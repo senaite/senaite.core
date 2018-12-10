@@ -56,6 +56,7 @@ class ListingController extends React.Component
     @saveEditableField = @saveEditableField.bind @
     @updateEditableField = @updateEditableField.bind @
     @saveAjaxQueue = @saveAjaxQueue.bind @
+    @toggleRemarksRow = @toggleRemarksRow.bind @
 
     # root element
     @root_el = @props.root_el
@@ -105,8 +106,10 @@ class ListingController extends React.Component
       categories: []
       # Expanded categories
       expanded_categories: []
-      # Expanded Rows
+      # Expanded Rows (currently only Partitions)
       expanded_rows: []
+      # Expanded Remarks Rows
+      expanded_remarks_rows: []
       # total number of items in the database
       total: 0
       # UIDs of selected rows are stored in selected_uids.
@@ -200,6 +203,32 @@ class ListingController extends React.Component
     # set the new expanded categories
     @setState
       expanded_categories: expanded
+
+  toggleRemarksRow: (uid) ->
+    ###
+     * Expand/Collapse the remarks row
+    ###
+    console.debug "ListingController::toggleRemarksRow: uid=#{uid}"
+
+    # skip if no uid is given
+    return unless uid
+
+    # get the current expanded rows
+    expanded = @state.expanded_remarks_rows
+
+    # check if the current row is in there
+    index = expanded.indexOf uid
+
+    if index > -1
+      # remove the category
+      expanded.splice index, 1
+    else
+      # add the category
+      expanded.push uid
+
+    # set the new expanded categories
+    @setState
+      expanded_remarks_rows: expanded
 
   toggleRow: (uid) ->
     ###
@@ -828,9 +857,11 @@ class ListingController extends React.Component
             categories={@state.categories}
             expanded_categories={@state.expanded_categories}
             expanded_rows={@state.expanded_rows}
+            expanded_remarks_rows={@state.expanded_remarks_rows}
             show_categories={@state.show_categories}
             on_category_click={@toggleCategory}
             on_row_expand_click={@toggleRow}
+            on_remarks_row_expand_click={@toggleRemarksRow}
             filter={@state.filter}
             update_editable_field={@updateEditableField}
             save_editable_field={@saveEditableField}
