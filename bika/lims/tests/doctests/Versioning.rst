@@ -70,12 +70,7 @@ The `log` view should reflect this version::
     >>> log_view = analysisservice.restrictedTraverse("@@log")
     >>> folderitems = log_view.folderitems()
 
-There should be two versions::
-
-    >>> len(folderitems)
-    2
-
-And the latest version should be 1::
+The latest version should be 1::
 
     >>> folderitems[0]["Version"]
     1
@@ -115,12 +110,7 @@ The `log` view should reflect this version::
     >>> log_view = calculation.restrictedTraverse("@@log")
     >>> folderitems = log_view.folderitems()
 
-There should be two versions::
-
-    >>> len(folderitems)
-    2
-
-And the latest version should be 1::
+The latest version should be 1::
 
     >>> folderitems[0]["Version"]
     1
