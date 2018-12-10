@@ -113,8 +113,12 @@ def upgrade(tool):
     hide_samples(portal)
 
     # Add Listing JS to portal_javascripts registry
-    # https://github.com/senaite/senaite.core/pull/
+    # https://github.com/senaite/senaite.core/pull/1131
     add_listing_js_to_portal_javascripts(portal)
+
+    # Fix Analysis Request - Analyses inconsistencies
+    # https://github.com/senaite/senaite.core/pull/1138
+    fix_ar_analyses_inconsistencies(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
@@ -1059,3 +1063,36 @@ def add_listing_js_to_portal_javascripts(portal):
     portal_javascripts = portal.portal_javascripts
     if id not in portal_javascripts.getResourceIds():
         portal_javascripts.registerResource(id=id)
+
+
+def fix_ar_analyses_inconsistencies(portal):
+    """Fixes inconsistencies between analyses and the ARs they belong to when
+    the AR is in a "cancelled", "invalidated" or "rejected state
+    """
+    def fix_analyses(request, status):
+        wf_id = "bika_analysis_workflow"
+        workflow = api.get_tool("portal_workflow").getWorkflowById(wf_id)
+        review_states = ['assigned', 'unassigned', 'to_be_verified']
+        query = dict(portal_type="Analysis",
+                     getRequestUID=api.get_uid(request),
+                     review_state=review_states)
+        for brain in api.search(query, CATALOG_ANALYSIS_LISTING):
+            analysis = api.get_object(brain)
+            changeWorkflowState(analysis, wf_id, status)
+            workflow.updateRoleMappingsFor(analysis)
+            analysis.reindexObject(idxs="review_state")
+
+    def fix_ar_analyses(status, wf_state_id="review_state"):
+        brains = api.search({wf_state_id: status},
+                            CATALOG_ANALYSIS_REQUEST_LISTING)
+        total = len(brains)
+        for num, brain in enumerate(brains):
+            if num % 100 == 0:
+                logger.info("Fixing inconsistent analyses from {} ARs: {}/{}"
+                            .format(status, num, total))
+            fix_analyses(api.get_object(brain), status)
+
+    logger.info("Fixing Analysis Request - Analyses inconsistencies ...")
+    fix_ar_analyses("cancelled", wf_state_id="cancellation_state")
+    fix_ar_analyses("invalid")
+    fix_ar_analyses("rejected")
