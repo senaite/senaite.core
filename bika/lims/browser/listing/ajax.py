@@ -174,12 +174,15 @@ class AjaxListingView(BrowserView):
             transitions_by_tid[tid] = transition
 
         # transition ids all objects have in common
-        common_tids = None
+        common_tids = set()
 
         for uid in uids:
             # TODO: Research how to avoid the object wakeup here
             obj = api.get_object_by_uid(uid)
             obj_transitions = self.get_transitions_for(obj)
+            # skip objects w/o transitions, e.g. retracted/rejected analyses
+            if not obj_transitions:
+                continue
             tids = []
             for transition in obj_transitions:
                 tid = transition.get("id")
@@ -192,7 +195,7 @@ class AjaxListingView(BrowserView):
                     tids.append(tid)
                 transitions_by_tid[tid] = transition
 
-            if common_tids is None:
+            if not common_tids:
                 common_tids = set(tids)
 
             common_tids = common_tids.intersection(tids)
