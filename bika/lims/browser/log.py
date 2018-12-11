@@ -115,7 +115,7 @@ class LogView(BikaListingView):
         if self.is_versioning_entry(entry):
             # revision entries have an actor dict
             actor_dict = entry.get("actor")
-            actor = actor_dict.get("fullname") or actor_dict.get("actor_id")
+            actor = actor_dict.get("fullname") or actor_dict.get("actorid")
         else:
             # review history items have only an actor id
             actor = entry.get("actor")
