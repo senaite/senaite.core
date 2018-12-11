@@ -973,7 +973,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         workflow = getToolByName(self, 'portal_workflow')
         states = {}
         for w in workflow.getWorkflowsFor(self):
-            state = w._getWorkflowStateOf(self).id
+            state = api.get_workflow_status_of(self, w.state_var)
             states[w.state_var] = state
         return states
 
