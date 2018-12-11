@@ -651,6 +651,8 @@ class AnalysesView(BikaListingView):
         # input field for the introduction of result.
         choices = analysis_brain.getResultOptions
         if choices:
+            # By default set empty as the default selected choice
+            choices.insert(0, dict(ResultValue="", ResultText=""))
             item['choices']['Result'] = choices
 
         if self.is_analysis_edition_allowed(analysis_brain):

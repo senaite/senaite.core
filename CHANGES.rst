@@ -20,6 +20,7 @@ Changelog
 
 **Changed**
 
+- #1147 Set empty option selected by default in result options
 - #1148 Add "All" filter in Analysis Requests listings
 - #1148 Make "Active" filter to display ongoing Analysis Requests only
 - #1136 Skip objects w/o transitions in allowed transitions calculation
