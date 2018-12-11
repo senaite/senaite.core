@@ -661,21 +661,7 @@ class AnalysisRequestsView(BikaListingView):
             item["getAnalysesNum"] = ""
 
         # Progress
-        num_verified = 0
-        num_submitted = 0
-        num_total = 0
-        if analysesnum and len(analysesnum) > 1:
-            num_verified = analysesnum[0]
-            num_total = analysesnum[1]
-            num_submitted = num_total - num_verified
-            if len(analysesnum) > 2:
-                num_wo_results = analysesnum[2]
-                num_submitted = num_total - num_verified - num_wo_results
-        num_steps_total = num_total * 2
-        num_steps = (num_verified * 2) + (num_submitted)
-        progress_perc = 0
-        if num_steps > 0 and num_steps_total > 0:
-            progress_perc = (num_steps * 100) / num_steps_total
+        progress_perc = self.get_progress_percentage(obj)
         progress = '<div class="progress md-progress">'\
                    '<div class="progress-bar" style="width: {0}%">{0}%</div>'\
                    '</div>'
@@ -829,6 +815,34 @@ class AnalysisRequestsView(BikaListingView):
         item["children"] = obj.getDescendantsUIDs or []
 
         return item
+
+    def get_progress_percentage(self, ar_brain):
+        """Returns the percentage of completeness of the Analysis Request
+        """
+        review_state = ar_brain.review_state
+        if review_state == "published":
+            return 100
+
+        numbers = ar_brain.getAnalysesNum
+        if not numbers or len(numbers) < 3:
+            return 0
+
+        num_analyses = numbers[1] or 0
+        if not num_analyses:
+            return 0
+
+        # [verified, total, not_submitted, to_be_verified]
+        num_to_be_verified = numbers[3] or 0
+        num_verified = numbers[0] or 0
+
+        # 2 steps per analysis (submit, verify) plus one step for publish
+        max_num_steps = (num_analyses * 2) + 1
+        num_steps = num_to_be_verified + (num_verified * 2)
+        if not num_steps:
+            return 0
+        if num_steps > max_num_steps:
+            return 100
+        return (num_steps * 100) / max_num_steps
 
     @property
     def copy_to_new_allowed(self):
