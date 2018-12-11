@@ -20,6 +20,7 @@ Changelog
 
 **Changed**
 
+- #1150 Completeness of not yet published Analysis Requests is not 100%
 - #1136 Skip objects w/o transitions in allowed transitions calculation
 - #1135 Listing: Separate Remarks Toggle-Handle
 - #1128 Listing: Removed non-conform handling of disabled fields
