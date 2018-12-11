@@ -7,6 +7,7 @@
 
 import json
 from collections import OrderedDict
+from copy import copy
 
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
@@ -651,6 +652,8 @@ class AnalysesView(BikaListingView):
         # input field for the introduction of result.
         choices = analysis_brain.getResultOptions
         if choices:
+            # N.B.we copy here the list to avoid persistent changes
+            choices = copy(choices)
             # By default set empty as the default selected choice
             choices.insert(0, dict(ResultValue="", ResultText=""))
             item['choices']['Result'] = choices
