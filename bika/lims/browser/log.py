@@ -149,7 +149,7 @@ class LogView(BikaListingView):
         state = None
         if self.is_versioning_entry(entry):
             # revision entries have no state
-            new_version = self.get_entry_version(entry) + 1
+            new_version = self.get_entry_version(entry)
             state = "{}: {}".format(_("Version"), new_version)
         else:
             # review history items have a state id
