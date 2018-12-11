@@ -21,6 +21,9 @@ Changelog
 **Changed**
 
 - #1150 Completeness of not yet published Analysis Requests is not 100%
+- #1147 Set empty option selected by default in result options
+- #1148 Add "All" filter in Analysis Requests listings
+- #1148 Make "Active" filter to display ongoing Analysis Requests only
 - #1136 Skip objects w/o transitions in allowed transitions calculation
 - #1135 Listing: Separate Remarks Toggle-Handle
 - #1128 Listing: Removed non-conform handling of disabled fields
@@ -47,6 +50,7 @@ Changelog
 
 **Removed**
 
+- #1149 Remove "Unpublished" filter from Analysis Requests listing
 - #1132 Remove "Submitted by current user" icon from AR listing (performance)
 - #1125 Remove Sample views, listings and links to Sample(s) from everywhere
 - #1118 Removed all legacy Bika Listing / Advanced Filtering from Codebase
