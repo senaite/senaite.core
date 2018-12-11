@@ -1,4 +1,5 @@
 from bika.lims import api
+from bika.lims.interfaces import IReferenceAnalysis
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from plone.indexer import indexer
 
@@ -13,7 +14,7 @@ def getAncestorsUIDs(instance):
     return [api.get_uid(request)] + parents
 
 
-@indexer(IRequestAnalysis)
+@indexer(IRequestAnalysis, IReferenceAnalysis)
 def cancellation_state(instance):
     """Acts as a mask for cancellation_workflow that is not bound to Analysis
     content type. Returns 'active' or 'cancelled'
