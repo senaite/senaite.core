@@ -474,7 +474,7 @@ class AnalysesView(BaseView):
             item_img_text = t(_("Control"))
             if obj.getReferenceType() == "b":
                 item_img = "blank.png"
-                item_img_text = t(_("Duplicate"))
+                item_img_text = t(_("Blank"))
             # parent
             supplier = obj.getSupplier()
             parent_obj = supplier
