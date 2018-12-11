@@ -1909,27 +1909,14 @@ class AnalysisRequest(BaseFolder):
         an_nums = [0, 0, 0, 0]
         for analysis in self.getAnalyses():
             review_state = analysis.review_state
-            if review_state in ['retracted', 'rejected']:
-                # Discard retracted analyses
+            if review_state in ['retracted', 'rejected', 'cancelled']:
                 continue
-
-            if not api.is_active(analysis):
-                # Discard non-active analyses
-                continue
-
-            analysis_object = api.get_object(analysis)
-            actions = getReviewHistoryActionsList(analysis_object)
-            if 'verify' in actions:
-                # Assume the "last" state of analysis is verified
-                index = 0
-
-            elif 'submit' not in actions or review_state != 'to_be_verified':
-                # Assume the "first" state of analysis is results_pending
-                index = 2
-
+            if review_state == 'to_be_verified':
+                an_nums[3] += 1
+            elif review_state in ['published', 'verified']:
+                an_nums[0] += 1
             else:
-                index = 3
-            an_nums[index] += 1
+                an_nums[2] += 1
             an_nums[1] += 1
         return an_nums
 
