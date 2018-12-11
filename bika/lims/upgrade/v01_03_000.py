@@ -17,9 +17,11 @@ from bika.lims.config import PROJECTNAME as product
 from bika.lims.interfaces import IDuplicateAnalysis, IReferenceAnalysis
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
-from bika.lims.workflow import changeWorkflowState
+from bika.lims.workflow import changeWorkflowState, ActionHandlerPool
 from bika.lims.workflow import isTransitionAllowed
 from bika.lims.workflow import doActionFor as do_action_for
+from bika.lims.workflow.analysis.events import remove_analysis_from_worksheet, \
+    reindex_request
 
 version = '1.3.0'  # Remember version number in metadata.xml and setup.py
 profile = 'profile-{0}:default'.format(product)
@@ -1078,6 +1080,17 @@ def fix_ar_analyses_inconsistencies(portal):
                      review_state=review_states)
         for brain in api.search(query, CATALOG_ANALYSIS_LISTING):
             analysis = api.get_object(brain)
+            # If the analysis is assigned to a worksheet, try to unassign first
+            ws = analysis.getWorksheet()
+            if ws:
+                success = do_action_for(analysis, "unassign")
+                if not success[0]:
+                    # The state does not allow the unassignment, let's do it
+                    # manually (w/o transition)
+                    remove_analysis_from_worksheet(analysis)
+                    reindex_request(analysis)
+
+            # Force the new state
             changeWorkflowState(analysis, wf_id, status)
             workflow.updateRoleMappingsFor(analysis)
             analysis.reindexObject(idxs="review_state")
@@ -1093,6 +1106,9 @@ def fix_ar_analyses_inconsistencies(portal):
             fix_analyses(brain, status)
 
     logger.info("Fixing Analysis Request - Analyses inconsistencies ...")
+    pool = ActionHandlerPool.get_instance()
+    pool.queue_pool()
     fix_ar_analyses("cancelled", wf_state_id="cancellation_state")
     fix_ar_analyses("invalid")
     fix_ar_analyses("rejected")
+    pool.resume()
