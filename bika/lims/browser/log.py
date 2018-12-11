@@ -50,6 +50,10 @@ class LogView(BikaListingView):
                 "title": _("State"), "sortable": False}),
         ))
 
+        # Do not display Version column if the content is not versionable
+        if not self.is_versionable():
+            del(self.columns["Version"])
+
         self.review_states = [
             {
                 "id": "default",
@@ -58,6 +62,13 @@ class LogView(BikaListingView):
                 "columns": self.columns.keys(),
             }
         ]
+
+
+    def is_versionable(self):
+        """Checks if the content is versionable
+        """
+        pr = api.get_tool("portal_repository")
+        return pr.isVersionable(self.context)
 
     def update(self):
         """Update hook
