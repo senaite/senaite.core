@@ -1080,15 +1080,11 @@ def fix_ar_analyses_inconsistencies(portal):
                      review_state=review_states)
         for brain in api.search(query, CATALOG_ANALYSIS_LISTING):
             analysis = api.get_object(brain)
-            # If the analysis is assigned to a worksheet, try to unassign first
+            # If the analysis is assigned to a worksheet, unassign first
             ws = analysis.getWorksheet()
             if ws:
-                success = do_action_for(analysis, "unassign")
-                if not success[0]:
-                    # The state does not allow the unassignment, let's do it
-                    # manually (w/o transition)
-                    remove_analysis_from_worksheet(analysis)
-                    reindex_request(analysis)
+                remove_analysis_from_worksheet(analysis)
+                reindex_request(analysis)
 
             # Force the new state
             changeWorkflowState(analysis, wf_id, status)
