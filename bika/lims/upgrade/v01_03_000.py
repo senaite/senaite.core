@@ -832,20 +832,22 @@ def get_rm_candidates_for_analysisworkfklow(portal):
              CATALOG_ANALYSIS_LISTING))
 
     # Analysis workflow: "Modify portal content" for "unassigned"
-    if "Modify portal content" not in workflow.states.unassigned.permissions:
-        candidates.append(
-            (wf_id,
-             dict(portal_type="Analysis",
-                  review_state=["unassigned"]),
-             CATALOG_ANALYSIS_LISTING))
+    if "unassigned" in workflow.states:
+        if "Modify portal content" not in workflow.states.unassigned.permissions:
+            candidates.append(
+                (wf_id,
+                 dict(portal_type="Analysis",
+                      review_state=["unassigned"]),
+                 CATALOG_ANALYSIS_LISTING))
 
     # Analysis workflow: "Modify portal content" for "assigned"
-    if "Modify portal content" not in workflow.states.assigned.permissions:
-        candidates.append(
-            (wf_id,
-             dict(portal_type="Analysis",
-                  review_state=["assigned"]),
-             CATALOG_ANALYSIS_LISTING))
+    if "assigned" in workflow.states:
+        if "Modify portal content" not in workflow.states.assigned.permissions:
+            candidates.append(
+                (wf_id,
+                 dict(portal_type="Analysis",
+                      review_state=["assigned"]),
+                 CATALOG_ANALYSIS_LISTING))
 
 
     # Just in case (some buddies use 'retract' in 'verified' state)
