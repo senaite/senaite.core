@@ -62,6 +62,7 @@ Changelog
 
 **Fixed**
 
+- #1142 Fix instrument QC Analyses Table
 - #1137 Fixed and refactored log view
 - #1124 Traceback when invalidating an Analysis Request with retracted analyses
 - #1090 Primary AR does not recognize created Partitions
