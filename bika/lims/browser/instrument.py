@@ -481,25 +481,28 @@ class InstrumentReferenceAnalysesViewView(BrowserView):
     def __call__(self):
         return self.template()
 
-    def get_analyses_table(self):
-        """Returns the table of Reference Analyses
-        """
-        return self.get_analyses_view().contents_table()
+    def get_analyses_table_view(self):
+        view_name = "table_instrument_referenceanalyses"
+        view = api.get_view(
+            view_name, context=self.context, request=self.request)
+        # Call listing hooks
+        view.update()
+        view.before_render()
 
-    def get_analyses_view(self):
-        if not self._analysesview:
-            # Creates the Analyses View if not exists yet
-            self._analysesview = InstrumentReferenceAnalysesView(
-                self.context, self.request, show_categories=False)
-            self._analysesview.allow_edit = False
-            self._analysesview.show_select_column = False
-            self._analysesview.show_workflow_action_buttons = False
-            self._analysesview.form_id = "%s_qcanalyses" % self.context.UID()
-            self._analysesview.review_states[0]["transitions"] = [{}]
-        return self._analysesview
-
-    def get_analyses_json(self):
-        return self.get_analyses_view().chart.get_json()
+        # TODO Refactor QC Charts as React Components
+        # The current QC Chart is rendered by looking at the value from a hidden
+        # input with id "graphdata", that is rendered below the contents listing
+        # (see instrument_referenceanalyses.pt).
+        # The value is a json, is built by folderitem function and is returned
+        # by self.chart.get_json(). This function is called directly by the
+        # template on render, but the template itself does not directly render
+        # the contents listing, but is done asyncronously.
+        # Hence the function at this point returns an empty dictionary because
+        # folderitems hasn't been called yet. As a result, the chart appears
+        # empty. Here, we force folderitems function to be called in order to
+        # ensure the graphdata is filled before the template is rendered.
+        view.get_folderitems()
+        return view
 
 
 class InstrumentReferenceAnalysesView(AnalysesView):
@@ -511,6 +514,13 @@ class InstrumentReferenceAnalysesView(AnalysesView):
 
     def __init__(self, context, request, **kwargs):
         AnalysesView.__init__(self, context, request, **kwargs)
+
+        self.form_id = "{}_qcanalyses".format(api.get_uid(context))
+        self.allow_edit = False
+        self.show_select_column = False
+        self.show_search = False
+        self.omit_form = True
+
         self.catalog = CATALOG_ANALYSIS_LISTING
 
         self.contentFilter = {
@@ -531,6 +541,7 @@ class InstrumentReferenceAnalysesView(AnalysesView):
             "title": "",
             "sortable": False
         }
+
         self.review_states[0]["columns"] = [
             "Service",
             "getReferenceAnalysesGroupID",
@@ -540,6 +551,7 @@ class InstrumentReferenceAnalysesView(AnalysesView):
             "CaptureDate",
             "Retractions"
         ]
+        self.review_states[0]["transitions"] = [{}]
         self.chart = EvolutionChart()
 
     def isItemAllowed(self, obj):
