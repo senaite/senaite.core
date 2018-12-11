@@ -1,5 +1,4 @@
 from bika.lims import api
-from bika.lims.interfaces import IReferenceAnalysis
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from plone.indexer import indexer
 
