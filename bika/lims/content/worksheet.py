@@ -23,6 +23,7 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.fields.remarksfield import RemarksField
 from bika.lims.browser.widgets import RemarksWidget
+from bika.lims.catalog.analysis_catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.config import PROJECTNAME, WORKSHEET_LAYOUT_OPTIONS
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.idserver import renameAfterCreation
@@ -1546,5 +1547,29 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         analyses = self.getAnalyses()
         return list(set([an.getDepartmentUID() for an in analyses]))
 
+    def getProgressPercentage(self):
+        """Returns the progress percentage of this worksheet
+        """
+        state = api.get_workflow_status_of(self)
+        if state == "verified":
+            return 100
+
+        steps = 0
+        query = dict(getWorksheetUID=api.get_uid(self))
+        analyses = api.search(query, CATALOG_ANALYSIS_LISTING)
+        max_steps = len(analyses) * 2
+        for analysis in analyses:
+            an_state = analysis.review_state
+            if an_state in ["rejected", "retracted", "cancelled"]:
+                steps += 2
+            elif an_state in ["verified", "published"]:
+                steps += 2
+            elif an_state == "to_be_verified":
+                steps += 1
+        if steps == 0:
+            return 0
+        if steps > max_steps:
+            return 100
+        return (steps * 100)/max_steps
 
 registerType(Worksheet, PROJECTNAME)

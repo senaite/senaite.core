@@ -14,7 +14,7 @@ from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.catalog import CATALOG_WORKSHEET_LISTING
 from bika.lims.permissions import EditWorksheet
 from bika.lims.permissions import ManageWorksheets
-from bika.lims.utils import get_display_list
+from bika.lims.utils import get_display_list, get_progress_bar_html
 from bika.lims.utils import get_link
 from bika.lims.utils import getUsers
 from bika.lims.utils import user_fullname
@@ -80,6 +80,8 @@ class FolderView(BikaListingView):
             })
 
         self.columns = collections.OrderedDict((
+            ("Progress", {
+               "title": _("Progress")}),
             ("Title", {
                 "title": _("Worksheet"),
                 "index": "getId"}),
@@ -312,6 +314,10 @@ class FolderView(BikaListingView):
         item["NumRegularAnalyses"] = str(obj.getNumberOfRegularAnalyses)
         # Total Number of Samples
         item["NumRegularSamples"] = str(obj.getNumberOfRegularSamples)
+
+        # Progress
+        progress_perc = obj.getProgressPercentage
+        item["replace"]["Progress"] = get_progress_bar_html(progress_perc)
 
         review_state = item["review_state"]
         if self.can_reassign and review_state == "open":

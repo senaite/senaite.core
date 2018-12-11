@@ -6,6 +6,7 @@ Changelog
 
 **Added**
 
+- #1153 Progress bar in Worksheet listing
 - #1120 Listing: Confirm before transition
 - #1077 Creation of retests for blanks and controls via retraction
 - #1077 Creation of retests for duplicates via retraction

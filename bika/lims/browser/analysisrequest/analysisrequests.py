@@ -16,7 +16,7 @@ from bika.lims.permissions import AddAnalysisRequest
 from bika.lims.permissions import ManageAnalysisRequests
 from bika.lims.permissions import SampleSample
 from bika.lims.permissions import Verify as VerifyPermission
-from bika.lims.utils import get_image
+from bika.lims.utils import get_image, get_progress_bar_html
 from bika.lims.utils import getUsers
 from bika.lims.utils import t
 from DateTime import DateTime
@@ -652,10 +652,7 @@ class AnalysisRequestsView(BikaListingView):
 
         # Progress
         progress_perc = self.get_progress_percentage(obj)
-        progress = '<div class="progress md-progress">'\
-                   '<div class="progress-bar" style="width: {0}%">{0}%</div>'\
-                   '</div>'
-        item["replace"]["Progress"] = progress.format(progress_perc)
+        item["replace"]["Progress"] = get_progress_bar_html(progress_perc)
 
         item["BatchID"] = obj.getBatchID
         if obj.getBatchID:

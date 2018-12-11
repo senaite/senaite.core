@@ -782,6 +782,14 @@ def get_image(name, **kwargs):
     return html.format(portal_url, name, attr)
 
 
+def get_progress_bar_html(percentage):
+    """Returns an html that represents a progress bar
+    """
+    return '<div class="progress md-progress">' \
+           '<div class="progress-bar" style="width: {0}%">{0}%</div>' \
+           '</div>'.format(percentage or 0)
+
+
 def render_html_attributes(**kwargs):
     """Returns a string representation of attributes for html entities
     :param kwargs: attributes and values
