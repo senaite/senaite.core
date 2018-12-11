@@ -47,7 +47,7 @@ class LogView(BikaListingView):
             ("Action", {
                 "title": _("Action"), "sortable": False}),
             ("State", {
-                "title": _("State"), "sortable": False}),
+                "title": _("Outcome state"), "sortable": False}),
         ))
 
         # Do not display Version column if the content is not versionable
