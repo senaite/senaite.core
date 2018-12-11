@@ -14,7 +14,7 @@ def getAncestorsUIDs(instance):
     return [api.get_uid(request)] + parents
 
 
-@indexer(IRequestAnalysis, IReferenceAnalysis)
+@indexer(IRequestAnalysis)
 def cancellation_state(instance):
     """Acts as a mask for cancellation_workflow that is not bound to Analysis
     content type. Returns 'active' or 'cancelled'

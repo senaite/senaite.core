@@ -25,6 +25,7 @@ from bika.lims.workflow import doActionFor
 class AnalysesWorkflowAction(WorkflowAction):
     """Workflow actions taken in lists that contains analyses"""
 
+    # TODO Workflow - Clean-up and move this stuff to after_submit event
     def workflow_action_submit(self):
         uids = self.get_selected_uids()
         if not uids:
@@ -66,7 +67,7 @@ class AnalysesWorkflowAction(WorkflowAction):
         # _get_selected_items from the base class, cause that function fetches
         # the objects by uid, but sequentially one by one
         actions_pool = ActionsPool()
-        query = dict(UID=uids, cancellation_state="active")
+        query = dict(UID=uids)
         for brain in api.search(query, CATALOG_ANALYSIS_LISTING):
             uid = api.get_uid(brain)
             analysis = api.get_object(brain)
