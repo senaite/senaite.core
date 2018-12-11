@@ -369,38 +369,6 @@ class AnalysisRequestsView(BikaListingView):
                 "custom_transitions": [],
                 "columns": self.columns.keys(),
             }, {
-                "id": "unpublished",
-                "title": _("Unpublished"),
-                "contentFilter": {
-                    "cancellation_state": "active",
-                    "review_state": (
-                        "sample_registered",
-                        "to_be_sampled",
-                        "to_be_preserved",
-                        "sample_due",
-                        "sample_received",
-                        "to_be_verified",
-                        "attachment_due",
-                        "verified",
-                    ),
-                    "sort_on": "created",
-                    "sort_order": "descending",
-                },
-                "transitions": [
-                    {"id": "sample"},
-                    {"id": "preserve"},
-                    {"id": "receive"},
-                    {"id": "retract"},
-                    {"id": "verify"},
-                    {"id": "prepublish"},
-                    {"id": "publish"},
-                    {"id": "republish"},
-                    {"id": "cancel"},
-                    {"id": "reinstate"},
-                ],
-                "custom_transitions": [print_stickers],
-                "columns": self.columns.keys(),
-            }, {
                 "id": "cancelled",
                 "title": _("Cancelled"),
                 "contentFilter": {
