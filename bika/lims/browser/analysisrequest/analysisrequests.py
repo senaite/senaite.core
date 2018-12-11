@@ -824,8 +824,6 @@ class AnalysisRequestsView(BikaListingView):
             return 100
 
         numbers = ar_brain.getAnalysesNum
-        if not numbers or len(numbers) < 3:
-            return 0
 
         num_analyses = numbers[1] or 0
         if not num_analyses:
