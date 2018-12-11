@@ -488,6 +488,20 @@ class InstrumentReferenceAnalysesViewView(BrowserView):
         # Call listing hooks
         view.update()
         view.before_render()
+
+        # TODO Refactor QC Charts as React Components
+        # The current QC Chart is rendered by looking at the value from a hidden
+        # input with id "graphdata", that is rendered below the contents listing
+        # (see instrument_referenceanalyses.pt).
+        # The value is a json, is built by folderitem function and is returned
+        # by self.chart.get_json(). This function is called directly by the
+        # template on render, but the template itself does not directly render
+        # the contents listing, but is done asyncronously.
+        # Hence the function at this point returns an empty dictionary because
+        # folderitems hasn't been called yet. As a result, the chart appears
+        # empty. Here, we force folderitems function to be called in order to
+        # ensure the graphdata is filled before the template is rendered.
+        view.get_folderitems()
         return view
 
 
