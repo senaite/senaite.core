@@ -46,7 +46,13 @@ class LogView(BikaListingView):
                 "title": _("Actor"), "sortable": False}),
             ("Action", {
                 "title": _("Action"), "sortable": False}),
+            ("State", {
+                "title": _("Outcome state"), "sortable": False}),
         ))
+
+        # Do not display Version column if the content is not versionable
+        if not self.is_versionable():
+            del(self.columns["Version"])
 
         self.review_states = [
             {
@@ -57,11 +63,30 @@ class LogView(BikaListingView):
             }
         ]
 
+
+    def is_versionable(self):
+        """Checks if the content is versionable
+        """
+        pr = api.get_tool("portal_repository")
+        return pr.isVersionable(self.context)
+
     def update(self):
         """Update hook
         """
         super(LogView, self).update()
         self.total = len(self.get_full_history())
+
+    def is_versioning_entry(self, entry):
+        """Checks if the entry is a versioning entry
+        """
+        return entry.get("type") == "versioning"
+
+    def to_title(self, id):
+        """Convert an id to a human readable title
+        """
+        if not isinstance(id, basestring):
+            return id
+        return id.capitalize().replace("_", " ")
 
     def get_revision_history(self):
         """Return the revision history of the current context
@@ -97,26 +122,52 @@ class LogView(BikaListingView):
     def get_entry_actor(self, entry):
         """Return the fullname of the actor
         """
-        actor = entry.get("actor")
-        if isinstance(actor, basestring):
-            actor = api.get_user_properties(actor) or dict(actorid=actor)
-        fullname = actor.get("fullname")
-        if not fullname:
-            return actor.get("actorid")
-        return actor.get("fullname")
+        actor = None
+        if self.is_versioning_entry(entry):
+            # revision entries have an actor dict
+            actor_dict = entry.get("actor")
+            actor = actor_dict.get("fullname") or actor_dict.get("actorid")
+        else:
+            # review history items have only an actor id
+            actor = entry.get("actor")
+            # try to get the fullname
+            props = api.get_user_properties(actor)
+            actor = props.get("fullname") or actor
+        # automatic transitions have no actor
+        if actor is None:
+            return ""
+        return actor
 
     def get_entry_action(self, entry):
         """Return the action
         """
-        # revision entries have a transition_title
-        transition_title = entry.get("transition_title")
-        if transition_title:
-            return transition_title
-        # review history items have only an action
-        action = entry.get("action") or "Created"
+        action = None
+        if self.is_versioning_entry(entry):
+            # revision entries have a transition_title
+            action = entry.get("transition_title")
+        else:
+            # review history items have only an action
+            action = entry.get("action")
+        # automatic transitions have no action
+        if action is None:
+            return ""
         # make the action human readable
-        action = action.capitalize().replace("_", " ")
-        return _(action)
+        return _(self.to_title(action))
+
+    def get_entry_state(self, entry):
+        """Return the state
+        """
+        state = None
+        if self.is_versioning_entry(entry):
+            # revision entries have no state
+            new_version = self.get_entry_version(entry)
+            state = "{}: {}".format(_("Version"), new_version)
+        else:
+            # review history items have a state id
+            state = entry.get("review_state")
+        if not state:
+            return ""
+        return _(self.to_title(state))
 
     def make_empty_item(self, **kw):
         """Create a new empty item
@@ -142,6 +193,7 @@ class LogView(BikaListingView):
         item["Date"] = self.get_entry_date(entry)
         item["Actor"] = self.get_entry_actor(entry)
         item["Action"] = self.get_entry_action(entry)
+        item["State"] = self.get_entry_state(entry)
 
         return item
 
