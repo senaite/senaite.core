@@ -460,6 +460,8 @@ class TableCell extends React.Component
       field = field.concat @create_readonly_field()
     else if type == "interim"
       field = field.concat @create_numeric_field()
+    # XXX Is this still needed with the async save button?
+    #
     #   interims = item.interimfields or []
     #   # XXX Fake in interims for browser.analyses.workflow.workflow_action_submit
     #   if interims.length > 0
