@@ -25,25 +25,6 @@ class TableCell extends React.Component
       "default": ":records"
     }
 
-    # Bind checkbox field events
-    @on_checkbox_field_change = @on_checkbox_field_change.bind @
-
-
-  on_checkbox_field_change: (event) ->
-    el = event.currentTarget
-    uid = el.getAttribute("uid")
-    name = el.getAttribute("column_key") or el.name
-    value = el.checked
-    console.debug "TableCell:on_checkbox_field_change: checked=#{value}"
-
-    # Call the *update* field handler
-    if @props.update_editable_field
-      @props.update_editable_field uid, name, value, @get_item()
-
-    # Call the *save* field handler (no blur event here necessary)
-    if @props.save_editable_field
-      @props.save_editable_field uid, name, value, @get_item()
-
   get_item: ->
     return @props.item
 
@@ -444,14 +425,16 @@ class TableCell extends React.Component
       <Checkbox
         key={name}
         uid={uid}
+        item={item}
         name={fieldname}
         value="on"
         column_key={column_key}
         title={title}
         defaultChecked={value}
         disabled={disabled}
-        onChange={@on_checkbox_field_change}
         className={css_class}
+        update_editable_field={@props.update_editable_field}
+        save_editable_field={@props.save_editable_field}
         {...props}
         />)
 
