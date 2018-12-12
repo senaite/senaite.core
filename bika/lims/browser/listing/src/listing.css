@@ -199,3 +199,5 @@
 
 /* Remarks */
 .ajax-contents-table span.remarksicon { cursor: pointer; color: #3F729B; }
+
+.ajax-contents-table span.unit { padding: 0 0.25em; color: #bbb; }
