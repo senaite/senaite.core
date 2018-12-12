@@ -123,6 +123,7 @@ class TableTransposedCell extends TableCell
             placeholder: interim.title or interim.keyword
             formatted_value: interim.formatted_value
             after: "<span class='unit'>#{unit}</span>"
+      # calculated field
       if item.calculation
         fields = fields.concat @create_readonly_field()
       # select

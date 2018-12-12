@@ -69,8 +69,7 @@ class TableCells extends React.Component
           <div uid={uid}
                onClick={@on_remarks_row_expand_click}>
             <span className="remarksicon glyphicon glyphicon-comment"></span>
-          </div>
-          }
+          </div>}
         </td>)
 
     # insert visible columns in the right order
