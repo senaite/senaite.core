@@ -1049,6 +1049,11 @@ def hide_samples(portal):
                 type_info.deleteActions([index])
                 break
 
+    def remove_actions_from_sample(sample):
+        type_info = sample.getTypeInfo()
+        idxs = [index for index, value in enumerate(type_info._actions)]
+        type_info.deleteActions(idxs)
+
     logger.info("Removing Samples action view from inside Clients ...")
     for client in portal.clients.objectValues("Client"):
         remove_samples_action(client)
@@ -1056,6 +1061,10 @@ def hide_samples(portal):
     logger.info("Removing Samples action view from inside Batches ...")
     for batch in portal.batches.objectValues("Batch"):
         remove_samples_action(batch)
+
+    logger.info("Removing actions from inside Samples ...")
+    for sample in api.search(dict(portal_type="Sample"), "bika_catalog"):
+        remove_actions_from_sample(api.get_object(sample))
 
     # Remove indexes and metadata not used anymore
     del_index(portal, "bika_catalog", "getSampleUID")
