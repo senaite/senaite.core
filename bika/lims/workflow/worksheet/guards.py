@@ -71,8 +71,7 @@ def guard_retract(worksheet):
     for analysis in analyses:
         if api.get_workflow_status_of(analysis) in detached:
             num_detached += 1
-            continue
-        if not isTransitionAllowed(analysis, "retract"):
+        elif not isTransitionAllowed(analysis, "retract"):
             return False
     return analyses and num_detached < len(analyses) or False
 
