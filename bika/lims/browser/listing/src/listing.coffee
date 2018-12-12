@@ -56,7 +56,7 @@ class ListingController extends React.Component
     @saveEditableField = @saveEditableField.bind @
     @updateEditableField = @updateEditableField.bind @
     @saveAjaxQueue = @saveAjaxQueue.bind @
-    @toggleRemarksRow = @toggleRemarksRow.bind @
+    @toggleRemarks = @toggleRemarks.bind @
 
     # root element
     @root_el = @props.root_el
@@ -109,7 +109,7 @@ class ListingController extends React.Component
       # Expanded Rows (currently only Partitions)
       expanded_rows: []
       # Expanded Remarks Rows
-      expanded_remarks_rows: []
+      expanded_remarks: []
       # total number of items in the database
       total: 0
       # UIDs of selected rows are stored in selected_uids.
@@ -204,31 +204,31 @@ class ListingController extends React.Component
     @setState
       expanded_categories: expanded
 
-  toggleRemarksRow: (uid) ->
+  toggleRemarks: (uid) ->
     ###
-     * Expand/Collapse the remarks row
+     * Expand/Collapse remarks
     ###
-    console.debug "ListingController::toggleRemarksRow: uid=#{uid}"
+    console.debug "ListingController::toggleRemarks: uid=#{uid}"
 
     # skip if no uid is given
     return unless uid
 
-    # get the current expanded rows
-    expanded = @state.expanded_remarks_rows
+    # get the current expanded remarks
+    expanded = @state.expanded_remarks
 
-    # check if the current row is in there
+    # check if the current UID is in there
     index = expanded.indexOf uid
 
     if index > -1
-      # remove the category
+      # remove the UID
       expanded.splice index, 1
     else
-      # add the category
+      # add the UID
       expanded.push uid
 
-    # set the new expanded categories
+    # set the new expanded remarks
     @setState
-      expanded_remarks_rows: expanded
+      expanded_remarks: expanded
 
   toggleRow: (uid) ->
     ###
@@ -862,11 +862,11 @@ class ListingController extends React.Component
             categories={@state.categories}
             expanded_categories={@state.expanded_categories}
             expanded_rows={@state.expanded_rows}
-            expanded_remarks_rows={@state.expanded_remarks_rows}
+            expanded_remarks={@state.expanded_remarks}
             show_categories={@state.show_categories}
             on_category_click={@toggleCategory}
             on_row_expand_click={@toggleRow}
-            on_remarks_row_expand_click={@toggleRemarksRow}
+            on_remarks_row_expand_click={@toggleRemarks}
             filter={@state.filter}
             update_editable_field={@updateEditableField}
             save_editable_field={@saveEditableField}
