@@ -149,18 +149,6 @@ class TableTransposedCell extends TableCell
       else
         fields = fields.concat @create_numeric_field()
 
-      # Append Attachments
-      if item.replace.Attachments
-        fields = fields.concat @create_readonly_field
-            props:
-              key: column_index + "_attachments"
-              uid: uid
-              item: item
-              column_key: "Attachments"
-              formatted_value: item.replace.Attachments
-              attrs:
-                style: {display: "block", padding: "1em"}
-
       # Append Remarks field(s)
       for column_key, column_index in @get_remarks_columns()
         value = item[column_key]
@@ -175,6 +163,18 @@ class TableTransposedCell extends TableCell
               value={item[column_key]}
             />
           </div>)
+
+      # Append Attachments
+      if item.replace.Attachments
+        fields = fields.concat @create_readonly_field
+            props:
+              key: column_index + "_attachments"
+              uid: uid
+              item: item
+              column_key: "Attachments"
+              formatted_value: item.replace.Attachments
+              attrs:
+                style: {display: "block", padding: "1em"}
 
     return fields
 
