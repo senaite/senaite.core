@@ -1120,8 +1120,8 @@ def add_worksheet_progress_percentage(portal):
     """Adds getProgressPercentage metadata to worksheets catalog
     """
     add_metadata(portal, CATALOG_WORKSHEET_LISTING, "getProgressPercentage")
-    logger.info("Reindexing open Worksheets ...")
-    query = dict(portal_type="Worksheet", review_state="open")
+    logger.info("Reindexing Worksheets ...")
+    query = dict(portal_type="Worksheet")
     brains = api.search(query, CATALOG_WORKSHEET_LISTING)
     total = len(brains)
     for num, brain in enumerate(brains):
@@ -1130,4 +1130,3 @@ def add_worksheet_progress_percentage(portal):
                         .format(num, total))
         worksheet = api.get_object(brain)
         worksheet.reindexObject()
-
