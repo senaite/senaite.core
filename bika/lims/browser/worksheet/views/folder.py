@@ -109,37 +109,15 @@ class FolderView(BikaListingView):
         self.review_states = [
             {
                 "id": "default",
-                "title": _("All"),
+                "title": _("Active"),
                 "contentFilter": {
                     "review_state": [
                         "open",
                         "to_be_verified",
-                        "verified"
                     ],
-                    "sort_on":"CreationDate",
+                    "sort_on": "CreationDate",
                     "sort_order": "reverse"},
-                "transitions":[
-                    {"id": "retract"},
-                    {"id": "verify"},
-                    {"id": "reject"}
-                ],
-                "custom_transitions": [],
-                "columns": self.columns.keys(),
-            }, {
-                # getAuthenticatedMember does not work in __init__ so "mine" is
-                # configured further in "folderitems" below.
-                "id": "mine",
-                "title": _("Mine"),
-                "contentFilter": {
-                    "review_state": [
-                        "open",
-                        "to_be_verified",
-                        "verified",
-                        "rejected"
-                    ],
-                    "sort_on":"CreationDate",
-                    "sort_order": "reverse"},
-                "transitions":[
+                "transitions": [
                     {"id": "retract"},
                     {"id": "verify"},
                     {"id": "reject"}
@@ -179,6 +157,46 @@ class FolderView(BikaListingView):
                     "sort_order": "reverse"
                 },
                 "transitions": [],
+                "custom_transitions": [],
+                "columns": self.columns.keys(),
+            }, {
+                "id": "all",
+                "title": _("All"),
+                "contentFilter": {
+                    "review_state": [
+                        "open",
+                        "to_be_verified",
+                        "verified",
+                        "rejected",
+                    ],
+                    "sort_on":"CreationDate",
+                    "sort_order": "reverse"},
+                "transitions":[
+                    {"id": "retract"},
+                    {"id": "verify"},
+                    {"id": "reject"}
+                ],
+                "custom_transitions": [],
+                "columns": self.columns.keys(),
+            }, {
+                # getAuthenticatedMember does not work in __init__ so "mine" is
+                # configured further in "folderitems" below.
+                "id": "mine",
+                "title": _("Mine"),
+                "contentFilter": {
+                    "review_state": [
+                        "open",
+                        "to_be_verified",
+                        "verified",
+                        "rejected"
+                    ],
+                    "sort_on":"CreationDate",
+                    "sort_order": "reverse"},
+                "transitions":[
+                    {"id": "retract"},
+                    {"id": "verify"},
+                    {"id": "reject"}
+                ],
                 "custom_transitions": [],
                 "columns": self.columns.keys(),
             }
@@ -241,7 +259,7 @@ class FolderView(BikaListingView):
             "id": "reassign",
             "title": _("Reassign")}
         for rs in self.review_states:
-            if rs["id"] not in ["default", "mine", "open"]:
+            if rs["id"] not in ["default", "mine", "open", "all"]:
                 continue
             rs["custom_transitions"].append(reassing_analyst_transition)
         self.show_select_column = True
