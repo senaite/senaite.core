@@ -122,6 +122,10 @@ def upgrade(tool):
     # https://github.com/senaite/senaite.core/pull/1138
     fix_ar_analyses_inconsistencies(portal)
 
+    # Add getProgressPercentage metadata for worksheets
+    # https://github.com/senaite/senaite.core/pull/1153
+    add_worksheet_progress_percentage(portal)
+
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
 
@@ -1110,3 +1114,19 @@ def fix_ar_analyses_inconsistencies(portal):
     fix_ar_analyses("invalid")
     fix_ar_analyses("rejected")
     pool.resume()
+
+
+def add_worksheet_progress_percentage(portal):
+    """Adds getProgressPercentage metadata to worksheets catalog
+    """
+    add_metadata(portal, CATALOG_WORKSHEET_LISTING, "getProgressPercentage")
+    logger.info("Reindexing Worksheets ...")
+    query = dict(portal_type="Worksheet")
+    brains = api.search(query, CATALOG_WORKSHEET_LISTING)
+    total = len(brains)
+    for num, brain in enumerate(brains):
+        if num % 100 == 0:
+            logger.info("Reindexing open Worksheets: {}/{}"
+                        .format(num, total))
+        worksheet = api.get_object(brain)
+        worksheet.reindexObject()

@@ -39,6 +39,7 @@ _columns_list = [
     'getNumberOfQCAnalyses',
     'getNumberOfRegularAnalyses',
     'getNumberOfRegularSamples',
+    'getProgressPercentage',
 ]
 # Adding basic indexes
 _base_indexes_copy = BASE_CATALOG_INDEXES.copy()

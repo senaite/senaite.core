@@ -92,6 +92,7 @@ def after_submit(analysis):
     ws = analysis.getWorksheet()
     if ws:
         doActionFor(ws, 'submit')
+        push_reindex_to_actions_pool(ws)
 
     # Promote transition to Analysis Request
     if IRequestAnalysis.providedBy(analysis):
@@ -176,6 +177,7 @@ def after_verify(analysis):
     ws = analysis.getWorksheet()
     if ws:
         doActionFor(ws, 'verify')
+        push_reindex_to_actions_pool(ws)
 
     # Promote transition to Analysis Request
     if IRequestAnalysis.providedBy(analysis):
