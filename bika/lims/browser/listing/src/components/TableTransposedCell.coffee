@@ -2,6 +2,7 @@ import React from "react"
 
 import Checkbox from "./Checkbox.coffee"
 import TableCell from "./TableCell.coffee"
+import RemarksField from "./RemarksField.coffee"
 
 ###*
  * This component is currently only used for the Transposed Layout in Worksheets
@@ -56,6 +57,13 @@ class TableTransposedCell extends TableCell
       css.push item.state_class
     return css.join " "
 
+  get_remarks_columns: ->
+    columns = []
+    for key, value of @props.columns
+      if value.type == "remarks"
+        columns.push key
+    return columns
+
   ###*
    * Creates a select checkbox for the original folderitem
    * @param props {object} properties passed to the component
@@ -99,9 +107,17 @@ class TableTransposedCell extends TableCell
     # the fields to return
     fields = []
 
-    # Always prepend a select checkbox before a readonly/editable results cell
     if @is_result_column()
+      # Add a select checkbox for result cells
       fields = fields.concat @create_select_checkbox()
+      # Append remarks toggle
+      fields.push(
+        <span key={uid + "_remarks"}
+              className="remarks"
+              uid={uid}
+              onClick={@props.on_remarks_expand_click}>
+          <span className="remarksicon glyphicon glyphicon-comment"></span>
+        </span>)
 
     if type == "readonly"
       fields = fields.concat @create_readonly_field()
@@ -132,6 +148,19 @@ class TableTransposedCell extends TableCell
       # numeric
       else
         fields = fields.concat @create_numeric_field()
+
+      # Append Remarks field(s)
+      for column_key, column_index in @get_remarks_columns()
+        value = item[column_key]
+        fields.push(
+          <RemarksField
+            {...@props}
+            key={"#{column_key}.#{uid}"}
+            uid={uid}
+            item={item}
+            column_key={column_key}
+            value={item[column_key]}
+          />)
 
     return fields
 

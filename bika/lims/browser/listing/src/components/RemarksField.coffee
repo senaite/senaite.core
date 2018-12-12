@@ -72,9 +72,9 @@ class RemarksField extends React.Component
     columns = @props.columns
     column_key = @props.column_key
     column = columns[column_key]
-    title = column.title
+    title = column.title or "Remarks"
     if (typeof _ == "function") then title = _(title)
-    return title or ""
+    return title
 
   ###*
    * Compute the inline CSS style for the field
