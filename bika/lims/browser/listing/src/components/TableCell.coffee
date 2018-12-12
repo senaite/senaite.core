@@ -6,7 +6,6 @@ import MultiSelect from "./MultiSelect.coffee"
 import NumericField from "./NumericField.coffee"
 import ReadonlyField from "./ReadonlyField.coffee"
 import Select from "./Select.coffee"
-import StringField from "./StringField.coffee"
 
 
 class TableCell extends React.Component
@@ -29,9 +28,6 @@ class TableCell extends React.Component
     # Bind checkbox field events
     @on_checkbox_field_change = @on_checkbox_field_change.bind @
 
-    # Bind string field events
-    @on_string_field_blur = @on_string_field_blur.bind @
-    @on_string_field_change = @on_string_field_change.bind @
 
   on_checkbox_field_change: (event) ->
     el = event.currentTarget
@@ -47,28 +43,6 @@ class TableCell extends React.Component
     # Call the *save* field handler (no blur event here necessary)
     if @props.save_editable_field
       @props.save_editable_field uid, name, value, @get_item()
-
-  on_string_field_blur: (event) ->
-    el = event.currentTarget
-    uid = el.getAttribute("uid")
-    name = el.getAttribute("column_key") or el.name
-    value = el.value
-    console.debug "TableCell:on_string_field_blur: value=#{value}"
-
-    # Call the *save* field handler
-    if @props.save_editable_field
-      @props.save_editable_field uid, name, value, @get_item()
-
-  on_string_field_change: (event) ->
-    el = event.currentTarget
-    uid = el.getAttribute("uid")
-    name = el.getAttribute("column_key") or el.name
-    value = el.value
-    console.debug "TableCell:on_string_field_change: value=#{value}"
-
-    # Call the *update* field handler
-    if @props.update_editable_field
-      @props.update_editable_field uid, name, value, @get_item()
 
   get_item: ->
     return @props.item
