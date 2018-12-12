@@ -113,7 +113,7 @@ class TableTransposedCell extends TableCell
       # Append remarks toggle
       fields.push(
         <span key={uid + "_remarks"}
-              className="remarks"
+              className="transposedremarks"
               uid={uid}
               onClick={@props.on_remarks_expand_click}>
           <span className="remarksicon glyphicon glyphicon-comment"></span>
@@ -153,14 +153,17 @@ class TableTransposedCell extends TableCell
       for column_key, column_index in @get_remarks_columns()
         value = item[column_key]
         fields.push(
-          <RemarksField
-            {...@props}
-            key={"#{column_key}.#{uid}"}
-            uid={uid}
-            item={item}
-            column_key={column_key}
-            value={item[column_key]}
-          />)
+          <div style={{paddingLeft: "1em"}}
+               key={column_index}>
+            <RemarksField
+              {...@props}
+              key={"#{column_key}.#{uid}"}
+              uid={uid}
+              item={item}
+              column_key={column_key}
+              value={item[column_key]}
+            />
+          </div>)
 
     return fields
 
@@ -168,7 +171,7 @@ class TableTransposedCell extends TableCell
     <td className={@get_css()}
         colSpan={@props.colspan}
         rowSpan={@props.rowspan}>
-      <div className="form-group">
+      <div className="form-group col-sm-12">
         {@render_before_content()}
         {@render_content()}
         {@render_after_content()}
