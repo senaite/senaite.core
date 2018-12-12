@@ -18,7 +18,6 @@
 
   <state state_id="attachment_due" title="Attachment due" i18n:attributes="title">
     <exit-transition transition_id="attach" />
-    <exit-transition transition_id="retract" />
     <exit-transition transition_id="reject" />
     <permission-map name="BIKA: Add Attachment" acquired="False">
       <permission-role>Analyst</permission-role>
@@ -39,9 +38,6 @@
       <permission-role>Manager</permission-role>
     </permission-map>
     <permission-map name="BIKA: Retract" acquired="False">
-      <permission-role>Analyst</permission-role>
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
     </permission-map>
     <permission-map name="BIKA: Unassign analyses" acquired="False">
       <permission-role>Analyst</permission-role>
@@ -84,9 +80,6 @@
       <permission-role>Manager</permission-role>
     </permission-map>
     <permission-map name="BIKA: Retract" acquired="False">
-      <permission-role>Analyst</permission-role>
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
     </permission-map>
     <permission-map name="BIKA: Unassign analyses" acquired="False">
       <permission-role>Analyst</permission-role>
@@ -157,7 +150,6 @@
     </permission-map>
     <permission-map name="BIKA: Retract" acquired="False">
       <permission-role>Analyst</permission-role>
-      <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>
@@ -227,10 +219,16 @@
     </guard>
   </transition>
 
-  <transition transition_id="retract" title="Retract" new_state="open" trigger="USER" before_script="" after_script="" i18n:attributes="title">
-    <action url="" category="workflow" icon="">Retract worksheet</action>
+  <!-- Transition: retract
+  Shortcut that retracts all analyses the Worksheet contains.
+  The analyses of the worksheet transition to "retracted" state and a new copy
+  of each one is created and assigned to the same worksheet. -->
+  <transition transition_id="retract" title="Retract"
+              new_state="open" trigger="USER" before_script=""
+              after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Retract</action>
     <guard>
-      <guard-expression>python:here.guard_retract_transition()</guard-expression>
+      <guard-expression>python:here.guard_handler("retract")</guard-expression>
     </guard>
   </transition>
 
