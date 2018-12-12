@@ -95,7 +95,9 @@ class AnalysesTransposedView(AnalysesView):
         transposed.update(self.headers)
 
         # the collected services (Iron, Copper, Calcium...) come afterwards
-        transposed.update(self.services)
+        services = OrderedDict(reversed(self.services.items()))
+        # the collected services (Iron, Copper, Calcium...) come afterwards
+        transposed.update(services)
 
         # listing fixtures
         self.total = len(transposed.keys())
