@@ -98,10 +98,11 @@ class Select extends React.Component
             column_key={@props.column_key}
             title={@props.title}
             disabled={@props.disabled}
-            onBlur={@on_blur}
-            onChange={@on_change}
+            onBlur={@props.onBlur or @on_blur}
+            onChange={@props.onChange or @on_change}
             required={@props.required}
-            className={@props.className}>
+            className={@props.className}
+            {...@props.attrs}>
       {@build_options()}
     </select>
 

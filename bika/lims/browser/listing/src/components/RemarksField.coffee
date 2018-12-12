@@ -114,9 +114,10 @@ class RemarksField extends React.Component
           style={{width: "100%"}}
           rows={@props.rows or 2}
           name={name}
-          onBlur={@on_blur}
-          onChange={@on_change}
-          defaultValue={value}>
+          onBlur={@props.onBlur or @on_blur}
+          onChange={@props.onChange or @on_change}
+          defaultValue={value}
+          {...@props.attrs}>
         </textarea>)
 
     return field

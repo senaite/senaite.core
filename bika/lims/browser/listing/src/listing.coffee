@@ -158,7 +158,6 @@ class ListingController extends React.Component
     ###
      * ReactJS event handler when the component did mount
     ###
-    console.debug "ListingController::componentDidMount"
 
     # initial fetch of the folderitems
     @fetch_folderitems()
@@ -167,7 +166,6 @@ class ListingController extends React.Component
     ###
      * ReactJS event handler when the component did update
     ###
-    console.debug "ListingController::componentDidUpdate"
 
   toggleContextMenu: (x, y, toggle) ->
     ###

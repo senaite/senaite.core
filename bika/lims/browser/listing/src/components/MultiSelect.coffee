@@ -90,8 +90,8 @@ class MultiSelect extends React.Component
                  uid={@props.uid}
                  name={@props.name}
                  value={value}
-                 onChange={@on_change}
-                 onBlur={@on_blur}
+                 onChange={@props.onChange or @on_change}
+                 onBlur={@props.onBlur or @on_blur}
                  column_key={@props.column_key}
                  {...@props.attrs}/> {title}
         </li>)

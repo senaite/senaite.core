@@ -169,7 +169,6 @@ class TableRows extends React.Component
       for column_key, column_index in remarks_columns
         # skip for transposed cells
         break if transposed
-        console.debug "Adding remarks row below folderitem ", item
         column = @props.columns[column_key]
         # support rowspanning for WS header slot
         skip = item.skip or []
