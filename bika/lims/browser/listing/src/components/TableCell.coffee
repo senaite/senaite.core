@@ -37,10 +37,6 @@ class TableCell extends React.Component
     @on_multiselect_field_blur = @on_multiselect_field_blur.bind @
     @on_multiselect_field_change = @on_multiselect_field_change.bind @
 
-    # Bind numeric field events
-    @on_numeric_field_blur = @on_numeric_field_blur.bind @
-    @on_numeric_field_change = @on_numeric_field_change.bind @
-
     # Bind string field events
     @on_string_field_blur = @on_string_field_blur.bind @
     @on_string_field_change = @on_string_field_change.bind @
@@ -105,28 +101,6 @@ class TableCell extends React.Component
     console.debug "TableCell:on_multiselect_field_change: value=#{value}"
 
     # Call the *on_blur* field handler
-    if @props.update_editable_field
-      @props.update_editable_field uid, name, value, @get_item()
-
-  on_numeric_field_blur: (event) ->
-    el = event.currentTarget
-    uid = el.getAttribute("uid")
-    name = el.getAttribute("column_key") or el.name
-    value = el.value
-    console.debug "TableCell:on_numeric_field_blur: value=#{value}"
-
-    # Call the *save* field handler
-    if @props.save_editable_field
-      @props.save_editable_field uid, name, value, @get_item()
-
-  on_numeric_field_change: (event) ->
-    el = event.currentTarget
-    uid = el.getAttribute("uid")
-    name = el.getAttribute("column_key") or el.name
-    value = el.value
-    console.debug "TableCell:on_numeric_field_change: value=#{value}"
-
-    # Call the *update* field handler
     if @props.update_editable_field
       @props.update_editable_field uid, name, value, @get_item()
 
@@ -408,6 +382,7 @@ class TableCell extends React.Component
     formatted_value = @get_formatted_value()
     unit = @get_formatted_unit()
     uid = @get_uid()
+    item = @get_item()
     converter = @ZPUBLISHER_CONVERTER["numeric"]
     fieldname = name + converter
     title = @props.column.title or column_key
@@ -421,6 +396,7 @@ class TableCell extends React.Component
       <NumericField
         key={name}
         uid={uid}
+        item={item}
         name={fieldname}
         defaultValue={value}
         column_key={column_key}
@@ -430,10 +406,10 @@ class TableCell extends React.Component
         selected={selected}
         disabled={disabled}
         required={required}
-        onChange={@on_numeric_field_change}
-        onBlur={@on_numeric_field_blur}
         className={css_class}
         after={unit}
+        update_editable_field={@props.update_editable_field}
+        save_editable_field={@props.save_editable_field}
         {...props}
         />)
 
