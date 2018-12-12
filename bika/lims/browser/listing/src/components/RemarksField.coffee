@@ -12,15 +12,15 @@ class RemarksField extends React.Component
   ###
   constructor: (props) ->
     super(props)
-    # Bind events
-    @on_remarks_field_blur = @on_remarks_field_blur.bind @
-    @on_remarks_field_change = @on_remarks_field_change.bind @
+    # Bind events to local context
+    @on_blur = @on_blur.bind @
+    @on_change = @on_change.bind @
 
   ###*
    * Event handler when the mouse left the textarea
    * @param event {object} ReactJS event object
   ###
-  on_remarks_field_blur: (event) ->
+  on_blur: (event) ->
     el = event.currentTarget
     # Extract the UID attribute
     uid = el.getAttribute("uid")
@@ -28,7 +28,7 @@ class RemarksField extends React.Component
     name = el.getAttribute("column_key") or el.name
     # Extract the value of the textarea
     value = el.value
-    console.debug "RemarksField:on_remarks_field_blur: value=#{value}"
+    console.debug "RemarksField:on_blur: value=#{value}"
 
     # Call the *save* field handler with the UID, name, value
     if @props.save_editable_field
@@ -38,7 +38,7 @@ class RemarksField extends React.Component
    * Event handler when the value changed of the textarea
    * @param event {object} ReactJS event object
   ###
-  on_remarks_field_change: (event) ->
+  on_change: (event) ->
     el = event.currentTarget
     # Extract the UID attribute
     uid = el.getAttribute("uid")
@@ -46,7 +46,7 @@ class RemarksField extends React.Component
     name = el.getAttribute("column_key") or el.name
     # Extract the value of the textarea
     value = el.value
-    console.debug "RemarksField:on_remarks_field_change: value=#{value}"
+    console.debug "RemarksField:on_change: value=#{value}"
 
     # Call the *update* field handler with the UID, name, value
     if @props.update_editable_field
@@ -114,8 +114,8 @@ class RemarksField extends React.Component
           style={{width: "100%"}}
           rows={@props.rows or 2}
           name={name}
-          onBlur={@on_remarks_field_blur}
-          onChange={@on_remarks_field_change}
+          onBlur={@on_blur}
+          onChange={@on_change}
           defaultValue={value}>
         </textarea>)
 
