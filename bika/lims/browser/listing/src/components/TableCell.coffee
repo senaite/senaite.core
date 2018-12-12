@@ -29,10 +29,6 @@ class TableCell extends React.Component
     # Bind checkbox field events
     @on_checkbox_field_change = @on_checkbox_field_change.bind @
 
-    # Bind multiselect field events
-    @on_multiselect_field_blur = @on_multiselect_field_blur.bind @
-    @on_multiselect_field_change = @on_multiselect_field_change.bind @
-
     # Bind string field events
     @on_string_field_blur = @on_string_field_blur.bind @
     @on_string_field_change = @on_string_field_change.bind @
@@ -51,32 +47,6 @@ class TableCell extends React.Component
     # Call the *save* field handler (no blur event here necessary)
     if @props.save_editable_field
       @props.save_editable_field uid, name, value, @get_item()
-
-  on_multiselect_field_blur: (event) ->
-    el = event.currentTarget
-    ul = el.parentNode.parentNode
-    checked = ul.querySelectorAll("input[type='checkbox']:checked")
-    uid = el.getAttribute("uid")
-    name = el.getAttribute("column_key") or el.name
-    value = (input.value for input in checked)
-    console.debug "TableCell:on_multiselect_field_blur: value=#{value}"
-
-    # Call the *save* field handler
-    if @props.save_editable_field
-      @props.save_editable_field uid, name, value, @get_item()
-
-  on_multiselect_field_change: (event) ->
-    el = event.currentTarget
-    ul = el.parentNode.parentNode
-    checked = ul.querySelectorAll("input[type='checkbox']:checked")
-    uid = el.getAttribute("uid")
-    value = (input.value for input in checked)
-    name = el.getAttribute("column_key") or el.name
-    console.debug "TableCell:on_multiselect_field_change: value=#{value}"
-
-    # Call the *on_blur* field handler
-    if @props.update_editable_field
-      @props.update_editable_field uid, name, value, @get_item()
 
   on_string_field_blur: (event) ->
     el = event.currentTarget
@@ -356,7 +326,6 @@ class TableCell extends React.Component
     formatted_value = @get_formatted_value()
     unit = @get_formatted_unit()
     uid = @get_uid()
-    item = @get_item()
     converter = @ZPUBLISHER_CONVERTER["numeric"]
     fieldname = name + converter
     title = @props.column.title or column_key
@@ -402,7 +371,6 @@ class TableCell extends React.Component
     options = item.choices[column_key] or []
     formatted_value = @get_formatted_value()
     uid = @get_uid()
-    item = @get_item()
     converter = @ZPUBLISHER_CONVERTER["select"]
     fieldname = name + converter
     title = @props.column.title or column_key
@@ -425,8 +393,6 @@ class TableCell extends React.Component
         selected={selected}
         required={required}
         options={options}
-        onChange={@on_select_field_change}
-        onBlur={@on_select_field_blur}
         className={css_class}
         update_editable_field={@props.update_editable_field}
         save_editable_field={@props.save_editable_field}
@@ -461,6 +427,7 @@ class TableCell extends React.Component
       <MultiSelect
         key={name}
         uid={uid}
+        item={item}
         name={fieldname}
         defaultValue={value}
         column_key={column_key}
@@ -469,9 +436,9 @@ class TableCell extends React.Component
         selected={selected}
         required={required}
         options={options}
-        onChange={@on_multiselect_field_change}
-        onBlur={@on_multiselect_field_blur}
         className={css_class}
+        update_editable_field={@props.update_editable_field}
+        save_editable_field={@props.save_editable_field}
         {...props}
         />)
 

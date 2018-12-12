@@ -3,29 +3,75 @@ import React from "react"
 
 class MultiSelect extends React.Component
 
+  ###*
+   * Multi-Select Field for the Listing Table
+   *
+   * A multi select field is identified by the column type "multichoices" in the listing
+   * view, e.g.  `self.columns = {"Result": {"type": "multichoices"}, ... }`
+   *
+  ###
   constructor: (props) ->
     super(props)
+
+    # bind event handler to the current context
     @on_blur = @on_blur.bind @
     @on_change = @on_change.bind @
 
+  ###*
+   * Event handler when the mouse left the select field
+   * @param event {object} ReactJS event object
+  ###
   on_blur: (event) ->
     el = event.currentTarget
-    checked = el.checked
-    console.debug "MultiSelect::on_blur: value=#{checked}"
+    # Get the parent list wrapper
+    ul = el.parentNode.parentNode
+    # Extract all checked items
+    checked = ul.querySelectorAll("input[type='checkbox']:checked")
+    # Extract the UID attribute
+    uid = el.getAttribute("uid")
+    # Extract the column_key attribute
+    name = el.getAttribute("column_key") or el.name
+    # Prepare a list of UIDs
+    value = (input.value for input in checked)
 
-    # propagate event
-    if @props.onBlur then @props.onBlur event
+    console.debug "MultiSelect::on_blur: value=#{value}"
 
+    # Call the *save* field handler with the UID, name, value
+    if @props.save_editable_field
+      @props.save_editable_field uid, value, checked, @props.item
+
+  ###*
+   * Event handler when the value changed of the select field
+   * @param event {object} ReactJS event object
+  ###
   on_change: (event) ->
     el = event.currentTarget
-    checked = el.checked
-    console.debug "MultiSelect::on_change: value=#{checked}"
+    # Get the parent list wrapper
+    ul = el.parentNode.parentNode
+    # Extract all checked items
+    checked = ul.querySelectorAll("input[type='checkbox']:checked")
+    # Extract the UID attribute
+    uid = el.getAttribute("uid")
+    # Extract the column_key attribute
+    name = el.getAttribute("column_key") or el.name
+    # Prepare a list of UIDs
+    value = (input.value for input in checked)
 
-    # propagate event to the parent event handler
-    if @props.onChange then @props.onChange event
+    console.debug "MultiSelect::on_change: value=#{value}"
 
+    # Call the *update* field handler
+    if @props.update_editable_field
+      @props.update_editable_field uid, name, value, @props.item
+
+  ###*
+   * Select options builder
+   * @param options {array} list of option objects, e.g.:
+   *                        {"ResultText": ..., "ResultValue": ...}
+  ###
   build_options: ->
     options = []
+
+    # Sort the items alphabetically
     sorted_options = @props.options.sort (a, b) ->
       text_a = a.ResultText
       text_b = b.ResultText
@@ -48,10 +94,10 @@ class MultiSelect extends React.Component
                  onBlur={@on_blur}
                  column_key={@props.column_key}
                  {...@props.attrs}/> {title}
-        </li>
-      )
+        </li>)
 
     return options
+
   render: ->
     <div className="multiselect">
       <ul className="list-unstyled">
