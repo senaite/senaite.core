@@ -95,8 +95,6 @@ class TableTransposedCell extends TableCell
     uid = @get_uid()
     # field type to render
     type = @get_type()
-    # interimfields contained in original folderitem
-    interims = @get_interimfields()
 
     # the fields to return
     fields = []
@@ -106,46 +104,33 @@ class TableTransposedCell extends TableCell
       fields = fields.concat @create_select_checkbox()
 
     if type == "readonly"
-      # Render the results field + all interim fields
-      if column_key == "Result"
-        # Append the Unit after the readonly result field
-        fields = fields.concat @create_readonly_field
-          props:
-            after: " #{item.Unit}"
-      else
-        fields = fields.concat @create_readonly_field()
+      fields = fields.concat @create_readonly_field()
+
     # The "transposed" type is defined in the column definition, see analyses_transposed.py
+    # -> full folderitem is located below the column key in this item
     else if type == "transposed"
-      # Result field handling
-      if @is_result_column()
-        for interim, index in @get_interimfields()
-          # {value: 10, keyword: "F_cl", formatted_value: "10,0", unit: "mg/mL", title: "Faktor cl"}
-          fields = fields.concat @create_numeric_field
-            props:
-              key: interim.keyword
-              column_key: interim.keyword
-              name: "#{interim.keyword}.#{uid}"
-              defaultValue: interim.value
-              placeholder: interim.unit
-              formatted_value: interim.formatted_value
-        if item.calculation
-          fields = fields.concat @create_readonly_field()
-        else
-          fields = fields.concat @create_numeric_field
-            props:
-              placeholder: item.Unit or column_key
+      # insert all interims first
+      interims = item.interimfields or []
+      for interim, index in interims
+        # {value: 10, keyword: "F_cl", formatted_value: "10,0", unit: "mg/mL", title: "Faktor cl"}
+        unit = interim.unit or ""
+        fields = fields.concat @create_numeric_field
+          props:
+            key: interim.keyword
+            column_key: interim.keyword
+            name: "#{interim.keyword}.#{uid}"
+            defaultValue: interim.value
+            placeholder: interim.title or interim.keyword
+            formatted_value: interim.formatted_value
+            after: "<span class='unit'>#{unit}</span>"
+      if item.calculation
+        fields = fields.concat @create_readonly_field()
+      # select
+      else if column_key of @get_choices()
+        fields = fields.concat @create_select_field()
+      # numeric
       else
-        # select
-        if column_key of @get_choices()
-          fields = fields.concat @create_select_field()
-        # checkbox
-        else if typeof(@get_value()) == "boolean"
-          fields = fields.concat @create_checkbox_field()
-        # numeric
-        else if type == "numeric"
-          fields = fields.concat @create_numeric_field()
-        else
-          fields = fields.concat @create_readonly_field()
+        fields = fields.concat @create_numeric_field()
 
     return fields
 

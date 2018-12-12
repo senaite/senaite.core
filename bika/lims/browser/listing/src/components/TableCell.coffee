@@ -228,11 +228,11 @@ class TableCell extends React.Component
     value = item[column_key]
 
     # check if the field is an interim
-    interims = item.interimfields or []
-    for interim in interims
-      if interim.keyword == column_key
-        value = interim.value
-        break
+    interims = @get_interimfields()
+    if interims.hasOwnProperty column_key
+        # extract the value from the interim field
+        # {value: "", keyword: "", formatted_value: "", unit: "", title: ""}
+        value = interims[column_key].value or ""
 
     # values of input fields should not be null
     if value is null
@@ -240,9 +240,39 @@ class TableCell extends React.Component
 
     return value
 
+  ###*
+   *  Returns the unit of the interimfield or of the folderitem
+  ###
+  get_formatted_unit: ->
+    column_key = @get_column_key()
+    item = @get_item()
+    unit = item.Unit
+    # extract the unit from the interim field
+    # {value: "", keyword: "", formatted_value: "", unit: "", title: ""}
+    if @is_interimfield()
+      unit = item[column_key].unit
+    if not unit
+      return ""
+    return "<span class='unit'>#{unit}</span>"
+
+  ###*
+   * Create a mapping of interim keyword -> interim field
+   *
+   * Interim fields are record fields with a format like this:
+   * {value: "", keyword: "", formatted_value: "", unit: "", title: ""}
+  ###
   get_interimfields: ->
     item = @get_item()
-    return item.interimfields or []
+    interims = item.interimfields or []
+    mapping = {}
+    interims.map (item, index) ->
+      mapping[item.keyword] = item
+    return mapping
+
+  is_interimfield: ->
+    column_key = @get_column_key()
+    interims = @get_interimfields()
+    return interims.hasOwnProperty column_key
 
   get_choices: ->
     item = @get_item()
@@ -250,7 +280,11 @@ class TableCell extends React.Component
 
   is_result_column: ->
     column_key = @get_column_key()
-    return column_key == "Result"
+    if column_key == "Result"
+      return yes
+    if @is_interimfield()
+      return yes
+    return no
 
   get_formatted_value: ->
     column_key = @get_column_key()
@@ -262,6 +296,9 @@ class TableCell extends React.Component
     # use the formatted result
     if @is_result_column()
       formatted_value = item.formatted_result or formatted_value
+      # Append the unit to the formatted value
+      if formatted_value
+        formatted_value += @get_formatted_unit()
 
     return formatted_value
 
@@ -293,12 +330,8 @@ class TableCell extends React.Component
       return "select"
 
     # check if the field is an interim
-    interims = @get_interimfields()
-    if interims.length > 0
-      interim_keys = interims.map (interim) ->
-        return interim.keyword
-      if column_key in interim_keys
-        return "interim"
+    if @is_interimfield()
+      return "interim"
 
     # check if the field is a calculated field
     if resultfield and item.calculation
@@ -373,6 +406,7 @@ class TableCell extends React.Component
     name = @get_name()
     value = @get_value()
     formatted_value = @get_formatted_value()
+    unit = @get_formatted_unit()
     uid = @get_uid()
     converter = @ZPUBLISHER_CONVERTER["numeric"]
     fieldname = name + converter
@@ -399,6 +433,7 @@ class TableCell extends React.Component
         onChange={@on_numeric_field_change}
         onBlur={@on_numeric_field_blur}
         className={css_class}
+        after={unit}
         {...props}
         />)
 
@@ -547,16 +582,16 @@ class TableCell extends React.Component
       field = field.concat @create_readonly_field()
     else if type == "interim"
       field = field.concat @create_numeric_field()
-      interims = item.interimfields or []
-      # XXX Fake in interims for browser.analyses.workflow.workflow_action_submit
-      if interims.length > 0
-        item_data = {}
-        item_data[@get_uid()] = interims
-        field = field.concat @create_hidden_field
-          props:
-            key: "interim_data_hidden"
-            name: "item_data"
-            value: JSON.stringify item_data
+    #   interims = item.interimfields or []
+    #   # XXX Fake in interims for browser.analyses.workflow.workflow_action_submit
+    #   if interims.length > 0
+    #     item_data = {}
+    #     item_data[@get_uid()] = interims
+    #     field = field.concat @create_hidden_field
+    #       props:
+    #         key: "interim_data_hidden"
+    #         name: "item_data"
+    #         value: JSON.stringify item_data
     else if type in ["select", "choices"]
       field = field.concat @create_select_field()
     else if type in ["multiselect", "multichoices"]
