@@ -690,6 +690,9 @@ class ListingController extends React.Component
         if uid not of new_folderitems
           # get the missing folderitem from the current state
           folderitem = existing_folderitems[uid]
+          # skip if the selected UID is not in the existing folderitems
+          # -> happens for transposed WS folderitems, e.g.: {0: {uid: ...}, 1: {uid: ...}}
+          continue unless folderitem
           # inject it to the new folderitems list from the server
           new_folderitems[uid] = existing_folderitems[uid]
           # also append the category if it is missing
@@ -774,12 +777,14 @@ class ListingController extends React.Component
     me = this
     promise.then (data) ->
       console.debug "ListingController::ajax_save: GOT DATA=", data
+      # uids of the updated objects
+      uids = data.uids or []
+      # make sure all updated UIDs are selected
+      uids.map (uid) -> me.selectUID uid, yes
       # empty the ajax save queue
       me.setState
         show_ajax_save: no
         ajax_save_queue: {}
-      # uids of the updated objects
-      uids = data.uids or []
       # reload the folderitems
       if reload and uids.length > 0
         me.fetch_folderitems yes
