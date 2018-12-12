@@ -8,15 +8,15 @@ class TableCells extends React.Component
 
   constructor: (props) ->
     super(props)
-    @on_remarks_row_expand_click = @on_remarks_row_expand_click.bind @
+    @on_remarks_expand_click = @on_remarks_expand_click.bind @
 
-  on_remarks_row_expand_click: (event) ->
+  on_remarks_expand_click: (event) ->
     el = event.currentTarget
     uid = el.getAttribute "uid"
 
     # notify parent event handler with the extracted uid
-    if @props.on_remarks_row_expand_click
-      @props.on_remarks_row_expand_click uid
+    if @props.on_remarks_expand_click
+      @props.on_remarks_expand_click uid
 
   get_column: (column_key) ->
     return @props.columns[column_key]
@@ -67,7 +67,7 @@ class TableCells extends React.Component
 
           {remarks and
           <div uid={uid}
-               onClick={@on_remarks_row_expand_click}>
+               onClick={@on_remarks_expand_click}>
             <span className="remarksicon glyphicon glyphicon-comment"></span>
           </div>}
         </td>)
@@ -105,6 +105,7 @@ class TableCells extends React.Component
             disabled={disabled}
             colspan={colspan}
             rowspan={rowspan}
+            on_remarks_expand_click={@on_remarks_expand_click}
             />)
       else
         # Regular Cell

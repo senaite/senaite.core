@@ -866,7 +866,7 @@ class ListingController extends React.Component
             show_categories={@state.show_categories}
             on_category_click={@toggleCategory}
             on_row_expand_click={@toggleRow}
-            on_remarks_row_expand_click={@toggleRemarks}
+            on_remarks_expand_click={@toggleRemarks}
             filter={@state.filter}
             update_editable_field={@updateEditableField}
             save_editable_field={@saveEditableField}

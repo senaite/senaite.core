@@ -1,0 +1,134 @@
+import React from "react"
+
+
+class RemarksField extends React.Component
+
+  ###*
+   * Collapsible Remarks Field for the Listing Table
+   *
+   * A remarks field is identified by the column type "remarks" in the listing
+   * view, e.g.  `self.columns = {"Remarks": {"type": "remarks"}, ... }`
+   *
+  ###
+  constructor: (props) ->
+    super(props)
+    # Bind events
+    @on_remarks_field_blur = @on_remarks_field_blur.bind @
+    @on_remarks_field_change = @on_remarks_field_change.bind @
+
+  ###*
+   * Event handler when the mouse left the textarea
+   * @param event {object} ReactJS event object
+  ###
+  on_remarks_field_blur: (event) ->
+    el = event.currentTarget
+    # Extract the UID attribute
+    uid = el.getAttribute("uid")
+    # Extract the column_key (usually `Remarks`)
+    name = el.getAttribute("column_key") or el.name
+    # Extract the value of the textarea
+    value = el.value
+    console.debug "RemarksField:on_remarks_field_blur: value=#{value}"
+
+    # Call the *save* field handler with the UID, name, value
+    if @props.save_editable_field
+      @props.save_editable_field uid, name, value, @props.item
+
+  ###*
+   * Event handler when the value changed of the textarea
+   * @param event {object} ReactJS event object
+  ###
+  on_remarks_field_change: (event) ->
+    el = event.currentTarget
+    # Extract the UID attribute
+    uid = el.getAttribute("uid")
+    # Extract the column_key (usually `Remarks`)
+    name = el.getAttribute("column_key") or el.name
+    # Extract the value of the textarea
+    value = el.value
+    console.debug "RemarksField:on_remarks_field_change: value=#{value}"
+
+    # Call the *update* field handler with the UID, name, value
+    if @props.update_editable_field
+      @props.update_editable_field uid, name, value, @props.item
+
+  ###*
+   * Check if the remarks field is editable or not
+   * @param item {object} the folderitem containing the {"Remarks": "..."} data
+   * @param column_key {string} the current rendered column key (usually `Remarks`)
+  ###
+  can_edit: ->
+    item = @props.item
+    column_key = @props.column_key
+    allow_edit = item.allow_edit or []
+    return column_key in allow_edit
+
+  ###*
+   * Get the title of the column object, e.g.: self.columns = {"Remarks": {"title": "..."}}
+   * @param columns {object} as defined in the browser listing view
+   * @param column {object} the remarks column definition
+  ###
+  get_column_title: ->
+    columns = @props.columns
+    column_key = @props.column_key
+    column = columns[column_key]
+    title = column.title
+    if (typeof _ == "function") then title = _(title)
+    return title or ""
+
+  ###*
+   * Compute the inline CSS style for the field
+   * @param uid {string} UID of the folderitem
+   * @param expanded_remarks {array} list of expanded remarks fields
+  ###
+  get_style: ->
+    uid = @props.uid
+    # show if the remarks are expanded or if a remark is set
+    show = uid in @props.expanded_remarks or @props.value.length > 0
+    style =
+      display: if show then "block" else "none"
+    return style
+
+  ###*
+   * Render the editable/readonly remarks field
+   * @param uid {string} UID of the folderitem
+   * @param column_key {string} the current rendered column key (usually `Remarks`)
+   * @param item {object} the folderitem containing the {"Remarks": "..."} data
+  ###
+  render_remarks_field: ->
+    uid = @props.uid
+    column_key = @props.column_key
+    name = "#{column_key}.#{uid}:records"
+    value = @props.value
+
+    if not @can_edit()
+      field = (
+        <span className="remarksfield"
+              dangerouslySetInnerHTML={{__html: value}}/>)
+    else
+      field = (
+        <textarea
+          className="remarksfield form-control"
+          uid={uid}
+          column_key={column_key}
+          style={{width: "100%"}}
+          rows={@props.rows or 2}
+          name={name}
+          onBlur={@on_remarks_field_blur}
+          onChange={@on_remarks_field_change}
+          defaultValue={value}>
+        </textarea>)
+
+    return field
+
+  render: ->
+    <div style={@get_style()}
+         className="remarks text-muted">
+      <div className="text-info">
+        <span className="glyphicon glyphicon-hand-right"/> {@get_column_title()}:
+      </div>
+      {@render_remarks_field()}
+    </div>
+
+
+export default RemarksField
