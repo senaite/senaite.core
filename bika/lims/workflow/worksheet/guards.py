@@ -66,12 +66,15 @@ def guard_retract(worksheet):
     analyses the worksheet contains
     """
     analyses = worksheet.getAnalyses()
-    if len(analyses) == 0:
-        return False
-    for analysis in worksheet.getAnalyses():
+    detached = ['rejected', 'retracted']
+    num_detached = 0
+    for analysis in analyses:
+        if api.get_workflow_status_of(analysis) in detached:
+            num_detached += 1
+            continue
         if not isTransitionAllowed(analysis, "retract"):
             return False
-    return True
+    return analyses and num_detached < len(analyses) or False
 
 
 def guard_verify(obj):
