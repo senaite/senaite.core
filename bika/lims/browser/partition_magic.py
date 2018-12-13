@@ -145,6 +145,10 @@ class PartitionMagicView(BrowserView):
             specifications=self.get_specifications_for(ar)
         )
 
+        # Remove selected analyses from the parent Analysis Request
+        analyses_ids = map(api.get_id, analyses)
+        ar.manage_delObjects(analyses_ids)
+
         # Reindex Parent Analysis Request
         # TODO Workflow - AnalysisRequest - Partitions creation
         ar.reindexObject(idxs=["isRootAncestor"])
