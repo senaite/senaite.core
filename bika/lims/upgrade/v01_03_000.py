@@ -709,6 +709,15 @@ def get_rm_candidates_for_worksheet_workflow(portal):
              dict(portal_type="Worksheet",
                   review_state=["to_be_verified"]),
              CATALOG_WORKSHEET_LISTING))
+
+    if "retract" not in workflow.states.verified.transitions:
+        candidates.append(
+            (wf_id,
+             dict(portal_type="Worksheet",
+                  review_state=["attachment_due", "to_be_verified",
+                                "verified"]),
+             CATALOG_WORKSHEET_LISTING)
+        )
     return candidates
 
 

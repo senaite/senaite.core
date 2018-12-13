@@ -34,8 +34,11 @@ def after_verify(obj):
     pass
 
 
-def after_retract(obj):
-    pass
+def after_retract(worksheet):
+    """Retracts all analyses the worksheet contains
+    """
+    for analysis in worksheet.getAnalyses():
+       wf.doActionFor(analysis, "retract")
 
 
 def after_rollback_to_receive(analysis_request):
