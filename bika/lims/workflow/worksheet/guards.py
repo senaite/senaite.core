@@ -92,7 +92,7 @@ def guard_verify(obj):
     return _children_are_ready(obj, 'verify', dettached_states=dettached)
 
 
-def guard_rollback_to_receive(worksheet):
+def guard_rollback_to_open(worksheet):
     """Return whether 'rollback_to_receive' transition can be performed or not
     """
     for analysis in worksheet.getAnalyses():
