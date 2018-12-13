@@ -214,7 +214,7 @@ Current user can verify because has the `LabManager` role:
     >>> isTransitionAllowed(ws, "retract")
     True
 
-Also if the user has the role `Manager` or `Verifier`:
+Also if the user has the role `Manager`:
 
     >>> setRoles(portal, TEST_USER_ID, ['Manager',])
     >>> isTransitionAllowed(ws, "retract")
