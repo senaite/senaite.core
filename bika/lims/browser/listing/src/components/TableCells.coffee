@@ -69,6 +69,7 @@ class TableCells extends React.Component
           {remarks and
           <a uid={uid}
              href="#"
+             className="remarks"
              onClick={@on_remarks_expand_click}>
             <span className="remarksicon glyphicon glyphicon-comment"></span>
           </a>}

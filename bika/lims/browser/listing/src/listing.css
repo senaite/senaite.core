@@ -41,9 +41,9 @@
 .ajax-contents-table tr.state-invalid:hover { background-color: rgba(244, 67, 54, 0.2); }
 
 /* state rejected */
-.ajax-contents-table tr.state-rejected { border-left:2px solid #ddd; }
-.ajax-contents-table td.result.state-rejected { border-left:2px solid transparent; }
-.ajax-contents-table tr.state-invalid:hover { background-color: #ddd; }
+.ajax-contents-table tr.state-rejected { border-left:2px solid #abc !important; }
+.ajax-contents-table td.result.state-rejected { border-left:2px solid #abc !important; }
+.ajax-contents-table tr.state-rejected:hover { background-color: #abc; }
 
 /* state assigned */
 .ajax-contents-table tr.state-assigned { border-left:2px solid #ddd; }
@@ -208,3 +208,5 @@
 .ajax-contents-table td.transposed span.before-item > * { display: block; padding-bottom: 5px; }
 .ajax-contents-table td.transposed input[type=text] { margin-bottom: 5px; }
 
+/* Regular Cell */
+.ajax-contents-table td a.remarks { display: block; }
