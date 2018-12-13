@@ -197,11 +197,14 @@
 /* Worksheet's slots table */
 .ajax-contents-table table.slot-header-table { margin-bottom: 0px; }
 
-/* Remarks */
-.ajax-contents-table span.transposedremarks span.remarksicon { padding: 0 10px 0 0; }
-
 /* Results Unit */
 .ajax-contents-table span.unit { padding: 0 0.25em; color: black; font-style: italic; }
 
 /* Readonly Field */
 .ajax-contents-table span.readonly { padding-right: 0.5em; }
+
+/* Transposed Cell */
+.ajax-contents-table td.transposed span.before-item { vertical-align: top; }
+.ajax-contents-table td.transposed span.before-item > * { display: block; padding-bottom: 5px; }
+.ajax-contents-table td.transposed input[type=text] { margin-bottom: 5px; }
+

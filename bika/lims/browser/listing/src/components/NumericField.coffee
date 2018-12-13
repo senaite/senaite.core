@@ -90,7 +90,7 @@ class NumericField extends React.Component
   ###
   to_float: (value) ->
     # Valid -.5; -0.5; -0.555; .5; 0.5; 0.555
-    #         -,5; -0,5; -0,555; ,5; 0,5; 0,555
+    #       -,5; -0,5; -0,555; ,5; 0,5; 0,555
     # Non Valid: -.5.5; 0,5,5; ...;
     value = value.replace /(^-?)(\d*)([\.,]?\d*)(.*)/, "$1$2$3"
     value = value.replace(",", ".")

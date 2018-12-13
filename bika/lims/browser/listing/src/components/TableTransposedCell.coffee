@@ -76,7 +76,7 @@ class TableTransposedCell extends TableCell
     disabled = @is_disabled()
     selected = @is_selected()
     return (
-      <div key="select" className="checkbox input-sm">
+      <div key="select" className="checkbox">
         <Checkbox
           name={name}
           value={uid}
@@ -147,16 +147,20 @@ class TableTransposedCell extends TableCell
     fields = []
 
     if @is_result_column()
+      # render the select checkbox and the remarks toggle in the before box
+      before_components = []
       # Add a select checkbox for result cells
-      fields = fields.concat @create_select_checkbox()
+      before_components = before_components.concat @create_select_checkbox()
       # Append remarks toggle
-      fields.push(
-        <span key={uid + "_remarks"}
-              className="transposedremarks"
-              uid={uid}
-              onClick={@props.on_remarks_expand_click}>
+      before_components.push(
+        <a key={uid + "_remarks"}
+           href="#"
+           className="transposed_remarks"
+           uid={uid}
+           onClick={@props.on_remarks_expand_click}>
           <span className="remarksicon glyphicon glyphicon-comment"></span>
-        </span>)
+        </a>)
+      item["before_components"] = before_components
 
     if type == "readonly"
       fields = fields.concat @create_readonly_field()
@@ -185,8 +189,7 @@ class TableTransposedCell extends TableCell
       for column_key, column_index in @get_remarks_columns()
         value = item[column_key]
         fields.push(
-          <div style={{paddingLeft: "1em"}}
-               key={column_index + "_remarks"}>
+          <div key={column_index + "_remarks"}>
             <RemarksField
               {...@props}
               uid={uid}
@@ -206,7 +209,7 @@ class TableTransposedCell extends TableCell
               column_key: "Attachments"
               formatted_value: item.replace.Attachments
               attrs:
-                style: {display: "block", padding: "0 0 0 0.5em"}
+                style: {display: "block"}
 
     return fields
 
@@ -214,7 +217,7 @@ class TableTransposedCell extends TableCell
     <td className={@get_css()}
         colSpan={@props.colspan}
         rowSpan={@props.rowspan}>
-      <div className="form-group col-sm-12">
+      <div className="form-group">
         {@render_before_content()}
         {@render_content()}
         {@render_after_content()}

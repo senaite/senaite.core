@@ -38,10 +38,14 @@ class TableCell extends React.Component
     before = item.before
     if column_key not of before
       return null
-    return <span className="before-item"
-                 dangerouslySetInnerHTML={{__html: before[column_key]}}
-                 {...props}>
-           </span>
+    # support to render React components
+    before_components = item.before_components or []
+    return (
+      <span key={column_key + "_before"}
+            className="before-item">
+        {before_components}
+        <span dangerouslySetInnerHTML={{__html: before[column_key]}} {...props}></span>
+      </span>)
 
   render_after_content: (props={}) ->
     column_key = @get_column_key()
@@ -50,10 +54,14 @@ class TableCell extends React.Component
     after = item.after
     if column_key not of after
       return null
-    return <span className="after-item"
-                 dangerouslySetInnerHTML={{__html: after[column_key]}}
-                 {...props}>
-           </span>
+    # support to render React components
+    after_components = item.after_components or []
+    return (
+      <span key={column_key + "_after"}
+            className="after-item">
+        {after_components}
+        <span dangerouslySetInnerHTML={{__html: after[column_key]}} {...props}></span>
+      </span>)
 
   is_edit_allowed: ->
     column_key = @get_column_key()

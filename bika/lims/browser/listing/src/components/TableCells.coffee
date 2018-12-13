@@ -11,6 +11,7 @@ class TableCells extends React.Component
     @on_remarks_expand_click = @on_remarks_expand_click.bind @
 
   on_remarks_expand_click: (event) ->
+    event.preventDefault()
     el = event.currentTarget
     uid = el.getAttribute "uid"
 
@@ -66,10 +67,11 @@ class TableCells extends React.Component
             onChange={@props.on_select_checkbox_checked}/>
 
           {remarks and
-          <div uid={uid}
-               onClick={@on_remarks_expand_click}>
+          <a uid={uid}
+             href="#"
+             onClick={@on_remarks_expand_click}>
             <span className="remarksicon glyphicon glyphicon-comment"></span>
-          </div>}
+          </a>}
         </td>)
 
     # insert visible columns in the right order
