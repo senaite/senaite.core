@@ -149,15 +149,6 @@ class TableTransposedCell extends TableCell
     if @is_result_column()
       # Add a select checkbox for result cells
       fields = fields.concat @create_select_checkbox()
-      # Append info icon
-      # see: bika.lims.site.coffee for the attached event handler
-      fields.push(
-        <a key={uid + "_info"}
-           href="analysisservice_info?service_uid=#{item.service_uid}&analysis_uid=#{uid}"
-           className="service_info"
-           title={item.Service}>
-          <span className="glyphicon glyphicon-info-sign"></span>
-        </a>)
       # Append remarks toggle
       fields.push(
         <span key={uid + "_remarks"}

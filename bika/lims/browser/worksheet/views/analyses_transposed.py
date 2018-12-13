@@ -9,6 +9,7 @@ from collections import OrderedDict
 
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.worksheet.views import AnalysesView
+from bika.lims.utils import get_link
 from plone.memoize import view
 
 
@@ -69,6 +70,14 @@ class AnalysesTransposedView(AnalysesView):
 
         pos = str(item["Pos"])
         service = item["Service"]
+
+        # Append info link after the service
+        # see: bika.lims.site.coffee for the attached event handler
+        item["before"]["Result"] = get_link(
+            "analysisservice_info?service_uid={}&analysis_uid={}"
+            .format(item["service_uid"], item["uid"]),
+            value="<span class='glyphicon glyphicon-info-sign'></span>",
+            css_class="service_info")
 
         # remember the headers
         if "Pos" not in self.headers:

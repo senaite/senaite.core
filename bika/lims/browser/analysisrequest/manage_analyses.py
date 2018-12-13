@@ -13,6 +13,7 @@ from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.content.analysisspec import ResultsRangeDict
 from bika.lims.utils import dicts_to_dict
 from bika.lims.utils import get_image
+from bika.lims.utils import get_link
 from bika.lims.utils import logged_in_client
 from bika.lims.utils import t
 from bika.lims.workflow import wasTransitionPerformed
@@ -288,6 +289,13 @@ class AnalysisRequestAnalysesView(BikaListingView):
         item["Hidden"] = hidden
         item["Partition"] = partition.getId()
         item["choices"]["Partition"] = partitions
+
+        # Append info link after the service
+        # see: bika.lims.site.coffee for the attached event handler
+        item["after"]["Title"] = get_link(
+            "analysisservice_info?service_uid={}".format(uid),
+            value="<span class='glyphicon glyphicon-info-sign'></span>",
+            css_class="service_info")
 
         # Icons
         after_icons = ""
