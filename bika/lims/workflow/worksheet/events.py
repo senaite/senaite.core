@@ -20,3 +20,10 @@ def after_submit(obj):
     # all the analyses that contain have been submitted manually after
     # the results input
     wf.doActionFor(obj, 'attach')
+
+
+def after_retract(worksheet):
+    """Retracts all analyses the worksheet contains
+    """
+    for analysis in worksheet.getAnalyses():
+       wf.doActionFor(analysis, "retract")
