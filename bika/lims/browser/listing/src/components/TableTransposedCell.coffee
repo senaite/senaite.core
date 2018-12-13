@@ -125,18 +125,25 @@ class TableTransposedCell extends TableCell
     # The "transposed" type is defined in the column definition, see analyses_transposed.py
     # -> full folderitem is located below the column key in this item
     else if type == "transposed"
-      # insert all interims first
+      # insert all visible interims first
       interims = item.interimfields or []
+      # [{value: 10, keyword: "F_cl", formatted_value: "10,0", unit: "mg/mL", title: "Faktor cl"}, ...]
       for interim, index in interims
-        # {value: 10, keyword: "F_cl", formatted_value: "10,0", unit: "mg/mL", title: "Faktor cl"}
+        # get the keyword of the interim field
+        keyword = interim.keyword
+        # skip interims which are not listed in the columns
+        # -> see: bika.lims.browser.analyses.view.folderitems
+        continue unless @props.columns.hasOwnProperty keyword
+        # get the unit of the interim
         unit = interim.unit or ""
+        # add a numeric field per interim
         fields = fields.concat @create_numeric_field
           props:
-            key: interim.keyword
-            column_key: interim.keyword
-            name: "#{interim.keyword}.#{uid}"
+            key: keyword
+            column_key: keyword
+            name: "#{keyword}.#{uid}"
             defaultValue: interim.value
-            placeholder: interim.title or interim.keyword
+            placeholder: interim.title or keyword
             formatted_value: interim.formatted_value
             after: "<span class='unit'>#{unit}</span>"
       # calculated field
