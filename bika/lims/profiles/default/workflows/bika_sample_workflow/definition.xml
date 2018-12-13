@@ -533,7 +533,6 @@
   </state>
 
   <transition transition_id="dispose" title="Dispose" new_state="disposed" trigger="USER" before_script="" after_script="" i18n:attributes="title">
-    <action url="" category="workflow" icon="">Dispose</action>
     <guard>
       <guard-permission>BIKA: Dispose Sample</guard-permission>
       <guard-expression>python:here.guard_cancelled_object()</guard-expression>
@@ -541,7 +540,6 @@
   </transition>
 
   <transition transition_id="expire" title="Expire" new_state="expired" trigger="USER" before_script="" after_script="" i18n:attributes="title">
-    <action url="" category="workflow" icon="">Expire</action>
     <guard>
       <guard-permission>BIKA: Expire Sample</guard-permission>
       <guard-expression>python:here.guard_cancelled_object()</guard-expression>
@@ -549,21 +547,18 @@
   </transition>
 
   <transition transition_id="no_sampling_workflow" title="No sampling workflow" new_state="sampled" trigger="USER" before_script="" after_script="" i18n:attributes="title">
-    <action url="" category="workflow" icon="">No sampling workflow</action>
     <guard>
       <guard-permission>BIKA: Add Sample</guard-permission>
     </guard>
   </transition>
 
   <transition transition_id="preserve" title="Preserve" new_state="sample_due" trigger="USER" before_script="" after_script="" i18n:attributes="title">
-    <action url="" category="workflow" icon="">Preserve</action>
     <guard>
       <guard-permission>BIKA: Preserve Sample</guard-permission>
     </guard>
   </transition>
 
   <transition transition_id="receive" title="Receive sample" new_state="sample_received" trigger="USER" before_script="" after_script="" i18n:attributes="title">
-    <action url="" category="workflow" icon="">Receive sample</action>
     <guard>
       <guard-permission>BIKA: Receive Sample</guard-permission>
       <guard-expression>python:here.guard_receive_transition()</guard-expression>
@@ -571,7 +566,6 @@
   </transition>
 
   <transition transition_id="sample" title="Sample" new_state="sampled" trigger="USER" before_script="" after_script="" i18n:attributes="title">
-    <action url="" category="workflow" icon="">Sample</action>
     <guard>
       <guard-permission>BIKA: Sample Sample</guard-permission>
       <guard-expression>python:here.guard_sample_transition()</guard-expression>
@@ -579,20 +573,17 @@
   </transition>
 
   <transition transition_id="sample_due" title="Sample due" new_state="sample_due" trigger="USER" before_script="" after_script="" i18n:attributes="title">
-    <action url="" category="workflow" icon="">Sample due</action>
     <guard>
     </guard>
   </transition>
 
   <transition transition_id="sampling_workflow" title="Sampling workflow" new_state="to_be_sampled" trigger="USER" before_script="" after_script="" i18n:attributes="title">
-    <action url="" category="workflow" icon="">Sampling workflow</action>
     <guard>
       <guard-permission>BIKA: Add Sample</guard-permission>
     </guard>
   </transition>
 
   <transition transition_id="schedule_sampling" title="Schedule sampling" new_state="scheduled_sampling" trigger="USER" before_script="" after_script="" i18n:attributes="title">
-    <action url="" category="workflow" icon="">Schedule sampling</action>
     <guard>
       <guard-permission>BIKA: Schedule Sampling</guard-permission>
       <guard-expression>python:here.guard_schedule_sampling_transition()</guard-expression>
@@ -600,13 +591,11 @@
   </transition>
 
   <transition transition_id="to_be_preserved" title="To be preserved" new_state="to_be_preserved" trigger="USER" before_script="" after_script="" i18n:attributes="title">
-    <action url="" category="workflow" icon="">To be preserved</action>
     <guard>
     </guard>
   </transition>
 
   <transition transition_id="reject" title="Reject" new_state="rejected" trigger="USER" before_script="" after_script="" i18n:attributes="title">
-    <action url="" category="workflow" icon="">Reject</action>
     <guard>
       <guard-expression>python:here.bika_setup.isRejectionWorkflowEnabled()</guard-expression>
       <guard-permission>Reject Sample</guard-permission>

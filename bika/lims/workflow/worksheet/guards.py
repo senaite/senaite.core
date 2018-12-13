@@ -7,7 +7,7 @@
 
 from bika.lims import api
 from bika.lims.catalog.analysis_catalog import CATALOG_ANALYSIS_LISTING
-from bika.lims.workflow import getCurrentState
+from bika.lims.workflow import getCurrentState, isTransitionAllowed
 from bika.lims.workflow import isBasicTransitionAllowed
 from bika.lims.workflow import wasTransitionPerformed
 
@@ -58,6 +58,24 @@ def guard_submit(obj):
     return _children_are_ready(obj, 'submit', dettached_states=dettached)
 
 
+def guard_retract(worksheet):
+    """Return whether the transition retract can be performed or not to the
+    worksheet passed in. Since the retract transition from worksheet is a
+    shortcut to retract transitions from all analyses the worksheet contains,
+    this guard only returns True if retract transition is allowed for all
+    analyses the worksheet contains
+    """
+    analyses = worksheet.getAnalyses()
+    detached = ['rejected', 'retracted']
+    num_detached = 0
+    for analysis in analyses:
+        if api.get_workflow_status_of(analysis) in detached:
+            num_detached += 1
+        elif not isTransitionAllowed(analysis, "retract"):
+            return False
+    return analyses and num_detached < len(analyses) or False
+
+
 def guard_verify(obj):
     """Returns True if 'verify' transition can be applied to the Worksheet
     passed in. This is, returns true if all the analyses assigned
@@ -74,7 +92,7 @@ def guard_verify(obj):
     return _children_are_ready(obj, 'verify', dettached_states=dettached)
 
 
-def guard_rollback_to_receive(worksheet):
+def guard_rollback_to_open(worksheet):
     """Return whether 'rollback_to_receive' transition can be performed or not
     """
     for analysis in worksheet.getAnalyses():
