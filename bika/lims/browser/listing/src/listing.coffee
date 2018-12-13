@@ -24,13 +24,8 @@ document.addEventListener "DOMContentLoaded", ->
   window.listings ?= {}
   for table in tables
     form_id = table.dataset.form_id
-    # N.B. At the moment this JS is included in every contents table template,
-    #      which has the side-effect that this initializer is called as many
-    #      times as tables are on the page. This check avoids that
-    #      multi-rendering.
-    if form_id of window.listings
-      continue
     controller = ReactDOM.render <ListingController root_el={table} />, table
+    # Keep a reference to the listing
     window.listings[form_id] = controller
 
 
