@@ -84,6 +84,8 @@ class TableCells extends React.Component
       colspan = @get_colspan column_key, item
       rowspan = @get_rowspan column_key, item
 
+      css = "contentcell #{column_key}"
+
       # Transposed cell items contain an object key "key", which points to the
       # transposed folderitem requested.
       #
@@ -106,6 +108,7 @@ class TableCells extends React.Component
             colspan={colspan}
             rowspan={rowspan}
             on_remarks_expand_click={@on_remarks_expand_click}
+            className={css}
             />)
       else
         # Regular Cell
@@ -121,6 +124,7 @@ class TableCells extends React.Component
             disabled={disabled}
             colspan={colspan}
             rowspan={rowspan}
+            className={css}
             />)
 
     return cells
