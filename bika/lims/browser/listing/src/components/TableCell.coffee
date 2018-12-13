@@ -155,8 +155,6 @@ class TableCell extends React.Component
     column_key = @get_column_key()
     if column_key == "Result"
       return yes
-    if @is_interimfield()
-      return yes
     return no
 
   get_formatted_value: ->
@@ -169,6 +167,10 @@ class TableCell extends React.Component
     # use the formatted result
     if @is_result_column()
       formatted_value = item.formatted_result or formatted_value
+      # Append the unit to the formatted value
+      if formatted_value
+        formatted_value += @get_formatted_unit()
+    else if @is_interimfield()
       # Append the unit to the formatted value
       if formatted_value
         formatted_value += @get_formatted_unit()
@@ -185,6 +187,9 @@ class TableCell extends React.Component
 
     # readonly field
     if not editable
+      # check if the field is a calculated field
+      if resultfield and item.calculation
+        return "calculated"
       return "readonly"
 
     # type definition of the column has precedence
@@ -205,10 +210,6 @@ class TableCell extends React.Component
     # check if the field is an interim
     if @is_interimfield()
       return "interim"
-
-    # check if the field is a calculated field
-    if resultfield and item.calculation
-      return "calculated"
 
     # the default
     return "numeric"
@@ -460,18 +461,6 @@ class TableCell extends React.Component
       field = field.concat @create_readonly_field()
     else if type == "interim"
       field = field.concat @create_numeric_field()
-    # XXX Is this still needed with the async save button?
-    #
-    #   interims = item.interimfields or []
-    #   # XXX Fake in interims for browser.analyses.workflow.workflow_action_submit
-    #   if interims.length > 0
-    #     item_data = {}
-    #     item_data[@get_uid()] = interims
-    #     field = field.concat @create_hidden_field
-    #       props:
-    #         key: "interim_data_hidden"
-    #         name: "item_data"
-    #         value: JSON.stringify item_data
     else if type in ["select", "choices"]
       field = field.concat @create_select_field()
     else if type in ["multiselect", "multichoices"]
