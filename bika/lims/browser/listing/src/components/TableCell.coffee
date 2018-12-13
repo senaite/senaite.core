@@ -39,11 +39,11 @@ class TableCell extends React.Component
     if column_key not of before
       return null
     # support to render React components
-    before_components = item.before_components or []
+    before_components = item.before_components or {}
     return (
       <span key={column_key + "_before"}
             className="before-item">
-        {before_components}
+        {before_components[column_key]}
         <span dangerouslySetInnerHTML={{__html: before[column_key]}} {...props}></span>
       </span>)
 
@@ -55,11 +55,11 @@ class TableCell extends React.Component
     if column_key not of after
       return null
     # support to render React components
-    after_components = item.after_components or []
+    after_components = item.after_components or {}
     return (
       <span key={column_key + "_after"}
             className="after-item">
-        {after_components}
+        {after_components[column_key]}
         <span dangerouslySetInnerHTML={{__html: after[column_key]}} {...props}></span>
       </span>)
 

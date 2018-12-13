@@ -150,11 +150,11 @@ class TableTransposedCell extends TableCell
 
     if @is_result_column()
       # render the select checkbox and the remarks toggle in the before box
-      before_components = []
+      before_components = {}
       # Add a select checkbox for result cells
-      before_components = before_components.concat @create_select_checkbox()
+      before_components[column_key] = [@create_select_checkbox()]
       # Append remarks toggle
-      before_components.push(
+      before_components[column_key].push(
         <a key={uid + "_remarks"}
            href="#"
            className="transposed_remarks"
