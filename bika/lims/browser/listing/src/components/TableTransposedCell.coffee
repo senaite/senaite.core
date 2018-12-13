@@ -55,6 +55,8 @@ class TableTransposedCell extends TableCell
       css.push "empty"
     else
       css.push item.state_class
+      if item.uid in @props.selected_uids
+        css.push "info"
     return css.join " "
 
   get_remarks_columns: ->
