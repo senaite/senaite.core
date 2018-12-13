@@ -198,8 +198,7 @@
 .ajax-contents-table table.slot-header-table { margin-bottom: 0px; }
 
 /* Remarks */
-.ajax-contents-table span.remarksicon { cursor: pointer; color: #337ab7; }
-.ajax-contents-table span.transposedremarks span.remarksicon { padding: 0 .75em 0 .75em; }
+.ajax-contents-table span.transposedremarks span.remarksicon { padding: 0 10px 0 0; }
 
 /* Results Unit */
 .ajax-contents-table span.unit { padding: 0 0.25em; color: black; font-style: italic; }
