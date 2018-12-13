@@ -88,6 +88,45 @@ class TableTransposedCell extends TableCell
       </div>)
 
   ###*
+   * Creates all interim fields
+   * @param props {object} properties passed to the component
+   * @returns Interim Fields
+  ###
+  create_interim_fields: ({props}={}) ->
+    props ?= {}
+    uid = @get_uid()
+    item = @get_item()
+    fields = []
+    interims = item.interimfields or []
+    # [{value: 10, keyword: "F_cl", formatted_value: "10,0", unit: "mg/mL", title: "Faktor cl"}, ...]
+    for interim, index in interims
+      # get the keyword of the interim field
+      keyword = interim.keyword
+      # skip interims which are not listed in the columns
+      # -> see: bika.lims.browser.analyses.view.folderitems
+      continue unless @props.columns.hasOwnProperty keyword
+      # get the unit of the interim
+      unit = interim.unit or ""
+      # prepare the field properties
+      props =
+        key: keyword
+        column_key: keyword
+        name: "#{keyword}.#{uid}"
+        defaultValue: interim.value
+        placeholder: interim.title or keyword
+        formatted_value: interim.formatted_value
+        after: "<span class='unit'>#{unit}</span>"
+
+      if @is_edit_allowed()
+        # add a numeric field per interim
+        fields = fields.concat @create_numeric_field props: props
+      else
+        # add a readonly field per interim
+        fields = fields.concat @create_readonly_field props: props
+
+    return fields
+
+  ###*
    * Render the fields for a single transposed cell
   ###
   render_content: ->
@@ -121,31 +160,16 @@ class TableTransposedCell extends TableCell
 
     if type == "readonly"
       fields = fields.concat @create_readonly_field()
-
+    else if type == "calculated"
+      # prepend interim fields
+      fields = fields.concat @create_interim_fields()
+      # add the calculated results field
+      fields = fields.concat @create_readonly_field()
     # The "transposed" type is defined in the column definition, see analyses_transposed.py
     # -> full folderitem is located below the column key in this item
     else if type == "transposed"
       # insert all visible interims first
-      interims = item.interimfields or []
-      # [{value: 10, keyword: "F_cl", formatted_value: "10,0", unit: "mg/mL", title: "Faktor cl"}, ...]
-      for interim, index in interims
-        # get the keyword of the interim field
-        keyword = interim.keyword
-        # skip interims which are not listed in the columns
-        # -> see: bika.lims.browser.analyses.view.folderitems
-        continue unless @props.columns.hasOwnProperty keyword
-        # get the unit of the interim
-        unit = interim.unit or ""
-        # add a numeric field per interim
-        fields = fields.concat @create_numeric_field
-          props:
-            key: keyword
-            column_key: keyword
-            name: "#{keyword}.#{uid}"
-            defaultValue: interim.value
-            placeholder: interim.title or keyword
-            formatted_value: interim.formatted_value
-            after: "<span class='unit'>#{unit}</span>"
+      fields = fields.concat @create_interim_fields()
       # calculated field
       if item.calculation
         fields = fields.concat @create_readonly_field()
@@ -156,6 +180,7 @@ class TableTransposedCell extends TableCell
       else
         fields = fields.concat @create_numeric_field()
 
+    if @is_result_column()
       # Append Remarks field(s)
       for column_key, column_index in @get_remarks_columns()
         value = item[column_key]
@@ -181,7 +206,7 @@ class TableTransposedCell extends TableCell
               column_key: "Attachments"
               formatted_value: item.replace.Attachments
               attrs:
-                style: {display: "block", padding: "1em"}
+                style: {display: "block", padding: "0 0 0 0.5em"}
 
     return fields
 

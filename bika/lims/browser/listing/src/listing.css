@@ -202,4 +202,7 @@
 .ajax-contents-table span.transposedremarks span.remarksicon { padding: 0 .75em 0 0; }
 
 /* Results Unit */
-.ajax-contents-table span.unit { padding: 0 0.25em; color: gray; }
+.ajax-contents-table span.unit { padding: 0 0.25em; color: black; font-style: italic; }
+
+/* Readonly Field */
+.ajax-contents-table span.readonly { padding-right: 0.5em; }
