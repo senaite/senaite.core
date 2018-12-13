@@ -7,6 +7,7 @@
 
 from collections import OrderedDict
 
+from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.worksheet.views import AnalysesView
 from plone.memoize import view
 
@@ -17,6 +18,19 @@ class AnalysesTransposedView(AnalysesView):
 
     def __init__(self, context, request):
         super(AnalysesTransposedView, self).__init__(context, request)
+
+        self.review_states = [
+            {
+                "id": "default",
+                "title": _("All"),
+                "contentFilter": {},
+                "transitions": [
+                    {"id": "submit"},
+                    {"id": "verify"},
+                    {"id": "retract"}],
+                "columns": self.columns.keys(),
+            },
+        ]
 
         self.headers = OrderedDict()
         self.services = OrderedDict()
