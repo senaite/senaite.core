@@ -152,13 +152,12 @@ class TableTransposedCell extends TableCell
       # Append info icon
       # see: bika.lims.site.coffee for the attached event handler
       fields.push(
-        <span key={uid + "_log"}
-              style={{cursor: "pointer"}}
-              className="service_log"
-              uid={uid}
-              title={item.Service}>
+        <a key={uid + "_info"}
+           href="analysisservice_info?service_uid=#{item.service_uid}&analysis_uid=#{uid}"
+           className="service_info"
+           title={item.Service}>
           <span className="glyphicon glyphicon-info-sign"></span>
-        </span>)
+        </a>)
       # Append remarks toggle
       fields.push(
         <span key={uid + "_remarks"}

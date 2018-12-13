@@ -7,17 +7,9 @@
 
 import json
 
-from Products.CMFCore.utils import getToolByName
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-
-from zope.component import adapts
-from zope.interface import implements
-
 import plone
 import plone.protect
-
-from magnitude import mg
-
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser import BrowserView
 from bika.lims.browser.log import LogView
@@ -25,10 +17,67 @@ from bika.lims.config import POINTS_OF_CAPTURE
 from bika.lims.content.analysisservice import getContainers
 from bika.lims.interfaces import IAnalysisService
 from bika.lims.interfaces import IJSONReadExtender
-from bika.lims.jsonapi import load_field_values, get_include_fields
+from bika.lims.jsonapi import get_include_fields
+from bika.lims.jsonapi import load_field_values
+from bika.lims.utils import get_image
 from bika.lims.utils import to_unicode
+from magnitude import mg
+from Products.CMFCore.utils import getToolByName
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from zope.component import adapts
+from zope.interface import implements
 
-# AJAX methods for AnalysisService context
+
+class AnalysisServiceInfoView(BrowserView):
+    """Show details of the Analysis Service
+    """
+    template = ViewPageTemplateFile("templates/analysisservice_info.pt")
+
+    def __init__(self, context, request):
+        super(AnalysisServiceInfoView, self).__init__(context, request)
+
+    def __call__(self):
+        # disable the editable border
+        self.request.set("disable_border", 1)
+        return self.template()
+
+    def get_icon_for(self, typename):
+        image = "{}.png".format(typename)
+        return get_image(image)
+
+    def get_service(self):
+        service_uid = self.request.form.get("service_uid")
+        return api.get_object_by_uid(service_uid, None)
+
+    def get_methods(self):
+        if not self.get_service():
+            return None
+        return self.get_service().getMethods()
+
+    def get_analysis(self):
+        analysis_uid = self.request.form.get("analysis_uid")
+        return api.get_object_by_uid(analysis_uid, None)
+
+    def get_calculation(self):
+        if not self.get_service():
+            return None
+        return self.get_service().getCalculation()
+
+    def get_dependencies(self):
+        if not self.get_calculation():
+            return []
+        return self.get_calculation().getDependentServices()
+
+    def analysis_log_view(self):
+        """Get the log view of the requested analysis
+        """
+        analysis = self.get_analysis()
+        if analysis is None:
+            return None
+        view = api.get_view("log", context=analysis, request=self.request)
+        view.update()
+        view.before_render()
+        return view
 
 
 class ajaxGetContainers(BrowserView):
@@ -61,81 +110,6 @@ class ajaxGetContainers(BrowserView):
         )
 
         return json.dumps(containers)
-
-
-class ajaxServicePopup(BrowserView):
-
-    template = ViewPageTemplateFile("templates/analysisservice_popup.pt")
-
-    def __init__(self, context, request):
-        super(ajaxServicePopup, self).__init__(context, request)
-        self.icon = self.portal_url + "/++resource++bika.lims.images/analysisservice_big.png"
-
-    def __call__(self):
-        plone.protect.CheckAuthenticator(self.request)
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
-        uc = getToolByName(self.context, 'uid_catalog')
-
-        service_title = self.request.get('service_title', '').strip()
-        if not service_title:
-            return ''
-
-        analysis = uc(UID=self.request.get('analysis_uid', None))
-        if analysis:
-            analysis = analysis[0].getObject()
-            self.request['ajax_load'] = 1
-            tmp = LogView(analysis, self.request)
-            self.log = tmp.folderitems()
-            self.log.reverse()
-        else:
-            self.log = []
-
-        brains = bsc(portal_type="AnalysisService",
-                     title=to_unicode(service_title))
-        if not brains:
-            return ''
-
-        self.service = brains[0].getObject()
-
-        self.calc = self.service.getCalculation()
-
-        self.partsetup = self.service.getPartitionSetup()
-
-        # convert uids to comma-separated list of display titles
-        for i, ps in enumerate(self.partsetup):
-            self.partsetup[i]['separate'] = 'separate' in ps and _('Yes') or _('No')
-
-            if isinstance(ps['sampletype'], basestring):
-                ps['sampletype'] = [ps['sampletype'], ]
-            sampletypes = []
-            for st in ps['sampletype']:
-                res = bsc(UID=st)
-                sampletypes.append(res and res[0].Title or st)
-            self.partsetup[i]['sampletype'] = ", ".join(sampletypes)
-
-            if 'container' in ps:
-                if isinstance(ps['container'], basestring):
-                    self.partsetup[i]['container'] = [ps['container'], ]
-                try:
-                    containers = [bsc(UID=c)[0].Title for c in ps['container']]
-                except IndexError:
-                    containers = [c for c in ps['container']]
-                self.partsetup[i]['container'] = ", ".join(containers)
-            else:
-                self.partsetup[i]['container'] = ''
-
-            if 'preservation' in ps:
-                if isinstance(ps['preservation'], basestring):
-                    ps['preservation'] = [ps['preservation'], ]
-                try:
-                    preservations = [bsc(UID=c)[0].Title for c in ps['preservation']]
-                except IndexError:
-                    preservations = [c for c in ps['preservation']]
-                self.partsetup[i]['preservation'] = ", ".join(preservations)
-            else:
-                self.partsetup[i]['preservation'] = ''
-
-        return self.template()
 
 
 class ajaxGetServiceInterimFields:

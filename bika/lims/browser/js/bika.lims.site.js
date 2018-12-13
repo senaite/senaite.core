@@ -11,7 +11,7 @@
       this.on_ajax_error = bind(this.on_ajax_error, this);
       this.on_ajax_end = bind(this.on_ajax_end, this);
       this.on_ajax_start = bind(this.on_ajax_start, this);
-      this.on_analysis_service_title_click = bind(this.on_analysis_service_title_click, this);
+      this.on_service_info_click = bind(this.on_service_info_click, this);
       this.on_reference_definition_list_change = bind(this.on_reference_definition_list_change, this);
       this.on_numeric_field_keypress = bind(this.on_numeric_field_keypress, this);
       this.on_numeric_field_paste = bind(this.on_numeric_field_paste, this);
@@ -24,7 +24,6 @@
       this.on_date_range_end_change = bind(this.on_date_range_end_change, this);
       this.on_date_range_start_change = bind(this.on_date_range_start_change, this);
       this.filter_default_departments = bind(this.filter_default_departments, this);
-      this.load_analysis_service_popup = bind(this.load_analysis_service_popup, this);
       this.stop_spinner = bind(this.stop_spinner, this);
       this.start_spinner = bind(this.start_spinner, this);
       this.notify_in_panel = bind(this.notify_in_panel, this);
@@ -50,7 +49,7 @@
 
     SiteView.prototype.load = function() {
       console.debug("SiteView::load");
-      jarn.i18n.loadCatalog("senaite.core");
+      jarn.i18n.loadCatalog('senaite.core');
       this._ = window.jarn.i18n.MessageFactory("senaite.core");
       this.init_spinner();
       this.init_client_add_overlay();
@@ -76,7 +75,6 @@
        * delegate the event: https://learn.jquery.com/events/event-delegation/
        */
       console.debug("SiteView::bind_eventhandler");
-      $("body").on("click", ".service_title span:not(.before)", this.on_analysis_service_title_click);
       $("body").on("change", "#ReferenceDefinition\\:list", this.on_reference_definition_list_change);
       $("body").on("keypress", ".numeric", this.on_numeric_field_keypress);
       $("body").on("paste", ".numeric", this.on_numeric_field_paste);
@@ -88,6 +86,7 @@
       $("body").on("change", "select[name='Departments:list']", this.on_department_list_change);
       $("body").on("change", ".date_range_start", this.on_date_range_start_change);
       $("body").on("change", ".date_range_end", this.on_date_range_end_change);
+      $("body").on("click", "a.service_info", this.on_service_info_click);
       $(document).on("ajaxStart", this.on_ajax_start);
       $(document).on("ajaxStop", this.on_ajax_end);
       return $(document).on("ajaxError", this.on_ajax_error);
@@ -460,31 +459,6 @@
       }
     };
 
-    SiteView.prototype.load_analysis_service_popup = function(title, uid) {
-
-      /*
-       * Load the analysis service popup
-       */
-      var dialog;
-      console.debug("SiteView::show_analysis_service_popup:title=" + title + ", uid=" + uid);
-      if (!title || !uid) {
-        console.warn("SiteView::load_analysis_service_popup: title and uid are mandatory");
-        return;
-      }
-      dialog = $('<div></div>');
-      dialog.load((this.get_portal_url()) + "/analysisservice_popup", {
-        'service_title': title,
-        'analysis_uid': uid,
-        '_authenticator': this.get_authenticator()
-      }).dialog({
-        width: 450,
-        height: 450,
-        closeText: this._('Close'),
-        resizable: true,
-        title: $(this).text()
-      });
-    };
-
     SiteView.prototype.filter_default_departments = function(deps_element) {
 
       /*
@@ -759,18 +733,34 @@
       });
     };
 
-    SiteView.prototype.on_analysis_service_title_click = function(event) {
+    SiteView.prototype.on_service_info_click = function(event) {
 
       /*
-       * Eventhandler when the user clicked on an Analysis Service Title
+       * Eventhandler when the service info icon was clicked
        */
-      var $el, el, title, uid;
-      console.debug("°°° SiteView::on_analysis_service_title_click °°°");
+      var el;
+      console.debug("°°° SiteView::on_service_info_click °°°");
+      event.preventDefault();
       el = event.currentTarget;
-      $el = $(el);
-      title = $el.closest('td').find("span[class^='state']").html();
-      uid = $el.parents('tr').attr('uid');
-      return this.load_analysis_service_popup(title, uid);
+      $(el).prepOverlay({
+        subtype: "ajax",
+        width: '70%',
+        filter: '#content>*:not(div#portal-column-content)',
+        config: {
+          closeOnClick: true,
+          closeOnEsc: true,
+          onBeforeLoad: function(event) {
+            var overlay;
+            overlay = this.getOverlay();
+            return overlay.draggable();
+          },
+          onLoad: function(event) {
+            event = new Event("DOMContentLoaded", {});
+            return window.document.dispatchEvent(event);
+          }
+        }
+      });
+      return $(el).click();
     };
 
     SiteView.prototype.on_ajax_start = function(event) {
