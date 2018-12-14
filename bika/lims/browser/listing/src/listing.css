@@ -204,8 +204,9 @@
 .ajax-contents-table span.readonly { padding-right: 0.5em; }
 
 /* Transposed Cell */
-.ajax-contents-table td.transposed span.before-item { vertical-align: top; }
-.ajax-contents-table td.transposed span.before-item > * { display: block; padding-bottom: 5px; }
+.ajax-contents-table td.transposed span.before-item { width: 60px }
+.ajax-contents-table td.transposed span.before-item > * { display: block; float: left; padding-right: 5px; }
+.ajax-contents-table td.transposed span.before-item input[type=checkbox] { margin: 0; }
 .ajax-contents-table td.transposed input[type=text] { margin-bottom: 5px; }
 
 /* Regular Cell */
