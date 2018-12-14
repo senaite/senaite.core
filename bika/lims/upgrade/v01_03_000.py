@@ -1157,8 +1157,11 @@ def remove_get_department_uids(portal):
     """Removes getDepartmentUIDs indexes and metadata
     """
     del_index(portal, "bika_catalog", "getDepartmentUIDs")
+    del_index(portal, "bika_setup_catalog", "getDepartmentUID")
     del_index(portal, CATALOG_ANALYSIS_REQUEST_LISTING, "getDepartmentUIDs")
     del_index(portal, CATALOG_WORKSHEET_LISTING, "getDepartmentUIDs")
+    del_index(portal, CATALOG_ANALYSIS_LISTING, "getDepartmentUID")
 
     del_metadata(portal, CATALOG_ANALYSIS_REQUEST_LISTING, "getDepartmentUIDs")
     del_metadata(portal, CATALOG_WORKSHEET_LISTING, "getDepartmentUIDs")
+    del_metadata(portal, CATALOG_ANALYSIS_LISTING, "getDepartmentUID")

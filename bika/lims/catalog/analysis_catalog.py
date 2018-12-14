@@ -25,7 +25,6 @@ _indexes_dict = {
     'cancellation_state': 'FieldIndex',
     'getParentUID': 'FieldIndex',
     'getRequestUID': 'FieldIndex',
-    'getDepartmentUID': 'FieldIndex',
     'getDueDate': 'DateIndex',
     'getDateSampled': 'DateIndex',
     'getDateReceived': 'DateIndex',
@@ -103,7 +102,6 @@ _columns_list = [
     # defined as a service metacolumn instead of an analysis one
     'getResultOptions',
     'getServiceUID',
-    'getDepartmentUID',
     'getInstrumentEntryOfResults',
     'getAllowedInstrumentUIDs',
     'getInstrumentUID',
