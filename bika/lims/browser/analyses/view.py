@@ -441,9 +441,9 @@ class AnalysesView(BikaListingView):
         item['retested'] = obj.getRetestOfUID and True or False
         item['class']['retested'] = 'center'
 
-        # Append info link after the service
+        # Append info link before the service
         # see: bika.lims.site.coffee for the attached event handler
-        item["after"]["Service"] = get_link(
+        item["before"]["Service"] = get_link(
             "analysisservice_info?service_uid={}&analysis_uid={}"
             .format(obj.getServiceUID, obj.UID),
             value="<span class='glyphicon glyphicon-info-sign'></span>",

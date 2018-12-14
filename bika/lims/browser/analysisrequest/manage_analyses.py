@@ -290,9 +290,9 @@ class AnalysisRequestAnalysesView(BikaListingView):
         item["Partition"] = partition.getId()
         item["choices"]["Partition"] = partitions
 
-        # Append info link after the service
+        # Append info link before the service
         # see: bika.lims.site.coffee for the attached event handler
-        item["after"]["Title"] = get_link(
+        item["before"]["Title"] = get_link(
             "analysisservice_info?service_uid={}".format(uid),
             value="<span class='glyphicon glyphicon-info-sign'></span>",
             css_class="service_info")
