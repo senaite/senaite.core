@@ -54,6 +54,7 @@
                 </td>
                 <td tal:define="category service/getCategory">
                   <a href="#"
+                     target="_blank"
                      tal:attributes="href category/absolute_url">
                     <span tal:content="category/Title"></span>
                   </a>
@@ -166,7 +167,7 @@
                   <span i18n:translate="">Formula</span>
                 </td>
                 <td>
-                  <span tal:content="calc/getFormula"></span>
+                  <code tal:content="calc/getFormula"></code>
                 </td>
               </tr>
             </table>
@@ -174,13 +175,13 @@
         </div>
       </div>
 
-      <!-- Dependencies -->
+      <!-- Dependendent Services -->
       <div class="row"
-           tal:define="deps view/get_dependencies"
+           tal:define="deps view/get_dependent_services"
            tal:condition="deps">
         <div class="col-sm-12">
           <h3>
-            <span class="glyphicon glyphicon-link"></span>
+            <img tal:replace="structure python:view.get_icon_for('dependencies')"/>
             <span i18n:translate="">Dependent Analyses</span>
           </h3>
           <div id="dependencies">
@@ -192,7 +193,7 @@
                 <th i18n:translate="">Service</th>
                 <th i18n:translate="">Category</th>
                 <th i18n:translate="">Keyword</th>
-                <th i18n:translate="">Method</th>
+                <th i18n:translate="">Methods</th>
               </tr>
               <tr tal:repeat="dep deps">
                 <td>
@@ -200,13 +201,24 @@
                      tal:attributes="href dep/absolute_url"
                      tal:content="dep/Title"/>
                 </td>
-                <td tal:content="dep/getCategoryTitle"/>
-                <td tal:content="dep/getKeyword"/>
+                <td tal:define="category dep/getCategory">
+                  <a href="#"
+                     target="_blank"
+                     tal:attributes="href category/absolute_url">
+                    <span tal:content="category/Title"/>
+                  </a>
+                </td>
                 <td>
-                  <a tal:define="method dep/getMethod"
-                     tal:condition="method"
-                     tal:attributes="href method/absolute_url"
-                     tal:content="method/Title"/>
+                  <code tal:content="dep/getKeyword"/>
+                </td>
+                <td tal:define="methods dep/getMethods">
+                  <span tal:repeat="method methods">
+                    <a href=""
+                       target="_blank"
+                       tal:attributes="href method/absolute_url">
+                      <span tal:content="method/Title"/><tal:sep condition="not:repeat/method/end">;</tal:sep>
+                    </a>
+                  </span>
                 </td>
               </tr>
             </table>
@@ -220,7 +232,7 @@
            tal:condition="logview">
         <div class="col-sm-12">
           <h3>
-            <span class="glyphicon glyphicon-calendar"></span>
+            <img tal:replace="structure python:view.get_icon_for('calendar')"/>
             <span i18n:translate="">Log</span>
           </h3>
           <div id="analyis-log"

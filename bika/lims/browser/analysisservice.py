@@ -57,8 +57,9 @@ class AnalysisServiceInfoView(BrowserView):
         return locale.numbers.currencies[currency].symbol
 
     def get_icon_for(self, typename):
-        image = "{}.png".format(typename)
-        return get_image(image)
+        image = "{}_big.png".format(typename)
+        return get_image(
+            image, width="20px", style="vertical-align: baseline;")
 
     @view.memoize
     def get_service(self):
@@ -74,15 +75,21 @@ class AnalysisServiceInfoView(BrowserView):
         analysis_uid = self.request.form.get("analysis_uid")
         return api.get_object_by_uid(analysis_uid, None)
 
+    @view.memoize
     def get_calculation(self):
         if not self.get_service():
             return None
         return self.get_service().getCalculation()
 
-    def get_dependencies(self):
+    def get_dependent_services(self):
         if not self.get_calculation():
             return []
         return self.get_calculation().getDependentServices()
+
+    def get_calculation_dependencies(self):
+        if not self.get_calculation():
+            return []
+        return self.get_calculation().getCalculationDependencies()
 
     def analysis_log_view(self):
         """Get the log view of the requested analysis
