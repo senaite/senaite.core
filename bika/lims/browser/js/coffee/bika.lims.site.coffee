@@ -27,14 +27,6 @@ class window.SiteView
     # initialze reference definition selection
     @init_referencedefinition()
 
-    # Department Filtering
-    # The name of the department filter cookies
-    @department_filter_cookie = "filter_by_department_info"
-    @department_filter_disabled_cookie = "dep_filter_disabled"
-
-    # initialize department filtering
-    @init_department_filtering()
-
     # bind the event handler to the elements
     @bind_eventhandler()
 
@@ -85,11 +77,6 @@ class window.SiteView
     # Autocomplete events
     # XXX Where is this used?
     $("body").on "keydown", "input.autocomplete", @on_autocomplete_keydown
-
-    # Department filtering events
-    $("body").on "click", "#department_filter_submit", @on_department_filter_submit
-    $("body").on "change","#admin_dep_filter_enabled", @on_admin_dep_filter_change
-    $("body").on "change", "select[name='Departments:list']", @on_department_list_change
 
     # Date Range Filtering
     $("body").on "change", ".date_range_start", @on_date_range_start_change
@@ -286,31 +273,6 @@ class window.SiteView
       $('#ReferenceDefinition:list').change()
 
 
-  init_department_filtering: =>
-    ###
-     * Initialize department filtering (when enabled in Setup)
-     *
-     * This function checks if the cookie 'filter_by_department_info' is
-     * available. If the cookie exists, do nothing, if the cookie has not been
-     * created yet, checks the selected department in the checkbox group and
-     * creates the cookie with the UID of the first department. If cookie value
-     * "dep_filter_disabled" is true, it means the user is admin and filtering
-     * is disabled.
-    ###
-    console.debug "SiteView::init_department_filtering"
-
-    cookie_val = @read_cookie(@department_filter_cookie)
-    if cookie_val == null or cookie_val == ''
-      dep_uid = $('input[name^=chb_deps_]:checkbox:visible:first').val()
-      @set_cookie @department_filter_cookie, dep_uid
-
-    dep_filter_disabled = @read_cookie @department_filter_disabled_cookie
-    if dep_filter_disabled == 'true' or dep_filter_disabled == '"true"'
-      $('#admin_dep_filter_enabled').prop 'checked', true
-
-    return
-
-
   ### METHODS ###
 
   get_portal_url: =>
@@ -494,34 +456,6 @@ class window.SiteView
     return
 
 
-  filter_default_departments: (deps_element) =>
-    ###
-     * Keep the list of default departments in sync with the selected departments
-     *
-     * 1. Go to a labcontact and select departments
-     * 2. The list of default departments is kept in sync with the selection
-    ###
-    console.debug "SiteView::filter_default_departments"
-
-    def_deps = $("select[name='DefaultDepartment']")[0]
-    def_deps.options.length = 0
-    null_opt = document.createElement('option')
-    null_opt.text = ''
-    null_opt.value = ''
-    null_opt.selected = 'selected'
-    def_deps.add null_opt
-
-    #Adding selected deps
-    $('option:selected', deps_element).each ->
-      option = document.createElement('option')
-      option.text = $(this).text()
-      option.value = $(this).val()
-      option.selected = 'selected'
-      def_deps.add option
-      return
-    return
-
-
   ### EVENT HANDLER ###
 
   on_date_range_start_change: (event) =>
@@ -558,73 +492,6 @@ class window.SiteView
     date_element = $el.datepicker('getDate')
     brother = $el.siblings('.date_range_start')
     $(brother).datepicker 'option', 'maxDate', date_element
-
-
-  on_department_list_change: (event) =>
-    ###
-     * Eventhandler for Department list on LabContacts
-    ###
-    console.debug "°°° SiteView::on_department_list_change °°°"
-
-    el = event.currentTarget
-    $el = $(el)
-
-    # filter the list of default departments
-    @filter_default_departments el
-
-
-  on_department_filter_submit: (event) =>
-    ###
-     * Eventhandler for Department filter Portlet
-     *
-     * 1. Go to Setup and activate "Enable filtering by department"
-     * 2. The portlet contains the id="department_filter_submit"
-    ###
-    console.debug "°°° SiteView::on_department_filter_submit °°°"
-
-    el = event.currentTarget
-    $el = $(el)
-
-    if !$('#admin_dep_filter_enabled').is(':checked')
-      deps = []
-      $.each $('input[name^=chb_deps_]:checked'), ->
-        deps.push $(this).val()
-        return
-
-      if deps.length == 0
-        deps.push $('input[name^=chb_deps_]:checkbox:not(:checked):visible:first').val()
-
-      @set_cookie @department_filter_cookie, deps.toString()
-
-    window.location.reload true
-    return
-
-
-  on_admin_dep_filter_change: (event) =>
-    ###
-     * Eventhandler for Department filter Portlet
-     *
-     * 1. Go to Setup and activate "Enable filtering by department"
-     * 2. The portlet contains the id="admin_dep_filter_enabled"
-    ###
-    console.debug "°°° SiteView::on_admin_dep_filter_change °°°"
-
-    el = event.currentTarget
-    $el = $(el)
-
-    if $el.is(':checked')
-      deps = []
-      $.each $('input[name^=chb_deps_]:checkbox'), ->
-        deps.push $(this).val()
-
-      @set_cookie @department_filter_cookie, deps
-      @set_cookie @department_filter_disabled_cookie, 'true'
-
-      window.location.reload true
-    else
-      @set_cookie @department_filter_disabled_cookie, 'false'
-      window.location.reload true
-    return
 
 
   on_autocomplete_keydown: (event) =>

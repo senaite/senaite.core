@@ -51,13 +51,6 @@ class AnalysisRequestsView(BikaListingView):
             "isRootAncestor": True,  # only root ancestors
         }
 
-        # Filter by Department
-        if self.context.bika_setup.getAllowDepartmentFiltering():
-            deps = self.request.get('filter_by_department_info', '')
-            dep_uids = deps.split(",")
-            dep_query = {"query": dep_uids, "operator": "or"}
-            self.contentFilter['getDepartmentUIDs'] = dep_query
-
         self.context_actions = {}
 
         self.allow_edit = True

@@ -33,7 +33,6 @@ from plone.memoize import ram
 from plone.memoize import view as viewcache
 
 DASHBOARD_FILTER_COOKIE = 'dashboard_filter_cookie'
-FILTER_BY_DEPT_COOKIE_ID = 'filter_by_department_info'
 
 # Supported periodicities for evolution charts
 PERIODICITY_DAILY = "d"
@@ -370,10 +369,6 @@ class DashboardView(BrowserView):
         catalog = getToolByName(self.context, CATALOG_ANALYSIS_REQUEST_LISTING)
         query = {'portal_type': "AnalysisRequest",
                  'cancellation_state': ['active']}
-        filtering_allowed = self.context.bika_setup.getAllowDepartmentFiltering()
-        if filtering_allowed:
-            cookie_dep_uid = self.request.get(FILTER_BY_DEPT_COOKIE_ID, '').split(',') if filtering_allowed else ''
-            query['getDepartmentUIDs'] = {"query": cookie_dep_uid, "operator": "or"}
 
         # Check if dashboard_cookie contains any values to query
         # elements by
@@ -482,10 +477,6 @@ class DashboardView(BrowserView):
         out = []
         bc = getToolByName(self.context, CATALOG_WORKSHEET_LISTING)
         query = {'portal_type': "Worksheet", }
-        filtering_allowed = self.context.bika_setup.getAllowDepartmentFiltering()
-        if filtering_allowed:
-            cookie_dep_uid = self.request.get(FILTER_BY_DEPT_COOKIE_ID, '').split(',') if filtering_allowed else ''
-            query['getDepartmentUIDs'] = {"query": cookie_dep_uid, "operator": "or"}
 
         # Check if dashboard_cookie contains any values to query
         # elements by
@@ -538,10 +529,6 @@ class DashboardView(BrowserView):
         bc = getToolByName(self.context, CATALOG_ANALYSIS_LISTING)
         query = {'portal_type': "Analysis",
                  'cancellation_state': 'active'}
-        filtering_allowed = self.context.bika_setup.getAllowDepartmentFiltering()
-        if filtering_allowed:
-            cookie_dep_uid = self.request.get(FILTER_BY_DEPT_COOKIE_ID, '').split(',') if filtering_allowed else ''
-            query['getDepartmentUID'] = { "query": cookie_dep_uid,"operator":"or" }
 
         # Check if dashboard_cookie contains any values to query elements by
         query = self._update_criteria_with_filters(query, 'analyses')
@@ -595,14 +582,6 @@ class DashboardView(BrowserView):
         catalog = getToolByName(self.context, 'portal_catalog')
         query = {'portal_type': "Sample",
                  'cancellation_state': ['active']}
-        filtering_allowed = \
-            self.context.bika_setup.getAllowDepartmentFiltering()
-        if filtering_allowed:
-            cookie_dep_uid = self.request\
-                .get(FILTER_BY_DEPT_COOKIE_ID, '')\
-                .split(',') if filtering_allowed else ''
-            query['getDepartmentUIDs'] = {"query": cookie_dep_uid,
-                                          "operator": "or"}
 
         # Check if dashboard_cookie contains any values to query
         # elements by

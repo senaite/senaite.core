@@ -144,31 +144,6 @@ class AggregatedAnalysesView(AnalysesView):
         correct way to introduce results is by using Worksheets!"""
         return False
 
-    def isItemAllowed(self, obj):
-        """
-        Checks if the passed in Analysis must be displayed in the list. If the
-        'filtering by department' option is enabled in Bika Setup, this
-        function checks if the Analysis Service associated to the Analysis
-        is assigned to any of the currently selected departments (information
-        stored in a cookie). In addition, the function checks if the Analysis
-        matches with the filtering criterias set in the advanced filter bar.
-        If no criteria in the advanced filter bar has been set and the option
-        'filtering by department' is disblaed, returns True.
-
-        :param obj: A single Analysis brain
-        :type obj: CatalogBrain
-        :returns: True if the item can be added to the list. Otherwise, False
-        :rtype: bool
-        """
-        # The isItemAllowed function from the base class AnalysesView already
-        # takes into account filtering by department
-        allowed = AnalysesView.isItemAllowed(self, obj)
-        if not allowed:
-            return False
-
-        # By default, display the analysis
-        return True
-
     def folderitem(self, obj, item, index):
         """
         In this case obj should be a brain

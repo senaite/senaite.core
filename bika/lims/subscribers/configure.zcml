@@ -37,14 +37,4 @@
       handler="bika.lims.subscribers.samplinground.SamplingRoundAddedEventHandler"
       />
 
-  <subscriber
-      for="Products.PlonePAS.events.UserLoggedOutEvent"
-      handler="bika.lims.subscribers.dep_cookie.clear_department_cookies"
-      />
-
-  <subscriber
-      for="Products.PluggableAuthService.interfaces.events.IUserLoggedInEvent"
-      handler="bika.lims.subscribers.dep_cookie.set_department_cookies"
-      />
-
 </configure>

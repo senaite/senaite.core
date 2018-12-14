@@ -81,14 +81,6 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
-  <browser:page
-      for="*"
-      name="portletfilter_by_department"
-      class="bika.lims.browser.updateFilerByDepartmentCookie"
-      permission="zope2.View"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
   <!-- AR Partition Magic View -->
   <browser:page
       for="*"

@@ -182,7 +182,7 @@ class ManageResultsView(BrowserView):
         tests failed) is found, a warn message will be displayed.
         """
         invalid = []
-        ans = self._getAnalyses()
+        ans = self.context.getAnalyses()
         for an in ans:
             valid = an.isInstrumentValid()
             if not valid:
@@ -196,37 +196,3 @@ class ManageResultsView(BrowserView):
                         "instruments. Results edition not allowed")
             message = "%s: %s" % (message, (", ".join(invalid)))
             self.context.plone_utils.addPortalMessage(message, "warning")
-
-    # TODO Department filtering
-    def _getAnalyses(self):
-        """
-        This function returns a list with the analyses related to the worksheet
-        and filtered by the current selected department in the department
-        porlet.
-        @returna list of analyses objects.
-        """
-        ans = [a for a in self.context.getAnalyses() if self._isItemAllowed(a)]
-        return ans
-
-    # TODO Department filtering
-    def _isItemAllowed(self, obj):
-        """
-        It checks if the analysis service can be added to the list depending
-        on the department filter. If the analysis service is not assigned to a
-        department, show it.
-        If department filtering is disabled in bika_setup, will return True.
-        @Obj: it is an analysis object.
-        @return: boolean
-        """
-        if not self.context.bika_setup.getAllowDepartmentFiltering():
-            return True
-        # Gettin the department from analysis service
-        serv_dep = obj.getDepartment()
-        result = True
-        if serv_dep:
-            # Getting the cookie value
-            cookie_dep_uid = self.request.get('filter_by_department_info', '')
-            # Comparing departments' UIDs
-            result = True if serv_dep.UID() in\
-                cookie_dep_uid.split(',') else False
-        return result
