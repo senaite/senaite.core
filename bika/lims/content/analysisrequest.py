@@ -2549,12 +2549,6 @@ class AnalysisRequest(BaseFolder):
         depts = [b.getObject() for b in brains]
         return list(set(depts))
 
-    def getDepartmentUIDs(self):
-        """Return a list of the UIDs of departments assigned to the Analyses
-        from this Analysis Request.
-        """
-        return [dept.UID() for dept in self.getDepartments()]
-
     def getResultsInterpretationByDepartment(self, department=None):
         """Returns the results interpretation for this Analysis Request
            and department. If department not set, returns the results

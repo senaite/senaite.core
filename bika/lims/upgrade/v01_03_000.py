@@ -100,6 +100,9 @@ def upgrade(tool):
     # Removed `not requested analyses` from AR view
     remove_not_requested_analyses_view(portal)
 
+    # Remove getDepartmentUID indexes + metadata
+    remove_get_department_uids(portal)
+
     # Update workflows
     update_workflows(portal)
 
@@ -1148,3 +1151,14 @@ def add_worksheet_progress_percentage(portal):
                         .format(num, total))
         worksheet = api.get_object(brain)
         worksheet.reindexObject()
+
+
+def remove_get_department_uids(portal):
+    """Removes getDepartmentUIDs indexes and metadata
+    """
+    del_index(portal, "bika_catalog", "getDepartmentUIDs")
+    del_index(portal, CATALOG_ANALYSIS_REQUEST_LISTING, "getDepartmentUIDs")
+    del_index(portal, CATALOG_WORKSHEET_LISTING, "getDepartmentUIDs")
+
+    del_metadata(portal, CATALOG_ANALYSIS_REQUEST_LISTING, "getDepartmentUIDs")
+    del_metadata(portal, CATALOG_WORKSHEET_LISTING, "getDepartmentUIDs")

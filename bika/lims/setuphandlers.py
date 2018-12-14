@@ -290,7 +290,6 @@ class BikaGenerator(object):
         addIndex(bc, 'cancellation_state', 'FieldIndex')
         addIndex(bc, 'Identifiers', 'KeywordIndex')
 
-        addIndex(bc, 'getDepartmentUIDs', 'KeywordIndex')
         addIndex(bc, 'getAnalysisService', 'KeywordIndex')
         addIndex(bc, 'getAnalyst', 'FieldIndex')
         addIndex(bc, 'getAnalysts', 'KeywordIndex')

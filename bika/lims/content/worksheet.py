@@ -203,7 +203,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         doActionFor(self, "rollback_to_open")
 
         # Reindex Worksheet
-        idxs = ["getAnalysesUIDs", "getDepartmentUIDs"]
+        idxs = ["getAnalysesUIDs"]
         push_reindex_to_actions_pool(self, idxs=idxs)
 
         # Reindex Analysis Request, if any
@@ -380,7 +380,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         # Reindex
         ref_analysis.reindexObject(idxs=["getAnalyst", "getWorksheetUID",
                                          "getReferenceAnalysesGroupID"])
-        self.reindexObject(idxs=["getAnalysesUIDs", "getDepartmentUIDs"])
+        self.reindexObject(idxs=["getAnalysesUIDs"])
         return ref_analysis
 
     def nextRefAnalysesGroupID(self, reference):
@@ -504,7 +504,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         # Reindex
         duplicate.reindexObject(idxs=["getAnalyst", "getWorksheetUID",
                                       "getReferenceAnalysesGroupID"])
-        self.reindexObject(idxs=["getAnalysesUIDs", "getDepartmentUIDs"])
+        self.reindexObject(idxs=["getAnalysesUIDs"])
         return duplicate
 
     def get_suitable_slot_for_duplicate(self, src_slot):
@@ -1536,16 +1536,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         if isinstance(analyses, list):
             return [an.UID() for an in analyses]
         return []
-
-    def getDepartmentUIDs(self):
-        """
-        Returns a list of department uids to which the analyses from
-        this Worksheet belong to. The list has no duplicates.
-        :returns: a list of uids
-        :rtype: list
-        """
-        analyses = self.getAnalyses()
-        return list(set([an.getDepartmentUID() for an in analyses]))
 
     def getProgressPercentage(self):
         """Returns the progress percentage of this worksheet

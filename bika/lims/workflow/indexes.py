@@ -85,19 +85,15 @@ ACTIONS_TO_INDEXES = {
     "Worksheet": {
         "attach": [
             "getAnalysesUIDs",
-            "getDepartmentUIDs",
         ],
         "rollback_to_open": [
             "getAnalysesUIDs",
-            "getDepartmentUIDs",
         ],
         "submit": [
             "getAnalysesUIDs",
-            "getDepartmentUIDs",
         ],
         "verify": [
             "getAnalysesUIDs",
-            "getDepartmentUIDs",
         ],
     },
 

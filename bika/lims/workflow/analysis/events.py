@@ -230,7 +230,7 @@ def remove_analysis_from_worksheet(analysis):
         doActionFor(worksheet, "rollback_to_open")
 
     # Reindex the Worksheet
-    idxs = ["getAnalysesUIDs", "getDepartmentUIDs"]
+    idxs = ["getAnalysesUIDs"]
     push_reindex_to_actions_pool(worksheet, idxs=idxs)
 
 
