@@ -101,6 +101,7 @@ def upgrade(tool):
     remove_not_requested_analyses_view(portal)
 
     # Remove getDepartmentUID indexes + metadata
+    # https://github.com/senaite/senaite.core/pull/1167
     remove_get_department_uids(portal)
 
     # Update workflows
@@ -1156,6 +1157,7 @@ def add_worksheet_progress_percentage(portal):
 def remove_get_department_uids(portal):
     """Removes getDepartmentUIDs indexes and metadata
     """
+    logger.info("Removing filtering by department ...")
     del_index(portal, "bika_catalog", "getDepartmentUIDs")
     del_index(portal, "bika_setup_catalog", "getDepartmentUID")
     del_index(portal, CATALOG_ANALYSIS_REQUEST_LISTING, "getDepartmentUIDs")

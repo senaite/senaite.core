@@ -52,6 +52,7 @@ Changelog
 
 **Removed**
 
+- #1167 Remove filtering by department
 - #1149 Remove "Unpublished" filter from Analysis Requests listing
 - #1132 Remove "Submitted by current user" icon from AR listing (performance)
 - #1125 Remove Sample views, listings and links to Sample(s) from everywhere
