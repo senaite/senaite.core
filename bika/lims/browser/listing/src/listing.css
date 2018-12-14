@@ -201,8 +201,6 @@
 /* Results Unit */
 .ajax-contents-table span.unit { padding: 0 0.25em; color: black; }
 
-/* Readonly Field */
-.ajax-contents-table span.readonly { padding-right: 0.5em; }
 
 /* Transposed Cell */
 .ajax-contents-table td.transposed span.before-item { width: 60px }
@@ -211,6 +209,7 @@
 .ajax-contents-table td.transposed input { margin-right: 10px; }
 .ajax-contents-table td.transposed .before_field { font-size: 85%; display: table-cell; }
 .ajax-contents-table td.transposed .after_field { font-size: 85%; display: table-cell; }
+.ajax-contents-table td.transposed span.readonly { padding-right: 0.5em; }
 
 /* Regular Cell */
 .ajax-contents-table td a.remarks { display: block; }
