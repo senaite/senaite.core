@@ -118,13 +118,17 @@ class TableTransposedCell extends TableCell
         name: "#{keyword}.#{uid}"
         defaultValue: interim.value
         placeholder: title
-        className: "form-control input-sm interim"
         formatted_value: interim.formatted_value
         before: "<span>#{title}</span>"
         after: "<span>#{unit}</span>"
 
-      # add a numeric field per interim
-      fields = fields.concat @create_numeric_field props: props
+      if @is_edit_allowed()
+        # add a numeric field per interim
+        props.className = "form-control input-sm interim"
+        fields = fields.concat @create_numeric_field props: props
+      else
+        props.className = "readonly interim"
+        fields = fields.concat @create_readonly_field props: props
 
     return fields
 
@@ -179,6 +183,7 @@ class TableTransposedCell extends TableCell
 
     # E.g. a submitted result
     if type == "readonly"
+      fields = fields.concat @create_interim_fields()
       fields = fields.concat @create_readonly_field()
     else
       # interims first

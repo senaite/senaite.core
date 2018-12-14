@@ -196,9 +196,6 @@ class TableCell extends React.Component
 
     # readonly field
     if not editable
-      # check if the field is a calculated field
-      if resultfield and item.calculation
-        return "calculated"
       return "readonly"
 
     # calculated fields are also in editable mode readonly
