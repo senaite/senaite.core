@@ -10,9 +10,7 @@ import json
 import plone
 import plone.protect
 from bika.lims import api
-from bika.lims import bikaMessageFactory as _
 from bika.lims.browser import BrowserView
-from bika.lims.browser.log import LogView
 from bika.lims.config import POINTS_OF_CAPTURE
 from bika.lims.content.analysisservice import getContainers
 from bika.lims.interfaces import IAnalysisService
@@ -20,12 +18,13 @@ from bika.lims.interfaces import IJSONReadExtender
 from bika.lims.jsonapi import get_include_fields
 from bika.lims.jsonapi import load_field_values
 from bika.lims.utils import get_image
-from bika.lims.utils import to_unicode
 from magnitude import mg
+from plone.memoize import view
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.component import adapts
 from zope.interface import implements
+from zope.i18n.locales import locales
 
 
 class AnalysisServiceInfoView(BrowserView):
@@ -41,10 +40,27 @@ class AnalysisServiceInfoView(BrowserView):
         self.request.set("disable_border", 1)
         return self.template()
 
+    @view.memoize
+    def show_prices(self):
+        """Checks if prices should be shown or not
+        """
+        setup = api.get_setup()
+        return setup.getShowPrices()
+
+    @view.memoize
+    def get_currency_symbol(self):
+        """Get the currency Symbol
+        """
+        locale = locales.getLocale('en')
+        setup = api.get_setup()
+        currency = setup.getCurrency()
+        return locale.numbers.currencies[currency].symbol
+
     def get_icon_for(self, typename):
         image = "{}.png".format(typename)
         return get_image(image)
 
+    @view.memoize
     def get_service(self):
         service_uid = self.request.form.get("service_uid")
         return api.get_object_by_uid(service_uid, None)
