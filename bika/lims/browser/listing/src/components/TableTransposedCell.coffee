@@ -130,6 +130,8 @@ class TableTransposedCell extends TableCell
 
   ###*
    * Render the fields for a single transposed cell
+   * @param column_key {object} properties passed to the component
+   * @returns fields {array}
   ###
   render_content: ->
     # the current rendered column ID
@@ -170,22 +172,20 @@ class TableTransposedCell extends TableCell
       # prepend interim fields
       fields = fields.concat @create_interim_fields()
       # add the calculated results field
-      fields = fields.concat @create_readonly_field()
+      fields = fields.concat @create_calculated_field()
     # The "transposed" type is defined in the column definition, see analyses_transposed.py
     # -> full folderitem is located below the column key in this item
     else if type == "transposed"
       # insert all visible interims first
       fields = fields.concat @create_interim_fields()
-      # calculated field
-      if item.calculation
-        fields = fields.concat @create_readonly_field()
-      # select
-      else if column_key of @get_choices()
+      if column_key of @get_choices()
+        # select
         fields = fields.concat @create_select_field()
-      # numeric
       else
+        # numeric
         fields = fields.concat @create_numeric_field()
 
+    # Additional fields after (after the results field only)
     if @is_result_column()
       # Append Remarks field(s)
       for column_key, column_index in @get_remarks_columns()

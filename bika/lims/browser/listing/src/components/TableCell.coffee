@@ -4,6 +4,7 @@ import Checkbox from "./Checkbox.coffee"
 import HiddenField from "./HiddenField.coffee"
 import MultiSelect from "./MultiSelect.coffee"
 import NumericField from "./NumericField.coffee"
+import CalculatedField from "./CalculatedField.coffee"
 import ReadonlyField from "./ReadonlyField.coffee"
 import Select from "./Select.coffee"
 
@@ -254,6 +255,47 @@ class TableCell extends React.Component
         />)
 
   ###*
+   * Creates a calculated field component
+   * @param props {object} properties passed to the component
+   * @returns CalculatedField component
+  ###
+  create_calculated_field: ({props}={}) ->
+    column_key = @get_column_key()
+    item = @get_item()
+    props ?= {}
+
+    name = @get_name()
+    value = @get_value()
+    formatted_value = @get_formatted_value()
+    unit = @get_formatted_unit()
+    uid = @get_uid()
+    title = @props.column.title or column_key
+    selected = @is_selected()
+    required = @is_required()
+    css_class = "form-control input-sm calculated"
+    if required then css_class += " required"
+
+    return (
+      <CalculatedField
+        key={name}
+        uid={uid}
+        item={item}
+        name={name}
+        value={value}
+        column_key={column_key}
+        title={title}
+        formatted_value={formatted_value}
+        placeholder={title}
+        selected={selected}
+        required={required}
+        className={css_class}
+        after={unit}
+        update_editable_field={@props.update_editable_field}
+        save_editable_field={@props.save_editable_field}
+        {...props}
+        />)
+
+  ###*
    * Creates a hidden field component
    * @param props {object} properties passed to the component
    * @returns HiddenField component
@@ -470,7 +512,7 @@ class TableCell extends React.Component
     if type == "readonly"
       field = field.concat @create_readonly_field()
     else if type == "calculated"
-      field = field.concat @create_readonly_field()
+      field = field.concat @create_calculated_field()
     else if type == "interim"
       field = field.concat @create_numeric_field()
     else if type in ["select", "choices"]
