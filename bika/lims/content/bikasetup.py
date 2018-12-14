@@ -891,19 +891,6 @@ schema = BikaFolderSchema.copy() + Schema((
                           "Request is rejected.")
         ),
     ),
-    BooleanField(
-        'AllowDepartmentFiltering',
-        schemata="Security",
-        default=False,
-        widget=BooleanWidget(
-            label=_("Enable filtering by department"),
-            description=_("When enabled, only those items belonging to the "
-                          "same department as the logged user will be "
-                          "displayed. Since a user can belong to more than "
-                          "one department, a department filtering portlet "
-                          "will be displayed too. By default, disabled.")
-        )
-    ),
     IntegerField(
         'DefaultNumberOfARsToAdd',
         schemata="Analyses",
@@ -943,11 +930,6 @@ class BikaSetup(folder.ATFolder):
 
     schema = schema
     security = ClassSecurityInfo()
-
-    # needed to access the field for the front-page Portlet for Anonymous, w/o
-    # making the whole Laboratory viewable by Anonymous.
-    # Only the permission "Access contents information" is needed
-    security.declarePublic('getAllowDepartmentFiltering')
 
     def getAttachmentsPermitted(self):
         """Attachments permitted
