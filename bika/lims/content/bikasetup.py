@@ -346,7 +346,7 @@ schema = BikaFolderSchema.copy() + Schema((
     BooleanField(
         'EnableARSpecs',
         schemata="Analyses",
-        default=True,
+        default=False,
         widget=BooleanWidget(
             label=_("Enable AR Specifications"),
             description=_(
