@@ -328,6 +328,9 @@ class AjaxListingView(BrowserView):
         # recalculate dependent analyses
         for dep in obj.getDependents():
             if dep.calculateResult(override=True, cascade=True):
+                # TODO the `calculateResult` method should return False here!
+                if dep.getResult() in ["NA", "0/0"]:
+                    continue
                 recalculated_objects.append(dep)
         return recalculated_objects
 
