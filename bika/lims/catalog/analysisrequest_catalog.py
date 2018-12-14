@@ -30,7 +30,6 @@ _indexes_dict = {
     'getDueDate': 'DateIndex',
     'getSampler': 'FieldIndex',
     'getReceivedBy': 'FieldIndex',
-    'getDepartmentUIDs': 'KeywordIndex',
     'getPrinted': 'FieldIndex',
     'getProvince': 'FieldIndex',
     'getDistrict': 'FieldIndex',
@@ -103,7 +102,6 @@ _columns_list = [
     'getInvoiceExclude',
     'getHazardous',
     'getSamplingWorkflowEnabled',
-    'getDepartmentUIDs',
     'assigned_state',
 ]
 # Adding basic indexes

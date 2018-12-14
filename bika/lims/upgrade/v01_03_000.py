@@ -100,6 +100,10 @@ def upgrade(tool):
     # Removed `not requested analyses` from AR view
     remove_not_requested_analyses_view(portal)
 
+    # Remove getDepartmentUID indexes + metadata
+    # https://github.com/senaite/senaite.core/pull/1167
+    remove_get_department_uids(portal)
+
     # Update workflows
     update_workflows(portal)
 
@@ -1148,3 +1152,18 @@ def add_worksheet_progress_percentage(portal):
                         .format(num, total))
         worksheet = api.get_object(brain)
         worksheet.reindexObject()
+
+
+def remove_get_department_uids(portal):
+    """Removes getDepartmentUIDs indexes and metadata
+    """
+    logger.info("Removing filtering by department ...")
+    del_index(portal, "bika_catalog", "getDepartmentUIDs")
+    del_index(portal, "bika_setup_catalog", "getDepartmentUID")
+    del_index(portal, CATALOG_ANALYSIS_REQUEST_LISTING, "getDepartmentUIDs")
+    del_index(portal, CATALOG_WORKSHEET_LISTING, "getDepartmentUIDs")
+    del_index(portal, CATALOG_ANALYSIS_LISTING, "getDepartmentUID")
+
+    del_metadata(portal, CATALOG_ANALYSIS_REQUEST_LISTING, "getDepartmentUIDs")
+    del_metadata(portal, CATALOG_WORKSHEET_LISTING, "getDepartmentUIDs")
+    del_metadata(portal, CATALOG_ANALYSIS_LISTING, "getDepartmentUID")
