@@ -13,7 +13,7 @@ class CalculatedField extends React.Component
     super(props)
   render: ->
     <span className="form-group">
-      {@props.before and <span dangerouslySetInnerHTML={{__html: @props.before}}></span>}
+      {@props.before and <span className="before_field" dangerouslySetInnerHTML={{__html: @props.before}}></span>}
       <input type="text"
              size={@props.size or 5}
              uid={@props.uid}
@@ -26,7 +26,7 @@ class CalculatedField extends React.Component
              className={@props.className}
              placeholder={@props.placeholder}
              {...@props.attrs}/>
-      {@props.after and <span dangerouslySetInnerHTML={{__html: @props.after}}></span>}
+      {@props.after and <span className="after_field" dangerouslySetInnerHTML={{__html: @props.after}}></span>}
     </span>
 
 

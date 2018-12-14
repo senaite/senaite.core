@@ -199,7 +199,7 @@
 .ajax-contents-table table.slot-header-table { margin-bottom: 0px; }
 
 /* Results Unit */
-.ajax-contents-table span.unit { padding: 0 0.25em; color: black; font-style: italic; }
+.ajax-contents-table span.unit { padding: 0 0.25em; color: black; }
 
 /* Readonly Field */
 .ajax-contents-table span.readonly { padding-right: 0.5em; }
@@ -208,7 +208,9 @@
 .ajax-contents-table td.transposed span.before-item { width: 60px }
 .ajax-contents-table td.transposed span.before-item > * { display: block; float: left; padding-right: 5px; }
 .ajax-contents-table td.transposed span.before-item input[type=checkbox] { margin: 0; }
-.ajax-contents-table td.transposed input[type=text] { margin-bottom: 5px; }
+.ajax-contents-table td.transposed input { margin-right: 10px; }
+.ajax-contents-table td.transposed .before_field { font-size: 85%; display: table-cell; }
+.ajax-contents-table td.transposed .after_field { font-size: 85%; display: table-cell; }
 
 /* Regular Cell */
 .ajax-contents-table td a.remarks { display: block; }

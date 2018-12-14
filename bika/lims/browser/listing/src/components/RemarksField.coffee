@@ -125,10 +125,12 @@ class RemarksField extends React.Component
   render: ->
     <div style={@get_style()}
          className="remarks text-muted">
+      {@props.before and <span className="before_field" dangerouslySetInnerHTML={{__html: @props.before}}></span>}
       <div className="text-info">
         <span className="glyphicon glyphicon-hand-right"/> {@get_column_title()}:
       </div>
       {@render_remarks_field()}
+      {@props.after and <span className="after_field" dangerouslySetInnerHTML={{__html: @props.after}}></span>}
     </div>
 
 

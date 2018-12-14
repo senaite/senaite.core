@@ -98,7 +98,7 @@ class NumericField extends React.Component
 
   render: ->
     <span className="form-group">
-      {@props.before and <span dangerouslySetInnerHTML={{__html: @props.before}}></span>}
+      {@props.before and <span className="before_field" dangerouslySetInnerHTML={{__html: @props.before}}></span>}
       <input type="text"
              size={@props.size or 5}
              uid={@props.uid}
@@ -113,7 +113,7 @@ class NumericField extends React.Component
              onBlur={@props.onBlur or @on_blur}
              onChange={@props.onChange or @on_change}
              {...@props.attrs}/>
-      {@props.after and <span dangerouslySetInnerHTML={{__html: @props.after}}></span>}
+      {@props.after and <span className="after_field" dangerouslySetInnerHTML={{__html: @props.after}}></span>}
     </span>
 
 

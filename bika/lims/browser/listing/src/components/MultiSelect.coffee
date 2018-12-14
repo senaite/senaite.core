@@ -100,9 +100,11 @@ class MultiSelect extends React.Component
 
   render: ->
     <div className="multiselect">
+      {@props.before and <span className="before_field" dangerouslySetInnerHTML={{__html: @props.before}}></span>}
       <ul className="list-unstyled">
         {@build_options()}
       </ul>
+      {@props.after and <span className="after_field" dangerouslySetInnerHTML={{__html: @props.after}}></span>}
     </div>
 
 

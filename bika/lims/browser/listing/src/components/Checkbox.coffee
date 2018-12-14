@@ -42,7 +42,7 @@ class Checkbox extends React.Component
 
   render: ->
     <span className="form-group">
-      {@props.before and <span dangerouslySetInnerHTML={{__html: @props.before}}></span>}
+      {@props.before and <span className="before_field" dangerouslySetInnerHTML={{__html: @props.before}}></span>}
       <input key={@props.name}
             type="checkbox"
             uid={@props.uid}
@@ -56,7 +56,7 @@ class Checkbox extends React.Component
             className={@props.className}
             onChange={@props.onChange or @on_change}
             {...@props.attrs}/>
-      {@props.after and <span dangerouslySetInnerHTML={{__html: @props.after}}></span>}
+      {@props.after and <span className="after_field" dangerouslySetInnerHTML={{__html: @props.after}}></span>}
     </span>
 
 

@@ -91,20 +91,24 @@ class Select extends React.Component
     return options
 
   render: ->
-    <select key={@props.name}
-            uid={@props.uid}
-            name={@props.name}
-            defaultValue={@props.defaultValue}
-            column_key={@props.column_key}
-            title={@props.title}
-            disabled={@props.disabled}
-            onBlur={@props.onBlur or @on_blur}
-            onChange={@props.onChange or @on_change}
-            required={@props.required}
-            className={@props.className}
-            {...@props.attrs}>
-      {@build_options()}
-    </select>
+    <span className="form-group">
+      {@props.before and <span className="before_field" dangerouslySetInnerHTML={{__html: @props.before}}></span>}
+      <select key={@props.name}
+              uid={@props.uid}
+              name={@props.name}
+              defaultValue={@props.defaultValue}
+              column_key={@props.column_key}
+              title={@props.title}
+              disabled={@props.disabled}
+              onBlur={@props.onBlur or @on_blur}
+              onChange={@props.onChange or @on_change}
+              required={@props.required}
+              className={@props.className}
+              {...@props.attrs}>
+        {@build_options()}
+      </select>
+      {@props.after and <span className="after_field" dangerouslySetInnerHTML={{__html: @props.after}}></span>}
+    </span>
 
 
 export default Select
