@@ -200,6 +200,10 @@ class TableCell extends React.Component
         return "calculated"
       return "readonly"
 
+    # calculated fields are also in editable mode readonly
+    if resultfield and item.calculation
+      return "calculated"
+
     # type definition of the column has precedence
     column = @props.column or {}
     if "type" of column
