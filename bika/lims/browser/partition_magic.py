@@ -44,6 +44,8 @@ class PartitionMagicView(BrowserView):
         self.context = context
         self.request = request
         self.back_url = self.context.absolute_url()
+        self.analyses_to_remove = dict()
+
 
     def __call__(self):
         form = self.request.form
@@ -94,6 +96,9 @@ class PartitionMagicView(BrowserView):
             if not partitions:
                 # If no partitions were created, show a warning message
                 return self.redirect(message=_("No partitions were created"))
+
+            # Remove analyses from primary Analysis Requests
+            self.remove_primary_analyses()
 
             message = _("Created {} partitions: {}".format(
                 len(partitions), ", ".join(map(api.get_title, partitions))))
@@ -146,14 +151,28 @@ class PartitionMagicView(BrowserView):
         )
 
         # Remove selected analyses from the parent Analysis Request
-        analyses_ids = map(api.get_id, analyses)
-        ar.manage_delObjects(analyses_ids)
+        self.push_primary_analyses_for_removal(ar, analyses)
 
         # Reindex Parent Analysis Request
         # TODO Workflow - AnalysisRequest - Partitions creation
         ar.reindexObject(idxs=["isRootAncestor"])
 
         return partition
+
+    def push_primary_analyses_for_removal(self, analysis_request, analyses):
+        """Stores the analyses to be removed after partitions creation
+        """
+        to_remove = self.analyses_to_remove.get(analysis_request, [])
+        to_remove.extend(analyses)
+        self.analyses_to_remove[analysis_request] = to_remove
+
+    def remove_primary_analyses(self):
+        """Remove analyses relocated to partitions
+        """
+        for ar, analyses in self.analyses_to_remove.items():
+            analyses_ids = list(set(map(api.get_id, analyses)))
+            ar.manage_delObjects(analyses_ids)
+        self.analyses_to_remove = dict()
 
     def get_specifications_for(self, ar):
         """Returns a mapping of service uid -> specification
@@ -228,12 +247,13 @@ class PartitionMagicView(BrowserView):
     def get_analysis_data_for(self, ar):
         """Return the Analysis data for this AR
         """
-        analyses = ar.getAnalyses()
+        # Exclude analyses from children (partitions)
+        analyses = ar.objectValues("Analysis")
         out = []
         for an in analyses:
             info = self.get_base_info(an)
             info.update({
-                "service_uid": an.getServiceUID,
+                "service_uid": an.getServiceUID(),
             })
             out.append(info)
         return out
