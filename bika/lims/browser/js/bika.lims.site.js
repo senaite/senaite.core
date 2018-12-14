@@ -27,7 +27,6 @@
       this.notify_in_panel = this.notify_in_panel.bind(this);
       this.start_spinner = this.start_spinner.bind(this);
       this.stop_spinner = this.stop_spinner.bind(this);
-      this.load_analysis_service_popup = this.load_analysis_service_popup.bind(this);
       /* EVENT HANDLER */
       this.on_date_range_start_change = this.on_date_range_start_change.bind(this);
       this.on_date_range_end_change = this.on_date_range_end_change.bind(this);
@@ -37,7 +36,7 @@
       this.on_numeric_field_paste = this.on_numeric_field_paste.bind(this);
       this.on_numeric_field_keypress = this.on_numeric_field_keypress.bind(this);
       this.on_reference_definition_list_change = this.on_reference_definition_list_change.bind(this);
-      this.on_analysis_service_title_click = this.on_analysis_service_title_click.bind(this);
+      this.on_service_info_click = this.on_service_info_click.bind(this);
       this.on_ajax_start = this.on_ajax_start.bind(this);
       this.on_ajax_end = this.on_ajax_end.bind(this);
       this.on_ajax_error = this.on_ajax_error.bind(this);
@@ -88,8 +87,6 @@
        * delegate the event: https://learn.jquery.com/events/event-delegation/
        */
       console.debug("SiteView::bind_eventhandler");
-      // Analysis service popup
-      $("body").on("click", ".service_title span:not(.before)", this.on_analysis_service_title_click);
       // ReferenceSample selection changed
       $("body").on("change", "#ReferenceDefinition\\:list", this.on_reference_definition_list_change);
       // Numeric field events
@@ -104,6 +101,7 @@
       // Date Range Filtering
       $("body").on("change", ".date_range_start", this.on_date_range_start_change);
       $("body").on("change", ".date_range_end", this.on_date_range_end_change);
+      $("body").on("click", "a.service_info", this.on_service_info_click);
       // handle Ajax events
       $(document).on("ajaxStart", this.on_ajax_start);
       $(document).on("ajaxStop", this.on_ajax_end);
@@ -437,30 +435,6 @@
       }
     }
 
-    load_analysis_service_popup(title, uid) {
-      var dialog;
-      /*
-       * Load the analysis service popup
-       */
-      console.debug(`SiteView::show_analysis_service_popup:title=${title}, uid=${uid}`);
-      if (!title || !uid) {
-        console.warn("SiteView::load_analysis_service_popup: title and uid are mandatory");
-        return;
-      }
-      dialog = $('<div></div>');
-      dialog.load(`${this.get_portal_url()}/analysisservice_popup`, {
-        'service_title': title,
-        'analysis_uid': uid,
-        '_authenticator': this.get_authenticator()
-      }).dialog({
-        width: 450,
-        height: 450,
-        closeText: this._('Close'),
-        resizable: true,
-        title: $(this).text()
-      });
-    }
-
     on_date_range_start_change(event) {
       var $el, brother, date_element, el;
       /*
@@ -646,17 +620,38 @@
       });
     }
 
-    on_analysis_service_title_click(event) {
-      var $el, el, title, uid;
+    on_service_info_click(event) {
+      var el;
       /*
-       * Eventhandler when the user clicked on an Analysis Service Title
+       * Eventhandler when the service info icon was clicked
        */
-      console.debug("°°° SiteView::on_analysis_service_title_click °°°");
+      console.debug("°°° SiteView::on_service_info_click °°°");
+      event.preventDefault();
       el = event.currentTarget;
-      $el = $(el);
-      title = $el.closest('td').find("span[class^='state']").html();
-      uid = $el.parents('tr').attr('uid');
-      return this.load_analysis_service_popup(title, uid);
+      // https://jquerytools.github.io/documentation/overlay
+      // https://github.com/plone/plone.app.jquerytools/blob/master/plone/app/jquerytools/browser/overlayhelpers.js
+      $(el).prepOverlay({
+        subtype: "ajax",
+        width: '70%',
+        filter: '#content>*:not(div#portal-column-content)',
+        config: {
+          closeOnClick: true,
+          closeOnEsc: true,
+          onBeforeLoad: function(event) {
+            var overlay;
+            overlay = this.getOverlay();
+            return overlay.draggable();
+          },
+          onLoad: function(event) {
+            // manually dispatch the DOMContentLoaded event, so that the ReactJS
+            // component loads
+            event = new Event("DOMContentLoaded", {});
+            return window.document.dispatchEvent(event);
+          }
+        }
+      });
+      // workaround un-understandable overlay api
+      return $(el).click();
     }
 
     on_ajax_start(event) {

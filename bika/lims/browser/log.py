@@ -63,7 +63,6 @@ class LogView(BikaListingView):
             }
         ]
 
-
     def is_versionable(self):
         """Checks if the content is versionable
         """

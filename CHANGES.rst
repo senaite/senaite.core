@@ -22,6 +22,7 @@ Changelog
 
 **Changed**
 
+- #1161 Listing: Transposed worksheet improvements
 - #1150 Completeness of not yet published Analysis Requests is not 100%
 - #1147 Set empty option selected by default in result options
 - #1148 Add "All" filter in Analysis Requests listings

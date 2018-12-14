@@ -4,9 +4,9 @@ import Checkbox from "./Checkbox.coffee"
 import HiddenField from "./HiddenField.coffee"
 import MultiSelect from "./MultiSelect.coffee"
 import NumericField from "./NumericField.coffee"
+import CalculatedField from "./CalculatedField.coffee"
 import ReadonlyField from "./ReadonlyField.coffee"
 import Select from "./Select.coffee"
-import StringField from "./StringField.coffee"
 
 
 class TableCell extends React.Component
@@ -26,132 +26,6 @@ class TableCell extends React.Component
       "default": ":records"
     }
 
-    # Bind checkbox field events
-    @on_checkbox_field_change = @on_checkbox_field_change.bind @
-
-    # Bind select field events
-    @on_select_field_blur = @on_select_field_blur.bind @
-    @on_select_field_change = @on_select_field_change.bind @
-
-    # Bind multiselect field events
-    @on_multiselect_field_blur = @on_multiselect_field_blur.bind @
-    @on_multiselect_field_change = @on_multiselect_field_change.bind @
-
-    # Bind numeric field events
-    @on_numeric_field_blur = @on_numeric_field_blur.bind @
-    @on_numeric_field_change = @on_numeric_field_change.bind @
-
-    # Bind string field events
-    @on_string_field_blur = @on_string_field_blur.bind @
-    @on_string_field_change = @on_string_field_change.bind @
-
-  on_checkbox_field_change: (event) ->
-    el = event.currentTarget
-    uid = el.getAttribute("uid")
-    name = el.getAttribute("column_key") or el.name
-    value = el.checked
-    console.debug "TableCell:on_checkbox_field_change: checked=#{value}"
-
-    # Call the *update* field handler
-    if @props.update_editable_field
-      @props.update_editable_field uid, name, value, @get_item()
-
-    # Call the *save* field handler (no blur event here necessary)
-    if @props.save_editable_field
-      @props.save_editable_field uid, name, value, @get_item()
-
-  on_select_field_blur: (event) ->
-    el = event.currentTarget
-    uid = el.getAttribute("uid")
-    name = el.getAttribute("column_key") or el.name
-    value = el.value
-    console.debug "TableCell:on_select_field_blur: value=#{value}"
-
-    # Call the *save* field handler
-    if @props.save_editable_field
-      @props.save_editable_field uid, name, value, @get_item()
-
-  on_select_field_change: (event) ->
-    el = event.currentTarget
-    uid = el.getAttribute("uid")
-    name = el.getAttribute("column_key") or el.name
-    value = el.value
-    console.debug "TableCell:on_select_field_change: value=#{value}"
-
-    # Call the *update* field handler
-    if @props.update_editable_field
-      @props.update_editable_field uid, name, value, @get_item()
-
-  on_multiselect_field_blur: (event) ->
-    el = event.currentTarget
-    ul = el.parentNode.parentNode
-    checked = ul.querySelectorAll("input[type='checkbox']:checked")
-    uid = el.getAttribute("uid")
-    name = el.getAttribute("column_key") or el.name
-    value = (input.value for input in checked)
-    console.debug "TableCell:on_multiselect_field_blur: value=#{value}"
-
-    # Call the *save* field handler
-    if @props.save_editable_field
-      @props.save_editable_field uid, name, value, @get_item()
-
-  on_multiselect_field_change: (event) ->
-    el = event.currentTarget
-    ul = el.parentNode.parentNode
-    checked = ul.querySelectorAll("input[type='checkbox']:checked")
-    uid = el.getAttribute("uid")
-    value = (input.value for input in checked)
-    name = el.getAttribute("column_key") or el.name
-    console.debug "TableCell:on_multiselect_field_change: value=#{value}"
-
-    # Call the *on_blur* field handler
-    if @props.update_editable_field
-      @props.update_editable_field uid, name, value, @get_item()
-
-  on_numeric_field_blur: (event) ->
-    el = event.currentTarget
-    uid = el.getAttribute("uid")
-    name = el.getAttribute("column_key") or el.name
-    value = el.value
-    console.debug "TableCell:on_numeric_field_blur: value=#{value}"
-
-    # Call the *save* field handler
-    if @props.save_editable_field
-      @props.save_editable_field uid, name, value, @get_item()
-
-  on_numeric_field_change: (event) ->
-    el = event.currentTarget
-    uid = el.getAttribute("uid")
-    name = el.getAttribute("column_key") or el.name
-    value = el.value
-    console.debug "TableCell:on_numeric_field_change: value=#{value}"
-
-    # Call the *update* field handler
-    if @props.update_editable_field
-      @props.update_editable_field uid, name, value, @get_item()
-
-  on_string_field_blur: (event) ->
-    el = event.currentTarget
-    uid = el.getAttribute("uid")
-    name = el.getAttribute("column_key") or el.name
-    value = el.value
-    console.debug "TableCell:on_string_field_blur: value=#{value}"
-
-    # Call the *save* field handler
-    if @props.save_editable_field
-      @props.save_editable_field uid, name, value, @get_item()
-
-  on_string_field_change: (event) ->
-    el = event.currentTarget
-    uid = el.getAttribute("uid")
-    name = el.getAttribute("column_key") or el.name
-    value = el.value
-    console.debug "TableCell:on_string_field_change: value=#{value}"
-
-    # Call the *update* field handler
-    if @props.update_editable_field
-      @props.update_editable_field uid, name, value, @get_item()
-
   get_item: ->
     return @props.item
 
@@ -165,10 +39,14 @@ class TableCell extends React.Component
     before = item.before
     if column_key not of before
       return null
-    return <span className="before-item"
-                 dangerouslySetInnerHTML={{__html: before[column_key]}}
-                 {...props}>
-           </span>
+    # support to render React components
+    before_components = item.before_components or {}
+    return (
+      <span key={column_key + "_before"}
+            className="before-item">
+        {before_components[column_key]}
+        <span dangerouslySetInnerHTML={{__html: before[column_key]}} {...props}></span>
+      </span>)
 
   render_after_content: (props={}) ->
     column_key = @get_column_key()
@@ -177,10 +55,14 @@ class TableCell extends React.Component
     after = item.after
     if column_key not of after
       return null
-    return <span className="after-item"
-                 dangerouslySetInnerHTML={{__html: after[column_key]}}
-                 {...props}>
-           </span>
+    # support to render React components
+    after_components = item.after_components or {}
+    return (
+      <span key={column_key + "_after"}
+            className="after-item">
+        {after_components[column_key]}
+        <span dangerouslySetInnerHTML={{__html: after[column_key]}} {...props}></span>
+      </span>)
 
   is_edit_allowed: ->
     column_key = @get_column_key()
@@ -228,11 +110,11 @@ class TableCell extends React.Component
     value = item[column_key]
 
     # check if the field is an interim
-    interims = item.interimfields or []
-    for interim in interims
-      if interim.keyword == column_key
-        value = interim.value
-        break
+    interims = @get_interimfields()
+    if interims.hasOwnProperty column_key
+        # extract the value from the interim field
+        # {value: "", keyword: "", formatted_value: "", unit: "", title: ""}
+        value = interims[column_key].value or ""
 
     # values of input fields should not be null
     if value is null
@@ -240,9 +122,39 @@ class TableCell extends React.Component
 
     return value
 
+  ###*
+   *  Returns the unit of the interimfield or of the folderitem
+  ###
+  get_formatted_unit: ->
+    column_key = @get_column_key()
+    item = @get_item()
+    unit = item.Unit
+    # extract the unit from the interim field
+    # {value: "", keyword: "", formatted_value: "", unit: "", title: ""}
+    if @is_interimfield()
+      unit = item[column_key].unit
+    if not unit
+      return ""
+    return "<span class='unit'>#{unit}</span>"
+
+  ###*
+   * Create a mapping of interim keyword -> interim field
+   *
+   * Interim fields are record fields with a format like this:
+   * {value: "", keyword: "", formatted_value: "", unit: "", title: ""}
+  ###
   get_interimfields: ->
     item = @get_item()
-    return item.interimfields or []
+    interims = item.interimfields or []
+    mapping = {}
+    interims.map (item, index) ->
+      mapping[item.keyword] = item
+    return mapping
+
+  is_interimfield: ->
+    column_key = @get_column_key()
+    interims = @get_interimfields()
+    return interims.hasOwnProperty column_key
 
   get_choices: ->
     item = @get_item()
@@ -250,7 +162,9 @@ class TableCell extends React.Component
 
   is_result_column: ->
     column_key = @get_column_key()
-    return column_key == "Result"
+    if column_key == "Result"
+      return yes
+    return no
 
   get_formatted_value: ->
     column_key = @get_column_key()
@@ -262,6 +176,13 @@ class TableCell extends React.Component
     # use the formatted result
     if @is_result_column()
       formatted_value = item.formatted_result or formatted_value
+      # Append the unit to the formatted value
+      if formatted_value
+        formatted_value += @get_formatted_unit()
+    else if @is_interimfield()
+      # Append the unit to the formatted value
+      if formatted_value
+        formatted_value += @get_formatted_unit()
 
     return formatted_value
 
@@ -276,6 +197,10 @@ class TableCell extends React.Component
     # readonly field
     if not editable
       return "readonly"
+
+    # calculated fields are also in editable mode readonly
+    if resultfield and item.calculation
+      return "calculated"
 
     # type definition of the column has precedence
     column = @props.column or {}
@@ -293,16 +218,8 @@ class TableCell extends React.Component
       return "select"
 
     # check if the field is an interim
-    interims = @get_interimfields()
-    if interims.length > 0
-      interim_keys = interims.map (interim) ->
-        return interim.keyword
-      if column_key in interim_keys
-        return "interim"
-
-    # check if the field is a calculated field
-    if resultfield and item.calculation
-      return "calculated"
+    if @is_interimfield()
+      return "interim"
 
     # the default
     return "numeric"
@@ -331,6 +248,47 @@ class TableCell extends React.Component
         value={value}
         formatted_value={formatted_value}
         className={css_class}
+        {...props}
+        />)
+
+  ###*
+   * Creates a calculated field component
+   * @param props {object} properties passed to the component
+   * @returns CalculatedField component
+  ###
+  create_calculated_field: ({props}={}) ->
+    column_key = @get_column_key()
+    item = @get_item()
+    props ?= {}
+
+    name = @get_name()
+    value = @get_value()
+    formatted_value = @get_formatted_value()
+    unit = @get_formatted_unit()
+    uid = @get_uid()
+    title = @props.column.title or column_key
+    selected = @is_selected()
+    required = @is_required()
+    css_class = "form-control input-sm calculated"
+    if required then css_class += " required"
+
+    return (
+      <CalculatedField
+        key={name}
+        uid={uid}
+        item={item}
+        name={name}
+        value={value}
+        column_key={column_key}
+        title={title}
+        formatted_value={formatted_value}
+        placeholder={title}
+        selected={selected}
+        required={required}
+        className={css_class}
+        after={unit}
+        update_editable_field={@props.update_editable_field}
+        save_editable_field={@props.save_editable_field}
         {...props}
         />)
 
@@ -373,6 +331,7 @@ class TableCell extends React.Component
     name = @get_name()
     value = @get_value()
     formatted_value = @get_formatted_value()
+    unit = @get_formatted_unit()
     uid = @get_uid()
     converter = @ZPUBLISHER_CONVERTER["numeric"]
     fieldname = name + converter
@@ -387,6 +346,7 @@ class TableCell extends React.Component
       <NumericField
         key={name}
         uid={uid}
+        item={item}
         name={fieldname}
         defaultValue={value}
         column_key={column_key}
@@ -396,9 +356,10 @@ class TableCell extends React.Component
         selected={selected}
         disabled={disabled}
         required={required}
-        onChange={@on_numeric_field_change}
-        onBlur={@on_numeric_field_blur}
         className={css_class}
+        after={unit}
+        update_editable_field={@props.update_editable_field}
+        save_editable_field={@props.save_editable_field}
         {...props}
         />)
 
@@ -430,6 +391,7 @@ class TableCell extends React.Component
       <Select
         key={name}
         uid={uid}
+        item={item}
         name={fieldname}
         defaultValue={value}
         column_key={column_key}
@@ -438,9 +400,9 @@ class TableCell extends React.Component
         selected={selected}
         required={required}
         options={options}
-        onChange={@on_select_field_change}
-        onBlur={@on_select_field_blur}
         className={css_class}
+        update_editable_field={@props.update_editable_field}
+        save_editable_field={@props.save_editable_field}
         {...props}
         />)
 
@@ -472,6 +434,7 @@ class TableCell extends React.Component
       <MultiSelect
         key={name}
         uid={uid}
+        item={item}
         name={fieldname}
         defaultValue={value}
         column_key={column_key}
@@ -480,9 +443,9 @@ class TableCell extends React.Component
         selected={selected}
         required={required}
         options={options}
-        onChange={@on_multiselect_field_change}
-        onBlur={@on_multiselect_field_blur}
         className={css_class}
+        update_editable_field={@props.update_editable_field}
+        save_editable_field={@props.save_editable_field}
         {...props}
         />)
 
@@ -514,14 +477,16 @@ class TableCell extends React.Component
       <Checkbox
         key={name}
         uid={uid}
+        item={item}
         name={fieldname}
         value="on"
         column_key={column_key}
         title={title}
         defaultChecked={value}
         disabled={disabled}
-        onChange={@on_checkbox_field_change}
         className={css_class}
+        update_editable_field={@props.update_editable_field}
+        save_editable_field={@props.save_editable_field}
         {...props}
         />)
 
@@ -544,19 +509,9 @@ class TableCell extends React.Component
     if type == "readonly"
       field = field.concat @create_readonly_field()
     else if type == "calculated"
-      field = field.concat @create_readonly_field()
+      field = field.concat @create_calculated_field()
     else if type == "interim"
       field = field.concat @create_numeric_field()
-      interims = item.interimfields or []
-      # XXX Fake in interims for browser.analyses.workflow.workflow_action_submit
-      if interims.length > 0
-        item_data = {}
-        item_data[@get_uid()] = interims
-        field = field.concat @create_hidden_field
-          props:
-            key: "interim_data_hidden"
-            name: "item_data"
-            value: JSON.stringify item_data
     else if type in ["select", "choices"]
       field = field.concat @create_select_field()
     else if type in ["multiselect", "multichoices"]

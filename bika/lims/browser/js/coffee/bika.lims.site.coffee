@@ -60,9 +60,6 @@ class window.SiteView
     ###
     console.debug "SiteView::bind_eventhandler"
 
-    # Analysis service popup
-    $("body").on "click", ".service_title span:not(.before)", @on_analysis_service_title_click
-
     # ReferenceSample selection changed
     $("body").on "change", "#ReferenceDefinition\\:list", @on_reference_definition_list_change
 
@@ -81,6 +78,8 @@ class window.SiteView
     # Date Range Filtering
     $("body").on "change", ".date_range_start", @on_date_range_start_change
     $("body").on "change", ".date_range_end", @on_date_range_end_change
+
+    $("body").on "click", "a.service_info", @on_service_info_click
 
     # handle Ajax events
     $(document).on "ajaxStart", @on_ajax_start
@@ -432,30 +431,6 @@ class window.SiteView
     return
 
 
-  load_analysis_service_popup: (title, uid) =>
-    ###
-     * Load the analysis service popup
-    ###
-    console.debug "SiteView::show_analysis_service_popup:title=#{title}, uid=#{uid}"
-
-    if !title or !uid
-      console.warn "SiteView::load_analysis_service_popup: title and uid are mandatory"
-      return
-
-    dialog = $('<div></div>')
-    dialog.load "#{@get_portal_url()}/analysisservice_popup",
-      'service_title': title
-      'analysis_uid': uid
-      '_authenticator': @get_authenticator()
-    .dialog
-      width: 450
-      height: 450
-      closeText: @_('Close')
-      resizable: true
-      title: $(this).text()
-    return
-
-
   ### EVENT HANDLER ###
 
   on_date_range_start_change: (event) =>
@@ -654,19 +629,34 @@ class window.SiteView
     return
 
 
-  on_analysis_service_title_click: (event) =>
+  on_service_info_click: (event) =>
     ###
-     * Eventhandler when the user clicked on an Analysis Service Title
+     * Eventhandler when the service info icon was clicked
     ###
-    console.debug "°°° SiteView::on_analysis_service_title_click °°°"
-
+    console.debug "°°° SiteView::on_service_info_click °°°"
+    event.preventDefault()
     el = event.currentTarget
-    $el = $(el)
 
-    title = $el.closest('td').find("span[class^='state']").html()
-    uid = $el.parents('tr').attr('uid')
+    # https://jquerytools.github.io/documentation/overlay
+    # https://github.com/plone/plone.app.jquerytools/blob/master/plone/app/jquerytools/browser/overlayhelpers.js
+    $(el).prepOverlay
+      subtype: "ajax"
+      width: '70%'
+      filter: '#content>*:not(div#portal-column-content)'
+      config:
+        closeOnClick: yes
+        closeOnEsc: yes
+        onBeforeLoad: (event) ->
+          overlay = this.getOverlay()
+          overlay.draggable()
+        onLoad: (event) ->
+          # manually dispatch the DOMContentLoaded event, so that the ReactJS
+          # component loads
+          event = new Event "DOMContentLoaded", {}
+          window.document.dispatchEvent(event)
 
-    @load_analysis_service_popup title, uid
+    # workaround un-understandable overlay api
+    $(el).click()
 
 
   on_ajax_start: (event) =>

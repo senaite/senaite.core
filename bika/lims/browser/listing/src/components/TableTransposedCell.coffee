@@ -2,6 +2,7 @@ import React from "react"
 
 import Checkbox from "./Checkbox.coffee"
 import TableCell from "./TableCell.coffee"
+import RemarksField from "./RemarksField.coffee"
 
 ###*
  * This component is currently only used for the Transposed Layout in Worksheets
@@ -54,7 +55,16 @@ class TableTransposedCell extends TableCell
       css.push "empty"
     else
       css.push item.state_class
+      if item.uid in @props.selected_uids
+        css.push "info"
     return css.join " "
+
+  get_remarks_columns: ->
+    columns = []
+    for key, value of @props.columns
+      if value.type == "remarks"
+        columns.push key
+    return columns
 
   ###*
    * Creates a select checkbox for the original folderitem
@@ -68,7 +78,7 @@ class TableTransposedCell extends TableCell
     disabled = @is_disabled()
     selected = @is_selected()
     return (
-      <div key="select" className="checkbox input-sm">
+      <div key="select" className="checkbox">
         <Checkbox
           name={name}
           value={uid}
@@ -80,7 +90,52 @@ class TableTransposedCell extends TableCell
       </div>)
 
   ###*
+   * Creates all interim fields
+   * @param props {object} properties passed to the component
+   * @returns Interim Fields
+  ###
+  create_interim_fields: ({props}={}) ->
+    props ?= {}
+    uid = @get_uid()
+    item = @get_item()
+    fields = []
+    interims = item.interimfields or []
+    # [{value: 10, keyword: "F_cl", formatted_value: "10,0", unit: "mg/mL", title: "Faktor cl"}, ...]
+    for interim, index in interims
+      # get the keyword of the interim field
+      keyword = interim.keyword
+      # skip interims which are not listed in the columns
+      # -> see: bika.lims.browser.analyses.view.folderitems
+      continue unless @props.columns.hasOwnProperty keyword
+      # get the unit of the interim
+      unit = interim.unit or ""
+      # title / keyword
+      title = interim.title or keyword
+      # prepare the field properties
+      props =
+        key: keyword
+        column_key: keyword
+        name: "#{keyword}.#{uid}"
+        defaultValue: interim.value
+        placeholder: title
+        formatted_value: interim.formatted_value
+        before: "<span>#{title}</span>"
+        after: "<span>#{unit}</span>"
+
+      if @is_edit_allowed()
+        # add a numeric field per interim
+        props.className = "form-control input-sm interim"
+        fields = fields.concat @create_numeric_field props: props
+      else
+        props.className = "readonly interim"
+        fields = fields.concat @create_readonly_field props: props
+
+    return fields
+
+  ###*
    * Render the fields for a single transposed cell
+   * @param column_key {object} properties passed to the component
+   * @returns fields {array}
   ###
   render_content: ->
     # the current rendered column ID
@@ -95,57 +150,84 @@ class TableTransposedCell extends TableCell
     uid = @get_uid()
     # field type to render
     type = @get_type()
-    # interimfields contained in original folderitem
-    interims = @get_interimfields()
 
     # the fields to return
     fields = []
 
-    # Always prepend a select checkbox before a readonly/editable results cell
-    if @is_result_column()
-      fields = fields.concat @create_select_checkbox()
+    # We deal only with result columns in transposed view for now
+    if not @is_result_column
+      return
 
+    # Get the Result column
+    result_column = @props.columns["Result"]
+    result_column_title = result_column.title
+
+    # Each item can render a piece of HTML, which is defined in the before/after
+    # key of the folderitem.
+    # To add a controlled ReactJS component (with callbacks etc.), we inject here
+    # a checkbox and the remarks button into the item['before_components'].
+    # This is handled then by `render_before_content` and `render_after_content`.
+    before_components = {}
+    # Add a select checkbox for result cells
+    before_components[column_key] = [@create_select_checkbox()]
+    # Append remarks toggle
+    before_components[column_key].push(
+      <a key={uid + "_remarks"}
+          href="#"
+          className="transposed_remarks"
+          uid={uid}
+          onClick={@props.on_remarks_expand_click}>
+        <span className="remarksicon glyphicon glyphicon-comment"></span>
+      </a>)
+    item["before_components"] = before_components
+
+    # E.g. a submitted result
     if type == "readonly"
-      # Render the results field + all interim fields
-      if column_key == "Result"
-        # Append the Unit after the readonly result field
-        fields = fields.concat @create_readonly_field
+      fields = fields.concat @create_interim_fields()
+      fields = fields.concat @create_readonly_field()
+    else
+      # interims first
+      fields = fields.concat @create_interim_fields()
+
+      # calculated field
+      if type == "calculated"
+        fields = fields.concat @create_calculated_field
           props:
-            after: " #{item.Unit}"
+            before: "<span>#{result_column_title}</span>"
+            after: "<span>#{item.Unit or ''}</span>"
       else
-        fields = fields.concat @create_readonly_field()
-    # The "transposed" type is defined in the column definition, see analyses_transposed.py
-    else if type == "transposed"
-      # Result field handling
-      if @is_result_column()
-        for interim, index in @get_interimfields()
-          # {value: 10, keyword: "F_cl", formatted_value: "10,0", unit: "mg/mL", title: "Faktor cl"}
-          fields = fields.concat @create_numeric_field
-            props:
-              key: interim.keyword
-              column_key: interim.keyword
-              name: "#{interim.keyword}.#{uid}"
-              defaultValue: interim.value
-              placeholder: interim.unit
-              formatted_value: interim.formatted_value
-        if item.calculation
-          fields = fields.concat @create_readonly_field()
-        else
-          fields = fields.concat @create_numeric_field
-            props:
-              placeholder: item.Unit or column_key
-      else
-        # select
+        # editable choices field
         if column_key of @get_choices()
           fields = fields.concat @create_select_field()
-        # checkbox
-        else if typeof(@get_value()) == "boolean"
-          fields = fields.concat @create_checkbox_field()
-        # numeric
-        else if type == "numeric"
-          fields = fields.concat @create_numeric_field()
         else
-          fields = fields.concat @create_readonly_field()
+          # editable numeric field
+          fields = fields.concat @create_numeric_field()
+
+    # Append Remarks field(s)
+    for column_key, column_index in @get_remarks_columns()
+      value = item[column_key]
+      fields.push(
+        <div key={column_index + "_remarks"}>
+          <RemarksField
+            {...@props}
+            uid={uid}
+            item={item}
+            column_key={column_key}
+            value={item[column_key]}
+          />
+        </div>)
+
+    # Append Attachments
+    if item.replace.Attachments
+      fields = fields.concat @create_readonly_field
+          props:
+            key: column_index + "_attachments"
+            uid: uid
+            item: item
+            column_key: "Attachments"
+            formatted_value: item.replace.Attachments
+            attrs:
+              style: {display: "block"}
 
     return fields
 
