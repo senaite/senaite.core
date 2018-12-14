@@ -81,6 +81,9 @@ class AnalysesView(BaseView):
                 "title": get_image("retested.png", title=t(_("Retested"))),
                 "toggle": False,
                 "type": "boolean"}),
+            ("Specification", {
+                "title": _("Specification"),
+                "sortable": False}),
             ("Uncertainty", {
                 "sortable": False,
                 "title": _("+-")}),
