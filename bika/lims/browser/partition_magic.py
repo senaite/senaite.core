@@ -247,12 +247,13 @@ class PartitionMagicView(BrowserView):
     def get_analysis_data_for(self, ar):
         """Return the Analysis data for this AR
         """
-        analyses = ar.getAnalyses()
+        # Exclude analyses from children (partitions)
+        analyses = ar.objectValues("Analysis")
         out = []
         for an in analyses:
             info = self.get_base_info(an)
             info.update({
-                "service_uid": an.getServiceUID,
+                "service_uid": an.getServiceUID(),
             })
             out.append(info)
         return out
