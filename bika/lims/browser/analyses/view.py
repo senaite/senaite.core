@@ -441,6 +441,14 @@ class AnalysesView(BikaListingView):
         item['retested'] = obj.getRetestOfUID and True or False
         item['class']['retested'] = 'center'
 
+        # Append info link before the service
+        # see: bika.lims.site.coffee for the attached event handler
+        item["before"]["Service"] = get_link(
+            "analysisservice_info?service_uid={}&analysis_uid={}"
+            .format(obj.getServiceUID, obj.UID),
+            value="<span class='glyphicon glyphicon-info-sign'></span>",
+            css_class="service_info")
+
         # Note that getSampleTypeUID returns the type of the Sample, no matter
         # if the sample associated to the analysis is a regular Sample (routine
         # analysis) or if is a Reference Sample (Reference Analysis). If the

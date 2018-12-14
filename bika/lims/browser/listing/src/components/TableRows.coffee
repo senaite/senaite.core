@@ -135,10 +135,6 @@ class TableRows extends React.Component
       uid = @get_item_uid item
       css = @get_item_css item
 
-      # transposed items have no uid, so use the index instead
-      if uid is null
-        uid = item_index
-
       # list of child UIDs in the folderitem
       children = @get_item_children item
 
@@ -147,6 +143,12 @@ class TableRows extends React.Component
       disabled = @is_item_disabled item
       expandable = @has_item_children item
       remarks_columns = @get_remarks_columns()
+      transposed = no
+
+      # transposed items have no uid, so use the index instead
+      if uid is null
+        transposed = yes
+        uid = item_index
 
       rows.push(
         <TableRow
@@ -165,10 +167,13 @@ class TableRows extends React.Component
 
       # columns with type="remarks" set are rendered in their own row
       for column_key, column_index in remarks_columns
+        # skip for transposed cells
+        break if transposed
         column = @props.columns[column_key]
         # support rowspanning for WS header slot
         skip = item.skip or []
         colspan = @props.column_count - skip.length
+        value = item[column_key]
         rows.push(
           <TableRemarksRow
             {...@props}
@@ -176,6 +181,7 @@ class TableRows extends React.Component
             uid={uid}
             item={item}
             column_key={column_key}
+            value={value}
             expanded={expanded}
             selected={selected}
             disabled={disabled}

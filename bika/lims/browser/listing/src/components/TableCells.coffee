@@ -8,15 +8,16 @@ class TableCells extends React.Component
 
   constructor: (props) ->
     super(props)
-    @on_remarks_row_expand_click = @on_remarks_row_expand_click.bind @
+    @on_remarks_expand_click = @on_remarks_expand_click.bind @
 
-  on_remarks_row_expand_click: (event) ->
+  on_remarks_expand_click: (event) ->
+    event.preventDefault()
     el = event.currentTarget
     uid = el.getAttribute "uid"
 
     # notify parent event handler with the extracted uid
-    if @props.on_remarks_row_expand_click
-      @props.on_remarks_row_expand_click uid
+    if @props.on_remarks_expand_click
+      @props.on_remarks_expand_click uid
 
   get_column: (column_key) ->
     return @props.columns[column_key]
@@ -66,11 +67,12 @@ class TableCells extends React.Component
             onChange={@props.on_select_checkbox_checked}/>
 
           {remarks and
-          <div uid={uid}
-               onClick={@on_remarks_row_expand_click}>
+          <a uid={uid}
+             href="#"
+             className="remarks"
+             onClick={@on_remarks_expand_click}>
             <span className="remarksicon glyphicon glyphicon-comment"></span>
-          </div>
-          }
+          </a>}
         </td>)
 
     # insert visible columns in the right order
@@ -84,6 +86,8 @@ class TableCells extends React.Component
       column = @get_column column_key
       colspan = @get_colspan column_key, item
       rowspan = @get_rowspan column_key, item
+
+      css = "contentcell #{column_key}"
 
       # Transposed cell items contain an object key "key", which points to the
       # transposed folderitem requested.
@@ -106,6 +110,8 @@ class TableCells extends React.Component
             disabled={disabled}
             colspan={colspan}
             rowspan={rowspan}
+            on_remarks_expand_click={@on_remarks_expand_click}
+            className={css}
             />)
       else
         # Regular Cell
@@ -121,6 +127,7 @@ class TableCells extends React.Component
             disabled={disabled}
             colspan={colspan}
             rowspan={rowspan}
+            className={css}
             />)
 
     return cells

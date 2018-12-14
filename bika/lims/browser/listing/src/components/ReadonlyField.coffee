@@ -16,13 +16,13 @@ class ReadonlyField extends React.Component
       if @props.value
         return <span className="glyphicon glyphicon-ok"></span>
       else
-        return <span className="glyphicon glyphicon-remove"></span>
+        return <span className="glyphicon glyphicon-minus"></span>
     else
       return (
         <span className={@props.className}>
-          {@props.before and <span dangerouslySetInnerHTML={{__html: @props.before}}></span>}
+          {@props.before and <span className="before_field" dangerouslySetInnerHTML={{__html: @props.before}}></span>}
           <span dangerouslySetInnerHTML={{__html: @props.formatted_value}} {...@props.attrs}></span>
-          {@props.after and <span dangerouslySetInnerHTML={{__html: @props.after}}></span>}
+          {@props.after and <span className="after_field" dangerouslySetInnerHTML={{__html: @props.after}}></span>}
         </span>
       )
 

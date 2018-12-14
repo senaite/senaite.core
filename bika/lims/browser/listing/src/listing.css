@@ -41,9 +41,9 @@
 .ajax-contents-table tr.state-invalid:hover { background-color: rgba(244, 67, 54, 0.2); }
 
 /* state rejected */
-.ajax-contents-table tr.state-rejected { border-left:2px solid #ddd; }
-.ajax-contents-table td.result.state-rejected { border-left:2px solid transparent; }
-.ajax-contents-table tr.state-invalid:hover { background-color: #ddd; }
+.ajax-contents-table tr.state-rejected { border-left:2px solid #abc !important; }
+.ajax-contents-table td.result.state-rejected { border-left:2px solid #abc !important; }
+.ajax-contents-table tr.state-rejected:hover { background-color: #abc; }
 
 /* state assigned */
 .ajax-contents-table tr.state-assigned { border-left:2px solid #ddd; }
@@ -135,8 +135,9 @@
 .ajax-contents-table tr.contentrow.expanded td:first-child:before,
 .ajax-contents-table tr.contentrow.child td:first-child:before {
     padding-right: 0.5em;
-    vertical-align: 0.5em;
+    vertical-align: bottom;
     color: #555;
+    cursor: pointer;
 }
 .ajax-contents-table tr.contentrow.collapsed td:first-child:before {
     content: "▶";
@@ -197,5 +198,18 @@
 /* Worksheet's slots table */
 .ajax-contents-table table.slot-header-table { margin-bottom: 0px; }
 
-/* Remarks */
-.ajax-contents-table span.remarksicon { cursor: pointer; color: #3F729B; }
+/* Results Unit */
+.ajax-contents-table span.unit { padding: 0 0.25em; color: black; }
+
+
+/* Transposed Cell */
+.ajax-contents-table td.transposed span.before-item { width: 60px }
+.ajax-contents-table td.transposed span.before-item > * { display: block; float: left; padding-right: 5px; }
+.ajax-contents-table td.transposed span.before-item input[type=checkbox] { margin: 0; }
+.ajax-contents-table td.transposed input { margin-right: 10px; }
+.ajax-contents-table td.transposed .before_field { font-size: 85%; display: table-cell; }
+.ajax-contents-table td.transposed .after_field { font-size: 85%; display: table-cell; }
+.ajax-contents-table td.transposed span.readonly { padding-right: 0.5em; }
+
+/* Regular Cell */
+.ajax-contents-table td a.remarks { display: block; }

@@ -8,6 +8,7 @@
 from collections import OrderedDict
 
 from bika.lims.browser.worksheet.views import AnalysesView
+from bika.lims.utils import get_link
 from plone.memoize import view
 
 
@@ -55,6 +56,19 @@ class AnalysesTransposedView(AnalysesView):
 
         pos = str(item["Pos"])
         service = item["Service"]
+        review_state = item["review_state"]
+
+        # Skip retracted folderitems and display only the retest
+        if review_state in ["retracted"]:
+            return item
+
+        # Append info link after the service
+        # see: bika.lims.site.coffee for the attached event handler
+        item["before"]["Result"] = get_link(
+            "analysisservice_info?service_uid={}&analysis_uid={}"
+            .format(item["service_uid"], item["uid"]),
+            value="<span class='glyphicon glyphicon-info-sign'></span>",
+            css_class="service_info")
 
         # remember the headers
         if "Pos" not in self.headers:
@@ -95,7 +109,9 @@ class AnalysesTransposedView(AnalysesView):
         transposed.update(self.headers)
 
         # the collected services (Iron, Copper, Calcium...) come afterwards
-        transposed.update(self.services)
+        services = OrderedDict(reversed(self.services.items()))
+        # the collected services (Iron, Copper, Calcium...) come afterwards
+        transposed.update(services)
 
         # listing fixtures
         self.total = len(transposed.keys())
