@@ -56,6 +56,11 @@ class AnalysesTransposedView(AnalysesView):
 
         pos = str(item["Pos"])
         service = item["Service"]
+        review_state = item["review_state"]
+
+        # Skip retracted folderitems and display only the retest
+        if review_state in ["retracted"]:
+            return item
 
         # Append info link after the service
         # see: bika.lims.site.coffee for the attached event handler
