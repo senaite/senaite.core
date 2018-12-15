@@ -158,7 +158,7 @@ class AttachmentsView(BrowserView):
 
             # XXX: refactor out dependency to this view.
             view = api.get_view("manage_results", context=self.context, request=self.request)
-            analyses = view._getAnalyses()
+            analyses = self.context.getAnalyses()
             allowed_states = ["assigned", "unassigned", "to_be_verified"]
             for analysis in analyses:
                 if analysis.portal_type not in ('Analysis', 'DuplicateAnalysis'):
