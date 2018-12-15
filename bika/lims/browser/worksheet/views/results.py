@@ -143,7 +143,7 @@ class ManageResultsView(BrowserView):
         """
         outdict = {}
         allowed_states = ['assigned', 'unassigned']
-        for analysis in self._getAnalyses():
+        for analysis in self.context.getAnalyses():
             # TODO Workflow - Analysis Use a query instead of this
             if api.get_workflow_status_of(analysis) not in allowed_states:
                 continue
