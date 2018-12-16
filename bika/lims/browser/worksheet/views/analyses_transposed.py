@@ -75,9 +75,10 @@ class AnalysesTransposedView(AnalysesView):
             self.headers["Pos"] = self.make_empty_item(
                 column_key="Positions", item_key="Pos")
         if pos not in self.headers["Pos"]:
+            header_item = self.make_empty_item()
             # Add the item with the Pos header
-            item["replace"]["Pos"] = self.get_slot_header(item)
-            self.headers["Pos"][pos] = item
+            header_item["replace"]["Pos"] = self.get_slot_header(item)
+            self.headers["Pos"][pos] = header_item
 
         # remember the services
         if service not in self.services:

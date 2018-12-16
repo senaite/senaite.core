@@ -123,6 +123,8 @@ class RemarksField extends React.Component
     return field
 
   render: ->
+    if not @props.uid
+      return null
     <div style={@get_style()}
          className="remarks text-muted">
       {@props.before and <span className="before_field" dangerouslySetInnerHTML={{__html: @props.before}}></span>}
