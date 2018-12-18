@@ -82,7 +82,7 @@
                   <span i18n:translate="">Unit</span>
                 </td>
                 <td>
-                  <span tal:content="service/Unit"></span>
+                  <span tal:content="service/Unit|nothing"></span>
                 </td>
               </tr>
               <tr>
