@@ -1208,7 +1208,7 @@
   <transition transition_id="retract" title="Retract" new_state="sample_received" trigger="USER" before_script="" after_script="" i18n:attributes="title">
     <action url="" category="workflow" icon="">Retract</action>
     <guard>
-      <guard-expression>python:here.guard_retract_transition()</guard-expression>
+      <guard-expression>python:here.guard_handler('retract')</guard-expression>
     </guard>
   </transition>
 
