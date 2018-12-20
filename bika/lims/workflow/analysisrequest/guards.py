@@ -8,7 +8,6 @@
 from bika.lims import api
 from bika.lims.workflow import getCurrentState
 from bika.lims.workflow import isActive
-from bika.lims.workflow import isBasicTransitionAllowed
 from bika.lims.workflow import isTransitionAllowed
 
 # States to be omitted in regular transitions
