@@ -1244,7 +1244,6 @@
     <action url="" category="workflow" icon="">Sample</action>
     <guard>
       <guard-permission>BIKA: Sample Sample</guard-permission>
-      <guard-expression>python:here.guard_sample_transition()</guard-expression>
     </guard>
   </transition>
 
