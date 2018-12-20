@@ -187,7 +187,11 @@ def guard_cancel(analysis_request):
 def guard_reinstate(analysis_request):
     """Returns whether 'reinstate" transition can be performed or not. Returns
     True only if this is not a partition or the parent analysis request can be
-    reinstated
+    reinstated or is not in a cancelled state
     """
     parent = analysis_request.getParentAnalysisRequest()
-    return not parent or isTransitionAllowed(parent, "reinstate")
+    if not parent:
+        return True
+    if api.get_workflow_status_of(parent) != "cancelled":
+        return True
+    return isTransitionAllowed(parent, "reinstate")

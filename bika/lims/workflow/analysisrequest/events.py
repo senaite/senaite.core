@@ -233,21 +233,20 @@ def after_reinstate(analysis_request):
     passed in is performed. Reinstates all parent analysis requests, as well as
     the contained analyses
     """
-    # TODO Workflow - AR - Remove after Sample removal
-    _promote_transition(analysis_request, "reinstate")
-
-    # Promote to parent Analysis Request
-    parent_ar = analysis_request.getParentAnalysisRequest()
-    if parent_ar:
-        doActionFor(parent_ar, "reinstate")
+    # Cascade to partitions
+    for part in analysis_request.getDescendants(all_descendants=False):
+        doActionFor(part, "reinstate")
 
     # Cascade to analyses
-    for analysis in analysis_request.getAnalyses(full_objects=True):
+    for analysis in analysis_request.objectValues("Analysis"):
         doActionFor(analysis, 'reinstate')
 
     # Force the transition to previous state before the request was cancelled
     prev_status = get_prev_status_from_history(analysis_request, "cancelled")
-    changeWorkflowState(analysis_request, AR_WORKFLOW_ID, prev_status)
+    changeWorkflowState(analysis_request, AR_WORKFLOW_ID, prev_status,
+                        action="reinstate",
+                        actor=api.get_current_user().getId())
+    analysis_request.reindexObject()
 
 
 def after_cancel(analysis_request):
