@@ -481,6 +481,9 @@ def update_workflows(portal):
     # Fix cancelled analyses inconsistencies
     fix_cancelled_analyses_inconsistencies(portal)
 
+    # Fix cancelled analysis requests inconsistencies
+    decouple_analysis_requests_from_cancellation_workflow(portal)
+
     # Update role mappings
     update_role_mappings(portal, rm_queries)
 
@@ -1167,3 +1170,31 @@ def remove_get_department_uids(portal):
     del_metadata(portal, CATALOG_ANALYSIS_REQUEST_LISTING, "getDepartmentUIDs")
     del_metadata(portal, CATALOG_WORKSHEET_LISTING, "getDepartmentUIDs")
     del_metadata(portal, CATALOG_ANALYSIS_LISTING, "getDepartmentUID")
+
+
+def decouple_analysis_requests_from_cancellation_workflow(portal):
+    logger.info("Decoupling Analysis Requests from cancellation_workflow ...")
+    wf_id = "bika_ar_workflow"
+    wf_tool = api.get_tool("portal_workflow")
+    workflow = wf_tool.getWorkflowById(wf_id)
+    query = dict(portal_type="AnalysisRequest", cancellation_state="cancelled")
+    brains = api.search(query, CATALOG_ANALYSIS_REQUEST_LISTING)
+    total = len(brains)
+    for num, brain in enumerate(brains):
+        if brain.review_state == "cancelled":
+            continue
+        if num % 100 == 0:
+            logger.info("Resolving state to 'cancelled': {}/{}"
+                        .format(num, total))
+        # Set state
+        analysis_request = api.get_object(brain)
+        if api.get_workflow_status_of(analysis_request) == "cancelled":
+            # The state of the analysis request is fine, only reindex
+            analysis_request.reindexObject(idxs=["cancellation_state"])
+            continue
+
+        changeWorkflowState(analysis_request, wf_id, "cancelled")
+        # Update role mappings
+        workflow.updateRoleMappingsFor(analysis_request)
+        # Reindex
+        analysis_request.reindexObject(idxs=["cancellation_state"])
