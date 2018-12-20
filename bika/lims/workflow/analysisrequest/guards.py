@@ -32,14 +32,7 @@ def schedule_sampling(obj):
     - if no date and samples have been defined
       and "sampling schedule" checkbox is set in bika_setup
     """
-    if obj.bika_setup.getScheduleSamplingEnabled() and \
-            isBasicTransitionAllowed(obj):
-        return True
-    return False
-
-
-def receive(obj):
-    return isBasicTransitionAllowed(obj)
+    return obj.bika_setup.getScheduleSamplingEnabled()
 
 
 def guard_create_partitions(analysis_request):

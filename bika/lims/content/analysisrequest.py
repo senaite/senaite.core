@@ -2758,10 +2758,6 @@ class AnalysisRequest(BaseFolder):
         return guards.assign(self)
 
     @security.public
-    def guard_receive_transition(self):
-        return guards.receive(self)
-
-    @security.public
     def guard_schedule_sampling_transition(self):
         return guards.schedule_sampling(self)
 

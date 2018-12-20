@@ -1161,11 +1161,12 @@
     </guard>
   </transition>
 
-  <transition transition_id="receive" title="Receive" new_state="sample_received" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+  <transition transition_id="receive" title="Receive" new_state="sample_received"
+              trigger="USER" before_script="" after_script="" i18n:attributes="title">
     <action url="" category="workflow" icon="">Receive sample</action>
     <guard>
       <guard-permission>BIKA: Receive Sample</guard-permission>
-      <guard-expression>python:here.guard_receive_transition()</guard-expression>
+      <guard-expression>python:here.guard_handler("receive")</guard-expression>
     </guard>
   </transition>
 
