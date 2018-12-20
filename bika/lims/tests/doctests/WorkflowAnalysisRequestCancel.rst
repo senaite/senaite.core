@@ -70,7 +70,7 @@ We need to create some basic objects for the test:
     >>> Au = api.create(bikasetup.bika_analysisservices, "AnalysisService", title="Gold", Keyword="Au", Price="20", Category=category.UID())
 
 
-Assign transition and guard basic constraints
+Cancel transition and guard basic constraints
 ---------------------------------------------
 
 Create an Analysis Request:
@@ -120,14 +120,20 @@ And we can cancel again:
     >>> transitioned = do_action_for(ar, "cancel")
     >>> api.get_workflow_status_of(ar)
     'cancelled'
+    >>> analyses = ar.getAnalyses(full_objects=True)
+    >>> map(api.get_workflow_status_of, analyses)
+    ['cancelled', 'cancelled', 'cancelled']
 
 And reinstate:
 
     >>> transitioned = do_action_for(ar, "reinstate")
     >>> api.get_workflow_status_of(ar)
     'sample_received'
+    >>> analyses = ar.getAnalyses(full_objects=True)
+    >>> map(api.get_workflow_status_of, analyses)
+    ['unassigned', 'unassigned', 'unassigned']
 
-Thus, the Analysis Request could be cancelled again:
+Thus, the Analysis Request can be cancelled again:
 
     >>> isTransitionAllowed(ar, "cancel")
     True
