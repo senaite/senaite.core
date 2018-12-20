@@ -104,9 +104,6 @@ def prepublish(obj):
     provisional report, also if results are not yet definitive.
     :returns: true or false
     """
-    if not isBasicTransitionAllowed(obj):
-        return False
-
     if isTransitionAllowed(obj, 'publish'):
         return False
 
