@@ -6,11 +6,10 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from bika.lims import api
-from bika.lims.interfaces import IAnalysisRequest
-from bika.lims.interfaces.analysis import IRequestAnalysis
+from bika.lims.interfaces import ICancellable
 from plone.indexer import indexer
 
-@indexer(IAnalysisRequest, IRequestAnalysis)
+@indexer(ICancellable)
 def cancellation_state(instance):
     """Acts as a mask for cancellation_workflow for those content types that are
     not bound to this workflow. Returns 'active' or 'cancelled'
