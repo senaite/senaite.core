@@ -297,9 +297,8 @@ def get_prev_status_from_history(instance, status=None):
     one is considered.
     """
     target = status or api.get_workflow_status_of(instance)
-    history = getReviewHistoryActionsList(instance, reverse=True)
-    # Filter empty/none actions (those forced internally)
-    history = filter(lambda action: action or False, history)
+    history = getReviewHistory(instance, reverse=True)
+    history = map(lambda event: event["review_state"], history)
     if target not in history or history.index(target) == len(history)-1:
         return None
     return history[history.index(target)+1]
