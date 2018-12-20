@@ -72,6 +72,7 @@ Changelog
 
 **Fixed**
 
+- #1175 Fixed Version Display of SENAITE CORE Add-on in the Quickinstaller Tool
 - #1142 Fix instrument QC Analyses Table
 - #1137 Fixed and refactored log view
 - #1124 Traceback when invalidating an Analysis Request with retracted analyses
