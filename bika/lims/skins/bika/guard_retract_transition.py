@@ -21,7 +21,7 @@ workflow = context.portal_workflow
 checkPermission = context.portal_membership.checkPermission
 
 # Can't do anything to the object if it's cancelled
-if workflow.getInfoFor(context, 'cancellation_state', 'active') == "cancelled":
+if workflow.getInfoFor(context, 'review_state', 'active') == "cancelled":
     return False
 
 if checkPermission(Retract, context):
