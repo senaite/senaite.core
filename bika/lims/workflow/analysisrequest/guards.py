@@ -43,9 +43,6 @@ def guard_create_partitions(analysis_request):
         # If partitions are disabled in Setup, return False
         return False
 
-    if not isBasicTransitionAllowed(analysis_request):
-        return False
-
     if analysis_request.isPartition():
         # Do not allow the creation of partitions from partitions
         return False
