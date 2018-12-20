@@ -4,3 +4,5 @@
 #
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+
+AR_WORKFLOW_ID = "bika_ar_workflow"
