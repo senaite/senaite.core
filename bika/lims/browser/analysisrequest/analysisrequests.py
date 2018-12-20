@@ -47,7 +47,6 @@ class AnalysisRequestsView(BikaListingView):
         self.contentFilter = {
             "sort_on": "created",
             "sort_order": "descending",
-            "cancellation_state": "active",
             "isRootAncestor": True,  # only root ancestors
         }
 
@@ -234,7 +233,6 @@ class AnalysisRequestsView(BikaListingView):
                         "to_be_verified",
                         "verified",
                     ),
-                    "cancellation_state": "active",
                     "sort_on": "created",
                     "sort_order": "descending",
                 },
@@ -377,18 +375,7 @@ class AnalysisRequestsView(BikaListingView):
                 "id": "cancelled",
                 "title": _("Cancelled"),
                 "contentFilter": {
-                    "cancellation_state": "cancelled",
-                    "review_state": (
-                        "sample_registered",
-                        "to_be_sampled",
-                        "to_be_preserved",
-                        "sample_due",
-                        "sample_received",
-                        "to_be_verified",
-                        "attachment_due",
-                        "verified",
-                        "published",
-                    ),
+                    "review_state": "cancelled",
                     "sort_on": "created",
                     "sort_order": "descending",
                 },
@@ -440,7 +427,6 @@ class AnalysisRequestsView(BikaListingView):
                                    title=t(_("Assigned"))),
                 "contentFilter": {
                     "assigned_state": "assigned",
-                    "cancellation_state": "active",
                     "review_state": ("sample_received",
                                      "attachment_due",),
                     "sort_on": "created",
@@ -460,7 +446,6 @@ class AnalysisRequestsView(BikaListingView):
                                    title=t(_("Unsassigned"))),
                 "contentFilter": {
                     "assigned_state": "unassigned",
-                    "cancellation_state": "active",
                     "review_state": (
                         "sample_received",
                         "attachment_due",
@@ -482,7 +467,6 @@ class AnalysisRequestsView(BikaListingView):
                 "title": get_image("late.png",
                                    title=t(_("Late"))),
                 "contentFilter": {
-                    "cancellation_state": "active",
                     # Query only for unpublished ARs that are late
                     "review_state": (
                         "sample_received",

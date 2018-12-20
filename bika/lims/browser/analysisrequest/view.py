@@ -109,7 +109,7 @@ class AnalysisRequestViewView(BrowserView):
     def is_cancelled(self):
         """Checks if the AR is cancelled
         """
-        return api.get_cancellation_status(self.context) == "cancelled"
+        return api.get_review_status(self.context) == "cancelled"
 
     def is_hazardous(self):
         """Checks if the AR is hazardous
