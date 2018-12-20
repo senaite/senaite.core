@@ -253,9 +253,11 @@ def after_cancel(analysis_request):
     for part in analysis_request.getDescendants(all_descendants=False):
         doActionFor(part, "cancel")
 
-    # Cascade to analyses
-    for analysis in analysis_request.getAnalyses(full_objects=True):
-        doActionFor(analysis, 'cancel')
+    # Cascade to analyses. We've cascaded to partitions already, so there is
+    # no need to cascade to analyses from partitions again, but through the
+    # analyses directly bound to the current Analysis Request.
+    for analysis in analysis_request.objectValues("Analysis"):
+        doActionFor(analysis, "cancel")
 
 
 def after_rollback_to_receive(analysis_request):

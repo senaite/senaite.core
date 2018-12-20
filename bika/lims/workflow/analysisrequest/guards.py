@@ -174,10 +174,11 @@ def guard_cancel(analysis_request):
         if not isTransitionAllowed(partition, "cancel"):
             return False
 
-    # Look through analyses
-    for analysis in analysis_request.getAnalyses():
-        analysis_object = api.get_object(analysis)
-        if api.get_workflow_status_of(analysis_object) != "unassigned":
+    # Look through analyses. We've checked the partitions already, so there is
+    # no need to look through analyses from partitions again, but through the
+    # analyses directly bound to the current Analysis Request.
+    for analysis in analysis_request.objectValues("Analysis"):
+        if api.get_workflow_status_of(analysis) != "unassigned":
             return False
 
     return True
