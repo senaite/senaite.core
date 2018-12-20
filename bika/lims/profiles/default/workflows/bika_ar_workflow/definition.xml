@@ -1173,6 +1173,7 @@
   There is no new_state defined explicitly defined, cause the new_state will be
   the state before the request was cancelled. See after_reinstate -->
   <transition transition_id="reinstate" title="Reinstate"
+              new_state="sample_registered"
               trigger="USER" before_script="" after_script=""
               i18n:attributes="title">
     <action url="" category="workflow" icon="">Reinstate</action>
