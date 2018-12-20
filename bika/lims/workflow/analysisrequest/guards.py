@@ -124,17 +124,6 @@ def prepublish(obj):
     return False
 
 
-def guard_publish(analysis_request):
-    """Returns True if 'publish' transition can be applied to the Analysis
-    Request passed in. Returns true if the Analysis Request is active (not in
-    a cancelled/inactive state). As long as 'publish' transition, in accordance
-    with its DC workflow can only be performed if its previous state is
-    verified or published, there is no need of additional validations.
-    :returns: true or false
-    """
-    return isBasicTransitionAllowed(analysis_request)
-
-
 def guard_rollback_to_receive(analysis_request):
     """Return whether 'rollback_to_receive' transition can be performed or not
     """
