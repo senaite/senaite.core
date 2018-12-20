@@ -8,8 +8,6 @@
 import logging
 import warnings
 
-import pkg_resources
-
 import App
 from AccessControl import allow_module
 from bika.lims.permissions import ADD_CONTENT_PERMISSION
@@ -20,12 +18,6 @@ from Products.CMFCore.utils import ContentInit
 from zope.i18nmessageid import MessageFactory
 
 PROJECTNAME = "bika.lims"
-
-try:
-    __version__ = pkg_resources.get_distribution("senaite.core").version
-except TypeError:
-    __version__ = pkg_resources.get_distribution("bika.lims").version
-    print "Using old distribution name: bika.lims"
 
 # import this to create messages in the bika domain.
 bikaMessageFactory = MessageFactory("senaite.core")
