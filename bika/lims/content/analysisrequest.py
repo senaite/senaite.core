@@ -2745,26 +2745,6 @@ class AnalysisRequest(BaseFolder):
             states[w.state_var] = state
         return states
 
-    @security.public
-    def guard_to_be_preserved(self):
-        return guards.to_be_preserved(self)
-
-    @security.public
-    def guard_unassign_transition(self):
-        return guards.unassign(self)
-
-    @security.public
-    def guard_assign_transition(self):
-        return guards.assign(self)
-
-    @security.public
-    def guard_schedule_sampling_transition(self):
-        return guards.schedule_sampling(self)
-
-    @security.public
-    def guard_prepublish_transition(self):
-        return guards.prepublish(self)
-
     def SearchableText(self):
         """
         Override searchable text logic based on the requirements.

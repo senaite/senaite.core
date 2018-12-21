@@ -28,7 +28,7 @@ from bika.lims.utils import to_utf8
 from bika.lims.utils.sample import create_sample
 from bika.lims.utils.samplepartition import create_samplepartition
 from bika.lims.workflow import doActionFor, ActionHandlerPool, \
-    push_reindex_to_actions_pool
+    push_reindex_to_actions_pool, isTransitionAllowed
 from bika.lims.workflow import doActionsFor
 from bika.lims.workflow import getReviewHistoryActionsList
 from email.Utils import formataddr
@@ -126,13 +126,9 @@ def create_analysisrequest(client, request, values, analyses=None,
     # each object we created). After and Before transitions will take care of
     # cascading and promoting the transitions in all the objects "associated"
     # to this Analysis Request.
-    sampling_workflow_enabled = sample.getSamplingWorkflowEnabled()
-    action = 'no_sampling_workflow'
-    if sampling_workflow_enabled:
-        action = 'sampling_workflow'
-    # Transition the Analysis Request and related objects to "sampled" (if
-    # sampling workflow not enabled) or to "to_be_sampled" statuses.
-    doActionFor(ar, action)
+    succeed = doActionFor(ar, "no_sampling_workflow")
+    if not succeed[0]:
+        doActionFor(ar, "sampling_workflow")
 
     if secondary:
         # If secondary AR, then we need to manually transition the AR (and its

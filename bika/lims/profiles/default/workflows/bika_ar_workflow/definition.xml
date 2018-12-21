@@ -1135,6 +1135,7 @@
     <action url="" category="workflow" icon="">No sampling workflow</action>
     <guard>
       <guard-permission>BIKA: Add Analysis Request</guard-permission>
+      <guard-expression>python:here.guard_handler("no_sampling_workflow")</guard-expression>
     </guard>
   </transition>
 
@@ -1142,7 +1143,7 @@
     <action url="" category="workflow" icon="">Prepublish</action>
     <guard>
       <guard-permission>BIKA: Publish</guard-permission>
-      <guard-expression>python:here.guard_prepublish_transition()</guard-expression>
+      <guard-expression>python:here.guard_handler("prepublish")</guard-expression>
     </guard>
   </transition>
 
@@ -1257,6 +1258,7 @@
     <action url="" category="workflow" icon="">Sampling workflow</action>
     <guard>
       <guard-permission>BIKA: Add Analysis Request</guard-permission>
+      <guard-expression>python:here.guard_handler("sampling_workflow")</guard-expression>
     </guard>
   </transition>
 
@@ -1264,7 +1266,7 @@
     <action url="" category="workflow" icon="">Schedule sampling</action>
     <guard>
       <guard-permission>BIKA: Schedule Sampling</guard-permission>
-      <guard-expression>python:here.guard_schedule_sampling_transition()</guard-expression>
+      <guard-expression>python:here.guard_handler("schedule_sampling")</guard-expression>
     </guard>
   </transition>
 
