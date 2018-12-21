@@ -367,6 +367,11 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
 
         # Create the reference analysis
         ref_analysis = reference.addReferenceAnalysis(service)
+        if not ref_analysis:
+            logger.warning("Unable to create a reference analysis for "
+                           "reference '{0}' and service '{1}'"
+                           .format(reference.getId(), service.getKeyword()))
+            return None
 
         # Set ReferenceAnalysesGroupID (same id for the analyses from
         # the same Reference Sample and same Worksheet)
