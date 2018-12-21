@@ -5,6 +5,7 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
+from bika.lims import api
 from bika.lims import workflow as wf
 from bika.lims.interfaces import IBatch, IClient
 from bika.lims.interfaces import IATWidgetVisibility
@@ -246,13 +247,19 @@ class SampleDateReceived(object):
     def __call__(self, context, mode, field, default):
         state = default if default else 'visible'
         if field.getName() == 'DateReceived':
-            # In states earlier than `sample_received`, the field is uneditable
-            if not wf.wasTransitionPerformed(context, "receive"):
-                return mode == 'edit' and 'invisible' or 'visible'
-            # The edition of Sample Date Received is only permitted if no
-            # results have been submitted yet
-            pending_states = ["unassigned", "assigned"]
-            for analysis in context.getAnalyses():
-                if analysis.review_state not in pending_states:
-                    return mode == 'edit' and 'invisible' or 'visible'
+            if not self.can_edit_date_received(context):
+                return mode == "edit" and "invisible" or "visible"
         return state
+
+    def can_edit_date_received(self, context):
+        """Checkes whether the date received can be edited or not by the
+        current user and for the current state of the context
+        """
+        m_tool = getToolByName(context, "portal_membership")
+        if not m_tool.checkPermission("Modify Date Received", context):
+            return False
+        allowed_states = ['unassigned', 'assigned']
+        for analysis in context.getAnalyses():
+            if api.get_workflow_status_of(analysis) not in allowed_states:
+                return False
+        return True

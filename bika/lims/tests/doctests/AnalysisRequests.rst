@@ -586,7 +586,7 @@ Setting the value on the `Sample` changes also the value on the `AnalysisRequest
 
 
 ClientSampleID
-...............
+..............
 
 The `ClientSampleID` field keeps an identifier of the sample given from the client::
 
@@ -924,13 +924,12 @@ For this we need an AR with more than one Analysis:
 
     >>> as2 = api.create(bika_analysisservices, 'AnalysisService', title='Another Type Of Analysis', ShortTitle='Another', Category=analysiscategory, Keyword='AN')
     >>> ar1 = create_analysisrequest(client, request, values, service_uids + [as2.UID()])
-    >>> sample1 = ar1.getSample()
 
 In states earlier than `sample_received` the DateReceived field is uneditable:
 
     .. code ::
 
-    >>> SampleDateReceived(sample1)(sample1, 'edit', sample1.schema['DateReceived'], 'default')
+    >>> SampleDateReceived(ar1)(ar1, 'edit', ar1.schema['DateReceived'], 'default')
     'invisible'
 
 In the `sample_received` state however, it is possible to modify the field.  In this case
@@ -939,7 +938,7 @@ the SampleDateReceived adapter also simply passes the schema default unmolested.
     .. code ::
 
     >>> p = api.do_transition_for(ar1, 'receive')
-    >>> SampleDateReceived(sample1)(sample1, 'edit', sample1.schema['DateReceived'], 'default')
+    >>> SampleDateReceived(ar1)(ar1, 'edit', ar1.schema['DateReceived'], 'default')
     'default'
 
 After any analysis has been submitted, the field is no longer editable.  The adapter
@@ -950,5 +949,5 @@ sets the widget.isible to 'invisible'.
     >>> an = ar1.getAnalyses(full_objects=True)[0]
     >>> an.setResult('1')
     >>> p = doActionFor(an, 'submit')
-    >>> SampleDateReceived(sample1)(sample1, 'edit', sample1.schema['DateReceived'], 'default')
+    >>> SampleDateReceived(ar1)(ar1, 'edit', ar1.schema['DateReceived'], 'default')
     'invisible'

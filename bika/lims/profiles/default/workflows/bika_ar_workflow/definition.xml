@@ -26,6 +26,10 @@
   <permission>Modify portal content</permission>
   <permission>View</permission>
 
+  <!-- Field-specific permissions -->
+  <!-- Date Received can only be modified in "sample_received" state -->
+  <permission>Modify Date Received</permission>
+
   <!--
   Client can only reject an AR when is not yet received.
   Labman can only reject an AR when is not yet verified.
@@ -98,6 +102,10 @@
       <permission-role>Sampler</permission-role>
       <permission-role>SamplingCoordinator</permission-role>
       <permission-role>Verifier</permission-role>
+    </permission-map>
+
+    <!-- Field-specific permissions -->
+    <permission-map name="Modify Date Received" acquired="False">
     </permission-map>
 
     <!-- Reject Analysis Request -->
@@ -195,6 +203,10 @@
       <permission-role>Sampler</permission-role>
       <permission-role>SamplingCoordinator</permission-role>
       <permission-role>Verifier</permission-role>
+    </permission-map>
+
+    <!-- Field-specific permissions -->
+    <permission-map name="Modify Date Received" acquired="False">
     </permission-map>
 
     <!-- Reject Analysis Request -->
@@ -297,6 +309,10 @@
       <permission-role>Verifier</permission-role>
     </permission-map>
 
+    <!-- Field-specific permissions -->
+    <permission-map name="Modify Date Received" acquired="False">
+    </permission-map>
+
     <!-- Reject Analysis Request -->
     <permission-map name="Reject Analysis Request" acquired="False">
       <permission-role>Manager</permission-role>
@@ -390,6 +406,10 @@
       <permission-role>Sampler</permission-role>
       <permission-role>SamplingCoordinator</permission-role>
       <permission-role>Verifier</permission-role>
+    </permission-map>
+
+    <!-- Field-specific permissions -->
+    <permission-map name="Modify Date Received" acquired="False">
     </permission-map>
 
     <!-- Reject Analysis Request -->
@@ -492,6 +512,10 @@
       <permission-role>Verifier</permission-role>
     </permission-map>
 
+    <!-- Field-specific permissions -->
+    <permission-map name="Modify Date Received" acquired="False">
+    </permission-map>
+
     <!-- Reject Analysis Request -->
     <permission-map name="Reject Analysis Request" acquired="False">
       <permission-role>Manager</permission-role>
@@ -592,6 +616,13 @@
       <permission-role>Verifier</permission-role>
     </permission-map>
 
+    <!-- Field-specific permissions -->
+    <permission-map name="Modify Date Received" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+
     <!-- Reject Analysis Request -->
     <permission-map name="Reject Analysis Request" acquired="False">
       <permission-role>Manager</permission-role>
@@ -676,6 +707,10 @@
       <permission-role>Sampler</permission-role>
       <permission-role>SamplingCoordinator</permission-role>
       <permission-role>Verifier</permission-role>
+    </permission-map>
+
+    <!-- Field-specific permissions -->
+    <permission-map name="Modify Date Received" acquired="False">
     </permission-map>
 
     <!-- Reject Analysis Request -->
@@ -773,6 +808,10 @@
       <permission-role>Verifier</permission-role>
     </permission-map>
 
+    <!-- Field-specific permissions -->
+    <permission-map name="Modify Date Received" acquired="False">
+    </permission-map>
+
     <!-- Reject Analysis Request -->
     <permission-map name="Reject Analysis Request" acquired="False">
       <permission-role>Manager</permission-role>
@@ -862,6 +901,10 @@
       <permission-role>Verifier</permission-role>
     </permission-map>
 
+    <!-- Field-specific permissions -->
+    <permission-map name="Modify Date Received" acquired="False">
+    </permission-map>
+
     <!-- Reject Analysis Request -->
     <permission-map name="Reject Analysis Request" acquired="False">
       <permission-role>Manager</permission-role>
@@ -932,6 +975,10 @@
       <permission-role>SamplingCoordinator</permission-role>
       <permission-role>Verifier</permission-role>
     </permission-map>
+
+    <!-- Field-specific permissions -->
+    <permission-map name="Modify Date Received" acquired="False">
+    </permission-map>
   </state>
 
   <state state_id="published" title="Published" i18n:attributes="title">
@@ -986,6 +1033,10 @@
       <permission-role>SamplingCoordinator</permission-role>
       <permission-role>Verifier</permission-role>
     </permission-map>
+
+    <!-- Field-specific permissions -->
+    <permission-map name="Modify Date Received" acquired="False">
+    </permission-map>
   </state>
 
   <state state_id="rejected" title="Rejected" i18n:attributes="title">
@@ -1023,6 +1074,10 @@
       <permission-role>Manager</permission-role>
       <permission-role>Owner</permission-role>
       <permission-role>RegulatoryInspector</permission-role>
+    </permission-map>
+
+    <!-- Field-specific permissions -->
+    <permission-map name="Modify Date Received" acquired="False">
     </permission-map>
   </state>
 
@@ -1068,6 +1123,10 @@
       <permission-role>SamplingCoordinator</permission-role>
       <permission-role>Verifier</permission-role>
     </permission-map>
+
+    <!-- Field-specific permissions -->
+    <permission-map name="Modify Date Received" acquired="False">
+    </permission-map>
   </state>
 
   <!-- State: cancelled
@@ -1107,6 +1166,10 @@
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
       <permission-role>RegulatoryInspector</permission-role>
+    </permission-map>
+
+    <!-- Field-specific permissions -->
+    <permission-map name="Modify Date Received" acquired="False">
     </permission-map>
   </state>
 
