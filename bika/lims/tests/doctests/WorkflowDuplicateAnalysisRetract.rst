@@ -148,6 +148,8 @@ The new analysis is a copy of retracted one:
     True
     >>> retest.getRetestOf() == duplicate
     True
+    >>> duplicate.getRetest() == retest
+    True
     >>> retest.getAnalysis() == duplicate.getAnalysis()
     True
 
