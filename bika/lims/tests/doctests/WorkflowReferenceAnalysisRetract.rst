@@ -221,26 +221,21 @@ Create an Analysis Request:
     ... for analysis in ar.getAnalyses(full_objects=True):
     ...     worksheet.addAnalysis(analysis)
 
-Add same reference twice:
+Add same reference sample twice:
 
-    >>> worksheet.addReferenceAnalyses(control_sample, [api.get_uid(Cu)])
-    >>> worksheet.addReferenceAnalyses(control_sample, [api.get_uid(Cu)])
-
-Get the reference analyses and their positions:
-
-    >>> references = worksheet.getReferenceAnalyses()
-    >>> ref_1 = references[0]
-    >>> ref_2 = references[1]
+    >>> ref_1 = worksheet.addReferenceAnalyses(control_sample, [api.get_uid(Cu)])[0]
+    >>> ref_2 = worksheet.addReferenceAnalyses(control_sample, [api.get_uid(Cu)])[0]
     >>> ref_1 != ref_2
     True
+
+Get the reference analyses positions:
+
     >>> ref_1_pos = worksheet.get_slot_position_for(ref_1)
-    >>> api.is_floatable(ref_1_pos)
-    True
+    >>> ref_1_pos
+    1
     >>> ref_2_pos = worksheet.get_slot_position_for(ref_2)
-    >>> api.is_floatable(ref_2_pos)
-    True
-    >>> ref_1_pos != ref_2_pos
-    True
+    >>> ref_2_pos
+    2
 
 Submit both:
 
@@ -255,12 +250,15 @@ Retract the first reference analysis. The retest has been added in same slot:
 
     >>> try_transition(ref_1, "retract", "retracted")
     True
-    >>> worksheet.get_slot_position(ref_1.getRetest()) == ref_1_pos
-    True
+    >>> retest_1 = ref_1.getRetest()
+    >>> import pdb;pdb.set_trace()
+    >>> worksheet.get_slot_position_for(retest_1)
+    1
 
 And the same if we retract the second reference analysis:
 
     >>> try_transition(ref_2, "retract", "retracted")
     True
-    >>> worksheet.get_slot_position(ref_2.getRetest()) == ref_2_pos
-    True
+    >>> retest_2 = ref_2.getRetest()
+    >>> worksheet.get_slot_position_for(retest_2)
+    2
