@@ -160,6 +160,8 @@ The new analysis is a copy of retracted one:
     True
     >>> retest.getRetestOf() == reference
     True
+    >>> reference.getRetest() == retest
+    True
     >>> retest.getAnalysisService() == reference.getAnalysisService()
     True
 
@@ -202,3 +204,62 @@ And the Worksheet has been transitioned to `open`:
 
     >>> api.get_workflow_status_of(worksheet)
     'open'
+
+Retract transition when reference analyses from same Reference Sample are added
+===============================================================================
+
+When analyses from same Reference Sample are added in a worksheet, the
+worksheet allocates different slots for them, although each of the slots keeps
+the container the analysis belongs to (in this case the same Reference Sample).
+Hence, when retracting a reference analysis, the retest must be added in the
+same position as the original, regardless of how many reference analyses from
+same reference sample exist.
+Further information: https://github.com/senaite/senaite.core/pull/1179
+
+Create an Analysis Request:
+
+    >>> ar = new_ar([Cu])
+    >>> worksheet = api.create(portal.worksheets, "Worksheet")
+    ... for analysis in ar.getAnalyses(full_objects=True):
+    ...     worksheet.addAnalysis(analysis)
+
+Add same reference sample twice:
+
+    >>> ref_1 = worksheet.addReferenceAnalyses(control_sample, [api.get_uid(Cu)])[0]
+    >>> ref_2 = worksheet.addReferenceAnalyses(control_sample, [api.get_uid(Cu)])[0]
+    >>> ref_1 != ref_2
+    True
+
+Get the reference analyses positions:
+
+    >>> ref_1_pos = worksheet.get_slot_position_for(ref_1)
+    >>> ref_1_pos
+    1
+    >>> ref_2_pos = worksheet.get_slot_position_for(ref_2)
+    >>> ref_2_pos
+    2
+
+Submit both:
+
+    >>> ref_1.setResult(12)
+    >>> ref_2.setResult(13)
+    >>> try_transition(ref_1, "submit", "to_be_verified")
+    True
+    >>> try_transition(ref_2, "submit", "to_be_verified")
+    True
+
+Retract the first reference analysis. The retest has been added in same slot:
+
+    >>> try_transition(ref_1, "retract", "retracted")
+    True
+    >>> retest_1 = ref_1.getRetest()
+    >>> worksheet.get_slot_position_for(retest_1)
+    1
+
+And the same if we retract the second reference analysis:
+
+    >>> try_transition(ref_2, "retract", "retracted")
+    True
+    >>> retest_2 = ref_2.getRetest()
+    >>> worksheet.get_slot_position_for(retest_2)
+    2

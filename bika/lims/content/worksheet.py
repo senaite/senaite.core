@@ -367,6 +367,11 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
 
         # Create the reference analysis
         ref_analysis = reference.addReferenceAnalysis(service)
+        if not ref_analysis:
+            logger.warning("Unable to create a reference analysis for "
+                           "reference '{0}' and service '{1}'"
+                           .format(reference.getId(), service.getKeyword()))
+            return None
 
         # Set ReferenceAnalysesGroupID (same id for the analyses from
         # the same Reference Sample and same Worksheet)
@@ -574,7 +579,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         if not IReferenceSample.providedBy(reference):
             return -1
 
-        occupied = self.get_slot_positions(type='all')
+        occupied = self.get_slot_positions(type='all') or [0]
         wst = self.getWorksheetTemplate()
         if not wst:
             # No worksheet template assigned, add a new slot at the end of the
@@ -742,11 +747,11 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         """Returns the slot where the instance passed in is located. If not
         found, returns None
         """
-        analysis_type = self.get_analysis_type(instance)
-        container = self.get_container_for(instance)
-        slot = self.get_slot_position(container, analysis_type)
-        analyses = self.get_analyses_at(slot)
-        return instance in analyses and slot or None
+        uid = api.get_uid(instance)
+        slot = filter(lambda s: s['analysis_uid'] == uid, self.getLayout())
+        if not slot:
+            return None
+        return to_int(slot[0]['position'])
 
     def resolve_available_slots(self, worksheet_template, type='a'):
         """Returns the available slots from the current worksheet that fits

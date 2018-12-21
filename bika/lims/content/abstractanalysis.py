@@ -1176,7 +1176,8 @@ class AbstractAnalysis(AbstractBaseAnalysis):
     def getRetest(self):
         """Returns the retest that comes from this analysis, if any
         """
-        back_refs = get_backreferences(self, 'AnalysisRetestOf')
+        relationship = "{}RetestOf".format(self.portal_type)
+        back_refs = get_backreferences(self, relationship)
         if not back_refs:
             return None
         if len(back_refs) > 1:

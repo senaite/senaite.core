@@ -123,6 +123,10 @@ And the Analysis Request has been transitioned to `sample_received`:
 The new analysis is a copy of retracted one:
 
     >>> retest = filter(lambda an: api.get_workflow_status_of(an) == "unassigned", analyses)[0]
+    >>> analysis.getRetest() == retest
+    True
+    >>> retest.getRetestOf() == analysis
+    True
     >>> retest.getKeyword() == analysis.getKeyword()
     True
 
