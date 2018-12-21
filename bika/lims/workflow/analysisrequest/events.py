@@ -111,8 +111,16 @@ def after_cancel(analysis_request):
     do_action_to_descendants(analysis_request, "cancel")
     do_action_to_analyses(analysis_request, "cancel")
 
+
 def after_receive(analysis_request):
     """Method triggered after "receive" transition for the Analysis Request
     passed in is performed
     """
     analysis_request.setDateReceived(DateTime())
+
+
+def after_sample(analysis_request):
+    """Method triggered after "sample" transition for the Analysis Request
+    passed in is performed
+    """
+    analysis_request.setDateSampled(DateTime())
