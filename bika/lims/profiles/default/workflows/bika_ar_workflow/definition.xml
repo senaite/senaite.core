@@ -1169,7 +1169,7 @@
     <action url="" category="workflow" icon="">Republish</action>
     <guard>
       <guard-permission>BIKA: Publish</guard-permission>
-      <guard-expression>python:here.guard_cancelled_object()</guard-expression>
+      <guard-expression>python:here.guard_handler("republish")</guard-expression>
     </guard>
   </transition>
 
@@ -1204,7 +1204,7 @@
     <action url="" category="workflow" icon="">Invalidate</action>
     <guard>
       <guard-permission>BIKA: Retract</guard-permission>
-      <guard-expression>python:here.guard_cancelled_object()</guard-expression>
+      <guard-expression>python:here.guard_handler("invalidate")</guard-expression>
     </guard>
   </transition>
 

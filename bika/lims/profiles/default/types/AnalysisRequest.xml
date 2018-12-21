@@ -40,7 +40,7 @@
  <action title="Manage Analyses"
          action_id="analyses"
          category="object"
-         condition_expr="python:here.guard_cancelled_object()"
+         condition_expr=""
          icon_expr=""
          link_target=""
          url_expr="string:${object_url}/analyses"
@@ -53,7 +53,7 @@
  <action title="Manage Results"
          action_id="manage_results"
          category="object"
-         condition_expr="python:here.guard_cancelled_object()"
+         condition_expr=""
          icon_expr=""
          link_target=""
          url_expr="string:${object_url}/manage_results"
@@ -65,13 +65,13 @@
  <action title="Published results"
          action_id="published_results"
          category="object"
-         condition_expr="python:here.guard_cancelled_object()"
+         condition_expr=""
          icon_expr=""
          link_target=""
          url_expr="string:${object_url}/published_results"
          i18n:attributes="title"
          visible="True">
-     <permission value="View"/>
+     <permission value="BIKA: View Results"/>
  </action>
 
  <action title="Invoice"
