@@ -73,7 +73,6 @@ _columns_list = [
     'getKeyword',
     'getCategoryTitle',
     'getInterimFields',
-    'getSamplePartitionID',
     'getRemarks',
     'getRetestOfUID',
     'getExpiryDate',

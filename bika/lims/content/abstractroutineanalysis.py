@@ -271,16 +271,6 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
                 return samplepoint.UID()
 
     @security.public
-    def getSamplePartitionID(self):
-        """Used to populate catalog values.
-        Returns the sample partition ID
-        """
-        partition = self.getSamplePartition()
-        if partition:
-            return partition.getId()
-        return ''
-
-    @security.public
     def getDueDate(self):
         """Used to populate getDueDate index and metadata.
         This calculates the difference between the time the analysis processing

@@ -811,16 +811,5 @@ class Sample(BaseFolder, HistoryAwareMixin):
             batch_uids.append(batch_uid)
         return batch_uids
 
-    @security.public
-    def guard_to_be_preserved(self):
-        return guards.to_be_preserved(self)
-
-    @security.public
-    def guard_receive_transition(self):
-        return guards.receive(self)
-
-    @security.public
-    def guard_schedule_sampling_transition(self):
-        return guards.schedule_sampling(self)
 
 atapi.registerType(Sample, PROJECTNAME)
