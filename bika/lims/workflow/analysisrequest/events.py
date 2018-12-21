@@ -9,8 +9,7 @@ from DateTime import DateTime
 from bika.lims import api
 from bika.lims.utils import changeWorkflowState
 from bika.lims.utils.analysisrequest import create_retest
-from bika.lims.workflow import get_prev_status_from_history, \
-    push_reindex_to_actions_pool
+from bika.lims.workflow import get_prev_status_from_history
 from bika.lims.workflow.analysisrequest import AR_WORKFLOW_ID, \
     do_action_to_descendants, do_action_to_analyses, do_action_to_ancestors
 
@@ -119,8 +118,8 @@ def after_receive(analysis_request):
     """
     analysis_request.setDateReceived(DateTime())
     idxs = ['getDateReceived', 'isSampleReceived']
-    for analysis in analysis_request.getAnalyses():
-        push_reindex_to_actions_pool(analysis, idxs=idxs)
+    for analysis in analysis_request.getAnalyses(full_objects=True):
+        analysis.reindexObject(idxs=idxs)
 
 
 def after_sample(analysis_request):
@@ -128,5 +127,6 @@ def after_sample(analysis_request):
     passed in is performed
     """
     analysis_request.setDateSampled(DateTime())
-    for analysis in analysis_request.getAnalyses():
-        push_reindex_to_actions_pool(analysis, idxs=['getDateSampled'])
+    idxs = ['getDateSampled']
+    for analysis in analysis_request.getAnalyses(full_objects=True):
+        analysis.reindexObject(idxs=idxs)

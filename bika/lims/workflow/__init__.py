@@ -627,10 +627,9 @@ class ActionHandlerPool(object):
         return list(set(idxs))
 
 
-def push_reindex_to_actions_pool(object_or_brain, idxs=None):
+def push_reindex_to_actions_pool(obj, idxs=None):
     """Push a reindex job to the actions handler pool
     """
     indexes = idxs and idxs or []
     pool = ActionHandlerPool.get_instance()
-    pool.push(api.get_object(object_or_brain), "reindex", success=True,
-              idxs=indexes)
+    pool.push(obj, "reindex", success=True, idxs=indexes)

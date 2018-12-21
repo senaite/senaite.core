@@ -1829,6 +1829,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             client = self.get_object_by_uid(client_uid)
 
             if not client:
+                actions.resume()
                 raise RuntimeError("No client found")
 
             # get the specifications and pass them to the AR create function.
@@ -1843,6 +1844,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                     specifications=specifications
                 )
             except (KeyError, RuntimeError) as e:
+                actions.resume()
                 errors["message"] = e.message
                 return {"errors": errors}
             # We keep the title to check if AR is newly created
