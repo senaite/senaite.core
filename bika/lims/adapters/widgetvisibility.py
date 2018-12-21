@@ -247,12 +247,12 @@ class SampleDateReceived(object):
     def __call__(self, context, mode, field, default):
         state = default if default else 'visible'
         if field.getName() == 'DateReceived':
-            if not self.can_edit_date_received(context):
+            if not self.is_date_received_editable(context):
                 return mode == "edit" and "invisible" or "visible"
         return state
 
-    def can_edit_date_received(self, context):
-        """Checkes whether the date received can be edited or not by the
+    def is_date_received_editable(self, context):
+        """Returns whether the date received can be edited or not by the
         current user and for the current state of the context
         """
         m_tool = getToolByName(context, "portal_membership")
