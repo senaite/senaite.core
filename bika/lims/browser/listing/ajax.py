@@ -11,6 +11,7 @@ from bika.lims.browser.listing.decorators import returns_safe_json
 from bika.lims.browser.listing.decorators import set_application_json_header
 from bika.lims.browser.listing.decorators import translate
 from bika.lims.interfaces import IRoutineAnalysis
+from bika.lims.interfaces import IReferenceAnalysis
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.interface import implements
 from zope.publisher.interfaces import IPublishTraverse
@@ -337,7 +338,11 @@ class AjaxListingView(BrowserView):
     def is_analysis(self, obj):
         """Check if the object is an analysis
         """
-        return IRoutineAnalysis.providedBy(obj)
+        if IRoutineAnalysis.providedBy(obj):
+            return True
+        if IReferenceAnalysis.providedBy(obj):
+            return True
+        return False
 
     def lookup_schema_field(self, obj, fieldname):
         """Lookup  a schema field by name
