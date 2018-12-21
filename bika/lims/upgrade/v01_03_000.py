@@ -481,11 +481,14 @@ def update_workflows(portal):
     # Fix cancelled analyses inconsistencies
     fix_cancelled_analyses_inconsistencies(portal)
 
+    # Decouple analysis requests from samples
+    decouple_analysisrequests_from_sample(portal)
+
     # Fix cancelled analysis requests inconsistencies
     decouple_analysis_requests_from_cancellation_workflow(portal)
 
-    # Decouple analysis requests from samples
-    decouple_analysisrequests_from_sample(portal)
+    # Fix Analysis Requests in sampled status
+    fix_analysisrequests_in_sampled_status(portal)
 
     # Update role mappings
     update_role_mappings(portal, rm_queries)
@@ -1207,3 +1210,21 @@ def decouple_analysisrequests_from_sample(portal):
     logger.info("Removing sample workflow ...")
     del_index(portal, CATALOG_ANALYSIS_LISTING, "getSamplePartitionUID")
     del_metadata(portal, CATALOG_ANALYSIS_LISTING, "getSamplePartitionID")
+
+
+def fix_analysisrequests_in_sampled_status(portal):
+    logger.info("Resolving status 'sample' from Analysis Requests ...")
+    wf_id = "bika_ar_workflow"
+    wf_tool = api.get_tool("portal_workflow")
+    workflow = wf_tool.getWorkflowById(wf_id)
+    query = dict(portal_type="AnalysisRequest", review_state="sampled")
+    brains = api.search(query, CATALOG_ANALYSIS_REQUEST_LISTING)
+    total = len(brains)
+    for num, brain in enumerate(brains):
+        if num % 100 == 0:
+            logger.info("Resolving state to 'sample_due': {}/{}"
+                        .format(num, total))
+        analysis_request = api.get_object(brain)
+        changeWorkflowState(analysis_request, wf_id, "sample_due")
+        workflow.updateRoleMappingsFor(analysis_request)
+        analysis_request.reindexObject(idxs=["review_state"])

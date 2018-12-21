@@ -225,7 +225,6 @@ class AnalysisRequestsView(BikaListingView):
                         "sample_registered",
                         "scheduled_sampling",
                         "to_be_sampled",
-                        "sampled",
                         "sample_due",
                         "sample_received",
                         "attachment_due",
