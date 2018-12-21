@@ -160,6 +160,8 @@ The new analysis is a copy of retracted one:
     True
     >>> retest.getRetestOf() == reference
     True
+    >>> reference.getRetest() == retest
+    True
     >>> retest.getAnalysisService() == reference.getAnalysisService()
     True
 
