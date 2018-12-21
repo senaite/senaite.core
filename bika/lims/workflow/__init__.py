@@ -283,17 +283,29 @@ def isActive(instance):
     return api.is_active(instance)
 
 
-def getReviewHistoryActionsList(instance):
-    """Returns a list with the actions performed for the instance, from oldest
-    to newest"""
-    review_history = getReviewHistory(instance)
-    review_history.reverse()
-    actions = [event['action'] for event in review_history]
-    return actions
+def getReviewHistoryActionsList(instance, reverse=False):
+    """Returns a list with the actions performed to the instance
+    """
+    review_history = getReviewHistory(instance, reverse=reverse)
+    return map(lambda event: event["action"], review_history)
 
 
-def getReviewHistory(instance):
-    """Returns the review history for the instance in reverse order
+def get_prev_status_from_history(instance, status=None):
+    """Returns the previous status of the object. If status is set, returns the
+    previous status before the object reached the status passed in.
+    If instance has reached the status passed in more than once, only the last
+    one is considered.
+    """
+    target = status or api.get_workflow_status_of(instance)
+    history = getReviewHistory(instance, reverse=True)
+    history = map(lambda event: event["review_state"], history)
+    if target not in history or history.index(target) == len(history)-1:
+        return None
+    return history[history.index(target)+1]
+
+
+def getReviewHistory(instance, reverse=True):
+    """Returns the review history for the instance
     :returns: the list of historic events as dicts
     """
     review_history = []
@@ -303,8 +315,9 @@ def getReviewHistory(instance):
     except WorkflowException:
         logger.error("Unable to retrieve review history from {}:{}"
                      .format(instance.portal_type, instance.getId()))
-    # invert the list, so we always see the most recent matching event
-    review_history.reverse()
+    if reverse:
+        # invert the list, so we always see the most recent matching event
+        review_history.reverse()
     return review_history
 
 def getCurrentState(obj, stateflowid='review_state'):

@@ -8,7 +8,6 @@
 from bika.lims import api
 from bika.lims.workflow import getCurrentState
 from bika.lims.workflow import isActive
-from bika.lims.workflow import isBasicTransitionAllowed
 from bika.lims.workflow import isTransitionAllowed
 
 # States to be omitted in regular transitions
@@ -32,14 +31,7 @@ def schedule_sampling(obj):
     - if no date and samples have been defined
       and "sampling schedule" checkbox is set in bika_setup
     """
-    if obj.bika_setup.getScheduleSamplingEnabled() and \
-            isBasicTransitionAllowed(obj):
-        return True
-    return False
-
-
-def receive(obj):
-    return isBasicTransitionAllowed(obj)
+    return obj.bika_setup.getScheduleSamplingEnabled()
 
 
 def guard_create_partitions(analysis_request):
@@ -48,9 +40,6 @@ def guard_create_partitions(analysis_request):
     """
     if not analysis_request.bika_setup.getShowPartitions():
         # If partitions are disabled in Setup, return False
-        return False
-
-    if not isBasicTransitionAllowed(analysis_request):
         return False
 
     if analysis_request.isPartition():
@@ -114,9 +103,6 @@ def prepublish(obj):
     provisional report, also if results are not yet definitive.
     :returns: true or false
     """
-    if not isBasicTransitionAllowed(obj):
-        return False
-
     if isTransitionAllowed(obj, 'publish'):
         return False
 
@@ -135,17 +121,6 @@ def prepublish(obj):
     # verified yet. In this situation, it doesn't make sense to publish a
     # provisional results reports without a single result to display
     return False
-
-
-def guard_publish(analysis_request):
-    """Returns True if 'publish' transition can be applied to the Analysis
-    Request passed in. Returns true if the Analysis Request is active (not in
-    a cancelled/inactive state). As long as 'publish' transition, in accordance
-    with its DC workflow can only be performed if its previous state is
-    verified or published, there is no need of additional validations.
-    :returns: true or false
-    """
-    return isBasicTransitionAllowed(analysis_request)
 
 
 def guard_rollback_to_receive(analysis_request):
@@ -174,10 +149,11 @@ def guard_cancel(analysis_request):
         if not isTransitionAllowed(partition, "cancel"):
             return False
 
-    # Look through analyses
-    for analysis in analysis_request.getAnalyses():
-        analysis_object = api.get_object(analysis)
-        if api.get_workflow_status_of(analysis_object) != "unassigned":
+    # Look through analyses. We've checked the partitions already, so there is
+    # no need to look through analyses from partitions again, but through the
+    # analyses directly bound to the current Analysis Request.
+    for analysis in analysis_request.objectValues("Analysis"):
+        if api.get_workflow_status_of(analysis) != "unassigned":
             return False
 
     return True
@@ -186,7 +162,11 @@ def guard_cancel(analysis_request):
 def guard_reinstate(analysis_request):
     """Returns whether 'reinstate" transition can be performed or not. Returns
     True only if this is not a partition or the parent analysis request can be
-    reinstated
+    reinstated or is not in a cancelled state
     """
     parent = analysis_request.getParentAnalysisRequest()
-    return not parent or isTransitionAllowed(parent, "reinstate")
+    if not parent:
+        return True
+    if api.get_workflow_status_of(parent) != "cancelled":
+        return True
+    return isTransitionAllowed(parent, "reinstate")

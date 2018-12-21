@@ -5,9 +5,13 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
+from bika.lims import api
+from bika.lims.utils import changeWorkflowState
 from bika.lims.utils.analysisrequest import create_retest
-from bika.lims.workflow import doActionFor
+from bika.lims.workflow import doActionFor, getReviewHistoryActionsList, \
+    get_prev_status_from_history
 from bika.lims.workflow import getCurrentState
+from bika.lims.workflow.analysisrequest import AR_WORKFLOW_ID
 
 
 def _promote_transition(obj, transition_id):
@@ -229,17 +233,20 @@ def after_reinstate(analysis_request):
     passed in is performed. Reinstates all parent analysis requests, as well as
     the contained analyses
     """
-    # TODO Workflow - AR - Remove after Sample removal
-    _promote_transition(analysis_request, "reinstate")
-
-    # Promote to parent Analysis Request
-    parent_ar = analysis_request.getParentAnalysisRequest()
-    if parent_ar:
-        doActionFor(parent_ar, "reinstate")
+    # Cascade to partitions
+    for part in analysis_request.getDescendants(all_descendants=False):
+        doActionFor(part, "reinstate")
 
     # Cascade to analyses
-    for analysis in analysis_request.getAnalyses(full_objects=True):
+    for analysis in analysis_request.objectValues("Analysis"):
         doActionFor(analysis, 'reinstate')
+
+    # Force the transition to previous state before the request was cancelled
+    prev_status = get_prev_status_from_history(analysis_request, "cancelled")
+    changeWorkflowState(analysis_request, AR_WORKFLOW_ID, prev_status,
+                        action="reinstate",
+                        actor=api.get_current_user().getId())
+    analysis_request.reindexObject()
 
 
 def after_cancel(analysis_request):
@@ -253,9 +260,11 @@ def after_cancel(analysis_request):
     for part in analysis_request.getDescendants(all_descendants=False):
         doActionFor(part, "cancel")
 
-    # Cascade to analyses
-    for analysis in analysis_request.getAnalyses(full_objects=True):
-        doActionFor(analysis, 'cancel')
+    # Cascade to analyses. We've cascaded to partitions already, so there is
+    # no need to cascade to analyses from partitions again, but through the
+    # analyses directly bound to the current Analysis Request.
+    for analysis in analysis_request.objectValues("Analysis"):
+        doActionFor(analysis, "cancel")
 
 
 def after_rollback_to_receive(analysis_request):

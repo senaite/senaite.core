@@ -34,7 +34,7 @@ from bika.lims.config import PROJECTNAME
 from bika.lims.content.analysisspec import ResultsRangeDict
 from bika.lims.content.bikaschema import BikaSchema
 # Bika Interfaces
-from bika.lims.interfaces import IAnalysisRequest
+from bika.lims.interfaces import IAnalysisRequest, ICancellable
 # Bika Permissions
 from bika.lims.permissions import EditARContact
 from bika.lims.permissions import ManageInvoices
@@ -1796,7 +1796,7 @@ schema.moveField('ResultsInterpretationDepts', pos='bottom')
 
 
 class AnalysisRequest(BaseFolder):
-    implements(IAnalysisRequest)
+    implements(IAnalysisRequest, ICancellable)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
@@ -2756,10 +2756,6 @@ class AnalysisRequest(BaseFolder):
     @security.public
     def guard_assign_transition(self):
         return guards.assign(self)
-
-    @security.public
-    def guard_receive_transition(self):
-        return guards.receive(self)
 
     @security.public
     def guard_schedule_sampling_transition(self):

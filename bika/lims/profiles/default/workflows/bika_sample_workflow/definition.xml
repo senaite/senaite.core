@@ -568,7 +568,6 @@
   <transition transition_id="sample" title="Sample" new_state="sampled" trigger="USER" before_script="" after_script="" i18n:attributes="title">
     <guard>
       <guard-permission>BIKA: Sample Sample</guard-permission>
-      <guard-expression>python:here.guard_sample_transition()</guard-expression>
     </guard>
   </transition>
 

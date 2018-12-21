@@ -108,6 +108,12 @@ ACTIONS_TO_INDEXES = {
         ],
         "verify": [
             "getDateVerified",
-        ]
+        ],
+        "cancel": [
+            "cancellation_state",
+        ],
+        "reinstate": [
+            "cancellation_state",
+        ],
     }
 }

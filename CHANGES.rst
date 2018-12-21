@@ -22,6 +22,7 @@ Changelog
 
 **Changed**
 
+- #1176 Unbind `cancellation_workflow` from AnalysisRequest content type
 - #1173 Improve Resultsinterpretation Form
 - #1161 Listing: Transposed worksheet improvements
 - #1150 Completeness of not yet published Analysis Requests is not 100%
