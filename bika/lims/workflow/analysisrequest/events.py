@@ -8,238 +8,91 @@
 from bika.lims import api
 from bika.lims.utils import changeWorkflowState
 from bika.lims.utils.analysisrequest import create_retest
-from bika.lims.workflow import doActionFor, getReviewHistoryActionsList, \
-    get_prev_status_from_history
-from bika.lims.workflow import getCurrentState
-from bika.lims.workflow.analysisrequest import AR_WORKFLOW_ID
+from bika.lims.workflow import get_prev_status_from_history
+from bika.lims.workflow.analysisrequest import AR_WORKFLOW_ID, \
+    do_action_to_descendants, do_action_to_analyses, do_action_to_ancestors
 
 
-def _promote_transition(obj, transition_id):
-    """Promotes the transition passed in to the object's parent
-    :param obj: Analysis Request for which the transition has to be promoted
-    :param transition_id: Unique id of the transition
-    """
-    sample = obj.getSample()
-    if sample:
-        doActionFor(sample, transition_id)
-
-
-def after_no_sampling_workflow(obj):
-    """Method triggered after a 'no_sampling_workflow' transition for the
-    Analysis Request passed inis performed. Performs the same transition to the
-    parent's Sample.
-    This function is called automatically by
-    bika.lims.workflow.AfterTransitionEventHandler
-    :param obj: Analysis Request affected by the transition
-    :type obj: AnalysisRequest
-    """
-
-    # Do note that the 'no_sampling' transition for Sample already transitions
-    # all the analyses associated to all the sample partitions, so there
-    # is no need to transition neither the analyses nor partitions here
-    _promote_transition(obj, 'no_sampling_workflow')
-
-
-def after_sampling_workflow(obj):
-    """Method triggered after a 'sampling_workflow' transition for the
-    Analysis Request passed in is performed. Performs the same transition to
-    the parent's Sample.
-    This function is called automatically by
-    bika.lims.workflow.AfterTransitionEventHandler
-    :param obj: Analysis Request affected by the transition
-    :type obj: AnalysisRequest
-    """
-
-    # Do note that the 'sampling' transition for Sample already transitions
-    # all the analyses associated to all the sample partitions, so there
-    # is no need to transition neither the analyses nor partitions here
-    _promote_transition(obj, 'sampling_workflow')
-
-
-def after_preserve(obj):
-    """Method triggered after a 'preserve' transition for the Analysis Request
-    passed in is performed. Promotes the same transition to parent's Sample.
-    This function is called automatically by
-    bika.lims.workflow.AfterTransitionEventHandler
-    :param obj: Analysis Request affected by the transition
-    :type obj: AnalysisRequest
-    """
-
-    # Do note that the 'preserve' transition for Sample already transitions
-    # all the analyses associated to all the sample partitions, so there
-    # is no need to transition neither the analyses nor partitions here
-    _promote_transition(obj, 'preserve')
-
-
-def after_schedule_sampling(obj):
-    """Method triggered after a 'schedule_sampling' transition for the Analysis
-    Request passed in is performed. Promotes the same transition to parent's
-    Sample.
-    This function is called automatically by
-    bika.lims.workflow.AfterTransitionEventHandler
-    :param obj: Analysis Request affected by the transition
-    :type obj: AnalysisRequest
-    """
-    _promote_transition(obj, 'schedule_sampling')
-
-
-def after_sample(obj):
-    """Method triggered after a 'sample' transition for the Analysis Request
-    passed in is performed. Promotes sample transition to parent's sample
-    bika.lims.workflow.AfterTransitionEventHandler
-    :param obj: Analysis Request affected by the transition
-    :type obj: AnalysisRequest
-    """
-    # Do note that the 'sample' transition for Sample already transitions
-    # all the analyses associated to all the sample partitions, so there
-    # is no need to transition neither the analyses nor partitions here
-    _promote_transition(obj, 'sample')
-
-
-def after_receive(obj):
-    """Method triggered after a 'receive' transition for the Analysis Request
-    passed in is performed. Responsible of triggering cascade actions such as
-    transitioning the container (sample), as well as associated analyses.
-    This function is called automatically by
-    bika.lims.workflow.AfterTransitionEventHandler
-    :param obj: Analysis Request affected by the transition
-    :type obj: AnalysisRequest
-    """
-    # Do note that the 'sample' transition for Sample already transitions
-    # all the analyses associated to all the sample partitions, so there
-    # is no need to transition neither the analyses nor partitions here
-    _promote_transition(obj, 'receive')
-
-    # Reindex the analyses this Analysis Request contains
-    for analysis in obj.getAnalyses(full_objects=True):
-        analysis.reindexObject()
-
-def after_reject(obj):
+def after_reject(analysis_request):
     """Method triggered after a 'reject' transition for the Analysis Request
-    passed in is performed. Transitions and sets the rejection reasons to the
-    parent Sample. Also transitions the analyses assigned to the AR
-    bika.lims.workflow.AfterTransitionEventHandler
-    :param obj: Analysis Request affected by the transition
-    :type obj: AnalysisRequest
+    passed in is performed. Cascades the transition to descendants (partitions)
+    and analyses as well. If "notify on rejection" setting is enabled, sends a
+    notification to the client contact.
     """
-    sample = obj.getSample()
-    if not sample:
+    do_action_to_descendants(analysis_request, "reject")
+    do_action_to_analyses(analysis_request, "reject")
+
+    # TODO Workflow - AnalysisRequest - Revisit rejection notification
+    if not analysis_request.bika_setup.getNotifyOnRejection():
         return
 
-    if getCurrentState(sample) != 'rejected':
-        doActionFor(sample, 'reject')
-        reasons = obj.getRejectionReasons()
-        sample.setRejectionReasons(reasons)
+    ancestor = analysis_request.getParentAnalysisRequest()
+    if ancestor and api.get_workflow_status_of(ancestor) == "rejected":
+        # No need to notify, notification done by the ancestor
+        return
 
-    # Deactivate all analyses from this Analysis Request
-    ans = obj.getAnalyses(full_objects=True)
-    for analysis in ans:
-        doActionFor(analysis, 'reject')
-
-    if obj.bika_setup.getNotifyOnRejection():
-        # Import here to brake circular importing somewhere
-        from bika.lims.utils.analysisrequest import notify_rejection
-        # Notify the Client about the Rejection.
-        notify_rejection(obj)
+    # Notify the Client about the Rejection.
+    from bika.lims.utils.analysisrequest import notify_rejection
+    notify_rejection(analysis_request)
 
 
-def after_retract(obj):
+def after_retract(analysis_request):
     """Method triggered after a 'retract' transition for the Analysis Request
-    passed in is performed. Transitions and sets the analyses of the Analyses
-    Request to retracted.
-    :param obj: Analysis Request affected by the transition
-    :type obj: AnalysisRequest
+    passed in is performed. Cascades the transition to descendants (partitions)
+    and analyses as well.
     """
-    ans = obj.getAnalyses(full_objects=True)
-    for analysis in ans:
-        doActionFor(analysis, 'retract')
+    do_action_to_descendants(analysis_request, "retract")
+    do_action_to_analyses(analysis_request, "retract")
 
 
 def after_invalidate(obj):
     """Function triggered after 'invalidate' transition for the Analysis
     Request passed in is performed. Creates a retest
-    :param obj: Analysis Request affected by the transition
-    :type obj: AnalysisRequest
     """
     create_retest(obj)
 
 
-def after_attach(obj):
-    """Method triggered after an 'attach' transition for the Analysis Request
-    passed in is performed.
-    This function is called automatically by
-    bika.lims.workflow.AfterTransitionEventHandler
-    :param obj: Analysis Request affected by the transition
-    :type obj: AnalysisRequest
+def after_submit(analysis_request):
+    """Function called after a 'submit' transition is triggered. Promotes the
+    submission of ancestors and descendants (partitions).
     """
-    # Don't cascade. Shouldn't be attaching ARs for now (if ever).
-    pass
+    # This transition is not meant to be triggered manually by the user, rather
+    # promoted by analyses. Hence, there is no need to cascade the transition
+    # to the analyses the analysis request contains.
+    do_action_to_ancestors(analysis_request, "submit")
+    do_action_to_descendants(analysis_request, "submit")
 
 
-def after_submit(obj):
-    """Function called after a 'submit' transition is triggered
-    """
-    # Promote to parent AR
-    parent_ar = obj.getParentAnalysisRequest()
-    if parent_ar:
-        doActionFor(parent_ar, "submit")
-
-    # Cascade to partitions
-    parts = obj.getDescendants(all_descendants=False)
-    for part in parts:
-        doActionFor(part, "submit")
-
-
-def after_verify(obj):
+def after_verify(analysis_request):
     """Method triggered after a 'verify' transition for the Analysis Request
-    passed in is performed. Responsible of triggering cascade actions to
-    associated analyses.
-    This function is called automatically by
-    bika.lims.workflow.AfterTransitionEventHandler
-    :param obj: Analysis Request affected by the transition
-    :type obj: AnalysisRequest
+    passed in is performed. Promotes the 'verify' transition to ancestors,
+    descendants and to the analyses that belong to the analysis request.
     """
-    # Promote to parent AR
-    parent_ar = obj.getParentAnalysisRequest()
-    if parent_ar:
-        doActionFor(parent_ar, "verify")
-
-    # Cascade to partitions
-    parts = obj.getDescendants(all_descendants=False)
-    for part in parts:
-        doActionFor(part, "verify")
+    # This transition is not meant to be triggered manually by the user, rather
+    # promoted by analyses. Hence, there is no need to cascade the transition
+    # to the analyses the analysis request contains.
+    do_action_to_ancestors(analysis_request, "verify")
+    do_action_to_descendants(analysis_request, "verify")
 
 
 def after_publish(analysis_request):
     """Method triggered after an 'publish' transition for the Analysis Request
-    passed in is performed. Performs the 'publish' transition to children.
-    This function is called automatically by
-    bika.lims.workflow.AfterTransitionEventHandler
-    :param obj: Analysis Request affected by the transition
-    :type obj: AnalysisRequest
+    passed in is performed. Performs the 'publish' transition Publishes the
+    descendant partitions and all analyses associated to the analysis request
+    as well.
     """
-    # Transition the children
-    for analysis in analysis_request.getAnalyses(full_objects=True):
-        doActionFor(analysis, 'publish')
-
-    # Cascade to partitions
-    parts = analysis_request.getDescendants(all_descendants=False)
-    for part in parts:
-        doActionFor(part, "publish")
+    do_action_to_descendants(analysis_request, "cancel")
+    do_action_to_analyses(analysis_request, "cancel")
 
 
 def after_reinstate(analysis_request):
     """Method triggered after a 'reinstate' transition for the Analysis Request
-    passed in is performed. Reinstates all parent analysis requests, as well as
-    the contained analyses
+    passed in is performed. Sets its status to the last status before it was
+    cancelled. Reinstates the descendant partitions and all the analyses
+    associated to the analysis request as well.
     """
-    # Cascade to partitions
-    for part in analysis_request.getDescendants(all_descendants=False):
-        doActionFor(part, "reinstate")
-
-    # Cascade to analyses
-    for analysis in analysis_request.objectValues("Analysis"):
-        doActionFor(analysis, 'reinstate')
+    do_action_to_descendants(analysis_request, "cancel")
+    do_action_to_analyses(analysis_request, "cancel")
 
     # Force the transition to previous state before the request was cancelled
     prev_status = get_prev_status_from_history(analysis_request, "cancelled")
@@ -253,21 +106,6 @@ def after_cancel(analysis_request):
     """Method triggered after a 'cancel' transition for the Analysis Request
     passed in is performed. Cascades this transition to its analyses and
     partitions.
-    :param obj: Analysis Request affected by the transition
-    :type obj: AnalysisRequest
     """
-    # Cascade to partitions
-    for part in analysis_request.getDescendants(all_descendants=False):
-        doActionFor(part, "cancel")
-
-    # Cascade to analyses. We've cascaded to partitions already, so there is
-    # no need to cascade to analyses from partitions again, but through the
-    # analyses directly bound to the current Analysis Request.
-    for analysis in analysis_request.objectValues("Analysis"):
-        doActionFor(analysis, "cancel")
-
-
-def after_rollback_to_receive(analysis_request):
-    """Function triggered after rollback_to_receive transition finishes
-    """
-    pass
+    do_action_to_descendants(analysis_request, "cancel")
+    do_action_to_analyses(analysis_request, "cancel")
