@@ -202,3 +202,65 @@ And the Worksheet has been transitioned to `open`:
 
     >>> api.get_workflow_status_of(worksheet)
     'open'
+
+Retract transition when reference analyses from same Reference Sample are added
+===============================================================================
+
+When analyses from same Reference Sample are added in a worksheet, the
+worksheet allocates different slots for them, although each of the slots keeps
+the container the analysis belongs to (in this case the same Reference Sample).
+Hence, when retracting a reference analysis, the retest must be added in the
+same position as the original, regardless of how many reference analyses from
+same reference sample exist.
+Further information: https://github.com/senaite/senaite.core/pull/1179
+
+Create an Analysis Request:
+
+    >>> ar = new_ar([Cu])
+    >>> worksheet = api.create(portal.worksheets, "Worksheet")
+    ... for analysis in ar.getAnalyses(full_objects=True):
+    ...     worksheet.addAnalysis(analysis)
+
+Add same reference twice:
+
+    >>> worksheet.addReferenceAnalyses(control_sample, [api.get_uid(Cu)])
+    >>> worksheet.addReferenceAnalyses(control_sample, [api.get_uid(Cu)])
+
+Get the reference analyses and their positions:
+
+    >>> references = worksheet.getReferenceAnalyses()
+    >>> ref_1 = references[0]
+    >>> ref_2 = references[1]
+    >>> ref_1 != ref_2
+    True
+    >>> ref_1_pos = worksheet.get_slot_position_for(ref_1)
+    >>> api.is_floatable(ref_1_pos)
+    True
+    >>> ref_2_pos = worksheet.get_slot_position_for(ref_2)
+    >>> api.is_floatable(ref_2_pos)
+    True
+    >>> ref_1_pos != ref_2_pos
+    True
+
+Submit both:
+
+    >>> ref_1.setResult(12)
+    >>> ref_2.setResult(13)
+    >>> try_transition(ref_1, "submit", "to_be_verified")
+    True
+    >>> try_transition(ref_2, "submit", "to_be_verified")
+    True
+
+Retract the first reference analysis. The retest has been added in same slot:
+
+    >>> try_transition(ref_1, "retract", "retracted")
+    True
+    >>> worksheet.get_slot_position(ref_1.getRetest()) == ref_1_pos
+    True
+
+And the same if we retract the second reference analysis:
+
+    >>> try_transition(ref_2, "retract", "retracted")
+    True
+    >>> worksheet.get_slot_position(ref_2.getRetest()) == ref_2_pos
+    True

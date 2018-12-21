@@ -579,7 +579,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         if not IReferenceSample.providedBy(reference):
             return -1
 
-        occupied = self.get_slot_positions(type='all')
+        occupied = self.get_slot_positions(type='all') or [0]
         wst = self.getWorksheetTemplate()
         if not wst:
             # No worksheet template assigned, add a new slot at the end of the
