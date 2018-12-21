@@ -251,7 +251,6 @@ Retract the first reference analysis. The retest has been added in same slot:
     >>> try_transition(ref_1, "retract", "retracted")
     True
     >>> retest_1 = ref_1.getRetest()
-    >>> import pdb;pdb.set_trace()
     >>> worksheet.get_slot_position_for(retest_1)
     1
 
