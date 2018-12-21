@@ -484,6 +484,9 @@ def update_workflows(portal):
     # Fix cancelled analysis requests inconsistencies
     decouple_analysis_requests_from_cancellation_workflow(portal)
 
+    # Decouple analysis requests from samples
+    decouple_analysisrequests_from_sample(portal)
+
     # Update role mappings
     update_role_mappings(portal, rm_queries)
 
@@ -1198,3 +1201,9 @@ def decouple_analysis_requests_from_cancellation_workflow(portal):
         workflow.updateRoleMappingsFor(analysis_request)
         # Reindex
         analysis_request.reindexObject(idxs=["cancellation_state"])
+
+
+def decouple_analysisrequests_from_sample(portal):
+    logger.info("Removing sample workflow ...")
+    del_index(portal, CATALOG_ANALYSIS_LISTING, "getSamplePartitionUID")
+    del_metadata(portal, CATALOG_ANALYSIS_LISTING, "getSamplePartitionID")

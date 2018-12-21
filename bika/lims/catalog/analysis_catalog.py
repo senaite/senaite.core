@@ -38,7 +38,6 @@ _indexes_dict = {
     'getServiceUID': 'FieldIndex',
     'getCategoryUID': 'FieldIndex',
     'getPointOfCapture': 'FieldIndex',
-    'getSamplePartitionUID': 'FieldIndex',
     'getSampleTypeUID': 'FieldIndex',
     'getSamplePointUID': 'FieldIndex',
     'getReferenceAnalysesGroupID': 'FieldIndex',

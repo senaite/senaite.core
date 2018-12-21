@@ -255,12 +255,6 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
         return self.getDateReceived()
 
     @security.public
-    def getSamplePartitionUID(self):
-        part = self.getSamplePartition()
-        if part:
-            return part.UID()
-
-    @security.public
     def getSamplePointUID(self):
         """Used to populate catalog values.
         """
