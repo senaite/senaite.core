@@ -809,7 +809,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             "cancellation_state": "active",
             "sort_on": "getPrioritySortkey"
         }
-
         # Filter analyses their Analysis Requests have been received
         analyses = bac(query)
 
