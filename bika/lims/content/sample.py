@@ -22,7 +22,6 @@ from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import ISample
 from bika.lims.permissions import SampleSample
 from bika.lims.permissions import ScheduleSampling
-from bika.lims.workflow.sample import guards
 from Products.Archetypes import atapi
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
