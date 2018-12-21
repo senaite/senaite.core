@@ -82,8 +82,8 @@ def after_publish(analysis_request):
     descendant partitions and all analyses associated to the analysis request
     as well.
     """
-    do_action_to_descendants(analysis_request, "cancel")
-    do_action_to_analyses(analysis_request, "cancel")
+    do_action_to_descendants(analysis_request, "publish")
+    do_action_to_analyses(analysis_request, "publish")
 
 
 def after_reinstate(analysis_request):
@@ -92,8 +92,8 @@ def after_reinstate(analysis_request):
     cancelled. Reinstates the descendant partitions and all the analyses
     associated to the analysis request as well.
     """
-    do_action_to_descendants(analysis_request, "cancel")
-    do_action_to_analyses(analysis_request, "cancel")
+    do_action_to_descendants(analysis_request, "reinstate")
+    do_action_to_analyses(analysis_request, "reinstate")
 
     # Force the transition to previous state before the request was cancelled
     prev_status = get_prev_status_from_history(analysis_request, "cancelled")
