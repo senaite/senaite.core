@@ -98,6 +98,10 @@ ACTIONS_TO_INDEXES = {
     },
 
     "AnalysisRequest": {
+        "receive": {
+            "getDueDate",
+            "getDateReceived",
+        },
         "rollback_to_receive": [
             "assigned_state",
             "getDueDate",

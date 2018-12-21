@@ -5,6 +5,7 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
+from DateTime import DateTime
 from bika.lims import api
 from bika.lims.utils import changeWorkflowState
 from bika.lims.utils.analysisrequest import create_retest
@@ -109,3 +110,9 @@ def after_cancel(analysis_request):
     """
     do_action_to_descendants(analysis_request, "cancel")
     do_action_to_analyses(analysis_request, "cancel")
+
+def after_receive(analysis_request):
+    """Method triggered after "receive" transition for the Analysis Request
+    passed in is performed
+    """
+    analysis_request.setDateReceived(DateTime())
