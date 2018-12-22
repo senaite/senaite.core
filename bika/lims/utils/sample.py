@@ -13,10 +13,10 @@ from Products.CMFPlone.utils import _createObjectByType
 def create_sample(client, request, values):
     """Creates a sample for the passed in client
     """
-    # Retrieve the required tools
-    uc = getToolByName(client, 'uid_catalog')
     # Create sample or refer to existing for secondary analysis request
     if values.get('Sample_uid', ''):
+        # Retrieve the required tools
+        uc = getToolByName(client, 'uid_catalog')
         sample = uc(UID=values['Sample'])[0].getObject()
     else:
         sample = _createObjectByType('Sample', client, tmpID())
