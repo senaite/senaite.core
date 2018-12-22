@@ -1760,50 +1760,6 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                 msg = _("Field '{}' is required".format(field))
                 fielderrors[fieldname] = msg
 
-            # Selected Analysis UIDs
-            selected_analysis_uids = record.get("Analyses", [])
-
-            # Partitions defined in Template
-            template_parts = {}
-            template_uid = record.get("Template_uid")
-            if template_uid:
-                template = api.get_object_by_uid(template_uid)
-                for part in template.getPartitions():
-                    # remember the part setup by part_id
-                    template_parts[part.get("part_id")] = part
-
-            # The final data structure should look like this:
-            # [{"part_id": "...", "container_uid": "...", "services": []}]
-            partitions = {}
-            parts = record.pop("Parts", [])
-            for part in parts:
-                part_id = part.get("part")
-                service_uid = part.get("uid")
-                # skip unselected Services
-                if service_uid not in selected_analysis_uids:
-                    continue
-                # Container UID for this part
-                container_uids = []
-                template_part = template_parts.get(part_id)
-                if template_part:
-                    container_uid = template_part.get("container_uid")
-                    if container_uid:
-                        container_uids.append(container_uid)
-
-                # remember the part id and the services
-                if part_id not in partitions:
-                    partitions[part_id] = {
-                        "part_id": part_id,
-                        "container_uid": container_uids,
-                        "services": [service_uid],
-                    }
-                else:
-                    partitions[part_id]["services"].append(service_uid)
-
-            # Inject the Partitions to the record (will be picked up during the
-            # AR creation)
-            record["Partitions"] = partitions.values()
-
             # Process valid record
             valid_record = dict()
             for fieldname, fieldvalue in record.iteritems():
