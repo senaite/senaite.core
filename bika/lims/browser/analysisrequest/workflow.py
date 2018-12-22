@@ -26,7 +26,7 @@ from bika.lims.utils import encode_header
 from bika.lims.utils import isActive
 from bika.lims.utils import t
 from bika.lims.utils import tmpID
-from bika.lims.workflow import getCurrentState
+from bika.lims.workflow import getCurrentState, doActionFor
 from bika.lims.workflow import wasTransitionPerformed
 from email.Utils import formataddr
 
@@ -120,123 +120,38 @@ class AnalysisRequestWorkflowAction(AnalysesWorkflowAction):
                         mapping={'error': safe_unicode(msg)})
             self.context.plone_utils.addPortalMessage(message, 'warning')
 
-    def workflow_action_save_partitions_button(self):
-        form = self.request.form
-        # Sample Partitions or AR Manage Analyses: save Partition Table
-        sample = self.context.portal_type == 'Sample' and self.context or\
-            self.context.getSample()
-        part_prefix = sample.getId() + "-P"
-        nr_existing = len(sample.objectIds())
-        nr_parts = len(form['PartTitle'][0])
-        # add missing parts
-        if nr_parts > nr_existing:
-            for i in range(nr_parts - nr_existing):
-                part = _createObjectByType("SamplePartition", sample, tmpID())
-                part.processForm()
-        # remove excess parts
-        if nr_existing > nr_parts:
-            for i in range(nr_existing - nr_parts):
-                part = sample['%s%s' % (part_prefix, nr_existing - i)]
-                analyses = part.getAnalyses()
-                for a in analyses:
-                    a.setSamplePartition(None)
-                sample.manage_delObjects(['%s%s' % (part_prefix, nr_existing - i), ])
-        # modify part container/preservation
-        for part_uid, part_id in form['PartTitle'][0].items():
-            part = sample["%s%s" % (part_prefix, part_id.split(part_prefix)[1])]
-            part.edit(
-                Container=form['getContainer'][0][part_uid],
-                Preservation=form['getPreservation'][0][part_uid],
-            )
-            part.reindexObject()
-            # Adding the Security Seal Intact checkbox's value to the container object
-            container_uid = form['getContainer'][0][part_uid]
-            uc = getToolByName(self.context, 'uid_catalog')
-            cbr = uc(UID=container_uid)
-            if cbr and len(cbr) > 0:
-                container_obj = cbr[0].getObject()
-            else:
-                continue
-            value = form.get('setSecuritySealIntact', {}).get(part_uid, '') == 'on'
-            container_obj.setSecuritySealIntact(value)
-        objects = WorkflowAction._get_selected_items(self)
-        if not objects:
-            message = _("No items have been selected")
-            self.context.plone_utils.addPortalMessage(message, 'info')
-            if self.context.portal_type == 'Sample':
-                # in samples his table is on 'Partitions' tab
-                self.destination_url = self.context.absolute_url() +\
-                    "/partitions"
-            else:
-                # in ar context this table is on 'ManageAnalyses' tab
-                self.destination_url = self.context.absolute_url() +\
-                    "/analyses"
-            self.request.response.redirect(self.destination_url)
-
     def workflow_action_save_analyses_button(self):
         form = self.request.form
-        workflow = getToolByName(self.context, 'portal_workflow')
-        bsc = self.context.bika_setup_catalog
-        action, came_from = WorkflowAction._get_form_workflow_action(self)
         # AR Manage Analyses: save Analyses
         ar = self.context
-        sample = ar.getSample()
         objects = WorkflowAction._get_selected_items(self)
-        Analyses = objects.keys()
+        objects_uids = objects.keys()
         prices = form.get("Price", [None])[0]
 
         # Hidden analyses?
         # https://jira.bikalabs.com/browse/LIMS-1324
         outs = []
-        hiddenans = form.get('Hidden', {})
-        for uid in Analyses:
-            hidden = hiddenans.get(uid, '')
-            hidden = True if hidden == 'on' else False
-            outs.append({'uid':uid, 'hidden':hidden})
+        hidden_ans = form.get('Hidden', {})
+        for uid in objects.keys():
+            hidden = hidden_ans.get(uid, '') == "on" or False
+            outs.append({'uid': uid, 'hidden': hidden})
         ar.setAnalysisServicesSettings(outs)
 
         specs = {}
-        if form.get("min", None):
-            for service_uid in Analyses:
-                service = objects[service_uid]
-                keyword = service.getKeyword()
-                specs[service_uid] = {
+        for service_uid, service in objects.items():
+            keyword = service.getKeyword()
+            results_range = ResultsRangeDict(keyword=keyword, uid=service_uid)
+            if form.get("min", None):
+                results_range.update({
                     "min": form["min"][0][service_uid],
                     "max": form["max"][0][service_uid],
                     "warn_min": form["warn_min"][0][service_uid],
                     "warn_max": form["warn_max"][0][service_uid],
-                    "keyword": keyword,
-                    "uid": service_uid,
-                }
-        else:
-            for service_uid in Analyses:
-                service = objects[service_uid]
-                keyword = service.getKeyword()
-                specs[service_uid] = ResultsRangeDict(keyword=keyword,
-                                                      uid=service_uid)
-        new = ar.setAnalyses(Analyses, prices=prices, specs=specs.values())
-        # link analyses and partitions
-        # If Bika Setup > Analyses > 'Display individual sample
-        # partitions' is checked, no Partitions available.
-        # https://github.com/bikalabs/Bika-LIMS/issues/1030
-        if 'Partition' in form:
-            for service_uid, service in objects.items():
-                part_id = form['Partition'][0][service_uid]
-                part = sample[part_id]
-                analysis = ar[service.getKeyword()]
-                analysis.setSamplePartition(part)
-                analysis.reindexObject()
-                partans = part.getAnalyses()
-                partans.append(analysis)
-                part.setAnalyses(partans)
-                part.reindexObject()
+                })
+            specs[service_uid] = results_range
 
-        if new:
-            if wasTransitionPerformed(ar, 'to_be_verified'):
-                # Apply to AR only; we don't want this transition to cascade.
-                ar.REQUEST['workflow_skiplist'].append("retract all analyses")
-                workflow.doActionFor(ar, 'retract')
-                ar.REQUEST['workflow_skiplist'].remove("retract all analyses")
+        if ar.setAnalyses(objects_uids, prices=prices, specs=specs.values()):
+            doActionFor(ar, "rollback_to_receive")
 
         message = PMF("Changes saved.")
         self.context.plone_utils.addPortalMessage(message, 'info')
