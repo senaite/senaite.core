@@ -182,6 +182,7 @@ class ARAnalysesField(ObjectField):
                 worksheet.removeAnalysis(analysis)
 
             # Unset the partition reference
+            # TODO Remove in >v1.3.0 - This is kept for backwards-compatibility
             part = analysis.getSamplePartition()
             if part:
                 # From this partition, remove the reference to the current
