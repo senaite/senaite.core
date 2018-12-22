@@ -71,10 +71,6 @@ class AnalysisRequestAnalysesView(BikaListingView):
             ("Price", {
                 "title": _("Price"),
                 "sortable": False}),
-            ("Partition", {
-                "title": _("Partition"),
-                "sortable": False,
-                "type": "choices"}),
             ("warn_min", {
                 "title": _("Min warn")}),
             ("min", {
@@ -88,8 +84,6 @@ class AnalysisRequestAnalysesView(BikaListingView):
         columns = ["Title", "Unit", "Hidden", ]
         if self.show_prices():
             columns.append("Price")
-        if self.show_partitions():
-            columns.append("Partition")
         if self.show_ar_specs():
             columns.append("warn_min")
             columns.append("min")
@@ -128,13 +122,6 @@ class AnalysisRequestAnalysesView(BikaListingView):
         return setup.getShowPrices()
 
     @view.memoize
-    def show_partitions(self):
-        """Checks if partitions should be shown
-        """
-        setup = api.get_setup()
-        return setup.getShowPartitions()
-
-    @view.memoize
     def show_ar_specs(self):
         """Checks if AR specs should be shown or not
         """
@@ -149,21 +136,6 @@ class AnalysisRequestAnalysesView(BikaListingView):
         if spec:
             return dicts_to_dict(spec, "keyword")
         return ResultsRangeDict()
-
-    @view.memoize
-    def get_partitions(self):
-        """Get the partitions
-        """
-        sample = self.context.getSample()
-        return sample.objectValues("SamplePartition")
-
-    def get_partition(self, analysis):
-        """Get the partition of the Analysis
-        """
-        partition = analysis.getSamplePartition()
-        if not partition:
-            return self.get_partitions()[0]
-        return partition
 
     @view.memoize
     def get_currency_symbol(self):
@@ -188,7 +160,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
     def get_editable_columns(self, obj):
         """Return editable fields
         """
-        columns = ["Partition", "min", "max", "warn_min", "warn_max", "Hidden"]
+        columns = ["min", "max", "warn_min", "warn_max", "Hidden"]
         if not self.get_logged_in_client():
             columns.append("Price")
         return columns
@@ -224,12 +196,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
         if category not in self.categories:
             self.categories.append(category)
 
-        parts = filter(api.is_active, self.get_partitions())
-        partitions = map(lambda part: {
-            "ResultValue": part.Title(), "ResultText": part.getId()}, parts)
-
         keyword = obj.getKeyword()
-        partition = None
         if uid in self.analyses:
             analysis = self.analyses[uid]
             # Might differ from the service keyword
@@ -238,10 +205,6 @@ class AnalysisRequestAnalysesView(BikaListingView):
             item["disabled"] = not analysis.isOpen()
             # get the hidden status of the analysis
             hidden = analysis.getHidden()
-            # get the partition of the analysis
-            partition = self.get_partition(analysis)
-        else:
-            partition = self.get_partitions()[0]
 
         # get the specification of this object
         rr = self.get_results_range()
@@ -258,8 +221,6 @@ class AnalysisRequestAnalysesView(BikaListingView):
         item["warn_min"] = str(spec.get("warn_min", ""))
         item["warn_max"] = str(spec.get("warn_max", ""))
         item["Hidden"] = hidden
-        item["Partition"] = partition.getId()
-        item["choices"]["Partition"] = partitions
 
         # Append info link before the service
         # see: bika.lims.site.coffee for the attached event handler
