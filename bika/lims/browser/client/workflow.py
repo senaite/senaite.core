@@ -37,6 +37,7 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
         context = self.context
         context_url = context.absolute_url()
 
+        # TODO Workflow - AR + Sample - Revisit/remove all this crap
         # use came_from to decide which UI action was clicked.
         # "workflow_action" is the action name specified in the
         # portal_workflow transition url.
@@ -180,17 +181,7 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
                 else:
                     continue
 
-                for sp in sample.objectValues("SamplePartition"):
-                    if workflow.getInfoFor(sp, 'review_state') == 'to_be_preserved':
-                        sp.setDatePreserved(DatePreserved)
-                        sp.setPreserver(Preserver)
-                for sp in sample.objectValues("SamplePartition"):
-                    if workflow.getInfoFor(sp, 'review_state') == 'to_be_preserved':
-                        if Preserver and DatePreserved:
-                            doActionFor(sp, action)
-                            transitioned[sp.aq_parent.Title()] = sp.Title()
-                        else:
-                            not_transitioned.append(sp)
+                # TODO Workflow - Preservation - Set Date preserved + preserver
 
             if len(transitioned.keys()) > 1:
                 message = _('${items}: partitions are waiting to be received.',
@@ -200,14 +191,6 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
                             mapping={'item': ', '.join(transitioned.keys()),
                                      'part': ', '.join(transitioned.values()), })
             self.context.plone_utils.addPortalMessage(message, 'info')
-
-            # And then the sample itself
-            if Preserver and DatePreserved and not not_transitioned:
-                doActionFor(sample, action)
-                # message = _('${item} is waiting to be received.',
-                #            mapping = {'item': sample.Title()})
-                # message = t(message)
-                # self.context.plone_utils.addPortalMessage(message, 'info')
 
             self.destination_url = self.request.get_header(
                 "referer", self.context.absolute_url())
