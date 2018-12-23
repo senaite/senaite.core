@@ -307,7 +307,6 @@ class BikaGenerator(object):
         addIndex(bc, 'getDatePublished', 'DateIndex')
         addIndex(bc, 'getDateReceived', 'DateIndex')
         addIndex(bc, 'getDateSampled', 'DateIndex')
-        addIndex(bc, 'getDisposalDate', 'DateIndex')
         addIndex(bc, 'getDueDate', 'DateIndex')
         addIndex(bc, 'getExpiryDate', 'DateIndex')
         addIndex(bc, 'getInvoiced', 'FieldIndex')

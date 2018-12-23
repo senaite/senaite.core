@@ -7,6 +7,8 @@
 
 """Sample represents a physical sample submitted for testing
 """
+
+from datetime import timedelta
 from AccessControl import ClassSecurityInfo
 from bika.lims import bikaMessageFactory as _
 from bika.lims.api import get_object_by_uid
@@ -742,20 +744,24 @@ class Sample(BaseFolder, HistoryAwareMixin):
         return getUsers(self, ['Sampler', ])
 
     def disposal_date(self):
-        """ Calculate the disposal date by returning the latest
-            disposal date in this sample's partitions """
+        """Returns the date the retention period ends for this sample based on
+        the retention period from the Sample Type. If the sample hasn't been
+        collected yet, returns None
+        """
+        date_sampled = self.getDateSampled()
+        if not date_sampled:
+            return None
 
-        parts = self.objectValues("SamplePartition")
-        dates = []
-        for part in parts:
-            date = part.getDisposalDate()
-            if date:
-                dates.append(date)
-        if dates:
-            dis_date = dt2DT(max([DT2dt(date) for date in dates]))
-        else:
-            dis_date = None
-        return dis_date
+        # TODO Preservation - preservation's retention period has priority over
+        # sample type's preservation period
+
+        retention_period = self.getSampleType().getRetentionPeriod() or {}
+        retention_period_delta = timedelta(
+            days=int(retention_period.get("days", 0)),
+            hours=int(retention_period.get("hours", 0)),
+            minutes=int(retention_period.get("minutes", 0))
+        )
+        return dt2DT(DT2dt(date_sampled) + retention_period_delta)
 
     def getLastARNumber(self):
         ARs = self.getBackReferences("AnalysisRequestSample")

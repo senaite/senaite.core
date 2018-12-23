@@ -49,12 +49,6 @@ schema = BikaSchema.copy() + Schema((
     ),
     DurationField('RetentionPeriod',
     ),
-    ComputedField('DisposalDate',
-        expression = 'context.disposal_date()',
-        widget = ComputedWidget(
-            visible=False,
-        ),
-    ),
 )
 )
 
@@ -73,41 +67,9 @@ class SamplePartition(BaseContent, HistoryAwareMixin):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
 
-    def _getCatalogTool(self):
-        from bika.lims.catalog import getCatalog
-        return getCatalog(self)
-
     def Title(self):
         """ Return the Sample ID as title """
         return safe_unicode(self.getId()).encode('utf-8')
 
-    @security.public
-    def current_date(self):
-        """ return current date """
-        return DateTime()
-
-    @security.public
-    def disposal_date(self):
-        """ return disposal date """
-
-        DateSampled = self.getDateSampled()
-
-        # fallback to sampletype retention period
-        st_retention = self.aq_parent.getSampleType().getRetentionPeriod()
-
-        # but prefer retention period from preservation
-        pres = self.getPreservation()
-        pres_retention = pres and pres.getRetentionPeriod() or None
-
-        rp = pres_retention and pres_retention or None
-        rp = rp or st_retention
-
-        td = timedelta(
-            days='days' in rp and int(rp['days']) or 0,
-            hours='hours' in rp and int(rp['hours']) or 0,
-            minutes='minutes' in rp and int(rp['minutes']) or 0)
-
-        dis_date = DateSampled and dt2DT(DT2dt(DateSampled) + td) or None
-        return dis_date
 
 registerType(SamplePartition, PROJECTNAME)
