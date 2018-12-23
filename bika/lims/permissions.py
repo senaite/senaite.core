@@ -50,7 +50,6 @@ AddPricelist = 'BIKA: Add Pricelist'
 AddSupplyOrder = 'BIKA: Add SupplyOrder'
 AddSample = 'BIKA: Add Sample'
 AddSampleMatrix = 'BIKA: Add SampleMatrix'
-AddSamplePartition = 'BIKA: Add SamplePartition'
 AddSamplePoint = 'BIKA: Add SamplePoint'
 AddSamplingDeviation = 'BIKA: Add SamplingDeviation'
 AddSamplingRound = 'BIKA: Add SamplingRound'
@@ -67,7 +66,7 @@ ADD_CONTENT_PERMISSIONS = {
     'Attachment': AddAttachment, 'Batch': AddBatch, 'Client': AddClient,
     'Invoice': AddInvoice, 'Method': AddMethod, 'Multifile': AddMultifile,
     'SupplyOrder': AddSupplyOrder, 'Sample': AddSample,
-    'SampleMatrix': AddSampleMatrix, 'SamplePartition': AddSamplePartition,
+    'SampleMatrix': AddSampleMatrix,
     'SamplingDeviation': AddSamplingDeviation,
     'SamplingRound': AddSamplingRound, 'SubGroup': AddSubGroup, }
 
@@ -206,7 +205,6 @@ def setup_permissions(portal):
     mp(AddPricelist, ['Manager', 'Owner', 'LabManager'], 1)
     mp(AddSample, ['Manager', 'Owner', 'LabManager', 'LabClerk', 'Sampler'], 1)
     mp(AddSampleMatrix, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
-    mp(AddSamplePartition, ['Manager', 'Owner', 'LabManager', 'LabClerk', 'Sampler', 'SamplingCoordinator'], 1)
     mp(AddSamplePoint, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
     mp(AddSamplingDeviation, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
     mp(AddSRTemplate, ['Manager', 'Owner', 'LabManager'], 0)
