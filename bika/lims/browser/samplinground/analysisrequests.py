@@ -25,8 +25,6 @@ class AnalysisRequestsView(_ARV, _ARAV):
         self.catalog = "portal_catalog"
         SamplingWorkflowEnabled = self.context.bika_setup.getSamplingWorkflowEnabled()
         self.columns = {
-            'partition': {'title': _('Partition ID'),
-                          'toggle': True},
             'securitySealIntact': {'title': _('Security Seal Intact'),
                                   'toggle': True},
             'samplingRoundTemplate': {'title': _('Sampling Round Template'),
@@ -65,8 +63,7 @@ class AnalysisRequestsView(_ARV, _ARAV):
                              {'id': 'cancel'},
                              {'id': 'reinstate'}],
              'custom_transitions': [],
-             'columns': ['partition',
-                         'securitySealIntact',
+             'columns': ['securitySealIntact',
                          'getId',
                          'samplingRoundTemplate',
                          'getSample',
@@ -85,8 +82,7 @@ class AnalysisRequestsView(_ARV, _ARAV):
                              {'id': 'cancel'},
                              {'id': 'reinstate'}],
              'custom_transitions': [],
-             'columns': ['partition',
-                         'securitySealIntact',
+             'columns': ['securitySealIntact',
                          'getId',
                          'samplingRoundTemplate',
                          'getSample',
@@ -101,8 +97,7 @@ class AnalysisRequestsView(_ARV, _ARAV):
                              {'id': 'cancel'},
                              {'id': 'reinstate'}],
              'custom_transitions': [],
-             'columns': ['partition',
-                         'securitySealIntact',
+             'columns': ['securitySealIntact',
                          'getId',
                          'samplingRoundTemplate',
                          'getSample',
@@ -119,8 +114,7 @@ class AnalysisRequestsView(_ARV, _ARAV):
                              {'id': 'cancel'},
                              {'id': 'reinstate'}],
              'custom_transitions': [],
-             'columns': ['partition',
-                         'securitySealIntact',
+             'columns': ['securitySealIntact',
                          'getId',
                          'samplingRoundTemplate',
                          'getSample',
@@ -133,8 +127,7 @@ class AnalysisRequestsView(_ARV, _ARAV):
                                'sort_order': 'reverse'},
              'transitions': [{'id': 'publish'}],
              'custom_transitions': [],
-             'columns': ['partition',
-                         'securitySealIntact',
+             'columns': ['securitySealIntact',
                          'getId',
                          'samplingRoundTemplate',
                          'getSample',
@@ -147,8 +140,7 @@ class AnalysisRequestsView(_ARV, _ARAV):
                                'sort_order': 'reverse'},
              'transitions': [{'id': 'republish'}],
              'custom_transitions': [],
-             'columns': ['partition',
-                         'securitySealIntact',
+             'columns': ['securitySealIntact',
                          'getId',
                          'samplingRoundTemplate',
                          'getSample',
@@ -165,8 +157,7 @@ class AnalysisRequestsView(_ARV, _ARAV):
                                'sort_order': 'reverse'},
              'transitions': [{'id': 'reinstate'}],
              'custom_transitions': [],
-             'columns': ['partition',
-                         'securitySealIntact',
+             'columns': ['securitySealIntact',
                          'getId',
                          'samplingRoundTemplate',
                          'getSample',
@@ -179,8 +170,7 @@ class AnalysisRequestsView(_ARV, _ARAV):
                                'sort_order': 'reverse'},
              'transitions': [],
              'custom_transitions': [],
-             'columns': ['partition',
-                         'securitySealIntact',
+             'columns': ['securitySealIntact',
                          'getId',
                          'samplingRoundTemplate',
                          'getSample',
@@ -204,8 +194,7 @@ class AnalysisRequestsView(_ARV, _ARAV):
                              {'id': 'cancel'},
                              {'id': 'reinstate'}],
              'custom_transitions': [],
-             'columns': ['partition',
-                         'securitySealIntact',
+             'columns': ['securitySealIntact',
                          'getId',
                          'samplingRoundTemplate',
                          'getSample',
@@ -230,8 +219,7 @@ class AnalysisRequestsView(_ARV, _ARAV):
                              {'id': 'cancel'},
                              {'id': 'reinstate'}],
              'custom_transitions': [],
-             'columns': ['partition',
-                         'securitySealIntact',
+             'columns': ['securitySealIntact',
                          'getId',
                          'samplingRoundTemplate',
                          'getSample',
@@ -272,20 +260,11 @@ class AnalysisRequestsView(_ARV, _ARAV):
         # Getting the sampling round object
         catalog = getToolByName(self.context, 'uid_catalog')
         srTemplateObj = catalog(UID=srTemplateUID)[0].getObject() if catalog(UID=srTemplateUID) else None
-        # Getting the partitions and creating a row per partition
-        partitions = obj.getPartitions()
-        for part in partitions:
-            item['partition'] = part.id
-            if part.getContainer():
-                img_url = '<img src="'+self.portal_url+'/++resource++bika.lims.images/ok.png"/>'
-                item['securitySealIntact'] = part.getContainer().getSecuritySealIntact()
-                item['replace']['securitySealIntact'] = img_url \
-                    if part.getContainer().getSecuritySealIntact() else ' '
-            else:
-                item['securitySealIntact'] = ' '
-            item['replace']['partition'] = "<a href='%s'>%s</a>" % (part.absolute_url(), item['partition'])
-            item['samplingRoundTemplate'] = srTemplateObj.title if srTemplateObj else ''
-            if srTemplateObj:
-                item['replace']['samplingRoundTemplate'] = \
-                    "<a href='%s'>%s</a>" % (srTemplateObj.absolute_url, item['samplingRoundTemplate'])
+        item['samplingRoundTemplate'] = ''
+        if srTemplateObj:
+            item['samplingRoundTemplate'] = srTemplateObj.title
+            item['replace']['samplingRoundTemplate'] = \
+                "<a href='%s'>%s</a>" % (
+                srTemplateObj.absolute_url, item['samplingRoundTemplate'])
+        item['securitySealIntact'] = ''
         return item

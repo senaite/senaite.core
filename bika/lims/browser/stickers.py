@@ -26,7 +26,7 @@ import tempfile
 
 class Sticker(BrowserView):
     """ Invoked via URL on an object or list of objects from the types
-        AnalysisRequest, Sample, SamplePartition or ReferenceSample.
+        AnalysisRequest, Sample or ReferenceSample.
         Renders a preview for the objects, a control to allow the user to
         select the stcker template to be invoked and print.
 

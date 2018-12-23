@@ -164,8 +164,6 @@ class PrintForm(BrowserView):
                 'sample_type',
                 'sampling_point',
                 'sampling_date',
-                'partition',
-                'container',
                 'analyses',
                 ],
             'titles': {
@@ -173,8 +171,6 @@ class PrintForm(BrowserView):
                 'sample_type': _('Sample Type'),
                 'sampling_point': _('Sampling Point'),
                 'sampling_date': _('Sampling Date'),
-                'partition': _('Partition'),
-                'container': _('Container'),
                 'analyses': _('Analysis'),
             }
         }
@@ -182,53 +178,37 @@ class PrintForm(BrowserView):
         for ar in ars:
             ar = ar.getObject()
             arcell = False
-            numans = len(ar.getAnalyses())
-            for part in ar.getPartitions():
-                partcell = False
-                container = part.getContainer().title \
-                    if part and part.getContainer() else ''
-                partans = part.getAnalyses()
-                numpartans = len(partans)
-                for analysis in partans:
-                    row = {
-                        'sample_id': {
-                            'hidden': True if arcell else False,
-                            'rowspan': numans,
-                            'value': ar.getSample().id,
-                            },
-                        'sample_type': {
-                            'hidden': True if arcell else False,
-                            'rowspan': numans,
-                            'value': ar.getSampleType().title,
-                            },
-                        'sampling_point': {
-                            'hidden': True if arcell else False,
-                            'rowspan': numans,
-                            'value': ar.getSamplePoint().title if ar.getSamplePoint() else '',
-                            },
-                        'sampling_date': {
-                            'hidden': True if arcell else False,
-                            'rowspan': numans,
-                            'value': self.context.sampling_date,
-                            },
-                        'partition': {
-                            'hidden': True if partcell else False,
-                            'rowspan': numpartans,
-                            'value': part.id,
-                            },
-                        'container': {
-                            'hidden': True if partcell else False,
-                            'rowspan': numpartans,
-                            'value': container,
-                            },
-                        'analyses': {
-                            'title': analysis.Title(),
-                            'units': analysis.getUnit(),
+            analyses = ar.getAnalyses()
+            numans = len(analyses)
+            for analysis in analyses:
+                row = {
+                    'sample_id': {
+                        'hidden': True if arcell else False,
+                        'rowspan': numans,
+                        'value': ar.getSample().id,
                         },
-                    }
-                    rows.append(row)
-                    arcell = True
-                    partcell = True
+                    'sample_type': {
+                        'hidden': True if arcell else False,
+                        'rowspan': numans,
+                        'value': ar.getSampleType().title,
+                        },
+                    'sampling_point': {
+                        'hidden': True if arcell else False,
+                        'rowspan': numans,
+                        'value': ar.getSamplePoint().title if ar.getSamplePoint() else '',
+                        },
+                    'sampling_date': {
+                        'hidden': True if arcell else False,
+                        'rowspan': numans,
+                        'value': self.context.sampling_date,
+                        },
+                    'analyses': {
+                        'title': analysis.title,
+                        'units': analysis.getUnit,
+                    },
+                }
+                rows.append(row)
+                arcell = True
 
         # table will contain the data that from where the html
         # will take the info

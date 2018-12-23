@@ -32,13 +32,7 @@ from email.Utils import formataddr
 
 
 class AnalysisRequestWorkflowAction(AnalysesWorkflowAction):
-
     """Workflow actions taken in AnalysisRequest context.
-
-        Sample context workflow actions also redirect here
-        Applies to
-            Analysis objects
-            SamplePartition objects
     """
 
     def __call__(self):
