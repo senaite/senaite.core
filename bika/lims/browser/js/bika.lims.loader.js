@@ -128,11 +128,6 @@ window.bika.lims.controllers =  {
     ".portaltype-analysisrequest.template-analyses":
         ['AnalysisRequestAnalysesView'],
 
-    // Aggregated analyses view
-    ".template-aggregatedanalyses.portaltype-plone-site":
-        ['WorksheetManageResultsView',
-         'AnalysisRequestManageResultsView',],
-
 	// Common and utilities for AR Add forms
 	".portaltype-analysisrequest.template-ar_add": ['AnalysisRequestAddView'],
 

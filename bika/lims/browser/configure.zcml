@@ -37,7 +37,6 @@
   <include file="arimports.zcml"/>
   <include file="worksheettemplate.zcml"/>
 
-  <include package=".aggregatedanalyses"/>
   <include package=".analyses"/>
   <include package=".analysisrequest"/>
   <include package=".batch"/>
