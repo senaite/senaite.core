@@ -767,18 +767,6 @@ class Sample(BaseFolder, HistoryAwareMixin):
             return 0
         return last_ar_number
 
-    def getSampleState(self):
-        """Returns the sample veiew_state
-        """
-        workflow = getToolByName(self, 'portal_workflow')
-        return workflow.getInfoFor(self, 'review_state')
-
-    def getSamplePartitions(self):
-        """Returns the Sample Partitions associated to this Sample
-        """
-        partitions = self.objectValues('SamplePartition')
-        return partitions
-
     def getBatchUIDs(self):
         """Returns the UIDs of the Batches to which this Sample is assigned
         through Analysis Requests

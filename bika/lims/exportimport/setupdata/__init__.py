@@ -2164,8 +2164,6 @@ class Analysis_Requests(WorksheetImporter):
                 },
             )
 
-            part = sample.objectValues()[0].UID()
-            obj.setSamplePartition(part)
             analyses = ar.objectValues('Analyses')
             analyses = list(analyses)
             analyses.append(obj)
