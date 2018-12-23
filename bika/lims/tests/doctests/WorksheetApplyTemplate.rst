@@ -34,7 +34,6 @@ Needed Imports:
     >>> from bika.lims import api
     >>> from bika.lims.content.analysisrequest import AnalysisRequest
     >>> from bika.lims.content.sample import Sample
-    >>> from bika.lims.content.samplepartition import SamplePartition
     >>> from bika.lims.utils.analysisrequest import create_analysisrequest
     >>> from bika.lims.utils.sample import create_sample
     >>> from bika.lims.utils import tmpID
