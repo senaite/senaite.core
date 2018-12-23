@@ -133,18 +133,6 @@ ViewLogTab = 'BIKA: View Log Tab'
 # 'sample_due', 'sample_received', 'to_be_verified', 'attachment_due'
 EditAR = 'BIKA: Edit AR'
 
-# Edit Sample Partition
-# -----------------------------------------------------------------------------
-# Allows to set a Container and/or Preserver for a Sample Partition.
-# See AR view: Sample Partitions table and Sample Partitions tab
-#
-# Only takes effect if:
-#   - The Sample's 'cancellation_state' is 'active'
-#   - The Sample's 'review_state' is in:
-#       'sample_registered', 'to_be_sampled', 'to_be_preserved',
-# 'sample_due', 'sample_received', 'to_be_verified', 'attachment_due'
-EditSamplePartition = 'BIKA: Edit Sample Partition'
-
 # Edit Client
 # ----------------------------------------------
 # Allows access to 'Edit' and 'Contacts' tabs from Client View
@@ -251,8 +239,6 @@ def setup_permissions(portal):
     mp(ViewResults, ['Manager', 'LabManager', 'Analyst', 'Sampler', 'RegulatoryInspector', 'SamplingCoordinator'], 1)
     mp(EditResults, ['Manager', 'LabManager', 'Analyst'], 1)
     mp(EditFieldResults, ['Manager', 'LabManager', 'Sampler'], 1)
-    mp(EditSamplePartition, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner', 'SamplingCoordinator'], 1)
-
     mp('Access contents information', ['Authenticated'], 1)
     mp(permissions.View, ['Authenticated'], 1)
 
