@@ -56,8 +56,6 @@ class TestBarcodeEntry(BaseTestCase):
             self.client, 'Sample', SampleType=sampletype)
         self.sample2 = self.addthing(
             self.client, 'Sample', SampleType=sampletype)
-        self.addthing(self.sample1, 'SamplePartition', Container=container)
-        self.addthing(self.sample2, 'SamplePartition', Container=container)
         # Create an AR
         self.ar1 = self.addthing(
             self.client, 'AnalysisRequest', Contact=contact,
