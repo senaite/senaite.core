@@ -42,6 +42,14 @@ import sys
 from bika.lims.utils import to_unicode
 
 schema = BikaSchema.copy() + Schema((
+    # TODO This field is only for v1.3.0 migration purposes
+    # bika_catalog contains an "isValid" index. We will take advantage of this
+    # index to keep track of the Samples that have been migrated already in
+    # order to prevent an unnecessary reimport when v1.3.0 is rerun.
+    # This field is used by `isValid` function
+    BooleanField('Migrated',
+        default = False,
+    ),
     StringField('SampleID',
         required=1,
         searchable=True,
@@ -784,6 +792,13 @@ class Sample(BaseFolder, HistoryAwareMixin):
                 continue
             batch_uids.append(batch_uid)
         return batch_uids
+
+    # TODO This method is only for v1.3.0 migration purposes
+    # bika_catalog contains an "isValid" index. We will take advantage of this
+    # index to keep track of the Samples that have been migrated already in
+    # order to prevent an unnecessary reimport when v1.3.0 is rerun.
+    def isValid(self):
+        return self.getMigrated()
 
 
 atapi.registerType(Sample, PROJECTNAME)

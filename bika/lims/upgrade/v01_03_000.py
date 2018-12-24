@@ -5,6 +5,9 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
+import time
+import transaction
+
 from Products.DCWorkflow.Guard import Guard
 from Products.ZCatalog.ProgressHandler import ZLogHandler
 from bika.lims import api
@@ -92,6 +95,10 @@ def upgrade(tool):
     # Reindex Clients, so that the fields are searchable by the catalog
     # https://github.com/senaite/senaite.core/pull/1080
     reindex_clients(portal)
+
+    # Port Analysis Request Proxy Fields
+    # https://github.com/senaite/senaite.core/pull/1180
+    port_analysis_request_proxy_fields(portal)
 
     # Add catalog indexes for reference sample handling in Worksheets
     # https://github.com/senaite/senaite.core/pull/1091
@@ -1093,6 +1100,7 @@ def hide_samples(portal):
     del_index(portal, CATALOG_ANALYSIS_LISTING, "getSampleUID")
     del_index(portal,CATALOG_ANALYSIS_REQUEST_LISTING, "getSampleUID")
     del_metadata(portal, CATALOG_ANALYSIS_REQUEST_LISTING, "getSampleUID")
+    del_metadata(portal, CATALOG_ANALYSIS_REQUEST_LISTING, "getSampleURL")
 
 
 def add_listing_js_to_portal_javascripts(portal):
@@ -1228,3 +1236,87 @@ def fix_analysisrequests_in_sampled_status(portal):
         changeWorkflowState(analysis_request, wf_id, "sample_due")
         workflow.updateRoleMappingsFor(analysis_request)
         analysis_request.reindexObject(idxs=["review_state"])
+
+
+def port_analysis_request_proxy_fields(portal):
+    logger.info("Purging Analysis Request Proxy Fields ...")
+    fields_to_purge = [
+        "AdHoc",
+        "ClientReference",
+        "ClientSampleID",
+        "Composite",
+        "DateReceived",
+        "DateSampled",
+        "EnvironmentalConditions",
+        "SampleCondition",
+        "SamplePoint",
+        "SampleType",
+        "Sampler",
+        "SamplingDate",
+        "SamplingDeviation",
+        "ScheduledSamplingSampler",
+        "StorageLocation",
+    ]
+
+    def set_value(analysis_request, field_name, field_value):
+        ar_field = analysis_request.Schema()[field_name]
+        if ar_field.type == 'uidreference':
+            if api.is_object(field_value):
+                field_value = api.get_uid(field_value)
+            elif not api.is_uid(field_value):
+                return
+        ar_field.set(analysis_request, field_value)
+
+    def unlink_proxy_fields(sample_brain, analysis_request=None):
+        processed_fields = []
+        sample_obj = api.get_object(sample_brain)
+        if not analysis_request:
+            for ar in sample_obj.getAnalysisRequests():
+                processed_fields.extend(unlink_proxy_fields(sample_brain, ar))
+                ar.reindexObject()
+            return list(set(processed_fields))
+
+        for field_id in fields_to_purge:
+            field_value = None
+            try:
+                field = sample_obj.Schema().getField(field_id)
+                field_value = field.get(sample_obj)
+            except AttributeError:
+                logger.warn("Field {} not found for {}"
+                            .format(field_id, sample_obj.getId()))
+            if not field_value:
+                continue
+            set_value(analysis_request, field_id, field_value)
+            processed_fields.append(field_id)
+        return processed_fields
+
+    start = time.time()
+    query = dict(portal_type="Sample")
+    brains = api.search(query, "bika_catalog")
+    total = len(brains)
+    need_commit = False
+    for num, brain in enumerate(brains):
+        need_commit = True
+        if num % 10 == 0:
+            logger.info("Purging Analysis Requests' ProxyField: {}/{}"
+                        .format(num, total))
+        processed_fields = unlink_proxy_fields(brain)
+        if num > 0 and num % 1000 == 0:
+            # This a very RAM consuming thing, so better to keep doing
+            # transaction commits every now and then
+            commit_transaction(portal)
+            need_commit = False
+
+    if need_commit:
+        commit_transaction(portal)
+    end = time.time()
+    logger.info("Purging Analysis Request Proxy Fields took {:.2f}s"
+                .format(end - start))
+
+def commit_transaction(portal):
+    start = time.time()
+    logger.info("Commit transaction ...")
+    transaction.commit()
+    end = time.time()
+    logger.info("Commit transaction ... Took {:.2f}s [DONE]"
+                .format(end - start))

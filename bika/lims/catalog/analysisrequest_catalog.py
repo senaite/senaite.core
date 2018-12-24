@@ -53,7 +53,6 @@ _columns_list = [
     'getSampleID',
     # Used to create add an anchor to Sample ID that redirects to
     # the Sample view.
-    'getSampleURL',
     'getClientOrderNumber',
     'getClientReference',
     'getClientSampleID',
