@@ -74,7 +74,7 @@ schema = Schema((
             'hidemax',
             'rangecomment'
         ),
-        required_subfields=('keyword', 'min', 'max'),
+        required_subfields=('keyword',),
         subfield_validators={
             'min': 'analysisspecs_validator',
             'max': 'analysisspecs_validator',
