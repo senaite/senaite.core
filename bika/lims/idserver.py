@@ -133,9 +133,16 @@ def get_variables(context, **kw):
 
     # Augment the variables map depending on the portal type
     if portal_type == "AnalysisRequest":
+        now = DateTime()
+        sampling_date = context.getSamplingDate()
+        sampling_date = sampling_date and DT2dt(sampling_date) or DT2dt(now)
+        date_sampled = context.getDateSampled()
+        date_sampled = date_sampled and DT2dt(date_sampled) or DT2dt(now)
         variables.update({
-            'sampleId': context.getSample().getId(),
-            'sample': context.getSample(),
+            'clientId': context.aq_parent.getClientID(),
+            'dateSampled': date_sampled,
+            'samplingDate': sampling_date,
+            'sampleType': context.getSampleType().getPrefix(),
         })
 
     elif portal_type == "SamplePartition":

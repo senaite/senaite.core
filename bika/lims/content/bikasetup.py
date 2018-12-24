@@ -767,19 +767,22 @@ schema = BikaFolderSchema.copy() + Schema((
                 'sequence_type': 'generated',
                 'split_length': 1
             }, {
+                'form': '{sampleType}-{alpha:3a3d}',
+                'portal_type': 'AnalysisRequest',
+                'prefix': 'analysisrequest',
+                'sequence_type': 'generated',
+                'split_length': 1
+            },
+            # TODO To be removed in >=v1.3.1
+            {
                 'form': '{sampleType}-{seq:04d}',
                 'portal_type': 'Sample',
                 'prefix': 'sample',
                 'sequence_type': 'generated',
                 'split_length': 1
-            }, {
-                'context': 'sample',
-                'counter_reference': 'AnalysisRequestSample',
-                'counter_type': 'backreference',
-                'form': '{sampleId}-R{seq:02d}',
-                'portal_type': 'AnalysisRequest',
-                'sequence_type': 'counter'
-            }, {
+            },
+            # TODO To be removed in >=v1.3.1
+            {
                 'context': 'sample',
                 'counter_reference': 'SamplePartition',
                 'counter_type': 'contained',

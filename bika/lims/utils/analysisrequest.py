@@ -59,11 +59,12 @@ def create_analysisrequest(client, request, values, analyses=None,
 
     # Create new sample or locate the existing for secondary AR
     secondary = False
-    if values.get('Sample', None):
-        secondary = True
-        values["Sample"] = get_sample_from_values(client, values)
-    else:
-        values["Sample"] = create_sample(client, request, values)
+    # TODO Sample Cleanup - Manage secondary ARs properly
+    #if values.get('Sample', None):
+    #    secondary = True
+    #    values["Sample"] = get_sample_from_values(client, values)
+    #else:
+    #    values["Sample"] = create_sample(client, request, values)
 
     # Create the Analysis Request
     ar = _createObjectByType('AnalysisRequest', client, tmpID())

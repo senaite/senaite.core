@@ -100,6 +100,10 @@ def upgrade(tool):
     # https://github.com/senaite/senaite.core/pull/1180
     port_analysis_request_proxy_fields(portal)
 
+    # Change ID Formatting of Analysis Request to {sampleType}-{seq:04d}
+    # https://github.com/senaite/senaite.core/pull/1180
+    change_analysis_requests_id_formatting(portal)
+
     # Add catalog indexes for reference sample handling in Worksheets
     # https://github.com/senaite/senaite.core/pull/1091
     add_reference_sample_indexes(portal)
@@ -1320,3 +1324,34 @@ def commit_transaction(portal):
     end = time.time()
     logger.info("Commit transaction ... Took {:.2f}s [DONE]"
                 .format(end - start))
+
+
+def change_analysis_requests_id_formatting(portal):
+    """Sets the Analysis Request ID Formatting by default (without Sample)
+    """
+    set_id_format(portal, dict(
+        form='{sampleType}-{alpha:3a3d}',
+        portal_type='AnalysisRequest',
+        prefix='analysisrequest',
+        sequence_type='generated',
+        split_length=1))
+
+
+def set_id_format(portal, format):
+    """Sets the id formatting in setup for the format provided
+    """
+    bs = portal.bika_setup
+    if 'portal_type' not in format:
+        return
+    logger.info("Applying format {} for {}".format(format.get('form', ''),
+                                                   format.get(
+                                                       'portal_type')))
+    portal_type = format['portal_type']
+    ids = list()
+    id_map = bs.getIDFormatting()
+    for record in id_map:
+        if record.get('portal_type', '') == portal_type:
+            continue
+        ids.append(record)
+    ids.append(format)
+    bs.setIDFormatting(ids)

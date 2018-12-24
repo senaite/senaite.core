@@ -114,9 +114,7 @@ class AnalysisRequestViewView(BrowserView):
     def is_hazardous(self):
         """Checks if the AR is hazardous
         """
-        sample = self.context.getSample()
-        sample_type = sample.getSampleType()
-        return sample_type.getHazardous()
+        return self.context.getHazardous()
 
     def is_retest(self):
         """Checks if the AR is a retest
