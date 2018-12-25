@@ -1330,7 +1330,7 @@ def change_analysis_requests_id_formatting(portal):
     """Sets the Analysis Request ID Formatting by default (without Sample)
     """
     set_id_format(portal, dict(
-        form='{sampleType}-{alpha:3a3d}',
+        form='{sampleType}-{year}-{alpha:2a3d}',
         portal_type='AnalysisRequest',
         prefix='analysisrequest',
         sequence_type='generated',

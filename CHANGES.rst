@@ -22,6 +22,7 @@ Changelog
 
 **Changed**
 
+- #1180 Default AR ID format to {sampleType}-{year}-{alpha:2a3d}
 - #1176 Unbind `cancellation_workflow` from AnalysisRequest content type
 - #1173 Improve Resultsinterpretation Form
 - #1161 Listing: Transposed worksheet improvements
