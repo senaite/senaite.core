@@ -17,6 +17,7 @@ from bika.lims import logger
 # Bika Fields
 from bika.lims.browser.fields import ARAnalysesField
 from bika.lims.browser.fields import DateTimeField
+from bika.lims.browser.fields import DurationField
 from bika.lims.browser.fields import UIDReferenceField
 # Bika Widgets
 from bika.lims.browser.fields.remarksfield import RemarksField
@@ -688,7 +689,32 @@ schema = BikaSchema.copy() + Schema((
             showOn=True,
         ),
     ),
-
+    # TODO Sample cleanup - This comes from partition
+    ReferenceField('Container',
+        allowed_types=('Container',),
+        relationship='AnalysisRequestContainer',
+        required=0,
+        multiValued=0,
+    ),
+    # TODO Sample cleanup - This comes from partition
+    ReferenceField('Preservation',
+        allowed_types=('Preservation',),
+        relationship='AnalysisRequestPreservation',
+        required=0,
+        multiValued=0,
+    ),
+    # TODO Sample cleanup - This comes from partition
+    DateTimeField('DatePreserved',
+        required=0,
+    ),
+    # TODO Sample cleanup - This comes from partition
+    StringField('Preserver',
+        required=0,
+    ),
+    # TODO Sample cleanup - This comes from partition
+    DurationField('RetentionPeriod',
+        required=0,
+    ),
     RecordsField(
         'RejectionReasons',
         widget=RejectionWidget(
@@ -2515,18 +2541,14 @@ class AnalysisRequest(BaseFolder):
                 partitions.append(analysis.getSamplePartition())
         return partitions
 
+    # TODO Sample Cleanup - Remove (Use getContainer instead)
     def getContainers(self):
         """This functions returns the containers from the analysis request's
         analyses
 
         :returns: a list with the full partition objects
         """
-        partitions = self.getPartitions()
-        containers = []
-        for partition in partitions:
-            if partition.getContainer():
-                containers.append(partition.getContainer())
-        return containers
+        return [self.getContainer()]
 
     def isAnalysisServiceHidden(self, uid):
         """Checks if the analysis service that match with the uid provided must

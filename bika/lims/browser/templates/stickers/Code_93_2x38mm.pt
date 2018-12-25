@@ -35,28 +35,13 @@
 <td class="sticker-cell">
 <tal:sticker define="
     ar                python:item[0];
-    ar_id             python:ar.getId() if ar else '';
-    sample            python:item[1];
-    part              python:item[2];
-    partnr            python:part.getId().split('-')[1];
-    sampler           python:sample.getSampler();
-    sample_id         python:sample.getId();
-    sample_point      python:sample.getSamplePoint() and sample.getSamplePoint().Title() or '';
-    sample_type       python:sample.getSampleType().Title();
-    sampling_date     python:sample.getSamplingDate() and sample.getSamplingDate().Date();
-    client_sample_id  python:sample.getClientSampleID();
-    preservation      python:part.getPreservation() and part.getPreservation().Title() or '';
-    container         python:part.getContainer() and part.getContainer().Title() or '';
-    date_sampled      python:sample.getDateSampled() and sample.getDateSampled().Date();
-    analyses          python:part.getAnalyses();
-    field_analyses    python:[analysis for analysis in analyses if analysis.getPointOfCapture()=='field'];
-    show_partitions   python:context.bika_setup.getShowPartitions();
-    smart_id          python:part.getId() if show_partitions else sample.getId();
-    hazardous         python:sample.getSampleType().getHazardous();">
+    ar_id             python:ar.getId();
+    client_sample_id  python:ar.getClientSampleID() or '---';
+    hazardous         python:ar.getHazardous();">
 
     <!-- Barcode -->
     <div class="barcode"
-        tal:attributes="data-id smart_id;"
+        tal:attributes="data-id ar_id;"
         data-code="code93"
         data-barHeight="10"
         data-addQuietZone="true"
@@ -67,7 +52,7 @@
     <div class="analysisrequest-info">
         <table cellpadding="0" cellspacing="0" border="0">
             <tr>
-                <td class="client-sample-id" tal:content="python:'%s: %s' % ('CSID', client_sample_id if client_sample_id else '---')"/>
+                <td class="client-sample-id" tal:content="python:'%s: %s' % ('CSID', client_sample_id)"/>
                 <td style="text-align:right;padding-right:2mm;">
                     <img tal:condition="hazardous | nothing"
                          tal:attributes="src string:${portal_url}/++resource++bika.lims.images/hazardous.png"/>
