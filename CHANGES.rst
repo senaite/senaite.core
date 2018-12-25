@@ -73,6 +73,7 @@ Changelog
 
 **Fixed**
 
+- #1183 Fix results calculation of dependent calculations
 - #1175 Fixed Version Display of SENAITE CORE Add-on in the Quickinstaller Tool
 - #1142 Fix instrument QC Analyses Table
 - #1137 Fixed and refactored log view
