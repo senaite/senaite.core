@@ -46,7 +46,6 @@
   <include package=".dashboard"/>
   <include package=".department"/>
   <include package=".resultsimport"/>
-  <include package=".sample"/>
   <include package=".samplinground"/>
   <include package=".srtemplate"/>
   <include package=".viewlets"/>
@@ -55,6 +54,8 @@
   <include package=".fields"/>
   <include package=".reports"/>
   <include package=".widgets"/>
+
+  <include package=".listing"/>
 
   <browser:page
       for="*"
@@ -80,16 +81,25 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
+  <!-- AR Partition Magic View -->
   <browser:page
       for="*"
-      name="portletfilter_by_department"
-      class="bika.lims.browser.updateFilerByDepartmentCookie"
-      permission="zope2.View"
+      name="partition_magic"
+      class=".partition_magic.PartitionMagicView"
+      permission="bika.lims.ManageAnalysisRequests"
       layer="bika.lims.interfaces.IBikaLIMS"
-    />
+  />
+
+  <!-- Searches for sample types (TemplatePartitions) -->
+  <browser:page
+      for="*"
+      name="get_sampletypes"
+      class=".sampletype.get_sampletypes"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+  />
 
   <!-- Zope 3 browser resources -->
-
   <browser:resourceDirectory
       name="bika.lims.images"
       directory="images"

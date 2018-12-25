@@ -356,10 +356,9 @@ class AnalysisResultsImporter(Logger):
                                        'attachment_due',
                                        'to_be_verified']
         if not self._allowed_analysis_states:
-            self._allowed_analysis_states = ['sampled',
-                                             'sample_received',
-                                             'attachment_due',
-                                             'to_be_verified']
+            self._allowed_analysis_states = [
+                'unassigned', 'assigned', 'to_be_verified'
+            ]
         if not self._idsearch:
             self._idsearch = ['getId']
         self.instrument_uid = instrument_uid
@@ -559,8 +558,7 @@ class AnalysisResultsImporter(Logger):
                     # And only if the filename of the attachment is unique in
                     # this worksheet.  Otherwise we will attempt to use
                     # existing attachment.
-                    wss = analysis.getBackReferences('WorksheetAnalysis')
-                    ws = wss[0] if wss else None
+                    ws = analysis.getWorksheet()
                     if ws:
                         if ws.getId() not in attachments:
                             fn = infile.filename
@@ -827,8 +825,8 @@ class AnalysisResultsImporter(Logger):
                 # The search has been made using the internal identifier
                 # from a Reference Analysis (id or uid). That is not usual.
                 an = refans[0].getObject()
-                wss = an.getBackReferences('WorksheetAnalysis')
-                if wss and len(wss) > 0:
+                worksheet = an.getWorksheet()
+                if worksheet:
                     # A regular QC test (assigned to a Worksheet)
                     return [an, ]
                 elif an.getInstrument():

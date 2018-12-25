@@ -20,7 +20,6 @@ _indexes_dict = {
     # TODO: Can be removed? Same as id
     'sortable_title': 'FieldIndex',
     'getClientUID': 'FieldIndex',
-    'getSampleUID': 'FieldIndex',
     'cancellation_state': 'FieldIndex',
     'getBatchUID': 'FieldIndex',
     'getDateSampled': 'DateIndex',
@@ -28,9 +27,9 @@ _indexes_dict = {
     'getDateReceived': 'DateIndex',
     'getDateVerified': 'DateIndex',
     'getDatePublished': 'DateIndex',
+    'getDueDate': 'DateIndex',
     'getSampler': 'FieldIndex',
     'getReceivedBy': 'FieldIndex',
-    'getDepartmentUIDs': 'KeywordIndex',
     'getPrinted': 'FieldIndex',
     'getProvince': 'FieldIndex',
     'getDistrict': 'FieldIndex',
@@ -43,13 +42,13 @@ _indexes_dict = {
     # Searchable Text Index by wildcards
     # http://zope.readthedocs.io/en/latest/zope2book/SearchingZCatalog.html#textindexng
     'listing_searchable_text': 'TextIndexNG3',
+    'isRootAncestor': 'BooleanIndex',
 }
 # Defining the columns for this catalog
 _columns_list = [
     'getCreatorFullName',
     'getCreatorEmail',
     'getPhysicalPath',
-    'getSampleUID',
     # Used to print the ID of the Sample in lists
     'getSampleID',
     # Used to create add an anchor to Sample ID that redirects to
@@ -84,11 +83,13 @@ _columns_list = [
     'getDateReceived',
     'getDateVerified',
     'getDatePublished',
+    'getDescendantsUIDs',
     'getDistrict',
     'getProfilesUID',
     'getProfilesURL',
     'getProfilesTitle',
     'getProfilesTitleStr',
+    'getRawParentAnalysisRequest',
     'getProvince',
     'getTemplateUID',
     'getTemplateURL',
@@ -97,12 +98,10 @@ _columns_list = [
     'getPrinted',
     'getSamplingDeviationTitle',
     'getPrioritySortkey',
-    # TODO: This should be updated through a clock
-    'getLate',
+    'getDueDate',
     'getInvoiceExclude',
     'getHazardous',
     'getSamplingWorkflowEnabled',
-    'getDepartmentUIDs',
     'assigned_state',
 ]
 # Adding basic indexes

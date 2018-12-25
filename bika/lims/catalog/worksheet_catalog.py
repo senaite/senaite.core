@@ -23,12 +23,10 @@ _indexes_dict = {
     'getAnalyst': 'FieldIndex',
     'getWorksheetTemplateTitle': 'FieldIndex',
     'getAnalysesUIDs': 'KeywordIndex',
-    'getDepartmentUIDs': 'KeywordIndex',
 }
 # Defining the columns for this catalog
 _columns_list = [
     'getAnalyst',
-    'getDepartmentUIDs',
     'getWorksheetTemplateUID',
     'getWorksheetTemplateTitle',
     'getWorksheetTemplateURL',
@@ -39,6 +37,7 @@ _columns_list = [
     'getNumberOfQCAnalyses',
     'getNumberOfRegularAnalyses',
     'getNumberOfRegularSamples',
+    'getProgressPercentage',
 ]
 # Adding basic indexes
 _base_indexes_copy = BASE_CATALOG_INDEXES.copy()

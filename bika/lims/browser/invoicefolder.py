@@ -26,7 +26,7 @@ class InvoiceFolderContentsView(BikaListingView):
         self.icon = self.portal_url + "/++resource++bika.lims.images/invoice_big.png"
         self.title = self.context.translate(_("Statements"))
         self.description = ""
-        self.show_sort_column = False
+
         self.show_select_row = False
         self.show_select_all_checkbox = False
         self.show_select_column = False

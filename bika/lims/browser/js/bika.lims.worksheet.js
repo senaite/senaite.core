@@ -590,6 +590,7 @@
   window.WorksheetManageResultsView = (function() {
     function WorksheetManageResultsView() {
       this.on_wideinterims_apply_click = bind(this.on_wideinterims_apply_click, this);
+      this.on_slot_remarks_click = bind(this.on_slot_remarks_click, this);
       this.on_wideiterims_interims_change = bind(this.on_wideiterims_interims_change, this);
       this.on_wideiterims_analyses_change = bind(this.on_wideiterims_analyses_change, this);
       this.on_remarks_balloon_clicked = bind(this.on_remarks_balloon_clicked, this);
@@ -625,7 +626,6 @@
       this._ = window.jarn.i18n.MessageFactory("senaite.core");
       this._pmf = window.jarn.i18n.MessageFactory('plone');
       this.bind_eventhandler();
-      this.init_overlays();
       this.constraints = null;
       this.init_instruments_and_methods();
       return window.ws = this;
@@ -655,34 +655,10 @@
       $("body").on("change", "#wideinterims_analyses", this.on_wideiterims_analyses_change);
       $("body").on("change", "#wideinterims_interims", this.on_wideiterims_interims_change);
       $("body").on("click", "#wideinterims_apply", this.on_wideinterims_apply_click);
+      $("body").on("click", "img.slot-remarks", this.on_slot_remarks_click);
 
       /* internal events */
       return $(this).on("constraints:loaded", this.on_constraints_loaded);
-    };
-
-    WorksheetManageResultsView.prototype.init_overlays = function() {
-
-      /*
-       * Initialize all overlays for later loading
-       *
-       */
-      console.debug("WorksheetManageResultsView::init_overlays");
-      return $("img.slot-remarks").prepOverlay({
-        subtype: "ajax",
-        filter: "h1,#archetypes-fieldname-Remarks span.remarks_history",
-        config: {
-          closeOnClick: true,
-          closeOnEsc: true,
-          onBeforeLoad: function(event) {
-            var overlay;
-            overlay = this.getOverlay();
-            return overlay.draggable();
-          },
-          onLoad: function(event) {
-            return $.mask.close();
-          }
-        }
-      });
     };
 
     WorksheetManageResultsView.prototype.init_instruments_and_methods = function() {
@@ -1146,6 +1122,33 @@
       return $("#wideinterims_value").val($(idinter).val());
     };
 
+    WorksheetManageResultsView.prototype.on_slot_remarks_click = function(event) {
+
+      /*
+       * Eventhandler when the remarks icon was clicked
+       */
+      var el;
+      console.debug("°°° WorksheetManageResultsView::on_slot_remarks_click °°°");
+      el = event.currentTarget;
+      $(el).prepOverlay({
+        subtype: "ajax",
+        filter: "h1,#archetypes-fieldname-Remarks span.remarks_history",
+        config: {
+          closeOnClick: true,
+          closeOnEsc: true,
+          onBeforeLoad: function(event) {
+            var overlay;
+            overlay = this.getOverlay();
+            return overlay.draggable();
+          },
+          onLoad: function(event) {
+            return $.mask.close();
+          }
+        }
+      });
+      return $(el).click();
+    };
+
     WorksheetManageResultsView.prototype.on_wideinterims_apply_click = function(event) {
 
       /*
@@ -1158,16 +1161,15 @@
       analysis = $("#wideinterims_analyses").val();
       interim = $("#wideinterims_interims").val();
       empty_only = $("#wideinterims_empty").is(":checked");
-      return $("tr[keyword='" + analysis + "'] input[field='" + interim + "']").each(function(index, element) {
+      return $("tr td input[column_key='" + interim + "']").each(function(index, element) {
         if (empty_only) {
           if ($(this).val() === "" || $(this).val().match(/\d+/) === "0") {
             $(this).val($("#wideinterims_value").val());
-            return $(this).change();
           }
         } else {
           $(this).val($("#wideinterims_value").val());
-          return $(this).change();
         }
+        return $(this).trigger("change");
       });
     };
 

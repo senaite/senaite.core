@@ -34,7 +34,7 @@ from bika.lims.config import PROJECTNAME
 from bika.lims.content.analysisspec import ResultsRangeDict
 from bika.lims.content.bikaschema import BikaSchema
 # Bika Interfaces
-from bika.lims.interfaces import IAnalysisRequest
+from bika.lims.interfaces import IAnalysisRequest, ICancellable
 # Bika Permissions
 from bika.lims.permissions import EditARContact
 from bika.lims.permissions import ManageInvoices
@@ -274,24 +274,24 @@ schema = BikaSchema.copy() + Schema((
             size=20,
             render_own_label=True,
             visible={
-                'edit': 'visible',
-                'view': 'visible',
+                'edit': 'invisible',
+                'view': 'invisible',
                 'add': 'edit',
-                'header_table': 'visible',
+                'header_table': 'invisible',
                 'sample_registered': {
-                    'view': 'visible', 'edit': 'visible', 'add': 'edit'},
-                'to_be_sampled': {'view': 'visible', 'edit': 'invisible'},
-                'scheduled_sampling': {'view': 'visible', 'edit': 'invisible'},
-                'sampled': {'view': 'visible', 'edit': 'invisible'},
-                'to_be_preserved': {'view': 'visible', 'edit': 'invisible'},
-                'sample_due': {'view': 'visible', 'edit': 'invisible'},
-                'sample_received': {'view': 'visible', 'edit': 'invisible'},
-                'attachment_due': {'view': 'visible', 'edit': 'invisible'},
-                'to_be_verified': {'view': 'visible', 'edit': 'invisible'},
-                'verified': {'view': 'visible', 'edit': 'invisible'},
-                'published': {'view': 'visible', 'edit': 'invisible'},
-                'invalid': {'view': 'visible', 'edit': 'invisible'},
-                'rejected': {'view': 'visible', 'edit': 'invisible'},
+                    'view': 'invisible', 'edit': 'invisible', 'add': 'edit'},
+                'to_be_sampled': {'view': 'invisible', 'edit': 'invisible'},
+                'scheduled_sampling': {'view': 'invisible', 'edit': 'invisible'},
+                'sampled': {'view': 'invisible', 'edit': 'invisible'},
+                'to_be_preserved': {'view': 'invisible', 'edit': 'invisible'},
+                'sample_due': {'view': 'invisible', 'edit': 'invisible'},
+                'sample_received': {'view': 'invisible', 'edit': 'invisible'},
+                'attachment_due': {'view': 'invisible', 'edit': 'invisible'},
+                'to_be_verified': {'view': 'invisible', 'edit': 'invisible'},
+                'verified': {'view': 'invisible', 'edit': 'invisible'},
+                'published': {'view': 'invisible', 'edit': 'invisible'},
+                'invalid': {'view': 'invisible', 'edit': 'invisible'},
+                'rejected': {'view': 'invisible', 'edit': 'invisible'},
             },
             catalog_name='bika_catalog',
             base_query={'cancellation_state': 'active',
@@ -527,6 +527,11 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     # This field is a mirror of a field in Sample with the same name
+    # TODO Workflow - Request - Fix DateSampled inconsistencies. At the moment,
+    # one can create an AR (using code) with DateSampled set when sampling_wf at
+    # the same time sampling workflow is active. This might cause
+    # inconsistencies: AR still in `to_be_sampled`, but getDateSampled returns
+    # a valid date!
     ProxyField(
         'DateSampled',
         proxy="context.getSample()",
@@ -1394,40 +1399,22 @@ schema = BikaSchema.copy() + Schema((
             },
         )
     ),
-    # Another way to obtain a transition date is using getTransitionDate
-    # function. We are using a DateTimeField/Widget here because in some
-    # cases the user may want to change the Received Date.
-    # AnalysisRequest and Sample's DateReceived fields needn't to have
-    # the same value.
-    # This field is updated in workflow_script_receive method.
-    DateTimeField(
+    # This field is a mirror of a field in Sample with the same name
+    ProxyField(
         'DateReceived',
+        proxy="context.getSample()",
         mode="rw",
         read_permission=View,
         write_permission=ModifyPortalContent,
         widget=DateTimeWidget(
-            label=_("Date Received"),
+            label=_("Date Sample Received"),
+            show_time=True,
             description=_("The date when the sample was received"),
             render_own_label=True,
             visible={
-                'edit': 'visible',
+                'edit': 'invisible',
                 'view': 'visible',
                 'header_table': 'visible',
-                'sample_registered': {
-                    'view': 'invisible', 'edit': 'invisible'},
-                'to_be_sampled': {'view': 'invisible', 'edit': 'invisible'},
-                'scheduled_sampling': {
-                    'view': 'invisible', 'edit': 'invisible'},
-                'sampled': {'view': 'invisible', 'edit': 'invisible'},
-                'to_be_preserved': {'view': 'invisible', 'edit': 'invisible'},
-                'sample_due': {'view': 'invisible', 'edit': 'invisible'},
-                'sample_received': {'view': 'visible', 'edit': 'invisible'},
-                'attachment_due': {'view': 'visible', 'edit': 'invisible'},
-                'to_be_verified': {'view': 'visible', 'edit': 'invisible'},
-                'verified': {'view': 'visible', 'edit': 'invisible'},
-                'published': {'view': 'visible', 'edit': 'invisible'},
-                'invalid': {'view': 'visible', 'edit': 'invisible'},
-                'rejected': {'view': 'visible', 'edit': 'invisible'},
             },
         ),
     ),
@@ -1700,18 +1687,6 @@ schema = BikaSchema.copy() + Schema((
         expression="here.getTemplate().Title() if here.getTemplate() else ''",
         widget=ComputedWidget(visible=False),
     ),
-    ReferenceField(
-        'ChildAnalysisRequest',
-        allowed_types=('AnalysisRequest',),
-        relationship='AnalysisRequestChildAnalysisRequest',
-        referenceClass=HoldingReference,
-        mode="rw",
-        read_permission=View,
-        write_permission=ModifyPortalContent,
-        widget=ReferenceWidget(
-            visible=False,
-        ),
-    ),
 
     ReferenceField(
         'ParentAnalysisRequest',
@@ -1724,6 +1699,29 @@ schema = BikaSchema.copy() + Schema((
         widget=ReferenceWidget(
             visible=False,
         ),
+    ),
+
+    # The Analysis Request the current Analysis Request comes from because of
+    # an invalidation of the former
+    ReferenceField(
+        'Invalidated',
+        allowed_types=('AnalysisRequest',),
+        relationship='AnalysisRequestRetracted',
+        referenceClass=HoldingReference,
+        mode="rw",
+        read_permission=View,
+        write_permission=ModifyPortalContent,
+        widget=ReferenceWidget(
+            visible=False,
+        ),
+    ),
+
+    # The Analysis Request that was automatically generated due to the
+    # invalidation of the current Analysis Request
+    ComputedField(
+        'Retest',
+        expression="here.get_retest()",
+        widget=ComputedWidget(visible=False)
     ),
 
     # For comments or results interpretation
@@ -1778,12 +1776,6 @@ schema = BikaSchema.copy() + Schema((
                      'edit': 'invisible'},
         ),
     ),
-    # Here is stored pre-digested data used during publication.
-    # It is updated when the object is verified or when changes
-    # are made to verified objects.
-    StringField(
-        'Digest'
-    )
 )
 )
 
@@ -1804,7 +1796,7 @@ schema.moveField('ResultsInterpretationDepts', pos='bottom')
 
 
 class AnalysisRequest(BaseFolder):
-    implements(IAnalysisRequest)
+    implements(IAnalysisRequest, ICancellable)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
@@ -1917,27 +1909,14 @@ class AnalysisRequest(BaseFolder):
         an_nums = [0, 0, 0, 0]
         for analysis in self.getAnalyses():
             review_state = analysis.review_state
-            if review_state in ['retracted', 'rejected']:
-                # Discard retracted analyses
+            if review_state in ['retracted', 'rejected', 'cancelled']:
                 continue
-
-            if not api.is_active(analysis):
-                # Discard non-active analyses
-                continue
-
-            analysis_object = api.get_object(analysis)
-            actions = getReviewHistoryActionsList(analysis_object)
-            if 'verify' in actions:
-                # Assume the "last" state of analysis is verified
-                index = 0
-
-            elif 'submit' not in actions or review_state != 'to_be_verified':
-                # Assume the "first" state of analysis is results_pending
-                index = 2
-
+            if review_state == 'to_be_verified':
+                an_nums[3] += 1
+            elif review_state in ['published', 'verified']:
+                an_nums[0] += 1
             else:
-                index = 3
-            an_nums[index] += 1
+                an_nums[2] += 1
             an_nums[1] += 1
         return an_nums
 
@@ -1995,31 +1974,22 @@ class AnalysisRequest(BaseFolder):
                 manager_list.append(manager)
         return manager_list
 
+    def getDueDate(self):
+        """Returns the earliest due date of the analyses this Analysis Request
+        contains."""
+        due_dates = map(lambda an: an.getDueDate, self.getAnalyses())
+        return due_dates and min(due_dates) or None
+
     security.declareProtected(View, 'getLate')
 
     def getLate(self):
-        """Return True if any analyses are late
+        """Return True if there is at least one late analysis in this Request
         """
-        workflow = getToolByName(self, 'portal_workflow')
-        review_state = workflow.getInfoFor(self, 'review_state', '')
-        resultdate = 0
-        if review_state in ['to_be_sampled', 'to_be_preserved',
-                            'sample_due', 'published']:
-            return False
-
-        for analysis in self.objectValues('Analysis'):
-            review_state = workflow.getInfoFor(analysis, 'review_state', '')
-            if review_state == 'published':
+        for analysis in self.getAnalyses():
+            if analysis.review_state == "retracted":
                 continue
-            # This situation can be met during analysis request creation
-            calculation = analysis.getCalculation()
-            if not calculation or (
-                    calculation and not calculation.getDependentServices()):
-                resultdate = analysis.getResultCaptureDate()
-            duedate = analysis.getDueDate()
-            # noinspection PyCallingNonCallable
-            if (resultdate and resultdate > duedate) \
-                    or (not resultdate and DateTime() > duedate):
+            analysis_obj = api.get_object(analysis)
+            if analysis_obj.isLateAnalysis():
                 return True
         return False
 
@@ -2062,64 +2032,38 @@ class AnalysisRequest(BaseFolder):
     security.declareProtected(View, 'getBillableItems')
 
     def getBillableItems(self):
-        """The main purpose of this function is to obtain the analysis services
-        and profiles from the analysis request
-        whose prices are needed to quote the analysis request.
-        If an analysis belongs to a profile, this analysis will only be
-        included in the analyses list if the profile
-        has disabled "Use Analysis Profile Price".
-
-        :returns: a tuple of two lists. The first one only contains analysis
-                  services not belonging to a profile with active "Use Analysis
-                  Profile Price". The second list contains the profiles with
-                  activated "Use Analysis Profile Price".
+        """Returns the items to be billed
         """
-        workflow = getToolByName(self, 'portal_workflow')
-        # REMEMBER: Analysis != Analysis services
-        analyses = []
-        analysis_profiles = []
-        to_be_billed = []
-        # Getting all analysis request analyses
-        # Getting all analysis request analyses
-        ar_analyses = self.getAnalyses(cancellation_state='active',
-                                       full_objects=True)
-        for analysis in ar_analyses:
-            review_state = workflow.getInfoFor(analysis, 'review_state', '')
-            if review_state not in ('not_requested', 'retracted'):
-                analyses.append(analysis)
-        # Getting analysis request profiles
-        for profile in self.getProfiles():
-            # Getting the analysis profiles which has "Use Analysis Profile
-            # Price" enabled
-            if profile.getUseAnalysisProfilePrice():
-                analysis_profiles.append(profile)
-            else:
-                # we only need the analysis service keywords from these
-                # profiles
-                to_be_billed += [service.getKeyword() for service in
-                                 profile.getService()]
-        # So far we have three arrays:
-        #   - analyses: has all analyses (even if they are included inside a
-        # profile or not)
-        #   - analysis_profiles: has the profiles with "Use Analysis Profile
-        # Price" enabled
-        #   - to_be_quoted: has analysis services keywords from analysis
-        # profiles with "Use Analysis Profile Price"
-        #     disabled
-        # If a profile has its own price, we don't need their analises'
-        # prices, so we have to quit all
-        # analysis belonging to that profile. But if another profile has the
-        # same analysis service but has
-        # "Use Analysis Profile Price" disabled, the service must be included
-        #  as billable.
-        for profile in analysis_profiles:
-            for analysis_service in profile.getService():
-                for analysis in analyses:
-                    if analysis_service.getKeyword() == analysis.getKeyword() \
-                            and analysis.getKeyword() not in to_be_billed:
-                        analyses.remove(analysis)
-        return analyses, analysis_profiles
+        def get_keywords_set(profiles):
+            keys = list()
+            for profile in profiles:
+                keys += map(lambda s: s.getKeyword(), profile.getService())
+            return set(keys)
 
+        # Profiles with a fixed price, regardless of their analyses
+        profiles = self.getProfiles()
+        billable_items = filter(lambda pr: pr.getUseAnalysisProfilePrice(),
+                                 profiles)
+        # Profiles w/o a fixed price. The price is the sum of the individual
+        # price for each analysis
+        non_billable = filter(lambda p: p not in billable_items, profiles)
+        billable_keys = get_keywords_set(non_billable) - \
+                        get_keywords_set(billable_items)
+
+        # Get the analyses to be billed
+        exclude_rs = ['retracted', 'rejected']
+        for analysis in self.getAnalyses(cancellation_state="active"):
+            if analysis.review_state in exclude_rs:
+                continue
+            if analysis.getKeyword not in billable_keys:
+                continue
+            billable_items.append(api.get_object(analysis))
+
+        # Return the analyses that need to be billed individually, together with
+        # the profiles with a fixed price
+        return billable_items
+
+    # TODO Cleanup - Remove this function, only used in invoice and too complex
     def getServicesAndProfiles(self):
         """This function gets all analysis services and all profiles and removes
         the services belonging to a profile.
@@ -2128,52 +2072,45 @@ class AnalysisRequest(BaseFolder):
         analyses and the second list the profiles.
         The third contains the analyses objects used by the profiles.
         """
-        # Getting requested analyses
-        workflow = getToolByName(self, 'portal_workflow')
-        analyses = []
         # profile_analyses contains the profile's analyses (analysis !=
         # service") objects to obtain
         # the correct price later
-        profile_analyses = []
-        for analysis in self.objectValues('Analysis'):
-            review_state = workflow.getInfoFor(analysis, 'review_state', '')
-            if review_state != 'not_requested':
-                analyses.append(analysis)
-        # Getting all profiles
-        analysis_profiles = self.getProfiles() if len(
-            self.getProfiles()) > 0 else []
-        # Cleaning services included in profiles
-        for profile in analysis_profiles:
-            for analysis_service in profile.getService():
-                for analysis in analyses:
-                    if analysis_service.getKeyword() == analysis.getKeyword():
-                        analyses.remove(analysis)
-                        profile_analyses.append(analysis)
-        return analyses, analysis_profiles, profile_analyses
+        exclude_rs = ['retracted', 'rejected']
+        analyses = filter(lambda an: an.review_state not in exclude_rs,
+                          self.getAnalyses(cancellation_state='active'))
+        analyses = map(api.get_object, analyses)
+        profiles = self.getProfiles()
+
+        # Get the service keys from all profiles
+        profiles_keys = list()
+        for profile in profiles:
+            profile_keys = map(lambda s: s.getKeyword(), profile.getService())
+            profiles_keys.extend(profile_keys)
+
+        # Extract the analyses which service is present in at least one profile
+        # and those not present (orphan)
+        profile_analyses = list()
+        orphan_analyses = list()
+        for an in analyses:
+            if an.getKeyword() in profiles_keys:
+                profile_analyses.append(an)
+            else:
+                orphan_analyses.append(an)
+        return analyses, profiles, profile_analyses
 
     security.declareProtected(View, 'getSubtotal')
 
     def getSubtotal(self):
         """Compute Subtotal (without member discount and without vat)
         """
-        analyses, a_profiles = self.getBillableItems()
-        return sum(
-            [Decimal(obj.getPrice()) for obj in analyses] +
-            [Decimal(obj.getAnalysisProfilePrice()) for obj in a_profiles]
-        )
+        return sum([Decimal(obj.getPrice()) for obj in self.getBillableItems()])
 
     security.declareProtected(View, 'getSubtotalVATAmount')
 
     def getSubtotalVATAmount(self):
         """Compute VAT amount without member discount
         """
-        analyses, a_profiles = self.getBillableItems()
-        if len(analyses) > 0 or len(a_profiles) > 0:
-            return sum(
-                [Decimal(o.getVATAmount()) for o in analyses] +
-                [Decimal(o.getVATAmount()) for o in a_profiles]
-            )
-        return 0
+        return sum([Decimal(o.getVATAmount()) for o in self.getBillableItems()])
 
     security.declareProtected(View, 'getSubtotalTotalPrice')
 
@@ -2308,9 +2245,6 @@ class AnalysisRequest(BaseFolder):
                 attachments.append(other.UID())
             attachments.append(attachment.UID())
             analysis.setAttachment(attachments)
-            if workflow.getInfoFor(analysis,
-                                   'review_state') == 'attachment_due':
-                workflow.doActionFor(analysis, 'attach')
         else:
             others = self.getAttachment()
             attachments = []
@@ -2351,7 +2285,13 @@ class AnalysisRequest(BaseFolder):
 
     security.declarePublic('getVerifier')
 
+    @deprecated("Use getVerifiers instead")
     def getVerifier(self):
+        """Returns the user that verified the whole Analysis Request. Since the
+        verification is done automatically as soon as all the analyses it
+        contains are verified, this function returns the user that verified the
+        last analysis pending.
+        """
         wtool = getToolByName(self, 'portal_workflow')
         mtool = getToolByName(self, 'portal_membership')
 
@@ -2374,6 +2314,29 @@ class AnalysisRequest(BaseFolder):
             if verifier is None or verifier == '':
                 verifier = actor
         return verifier
+
+    @security.public
+    def getVerifiersIDs(self):
+        """Returns the ids from users that have verified at least one analysis
+        from this Analysis Request
+        """
+        verifiers_ids = list()
+        for brain in self.getAnalyses():
+            verifiers_ids += brain.getVerificators
+        return list(set(verifiers_ids))
+
+    @security.public
+    def getVerifiers(self):
+        """Returns the list of lab contacts that have verified at least one
+        analysis from this Analysis Request
+        """
+        contacts = list()
+        for verifier in self.getVerifiersIDs():
+            user = api.get_user(verifier)
+            contact = api.get_user_contact(user, ["LabContact"])
+            if contact:
+                contacts.append(contact)
+        return contacts
 
     security.declarePublic('getContactUIDForUser')
 
@@ -2439,15 +2402,15 @@ class AnalysisRequest(BaseFolder):
 
         for an in ans:
             an = an.getObject()
-            br = an.getBackReferences('WorksheetAnalysis')
-            if len(br) > 0:
-                ws = br[0]
-                was = ws.getAnalyses()
-                for wa in was:
-                    if valid_dup(wa):
-                        qcanalyses.append(wa)
-                    elif valid_ref(wa):
-                        qcanalyses.append(wa)
+            ws = an.getWorksheet()
+            if not ws:
+                continue
+            was = ws.getAnalyses()
+            for wa in was:
+                if valid_dup(wa):
+                    qcanalyses.append(wa)
+                elif valid_ref(wa):
+                    qcanalyses.append(wa)
 
         return qcanalyses
 
@@ -2456,41 +2419,6 @@ class AnalysisRequest(BaseFolder):
         """
         workflow = getToolByName(self, 'portal_workflow')
         return workflow.getInfoFor(self, 'review_state') == 'invalid'
-
-    def getLastChild(self):
-        """return the last child Request due to invalidation
-        """
-        child = self.getChildAnalysisRequest()
-        while child and child.getChildAnalysisRequest():
-            child = child.getChildAnalysisRequest()
-        return child
-
-    def getRequestedAnalyses(self):
-        """It returns all requested analyses, even if they belong to an
-        analysis profile or not.
-        """
-        #
-        # title=Get requested analyses
-        #
-        result = []
-        cats = {}
-        workflow = getToolByName(self, 'portal_workflow')
-        for analysis in self.getAnalyses(full_objects=True):
-            review_state = workflow.getInfoFor(analysis, 'review_state')
-            if review_state == 'not_requested':
-                continue
-            category_name = analysis.getCategoryTitle()
-            if category_name not in cats:
-                cats[category_name] = {}
-            cats[category_name][analysis.Title()] = analysis
-        cat_keys = sorted(cats.keys(), key=methodcaller('lower'))
-        for cat_key in cat_keys:
-            analyses = cats[cat_key]
-            analysis_keys = sorted(analyses.keys(),
-                                   key=methodcaller('lower'))
-            for analysis_key in analysis_keys:
-                result.append(analyses[analysis_key])
-        return result
 
     def getSamplingRoundUID(self):
         """Obtains the sampling round UID
@@ -2607,25 +2535,12 @@ class AnalysisRequest(BaseFolder):
         """Returns a list of the departments assigned to the Analyses
         from this Analysis Request
         """
-        bsc = getToolByName(self, 'bika_setup_catalog')
-        dept_uids = []
-        for an in self.getAnalyses():
-            deptuid = None
-            if hasattr(an, 'getDepartmentUID'):
-                deptuid = an.getDepartmentUID
-            if not deptuid and hasattr(an, 'getObject'):
-                deptuid = an.getObject().getDepartmentUID()
-            if deptuid:
-                dept_uids.append(deptuid)
-        brains = bsc(portal_type='Department', UID=dept_uids)
-        depts = [b.getObject() for b in brains]
-        return list(set(depts))
-
-    def getDepartmentUIDs(self):
-        """Return a list of the UIDs of departments assigned to the Analyses
-        from this Analysis Request.
-        """
-        return [dept.UID() for dept in self.getDepartments()]
+        departments = list()
+        for analysis in self.getAnalyses(full_objects=True):
+            department = analysis.getDepartment()
+            if department and department not in departments:
+                departments.append(department)
+        return departments
 
     def getResultsInterpretationByDepartment(self, department=None):
         """Returns the results interpretation for this Analysis Request
@@ -2684,9 +2599,8 @@ class AnalysisRequest(BaseFolder):
 
         :returns: a list with the full partition objects
         """
-        analyses = self.getRequestedAnalyses()
         partitions = []
-        for analysis in analyses:
+        for analysis in self.getAnalyses(full_objects=True):
             if analysis.getSamplePartition() not in partitions:
                 partitions.append(analysis.getSamplePartition())
         return partitions
@@ -2817,51 +2731,6 @@ class AnalysisRequest(BaseFolder):
         """
         return user_email(self, self.Creator())
 
-    # TODO Workflow, AnalysisRequest Move to guards.verify?
-    def isVerifiable(self):
-        """Checks it the current Analysis Request can be verified. This is, its
-        not a cancelled Analysis Request and all the analyses that contains
-        are verifiable too. Note that verifying an Analysis Request is in fact,
-        the same as verifying all the analyses that contains. Therefore, the
-        'verified' state of an Analysis Request shouldn't be a 'real' state,
-        rather a kind-of computed state, based on the statuses of the analyses
-        it contains. This is why this function checks if the analyses
-        contained are verifiable, cause otherwise, the Analysis Request will
-        never be able to reach a 'verified' state.
-        :returns: True or False
-        """
-        # Check if the analysis request is active
-        workflow = getToolByName(self, "portal_workflow")
-        objstate = workflow.getInfoFor(self, 'cancellation_state', 'active')
-        if objstate == "cancelled":
-            return False
-
-        # Check if the analysis request state is to_be_verified
-        review_state = workflow.getInfoFor(self, "review_state")
-        if review_state == 'to_be_verified':
-            # This means that all the analyses from this analysis request have
-            # already been transitioned to a 'verified' state, and so the
-            # analysis request itself
-            return True
-        else:
-            # Check if the analyses contained in this analysis request are
-            # verifiable. Only check those analyses not cancelled and that
-            # are not in a kind-of already verified state
-            canbeverified = True
-            omit = ['published', 'retracted', 'rejected', 'verified']
-            for a in self.getAnalyses(full_objects=True):
-                st = workflow.getInfoFor(a, 'cancellation_state', 'active')
-                if st == 'cancelled':
-                    continue
-                st = workflow.getInfoFor(a, 'review_state')
-                if st in omit:
-                    continue
-                # Can the analysis be verified?
-                if not a.isVerifiable(self):
-                    canbeverified = False
-                    break
-            return canbeverified
-
     def getObjectWorkflowStates(self):
         """
         This method is used as a metacolumn.
@@ -2876,38 +2745,9 @@ class AnalysisRequest(BaseFolder):
             states[w.state_var] = state
         return states
 
-    # TODO Workflow, AnalysisRequest Move to guards.verify?
-    def isUserAllowedToVerify(self, member):
-        """Checks if the specified user has enough privileges to verify the
-        current AR. Apart from the roles, this function also checks if the
-        current user has enough privileges to verify all the analyses contained
-        in this Analysis Request. Note that this function only returns if the
-        user can verify the analysis request according to his/her privileges
-        and the analyses contained (see isVerifiable function)
-
-        :member: user to be tested
-        :returns: true or false
-        """
-        # Check if the user has "Bika: Verify" privileges
-        username = member.getUserName()
-        allowed = ploneapi.user.has_permission(VerifyPermission,
-                                               username=username)
-        if not allowed:
-            return False
-        # Check if the user is allowed to verify all the contained analyses
-        # TODO-performance: gettin all analysis each time this function is
-        # called
-        notallowed = [a for a in self.getAnalyses(full_objects=True)
-                      if not a.isUserAllowedToVerify(member)]
-        return not notallowed
-
     @security.public
     def guard_to_be_preserved(self):
         return guards.to_be_preserved(self)
-
-    @security.public
-    def guard_verify_transition(self):
-        return guards.verify(self)
 
     @security.public
     def guard_unassign_transition(self):
@@ -2918,72 +2758,12 @@ class AnalysisRequest(BaseFolder):
         return guards.assign(self)
 
     @security.public
-    def guard_receive_transition(self):
-        return guards.receive(self)
-
-    @security.public
     def guard_schedule_sampling_transition(self):
         return guards.schedule_sampling(self)
 
     @security.public
-    def guard_publish_transition(self):
-        return guards.publish(self)
-
-    @security.public
     def guard_prepublish_transition(self):
         return guards.prepublish(self)
-
-    @security.public
-    def workflow_script_no_sampling_workflow(self):
-        events.after_no_sampling_workflow(self)
-
-    @security.public
-    def workflow_script_sampling_workflow(self):
-        events.after_sampling_workflow(self)
-
-    @security.public
-    def workflow_script_sample(self):
-        events.after_sample(self)
-
-    @security.public
-    def workflow_script_receive(self):
-        events.after_receive(self)
-
-    @security.public
-    def workflow_script_preserve(self):
-        events.after_preserve(self)
-
-    @security.public
-    def workflow_script_attach(self):
-        events.after_attach(self)
-
-    @security.public
-    def workflow_script_verify(self):
-        events.after_verify(self)
-
-    @security.public
-    def workflow_script_publish(self):
-        events.after_publish(self)
-
-    @security.public
-    def workflow_script_reinstate(self):
-        events.after_reinstate(self)
-
-    @security.public
-    def workflow_script_cancel(self):
-        events.after_cancel(self)
-
-    @security.public
-    def workflow_script_schedule_sampling(self):
-        events.after_schedule_sampling(self)
-
-    @security.public
-    def workflow_script_reject(self):
-        events.after_reject(self)
-
-    @security.public
-    def workflow_script_retract(self):
-        events.after_retract(self)
 
     def SearchableText(self):
         """
@@ -3070,6 +2850,74 @@ class AnalysisRequest(BaseFolder):
         logger.warn("_ARAttachment is a virtual field used in AR Add. "
                     "It can not hold an own value!")
         return None
+
+    def get_retest(self):
+        """Returns the Analysis Request automatically generated because of the
+        retraction of the current analysis request
+        """
+        relationship = "AnalysisRequestRetracted"
+        retest = self.getBackReferences(relationship=relationship)
+        if retest and len(retest) > 1:
+            logger.warn("More than one retest for {0}".format(self.getId()))
+        return retest and retest[0] or None
+
+    def getAncestors(self, all_ancestors=True):
+        """Returns the ancestor(s) of this Analysis Request
+        param all_ancestors: include all ancestors, not only the parent
+        """
+        parent = self.getParentAnalysisRequest()
+        if not parent:
+            return list()
+        if not all_ancestors:
+            return [parent]
+        return [parent] + parent.getAncestors(all_ancestors=True)
+
+    def isRootAncestor(self):
+        """Returns True if the AR is the root ancestor
+
+        :returns: True if the AR has no more parents
+        """
+        parent = self.getParentAnalysisRequest()
+        if parent:
+            return False
+        return True
+
+    def getDescendants(self, all_descendants=False):
+        """Returns the descendant Analysis Requests
+
+        :param all_descendants: recursively include all descendants
+        """
+
+        # N.B. full objects returned here from
+        #      `Products.Archetypes.Referenceable.getBRefs`
+        #      -> don't add this method into Metadata
+        children = self.getBackReferences(
+            "AnalysisRequestParentAnalysisRequest")
+
+        descendants = []
+
+        # recursively include all children
+        if all_descendants:
+            for child in children:
+                descendants.append(child)
+                descendants += child.getDescendants(all_descendants=True)
+        else:
+            descendants = children
+
+        return descendants
+
+    def getDescendantsUIDs(self, all_descendants=False):
+        """Returns the UIDs of the descendant Analysis Requests
+
+        This method is used as metadata
+        """
+        descendants = self.getDescendants(all_descendants=all_descendants)
+        return map(api.get_uid, descendants)
+
+    def isPartition(self):
+        """Returns true if this Analysis Request is a partition
+        """
+        return not self.isRootAncestor()
 
 
 registerType(AnalysisRequest, PROJECTNAME)

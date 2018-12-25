@@ -5,7 +5,6 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-
 def get_instrument_import_search_criteria(sample):
     sam = ['getRequestID', 'getSampleID', 'getClientSampleID']
     if sample == 'requestid':

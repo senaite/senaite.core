@@ -8,9 +8,10 @@
 from Products.CMFCore.utils import getToolByName
 from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
-from bika.lims.utils import formatDateQuery, formatDateParms, formatDuration, \
+from bika.lims.utils import formatDateQuery, formatDateParms, \
     logged_in_client
 from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
@@ -65,24 +66,7 @@ class Report(BrowserView):
 
         query['review_state'] = 'published'
 
-        workflow = getToolByName(self.context, 'portal_workflow')
-        if 'bika_worksheetanalysis_workflow' in self.request.form:
-            query['worksheetanalysis_review_state'] = self.request.form[
-                'bika_worksheetanalysis_workflow']
-            ws_review_state = workflow.getTitleForStateOnType(
-                self.request.form['bika_worksheetanalysis_workflow'], 'Analysis')
-            parms.append(
-                {'title': _('Assigned to worksheet'), 'value': ws_review_state,
-                 'type': 'text'})
-
-        # query all the analyses and increment the counts
-        count_early = 0
-        mins_early = 0
-        count_late = 0
-        mins_late = 0
-        count_undefined = 0
         services = {}
-
         analyses = bc(query)
         for a in analyses:
             analysis = a.getObject()
@@ -122,16 +106,15 @@ class Report(BrowserView):
                 services[service_uid]['ave_early'] = ''
             else:
                 avemins = (mins_early) / count_early
-                services[service_uid]['ave_early'] = formatDuration(self.context,
-                                                                    avemins)
+                services[service_uid]['ave_early'] = \
+                    api.to_dhm_format(minutes=avemins)
             count_late = services[service_uid]['count_late']
             mins_late = services[service_uid]['mins_late']
             if count_late == 0:
                 services[service_uid]['ave_late'] = ''
             else:
                 avemins = mins_late / count_late
-                services[service_uid]['ave_late'] = formatDuration(self.context,
-                                                                   avemins)
+                services[service_uid]['ave_late'] = api.to_dhm_format(avemins)
 
         # and now lets do the actual report lines
         formats = {'columns': 7,
@@ -265,7 +248,7 @@ class Report(BrowserView):
 
         if total_count_late:
             ave_mins = total_mins_late / total_count_late
-            footline.append({'value': formatDuration(self.context, ave_mins),
+            footline.append({'value': api.to_dhm_format(minutes=ave_mins),
                              'class': 'total number'})
         else:
             footline.append({'value': ''})
@@ -275,7 +258,7 @@ class Report(BrowserView):
 
         if total_count_early:
             ave_mins = total_mins_early / total_count_early
-            footline.append({'value': formatDuration(self.context, ave_mins),
+            footline.append({'value': api.to_dhm_format(minutes=ave_mins),
                              'class': 'total number'})
         else:
             footline.append({'value': '',

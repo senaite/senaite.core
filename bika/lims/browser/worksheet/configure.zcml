@@ -4,139 +4,155 @@
     xmlns:i18n="http://namespaces.zope.org/i18n"
     i18n_domain="senaite.core">
 
-
-    <!-- Workflow actions -->
-    <browser:page
+  <!-- Workflow actions -->
+  <browser:page
       for="bika.lims.interfaces.IWorksheetFolder"
       name="workflow_action"
       class="bika.lims.browser.worksheet.workflow.WorksheetFolderWorkflowAction"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
-    />
+      />
 
-    <browser:page
+  <browser:page
       for="bika.lims.interfaces.IWorksheet"
       name="workflow_action"
       class="bika.lims.browser.worksheet.workflow.WorksheetWorkflowAction"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
-    />
+      />
 
-
-    <!-- Views -->
-    <browser:page
+  <!-- Views -->
+  <browser:page
       for="bika.lims.interfaces.IWorksheetFolder"
       name="base_view"
       class="bika.lims.browser.worksheet.views.FolderView"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
-    />
+      />
 
-    <browser:page
+  <browser:page
       for="bika.lims.interfaces.IWorksheetFolder"
       name="worksheet_add"
       class="bika.lims.browser.worksheet.views.AddWorksheetView"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
-    />
+      />
 
-    <browser:page
+  <browser:page
       for="bika.lims.interfaces.IWorksheet"
       name="manage_results"
       class="bika.lims.browser.worksheet.views.ManageResultsView"
       permission="bika.lims.ViewResults"
       layer="bika.lims.interfaces.IBikaLIMS"
-    />
+      />
 
-    <browser:page
+  <browser:page
       for="bika.lims.interfaces.IWorksheet"
       name="add_analyses"
       class="bika.lims.browser.worksheet.views.AddAnalysesView"
       permission="bika.lims.EditWorksheet"
       layer="bika.lims.interfaces.IBikaLIMS"
-    />
+      />
 
-    <browser:page
+  <!-- Analyses Classic View -->
+  <browser:page
+      for="bika.lims.interfaces.IWorksheet"
+      name="analyses_classic_view"
+      class="bika.lims.browser.worksheet.views.AnalysesView"
+      permission="bika.lims.EditWorksheet"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
+
+  <!-- Analyses Transposed View -->
+  <browser:page
+      for="bika.lims.interfaces.IWorksheet"
+      name="analyses_transposed_view"
+      class="bika.lims.browser.worksheet.views.AnalysesTransposedView"
+      permission="bika.lims.EditWorksheet"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
+
+  <browser:page
       for="bika.lims.interfaces.IWorksheet"
       name="add_blank"
       class="bika.lims.browser.worksheet.views.AddBlankView"
       permission="bika.lims.EditWorksheet"
       layer="bika.lims.interfaces.IBikaLIMS"
-    />
+      />
 
-    <browser:page
+  <browser:page
       for="bika.lims.interfaces.IWorksheet"
       name="add_control"
       class="bika.lims.browser.worksheet.views.AddControlView"
       permission="bika.lims.EditWorksheet"
       layer="bika.lims.interfaces.IBikaLIMS"
-    />
+      />
 
-    <browser:page
+  <browser:page
       for="bika.lims.interfaces.IWorksheet"
       name="add_duplicate"
       class="bika.lims.browser.worksheet.views.AddDuplicateView"
       permission="bika.lims.EditWorksheet"
       layer="bika.lims.interfaces.IBikaLIMS"
-    />
+      />
 
-    <browser:page
+  <browser:page
       for="bika.lims.interfaces.IWorksheet"
       name="export"
       class="bika.lims.browser.worksheet.views.ExportView"
       permission="bika.lims.EditWorksheet"
       layer="bika.lims.interfaces.IBikaLIMS"
-    />
+      />
 
-    <browser:page
+  <browser:page
       for="bika.lims.interfaces.IWorksheet"
       name="getWorksheetReferences"
       class="bika.lims.browser.worksheet.views.ReferenceSamplesView"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
-    />
+      />
 
-    <browser:page
+  <browser:page
       for="bika.lims.interfaces.IWorksheet"
       name="print"
       class="bika.lims.browser.worksheet.views.PrintView"
       permission="bika.lims.EditWorksheet"
       layer="bika.lims.interfaces.IBikaLIMS"
-    />
+      />
 
 
-    <!-- Ajax signatures -->
+  <!-- Ajax signatures -->
 
-    <browser:page
+  <browser:page
       for="bika.lims.interfaces.IWorksheet"
       name="getServices"
       class="bika.lims.browser.worksheet.ajax.GetServices"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
-    />
+      />
 
-    <browser:page
+  <browser:page
       for="bika.lims.interfaces.IWorksheet"
       name="attachAnalyses"
       class="bika.lims.browser.worksheet.ajax.AttachAnalyses"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
-    />
+      />
 
-    <browser:page
+  <browser:page
       for="bika.lims.interfaces.IWorksheet"
       name="set_analyst"
       class="bika.lims.browser.worksheet.ajax.SetAnalyst"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
-    />
+      />
 
-    <browser:page
+  <browser:page
       for="bika.lims.interfaces.IWorksheet"
       name="set_instrument"
       class="bika.lims.browser.worksheet.ajax.SetInstrument"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
-    />
+      />
 
 </configure>

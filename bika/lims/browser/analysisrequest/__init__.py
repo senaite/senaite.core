@@ -25,14 +25,11 @@ from .add2 import AnalysisRequestAddView  # noqa: F401
 from .add2 import AnalysisRequestManageView  # noqa: F401
 from .add2 import ajaxAnalysisRequestAddView  # noqa: F401
 from .analysisrequests import AnalysisRequestsView
-from .analysisrequests import QueuedAnalysisRequestsCount
 from .invoice import InvoicePrintView
 from .invoice import InvoiceView
-from .log import AnalysisRequestLog
 from .manage_analyses import AnalysisRequestAnalysesView
 from .manage_results import AnalysisRequestManageResultsView
 from .published_results import AnalysisRequestPublishedResults
-from .results_not_requested import AnalysisRequestResultsNotRequestedView
 from .workflow import AnalysisRequestWorkflowAction
 
 
@@ -85,15 +82,11 @@ class JSONReadExtender(object):
             #     adapter(request, analysis_data)
             if not self.include_fields or "transitions" in self.include_fields:
                 analysis_data['transitions'] = get_workflow_actions(analysis)
-            if analysis.getRetested():
-                retracted = self.context.getAnalyses(review_state='retracted',
-                                            title=analysis.Title(),
-                                            full_objects=True)
-                prevs = sorted(retracted, key=lambda item: item.created())
-                prevs = [{'created': str(p.created()),
-                          'Result': p.getResult(),
-                          'InterimFields': p.getInterimFields()}
-                         for p in prevs]
+            retest_of = analysis.getRetestOf()
+            if retest_of:
+                prevs = [{'created': str(retest_of.created()),
+                          'Result': retest_of.getResult(),
+                          'InterimFields': retest_of.getInterimFields()}]
                 analysis_data['Previous Results'] = prevs
             ret.append(analysis_data)
         return ret

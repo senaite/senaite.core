@@ -51,7 +51,6 @@ class TemplatesView(BikaListingView):
             "/++resource++bika.lims.images/artemplate_big.png"
         )
 
-        self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = True
 

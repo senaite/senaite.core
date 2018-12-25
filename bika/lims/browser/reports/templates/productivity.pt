@@ -190,10 +190,6 @@
                                                                workflow_id='bika_cancellation_workflow',
                                                                field_id='bika_cancellation_workflow',
                                                                field_title='Cancellation state')"/>
-                <tal:x content="structure python:view.selection_macros.select_state_worksheetanalysis(
-                                                               workflow_id='bika_worksheetanalysis_workflow',
-                                                               field_id='bika_worksheetanalysis_workflow',
-                                                               field_title='Worksheet state')"/>
                 <tal:x content="structure context/@@selection_macros/select_output_format"/>
             </fieldset>
             <input tabindex=""
@@ -233,10 +229,6 @@
                                                                workflow_id='bika_cancellation_workflow',
                                                                field_id='bika_cancellation_workflow',
                                                                field_title='Cancellation state')"/>
-                <tal:x content="structure python:view.selection_macros.select_state_worksheetanalysis(
-                                                               workflow_id='bika_worksheetanalysis_workflow',
-                                                               field_id='bika_worksheetanalysis_workflow',
-                                                               field_title='Worksheet state')"/>
                 <tal:x content="structure context/@@selection_macros/select_output_format"/>
             </fieldset>
             <input tabindex=""
@@ -286,10 +278,6 @@
                                                                workflow_id='bika_cancellation_workflow',
                                                                field_id='bika_cancellation_workflow',
                                                                field_title='Cancellation state')"/>
-                <tal:x content="structure python:view.selection_macros.select_state_worksheetanalysis(
-                                                               workflow_id='bika_worksheetanalysis_workflow',
-                                                               field_id='bika_worksheetanalysis_workflow',
-                                                               field_title='Worksheet state')"/>
                 <tal:x content="structure context/@@selection_macros/select_output_format"/>
             </fieldset>
             <input tabindex=""
@@ -321,10 +309,6 @@
                 <tal:x content="structure python:view.selection_macros.select_daterange_received(
                                                                field_id='Received',
                                                                field_title='Date Received')"/>
-                <tal:x content="structure python:view.selection_macros.select_state_worksheetanalysis(
-                                                               workflow_id='bika_worksheetanalysis_workflow',
-                                                               field_id='bika_worksheetanalysis_workflow',
-                                                               field_title='Worksheet state')"/>
                 <tal:x content="structure context/@@selection_macros/select_output_format"/>
             </fieldset>
             <input tabindex=""

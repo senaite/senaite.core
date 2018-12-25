@@ -175,7 +175,7 @@ class AnalysisServicesView(BikaListingView):
 
         self.title = self.context.translate(_("Analysis Services"))
         self.form_id = "list_analysisservices"
-        self.show_sort_column = False
+
         self.show_select_row = False
         self.show_select_column = True
         self.show_select_all_checkbox = False
@@ -190,8 +190,6 @@ class AnalysisServicesView(BikaListingView):
             self.pagesize = 999999  # hide batching controls
             self.show_categories = True
             self.expand_all_categories = False
-            self.ajax_categories = True
-            self.category_index = "getCategoryTitle"
 
         self.columns = collections.OrderedDict((
             ("Title", {
@@ -321,28 +319,6 @@ class AnalysisServicesView(BikaListingView):
             self.decimal_mark,
             variation[1]
         )
-
-    def isItemAllowed(self, obj):
-        """It checks if the item can be added to the list depending on the
-        department filter.
-
-        If the analysis service is not assigned to a department, show it.
-        If department filtering is disabled in bika_setup, will return True.
-        """
-        if not self.context.bika_setup.getAllowDepartmentFiltering():
-            return True
-        # Gettin the department from analysis service
-        obj_dep = obj.getDepartment()
-        result = True
-        if obj_dep:
-            # Getting the cookie value
-            cookie_dep_uid = self.request.get(
-                "filter_by_department_info", "no")
-            # Comparing departments" UIDs
-            result = True if obj_dep.UID() in\
-                cookie_dep_uid.split(",") else False
-            return result
-        return result
 
     def folderitem(self, obj, item, index):
         """Service triggered each time an item is iterated in folderitems.

@@ -180,6 +180,20 @@ schema = BikaFolderSchema.copy() + Schema((
         )
     ),
     BooleanField(
+        'AllowToSubmitNotAssigned',
+        schemata="Security",
+        default=True,
+        widget=BooleanWidget(
+            label=_("Allow to submit results for unassigned analyses or for "
+                    "analyses assigned to others"),
+            description=_(
+                "If unchecked, users will only be able to submit results "
+                "for the analyses they are assigned to, and the submission of "
+                "results for unassigned analyses won't be permitted. This "
+                "setting does not apply to users with role Lab Manager")
+        )
+    ),
+    BooleanField(
         'RestrictWorksheetManagement',
         schemata="Security",
         default=True,
@@ -190,14 +204,6 @@ schema = BikaFolderSchema.copy() + Schema((
                           "users have restricted access only to those "
                           "worksheets for which they are assigned, "
                           "this option will be checked and readonly.")
-        )
-    ),
-    BooleanField(
-        'ShowNewReleasesInfo',
-        schemata="Notifications",
-        default=True,
-        widget=BooleanWidget(
-            label=_("Display an alert on new releases of Bika LIMS"),
         )
     ),
     BooleanField(
@@ -340,7 +346,7 @@ schema = BikaFolderSchema.copy() + Schema((
     BooleanField(
         'EnableARSpecs',
         schemata="Analyses",
-        default=True,
+        default=False,
         widget=BooleanWidget(
             label=_("Enable AR Specifications"),
             description=_(
@@ -796,7 +802,10 @@ schema = BikaFolderSchema.copy() + Schema((
                 " IDs from 001 to 999.</p>" 
                 "<p>Alphanumeric prefixes for IDs are included as is in the" 
                 " formats, e.g. WS for Worksheet in WS-{seq:03d} produces" 
-                " sequential Worksheet IDs: WS-001, WS-002, WS-003 etc.</p>" 
+                " sequential Worksheet IDs: WS-001, WS-002, WS-003 etc.</p>"
+                "<p>For dynamic generation of alphanumeric and sequential IDs,"
+                " the wildcard {alpha} can be used. E.g WS-{alpha:2a3d}"
+                " produces WS-AA001, WS-AA002, WS-AB034, etc.</p>"
                 "<p>Variables that can be used include:" 
                 "<table>" 
                 "<tr>"
@@ -882,59 +891,6 @@ schema = BikaFolderSchema.copy() + Schema((
                           "Request is rejected.")
         ),
     ),
-    BooleanField(
-        'AllowDepartmentFiltering',
-        schemata="Security",
-        default=False,
-        widget=BooleanWidget(
-            label=_("Enable filtering by department"),
-            description=_("When enabled, only those items belonging to the "
-                          "same department as the logged user will be "
-                          "displayed. Since a user can belong to more than "
-                          "one department, a department filtering portlet "
-                          "will be displayed too. By default, disabled.")
-        )
-    ),
-    BooleanField(
-        'DisplayAdvancedFilterBarForAnalysisRequests',
-        schemata="Analyses",
-        default=False,
-        widget=BooleanWidget(
-            label=_(
-                "Display an advanced filter bar in Analysis Requests lists"),
-            description=_(
-                "If enabled, the Analysis Requests Lists will"
-                " display an additional filter bar which allows the user "
-                "to filter the listed items by some several criteria."
-                "Warning: This may affect the listing performance."),
-        ),
-    ),
-    BooleanField(
-        'DisplayAdvancedFilterBarForSamples',
-        schemata="Analyses",
-        default=False,
-        widget=BooleanWidget(
-            label=_("Display an advanced filter bar in Samples lists"),
-            description=_(
-                "If enabled, the Samples Lists will"
-                " display an additional filter bar which allows the user "
-                "to filter the listed items by some several criteria."
-                "Warning: This may affect the listing performance."),
-        ),
-    ),
-    BooleanField(
-        'DisplayAdvancedFilterBarForAnalyses',
-        schemata="Analyses",
-        default=False,
-        widget=BooleanWidget(
-            label=_("Display an advanced filter bar in Analyses lists"),
-            description=_(
-                "If enabled, the Analyses Lists will"
-                " display an additional filter bar which allows the user "
-                "to filter the listed items by some several criteria."
-                "Warning: This may affect the listing performance."),
-        ),
-    ),
     IntegerField(
         'DefaultNumberOfARsToAdd',
         schemata="Analyses",
@@ -974,11 +930,6 @@ class BikaSetup(folder.ATFolder):
 
     schema = schema
     security = ClassSecurityInfo()
-
-    # needed to access the field for the front-page Portlet for Anonymous, w/o
-    # making the whole Laboratory viewable by Anonymous.
-    # Only the permission "Access contents information" is needed
-    security.declarePublic('getAllowDepartmentFiltering')
 
     def getAttachmentsPermitted(self):
         """Attachments permitted

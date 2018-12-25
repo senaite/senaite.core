@@ -5,155 +5,203 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from AccessControl.SecurityManagement import newSecurityManager
-from Acquisition import aq_inner, aq_parent
+import collections
+
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
 from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims.utils import to_utf8
+from plone.memoize import view
 from DateTime import DateTime
-from operator import itemgetter
-from plone.app.layout.globals.interfaces import IViewView
-from plone.app.layout.viewlets.content import ContentHistoryView, ContentHistoryViewlet
-from Products.Archetypes.config import REFERENCE_CATALOG
-from Products.CMFCore.utils import getToolByName
-from Products.CMFCore.WorkflowCore import WorkflowException
-from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from zope.interface import implements
-from zope.publisher.browser import TestRequest
-import json
+from plone.app.layout.viewlets.content import ContentHistoryView
 
 
 class LogView(BikaListingView):
-
-    """ Show log entries, workflow history and revision history details
-    for an object
+    """Review/Revision log view
     """
-    implements(IViewView)
 
     template = ViewPageTemplateFile("templates/log.pt")
 
     def __init__(self, context, request):
-        BikaListingView.__init__(self, context, request)
+        super(LogView, self).__init__(context, request)
 
-        self.show_sort_column = False
-        self.show_select_row = False
         self.show_select_column = False
-        self.show_workflow_action_buttons = False
         self.pagesize = 999999
+        self.show_search = False
 
-        self.icon = self.portal_url + "/++resource++bika.lims.images/%s_big.png" % \
-            context.portal_type.lower()
-        self.title = to_utf8(self.context.Title()) + " " + t(_("Log"))
-        self.description = ""
+        self.icon = "{}/{}/{}".format(
+            self.portal_url,
+            "++resource++bika.lims.images",
+            "%s_big.png" % context.portal_type.lower(),
+        )
 
-        self.columns = {
-            'Version': {'title': _('Version'), 'sortable': False},
-            'Date': {'title': _('Date'), 'sortable': False},
-            'User': {'title': _('User'), 'sortable': False},
-            'Action': {'title': _('Action'), 'sortable': False},
-            'Description': {'title': _('Description'), 'sortable': False},
-        }
+        self.title = "{} Log".format(api.get_title(context))
+
+        self.columns = collections.OrderedDict((
+            ("Version", {
+                "title": _("Version"), "sortable": False}),
+            ("Date", {
+                "title": _("Date"), "sortable": False}),
+            ("Actor", {
+                "title": _("Actor"), "sortable": False}),
+            ("Action", {
+                "title": _("Action"), "sortable": False}),
+            ("State", {
+                "title": _("Outcome state"), "sortable": False}),
+        ))
+
+        # Do not display Version column if the content is not versionable
+        if not self.is_versionable():
+            del(self.columns["Version"])
+
         self.review_states = [
-            {'id': 'default',
-             'title': 'All',
-             'contentFilter': {},
-             'columns': ['Version',
-                         'Date',
-                         'User',
-                         'Action',
-                         'Description']},
+            {
+                "id": "default",
+                "title": "All",
+                "contentFilter": {},
+                "columns": self.columns.keys(),
+            }
         ]
 
-    def folderitems(self):
-        rc = getToolByName(self.context, REFERENCE_CATALOG)
-        wf = getToolByName(self.context, 'portal_workflow')
-        pr = getToolByName(self.context, 'portal_repository')
+    def is_versionable(self):
+        """Checks if the content is versionable
+        """
+        pr = api.get_tool("portal_repository")
+        return pr.isVersionable(self.context)
 
-        isVersionable = pr.isVersionable(aq_inner(self.context))
-        try:
-            review_history = wf.getInfoFor(self.context, 'review_history')
-            review_history = list(review_history)
-            review_history.reverse()
-        except WorkflowException:
-            review_history = []
-        items = []
-        for entry in review_history:
-            # this folderitems doesn't subclass from the bika_listing.py
-            # so we create items from scratch
-            review_state = entry.get('review_state')
-            state_title = wf.getTitleForStateOnType(review_state, self.context.portal_type)
-            item = {
-                'obj': self.context,
-                'id': self.context.id,
-                'uid': self.context.UID(),
-                'title': self.context.title_or_id(),
-                'type_class': '',
-                'url': self.context.absolute_url(),
-                'relative_url': self.context.absolute_url(),
-                'view_url': self.context.absolute_url(),
-                'path': "/".join(self.context.getPhysicalPath()),
-                'replace': {},
-                'before': {},
-                'after': {},
-                'choices': {},
-                'class': {},
-                'state_class': '',
-                'allow_edit': [],
-                'required': [],
-                'Version': isVersionable and self.context.get('version_id', '') or '0',
-                'Date': self.ulocalized_time(entry.get('time')),
-                'sortable_date': entry.get('time'),
-                'User': entry.get('actor'),
-                'Action': entry.get('action') and entry.get('action') or 'Create',
-                'Description': "review state: %s" % state_title,
-            }
-            items.append(item)
+    def update(self):
+        """Update hook
+        """
+        super(LogView, self).update()
+        self.total = len(self.get_full_history())
 
-        if isVersionable:
-            request = TestRequest()
-            chv = ContentHistoryViewlet(self.context, request, None, None)
-            chv.navigation_root_url = chv.site_url = 'http://localhost:8080/bikas'
-            version_history = chv.revisionHistory()
+    def is_versioning_entry(self, entry):
+        """Checks if the entry is a versioning entry
+        """
+        return entry.get("type") == "versioning"
+
+    def to_title(self, id):
+        """Convert an id to a human readable title
+        """
+        if not isinstance(id, basestring):
+            return id
+        return id.capitalize().replace("_", " ")
+
+    def get_revision_history(self):
+        """Return the revision history of the current context
+        """
+        chv = ContentHistoryView(self.context, self.request)
+        return chv.revisionHistory()
+
+    def get_review_history(self):
+        """Return the review history of the current context
+        """
+        return api.get_review_history(self.context)
+
+    @view.memoize
+    def get_full_history(self):
+        history = self.get_revision_history() + self.get_review_history()
+        if len(history) == 0:
+            return []
+        history.sort(key=lambda x: x["time"], reverse=True)
+        return history
+
+    def get_entry_version(self, entry, default=0):
+        """Return the version of the entry
+        """
+        version = entry.get("version_id", default) or default
+        return version
+
+    def get_entry_date(self, entry):
+        """Return the action date
+        """
+        date = DateTime(entry.get("time"))
+        return self.ulocalized_time(date, long_format=1),
+
+    def get_entry_actor(self, entry):
+        """Return the fullname of the actor
+        """
+        actor = None
+        if self.is_versioning_entry(entry):
+            # revision entries have an actor dict
+            actor_dict = entry.get("actor")
+            actor = actor_dict.get("fullname") or actor_dict.get("actorid")
         else:
-            version_history = []
+            # review history items have only an actor id
+            actor = entry.get("actor")
+            # try to get the fullname
+            props = api.get_user_properties(actor)
+            actor = props.get("fullname") or actor
+        # automatic transitions have no actor
+        if actor is None:
+            return ""
+        return actor
 
-        for entry in version_history:
-            # this folderitems doesn't subclass from the bika_listing.py
-            # so we create items from scratch
-            # disregard the first entry of version history, as it is
-            # represented by the first entry in review_history
-            if not entry.get('version_id'):
-                continue
-            item = {
-                'obj': self.context,
-                'id': self.context.id,
-                'uid': self.context.UID(),
-                'title': self.context.title_or_id(),
-                'type_class': '',
-                'url': self.context.absolute_url(),
-                'relative_url': self.context.absolute_url(),
-                'view_url': self.context.absolute_url(),
-                'path': "/".join(self.context.getPhysicalPath()),
-                'replace': {},
-                'before': {},
-                'after': {},
-                'choices': {},
-                'class': {},
-                'state_class': '',
-                'allow_edit': [],
-                'required': [],
-                'Version': entry.get('version_id'),
-                'Date': self.ulocalized_time(DateTime(entry.get('time'))),
-                'sortable_date': entry.get('time'),
-                'User': entry.get('actor').get('fullname'),
-                'Action': entry.get('action') and entry.get('action') or 'Create',
-                'Description': entry.get('comments'),
-            }
-            items.append(item)
+    def get_entry_action(self, entry):
+        """Return the action
+        """
+        action = None
+        if self.is_versioning_entry(entry):
+            # revision entries have a transition_title
+            action = entry.get("transition_title")
+        else:
+            # review history items have only an action
+            action = entry.get("action")
+        # automatic transitions have no action
+        if action is None:
+            return ""
+        # make the action human readable
+        return _(self.to_title(action))
 
-        items = sorted(items, key=itemgetter('sortable_date'))
-        items.reverse()
+    def get_entry_state(self, entry):
+        """Return the state
+        """
+        state = None
+        if self.is_versioning_entry(entry):
+            # revision entries have no state
+            new_version = self.get_entry_version(entry)
+            state = "{}: {}".format(_("Version"), new_version)
+        else:
+            # review history items have a state id
+            state = entry.get("review_state")
+        if not state:
+            return ""
+        return _(self.to_title(state))
 
+    def make_empty_item(self, **kw):
+        """Create a new empty item
+        """
+        item = {
+            "uid": None,
+            "before": {},
+            "after": {},
+            "replace": {},
+            "allow_edit": [],
+            "disabled": False,
+            "state_class": "state-active",
+        }
+        item.update(**kw)
+        return item
+
+    def make_log_entry(self, entry, index):
+        """Create a log entry
+        """
+        item = self.make_empty_item(**entry)
+
+        item["Version"] = self.get_entry_version(entry)
+        item["Date"] = self.get_entry_date(entry)
+        item["Actor"] = self.get_entry_actor(entry)
+        item["Action"] = self.get_entry_action(entry)
+        item["State"] = self.get_entry_state(entry)
+
+        return item
+
+    def folderitems(self):
+        """Generate folderitems for each review history item
+        """
+        items = []
+
+        history = self.get_full_history()
+        for num, entry in enumerate(history):
+            items.append(self.make_log_entry(entry, num))
         return items

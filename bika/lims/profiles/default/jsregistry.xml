@@ -107,18 +107,6 @@
               inline="False"
               insert-after="*"
               />
-
-  <javascript authenticated="False"
-              id="++resource++bika.lims.js/bika.lims.bikalisting.js"
-              cacheable="True"
-              compression="safe"
-              conditionalcomment=""
-              cookable="True"
-              enabled="on"
-              expression=""
-              inline="False"
-              insert-after="*"/>
-
   <javascript authenticated="True"
               id="++resource++bika.lims.js/bika.lims.utils.calcs.js"
               cacheable="True"
@@ -483,17 +471,6 @@
           inline="False"
           insert-after="*"/>
 
-  <javascript authenticated="False"
-          id="++resource++bika.lims.js/bika.lims.department.js"
-          cacheable="True"
-          compression="safe"
-          conditionalcomment=""
-          cookable="True"
-          enabled="on"
-          expression=""
-          inline="False"
-          insert-after="*"/>
-
       <javascript authenticated="False"
           id="++resource++bika.lims.js/bika.lims.calculation.edit.js"
           cacheable="True"
@@ -516,17 +493,6 @@
           inline="False"
           insert-after="*"/>
 
-  <javascript authenticated="False"
-          id="++resource++bika.lims.js/bika.lims.bikalistingfilterbar.js"
-          cacheable="True"
-          compression="safe"
-          conditionalcomment=""
-          cookable="True"
-          enabled="on"
-          expression=""
-          inline="False"
-          insert-after="*"/>
-
   <!-- Add javascripts ALWAYS BEFORE this one -->
   <javascript authenticated="False"
               id="++resource++bika.lims.js/bika.lims.loader.js"
@@ -539,46 +505,16 @@
               inline="False"
               insert-after="*"/>
 
-  <!-- TODO Remove javascripts no longer used XXX-->
-  <javascript id="++resource++bika.lims.js/jquery.json.js" enabled="False"/>
-  <javascript id="++resource++bika.lims.js/utils.js" enabled="False"/>
-  <javascript id="++resource++bika.lims.js/bika_listing.js" enabled="False"/>
-  <javascript id="++resource++bika.lims.js/queries.js" enabled="False"/>
-  <javascript id="++resource++bika.lims.js/client.js" enabled="False"/>
-  <javascript id="++resource++bika.lims.js/calcs.js" enabled="False"/>
-  <javascript id="++resource++bika.lims.js/batch.js" enabled="False"/>
-  <javascript id="++resource++bika.lims.js/ar.js" enabled="False"/>
-  <javascript id="++resource++bika.lims.js/ar_add.js" enabled="False"/>
-  <javascript id="++resource++bika.lims.js/worksheet.js" enabled="False"/>
-  <javascript id="++resource++bika.lims.js/sample.js" enabled="False"/>
-  <javascript id="++resource++bika.lims.js/contact.js" enabled="False"/>
-  <javascript id="++resource++bika.lims.js/referencesample.js" enabled="False"/>
-  <javascript id="++resource++bika.lims.js/reports.js" enabled="False"/>
-  <javascript id="++resource++bika.lims.js/artemplate.js" enabled="False"/>
-  <javascript id="++resource++bika.lims.js/barcode.js" enabled="False"/>
-  <javascript id="++resource++bika.lims.js/jquery-barcode-2.0.2.js" enabled="False"/>
-  <javascript id="++resource++bika.lims.js/jquery-query-2.1.7.js" enabled="False"/>
-  <javascript id="++resource++bika.lims.js/jquery-timepicker.js" enabled="False"/>
-  <javascript id="++resource++bika.lims.js/jquery.ui.combogrid-1.6.3.js" enabled="False"/>
-  <javascript id="++resource++bika.lims.js/jquery.ui.combogrid-1.6.2.js" enabled="False"/>
-  <javascript id="++resource++bika.lims.js/attachments.js" enabled="False"/>
-  <javascript id="++resource++bika.lims.js/supplyorder_edit.js" enabled="False"/>
-  <javascript id="++resource++bika.lims.js/arimport.js" enabled="False"/>
-  <javascript id="++resource++bika.lims.js/bika.lims.arimport.js" enabled="False"/>
-  <javascript id="++resource++bika.lims.js/d3.js" enabled="False"/>
-  <javascript id="++resource++bika.lims.js/bika.d3.controlchart.js" enabled="False"/>
-  <javascript id="++resource++bika.lims.js/bika.lims.method.edit.js" enabled="False"/>
-  <javascript id="++resource++bika.lims.js/bika.lims.analysisservice.edit.js" enabled="False"/>
-  <javascript id="++resource++bika.lims.js/bika.lims.bikasetup.edit.js" enabled="False"/>
-  <javascript id="++resource++bika.lims.js/bika.lims.artemplate.edit.js" enabled="False"/>
-  <javascript id="++resource++bika.lims.js/bika.lims.client.edit.js" enabled="False"/>
-  <javascript id="++resource++bika.lims.js/bika.lims.instrumentcertification.edit.js" enabled="False"/>
-  <javascript id="++resource++bika.lims.js/analysisservice.js" enabled="False"/>
-  <javascript id="++resource++bika.lims.js/bika.lims.sandbox.client.js" enabled="False"/>
-  <javascript id="++resource++bika.lims.js/bika.lims.sandbox.referencesample.js" enabled="False"/>
-  <javascript id="++resource++bika.lims.js/bika.lims.sandbox.ar_analyses.js" enabled="False"/>
-  <javascript id="++resource++bika.lims.js/bika.lims.utils.contact.js" enabled="False"/>
-  <javascript id="++resource++bika.lims.js/bika.lims.utils.js" enabled="False"/>
-  <javascript id="++resource++bika.lims.js/bika.lims.analysisrequest.analyses.js" enabled="False"/>
+  <!-- Listing ReactJS (not managed by bika.lims.loader) -->
+  <javascript authenticated="False"
+              id="++resource++senaite.core.browser.listing.static/js/senaite.core.listing.js"
+              cacheable="True"
+              compression="safe"
+              conditionalcomment=""
+              cookable="True"
+              enabled="on"
+              expression=""
+              inline="False"
+              insert-after="*"/>
 
  </object>

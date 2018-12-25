@@ -19,7 +19,7 @@
              tal:attributes="src view/icon"
              style="height:32px;width:auto;"/>
         <span tal:content="python:view.context.translate(view.title)"/>
-          <span tal:condition="python:checkPermission('Add portal content', context)"
+          <span tal:condition="python:checkPermission('BIKA: Add Analysis Request', context)"
                 style="padding-left:0.5em;display:inline-block;">
           <form method="GET" class="form-inline" action="ar_add">
             <input type="number"
@@ -29,9 +29,9 @@
                    class="form-control input-sm"
                    tal:attributes="value view/getDefaultAddCount|1"/>
             <button type="submit"
-                    class="btn btn-link">
+                    class="btn btn-default btn-sm">
               <img src="#"
-                   style="height:16px;width:auto;"
+                   style="height:12px;width:auto;"
                    tal:attributes="src string:${context/absolute_url}/++resource++bika.lims.images/add.png"/>
               <span i18n:translate="">Add</span>
             </button>

@@ -26,6 +26,17 @@
  <alias from="view" to="base_view"/>
  <alias from="edit" to="base_edit"/>
 
+ <action title="View"
+         action_id="view"
+         category="object"
+         condition_expr=""
+         url_expr="string:${object_url}"
+         i18n:attributes="title"
+         i18n:domain="plone"
+         visible="True">
+   <permission value="View"/>
+ </action>
+
  <action title="Edit"
          action_id="edit"
          category="object"
@@ -34,14 +45,14 @@
          i18n:attributes="title"
          i18n:domain="plone"
          visible="True">
-  <permission value="Modify portal content"/>
+   <permission value="Modify portal content"/>
  </action>
 
- <action action_id="view"
+ <action action_id="reference_samples"
          title="Reference Samples"
          category="object"
          condition_expr=""
-         url_expr="string:${object_url}/base_view"
+         url_expr="string:${object_url}/reference_samples"
          i18n:attributes="title"
          i18n:domain="plone"
          visible="True">

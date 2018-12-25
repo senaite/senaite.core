@@ -12,10 +12,8 @@ from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import ISampleConditions
 from bika.lims.utils import get_link
-from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder
 from plone.app.folder.folder import ATFolderSchema
-from plone.app.layout.globals.interfaces import IViewView
 from Products.Archetypes import atapi
 from Products.ATContentTypes.content import schemata
 from zope.interface.declarations import implements
@@ -25,7 +23,6 @@ from zope.interface.declarations import implements
 
 
 class SampleConditionsView(BikaListingView):
-    implements(IFolderContentsView, IViewView)
 
     def __init__(self, context, request):
         super(SampleConditionsView, self).__init__(context, request)
@@ -49,7 +46,7 @@ class SampleConditionsView(BikaListingView):
             self.portal_url,
             "/++resource++bika.lims.images/samplecondition_big.png"
         )
-        self.show_sort_column = False
+
         self.show_select_row = False
         self.show_select_column = True
         self.pagesize = 25

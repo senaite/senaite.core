@@ -5,7 +5,6 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
+# flake8: noqa
 from .aggregatedanalyses import AggregatedAnalysesView
-from .aggregatedanalyses_filter_bar\
-    import AggregatedanalysesBikaListingFilterBar
 from .workflow import AggregatedAnalysesWorkflowAction

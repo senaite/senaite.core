@@ -5,63 +5,92 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from Products.CMFCore.utils import getToolByName
-from DateTime import DateTime
-
+import transaction
+from Products.CMFPlone.utils import _createObjectByType
 from bika.lims import logger
-from bika.lims.utils import changeWorkflowState
+from bika.lims.utils import tmpID
+from bika.lims.utils.analysis import copy_analysis_field_values
 from bika.lims.workflow import doActionFor
-from bika.lims.workflow import getCurrentState
-from bika.lims.workflow import isBasicTransitionAllowed
-from bika.lims.workflow import wasTransitionPerformed
 from bika.lims.workflow.analysis import events as analysis_events
 
 
-def after_submit(obj):
+def after_submit(duplicate_analysis):
     """Method triggered after a 'submit' transition for the duplicate analysis
     passed in is performed.
     Delegates to bika.lims.workflow.analysis.events.after_submit
-    This function is called automatically by
-    bika.lims.workfow.AfterTransitionEventHandler
     """
-    analysis_events.after_submit(obj)
+    analysis_events.after_submit(duplicate_analysis)
 
 
-def after_verify(obj):
-    """Method triggered after a 'verify' transition for the duplicate analysis
-    passed in is performed. Promotes the transition to its parent worksheet,
-    but the worksheet will only be transitioned to 'verified' if all its
-    analyses have been previously verified. See the Worksheet's verify guard
-    for further information.
-    This function is called automatically by
-    bika.lims.workflow.AfterTransitionEventHandler
+def after_verify(duplicate_analysis):
+    """Function called after a 'verify' transition for the duplicate analysis
+    passed in is performed
+    Delegates to bika.lims.workflow.analysis.events.after_verify
     """
-    # Ecalate to Worksheet. Note that the guard for verify transition from
-    # Worksheet will check if the Worksheet can be transitioned, so there is no
-    # need to check here if all analyses within the WS have been transitioned
-    # already
-    ws = obj.getWorksheet()
-    if ws:
-        doActionFor(ws, 'verify')
+    analysis_events.after_verify(duplicate_analysis)
 
 
-def after_retract(obj):
-    """Method triggered after a 'retract' transition for the duplicate analysis
-    passed in is performed. Retracting an analysis cause its transition to
-    'retracted'
-    This function is called automatically by
-    bika.lims.workflow.AfterTransitionEventHandler
+def after_unassign(duplicate_analysis):
+    """Removes the duplicate from the system
     """
-    # TODO Workflow Duplicate Retraction - The current duplicate must be
-    # retracted and a new copy of the duplicate for rested must be created.
-    # Retracting an analysis must never have any effect to the Worksheet
-    pass
+    analysis_events.after_unassign(duplicate_analysis)
+    parent = duplicate_analysis.aq_parent
+    logger.info("Removing duplicate '{}' from '{}'"
+                .format(duplicate_analysis.getId(), parent.getId()))
+    parent.manage_delObjects([duplicate_analysis.getId()])
 
 
-def after_attach(obj):
-    # TODO Workflow Duplicate Attach - Attach transition is still available?
-    # If all analyses on the worksheet have been attached,
-    # then attach the worksheet.
-    ws = obj.getWorksheet()
-    if ws:
-        doActionFor(ws)
+def after_retract(duplicate_analysis):
+    """Function triggered after a 'retract' transition for the duplicate passed
+    in is performed. The duplicate transitions to "retracted" state and a new
+    copy of the duplicate is created.
+    """
+    # Rename the analysis to make way for it's successor.
+    # Support multiple retractions by renaming to *-0, *-1, etc
+    parent = duplicate_analysis.aq_parent
+    keyword = duplicate_analysis.getKeyword()
+    analyses = filter(lambda an: an.getKeyword() == keyword,
+                      parent.objectValues("DuplicateAnalysis"))
+
+    # Rename the retracted duplicate
+    # https://docs.plone.org/develop/plone/content/rename.html
+    # _verifyObjectPaste permission check must be cancelled
+    parent._verifyObjectPaste = str
+    retracted_id = '{}-{}'.format(keyword, len(analyses))
+    # Make sure all persistent objects have _p_jar attribute
+    transaction.savepoint(optimistic=True)
+    parent.manage_renameObject(duplicate_analysis.getId(), retracted_id)
+    delattr(parent, '_verifyObjectPaste')
+
+    # Find out the slot position of the duplicate in the worksheet
+    worksheet = duplicate_analysis.getWorksheet()
+    if not worksheet:
+        logger.warn("Duplicate {} has been retracted, but without worksheet"
+                    .format(duplicate_analysis.getId()))
+        return
+
+    dest_slot = worksheet.get_slot_position_for(duplicate_analysis)
+    if not dest_slot:
+        logger.warn("Duplicate {} has been retracted, but not found in any"
+                    "slot of worksheet {}"
+                    .format(duplicate_analysis.getId(), worksheet.getId()))
+        return
+
+    # Create a copy (retest) of the duplicate and assign to worksheet
+    ref_gid = duplicate_analysis.getReferenceAnalysesGroupID()
+    retest = _createObjectByType("DuplicateAnalysis", worksheet, tmpID())
+    copy_analysis_field_values(duplicate_analysis, retest)
+    retest.setAnalysis(duplicate_analysis.getAnalysis())
+    retest.setRetestOf(duplicate_analysis)
+    retest.setReferenceAnalysesGroupID(ref_gid)
+    retest.setResult(duplicate_analysis.getResult())
+    worksheet.addToLayout(retest, dest_slot)
+    worksheet.setAnalyses(worksheet.getAnalyses() + [retest, ])
+
+    # Reindex
+    retest.reindexObject(idxs=["getAnalyst", "getWorksheetUID", "isRetest",
+                               "getReferenceAnalysesGroupID"])
+    worksheet.reindexObject(idxs=["getAnalysesUIDs"])
+
+    # Try to rollback the worksheet to prevent inconsistencies
+    doActionFor(worksheet, "rollback_to_open")

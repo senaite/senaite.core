@@ -9,7 +9,7 @@ class window.SiteView
     console.debug "SiteView::load"
 
     # load translations
-    jarn.i18n.loadCatalog 'bika'
+    jarn.i18n.loadCatalog 'senaite.core'
     @_ = window.jarn.i18n.MessageFactory("senaite.core")
 
     # initialze the loading spinner
@@ -26,14 +26,6 @@ class window.SiteView
 
     # initialze reference definition selection
     @init_referencedefinition()
-
-    # Department Filtering
-    # The name of the department filter cookies
-    @department_filter_cookie = "filter_by_department_info"
-    @department_filter_disabled_cookie = "dep_filter_disabled"
-
-    # initialize department filtering
-    @init_department_filtering()
 
     # bind the event handler to the elements
     @bind_eventhandler()
@@ -68,9 +60,6 @@ class window.SiteView
     ###
     console.debug "SiteView::bind_eventhandler"
 
-    # Analysis service popup
-    $("body").on "click", ".service_title span:not(.before)", @on_analysis_service_title_click
-
     # ReferenceSample selection changed
     $("body").on "change", "#ReferenceDefinition\\:list", @on_reference_definition_list_change
 
@@ -86,14 +75,11 @@ class window.SiteView
     # XXX Where is this used?
     $("body").on "keydown", "input.autocomplete", @on_autocomplete_keydown
 
-    # Department filtering events
-    $("body").on "click", "#department_filter_submit", @on_department_filter_submit
-    $("body").on "change","#admin_dep_filter_enabled", @on_admin_dep_filter_change
-    $("body").on "change", "select[name='Departments:list']", @on_department_list_change
-
     # Date Range Filtering
     $("body").on "change", ".date_range_start", @on_date_range_start_change
     $("body").on "change", ".date_range_end", @on_date_range_end_change
+
+    $("body").on "click", "a.service_info", @on_service_info_click
 
     # handle Ajax events
     $(document).on "ajaxStart", @on_ajax_start
@@ -286,31 +272,6 @@ class window.SiteView
       $('#ReferenceDefinition:list').change()
 
 
-  init_department_filtering: =>
-    ###
-     * Initialize department filtering (when enabled in Setup)
-     *
-     * This function checks if the cookie 'filter_by_department_info' is
-     * available. If the cookie exists, do nothing, if the cookie has not been
-     * created yet, checks the selected department in the checkbox group and
-     * creates the cookie with the UID of the first department. If cookie value
-     * "dep_filter_disabled" is true, it means the user is admin and filtering
-     * is disabled.
-    ###
-    console.debug "SiteView::init_department_filtering"
-
-    cookie_val = @read_cookie(@department_filter_cookie)
-    if cookie_val == null or cookie_val == ''
-      dep_uid = $('input[name^=chb_deps_]:checkbox:visible:first').val()
-      @set_cookie @department_filter_cookie, dep_uid
-
-    dep_filter_disabled = @read_cookie @department_filter_disabled_cookie
-    if dep_filter_disabled == 'true' or dep_filter_disabled == '"true"'
-      $('#admin_dep_filter_enabled').prop 'checked', true
-
-    return
-
-
   ### METHODS ###
 
   get_portal_url: =>
@@ -470,58 +431,6 @@ class window.SiteView
     return
 
 
-  load_analysis_service_popup: (title, uid) =>
-    ###
-     * Load the analysis service popup
-    ###
-    console.debug "SiteView::show_analysis_service_popup:title=#{title}, uid=#{uid}"
-
-    if !title or !uid
-      console.warn "SiteView::load_analysis_service_popup: title and uid are mandatory"
-      return
-
-    dialog = $('<div></div>')
-    dialog.load "#{@get_portal_url()}/analysisservice_popup",
-      'service_title': title
-      'analysis_uid': uid
-      '_authenticator': @get_authenticator()
-    .dialog
-      width: 450
-      height: 450
-      closeText: @_('Close')
-      resizable: true
-      title: $(this).text()
-    return
-
-
-  filter_default_departments: (deps_element) =>
-    ###
-     * Keep the list of default departments in sync with the selected departments
-     *
-     * 1. Go to a labcontact and select departments
-     * 2. The list of default departments is kept in sync with the selection
-    ###
-    console.debug "SiteView::filter_default_departments"
-
-    def_deps = $("select[name='DefaultDepartment']")[0]
-    def_deps.options.length = 0
-    null_opt = document.createElement('option')
-    null_opt.text = ''
-    null_opt.value = ''
-    null_opt.selected = 'selected'
-    def_deps.add null_opt
-
-    #Adding selected deps
-    $('option:selected', deps_element).each ->
-      option = document.createElement('option')
-      option.text = $(this).text()
-      option.value = $(this).val()
-      option.selected = 'selected'
-      def_deps.add option
-      return
-    return
-
-
   ### EVENT HANDLER ###
 
   on_date_range_start_change: (event) =>
@@ -558,73 +467,6 @@ class window.SiteView
     date_element = $el.datepicker('getDate')
     brother = $el.siblings('.date_range_start')
     $(brother).datepicker 'option', 'maxDate', date_element
-
-
-  on_department_list_change: (event) =>
-    ###
-     * Eventhandler for Department list on LabContacts
-    ###
-    console.debug "°°° SiteView::on_department_list_change °°°"
-
-    el = event.currentTarget
-    $el = $(el)
-
-    # filter the list of default departments
-    @filter_default_departments el
-
-
-  on_department_filter_submit: (event) =>
-    ###
-     * Eventhandler for Department filter Portlet
-     *
-     * 1. Go to Setup and activate "Enable filtering by department"
-     * 2. The portlet contains the id="department_filter_submit"
-    ###
-    console.debug "°°° SiteView::on_department_filter_submit °°°"
-
-    el = event.currentTarget
-    $el = $(el)
-
-    if !$('#admin_dep_filter_enabled').is(':checked')
-      deps = []
-      $.each $('input[name^=chb_deps_]:checked'), ->
-        deps.push $(this).val()
-        return
-
-      if deps.length == 0
-        deps.push $('input[name^=chb_deps_]:checkbox:not(:checked):visible:first').val()
-
-      @set_cookie @department_filter_cookie, deps.toString()
-
-    window.location.reload true
-    return
-
-
-  on_admin_dep_filter_change: (event) =>
-    ###
-     * Eventhandler for Department filter Portlet
-     *
-     * 1. Go to Setup and activate "Enable filtering by department"
-     * 2. The portlet contains the id="admin_dep_filter_enabled"
-    ###
-    console.debug "°°° SiteView::on_admin_dep_filter_change °°°"
-
-    el = event.currentTarget
-    $el = $(el)
-
-    if $el.is(':checked')
-      deps = []
-      $.each $('input[name^=chb_deps_]:checkbox'), ->
-        deps.push $(this).val()
-
-      @set_cookie @department_filter_cookie, deps
-      @set_cookie @department_filter_disabled_cookie, 'true'
-
-      window.location.reload true
-    else
-      @set_cookie @department_filter_disabled_cookie, 'false'
-      window.location.reload true
-    return
 
 
   on_autocomplete_keydown: (event) =>
@@ -787,19 +629,34 @@ class window.SiteView
     return
 
 
-  on_analysis_service_title_click: (event) =>
+  on_service_info_click: (event) =>
     ###
-     * Eventhandler when the user clicked on an Analysis Service Title
+     * Eventhandler when the service info icon was clicked
     ###
-    console.debug "°°° SiteView::on_analysis_service_title_click °°°"
-
+    console.debug "°°° SiteView::on_service_info_click °°°"
+    event.preventDefault()
     el = event.currentTarget
-    $el = $(el)
 
-    title = $el.closest('td').find("span[class^='state']").html()
-    uid = $el.parents('tr').attr('uid')
+    # https://jquerytools.github.io/documentation/overlay
+    # https://github.com/plone/plone.app.jquerytools/blob/master/plone/app/jquerytools/browser/overlayhelpers.js
+    $(el).prepOverlay
+      subtype: "ajax"
+      width: '70%'
+      filter: '#content>*:not(div#portal-column-content)'
+      config:
+        closeOnClick: yes
+        closeOnEsc: yes
+        onBeforeLoad: (event) ->
+          overlay = this.getOverlay()
+          overlay.draggable()
+        onLoad: (event) ->
+          # manually dispatch the DOMContentLoaded event, so that the ReactJS
+          # component loads
+          event = new Event "DOMContentLoaded", {}
+          window.document.dispatchEvent(event)
 
-    @load_analysis_service_popup title, uid
+    # workaround un-understandable overlay api
+    $(el).click()
 
 
   on_ajax_start: (event) =>

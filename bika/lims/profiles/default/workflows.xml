@@ -3,7 +3,6 @@
   <property
       name="title">Contains workflow definitions for your portal</property>
   <object name="bika_analysis_workflow" meta_type="Workflow"/>
-  <object name="bika_analysis_workflow" meta_type="Workflow"/>
   <object name="bika_ar_workflow" meta_type="Workflow"/>
   <object name="bika_arimport_workflow" meta_type="Workflow"/>
   <object name="bika_batch_workflow" meta_type="Workflow"/>
@@ -20,7 +19,6 @@
   <object name="bika_sample_workflow" meta_type="Workflow"/>
   <object name="bika_samplinground_workflow" meta_type="Workflow"/>
   <object name="bika_worksheet_workflow" meta_type="Workflow"/>
-  <object name="bika_worksheetanalysis_workflow" meta_type="Workflow"/>
   <object name="folder_workflow" meta_type="Workflow"/>
   <object name="intranet_folder_workflow" meta_type="Workflow"/>
   <object name="intranet_workflow" meta_type="Workflow"/>
@@ -73,8 +71,6 @@
     <!-- Analysis -->
     <type type_id="Analysis">
       <bound-workflow workflow_id="bika_analysis_workflow"/>
-      <bound-workflow workflow_id="bika_worksheetanalysis_workflow"/>
-      <bound-workflow workflow_id="bika_cancellation_workflow"/>
     </type>
 
     <!-- Analysis Categories -->
@@ -92,7 +88,6 @@
     </type>
     <type type_id="AnalysisRequest">
       <bound-workflow workflow_id="bika_ar_workflow"/>
-      <bound-workflow workflow_id="bika_cancellation_workflow"/>
     </type>
 
     <!-- AR Reports -->

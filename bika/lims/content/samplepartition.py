@@ -6,6 +6,7 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 
+
 from AccessControl import ClassSecurityInfo
 from bika.lims import deprecated
 from bika.lims.browser.fields import UIDReferenceField
@@ -119,10 +120,6 @@ class SamplePartition(BaseContent, HistoryAwareMixin):
         (Analyses). If all sibling partitions are in the targe state, promotes
         the transition to its parent Sample
         """
-        # Transition our analyses
-        for analysis in self.getAnalyses():
-            doActionFor(analysis, actionid)
-
         # If all sibling partitions are received, promote Sample. Sample
         # transition will, in turn, transition the Analysis Requests
         sample = self.aq_parent
@@ -176,16 +173,10 @@ class SamplePartition(BaseContent, HistoryAwareMixin):
     @security.public
     def after_receive_transition_event(self):
         """Method triggered after a 'receive' transition for the current Sample
-        Partition is performed. Stores value for "Date Received" field and also
-        triggers the 'receive' transition for depedendent objects, such as
-        Analyses associated to this Sample Partition. If all Sample Partitions
-        that belongs to the same sample as the current Sample Partition have
-        been transitioned to the "received" state, promotes to Sample
+        Partition is performed.
         This function is called automatically by
         bika.lims.workflow.AfterTransitionEventHandler
         """
-        self.setDateReceived(DateTime())
-        self.reindexObject(idxs=["getDateReceived", ])
         self._cascade_promote_transition('receive', 'sample_received')
 
     def guard_to_be_preserved(self):
@@ -209,11 +200,6 @@ class SamplePartition(BaseContent, HistoryAwareMixin):
     def workflow_script_preserve(self):
         workflow = getToolByName(self, 'portal_workflow')
         sample = self.aq_parent
-        # Transition our analyses
-        analyses = self.getAnalyses()
-        if analyses:
-            for analysis in analyses:
-                doActionFor(analysis, "preserve")
         # if all our siblings are now up to date, promote sample and ARs.
         parts = sample.objectValues("SamplePartition")
         if parts:
@@ -236,10 +222,6 @@ class SamplePartition(BaseContent, HistoryAwareMixin):
             return
         sample = self.aq_parent
         workflow = getToolByName(self, 'portal_workflow')
-        # Transition our analyses
-        analyses = self.getAnalyses()
-        for analysis in analyses:
-            doActionFor(analysis, "to_be_preserved")
         # if all our siblings are now up to date, promote sample and ARs.
         parts = sample.objectValues("SamplePartition")
         if parts:

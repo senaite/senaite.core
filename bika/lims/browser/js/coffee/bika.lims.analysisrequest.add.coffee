@@ -9,7 +9,7 @@ class window.AnalysisRequestAdd
     console.debug "AnalysisRequestAdd::load"
 
     # load translations
-    jarn.i18n.loadCatalog 'bika'
+    jarn.i18n.loadCatalog 'senaite.core'
     @_ = window.jarn.i18n.MessageFactory("senaite.core")
 
     # disable browser autocomplete
@@ -1104,6 +1104,12 @@ class window.AnalysisRequestAdd
     has_template_selected = $el.val()
     console.debug "°°° on_analysis_template_change::UID=#{uid} Template=#{val}°°°"
 
+    # remember the set uid to handle later removal
+    if uid
+      $el.attr "previous_uid", uid
+    else
+      uid = $el.attr "previous_uid"
+
     # deselect the template if the field is empty
     if not has_template_selected and uid
       # forget the applied template
@@ -1122,7 +1128,7 @@ class window.AnalysisRequestAdd
         if uid of record.service_metadata
           template_services.push record.service_metadata[uid]
 
-      if template_services
+      if template_services.length
         context = {}
         context["template"] = template_metadata
         context["services"] = template_services
@@ -1137,6 +1143,50 @@ class window.AnalysisRequestAdd
         dialog.on "no", ->
           # trigger form:changed event
           $(me).trigger "form:changed"
+
+      # deselect the profile coming from the template
+      # XXX: This is crazy and need to get refactored!
+      if template_metadata.analysis_profile_uid
+        field = $("#Profiles-#{arnum}")
+
+        # uid and title of the selected profile
+        uid = template_metadata.analysis_profile_uid
+        title = template_metadata.analysis_profile_title
+
+        # get the parent field wrapper (field is only the input)
+        $parent = field.closest("div.field")
+
+        # search for the multi item and remove it
+        item = $(".reference_multi_item[uid=#{uid}]", $parent)
+        if item.length
+          item.remove()
+          # remove the uid from the hidden field
+          uids_field = $("input[type=hidden]", $parent)
+          existing_uids = uids_field.val().split(",")
+          remove_index = existing_uids.indexOf(uid)
+          if remove_index > -1
+            existing_uids.splice remove_index, 1
+          uids_field.val existing_uids.join ","
+
+      # deselect the samplepoint
+      if template_metadata.sample_point_uid
+        field = $("#SamplePoint-#{arnum}")
+        @flush_reference_field(field)
+
+      # deselect the sampletype
+      if template_metadata.sample_type_uid
+        field = $("#SampleType-#{arnum}")
+        @flush_reference_field(field)
+
+      # flush the remarks field
+      if template_metadata.remarks
+        field = $("#Remarks-#{arnum}")
+        field.text ""
+
+      # reset the composite checkbox
+      if template_metadata.composite
+        field = $("#Composite-#{arnum}")
+        field.prop "checked", no
 
     # trigger form:changed event
     $(me).trigger "form:changed"

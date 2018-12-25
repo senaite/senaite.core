@@ -5,172 +5,213 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
+import collections
+
 from AccessControl import ClassSecurityInfo
-from Acquisition import aq_base, aq_inner
-from Products.Archetypes.Registry import registerWidget, registerPropertyType
-from Products.Archetypes.Widget import TypesWidget
-from Products.Archetypes.utils import shasattr
-from Products.CMFCore.utils import getToolByName
-from archetypes.referencebrowserwidget import utils
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
-from bika.lims.browser import BrowserView
-from bika.lims.utils import t
 from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims.config import POINTS_OF_CAPTURE
-from bika.lims.permissions import ManageBika
-from types import StringType
-from zope.site.hooks import getSite
+from bika.lims.utils import get_image
+from bika.lims.utils import get_link
+from plone.memoize import view
+from Products.Archetypes.Registry import registerWidget
+from Products.Archetypes.Widget import TypesWidget
+
 
 class ServicesView(BikaListingView):
-    """ bika listing to display a list of services.
-    field must be a <reference field> containing <AnalysisService> objects.
+    """Listing table to display Analyses Services
     """
-    def __init__(self, context, request, field=None, category=None):
-        BikaListingView.__init__(self, context, request)
-        if field:
-            self.selected = [o.UID() for o in getattr(field, field.accessor)()]
-        else:
-            self.selected = []
-        self.category = category if category else None
-        self.context_actions = {}
+
+    def __init__(self, context, request):
+        super(ServicesView, self).__init__(context, request)
+
         self.catalog = "bika_setup_catalog"
         self.contentFilter = {
-            'portal_type': 'AnalysisService',
-            'inactive_state': 'active',
-            'sort_on': 'sortable_title'}
-        self.base_url = self.context.absolute_url()
-        self.view_url = self.base_url
-        self.show_sort_column = False
-        self.show_select_row = False
-        self.show_select_all_checkbox = False
+            "portal_type": "AnalysisService",
+            "sort_on": "sortable_title",
+            "sort_order": "ascending",
+        }
+
+        if context.getRestrictToMethod():
+            method_uid = context.getMethodUID()
+            if method_uid:
+                self.contentFilter.update({
+                    "getAvailableMethodUIDs": method_uid
+                })
+
+        self.context_actions = {}
+
+        # selected services UIDs
+        self.selected_services_uids = self.get_assigned_services_uids()
+
+        self.show_column_toggles = False
         self.show_select_column = True
+        self.show_select_all_checkbox = False
         self.pagesize = 999999
-        self.form_id = 'serviceswidget'
-        self.show_categories = False
-        self.categories = []
-        self.method_filter = None
-        # Filter by method
-        # TODO Check if filtering by multiple UIDs should be enabled
-        if hasattr(self.context, 'getRestrictToMethod') and\
-                getattr(self.context, 'getMethodUID')():
-            self.method_filter = {
-                'getAvailableMethodUIDs': self.context.getMethodUID()}
-        self.do_cats = self.context.bika_setup.getCategoriseAnalysisServices()
-        if self.do_cats:
+        self.allow_edit = True
+        self.show_search = True
+        # omit the outer form
+        self.omit_form = True
+        # no need to fetch the allowed transitions on select
+        self.fetch_transitions_on_select = False
+
+        # Categories
+        if self.show_categories_enabled():
+            self.categories = []
             self.show_categories = True
             self.expand_all_categories = False
-            self.ajax_categories = True
-            self.category_index = 'getCategoryTitle'
-            self.ajax_categories_url = context.absolute_url() + \
-                                       "/ajax_services_expand_category"
 
-        self.columns = {
-            'Service': {'title': _('Service')},
-            'Keyword': {'title': _('Keyword'),
-                        'index': 'getKeyword'},
-            'Method': {'title': _('Method')},
-            'Calculation': {'title': _('Calculation')},
-        }
+        self.columns = collections.OrderedDict((
+            ("Title", {
+                "title": _("Service")}),
+            ("Keyword", {
+                "title": _("Keyword"),
+                "index": "getKeyword"}),
+            ("Methods", {
+                "title": _("Methods")}),
+            ("Calculation", {
+                "title": _("Calculation")}),
+        ))
+
         self.review_states = [
-            {'id':'default',
-             'title': _('All'),
-             'contentFilter':{},
-             'transitions': [],
-             'columns':['Service',
-                        'Keyword',
-                        'Method',
-                        'Calculation', ]
-            },
+            {
+                "id": "default",
+                "title": _("All"),
+                "contentFilter": {"inactive_state": "active"},
+                "transitions": [{"id": "disallow-all-possible-transitions"}],
+                "columns": self.columns.keys(),
+            }
         ]
 
-    def folderitems(self):
-        checkPermission = self.context.portal_membership.checkPermission
-        catalog = getToolByName(self.context, self.catalog)
-        contentFilter = self.contentFilter
-        method_uid = None
-        if self.method_filter:
-            contentFilter.update(self.method_filter)
-        if self.ajax_categories and self.category:
-            contentFilter[self.category_index] = self.category
-        services = catalog(contentFilter)
-        items = []
-        for service in services:
-            service = service.getObject()
-            cat = service.getCategoryTitle()
-            if cat not in self.categories:
-                self.categories.append(cat)
-            # this folderitems doesn't subclass from the bika_listing.py
-            # so we create items from scratch
-            service_title = service.Title()
-            calculation = service.getCalculation()
-            method = service.getMethod()
+    def update(self):
+        """Update hook
+        """
+        super(ServicesView, self).update()
 
-            item = {
-                'obj': service,
-                'Keyword': service.getKeyword(),
-                'Method': method and method.Title() or '',
-                'Calculation': calculation and calculation.Title() or '',
-                'id': service.getId(),
-                'uid': service.UID(),
-                'title': service_title,
-                'category': cat,
-                'selected': service.UID() in self.selected,
-                'type_class': 'contenttype-AnalysisService',
-                'url': service.absolute_url(),
-                'relative_url': service.absolute_url(),
-                'view_url': service.absolute_url(),
-                'Service': service_title,
-                'replace': {},
-                'before': {},
-                'after': {},
-                'choices':{},
-                'class': {},
-                'state_class': 'state-active',
-                'allow_edit': [],
-                'required': [],
-            }
-            if checkPermission(ManageBika, service):
-                item['replace']['Service'] = "<a href='%s'>%s</a>" % \
-                    (service.absolute_url(), service_title)
-            else:
-                item['replace']['Service'] = "<span class='service_title'>%s</span>" % \
-                    service_title
-            items.append(item)
+    @view.memoize
+    def show_categories_enabled(self):
+        """Check in the setup if categories are enabled
+        """
+        return self.context.bika_setup.getCategoriseAnalysisServices()
+
+    @view.memoize
+    def get_assigned_services(self):
+        """Return the assigned services
+        """
+        return self.context.getService()
+
+    @view.memoize
+    def get_assigned_services_uids(self):
+        """Return the UIDs of the assigned services
+        """
+        return map(api.get_uid, self.get_assigned_services())
+
+    def folderitems(self):
+        """TODO: Refactor to non-classic mode
+        """
+        items = super(ServicesView, self).folderitems()
         self.categories.sort()
         return items
 
+    def folderitem(self, obj, item, index):
+        """Service triggered each time an item is iterated in folderitems.
+
+        The use of this service prevents the extra-loops in child objects.
+
+        :obj: the instance of the class to be foldered
+        :item: dict containing the properties of the object to be used by
+            the template
+        :index: current index of the item
+        """
+        # ensure we have an object and not a brain
+        obj = api.get_object(obj)
+        uid = api.get_uid(obj)
+        url = api.get_url(obj)
+        title = api.get_title(obj)
+
+        # get the category
+        if self.show_categories_enabled():
+            category = obj.getCategoryTitle()
+            if category not in self.categories:
+                self.categories.append(category)
+            item["category"] = category
+
+        item["replace"]["Title"] = get_link(url, value=title)
+        item["selected"] = False
+        item["selected"] = uid in self.selected_services_uids
+
+        # Add methods
+        methods = obj.getMethods()
+        if methods:
+            links = map(
+                lambda m: get_link(
+                    m.absolute_url(), value=m.Title(), css_class="link"),
+                methods)
+            item["replace"]["Methods"] = ", ".join(links)
+        else:
+            item["methods"] = ""
+
+        calculation = obj.getCalculation()
+        if calculation:
+            title = calculation.Title()
+            url = calculation.absolute_url()
+            item["Calculation"] = title
+            item["replace"]["Calculation"] = get_link(url, value=title)
+        else:
+            item["Calculation"] = ""
+
+        # Icons
+        after_icons = ""
+        if obj.getAccredited():
+            after_icons += get_image(
+                "accredited.png", title=_("Accredited"))
+        if obj.getAttachmentOption() == "r":
+            after_icons += get_image(
+                "attach_reqd.png", title=_("Attachment required"))
+        if obj.getAttachmentOption() == "n":
+            after_icons += get_image(
+                "attach_no.png", title=_("Attachment not permitted"))
+        if after_icons:
+            item["after"]["Title"] = after_icons
+
+        return item
+
+
 class ServicesWidget(TypesWidget):
+    """Analyses Services Widget
+    """
     _properties = TypesWidget._properties.copy()
     _properties.update({
-        'macro': "bika_widgets/serviceswidget",
+        "macro": "bika_widgets/serviceswidget",
     })
 
     security = ClassSecurityInfo()
 
-    security.declarePublic('Services')
-    def Services(self, field, show_select_column=True):
-        """ Prints a bika listing with categorized services.
-            field contains the archetypes field with a list of services in it
-        """
-        services = ServicesView(self, self.REQUEST, field)
-        services.show_select_column = show_select_column
-        return services.contents_table(table_only=True)
+    security.declarePublic("process_form")
 
     def process_form(self, instance, field, form, empty_marker=None,
                      emptyReturnsMarker=False, validating=True):
-        service_uids = form.get('uids', [])
+        """Return UIDs of the selected services
+        """
+        service_uids = form.get("uids", [])
         return service_uids, {}
+
+    security.declarePublic("Services")
+
+    def Services(self, field, show_select_column=True):
+        """Render Analyses Services Listing Table
+        """
+
+        instance = getattr(self, "instance", field.aq_parent)
+        table = api.get_view("table_analyses_services",
+                             context=instance,
+                             request=self.REQUEST)
+        # Call listing hooks
+        table.update()
+        table.before_render()
+        return table.ajax_contents_table()
 
 
 registerWidget(ServicesWidget,
-               title = 'Analysis Services',
-               description = ('Categorised AnalysisService selector.'),
-               )
-
-class AJAXCategoryExpand(BrowserView):
-
-    def __call__(self):
-        if 'ajax_category_expand' in self.request.keys():
-            cat = self.request.get('cat')
-            asv = ServicesView(self.context, self.request, category=cat)
-            return asv.rendered_items()
+               title="Analysis Services",
+               description=("Categorised AnalysisService selector."),)

@@ -1,0 +1,52 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="senaite.core">
+
+  <body>
+    <metal:content-title fill-slot="content-title">
+      <h1>
+        <img tal:condition="view/icon | nothing"
+             tal:attributes="src view/icon"
+             style="height:32px;width:auto;"/>
+        <span class="documentFirstHeading"
+              tal:define="checkPermission nocall: context/portal_membership/checkPermission;"
+              tal:content="python:view.context.translate(view.title)"/>
+
+        <tal:contextactions repeat="key python:view.context_actions.keys()">
+
+          <!-- Context Actions -->
+          <tal:contextaction define="url python:view.context_actions[key]['url'];
+                                     icon python:view.context_actions[key]['icon'];
+                                     permission python:view.context_actions[key].get('permission', 'View');
+                                     css_class python:view.context_actions[key].get('class', '');">
+            <a tal:condition="python:checkPermission(permission, context)"
+               tal:attributes="href url;
+                               class python:'context_action_link %s btn btn-default btn-sm' % css_class">
+                <img tal:condition="icon|nothing"
+                     tal:attributes="src icon"
+                     style="height:12px;width:auto;"/> <span tal:content="key"/>
+            </a>
+          </tal:contextaction>
+        </tal:contextactions>
+
+      </h1>
+    </metal:content-title>
+
+    <metal:content-description fill-slot="content-description">
+      <div class="documentDescription"
+           tal:content="structure view/description"
+           tal:condition="view/description"/>
+    </metal:content-description>
+
+    <metal:content-core fill-slot="content-core">
+      <div id="folderlisting-main-table"
+           tal:content="structure view/contents_table">
+      </div>
+
+    </metal:content-core>
+
+  </body>
+</html>

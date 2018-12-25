@@ -14,14 +14,11 @@ from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims.utils import get_link
 from bika.lims.interfaces import ISamplingDeviations
-from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
-from plone.app.layout.globals.interfaces import IViewView
 from zope.interface.declarations import implements
 
 
 class SamplingDeviationsView(BikaListingView):
-    implements(IFolderContentsView, IViewView)
 
     def __init__(self, context, request):
         super(SamplingDeviationsView, self).__init__(context, request)
@@ -45,7 +42,7 @@ class SamplingDeviationsView(BikaListingView):
             self.portal_url,
             "/++resource++bika.lims.images/samplingdeviation_big.png"
         )
-        self.show_sort_column = False
+
         self.show_select_row = False
         self.pagesize = 25
         self.show_select_column = True

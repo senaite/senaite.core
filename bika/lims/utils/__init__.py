@@ -61,7 +61,9 @@ def t(i18n_msg):
     """
     text = to_unicode(i18n_msg)
     try:
-        text = translate(text)
+        request = api.get_request()
+        domain = getattr(i18n_msg, "domain", "senaite.core")
+        text = translate(text, domain=domain, context=request)
     except UnicodeDecodeError:
         # TODO: This is only a quick fix
         logger.warn("{} couldn't be translated".format(text))
@@ -183,25 +185,6 @@ def formatDateParms(context, date_id):
         date_parms = 'to %s' % (to_date)
 
     return date_parms
-
-
-def formatDuration(context, totminutes):
-    """ Format a time period in a usable manner: eg. 3h24m
-    """
-    mins = totminutes % 60
-    hours = (totminutes - mins) / 60
-
-    if mins:
-        mins_str = '%sm' % mins
-    else:
-        mins_str = ''
-
-    if hours:
-        hours_str = '%sh' % hours
-    else:
-        hours_str = ''
-
-    return '%s%s' % (hours_str, mins_str)
 
 
 def formatDecimalMark(value, decimalmark='.'):
@@ -797,6 +780,14 @@ def get_image(name, **kwargs):
     attr = render_html_attributes(**kwargs)
     html = '<img src="{}/++resource++bika.lims.images/{}" {}/>'
     return html.format(portal_url, name, attr)
+
+
+def get_progress_bar_html(percentage):
+    """Returns an html that represents a progress bar
+    """
+    return '<div class="progress md-progress">' \
+           '<div class="progress-bar" style="width: {0}%">{0}%</div>' \
+           '</div>'.format(percentage or 0)
 
 
 def render_html_attributes(**kwargs):

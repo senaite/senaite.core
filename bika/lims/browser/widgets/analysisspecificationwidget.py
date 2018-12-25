@@ -10,73 +10,65 @@ import collections
 from AccessControl import ClassSecurityInfo
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
-from bika.lims import logger
 from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims.config import MIN_OPERATORS, MAX_OPERATORS
-from bika.lims.utils import get_image, to_choices
+from bika.lims.config import MAX_OPERATORS
+from bika.lims.config import MIN_OPERATORS
+from bika.lims.utils import get_image
 from bika.lims.utils import get_link
+from bika.lims.utils import to_choices
+from plone.memoize import view
 from Products.Archetypes.Registry import registerWidget
 from Products.Archetypes.Widget import TypesWidget
 
-ALLOW_EDIT = ["LabManager", "Manager"]
-
-
-# TODO: Separate widget and view into own modules!
-
 
 class AnalysisSpecificationView(BikaListingView):
-    """Renders a listing to display an Analysis Services (AS) table for an
-       Analysis Specification.
+    """Listing table to display Analysis Specifications
     """
 
-    def __init__(self, context, request, fieldvalue=[], allow_edit=True):
-        BikaListingView.__init__(self, context, request)
+    def __init__(self, context, request):
+        super(AnalysisSpecificationView, self).__init__(context, request)
 
+        self.catalog = "bika_setup_catalog"
         self.contentFilter = {
             "portal_type": "AnalysisService",
             "inactive_state": "active",
             "sort_on": "sortable_title",
             "sort_order": "ascending",
         }
-
         self.context_actions = {}
-        self.base_url = self.context.absolute_url()
-        self.view_url = self.base_url
-        self.show_sort_column = False
-        self.show_select_row = False
-        self.show_select_all_checkbox = False
-        self.show_select_column = False
-        self.pagesize = 999999
-        self.allow_edit = allow_edit
-        self.show_categories = True
-        # self.expand_all_categories = False
-        self.ajax_categories = True
-        self.ajax_categories_url = "{}/{}".format(
-            self.context.absolute_url(),
-            "/analysis_spec_widget_view"
-        )
-        self.category_index = "getCategoryTitle"
 
-        self.specsresults = {}
-        for specresults in fieldvalue:
-            self.specsresults[specresults["keyword"]] = specresults
+        self.show_column_toggles = False
+        self.show_select_column = True
+        self.show_select_all_checkbox = False
+        self.pagesize = 999999
+        self.allow_edit = True
+        self.show_search = True
+        self.omit_form = True
+        self.fetch_transitions_on_select = False
+
+        # Categories
+        if self.show_categories_enabled():
+            self.categories = []
+            self.show_categories = True
+            self.expand_all_categories = False
+
+        # Operator Choices
+        self.min_operator_choices = to_choices(MIN_OPERATORS)
+        self.max_operator_choices = to_choices(MAX_OPERATORS)
 
         self.columns = collections.OrderedDict((
-            ("service", {
+            ("Title", {
                 "title": _("Service"),
                 "index": "sortable_title",
                 "sortable": False}),
-            ("keyword", {
+            ("Keyword", {
                 "title": _("Keyword"),
                 "sortable": False}),
-            ("methods", {
+            ("Methods", {
                 "title": _("Methods"),
                 "sortable": False}),
-            ("unit", {
+            ("Unit", {
                 "title": _("Unit"),
-                "sortable": False}),
-            ("service", {
-                "title": _("Service"),
                 "sortable": False}),
             ("warn_min", {
                 "title": _("Min warn"),
@@ -107,6 +99,7 @@ class AnalysisSpecificationView(BikaListingView):
             ("rangecomment", {
                 "title": _("Range comment"),
                 "sortable": False,
+                "type": "remarks",
                 "toggle": False}),
         ))
 
@@ -114,37 +107,56 @@ class AnalysisSpecificationView(BikaListingView):
             {
                 "id": "default",
                 "title": _("All"),
-                "contentFilter": {"inactive_state": "active"},
-                "transitions": [],
+                "contentFilter": {},
+                "transitions": [{"id": "disallow-all-possible-transitions"}],
                 "columns": self.columns.keys(),
             },
         ]
 
-    def get_sorted_categories(self, items):
-        """Extracts the categories from the items
+    def update(self):
+        """Update hook
         """
+        super(AnalysisSpecificationView, self).update()
+        self.allow_edit = self.is_edit_allowed()
+        self.specification = self.context.getResultsRangeDict()
 
-        # XXX should be actually following the sortKey as well
-        categories = filter(
-            None, set(map(lambda item: item.get("category"), items)))
-
-        return sorted(categories)
-
-    def get_services(self):
-        """returns all services
+    @view.memoize
+    def is_edit_allowed(self):
+        """Check if edit is allowed
         """
-        catalog = api.get_tool("bika_setup_catalog")
-        query = self.contentFilter.copy()
-        # The contentFilter query get changed by the listing view to show only
-        # services in a category. This update ensures that the sorting is kept
-        # correct and that no inactive services are displayed.
-        query.update({
-            "inactive_state": "active",
-            "sort_on": self.sort_on,
-            "sort_order": self.sort_order,
-        })
-        logger.info("AnalysisSpecificationWidget::query=%r" % query)
-        return catalog(query)
+        current_user = api.get_current_user()
+        roles = current_user.getRoles()
+        if "LabManager" in roles:
+            return True
+        if "Manager" in roles:
+            return True
+        return False
+
+    @view.memoize
+    def show_categories_enabled(self):
+        """Check in the setup if categories are enabled
+        """
+        return self.context.bika_setup.getCategoriseAnalysisServices()
+
+    def get_editable_columns(self):
+        """Return editable fields
+        """
+        columns = ["min", "max", "warn_min", "warn_max", "hidemin", "hidemax",
+                   "rangecomment", "min_operator", "max_operator"]
+        return columns
+
+    def get_required_columns(self):
+        """Return required editable fields
+        """
+        columns = ["min", "max"]
+        return columns
+
+    def folderitems(self):
+        """TODO: Refactor to non-classic mode
+        """
+        items = super(AnalysisSpecificationView, self).folderitems()
+        self.categories.sort()
+        return items
 
     def folderitem(self, obj, item, index):
         """Service triggered each time an item is iterated in folderitems.
@@ -156,122 +168,69 @@ class AnalysisSpecificationView(BikaListingView):
             the template
         :index: current index of the item
         """
-        service = api.get_object(obj)
+        # ensure we have an object and not a brain
+        obj = api.get_object(obj)
+        url = api.get_url(obj)
+        title = api.get_title(obj)
+        keyword = obj.getKeyword()
 
-        if service.getKeyword() in self.specsresults:
-            specresults = self.specsresults[service.getKeyword()]
-        else:
-            specresults = {
-                "keyword": service.getKeyword(),
-                "min_operator": "",
-                "min": "",
-                "max_operator": "",
-                "max": "",
-                "warn_min": "",
-                "warn_max": "",
-                "hidemin": "",
-                "hidemax": "",
-                "rangecomment": "",
-            }
+        # get the category
+        if self.show_categories_enabled():
+            category = obj.getCategoryTitle()
+            if category not in self.categories:
+                self.categories.append(category)
+            item["category"] = category
 
-        # Icons
-        after_icons = ""
-        if service.getAccredited():
-            after_icons += get_image(
-                "accredited.png", title=_("Accredited"))
-        if service.getAttachmentOption() == "r":
-            after_icons += get_image(
-                "attach_reqd.png", title=_("Attachment required"))
-        if service.getAttachmentOption() == "n":
-            after_icons += get_image(
-                "attach_no.png", title=_("Attachment not permitted"))
+        item["Title"] = title
+        item["replace"]["Title"] = get_link(url, value=title)
+        item["choices"]["min_operator"] = self.min_operator_choices
+        item["choices"]["max_operator"] = self.max_operator_choices
+        item["allow_edit"] = self.get_editable_columns()
+        item["required"] = self.get_required_columns()
 
-        state = api.get_workflow_status_of(service, state_var="inactive_state")
-        unit = service.getUnit()
-
-        item = {
-            "obj": service,
-            "id": service.getId(),
-            "uid": service.UID(),
-            "keyword": service.getKeyword(),
-            "title": service.Title(),
-            "unit": unit,
-            "category": service.getCategoryTitle(),
-            "selected": service.getKeyword() in self.specsresults.keys(),
-            "type_class": "contenttype-ReferenceResult",
-            "url": service.absolute_url(),
-            "relative_url": service.absolute_url(),
-            "view_url": service.absolute_url(),
-            "service": service.Title(),
-            "min_operator": specresults.get("min_operator", "geq"),
-            "min": specresults.get("min", ""),
-            "max_operator": specresults.get("max_operator", "leq"),
-            "max": specresults.get("max", ""),
-            "warn_min": specresults.get("warn_min", ""),
-            "warn_max": specresults.get("warn_max", ""),
-            "hidemin": specresults.get("hidemin", ""),
-            "hidemax": specresults.get("hidemax", ""),
-            "rangecomment": specresults.get("rangecomment", ""),
-            "replace": {},
-            "before": {},
-            "after": {
-                "service": after_icons,
-            },
-            "choices": {
-                "min_operator": to_choices(MIN_OPERATORS),
-                "max_operator": to_choices(MAX_OPERATORS),
-            },
-            "class": "state-%s" % (state),
-            "state_class": "state-%s" % (state),
-            "allow_edit": ["min", "max", "warn_min", "warn_max", "hidemin",
-                           "hidemax", "rangecomment", "min_operator",
-                           "max_operator"],
-            "table_row_class": "even",
-            "required": ["min_operator", "max_operator"]
-        }
+        spec = self.specification.get(keyword, {})
+        item["selected"] = spec and True or False
+        item["min_operator"] = spec.get("min_operator", "geq")
+        item["min"] = spec.get("min", "")
+        item["max_operator"] = spec.get("max_operator", "leq")
+        item["max"] = spec.get("max", "")
+        item["warn_min"] = spec.get("warn_min", "")
+        item["warn_max"] = spec.get("warn_max", "")
+        item["hidemin"] = spec.get("hidemin", "")
+        item["hidemax"] = spec.get("hidemax", "")
+        item["rangecomment"] = spec.get("rangecomment", "")
 
         # Add methods
-        methods = service.getMethods()
+        methods = obj.getMethods()
         if methods:
             links = map(
                 lambda m: get_link(
                     m.absolute_url(), value=m.Title(), css_class="link"),
                 methods)
-            item["replace"]["methods"] = ", ".join(links)
+            item["replace"]["Methods"] = ", ".join(links)
         else:
             item["methods"] = ""
 
+        # Icons
+        after_icons = ""
+        if obj.getAccredited():
+            after_icons += get_image(
+                "accredited.png", title=_("Accredited"))
+        if obj.getAttachmentOption() == "r":
+            after_icons += get_image(
+                "attach_reqd.png", title=_("Attachment required"))
+        if obj.getAttachmentOption() == "n":
+            after_icons += get_image(
+                "attach_no.png", title=_("Attachment not permitted"))
+        if after_icons:
+            item["after"]["Title"] = after_icons
+
         return item
-
-    def folderitems(self):
-        """Custom folderitems
-
-        :returns: listing items
-        """
-
-        # XXX: Should be done via the Worflow
-        # Check edit permissions
-        self.allow_edit = False
-        member = api.get_current_user()
-        roles = member.getRoles()
-        if set(roles).intersection(ALLOW_EDIT):
-            self.allow_edit = True
-
-        # Analysis Services retrieval and custom item creation
-        items = []
-
-        services = self.get_services()
-        for num, service in enumerate(services):
-            item = self.folderitem(service, {}, num)
-            if item:
-                items.append(item)
-
-        self.categories = self.get_sorted_categories(items)
-
-        return items
 
 
 class AnalysisSpecificationWidget(TypesWidget):
+    """Analysis Specification Widget
+    """
     _properties = TypesWidget._properties.copy()
     _properties.update({
         'macro': "bika_widgets/analysisspecificationwidget",
@@ -291,12 +250,16 @@ class AnalysisSpecificationWidget(TypesWidget):
         hidemin and/or hidemax specified, results might contain empty min
         and/or max fields.
         """
-
         values = []
-        if "service" not in form:
-            return values, {}
 
-        for uid, keyword in form["keyword"][0].items():
+        # selected services
+        service_uids = form.get("uids", [])
+
+        if not service_uids:
+            # Inject empty fields for the validator
+            values = [dict.fromkeys(field.getSubfields())]
+
+        for uid in service_uids:
             s_min = self._get_spec_value(form, uid, "min")
             s_max = self._get_spec_value(form, uid, "max")
             if not s_min and not s_max:
@@ -305,16 +268,23 @@ class AnalysisSpecificationWidget(TypesWidget):
                 # mandatory subfields, the following message will appear after
                 # submission: "Specifications is required, please correct."
                 continue
-            min_operator = self._get_spec_value(form, uid, "min_operator",
-                                                check_floatable=False)
-            max_operator = self._get_spec_value(form, uid, "max_operator",
-                                                check_floatable=False)
+
+            # TODO: disallow this case in the UI
+            if s_min > s_max:
+                continue
+
+            min_operator = self._get_spec_value(
+                form, uid, "min_operator", check_floatable=False)
+            max_operator = self._get_spec_value(
+                form, uid, "max_operator", check_floatable=False)
+
             if not min_operator and not max_operator:
                 # Values for min operator and max operator are required
                 continue
 
+            service = api.get_object_by_uid(uid)
             values.append({
-                "keyword": keyword,
+                "keyword": service.getKeyword(),
                 "uid": uid,
                 "min_operator": min_operator,
                 "min": s_min,
@@ -356,21 +326,16 @@ class AnalysisSpecificationWidget(TypesWidget):
     security.declarePublic("AnalysisSpecificationResults")
 
     def AnalysisSpecificationResults(self, field, allow_edit=False):
-        """Render listing with categorized services.
-
-        :param field: Contains the schema field with a list of services in it
+        """Render Analyses Specifications Table
         """
-        fieldvalue = getattr(field, field.accessor)()
-
-        # N.B. we do not want to pass the field as the context to
-        # AnalysisProfileAnalysesView, but rather the holding instance
         instance = getattr(self, "instance", field.aq_parent)
-        view = AnalysisSpecificationView(instance,
-                                         self.REQUEST,
-                                         fieldvalue=fieldvalue,
-                                         allow_edit=allow_edit)
-
-        return view.contents_table(table_only=True)
+        table = api.get_view("table_analysis_specifications",
+                             context=instance,
+                             request=self.REQUEST)
+        # Call listing hooks
+        table.update()
+        table.before_render()
+        return table.ajax_contents_table()
 
 
 registerWidget(AnalysisSpecificationWidget,

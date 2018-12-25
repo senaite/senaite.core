@@ -5,16 +5,18 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from Products.ATContentTypes.content import schemata
-from Products.Archetypes import atapi
-from Products.CMFCore.permissions import ModifyPortalContent, AddPortalContent
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import ISamplingRoundTemplates
 from bika.lims.permissions import AddSRTemplate
 from bika.lims.utils import checkPermissions
-from plone.app.folder.folder import ATFolder, ATFolderSchema
+from plone.app.folder.folder import ATFolder
+from plone.app.folder.folder import ATFolderSchema
+from Products.Archetypes import atapi
+from Products.ATContentTypes.content import schemata
+from Products.CMFCore.permissions import AddPortalContent
+from Products.CMFCore.permissions import ModifyPortalContent
 from zope.interface.declarations import implements
 
 
@@ -85,7 +87,16 @@ class SamplingRoundTemplatesView(BikaListingView):
             }
         return super(SamplingRoundTemplatesView, self).__call__()
 
+    def before_render(self):
+        """Before template render hook
+        """
+        # Don't allow any context actions
+        self.request.set("disable_border", 1)
+
+
 schema = ATFolderSchema.copy()
+
+
 class SRTemplates(ATFolder):
     implements(ISamplingRoundTemplates)
     displayContentsTab = False

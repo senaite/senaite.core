@@ -105,7 +105,6 @@ Retract = "BIKA: Retract"
 Verify = 'BIKA: Verify'
 Publish = 'BIKA: Publish'
 EditSample = 'BIKA: Edit Sample'
-ResultsNotRequested = 'BIKA: Results not requested'
 ManageInvoices = 'BIKA: Manage Invoices'
 ViewResults = 'BIKA: View Results'
 EditResults = 'BIKA: Edit Results'
@@ -250,7 +249,6 @@ def setup_permissions(portal):
     mp(EditSample, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner', 'SamplingCoordinator'], 1)
     mp(EditAR, ['Manager', 'LabManager', 'LabClerk', 'Sampler', 'SamplingCoordinator'], 1)
     mp(EditWorksheet, ['Manager', 'LabManager', 'Analyst'], 1)
-    mp(ResultsNotRequested, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
     mp(ManageInvoices, ['Manager', 'LabManager', 'Owner'], 1)
     mp(ViewResults, ['Manager', 'LabManager', 'Analyst', 'Sampler', 'RegulatoryInspector', 'SamplingCoordinator'], 1)
     mp(EditResults, ['Manager', 'LabManager', 'Analyst'], 1)
@@ -370,16 +368,6 @@ def setup_permissions(portal):
     mp('Access contents information', ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
     mp(permissions.DeleteObjects, ['Manager', 'LabManager', 'Owner'], 0)
     portal.referencesamples.reindexObject()
-
-    # /samples folder permissions
-    mp = portal.samples.manage_permission
-    mp(CancelAndReinstate, ['Manager', 'LabManager', 'LabClerk'], 0)
-    mp(permissions.ListFolderContents, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'RegulatoryInspector', 'SamplingCoordinator'], 0)
-    mp(permissions.AddPortalContent, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'SamplingCoordinator'], 0)
-    mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'RegulatoryInspector', 'SamplingCoordinator'], 0)
-    mp('Access contents information', ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'RegulatoryInspector', 'SamplingCoordinator'], 0)
-    mp(permissions.DeleteObjects, ['Manager', 'LabManager', 'Owner'], 0)
-    portal.samples.reindexObject()
 
     # /reports folder permissions
     mp = portal.reports.manage_permission

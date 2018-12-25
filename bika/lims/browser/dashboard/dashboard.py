@@ -33,7 +33,6 @@ from plone.memoize import ram
 from plone.memoize import view as viewcache
 
 DASHBOARD_FILTER_COOKIE = 'dashboard_filter_cookie'
-FILTER_BY_DEPT_COOKIE_ID = 'filter_by_department_info'
 
 # Supported periodicities for evolution charts
 PERIODICITY_DAILY = "d"
@@ -370,10 +369,6 @@ class DashboardView(BrowserView):
         catalog = getToolByName(self.context, CATALOG_ANALYSIS_REQUEST_LISTING)
         query = {'portal_type': "AnalysisRequest",
                  'cancellation_state': ['active']}
-        filtering_allowed = self.context.bika_setup.getAllowDepartmentFiltering()
-        if filtering_allowed:
-            cookie_dep_uid = self.request.get(FILTER_BY_DEPT_COOKIE_ID, '').split(',') if filtering_allowed else ''
-            query['getDepartmentUIDs'] = {"query": cookie_dep_uid, "operator": "or"}
 
         # Check if dashboard_cookie contains any values to query
         # elements by
@@ -482,10 +477,6 @@ class DashboardView(BrowserView):
         out = []
         bc = getToolByName(self.context, CATALOG_WORKSHEET_LISTING)
         query = {'portal_type': "Worksheet", }
-        filtering_allowed = self.context.bika_setup.getAllowDepartmentFiltering()
-        if filtering_allowed:
-            cookie_dep_uid = self.request.get(FILTER_BY_DEPT_COOKIE_ID, '').split(',') if filtering_allowed else ''
-            query['getDepartmentUIDs'] = {"query": cookie_dep_uid, "operator": "or"}
 
         # Check if dashboard_cookie contains any values to query
         # elements by
@@ -533,20 +524,11 @@ class DashboardView(BrowserView):
         """ Returns the section dictionary related with Analyses,
             that contains some informative panels (analyses pending
             analyses assigned, etc.)
-
-            sample_registered, not_requested, published, retracted,
-            sample_due, sample_received, sampled, to_be_preserved,
-            to_be_sampled, , to_be_verified, rejected, verified, to_be_verified,
-            assigned
         """
         out = []
         bc = getToolByName(self.context, CATALOG_ANALYSIS_LISTING)
         query = {'portal_type': "Analysis",
                  'cancellation_state': 'active'}
-        filtering_allowed = self.context.bika_setup.getAllowDepartmentFiltering()
-        if filtering_allowed:
-            cookie_dep_uid = self.request.get(FILTER_BY_DEPT_COOKIE_ID, '').split(',') if filtering_allowed else ''
-            query['getDepartmentUID'] = { "query": cookie_dep_uid,"operator":"or" }
 
         # Check if dashboard_cookie contains any values to query elements by
         query = self._update_criteria_with_filters(query, 'analyses')
@@ -558,16 +540,14 @@ class DashboardView(BrowserView):
         name = _('Assignment pending')
         desc = _('Assignment pending')
         purl = 'aggregatedanalyses?analyses_form_review_state=default'
-        query['review_state'] = ['sample_received', 'attachment_due', ]
-        query['worksheetanalysis_review_state'] = ['unassigned']
+        query['review_state'] = ['unassigned']
         out.append(self._getStatistics(name, desc, purl, bc, query, total))
 
         # Analyses pending
         name = _('Results pending')
         desc = _('Results pending')
         purl = 'aggregatedanalyses?analyses_form_review_state=results_pending'
-        query['review_state'] = ['sample_received', 'attachment_due', ]
-        del query['worksheetanalysis_review_state']
+        query['review_state'] = ['unassigned', 'assigned', ]
         out.append(self._getStatistics(name, desc, purl, bc, query, total))
 
         # Analyses to be verified
@@ -602,14 +582,6 @@ class DashboardView(BrowserView):
         catalog = getToolByName(self.context, 'portal_catalog')
         query = {'portal_type': "Sample",
                  'cancellation_state': ['active']}
-        filtering_allowed = \
-            self.context.bika_setup.getAllowDepartmentFiltering()
-        if filtering_allowed:
-            cookie_dep_uid = self.request\
-                .get(FILTER_BY_DEPT_COOKIE_ID, '')\
-                .split(',') if filtering_allowed else ''
-            query['getDepartmentUIDs'] = {"query": cookie_dep_uid,
-                                          "operator": "or"}
 
         # Check if dashboard_cookie contains any values to query
         # elements by
@@ -684,11 +656,8 @@ class DashboardView(BrowserView):
 
     def get_states_map(self, portal_type):
         if portal_type == 'Analysis':
-            return {'to_be_sampled':   _('Reception pending'),
-                    'sample_due':      _('Reception pending'),
-                    'sample_received': _('Assignment pending'),
+            return {'unassigned':      _('Assignment pending'),
                     'assigned':        _('Results pending'),
-                    'attachment_due':  _('Results pending'),
                     'to_be_verified':  _('To be verified'),
                     'rejected':        _('Rejected'),
                     'retracted':       _('Retracted'),

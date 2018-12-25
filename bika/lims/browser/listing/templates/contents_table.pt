@@ -1,0 +1,28 @@
+<tal:contents_table
+  define="portal context/@@plone_portal_state/portal;">
+
+  <form name="listing_form"
+        class="form form-inline"
+        method="post"
+        i18n:domain="senaite.core"
+        tal:omit-tag="view/omit_form"
+        tal:attributes="id python:view.form_id;
+                        action python:view.getPOSTAction()">
+
+    <input tal:condition="not: view/omit_form"
+           tal:replace="structure context/@@authenticator/authenticator"/>
+
+    <input tal:condition="not: view/omit_form"
+           type="hidden" name="submitted" value="1"/>
+
+    <!-- ReactJS managed component -->
+    <div class="ajax-contents-table"
+         tal:attributes="data-form_id python:view.form_id;
+                         data-pagesize python:view.pagesize;
+                         data-api_url python:view.get_api_url();
+                         data-columns python:view.ajax_columns();
+                         data-review_states python:view.ajax_review_states();">
+    </div>
+  </form>
+
+</tal:contents_table>

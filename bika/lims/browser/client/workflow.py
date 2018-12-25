@@ -12,7 +12,7 @@ from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.analysisrequest import AnalysisRequestWorkflowAction
 from bika.lims.permissions import *
-from bika.lims.subscribers import doActionFor
+from bika.lims.workflow import doActionFor
 from bika.lims.utils import isActive
 
 
@@ -42,7 +42,7 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
         # portal_workflow transition url.
         came_from = "workflow_action"
         action = form.get(came_from, '')
-        if not action and not form.get('bika_listing_filter_bar_submit', ''):
+        if not action:
             # workflow_action_button is the action name specified in
             # the bika_listing_view table buttons.
             came_from = "workflow_action_button"

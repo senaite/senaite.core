@@ -287,11 +287,9 @@ class BikaGenerator(object):
         addIndex(bc, 'description', 'FieldIndex', 'Description')
         addIndex(bc, 'review_state', 'FieldIndex')
         addIndex(bc, 'inactive_state', 'FieldIndex')
-        addIndex(bc, 'worksheetanalysis_review_state', 'FieldIndex')
         addIndex(bc, 'cancellation_state', 'FieldIndex')
         addIndex(bc, 'Identifiers', 'KeywordIndex')
 
-        addIndex(bc, 'getDepartmentUIDs', 'KeywordIndex')
         addIndex(bc, 'getAnalysisService', 'KeywordIndex')
         addIndex(bc, 'getAnalyst', 'FieldIndex')
         addIndex(bc, 'getAnalysts', 'KeywordIndex')
@@ -322,11 +320,16 @@ class BikaGenerator(object):
         addIndex(bc, 'getScheduledSamplingSampler', 'FieldIndex')
         addIndex(bc, 'getSampleTypeTitle', 'FieldIndex')
         addIndex(bc, 'getSampleTypeUID', 'FieldIndex')
-        addIndex(bc, 'getSampleUID', 'FieldIndex')
         addIndex(bc, 'getSamplingDate', 'DateIndex')
         addIndex(bc, 'getWorksheetTemplateTitle', 'FieldIndex')
         addIndex(bc, 'BatchUID', 'FieldIndex')
         addIndex(bc, 'getBatchUIDs', 'KeywordIndex')
+
+        # https://github.com/senaite/senaite.core/pull/1091
+        addIndex(bc, 'getSupportedServices', 'KeywordIndex')
+        addIndex(bc, 'getBlank', 'BooleanIndex')
+        addIndex(bc, 'isValid', 'BooleanIndex')
+
         addColumn(bc, 'path')
         addColumn(bc, 'UID')
         addColumn(bc, 'id')
@@ -459,7 +462,6 @@ class BikaGenerator(object):
         addIndex(bsc, 'getCategoryUID', 'FieldIndex')
         addIndex(bsc, 'getClientUID', 'FieldIndex')
         addIndex(bsc, 'getDepartmentTitle', 'FieldIndex')
-        addIndex(bsc, 'getDepartmentUID', 'FieldIndex')
         addIndex(bsc, 'getDocumentID', 'FieldIndex')
         addIndex(bsc, 'getDuplicateVariation', 'FieldIndex')
         addIndex(bsc, 'getFormula', 'FieldIndex')

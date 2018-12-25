@@ -5,30 +5,34 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
+import os
+import tempfile
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
 from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import _createObjectByType
 from Products.CMFPlone.utils import safe_unicode
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.idserver import renameAfterCreation
-from bika.lims.interfaces import ISample, IAnalysisService, IRoutineAnalysis
-from bika.lims.utils import tmpID
-from bika.lims.utils import to_utf8
-from bika.lims.utils import encode_header
-from bika.lims.utils import createPdf
+from bika.lims.interfaces import ISample, IAnalysisService, IRoutineAnalysis, \
+    IAnalysisRequest
 from bika.lims.utils import attachPdf
+from bika.lims.utils import changeWorkflowState
+from bika.lims.utils import createPdf
+from bika.lims.utils import encode_header
+from bika.lims.utils import tmpID, copy_field_values
+from bika.lims.utils import to_utf8
 from bika.lims.utils.sample import create_sample
 from bika.lims.utils.samplepartition import create_samplepartition
-from bika.lims.workflow import doActionFor
+from bika.lims.workflow import doActionFor, ActionHandlerPool, \
+    push_reindex_to_actions_pool
 from bika.lims.workflow import doActionsFor
 from bika.lims.workflow import getReviewHistoryActionsList
-from copy import deepcopy
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
 from email.Utils import formataddr
-from plone import api
-from Products.CMFPlone.utils import _createObjectByType
-import os
-import tempfile
+
 
 def create_analysisrequest(client, request, values, analyses=None,
                            partitions=None, specifications=None, prices=None):
@@ -117,7 +121,7 @@ def create_analysisrequest(client, request, values, analyses=None,
         part_num += 1
 
     # At this point, we have a fully created AR, with a Sample, Partitions and
-    # Analyses, but the state of all them is the initial ("sample_registered").
+    # Analyses, but the state of all them is the initial ("unassigned").
     # We can now transition the whole thing (instead of doing it manually for
     # each object we created). After and Before transitions will take care of
     # cascading and promoting the transitions in all the objects "associated"
@@ -274,7 +278,7 @@ def _resolve_items_to_service_uids(items):
             continue
 
         # Maybe object UID.
-        portal = portal if portal else api.portal.get()
+        portal = portal if portal else api.get_portal()
         bsc = bsc if bsc else getToolByName(portal, 'bika_setup_catalog')
         brains = bsc(UID=item)
         if brains:
@@ -382,3 +386,65 @@ def notify_rejection(analysisrequest):
             "Email with subject %s was not sent (SMTP connection error)" % mailsubject)
 
     return True
+
+
+def create_retest(ar):
+    """Creates a retest (Analysis Request) from an invalidated Analysis Request
+    :param ar: The invalidated Analysis Request
+    :type ar: IAnalysisRequest
+    :rtype: IAnalysisRequest
+    """
+    if not ar:
+        raise ValueError("Source Analysis Request cannot be None")
+
+    if not IAnalysisRequest.providedBy(ar):
+        raise ValueError("Type not supported: {}".format(repr(type(ar))))
+
+    if ar.getRetest():
+        # Do not allow the creation of another retest!
+        raise ValueError("Retest already set")
+
+    if not ar.isInvalid():
+        # Analysis Request must be in 'invalid' state
+        raise ValueError("Cannot do a retest from an invalid Analysis Request"
+                         .format(repr(ar)))
+
+    # 0. Open the actions pool
+    actions_pool = ActionHandlerPool.get_instance()
+    actions_pool.queue_pool()
+
+    # 1. Create the Retest (Analysis Request)
+    ignore = ['Analyses', 'DatePublished', 'Invalidated', 'Sample']
+    retest = _createObjectByType("AnalysisRequest", ar.aq_parent, tmpID())
+    retest.setSample(ar.getSample())
+    copy_field_values(ar, retest, ignore_fieldnames=ignore)
+    renameAfterCreation(retest)
+
+    # 2. Copy the analyses from the source
+    intermediate_states = ['retracted', 'reflexed']
+    for an in ar.getAnalyses(full_objects=True):
+        if (api.get_workflow_status_of(an) in intermediate_states):
+            # Exclude intermediate analyses
+            continue
+
+        nan = _createObjectByType("Analysis", retest, an.getKeyword())
+
+        # Make a copy
+        ignore_fieldnames = ['DataAnalysisPublished']
+        copy_field_values(an, nan, ignore_fieldnames=ignore_fieldnames)
+        nan.unmarkCreationFlag()
+        push_reindex_to_actions_pool(nan)
+
+    # 3. Assign the source to retest
+    retest.setInvalidated(ar)
+
+    # 4. Transition the retest to "sample_received"!
+    changeWorkflowState(retest, 'bika_ar_workflow', 'sample_received')
+
+    # 5. Reindex and other stuff
+    push_reindex_to_actions_pool(retest)
+    push_reindex_to_actions_pool(retest.aq_parent)
+
+    # 6. Resume the actions pool
+    actions_pool.resume()
+    return retest

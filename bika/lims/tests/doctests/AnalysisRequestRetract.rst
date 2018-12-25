@@ -175,18 +175,18 @@ Retract the Analysis Request::
     'sample_received'
 
 Verify that its analyses have also been retracted and that a new analysis has been
-created with review status 'sample_received'. Since we previously checked that the AR
-had only one analyses the count for both 'retracted' and 'sample_received' analyses
+created with review status 'unassigned'. Since we previously checked that the AR
+had only one analyses the count for both 'retracted' and 'unassigned' analyses
 should be one::
 
-    >>> sample_received = 0
+    >>> registered = 0
     >>> retracted = 0
     >>> for analysis in ar.getAnalyses(full_objects=True):
     ...     if analysis.portal_workflow.getInfoFor(analysis, 'review_state') == 'retracted':
     ...         retracted += 1
-    ...     if analysis.portal_workflow.getInfoFor(analysis, 'review_state') != 'sample_received':
-    ...         sample_received += 1
-    >>> sample_received
+    ...     if analysis.portal_workflow.getInfoFor(analysis, 'review_state') != 'unassigned':
+    ...         registered += 1
+    >>> registered
     1
     >>> retracted
     1

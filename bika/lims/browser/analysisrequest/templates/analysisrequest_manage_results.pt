@@ -7,9 +7,7 @@
 
   <head>
     <title></title>
-    <metal:block fill-slot="javascript_head_slot"
-                 tal:define="portal context/@@plone_portal_state/portal;">
-
+    <metal:block fill-slot="javascript_head_slot">
       <!-- TODO move to senaite.lims bootstrap css -->
       <style type="text/css">
        #remarks-widget {
@@ -28,73 +26,101 @@
     </metal:block>
   </head>
 
-  <body tal:define="ortal context/@@plone_portal_state/portal;
-                    global out_of_range python:0;
-                    global late python:0;
-                    tabindex view/tabindex;
-                    now view/now">
-
+  <body>
     <metal:content-title fill-slot="content-title">
       <h1>
+        <!-- AR Icon -->
         <img tal:condition="view/icon | nothing"
              src="" tal:attributes="src view/icon"/>
-        <span class="documentFirstHeading" tal:content="context/title_or_id"></span>
-        <img tal:condition="python:context.getSample().getSampleType().getHazardous()"
-                            title="Hazardous"
-                            i18n:attributes="value"
-                            tal:attributes="src string:${view/portal_url}/++resource++bika.lims.images/hazardous_big.png"/>
-        <img tal:condition="python:context.getInvoiceExclude()"
-                            title="Exclude from invoice"
-                            i18n:attributes="value"
-                            tal:attributes="src string:${view/portal_url}/++resource++bika.lims.images/invoice_exclude_big.png"/>
+        <!-- Title -->
+        <span class="documentFirstHeading" tal:content="context/id"></span>
+        <!-- Barcode -->
+        <span class="barcode" tal:attributes="value context/id"></span>
+        <!-- Hazardous Icon -->
+        <img tal:condition="python:view.is_hazardous()"
+             title="Hazardous"
+             i18n:attributes="value"
+             tal:attributes="src string:${view/portal_url}/++resource++bika.lims.images/hazardous_big.png"/>
+        <!-- Exclude Invoice Icon -->
+        <img tal:condition="python:view.exclude_invoice()"
+             title="Exclude from invoice"
+             i18n:attributes="value"
+             tal:attributes="src string:${view/portal_url}/++resource++bika.lims.images/invoice_exclude_big.png"/>
+        <!-- Retest Icon -->
+        <img tal:condition="python:view.is_retest()"
+             title="Results have been withdrawn"
+             i18n:attributes="value"
+             tal:attributes="src string:${view/portal_url}/++resource++bika.lims.images/delete_big.png"/>
       </h1>
     </metal:content-title>
 
     <metal:content-description fill-slot="content-description">
     </metal:content-description>
 
-    <metal:content-core fill-slot="content-core" tal:define="
-                                   tabindex view/tabindex;
-                                   portal context/@@plone_portal_state/portal;">
+    <metal:content-core fill-slot="content-core">
 
-      <tal:tables tal:repeat="table python:view.tables.items()" tal:condition="python:hasattr(view, 'tables')">
-        <h3>
-          <img
-            i18n:attributes="title"
-                             title="Analyses"
-                             tal:attributes="src string:${view/portal_url}/++resource++bika.lims.images/analysisservice.png"/>
-          <span tal:content="python: table[0]"/>
-        </h3>
-        <span tal:replace="structure python: table[1]"/>
-      </tal:tables>
+      <tal:field_analyses condition="python:view.has_field_analyses()">
+        <div class="row">
+          <div class="col-sm-12">
+            <h3>
+              <img i18n:attributes="title" title="Field Analyses" src="++resource++bika.lims.images/analysisservice.png"/>
+              <span i18n:translate="">Field Analyses</span>
+            </h3>
+            <span tal:replace="structure python:view.render_analyses_table(table='field')"/>
+          </div>
+        </div>
+      </tal:field_analyses>
 
-      <!-- Refactored Remarks Widget
+      <tal:lab_analyses condition="python:view.has_lab_analyses()">
+        <div class="row">
+          <div class="col-sm-12">
+            <h3>
+              <img i18n:attributes="title" title="Lab Analyses" src="++resource++bika.lims.images/analysisservice.png"/>
+              <span i18n:translate="">Lab Analyses</span>
+            </h3>
+            <span tal:replace="structure python:view.render_analyses_table(table='lab')"/>
+          </div>
+        </div>
+      </tal:lab_analyses>
+
+      <!-- Remarks Widget
            https://github.com/senaite/senaite.core/pull/920 -->
-      <div id="remarks-widget" tal:define="checkPermission nocall: context/portal_membership/checkPermission;
-               mode python:'edit' if checkPermission('Modify portal content', context) else 'view';
-               field python:context.Schema()['Remarks'];
-               errors python:{};">
-        <h3>
-          <img i18n:attributes="title" title="Remarks" src="++resource++bika.lims.images/remarks.png"/>
-          <span i18n:translate="">Remarks</span>
-        </h3>
-        <div class="well">
-          <metal:widget use-macro="python:context.widget('Remarks', mode=mode)"/>
+      <div class="row">
+        <div id="remarks-widget"
+             class="col-sm-12"
+             tal:define="checkPermission nocall: context/portal_membership/checkPermission;
+                 mode python:'edit' if checkPermission('Modify portal content', context) else 'view';
+                 field python:context.Schema()['Remarks'];
+                 errors python:{};">
+          <h3>
+            <img i18n:attributes="title" title="Remarks" src="++resource++bika.lims.images/remarks.png"/>
+            <span i18n:translate="">Remarks</span>
+          </h3>
+          <div class="well">
+            <metal:widget use-macro="python:context.widget('Remarks', mode=mode)"/>
+          </div>
         </div>
       </div>
+      <!-- /Remarks Widget -->
 
-      <tal:rejection define="field python:context.Schema()['RejectionReasons'];
-                             widget python:field.widget;
-                             errors python:{};">
-        <table style="display: none;">
-          <td>
-            <span tal:replace="python:widget.label"/>
-          </td>
-          <td>
-            <metal:widget use-macro="python:context.widget('RejectionReasons', mode='edit')" />
-          </td>
-        </table>
-      </tal:rejection>
+      <!-- Rejection Widget -->
+      <div class="row">
+        <div class="col-sm-12">
+          <tal:rejection define="field python:context.Schema()['RejectionReasons'];
+                                 widget python:field.widget;
+                                 errors python:{};">
+            <table style="display: none;">
+              <td>
+                <span tal:replace="python:widget.label"/>
+              </td>
+              <td>
+                <metal:widget use-macro="python:context.widget('RejectionReasons', mode='edit')" />
+              </td>
+            </table>
+          </tal:rejection>
+        </div>
+      </div>
+      <!-- /Rejection Widget -->
 
     </metal:content-core>
 

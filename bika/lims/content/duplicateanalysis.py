@@ -9,7 +9,6 @@ from AccessControl import ClassSecurityInfo
 from Products.Archetypes.public import Schema, registerType
 from Products.Archetypes.public import StringField
 from bika.lims import api
-from bika.lims import deprecated
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.abstractroutineanalysis import AbstractRoutineAnalysis
@@ -17,10 +16,8 @@ from bika.lims.content.abstractroutineanalysis import schema
 from bika.lims.content.analysisspec import ResultsRangeDict
 from bika.lims.interfaces import IDuplicateAnalysis
 from bika.lims.interfaces.analysis import IRequestAnalysis
-from bika.lims.subscribers import skip
 from bika.lims.workflow import in_state
 from bika.lims.workflow.analysis import STATE_RETRACTED, STATE_REJECTED
-from bika.lims.workflow.duplicateanalysis import events
 from zope.interface import implements
 
 # A reference back to the original analysis from which this one was duplicated.
@@ -99,7 +96,7 @@ class DuplicateAnalysis(AbstractRoutineAnalysis):
                 # Exclude me from the list
                 continue
 
-            if IRequestAnalysis.providedBy(analysis) is False:
+            if not IRequestAnalysis.providedBy(analysis):
                 # Exclude analyses that do not have an analysis request
                 # associated
                 continue
@@ -164,17 +161,6 @@ class DuplicateAnalysis(AbstractRoutineAnalysis):
         specs.min = str(result - margin)
         specs.max = str(result + margin)
         return specs
-
-    def workflow_script_attach(self):
-        events.after_attach(self)
-
-    @security.public
-    def workflow_script_retract(self):
-        events.after_retract(self)
-
-    @security.public
-    def workflow_script_verify(self):
-        events.after_verify(self)
 
 
 registerType(DuplicateAnalysis, PROJECTNAME)

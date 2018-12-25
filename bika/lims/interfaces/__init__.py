@@ -689,23 +689,6 @@ class IProductivityReport(Interface):
     """
 
 
-class IQualityControlReport(Interface):
-    """Reports are enumerated manually in reports/*.pt - but addional reports
-    can be added to this list by extension packages using this adapter.
-
-    The adapter must return a dictionary:
-
-    {
-     title: text (i18n translated),
-     description: text (i18n translated),
-     query_form: html <fieldset> of controls used to enter report
-                 parameters (excluding <form> tags and <submit> button)
-     module: The name of the module containing a class named "Report"
-             an instance of this class will be used to create the report
-    }
-    """
-
-
 class IAdministrationReport(Interface):
     """Reports are enumerated manually in reports/*.pt - but addional reports
     can be added to this list by extension packages using this adapter.
@@ -874,4 +857,10 @@ class IGetStickerTemplates(Interface):
 
 class IARReport(Interface):
     """Marker interface for published AR Reports
+    """
+
+
+class ICancellable(Interface):
+    """Marker for those objects that can be cancelled, but their content
+    type is not bound to cancellation_workflow
     """

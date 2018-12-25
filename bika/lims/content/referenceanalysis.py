@@ -75,7 +75,8 @@ class ReferenceAnalysis(AbstractAnalysis):
     def setResult(self, value):
         # Always update ResultCapture date when this field is modified
         self.setResultCaptureDate(DateTime())
-        val = str(value).strip()
+        # Ensure result integrity regards to None, empty and 0 values
+        val = str('' if not value and value != 0 else value).strip()
         self.getField('Result').set(self, val)
 
     def getReferenceResults(self):
@@ -153,92 +154,12 @@ class ReferenceAnalysis(AbstractAnalysis):
         """
         return []
 
-    @security.public
-    def workflow_script_submit(self):
-        """Method triggered after a 'submit' transition for the current
-        ReferenceAnalysis is performed.
-        By default, the "submit" action for transitions the RefAnalysis to the
-        "attachment_due" state. If attachment is not required, the Reference
-        Analysis is transitioned to 'to_be_verified' state (via 'attach').
-        If all the analyses that belong to the same worksheet are in a suitable
-        state, the 'submit' transition to the worksheet is triggered too.
-        This function is called automatically by
-        bika.lims.workflow.AfterTransitionEventHandler
+    def getDependents(self, retracted=False):
+        """It doesn't make sense for a ReferenceAnalysis to use
+        dependents, since them are only used in calculations for
+        routine analyses
         """
-        # By default, the 'submit' action transitions the ReferenceAnalysis to
-        # the 'attachment_due'. Since doActionFor already checks for the guards
-        # in this case (guard_attach_transition), try always the transition to
-        # 'to_be_verified' via 'attach' action
-        # doActionFor will check the
-        doActionFor(self, 'attach')
+        return []
 
-        # Delegate the transition of Worksheet to base class AbstractAnalysis
-        AbstractAnalysis.workflow_script_submit(self)
-
-    def workflow_script_attach(self):
-        if skip(self, "attach"):
-            return
-        workflow = getToolByName(self, 'portal_workflow')
-        # If all analyses on the worksheet have been attached,
-        # then attach the worksheet.
-        ws = self.getBackReferences('WorksheetAnalysis')
-        ws = ws[0]
-        ws_state = workflow.getInfoFor(ws, 'review_state')
-        if ws_state == 'attachment_due' and not skip(ws, "attach", peek=True):
-            can_attach = True
-            for a in ws.getAnalyses():
-                if workflow.getInfoFor(a, 'review_state') in \
-                        ('sample_due', 'sample_received', 'attachment_due',
-                         'assigned',):
-                    can_attach = False
-                    break
-            if can_attach:
-                workflow.doActionFor(ws, 'attach')
-        self.reindexObject()
-
-    def workflow_script_retract(self):
-        if skip(self, "retract"):
-            return
-        workflow = getToolByName(self, 'portal_workflow')
-        # Escalate action to the Worksheet.
-        ws = self.getBackReferences('WorksheetAnalysis')
-        ws = ws[0]
-        if not skip(ws, "retract", peek=True):
-            if workflow.getInfoFor(ws, 'review_state') == 'open':
-                skip(ws, "retract")
-            else:
-                if "retract all analyses" \
-                        not in self.REQUEST['workflow_skiplist']:
-                    self.REQUEST["workflow_skiplist"].append(
-                        "retract all analyses")
-                workflow.doActionFor(ws, 'retract')
-        self.reindexObject()
-
-    def workflow_script_verify(self):
-        if skip(self, "verify"):
-            return
-        workflow = getToolByName(self, 'portal_workflow')
-        # If all other analyses on the worksheet are verified,
-        # then verify the worksheet.
-        ws = self.getBackReferences('WorksheetAnalysis')
-        if ws and len(ws) > 0:
-            ws = ws[0]
-            ws_state = workflow.getInfoFor(ws, 'review_state')
-            if ws_state == 'to_be_verified' and not skip(ws, "verify",
-                                                         peek=True):
-                all_verified = True
-                for a in ws.getAnalyses():
-                    if workflow.getInfoFor(a, 'review_state') in \
-                            ('sample_due', 'sample_received', 'attachment_due',
-                             'to_be_verified', 'assigned'):
-                        all_verified = False
-                        break
-                if all_verified:
-                    if "verify all analyses" \
-                            not in self.REQUEST['workflow_skiplist']:
-                        self.REQUEST["workflow_skiplist"].append(
-                            "verify all analyses")
-                    workflow.doActionFor(ws, "verify")
-        self.reindexObject()
 
 registerType(ReferenceAnalysis, PROJECTNAME)

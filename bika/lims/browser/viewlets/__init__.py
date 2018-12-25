@@ -8,7 +8,6 @@
 from attachments import AttachmentsViewlet  # noqa
 from attachments import WorksheetAttachmentsViewlet  # noqa
 from document_actions import DocumentActionsViewlet  # noqa
-from new_versions import NewVersionsViewlet  # noqa
 from path_bar import PathBarViewlet  # noqa
 from authenticator import AuthenticatorViewlet  # noqa
 from instruments import InstrumentQCFailuresViewlet  # noqa

@@ -1,7 +1,7 @@
 QC Analyses With Interim Fields On A Worksheet
 ==============================================
 
-Creating analysis that has interims fields so that we can test for 
+Creating analysis that has interims fields so that we can test for
 Reference Analyses(Blank and Control) that have interim fields.
 
 Running this test from the buildout directory::
@@ -127,8 +127,8 @@ Create a new Worksheet and add the analyses:
     <Analysis at /plone/clients/client-1/W-0001-R01/TotalTerpenes>
     >>> worksheet.addAnalysis(analysis)
     >>> transaction.commit()
-    >>> api.get_workflow_status_of(analysis, state_var='worksheetanalysis_review_state')
-    'assigned'
+    >>> analysis.getWorksheet().UID() == worksheet.UID()
+    True
 
 Add a blank and a control:
 
@@ -139,13 +139,9 @@ Add a blank and a control:
     >>> transaction.commit()
     >>> controls.sort(key=lambda analysis: analysis.getKeyword(), reverse=False)
     >>> transaction.commit()
-    >>> browser.open(worksheets_url)
-    >>> contents = browser.contents
     >>> for analysis in worksheet.getAnalyses():
     ...     if analysis.portal_type == 'ReferenceAnalysis':
     ...         if analysis.getReferenceType() == 'b' or analysis.getReferenceType() == 'c':
     ...             # 3 is the number of interim fields on the analysis/calculation
     ...             if len(analysis.getInterimFields()) != 3:
     ...                 self.fail("Blank or Control Analyses interim field are not correct")
-    >>> if contents.count("12.3") != contents.count("14.8") or contents.count("14.8") != contents.count('16.82'):
-    ...     self.fail("One of the analyses on the worksheet does not have interim fields")

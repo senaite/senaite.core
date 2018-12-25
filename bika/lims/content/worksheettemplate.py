@@ -5,55 +5,66 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
+import sys
+
 from AccessControl import ClassSecurityInfo
-from Acquisition import aq_base, aq_inner
-from Products.ATExtensions.field.records import RecordsField
-from Products.Archetypes.public import *
-from Products.Archetypes.references import HoldingReference
-from Products.CMFCore.permissions import View, ModifyPortalContent
-from Products.CMFCore.utils import getToolByName
+from bika.lims import api
+from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.widgets import ServicesWidget
 from bika.lims.browser.widgets import WorksheetTemplateLayoutWidget
-from bika.lims.config import ANALYSIS_TYPES, PROJECTNAME
+from bika.lims.config import ANALYSIS_TYPES
+from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
-from bika.lims import PMF, bikaMessageFactory as _
-from Products.Archetypes.atapi import BooleanField
-from Products.Archetypes.atapi import BooleanWidget
-from zope.interface import implements
-import sys
+from Products.Archetypes.public import BaseContent
+from Products.Archetypes.public import BooleanField
+from Products.Archetypes.public import BooleanWidget
+from Products.Archetypes.public import DisplayList
+from Products.Archetypes.public import ReferenceField
+from Products.Archetypes.public import ReferenceWidget
+from Products.Archetypes.public import Schema
+from Products.Archetypes.public import SelectionWidget
+from Products.Archetypes.public import StringField
+from Products.Archetypes.public import StringWidget
+from Products.Archetypes.public import registerType
+from Products.Archetypes.references import HoldingReference
+from Products.ATExtensions.field.records import RecordsField
+
 
 schema = BikaSchema.copy() + Schema((
     RecordsField(
-        'Layout',
-        schemata='Layout',
+        "Layout",
+        schemata="Layout",
         required=1,
-        type='templateposition',
-        subfields=('pos', 'type', 'blank_ref', 'control_ref', 'dup'),
-        required_subfields=('pos', 'type'),
+        type="templateposition",
+        subfields=("pos", "type", "blank_ref", "control_ref", "dup"),
+        required_subfields=("pos", "type"),
         subfield_labels={
-            'pos': _('Position'),
-            'type': _('Analysis Type'),
-            'blank_ref': _('Reference'),
-            'control_ref': _('Reference'),
-            'dup': _('Duplicate Of')
+            "pos": _("Position"),
+            "type": _("Analysis Type"),
+            "blank_ref": _("Reference"),
+            "control_ref": _("Reference"),
+            "dup": _("Duplicate Of")
         },
         widget=WorksheetTemplateLayoutWidget(
             label=_("Worksheet Layout"),
             description=_(
                 "Specify the size of the Worksheet, e.g. corresponding to a "
-                "specific instrument's tray size. Then select an Analysis 'type' "
-                "per Worksheet position. Where QC samples are selected, also select "
-                "which Reference Sample should be used. If a duplicate analysis is "
-                "selected, indicate which sample position it should be a duplicate of"),
+                "specific instrument's tray size. "
+                "Then select an Analysis 'type' per Worksheet position."
+                "Where QC samples are selected, also select which Reference "
+                "Sample should be used."
+                "If a duplicate analysis is selected, indicate which sample "
+                "position it should be a duplicate of"),
         )
     ),
+
     ReferenceField(
-        'Service',
-        schemata='Analyses',
+        "Service",
+        schemata="Analyses",
         required=0,
         multiValued=1,
-        allowed_types=('AnalysisService',),
-        relationship='WorksheetTemplateAnalysisService',
+        allowed_types=("AnalysisService",),
+        relationship="WorksheetTemplateAnalysisService",
         referenceClass=HoldingReference,
         widget=ServicesWidget(
             label=_("Analysis Service"),
@@ -62,17 +73,18 @@ schema = BikaSchema.copy() + Schema((
             ),
         )
     ),
+
     ReferenceField(
-        'RestrictToMethod',
+        "RestrictToMethod",
         schemata="Description",
         required=0,
         vocabulary_display_path_bound=sys.maxint,
-        vocabulary='_getMethodsVoc',
-        allowed_types=('Method',),
-        relationship='WorksheetTemplateMethod',
+        vocabulary="_getMethodsVoc",
+        allowed_types=("Method",),
+        relationship="WorksheetTemplateMethod",
         referenceClass=HoldingReference,
         widget=SelectionWidget(
-            format='select',
+            format="select",
             label=_("Method"),
             description=_(
                 "Restrict the available analysis services and instruments"
@@ -82,14 +94,15 @@ schema = BikaSchema.copy() + Schema((
             ),
         ),
     ),
+
     ReferenceField(
-        'Instrument',
+        "Instrument",
         schemata="Description",
         required=0,
         vocabulary_display_path_bound=sys.maxint,
-        vocabulary='getInstruments',
-        allowed_types=('Instrument',),
-        relationship='WorksheetTemplateInstrument',
+        vocabulary="getInstruments",
+        allowed_types=("Instrument",),
+        relationship="WorksheetTemplateInstrument",
         referenceClass=HoldingReference,
         widget=ReferenceWidget(
             checkbox_bound=0,
@@ -99,83 +112,111 @@ schema = BikaSchema.copy() + Schema((
             ),
         ),
     ),
-    ComputedField(
-        'InstrumentTitle',
-        expression="context.getInstrument() and context.getInstrument().Title() or ''",
-        widget=ComputedWidget(
-            visible=False,
-        ),
+
+    StringField(
+        "InstrumentTitle",
+        widget=StringWidget(
+            visible=False
+        )
     ),
+
     BooleanField(
-        'EnableMultipleUseOfInstrument',
+        "EnableMultipleUseOfInstrument",
         default=True,
         schemata="Description",
         widget=BooleanWidget(
             label=_("Enable Multiple Use of Instrument in Worksheets."),
             description=_(
-                "If unchecked, \
-                Lab Managers won't be able to assign the same Instrument more than one Analyses while \
-                creating a Worksheet."
+                "If unchecked, Lab Managers won't be able to assign the same "
+                "Instrument more than one Analyses while creating a Worksheet."
             )
         )
     ),
+
 ))
 
-schema['title'].schemata = 'Description'
-schema['title'].widget.visible = True
+schema["title"].schemata = "Description"
+schema["title"].widget.visible = True
 
-schema['description'].schemata = 'Description'
-schema['description'].widget.visible = True
+schema["description"].schemata = "Description"
+schema["description"].widget.visible = True
 
 
 class WorksheetTemplate(BaseContent):
+    """Worksheet Templates
+    """
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
-
     _at_rename_after_creation = True
+
     def _renameAfterCreation(self, check_auto_id=False):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
 
-    security.declarePublic('getAnalysisTypes')
+    @security.public
+    def getInstrumentTitle(self):
+        """Return the instrument title
+        """
+        instrument = self.getInstrument()
+        if not instrument:
+            return ""
+        return api.get_title(instrument)
+
+    @security.public
     def getAnalysisTypes(self):
-        """ return Analysis type displaylist """
+        """Return Analysis type displaylist
+        """
         return ANALYSIS_TYPES
 
     def getInstruments(self):
-        cfilter = {'portal_type': 'Instrument', 'inactive_state': 'active'}
+        """Get the allowed instruments
+        """
+        query = {"portal_type": "Instrument", "inactive_state": "active"}
+
         if self.getRestrictToMethod():
-            cfilter['getMethodUIDs'] = {
-                                    "query": self.getRestrictToMethod().UID(),
-                                    "operator": "or"}
-        bsc = getToolByName(self, 'bika_setup_catalog')
-        items = [('', 'No instrument')] + [
-            (o.UID, o.Title) for o in
-            bsc(cfilter)]
-        o = self.getInstrument()
-        if o and o.UID() not in [i[0] for i in items]:
-            items.append((o.UID(), o.Title()))
+            query.update({
+                "getMethodUIDs": {
+                    "query": api.get_uid(self.getRestrictToMethod()),
+                    "operator": "or",
+                }
+            })
+
+        instruments = api.search(query, "bika_setup_catalog")
+        items = map(lambda i: (i.UID, i.Title), instruments)
+
+        instrument = self.getInstrument()
+        if instrument:
+            instrument_uids = map(api.get_uid, instruments)
+            if api.get_uid(instrument) not in instrument_uids:
+                items.append(
+                    (api.get_uid(instrument), api.get_title(instrument)))
+
         items.sort(lambda x, y: cmp(x[1], y[1]))
+        items.insert(0, ("", _("No instrument")))
+
         return DisplayList(list(items))
 
     def getMethodUID(self):
+        """Return method UID
+        """
         method = self.getRestrictToMethod()
         if method:
             return method.UID()
-        return ''
+        return ""
 
     def _getMethodsVoc(self):
+        """Return the registered methods as DisplayList
         """
-        This function returns the registered methods in the system as a
-        vocabulary.
-        """
-        bsc = getToolByName(self, 'bika_setup_catalog')
-        items = [(i.UID, i.Title)
-                 for i in bsc(portal_type='Method',
-                              inactive_state='active')]
+        methods = api.search({
+            "portal_type": "Method",
+            "inactive_state": "active"
+        }, "bika_setup_catalog")
+
+        items = map(lambda m: (api.get_uid(m), api.get_title(m)), methods)
         items.sort(lambda x, y: cmp(x[1], y[1]))
-        items.insert(0, ('', _("Not specified")))
+        items.insert(0, ("", _("Not specified")))
+
         return DisplayList(list(items))
 
 

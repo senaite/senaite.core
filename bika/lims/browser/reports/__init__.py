@@ -18,7 +18,6 @@ from bika.lims.utils import getUsers, logged_in_client
 from bika.lims.utils import to_unicode as _u
 from bika.lims.utils import to_utf8 as _c
 from bika.lims.interfaces import IProductivityReport
-from bika.lims.interfaces import IQualityControlReport
 from bika.lims.interfaces import IAdministrationReport
 from bika.lims.catalog.report_catalog import CATALOG_REPORT_LISTING
 from DateTime import DateTime
@@ -58,34 +57,6 @@ class ProductivityView(BrowserView):
         return self.template()
 
 
-class QualityControlView(BrowserView):
-    """ QC View form
-    """
-    implements(IViewView)
-    template = ViewPageTemplateFile("templates/qualitycontrol.pt")
-
-    def __init__(self, context, request):
-        BrowserView.__init__(self, context, request)
-        self.context = context
-        self.request = request
-
-    def __call__(self):
-        self.selection_macros = SelectionMacrosView(self.context, self.request)
-        self.icon = self.portal_url + "/++resource++bika.lims.images/report_big.png"
-
-        self.additional_reports = []
-        adapters = getAdapters((self.context, ), IQualityControlReport)
-        for name, adapter in adapters:
-            report_dict = adapter(self.context, self.request)
-            report_dict['id'] = name
-            self.additional_reports.append(report_dict)
-
-        return self.template()
-
-    def isSamplePointHidden(self):
-        return isAttributeHidden('AnalysisRequest', 'SamplePoint')
-
-
 class AdministrationView(BrowserView):
     """ Administration View form
     """
@@ -122,7 +93,7 @@ class ReportHistoryView(BikaListingView):
         self.catalog = CATALOG_REPORT_LISTING
 
         self.context_actions = {}
-        self.show_sort_column = False
+
         self.show_select_row = False
         self.show_select_column = False
         self.show_column_toggles = False

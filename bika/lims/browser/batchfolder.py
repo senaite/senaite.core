@@ -31,7 +31,7 @@ class BatchFolderContentsView(BikaListingView):
         self.icon = self.portal_url + "/++resource++bika.lims.images/batch_big.png"
         self.title = self.context.translate(_("Batches"))
         self.description = ""
-        self.show_sort_column = False
+
         self.show_select_row = False
         self.show_select_all_checkbox = False
         self.show_select_column = True
@@ -107,32 +107,6 @@ class BatchFolderContentsView(BikaListingView):
                  'icon': self.portal.absolute_url() + '/++resource++bika.lims.images/add.png'}
         return super(BatchFolderContentsView, self).__call__()
 
-    def isItemAllowed(self, obj):
-        """
-        It checks if the item can be added to the list depending on the
-        department filter. If the batch contains analysis requests
-        with services from the selected department, show it.
-        If department filtering is disabled in bika_setup, will return True.
-        @obj: it is a batch.
-        @return: boolean
-        """
-        if not self.context.bika_setup.getAllowDepartmentFiltering():
-            return True
-        # Gettin the departments from the batch
-        ars = obj.getAnalysisRequests()
-        if not ars:
-            return True
-        # Getting the cookie value
-        cookie_dep_uid = self.request.get('filter_by_department_info', '')
-        filter_uids = set(
-            cookie_dep_uid.split(','))
-        for ar in ars:
-            # Comparing departments' UIDs
-            deps_uids = set(ar.getDepartmentUIDs())
-            matches = deps_uids & filter_uids
-            if len(matches) > 0:
-                return True
-        return False
 
     def folderitem(self, obj, item, index):
         """Applies new properties to the item (Batch) that is currently being

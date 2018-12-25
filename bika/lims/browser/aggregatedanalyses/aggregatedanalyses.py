@@ -8,8 +8,6 @@
 from Products.CMFCore.utils import getToolByName
 
 from bika.lims import bikaMessageFactory as _
-from bika.lims.browser.aggregatedanalyses.aggregatedanalyses_filter_bar \
-    import AggregatedanalysesBikaListingFilterBar
 from bika.lims.browser.analyses import AnalysesView
 from bika.lims.catalog import CATALOG_WORKSHEET_LISTING
 
@@ -38,9 +36,6 @@ class AggregatedAnalysesView(AnalysesView):
         # Get temp objects that are too time consuming to obtain every time
         self.worksheet_catalog = getToolByName(
             context, CATALOG_WORKSHEET_LISTING)
-        # Check if the filter bar functionality is activated or not
-        self.filter_bar_enabled =\
-            self.context.bika_setup.getDisplayAdvancedFilterBarForAnalyses()
 
         # each editable item needs it's own allow_edit
         # which is a list of field names.
@@ -61,8 +56,7 @@ class AggregatedAnalysesView(AnalysesView):
              'title': _('Assignment pending'),
              'transitions': [{'id': 'submit'}, ],
              'contentFilter': {
-                 'worksheetanalysis_review_state': ['unassigned'],
-                 'review_state': ['sample_received', 'attachment_due'],
+                 'review_state': ['unassigned'],
                  'cancellation_state': 'active', },
              'columns': ['AnalysisRequest',
                          'Service',
@@ -81,7 +75,7 @@ class AggregatedAnalysesView(AnalysesView):
              'transitions': [{'id': 'submit'},
                              ],
              'contentFilter': {
-                 'review_state': ['sample_received', 'attachment_due'],
+                 'review_state': ['unassigned', 'assigned'],
                  'cancellation_state': 'active', },
              'columns': ['AnalysisRequest',
                          'Worksheet',
@@ -150,36 +144,6 @@ class AggregatedAnalysesView(AnalysesView):
         correct way to introduce results is by using Worksheets!"""
         return False
 
-    def isItemAllowed(self, obj):
-        """
-        Checks if the passed in Analysis must be displayed in the list. If the
-        'filtering by department' option is enabled in Bika Setup, this
-        function checks if the Analysis Service associated to the Analysis
-        is assigned to any of the currently selected departments (information
-        stored in a cookie). In addition, the function checks if the Analysis
-        matches with the filtering criterias set in the advanced filter bar.
-        If no criteria in the advanced filter bar has been set and the option
-        'filtering by department' is disblaed, returns True.
-
-        :param obj: A single Analysis brain
-        :type obj: CatalogBrain
-        :returns: True if the item can be added to the list. Otherwise, False
-        :rtype: bool
-        """
-        # The isItemAllowed function from the base class AnalysesView already
-        # takes into account filtering by department
-        allowed = AnalysesView.isItemAllowed(self, obj)
-        if not allowed:
-            return False
-
-        if self.filter_bar_enabled:
-            # Advanced filter bar is enabled. Check if the Analysis matches
-            # with the filtering criterias.
-            return self.filter_bar_check_item(obj)
-
-        # By default, display the analysis
-        return True
-
     def folderitem(self, obj, item, index):
         """
         In this case obj should be a brain
@@ -200,15 +164,3 @@ class AggregatedAnalysesView(AnalysesView):
             item['replace']['Worksheet'] = anchor
 
         return item
-
-    def getFilterBar(self):
-        """
-        This function creates an instance of BikaListingFilterBar if the
-        class has not created one yet.
-        :returns: a BikaListingFilterBar instance
-        :rtype: bika.lims.browser.BikaListingFilterBar
-        """
-        if not self._advfilterbar:
-            self._advfilterbar = AggregatedanalysesBikaListingFilterBar(
-                                    context=self.context, request=self.request)
-        return self._advfilterbar

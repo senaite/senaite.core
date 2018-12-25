@@ -113,12 +113,6 @@ Login with the first user::
 
 The user is not allowed to access any clients folder::
 
-    >>> browser.open(clients.absolute_url())
-    >>> "client-1" not in browser.contents
-    True
-    >>> "client-2" not in browser.contents
-    True
-
     >>> browser.open(client1.absolute_url())
     Traceback (most recent call last):
     ...
@@ -145,17 +139,6 @@ It also grants local `Owner` role on the client object::
 
     >>> sorted(user1.getRolesInContext(client1))
     ['Authenticated', 'Member', 'Owner']
-
-This allows the user to see the client in the clients folder::
-
-    >>> browser.open(clients.absolute_url())
-    >>> "client-1" in browser.contents
-    True
-
-But not any other client in the clients folder::
-
-    >>> "client-2" not in browser.contents
-    True
 
 The user is able to modify the `client` object properties::
 
@@ -193,12 +176,6 @@ The user has no local owner role anymore on the client::
 
     >>> sorted(user1.getRolesInContext(client1))
     ['Authenticated', 'Member']
-
-The user can not access the `client` anymore::
-
-    >>> browser.open(clients.absolute_url())
-    >>> "client-1" not in browser.contents
-    True
 
     >>> browser.open(client1.absolute_url())
     Traceback (most recent call last):

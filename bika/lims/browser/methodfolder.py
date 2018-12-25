@@ -39,7 +39,7 @@ class MethodFolderContentsView(BikaListingView):
         self.icon = "{}/{}".format(
             self.portal_url, "++resource++bika.lims.images/method_big.png")
         self.description = ""
-        self.show_sort_column = False
+
         self.show_select_row = False
         self.show_select_column = True
         self.pagesize = 25
@@ -74,18 +74,18 @@ class MethodFolderContentsView(BikaListingView):
                 "title": _("Active"),
                 "contentFilter": {"inactive_state": "active"},
                 "transitions": [{"id": "deactivate"}, ],
-                "columns": self.columns,
+                "columns": self.columns.keys(),
             }, {
                 "id": "inactive",
                 "title": _("Dormant"),
                 "contentFilter": {"inactive_state": "inactive"},
                 "transitions": [{"id": "activate"}, ],
-                "columns": self.columns,
+                "columns": self.columns.keys(),
             }, {
                 "id": "all",
                 "title": _("All"),
                 "contentFilter": {},
-                "columns": self.columns,
+                "columns": self.columns.keys(),
             },
         ]
 
