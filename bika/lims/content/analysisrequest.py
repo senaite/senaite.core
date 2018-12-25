@@ -2529,6 +2529,7 @@ class AnalysisRequest(BaseFolder):
 
         return sets[0] if sets else {'uid': uid}
 
+    # TODO Sample Cleanup - Remove this function
     def getPartitions(self):
         """This functions returns the partitions from the analysis request's
         analyses.
@@ -2548,7 +2549,7 @@ class AnalysisRequest(BaseFolder):
 
         :returns: a list with the full partition objects
         """
-        return [self.getContainer()]
+        return self.getContainer() and [self.getContainer] or []
 
     def isAnalysisServiceHidden(self, uid):
         """Checks if the analysis service that match with the uid provided must
