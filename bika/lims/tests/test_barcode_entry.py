@@ -51,24 +51,19 @@ class TestBarcodeEntry(BaseTestCase):
             bs.bika_analysisservices, 'AnalysisService', title='Ecoli',
             Keyword="ECO")
         batch = self.addthing(self.portal.batches, 'Batch', title='B1')
-        # Create Sample with single partition
-        self.sample1 = self.addthing(
-            self.client, 'Sample', SampleType=sampletype)
-        self.sample2 = self.addthing(
-            self.client, 'Sample', SampleType=sampletype)
         # Create an AR
         self.ar1 = self.addthing(
             self.client, 'AnalysisRequest', Contact=contact,
-            Sample=self.sample1, Analyses=[service], SamplingDate=DateTime())
+            SampleType=sampletype, Analyses=[service], SamplingDate=DateTime())
         # Create a secondary AR - linked to a Batch
         self.ar2 = self.addthing(
             self.client, 'AnalysisRequest', Contact=contact,
-            Sample=self.sample1, Analyses=[service], SamplingDate=DateTime(),
+            SampleType=sampletype, Analyses=[service], SamplingDate=DateTime(),
             Batch=batch)
         # Create an AR - single AR on sample2
         self.ar3 = self.addthing(
             self.client, 'AnalysisRequest', Contact=contact,
-            Sample=self.sample2, Analyses=[service], SamplingDate=DateTime())
+            SampleType=sampletype, Analyses=[service], SamplingDate=DateTime())
         # @formatter:on
         for ar in self.ar1, self.ar2, self.ar3:
             # Set initial AR state
@@ -124,12 +119,12 @@ class TestBarcodeEntry(BaseTestCase):
                              expected, value['url']))
 
     def test_sample_with_multiple_ars_redirects_to_self(self):
-        self.portal.REQUEST['entry'] = self.sample1.id
+        self.portal.REQUEST['entry'] = self.ar1.id
         self.portal.REQUEST['_authenticator'] = self.getAuthenticator()
         value = json.loads(barcode_entry(self.portal, self.portal.REQUEST)())
-        expected = self.sample1.absolute_url()
+        expected = self.ar1.absolute_url() + "/manage_results"
         self.assertEqual(value['url'], expected,
-                         "sample1 redirect should be self:%s but it's %s" % (
+                         "ar1 redirect should be self:%s but it's %s" % (
                              expected, value['url']))
 
 
