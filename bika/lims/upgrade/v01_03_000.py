@@ -17,7 +17,8 @@ from bika.lims.catalog.analysisrequest_catalog import \
     CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.catalog.worksheet_catalog import CATALOG_WORKSHEET_LISTING
 from bika.lims.config import PROJECTNAME as product
-from bika.lims.interfaces import IDuplicateAnalysis, IReferenceAnalysis
+from bika.lims.interfaces import IDuplicateAnalysis, IReferenceAnalysis, \
+    INumberGenerator
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
 from bika.lims.workflow import changeWorkflowState, ActionHandlerPool
@@ -25,6 +26,8 @@ from bika.lims.workflow import isTransitionAllowed
 from bika.lims.workflow import doActionFor as do_action_for
 from bika.lims.workflow.analysis.events import remove_analysis_from_worksheet, \
     reindex_request
+
+from zope.component import getUtility
 
 version = '1.3.0'  # Remember version number in metadata.xml and setup.py
 profile = 'profile-{0}:default'.format(product)
@@ -1326,15 +1329,51 @@ def commit_transaction(portal):
                 .format(end - start))
 
 
-def change_analysis_requests_id_formatting(portal):
-    """Sets the Analysis Request ID Formatting by default (without Sample)
+def change_analysis_requests_id_formatting(portal, p_type="AnalysisRequest"):
+    """Applies the system's Sample ID Formatting to Analysis Request
     """
-    set_id_format(portal, dict(
-        form='{sampleType}-{year}-{alpha:2a3d}',
-        portal_type='AnalysisRequest',
-        prefix='analysisrequest',
-        sequence_type='generated',
-        split_length=1))
+    ar_id_format = dict(
+            form='{sampleType}-{seq:04d}',
+            portal_type='AnalysisRequest',
+            prefix='analysisrequest',
+            sequence_type='generated',
+            counter_type='',
+            split_length=1)
+    bs = portal.bika_setup
+    id_formatting = bs.getIDFormatting()
+    ar_format = filter(lambda id: id["portal_type"] == p_type, id_formatting)
+    if p_type=="AnalysisRequest":
+        logger.info("Set ID Format for Analysis Request portal_type ...")
+        if not ar_format or "sample" in ar_format[0]["form"]:
+            # Copy the ID formatting set for Sample
+            change_analysis_requests_id_formatting(portal, p_type="Sample")
+            return
+        else:
+            logger.info("ID Format for Analysis Request already set: {} [SKIP]"
+                        .format(ar_format[0]["form"]))
+            return
+    else:
+        ar_format = ar_format and ar_format[0].copy() or ar_id_format
+
+    # Set the Analysis Request ID Format
+    ar_id_format.update(ar_format)
+    ar_id_format["portal_type"] ="AnalysisRequest"
+    ar_id_format["prefix"] = "analysisrequest"
+    set_id_format(portal, ar_id_format)
+
+    # Find out the last ID for Sample and reseed AR to prevent ID already taken
+    # errors on AR creation
+    if p_type == "Sample":
+        number_generator = getUtility(INumberGenerator)
+        ar_keys = dict()
+        for key, value in number_generator.storage.items():
+            if "sample-" in key:
+                ar_key = key.replace("sample-", "analysisrequest-")
+                ar_keys[ar_key] = api.to_int(value, 0)
+
+        for key, value in ar_keys.items():
+            logger.info("Seeding {} to {}".format(key, value))
+            number_generator.set_number(key, value)
 
 
 def set_id_format(portal, format):

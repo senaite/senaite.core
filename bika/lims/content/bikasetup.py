@@ -767,9 +767,9 @@ schema = BikaFolderSchema.copy() + Schema((
                 'sequence_type': 'generated',
                 'split_length': 1
             }, {
-                'form': '{sampleType}-{year}-{alpha:2a3d}',
+                'form': '{sampleType}-{seq:04d}',
                 'portal_type': 'AnalysisRequest',
-                'prefix': 'analysisrequest',
+                'prefix': 'sample',
                 'sequence_type': 'generated',
                 'split_length': 1
             },
