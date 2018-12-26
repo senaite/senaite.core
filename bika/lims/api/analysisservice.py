@@ -1,8 +1,19 @@
-from bika.lims.api import get_uid
+# -*- coding: utf-8 -*-
+#
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+
+from bika.lims import api
+from bika.lims.browser.fields.uidreferencefield import get_backreferences
 
 
 def get_calculation_dependants_for(service):
-    """Calculation dependants of this service
+    """Collect all services which depend on this service
+
+    :param service: Analysis Service Object/ZCatalog Brain
+    :returns: List of services that depend on this service
     """
 
     def calc_dependants_gen(service, collector=None):
@@ -10,7 +21,7 @@ def get_calculation_dependants_for(service):
         """
 
         # The UID of the service
-        service_uid = get_uid(service)
+        service_uid = api.get_uid(service)
 
         # maintain an internal dependency mapping
         if collector is None:
@@ -22,41 +33,39 @@ def get_calculation_dependants_for(service):
 
         # Get the dependant calculations of the service
         # (calculations that use the service in their formula).
-        dep_calcs = service.getBackReferences('CalculationAnalysisService')
-        for dep_calc in dep_calcs:
-            # Get the methods linked to this calculation
-            dep_methods = dep_calc.getBackReferences('MethodCalculation')
-            for dep_method in dep_methods:
-                # Get the services that have this method linked
-                dep_services = dep_method.getBackReferences(
-                    'AnalysisServiceMethod')
-                for dep_service in dep_services:
+        calc_uids = get_backreferences(
+            service, relationship="CalculationDependentServices")
 
-                    # get the UID of the dependent service
-                    dep_service_uid = get_uid(dep_service)
+        for calc_uid in calc_uids:
+            # Get the calculation object
+            calc = api.get_object_by_uid(calc_uid)
 
-                    # skip services with a different calculation, e.g. when
-                    # the user selected a calculation manually.
-                    if dep_service.getCalculation() != dep_calc:
-                        continue
+            # Get the Analysis Services which have this calculation assigned
+            dep_service_uids = get_backreferences(
+                calc, relationship='AnalysisServiceCalculation')
 
-                    # remember the dependent service
-                    collector[dep_service_uid] = dep_service
+            for dep_service_uid in dep_service_uids:
+                dep_service = api.get_object_by_uid(dep_service_uid)
 
-                    # yield the dependent service
-                    yield dep_service
+                # remember the dependent service
+                collector[dep_service_uid] = dep_service
 
-                    # check the dependants of the dependant services
-                    for ddep_service in calc_dependants_gen(
-                            dep_service, collector=collector):
-                        yield ddep_service
+                # yield the dependent service
+                yield dep_service
+
+                # check the dependants of the dependant services
+                for ddep_service in calc_dependants_gen(
+                        dep_service, collector=collector):
+                    yield ddep_service
 
     dependants = {}
+    service = api.get_object(service)
+
     for dep_service in calc_dependants_gen(service):
         # Skip the initial (requested) service
         if dep_service == service:
             continue
-        uid = get_uid(dep_service)
+        uid = api.get_uid(dep_service)
         dependants[uid] = dep_service
 
     return dependants
@@ -72,7 +81,7 @@ def get_calculation_dependencies_for(service):
         """
 
         # The UID of the service
-        service_uid = get_uid(service)
+        service_uid = api.get_uid(service)
 
         # maintain an internal dependency mapping
         if collector is None:
@@ -96,7 +105,7 @@ def get_calculation_dependencies_for(service):
         dep_services = calculation.getDependentServices()
         for dep_service in dep_services:
             # get the UID of the dependent service
-            dep_service_uid = get_uid(dep_service)
+            dep_service_uid = api.get_uid(dep_service)
 
             # remember the dependent service
             collector[dep_service_uid] = dep_service
@@ -114,7 +123,7 @@ def get_calculation_dependencies_for(service):
         # Skip the initial (requested) service
         if dep_service == service:
             continue
-        uid = get_uid(dep_service)
+        uid = api.get_uid(dep_service)
         dependencies[uid] = dep_service
 
     return dependencies
