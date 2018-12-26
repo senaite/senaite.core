@@ -14,12 +14,13 @@ from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.api.analysisservice import get_calculation_dependencies_for
+from bika.lims.api.analysisservice import get_service_dependencies_for
 from bika.lims.interfaces import IGetDefaultFieldValueARAddHook
 from bika.lims.utils import tmpID
 from bika.lims.utils.analysisrequest import create_analysisrequest as crar
+from bika.lims.workflow import ActionHandlerPool
 from BTrees.OOBTree import OOBTree
 from DateTime import DateTime
-from bika.lims.workflow import ActionHandlerPool
 from plone import protect
 from plone.memoize.volatile import DontCache
 from plone.memoize.volatile import cache
@@ -915,8 +916,6 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
 
         dependencies = get_calculation_dependencies_for(obj).values()
         info["dependencies"] = map(self.get_base_info, dependencies)
-        # dependants = self.get_calculation_dependants_for(obj).values()
-        # info["dependendants"] = map(self.get_base_info, dependants)
         return info
 
     @cache(cache_key)
@@ -1430,7 +1429,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             #  DEPENDENCIES
             for uid, obj in _services.iteritems():
                 # get the dependencies of this service
-                deps = self.get_service_dependencies_for(obj)
+                deps = get_service_dependencies_for(obj)
 
                 # check for unmet dependencies
                 for dep in deps["dependencies"]:
@@ -1446,8 +1445,6 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                 service_metadata[uid].update({
                     "dependencies": map(
                         self.get_base_info, deps["dependencies"]),
-                    "dependants": map(
-                        self.get_base_info, deps["dependants"]),
                 })
 
             # Each key `n` (1,2,3...) contains the form data for one AR Add
