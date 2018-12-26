@@ -113,7 +113,7 @@ Finally, the `AnalysisRequest` can be created::
     >>> service_uids = [analysisservice.UID()]
     >>> ar = create_analysisrequest(client, request, values, service_uids)
     >>> ar
-    <AnalysisRequest at /plone/clients/client-1/water-0001-R01>
+    <AnalysisRequest at /plone/clients/client-1/water-0001>
 
 Also, make sure that the Analysis Request only has one analysis. You will
 see why later::

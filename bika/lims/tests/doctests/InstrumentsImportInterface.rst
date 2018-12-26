@@ -168,7 +168,7 @@ Create an `AnalysisRequest` with this `AnalysisService` and receive it::
     ...                ]
     >>> ar = create_analysisrequest(client, request, values, service_uids)
     >>> ar
-    <AnalysisRequest at /plone/clients/client-1/H2O-0001-R01>
+    <AnalysisRequest at /plone/clients/client-1/H2O-0001>
     >>> ar.getReceivedBy()
     ''
     >>> wf = getToolByName(ar, 'portal_workflow')

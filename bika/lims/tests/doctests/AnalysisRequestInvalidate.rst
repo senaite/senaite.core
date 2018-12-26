@@ -114,7 +114,7 @@ Finally, the `AnalysisRequest` can be created:
     >>> service_uids = [analysisservice.UID()]
     >>> ar = create_analysisrequest(client, request, values, service_uids)
     >>> ar
-    <AnalysisRequest at /plone/clients/client-1/water-0001-R01>
+    <AnalysisRequest at /plone/clients/client-1/water-0001>
 
 Also, make sure that the Analysis Request only has one analysis. You will
 see why later:
@@ -208,10 +208,10 @@ the invalidated:
 
     >>> retest = ar.getRetest()
     >>> retest
-    <AnalysisRequest at /plone/clients/client-1/water-0001-R02>
+    <AnalysisRequest at /plone/clients/client-1/water-0002>
 
     >>> retest.getInvalidated()
-    <AnalysisRequest at /plone/clients/client-1/water-0001-R01>
+    <AnalysisRequest at /plone/clients/client-1/water-0001>
 
     >>> api.get_workflow_status_of(retest)
     'sample_received'
@@ -270,13 +270,13 @@ as the invalidated (retest):
 
     >>> retest2 = retest.getRetest()
     >>> retest2
-    <AnalysisRequest at /plone/clients/client-1/water-0001-R03>
+    <AnalysisRequest at /plone/clients/client-1/water-0003>
 
     >>> retest2.getInvalidated()
-    <AnalysisRequest at /plone/clients/client-1/water-0001-R02>
+    <AnalysisRequest at /plone/clients/client-1/water-0002>
 
     >>> retest2.getInvalidated().getInvalidated()
-    <AnalysisRequest at /plone/clients/client-1/water-0001-R01>
+    <AnalysisRequest at /plone/clients/client-1/water-0001>
 
     >>> api.get_workflow_status_of(retest2)
     'sample_received'

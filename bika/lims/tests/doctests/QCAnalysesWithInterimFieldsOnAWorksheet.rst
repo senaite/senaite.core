@@ -109,7 +109,7 @@ Create an Analysis Request:
 
     >>> ar = create_analysisrequest(client, request, values, service_uids)
     >>> ar
-    <AnalysisRequest at /plone/clients/client-1/W-0001-R01>
+    <AnalysisRequest at /plone/clients/client-1/W-0001>
     >>> transaction.commit()
     >>> success = doActionFor(ar, 'receive')
 
@@ -124,7 +124,7 @@ Create a new Worksheet and add the analyses:
     >>> analyses = map(api.get_object, ar.getAnalyses())
     >>> analysis = analyses[0]
     >>> analysis
-    <Analysis at /plone/clients/client-1/W-0001-R01/TotalTerpenes>
+    <Analysis at /plone/clients/client-1/W-0001/TotalTerpenes>
     >>> worksheet.addAnalysis(analysis)
     >>> transaction.commit()
     >>> analysis.getWorksheet().UID() == worksheet.UID()

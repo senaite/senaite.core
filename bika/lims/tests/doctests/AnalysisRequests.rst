@@ -117,7 +117,7 @@ Finally, the `AnalysisRequest` can be created::
     >>> service_uids = [analysisservice.UID()]
     >>> ar = create_analysisrequest(client, request, values, service_uids)
     >>> ar
-    <AnalysisRequest at /plone/clients/client-1/water-0001-R01>
+    <AnalysisRequest at /plone/clients/client-1/water-0001>
     >>> ar.getPriority()
     '1'
     >>> ar.getPriorityText()
@@ -131,7 +131,7 @@ Proxy Fields of ARs manage the getting and the setting from an equivalent field
 of the underlying Sample (https://github.com/bikalabs/bika.lims/issues/1992)::
 
     >>> ar
-    <AnalysisRequest at /plone/clients/client-1/water-0001-R01>
+    <AnalysisRequest at /plone/clients/client-1/water-0001>
 
     >>> sample = ar.getSample()
     >>> sample
