@@ -257,14 +257,19 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
         return self.getDateReceived()
 
     @security.public
+    def getSamplePoint(self):
+        request = self.getRequest()
+        if request:
+            return request.getSamplePoint()
+        return None
+
+    @security.public
     def getSamplePointUID(self):
         """Used to populate catalog values.
         """
-        sample = self.getSample()
-        if sample:
-            samplepoint = sample.getSamplePoint()
-            if samplepoint:
-                return samplepoint.UID()
+        sample_point = self.getSamplePoint()
+        if sample_point:
+            return api.get_uid(sample_point)
 
     @security.public
     def getDueDate(self):
@@ -282,14 +287,19 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
         return dt2DT(DT2dt(start) + timedelta(minutes=api.to_minutes(**tat)))
 
     @security.public
+    def getSampleType(self):
+        request = self.getRequest()
+        if request:
+            return request.getSampleType()
+        return None
+
+    @security.public
     def getSampleTypeUID(self):
         """Used to populate catalog values.
         """
-        sample = self.getSample()
-        if sample:
-            sampletype = sample.getSampleType()
-            if sampletype:
-                return sampletype.UID()
+        sample_type = self.getSampleType()
+        if sample_type:
+            return api.get_uid(sample_type)
 
     @security.public
     def getBatchUID(self):
