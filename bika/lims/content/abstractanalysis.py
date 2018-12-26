@@ -978,15 +978,6 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         return states
 
     @security.public
-    def getSampleConditionUID(self):
-        """This method is used to populate catalog values
-        """
-        sample_cond = self.getSample().getSampleCondition()
-        if sample_cond:
-            return sample_cond.UID()
-        return ''
-
-    @security.public
     def getSubmittedBy(self):
         """
         Returns the identifier of the user who submitted the result if the

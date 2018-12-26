@@ -44,7 +44,6 @@ _indexes_dict = {
     'getMethodUID': 'FieldIndex',
     'getInstrumentUID': 'FieldIndex',
     'getBatchUID': 'FieldIndex',
-    'getSampleConditionUID': 'FieldIndex',
     'getAnalysisRequestPrintStatus': 'FieldIndex',
     'getWorksheetUID': 'FieldIndex',
     'getOriginalReflexedAnalysisUID': 'FieldIndex',
