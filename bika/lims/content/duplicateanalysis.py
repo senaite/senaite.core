@@ -61,14 +61,6 @@ class DuplicateAnalysis(AbstractRoutineAnalysis):
             return analysis.portal_type
 
     @security.public
-    def getSample(self):
-        """Returns the Sample of the original analysis.
-        """
-        analysis = self.getAnalysis()
-        if analysis:
-            return analysis.getSample()
-
-    @security.public
     def getWorksheet(self):
         return self.aq_parent
 
