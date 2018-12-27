@@ -444,10 +444,6 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             self.getField('Uncertainty').set(self, None)
 
     @security.public
-    def getSample(self):
-        raise NotImplementedError("getSample is not implemented.")
-
-    @security.public
     def getResultsRange(self):
         raise NotImplementedError("getResultsRange is not implemented.")
 
@@ -1062,18 +1058,6 @@ class AbstractAnalysis(AbstractBaseAnalysis):
                 "Analysis %s is assigned to more than one worksheet."
                 % self.getId())
         return worksheet[0]
-
-    @security.public
-    def getExpiryDate(self):
-        """It is used as a metacolumn.
-        Returns the expiration date from the associated sample
-        """
-        # XXX getattr(getExpiryDate) is quite silly
-        # it seems that ReferenceSample should have this attribute (but doesnt)
-        # and that although nobody expected Sample to have it, it should.
-        sample = self.getSample()
-        if hasattr(sample, 'getExpiryDate'):
-            return sample.getExpiryDate()
 
     @security.public
     def getInstrumentValid(self):

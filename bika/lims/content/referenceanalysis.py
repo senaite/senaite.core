@@ -63,6 +63,15 @@ class ReferenceAnalysis(AbstractAnalysis):
         return self.aq_parent
 
     @security.public
+    def getExpiryDate(self):
+        """It is used as a metacolumn.
+        Returns the expiration date from the associated sample
+        """
+        sample = self.getSample()
+        if hasattr(sample, 'getExpiryDate'):
+            return sample.getExpiryDate()
+
+    @security.public
     def getDueDate(self):
         """Used to populate getDueDate index and metadata.
         This very simply returns the expiry date of the parent reference sample.
