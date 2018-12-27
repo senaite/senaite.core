@@ -257,7 +257,7 @@ schema = BikaSchema.copy() + Schema((
                 }
         ),
     ),
-
+    # TODO Remove in >v1.3.0 - This is kept for upgrade and backwards-compat.
     UIDReferenceField(
         'Sample',
         allowed_types=('Sample',),
@@ -2831,12 +2831,6 @@ class AnalysisRequest(BaseFolder):
         """Returns true if this Analysis Request is a partition
         """
         return not self.isRootAncestor()
-
-    # TODO Remove in >v1.3.0 - This is kept for backwards-compatibility
-    @deprecated("To be removed in >v1.3.0")
-    def getSample(self):
-        logger.warn("Call to deprecated function: 'getSample' ")
-        return self
 
 
 registerType(AnalysisRequest, PROJECTNAME)
