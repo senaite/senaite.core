@@ -1,9 +1,9 @@
-.. figure:: https://raw.githubusercontent.com/senaite/senaite.core/master/bika/lims/skins/bika/senaite-core-logo.png
-   :width: 500px
+.. image:: https://raw.githubusercontent.com/senaite/senaite.core/master/static/senaite-logo.png
    :alt: senaite.core
+   :height: 64 px
    :align: center
 
-— **SENAITE.CORE**: *the heart of SENAITE.LIMS, the evolution of Bika LIMS*
+— **SENAITE.CORE**: *Open Soure LIMS Core based on Plone CMS*
 
 .. image:: https://img.shields.io/pypi/v/senaite.core.svg?style=flat-square
     :target: https://pypi.python.org/pypi/senaite.core
@@ -27,23 +27,38 @@
 Introduction
 ============
 
-SENAITE.CORE is an Open Source Laboratory Information Management System (LIMS) for enterprise environments, especially focused to behave with excellent performance and stability.
-
-This software is a direct derivative work of the Bika-LIMS software and comes with the same user interface.
+SENAITE.CORE is an Open Source Laboratory Information Management System (LIMS)
+for enterprise environments, especially focused to behave with excellent
+performance and stability.
 
 
 Installation
 ============
 
-SENAITE.CORE provides the core functionalities and entities used by `SENAITE.LIMS <https://github.com/senaite/senaite.lims>`_.  It is intended to be imported automatically as a dependency of SENAITE.LIMS and other SENAITE products, and it should not be installed directly unless you know what you are doing.
+SENAITE.CORE provides the core functionalities and entities used by
+`SENAITE.LIMS <https://github.com/senaite/senaite.lims>`_.
+
+It is intended to be imported automatically as a dependency of SENAITE.LIMS and
+other SENAITE products, and it should **not** be installed without the
+SENAITE.LIMS UI.
 
 
 Contribute
 ==========
 
-We want contributing to SENAITE.CORE to be fun, enjoyable, and educational for anyone, and everyone. This project adheres to the `Contributor Covenant <https://github.com/senaite/senaite.core/blob/master/CODE_OF_CONDUCT.md>`_. By participating, you are expected to uphold this code. Please report unacceptable behavior.
+We want contributing to SENAITE.CORE to be fun, enjoyable, and educational for
+anyone, and everyone. This project adheres to the `Contributor Covenant
+<https://github.com/senaite/senaite.core/blob/master/CODE_OF_CONDUCT.md>`_.
 
-Contributions go far beyond pull requests and commits. Although we love giving you the opportunity to put your stamp on SENAITE.CORE, we also are thrilled to receive a variety of other contributions. Please, read `Contributing to senaite.core document <https://github.com/senaite/senaite.core/blob/master/CONTRIBUTING.md>`_.
+By participating, you are expected to uphold this code. Please report
+unacceptable behavior.
+
+Contributions go far beyond pull requests and commits. Although we love giving
+you the opportunity to put your stamp on SENAITE.CORE, we also are thrilled to
+receive a variety of other contributions.
+
+Please, read `Contributing to senaite.core document
+<https://github.com/senaite/senaite.core/blob/master/CONTRIBUTING.md>`_.
 
 
 Feedback and support
@@ -55,14 +70,17 @@ Feedback and support
 
 License
 =======
+
 SENAITE.CORE
 Copyright (C) 2018 Senaite Foundation
 
-This software, henceforth "SENAITE.CORE", an add-on for
-`Plone software <https://plone.org/>`_, is a derivative work of BIKALIMS_.
+This software, henceforth "SENAITE.CORE" is an add-on for the
+`Plone CMS <https://plone.org/>`_ and a derivative work of BIKA LIMS.
 
-This program is free software; you can redistribute it and/or
-modify it under the terms of the `GNU General Public License version 2 <./LICENSE>`_ as published by the Free Software Foundation.
+This program is free software; you can redistribute it and/or modify it under
+the terms of the `GNU General Public License version 2
+<https://github.com/senaite/senaite.core/blob/master/LICENSE>`_ as published by
+the Free Software Foundation.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -71,8 +89,3 @@ GNU General Public License for more details.
 
 SENAITE.CORE uses third party libraries that are distributed under their own
 terms (see LICENSE-3RD-PARTY.rst)
-
-
-.. Links
-
-.. _BIKALIMS: https://github.com/bikalims/bika.lims
