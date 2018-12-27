@@ -7,12 +7,8 @@
 
 import plone
 from Acquisition import aq_inner
-from DateTime import DateTime
 from Products.CMFCore.utils import getToolByName
-from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.analysisrequest import AnalysisRequestWorkflowAction
-from bika.lims.permissions import *
-from bika.lims.workflow import doActionFor
 from bika.lims.utils import isActive
 
 
@@ -27,7 +23,6 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
         AR and Sample context workflow actions (affecting parts/analyses)
 
     """
-
     def __call__(self):
         form = self.request.form
         plone.protect.CheckAuthenticator(form)
@@ -54,147 +49,6 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
                                                                    context_url)
                 self.request.response.redirect(self.destination_url)
                 return
-
-        if action == "sample":
-            objects = AnalysisRequestWorkflowAction._get_selected_items(self)
-            transitioned = {'to_be_preserved': [], 'sample_due': []}
-            dsfn = 'getDateSampled'
-            for obj_uid, obj in objects.items():
-                if obj.portal_type == "AnalysisRequest":
-                    ar = obj
-                    sample = obj.getSample()
-                else:
-                    # If it is a Sample, then fieldname is DateSampled
-                    dsfn = 'DateSampled'
-                    sample = obj
-                    ar = sample.aq_parent
-                # can't transition inactive items
-                if workflow.getInfoFor(sample, 'inactive_state', '') == 'inactive':
-                    continue
-
-                # grab this object's Sampler and DateSampled from the form
-                # (if the columns are available and edit controls exist)
-                if 'getSampler' in form:
-                    try:
-                        Sampler = form['getSampler'][0][obj_uid].strip()
-                    except KeyError:
-                        continue
-                    Sampler = Sampler and Sampler or ''
-                    sample.setSampler(Sampler)
-                    sample.reindexObject()
-
-                if dsfn in form:
-                    try:
-                        DateSampled = form[dsfn][0][obj_uid].strip()
-                    except KeyError:
-                        continue
-                    DateSampled = DateSampled and DateTime(DateSampled) or ''
-                    sample.setDateSampled(DateSampled)
-                    sample.reindexObject()
-
-                # write them to the sample
-                if not sample.getSampler():
-                    # Make the message more specific if the reason for not
-                    # transitioning is that no Sampler has been selected
-                    message = _('Sampler is required for the Sampling transition of ${sample}',
-                                mapping={'sample': sample.Title()})
-                    self.context.plone_utils.addPortalMessage(message, 'info')
-                    continue
-                if not sample.getDateSampled():
-                    continue
-                Sampler = sample.getSampler()
-                DateSampled = sample.getDateSampled()
-
-                sample.reindexObject()
-                ars = sample.getAnalysisRequests()
-                # Analyses and AnalysisRequets have calculated fields
-                # that are indexed; re-index all these objects.
-                for ar in ars:
-                    ar.reindexObject()
-                    analyses = sample.getAnalyses({'review_state': 'to_be_sampled'})
-                    for a in analyses:
-                        a.getObject().reindexObject()
-
-                # transition the object if both values are present
-                if Sampler and DateSampled:
-                    workflow.doActionFor(sample, action)
-                    new_state = workflow.getInfoFor(sample, 'review_state')
-                    doActionFor(ar, action)
-                    transitioned[new_state].append(sample.Title())
-
-            message = None
-            for state in transitioned:
-                tlist = transitioned[state]
-                if len(tlist) > 1:
-                    if state == 'to_be_preserved':
-                        message = _('${items} are waiting for preservation.',
-                                    mapping={'items': ', '.join(tlist)})
-                    else:
-                        message = _('${items} are waiting to be received.',
-                                    mapping={'items': ', '.join(tlist)})
-                    self.context.plone_utils.addPortalMessage(message, 'info')
-                elif len(tlist) == 1:
-                    if state == 'to_be_preserved':
-                        message = _('${item} is waiting for preservation.',
-                                    mapping={'item': ', '.join(tlist)})
-                    else:
-                        message = _('${item} is waiting to be received.',
-                                    mapping={'item': ', '.join(tlist)})
-                    self.context.plone_utils.addPortalMessage(message, 'info')
-
-            if not message:
-                message = _('No changes made.')
-                self.context.plone_utils.addPortalMessage(message, 'info')
-            self.destination_url = self.request.get_header("referer",
-                                                           context_url)
-            self.request.response.redirect(self.destination_url)
-
-        elif action == "preserve":
-            objects = AnalysisRequestWorkflowAction._get_selected_items(self)
-            transitioned = {}
-            not_transitioned = []
-            Preserver = str()
-            DatePreserved = str()
-            for obj_uid, obj in objects.items():
-                if obj.portal_type == "AnalysisRequest":
-                    ar = obj
-                    sample = obj.getSample()
-                else:
-                    sample = obj
-                    ar = sample.aq_parent
-                # can't transition inactive items
-                if workflow.getInfoFor(sample, 'inactive_state', '') == 'inactive':
-                    continue
-                if not checkPermission(PreserveSample, sample):
-                    continue
-
-                # grab this object's Preserver and DatePreserved from the form
-                # (if the columns are available and edit controls exist)
-                if 'getPreserver' in form and 'getDatePreserved' in form:
-                    try:
-                        Preserver = form['getPreserver'][0][obj_uid].strip()
-                        DatePreserved = form['getDatePreserved'][0][obj_uid].strip()
-                    except KeyError:
-                        continue
-                    Preserver = Preserver and Preserver or ''
-                    DatePreserved = DatePreserved and DateTime(DatePreserved) or ''
-                else:
-                    continue
-
-                # TODO Workflow - Preservation - Set Date preserved + preserver
-
-            if len(transitioned.keys()) > 1:
-                message = _('${items}: partitions are waiting to be received.',
-                            mapping={'items': ', '.join(transitioned.keys())})
-            else:
-                message = _('${item}: ${part} is waiting to be received.',
-                            mapping={'item': ', '.join(transitioned.keys()),
-                                     'part': ', '.join(transitioned.values()), })
-            self.context.plone_utils.addPortalMessage(message, 'info')
-
-            self.destination_url = self.request.get_header(
-                "referer", self.context.absolute_url())
-            self.request.response.redirect(self.destination_url)
 
         elif action in ('prepublish', 'publish', 'republish'):
             # We pass a list of AR objects to Publish.

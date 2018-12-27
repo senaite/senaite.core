@@ -68,17 +68,32 @@ class WorkflowAction:
         """Returns a list of selected form uids"""
         return self.request.form.get('uids', None) or list()
 
-    def _get_selected_items(self):
+    def _get_selected_items(self, filter_active=False, permissions=list()):
         """return a list of selected form objects
            full_objects defaults to True
         """
         uids = self.get_selected_uids()
         selected_items = collections.OrderedDict()
+        checkPermission = self.context.portal_membership.checkPermission
         for uid in uids:
             obj = get_object_by_uid(uid)
-            if obj:
-                selected_items[uid] = obj
+            if not obj:
+                continue
+            if filter_active and not api.is_active(obj):
+                continue
+            if permissions:
+                for permission in permissions:
+                    if not checkPermission(permission, obj):
+                        continue
+            selected_items[uid] = obj
         return selected_items
+
+    def get_form_value(self, form_key, object_uid, default=None):
+        form = self.request.form
+        val = form.get(form_key, []) or []
+        val = val and val[0] or {}
+        val = val and val.get(object_uid, default) or default
+        return val
 
     def redirect(self, redirect_url=None, message=None, level="info"):
         """Redirect with a message

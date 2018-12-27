@@ -744,9 +744,7 @@ class AnalysisRequestsView(BikaListingView):
                     # TODO-performance: hit performance while getting the
                     # sample object...
                     # TODO Can LabManagers be a Sampler?!
-                    samplers = getUsers(
-                        full_object.getSample(),
-                        ["Sampler", ])
+                    samplers = getUsers(full_object, ["Sampler", ])
                     username = self.member.getUserName()
                     users = [({
                         "ResultValue": u,

@@ -12,7 +12,7 @@ from string import Template
 import plone
 from DateTime import DateTime
 from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import _createObjectByType, safe_unicode
+from Products.CMFPlone.utils import safe_unicode
 from bika.lims import PMF, api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import interfaces
@@ -21,17 +21,14 @@ from bika.lims.browser.bika_listing import WorkflowAction
 from bika.lims.content.analysisspec import ResultsRangeDict
 from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.permissions import *
-from bika.lims.utils import changeWorkflowState
 from bika.lims.utils import encode_header
 from bika.lims.utils import isActive
 from bika.lims.utils import t
-from bika.lims.utils import tmpID
-from bika.lims.workflow import getCurrentState, doActionFor
-from bika.lims.workflow import wasTransitionPerformed
+from bika.lims.workflow import doActionFor
 from email.Utils import formataddr
 
 
-class AnalysisRequestWorkflowAction(AnalysesWorkflowAction):
+class AnalysisRequestWorkflowAction(WorkflowAction):
     """Workflow actions taken in AnalysisRequest context.
     """
 
@@ -152,65 +149,50 @@ class AnalysisRequestWorkflowAction(AnalysesWorkflowAction):
         self.destination_url = self.context.absolute_url()
         self.request.response.redirect(self.destination_url)
 
-    def workflow_action_preserve(self):
-        form = self.request.form
-        workflow = getToolByName(self.context, 'portal_workflow')
-        action, came_from = WorkflowAction._get_form_workflow_action(self)
-        checkPermission = self.context.portal_membership.checkPermission
-        # Partition Preservation
-        # the partition table shown in AR and Sample views sends it's
-        # action button submits here.
-        objects = WorkflowAction._get_selected_items(self)
+    def workflow_action_sample(self):
+        # TODO Workflow - Analysis Request - this should be managed by the guard
+        if IAnalysisRequest.providedBy(self.context):
+            objects = [{api.get_uid(self.context): self.context}]
+        else:
+            objects = self._get_selected_items(filter_active=True)
         transitioned = []
-        incomplete = []
-        for obj_uid, obj in objects.items():
-            part = obj
-            # can't transition inactive items
-            if workflow.getInfoFor(part, 'inactive_state', '') == 'inactive':
+        for uid, ar in objects.items():
+            sampler = self.get_form_value("Sampler", uid, default="")
+            sampled = self.get_form_value("getDateSampled", uid, default="")
+            if not sampler or not sampled:
                 continue
-            if not checkPermission(PreserveSample, part):
+            ar.setSampler(sampler)
+            ar.setDateSampled(DateTime(sampled))
+            success, message = doActionFor(ar, "sample")
+            if success:
+                transitioned.append(ar.getId())
+        message = _("No changes made")
+        if transitioned:
+            message = _("Saved items: {}".format(", ".join(transitioned)))
+        self.redirect(message=message)
+
+    def workflow_action_preserve(self):
+        # TODO Workflow - Analysis Request - this should be managed by the guard
+        if IAnalysisRequest.providedBy(self.context):
+            objects = [{api.get_uid(self.context): self.context}]
+        else:
+            objects = self._get_selected_items(filter_active=True,
+                                               permissions=[PreserveSample])
+        transitioned = []
+        for uid, ar in objects.items():
+            preserver = self.get_form_value("Preserver", uid, default="")
+            preserved = self.get_form_value("getDatePreserved", uid, default="")
+            if not preserver or not preserved:
                 continue
-            # grab this object's Preserver and DatePreserved from the form
-            Preserver = form['getPreserver'][0][obj_uid].strip()
-            Preserver = Preserver and Preserver or ''
-            DatePreserved = form['getDatePreserved'][0][obj_uid].strip()
-            DatePreserved = DatePreserved and DateTime(DatePreserved) or ''
-            # write them to the sample
-            part.setPreserver(Preserver)
-            part.setDatePreserved(DatePreserved)
-            # transition the object if both values are present
-            if Preserver and DatePreserved:
-                workflow.doActionFor(part, action)
-                transitioned.append(part.id)
-            else:
-                incomplete.append(part.id)
-            part.reindexObject()
-            part.aq_parent.reindexObject()
-        message = None
-        if len(transitioned) > 1:
-            message = _('${items} are waiting to be received.',
-                        mapping={'items': safe_unicode(', '.join(transitioned))})
-            self.context.plone_utils.addPortalMessage(message, 'info')
-        elif len(transitioned) == 1:
-            message = _('${item} is waiting to be received.',
-                        mapping={'item': safe_unicode(', '.join(transitioned))})
-            self.context.plone_utils.addPortalMessage(message, 'info')
-        if not message:
-            message = _('No changes made.')
-            self.context.plone_utils.addPortalMessage(message, 'info')
-
-        if len(incomplete) > 1:
-            message = _('${items} are missing Preserver or Date Preserved',
-                        mapping={'items': safe_unicode(', '.join(incomplete))})
-            self.context.plone_utils.addPortalMessage(message, 'error')
-        elif len(incomplete) == 1:
-            message = _('${item} is missing Preserver or Preservation Date',
-                        mapping={'item': safe_unicode(', '.join(incomplete))})
-            self.context.plone_utils.addPortalMessage(message, 'error')
-
-        self.destination_url = self.request.get_header("referer",
-                               self.context.absolute_url())
-        self.request.response.redirect(self.destination_url)
+            ar.setPreserver(preserver)
+            ar.setDatePreserved(DateTime(preserved))
+            success, message = doActionFor(ar, "preserve")
+            if success:
+                transitioned.append(ar.getId())
+        message = _("No changes made")
+        if transitioned:
+            message = _("Saved items: {}".format(", ".join(transitioned)))
+        self.redirect(message=message)
 
     def workflow_action_receive(self):
         action, came_from = WorkflowAction._get_form_workflow_action(self)
@@ -255,7 +237,6 @@ class AnalysisRequestWorkflowAction(AnalysesWorkflowAction):
         self.request.response.redirect(referer)
 
     def workflow_action_publish(self):
-        action, came_from = WorkflowAction._get_form_workflow_action(self)
         if not isActive(self.context):
             message = _('Item is inactive.')
             self.context.plone_utils.addPortalMessage(message, 'info')
