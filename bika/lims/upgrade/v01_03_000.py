@@ -1102,19 +1102,6 @@ def hide_samples(portal):
     for sample in api.search(dict(portal_type="Sample"), "bika_catalog"):
         remove_actions_from_sample(api.get_object(sample))
 
-    # Remove indexes and metadata not used anymore
-    del_index(portal, "bika_catalog", "getSampleID")
-    del_index(portal, "bika_catalog", "getSampleUID")
-    del_index(portal, "bika_catalog", "getDisposalDate")
-    del_index(portal, CATALOG_ANALYSIS_LISTING, "getSampleUID")
-    del_index(portal, CATALOG_ANALYSIS_LISTING, "getSampleConditionUID")
-    del_index(portal,CATALOG_ANALYSIS_REQUEST_LISTING, "getSampleID")
-    del_index(portal,CATALOG_ANALYSIS_REQUEST_LISTING, "getSampleUID")
-    del_metadata(portal, "bika_catalog", "getSampleID")
-    del_metadata(portal, CATALOG_ANALYSIS_REQUEST_LISTING, "getSampleID")
-    del_metadata(portal, CATALOG_ANALYSIS_REQUEST_LISTING, "getSampleUID")
-    del_metadata(portal, CATALOG_ANALYSIS_REQUEST_LISTING, "getSampleURL")
-
 
 def add_listing_js_to_portal_javascripts(portal):
     """Adds senaite.core.listing.js to the portal_javascripts registry
@@ -1229,8 +1216,20 @@ def decouple_analysis_requests_from_cancellation_workflow(portal):
 
 def decouple_analysisrequests_from_sample(portal):
     logger.info("Removing sample workflow ...")
+    del_index(portal, "bika_catalog", "getSampleID")
+    del_index(portal, "bika_catalog", "getSampleUID")
+    del_index(portal, "bika_catalog", "getDisposalDate")
     del_index(portal, CATALOG_ANALYSIS_LISTING, "getSamplePartitionUID")
+    del_index(portal, CATALOG_ANALYSIS_LISTING, "getSampleUID")
+    del_index(portal, CATALOG_ANALYSIS_LISTING, "getSampleConditionUID")
+    del_index(portal, CATALOG_ANALYSIS_REQUEST_LISTING, "getSampleID")
+    del_index(portal, CATALOG_ANALYSIS_REQUEST_LISTING, "getSampleUID")
+    del_metadata(portal, "bika_catalog", "getSampleID")
+    del_metadata(portal, CATALOG_ANALYSIS_LISTING, "getExpiryDate")
     del_metadata(portal, CATALOG_ANALYSIS_LISTING, "getSamplePartitionID")
+    del_metadata(portal, CATALOG_ANALYSIS_REQUEST_LISTING, "getSampleID")
+    del_metadata(portal, CATALOG_ANALYSIS_REQUEST_LISTING, "getSampleUID")
+    del_metadata(portal, CATALOG_ANALYSIS_REQUEST_LISTING, "getSampleURL")
 
 
 def fix_analysisrequests_in_sampled_status(portal):

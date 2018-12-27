@@ -74,7 +74,6 @@ _columns_list = [
     'getInterimFields',
     'getRemarks',
     'getRetestOfUID',
-    'getExpiryDate',
     'getDateSampled',
     'getDueDate',
     'getReferenceResults',
