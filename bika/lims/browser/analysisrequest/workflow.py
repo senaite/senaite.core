@@ -149,6 +149,10 @@ class AnalysisRequestWorkflowAction(AnalysesWorkflowAction):
         if ar.setAnalyses(objects_uids, prices=prices, specs=specs.values()):
             doActionFor(ar, "rollback_to_receive")
 
+        # Reindex the analyses
+        for analysis in ar.objectValues("Analysis"):
+            analysis.reindexObject()
+
         message = PMF("Changes saved.")
         self.context.plone_utils.addPortalMessage(message, 'info')
         self.destination_url = self.context.absolute_url()
