@@ -185,7 +185,7 @@ class PrintForm(BrowserView):
                     'sample_id': {
                         'hidden': True if arcell else False,
                         'rowspan': numans,
-                        'value': ar.getSample().id,
+                        'value': ar.getId(),
                         },
                     'sample_type': {
                         'hidden': True if arcell else False,
