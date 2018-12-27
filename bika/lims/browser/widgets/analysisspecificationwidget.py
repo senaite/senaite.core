@@ -273,7 +273,7 @@ class AnalysisSpecificationWidget(TypesWidget):
 
             # TODO: disallow this case in the UI
             if s_min and s_max:
-                if s_min > s_max:
+                if float(s_min) > float(s_max):
                     logger.warn("Min({}) > Max({}) is not allowed"
                                 .format(s_min, s_max))
                     continue
