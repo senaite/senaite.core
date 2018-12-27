@@ -107,9 +107,9 @@
             <tr>
                 <td class="label" i18n:translate="">Sample ID</td>
                 <td tal:condition="python: ar.getClientSampleID()"
-                    tal:content="python:'%s / %s' % (ar.getClientSampleID(), ar.getSampleID())" colspan="5"></td>
+                    tal:content="python:'%s / %s' % (ar.getClientSampleID(), ar.getId())" colspan="5"></td>
                 <td tal:condition="python: not ar.getClientSampleID()"
-                    tal:content="python:ar.getSampleID()" colspan="5"></td>
+                    tal:content="python:ar.getId()" colspan="5"></td>
             </tr>
             <tr>
                 <td class="label" i18n:translate="">Analyses requested</td>
