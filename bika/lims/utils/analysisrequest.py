@@ -315,7 +315,6 @@ def create_retest(ar):
     # 1. Create the Retest (Analysis Request)
     ignore = ['Analyses', 'DatePublished', 'Invalidated', 'Sample']
     retest = _createObjectByType("AnalysisRequest", ar.aq_parent, tmpID())
-    retest.setSample(ar.getSample())
     copy_field_values(ar, retest, ignore_fieldnames=ignore)
     renameAfterCreation(retest)
 
