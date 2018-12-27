@@ -56,7 +56,6 @@
     portal_url  nocall:context/portal_url;
     portal      portal_url/getPortalObject;
     ar          python:view.context;
-    sample      python:ar;
     lab         python:ar.bika_setup.laboratory;
     alllabreas  python:ar.bika_setup.getRejectionReasons()[0];
     labreasons  python:[alllabreas[key] for key in alllabreas.keys() if key != 'checkbox'];
@@ -99,18 +98,18 @@
         <table cellpadding="0" cellspacing="0" border="0">
             <tr>
                 <td class="label" i18n:translate="">Sample type</td>
-                <td tal:content="python: sample.getSampleType().Title()"></td>
+                <td tal:content="python: ar.getSampleType().Title()"></td>
                 <td class="label" i18n:translate="">Date collected</td>
-                <td tal:content="python:plone_view.toLocalizedTime(sample.getDateSampled())"></td>
+                <td tal:content="python:plone_view.toLocalizedTime(ar.getDateSampled())"></td>
                 <td class="label" i18n:translate="">Date received</td>
-                <td tal:content="python:plone_view.toLocalizedTime(sample.getDateReceived())"></td>
+                <td tal:content="python:plone_view.toLocalizedTime(ar.getDateReceived())"></td>
             </tr>
             <tr>
                 <td class="label" i18n:translate="">Sample ID</td>
-                <td tal:condition="python: sample.getClientSampleID()"
-                    tal:content="python:'%s / %s' % (sample.getClientSampleID(), sample.getSampleID())" colspan="5"></td>
-                <td tal:condition="python: not sample.getClientSampleID()"
-                    tal:content="python:sample.getSampleID()" colspan="5"></td>
+                <td tal:condition="python: ar.getClientSampleID()"
+                    tal:content="python:'%s / %s' % (ar.getClientSampleID(), ar.getSampleID())" colspan="5"></td>
+                <td tal:condition="python: not ar.getClientSampleID()"
+                    tal:content="python:ar.getSampleID()" colspan="5"></td>
             </tr>
             <tr>
                 <td class="label" i18n:translate="">Analyses requested</td>
