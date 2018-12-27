@@ -89,7 +89,7 @@ class QCAnalysesView(AnalysesView):
                       "src='%s/++resource++bika.lims.images/duplicate.png" \
                       "'/>&nbsp;" % (
                           antype, self.context.absolute_url())
-            item['sortcode'] = '%s_%s' % (obj.getSample().id, obj.getKeyword())
+            item['sortcode'] = '%s_%s' % (obj.getRequestID(), obj.getKeyword())
 
         item['before']['Service'] = imgtype
         item['sortcode'] = '%s_%s' % (obj.getReferenceAnalysesGroupID(),
