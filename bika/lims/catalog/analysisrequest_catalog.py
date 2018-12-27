@@ -73,6 +73,7 @@ _columns_list = [
     'getContactFullName',
     'getSampleTypeUID',
     'getSampleTypeTitle',
+    # TODO Index 'getSamplePointUID' is only used in reports/selection_macros
     'getSamplePointUID',
     'getSamplePointTitle',
     'getStorageLocationUID',
