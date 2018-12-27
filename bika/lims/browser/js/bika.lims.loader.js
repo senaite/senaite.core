@@ -22,10 +22,6 @@ window.bika.lims.controllers =  {
     ".range-chart":
         ['RangeGraph'],
 
-    // Calculation utils
-    ".ajax_calculate":
-        ['CalculationUtils'],
-
     // Atachments
     ".attachments":
         ['AttachmentsUtils'],

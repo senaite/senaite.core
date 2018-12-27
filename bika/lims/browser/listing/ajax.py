@@ -318,22 +318,33 @@ class AjaxListingView(BrowserView):
 
         return config
 
-    def recalculate_results(self, obj):
+    def recalculate_results(self, obj, recalculated=None):
         """Recalculate the result of the object and its dependents
 
         :returns: List of recalculated objects
         """
-        recalculated_objects = []
+        if recalculated is None:
+            recalculated = []
+        # avoid double recalculation in recursion
+        if obj in recalculated:
+            return []
         # recalculate own result
-        obj.calculateResult(override=True, cascade=True)
+        if obj.calculateResult(override=True):
+            # append object to the list of recalculated results
+            recalculated.append(obj)
         # recalculate dependent analyses
         for dep in obj.getDependents():
-            if dep.calculateResult(override=True, cascade=True):
+            if dep.calculateResult(override=True):
                 # TODO the `calculateResult` method should return False here!
                 if dep.getResult() in ["NA", "0/0"]:
                     continue
-                recalculated_objects.append(dep)
-        return recalculated_objects
+                recalculated.append(dep)
+            # recalculate dependents of dependents
+            for ddep in dep.getDependents():
+                recalculated.extend(
+                    self.recalculate_results(
+                        ddep, recalculated=recalculated))
+        return recalculated
 
     def is_analysis(self, obj):
         """Check if the object is an analysis
