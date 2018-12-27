@@ -43,8 +43,7 @@ class InvoiceView(BrowserView):
         workflow = getToolByName(context, 'portal_workflow')
         # Collect related data and objects
         invoice = context.getInvoice()
-        sample = context.getSample()
-        samplePoint = sample.getSamplePoint()
+        samplePoint = context.getSamplePoint()
         reviewState = workflow.getInfoFor(context, 'review_state')
         # Collection invoice information
         if invoice:
@@ -72,8 +71,8 @@ class InvoiceView(BrowserView):
         self.contact = contact.Title() if contact else ""
         self.clientOrderNumber = context.getClientOrderNumber()
         self.clientReference = context.getClientReference()
-        self.clientSampleId = sample.getClientSampleID()
-        self.sampleType = sample.getSampleType().Title()
+        self.clientSampleId = context.getClientSampleID()
+        self.sampleType = context.getSampleType().Title()
         self.samplePoint = samplePoint and samplePoint.Title()
         self.requestId = context.getId()
         self.headers = [

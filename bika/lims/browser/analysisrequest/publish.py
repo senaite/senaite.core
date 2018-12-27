@@ -34,6 +34,7 @@ from bika.lims.browser import BrowserView, ulocalized_time
 from bika.lims.catalog.analysis_catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.idserver import renameAfterCreation
 from bika.lims.interfaces import IAnalysisRequest
+from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.interfaces.field import IUIDReferenceField
 from bika.lims.utils import attachPdf, createPdf, encode_header, \
     format_supsub, \
@@ -552,17 +553,16 @@ class AnalysisRequestPublishView(BrowserView):
             else:
                 blanks_found = True
         if cr or cs:
-            sample = ar.getSample()
             if cr:
-                if sample.getClientReference():
-                    if not sample.getClientReference() in crs:
-                        crs.append(sample.getClientReference())
+                if ar.getClientReference():
+                    if not ar.getClientReference() in crs:
+                        crs.append(ar.getClientReference())
                 else:
                     blanks_found = True
             if cs:
-                if sample.getClientSampleID():
-                    if not sample.getClientSampleID() in css:
-                        css.append(sample.getClientSampleID())
+                if ar.getClientSampleID():
+                    if not ar.getClientSampleID() in css:
+                        css.append(ar.getClientSampleID())
                 else:
                     blanks_found = True
         line_items = []
@@ -1107,24 +1107,23 @@ class AnalysisRequestDigester:
 
     def _sample_data(self, ar):
         data = {}
-        sample = ar.getSample()
         if sample:
-            data = {'obj': sample,
-                    'id': sample.id,
-                    'url': sample.absolute_url(),
-                    'client_sampleid': sample.getClientSampleID(),
-                    'date_sampled': sample.getDateSampled(),
-                    'sampling_date': sample.getSamplingDate(),
-                    'sampler': self._sampler_data(sample),
-                    'date_received': sample.getDateReceived(),
-                    'composite': sample.getComposite(),
-                    'date_expired': sample.getDateExpired(),
-                    'date_disposal': sample.getDisposalDate(),
-                    'date_disposed': sample.getDateDisposed(),
-                    'adhoc': sample.getAdHoc(),
-                    'remarks': sample.getRemarks(),
-                    'sample_type': self._sample_type(sample),
-                    'sample_point': self._sample_point(sample)}
+            data = {'obj': ar,
+                    'id': ar.id,
+                    'url': ar.absolute_url(),
+                    'client_sampleid': ar.getClientSampleID(),
+                    'date_sampled': ar.getDateSampled(),
+                    'sampling_date': ar.getSamplingDate(),
+                    'sampler': self._sampler_data(ar),
+                    'date_received': ar.getDateReceived(),
+                    'composite': ar.getComposite(),
+                    'date_expired': ar.getDateExpired(),
+                    'date_disposal': ar.getDisposalDate(),
+                    'date_disposed': ar.getDateDisposed(),
+                    'adhoc': ar.getAdHoc(),
+                    'remarks': ar.getRemarks(),
+                    'sample_type': self._sample_type(ar),
+                    'sample_point': self._sample_point(ar)}
         return data
 
     def _sampler_data(self, sample=None):
@@ -1331,8 +1330,8 @@ class AnalysisRequestDigester:
         ws = analysis.getWorksheet()
         andict['worksheet'] = ws and ws.id or None
         andict['worksheet_url'] = ws and ws.absolute_url() or None
-        andict['refsample'] = analysis.getSample().id \
-            if analysis.portal_type == 'Analysis' \
+        andict['refsample'] = analysis.getRequest().id \
+            if IRequestAnalysis.providedBy(analysis) \
             else '%s - %s' % (analysis.aq_parent.id, analysis.aq_parent.Title())
 
         specs = analysis.getResultsRange()

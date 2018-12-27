@@ -56,7 +56,7 @@
     portal_url  nocall:context/portal_url;
     portal      portal_url/getPortalObject;
     ar          python:view.context;
-    sample      python:ar.getSample();
+    sample      python:ar;
     lab         python:ar.bika_setup.laboratory;
     alllabreas  python:ar.bika_setup.getRejectionReasons()[0];
     labreasons  python:[alllabreas[key] for key in alllabreas.keys() if key != 'checkbox'];

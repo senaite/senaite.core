@@ -2832,5 +2832,11 @@ class AnalysisRequest(BaseFolder):
         """
         return not self.isRootAncestor()
 
+    # TODO Remove in >v1.3.0 - This is kept for backwards-compatibility
+    @deprecated("To be removed in >v1.3.0")
+    def getSample(self):
+        logger.warn("Call to deprecated function: 'getSample' ")
+        return self
+
 
 registerType(AnalysisRequest, PROJECTNAME)
