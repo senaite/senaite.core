@@ -1,9 +1,16 @@
-.. image:: https://raw.githubusercontent.com/senaite/senaite.core/master/static/senaite-logo.png
-   :alt: senaite.core
-   :height: 64 px
-   :align: center
+.. raw:: html
 
-— **SENAITE.CORE**: *Open Soure LIMS Core based on Plone CMS*
+  <div align="center">
+    <h1>
+      <a href="https://github.com/senaite/senaite.core">
+        <div>
+          <img src="https://raw.githubusercontent.com/senaite/senaite.core/master/static/senaite-logo.png" alt="senaite.core" height="64" />
+        </div>
+      </a>
+    </h1>
+  </div>
+
+— **SENAITE.CORE**: *Open Source LIMS Core based on the CMS Plone*
 
 .. image:: https://img.shields.io/pypi/v/senaite.core.svg?style=flat-square
     :target: https://pypi.python.org/pypi/senaite.core
