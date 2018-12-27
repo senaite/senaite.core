@@ -436,4 +436,3 @@ class SamplingRound(Item):
             workflow = getToolByName(self, 'portal_workflow')
             if workflow.getInfoFor(ar_obj, 'cancellation_state') != 'cancelled':
                 doActionFor(ar.getObject(), 'cancel')
-                doActionFor(ar.getObject().getSample(), 'cancel')
