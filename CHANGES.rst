@@ -22,6 +22,7 @@ Changelog
 
 **Changed**
 
+- #1182 Allow open min/max values in analysis specifications
 - #1000 Refactor service calculation dependency/dependants functionality to API
 - #1176 Unbind `cancellation_workflow` from AnalysisRequest content type
 - #1173 Improve Resultsinterpretation Form

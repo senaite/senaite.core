@@ -10,6 +10,7 @@ import collections
 from AccessControl import ClassSecurityInfo
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
+from bika.lims import logger
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import MAX_OPERATORS
 from bika.lims.config import MIN_OPERATORS
@@ -148,7 +149,7 @@ class AnalysisSpecificationView(BikaListingView):
     def get_required_columns(self):
         """Return required editable fields
         """
-        columns = ["min", "max"]
+        columns = []
         return columns
 
     def folderitems(self):
@@ -262,6 +263,7 @@ class AnalysisSpecificationWidget(TypesWidget):
         for uid in service_uids:
             s_min = self._get_spec_value(form, uid, "min")
             s_max = self._get_spec_value(form, uid, "max")
+
             if not s_min and not s_max:
                 # If user has not set value neither for min nor max, omit this
                 # record. Otherwise, since 'min' and 'max' are defined as
@@ -270,17 +272,16 @@ class AnalysisSpecificationWidget(TypesWidget):
                 continue
 
             # TODO: disallow this case in the UI
-            if s_min > s_max:
-                continue
+            if s_min and s_max:
+                if float(s_min) > float(s_max):
+                    logger.warn("Min({}) > Max({}) is not allowed"
+                                .format(s_min, s_max))
+                    continue
 
             min_operator = self._get_spec_value(
                 form, uid, "min_operator", check_floatable=False)
             max_operator = self._get_spec_value(
                 form, uid, "max_operator", check_floatable=False)
-
-            if not min_operator and not max_operator:
-                # Values for min operator and max operator are required
-                continue
 
             service = api.get_object_by_uid(uid)
             values.append({
