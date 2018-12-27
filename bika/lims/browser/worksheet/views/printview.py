@@ -11,6 +11,7 @@ import traceback
 
 from DateTime import DateTime
 from bika.lims.api.analysis import is_out_of_range
+from bika.lims.interfaces import IReferenceSample, IReferenceAnalysis
 from plone.resource.utils import iterDirectoriesOfType, queryResourceDirectory
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
@@ -354,7 +355,9 @@ class PrintView(BrowserView):
 
                 ar = self._ar_data(arobj)
                 ar['client'] = self._client_data(arobj.aq_parent)
-                ar['sample'] = self._sample_data(an.getSample())
+                ar["sample"] = dict()
+                if IReferenceSample.providedBy(an):
+                    ar['sample'] = self._sample_data(an.getSample())
                 ar['analyses'] = []
                 ar['tmp_position'] = andict['tmp_position']
                 ar['position'] = andict['position']
@@ -415,8 +418,8 @@ class PrintView(BrowserView):
         }
 
         andict['refsample'] = analysis.getSample().id \
-            if analysis.portal_type == 'Analysis' \
-            else '%s - %s' % (analysis.aq_parent.id, analysis.aq_parent.Title())
+            if IReferenceAnalysis.providedBy(analysis) \
+            else analysis.getRequestID()
 
         specs = analysis.getResultsRange()
         andict['specs'] = specs
