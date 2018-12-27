@@ -64,6 +64,7 @@ Please, read `Contributing to senaite.core document
 Feedback and support
 ====================
 
+* `Community site <https://community.senaite.org/>`_
 * `Gitter channel <https://gitter.im/senaite/Lobby>`_
 * `Users list <https://sourceforge.net/projects/senaite/lists/senaite-users>`_
 
