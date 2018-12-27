@@ -22,6 +22,7 @@ Changelog
 
 **Changed**
 
+- #1000 Refactor service calculation dependency/dependants functionality to API
 - #1176 Unbind `cancellation_workflow` from AnalysisRequest content type
 - #1173 Improve Resultsinterpretation Form
 - #1161 Listing: Transposed worksheet improvements
@@ -74,6 +75,7 @@ Changelog
 
 **Fixed**
 
+- #1183 Fix results calculation of dependent calculations
 - #1175 Fixed Version Display of SENAITE CORE Add-on in the Quickinstaller Tool
 - #1142 Fix instrument QC Analyses Table
 - #1137 Fixed and refactored log view
