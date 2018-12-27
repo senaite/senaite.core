@@ -773,23 +773,6 @@ schema = BikaFolderSchema.copy() + Schema((
                 'sequence_type': 'generated',
                 'split_length': 1
             },
-            # TODO To be removed in >=v1.3.1
-            {
-                'form': '{sampleType}-{seq:04d}',
-                'portal_type': 'Sample',
-                'prefix': 'sample',
-                'sequence_type': 'generated',
-                'split_length': 1
-            },
-            # TODO To be removed in >=v1.3.1
-            {
-                'context': 'sample',
-                'counter_reference': 'SamplePartition',
-                'counter_type': 'contained',
-                'form': '{sampleId}-P{seq:d}',
-                'portal_type': 'SamplePartition',
-                'sequence_type': 'counter'
-            }
         ],
         widget=RecordsWidget(
             label=_("Formatting Configuration"),

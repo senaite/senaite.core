@@ -139,49 +139,10 @@ def get_variables(context, **kw):
         date_sampled = context.getDateSampled()
         date_sampled = date_sampled and DT2dt(date_sampled) or DT2dt(now)
         variables.update({
-            'clientId': context.aq_parent.getClientID(),
+            'clientId': context.getClientID(),
             'dateSampled': date_sampled,
             'samplingDate': sampling_date,
             'sampleType': context.getSampleType().getPrefix(),
-        })
-
-    elif portal_type == "SamplePartition":
-        variables.update({
-            'sampleId': context.aq_parent.getId(),
-            'sample': context.aq_parent,
-        })
-
-    elif portal_type == "Sample":
-        # get the prefix of the assigned sample type
-        sample_id = context.getId()
-        sample_type = context.getSampleType()
-        sampletype_prefix = sample_type.getPrefix()
-
-        date_now = DateTime()
-        sampling_date = context.getSamplingDate()
-        date_sampled = context.getDateSampled()
-
-        # Try to get the date sampled and sampling date
-        if sampling_date:
-            samplingDate = DT2dt(sampling_date)
-        else:
-            # No Sample Date?
-            logger.error("Sample {} has no sample date set".format(sample_id))
-            # fall back to current date
-            samplingDate = DT2dt(date_now)
-
-        if date_sampled:
-            dateSampled = DT2dt(date_sampled)
-        else:
-            # No Sample Date?
-            logger.error("Sample {} has no sample date set".format(sample_id))
-            dateSampled = DT2dt(date_now)
-
-        variables.update({
-            'clientId': context.aq_parent.getClientID(),
-            'dateSampled': dateSampled,
-            'samplingDate': samplingDate,
-            'sampleType': sampletype_prefix,
         })
 
     elif portal_type == "ARReport":

@@ -1540,6 +1540,11 @@ schema = BikaSchema.copy() + Schema((
         widget=ComputedWidget(visible=False),
     ),
     ComputedField(
+        'ClientID',
+        expression="here.getClient().getClientID() if here.getClient() else ''",
+        widget=ComputedWidget(visible=False),
+    ),
+    ComputedField(
         'ClientTitle',
         expression="here.getClient().Title() if here.getClient() else ''",
         widget=ComputedWidget(visible=False),
