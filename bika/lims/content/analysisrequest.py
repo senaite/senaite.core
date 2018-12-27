@@ -1466,15 +1466,6 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
-    # TODO Sample Cleanup
-    ComputedField(
-        'SampleID',
-        expression="here.getSample() and here.getSample().getId() or ''",
-        widget=ComputedWidget(
-            visible=False,
-        ),
-    ),
-
     ComputedField(
         'ContactUID',
         expression="here.getContact() and here.getContact().UID() or ''",

@@ -1103,10 +1103,15 @@ def hide_samples(portal):
         remove_actions_from_sample(api.get_object(sample))
 
     # Remove indexes and metadata not used anymore
+    del_index(portal, "bika_catalog", "getSampleID")
     del_index(portal, "bika_catalog", "getSampleUID")
+    del_index(portal, "bika_catalog", "getDisposalDate")
     del_index(portal, CATALOG_ANALYSIS_LISTING, "getSampleUID")
     del_index(portal, CATALOG_ANALYSIS_LISTING, "getSampleConditionUID")
+    del_index(portal,CATALOG_ANALYSIS_REQUEST_LISTING, "getSampleID")
     del_index(portal,CATALOG_ANALYSIS_REQUEST_LISTING, "getSampleUID")
+    del_metadata(portal, "bika_catalog", "getSampleID")
+    del_metadata(portal, CATALOG_ANALYSIS_REQUEST_LISTING, "getSampleID")
     del_metadata(portal, CATALOG_ANALYSIS_REQUEST_LISTING, "getSampleUID")
     del_metadata(portal, CATALOG_ANALYSIS_REQUEST_LISTING, "getSampleURL")
 

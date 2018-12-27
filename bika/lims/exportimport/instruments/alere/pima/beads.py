@@ -23,8 +23,6 @@ def Import(context, request):
     fileformat = request.form['alere_pima_beads_format']
     artoapply = request.form['alere_pima_beads_artoapply']
     override = request.form['alere_pima_beads_override']
-    sample = request.form.get('alere_pima_beads_sample',
-                              'requestid')
     instrument = request.form.get('instrument', None)
     errors = []
     logs = []
@@ -56,19 +54,8 @@ def Import(context, request):
         elif override == 'overrideempty':
             over = [True, True]
 
-        sam = ['getId', 'getSampleID', 'getClientSampleID']
-        if sample == 'requestid':
-            sam = ['getId']
-        if sample == 'sampleid':
-            sam = ['getSampleID']
-        elif sample == 'clientsid':
-            sam = ['getClientSampleID']
-        elif sample == 'sample_clientsid':
-            sam = ['getSampleID', 'getClientSampleID']
-
         importer = AlerePimaImporter(parser=parser,
                                               context=context,
-                                              idsearchcriteria=sam,
                                               allowed_ar_states=status,
                                               allowed_analysis_states=None,
                                               override=over,

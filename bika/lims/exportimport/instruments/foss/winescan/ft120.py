@@ -23,7 +23,6 @@ def Import(context, request):
     fileformat = request.form['wsf_format']
     artoapply = request.form['wsf_artoapply']
     override = request.form['wsf_override']
-    sample = request.form.get('wsf_sample', 'requestid')
     instrument = request.form.get('instrument', None)
     errors = []
     warns = []
@@ -55,19 +54,8 @@ def Import(context, request):
         elif override == 'overrideempty':
             over = [True, True]
 
-        sam = ['getId', 'getSampleID', 'getClientSampleID']
-        if sample == 'requestid':
-            sam = ['getId']
-        if sample == 'sampleid':
-            sam = ['getSampleID']
-        elif sample == 'clientsid':
-            sam = ['getClientSampleID']
-        elif sample == 'sample_clientsid':
-            sam = ['getSampleID', 'getClientSampleID']
-
         importer = WinescanFT120Importer(parser=parser,
                                          context=context,
-                                         idsearchcriteria=sam,
                                          allowed_ar_states=status,
                                          allowed_analysis_states=None,
                                          override=over,

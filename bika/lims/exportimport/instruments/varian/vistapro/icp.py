@@ -18,8 +18,7 @@ from zope.component import getUtility
 from bika.lims import api
 from bika.lims.browser import BrowserView
 from bika.lims.exportimport.instruments.utils import \
-    (get_instrument_import_search_criteria,
-     get_instrument_import_override,
+    (get_instrument_import_override,
      get_instrument_import_ar_allowed_states)
 from bika.lims.exportimport.instruments.resultsimport import \
     InstrumentCSVResultsFileParser, AnalysisResultsImporter
@@ -111,14 +110,13 @@ class VistaPROICPImporter(AnalysisResultsImporter):
     """ Importer
     """
 
-    def __init__(self, parser, context, idsearchcriteria, override,
+    def __init__(self, parser, context, override,
                  allowed_ar_states=None, allowed_analysis_states=None,
                  instrument_uid=None):
 
         AnalysisResultsImporter.__init__(self,
                                          parser,
                                          context,
-                                         idsearchcriteria,
                                          override,
                                          allowed_ar_states,
                                          allowed_analysis_states,
@@ -135,7 +133,7 @@ def Import(context, request):
         else form['instrument_results_file']
     override = form['results_override']
     artoapply = form['artoapply']
-    sample = form.get('sample', 'requestid')
+
     instrument = form.get('instrument', None)
     errors = []
     logs = []
@@ -149,11 +147,9 @@ def Import(context, request):
     parser = VistaPROICPParser(infile)
     status = get_instrument_import_ar_allowed_states(artoapply)
     over = get_instrument_import_override(override)
-    sam = get_instrument_import_search_criteria(sample)
 
     importer = VistaPROICPImporter(parser=parser,
                                    context=context,
-                                   idsearchcriteria=sam,
                                    allowed_ar_states=status,
                                    allowed_analysis_states=None,
                                    override=over,
@@ -227,8 +223,7 @@ class Export(BrowserView):
                 if 'a{}'.format(container.id) in used_ids:
                     continue
                 used_ids.append('a{}'.format(container.id))
-                sample = container.getSample()
-                samplepoint = sample.getSamplePoint()
+                samplepoint = container.getSamplePoint()
                 sp_title = samplepoint.Title() if samplepoint else ''
                 a = '"{}*{}"'.format(container.id, sp_title)
             elif row['type'] in 'bcd':

@@ -12,8 +12,7 @@ from bika.lims import api
 import json
 import re
 from bika.lims.exportimport.instruments.utils import \
-    (get_instrument_import_search_criteria,
-     get_instrument_import_override,
+    (get_instrument_import_override,
      get_instrument_import_ar_allowed_states)
 from bika.lims.exportimport.instruments.resultsimport import \
     InstrumentCSVResultsFileParser, AnalysisResultsImporter
@@ -33,7 +32,7 @@ def Import(context, request):
         form['instrument_results_file']
     artoapply = form['artoapply']
     override = form['results_override']
-    sample = form.get('sample', 'requestid')
+
     instrument = form.get('instrument', None)
     errors = []
     logs = []
@@ -45,10 +44,8 @@ def Import(context, request):
     parser = TwoDimensionCSVParser(infile)
     status = get_instrument_import_ar_allowed_states(artoapply)
     over = get_instrument_import_override(override)
-    sam = get_instrument_import_search_criteria(sample)
     importer = TwoDimensionImporter(parser=parser,
                                     context=context,
-                                    idsearchcriteria=sam,
                                     allowed_ar_states=status,
                                     allowed_analysis_states=None,
                                     override=over,
@@ -86,7 +83,7 @@ def find_analyses(ar_or_sample):
     bc = api.get_tool(CATALOG_ANALYSIS_REQUEST_LISTING)
     ar = bc(portal_type='AnalysisRequest', id=ar_or_sample)
     if len(ar) == 0:
-        ar = bc(portal_type='AnalysisRequest', getSampleID=ar_or_sample)
+        ar = bc(portal_type='AnalysisRequest', getClientSampleID=ar_or_sample)
     if len(ar) == 1:
         obj = ar[0].getObject()
         analyses = obj.getAnalyses(full_objects=True)
@@ -254,11 +251,10 @@ class TwoDimensionCSVParser(InstrumentCSVResultsFileParser):
 
 class TwoDimensionImporter(AnalysisResultsImporter):
 
-    def __init__(self, parser, context, idsearchcriteria, override,
+    def __init__(self, parser, context, override,
                  allowed_ar_states=None, allowed_analysis_states=None,
                  instrument_uid='', form=None):
         AnalysisResultsImporter.__init__(self, parser, context,
-                                         idsearchcriteria,
                                          override, allowed_ar_states,
                                          allowed_analysis_states,
                                          instrument_uid)

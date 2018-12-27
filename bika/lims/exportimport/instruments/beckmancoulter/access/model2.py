@@ -23,8 +23,6 @@ def Import(context, request):
     fileformat = request.form['beckmancoulter_access_model2_format']
     artoapply = request.form['beckmancoulter_access_model2_artoapply']
     override = request.form['beckmancoulter_access_model2_override']
-    sample = request.form.get('beckmancoulter_access_model2_sample',
-                              'requestid')
     instrument = request.form.get('instrument', None)
     errors = []
     logs = []
@@ -56,19 +54,8 @@ def Import(context, request):
         elif override == 'overrideempty':
             over = [True, True]
 
-        sam = ['getId', 'getSampleID', 'getClientSampleID']
-        if sample == 'requestid':
-            sam = ['getId']
-        if sample == 'sampleid':
-            sam = ['getSampleID']
-        elif sample == 'clientsid':
-            sam = ['getClientSampleID']
-        elif sample == 'sample_clientsid':
-            sam = ['getSampleID', 'getClientSampleID']
-
         importer = BeckmancoulterAccess2Importer(parser=parser,
                                               context=context,
-                                              idsearchcriteria=sam,
                                               allowed_ar_states=status,
                                               allowed_analysis_states=None,
                                               override=over,

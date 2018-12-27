@@ -201,7 +201,6 @@ Load results test file and import the results:
     >>> abbott_parser = Abbottm2000rtTSVParser(test_file)
     >>> importer = Abbottm2000rtImporter(parser=abbott_parser,
     ...                                  context=portal,
-    ...                                  idsearchcriteria=['getId', 'getSampleID', 'getClientSampleID'],
     ...                                  allowed_ar_states=['sample_received', 'attachment_due', 'to_be_verified'],
     ...                                  allowed_analysis_states=None,
     ...                                  override=[True, True])

@@ -34,7 +34,6 @@ _indexes_dict = {
     'getProvince': 'FieldIndex',
     'getDistrict': 'FieldIndex',
     'getClientSampleID': 'FieldIndex',
-    'getSampleID': 'FieldIndex',
     # To sort in lists
     'getClientTitle': 'FieldIndex',
     'getPrioritySortkey': 'FieldIndex',
@@ -49,8 +48,6 @@ _columns_list = [
     'getCreatorFullName',
     'getCreatorEmail',
     'getPhysicalPath',
-    # Used to print the ID of the Sample in lists
-    'getSampleID',
     # Used to create add an anchor to Sample ID that redirects to
     # the Sample view.
     'getClientOrderNumber',

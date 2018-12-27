@@ -42,7 +42,6 @@ def Import(context, request):
     fileformat = request.form['amhq_format']
     artoapply = request.form['amhq_artoapply']
     override = request.form['amhq_override']
-    sample = request.form.get('amhq_sample', 'requestid')
     instrument = request.form.get('instrument', None)
     errors = []
     logs = []
@@ -73,19 +72,8 @@ def Import(context, request):
         elif override == 'overrideempty':
             over = [True, True]
 
-        sam = ['getId', 'getSampleID', 'getClientSampleID']
-        if sample =='requestid':
-            sam = ['getId']
-        if sample == 'sampleid':
-            sam = ['getSampleID']
-        elif sample == 'clientsid':
-            sam = ['getClientSampleID']
-        elif sample == 'sample_clientsid':
-            sam = ['getSampleID', 'getClientSampleID']
-
         importer = MasshunterQuantImporter(parser=parser,
                                            context=context,
-                                           idsearchcriteria=sam,
                                            allowed_ar_states=status,
                                            allowed_analysis_states=None,
                                            override=over,
@@ -496,10 +484,10 @@ class MasshunterQuantCSVParser(InstrumentCSVResultsFileParser):
 
 class MasshunterQuantImporter(AnalysisResultsImporter):
 
-    def __init__(self, parser, context, idsearchcriteria, override,
+    def __init__(self, parser, context,  override,
                  allowed_ar_states=None, allowed_analysis_states=None,
                  instrument_uid=''):
-        AnalysisResultsImporter.__init__(self, parser, context, idsearchcriteria,
+        AnalysisResultsImporter.__init__(self, parser, context, 
                                          override, allowed_ar_states,
                                          allowed_analysis_states,
                                          instrument_uid)

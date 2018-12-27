@@ -159,7 +159,6 @@ Load results test file and import the results::
     >>> tx1800i_parser = TX1800iParser(test_file)
     >>> importer = SysmexXTImporter(parser=tx1800i_parser,
     ...                             context=portal,
-    ...                             idsearchcriteria=['getId', 'getSampleID', 'getClientSampleID'],
     ...                             allowed_ar_states=['sample_received', 'attachment_due', 'to_be_verified'],
     ...                             allowed_analysis_states=None,
     ...                             override=[True, True])
