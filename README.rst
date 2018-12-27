@@ -10,7 +10,7 @@
     </h1>
   </div>
 
-— **SENAITE.CORE**: *Open Soure LIMS Core based on Plone CMS*
+— **SENAITE.CORE**: *Open Source LIMS Core based on the CMS Plone*
 
 .. image:: https://img.shields.io/pypi/v/senaite.core.svg?style=flat-square
     :target: https://pypi.python.org/pypi/senaite.core
