@@ -28,7 +28,12 @@ from bika.lims.workflow import doActionFor
 from email.Utils import formataddr
 
 
-class AnalysisRequestWorkflowAction(WorkflowAction):
+# TODO Revisit AnalysisRequestWorkflowAction class
+# This class is not only used for workflow actions taken in AnalysisRequest
+# context, but also for workflow actions taken in other contexts (e.g.Client or
+# Batch) where the triggered action is for Analysis Requests selected from a
+# listing. E.g: ClientWorkflowAction and BatchWorkflowAction.
+class AnalysisRequestWorkflowAction(AnalysesWorkflowAction):
     """Workflow actions taken in AnalysisRequest context.
     """
 
