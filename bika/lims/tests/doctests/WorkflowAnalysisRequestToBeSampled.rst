@@ -3,7 +3,7 @@ Analysis Request to_be_sampled guard and event
 
 Running this test from the buildout directory:
 
-    bin/test test_textual_doctests -t WorfklowAnalysisRequestToBeSampled
+    bin/test test_textual_doctests -t WorkflowAnalysisRequestToBeSampled
 
 Test Setup
 ----------

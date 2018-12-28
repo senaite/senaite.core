@@ -152,3 +152,14 @@ def guard_reinstate(analysis_request):
     if api.get_workflow_status_of(parent) != "cancelled":
         return True
     return isTransitionAllowed(parent, "reinstate")
+
+
+def guard_sample(analysis_request):
+    """Returns whether 'sample' transition can be performed or not. Returns
+    True only if the analysis request has the DateSampled and Sampler set
+    """
+    if not analysis_request.getDateSampled():
+        return False
+    if not analysis_request.getSampler():
+        return False
+    return True

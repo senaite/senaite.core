@@ -229,6 +229,12 @@
     <exit-transition transition_id="submit"/>
     <exit-transition transition_id="schedule_sampling"/>
     <exit-transition transition_id="reject"/>
+    <permission-map name="BIKA: Sample Sample" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
+    </permission-map>
     <permission-map name="BIKA: Add Analysis" acquired="False">
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -1211,12 +1217,16 @@
     </guard>
   </transition>
 
+  <!-- Transition: sample
+  The sample has been collected and is due for reception. This transition
+  requires the Sampler and DateSampled fields to be set -->
   <transition transition_id="sample" title="Sample" new_state="sample_due"
               trigger="USER" before_script="" after_script=""
               i18n:attributes="title">
     <action url="" category="workflow" icon="">Sample</action>
     <guard>
       <guard-permission>BIKA: Sample Sample</guard-permission>
+      <guard-expression>python:here.guard_handler("sample")</guard-expression>
     </guard>
   </transition>
 
