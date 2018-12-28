@@ -84,7 +84,6 @@ def create_analysisrequest(client, request, values, analyses=None,
         return ar
 
     # Try first with no sampling transition, cause it is the most common config
-    import pdb;pdb.set_trace()
     success, message = doActionFor(ar, "no_sampling_workflow")
     if not success:
         doActionFor(ar, "to_be_sampled")
