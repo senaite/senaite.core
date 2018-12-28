@@ -37,8 +37,8 @@
   <permission>Reject Analysis Request</permission>
 
   <state state_id="sample_registered" title="Registered" i18n:attributes="title">
-    <description>Creating an AR</description>
-    <exit-transition transition_id="sampling_workflow"/>
+    <description>Creation</description>
+    <exit-transition transition_id="to_be_sampled"/>
     <exit-transition transition_id="no_sampling_workflow"/>
     <exit-transition transition_id="reject"/>
     <permission-map name="BIKA: Add Analysis" acquired="False">
@@ -219,6 +219,9 @@
     </permission-map>
   </state>
 
+  <!-- State: To be sampled
+  The Sample needs to be collected by laboratory personnel. Sample reaches this
+  status automatically upon creation (see to_be_sampled transition) -->
   <state state_id="to_be_sampled" title="To be sampled" i18n:attributes="title">
     <description>AR successfully created</description>
     <exit-transition transition_id="cancel"/>
@@ -1223,11 +1226,20 @@
     </guard>
   </transition>
 
-  <transition transition_id="sampling_workflow" title="Sampling workflow" new_state="to_be_sampled" trigger="USER" before_script="" after_script="" i18n:attributes="title">
-    <action url="" category="workflow" icon="">Sampling workflow</action>
+  <!-- Transition: To be sampled
+  This transition takes place automatically when sample collection is enabled
+  for the current Analysis Request, either because the setting is enabled by
+  default in setup or because a template with this setting enabled has been
+  used to create the Analysis Request.
+  There is no need of guard-permission, cause this transition is triggered
+  automatically when the Analysis Request is created for the first time.
+  -->
+  <transition transition_id="to_be_sampled" title="To be sampled"
+              new_state="to_be_sampled" trigger="USER" before_script=""
+              after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">To be sampled</action>
     <guard>
-      <guard-permission>BIKA: Add Analysis Request</guard-permission>
-      <guard-expression>python:here.guard_handler("sampling_workflow")</guard-expression>
+      <guard-expression>python:here.guard_handler("to_be_sampled")</guard-expression>
     </guard>
   </transition>
 

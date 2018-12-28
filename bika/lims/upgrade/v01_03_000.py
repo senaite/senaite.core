@@ -1084,7 +1084,8 @@ def hide_samples(portal):
     """Removes samples views from everywhere, related indexes, etc.
     """
     logger.info("Removing Samples from navbar ...")
-    portal.manage_delObjects(["samples"])
+    if "samples" in portal:
+        portal.manage_delObjects(["samples"])
 
     def remove_samples_action(content_type):
         type_info = content_type.getTypeInfo()

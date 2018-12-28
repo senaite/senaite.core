@@ -16,14 +16,14 @@ def guard_no_sampling_workflow(analysis_request):
     """Returns whether the transition "no_sampling_workflow" can be performed
     or not. Returns True when Sampling Workflow is not enabled in setup
     """
-    return not analysis_request.bika_setup.getSamplingWorkflowEnabled()
+    return not analysis_request.getSamplingRequired()
 
 
-def guard_sampling_workflow(analysis_request):
-    """Returns whether the transition "sampling_workflow" can be performed or
-    not. Returns True if Sampling Workflow is enabled in setup
+def guard_to_be_sampled(analysis_request):
+    """Returns whether the transition "to_be_sampled" can be performed or not.
+    Returns True if Sampling Workflow is enabled for the analysis request
     """
-    return analysis_request.bika_setup.getSamplingWorkflowEnabled()
+    return analysis_request.getSamplingRequired()
 
 
 def guard_schedule_sampling(analysis_request):

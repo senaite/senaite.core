@@ -81,11 +81,13 @@ def create_analysisrequest(client, request, values, analyses=None,
     reject_field = values.get("RejectionReasons", None)
     if reject_field and reject_field.get("checkbox", False):
         doActionFor(ar, "reject")
-    else:
-        succeed, message = doActionFor(ar, "no_sampling_workflow")
-        if not succeed:
-            doActionFor(ar, "sampling_workflow")
+        return ar
 
+    # Try first with no sampling transition, cause it is the most common config
+    import pdb;pdb.set_trace()
+    success, message = doActionFor(ar, "no_sampling_workflow")
+    if not success:
+        doActionFor(ar, "to_be_sampled")
     return ar
 
 

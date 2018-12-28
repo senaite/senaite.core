@@ -2828,5 +2828,13 @@ class AnalysisRequest(BaseFolder):
         """
         return not self.isRootAncestor()
 
+    def getSamplingRequired(self):
+        """Returns True if the sample of this Analysis Request has to be
+        collected by the laboratory personnel
+        """
+        template = self.getTemplate()
+        if template:
+            return template.getSamplingRequired()
+        return self.bika_setup.getSamplingWorkflowEnabled()
 
 registerType(AnalysisRequest, PROJECTNAME)
