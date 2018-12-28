@@ -48,7 +48,6 @@ class BikaGenerator(object):
                        'methods',
                        'analysisrequests',
                        'referencesamples',
-                       'samples',
                        'supplyorders',
                        'worksheets',
                        'reports',
