@@ -17,7 +17,7 @@ from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.idserver import renameAfterCreation
-from bika.lims.interfaces import ISample, IAnalysisService, IRoutineAnalysis, \
+from bika.lims.interfaces import IAnalysisService, IRoutineAnalysis, \
     IAnalysisRequest
 from bika.lims.utils import attachPdf
 from bika.lims.utils import changeWorkflowState
