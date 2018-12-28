@@ -358,6 +358,8 @@ class PrintView(BrowserView):
                 ar["sample"] = dict()
                 if IReferenceSample.providedBy(an):
                     ar['sample'] = self._sample_data(an.getSample())
+                else:
+                    ar['sample'] = self._sample_data(an.getRequest())
                 ar['analyses'] = []
                 ar['tmp_position'] = andict['tmp_position']
                 ar['position'] = andict['position']
