@@ -156,10 +156,11 @@ def guard_reinstate(analysis_request):
 
 def guard_sample(analysis_request):
     """Returns whether 'sample' transition can be performed or not. Returns
-    True only if the analysis request has the DateSampled and Sampler set
+    True only if the analysis request has the DateSampled and Sampler set or if
+    the user belongs to the Samplers group
     """
-    if not analysis_request.getDateSampled():
-        return False
-    if not analysis_request.getSampler():
-        return False
-    return True
+    if analysis_request.getDateSampled() and analysis_request.getSampler():
+        return True
+
+    current_user = api.get_current_user()
+    return "Sampler" in current_user.getRolesInContext(analysis_request)

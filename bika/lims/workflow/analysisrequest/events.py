@@ -14,6 +14,16 @@ from bika.lims.workflow.analysisrequest import AR_WORKFLOW_ID, \
     do_action_to_descendants, do_action_to_analyses, do_action_to_ancestors
 
 
+def before_sample(analysis_request):
+    """Method triggered before "sample" transition for the Analysis Request
+    passed in is performed
+    """
+    if not analysis_request.getDateSampled():
+        analysis_request.setDateSampled(DateTime())
+    if not analysis_request.getSampler():
+        analysis_request.setSampler(api.get_current_user().id)
+
+
 def after_reject(analysis_request):
     """Method triggered after a 'reject' transition for the Analysis Request
     passed in is performed. Cascades the transition to descendants (partitions)

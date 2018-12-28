@@ -100,8 +100,6 @@ We need to create some basic objects for the test:
     >>> ar_template = api.create(bikasetup.bika_artemplates, "ARTemplate", title="Test Template", SampleType=sampletype)
     >>> sampler_user = ploneapi.user.create(email="sampler1@example.com", username="sampler1", password="secret", properties=dict(fullname="Sampler 1"))
     >>> setRoles(portal, "sampler1", ['Authenticated', 'Member', 'Sampler'])
-    >>> sampler = api.create(bikasetup.bika_labcontacts, "LabContact", Firstname="Sampler", Lastname="1")
-    >>> success = sampler.setUser(sampler_user)
 
 
 Sample transition and guard basic constraints
@@ -136,10 +134,11 @@ But the transition is still not possible:
 
 Because we haven't set neither a Sampler nor the date the sample was collected:
 
-    >>> ar.setDateSampled(timestamp())
+    >>> date_sampled = timestamp()
+    >>> ar.setDateSampled(date_sampled)
     >>> isTransitionAllowed(ar, "sample")
     False
-    >>> ar.setSampler(sampler)
+    >>> ar.setSampler(sampler_user.id)
     >>> isTransitionAllowed(ar, "sample")
     True
 
@@ -148,6 +147,13 @@ When "sample" transition is performed, the status becomes "sample_due":
     >>> success = do_action_for(ar, "sample")
     >>> api.get_workflow_status_of(ar)
     'sample_due'
+
+And the values for DateSampled and Sampler are kept:
+
+    >>> ar.getSampler() == sampler_user.id
+    True
+    >>> ar.getDateSampled().strftime("%Y-%m-%d") == date_sampled
+    True
 
 
 Check permissions for sample transition
@@ -165,7 +171,7 @@ Create an Analysis Request by using a template with Sampling workflow enabled:
     >>> ar_template.setSamplingRequired(True)
     >>> ar = new_ar([Cu], ar_template)
     >>> ar.setDateSampled(timestamp())
-    >>> ar.setSampler(sampler)
+    >>> ar.setSampler(sampler_user.id)
 
 Exactly these roles can Sample:
 
