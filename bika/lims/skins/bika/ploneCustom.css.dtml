@@ -468,12 +468,6 @@ table.analysisrequest input {
   visibility: hidden;
 }
 
-.select_sample {
-  color: &dtml-linkColor; !important;
-  font-weight:bold;
-  cursor: pointer;
-}
-
 .copyButton{
   border: 0;
   cursor: pointer;
@@ -483,11 +477,6 @@ table.analysisrequest input {
   border: 0;
   cursor: pointer;
   margin-left:3px !important;
-}
-
-.deleteSampleButton{
-  border: 0;
-  cursor: pointer;
 }
 
 .link {

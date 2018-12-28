@@ -76,10 +76,6 @@ window.bika.lims.controllers =  {
     ".template-bika-lims-content-samplingsround.portaltype-client":
         ['ClientSamplingRoundAddEditView'],
 
-    // Client Samples View
-    ".portaltype-client.template-samples":
-        ['PrintSamplesSheetView'],
-
     // Sampling Rounds PrintView
     "#sr_publish_container":
         ['SamplingRoundPrintView'],
@@ -88,28 +84,17 @@ window.bika.lims.controllers =  {
     ".portaltype-referencesample.template-analyses":
         ['ReferenceSampleAnalysesView'],
 
-
-    // Sample
-    ".portaltype-sample":
-        ['SampleView',
-        'RejectionKickOff'],
-    // Samples fodler
-    ".portaltype-samplesfolder":
-        ['PrintSamplesSheetView'],
-
     // Analysis Request Templates
     ".portaltype-artemplate.template-base_edit":
         ['ARTemplateEditView'],
 
     // Analysis Requests
     ".portaltype-analysisrequest":
-        ['SampleView',
-         'AnalysisRequestView',
+        ['AnalysisRequestView',
      ],
      // Analysis request, but not in ARAdd view
      ".portaltype-analysisrequest:not(.template-ar_add)":
-        [
-        'RejectionKickOff',],
+        ['RejectionKickOff',],
 
     ".portaltype-analysisrequest.template-base_view":
         ['WorksheetManageResultsView',
@@ -133,19 +118,13 @@ window.bika.lims.controllers =  {
     "#ar_publish_container":
         ['RangeGraph', 'AnalysisRequestPublishView'],
 
-    // Samples PrintView
-     "#preview_container.samples_print_preview":
-         ['FormPrintView'],
-
     // Supply Orders
     ".portaltype-supplyorder.template-base_edit":
         ['SupplyOrderEditView'],
 
-
     // Imports
     ".portaltype-plone-site.template-import":
         ['InstrumentImportView'],
-
 
     // Batches
     ".portaltype-batchfolder":

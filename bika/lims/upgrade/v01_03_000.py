@@ -48,6 +48,11 @@ PORTLETS_TO_PURGE = [
     'portlet_verified-pt'
 ]
 
+JAVASCRIPTS_TO_REMOVE = [
+    "++resource++bika.lims.js/bika.lims.sample.js",
+    "++resource++bika.lims.js/bika.lims.samples.js",
+    "++resource++bika.lims.js/bika.lims.samples.print.js",
+]
 
 @upgradestep(product, version)
 def upgrade(tool):
@@ -66,6 +71,10 @@ def upgrade(tool):
     # -------- ADD YOUR STUFF BELOW --------
     setup.runImportStepFromProfile(profile, 'typeinfo')
     setup.runImportStepFromProfile(profile, 'content')
+
+    # Remove stale javascripts
+    # https://github.com/senaite/senaite.core/pull/1180
+    remove_stale_javascripts(portal)
 
     # Remove QC reports and gpw dependency
     # https://github.com/senaite/senaite.core/pull/1058
@@ -1399,3 +1408,12 @@ def set_id_format(portal, format):
         ids.append(record)
     ids.append(format)
     bs.setIDFormatting(ids)
+
+
+def remove_stale_javascripts(portal):
+    """Removes stale javascripts
+    """
+    logger.info("Removing stale javascripts ...")
+    for js in JAVASCRIPTS_TO_REMOVE:
+        logger.info("Unregistering JS %s" % js)
+        portal.portal_javascripts.unregisterResource(js)
