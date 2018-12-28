@@ -25,7 +25,6 @@ from bika.lims.utils import createPdf
 from bika.lims.utils import encode_header
 from bika.lims.utils import tmpID, copy_field_values
 from bika.lims.utils import to_utf8
-from bika.lims.utils.sample import create_sample
 from bika.lims.workflow import doActionFor, ActionHandlerPool, \
     push_reindex_to_actions_pool
 from email.Utils import formataddr
@@ -60,11 +59,6 @@ def create_analysisrequest(client, request, values, analyses=None,
     # Create new sample or locate the existing for secondary AR
     secondary = False
     # TODO Sample Cleanup - Manage secondary ARs properly
-    #if values.get('Sample', None):
-    #    secondary = True
-    #    values["Sample"] = get_sample_from_values(client, values)
-    #else:
-    #    values["Sample"] = create_sample(client, request, values)
 
     # Create the Analysis Request
     ar = _createObjectByType('AnalysisRequest', client, tmpID())
@@ -93,25 +87,6 @@ def create_analysisrequest(client, request, values, analyses=None,
             doActionFor(ar, "sampling_workflow")
 
     return ar
-
-
-def get_sample_from_values(context, values):
-    """values may contain a UID or a direct Sample object.
-    """
-    if ISample.providedBy(values['Sample']):
-        sample = values['Sample']
-    else:
-        bc = getToolByName(context, 'bika_catalog')
-        brains = bc(UID=values['Sample'])
-        if brains:
-            sample = brains[0].getObject()
-        else:
-            raise RuntimeError("create_analysisrequest: invalid sample "
-                               "value provided. values=%s" % values)
-    if not sample:
-        raise RuntimeError("create_analysisrequest: invalid sample "
-                           "value provided. values=%s" % values)
-    return sample
 
 
 def get_services_uids(context=None, analyses_serv=None, values=None):

@@ -130,6 +130,7 @@ class BikaCatalogTypesVocabulary(object):
         types = (
             ('AnalysisRequest', translate(to_utf8(_('Analysis Request')))),
             ('Batch', translate(to_utf8(_('Batch')))),
+            # TODO Remove in >v1.3.0
             ('Sample', translate(to_utf8(_('Sample')))),
             ('ReferenceSample', translate(to_utf8(_('Reference Sample')))),
             ('Worksheet', translate(to_utf8(_('Worksheet'))))

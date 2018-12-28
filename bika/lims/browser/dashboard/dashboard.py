@@ -603,14 +603,6 @@ class DashboardView(BrowserView):
                     'to_be_verified':  _('To be verified'),
                     'verified':        _('Verified')}
 
-        elif portal_type == 'Sample':
-            return {'to_be_sampled':       _('To be sampled'),
-                    'to_be_preserved':     _('To be preserved'),
-                    'scheduled_sampling':  _('Sampling scheduled'),
-                    'sample_due':          _('Reception pending'),
-                    'rejected':            _('Rejected'),
-                    'sample_received':     _('Sample received'), }
-
     def get_colors_palette(self):
         return {
             'to_be_sampled':                '#917A4C',

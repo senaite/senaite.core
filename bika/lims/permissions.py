@@ -65,7 +65,7 @@ ADD_CONTENT_PERMISSIONS = {
     'Analysis': AddAnalysis, 'AnalysisRequest': AddAnalysisRequest,
     'Attachment': AddAttachment, 'Batch': AddBatch, 'Client': AddClient,
     'Invoice': AddInvoice, 'Method': AddMethod, 'Multifile': AddMultifile,
-    'SupplyOrder': AddSupplyOrder, 'Sample': AddSample,
+    'SupplyOrder': AddSupplyOrder,
     'SampleMatrix': AddSampleMatrix,
     'SamplingDeviation': AddSamplingDeviation,
     'SamplingRound': AddSamplingRound, 'SubGroup': AddSubGroup, }

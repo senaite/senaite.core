@@ -2166,8 +2166,6 @@ class Analysis_Requests(WorksheetImporter):
             obj = _createObjectByType("AnalysisRequest", client, row['id'])
             contact = pc(portal_type="Contact",
                          getFullname=row['Contact_Fullname'])[0].getObject()
-            sample = bc(portal_type="Sample",
-                        id=row['Sample_id'])[0].getObject()
             obj.edit(
                 RequestID=row['id'],
                 Contact=contact,

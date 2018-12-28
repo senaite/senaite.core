@@ -1106,31 +1106,29 @@ class AnalysisRequestDigester:
         return data
 
     def _sample_data(self, ar):
-        data = {}
-        if sample:
-            data = {'obj': ar,
-                    'id': ar.id,
-                    'url': ar.absolute_url(),
-                    'client_sampleid': ar.getClientSampleID(),
-                    'date_sampled': ar.getDateSampled(),
-                    'sampling_date': ar.getSamplingDate(),
-                    'sampler': self._sampler_data(ar),
-                    'date_received': ar.getDateReceived(),
-                    'composite': ar.getComposite(),
-                    'date_expired': ar.getDateExpired(),
-                    'date_disposal': ar.getDisposalDate(),
-                    'date_disposed': ar.getDateDisposed(),
-                    'adhoc': ar.getAdHoc(),
-                    'remarks': ar.getRemarks(),
-                    'sample_type': self._sample_type(ar),
-                    'sample_point': self._sample_point(ar)}
+        data = {'obj': ar,
+                'id': ar.id,
+                'url': ar.absolute_url(),
+                'client_sampleid': ar.getClientSampleID(),
+                'date_sampled': ar.getDateSampled(),
+                'sampling_date': ar.getSamplingDate(),
+                'sampler': self._sampler_data(ar),
+                'date_received': ar.getDateReceived(),
+                'composite': ar.getComposite(),
+                'date_expired': ar.getDateExpired(),
+                'date_disposal': ar.getDisposalDate(),
+                'date_disposed': ar.getDateDisposed(),
+                'adhoc': ar.getAdHoc(),
+                'remarks': ar.getRemarks(),
+                'sample_type': self._sample_type(ar),
+                'sample_point': self._sample_point(ar)}
         return data
 
-    def _sampler_data(self, sample=None):
+    def _sampler_data(self, ar=None):
         data = {}
-        if not sample or not sample.getSampler():
+        if not ar or not ar.getSampler():
             return data
-        sampler = sample.getSampler()
+        sampler = ar.getSampler()
         mtool = getToolByName(self.context, 'portal_membership')
         member = mtool.getMemberById(sampler)
         if member:
@@ -1167,9 +1165,9 @@ class AnalysisRequestDigester:
                     'home_page': to_utf8(mhomepage)}
         return data
 
-    def _sample_type(self, sample=None):
+    def _sample_type(self, ar=None):
         data = {}
-        sampletype = sample.getSampleType() if sample else None
+        sampletype = ar.getSampleType() if ar else None
         if sampletype:
             data = {'obj': sampletype,
                     'id': sampletype.id,
@@ -1177,8 +1175,8 @@ class AnalysisRequestDigester:
                     'url': sampletype.absolute_url()}
         return data
 
-    def _sample_point(self, sample=None):
-        samplepoint = sample.getSamplePoint() if sample else None
+    def _sample_point(self, ar=None):
+        samplepoint = ar.getSamplePoint() if ar else None
         data = {}
         if samplepoint:
             data = {'obj': samplepoint,

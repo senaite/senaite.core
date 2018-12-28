@@ -262,7 +262,9 @@ class BikaGenerator(object):
 
         at = getToolByName(portal, 'archetype_tool')
         at.setCatalogsByType('Batch', ['bika_catalog', 'portal_catalog'])
+        # TODO Remove in >v1.3.0
         at.setCatalogsByType('Sample', ['bika_catalog', 'portal_catalog'])
+        # TODO Remove in >v1.3.0
         at.setCatalogsByType('SamplePartition',
                              ['bika_catalog', 'portal_catalog'])
         at.setCatalogsByType('ReferenceSample',
