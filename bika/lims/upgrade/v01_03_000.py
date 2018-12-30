@@ -32,6 +32,24 @@ from zope.component import getUtility
 version = '1.3.0'  # Remember version number in metadata.xml and setup.py
 profile = 'profile-{0}:default'.format(product)
 
+PROXY_FIELDS_TO_PURGE = [
+    "AdHoc",
+    "ClientReference",
+    "ClientSampleID",
+    "Composite",
+    "DateReceived",
+    "DateSampled",
+    "EnvironmentalConditions",
+    "SampleCondition",
+    "SamplePoint",
+    "SampleType",
+    "Sampler",
+    "SamplingDate",
+    "SamplingDeviation",
+    "ScheduledSamplingSampler",
+    "StorageLocation",
+]
+
 PORTLETS_TO_PURGE = [
     'accreditation-pt',
     'login',
@@ -1262,23 +1280,6 @@ def fix_analysisrequests_in_sampled_status(portal):
 
 def port_analysis_request_proxy_fields(portal):
     logger.info("Purging Analysis Request Proxy Fields ...")
-    fields_to_purge = [
-        "AdHoc",
-        "ClientReference",
-        "ClientSampleID",
-        "Composite",
-        "DateReceived",
-        "DateSampled",
-        "EnvironmentalConditions",
-        "SampleCondition",
-        "SamplePoint",
-        "SampleType",
-        "Sampler",
-        "SamplingDate",
-        "SamplingDeviation",
-        "ScheduledSamplingSampler",
-        "StorageLocation",
-    ]
 
     def set_value(analysis_request, field_name, field_value):
         ar_field = analysis_request.Schema()[field_name]
@@ -1298,7 +1299,7 @@ def port_analysis_request_proxy_fields(portal):
                 ar.reindexObject()
             return list(set(processed_fields))
 
-        for field_id in fields_to_purge:
+        for field_id in PROXY_FIELDS_TO_PURGE:
             field_value = None
             try:
                 field = sample_obj.Schema().getField(field_id)
