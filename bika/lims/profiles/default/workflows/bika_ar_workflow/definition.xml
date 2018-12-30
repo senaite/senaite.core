@@ -12,7 +12,6 @@
   <permission>BIKA: Add Attachment</permission>
   <permission>BIKA: Cancel and reinstate</permission>
   <permission>BIKA: Edit AR</permission>
-  <permission>BIKA: Edit AR Contact</permission>
   <permission>BIKA: Edit Field Results</permission>
   <permission>BIKA: Edit Results</permission>
   <permission>BIKA: Manage Invoices</permission>
@@ -26,9 +25,28 @@
   <permission>Modify portal content</permission>
   <permission>View</permission>
 
-  <!-- Field-specific permissions -->
-  <!-- Date Received can only be modified in "sample_received" state -->
-  <permission>Modify Date Received</permission>
+  <!-- Field-specific permissions
+  Are meant to be used for "read_permission" and "write_permission" in fields.
+  If not defined there, "read_permission" defaults to "View" and
+  "write_permission" defaults to "Modify portal content" -->
+  <permission>Field: Edit Batch</permission>
+  <permission>Field: Edit Client</permission>
+  <permission>Field: Edit Contact</permission>
+  <permission>Field: Edit Container</permission>
+  <permission>Field: Edit Date Preserved</permission>
+  <permission>Field: Edit Date Received</permission>
+  <permission>Field: Edit Date Sampled</permission>
+  <permission>Field: Edit Member Discount</permission>
+  <permission>Field: Edit Preservation</permission>
+  <permission>Field: Edit Preserver</permission>
+  <permission>Field: Edit Profiles</permission>
+  <permission>Field: Edit Results Interpretation</permission>
+  <permission>Field: Edit Sample Type</permission>
+  <permission>Field: Edit Sampler</permission>
+  <permission>Field: Edit Sampling Date</permission>
+  <permission>Field: Edit Sampling Round</permission>
+  <permission>Field: Edit Scheduled Sampler</permission>
+  <permission>Field: Edit Template</permission>
 
   <!--
   Client can only reject an AR when is not yet received.
@@ -56,8 +74,7 @@
       <permission-role>Owner</permission-role>
       <permission-role>Sampler</permission-role>
     </permission-map>
-    <permission-map name="BIKA: Cancel and reinstate" acquired="False">
-    </permission-map>
+    <permission-map name="BIKA: Cancel and reinstate" acquired="False"/>
     <permission-map name="BIKA: Edit AR" acquired="False">
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -65,24 +82,14 @@
       <permission-role>Owner</permission-role>
       <permission-role>Sampler</permission-role>
     </permission-map>
-    <permission-map name="BIKA: Edit AR Contact" acquired="False">
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-      <permission-role>Owner</permission-role>
-    </permission-map>
-    <permission-map name="BIKA: Edit Results" acquired="False">
-    </permission-map>
+    <permission-map name="BIKA: Edit Results" acquired="False"/>
     <permission-map name="BIKA: Manage Invoices" acquired="False">
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>
-    <permission-map name="BIKA: Preserve Sample" acquired="False">
-    </permission-map>
-    <permission-map name="BIKA: Schedule Sampling" acquired="False">
-    </permission-map>
-    <permission-map name="BIKA: View Results" acquired="False">
-    </permission-map>
+    <permission-map name="BIKA: Preserve Sample" acquired="False"/>
+    <permission-map name="BIKA: Schedule Sampling" acquired="False"/>
+    <permission-map name="BIKA: View Results" acquired="False"/>
     <permission-map name="Modify portal content" acquired="False">
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -104,14 +111,106 @@
       <permission-role>Verifier</permission-role>
     </permission-map>
 
-    <!-- Field-specific permissions -->
-    <permission-map name="Modify Date Received" acquired="False">
+    <!-- Field-specific permissions
+    NOTE: This field-specific permissions for "sample_registered" apply to
+    Analysis Request Add form! -->
+    <permission-map name="Field: Edit Batch" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Client" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Contact" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Container" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Date Preserved" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Date Received" acquired="False"/>
+    <permission-map name="Field: Edit Date Sampled" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Member Discount" acquired="False"/>
+    <permission-map name="Field: Edit Preservation" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Preserver" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Profiles" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Results Interpretation" acquired="False"/>
+    <permission-map name="Field: Edit Sample Type" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Sampler" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Sampling Round" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Scheduled Sampler" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Sampling Date" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Template" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
     </permission-map>
 
     <!-- Reject Analysis Request -->
     <permission-map name="Reject Analysis Request" acquired="False">
-      <permission-role>Manager</permission-role>
       <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
       <permission-role>LabClerk</permission-role>
       <permission-role>Client</permission-role>
       <permission-role>Owner</permission-role>
@@ -153,27 +252,18 @@
       <permission-role>Sampler</permission-role>
       <permission-role>SamplingCoordinator</permission-role>
     </permission-map>
-    <permission-map name="BIKA: Edit AR Contact" acquired="False">
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-      <permission-role>Owner</permission-role>
-    </permission-map>
     <permission-map name="BIKA: Edit Field Results" acquired="False">
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
       <permission-role>Sampler</permission-role>
     </permission-map>
-    <permission-map name="BIKA: Edit Results" acquired="False">
-    </permission-map>
+    <permission-map name="BIKA: Edit Results" acquired="False"/>
     <permission-map name="BIKA: Manage Invoices" acquired="False">
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>
-    <permission-map name="BIKA: Preserve Sample" acquired="False">
-    </permission-map>
-    <permission-map name="BIKA: Receive Sample" acquired="False">
-    </permission-map>
+    <permission-map name="BIKA: Preserve Sample" acquired="False"/>
+    <permission-map name="BIKA: Receive Sample" acquired="False"/>
     <permission-map name="BIKA: Schedule Sampling" acquired="False">
       <permission-role>Manager</permission-role>
       <permission-role>SamplingCoordinator</permission-role>
@@ -206,13 +296,105 @@
     </permission-map>
 
     <!-- Field-specific permissions -->
-    <permission-map name="Modify Date Received" acquired="False">
+    <permission-map name="Field: Edit Batch" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
     </permission-map>
+    <permission-map name="Field: Edit Client" acquired="False"/>
+    <permission-map name="Field: Edit Contact" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Container" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Date Preserved" acquired="False"/>
+    <permission-map name="Field: Edit Date Received" acquired="False"/>
+    <permission-map name="Field: Edit Date Sampled" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Member Discount" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Preservation" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Preserver</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Preserver" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Preserver</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Profiles" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Results Interpretation" acquired="False"/>
+    <permission-map name="Field: Edit Sample Type" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Sampler" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Sampling Date" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Sampling Round" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Scheduled Sampler" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Template" acquired="False"/>
 
     <!-- Reject Analysis Request -->
     <permission-map name="Reject Analysis Request" acquired="False">
-      <permission-role>Manager</permission-role>
       <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
       <permission-role>LabClerk</permission-role>
       <permission-role>Client</permission-role>
       <permission-role>Owner</permission-role>
@@ -265,25 +447,17 @@
       <permission-role>Sampler</permission-role>
       <permission-role>SamplingCoordinator</permission-role>
     </permission-map>
-    <permission-map name="BIKA: Edit AR Contact" acquired="False">
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-      <permission-role>Owner</permission-role>
-    </permission-map>
     <permission-map name="BIKA: Edit Field Results" acquired="False">
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
       <permission-role>Sampler</permission-role>
     </permission-map>
-    <permission-map name="BIKA: Edit Results" acquired="False">
-    </permission-map>
+    <permission-map name="BIKA: Edit Results" acquired="False"/>
     <permission-map name="BIKA: Manage Invoices" acquired="False">
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>
-    <permission-map name="BIKA: Preserve Sample" acquired="False">
-    </permission-map>
+    <permission-map name="BIKA: Preserve Sample" acquired="False"/>
     <permission-map name="BIKA: Receive Sample" acquired="False">
       <permission-role>SamplingCoordinator</permission-role>
     </permission-map>
@@ -319,13 +493,105 @@
     </permission-map>
 
     <!-- Field-specific permissions -->
-    <permission-map name="Modify Date Received" acquired="False">
+    <permission-map name="Field: Edit Batch" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
     </permission-map>
+    <permission-map name="Field: Edit Client" acquired="False"/>
+    <permission-map name="Field: Edit Contact" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Container" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Date Preserved" acquired="False"/>
+    <permission-map name="Field: Edit Date Received" acquired="False"/>
+    <permission-map name="Field: Edit Date Sampled" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Member Discount" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Preservation" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Preserver</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Preserver" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Preserver</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Profiles" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Results Interpretation" acquired="False"/>
+    <permission-map name="Field: Edit Sample Type" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Sampler" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Sampling Date" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Sampling Round" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Scheduled Sampler" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Template" acquired="False"/>
 
     <!-- Reject Analysis Request -->
     <permission-map name="Reject Analysis Request" acquired="False">
-      <permission-role>Manager</permission-role>
       <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
       <permission-role>LabClerk</permission-role>
       <permission-role>Client</permission-role>
       <permission-role>Owner</permission-role>
@@ -363,32 +629,23 @@
       <permission-role>Manager</permission-role>
       <permission-role>Owner</permission-role>
     </permission-map>
-    <permission-map name="BIKA: Edit AR Contact" acquired="False">
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-      <permission-role>Owner</permission-role>
-    </permission-map>
     <permission-map name="BIKA: Edit Field Results" acquired="False">
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
       <permission-role>Sampler</permission-role>
     </permission-map>
-    <permission-map name="BIKA: Edit Results" acquired="False">
-    </permission-map>
+    <permission-map name="BIKA: Edit Results" acquired="False"/>
     <permission-map name="BIKA: Manage Invoices" acquired="False">
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>
-    <permission-map name="BIKA: Preserve Sample" acquired="False">
-    </permission-map>
+    <permission-map name="BIKA: Preserve Sample" acquired="False"/>
     <permission-map name="BIKA: Receive Sample" acquired="False">
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>
-    <permission-map name="BIKA: Schedule Sampling" acquired="False">
-    </permission-map>
+    <permission-map name="BIKA: Schedule Sampling" acquired="False"/>
     <permission-map name="BIKA: View Results" acquired="False">
       <permission-role>Analyst</permission-role>
       <permission-role>LabClerk</permission-role>
@@ -423,13 +680,50 @@
     </permission-map>
 
     <!-- Field-specific permissions -->
-    <permission-map name="Modify Date Received" acquired="False">
+    <permission-map name="Field: Edit Batch" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
     </permission-map>
+    <permission-map name="Field: Edit Client" acquired="False"/>
+    <permission-map name="Field: Edit Contact" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Container" acquired="False"/>
+    <permission-map name="Field: Edit Date Preserved" acquired="False"/>
+    <permission-map name="Field: Edit Date Received" acquired="False"/>
+    <permission-map name="Field: Edit Date Sampled" acquired="False"/>
+    <permission-map name="Field: Edit Member Discount" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Preservation" acquired="False"/>
+    <permission-map name="Field: Edit Preserver" acquired="False"/>
+    <permission-map name="Field: Edit Profiles" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Results Interpretation" acquired="False"/>
+    <permission-map name="Field: Edit Sample Type" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Sampler" acquired="False"/>
+    <permission-map name="Field: Edit Sampling Date" acquired="False"/>
+    <permission-map name="Field: Edit Sampling Round" acquired="False"/>
+    <permission-map name="Field: Edit Scheduled Sampler" acquired="False"/>
+    <permission-map name="Field: Edit Template" acquired="False"/>
 
     <!-- Reject Analysis Request -->
     <permission-map name="Reject Analysis Request" acquired="False">
-      <permission-role>Manager</permission-role>
       <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
       <permission-role>LabClerk</permission-role>
       <permission-role>Client</permission-role>
       <permission-role>Owner</permission-role>
@@ -465,12 +759,6 @@
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>
-    <permission-map name="BIKA: Edit AR Contact" acquired="False">
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-      <permission-role>Owner</permission-role>
-    </permission-map>
     <permission-map name="BIKA: Edit Field Results" acquired="False">
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
@@ -485,15 +773,13 @@
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>
-    <permission-map name="BIKA: Preserve Sample" acquired="False">
-    </permission-map>
+    <permission-map name="BIKA: Preserve Sample" acquired="False"/>
     <permission-map name="BIKA: Publish" acquired="False">
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
       <permission-role>Publisher</permission-role>
     </permission-map>
-    <permission-map name="BIKA: Schedule Sampling" acquired="False">
-    </permission-map>
+    <permission-map name="BIKA: Schedule Sampling" acquired="False"/>
     <permission-map name="BIKA: View Results" acquired="False">
       <permission-role>Analyst</permission-role>
       <permission-role>LabClerk</permission-role>
@@ -527,16 +813,54 @@
     </permission-map>
 
     <!-- Field-specific permissions -->
-    <permission-map name="Modify Date Received" acquired="False">
+    <permission-map name="Field: Edit Batch" acquired="False">
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>
+    <permission-map name="Field: Edit Client" acquired="False"/>
+    <permission-map name="Field: Edit Contact" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Container" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Date Preserved" acquired="False"/>
+    <permission-map name="Field: Edit Date Received" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Date Sampled" acquired="False"/>
+    <permission-map name="Field: Edit Member Discount" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Preservation" acquired="False"/>
+    <permission-map name="Field: Edit Preserver" acquired="False"/>
+    <permission-map name="Field: Edit Profiles" acquired="False"/>
+    <permission-map name="Field: Edit Results Interpretation" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Sample Type" acquired="False"/>
+    <permission-map name="Field: Edit Sampler" acquired="False"/>
+    <permission-map name="Field: Edit Sampling Date" acquired="False"/>
+    <permission-map name="Field: Edit Sampling Round" acquired="False"/>
+    <permission-map name="Field: Edit Scheduled Sampler" acquired="False"/>
+    <permission-map name="Field: Edit Template" acquired="False"/>
 
     <!-- Reject Analysis Request -->
     <permission-map name="Reject Analysis Request" acquired="False">
-      <permission-role>Manager</permission-role>
       <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
       <permission-role>LabClerk</permission-role>
     </permission-map>
   </state>
@@ -556,18 +880,11 @@
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>
-    <permission-map name="BIKA: Cancel and reinstate" acquired="False">
-    </permission-map>
+    <permission-map name="BIKA: Cancel and reinstate" acquired="False"/>
     <permission-map name="BIKA: Edit AR" acquired="False">
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
-    </permission-map>
-    <permission-map name="BIKA: Edit AR Contact" acquired="False">
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-      <permission-role>Owner</permission-role>
     </permission-map>
     <permission-map name="BIKA: Edit Results" acquired="False">
       <permission-role>Analyst</permission-role>
@@ -578,15 +895,13 @@
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>
-    <permission-map name="BIKA: Preserve Sample" acquired="False">
-    </permission-map>
+    <permission-map name="BIKA: Preserve Sample" acquired="False"/>
     <permission-map name="BIKA: Publish" acquired="False">
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
       <permission-role>Publisher</permission-role>
     </permission-map>
-    <permission-map name="BIKA: Schedule Sampling" acquired="False">
-    </permission-map>
+    <permission-map name="BIKA: Schedule Sampling" acquired="False"/>
     <permission-map name="BIKA: View Results" acquired="False">
       <permission-role>Analyst</permission-role>
       <permission-role>LabClerk</permission-role>
@@ -620,13 +935,45 @@
     </permission-map>
 
     <!-- Field-specific permissions -->
-    <permission-map name="Modify Date Received" acquired="False">
+    <permission-map name="Field: Edit Batch" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
     </permission-map>
+    <permission-map name="Field: Edit Client" acquired="False"/>
+    <permission-map name="Field: Edit Contact" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Container" acquired="False"/>
+    <permission-map name="Field: Edit Date Preserved" acquired="False"/>
+    <permission-map name="Field: Edit Date Received" acquired="False"/>
+    <permission-map name="Field: Edit Date Sampled" acquired="False"/>
+    <permission-map name="Field: Edit Member Discount" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Preservation" acquired="False"/>
+    <permission-map name="Field: Edit Preserver" acquired="False"/>
+    <permission-map name="Field: Edit Profiles" acquired="False"/>
+    <permission-map name="Field: Edit Results Interpretation" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Sample Type" acquired="False"/>
+    <permission-map name="Field: Edit Sampler" acquired="False"/>
+    <permission-map name="Field: Edit Sampling Date" acquired="False"/>
+    <permission-map name="Field: Edit Sampling Round" acquired="False"/>
+    <permission-map name="Field: Edit Scheduled Sampler" acquired="False"/>
+    <permission-map name="Field: Edit Template" acquired="False"/>
 
     <!-- Reject Analysis Request -->
     <permission-map name="Reject Analysis Request" acquired="False">
-      <permission-role>Manager</permission-role>
       <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
     </permission-map>
   </state>
 
@@ -660,19 +1007,12 @@
       <permission-role>Owner</permission-role>
       <permission-role>Preserver</permission-role>
     </permission-map>
-    <permission-map name="BIKA: Edit AR Contact" acquired="False">
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-      <permission-role>Owner</permission-role>
-    </permission-map>
     <permission-map name="BIKA: Edit Field Results" acquired="False">
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
       <permission-role>Sampler</permission-role>
     </permission-map>
-    <permission-map name="BIKA: Edit Results" acquired="False">
-    </permission-map>
+    <permission-map name="BIKA: Edit Results" acquired="False"/>
     <permission-map name="BIKA: Manage Invoices" acquired="False">
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
@@ -682,10 +1022,8 @@
       <permission-role>Manager</permission-role>
       <permission-role>Preserver</permission-role>
     </permission-map>
-    <permission-map name="BIKA: Receive Sample" acquired="False">
-    </permission-map>
-    <permission-map name="BIKA: Schedule Sampling" acquired="False">
-    </permission-map>
+    <permission-map name="BIKA: Receive Sample" acquired="False"/>
+    <permission-map name="BIKA: Schedule Sampling" acquired="False"/>
     <permission-map name="BIKA: View Results" acquired="False">
       <permission-role>Analyst</permission-role>
       <permission-role>LabClerk</permission-role>
@@ -719,13 +1057,65 @@
     </permission-map>
 
     <!-- Field-specific permissions -->
-    <permission-map name="Modify Date Received" acquired="False">
+    <permission-map name="Field: Edit Batch" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
     </permission-map>
+    <permission-map name="Field: Edit Client" acquired="False"/>
+    <permission-map name="Field: Edit Contact" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Container" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Preserver</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Date Preserved" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Preserver</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Date Received" acquired="False"/>
+    <permission-map name="Field: Edit Date Sampled" acquired="False"/>
+    <permission-map name="Field: Edit Member Discount" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Preservation" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Preserver</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Preserver" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Preserver</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Profiles" acquired="False"/>
+    <permission-map name="Field: Edit Results Interpretation" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Sample Type" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Preserver</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Sampler" acquired="False"/>
+    <permission-map name="Field: Edit Sampling Date" acquired="False"/>
+    <permission-map name="Field: Edit Sampling Round" acquired="False"/>
+    <permission-map name="Field: Edit Scheduled Sampler" acquired="False"/>
+    <permission-map name="Field: Edit Template" acquired="False"/>
 
     <!-- Reject Analysis Request -->
     <permission-map name="Reject Analysis Request" acquired="False">
-      <permission-role>Manager</permission-role>
       <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
       <permission-role>LabClerk</permission-role>
       <permission-role>Client</permission-role>
       <permission-role>Owner</permission-role>
@@ -746,12 +1136,8 @@
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>
-    <permission-map name="BIKA: Cancel and reinstate" acquired="False">
-    </permission-map>
+    <permission-map name="BIKA: Cancel and reinstate" acquired="False"/>
     <permission-map name="BIKA: Edit AR" acquired="False">
-      <permission-role>Manager</permission-role>
-    </permission-map>
-    <permission-map name="BIKA: Edit AR Contact" acquired="False">
       <permission-role>Manager</permission-role>
     </permission-map>
     <permission-map name="BIKA: Edit Results" acquired="False">
@@ -763,15 +1149,13 @@
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>
-    <permission-map name="BIKA: Preserve Sample" acquired="False">
-    </permission-map>
+    <permission-map name="BIKA: Preserve Sample" acquired="False"/>
     <permission-map name="BIKA: Publish" acquired="False">
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
       <permission-role>Publisher</permission-role>
     </permission-map>
-    <permission-map name="BIKA: Schedule Sampling" acquired="False">
-    </permission-map>
+    <permission-map name="BIKA: Schedule Sampling" acquired="False"/>
     <permission-map name="BIKA: Verify" acquired="False">
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
@@ -812,13 +1196,43 @@
     </permission-map>
 
     <!-- Field-specific permissions -->
-    <permission-map name="Modify Date Received" acquired="False">
+    <permission-map name="Field: Edit Batch" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
     </permission-map>
+    <permission-map name="Field: Edit Client" acquired="False"/>
+    <permission-map name="Field: Edit Contact" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Container" acquired="False"/>
+    <permission-map name="Field: Edit Date Preserved" acquired="False"/>
+    <permission-map name="Field: Edit Date Received" acquired="False"/>
+    <permission-map name="Field: Edit Date Sampled" acquired="False"/>
+    <permission-map name="Field: Edit Member Discount" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Preservation" acquired="False"/>
+    <permission-map name="Field: Edit Preserver" acquired="False"/>
+    <permission-map name="Field: Edit Profiles" acquired="False"/>
+    <permission-map name="Field: Edit Results Interpretation" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Sample Type" acquired="False"/>
+    <permission-map name="Field: Edit Sampler" acquired="False"/>
+    <permission-map name="Field: Edit Sampling Date" acquired="False"/>
+    <permission-map name="Field: Edit Sampling Round" acquired="False"/>
+    <permission-map name="Field: Edit Scheduled Sampler" acquired="False"/>
+    <permission-map name="Field: Edit Template" acquired="False"/>
 
     <!-- Reject Analysis Request -->
     <permission-map name="Reject Analysis Request" acquired="False">
-      <permission-role>Manager</permission-role>
       <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
     </permission-map>
   </state>
 
@@ -826,33 +1240,25 @@
     <exit-transition transition_id="publish" />
     <exit-transition transition_id="invalidate" />
     <exit-transition transition_id="rollback_to_receive" />
-    <permission-map name="BIKA: Add Analysis" acquired="False">
-    </permission-map>
+    <permission-map name="BIKA: Add Analysis" acquired="False"/>
     <permission-map name="BIKA: Add Attachment" acquired="False">
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>
-    <permission-map name="BIKA: Cancel and reinstate" acquired="False">
-    </permission-map>
-    <permission-map name="BIKA: Edit AR" acquired="False">
-    </permission-map>
-    <permission-map name="BIKA: Edit AR Contact" acquired="False">
-    </permission-map>
-    <permission-map name="BIKA: Edit Results" acquired="False">
-    </permission-map>
+    <permission-map name="BIKA: Cancel and reinstate" acquired="False"/>
+    <permission-map name="BIKA: Edit AR" acquired="False"/>
+    <permission-map name="BIKA: Edit Results" acquired="False"/>
     <permission-map name="BIKA: Manage Invoices" acquired="False">
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>
-    <permission-map name="BIKA: Preserve Sample" acquired="False">
-    </permission-map>
+    <permission-map name="BIKA: Preserve Sample" acquired="False"/>
     <permission-map name="BIKA: Publish" acquired="False">
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
       <permission-role>Publisher</permission-role>
     </permission-map>
-    <permission-map name="BIKA: Schedule Sampling" acquired="False">
-    </permission-map>
+    <permission-map name="BIKA: Schedule Sampling" acquired="False"/>
     <permission-map name="BIKA: View Results" acquired="False">
       <permission-role>Analyst</permission-role>
       <permission-role>Client</permission-role>
@@ -887,31 +1293,46 @@
     </permission-map>
 
     <!-- Field-specific permissions -->
-    <permission-map name="Modify Date Received" acquired="False">
+    <permission-map name="Field: Edit Batch" acquired="False"/>
+    <permission-map name="Field: Edit Client" acquired="False"/>
+    <permission-map name="Field: Edit Contact" acquired="False"/>
+    <permission-map name="Field: Edit Container" acquired="False"/>
+    <permission-map name="Field: Edit Date Preserved" acquired="False"/>
+    <permission-map name="Field: Edit Date Received" acquired="False"/>
+    <permission-map name="Field: Edit Date Sampled" acquired="False"/>
+    <permission-map name="Field: Edit Member Discount" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
     </permission-map>
+    <permission-map name="Field: Edit Preservation" acquired="False"/>
+    <permission-map name="Field: Edit Preserver" acquired="False"/>
+    <permission-map name="Field: Edit Profiles" acquired="False"/>
+    <permission-map name="Field: Edit Results Interpretation" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Sample Type" acquired="False"/>
+    <permission-map name="Field: Edit Sampler" acquired="False"/>
+    <permission-map name="Field: Edit Sampling Date" acquired="False"/>
+    <permission-map name="Field: Edit Sampling Round" acquired="False"/>
+    <permission-map name="Field: Edit Scheduled Sampler" acquired="False"/>
+    <permission-map name="Field: Edit Template" acquired="False"/>
   </state>
 
   <state state_id="published" title="Published" i18n:attributes="title">
     <exit-transition transition_id="republish"/>
     <exit-transition transition_id="invalidate"/>
-    <permission-map name="BIKA: Add Analysis" acquired="False">
-    </permission-map>
-    <permission-map name="BIKA: Cancel and reinstate" acquired="False">
-    </permission-map>
-    <permission-map name="BIKA: Edit AR" acquired="False">
-    </permission-map>
-    <permission-map name="BIKA: Edit AR Contact" acquired="False">
-    </permission-map>
-    <permission-map name="BIKA: Edit Results" acquired="False">
-    </permission-map>
+    <permission-map name="BIKA: Add Analysis" acquired="False"/>
+    <permission-map name="BIKA: Cancel and reinstate" acquired="False"/>
+    <permission-map name="BIKA: Edit AR" acquired="False"/>
+    <permission-map name="BIKA: Edit Results" acquired="False"/>
     <permission-map name="BIKA: Manage Invoices" acquired="False">
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>
-    <permission-map name="BIKA: Preserve Sample" acquired="False">
-    </permission-map>
-    <permission-map name="BIKA: Schedule Sampling" acquired="False">
-    </permission-map>
+    <permission-map name="BIKA: Preserve Sample" acquired="False"/>
+    <permission-map name="BIKA: Schedule Sampling" acquired="False"/>
     <permission-map name="BIKA: View Results" acquired="False">
       <permission-role>Analyst</permission-role>
       <permission-role>Client</permission-role>
@@ -945,38 +1366,46 @@
     </permission-map>
 
     <!-- Field-specific permissions -->
-    <permission-map name="Modify Date Received" acquired="False">
+    <permission-map name="Field: Edit Batch" acquired="False"/>
+    <permission-map name="Field: Edit Client" acquired="False"/>
+    <permission-map name="Field: Edit Contact" acquired="False"/>
+    <permission-map name="Field: Edit Container" acquired="False"/>
+    <permission-map name="Field: Edit Date Preserved" acquired="False"/>
+    <permission-map name="Field: Edit Date Received" acquired="False"/>
+    <permission-map name="Field: Edit Date Sampled" acquired="False"/>
+    <permission-map name="Field: Edit Member Discount" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
     </permission-map>
+    <permission-map name="Field: Edit Preservation" acquired="False"/>
+    <permission-map name="Field: Edit Preserver" acquired="False"/>
+    <permission-map name="Field: Edit Profiles" acquired="False"/>
+    <permission-map name="Field: Edit Results Interpretation" acquired="False"/>
+    <permission-map name="Field: Edit Sample Type" acquired="False"/>
+    <permission-map name="Field: Edit Sampler" acquired="False"/>
+    <permission-map name="Field: Edit Sampling Date" acquired="False"/>
+    <permission-map name="Field: Edit Sampling Round" acquired="False"/>
+    <permission-map name="Field: Edit Scheduled Sampler" acquired="False"/>
+    <permission-map name="Field: Edit Template" acquired="False"/>
   </state>
 
   <state state_id="rejected" title="Rejected" i18n:attributes="title">
     <exit-transition transition_id="" />
-    <permission-map name="BIKA: Add Analysis" acquired="False">
-    </permission-map>
-    <permission-map name="BIKA: Add Attachment" acquired="False">
-    </permission-map>
-    <permission-map name="BIKA: Cancel and reinstate" acquired="False">
-    </permission-map>
-    <permission-map name="BIKA: Edit AR" acquired="False">
-    </permission-map>
-    <permission-map name="BIKA: Edit AR Contact" acquired="False">
-    </permission-map>
-    <permission-map name="BIKA: Edit Results" acquired="False">
-    </permission-map>
-    <permission-map name="BIKA: Manage Invoices" acquired="False">
-    </permission-map>
-    <permission-map name="BIKA: Preserve Sample" acquired="False">
-    </permission-map>
-    <permission-map name="BIKA: Publish" acquired="False">
-    </permission-map>
-    <permission-map name="BIKA: Schedule Sampling" acquired="False">
-    </permission-map>
+    <permission-map name="BIKA: Add Analysis" acquired="False"/>
+    <permission-map name="BIKA: Add Attachment" acquired="False"/>
+    <permission-map name="BIKA: Cancel and reinstate" acquired="False"/>
+    <permission-map name="BIKA: Edit AR" acquired="False"/>
+    <permission-map name="BIKA: Edit Results" acquired="False"/>
+    <permission-map name="BIKA: Manage Invoices" acquired="False"/>
+    <permission-map name="BIKA: Preserve Sample" acquired="False"/>
+    <permission-map name="BIKA: Publish" acquired="False"/>
+    <permission-map name="BIKA: Schedule Sampling" acquired="False"/>
     <permission-map name="BIKA: View Results" acquired="False">
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>
-    <permission-map name="Modify portal content" acquired="False">
-    </permission-map>
+    <permission-map name="Modify portal content" acquired="False"/>
     <permission-map name="View" acquired="False">
       <permission-role>Client</permission-role>
       <permission-role>LabClerk</permission-role>
@@ -987,28 +1416,35 @@
     </permission-map>
 
     <!-- Field-specific permissions -->
-    <permission-map name="Modify Date Received" acquired="False">
-    </permission-map>
+    <permission-map name="Field: Edit Batch" acquired="False"/>
+    <permission-map name="Field: Edit Client" acquired="False"/>
+    <permission-map name="Field: Edit Contact" acquired="False"/>
+    <permission-map name="Field: Edit Container" acquired="False"/>
+    <permission-map name="Field: Edit Date Preserved" acquired="False"/>
+    <permission-map name="Field: Edit Date Received" acquired="False"/>
+    <permission-map name="Field: Edit Date Sampled" acquired="False"/>
+    <permission-map name="Field: Edit Member Discount" acquired="False"/>
+    <permission-map name="Field: Edit Preservation" acquired="False"/>
+    <permission-map name="Field: Edit Preserver" acquired="False"/>
+    <permission-map name="Field: Edit Profiles" acquired="False"/>
+    <permission-map name="Field: Edit Results Interpretation" acquired="False"/>
+    <permission-map name="Field: Edit Sample Type" acquired="False"/>
+    <permission-map name="Field: Edit Sampler" acquired="False"/>
+    <permission-map name="Field: Edit Sampling Date" acquired="False"/>
+    <permission-map name="Field: Edit Sampling Round" acquired="False"/>
+    <permission-map name="Field: Edit Scheduled Sampler" acquired="False"/>
+    <permission-map name="Field: Edit Template" acquired="False"/>
   </state>
 
   <state state_id="invalid" title="Invalid" i18n:attributes="title">
     <exit-transition transition_id=""/>
-    <permission-map name="BIKA: Add Analysis" acquired="False">
-    </permission-map>
-    <permission-map name="BIKA: Cancel and reinstate" acquired="False">
-    </permission-map>
-    <permission-map name="BIKA: Edit AR" acquired="False">
-    </permission-map>
-    <permission-map name="BIKA: Edit AR Contact" acquired="False">
-    </permission-map>
-    <permission-map name="BIKA: Edit Results" acquired="False">
-    </permission-map>
-    <permission-map name="BIKA: Manage Invoices" acquired="False">
-    </permission-map>
-    <permission-map name="BIKA: Preserve Sample" acquired="False">
-    </permission-map>
-    <permission-map name="BIKA: Schedule Sampling" acquired="False">
-    </permission-map>
+    <permission-map name="BIKA: Add Analysis" acquired="False"/>
+    <permission-map name="BIKA: Cancel and reinstate" acquired="False"/>
+    <permission-map name="BIKA: Edit AR" acquired="False"/>
+    <permission-map name="BIKA: Edit Results" acquired="False"/>
+    <permission-map name="BIKA: Manage Invoices" acquired="False"/>
+    <permission-map name="BIKA: Preserve Sample" acquired="False"/>
+    <permission-map name="BIKA: Schedule Sampling" acquired="False"/>
     <permission-map name="BIKA: View Results" acquired="False">
       <permission-role>Analyst</permission-role>
       <permission-role>LabClerk</permission-role>
@@ -1035,8 +1471,24 @@
     </permission-map>
 
     <!-- Field-specific permissions -->
-    <permission-map name="Modify Date Received" acquired="False">
-    </permission-map>
+    <permission-map name="Field: Edit Batch" acquired="False"/>
+    <permission-map name="Field: Edit Client" acquired="False"/>
+    <permission-map name="Field: Edit Contact" acquired="False"/>
+    <permission-map name="Field: Edit Container" acquired="False"/>
+    <permission-map name="Field: Edit Date Preserved" acquired="False"/>
+    <permission-map name="Field: Edit Date Received" acquired="False"/>
+    <permission-map name="Field: Edit Date Sampled" acquired="False"/>
+    <permission-map name="Field: Edit Member Discount" acquired="False"/>
+    <permission-map name="Field: Edit Preservation" acquired="False"/>
+    <permission-map name="Field: Edit Preserver" acquired="False"/>
+    <permission-map name="Field: Edit Profiles" acquired="False"/>
+    <permission-map name="Field: Edit Results Interpretation" acquired="False"/>
+    <permission-map name="Field: Edit Sample Type" acquired="False"/>
+    <permission-map name="Field: Edit Sampler" acquired="False"/>
+    <permission-map name="Field: Edit Sampling Date" acquired="False"/>
+    <permission-map name="Field: Edit Sampling Round" acquired="False"/>
+    <permission-map name="Field: Edit Scheduled Sampler" acquired="False"/>
+    <permission-map name="Field: Edit Template" acquired="False"/>
   </state>
 
   <!-- State: cancelled
@@ -1047,26 +1499,17 @@
   results have been submitted yet. -->
   <state state_id="cancelled" title="Cancelled" i18n:attributes="title">
     <exit-transition transition_id="reinstate" />
-    <permission-map name="Modify portal content" acquired="False">
-    </permission-map>
-    <permission-map name="Reject Analysis Request" acquired="False">
-    </permission-map>
-    <permission-map name="BIKA: Add Analysis" acquired="False">
-    </permission-map>
-    <permission-map name="BIKA: Add Attachment" acquired="False">
-    </permission-map>
+    <permission-map name="Modify portal content" acquired="False"/>
+    <permission-map name="Reject Analysis Request" acquired="False"/>
+    <permission-map name="BIKA: Add Analysis" acquired="False"/>
+    <permission-map name="BIKA: Add Attachment" acquired="False"/>
     <permission-map name="BIKA: Cancel and reinstate" acquired="False">
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>
-    <permission-map name="BIKA: Edit AR" acquired="False">
-    </permission-map>
-    <permission-map name="BIKA: Edit AR Contact" acquired="False">
-    </permission-map>
-    <permission-map name="BIKA: Edit Field Results" acquired="False">
-    </permission-map>
-    <permission-map name="BIKA: Edit Results" acquired="False">
-    </permission-map>
+    <permission-map name="BIKA: Edit AR" acquired="False"/>
+    <permission-map name="BIKA: Edit Field Results" acquired="False"/>
+    <permission-map name="BIKA: Edit Results" acquired="False"/>
     <permission-map name="BIKA: View Results" acquired="False">
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
@@ -1079,8 +1522,24 @@
     </permission-map>
 
     <!-- Field-specific permissions -->
-    <permission-map name="Modify Date Received" acquired="False">
-    </permission-map>
+    <permission-map name="Field: Edit Batch" acquired="False"/>
+    <permission-map name="Field: Edit Client" acquired="False"/>
+    <permission-map name="Field: Edit Contact" acquired="False"/>
+    <permission-map name="Field: Edit Container" acquired="False"/>
+    <permission-map name="Field: Edit Date Preserved" acquired="False"/>
+    <permission-map name="Field: Edit Date Received" acquired="False"/>
+    <permission-map name="Field: Edit Date Sampled" acquired="False"/>
+    <permission-map name="Field: Edit Member Discount" acquired="False"/>
+    <permission-map name="Field: Edit Preservation" acquired="False"/>
+    <permission-map name="Field: Edit Preserver" acquired="False"/>
+    <permission-map name="Field: Edit Profiles" acquired="False"/>
+    <permission-map name="Field: Edit Results Interpretation" acquired="False"/>
+    <permission-map name="Field: Edit Sample Type" acquired="False"/>
+    <permission-map name="Field: Edit Sampler" acquired="False"/>
+    <permission-map name="Field: Edit Sampling Date" acquired="False"/>
+    <permission-map name="Field: Edit Sampling Round" acquired="False"/>
+    <permission-map name="Field: Edit Scheduled Sampler" acquired="False"/>
+    <permission-map name="Field: Edit Template" acquired="False"/>
   </state>
 
 

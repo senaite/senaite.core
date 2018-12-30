@@ -780,29 +780,14 @@ def get_rm_candidates_for_ar_workflow(portal):
     logger.info("Getting candidates for role mappings: {} ...".format(wf_id))
     workflow = get_workflow_by_id(portal, wf_id)
     candidates = list()
-
-    # Analysis Request workflow: rollback_to_receive
-    if "rollback_to_receive" not in workflow.transitions:
+    if "Field: Edit Priority" not in workflow.states.verified.permissions:
+        # Since we've introduced field-specific permissions in ar_workflow, there
+        # is no choice: we are forced to do a role mappings for all ARs :(
         candidates.append(
             (wf_id,
-             dict(portal_type="AnalysisRequest",
-                  review_state=["to_be_verified"]),
+             dict(portal_type="AnalysisRequest"),
              CATALOG_ANALYSIS_REQUEST_LISTING))
 
-    # Analysis Request workflow: cancel permissions - do not allow cancel
-    # transition from attachment_due and to_be_verified states
-    candidates.append(
-        (wf_id,
-        dict(portal_type="AnalysisRequest",
-             review_state=["attachment_due", "to_be_verified"]),
-             CATALOG_ANALYSIS_REQUEST_LISTING))
-
-    # To ensure the rollback_to_receive is possible from a verified state
-    candidates.append(
-        (wf_id,
-         dict(portal_type="AnalysisRequest",
-              review_state=["verified"]),
-         CATALOG_ANALYSIS_REQUEST_LISTING))
     return candidates
 
 
