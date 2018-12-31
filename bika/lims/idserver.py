@@ -6,56 +6,20 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 import re
-import urllib
 
 import transaction
-import zLOG
-from DateTime import DateTime
-from Products.ATContentTypes.utils import DT2dt
 from bika.lims import api
-from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
-from bika.lims.alphanumber import to_alpha, Alphanumber
-from bika.lims.browser.fields.uidreferencefield \
-    import get_backreferences as get_backuidreferences
+from bika.lims.alphanumber import Alphanumber
+from bika.lims.alphanumber import to_alpha
+from bika.lims.browser.fields.uidreferencefield import \
+    get_backreferences as get_backuidreferences
 from bika.lims.interfaces import IIdServer
 from bika.lims.numbergenerator import INumberGenerator
+from DateTime import DateTime
+from Products.ATContentTypes.utils import DT2dt
 from zope.component import getAdapters
 from zope.component import getUtility
-
-
-class IDServerUnavailable(Exception):
-    pass
-
-
-def idserver_generate_id(context, prefix, batch_size=None):
-    """ Generate a new id using external ID server.
-    """
-    plone = context.portal_url.getPortalObject()
-    url = api.get_bika_setup().getIDServerURL()
-
-    try:
-        if batch_size:
-            # GET
-            f = urllib.urlopen('%s/%s/%s?%s' % (
-                url,
-                plone.getId(),
-                prefix,
-                urllib.urlencode({'batch_size': batch_size}))
-            )
-        else:
-            f = urllib.urlopen('%s/%s/%s' % (url, plone.getId(), prefix))
-        new_id = f.read()
-        f.close()
-    except:
-        from sys import exc_info
-        info = exc_info()
-        msg = 'generate_id raised exception: {}, {} \n ID server URL: {}'
-        msg = msg.format(info[0], info[1], url)
-        zLOG.LOG('INFO', 0, '', msg)
-        raise IDServerUnavailable(_('ID Server unavailable'))
-
-    return new_id
 
 
 def get_objects_in_sequence(brain_or_object, ctype, cref):
@@ -82,6 +46,7 @@ def get_backreferences(obj, relationship):
         refs = obj.getBackReferences(relationship)
 
     return refs
+
 
 def get_contained_items(obj, spec):
     """Returns a list of (id, subobject) tuples of the current context.
@@ -372,7 +337,7 @@ def generateUniqueId(context, **kw):
     except KeyError, e:
         logger.error('KeyError: {} not in id_template {}'.format(
             e, id_template))
-        raise 
+        raise
     normalized_id = api.normalize_filename(new_id)
     logger.info("generateUniqueId: {}".format(normalized_id))
 
