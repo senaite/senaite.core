@@ -117,9 +117,6 @@ ManageLoginDetails = 'BIKA: Manage Login Details'
 Assign = 'BIKA: Assign analyses'
 Unassign = 'BIKA: Unassign analyses'
 
-# Field permissions
-EditARContact = "BIKA: Edit AR Contact"
-
 ViewLogTab = 'BIKA: View Log Tab'
 
 # Edit AR

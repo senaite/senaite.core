@@ -24,6 +24,7 @@ PARTITION_SKIP_FIELDS = [
     "RejectionReasons",
     "Remarks",
     "ResultsInterpretation",
+    "ResultsInterpretationDepts",
     "Sample",
     "SampleType",
     "Template",

@@ -131,7 +131,7 @@ For this we need an AR with more than one Analysis:
 
     .. code ::
 
-    >>> from bika.lims.adapters.widgetvisibility import SampleDateReceived
+    >>> from bika.lims.adapters.widgetvisibility import DateReceivedFieldVisibility
     >>> from bika.lims.workflow import doActionFor
 
     >>> as2 = api.create(bika_analysisservices, 'AnalysisService', title='Another Type Of Analysis', ShortTitle='Another', Category=analysiscategory, Keyword='AN')
@@ -141,8 +141,9 @@ In states earlier than `sample_received` the DateReceived field is uneditable:
 
     .. code ::
 
-    >>> SampleDateReceived(ar1)(ar1, 'edit', ar1.schema['DateReceived'], 'default')
-    'invisible'
+    >>> field = ar1.getField("DateReceived")
+    >>> field.checkPermission("edit", ar1) and True or False
+    False
 
 In the `sample_received` state however, it is possible to modify the field.  In this case
 the SampleDateReceived adapter also simply passes the schema default unmolested.
@@ -150,8 +151,9 @@ the SampleDateReceived adapter also simply passes the schema default unmolested.
     .. code ::
 
     >>> p = api.do_transition_for(ar1, 'receive')
-    >>> SampleDateReceived(ar1)(ar1, 'edit', ar1.schema['DateReceived'], 'default')
-    'default'
+    >>> field = ar1.getField("DateReceived")
+    >>> field.checkPermission("edit", ar1) and True or False
+    True
 
 After any analysis has been submitted, the field is no longer editable.  The adapter
 sets the widget.visible to 'invisible'.
@@ -161,5 +163,5 @@ sets the widget.visible to 'invisible'.
     >>> an = ar1.getAnalyses(full_objects=True)[0]
     >>> an.setResult('1')
     >>> p = doActionFor(an, 'submit')
-    >>> SampleDateReceived(ar1)(ar1, 'edit', ar1.schema['DateReceived'], 'default')
+    >>> DateReceivedFieldVisibility(ar1)(ar1, 'edit', ar1.schema['DateReceived'], 'default')
     'invisible'

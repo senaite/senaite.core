@@ -7,12 +7,14 @@
 
 from AccessControl import getSecurityManager
 from AccessControl.Permissions import view
+from Products.CMFCore.permissions import ModifyPortalContent
+from Products.CMFPlone import PloneMessageFactory as _p
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
+from bika.lims import logger
 from bika.lims.browser import BrowserView
 from bika.lims.interfaces import IHeaderTableFieldRenderer
 from bika.lims.utils import t
-from Products.CMFPlone import PloneMessageFactory as _p
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.component import getAdapter
 from zope.component.interfaces import ComponentLookupError
 
@@ -64,6 +66,7 @@ class HeaderTableView(BrowserView):
                 final.append(column)
         return final
 
+    # TODO Revisit this
     def render_field_view(self, field):
         fieldname = field.getName()
         field = self.context.Schema()[fieldname]
@@ -140,34 +143,63 @@ class HeaderTableView(BrowserView):
                 }
         return ret
 
-    def sublists(self):
-        ret = []
-        prominent = []
-        context = self.context
+    def get_field_visibility_mode(self, field):
+        """Returns "view" or "edit" modes, together with the place within where
+        this field has to be rendered, based on the permissions the current
+        user has for the context and the field passed in
+        """
+        fallback_mode = ("hidden", "hidden")
+        widget = field.widget
 
-        for field in context.Schema().fields():
-            fieldname = field.getName()
-            widget = field.widget
-            state = widget.isVisible(
-                context, "header_table", default="invisible", field=field)
-            if state == "invisible":
+        # TODO This needs to be done differently
+        # Check where the field has to be located
+        layout = widget.isVisible(self.context, "header_table")
+        if layout in ["invisible", "hidden"]:
+            return fallback_mode
+
+        # Check permissions. We want to display field (either in view or edit
+        # modes) only if the current user has enough privileges.
+        if field.checkPermission("edit", self.context):
+            mode = "edit"
+            sm = getSecurityManager()
+            if not sm.checkPermission(ModifyPortalContent, self.context):
+                logger.warn("Permission '{}' granted for the edition of '{}', "
+                            "but 'Modify portal content' not granted"
+                            .format(field.write_permission, field.getName()))
+        elif field.checkPermission("view", self.context):
+            mode = "view"
+        else:
+            return fallback_mode
+
+        # Check if the field needs to be displayed or not, even if the user has
+        # the permissions for edit or view. This may depend on criteria other
+        # than permissions (e.g. visibility depending on a setup setting, etc.)
+        if widget.isVisible(self.context, mode, field=field) != "visible":
+            if mode == "view":
+                return fallback_mode
+            # The field cannot be rendered in edit mode, but maybe can be
+            # rendered in view mode.
+            mode = "view"
+            if widget.isVisible(self.context, mode, field=field) != "visible":
+                return fallback_mode
+        return (mode, layout)
+
+    def get_fields_grouped_by_location(self):
+        standard = []
+        prominent = []
+        for field in self.context.Schema().fields():
+            mode, layout = self.get_field_visibility_mode(field)
+            if mode == "hidden":
+                # Do not render this field
                 continue
-            elif state == "prominent":
-                if widget.isVisible(
-                        context,
-                        "edit", default="invisible", field=field) == "visible":
-                    prominent.append({"fieldName": fieldname, "mode": "edit"})
-                elif widget.isVisible(
-                        context,
-                        "view", default="invisible", field=field) == "visible":
-                    prominent.append(self.render_field_view(field))
-            elif state == "visible":
-                if widget.isVisible(
-                        context,
-                        "edit", default="invisible", field=field) == "visible":
-                    ret.append({"fieldName": fieldname, "mode": "edit"})
-                elif widget.isVisible(
-                        context,
-                        "view", default="invisible", field=field) == "visible":
-                    ret.append(self.render_field_view(field))
-        return prominent, self.three_column_list(ret)
+            field_mapping = {"fieldName": field.getName(), "mode": mode}
+            if mode == "view":
+                # Special formatting (e.g. links, etc.)
+                field_mapping = self.render_field_view(field)
+            if layout == "prominent":
+                # Add the field at the top of the fields table
+                prominent.append(field_mapping)
+            else:
+                # Add the field at standard location
+                standard.append(field_mapping)
+        return prominent, self.three_column_list(standard)
