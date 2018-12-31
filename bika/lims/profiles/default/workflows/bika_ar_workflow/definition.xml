@@ -40,6 +40,7 @@
   <permission>Field: Edit Preservation</permission>
   <permission>Field: Edit Preserver</permission>
   <permission>Field: Edit Profiles</permission>
+  <permission>Field: Edit Publication Specification</permission>
   <permission>Field: Edit Rejection Reasons</permission>
   <permission>Field: Edit Results Interpretation</permission>
   <permission>Field: Edit Sample Type</permission>
@@ -171,6 +172,7 @@
       <permission-role>Manager</permission-role>
       <permission-role>Owner</permission-role>
     </permission-map>
+    <permission-map name="Field: Edit Publication Specification" acquired="False"/>
     <permission-map name="Field: Edit Rejection Reasons" acquired="False">
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -366,6 +368,7 @@
       <permission-role>Manager</permission-role>
       <permission-role>Owner</permission-role>
     </permission-map>
+    <permission-map name="Field: Edit Publication Specification" acquired="False"/>
     <permission-map name="Field: Edit Rejection Reasons" acquired="False">
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -575,6 +578,7 @@
       <permission-role>Manager</permission-role>
       <permission-role>Owner</permission-role>
     </permission-map>
+    <permission-map name="Field: Edit Publication Specification" acquired="False"/>
     <permission-map name="Field: Edit Rejection Reasons" acquired="False">
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -752,6 +756,7 @@
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>
+    <permission-map name="Field: Edit Publication Specification" acquired="False"/>
     <permission-map name="Field: Edit Results Interpretation" acquired="False"/>
     <permission-map name="Field: Edit Sample Type" acquired="False">
       <permission-role>LabClerk</permission-role>
@@ -894,6 +899,7 @@
     <permission-map name="Field: Edit Preservation" acquired="False"/>
     <permission-map name="Field: Edit Preserver" acquired="False"/>
     <permission-map name="Field: Edit Profiles" acquired="False"/>
+    <permission-map name="Field: Edit Publication Specification" acquired="False"/>
     <permission-map name="Field: Edit Rejection Reasons" acquired="False">
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -1017,6 +1023,7 @@
     <permission-map name="Field: Edit Preservation" acquired="False"/>
     <permission-map name="Field: Edit Preserver" acquired="False"/>
     <permission-map name="Field: Edit Profiles" acquired="False"/>
+    <permission-map name="Field: Edit Publication Specification" acquired="False"/>
     <permission-map name="Field: Edit Rejection Reasons" acquired="False"/>
     <permission-map name="Field: Edit Results Interpretation" acquired="False">
       <permission-role>LabClerk</permission-role>
@@ -1160,6 +1167,7 @@
       <permission-role>Preserver</permission-role>
     </permission-map>
     <permission-map name="Field: Edit Profiles" acquired="False"/>
+    <permission-map name="Field: Edit Publication Specification" acquired="False"/>
     <permission-map name="Field: Edit Rejection Reasons" acquired="False">
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -1291,6 +1299,11 @@
     <permission-map name="Field: Edit Preservation" acquired="False"/>
     <permission-map name="Field: Edit Preserver" acquired="False"/>
     <permission-map name="Field: Edit Profiles" acquired="False"/>
+    <permission-map name="Field: Edit Publication Specification" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
     <permission-map name="Field: Edit Rejection Reasons" acquired="False"/>
     <permission-map name="Field: Edit Results Interpretation" acquired="False">
       <permission-role>LabClerk</permission-role>
@@ -1387,6 +1400,11 @@
     <permission-map name="Field: Edit Preservation" acquired="False"/>
     <permission-map name="Field: Edit Preserver" acquired="False"/>
     <permission-map name="Field: Edit Profiles" acquired="False"/>
+    <permission-map name="Field: Edit Publication Specification" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
     <permission-map name="Field: Edit Rejection Reasons" acquired="False"/>
     <permission-map name="Field: Edit Results Interpretation" acquired="False">
       <permission-role>LabManager</permission-role>
@@ -1462,6 +1480,11 @@
     <permission-map name="Field: Edit Preservation" acquired="False"/>
     <permission-map name="Field: Edit Preserver" acquired="False"/>
     <permission-map name="Field: Edit Profiles" acquired="False"/>
+    <permission-map name="Field: Edit Publication Specification" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
     <permission-map name="Field: Edit Rejection Reasons" acquired="False"/>
     <permission-map name="Field: Edit Results Interpretation" acquired="False"/>
     <permission-map name="Field: Edit Sample Type" acquired="False"/>
@@ -1510,6 +1533,7 @@
     <permission-map name="Field: Edit Preservation" acquired="False"/>
     <permission-map name="Field: Edit Preserver" acquired="False"/>
     <permission-map name="Field: Edit Profiles" acquired="False"/>
+    <permission-map name="Field: Edit Publication Specification" acquired="False"/>
     <permission-map name="Field: Edit Rejection Reasons" acquired="False"/>
     <permission-map name="Field: Edit Results Interpretation" acquired="False"/>
     <permission-map name="Field: Edit Sample Type" acquired="False"/>
@@ -1567,6 +1591,7 @@
     <permission-map name="Field: Edit Preservation" acquired="False"/>
     <permission-map name="Field: Edit Preserver" acquired="False"/>
     <permission-map name="Field: Edit Profiles" acquired="False"/>
+    <permission-map name="Field: Edit Publication Specification" acquired="False"/>
     <permission-map name="Field: Edit Rejection Reasons" acquired="False"/>
     <permission-map name="Field: Edit Results Interpretation" acquired="False"/>
     <permission-map name="Field: Edit Sample Type" acquired="False"/>
@@ -1620,6 +1645,7 @@
     <permission-map name="Field: Edit Preservation" acquired="False"/>
     <permission-map name="Field: Edit Preserver" acquired="False"/>
     <permission-map name="Field: Edit Profiles" acquired="False"/>
+    <permission-map name="Field: Edit Publication Specification" acquired="False"/>
     <permission-map name="Field: Edit Rejection Reasons" acquired="False"/>
     <permission-map name="Field: Edit Results Interpretation" acquired="False"/>
     <permission-map name="Field: Edit Sample Type" acquired="False"/>

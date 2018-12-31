@@ -612,7 +612,7 @@ schema = BikaSchema.copy() + Schema((
         relationship='AnalysisRequestPublicationSpec',
         mode="rw",
         read_permission=View,
-        write_permission=View,
+        write_permission="Field: Edit Publication Specification",
         widget=ReferenceWidget(
             label=_("Publication Specification"),
             description=_(
@@ -620,23 +620,8 @@ schema = BikaSchema.copy() + Schema((
             size=20,
             render_own_label=True,
             visible={
-                'edit': 'visible',
-                'view': 'visible',
-                'header_table': 'visible',
-                'sample_registered': {
-                    'view': 'invisible', 'edit': 'invisible'},
-                'to_be_sampled': {'view': 'invisible', 'edit': 'invisible'},
-                'scheduled_sampling': {
-                    'view': 'invisible', 'edit': 'invisible'},
-                'to_be_preserved': {'view': 'invisible', 'edit': 'invisible'},
-                'sample_due': {'view': 'invisible', 'edit': 'invisible'},
-                'sample_received': {'view': 'invisible', 'edit': 'invisible'},
-                'attachment_due': {'view': 'invisible', 'edit': 'invisible'},
-                'to_be_verified': {'view': 'invisible', 'edit': 'invisible'},
-                'verified': {'view': 'visible', 'edit': 'visible'},
-                'published': {'view': 'visible', 'edit': 'visible'},
-                'invalid': {'view': 'visible', 'edit': 'invisible'},
-                'rejected': {'view': 'visible', 'edit': 'invisible'},
+                "add": "invisible",
+                'secondary': 'disabled',
             },
             catalog_name='bika_setup_catalog',
             base_query={'inactive_state': 'active'},
