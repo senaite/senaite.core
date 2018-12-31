@@ -5,10 +5,6 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from types import DictType
-
-from Products.CMFCore.WorkflowCore import WorkflowException
-from Products.CMFCore.utils import getToolByName
 from bika.lims import logger
 from bika.lims.interfaces import IATWidgetVisibility
 from bika.lims.interfaces import IBatch, IClient
