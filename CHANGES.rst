@@ -6,6 +6,7 @@ Changelog
 
 **Added**
 
+- #1180 Analysis Request field-specific permissions managed in `ar_workflow`
 - #1154 Default to "Active" Worksheets in listing
 - #1153 Progress bar in Worksheet listing
 - #1120 Listing: Confirm before transition
@@ -22,6 +23,10 @@ Changelog
 
 **Changed**
 
+- #1180 Analysis Request default ID Format becomes {sampleType}-{seq:04d}
+- #1180 `visibility` attr behavior (AR fields) in favour of field-specific perms
+- #1180 Sanitized `ar_workflow` regarding to guards, transitions and permissions
+- #1180 Sample content type discarded in favour of Analysis Request
 - #1182 Allow open min/max values in analysis specifications
 - #1000 Refactor service calculation dependency/dependants functionality to API
 - #1176 Unbind `cancellation_workflow` from AnalysisRequest content type
@@ -58,6 +63,8 @@ Changelog
 **Removed**
 
 - #1180 Remove support for "sampleId" and "sample" keywords in ID Formatting
+- #1180 Remove Sample views and accesses to Sample content types
+- #1180 Remove Sample Partitions classic functionality
 - #1167 Remove filtering by department
 - #1149 Remove "Unpublished" filter from Analysis Requests listing
 - #1132 Remove "Submitted by current user" icon from AR listing (performance)
