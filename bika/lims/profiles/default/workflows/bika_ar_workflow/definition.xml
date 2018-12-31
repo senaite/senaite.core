@@ -31,6 +31,7 @@
   "write_permission" defaults to "Modify portal content" -->
   <permission>Field: Edit Batch</permission>
   <permission>Field: Edit Client</permission>
+  <permission>Field: Edit Client Order Number</permission>
   <permission>Field: Edit Contact</permission>
   <permission>Field: Edit Container</permission>
   <permission>Field: Edit Date Preserved</permission>
@@ -129,6 +130,12 @@
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Client Order Number" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
     </permission-map>
     <permission-map name="Field: Edit Contact" acquired="False">
       <permission-role>LabClerk</permission-role>
@@ -332,6 +339,12 @@
       <permission-role>SamplingCoordinator</permission-role>
     </permission-map>
     <permission-map name="Field: Edit Client" acquired="False"/>
+    <permission-map name="Field: Edit Client Order Number" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+    </permission-map>
     <permission-map name="Field: Edit Contact" acquired="False">
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -556,6 +569,12 @@
       <permission-role>SamplingCoordinator</permission-role>
     </permission-map>
     <permission-map name="Field: Edit Client" acquired="False"/>
+    <permission-map name="Field: Edit Client Order Number" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+    </permission-map>
     <permission-map name="Field: Edit Contact" acquired="False">
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -769,6 +788,12 @@
       <permission-role>Manager</permission-role>
     </permission-map>
     <permission-map name="Field: Edit Client" acquired="False"/>
+    <permission-map name="Field: Edit Client Order Number" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+    </permission-map>
     <permission-map name="Field: Edit Contact" acquired="False">
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -925,6 +950,12 @@
       <permission-role>Manager</permission-role>
     </permission-map>
     <permission-map name="Field: Edit Client" acquired="False"/>
+    <permission-map name="Field: Edit Client Order Number" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+    </permission-map>
     <permission-map name="Field: Edit Contact" acquired="False">
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -1066,6 +1097,12 @@
       <permission-role>Manager</permission-role>
     </permission-map>
     <permission-map name="Field: Edit Client" acquired="False"/>
+    <permission-map name="Field: Edit Client Order Number" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+    </permission-map>
     <permission-map name="Field: Edit Contact" acquired="False">
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -1202,6 +1239,12 @@
       <permission-role>Manager</permission-role>
     </permission-map>
     <permission-map name="Field: Edit Client" acquired="False"/>
+    <permission-map name="Field: Edit Client Order Number" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+    </permission-map>
     <permission-map name="Field: Edit Contact" acquired="False">
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -1361,6 +1404,10 @@
       <permission-role>Manager</permission-role>
     </permission-map>
     <permission-map name="Field: Edit Client" acquired="False"/>
+    <permission-map name="Field: Edit Client Order Number" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
     <permission-map name="Field: Edit Contact" acquired="False">
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
@@ -1471,6 +1518,7 @@
     <!-- Field-specific permissions -->
     <permission-map name="Field: Edit Batch" acquired="False"/>
     <permission-map name="Field: Edit Client" acquired="False"/>
+    <permission-map name="Field: Edit Client Order Number" acquired="False"/>
     <permission-map name="Field: Edit Contact" acquired="False"/>
     <permission-map name="Field: Edit Container" acquired="False"/>
     <permission-map name="Field: Edit Date Preserved" acquired="False"/>
@@ -1557,6 +1605,7 @@
     <!-- Field-specific permissions -->
     <permission-map name="Field: Edit Batch" acquired="False"/>
     <permission-map name="Field: Edit Client" acquired="False"/>
+    <permission-map name="Field: Edit Client Order Number" acquired="False"/>
     <permission-map name="Field: Edit Contact" acquired="False"/>
     <permission-map name="Field: Edit Container" acquired="False"/>
     <permission-map name="Field: Edit Date Preserved" acquired="False"/>
@@ -1620,6 +1669,7 @@
     <!-- Field-specific permissions -->
     <permission-map name="Field: Edit Batch" acquired="False"/>
     <permission-map name="Field: Edit Client" acquired="False"/>
+    <permission-map name="Field: Edit Client Order Number" acquired="False"/>
     <permission-map name="Field: Edit Contact" acquired="False"/>
     <permission-map name="Field: Edit Container" acquired="False"/>
     <permission-map name="Field: Edit Date Preserved" acquired="False"/>
@@ -1684,6 +1734,7 @@
     <!-- Field-specific permissions -->
     <permission-map name="Field: Edit Batch" acquired="False"/>
     <permission-map name="Field: Edit Client" acquired="False"/>
+    <permission-map name="Field: Edit Client Order Number" acquired="False"/>
     <permission-map name="Field: Edit Contact" acquired="False"/>
     <permission-map name="Field: Edit Container" acquired="False"/>
     <permission-map name="Field: Edit Date Preserved" acquired="False"/>
@@ -1740,6 +1791,7 @@
     <!-- Field-specific permissions -->
     <permission-map name="Field: Edit Batch" acquired="False"/>
     <permission-map name="Field: Edit Client" acquired="False"/>
+    <permission-map name="Field: Edit Client Order Number" acquired="False"/>
     <permission-map name="Field: Edit Contact" acquired="False"/>
     <permission-map name="Field: Edit Container" acquired="False"/>
     <permission-map name="Field: Edit Date Preserved" acquired="False"/>
