@@ -39,6 +39,7 @@
   <permission>Field: Edit Date Preserved</permission>
   <permission>Field: Edit Date Received</permission>
   <permission>Field: Edit Date Sampled</permission>
+  <permission>Field: Edit Environmental Conditions</permission>
   <permission>Field: Edit Member Discount</permission>
   <permission>Field: Edit Preservation</permission>
   <permission>Field: Edit Preserver</permission>
@@ -173,6 +174,12 @@
     </permission-map>
     <permission-map name="Field: Edit Date Received" acquired="False"/>
     <permission-map name="Field: Edit Date Sampled" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Environmental Conditions" acquired="False">
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
@@ -404,6 +411,14 @@
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Environmental Conditions" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
       <permission-role>Sampler</permission-role>
       <permission-role>SamplingCoordinator</permission-role>
     </permission-map>
@@ -665,6 +680,14 @@
       <permission-role>Sampler</permission-role>
       <permission-role>SamplingCoordinator</permission-role>
     </permission-map>
+    <permission-map name="Field: Edit Environmental Conditions" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
+    </permission-map>
     <permission-map name="Field: Edit Member Discount" acquired="False">
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -900,6 +923,11 @@
     <permission-map name="Field: Edit Date Preserved" acquired="False"/>
     <permission-map name="Field: Edit Date Received" acquired="False"/>
     <permission-map name="Field: Edit Date Sampled" acquired="False"/>
+    <permission-map name="Field: Edit Environmental Conditions" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
     <permission-map name="Field: Edit Member Discount" acquired="False">
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -1092,6 +1120,7 @@
       <permission-role>Manager</permission-role>
     </permission-map>
     <permission-map name="Field: Edit Date Sampled" acquired="False"/>
+    <permission-map name="Field: Edit Environmental Conditions" acquired="False"/>
     <permission-map name="Field: Edit Member Discount" acquired="False">
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -1244,6 +1273,7 @@
     <permission-map name="Field: Edit Date Preserved" acquired="False"/>
     <permission-map name="Field: Edit Date Received" acquired="False"/>
     <permission-map name="Field: Edit Date Sampled" acquired="False"/>
+    <permission-map name="Field: Edit Environmental Conditions" acquired="False"/>
     <permission-map name="Field: Edit Member Discount" acquired="False">
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -1408,6 +1438,7 @@
     </permission-map>
     <permission-map name="Field: Edit Date Received" acquired="False"/>
     <permission-map name="Field: Edit Date Sampled" acquired="False"/>
+    <permission-map name="Field: Edit Environmental Conditions" acquired="False"/>
     <permission-map name="Field: Edit Member Discount" acquired="False">
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -1571,6 +1602,7 @@
     <permission-map name="Field: Edit Date Preserved" acquired="False"/>
     <permission-map name="Field: Edit Date Received" acquired="False"/>
     <permission-map name="Field: Edit Date Sampled" acquired="False"/>
+    <permission-map name="Field: Edit Environmental Conditions" acquired="False"/>
     <permission-map name="Field: Edit Member Discount" acquired="False">
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -1695,6 +1727,7 @@
     <permission-map name="Field: Edit Date Preserved" acquired="False"/>
     <permission-map name="Field: Edit Date Received" acquired="False"/>
     <permission-map name="Field: Edit Date Sampled" acquired="False"/>
+    <permission-map name="Field: Edit Environmental Conditions" acquired="False"/>
     <permission-map name="Field: Edit Member Discount" acquired="False">
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -1786,6 +1819,7 @@
     <permission-map name="Field: Edit Date Preserved" acquired="False"/>
     <permission-map name="Field: Edit Date Received" acquired="False"/>
     <permission-map name="Field: Edit Date Sampled" acquired="False"/>
+    <permission-map name="Field: Edit Environmental Conditions" acquired="False"/>
     <permission-map name="Field: Edit Member Discount" acquired="False">
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -1854,6 +1888,7 @@
     <permission-map name="Field: Edit Date Preserved" acquired="False"/>
     <permission-map name="Field: Edit Date Received" acquired="False"/>
     <permission-map name="Field: Edit Date Sampled" acquired="False"/>
+    <permission-map name="Field: Edit Environmental Conditions" acquired="False"/>
     <permission-map name="Field: Edit Member Discount" acquired="False"/>
     <permission-map name="Field: Edit Preservation" acquired="False"/>
     <permission-map name="Field: Edit Preserver" acquired="False"/>
@@ -1922,6 +1957,7 @@
     <permission-map name="Field: Edit Container" acquired="False"/>
     <permission-map name="Field: Edit Date Preserved" acquired="False"/>
     <permission-map name="Field: Edit Date Received" acquired="False"/>
+    <permission-map name="Field: Edit Environmental Conditions" acquired="False"/>
     <permission-map name="Field: Edit Date Sampled" acquired="False"/>
     <permission-map name="Field: Edit Member Discount" acquired="False"/>
     <permission-map name="Field: Edit Preservation" acquired="False"/>
@@ -1984,6 +2020,7 @@
     <permission-map name="Field: Edit Date Preserved" acquired="False"/>
     <permission-map name="Field: Edit Date Received" acquired="False"/>
     <permission-map name="Field: Edit Date Sampled" acquired="False"/>
+    <permission-map name="Field: Edit Environmental Conditions" acquired="False"/>
     <permission-map name="Field: Edit Member Discount" acquired="False"/>
     <permission-map name="Field: Edit Preservation" acquired="False"/>
     <permission-map name="Field: Edit Preserver" acquired="False"/>
