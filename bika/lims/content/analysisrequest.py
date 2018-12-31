@@ -771,28 +771,12 @@ schema = BikaSchema.copy() + Schema((
         vocabulary=PRIORITIES,
         mode='rw',
         read_permission=View,
-        write_permission=ModifyPortalContent,
+        write_permission="Field: Edit Priority",
         widget=PrioritySelectionWidget(
             label=_('Priority'),
             format='select',
             visible={
-                'edit': 'visible',
-                'view': 'visible',
                 'add': 'edit',
-                'header_table': 'visible',
-                'sample_registered':
-                    {'view': 'visible', 'edit': 'visible', 'add': 'edit'},
-                'to_be_sampled': {'view': 'visible', 'edit': 'visible'},
-                'scheduled_sampling': {'view': 'visible', 'edit': 'visible'},
-                'to_be_preserved': {'view': 'visible', 'edit': 'visible'},
-                'sample_due': {'view': 'visible', 'edit': 'visible'},
-                'sample_received': {'view': 'visible', 'edit': 'visible'},
-                'attachment_due': {'view': 'visible', 'edit': 'visible'},
-                'to_be_verified': {'view': 'visible', 'edit': 'visible'},
-                'verified': {'view': 'visible', 'edit': 'visible'},
-                'published': {'view': 'visible', 'edit': 'invisible'},
-                'invalid': {'view': 'visible', 'edit': 'invisible'},
-                'rejected': {'view': 'visible', 'edit': 'invisible'},
             },
         ),
     ),
@@ -884,6 +868,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
+    # TODO Review permission for this field Analyses
     ARAnalysesField(
         'Analyses',
         required=1,
