@@ -43,6 +43,7 @@
   <permission>Field: Edit Publication Specification</permission>
   <permission>Field: Edit Rejection Reasons</permission>
   <permission>Field: Edit Results Interpretation</permission>
+  <permission>Field: Edit Sample Point</permission>
   <permission>Field: Edit Sample Type</permission>
   <permission>Field: Edit Sampler</permission>
   <permission>Field: Edit Sampling Date</permission>
@@ -180,6 +181,12 @@
       <permission-role>Owner</permission-role>
     </permission-map>
     <permission-map name="Field: Edit Results Interpretation" acquired="False"/>
+    <permission-map name="Field: Edit Sample Point" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+    </permission-map>
     <permission-map name="Field: Edit Sample Type" acquired="False">
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -376,6 +383,14 @@
       <permission-role>Owner</permission-role>
     </permission-map>
     <permission-map name="Field: Edit Results Interpretation" acquired="False"/>
+    <permission-map name="Field: Edit Sample Point" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
+    </permission-map>
     <permission-map name="Field: Edit Sample Type" acquired="False">
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -586,6 +601,14 @@
       <permission-role>Owner</permission-role>
     </permission-map>
     <permission-map name="Field: Edit Results Interpretation" acquired="False"/>
+    <permission-map name="Field: Edit Sample Point" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
+    </permission-map>
     <permission-map name="Field: Edit Sample Type" acquired="False">
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -758,6 +781,11 @@
     </permission-map>
     <permission-map name="Field: Edit Publication Specification" acquired="False"/>
     <permission-map name="Field: Edit Results Interpretation" acquired="False"/>
+    <permission-map name="Field: Edit Sample Point" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
     <permission-map name="Field: Edit Sample Type" acquired="False">
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -911,6 +939,7 @@
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>
+    <permission-map name="Field: Edit Sample Point" acquired="False"/>
     <permission-map name="Field: Edit Sample Type" acquired="False"/>
     <permission-map name="Field: Edit Sampler" acquired="False"/>
     <permission-map name="Field: Edit Sampling Date" acquired="False"/>
@@ -1030,6 +1059,7 @@
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>
+    <permission-map name="Field: Edit Sample Point" acquired="False"/>
     <permission-map name="Field: Edit Sample Type" acquired="False"/>
     <permission-map name="Field: Edit Sampler" acquired="False"/>
     <permission-map name="Field: Edit Sampling Date" acquired="False"/>
@@ -1179,6 +1209,7 @@
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>
+    <permission-map name="Field: Edit Sample Point" acquired="False"/>
     <permission-map name="Field: Edit Sample Type" acquired="False">
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
@@ -1310,6 +1341,7 @@
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>
+    <permission-map name="Field: Edit Sample Point" acquired="False"/>
     <permission-map name="Field: Edit Sample Type" acquired="False"/>
     <permission-map name="Field: Edit Sampler" acquired="False"/>
     <permission-map name="Field: Edit Sampling Date" acquired="False"/>
@@ -1410,6 +1442,7 @@
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>
+    <permission-map name="Field: Edit Sample Point" acquired="False"/>
     <permission-map name="Field: Edit Sample Type" acquired="False"/>
     <permission-map name="Field: Edit Sampler" acquired="False"/>
     <permission-map name="Field: Edit Sampling Date" acquired="False"/>
@@ -1487,6 +1520,7 @@
     </permission-map>
     <permission-map name="Field: Edit Rejection Reasons" acquired="False"/>
     <permission-map name="Field: Edit Results Interpretation" acquired="False"/>
+    <permission-map name="Field: Edit Sample Point" acquired="False"/>
     <permission-map name="Field: Edit Sample Type" acquired="False"/>
     <permission-map name="Field: Edit Sampler" acquired="False"/>
     <permission-map name="Field: Edit Sampling Date" acquired="False"/>
@@ -1536,6 +1570,7 @@
     <permission-map name="Field: Edit Publication Specification" acquired="False"/>
     <permission-map name="Field: Edit Rejection Reasons" acquired="False"/>
     <permission-map name="Field: Edit Results Interpretation" acquired="False"/>
+    <permission-map name="Field: Edit Sample Point" acquired="False"/>
     <permission-map name="Field: Edit Sample Type" acquired="False"/>
     <permission-map name="Field: Edit Sampler" acquired="False"/>
     <permission-map name="Field: Edit Sampling Date" acquired="False"/>
@@ -1594,6 +1629,7 @@
     <permission-map name="Field: Edit Publication Specification" acquired="False"/>
     <permission-map name="Field: Edit Rejection Reasons" acquired="False"/>
     <permission-map name="Field: Edit Results Interpretation" acquired="False"/>
+    <permission-map name="Field: Edit Sample Point" acquired="False"/>
     <permission-map name="Field: Edit Sample Type" acquired="False"/>
     <permission-map name="Field: Edit Sampler" acquired="False"/>
     <permission-map name="Field: Edit Sampling Date" acquired="False"/>
@@ -1648,6 +1684,7 @@
     <permission-map name="Field: Edit Publication Specification" acquired="False"/>
     <permission-map name="Field: Edit Rejection Reasons" acquired="False"/>
     <permission-map name="Field: Edit Results Interpretation" acquired="False"/>
+    <permission-map name="Field: Edit Sample Point" acquired="False"/>
     <permission-map name="Field: Edit Sample Type" acquired="False"/>
     <permission-map name="Field: Edit Sampler" acquired="False"/>
     <permission-map name="Field: Edit Sampling Date" acquired="False"/>
