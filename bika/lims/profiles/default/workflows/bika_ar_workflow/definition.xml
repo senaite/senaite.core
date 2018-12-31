@@ -50,6 +50,7 @@
   <permission>Field: Edit Sampling Round</permission>
   <permission>Field: Edit Specification</permission>
   <permission>Field: Edit Scheduled Sampler</permission>
+  <permission>Field: Edit Storage Location</permission>
   <permission>Field: Edit Template</permission>
 
   <!--
@@ -222,6 +223,11 @@
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
       <permission-role>Owner</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Storage Location" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
     </permission-map>
     <permission-map name="Field: Edit Template" acquired="False">
       <permission-role>LabClerk</permission-role>
@@ -432,6 +438,12 @@
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
       <permission-role>Owner</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Storage Location" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
     </permission-map>
     <permission-map name="Field: Edit Template" acquired="False"/>
 
@@ -651,6 +663,12 @@
       <permission-role>Manager</permission-role>
       <permission-role>Owner</permission-role>
     </permission-map>
+    <permission-map name="Field: Edit Storage Location" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
+    </permission-map>
     <permission-map name="Field: Edit Template" acquired="False"/>
 
     <!-- Reject Analysis Request -->
@@ -800,6 +818,12 @@
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>
+    <permission-map name="Field: Edit Storage Location" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
+    </permission-map>
     <permission-map name="Field: Edit Template" acquired="False"/>
 
     <!-- Reject Analysis Request -->
@@ -945,6 +969,14 @@
     <permission-map name="Field: Edit Sampling Date" acquired="False"/>
     <permission-map name="Field: Edit Sampling Round" acquired="False"/>
     <permission-map name="Field: Edit Scheduled Sampler" acquired="False"/>
+    <permission-map name="Field: Edit Storage Location" acquired="False">
+      <premission-role>Analyst</premission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
+    </permission-map>
     <permission-map name="Field: Edit Template" acquired="False"/>
     <permission-map name="Field: Edit Specification" acquired="False">
       <permission-role>LabManager</permission-role>
@@ -1068,6 +1100,13 @@
     <permission-map name="Field: Edit Specification" acquired="False">
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Storage Location" acquired="False">
+      <premission-role>Analyst</premission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
     </permission-map>
     <permission-map name="Field: Edit Template" acquired="False"/>
 
@@ -1223,6 +1262,14 @@
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>
+    <permission-map name="Field: Edit Storage Location" acquired="False">
+      <premission-role>Analyst</premission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Preserver</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
+    </permission-map>
     <permission-map name="Field: Edit Template" acquired="False"/>
 
     <!-- Reject Analysis Request -->
@@ -1351,6 +1398,11 @@
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>
+    <permission-map name="Field: Edit Storage Location" acquired="False">
+      <premission-role>Analyst</premission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
     <permission-map name="Field: Edit Template" acquired="False"/>
 
     <!-- Reject Analysis Request -->
@@ -1449,6 +1501,11 @@
     <permission-map name="Field: Edit Sampling Round" acquired="False"/>
     <permission-map name="Field: Edit Scheduled Sampler" acquired="False"/>
     <permission-map name="Field: Edit Specification" acquired="False"/>
+    <permission-map name="Field: Edit Storage Location" acquired="False">
+      <premission-role>Analyst</premission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
     <permission-map name="Field: Edit Template" acquired="False"/>
   </state>
 
@@ -1527,6 +1584,11 @@
     <permission-map name="Field: Edit Sampling Round" acquired="False"/>
     <permission-map name="Field: Edit Scheduled Sampler" acquired="False"/>
     <permission-map name="Field: Edit Specification" acquired="False"/>
+    <permission-map name="Field: Edit Storage Location" acquired="False">
+      <premission-role>Analyst</premission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
     <permission-map name="Field: Edit Template" acquired="False"/>
   </state>
 
@@ -1577,6 +1639,11 @@
     <permission-map name="Field: Edit Sampling Round" acquired="False"/>
     <permission-map name="Field: Edit Scheduled Sampler" acquired="False"/>
     <permission-map name="Field: Edit Specification" acquired="False"/>
+    <permission-map name="Field: Edit Storage Location" acquired="False">
+      <premission-role>Analyst</premission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
     <permission-map name="Field: Edit Template" acquired="False"/>
   </state>
 
@@ -1636,6 +1703,7 @@
     <permission-map name="Field: Edit Sampling Round" acquired="False"/>
     <permission-map name="Field: Edit Scheduled Sampler" acquired="False"/>
     <permission-map name="Field: Edit Specification" acquired="False"/>
+    <permission-map name="Field: Edit Storage Location" acquired="False"/>
     <permission-map name="Field: Edit Template" acquired="False"/>
   </state>
 
@@ -1691,6 +1759,7 @@
     <permission-map name="Field: Edit Sampling Round" acquired="False"/>
     <permission-map name="Field: Edit Scheduled Sampler" acquired="False"/>
     <permission-map name="Field: Edit Specification" acquired="False"/>
+    <permission-map name="Field: Edit Storage Location" acquired="False"/>
     <permission-map name="Field: Edit Template" acquired="False"/>
   </state>
 
