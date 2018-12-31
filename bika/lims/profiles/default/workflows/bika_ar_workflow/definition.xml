@@ -1176,7 +1176,11 @@
     </permission-map>
 
     <!-- Field-specific permissions -->
-    <permission-map name="Field: Edit AdHoc" acquired="False"/>
+    <permission-map name="Field: Edit AdHoc" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
     <permission-map name="Field: Edit Batch" acquired="False">
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -1201,7 +1205,11 @@
       <permission-role>Manager</permission-role>
       <permission-role>Owner</permission-role>
     </permission-map>
-    <permission-map name="Field: Edit Composite" acquired="False"/>
+    <permission-map name="Field: Edit Composite" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
     <permission-map name="Field: Edit Contact" acquired="False">
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -1220,7 +1228,11 @@
       <permission-role>Manager</permission-role>
     </permission-map>
     <permission-map name="Field: Edit Date Sampled" acquired="False"/>
-    <permission-map name="Field: Edit Environmental Conditions" acquired="False"/>
+    <permission-map name="Field: Edit Environmental Conditions" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
     <permission-map name="Field: Edit Invoice Exclude" acquired="False">
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -1252,9 +1264,17 @@
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>
-    <permission-map name="Field: Edit Sample Point" acquired="False"/>
+    <permission-map name="Field: Edit Sample Point" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
     <permission-map name="Field: Edit Sample Type" acquired="False"/>
-    <permission-map name="Field: Edit Sampler" acquired="False"/>
+    <permission-map name="Field: Edit Sample Condition" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
     <permission-map name="Field: Edit Sampling Date" acquired="False"/>
     <permission-map name="Field: Edit Sampling Deviation" acquired="False"/>
     <permission-map name="Field: Edit Sampling Round" acquired="False"/>
