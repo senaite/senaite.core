@@ -391,8 +391,13 @@ class ListingController extends React.Component
      * select/deselect the UID
     ###
 
-    # the selected UIDs from the state
-    selected_uids = @state.selected_uids
+    me = this
+
+    # copy the selected UIDs from the state
+    #
+    # N.B. We use [].concat(@state.selecte_uids) to get a copy, otherwise it
+    #      would be a reference of the state value!
+    selected_uids = [].concat @state.selected_uids
 
     if toggle is yes
       # handle the select all checkbox
@@ -420,8 +425,12 @@ class ListingController extends React.Component
         pos = selected_uids.indexOf uid
         selected_uids.splice pos, 1
 
+    # Only set the state and refetch transitions if the selected UIDs changed
+    changed = selected_uids.filter((uid) ->
+       me.state.selected_uids.indexOf(uid)==-1).length > 0
+    return unless changed
+
     # set the new list of selected UIDs to the state
-    me = this
     @setState
      selected_uids: selected_uids
     , ->
