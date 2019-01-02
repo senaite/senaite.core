@@ -66,19 +66,19 @@
     <!-- Display/Hide Batch field in AR Add form when creation takes place
     inside a Batch context. -->
     <adapter
-      factory=".widgetvisibility.BatchFieldWidgetVisibility"
+      factory=".widgetvisibility.BatchFieldVisibility"
       provides="bika.lims.interfaces.IATWidgetVisibility"
       for="bika.lims.interfaces.IAnalysisRequest"
-      name="BatchFieldWidgetVisibility"
+      name="BatchFieldVisibility"
     />
 
     <!-- Hides the client field in AR Add form when the creation takes place
     inside a Client context. Makes the field readonly in mode=edit -->
     <adapter
-      factory=".widgetvisibility.ClientFieldWidgetVisibility"
+      factory=".widgetvisibility.ClientFieldVisibility"
       provides="bika.lims.interfaces.IATWidgetVisibility"
       for="bika.lims.interfaces.IAnalysisRequest"
-      name="ClientFieldWidgetVisibility"
+      name="ClientFieldVisibility"
     />
 
     <!-- Display Analysis Request's Date Received field in edit mode only if the

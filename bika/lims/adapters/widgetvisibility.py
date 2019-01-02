@@ -34,13 +34,13 @@ class SenaiteATWidgetVisibility(object):
         raise NotImplementedError("Must be implemented by subclass")
 
 
-class ClientFieldWidgetVisibility(SenaiteATWidgetVisibility):
+class ClientFieldVisibility(SenaiteATWidgetVisibility):
     """The Client field is editable by default in ar_add.  This adapter
     will force the Client field to be hidden when it should not be set
     by the user.
     """
     def __init__(self, context):
-        super(ClientFieldWidgetVisibility, self).__init__(
+        super(ClientFieldVisibility, self).__init__(
             context=context, sort=10, field_names=["Client"])
 
     def isVisible(self, field, mode="view", default="visible"):
@@ -63,12 +63,12 @@ class ClientFieldWidgetVisibility(SenaiteATWidgetVisibility):
         return default
 
 
-class BatchFieldWidgetVisibility(SenaiteATWidgetVisibility):
+class BatchFieldVisibility(SenaiteATWidgetVisibility):
     """This will force the 'Batch' field to 'hidden' in ar_add when the parent
     context is a Batch.
     """
     def __init__(self, context):
-        super(BatchFieldWidgetVisibility, self).__init__(
+        super(BatchFieldVisibility, self).__init__(
             context=context, sort=10, field_names=["Batch"])
 
     def isVisible(self, field, mode="view", default="visible"):
