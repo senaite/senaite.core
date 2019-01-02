@@ -63,24 +63,18 @@ class ClientFieldWidgetVisibility(SenaiteATWidgetVisibility):
         return default
 
 
-# TODO Is this necessary - Is still possible to add ARs inside a Batch folder?
-class BatchARAdd_BatchFieldWidgetVisibility(object):
+class BatchFieldWidgetVisibility(SenaiteATWidgetVisibility):
     """This will force the 'Batch' field to 'hidden' in ar_add when the parent
     context is a Batch.
     """
-    implements(IATWidgetVisibility)
-
     def __init__(self, context):
-        self.context = context
-        self.sort = 10
+        super(BatchFieldWidgetVisibility, self).__init__(
+            context=context, sort=10, field_names=["Batch"])
 
-    def __call__(self, context, mode, field, default):
-        state = default if default else 'visible'
-        fieldName = field.getName()
-        if fieldName == 'Batch' and context.aq_parent.portal_type == 'Batch':
-            return 'hidden'
-        return state
-
+    def isVisible(self, field, mode="view", default="visible"):
+        if IBatch.providedBy(self.context.aq_parent):
+            return "hidden"
+        return default
 
 
 class PreservationFieldsVisibility(SenaiteATWidgetVisibility):
@@ -155,8 +149,7 @@ class RegistryHiddenFieldsVisibility(SenaiteATWidgetVisibility):
     def __init__(self, context):
         field_names = getHiddenAttributesForClass(context.portal_type)
         super(RegistryHiddenFieldsVisibility, self).__init__(
-            context=context, sort=-1, field_names=[field_names,]
-        )
+            context=context, sort=-1, field_names=[field_names,])
 
     def isVisible(self, field, mode="view", default="visible"):
         return "invisible"
@@ -169,8 +162,7 @@ class AccountancyFieldsVisibility(SenaiteATWidgetVisibility):
         super(AccountancyFieldsVisibility, self).__init__(
             context=context, sort=3,
             field_names=["BulkDiscount", "MemberDiscountApplies",
-                         "InvoiceExclude", "MemberDiscount"]
-        )
+                         "InvoiceExclude", "MemberDiscount"])
 
     def isVisible(self, field, mode="view", default="visible"):
         if not self.context.bika_setup.getShowPrices():

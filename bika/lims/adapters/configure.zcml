@@ -13,13 +13,6 @@
     />
 
     <adapter
-      factory=".widgetvisibility.BatchARAdd_BatchFieldWidgetVisibility"
-      provides="bika.lims.interfaces.IATWidgetVisibility"
-      for="bika.lims.interfaces.IAnalysisRequest"
-      name="BatchBatchFieldWV"
-    />
-
-    <adapter
       for="zope.interface.Interface
            zope.publisher.interfaces.browser.IBrowserRequest"
       factory="bika.lims.adapters.referencewidgetvocabulary.DefaultReferenceWidgetVocabulary"
@@ -70,8 +63,17 @@
       name="AccountancyFieldsVisibility"
     />
 
-    <!-- Hides the client field on AR Add creation when the creation takes
-    place inside a Client context. Makes the field readonly in mode=edit -->
+    <!-- Display/Hide Batch field in AR Add form when creation takes place
+    inside a Batch context. -->
+    <adapter
+      factory=".widgetvisibility.BatchFieldWidgetVisibility"
+      provides="bika.lims.interfaces.IATWidgetVisibility"
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="BatchFieldWidgetVisibility"
+    />
+
+    <!-- Hides the client field in AR Add form when the creation takes place
+    inside a Client context. Makes the field readonly in mode=edit -->
     <adapter
       factory=".widgetvisibility.ClientFieldWidgetVisibility"
       provides="bika.lims.interfaces.IATWidgetVisibility"
