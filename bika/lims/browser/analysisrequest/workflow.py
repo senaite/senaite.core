@@ -137,13 +137,12 @@ class AnalysisRequestWorkflowAction(AnalysesWorkflowAction):
         for service_uid, service in objects.items():
             keyword = service.getKeyword()
             results_range = ResultsRangeDict(keyword=keyword, uid=service_uid)
-            if form.get("min", None):
-                results_range.update({
-                    "min": form["min"][0][service_uid],
-                    "max": form["max"][0][service_uid],
-                    "warn_min": form["warn_min"][0][service_uid],
-                    "warn_max": form["warn_max"][0][service_uid],
-                })
+            results_range.update({
+                "min": form["min"][0][service_uid],
+                "max": form["max"][0][service_uid],
+                "warn_min": form["warn_min"][0][service_uid],
+                "warn_max": form["warn_max"][0][service_uid],
+            })
             specs[service_uid] = results_range
 
         if ar.setAnalyses(objects_uids, prices=prices, specs=specs.values()):
