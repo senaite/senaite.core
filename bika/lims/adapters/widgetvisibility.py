@@ -34,32 +34,34 @@ class SenaiteATWidgetVisibility(object):
         raise NotImplementedError("Must be implemented by subclass")
 
 
-class ClientFieldWidgetVisibility(object):
+class ClientFieldWidgetVisibility(SenaiteATWidgetVisibility):
     """The Client field is editable by default in ar_add.  This adapter
     will force the Client field to be hidden when it should not be set
     by the user.
     """
-    implements(IATWidgetVisibility)
-
     def __init__(self, context):
-        self.context = context
-        self.sort = 10
+        super(ClientFieldWidgetVisibility, self).__init__(
+            context=context, sort=10, field_names=["Client"])
 
-    def __call__(self, context, mode, field, default):
-        state = default if default else 'hidden'
-        fieldName = field.getName()
-        if fieldName != 'Client':
-            return state
-        parent = self.context.aq_parent
+    def isVisible(self, field, mode="view", default="visible"):
+        if mode == "add":
+            parent = self.context.aq_parent
+            if IClient.providedBy(parent):
+                # Note we return "hidden" here instead of "invisible": we want
+                # the field to be auto-filled and processed on submit
+                return "hidden"
+            if IBatch.providedBy(parent) and parent.getClient():
+                # The Batch has a Client assigned already!
+                # Note we can have Batches without a client assigned
+                return "hidden"
+        elif mode == "edit":
+            # This is already managed by wf permission, but is **never** a good
+            # idea to allow the user to change the Client from an AR (basically
+            # because otherwise, we'd need to move the object from one client
+            # folder to another!).
+            return "visible"
+        return default
 
-        if IBatch.providedBy(parent):
-            if parent.getClient():
-                return 'hidden'
-
-        if IClient.providedBy(parent):
-            return 'hidden'
-
-        return state
 
 # TODO Is this necessary - Is still possible to add ARs inside a Batch folder?
 class BatchARAdd_BatchFieldWidgetVisibility(object):
