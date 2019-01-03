@@ -1296,10 +1296,22 @@ def port_analysis_request_proxy_fields(portal):
                 continue
             set_value(analysis_request, field_id, field_value)
             processed_fields.append(field_id)
+        sample_obj.setMigrated(True)
+        sample_obj.reindexObject(idxs="isValid")
         return processed_fields
 
     start = time.time()
-    query = dict(portal_type="Sample")
+
+    # We will use this index to keep track of the Samples that have been
+    # processed already. This index will be added later for Reference Samples,
+    # so is not an index only for this migration stuff, but we add the index
+    # here so the samples processed are labeled as soon as possible
+    add_index(portal, catalog_id="bika_catalog",
+              index_name="isValid",
+              index_attribute="isValid",
+              index_metatype="BooleanIndex")
+
+    query = dict(portal_type="Sample", isValid=False)
     brains = api.search(query, "bika_catalog")
     total = len(brains)
     need_commit = False
