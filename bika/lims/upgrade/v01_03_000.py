@@ -487,6 +487,9 @@ def update_workflows(portal):
     logger.info("Updating workflows ...")
 
     # IMPORTANT: The order of function calls is important!
+    # The following is going to be highly consuming tasks, so better to first
+    # do a transaction commit to free as much resources as possible
+    commit_transaction(portal)
 
     # Need to know first for which workflows we'll need later to update role
     # mappings. This will allow us to update role mappings for those required
@@ -536,6 +539,7 @@ def update_workflows(portal):
 
     # Rollback to receive inconsistent ARs
     rollback_to_receive_inconsistent_ars(portal)
+    commit_transaction(portal)
 
 
 def remove_orphan_duplicates(portal):
@@ -588,6 +592,7 @@ def remove_rejected_duplicates(portal):
 
         # Remove the duplicate
         orphan.aq_parent.manage_delObjects([orphan.getId()])
+    commit_transaction(portal)
 
 
 def remove_orphan_reference_analyses(portal):
@@ -705,6 +710,7 @@ def assign_retracted_to_retests(portal):
             logger.info("Reindexing retests: {}/{}"
                         .format(num, total))
         analysis.reindexObject(idxs="isRetest")
+    commit_transaction(portal)
 
 
 def fix_cancelled_analyses_inconsistencies(portal):
@@ -1114,6 +1120,7 @@ def hide_samples(portal):
     logger.info("Removing actions from inside Samples ...")
     for sample in api.search(dict(portal_type="Sample"), "bika_catalog"):
         remove_actions_from_sample(api.get_object(sample))
+    commit_transaction(portal)
 
 
 def add_listing_js_to_portal_javascripts(portal):
@@ -1166,6 +1173,7 @@ def fix_ar_analyses_inconsistencies(portal):
     fix_ar_analyses("invalid")
     fix_ar_analyses("rejected")
     pool.resume()
+    commit_transaction(portal)
 
 
 def add_worksheet_progress_percentage(portal):
