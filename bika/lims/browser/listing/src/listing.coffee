@@ -426,9 +426,11 @@ class ListingController extends React.Component
         selected_uids.splice pos, 1
 
     # Only set the state and refetch transitions if the selected UIDs changed
-    changed = selected_uids.filter((uid) ->
+    added = selected_uids.filter((uid) ->
        me.state.selected_uids.indexOf(uid)==-1).length > 0
-    return unless changed
+    removed = me.state.selected_uids.filter((uid) ->
+       selected_uids.indexOf(uid)==-1).length > 0
+    return unless added or removed
 
     # set the new list of selected UIDs to the state
     @setState
