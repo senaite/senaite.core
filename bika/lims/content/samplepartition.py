@@ -5,14 +5,15 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-
-from datetime import timedelta
-
 from AccessControl import ClassSecurityInfo
-from DateTime import DateTime
 from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
-from Products.ATContentTypes.utils import DT2dt, dt2DT
-from Products.Archetypes.public import *
+from Products.Archetypes.public import BaseContent
+from Products.Archetypes.public import BooleanField
+from Products.Archetypes.public import DateTimeField
+from Products.Archetypes.public import ReferenceField
+from Products.Archetypes.public import Schema
+from Products.Archetypes.public import StringField
+from Products.Archetypes.public import registerType
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims.browser.fields import DurationField
 from bika.lims.browser.fields import UIDReferenceField
