@@ -462,16 +462,6 @@ class Sample(BaseFolder, HistoryAwareMixin):
         )
         return dt2DT(DT2dt(date_sampled) + retention_period_delta)
 
-    def getLastARNumber(self):
-        ARs = self.getBackReferences("AnalysisRequestSample")
-        prefix = self.getSampleType().getPrefix()
-        ar_ids = sorted([AR.id for AR in ARs if AR.id.startswith(prefix)])
-        try:
-            last_ar_number = int(ar_ids[-1].split("-R")[-1])
-        except:
-            return 0
-        return last_ar_number
-
 
     # TODO This method is only for v1.3.0 migration purposes
     # bika_catalog contains an "isValid" index. We will take advantage of this
