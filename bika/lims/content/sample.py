@@ -472,17 +472,6 @@ class Sample(BaseFolder, HistoryAwareMixin):
             return 0
         return last_ar_number
 
-    def getBatchUIDs(self):
-        """Returns the UIDs of the Batches to which this Sample is assigned
-        through Analysis Requests
-        """
-        batch_uids = list()
-        for analysis_request in self.getAnalysisRequests():
-            batch_uid = analysis_request.getBatchUID()
-            if not batch_uid or batch_uid in batch_uids:
-                continue
-            batch_uids.append(batch_uid)
-        return batch_uids
 
     # TODO This method is only for v1.3.0 migration purposes
     # bika_catalog contains an "isValid" index. We will take advantage of this

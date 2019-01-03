@@ -322,7 +322,6 @@ class BikaGenerator(object):
         addIndex(bc, 'getSamplingDate', 'DateIndex')
         addIndex(bc, 'getWorksheetTemplateTitle', 'FieldIndex')
         addIndex(bc, 'BatchUID', 'FieldIndex')
-        addIndex(bc, 'getBatchUIDs', 'KeywordIndex')
 
         # https://github.com/senaite/senaite.core/pull/1091
         addIndex(bc, 'getSupportedServices', 'KeywordIndex')
@@ -344,7 +343,6 @@ class BikaGenerator(object):
         addColumn(bc, 'inactive_state')
         addColumn(bc, 'cancellation_state')
         addColumn(bc, 'getAnalysts')
-        addColumn(bc, 'getBatchUIDs')
         addColumn(bc, 'getClientOrderNumber')
         addColumn(bc, 'getClientReference')
         addColumn(bc, 'getClientSampleID')
