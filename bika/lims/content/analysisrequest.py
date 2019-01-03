@@ -804,23 +804,6 @@ schema = BikaSchema.copy() + Schema((
             showOn=True,
         ),
     ),
-    BooleanField(
-        'AdHoc',
-        default=False,
-        mode="rw",
-        read_permission=View,
-        write_permission="Field: Edit AdHoc",
-        widget=BooleanWidget(
-            label=_("Sampled AdHoc"),
-            description=_("Was the sample taken in non-scheduled matter, "
-                          "e.g. out of a recurring sampling schedule?"),
-            render_own_label=True,
-            visible={
-                'add': 'edit',
-                'secondary': 'disabled',
-            },
-        ),
-    ),
 
     BooleanField(
         'Composite',

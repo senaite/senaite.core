@@ -33,7 +33,6 @@ version = '1.3.0'  # Remember version number in metadata.xml and setup.py
 profile = 'profile-{0}:default'.format(product)
 
 PROXY_FIELDS_TO_PURGE = [
-    "AdHoc",
     "ClientReference",
     "ClientSampleID",
     "Composite",

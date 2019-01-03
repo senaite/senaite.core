@@ -29,7 +29,6 @@
   Are meant to be used for "read_permission" and "write_permission" in fields.
   If not defined there, "read_permission" defaults to "View" and
   "write_permission" defaults to "Modify portal content" -->
-  <permission>Field: Edit AdHoc</permission>
   <permission>Field: Edit Batch</permission>
   <permission>Field: Edit Client</permission>
   <permission>Field: Edit Client Order Number</permission>
@@ -129,12 +128,6 @@
     <!-- Field-specific permissions
     NOTE: This field-specific permissions for "sample_registered" apply to
     Analysis Request Add form! -->
-    <permission-map name="Field: Edit AdHoc" acquired="False">
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-      <permission-role>Owner</permission-role>
-    </permission-map>
     <permission-map name="Field: Edit Batch" acquired="False">
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -390,14 +383,6 @@
     </permission-map>
 
     <!-- Field-specific permissions -->
-    <permission-map name="Field: Edit AdHoc" acquired="False">
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-      <permission-role>Owner</permission-role>
-      <permission-role>Sampler</permission-role>
-      <permission-role>SamplingCoordinator</permission-role>
-    </permission-map>
     <permission-map name="Field: Edit Batch" acquired="False">
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -683,14 +668,6 @@
     </permission-map>
 
     <!-- Field-specific permissions -->
-    <permission-map name="Field: Edit AdHoc" acquired="False">
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-      <permission-role>Owner</permission-role>
-      <permission-role>Sampler</permission-role>
-      <permission-role>SamplingCoordinator</permission-role>
-    </permission-map>
     <permission-map name="Field: Edit Batch" acquired="False">
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -966,11 +943,6 @@
     </permission-map>
 
     <!-- Field-specific permissions -->
-    <permission-map name="Field: Edit AdHoc" acquired="False">
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-    </permission-map>
     <permission-map name="Field: Edit Batch" acquired="False">
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -1176,11 +1148,6 @@
     </permission-map>
 
     <!-- Field-specific permissions -->
-    <permission-map name="Field: Edit AdHoc" acquired="False">
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-    </permission-map>
     <permission-map name="Field: Edit Batch" acquired="False">
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -1371,7 +1338,6 @@
     </permission-map>
 
     <!-- Field-specific permissions -->
-    <permission-map name="Field: Edit AdHoc" acquired="False"/>
     <permission-map name="Field: Edit Batch" acquired="False">
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
@@ -1541,7 +1507,6 @@
     </permission-map>
 
     <!-- Field-specific permissions -->
-    <permission-map name="Field: Edit AdHoc" acquired="False"/>
     <permission-map name="Field: Edit Batch" acquired="False">
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
@@ -1734,7 +1699,6 @@
     </permission-map>
 
     <!-- Field-specific permissions -->
-    <permission-map name="Field: Edit AdHoc" acquired="False"/>
     <permission-map name="Field: Edit Batch" acquired="False">
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
@@ -1873,7 +1837,6 @@
     </permission-map>
 
     <!-- Field-specific permissions -->
-    <permission-map name="Field: Edit AdHoc" acquired="False"/>
     <permission-map name="Field: Edit Batch" acquired="False"/>
     <permission-map name="Field: Edit Client" acquired="False"/>
     <permission-map name="Field: Edit Client Order Number" acquired="False">
@@ -1988,7 +1951,6 @@
     </permission-map>
 
     <!-- Field-specific permissions -->
-    <permission-map name="Field: Edit AdHoc" acquired="False"/>
     <permission-map name="Field: Edit Batch" acquired="False"/>
     <permission-map name="Field: Edit Client" acquired="False"/>
     <permission-map name="Field: Edit Client Order Number" acquired="False"/>
@@ -2065,7 +2027,6 @@
     </permission-map>
 
     <!-- Field-specific permissions -->
-    <permission-map name="Field: Edit AdHoc" acquired="False"/>
     <permission-map name="Field: Edit Batch" acquired="False"/>
     <permission-map name="Field: Edit Client" acquired="False"/>
     <permission-map name="Field: Edit Client Order Number" acquired="False"/>
@@ -2139,7 +2100,6 @@
     </permission-map>
 
     <!-- Field-specific permissions -->
-    <permission-map name="Field: Edit AdHoc" acquired="False"/>
     <permission-map name="Field: Edit Batch" acquired="False"/>
     <permission-map name="Field: Edit Client" acquired="False"/>
     <permission-map name="Field: Edit Client Order Number" acquired="False"/>
@@ -2205,7 +2165,6 @@
     </permission-map>
 
     <!-- Field-specific permissions -->
-    <permission-map name="Field: Edit AdHoc" acquired="False"/>
     <permission-map name="Field: Edit Batch" acquired="False"/>
     <permission-map name="Field: Edit Client" acquired="False"/>
     <permission-map name="Field: Edit Client Order Number" acquired="False"/>

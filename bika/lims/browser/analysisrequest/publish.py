@@ -895,7 +895,6 @@ class AnalysisRequestDigester:
                 'client_order_num': ar.getClientOrderNumber(),
                 'client_reference': ar.getClientReference(),
                 'client_sampleid': ar.getClientSampleID(),
-                'adhoc': ar.getAdHoc(),
                 'composite': ar.getComposite(),
                 'invoice_exclude': ar.getInvoiceExclude(),
                 'date_received': ulocalized_time(ar.getDateReceived(),
@@ -1118,7 +1117,6 @@ class AnalysisRequestDigester:
                 'date_expired': ar.getDateExpired(),
                 'date_disposal': ar.getDisposalDate(),
                 'date_disposed': ar.getDateDisposed(),
-                'adhoc': ar.getAdHoc(),
                 'remarks': ar.getRemarks(),
                 'sample_type': self._sample_type(ar),
                 'sample_point': self._sample_point(ar)}

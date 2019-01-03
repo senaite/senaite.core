@@ -62,6 +62,7 @@ Changelog
 
 **Removed**
 
+- #1180 Remove AdHoc field from Analysis Request
 - #1180 Remove support for "sampleId" and "sample" keywords in ID Formatting
 - #1180 Remove Sample views and accesses to Sample content types
 - #1180 Remove Sample Partitions classic functionality

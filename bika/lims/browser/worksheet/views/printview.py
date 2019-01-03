@@ -446,8 +446,7 @@ class PrintView(BrowserView):
         """ Returns a dict that represents the sample
             Keys: obj, id, url, client_sampleid, date_sampled,
                   sampling_date, sampler, date_received, composite,
-                  date_expired, date_disposal, date_disposed, adhoc,
-                  remarks
+                  date_expired, date_disposal, date_disposed, remarks
         """
         data = {}
         if sample:

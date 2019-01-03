@@ -712,13 +712,6 @@ class Sample(BaseFolder, HistoryAwareMixin):
             ar.Schema()['ClientSampleID'].set(ar, value)
         self.Schema()['ClientSampleID'].set(self, value)
 
-    def setAdHoc(self, value, **kw):
-        """ Set the field on Analysis Requests.
-        """
-        for ar in self.getAnalysisRequests():
-            ar.Schema()['AdHoc'].set(ar, value)
-        self.Schema()['AdHoc'].set(self, value)
-
     def setComposite(self, value, **kw):
         """ Set the field on Analysis Requests.
         """

@@ -1107,7 +1107,6 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             "client_sample_id": obj.getClientSampleID(),
             "client_reference": obj.getClientReference(),
             "sampling_workflow_enabled": obj.getSamplingWorkflowEnabled(),
-            "adhoc": obj.getAdHoc(),
             "remarks": obj.getRemarks(),
         })
         return info

@@ -61,8 +61,6 @@ class window.AnalysisRequestAdd
     $("body").on "click", "tr.category", @on_service_category_click
     # Save button clicked
     $("body").on "click", "[name='save_button']", @on_form_submit
-    # AdHoc Checkbox clicked
-    $("body").on "click", "tr[fieldname=AdHoc] input[type='checkbox']", @recalculate_records
     # Composite Checkbox clicked
     $("body").on "click", "tr[fieldname=Composite] input[type='checkbox']", @recalculate_records
     # InvoiceExclude Checkbox clicked
@@ -598,10 +596,6 @@ class window.AnalysisRequestAdd
     field = $("#ClientReference-#{arnum}")
     value = sample.client_reference
     field.val value
-
-    # set adhoc
-    field = $("#AdHoc-#{arnum}")
-    field.prop "checked", sample.adhoc
 
     # set composite
     field = $("#Composite-#{arnum}")

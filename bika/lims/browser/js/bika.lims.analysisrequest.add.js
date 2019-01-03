@@ -90,7 +90,6 @@
       $("body").on("click", ".service-listing-header", this.on_service_listing_header_click);
       $("body").on("click", "tr.category", this.on_service_category_click);
       $("body").on("click", "[name='save_button']", this.on_form_submit);
-      $("body").on("click", "tr[fieldname=AdHoc] input[type='checkbox']", this.recalculate_records);
       $("body").on("click", "tr[fieldname=Composite] input[type='checkbox']", this.recalculate_records);
       $("body").on("click", "tr[fieldname=InvoiceExclude] input[type='checkbox']", this.recalculate_records);
       $("body").on("click", "tr[fieldname=Analyses] input[type='checkbox']", this.on_analysis_checkbox_click);
@@ -562,8 +561,6 @@
       field = $("#ClientReference-" + arnum);
       value = sample.client_reference;
       field.val(value);
-      field = $("#AdHoc-" + arnum);
-      field.prop("checked", sample.adhoc);
       field = $("#Composite-" + arnum);
       field.prop("checked", sample.composite);
       field = $("#SampleCondition-" + arnum);
