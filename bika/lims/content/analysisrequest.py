@@ -7,7 +7,6 @@
 
 import sys
 from decimal import Decimal
-from operator import methodcaller
 
 from AccessControl import ClassSecurityInfo
 from bika.lims import api
@@ -38,34 +37,25 @@ from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IAnalysisRequest, ICancellable
 # Bika Permissions
 from bika.lims.permissions import ManageInvoices
-from bika.lims.permissions import SampleSample
-from bika.lims.permissions import ScheduleSampling
-from bika.lims.permissions import Verify as VerifyPermission
 # Bika Utils
 from bika.lims.utils import getUsers
 from bika.lims.utils import user_email
 from bika.lims.utils import user_fullname
 # Bika Workflow
-from bika.lims.workflow import getReviewHistoryActionsList
 from bika.lims.workflow import getTransitionDate
 from bika.lims.workflow import getTransitionUsers
-from bika.lims.workflow.analysisrequest import events
-from bika.lims.workflow.analysisrequest import guards
 from DateTime import DateTime
-from plone import api as ploneapi
 from Products.Archetypes.atapi import BaseFolder
 from Products.Archetypes.atapi import BooleanField
 from Products.Archetypes.atapi import BooleanWidget
 from Products.Archetypes.atapi import ComputedField
 from Products.Archetypes.atapi import ComputedWidget
-from Products.Archetypes.atapi import DisplayList
 from Products.Archetypes.atapi import FileField
 from Products.Archetypes.atapi import FileWidget
 from Products.Archetypes.atapi import FixedPointField
 from Products.Archetypes.atapi import ReferenceField
 from Products.Archetypes.atapi import StringField
 from Products.Archetypes.atapi import StringWidget
-from Products.Archetypes.atapi import TextAreaWidget
 from Products.Archetypes.atapi import TextField
 from Products.Archetypes.atapi import registerType
 from Products.Archetypes.config import REFERENCE_CATALOG
