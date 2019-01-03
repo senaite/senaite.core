@@ -90,10 +90,9 @@ class WorkflowAction:
 
     def get_form_value(self, form_key, object_uid, default=None):
         form = self.request.form
-        val = form.get(form_key, []) or []
-        val = val and val[0] or {}
-        val = val and val.get(object_uid, default) or default
-        return val
+        val = form.get(form_key, None) or [{}]
+        val = val[0] or {}
+        return val.get(object_uid, default)
 
     def redirect(self, redirect_url=None, message=None, level="info"):
         """Redirect with a message
