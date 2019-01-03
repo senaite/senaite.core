@@ -89,6 +89,10 @@ def upgrade(tool):
     setup.runImportStepFromProfile(profile, 'typeinfo')
     setup.runImportStepFromProfile(profile, 'content')
 
+    # Remove stale indexes from bika_catalog
+    # https://github.com/senaite/senaite.core/pull/1180
+    remove_stale_indexes_from_bika_catalog(portal)
+
     # Remove stale javascripts
     # https://github.com/senaite/senaite.core/pull/1180
     remove_stale_javascripts(portal)
@@ -1425,3 +1429,49 @@ def remove_stale_javascripts(portal):
     for js in JAVASCRIPTS_TO_REMOVE:
         logger.info("Unregistering JS %s" % js)
         portal.portal_javascripts.unregisterResource(js)
+
+
+def remove_stale_indexes_from_bika_catalog(portal):
+    """Removes stale indexes and metadata from bika_catalog. Most of these
+    indexes and metadata were used for Samples, but they are no longer used.
+    """
+    logger.info("Removing stale indexes and metadata from bika_catalog ...")
+    cat_id = "bika_catalog"
+    indexes_to_remove = [
+        "getAnalyst",
+        "getAnalysts",
+        "getAnalysisService",
+        "getClientOrderNumber",
+        "getClientReference",
+        "getClientSampleID",
+        "getContactTitle",
+        "getDateDisposed",
+        "getDateExpired",
+        "getDateOpened",
+        "getDatePublished",
+        "getInvoiced",
+        "getPreserver",
+        "getSamplePointTitle",
+        "getSamplePointUID",
+        "getSampler",
+        "getScheduledSamplingSampler",
+        "getSamplingDate",
+        "getWorksheetTemplateTitle",
+        "BatchUID",
+    ]
+    metadata_to_remove = [
+        "getAnalysts",
+        "getClientOrderNumber",
+        "getClientReference",
+        "getClientSampleID",
+        "getContactTitle",
+        "getSamplePointTitle",
+        "getAnalysisService",
+        "getDatePublished",
+    ]
+    for index in indexes_to_remove:
+        del_index(portal, cat_id, index)
+
+    for metadata in metadata_to_remove:
+        del_metadata(portal, cat_id, metadata)
+    commit_transaction(portal)
