@@ -91,9 +91,6 @@
 .ar-table tr.service {
     display: none;
 }
-.ar-table tr.service .part {
-    display: none;
-}
 .ar-table tr.service.visible {
     display: table-row;
 }
@@ -107,14 +104,6 @@
     display: inline-block;
 }
 /* /AnalysisServices */
-
-
-/* AS settings */
-.partition-label {
-    color: grey;
-    font-size: 90%;
-}
-/* /AS settings */
 
 
 /* Service Info Table */

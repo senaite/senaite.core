@@ -1168,56 +1168,6 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         info.update({})
         return info
 
-    def get_service_partitions(self, service, sampletype):
-        """Returns the Partition info for a Service and SampleType
-
-        N.B.: This is actually not used as the whole partition, preservation
-        and conservation settings are solely handled by AR Templates for all
-        selected services.
-        """
-
-        partitions = []
-
-        sampletype_uid = api.get_uid(sampletype)
-        # partition setup of this service
-        partition_setup = filter(
-            lambda p: p.get("sampletype") == sampletype_uid,
-            service.getPartitionSetup())
-
-        def get_containers(container_uids):
-            containers = []
-            for container_uid in container_uids:
-                container = api.get_object_by_uid(container_uid)
-                if container.portal_type == "ContainerTypes":
-                    containers.extend(container.getContainers())
-                else:
-                    containers.append(container)
-            return containers
-
-        for partition in partition_setup:
-            containers = get_containers(partition.get("container", []))
-            preservations = map(
-                api.get_object_by_uid, partition.get("preservation", []))
-            partitions.append({
-                "separate": partition.get("separate", False) and True or False,
-                "container": map(self.get_container_info, containers),
-                "preservations": map(
-                    self.get_preservation_info, preservations),
-                "minvol": partition.get("vol", ""),
-            })
-        else:
-            containers = [service.getContainer()] or []
-            preservations = [service.getPreservation()] or []
-            partitions.append({
-                "separate": service.getSeparate(),
-                "container": map(self.get_container_info, containers),
-                "preservations": map(
-                    self.get_preservation_info, preservations),
-                "minvol": sampletype.getMinimumVolume() or "",
-            })
-
-        return partitions
-
     def ajax_get_global_settings(self):
         """Returns the global Bika settings
         """
@@ -1413,14 +1363,6 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             for uid, obj in _services.iteritems():
                 # get the service metadata
                 metadata = self.get_service_info(obj)
-
-                # N.B.: Partitions only handled via AR Template.
-                #
-                # # Partition setup for the give sample type
-                # for st_uid, st_obj in _sampletypes.iteritems():
-                #     # remember the partition setup for this service
-                #     metadata["partitions"] = self.get_service_partitions(
-                #         obj, st_obj)
 
                 # remember the services' metadata
                 service_metadata[uid] = metadata

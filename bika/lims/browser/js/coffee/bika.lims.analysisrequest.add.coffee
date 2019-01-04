@@ -706,41 +706,6 @@ class window.AnalysisRequestAdd
       # select the service
       me.set_service arnum, uid, yes
 
-    # PARTITIONS
-    me = this
-    part_selectors = $(".part-select-#{arnum}")
-
-    $.each part_selectors, (index, part_selector) ->
-      # the selection widget of a service
-      $el = $(part_selector)
-
-      # make the selector visible
-      $el.parent().show()
-
-      # flush existing options (usually part-1)
-      $el.empty()
-
-      # service uid
-      uid = $el.attr "uid"
-
-      # lookup which part is selected for this service
-      selected_part = "part-1"
-      if uid of template.analyses_partitions
-        selected_part = template.analyses_partitions[uid]
-
-      # prepare the context for the template
-      partitions = []
-      $.each template.partitions, (index, part) ->
-        part_id = part.part_id
-        partitions.push
-          part_id: part_id
-          selected: part_id == selected_part
-      context =
-        partitions: partitions
-
-      parts = me.render_template "part-select-template", context
-      $el.append(parts)
-
 
   set_service: (arnum, uid, checked) =>
     ###
