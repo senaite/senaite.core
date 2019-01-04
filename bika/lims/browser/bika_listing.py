@@ -176,7 +176,6 @@ class WorkflowAction:
 
     def __call__(self):
         request = self.request
-        form = request.form
 
         if self.destination_url == "":
             self.destination_url = request.get_header(
