@@ -174,17 +174,6 @@
               insert-after="*"/>
 
   <javascript authenticated="True"
-              id="++resource++bika.lims.js/bika.lims.sample.js"
-              cacheable="True"
-              compression="safe"
-              conditionalcomment=""
-              cookable="True"
-              enabled="on"
-              expression=""
-              inline="False"
-              insert-after="*"/>
-
-  <javascript authenticated="True"
               id="++resource++bika.lims.js/bika.lims.reports.js"
               cacheable="True"
               compression="safe"
@@ -406,29 +395,6 @@
 
   <javascript authenticated="False"
           id="++resource++bika.lims.js/bika.lims.samplinground.print.js"
-          cacheable="True"
-          compression="safe"
-          conditionalcomment=""
-          cookable="True"
-          enabled="on"
-          expression=""
-          inline="False"
-          insert-after="*"/>
-
-
-  <javascript authenticated="False"
-          id="++resource++bika.lims.js/bika.lims.samples.print.js"
-          cacheable="True"
-          compression="safe"
-          conditionalcomment=""
-          cookable="True"
-          enabled="on"
-          expression=""
-          inline="False"
-          insert-after="*"/>
-
-  <javascript authenticated="False"
-          id="++resource++bika.lims.js/bika.lims.samples.js"
           cacheable="True"
           compression="safe"
           conditionalcomment=""

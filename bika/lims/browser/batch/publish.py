@@ -103,7 +103,6 @@ class PublishView(BrowserView):
             datalines = []
             for analysis in ar.getAnalyses(full_objects=True):
                 method = analysis.getMethod()
-                sample = ar.getSample()
                 result = analysis.getResult()
                 formatted_result = format_numeric_result(analysis, result)
                 datalines.append({_("Analysis Service"): analysis.Title(),
@@ -114,8 +113,8 @@ class PublishView(BrowserView):
             self.ars.append({
                         _("Request ID"): ar.getId(),
                                 _("Date Requested"): self.ulocalized_time(datecreated),  # requested->created
-                        _("Sample Type"): sample.getSampleType() and sample.getSampleType().Title() or '',
-                                _("Sample Point"): sample.getSamplePoint() and sample.getSamplePoint().Title() or '',
+                        _("Sample Type"): ar.getSampleType() and ar.getSampleType().Title() or '',
+                                _("Sample Point"): ar.getSamplePoint() and ar.getSamplePoint().Title() or '',
                         _("datalines"): datalines,
                         })
 

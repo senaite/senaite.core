@@ -50,7 +50,6 @@ AddPricelist = 'BIKA: Add Pricelist'
 AddSupplyOrder = 'BIKA: Add SupplyOrder'
 AddSample = 'BIKA: Add Sample'
 AddSampleMatrix = 'BIKA: Add SampleMatrix'
-AddSamplePartition = 'BIKA: Add SamplePartition'
 AddSamplePoint = 'BIKA: Add SamplePoint'
 AddSamplingDeviation = 'BIKA: Add SamplingDeviation'
 AddSamplingRound = 'BIKA: Add SamplingRound'
@@ -66,8 +65,8 @@ ADD_CONTENT_PERMISSIONS = {
     'Analysis': AddAnalysis, 'AnalysisRequest': AddAnalysisRequest,
     'Attachment': AddAttachment, 'Batch': AddBatch, 'Client': AddClient,
     'Invoice': AddInvoice, 'Method': AddMethod, 'Multifile': AddMultifile,
-    'SupplyOrder': AddSupplyOrder, 'Sample': AddSample,
-    'SampleMatrix': AddSampleMatrix, 'SamplePartition': AddSamplePartition,
+    'SupplyOrder': AddSupplyOrder,
+    'SampleMatrix': AddSampleMatrix,
     'SamplingDeviation': AddSamplingDeviation,
     'SamplingRound': AddSamplingRound, 'SubGroup': AddSubGroup, }
 
@@ -118,9 +117,6 @@ ManageLoginDetails = 'BIKA: Manage Login Details'
 Assign = 'BIKA: Assign analyses'
 Unassign = 'BIKA: Unassign analyses'
 
-# Field permissions
-EditARContact = "BIKA: Edit AR Contact"
-
 ViewLogTab = 'BIKA: View Log Tab'
 
 # Edit AR
@@ -130,21 +126,9 @@ ViewLogTab = 'BIKA: View Log Tab'
 # Only takes effect if:
 #   - The AR's 'cancellation_state' is 'active'
 #   - The AR's 'review_state' is in:
-#       'sample_registered', 'to_be_sampled', 'sampled', 'to_be_preserved',
+#       'sample_registered', 'to_be_sampled', 'to_be_preserved',
 # 'sample_due', 'sample_received', 'to_be_verified', 'attachment_due'
 EditAR = 'BIKA: Edit AR'
-
-# Edit Sample Partition
-# -----------------------------------------------------------------------------
-# Allows to set a Container and/or Preserver for a Sample Partition.
-# See AR view: Sample Partitions table and Sample Partitions tab
-#
-# Only takes effect if:
-#   - The Sample's 'cancellation_state' is 'active'
-#   - The Sample's 'review_state' is in:
-#       'sample_registered', 'to_be_sampled', 'sampled', 'to_be_preserved',
-# 'sample_due', 'sample_received', 'to_be_verified', 'attachment_due'
-EditSamplePartition = 'BIKA: Edit Sample Partition'
 
 # Edit Client
 # ----------------------------------------------
@@ -206,7 +190,6 @@ def setup_permissions(portal):
     mp(AddPricelist, ['Manager', 'Owner', 'LabManager'], 1)
     mp(AddSample, ['Manager', 'Owner', 'LabManager', 'LabClerk', 'Sampler'], 1)
     mp(AddSampleMatrix, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
-    mp(AddSamplePartition, ['Manager', 'Owner', 'LabManager', 'LabClerk', 'Sampler', 'SamplingCoordinator'], 1)
     mp(AddSamplePoint, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
     mp(AddSamplingDeviation, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
     mp(AddSRTemplate, ['Manager', 'Owner', 'LabManager'], 0)
@@ -253,8 +236,6 @@ def setup_permissions(portal):
     mp(ViewResults, ['Manager', 'LabManager', 'Analyst', 'Sampler', 'RegulatoryInspector', 'SamplingCoordinator'], 1)
     mp(EditResults, ['Manager', 'LabManager', 'Analyst'], 1)
     mp(EditFieldResults, ['Manager', 'LabManager', 'Sampler'], 1)
-    mp(EditSamplePartition, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner', 'SamplingCoordinator'], 1)
-
     mp('Access contents information', ['Authenticated'], 1)
     mp(permissions.View, ['Authenticated'], 1)
 

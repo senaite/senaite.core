@@ -10,19 +10,6 @@
     <p></p>
     <h3 style='margin-bottom:10px;margin-top:10px;'>Advanced options</h3>
     <table cellpadding="0" cellspacing="0">
- <!--
-        <tr>
-            <td><label for="wsf_sample">Sample search</label></td>
-            <td>
-                <select name="wsf_sample" id="wsf_sample">
-                    <option value="requestid">Analysis Request ID</option>
-                    <option value="sampleid">Sample ID</option>
-                    <option value="clientsid">Client Sample ID</option>
-                    <option value="sample_clientsid">Both Sample ID and Client Sample ID</option>
-                </select>
-            </td>
-        </tr>
-  -->
         <tr>
             <td style='vertical-align:top;padding-right:30px;'><label for="wsf_artoapply">Analysis Requests state</label>&nbsp;</td>
             <td>

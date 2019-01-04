@@ -48,7 +48,6 @@ class BikaGenerator(object):
                        'methods',
                        'analysisrequests',
                        'referencesamples',
-                       'samples',
                        'supplyorders',
                        'worksheets',
                        'reports',
@@ -263,7 +262,9 @@ class BikaGenerator(object):
 
         at = getToolByName(portal, 'archetype_tool')
         at.setCatalogsByType('Batch', ['bika_catalog', 'portal_catalog'])
+        # TODO Remove in >v1.3.0
         at.setCatalogsByType('Sample', ['bika_catalog', 'portal_catalog'])
+        # TODO Remove in >v1.3.0
         at.setCatalogsByType('SamplePartition',
                              ['bika_catalog', 'portal_catalog'])
         at.setCatalogsByType('ReferenceSample',
@@ -290,40 +291,16 @@ class BikaGenerator(object):
         addIndex(bc, 'cancellation_state', 'FieldIndex')
         addIndex(bc, 'Identifiers', 'KeywordIndex')
 
-        addIndex(bc, 'getAnalysisService', 'KeywordIndex')
-        addIndex(bc, 'getAnalyst', 'FieldIndex')
-        addIndex(bc, 'getAnalysts', 'KeywordIndex')
-        addIndex(bc, 'getAnalysesUIDs', 'KeywordIndex')
         addIndex(bc, 'BatchDate', 'DateIndex')
-        addIndex(bc, 'getClientOrderNumber', 'FieldIndex')
-        addIndex(bc, 'getClientReference', 'FieldIndex')
-        addIndex(bc, 'getClientSampleID', 'FieldIndex')
         addIndex(bc, 'getClientTitle', 'FieldIndex')
         addIndex(bc, 'getClientUID', 'FieldIndex')
-        addIndex(bc, 'getContactTitle', 'FieldIndex')
-        addIndex(bc, 'getDateDisposed', 'DateIndex')
-        addIndex(bc, 'getDateExpired', 'DateIndex')
-        addIndex(bc, 'getDateOpened', 'DateIndex')
-        addIndex(bc, 'getDatePublished', 'DateIndex')
         addIndex(bc, 'getDateReceived', 'DateIndex')
         addIndex(bc, 'getDateSampled', 'DateIndex')
-        addIndex(bc, 'getDisposalDate', 'DateIndex')
         addIndex(bc, 'getDueDate', 'DateIndex')
         addIndex(bc, 'getExpiryDate', 'DateIndex')
-        addIndex(bc, 'getInvoiced', 'FieldIndex')
-        addIndex(bc, 'getPreserver', 'FieldIndex')
         addIndex(bc, 'getReferenceDefinitionUID', 'FieldIndex')
-        addIndex(bc, 'getSampleID', 'FieldIndex')
-        addIndex(bc, 'getSamplePointTitle', 'FieldIndex')
-        addIndex(bc, 'getSamplePointUID', 'FieldIndex')
-        addIndex(bc, 'getSampler', 'FieldIndex')
-        addIndex(bc, 'getScheduledSamplingSampler', 'FieldIndex')
         addIndex(bc, 'getSampleTypeTitle', 'FieldIndex')
         addIndex(bc, 'getSampleTypeUID', 'FieldIndex')
-        addIndex(bc, 'getSamplingDate', 'DateIndex')
-        addIndex(bc, 'getWorksheetTemplateTitle', 'FieldIndex')
-        addIndex(bc, 'BatchUID', 'FieldIndex')
-        addIndex(bc, 'getBatchUIDs', 'KeywordIndex')
 
         # https://github.com/senaite/senaite.core/pull/1091
         addIndex(bc, 'getSupportedServices', 'KeywordIndex')
@@ -344,18 +321,8 @@ class BikaGenerator(object):
         addColumn(bc, 'review_state')
         addColumn(bc, 'inactive_state')
         addColumn(bc, 'cancellation_state')
-        addColumn(bc, 'getAnalysts')
-        addColumn(bc, 'getSampleID')
-        addColumn(bc, 'getBatchUIDs')
-        addColumn(bc, 'getClientOrderNumber')
-        addColumn(bc, 'getClientReference')
-        addColumn(bc, 'getClientSampleID')
-        addColumn(bc, 'getContactTitle')
         addColumn(bc, 'getClientTitle')
-        addColumn(bc, 'getSamplePointTitle')
         addColumn(bc, 'getSampleTypeTitle')
-        addColumn(bc, 'getAnalysisService')
-        addColumn(bc, 'getDatePublished')
         addColumn(bc, 'getDateReceived')
         addColumn(bc, 'getDateSampled')
         addColumn(bc, 'review_state')

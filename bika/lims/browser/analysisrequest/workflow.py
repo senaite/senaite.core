@@ -12,7 +12,7 @@ from string import Template
 import plone
 from DateTime import DateTime
 from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import _createObjectByType, safe_unicode
+from Products.CMFPlone.utils import safe_unicode
 from bika.lims import PMF, api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import interfaces
@@ -21,24 +21,20 @@ from bika.lims.browser.bika_listing import WorkflowAction
 from bika.lims.content.analysisspec import ResultsRangeDict
 from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.permissions import *
-from bika.lims.utils import changeWorkflowState
 from bika.lims.utils import encode_header
 from bika.lims.utils import isActive
 from bika.lims.utils import t
-from bika.lims.utils import tmpID
-from bika.lims.workflow import getCurrentState
-from bika.lims.workflow import wasTransitionPerformed
+from bika.lims.workflow import doActionFor
 from email.Utils import formataddr
 
 
+# TODO Revisit AnalysisRequestWorkflowAction class
+# This class is not only used for workflow actions taken in AnalysisRequest
+# context, but also for workflow actions taken in other contexts (e.g.Client or
+# Batch) where the triggered action is for Analysis Requests selected from a
+# listing. E.g: ClientWorkflowAction and BatchWorkflowAction.
 class AnalysisRequestWorkflowAction(AnalysesWorkflowAction):
-
     """Workflow actions taken in AnalysisRequest context.
-
-        Sample context workflow actions also redirect here
-        Applies to
-            Analysis objects
-            SamplePartition objects
     """
 
     def __call__(self):
@@ -120,188 +116,91 @@ class AnalysisRequestWorkflowAction(AnalysesWorkflowAction):
                         mapping={'error': safe_unicode(msg)})
             self.context.plone_utils.addPortalMessage(message, 'warning')
 
-    def workflow_action_save_partitions_button(self):
-        form = self.request.form
-        # Sample Partitions or AR Manage Analyses: save Partition Table
-        sample = self.context.portal_type == 'Sample' and self.context or\
-            self.context.getSample()
-        part_prefix = sample.getId() + "-P"
-        nr_existing = len(sample.objectIds())
-        nr_parts = len(form['PartTitle'][0])
-        # add missing parts
-        if nr_parts > nr_existing:
-            for i in range(nr_parts - nr_existing):
-                part = _createObjectByType("SamplePartition", sample, tmpID())
-                part.processForm()
-        # remove excess parts
-        if nr_existing > nr_parts:
-            for i in range(nr_existing - nr_parts):
-                part = sample['%s%s' % (part_prefix, nr_existing - i)]
-                analyses = part.getAnalyses()
-                for a in analyses:
-                    a.setSamplePartition(None)
-                sample.manage_delObjects(['%s%s' % (part_prefix, nr_existing - i), ])
-        # modify part container/preservation
-        for part_uid, part_id in form['PartTitle'][0].items():
-            part = sample["%s%s" % (part_prefix, part_id.split(part_prefix)[1])]
-            part.edit(
-                Container=form['getContainer'][0][part_uid],
-                Preservation=form['getPreservation'][0][part_uid],
-            )
-            part.reindexObject()
-            # Adding the Security Seal Intact checkbox's value to the container object
-            container_uid = form['getContainer'][0][part_uid]
-            uc = getToolByName(self.context, 'uid_catalog')
-            cbr = uc(UID=container_uid)
-            if cbr and len(cbr) > 0:
-                container_obj = cbr[0].getObject()
-            else:
-                continue
-            value = form.get('setSecuritySealIntact', {}).get(part_uid, '') == 'on'
-            container_obj.setSecuritySealIntact(value)
-        objects = WorkflowAction._get_selected_items(self)
-        if not objects:
-            message = _("No items have been selected")
-            self.context.plone_utils.addPortalMessage(message, 'info')
-            if self.context.portal_type == 'Sample':
-                # in samples his table is on 'Partitions' tab
-                self.destination_url = self.context.absolute_url() +\
-                    "/partitions"
-            else:
-                # in ar context this table is on 'ManageAnalyses' tab
-                self.destination_url = self.context.absolute_url() +\
-                    "/analyses"
-            self.request.response.redirect(self.destination_url)
-
     def workflow_action_save_analyses_button(self):
         form = self.request.form
-        workflow = getToolByName(self.context, 'portal_workflow')
-        bsc = self.context.bika_setup_catalog
-        action, came_from = WorkflowAction._get_form_workflow_action(self)
         # AR Manage Analyses: save Analyses
         ar = self.context
-        sample = ar.getSample()
         objects = WorkflowAction._get_selected_items(self)
-        Analyses = objects.keys()
+        objects_uids = objects.keys()
         prices = form.get("Price", [None])[0]
 
         # Hidden analyses?
         # https://jira.bikalabs.com/browse/LIMS-1324
         outs = []
-        hiddenans = form.get('Hidden', {})
-        for uid in Analyses:
-            hidden = hiddenans.get(uid, '')
-            hidden = True if hidden == 'on' else False
-            outs.append({'uid':uid, 'hidden':hidden})
+        hidden_ans = form.get('Hidden', {})
+        for uid in objects.keys():
+            hidden = hidden_ans.get(uid, '') == "on" or False
+            outs.append({'uid': uid, 'hidden': hidden})
         ar.setAnalysisServicesSettings(outs)
 
         specs = {}
-        if form.get("min", None):
-            for service_uid in Analyses:
-                service = objects[service_uid]
-                keyword = service.getKeyword()
-                specs[service_uid] = {
-                    "min": form["min"][0][service_uid],
-                    "max": form["max"][0][service_uid],
-                    "warn_min": form["warn_min"][0][service_uid],
-                    "warn_max": form["warn_max"][0][service_uid],
-                    "keyword": keyword,
-                    "uid": service_uid,
-                }
-        else:
-            for service_uid in Analyses:
-                service = objects[service_uid]
-                keyword = service.getKeyword()
-                specs[service_uid] = ResultsRangeDict(keyword=keyword,
-                                                      uid=service_uid)
-        new = ar.setAnalyses(Analyses, prices=prices, specs=specs.values())
-        # link analyses and partitions
-        # If Bika Setup > Analyses > 'Display individual sample
-        # partitions' is checked, no Partitions available.
-        # https://github.com/bikalabs/Bika-LIMS/issues/1030
-        if 'Partition' in form:
-            for service_uid, service in objects.items():
-                part_id = form['Partition'][0][service_uid]
-                part = sample[part_id]
-                analysis = ar[service.getKeyword()]
-                analysis.setSamplePartition(part)
-                analysis.reindexObject()
-                partans = part.getAnalyses()
-                partans.append(analysis)
-                part.setAnalyses(partans)
-                part.reindexObject()
+        for service_uid, service in objects.items():
+            keyword = service.getKeyword()
+            results_range = ResultsRangeDict(keyword=keyword, uid=service_uid)
+            results_range.update({
+                "min": form["min"][0][service_uid],
+                "max": form["max"][0][service_uid],
+                "warn_min": form["warn_min"][0][service_uid],
+                "warn_max": form["warn_max"][0][service_uid],
+            })
+            specs[service_uid] = results_range
 
-        if new:
-            if wasTransitionPerformed(ar, 'to_be_verified'):
-                # Apply to AR only; we don't want this transition to cascade.
-                ar.REQUEST['workflow_skiplist'].append("retract all analyses")
-                workflow.doActionFor(ar, 'retract')
-                ar.REQUEST['workflow_skiplist'].remove("retract all analyses")
+        if ar.setAnalyses(objects_uids, prices=prices, specs=specs.values()):
+            doActionFor(ar, "rollback_to_receive")
+
+        # Reindex the analyses
+        for analysis in ar.objectValues("Analysis"):
+            analysis.reindexObject()
 
         message = PMF("Changes saved.")
         self.context.plone_utils.addPortalMessage(message, 'info')
         self.destination_url = self.context.absolute_url()
         self.request.response.redirect(self.destination_url)
 
-    def workflow_action_preserve(self):
-        form = self.request.form
-        workflow = getToolByName(self.context, 'portal_workflow')
-        action, came_from = WorkflowAction._get_form_workflow_action(self)
-        checkPermission = self.context.portal_membership.checkPermission
-        # Partition Preservation
-        # the partition table shown in AR and Sample views sends it's
-        # action button submits here.
-        objects = WorkflowAction._get_selected_items(self)
+    def workflow_action_sample(self):
+        # TODO Workflow - Analysis Request - this should be managed by the guard
+        if IAnalysisRequest.providedBy(self.context):
+            objects = [{api.get_uid(self.context): self.context}]
+        else:
+            objects = self._get_selected_items(filter_active=True)
         transitioned = []
-        incomplete = []
-        for obj_uid, obj in objects.items():
-            part = obj
-            # can't transition inactive items
-            if workflow.getInfoFor(part, 'inactive_state', '') == 'inactive':
+        for uid, ar in objects.items():
+            sampler = self.get_form_value("Sampler", uid, default="")
+            sampled = self.get_form_value("getDateSampled", uid, default="")
+            if not sampler or not sampled:
                 continue
-            if not checkPermission(PreserveSample, part):
+            ar.setSampler(sampler)
+            ar.setDateSampled(DateTime(sampled))
+            success, message = doActionFor(ar, "sample")
+            if success:
+                transitioned.append(ar.getId())
+        message = _("No changes made")
+        if transitioned:
+            message = _("Saved items: {}".format(", ".join(transitioned)))
+        self.redirect(message=message)
+
+    def workflow_action_preserve(self):
+        # TODO Workflow - Analysis Request - this should be managed by the guard
+        if IAnalysisRequest.providedBy(self.context):
+            objects = [{api.get_uid(self.context): self.context}]
+        else:
+            objects = self._get_selected_items(filter_active=True,
+                                               permissions=[PreserveSample])
+        transitioned = []
+        for uid, ar in objects.items():
+            preserver = self.get_form_value("Preserver", uid, default="")
+            preserved = self.get_form_value("getDatePreserved", uid, default="")
+            if not preserver or not preserved:
                 continue
-            # grab this object's Preserver and DatePreserved from the form
-            Preserver = form['getPreserver'][0][obj_uid].strip()
-            Preserver = Preserver and Preserver or ''
-            DatePreserved = form['getDatePreserved'][0][obj_uid].strip()
-            DatePreserved = DatePreserved and DateTime(DatePreserved) or ''
-            # write them to the sample
-            part.setPreserver(Preserver)
-            part.setDatePreserved(DatePreserved)
-            # transition the object if both values are present
-            if Preserver and DatePreserved:
-                workflow.doActionFor(part, action)
-                transitioned.append(part.id)
-            else:
-                incomplete.append(part.id)
-            part.reindexObject()
-            part.aq_parent.reindexObject()
-        message = None
-        if len(transitioned) > 1:
-            message = _('${items} are waiting to be received.',
-                        mapping={'items': safe_unicode(', '.join(transitioned))})
-            self.context.plone_utils.addPortalMessage(message, 'info')
-        elif len(transitioned) == 1:
-            message = _('${item} is waiting to be received.',
-                        mapping={'item': safe_unicode(', '.join(transitioned))})
-            self.context.plone_utils.addPortalMessage(message, 'info')
-        if not message:
-            message = _('No changes made.')
-            self.context.plone_utils.addPortalMessage(message, 'info')
-
-        if len(incomplete) > 1:
-            message = _('${items} are missing Preserver or Date Preserved',
-                        mapping={'items': safe_unicode(', '.join(incomplete))})
-            self.context.plone_utils.addPortalMessage(message, 'error')
-        elif len(incomplete) == 1:
-            message = _('${item} is missing Preserver or Preservation Date',
-                        mapping={'item': safe_unicode(', '.join(incomplete))})
-            self.context.plone_utils.addPortalMessage(message, 'error')
-
-        self.destination_url = self.request.get_header("referer",
-                               self.context.absolute_url())
-        self.request.response.redirect(self.destination_url)
+            ar.setPreserver(preserver)
+            ar.setDatePreserved(DateTime(preserved))
+            success, message = doActionFor(ar, "preserve")
+            if success:
+                transitioned.append(ar.getId())
+        message = _("No changes made")
+        if transitioned:
+            message = _("Saved items: {}".format(", ".join(transitioned)))
+        self.redirect(message=message)
 
     def workflow_action_receive(self):
         action, came_from = WorkflowAction._get_form_workflow_action(self)
@@ -346,7 +245,6 @@ class AnalysisRequestWorkflowAction(AnalysesWorkflowAction):
         self.request.response.redirect(referer)
 
     def workflow_action_publish(self):
-        action, came_from = WorkflowAction._get_form_workflow_action(self)
         if not isActive(self.context):
             message = _('Item is inactive.')
             self.context.plone_utils.addPortalMessage(message, 'info')

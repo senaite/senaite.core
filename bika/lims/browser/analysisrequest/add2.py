@@ -1107,7 +1107,6 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             "client_sample_id": obj.getClientSampleID(),
             "client_reference": obj.getClientReference(),
             "sampling_workflow_enabled": obj.getSamplingWorkflowEnabled(),
-            "adhoc": obj.getAdHoc(),
             "remarks": obj.getRemarks(),
         })
         return info
@@ -1168,56 +1167,6 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         info = self.get_base_info(obj)
         info.update({})
         return info
-
-    def get_service_partitions(self, service, sampletype):
-        """Returns the Partition info for a Service and SampleType
-
-        N.B.: This is actually not used as the whole partition, preservation
-        and conservation settings are solely handled by AR Templates for all
-        selected services.
-        """
-
-        partitions = []
-
-        sampletype_uid = api.get_uid(sampletype)
-        # partition setup of this service
-        partition_setup = filter(
-            lambda p: p.get("sampletype") == sampletype_uid,
-            service.getPartitionSetup())
-
-        def get_containers(container_uids):
-            containers = []
-            for container_uid in container_uids:
-                container = api.get_object_by_uid(container_uid)
-                if container.portal_type == "ContainerTypes":
-                    containers.extend(container.getContainers())
-                else:
-                    containers.append(container)
-            return containers
-
-        for partition in partition_setup:
-            containers = get_containers(partition.get("container", []))
-            preservations = map(
-                api.get_object_by_uid, partition.get("preservation", []))
-            partitions.append({
-                "separate": partition.get("separate", False) and True or False,
-                "container": map(self.get_container_info, containers),
-                "preservations": map(
-                    self.get_preservation_info, preservations),
-                "minvol": partition.get("vol", ""),
-            })
-        else:
-            containers = [service.getContainer()] or []
-            preservations = [service.getPreservation()] or []
-            partitions.append({
-                "separate": service.getSeparate(),
-                "container": map(self.get_container_info, containers),
-                "preservations": map(
-                    self.get_preservation_info, preservations),
-                "minvol": sampletype.getMinimumVolume() or "",
-            })
-
-        return partitions
 
     def ajax_get_global_settings(self):
         """Returns the global Bika settings
@@ -1414,14 +1363,6 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             for uid, obj in _services.iteritems():
                 # get the service metadata
                 metadata = self.get_service_info(obj)
-
-                # N.B.: Partitions only handled via AR Template.
-                #
-                # # Partition setup for the give sample type
-                # for st_uid, st_obj in _sampletypes.iteritems():
-                #     # remember the partition setup for this service
-                #     metadata["partitions"] = self.get_service_partitions(
-                #         obj, st_obj)
 
                 # remember the services' metadata
                 service_metadata[uid] = metadata
@@ -1625,50 +1566,6 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                 msg = _("Field '{}' is required".format(field))
                 fielderrors[fieldname] = msg
 
-            # Selected Analysis UIDs
-            selected_analysis_uids = record.get("Analyses", [])
-
-            # Partitions defined in Template
-            template_parts = {}
-            template_uid = record.get("Template_uid")
-            if template_uid:
-                template = api.get_object_by_uid(template_uid)
-                for part in template.getPartitions():
-                    # remember the part setup by part_id
-                    template_parts[part.get("part_id")] = part
-
-            # The final data structure should look like this:
-            # [{"part_id": "...", "container_uid": "...", "services": []}]
-            partitions = {}
-            parts = record.pop("Parts", [])
-            for part in parts:
-                part_id = part.get("part")
-                service_uid = part.get("uid")
-                # skip unselected Services
-                if service_uid not in selected_analysis_uids:
-                    continue
-                # Container UID for this part
-                container_uids = []
-                template_part = template_parts.get(part_id)
-                if template_part:
-                    container_uid = template_part.get("container_uid")
-                    if container_uid:
-                        container_uids.append(container_uid)
-
-                # remember the part id and the services
-                if part_id not in partitions:
-                    partitions[part_id] = {
-                        "part_id": part_id,
-                        "container_uid": container_uids,
-                        "services": [service_uid],
-                    }
-                else:
-                    partitions[part_id]["services"].append(service_uid)
-
-            # Inject the Partitions to the record (will be picked up during the
-            # AR creation)
-            record["Partitions"] = partitions.values()
-
             # Process valid record
             valid_record = dict()
             for fieldname, fieldvalue in record.iteritems():
@@ -1694,6 +1591,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             client = self.get_object_by_uid(client_uid)
 
             if not client:
+                actions.resume()
                 raise RuntimeError("No client found")
 
             # get the specifications and pass them to the AR create function.
@@ -1708,6 +1606,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                     specifications=specifications
                 )
             except (KeyError, RuntimeError) as e:
+                actions.resume()
                 errors["message"] = e.message
                 return {"errors": errors}
             # We keep the title to check if AR is newly created

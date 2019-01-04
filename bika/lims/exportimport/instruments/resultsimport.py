@@ -331,7 +331,6 @@ class InstrumentTXTResultsFileParser(InstrumentResultsFileParser):
 class AnalysisResultsImporter(Logger):
 
     def __init__(self, parser, context,
-                 idsearchcriteria=None,
                  override=[False, False],
                  allowed_ar_states=None,
                  allowed_analysis_states=None,
@@ -342,7 +341,7 @@ class AnalysisResultsImporter(Logger):
         self._allowed_ar_states = allowed_ar_states
         self._allowed_analysis_states = allowed_analysis_states
         self._override = override
-        self._idsearch = idsearchcriteria
+        self._idsearch = ['getId', 'getClientSampleID']
         self._priorizedsearchcriteria = ''
         self.bsc = getToolByName(self.context, 'bika_setup_catalog')
         self.bac = getToolByName(self.context, 'bika_analysis_catalog')
@@ -392,13 +391,6 @@ class AnalysisResultsImporter(Logger):
                           parsed result is empty.
         """
         return self._override
-
-    def getIdSearchCriteria(self):
-        """ Returns the search criteria for retrieving analyses.
-            Example:
-            serachcriteria=['getId', 'getSampleID', 'getClientSampleID']
-        """
-        return self._idsearch
 
     def getKeywordsToBeExcluded(self):
         """ Returns an array with the analysis codes/keywords to be excluded
@@ -451,8 +443,6 @@ class AnalysisResultsImporter(Logger):
         attachments = {}
         infile = self._parser.getInputFile()
 
-        # searchcriteria = self.getIdSearchCriteria()
-        # self.log(_("Search criterias: %s") % (', '.join(searchcriteria)))
         for objid, results in self._parser.getRawResults().iteritems():
             # Allowed more than one result for the same sample and analysis.
             # Needed for calibration tests
@@ -485,8 +475,7 @@ class AnalysisResultsImporter(Logger):
                     # How can we create a ReferenceAnalysis if we don't know
                     # which ReferenceSample we might use?
                     # Ok. The objid HAS to be the ReferenceSample code.
-                    refsample = self.bc(portal_type='ReferenceSample',
-                                        id=objid)
+                    refsample = self.bc(portal_type='ReferenceSample', id=objid)
                     if refsample and len(refsample) == 1:
                         refsample = refsample[0].getObject()
 
@@ -700,13 +689,9 @@ class AnalysisResultsImporter(Logger):
     def _getObjects(self, objid, criteria, states):
         # self.log("Criteria: %s %s") % (criteria, obji))
         obj = []
-        if criteria == 'arid':
+        if criteria in ['arid']:
             obj = self.ar_catalog(
                            getId=objid,
-                           review_state=states)
-        elif criteria == 'sid':
-            obj = self.ar_catalog(
-                           getSampleID=objid,
                            review_state=states)
         elif criteria == 'csid':
             obj = self.ar_catalog(
@@ -733,7 +718,6 @@ class AnalysisResultsImporter(Logger):
     def _getZODBAnalyses(self, objid):
         """ Searches for analyses from ZODB to be filled with results.
             objid can be either AR ID or Worksheet's Reference Sample IDs.
-            It uses the getIdSearchCriteria() for searches
             Only analyses that matches with getAnallowedAnalysisStates() will
             be returned. If not a ReferenceAnalysis, getAllowedARStates() is
             also checked.
@@ -741,9 +725,7 @@ class AnalysisResultsImporter(Logger):
         """
         # ars = []
         analyses = []
-        # HACK: Use always the full search workflow
-        # searchcriteria = self.getIdSearchCriteria()
-        searchcriteria = ['getId', 'getSampleID', 'getClientSampleID']
+        searchcriteria = ['getId', 'getClientSampleID']
         allowed_ar_states = self.getAllowedARStates()
         allowed_an_states = self.getAllowedAnalysisStates()
         # allowed_ar_states_msg = [_(s) for s in allowed_ar_states]
@@ -787,10 +769,9 @@ class AnalysisResultsImporter(Logger):
                 return self._getZODBAnalysesFromAR(objid, None,
                                                    allowedsearches, arstates)
         else:
-            sortorder = ['arid', 'sid', 'csid', 'aruid']
+            sortorder = ['arid', 'csid', 'aruid']
             for crit in sortorder:
                 if (crit == 'arid' and 'getId' in allowedsearches) \
-                    or (crit == 'sid' and 'getSampleID' in allowedsearches) \
                     or (crit == 'csid' and 'getClientSampleID'
                                 in allowedsearches) \
                         or (crit == 'aruid' and 'getId' in allowedsearches):

@@ -5,6 +5,9 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
+import time
+import transaction
+
 from Products.DCWorkflow.Guard import Guard
 from Products.ZCatalog.ProgressHandler import ZLogHandler
 from bika.lims import api
@@ -14,7 +17,8 @@ from bika.lims.catalog.analysisrequest_catalog import \
     CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.catalog.worksheet_catalog import CATALOG_WORKSHEET_LISTING
 from bika.lims.config import PROJECTNAME as product
-from bika.lims.interfaces import IDuplicateAnalysis, IReferenceAnalysis
+from bika.lims.interfaces import IDuplicateAnalysis, IReferenceAnalysis, \
+    INumberGenerator
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
 from bika.lims.workflow import changeWorkflowState, ActionHandlerPool
@@ -23,8 +27,27 @@ from bika.lims.workflow import doActionFor as do_action_for
 from bika.lims.workflow.analysis.events import remove_analysis_from_worksheet, \
     reindex_request
 
+from zope.component import getUtility
+
 version = '1.3.0'  # Remember version number in metadata.xml and setup.py
 profile = 'profile-{0}:default'.format(product)
+
+PROXY_FIELDS_TO_PURGE = [
+    "ClientReference",
+    "ClientSampleID",
+    "Composite",
+    "DateReceived",
+    "DateSampled",
+    "EnvironmentalConditions",
+    "SampleCondition",
+    "SamplePoint",
+    "SampleType",
+    "Sampler",
+    "SamplingDate",
+    "SamplingDeviation",
+    "ScheduledSamplingSampler",
+    "StorageLocation",
+]
 
 PORTLETS_TO_PURGE = [
     'accreditation-pt',
@@ -42,6 +65,12 @@ PORTLETS_TO_PURGE = [
     'portlet_verified-pt'
 ]
 
+JAVASCRIPTS_TO_REMOVE = [
+    "++resource++bika.lims.js/bika.lims.sample.js",
+    "++resource++bika.lims.js/bika.lims.samples.js",
+    "++resource++bika.lims.js/bika.lims.samples.print.js",
+    "++resource++bika.lims.js/bika.lims.utils.calcs.js",
+]
 
 @upgradestep(product, version)
 def upgrade(tool):
@@ -60,6 +89,14 @@ def upgrade(tool):
     # -------- ADD YOUR STUFF BELOW --------
     setup.runImportStepFromProfile(profile, 'typeinfo')
     setup.runImportStepFromProfile(profile, 'content')
+
+    # Remove stale indexes from bika_catalog
+    # https://github.com/senaite/senaite.core/pull/1180
+    remove_stale_indexes_from_bika_catalog(portal)
+
+    # Remove stale javascripts
+    # https://github.com/senaite/senaite.core/pull/1180
+    remove_stale_javascripts(portal)
 
     # Remove QC reports and gpw dependency
     # https://github.com/senaite/senaite.core/pull/1058
@@ -92,6 +129,14 @@ def upgrade(tool):
     # Reindex Clients, so that the fields are searchable by the catalog
     # https://github.com/senaite/senaite.core/pull/1080
     reindex_clients(portal)
+
+    # Port Analysis Request Proxy Fields
+    # https://github.com/senaite/senaite.core/pull/1180
+    port_analysis_request_proxy_fields(portal)
+
+    # Change ID Formatting of Analysis Request to {sampleType}-{seq:04d}
+    # https://github.com/senaite/senaite.core/pull/1180
+    change_analysis_requests_id_formatting(portal)
 
     # Add catalog indexes for reference sample handling in Worksheets
     # https://github.com/senaite/senaite.core/pull/1091
@@ -446,6 +491,9 @@ def update_workflows(portal):
     logger.info("Updating workflows ...")
 
     # IMPORTANT: The order of function calls is important!
+    # The following is going to be highly consuming tasks, so better to first
+    # do a transaction commit to free as much resources as possible
+    commit_transaction(portal)
 
     # Need to know first for which workflows we'll need later to update role
     # mappings. This will allow us to update role mappings for those required
@@ -481,14 +529,21 @@ def update_workflows(portal):
     # Fix cancelled analyses inconsistencies
     fix_cancelled_analyses_inconsistencies(portal)
 
+    # Decouple analysis requests from samples
+    decouple_analysisrequests_from_sample(portal)
+
     # Fix cancelled analysis requests inconsistencies
     decouple_analysis_requests_from_cancellation_workflow(portal)
+
+    # Fix Analysis Requests in sampled status
+    fix_analysisrequests_in_sampled_status(portal)
 
     # Update role mappings
     update_role_mappings(portal, rm_queries)
 
     # Rollback to receive inconsistent ARs
     rollback_to_receive_inconsistent_ars(portal)
+    commit_transaction(portal)
 
 
 def remove_orphan_duplicates(portal):
@@ -541,6 +596,7 @@ def remove_rejected_duplicates(portal):
 
         # Remove the duplicate
         orphan.aq_parent.manage_delObjects([orphan.getId()])
+    commit_transaction(portal)
 
 
 def remove_orphan_reference_analyses(portal):
@@ -658,6 +714,7 @@ def assign_retracted_to_retests(portal):
             logger.info("Reindexing retests: {}/{}"
                         .format(num, total))
         analysis.reindexObject(idxs="isRetest")
+    commit_transaction(portal)
 
 
 def fix_cancelled_analyses_inconsistencies(portal):
@@ -733,29 +790,14 @@ def get_rm_candidates_for_ar_workflow(portal):
     logger.info("Getting candidates for role mappings: {} ...".format(wf_id))
     workflow = get_workflow_by_id(portal, wf_id)
     candidates = list()
-
-    # Analysis Request workflow: rollback_to_receive
-    if "rollback_to_receive" not in workflow.transitions:
+    if "Field: Edit Priority" not in workflow.states.verified.permissions:
+        # Since we've introduced field-specific permissions in ar_workflow, there
+        # is no choice: we are forced to do a role mappings for all ARs :(
         candidates.append(
             (wf_id,
-             dict(portal_type="AnalysisRequest",
-                  review_state=["to_be_verified"]),
+             dict(portal_type="AnalysisRequest"),
              CATALOG_ANALYSIS_REQUEST_LISTING))
 
-    # Analysis Request workflow: cancel permissions - do not allow cancel
-    # transition from attachment_due and to_be_verified states
-    candidates.append(
-        (wf_id,
-        dict(portal_type="AnalysisRequest",
-             review_state=["attachment_due", "to_be_verified"]),
-             CATALOG_ANALYSIS_REQUEST_LISTING))
-
-    # To ensure the rollback_to_receive is possible from a verified state
-    candidates.append(
-        (wf_id,
-         dict(portal_type="AnalysisRequest",
-              review_state=["verified"]),
-         CATALOG_ANALYSIS_REQUEST_LISTING))
     return candidates
 
 
@@ -1055,7 +1097,8 @@ def hide_samples(portal):
     """Removes samples views from everywhere, related indexes, etc.
     """
     logger.info("Removing Samples from navbar ...")
-    portal.manage_delObjects(["samples"])
+    if "samples" in portal:
+        portal.manage_delObjects(["samples"])
 
     def remove_samples_action(content_type):
         type_info = content_type.getTypeInfo()
@@ -1081,12 +1124,7 @@ def hide_samples(portal):
     logger.info("Removing actions from inside Samples ...")
     for sample in api.search(dict(portal_type="Sample"), "bika_catalog"):
         remove_actions_from_sample(api.get_object(sample))
-
-    # Remove indexes and metadata not used anymore
-    del_index(portal, "bika_catalog", "getSampleUID")
-    del_index(portal, CATALOG_ANALYSIS_LISTING, "getSampleUID")
-    del_index(portal,CATALOG_ANALYSIS_REQUEST_LISTING, "getSampleUID")
-    del_metadata(portal, CATALOG_ANALYSIS_REQUEST_LISTING, "getSampleUID")
+    commit_transaction(portal)
 
 
 def add_listing_js_to_portal_javascripts(portal):
@@ -1139,6 +1177,7 @@ def fix_ar_analyses_inconsistencies(portal):
     fix_ar_analyses("invalid")
     fix_ar_analyses("rejected")
     pool.resume()
+    commit_transaction(portal)
 
 
 def add_worksheet_progress_percentage(portal):
@@ -1198,3 +1237,242 @@ def decouple_analysis_requests_from_cancellation_workflow(portal):
         workflow.updateRoleMappingsFor(analysis_request)
         # Reindex
         analysis_request.reindexObject(idxs=["cancellation_state"])
+
+
+def decouple_analysisrequests_from_sample(portal):
+    logger.info("Removing sample workflow ...")
+    del_index(portal, "bika_catalog", "getSampleID")
+    del_index(portal, "bika_catalog", "getSampleUID")
+    del_index(portal, "bika_catalog", "getDisposalDate")
+    del_index(portal, "bika_catalog", "getBatchUIDs")
+    del_index(portal, CATALOG_ANALYSIS_LISTING, "getSamplePartitionUID")
+    del_index(portal, CATALOG_ANALYSIS_LISTING, "getSampleUID")
+    del_index(portal, CATALOG_ANALYSIS_LISTING, "getSampleConditionUID")
+    del_index(portal, CATALOG_ANALYSIS_REQUEST_LISTING, "getSampleID")
+    del_index(portal, CATALOG_ANALYSIS_REQUEST_LISTING, "getSampleUID")
+    del_metadata(portal, "bika_catalog", "getSampleID")
+    del_metadata(portal, "bika_catalog", "getBatchUIDs")
+    del_metadata(portal, CATALOG_ANALYSIS_LISTING, "getExpiryDate")
+    del_metadata(portal, CATALOG_ANALYSIS_LISTING, "getSamplePartitionID")
+    del_metadata(portal, CATALOG_ANALYSIS_REQUEST_LISTING, "getSampleID")
+    del_metadata(portal, CATALOG_ANALYSIS_REQUEST_LISTING, "getSampleUID")
+    del_metadata(portal, CATALOG_ANALYSIS_REQUEST_LISTING, "getSampleURL")
+
+
+def fix_analysisrequests_in_sampled_status(portal):
+    logger.info("Resolving status 'sample' from Analysis Requests ...")
+    wf_id = "bika_ar_workflow"
+    wf_tool = api.get_tool("portal_workflow")
+    workflow = wf_tool.getWorkflowById(wf_id)
+    query = dict(portal_type="AnalysisRequest", review_state="sampled")
+    brains = api.search(query, CATALOG_ANALYSIS_REQUEST_LISTING)
+    total = len(brains)
+    for num, brain in enumerate(brains):
+        if num % 100 == 0:
+            logger.info("Resolving state to 'sample_due': {}/{}"
+                        .format(num, total))
+        analysis_request = api.get_object(brain)
+        changeWorkflowState(analysis_request, wf_id, "sample_due")
+        workflow.updateRoleMappingsFor(analysis_request)
+        analysis_request.reindexObject(idxs=["review_state"])
+
+
+def port_analysis_request_proxy_fields(portal):
+    logger.info("Purging Analysis Request Proxy Fields ...")
+
+    def set_value(analysis_request, field_name, field_value):
+        ar_field = analysis_request.Schema()[field_name]
+        if ar_field.type == 'uidreference':
+            if api.is_object(field_value):
+                field_value = api.get_uid(field_value)
+            elif not api.is_uid(field_value):
+                return
+        ar_field.set(analysis_request, field_value)
+
+    def unlink_proxy_fields(sample_brain, analysis_request=None):
+        processed_fields = []
+        sample_obj = api.get_object(sample_brain)
+        if not analysis_request:
+            for ar in sample_obj.getAnalysisRequests():
+                processed_fields.extend(unlink_proxy_fields(sample_brain, ar))
+                ar.reindexObject()
+            return list(set(processed_fields))
+
+        for field_id in PROXY_FIELDS_TO_PURGE:
+            field_value = None
+            try:
+                field = sample_obj.Schema().getField(field_id)
+                field_value = field.get(sample_obj)
+            except AttributeError:
+                logger.warn("Field {} not found for {}"
+                            .format(field_id, sample_obj.getId()))
+            if not field_value:
+                continue
+            set_value(analysis_request, field_id, field_value)
+            processed_fields.append(field_id)
+        sample_obj.setMigrated(True)
+        sample_obj.reindexObject(idxs="isValid")
+        return processed_fields
+
+    start = time.time()
+
+    # We will use this index to keep track of the Samples that have been
+    # processed already. This index will be added later for Reference Samples,
+    # so is not an index only for this migration stuff, but we add the index
+    # here so the samples processed are labeled as soon as possible
+    add_index(portal, catalog_id="bika_catalog",
+              index_name="isValid",
+              index_attribute="isValid",
+              index_metatype="BooleanIndex")
+
+    query = dict(portal_type="Sample", isValid=False)
+    brains = api.search(query, "bika_catalog")
+    total = len(brains)
+    need_commit = False
+    for num, brain in enumerate(brains):
+        need_commit = True
+        if num % 10 == 0:
+            logger.info("Purging Analysis Requests' ProxyField: {}/{}"
+                        .format(num, total))
+        processed_fields = unlink_proxy_fields(brain)
+        if num > 0 and num % 1000 == 0:
+            # This a very RAM consuming thing, so better to keep doing
+            # transaction commits every now and then
+            commit_transaction(portal)
+            need_commit = False
+
+    if need_commit:
+        commit_transaction(portal)
+    end = time.time()
+    logger.info("Purging Analysis Request Proxy Fields took {:.2f}s"
+                .format(end - start))
+
+def commit_transaction(portal):
+    start = time.time()
+    logger.info("Commit transaction ...")
+    transaction.commit()
+    end = time.time()
+    logger.info("Commit transaction ... Took {:.2f}s [DONE]"
+                .format(end - start))
+
+
+def change_analysis_requests_id_formatting(portal, p_type="AnalysisRequest"):
+    """Applies the system's Sample ID Formatting to Analysis Request
+    """
+    ar_id_format = dict(
+            form='{sampleType}-{seq:04d}',
+            portal_type='AnalysisRequest',
+            prefix='analysisrequest',
+            sequence_type='generated',
+            counter_type='',
+            split_length=1)
+    bs = portal.bika_setup
+    id_formatting = bs.getIDFormatting()
+    ar_format = filter(lambda id: id["portal_type"] == p_type, id_formatting)
+    if p_type=="AnalysisRequest":
+        logger.info("Set ID Format for Analysis Request portal_type ...")
+        if not ar_format or "sample" in ar_format[0]["form"]:
+            # Copy the ID formatting set for Sample
+            change_analysis_requests_id_formatting(portal, p_type="Sample")
+            return
+        else:
+            logger.info("ID Format for Analysis Request already set: {} [SKIP]"
+                        .format(ar_format[0]["form"]))
+            return
+    else:
+        ar_format = ar_format and ar_format[0].copy() or ar_id_format
+
+    # Set the Analysis Request ID Format
+    ar_id_format.update(ar_format)
+    ar_id_format["portal_type"] ="AnalysisRequest"
+    ar_id_format["prefix"] = "analysisrequest"
+    set_id_format(portal, ar_id_format)
+
+    # Find out the last ID for Sample and reseed AR to prevent ID already taken
+    # errors on AR creation
+    if p_type == "Sample":
+        number_generator = getUtility(INumberGenerator)
+        ar_keys = dict()
+        for key, value in number_generator.storage.items():
+            if "sample-" in key:
+                ar_key = key.replace("sample-", "analysisrequest-")
+                ar_keys[ar_key] = api.to_int(value, 0)
+
+        for key, value in ar_keys.items():
+            logger.info("Seeding {} to {}".format(key, value))
+            number_generator.set_number(key, value)
+
+
+def set_id_format(portal, format):
+    """Sets the id formatting in setup for the format provided
+    """
+    bs = portal.bika_setup
+    if 'portal_type' not in format:
+        return
+    logger.info("Applying format {} for {}".format(format.get('form', ''),
+                                                   format.get(
+                                                       'portal_type')))
+    portal_type = format['portal_type']
+    ids = list()
+    id_map = bs.getIDFormatting()
+    for record in id_map:
+        if record.get('portal_type', '') == portal_type:
+            continue
+        ids.append(record)
+    ids.append(format)
+    bs.setIDFormatting(ids)
+
+
+def remove_stale_javascripts(portal):
+    """Removes stale javascripts
+    """
+    logger.info("Removing stale javascripts ...")
+    for js in JAVASCRIPTS_TO_REMOVE:
+        logger.info("Unregistering JS %s" % js)
+        portal.portal_javascripts.unregisterResource(js)
+
+
+def remove_stale_indexes_from_bika_catalog(portal):
+    """Removes stale indexes and metadata from bika_catalog. Most of these
+    indexes and metadata were used for Samples, but they are no longer used.
+    """
+    logger.info("Removing stale indexes and metadata from bika_catalog ...")
+    cat_id = "bika_catalog"
+    indexes_to_remove = [
+        "getAnalyst",
+        "getAnalysts",
+        "getAnalysisService",
+        "getClientOrderNumber",
+        "getClientReference",
+        "getClientSampleID",
+        "getContactTitle",
+        "getDateDisposed",
+        "getDateExpired",
+        "getDateOpened",
+        "getDatePublished",
+        "getInvoiced",
+        "getPreserver",
+        "getSamplePointTitle",
+        "getSamplePointUID",
+        "getSampler",
+        "getScheduledSamplingSampler",
+        "getSamplingDate",
+        "getWorksheetTemplateTitle",
+        "BatchUID",
+    ]
+    metadata_to_remove = [
+        "getAnalysts",
+        "getClientOrderNumber",
+        "getClientReference",
+        "getClientSampleID",
+        "getContactTitle",
+        "getSamplePointTitle",
+        "getAnalysisService",
+        "getDatePublished",
+    ]
+    for index in indexes_to_remove:
+        del_index(portal, cat_id, index)
+
+    for metadata in metadata_to_remove:
+        del_metadata(portal, cat_id, metadata)
+    commit_transaction(portal)

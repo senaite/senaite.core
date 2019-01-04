@@ -61,8 +61,6 @@ class window.AnalysisRequestAdd
     $("body").on "click", "tr.category", @on_service_category_click
     # Save button clicked
     $("body").on "click", "[name='save_button']", @on_form_submit
-    # AdHoc Checkbox clicked
-    $("body").on "click", "tr[fieldname=AdHoc] input[type='checkbox']", @recalculate_records
     # Composite Checkbox clicked
     $("body").on "click", "tr[fieldname=Composite] input[type='checkbox']", @recalculate_records
     # InvoiceExclude Checkbox clicked
@@ -599,10 +597,6 @@ class window.AnalysisRequestAdd
     value = sample.client_reference
     field.val value
 
-    # set adhoc
-    field = $("#AdHoc-#{arnum}")
-    field.prop "checked", sample.adhoc
-
     # set composite
     field = $("#Composite-#{arnum}")
     field.prop "checked", sample.composite
@@ -711,41 +705,6 @@ class window.AnalysisRequestAdd
     $.each template.service_uids, (index, uid) ->
       # select the service
       me.set_service arnum, uid, yes
-
-    # PARTITIONS
-    me = this
-    part_selectors = $(".part-select-#{arnum}")
-
-    $.each part_selectors, (index, part_selector) ->
-      # the selection widget of a service
-      $el = $(part_selector)
-
-      # make the selector visible
-      $el.parent().show()
-
-      # flush existing options (usually part-1)
-      $el.empty()
-
-      # service uid
-      uid = $el.attr "uid"
-
-      # lookup which part is selected for this service
-      selected_part = "part-1"
-      if uid of template.analyses_partitions
-        selected_part = template.analyses_partitions[uid]
-
-      # prepare the context for the template
-      partitions = []
-      $.each template.partitions, (index, part) ->
-        part_id = part.part_id
-        partitions.push
-          part_id: part_id
-          selected: part_id == selected_part
-      context =
-        partitions: partitions
-
-      parts = me.render_template "part-select-template", context
-      $el.append(parts)
 
 
   set_service: (arnum, uid, checked) =>

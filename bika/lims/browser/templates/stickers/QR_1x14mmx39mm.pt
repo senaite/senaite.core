@@ -15,10 +15,12 @@
     If c), both analysis_request_object and sample_partition_object will be None
 -->
 <tal:sticker define="
+    portal_state      context/@@plone_portal_state;
+    portal_url        portal_state/portal_url;
     item              view/current_item;
-    ar_id             python:item[0].getId() if item[0] else '';
-    sample            python:item[1];
-    client_sample_id  python:sample.getClientSampleID();">
+    ar                python:item[0];
+    ar_id             python:ar.getId();
+    client_sample_id  python:ar.getClientSampleID() or '';">
 
     <div class='qrcode'
          data-size="36"

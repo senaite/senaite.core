@@ -26,7 +26,6 @@ def Import(context, request):
         form['instrument_results_file']
     artoapply = form['artoapply']
     override = form['results_override']
-    sample = form.get('sample', 'requestid')
     instrument = form.get('instrument', None)
     errors = []
     logs = []
@@ -53,19 +52,8 @@ def Import(context, request):
         elif override == 'overrideempty':
             over = [True, True]
 
-        sam = ['getRequestID', 'getSampleID', 'getClientSampleID']
-        if sample == 'requestid':
-            sam = ['getRequestID']
-        if sample == 'sampleid':
-            sam = ['getSampleID']
-        elif sample == 'clientsid':
-            sam = ['getClientSampleID']
-        elif sample == 'sample_clientsid':
-            sam = ['getSampleID', 'getClientSampleID']
-
         importer = LC2040C_Importer(parser=parser,
                                     context=context,
-                                    idsearchcriteria=sam,
                                     allowed_ar_states=status,
                                     allowed_analysis_states=None,
                                     override=over,
@@ -165,11 +153,11 @@ class TSVParser(InstrumentCSVResultsFileParser):
 
 class LC2040C_Importer(AnalysisResultsImporter):
 
-    def __init__(self, parser, context, idsearchcriteria, override,
+    def __init__(self, parser, context,  override,
                  allowed_ar_states=None, allowed_analysis_states=None,
                  instrument_uid=''):
         AnalysisResultsImporter.__init__(self, parser, context,
-                                         idsearchcriteria,
+                                         
                                          override, allowed_ar_states,
                                          allowed_analysis_states,
                                          instrument_uid)

@@ -48,12 +48,10 @@ class Importer:
 
             ar_states = self.get_allowed_ar_states()
             over = self.get_overrides()
-            crit = self.get_id_search_criteria()
             instrument = request.form.get('instrument', None)
 
             importer = HoribaJobinYvonICPImporter(parser=parser,
                                                   context=context,
-                                                  idsearchcriteria=crit,
                                                   allowed_ar_states=ar_states,
                                                   allowed_analysis_states=None,
                                                   override=over,
@@ -107,20 +105,6 @@ class Importer:
         else:
             over = [False, False]
         return over
-
-    def get_id_search_criteria(self):
-        sample = self.request.form.get('sample', 'requestid')
-        if sample == 'requestid':
-            sam = ['getId']
-        if sample == 'sampleid':
-            sam = ['getSampleID']
-        elif sample == 'clientsid':
-            sam = ['getClientSampleID']
-        elif sample == 'sample_clientsid':
-            sam = ['getSampleID', 'getClientSampleID']
-        else:
-            sam = ['getId', 'getSampleID', 'getClientSampleID']
-        return sam
 
 
 Import = Importer()

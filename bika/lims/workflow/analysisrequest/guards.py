@@ -6,32 +6,31 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from bika.lims import api
-from bika.lims.workflow import getCurrentState
-from bika.lims.workflow import isActive
 from bika.lims.workflow import isTransitionAllowed
 
 # States to be omitted in regular transitions
-ANALYSIS_DETTACHED_STATES = ['cancelled', 'rejected', 'retracted']
-
-def to_be_preserved(obj):
-    """ Returns True if the Sample from this AR needs to be preserved
-    Returns false if the Analysis Request has no Sample assigned yet or
-    does not need to be preserved
-    Delegates to Sample's guard_to_be_preserved
-    """
-    sample = obj.getSample()
-    return sample and sample.guard_to_be_preserved()
+ANALYSIS_DETACHED_STATES = ['cancelled', 'rejected', 'retracted']
 
 
-def schedule_sampling(obj):
+def guard_no_sampling_workflow(analysis_request):
+    """Returns whether the transition "no_sampling_workflow" can be performed
+    or not. Returns True when Sampling Workflow is not enabled in setup
     """
-    Prevent the transition if:
-    - if the user isn't part of the sampling coordinators group
-      and "sampling schedule" checkbox is set in bika_setup
-    - if no date and samples have been defined
-      and "sampling schedule" checkbox is set in bika_setup
+    return not analysis_request.getSamplingRequired()
+
+
+def guard_to_be_sampled(analysis_request):
+    """Returns whether the transition "to_be_sampled" can be performed or not.
+    Returns True if Sampling Workflow is enabled for the analysis request
     """
-    return obj.bika_setup.getScheduleSamplingEnabled()
+    return analysis_request.getSamplingRequired()
+
+
+def guard_schedule_sampling(analysis_request):
+    """Return whether the transition "schedule_sampling" can be performed or not
+    Returns True only when the schedule sampling workflow is enabled in setup.
+    """
+    return analysis_request.bika_setup.getScheduleSamplingEnabled()
 
 
 def guard_create_partitions(analysis_request):
@@ -59,13 +58,14 @@ def guard_create_partitions(analysis_request):
 
 def guard_submit(analysis_request):
     """Return whether the transition "submit" can be performed or not.
-    Returns True if there is at least one analysis in a non-dettached state and
-    all analyses in a non-dettached analyses have been submitted.
+    Returns True if there is at least one analysis in a non-detached state and
+    all analyses in a non-detached analyses have been submitted.
     """
     analyses_ready = False
     for analysis in analysis_request.getAnalyses():
-        analysis_status = api.get_workflow_status_of(api.get_object(analysis))
-        if analysis_status in ANALYSIS_DETTACHED_STATES:
+        analysis = api.get_object(analysis)
+        analysis_status = api.get_workflow_status_of(analysis)
+        if analysis_status in ANALYSIS_DETACHED_STATES:
             continue
         if analysis_status in ['assigned', 'unassigned']:
             return False
@@ -80,8 +80,9 @@ def guard_verify(analysis_request):
     """
     analyses_ready = False
     for analysis in analysis_request.getAnalyses():
-        analysis_status = api.get_workflow_status_of(api.get_object(analysis))
-        if analysis_status in ANALYSIS_DETTACHED_STATES:
+        analysis = api.get_object(analysis)
+        analysis_status = api.get_workflow_status_of(analysis)
+        if analysis_status in ANALYSIS_DETACHED_STATES:
             continue
         if analysis_status != 'verified':
             return False
@@ -89,53 +90,34 @@ def guard_verify(analysis_request):
     return analyses_ready
 
 
-def prepublish(obj):
-    """Returns True if 'prepublish' transition can be applied to the Analysis
-    Request passed in.
-    Returns true if the Analysis Request is active (not in a cancelled/inactive
-    state), the 'publish' transition cannot be performed yet, and at least one
-    of its analysis is under to_be_verified state or has been already verified.
-    As per default DC workflow definition in bika_ar_workflow, note that
-    prepublish does not transitions the Analysis Request to any other state
-    different from the actual one, neither its children. This 'fake' transition
-    is only used for the prepublish action to be displayed when the Analysis
-    Request' status is other than verified, so the labman can generate a
-    provisional report, also if results are not yet definitive.
-    :returns: true or false
+def guard_prepublish(analysis_request):
+    """Returns whether 'prepublish' transition can be perform or not. Returns
+    True if the analysis request has at least one analysis in 'verified' or in
+    'to_be_verified' status. Otherwise, return False
     """
-    if isTransitionAllowed(obj, 'publish'):
-        return False
-
-    analyses = obj.getAnalyses(full_objects=True)
-    for an in analyses:
-        # If the analysis is not active, omit
-        if not isActive(an):
-            continue
-
-        # Check if the current state is 'verified'
-        status = getCurrentState(an)
-        if status in ['verified', 'to_be_verified']:
+    valid_states = ['verified', 'to_be_verified']
+    for analysis in analysis_request.getAnalyses():
+        analysis = api.get_object(analysis)
+        if api.get_workflow_status_of(analysis) in valid_states:
             return True
-
-    # This analysis request has no single result ready to be verified or
-    # verified yet. In this situation, it doesn't make sense to publish a
-    # provisional results reports without a single result to display
     return False
 
 
 def guard_rollback_to_receive(analysis_request):
-    """Return whether 'rollback_to_receive' transition can be performed or not
+    """Return whether 'rollback_to_receive' transition can be performed or not.
+    Returns True if the analysis request has at least one analysis in 'assigned'
+    or 'unassigned' status. Otherwise, returns False
     """
-    # Can rollback to receive if at least one analysis hasn't been submitted yet
-    # or if all analyses have been rejected or retracted
-    analyses = analysis_request.getAnalyses()
     skipped = 0
+    valid_states = ['unassigned', 'assigned']
+    skip_states = ['retracted', 'rejected']
+    analyses = analysis_request.getAnalyses()
     for analysis in analyses:
-        analysis_object = api.get_object(analysis)
-        state = getCurrentState(analysis_object)
-        if state in ["unassigned", "assigned"]:
+        analysis = api.get_object(analysis)
+        status = api.get_workflow_status_of(analysis)
+        if status in valid_states:
             return True
-        if state in ["retracted", "rejected"]:
+        elif status in skip_states:
             skipped += 1
     return len(analyses) == skipped
 
@@ -170,3 +152,15 @@ def guard_reinstate(analysis_request):
     if api.get_workflow_status_of(parent) != "cancelled":
         return True
     return isTransitionAllowed(parent, "reinstate")
+
+
+def guard_sample(analysis_request):
+    """Returns whether 'sample' transition can be performed or not. Returns
+    True only if the analysis request has the DateSampled and Sampler set or if
+    the user belongs to the Samplers group
+    """
+    if analysis_request.getDateSampled() and analysis_request.getSampler():
+        return True
+
+    current_user = api.get_current_user()
+    return "Sampler" in current_user.getRolesInContext(analysis_request)

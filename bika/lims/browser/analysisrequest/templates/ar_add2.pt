@@ -213,17 +213,6 @@
         </table>
       </script>
 
-      <!-- Part Select Template -->
-      <script id="part-select-template" type="text/x-handlebars-template">
-        {{#each partitions}}
-          {{#if selected}}
-            <option selected="selected" value="{{part_id}}">{{part_id}}</option>
-          {{else}}
-            <option value="{{part_id}}">{{part_id}}</option>
-          {{/if}}
-        {{/each}}
-      </script>
-
     </metal:block>
   </head>
 
@@ -529,30 +518,6 @@
                                                      value python:service_spec.get('warn_max');"/>
                             </div>
                           </tal:specifications>
-
-                          <!-- Partitions -->
-                          <div tal:define="fieldname string:Parts-${arnum};"
-                               tal:attributes="fieldname string:${fieldname};
-                                               uid service_uid;
-                                               arnum arnum;
-                                               id string:${service_uid}-${arnum}-part;
-                                               class string:part ${service_uid}-part;">
-                            <!-- Service UID -->
-                            <input type="hidden"
-                                   tal:attributes="name string:${fieldname}.uid:records;
-                                                   value string:${service_uid}"/>
-                            <span class="partition-label"
-                                  i18n:translate="">
-                              Part
-                            </span>
-                            <!-- Part ID -->
-                            <select tal:attributes="name string:${fieldname}.part:records;
-                                                    class string:part-select-${arnum} part-select;
-                                                    uid string:${service_uid};
-                                                    id string:part-select-${service_uid};">
-                              <option value="part-1">part-1</option>
-                            </select>
-                          </div>
 
                           <!-- Service Info Box -->
                           <div tal:attributes="id string:${service_uid}-info;

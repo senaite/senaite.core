@@ -6,56 +6,20 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 import re
-import urllib
 
 import transaction
-import zLOG
-from DateTime import DateTime
-from Products.ATContentTypes.utils import DT2dt
 from bika.lims import api
-from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
-from bika.lims.alphanumber import to_alpha, Alphanumber
-from bika.lims.browser.fields.uidreferencefield \
-    import get_backreferences as get_backuidreferences
+from bika.lims.alphanumber import Alphanumber
+from bika.lims.alphanumber import to_alpha
+from bika.lims.browser.fields.uidreferencefield import \
+    get_backreferences as get_backuidreferences
 from bika.lims.interfaces import IIdServer
 from bika.lims.numbergenerator import INumberGenerator
+from DateTime import DateTime
+from Products.ATContentTypes.utils import DT2dt
 from zope.component import getAdapters
 from zope.component import getUtility
-
-
-class IDServerUnavailable(Exception):
-    pass
-
-
-def idserver_generate_id(context, prefix, batch_size=None):
-    """ Generate a new id using external ID server.
-    """
-    plone = context.portal_url.getPortalObject()
-    url = api.get_bika_setup().getIDServerURL()
-
-    try:
-        if batch_size:
-            # GET
-            f = urllib.urlopen('%s/%s/%s?%s' % (
-                url,
-                plone.getId(),
-                prefix,
-                urllib.urlencode({'batch_size': batch_size}))
-            )
-        else:
-            f = urllib.urlopen('%s/%s/%s' % (url, plone.getId(), prefix))
-        new_id = f.read()
-        f.close()
-    except:
-        from sys import exc_info
-        info = exc_info()
-        msg = 'generate_id raised exception: {}, {} \n ID server URL: {}'
-        msg = msg.format(info[0], info[1], url)
-        zLOG.LOG('INFO', 0, '', msg)
-        raise IDServerUnavailable(_('ID Server unavailable'))
-
-    return new_id
 
 
 def get_objects_in_sequence(brain_or_object, ctype, cref):
@@ -82,6 +46,7 @@ def get_backreferences(obj, relationship):
         refs = obj.getBackReferences(relationship)
 
     return refs
+
 
 def get_contained_items(obj, spec):
     """Returns a list of (id, subobject) tuples of the current context.
@@ -133,48 +98,16 @@ def get_variables(context, **kw):
 
     # Augment the variables map depending on the portal type
     if portal_type == "AnalysisRequest":
-        variables.update({
-            'sampleId': context.getSample().getId(),
-            'sample': context.getSample(),
-        })
-
-    elif portal_type == "SamplePartition":
-        variables.update({
-            'sampleId': context.aq_parent.getId(),
-            'sample': context.aq_parent,
-        })
-
-    elif portal_type == "Sample":
-        # get the prefix of the assigned sample type
-        sample_id = context.getId()
-        sample_type = context.getSampleType()
-        sampletype_prefix = sample_type.getPrefix()
-
-        date_now = DateTime()
+        now = DateTime()
         sampling_date = context.getSamplingDate()
+        sampling_date = sampling_date and DT2dt(sampling_date) or DT2dt(now)
         date_sampled = context.getDateSampled()
-
-        # Try to get the date sampled and sampling date
-        if sampling_date:
-            samplingDate = DT2dt(sampling_date)
-        else:
-            # No Sample Date?
-            logger.error("Sample {} has no sample date set".format(sample_id))
-            # fall back to current date
-            samplingDate = DT2dt(date_now)
-
-        if date_sampled:
-            dateSampled = DT2dt(date_sampled)
-        else:
-            # No Sample Date?
-            logger.error("Sample {} has no sample date set".format(sample_id))
-            dateSampled = DT2dt(date_now)
-
+        date_sampled = date_sampled and DT2dt(date_sampled) or DT2dt(now)
         variables.update({
-            'clientId': context.aq_parent.getClientID(),
-            'dateSampled': dateSampled,
-            'samplingDate': samplingDate,
-            'sampleType': sampletype_prefix,
+            'clientId': context.getClientID(),
+            'dateSampled': date_sampled,
+            'samplingDate': sampling_date,
+            'sampleType': context.getSampleType().getPrefix(),
         })
 
     elif portal_type == "ARReport":
@@ -404,7 +337,7 @@ def generateUniqueId(context, **kw):
     except KeyError, e:
         logger.error('KeyError: {} not in id_template {}'.format(
             e, id_template))
-        raise 
+        raise
     normalized_id = api.normalize_filename(new_id)
     logger.info("generateUniqueId: {}".format(normalized_id))
 

@@ -96,11 +96,11 @@ class RocheCobasTaqmanParser(InstrumentCSVResultsFileParser):
 
 
 class RocheCobasTaqmanImporter(AnalysisResultsImporter):
-    def __init__(self, parser, context, idsearchcriteria, override,
+    def __init__(self, parser, context,  override,
                  allowed_ar_states=None, allowed_analysis_states=None,
                  instrument_uid=None):
         AnalysisResultsImporter.__init__(self, parser, context,
-                                         idsearchcriteria, override,
+                                          override,
                                          allowed_ar_states,
                                          allowed_analysis_states,
                                          instrument_uid)
@@ -112,8 +112,6 @@ def Import(context, request):
     fileformat = request.form['rochecobas_taqman_model48_format']
     artoapply = request.form['rochecobas_taqman_model48_artoapply']
     override = request.form['rochecobas_taqman_model48_override']
-    sample = request.form.get('rochecobas_taqman_model48_sample',
-                              'requestid')
     instrument = request.form.get('instrument', None)
     errors = []
     logs = []
@@ -147,19 +145,8 @@ def Import(context, request):
         elif override == 'overrideempty':
             over = [True, True]
 
-        sam = ['getId', 'getSampleID', 'getClientSampleID']
-        if sample == 'requestid':
-            sam = ['getId']
-        if sample == 'sampleid':
-            sam = ['getSampleID']
-        elif sample == 'clientsid':
-            sam = ['getClientSampleID']
-        elif sample == 'sample_clientsid':
-            sam = ['getSampleID', 'getClientSampleID']
-
         importer = RocheCobasTaqman48Importer(parser=parser,
                                               context=context,
-                                              idsearchcriteria=sam,
                                               allowed_ar_states=status,
                                               allowed_analysis_states=None,
                                               override=over,

@@ -183,7 +183,7 @@ Create an Analysis Request:
     >>> service_uids = [analysisservice1.UID()]
     >>> ar = create_analysisrequest(client, request, values, service_uids)
     >>> ar
-    <AnalysisRequest at /plone/clients/client-1/water-0001-R01>
+    <AnalysisRequest at /plone/clients/client-1/water-0001>
 
 
 ARAnalysesField
@@ -211,12 +211,12 @@ The `get` method returns a list of assined analyses brains:
 The full objects can be obtained by passing in `full_objects=True`:
 
     >>> field.get(ar, full_objects=True)
-    [<Analysis at /plone/clients/client-1/water-0001-R01/PH>]
+    [<Analysis at /plone/clients/client-1/water-0001/PH>]
 
 The analysis `PH` is now contained in the AR:
 
     >>> ar.objectValues("Analysis")
-    [<Analysis at /plone/clients/client-1/water-0001-R01/PH>]
+    [<Analysis at /plone/clients/client-1/water-0001/PH>]
 
 
 Setting Analyses
@@ -246,7 +246,7 @@ Pass in all prior created Analysis Services:
 We expect to have now the `CA` and `MG` Analyses as well:
 
     >>> sorted(new_analyses, key=methodcaller('getId'))
-    [<Analysis at /plone/clients/client-1/water-0001-R01/CA>, <Analysis at /plone/clients/client-1/water-0001-R01/MG>]
+    [<Analysis at /plone/clients/client-1/water-0001/CA>, <Analysis at /plone/clients/client-1/water-0001/MG>]
 
 In the Analyis Request should be now three Analyses:
 
@@ -267,13 +267,13 @@ Now there should be again only one Analysis assigned:
 We expect to have just the `PH` Analysis again:
 
     >>> ar.objectValues("Analysis")
-    [<Analysis at /plone/clients/client-1/water-0001-R01/PH>]
+    [<Analysis at /plone/clients/client-1/water-0001/PH>]
 
 Removing all Analyses is prevented, because it can not be empty:
 
     >>> new_analyses = field.set(ar, [])
     >>> ar.objectValues("Analysis")
-    [<Analysis at /plone/clients/client-1/water-0001-R01/PH>]
+    [<Analysis at /plone/clients/client-1/water-0001/PH>]
 
 The field can also handle UIDs of Analyses Services:
 
@@ -283,18 +283,18 @@ The field can also handle UIDs of Analyses Services:
 We expect again to have the `CA` and `MG` Analyses as well:
 
     >>> sorted(new_analyses, key=methodcaller('getId'))
-    [<Analysis at /plone/clients/client-1/water-0001-R01/CA>, <Analysis at /plone/clients/client-1/water-0001-R01/MG>]
+    [<Analysis at /plone/clients/client-1/water-0001/CA>, <Analysis at /plone/clients/client-1/water-0001/MG>]
 
 And all the three Analyses in total:
 
     >>> sorted(ar.objectValues("Analysis"), key=methodcaller("getId"))
-    [<Analysis at /plone/clients/client-1/water-0001-R01/CA>, <Analysis at /plone/clients/client-1/water-0001-R01/MG>, <Analysis at /plone/clients/client-1/water-0001-R01/PH>]
+    [<Analysis at /plone/clients/client-1/water-0001/CA>, <Analysis at /plone/clients/client-1/water-0001/MG>, <Analysis at /plone/clients/client-1/water-0001/PH>]
 
 Set again only the `PH` Analysis:
 
     >>> new_analyses = field.set(ar, [analysisservice1])
     >>> ar.objectValues("Analysis")
-    [<Analysis at /plone/clients/client-1/water-0001-R01/PH>]
+    [<Analysis at /plone/clients/client-1/water-0001/PH>]
 
 The field should also handle catalog brains:
 
@@ -311,7 +311,7 @@ The field should also handle catalog brains:
 We expect now to have just the `CA` analysis assigned:
 
     >>> ar.objectValues("Analysis")
-    [<Analysis at /plone/clients/client-1/water-0001-R01/CA>]
+    [<Analysis at /plone/clients/client-1/water-0001/CA>]
 
 Now let's try int mixed, one catalog brain and one object:
 
@@ -320,7 +320,7 @@ Now let's try int mixed, one catalog brain and one object:
 We expect now to have now `PH` and `CA`:
 
     >>> sorted(ar.objectValues("Analysis"), key=methodcaller("getId"))
-    [<Analysis at /plone/clients/client-1/water-0001-R01/CA>, <Analysis at /plone/clients/client-1/water-0001-R01/PH>]
+    [<Analysis at /plone/clients/client-1/water-0001/CA>, <Analysis at /plone/clients/client-1/water-0001/PH>]
 
 Finally, we test it with an `Analysis` object:
 
@@ -328,7 +328,7 @@ Finally, we test it with an `Analysis` object:
     >>> new_analyses = field.set(ar, [analysis1])
 
     >>> sorted(ar.objectValues("Analysis"), key=methodcaller("getId"))
-    [<Analysis at /plone/clients/client-1/water-0001-R01/PH>]
+    [<Analysis at /plone/clients/client-1/water-0001/PH>]
 
 
 Setting Analysis Specifications
@@ -399,7 +399,7 @@ We expect to have now just one Analysis set:
 
     >>> analyses = field.get(ar, full_objects=True)
     >>> analyses
-    [<Analysis at /plone/clients/client-1/water-0001-R01/PH>]
+    [<Analysis at /plone/clients/client-1/water-0001/PH>]
 
 And the specification should be according to the values we have set
 
@@ -511,7 +511,7 @@ Now we assign the `Total Hardness` Analysis Service:
     >>> new_analyses = field.set(ar, [analysisservice4])
     >>> analysis = new_analyses[0]
     >>> analysis
-    <Analysis at /plone/clients/client-1/water-0001-R01/THCaCO3>
+    <Analysis at /plone/clients/client-1/water-0001/THCaCO3>
 
 The created Analysis has the same Calculation attached, as the Analysis Service:
 
@@ -560,7 +560,7 @@ The Analysis should be still there:
 
     >>> analysis = ar[analysisservice4.getKeyword()]
     >>> analysis
-    <Analysis at /plone/clients/client-1/water-0001-R01/THCaCO3>
+    <Analysis at /plone/clients/client-1/water-0001/THCaCO3>
 
 The calculation should be still there:
 
@@ -590,7 +590,7 @@ Assign the `PH` Analysis:
 
     >>> new_analyses = field.set(ar, [analysisservice1])
     >>> new_analyses
-    [<Analysis at /plone/clients/client-1/water-0001-R01/PH>]
+    [<Analysis at /plone/clients/client-1/water-0001/PH>]
 
 Create a new Worksheet and assign the Analysis to it:
 
@@ -620,13 +620,13 @@ The analysis is associated to the Worksheet:
 The worksheet contains now the Analysis:
 
     >>> ws.getAnalyses()
-    [<Analysis at /plone/clients/client-1/water-0001-R01/PH>]
+    [<Analysis at /plone/clients/client-1/water-0001/PH>]
 
 Removing the analysis from the AR also unassignes it from the worksheet:
 
     >>> new_analyses = field.set(ar, [analysisservice2])
     >>> new_analyses
-    [<Analysis at /plone/clients/client-1/water-0001-R01/MG>]
+    [<Analysis at /plone/clients/client-1/water-0001/MG>]
 
     >>> ws.getAnalyses()
     []
@@ -655,7 +655,7 @@ We expect that dependent services get automatically set:
     >>> new_analyses = field.set(ar, [analysisservice4])
 
     >>> sorted(ar.objectValues("Analysis"), key=methodcaller('getId'))
-    [<Analysis at /plone/clients/client-1/water-0001-R01/CA>, <Analysis at /plone/clients/client-1/water-0001-R01/MG>, <Analysis at /plone/clients/client-1/water-0001-R01/THCaCO3>]
+    [<Analysis at /plone/clients/client-1/water-0001/CA>, <Analysis at /plone/clients/client-1/water-0001/MG>, <Analysis at /plone/clients/client-1/water-0001/THCaCO3>]
 
 
 Attachments
@@ -675,13 +675,13 @@ Create a new AR and assign the *PH* analysis:
     >>> service_uids = [analysisservice1.UID()]
     >>> ar2 = create_analysisrequest(client, request, values, service_uids)
     >>> ar2
-    <AnalysisRequest at /plone/clients/client-1/water-0002-R01>
+    <AnalysisRequest at /plone/clients/client-1/water-0002>
 
 Get the analysis:
 
     >>> an1 = ar2[analysisservice1.getKeyword()]
     >>> an1
-    <Analysis at /plone/clients/client-1/water-0002-R01/PH>
+    <Analysis at /plone/clients/client-1/water-0002/PH>
 
 It should have *no* attachments assigned:
 
@@ -767,15 +767,15 @@ The attachments of *Magnesium* should be still there:
 Attachments linked to multiple ARs/ANs
 ......................................
 
-When an AR is invalidated, a copy of it get created for retesting with the
-suffix "-R2 ... -Rn". This copy holds also the Attachments as references.
+When an AR is invalidated, a copy of it get created for retesting. This copy
+holds also the Attachments as references.
 
 Create a new AR for that and assign a service w/o caclucation:
 
     >>> service_uids = [analysisservice5.UID()]
     >>> ar3 = create_analysisrequest(client, request, values, service_uids)
     >>> ar3
-    <AnalysisRequest at /plone/clients/client-1/water-0003-R01>
+    <AnalysisRequest at /plone/clients/client-1/water-0003>
 
 Receive the AR:
 
@@ -819,15 +819,15 @@ And invalidate it directly:
 
     >>> transitioned = do_action_for(ar3, "invalidate")
 
-A new AR is automatically created for retesting with the suffix "-R2":
+A new AR is automatically created for retesting:
 
     >>> ar_retest = ar3.getRetest()
     >>> ar_retest
-    <AnalysisRequest at /plone/clients/client-1/water-0003-R02>
+    <AnalysisRequest at /plone/clients/client-1/water-0004>
 
     >>> an_retest = ar3.getRetest()[analysisservice5.getKeyword()]
     >>> an_retest
-    <Analysis at /plone/clients/client-1/water-0003-R02/NoCalc>
+    <Analysis at /plone/clients/client-1/water-0004/NoCalc>
 
 However, this retest AR **references the same Attachments** as the original AR:
 
@@ -835,7 +835,7 @@ However, this retest AR **references the same Attachments** as the original AR:
     True
 
     >>> att_ar.getLinkedRequests()
-    [<AnalysisRequest at /plone/clients/client-1/water-0003-R02>, <AnalysisRequest at /plone/clients/client-1/water-0003-R01>]
+    [<AnalysisRequest at /plone/clients/client-1/water-0004>, <AnalysisRequest at /plone/clients/client-1/water-0003>]
 
     >>> att_ar.getLinkedAnalyses()
     []
@@ -849,7 +849,7 @@ And all contained Analyses of the retest keep references to the same Attachments
     []
 
     >>> att_an.getLinkedAnalyses()
-    [<Analysis at /plone/clients/client-1/water-0003-R02/NoCalc>, <Analysis at /plone/clients/client-1/water-0003-R01/NoCalc>]
+    [<Analysis at /plone/clients/client-1/water-0004/NoCalc>, <Analysis at /plone/clients/client-1/water-0003/NoCalc>]
 
 This means that removing that attachment from the retest should **not** delete
 the attachment from the original AR:
@@ -864,4 +864,4 @@ the attachment from the original AR:
 And the attachment is now only linked to the attachment of the original analysis:
 
     >>> att_an.getLinkedAnalyses()
-    [<Analysis at /plone/clients/client-1/water-0003-R01/NoCalc>]
+    [<Analysis at /plone/clients/client-1/water-0003/NoCalc>]

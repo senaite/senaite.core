@@ -193,7 +193,7 @@
                         <tal:ar repeat="ar ars">
                             <span class="td header_td"
                                   tal:attributes="style string:width:${arcol_width}%;;border-top:1px solid #cdcdcd;"
-                                  tal:content="python:ar.getSample().id"/>
+                                  tal:content="python:ar.id"/>
                         </tal:ar>
                     </div>
                     <div class="row">
@@ -203,7 +203,7 @@
                         <tal:ar repeat="ar ars">
                             <span class="td header_td"
                                   tal:attributes="style string:width:${arcol_width}%"
-                                  tal:content="python:ar.getSample().getSampleType().Title()"/>
+                                  tal:content="python:ar.getSampleType().Title()"/>
                         </tal:ar>
                     </div>
                     <div class="row">

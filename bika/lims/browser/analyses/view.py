@@ -96,10 +96,6 @@ class AnalysesView(BikaListingView):
                 "attr": "Title",
                 "index": "sortable_title",
                 "sortable": False}),
-            ("Partition", {
-                "title": _("Partition"),
-                "attr": "getSamplePartitionID",
-                "sortable": False}),
             ("Method", {
                 "title": _("Method"),
                 "sortable": False,

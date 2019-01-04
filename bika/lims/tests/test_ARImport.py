@@ -137,10 +137,6 @@ Total price excl Tax,,,,,,,,,,,,,,
         l = len(ars)
         if l != 4:
             self.fail('4 AnalysisRequests were not created!  We found %s' % l)
-        bc = getToolByName(self.portal, 'bika_catalog')
-        l = len(bc(portal_type='Sample'))
-        if l != 4:
-            self.fail('4 Samples were not created!  We found %s' % l)
         bac = getToolByName(self.portal, CATALOG_ANALYSIS_LISTING)
         analyses = bac(portal_type='Analysis')
         l = len(analyses)

@@ -9,22 +9,16 @@ from AccessControl import getSecurityManager
 from AccessControl import Unauthorized
 from bika.lims.idserver import renameAfterCreation
 from bika.lims.jsonapi import set_fields_from_request
-from bika.lims.jsonapi import resolve_request_lookup
 from bika.lims.permissions import AccessJSONAPI
-from bika.lims.utils import tmpID, dicts_to_dict
-from bika.lims.utils.analysisrequest import get_services_uids
-from bika.lims.workflow import doActionFor
-from bika.lims.workflow import getReviewHistoryActionsList
+from bika.lims.utils import tmpID
 from plone.jsonapi.core import router
 from plone.jsonapi.core.interfaces import IRouteProvider
 from Products.Archetypes.event import ObjectInitializedEvent
-from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
 from zExceptions import BadRequest
 from zope import event
 from zope import interface
 
-import json
 import transaction
 
 class Create(object):
@@ -159,11 +153,8 @@ class Create(object):
         self.used("obj_type")
         # AnalysisRequest shortcut: creates Sample, Partition, AR, Analyses.
         if obj_type == "AnalysisRequest":
-            try:
-                return self._create_ar(context, request)
-            except:
-                savepoint.rollback()
-                raise
+            raise BadRequest("Creation of Analysis Request through JSON API is "
+                             "not supported. Request aborted.")
         # Other object types require explicit path as their parent
         self.require("obj_path")
         obj_path = self.request['obj_path']
@@ -214,53 +205,6 @@ class Create(object):
 
         return ret
 
-    def get_specs_from_request(self, dicts_to_dict_rr=None):
-        """Specifications for analyses are given on the request in *Spec
-
-        >>> portal = layer['portal']
-        >>> portal_url = portal.absolute_url()
-        >>> from plone.app.testing import SITE_OWNER_NAME
-        >>> from plone.app.testing import SITE_OWNER_PASSWORD
-
-        >>> browser = layer['getBrowser'](portal, loggedIn=True, username=SITE_OWNER_NAME, password=SITE_OWNER_PASSWORD)
-        >>> browser.open(portal_url+"/@@API/create", "&".join([
-        ... "obj_type=AnalysisRequest",
-        ... "Client=portal_type:Client|id:client-1",
-        ... "SampleType=portal_type:SampleType|title:Apple Pulp",
-        ... "Contact=portal_type:Contact|getFullname:Rita Mohale",
-        ... "Services:list=portal_type:AnalysisService|title:Calcium",
-        ... "Services:list=portal_type:AnalysisService|title:Copper",
-        ... "Services:list=portal_type:AnalysisService|title:Magnesium",
-        ... "SamplingDate=2013-09-29",
-        ... "Specification=portal_type:AnalysisSpec|title:Apple Pulp",
-        ... 'ResultsRange=[{"keyword":"Cu","min":5,"max":10,"error":10},{"keyword":"Mg","min":6,"max":11,"error":11}]',
-        ... ]))
-        >>> browser.contents
-        '{..."success": true...}'
-
-        """
-
-        # valid output for ResultsRange goes here.
-        specs = []
-
-        context = self.context
-        request = self.request
-        brains = resolve_request_lookup(context, request, "Specification")
-        spec_rr = brains[0].getObject().getResultsRange() if brains else {}
-        spec_rr = dicts_to_dict(spec_rr, 'keyword')
-        #
-        bsc = getToolByName(context, "bika_setup_catalog")
-        req_rr = request.get('ResultsRange', "[]")
-        try:
-            req_rr = json.loads(req_rr)
-        except:
-            raise BadRequest("Invalid value for ResultsRange (%s)"%req_rr)
-        req_rr = dicts_to_dict(req_rr, 'keyword')
-        #
-        spec_rr.update(req_rr)
-
-        return spec_rr.values()
-
     def require(self, fieldname, allow_blank=False):
         """fieldname is required"""
         if self.request.form and fieldname not in self.request.form.keys():
@@ -272,192 +216,3 @@ class Create(object):
         """fieldname is used, remove from list of unused fields"""
         if fieldname in self.unused:
             self.unused.remove(fieldname)
-
-    # TODO Workflow, AR Creation - Remove or delegate function to utils.analysisrequest
-    def _create_ar(self, context, request):
-        """Creates AnalysisRequest object, with supporting Sample, Partition
-        and Analysis objects.  The client is retrieved from the obj_path
-        key in the request.
-
-        Required request parameters:
-
-            - Contact: One client contact Fullname.  The contact must exist
-              in the specified client.  The first Contact with the specified
-              value in it's Fullname field will be used.
-
-            - SampleType_<index> - Must be an existing sample type.
-
-        Optional request parameters:
-
-        - CCContacts: A list of contact Fullnames, which will be copied on
-          all messages related to this AR and it's sample or results.
-
-        - CCEmails: A list of email addresses to include as above.
-
-        - Sample_id: Create a secondary AR with an existing sample.  If
-          unspecified, a new sample is created.
-
-        - Specification: a lookup to set Analysis specs default values
-          for all analyses
-
-        - Analysis_Specification: specs (or overrides) per analysis, using
-          a special lookup format.
-
-            &Analysis_Specification:list=<Keyword>:min:max:error&...
-
-
-        """
-
-        wftool = getToolByName(context, 'portal_workflow')
-        bc = getToolByName(context, 'bika_catalog')
-        bsc = getToolByName(context, 'bika_setup_catalog')
-        pc = getToolByName(context, 'portal_catalog')
-        ret = {
-            "url": router.url_for("create", force_external=True),
-            "success": True,
-            "error": False,
-        }
-        SamplingWorkflowEnabled = context.bika_setup.getSamplingWorkflowEnabled()
-        for field in [
-            'Client',
-            'SampleType',
-            'Contact',
-            'SamplingDate',
-            'Services']:
-            self.require(field)
-            self.used(field)
-
-        try:
-            client = resolve_request_lookup(context, request, 'Client')[0].getObject()
-        except IndexError:
-            raise Exception("Client not found")
-
-        secondary = False
-        sample = None
-        # Sample_id
-        if 'Sample' in request:
-            # Secondary AR
-            try:
-                sample = resolve_request_lookup(context, request, 'Sample')[0].getObject()
-            except IndexError:
-                raise Exception("Sample not found")
-            secondary = True
-        else:
-            # Primary AR
-            sample = _createObjectByType("Sample", client, tmpID())
-            sample.unmarkCreationFlag()
-            fields = set_fields_from_request(sample, request)
-            for field in fields:
-                self.used(field)
-            sample._renameAfterCreation()
-            sample.setSampleID(sample.getId())
-            sample.setSamplingWorkflowEnabled(SamplingWorkflowEnabled)
-            event.notify(ObjectInitializedEvent(sample))
-            sample.at_post_create_script()
-
-        ret['sample_id'] = sample.getId()
-
-        parts = [{'services': [],
-                  'container': [],
-                  'preservation': '',
-                  'separate': False}]
-
-        specs = self.get_specs_from_request()
-        ar = _createObjectByType("AnalysisRequest", client, tmpID())
-        ar.unmarkCreationFlag()
-        fields = set_fields_from_request(ar, request)
-        for field in fields:
-            self.used(field)
-        ar.setSample(sample)
-        ar._renameAfterCreation()
-        ret['ar_id'] = ar.getId()
-
-        brains = resolve_request_lookup(context, request, 'Services')
-        service_uids = [p.UID for p in brains]
-        # If there is a profile, add its services' UIDs
-        brains = resolve_request_lookup(context, request, 'Profiles')
-        profiles_uids = [p.UID for p in brains]
-        profiles_uids = ','.join(profiles_uids)
-        profiles_dict = {'Profiles': profiles_uids}
-        service_uids = get_services_uids(
-            context=context, analyses_serv=service_uids, values=profiles_dict)
-        ar.setAnalyses(service_uids, specs=specs)
-        new_analyses = ar.getAnalyses(full_objects=True)
-        ar.reindexObject()
-        event.notify(ObjectInitializedEvent(ar))
-        ar.at_post_create_script()
-
-        # Create sample partitions
-        parts_and_services = {}
-        for _i in range(len(parts)):
-            p = parts[_i]
-            part_prefix = sample.getId() + "-P"
-            if '%s%s' % (part_prefix, _i + 1) in sample.objectIds():
-                parts[_i]['object'] = sample['%s%s' % (part_prefix, _i + 1)]
-                parts_and_services['%s%s' % (part_prefix, _i + 1)] = p['services']
-                part = parts[_i]['object']
-            else:
-                part = _createObjectByType("SamplePartition", sample, tmpID())
-                parts[_i]['object'] = part
-                container = None
-                preservation = p['preservation']
-                parts[_i]['prepreserved'] = False
-                part.edit(
-                    Container=container,
-                    Preservation=preservation,
-                )
-                part.processForm()
-                parts_and_services[part.id] = p['services']
-
-        # Add analyses to sample partitions
-        # XXX jsonapi create AR: right now, all new analyses are linked to the first samplepartition
-        if new_analyses:
-            analyses = list(part.getAnalyses())
-            analyses.extend(new_analyses)
-            for analysis in new_analyses:
-                analysis.setSamplePartition(part)
-            part.setAnalyses(analyses)
-
-        action = 'no_sampling_workflow'
-        if SamplingWorkflowEnabled:
-            action = 'sampling_workflow'
-        wftool.doActionFor(ar, action)
-
-        if secondary:
-            # If secondary AR, then we need to manually transition the AR (and its
-            # children) to fit with the Sample Partition's current state
-            sampleactions = getReviewHistoryActionsList(sample)
-            doActionsFor(ar, sampleactions)
-
-        else:
-            # If Preservation is required for some partitions,
-            # and the SamplingWorkflow is disabled, we need
-            # to transition to to_be_preserved manually.
-            if not SamplingWorkflowEnabled:
-                to_be_preserved = []
-                sample_due = []
-                lowest_state = 'sample_due'
-                for p in sample.objectValues('SamplePartition'):
-                    if p.getPreservation():
-                        lowest_state = 'to_be_preserved'
-                        to_be_preserved.append(p)
-                    else:
-                        sample_due.append(p)
-                for p in to_be_preserved:
-                    doActionFor(p, 'to_be_preserved')
-                for p in sample_due:
-                    doActionFor(p, 'sample_due')
-                doActionFor(sample, lowest_state)
-
-            # Transition pre-preserved partitions
-            for p in parts:
-                if 'prepreserved' in p and p['prepreserved']:
-                    part = p['object']
-                    state = workflow.getInfoFor(part, 'review_state')
-                    if state == 'to_be_preserved':
-                        doActionFor(part, 'preserve')
-
-        if self.unused:
-            raise BadRequest("The following request fields were not used: %s.  Request aborted." % self.unused)
-
-        return ret

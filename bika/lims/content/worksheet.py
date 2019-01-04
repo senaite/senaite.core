@@ -499,7 +499,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         # Set ReferenceAnalysesGroupID (same id for the analyses from
         # the same Reference Sample and same Worksheet)
         if not ref_gid:
-            ref_gid = self.nextRefAnalysesGroupID(duplicate.getSample())
+            ref_gid = self.nextRefAnalysesGroupID(duplicate.getRequest())
         duplicate.setReferenceAnalysesGroupID(ref_gid)
 
         # Add the duplicate into the worksheet
@@ -814,7 +814,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             "cancellation_state": "active",
             "sort_on": "getPrioritySortkey"
         }
-
         # Filter analyses their Analysis Requests have been received
         analyses = bac(query)
 
@@ -1220,7 +1219,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         :rtype: integer
         """
         analyses = self.getRegularAnalyses()
-        samples = [a.getSample().UID() for a in analyses]
+        samples = [a.getRequestUID() for a in analyses]
         # discarding any duplicate values
         return len(set(samples))
 

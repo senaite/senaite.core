@@ -495,10 +495,9 @@ def attachPdf(mimemultipart, pdfreport, filename=None):
 
 def get_invoice_item_description(obj):
     if obj.portal_type == 'AnalysisRequest':
-        sample = obj.getSample()
-        samplepoint = sample.getSamplePoint()
+        samplepoint = obj.getSamplePoint()
         samplepoint = samplepoint and samplepoint.Title() or ''
-        sampletype = sample.getSampleType()
+        sampletype = obj.getSampleType()
         sampletype = sampletype and sampletype.Title() or ''
         description = sampletype + ' ' + samplepoint
     elif obj.portal_type == 'SupplyOrder':

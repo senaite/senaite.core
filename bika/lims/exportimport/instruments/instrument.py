@@ -23,7 +23,7 @@ def GenericImport(context, request, parser, importer=None):
     fileformat = getFileFormat(request)
     artoapply = request.form['artoapply']
     override = request.form['results_override']
-    sample = request.form.get('sample', 'requestid')
+
     instrument = request.form.get('instrument', None)
     errors = []
     logs = []
@@ -48,21 +48,10 @@ def GenericImport(context, request, parser, importer=None):
         elif override == 'overrideempty':
             over = [True, True]
 
-        sam = ['getId', 'getSampleID', 'getClientSampleID']
-        if sample == 'requestid':
-            sam = ['getId']
-        if sample == 'sampleid':
-            sam = ['getSampleID']
-        elif sample == 'clientsid':
-            sam = ['getClientSampleID']
-        elif sample == 'sample_clientsid':
-            sam = ['getSampleID', 'getClientSampleID']
-
         imp = importer
         if not imp:
             imp = AnalysisResultsImporter(parser=parser,
                                           context=context,
-                                          idsearchcriteria=sam,
                                           allowed_ar_states=status,
                                           allowed_analysis_states=None,
                                           override=over,

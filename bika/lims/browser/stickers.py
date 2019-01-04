@@ -26,7 +26,7 @@ import tempfile
 
 class Sticker(BrowserView):
     """ Invoked via URL on an object or list of objects from the types
-        AnalysisRequest, Sample, SamplePartition or ReferenceSample.
+        AnalysisRequest, Sample or ReferenceSample.
         Renders a preview for the objects, a control to allow the user to
         select the stcker template to be invoked and print.
 
@@ -91,12 +91,6 @@ class Sticker(BrowserView):
         # before retrieving the required data for each type of object copy
         # each object as many times as the number of desired sticker copies
         self.items = self._resolve_number_of_copies(self.items)
-        new_items = []
-        for i in self.items:
-            outitems = self._populateItems(i)
-            new_items.extend(outitems)
-
-        self.items = new_items
         if not self.items:
             logger.warning(
                 "Cannot print stickers: no items specified in request")
@@ -104,65 +98,6 @@ class Sticker(BrowserView):
             return
 
         return self.template()
-
-    def _populateItems(self, item):
-        """ Creates an wel-defined array for this item to make the sticker
-            template easy to render. Each position of the array has a secondary
-            array, one per partition.
-
-            If the item is an object from an AnalysisRequest type, returns an
-            array with the following structure:
-                [
-                 [ar_object, ar_sample, ar_sample_partition-1],
-                 [ar_object, ar_sample, ar_sample_partition-2],
-                 ...
-                 [ar_object, ar_sample, ara_sample_partition-n]
-                ]
-
-            If the item is an object from Sample type, returns an arary with the
-            following structure:
-                [
-                 [None, sample, sample_partition-1],
-                 [None, sample, sample_partition-2],
-                 ...
-                ]
-            If the item is an object from ReferenceSample type, returns an
-            array with the following structure:
-                [[None, refsample, None]]
-            Note that in this case, the array always have a length=1
-
-            If the type of the item is a worksheet, returns an iterable with
-            the following structure:
-                [[None, AssignedAnalyst, workhseet]]
-
-            If the type of the item is a worksheet, returns an iterable with
-            the following structure:
-                [[None, None, batch]]
-        """
-        ar = None
-        sample = None
-        parts = []
-        portal_type = item.portal_type
-        if portal_type == 'AnalysisRequest':
-            ar = item
-            sample = item.getSample()
-            parts = sample.objectValues('SamplePartition')
-        elif portal_type == 'Sample':
-            sample = item
-            parts = sample.objectValues('SamplePartition')
-        elif portal_type == 'SamplePartition':
-            sample = item.aq_parent
-            parts = [item, ]
-        elif portal_type == 'ReferenceSample':
-            sample = item
-        elif portal_type == 'Worksheet':
-            return [[None, item.getAnalystName(), item]]
-        elif portal_type == 'Batch':
-            return [[None, None, item]]
-        items = []
-        for part in parts:
-            items.append([ar, sample, part])
-        return items
 
     def getAvailableTemplates(self):
         """ Returns an array with the templates of stickers available. Each
@@ -269,7 +204,7 @@ class Sticker(BrowserView):
         """
         if self.item_index == len(self.items):
             self.item_index = 0
-        self.current_item = self.items[self.item_index]
+        self.current_item = [self.items[self.item_index]]
         self.item_index += 1
         return self.current_item
 
@@ -295,33 +230,14 @@ class Sticker(BrowserView):
             return embed(self)
         except:
             tbex = traceback.format_exc()
-            stickerid = curritem[2].id if curritem[2] else curritem[1].id
             return "<div class='error'>%s - %s '%s':<pre>%s</pre></div>" % \
-                    (stickerid, _("Unable to load the template"), embedt, tbex)
+                    (repr(curritem), _("Unable to load the template"), embedt, tbex)
 
     def getItemsURL(self):
         req_items = self.request.get('items', '')
         req_items = req_items if req_items else self.context.getId()
         req = '%s?items=%s' % (self.request.URL, req_items)
         return req
-
-    def getClientFromCurrentItem(self):
-        """
-        This function tries to return the client from the current item.
-        :returns: A client object or None.
-        :rtype: ATContentType/NoneType
-        """
-        # 'current' will be an array such as [None, sample, sample_partition-1]
-        current = self.current_item
-        # Since the second item in the array is always a sample or reference
-        # sample, we can start getting it in order to get the client.
-        sample = current[1]
-        ars = sample.getAnalysisRequests()
-        if not ars:
-            return None
-        # Getting the real client object
-        client = ars[0].aq_parent.aq_inner
-        return client
 
     def _getStickersTemplatesDirectory(self, resource_name):
         """

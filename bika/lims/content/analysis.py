@@ -27,13 +27,6 @@ class Analysis(AbstractRoutineAnalysis):
     schema = schema
 
     @security.public
-    def getSample(self):
-        ar = self.aq_parent
-        if ar:
-            sample = ar.getSample()
-            return sample
-
-    @security.public
     def getSiblings(self, retracted=False):
         """
         Returns the list of analyses of the Analysis Request to which this

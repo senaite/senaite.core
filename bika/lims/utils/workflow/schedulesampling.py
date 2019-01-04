@@ -22,8 +22,7 @@ def doTransition(obj):
     :returns: bool, 'an error message'
     """
     errmsg = ''
-    if interfaces.ISample.providedBy(obj)\
-            or interfaces.IAnalysisRequest.providedBy(obj):
+    if interfaces.IAnalysisRequest.providedBy(obj):
         if obj.getScheduledSamplingSampler() and\
                 obj.getSamplingDate():
             doActionFor(obj, SCHEDULE_SAMPLING_TRANSITION_ID)

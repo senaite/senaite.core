@@ -7,4 +7,3 @@
 
 from .view import AnalysesView
 from .qc import QCAnalysesView
-from .late import LateAnalysesView

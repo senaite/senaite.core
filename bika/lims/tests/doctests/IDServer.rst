@@ -13,8 +13,8 @@ objects.
 
 Configuration Settings:
 * format:
-  - a python format string constructed from predefined variables like sampleId,
-    client, sampleType.
+  - a python format string constructed from predefined variables like client,
+    sampleType.
   - special variable 'seq' must be positioned last in the format string
 * sequence type: [generated|counter]
 * context: if type counter, provides context the counting function
@@ -129,26 +129,11 @@ An `AnalysisService` defines a analysis service offered by the laboratory:
 Set up `ID Server` configuration:
 
     >>> values = [
-    ...            {'form': '{sampleType}{year}-{seq:04d}',
-    ...             'portal_type': 'Sample',
-    ...             'prefix': 'sample',
-    ...             'sequence_type': 'generated',
-    ...             'split_length': 1,
-    ...             'value': ''},
-    ...            {'context': 'sample',
-    ...             'counter_reference': 'AnalysisRequestSample',
-    ...             'counter_type': 'backreference',
-    ...             'form': '{sampleId}-R{seq:d}',
+    ...            {'form': '{sampleType}-{year}-{alpha:2a3d}',
     ...             'portal_type': 'AnalysisRequest',
-    ...             'sequence_type': 'counter',
-    ...             'value': ''},
-    ...            {'context': 'sample',
-    ...             'counter_reference': 'SamplePartition',
-    ...             'counter_type': 'contained',
-    ...             'form': '{sampleId}-P{seq:d}',
-    ...             'portal_type': 'SamplePartition',
-    ...             'sequence_type': 'counter',
-    ...             'value': ''},
+    ...             'prefix': 'analysisrequest',
+    ...             'sequence_type': 'generated',
+    ...             'split_length': 1},
     ...            {'form': 'BA-{year}-{seq:04d}',
     ...             'portal_type': 'Batch',
     ...             'prefix': 'batch',
@@ -172,7 +157,7 @@ An `AnalysisRequest` can be created:
     >>> transaction.commit()
     >>> service_uids = [analysisservice.UID()]
     >>> ar = create_analysisrequest(client, request, values, service_uids)
-    >>> ar.getId() == "water{}-0001-R1".format(year)
+    >>> ar.getId() == "water-{}-AA001".format(year)
     True
 
 Create a second `AnalysisRequest`:
@@ -186,24 +171,7 @@ Create a second `AnalysisRequest`:
 
     >>> service_uids = [analysisservice.UID()]
     >>> ar = create_analysisrequest(client, request, values, service_uids)
-    >>> ar.getId() == "water{}-0002-R1".format(year)
-    True
-
-Create a third `AnalysisRequest` with existing sample:
-
-    >>> sample = ar.getSample()
-    >>> sample.getId() == "water{}-0002".format(year)
-    True
-
-    >>> values = {'Client': client.UID(),
-    ...           'Contact': contact.UID(),
-    ...           'SampleType': sampletype.UID(),
-    ...           'Sample': sample.UID(),
-    ...          }
-
-    >>> service_uids = [analysisservice.UID()]
-    >>> ar = create_analysisrequest(client, request, values, service_uids)
-    >>> ar.getId() == "water{}-0002-R2".format(year)
+    >>> ar.getId() == "water-{}-AA002".format(year)
     True
 
 Create a forth `Batch`::
@@ -216,25 +184,10 @@ Create a forth `Batch`::
 Change ID formats and create new `AnalysisRequest`::
     >>> values = [
     ...            {'form': '{clientId}-{dateSampled:%Y%m%d}-{sampleType}-{seq:04d}',
-    ...             'portal_type': 'Sample',
-    ...             'prefix': 'sample',
-    ...             'sequence_type': 'generated',
-    ...             'split_length': 2,
-    ...             'value': ''},
-    ...            {'context': 'sample',
-    ...             'counter_reference': 'AnalysisRequestSample',
-    ...             'counter_type': 'backreference',
-    ...             'form': '{sampleId}-R{seq:03d}',
     ...             'portal_type': 'AnalysisRequest',
-    ...             'sequence_type': 'counter',
-    ...             'value': ''},
-    ...            {'context': 'sample',
-    ...             'counter_reference': 'SamplePartition',
-    ...             'counter_type': 'contained',
-    ...             'form': '{sampleId}-P{seq:d}',
-    ...             'portal_type': 'SamplePartition',
-    ...             'sequence_type': 'counter',
-    ...             'value': ''},
+    ...             'prefix': 'analysisrequest',
+    ...             'sequence_type': 'generated',
+    ...             'split_length': 1},
     ...            {'form': 'BA-{year}-{seq:04d}',
     ...             'portal_type': 'Batch',
     ...             'prefix': 'batch',
@@ -255,7 +208,7 @@ Change ID formats and create new `AnalysisRequest`::
     >>> service_uids = [analysisservice.UID()]
     >>> ar = create_analysisrequest(client, request, values, service_uids)
     >>> ar.getId()
-    'RB-20170131-water-0001-R001'
+    'RB-20170131-water-0001'
 
 Re-seed and create a new `Batch`::
     >>> ploneapi.user.grant_roles(user=current_user,roles = ['Manager'])
@@ -267,7 +220,7 @@ Re-seed and create a new `Batch`::
     >>> browser.open(portal_url + '/ng_flush')
     >>> ar = create_analysisrequest(client, request, values, service_uids)
     >>> ar.getId()
-    'RB-20170131-water-0002-R001'
+    'RB-20170131-water-0002'
 
 Change ID formats and use alphanumeric ids::
     >>> sampletype2 = api.create(bika_sampletypes, "SampleType", Prefix="WB")
@@ -276,28 +229,10 @@ Change ID formats and use alphanumeric ids::
 
     >>> values = [
     ...            {'form': '{sampleType}-{alpha:3a1d}',
-    ...             'portal_type': 'Sample',
-    ...             'prefix': 'sample',
-    ...             'sequence_type': 'generated',
-    ...             'split_length': 1,
-    ...             'separator': '',
-    ...             'value': ''},
-    ...            {'context': 'sample',
-    ...             'counter_reference': 'AnalysisRequestSample',
-    ...             'counter_type': 'backreference',
-    ...             'form': '{sampleId}-R{seq:d}',
     ...             'portal_type': 'AnalysisRequest',
-    ...             'sequence_type': 'counter',
-    ...             'separator': '',
-    ...             'value': ''},
-    ...            {'context': 'sample',
-    ...             'counter_reference': 'SamplePartition',
-    ...             'counter_type': 'contained',
-    ...             'form': '{sampleId}-P{seq:d}',
-    ...             'portal_type': 'SamplePartition',
-    ...             'sequence_type': 'counter',
-    ...             'separator': '',
-    ...             'value': ''},
+    ...             'prefix': 'analysisrequest',
+    ...             'sequence_type': 'generated',
+    ...             'split_length': 1},
     ...          ]
 
     >>> bika_setup.setIDFormatting(values)
@@ -305,17 +240,17 @@ Change ID formats and use alphanumeric ids::
     >>> service_uids = [analysisservice.UID()]
     >>> ar = create_analysisrequest(client, request, values, service_uids)
     >>> ar.getId()
-    'WB-AAA1-R1'
+    'WB-AAA1'
 
     >>> ar = create_analysisrequest(client, request, values, service_uids)
     >>> ar.getId()
-    'WB-AAA2-R1'
+    'WB-AAA2'
 
 Now generate 8 more ARs to force the alpha segment to change
     >>> for num in range(8):
     ...     ar = create_analysisrequest(client, request, values, service_uids)
     >>> ar.getId()
-    'WB-AAB1-R1'
+    'WB-AAB1'
 
 And try now without separators:
 
@@ -325,28 +260,10 @@ And try now without separators:
 
     >>> values = [
     ...            {'form': '{sampleType}{alpha:3a1d}',
-    ...             'portal_type': 'Sample',
-    ...             'prefix': 'sample',
-    ...             'sequence_type': 'generated',
-    ...             'split_length': 1,
-    ...             'separator': '',
-    ...             'value': ''},
-    ...            {'context': 'sample',
-    ...             'counter_reference': 'AnalysisRequestSample',
-    ...             'counter_type': 'backreference',
-    ...             'form': '{sampleId}R{seq:d}',
     ...             'portal_type': 'AnalysisRequest',
-    ...             'sequence_type': 'counter',
-    ...             'separator': '',
-    ...             'value': ''},
-    ...            {'context': 'sample',
-    ...             'counter_reference': 'SamplePartition',
-    ...             'counter_type': 'contained',
-    ...             'form': '{sampleId}{seq:d}',
-    ...             'portal_type': 'SamplePartition',
-    ...             'sequence_type': 'counter',
-    ...             'separator': '',
-    ...             'value': ''},
+    ...             'prefix': 'analysisrequest',
+    ...             'sequence_type': 'generated',
+    ...             'split_length': 1},
     ...          ]
 
     >>> bika_setup.setIDFormatting(values)
@@ -354,16 +271,16 @@ And try now without separators:
     >>> service_uids = [analysisservice.UID()]
     >>> ar = create_analysisrequest(client, request, values, service_uids)
     >>> ar.getId()
-    'WBAAA1R1'
+    'WBAAA1'
 
     >>> ar = create_analysisrequest(client, request, values, service_uids)
     >>> ar.getId()
-    'WBAAA2R1'
+    'WBAAA2'
 
 Now generate 8 more ARs to force the alpha segment to change
     >>> for num in range(8):
     ...     ar = create_analysisrequest(client, request, values, service_uids)
     >>> ar.getId()
-    'WBAAB1R1'
+    'WBAAB1'
 
 TODO: Test the case when numbers are exhausted in a sequence!

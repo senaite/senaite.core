@@ -22,8 +22,6 @@ def Import(context, request):
     fileformat = request.form['panalytical_omnia_axios_format']
     artoapply = request.form['panalytical_omnia_axios_artoapply']
     override = request.form['panalytical_omnia_axios_override']
-    sample = request.form.get('panalytical_omnia_axios_sample',
-                              'requestid')
     instrument = request.form.get('instrument', None)
     errors = []
     logs = []
@@ -58,19 +56,8 @@ def Import(context, request):
         elif override == 'overrideempty':
             over = [True, True]
 
-        sam = ['getId', 'getSampleID', 'getClientSampleID']
-        if sample == 'requestid':
-            sam = ['getId']
-        if sample == 'sampleid':
-            sam = ['getSampleID']
-        elif sample == 'clientsid':
-            sam = ['getClientSampleID']
-        elif sample == 'sample_clientsid':
-            sam = ['getSampleID', 'getClientSampleID']
-
         importer = AxiosXrfImporter(parser=parser,
                                               context=context,
-                                              idsearchcriteria=sam,
                                               allowed_ar_states=status,
                                               allowed_analysis_states=None,
                                               override=over,

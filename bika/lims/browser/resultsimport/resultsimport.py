@@ -98,9 +98,6 @@ class ResultsImportView(BrowserView):
                     importer = GeneralImporter(
                                 parser=parser,
                                 context=self.portal,
-                                idsearchcriteria=['getId',
-                                                  'getSampleID',
-                                                  'getClientSampleID'],
                                 allowed_ar_states=['sample_received'],
                                 allowed_analysis_states=None,
                                 override=[False, False],

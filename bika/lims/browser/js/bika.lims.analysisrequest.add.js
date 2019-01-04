@@ -90,7 +90,6 @@
       $("body").on("click", ".service-listing-header", this.on_service_listing_header_click);
       $("body").on("click", "tr.category", this.on_service_category_click);
       $("body").on("click", "[name='save_button']", this.on_form_submit);
-      $("body").on("click", "tr[fieldname=AdHoc] input[type='checkbox']", this.recalculate_records);
       $("body").on("click", "tr[fieldname=Composite] input[type='checkbox']", this.recalculate_records);
       $("body").on("click", "tr[fieldname=InvoiceExclude] input[type='checkbox']", this.recalculate_records);
       $("body").on("click", "tr[fieldname=Analyses] input[type='checkbox']", this.on_analysis_checkbox_click);
@@ -562,8 +561,6 @@
       field = $("#ClientReference-" + arnum);
       value = sample.client_reference;
       field.val(value);
-      field = $("#AdHoc-" + arnum);
-      field.prop("checked", sample.adhoc);
       field = $("#Composite-" + arnum);
       field.prop("checked", sample.composite);
       field = $("#SampleCondition-" + arnum);
@@ -611,7 +608,7 @@
       /*
        * Apply the template data to all fields of arnum
        */
-      var field, me, part_selectors, template_uid, title, uid;
+      var field, me, template_uid, title, uid;
       me = this;
       field = $("#Template-" + arnum);
       uid = field.attr("uid");
@@ -642,35 +639,8 @@
       field.text(template.remarks);
       field = $("#Composite-" + arnum);
       field.prop("checked", template.composite);
-      $.each(template.service_uids, function(index, uid) {
+      return $.each(template.service_uids, function(index, uid) {
         return me.set_service(arnum, uid, true);
-      });
-      me = this;
-      part_selectors = $(".part-select-" + arnum);
-      return $.each(part_selectors, function(index, part_selector) {
-        var $el, context, partitions, parts, selected_part;
-        $el = $(part_selector);
-        $el.parent().show();
-        $el.empty();
-        uid = $el.attr("uid");
-        selected_part = "part-1";
-        if (uid in template.analyses_partitions) {
-          selected_part = template.analyses_partitions[uid];
-        }
-        partitions = [];
-        $.each(template.partitions, function(index, part) {
-          var part_id;
-          part_id = part.part_id;
-          return partitions.push({
-            part_id: part_id,
-            selected: part_id === selected_part
-          });
-        });
-        context = {
-          partitions: partitions
-        };
-        parts = me.render_template("part-select-template", context);
-        return $el.append(parts);
       });
     };
 

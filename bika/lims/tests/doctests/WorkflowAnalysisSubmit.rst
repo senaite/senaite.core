@@ -166,6 +166,8 @@ I cannot submit `Fe` neither, cause the Analysis Request has not been received:
 
 If I sample the Analysis Request:
 
+    >>> ar.setDateSampled(timestamp())
+    >>> ar.setSampler(TEST_USER_ID)
     >>> transitioned = do_action_for(ar, "sample")
     >>> transitioned[0]
     True

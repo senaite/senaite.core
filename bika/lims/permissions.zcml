@@ -37,7 +37,6 @@
 <permission id="bika.lims.permissions.AddSupplyOrder" title="BIKA: Add SupplyOrder"/>
 <permission id="bika.lims.permissions.AddSamplePoint" title="BIKA: Add SamplePoint"/>
 <permission id="bika.lims.permissions.AddSampleMatrix" title="BIKA: Add SampleMatrix"/>
-<permission id="bika.lims.permissions.AddSamplePartition" title="BIKA: Add SamplePartition"/>
 <permission id="bika.lims.permissions.AddSamplingDeviation" title="BIKA: Add SamplingDeviation"/>
 <permission id="bika.lims.permissions.AddSRTemplate" title="BIKA: Add SRTemplate"/>
 <permission id="bika.lims.permissions.AddSubGroup" title="BIKA: Add Sub-group"/>
@@ -101,9 +100,6 @@
 <permission id="bika.lims.Assign" title="BIKA: Assign analyses"/>
 <permission id="bika.lims.Unassign" title="BIKA: Unassign analyses"/>
 
-<!-- Field permissions -->
-<permission id="bika.lims.EditARContact" title="BIKA: Edit AR Contact"/>
-
 # Edit AR
 # -----------------------------------------------------------------------------
 # Allows to set values for AR fields in AR view
@@ -111,21 +107,9 @@
 # Only takes effect if:
 #   - The AR's 'cancellation_state' is 'active'
 #   - The AR's 'review_state' is in:
-#       'sample_registered', 'to_be_sampled', 'sampled', 'to_be_preserved',
+#       'sample_registered', 'to_be_sampled', 'to_be_preserved',
 #       'sample_due', 'sample_received', 'to_be_verified', 'attachment_due'
 <permission id="bika.lims.EditAR" title="BIKA: Edit AR"/>
-
-# Edit Sample Partition
-# ----------------------------------------------
-# Allows to set a Container and/or Preserver for a Sample Partition
-# See AR view: Sample Partitions table and Sample Partitions tab
-#
-# Only takes effect if:
-#   - The Sample's 'cancellation_state' is 'active'
-#   - The Sample's 'review_state' is in:
-#       'sample_registered', 'to_be_sampled', 'sampled', 'to_be_preserved',
-#       'sample_due', 'sample_received', 'to_be_verified', 'attachment_due'
-<permission id="bika.lims.EditSamplePartition" title="BIKA: Edit Sample Partition"/>
 
 # Edit Client
 # ----------------------------------------------

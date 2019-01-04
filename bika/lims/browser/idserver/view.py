@@ -86,8 +86,6 @@ class IDServerView(BrowserView):
         spec = {
             "seq": number,
             "year": get_current_year(),
-            "sample": "Sample",
-            "sampleId": "SampleId",
             "sampleType": key.replace(portal_type, "").strip("-"),
         }
         return id_template.format(**spec)

@@ -5,31 +5,8 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-import sys
 
 from AccessControl import ClassSecurityInfo
-from Products.ATExtensions.ateapi import RecordsField
-from Products.Archetypes.atapi import BooleanField
-from Products.Archetypes.atapi import BooleanWidget
-from Products.Archetypes.atapi import DecimalWidget
-from Products.Archetypes.atapi import FixedPointField
-from Products.Archetypes.atapi import IntegerField
-from Products.Archetypes.atapi import IntegerWidget
-from Products.Archetypes.atapi import LinesField
-from Products.Archetypes.atapi import MultiSelectionWidget
-from Products.Archetypes.atapi import ReferenceField
-from Products.Archetypes.atapi import ReferenceWidget
-from Products.Archetypes.atapi import Schema
-from Products.Archetypes.atapi import SelectionWidget
-from Products.Archetypes.atapi import StringField
-from Products.Archetypes.atapi import StringWidget
-from Products.Archetypes.atapi import TextAreaWidget
-from Products.Archetypes.atapi import TextField
-from Products.Archetypes.atapi import registerType
-from Products.Archetypes.references import HoldingReference
-from Products.Archetypes.utils import DisplayList
-from Products.Archetypes.utils import IntDisplayList
-from Products.CMFCore.utils import getToolByName
 from archetypes.referencebrowserwidget import ReferenceBrowserWidget
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import DurationField
@@ -51,6 +28,26 @@ from bika.lims.locales import COUNTRIES
 from bika.lims.numbergenerator import INumberGenerator
 from bika.lims.vocabularies import getStickerTemplates as _getStickerTemplates
 from plone.app.folder import folder
+from Products.Archetypes.atapi import BooleanField
+from Products.Archetypes.atapi import BooleanWidget
+from Products.Archetypes.atapi import DecimalWidget
+from Products.Archetypes.atapi import FixedPointField
+from Products.Archetypes.atapi import IntegerField
+from Products.Archetypes.atapi import IntegerWidget
+from Products.Archetypes.atapi import LinesField
+from Products.Archetypes.atapi import MultiSelectionWidget
+from Products.Archetypes.atapi import ReferenceField
+from Products.Archetypes.atapi import Schema
+from Products.Archetypes.atapi import SelectionWidget
+from Products.Archetypes.atapi import StringField
+from Products.Archetypes.atapi import StringWidget
+from Products.Archetypes.atapi import TextAreaWidget
+from Products.Archetypes.atapi import TextField
+from Products.Archetypes.atapi import registerType
+from Products.Archetypes.utils import DisplayList
+from Products.Archetypes.utils import IntDisplayList
+from Products.ATExtensions.ateapi import RecordsField
+from Products.CMFCore.utils import getToolByName
 from zope.component import getUtility
 from zope.interface import implements
 
@@ -768,95 +765,62 @@ schema = BikaFolderSchema.copy() + Schema((
                 'split_length': 1
             }, {
                 'form': '{sampleType}-{seq:04d}',
-                'portal_type': 'Sample',
-                'prefix': 'sample',
+                'portal_type': 'AnalysisRequest',
+                'prefix': 'analysisrequest',
                 'sequence_type': 'generated',
                 'split_length': 1
-            }, {
-                'context': 'sample',
-                'counter_reference': 'AnalysisRequestSample',
-                'counter_type': 'backreference',
-                'form': '{sampleId}-R{seq:02d}',
-                'portal_type': 'AnalysisRequest',
-                'sequence_type': 'counter'
-            }, {
-                'context': 'sample',
-                'counter_reference': 'SamplePartition',
-                'counter_type': 'contained',
-                'form': '{sampleId}-P{seq:d}',
-                'portal_type': 'SamplePartition',
-                'sequence_type': 'counter'
-            }
+            },
         ],
         widget=RecordsWidget(
             label=_("Formatting Configuration"),
             allowDelete=True,
             description=_(
-                " <p>The Bika LIMS ID Server provides unique sequential IDs " 
-                "for objects such as Samples and Worksheets etc, based on a " 
-                "format specified for each content type.</p>" 
-                "<p>The format is constructed similarly to the Python format" 
-                " syntax, using predefined variables per content type, and" 
-                " advancing the IDs through a sequence number, 'seq' and its" 
-                " padding as a number of digits, e.g. '03d' for a sequence of" 
-                " IDs from 001 to 999.</p>" 
-                "<p>Alphanumeric prefixes for IDs are included as is in the" 
-                " formats, e.g. WS for Worksheet in WS-{seq:03d} produces" 
+                " <p>The Bika LIMS ID Server provides unique sequential IDs "
+                "for objects such as Samples and Worksheets etc, based on a "
+                "format specified for each content type.</p>"
+                "<p>The format is constructed similarly to the Python format"
+                " syntax, using predefined variables per content type, and"
+                " advancing the IDs through a sequence number, 'seq' and its"
+                " padding as a number of digits, e.g. '03d' for a sequence of"
+                " IDs from 001 to 999.</p>"
+                "<p>Alphanumeric prefixes for IDs are included as is in the"
+                " formats, e.g. WS for Worksheet in WS-{seq:03d} produces"
                 " sequential Worksheet IDs: WS-001, WS-002, WS-003 etc.</p>"
                 "<p>For dynamic generation of alphanumeric and sequential IDs,"
                 " the wildcard {alpha} can be used. E.g WS-{alpha:2a3d}"
                 " produces WS-AA001, WS-AA002, WS-AB034, etc.</p>"
-                "<p>Variables that can be used include:" 
-                "<table>" 
+                "<p>Variables that can be used include:"
+                "<table>"
                 "<tr>"
-                "<th style='width:150px'>Content Type</th><th>Variables</th>" 
-                "</tr>" 
-                "<tr><td>Client</td><td>{client}</td></tr>" 
-                "<tr><td>Year</td><td>{year}</td></tr>" 
-                "<tr><td>Sample ID</td><td>{sampleId}</td></tr>" 
-                "<tr><td>Sample Type</td><td>{sampleType}</td></tr>" 
-                "<tr><td>Sampling Date</td><td>{samplingDate}</td></tr>" 
-                "<tr><td>Date Sampled</td><td>{dateSampled}</td></tr>" 
-                "</table>" 
-                "</p>" 
-                "<p>Configuration Settings:" 
-                "<ul>" 
-                "<li>format:" 
-                "<ul><li>a python format string constructed from predefined" 
-                " variables like sampleId, client, sampleType.</li>" 
-                "<li>special variable 'seq' must be positioned last in the"  
-                "format string</li></ul></li>" 
-                "<li>sequence type: [generated|counter]</li>" 
-                "<li>context: if type counter, provides context the counting" 
-                " function</li>" 
-                "<li>counter type: [backreference|contained]</li>" 
-                "<li>counter reference: a parameter to the counting" 
-                " function</li>" 
-                "<li>prefix: default prefix if none provided in format" 
-                " string</li>" 
-                "<li>split length: the number of parts to be included in the" 
-                " prefix</li>" 
+                "<th style='width:150px'>Content Type</th><th>Variables</th>"
+                "</tr>"
+                "<tr><td>Client</td><td>{client}</td></tr>"
+                "<tr><td>Year</td><td>{year}</td></tr>"
+                "<tr><td>Sample ID</td><td>{sampleId}</td></tr>"
+                "<tr><td>Sample Type</td><td>{sampleType}</td></tr>"
+                "<tr><td>Sampling Date</td><td>{samplingDate}</td></tr>"
+                "<tr><td>Date Sampled</td><td>{dateSampled}</td></tr>"
+                "</table>"
+                "</p>"
+                "<p>Configuration Settings:"
+                "<ul>"
+                "<li>format:"
+                "<ul><li>a python format string constructed from predefined"
+                " variables like sampleId, client, sampleType.</li>"
+                "<li>special variable 'seq' must be positioned last in the"
+                "format string</li></ul></li>"
+                "<li>sequence type: [generated|counter]</li>"
+                "<li>context: if type counter, provides context the counting"
+                " function</li>"
+                "<li>counter type: [backreference|contained]</li>"
+                "<li>counter reference: a parameter to the counting"
+                " function</li>"
+                "<li>prefix: default prefix if none provided in format"
+                " string</li>"
+                "<li>split length: the number of parts to be included in the"
+                " prefix</li>"
                 "</ul></p>")
         )
-    ),
-    BooleanField(
-        'ExternalIDServer',
-        schemata="ID Server",
-        default=False,
-        widget=BooleanWidget(
-            label=_("Use external ID server"),
-            description=_(
-                "Check this if you want to use a separate ID server. "
-                "Prefixes are configurable separately in each Bika site")
-        ),
-    ),
-    StringField(
-        'IDServerURL',
-        schemata="ID Server",
-        widget=StringWidget(
-            label=_("ID Server URL"),
-            description=_("The full URL: http://URL/path:port")
-        ),
     ),
     StringField(
         'IDServerValues',

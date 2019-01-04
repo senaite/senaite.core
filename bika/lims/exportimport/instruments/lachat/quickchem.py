@@ -17,8 +17,7 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims import api
 from bika.lims.browser import BrowserView
 from bika.lims.exportimport.instruments.utils import \
-    (get_instrument_import_search_criteria,
-     get_instrument_import_override,
+    (get_instrument_import_override,
      get_instrument_import_ar_allowed_states)
 from bika.lims.exportimport.instruments.resultsimport import \
     InstrumentCSVResultsFileParser, AnalysisResultsImporter
@@ -110,13 +109,13 @@ class Importer(AnalysisResultsImporter):
     """ Instrument Importer
     """
 
-    def __init__(self, parser, context, idsearchcriteria, override,
+    def __init__(self, parser, context,  override,
                  allowed_ar_states=None, allowed_analysis_states=None,
                  instrument_uid=None):
         AnalysisResultsImporter.__init__(self,
                                          parser,
                                          context,
-                                         idsearchcriteria,
+
                                          override,
                                          allowed_ar_states,
                                          allowed_analysis_states,
@@ -134,7 +133,7 @@ def Import(context, request):
     # fileformat = form['instrument_results_file_format']
     override = form['results_override']
     artoapply = form['artoapply']
-    sample = form.get('sample', 'requestid')
+
     instrument = form.get('instrument', None)
     errors = []
     logs = []
@@ -148,11 +147,9 @@ def Import(context, request):
     parser = LaChatQuickCheckFIAParser(infile)
     status = get_instrument_import_ar_allowed_states(artoapply)
     over = get_instrument_import_override(override)
-    sam = get_instrument_import_search_criteria(sample)
 
     importer = Importer(parser=parser,
                         context=context,
-                        idsearchcriteria=sam,
                         allowed_ar_states=status,
                         allowed_analysis_states=None,
                         override=over,
@@ -216,8 +213,7 @@ class Export(BrowserView):
                 used_ids.append('a{}'.format(container.id))
                 # col_a (sample id) has a weird format, but it matches
                 # the examples we are given, so it is true:
-                sample = container.getSample()
-                samplepoint = sample.getSamplePoint()
+                samplepoint = container.getSamplePoint()
                 sp_title = samplepoint.Title() if samplepoint else ''
                 col_b = '[{}] {}'.format(container.id, sp_title)
                 col_c = str(row['position'])

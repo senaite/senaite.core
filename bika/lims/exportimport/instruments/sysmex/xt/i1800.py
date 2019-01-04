@@ -28,7 +28,7 @@ def Import(context, request):
     fileformat = request.form['format']
     artoapply = request.form['artoapply']
     override = request.form['override']
-    sample = request.form.get('sample', 'requestid')
+
     instrument = request.form.get('instrument', None)
     errors = []
     logs = []
@@ -41,12 +41,6 @@ def Import(context, request):
         'nooverride': [False, False],
         'override': [True, False],
         'overrideempty': [True, True]
-    }
-    sample_mapping = {
-        'requestid': ['getId'],
-        'sampleid': ['getSampleID'],
-        'clientsid': ['getClientSampleID'],
-        'sample_clientsid': ['getSampleID', 'getClientSampleID']
     }
 
     # Load the most suitable parser according to file extension/options/etc...
@@ -62,10 +56,8 @@ def Import(context, request):
         # Load the importer
         status = status_mapping.get(artoapply, ['sample_received', 'attachment_due', 'to_be_verified'])
         over = override_mapping.get(override, [False, False])
-        sam = sample_mapping.get(sample, ['getId', 'getSampleID', 'getClientSampleID'])
         importer = SysmexXTImporter(parser=parser,
                                     context=context,
-                                    idsearchcriteria=sam,
                                     allowed_ar_states=status,
                                     allowed_analysis_states=None,
                                     override=over,

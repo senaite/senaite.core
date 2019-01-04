@@ -56,11 +56,11 @@ class SealAnalyticsAQ2CSVParser(InstrumentCSVResultsFileParser):
 
 
 class SealAnalyticsAQ2Importer(AnalysisResultsImporter):
-    def __init__(self, parser, context, idsearchcriteria, override,
+    def __init__(self, parser, context,  override,
                  allowed_ar_states=None, allowed_analysis_states=None,
                  instrument_uid=None):
         AnalysisResultsImporter.__init__(self, parser, context,
-                                         idsearchcriteria, override,
+                                          override,
                                          allowed_ar_states,
                                          allowed_analysis_states,
                                          instrument_uid)

@@ -44,7 +44,7 @@ schema = BikaSchema.copy() + Schema((
         mutator="setSamplePoint",
         widget=ReferenceWidget(
             label=_("Sample Point"),
-            description=_("Location where sample was taken"),
+            description=_("Location where sample is collected"),
             visible={
                 "edit": "visible", "view": "visible", "add": "visible",
                 "secondary": "invisible",
@@ -93,8 +93,16 @@ schema = BikaSchema.copy() + Schema((
         "Composite",
         default=False,
         widget=BooleanWidget(
-            label=_("Composite"),
-            description=_("Composite sample"),
+            label=_("Composite sample"),
+            description=_("The sample is a mix of sub samples"),
+        ),
+    ),
+    BooleanField(
+        "SamplingRequired",
+        default_method='getSamplingRequiredDefaultValue',
+        widget=BooleanWidget(
+            label=_("Sample collected by the laboratory"),
+            description=_("Enable sampling workflow for the created sample")
         ),
     ),
     RemarksField(
@@ -300,7 +308,6 @@ class ARTemplate(BaseContent):
         then that folder's UID must be returned in this index.
         """
         return self.aq_parent.UID()
-        return ""
 
     def getAnalysisServiceSettings(self, uid):
         """Returns a dictionary with the settings for the analysis service that
@@ -360,5 +367,10 @@ class ARTemplate(BaseContent):
 
         return removed
 
+    def getSamplingRequiredDefaultValue(self):
+        """Returns the default value for field SamplingRequired, that is the
+        value for setting SamplingWorkflowEnabled from setup
+        """
+        return self.bika_setup.getSamplingWorkflowEnabled()
 
 registerType(ARTemplate, PROJECTNAME)
