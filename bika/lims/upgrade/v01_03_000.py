@@ -69,6 +69,7 @@ JAVASCRIPTS_TO_REMOVE = [
     "++resource++bika.lims.js/bika.lims.sample.js",
     "++resource++bika.lims.js/bika.lims.samples.js",
     "++resource++bika.lims.js/bika.lims.samples.print.js",
+    "++resource++bika.lims.js/bika.lims.utils.calcs.js",
 ]
 
 @upgradestep(product, version)
