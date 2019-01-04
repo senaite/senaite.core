@@ -59,7 +59,7 @@ class ClientFieldVisibility(SenaiteATWidgetVisibility):
             # idea to allow the user to change the Client from an AR (basically
             # because otherwise, we'd need to move the object from one client
             # folder to another!).
-            return "visible"
+            return "invisible"
         return default
 
 
