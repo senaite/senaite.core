@@ -32,6 +32,14 @@
 
     <browser:page
       for="bika.lims.interfaces.IReferenceSample"
+      name="reference_analyses_table"
+      class="bika.lims.browser.referencesample.ReferenceAnalysesView"
+      permission="bika.lims.ManageReference"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="bika.lims.interfaces.IReferenceSample"
       name="results"
       class="bika.lims.browser.referencesample.ReferenceResultsView"
       permission="bika.lims.ManageReference"

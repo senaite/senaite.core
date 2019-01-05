@@ -11,7 +11,6 @@ from datetime import datetime
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
-from bika.lims import api
 from bika.lims.browser import BrowserView
 from bika.lims.browser.analyses import AnalysesView
 from bika.lims.browser.bika_listing import BikaListingView
@@ -67,7 +66,6 @@ class ReferenceAnalysesViewView(BrowserView):
             "/++resource++bika.lims.images/referencesample_big.png"
         self.title = self.context.translate(_("Reference Analyses"))
         self.description = ""
-        self._analysesview = None
 
     def __call__(self):
         return self.template()
@@ -78,109 +76,140 @@ class ReferenceAnalysesViewView(BrowserView):
         return self.get_analyses_view().contents_table()
 
     def get_analyses_view(self):
-        if not self._analysesview:
-            # Creates the Analyses View if not exists yet
-            self._analysesview = ReferenceAnalysesView(
-                self.context, self.request)
-            self._analysesview.allow_edit = False
-            self._analysesview.show_select_column = False
-            self._analysesview.show_workflow_action_buttons = False
-            self._analysesview.form_id = "%s_qcanalyses" % self.context.UID()
-            self._analysesview.review_states[0]['transitions'] = [{}]
-        return self._analysesview
+        return api.get_view(
+            "reference_analyses_table",
+            context=self.context,
+            request=self.request)
 
     def getReferenceSampleId(self):
         return self.context.id
 
     def get_analyses_json(self):
-        return self.get_analyses_view().chart.get_json()
+        view = self.get_analyses_view()
+        # XXX we need to call the view here to generate the chart
+        view()
+        view.folderitems()
+        return view.chart.get_json()
 
 
 class ReferenceAnalysesView(AnalysesView):
-    """ Reference Analyses on this sample
+    """Reference Analyses on this sample
     """
-    implements(IViewView)
 
     def __init__(self, context, request):
-        AnalysesView.__init__(self, context, request)
+        super(ReferenceAnalysesView, self).__init__(context, request)
+
+        self.form_id = "%s_qcanalyses" % context.UID()
+        self.show_select_row = False
+        self.show_workflow_action_buttons = False
+        self.show_select_column = False
+        self.pagesize = 999999
+        self.show_search = False
+
         self.contentFilter = {
-            'portal_type': 'ReferenceAnalysis',
-            'path': {'query': "/".join(self.context.getPhysicalPath()),
-                     'level': 0}}
-        self.columns = {
-            'id': {'title': _('ID'), 'toggle': False},
-            'getReferenceAnalysesGroupID': {
-                'title': _('QC Sample ID'), 'toggle': True},
-            'Category': {'title': _('Category'), 'toggle': True},
-            'Service': {'title': _('Service'), 'toggle': True},
-            'Worksheet': {'title': _('Worksheet'), 'toggle': True},
-            'Method': {
-                'title': _('Method'),
-                'sortable': False,
-                'toggle': True},
-            'Instrument': {
-                'title': _('Instrument'),
-                'sortable': False,
-                'toggle': True},
-            'Result': {'title': _('Result'), 'toggle': True},
-            'CaptureDate': {
-                'title': _('Captured'),
-                'index': 'getResultCaptureDate',
-                'toggle': True},
-            'Uncertainty': {'title': _('+-'), 'toggle': True},
-            'DueDate': {'title': _('Due Date'),
-                        'index': 'getDueDate',
-                        'toggle': True},
-            'retested': {'title': _('Retested'),
-                         'type': 'boolean', 'toggle': True},
-            'state_title': {'title': _('State'), 'toggle': True},
+            "portal_type": "ReferenceAnalysis",
+            "path": {
+                "query": "/".join(self.context.getPhysicalPath()),
+                "level": 0}
         }
+
+        self.columns = collections.OrderedDict((
+            ("id", {
+                "title": _("ID"),
+                "sortable": False,
+                "toggle": False}),
+            ("getReferenceAnalysesGroupID", {
+                "title": _("QC Sample ID"),
+                "sortable": False,
+                "toggle": True}),
+            ("Category", {
+                "title": _("Category"),
+                "sortable": False,
+                "toggle": True}),
+            ("Service", {
+                "title": _("Service"),
+                "sortable": False,
+                "toggle": True}),
+            ("Worksheet", {
+                "title": _("Worksheet"),
+                "sortable": False,
+                "toggle": True}),
+            ("Method", {
+                "title": _("Method"),
+                "sortable": False,
+                "toggle": True}),
+            ("Instrument", {
+                "title": _("Instrument"),
+                "sortable": False,
+                "toggle": True}),
+            ("Result", {
+                "title": _("Result"),
+                "sortable": False,
+                "toggle": True}),
+            ("CaptureDate", {
+                "title": _("Captured"),
+                "sortable": False,
+                "toggle": True}),
+            ("Uncertainty", {
+                "title": _("+-"),
+                "sortable": False,
+                "toggle": True}),
+            ("DueDate", {
+                "title": _("Due Date"),
+                "sortable": False,
+                "toggle": True}),
+            ("retested", {
+                "title": _("Retested"),
+                "sortable": False,
+                "type": "boolean",
+                "toggle": True}),
+            ("state_title", {
+                "title": _("State"),
+                "sortable": False,
+                "toggle": True}),
+        ))
+
         self.review_states = [
-            {'id': 'default',
-             'title': _('All'),
-             'contentFilter': {},
-             'transitions': [],
-             'columns':['id',
-                        'getReferenceAnalysesGroupID',
-                        'Category',
-                        'Service',
-                        'Worksheet',
-                        'Method',
-                        'Instrument',
-                        'Result',
-                        'CaptureDate',
-                        'Uncertainty',
-                        'DueDate',
-                        'state_title'],
-             },
+            {
+                "id": "default",
+                "title": _("All"),
+                "contentFilter": {},
+                "transitions": [],
+                "columns": self.columns.keys()
+            },
         ]
         self.chart = EvolutionChart()
 
-    def isItemAllowed(self, obj):
+    def is_analysis_edition_allowed(self, analysis_brain):
+        """see AnalysesView.is_analysis_edition_allowed
         """
-        :obj: it is a brain
-        """
-        allowed = super(ReferenceAnalysesView, self).isItemAllowed(obj)
-        return allowed if not allowed else obj.getResult != ''
+        return False
 
     def folderitem(self, obj, item, index):
-        """
-        :obj: it is a brain
+        """Service triggered each time an item is iterated in folderitems.
+
+        The use of this service prevents the extra-loops in child objects.
+
+        :obj: the instance of the class to be foldered
+        :item: dict containing the properties of the object to be used by
+            the template
+        :index: current index of the item
         """
         item = super(ReferenceAnalysesView, self).folderitem(obj, item, index)
+
         if not item:
             return None
-        item['Category'] = obj.getCategoryTitle
+        item["Category"] = obj.getCategoryTitle
         ref_analysis = api.get_object(obj)
         ws = ref_analysis.getWorksheet()
         if not ws:
             logger.warn(
-                'No Worksheet found for ReferenceAnalysis {}'
+                "No Worksheet found for ReferenceAnalysis {}"
                 .format(obj.getId))
         else:
-            item['Worksheet'] = ws.Title()
-            anchor = '<a href="%s">%s</a>' % (ws.absolute_url(), ws.Title())
-            item['replace']['Worksheet'] = anchor
+            item["Worksheet"] = ws.Title()
+            anchor = "<a href='%s'>%s</a>" % (ws.absolute_url(), ws.Title())
+            item["replace"]["Worksheet"] = anchor
 
         # Add the analysis to the QC Chart
         self.chart.add_analysis(obj)

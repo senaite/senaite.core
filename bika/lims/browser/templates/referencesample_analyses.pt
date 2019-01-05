@@ -40,8 +40,8 @@
 
     <!-- Reference Analyses table -->
     <tal:analysestable>
-    <tal:parts replace="structure view/get_analyses_table"/>
-    <input type="hidden" id='graphdata' tal:attributes="value view/get_analyses_json"/>
+      <tal:parts replace="structure view/get_analyses_table"/>
+      <input type="hidden" id='graphdata' tal:attributes="value view/get_analyses_json"/>
     </tal:analysestable>
 
     </metal:content-core>
