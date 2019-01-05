@@ -84,6 +84,7 @@ Changelog
 
 **Fixed**
 
+- #1190 Fixed evolution chart for reference analyses
 - #1183 Fix results calculation of dependent calculations
 - #1175 Fixed Version Display of SENAITE CORE Add-on in the Quickinstaller Tool
 - #1142 Fix instrument QC Analyses Table
