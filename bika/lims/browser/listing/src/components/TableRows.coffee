@@ -54,10 +54,13 @@ class TableRows extends React.Component
     children = @get_item_children item
     return children.length > 0
 
-  get_remarks_columns: ->
+  get_remarks_columns: (item) ->
     columns = []
     for key, value of @props.columns
       if value.type == "remarks"
+        # skip undefined values (e.g. reassignable slots)
+        if item[key] is undefined
+          continue
         columns.push key
     return columns
 
@@ -142,7 +145,7 @@ class TableRows extends React.Component
       selected = @is_selected item
       disabled = @is_item_disabled item
       expandable = @has_item_children item
-      remarks_columns = @get_remarks_columns()
+      remarks_columns = @get_remarks_columns item
       transposed = no
 
       # transposed items have no uid, so use the index instead
@@ -173,7 +176,8 @@ class TableRows extends React.Component
         # support rowspanning for WS header slot
         skip = item.skip or []
         colspan = @props.column_count - skip.length
-        value = item[column_key]
+        # get the remarks value
+        value = item[column_key] or ""
         rows.push(
           <TableRemarksRow
             {...@props}
