@@ -20,33 +20,32 @@ from bika.lims.utils import get_link
 from bika.lims.utils import t
 from plone.app.layout.globals.interfaces import IViewView
 from plone.memoize import view
-from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.ATContentTypes.utils import DT2dt
-from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.interface import implements
 
 
 class ViewView(BrowserView):
-    """ Reference Sample View
+    """Reference Sample View
     """
     implements(IViewView)
     template = ViewPageTemplateFile("templates/referencesample_view.pt")
 
     def __init__(self, context, request):
-        BrowserView.__init__(self, context, request)
-        self.icon = self.portal_url +\
-            "/++resource++bika.lims.images/referencesample_big.png"
+        super(ViewView, self).__init__(context, request)
+
+        self.icon = "{}/{}".format(
+            self.portal_url,
+            "++resource++bika.lims.images/referencesample_big.png")
 
     def __call__(self):
-        rc = getToolByName(self.context, REFERENCE_CATALOG)
         self.results = {}  # {category_title: listofdicts}
         for r in self.context.getReferenceResults():
-            service = rc.lookupObject(r['uid'])
+            service = api.get_object_by_uid(r["uid"])
             cat = service.getCategoryTitle()
             if cat not in self.results:
                 self.results[cat] = []
-            r['service'] = service
+            r["service"] = service
             self.results[cat].append(r)
         self.categories = self.results.keys()
         self.categories.sort()
@@ -58,14 +57,16 @@ class ReferenceAnalysesViewView(BrowserView):
     """
 
     implements(IViewView)
-    template = ViewPageTemplateFile("templates/referencesample_analyses.pt")
+    template = ViewPageTemplateFile(
+        "templates/referencesample_analyses.pt")
 
     def __init__(self, context, request):
         super(ReferenceAnalysesViewView, self).__init__(context, request)
-        self.icon = self.portal_url + \
-            "/++resource++bika.lims.images/referencesample_big.png"
+
         self.title = self.context.translate(_("Reference Analyses"))
-        self.description = ""
+        self.icon = "{}/{}".format(
+            self.portal_url,
+            "++resource++bika.lims.images/referencesample_big.png")
 
     def __call__(self):
         return self.template()
@@ -75,21 +76,28 @@ class ReferenceAnalysesViewView(BrowserView):
         """
         return self.get_analyses_view().contents_table()
 
-    def get_analyses_view(self):
-        return api.get_view(
-            "reference_analyses_table",
-            context=self.context,
-            request=self.request)
+    def get_analyses_table_view(self):
+        view_name = "table_referenceanalyses"
+        view = api.get_view(
+            view_name, context=self.context, request=self.request)
+        # Call listing hooks
+        view.update()
+        view.before_render()
 
-    def getReferenceSampleId(self):
-        return self.context.id
-
-    def get_analyses_json(self):
-        view = self.get_analyses_view()
-        # XXX we need to call the view here to generate the chart
-        view()
-        view.folderitems()
-        return view.chart.get_json()
+        # TODO Refactor QC Charts as React Components
+        # The current QC Chart is rendered by looking at the value from a
+        # hidden input with id "graphdata", that is rendered below the contents
+        # listing (see referenceanalyses.pt).
+        # The value is a json, is built by folderitem function and is returned
+        # by self.chart.get_json(). This function is called directly by the
+        # template on render, but the template itself does not directly render
+        # the contents listing, but is done asyncronously.
+        # Hence the function at this point returns an empty dictionary because
+        # folderitems hasn't been called yet. As a result, the chart appears
+        # empty. Here, we force folderitems function to be called in order to
+        # ensure the graphdata is filled before the template is rendered.
+        view.get_folderitems()
+        return view
 
 
 class ReferenceAnalysesView(AnalysesView):
@@ -99,11 +107,11 @@ class ReferenceAnalysesView(AnalysesView):
     def __init__(self, context, request):
         super(ReferenceAnalysesView, self).__init__(context, request)
 
-        self.form_id = "%s_qcanalyses" % context.UID()
-        self.show_select_row = False
-        self.show_workflow_action_buttons = False
+        self.form_id = "{}_qcanalyses".format(api.get_uid(context))
+        self.allow_edit = False
         self.show_select_column = False
-        self.pagesize = 999999
+        self.show_search = False
+        self.omit_form = True
         self.show_search = False
 
         self.contentFilter = {
