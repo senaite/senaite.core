@@ -85,7 +85,6 @@ def upgrade(tool):
         return True
 
     logger.info("Upgrading {0}: {1} -> {2}".format(product, ver_from, version))
-    return fix_worksheet_status_inconsistencies(portal)
 
     # -------- ADD YOUR STUFF BELOW --------
     setup.runImportStepFromProfile(profile, 'typeinfo')
