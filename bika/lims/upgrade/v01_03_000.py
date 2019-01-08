@@ -175,6 +175,10 @@ def upgrade(tool):
     # https://github.com/senaite/senaite.core/pull/1153
     add_worksheet_progress_percentage(portal)
 
+    # Worksheet can only be open if at least one analysis hasn't been verified
+    # https://github.com/senaite/senaite.core/pull/1191
+    fix_worksheet_status_inconsistencies(portal)
+
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
 
@@ -1475,4 +1479,37 @@ def remove_stale_indexes_from_bika_catalog(portal):
 
     for metadata in metadata_to_remove:
         del_metadata(portal, cat_id, metadata)
+    commit_transaction(portal)
+
+
+def fix_worksheet_status_inconsistencies(portal):
+    """Walks through open worksheets and transition them to 'verified' or
+    'to_be_verified' if all their analyses are not in an open status
+    """
+    logger.info("Fixing worksheet inconsistencies ...")
+    query = dict(portal_type="Worksheet",
+                 review_state=["open", "to_be_verified"])
+    brains = api.search(query, CATALOG_WORKSHEET_LISTING)
+    total = len(brains)
+    for num, brain in enumerate(brains):
+        success = False
+        if num % 100 == 0:
+            logger.info("Fixing worksheet inconsistencies: {}/{}"
+                        .format(num, total))
+        # Note we don't check anything, WS guards for "submit" and "verify"
+        # will take care of checking if the status of contained analyses allows
+        # the transition.
+        worksheet = api.get_object(brain)
+        if api.get_workflow_status_of(worksheet) == "open":
+            success, msg = do_action_for(worksheet, "submit")
+        elif api.get_workflow_status_of(worksheet) == "to_be_verified":
+            success, msg = do_action_for(worksheet, "verify")
+
+        if success:
+            logger.info("Worksheet {} transitioned to 'to_be_verified'"
+                        .format(worksheet.getId()))
+            success, msg = do_action_for(worksheet, "verify")
+            if success:
+                logger.info("Worksheet {} transitioned to 'verified'"
+                            .format(worksheet.getId()))
     commit_transaction(portal)
