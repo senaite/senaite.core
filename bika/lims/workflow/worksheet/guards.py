@@ -6,9 +6,8 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from bika.lims import api
-from bika.lims.catalog.analysis_catalog import CATALOG_ANALYSIS_LISTING
-from bika.lims.workflow import getCurrentState, isTransitionAllowed
 from bika.lims.workflow import isBasicTransitionAllowed
+from bika.lims.workflow import isTransitionAllowed
 from bika.lims.workflow import wasTransitionPerformed
 
 
@@ -54,8 +53,8 @@ def guard_submit(obj):
     if not isBasicTransitionAllowed(obj):
         return False
 
-    dettached = ['rejected', 'retracted']
-    return _children_are_ready(obj, 'submit', dettached_states=dettached)
+    detached = ['rejected', 'retracted']
+    return _children_are_ready(obj, 'submit', dettached_states=detached)
 
 
 def guard_retract(worksheet):
