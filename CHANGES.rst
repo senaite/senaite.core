@@ -84,7 +84,7 @@ Changelog
 
 **Fixed**
 
-- #1191 Some worksheets pre-1.3 with vpublished analyses remain in open state
+- #1191 Some worksheets pre-1.3 with published analyses remain in open state
 - #1190 Fixed evolution chart for reference analyses
 - #1183 Fix results calculation of dependent calculations
 - #1175 Fixed Version Display of SENAITE CORE Add-on in the Quickinstaller Tool
