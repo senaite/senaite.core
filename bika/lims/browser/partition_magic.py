@@ -80,13 +80,16 @@ class PartitionMagicView(BrowserView):
             for partition in form.get("partitions", []):
                 primary_uid = partition.get("primary_uid")
                 sampletype_uid = partition.get("sampletype_uid")
+                container_uid = partition.get("container_uid")
                 analyses_uids = partition.get("analyses")
                 if not analyses_uids or not primary_uid:
                     # Cannot create a partition w/o analyses!
                     continue
 
-                partition = self.create_partition(
-                    primary_uid, sampletype_uid, analyses_uids)
+                partition = self.create_partition(primary_uid=primary_uid,
+                                                  sampletype_uid=sampletype_uid,
+                                                  container_uid=container_uid,
+                                                  analyses_uids=analyses_uids)
                 partitions.append(partition)
                 logger.info("Successfully created partition: {}".format(
                     api.get_path(partition)))
@@ -112,7 +115,8 @@ class PartitionMagicView(BrowserView):
 
         return self.template()
 
-    def create_partition(self, primary_uid, sampletype_uid, analyses_uids):
+    def create_partition(self, primary_uid, sampletype_uid, container_uid,
+                         analyses_uids):
         """Create a new partition (AR)
         """
         logger.info("*** CREATE PARTITION ***")
@@ -122,6 +126,7 @@ class PartitionMagicView(BrowserView):
             "InternalUse": True,
             "ParentAnalysisRequest": primary_uid,
             "SampleType": sampletype_uid,
+            "Container": container_uid,
         }
 
         for fieldname, field in api.get_fields(ar).items():
@@ -213,6 +218,13 @@ class PartitionMagicView(BrowserView):
             info = self.get_base_info(obj)
             yield info
 
+    def get_container_data(self):
+        """Returns a list of Container data
+        """
+        for obj in self.get_containers():
+            info = self.get_base_info(obj)
+            yield info
+
     def get_objects(self):
         """Returns a list of objects coming from the "uids" request parameter
         """
@@ -235,6 +247,16 @@ class PartitionMagicView(BrowserView):
             "sort_order": "ascending",
             "inactive_state": "active",
         }
+        results = api.search(query, "bika_setup_catalog")
+        return map(api.get_object, results)
+
+    def get_containers(self):
+        """Returns the available Containers of the system
+        """
+        query = dict(portal_type="Container",
+                     sort_on="sortable_title",
+                     sort_order="ascending",
+                     inactive_state="active")
         results = api.search(query, "bika_setup_catalog")
         return map(api.get_object, results)
 
@@ -265,6 +287,9 @@ class PartitionMagicView(BrowserView):
         info = None
         template = ar.getTemplate()
         ar_sampletype_uid = api.get_uid(ar.getSampleType())
+        ar_container_uid = ""
+        if ar.getContainer():
+            ar_container_uid = api.get_uid(ar.getContainer())
 
         if template:
             info = self.get_base_info(template)
@@ -278,10 +303,13 @@ class PartitionMagicView(BrowserView):
                 analyses_by_partition[partition].append(service_uid)
 
             sampletypes_by_partition = defaultdict(list)
+            containers_by_partition = defaultdict(list)
             for part in template.getPartitions():
                 part_id = part.get("part_id")
                 sampletype_uid = part.get('sampletype_uid', ar_sampletype_uid)
                 sampletypes_by_partition[part_id] = sampletype_uid
+                container_uid = part.get("container_uid", ar_container_uid)
+                containers_by_partition[part_id] = container_uid
 
             partitions = map(lambda p: p.get("part_id"),
                              template.getPartitions())
@@ -289,12 +317,14 @@ class PartitionMagicView(BrowserView):
                 "analyses": analyses_by_partition,
                 "partitions": partitions,
                 "sample_types": sampletypes_by_partition,
+                "containers": containers_by_partition,
             })
         else:
             info = {
                 "analyses": {},
                 "partitions": [],
                 "sample_types": {},
+                "containers": {},
             }
         return info
 

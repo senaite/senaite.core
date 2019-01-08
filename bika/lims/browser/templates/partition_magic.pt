@@ -100,7 +100,8 @@
                 <tbody tal:define="number_of_partitions ar/number_of_partitions;
                                    template python:ar.get('template', {});
                                    partitions python:template.get('partitions', []);
-                                   sample_types python:template.get('sample_types', {});">
+                                   sample_types python:template.get('sample_types', {});
+                                   containers python:template.get('containers', {});">
                   <!-- No Partitions -->
                   <tr tal:condition="python:not number_of_partitions">
                     <td>
@@ -124,7 +125,7 @@
                         </div>
 
                         <!-- Sample Type Selection -->
-                        <div class="col-sm-4">
+                        <div class="col-sm-2">
                           <label i18n:translate="" for="sampletype">
                             Sample Type
                           </label>
@@ -137,6 +138,25 @@
                                                         selected python:sampletype.get('uid') == part_sampletype_uid"
                                         tal:content="sampletype/title">
                                   Sample Type
+                                </option>
+                              </tal:options>
+                            </select>
+                          </div>
+                        </div>
+
+                        <!-- Container Selection -->
+                        <div class="col-sm-2">
+                          <label i18n:translate="" for="container">
+                            Container
+                          </label>
+                          <div class="form-group">
+                            <select name="partitions.container_uid:records" class="form-control">
+                              <tal:options repeat="container view/get_container_data"
+                                          define="part_container_uid python:containers.get(partition, '');">
+                                <option tal:attributes="value container/uid;
+                                                        selected python:container.get('uid') == part_container_uid"
+                                        tal:content="container/title">
+                                  Container
                                 </option>
                               </tal:options>
                             </select>
