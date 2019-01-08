@@ -85,6 +85,7 @@ def upgrade(tool):
         return True
 
     logger.info("Upgrading {0}: {1} -> {2}".format(product, ver_from, version))
+    return fix_worksheet_status_inconsistencies(portal)
 
     # -------- ADD YOUR STUFF BELOW --------
     setup.runImportStepFromProfile(profile, 'typeinfo')
@@ -1487,18 +1488,24 @@ def fix_worksheet_status_inconsistencies(portal):
     'to_be_verified' if all their analyses are not in an open status
     """
     logger.info("Fixing worksheet inconsistencies ...")
-    query = dict(portal_type="Worksheet", review_state="open")
+    query = dict(portal_type="Worksheet",
+                 review_state=["open", "to_be_verified"])
     brains = api.search(query, CATALOG_WORKSHEET_LISTING)
     total = len(brains)
     for num, brain in enumerate(brains):
+        success = False
         if num % 100 == 0:
             logger.info("Fixing worksheet inconsistencies: {}/{}"
                         .format(num, total))
-        # Note we don't check anything, WS guards for "submit" and "verify" will
-        # take care of checking if the status of contained analyses allows the
-        # transition.
+        # Note we don't check anything, WS guards for "submit" and "verify"
+        # will take care of checking if the status of contained analyses allows
+        # the transition.
         worksheet = api.get_object(brain)
-        success, msg = do_action_for(worksheet, "submit")
+        if api.get_workflow_status_of(worksheet) == "open":
+            success, msg = do_action_for(worksheet, "submit")
+        elif api.get_workflow_status_of(worksheet) == "to_be_verified":
+            success, msg = do_action_for(worksheet, "verify")
+
         if success:
             logger.info("Worksheet {} transitioned to 'to_be_verified'"
                         .format(worksheet.getId()))
