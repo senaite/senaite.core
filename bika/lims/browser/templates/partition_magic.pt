@@ -152,9 +152,9 @@
                           </label>
                           <div class="form-group">
                             <select name="partitions.container_uid:records" class="form-control">
+                              <option value=""></option>
                               <tal:options repeat="container view/get_container_data"
                                           define="part_container_uid python:containers.get(partition, '');">
-                                <option value=""></option>
                                 <option tal:attributes="value container/uid;
                                                         selected python:container.get('uid') == part_container_uid"
                                         tal:content="container/title">
@@ -172,9 +172,9 @@
                           </label>
                           <div class="form-group">
                             <select name="partitions.preservation_uid:records" class="form-control">
+                              <option value=""></option>
                               <tal:options repeat="preservation view/get_preservation_data"
                                           define="part_preservation_uid python:preservations.get(partition, '');">
-                                <option value=""></option>
                                 <option tal:attributes="value preservation/uid;
                                                         selected python:preservation.get('uid') == part_preservation_uid"
                                         tal:content="preservation/title">
