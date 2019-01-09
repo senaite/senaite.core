@@ -22,21 +22,21 @@ msgstr ""
 "Preferred-Encodings: utf-8 latin1\n"
 
 #. Default: "AR Imports"
-msgid "AR Imports"
+msgid "Sample Imports"
 msgstr "AR Imports"
 
 #: bika/lims/profiles/default/types/ARTemplate.xml
-msgid "AR Template"
-msgstr "Plantilla de sol·licitud d'anàlisi"
+msgid "Sample Template"
+msgstr "Plantilla de mostra"
 
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/ARTemplates.xml
 #: bika/lims/profiles/default/types/Client.xml
-msgid "AR Templates"
-msgstr "Plantilles de sol·licituds d'anàlisi"
+msgid "Sample Templates"
+msgstr "Plantilles de mostres"
 
 #: bika/lims/profiles/default/types/ARReport.xml
-msgid "ARReport"
+msgid "SampleReport"
 msgstr ""
 
 # Manual Workflow State and Transition MsgIds
@@ -90,23 +90,23 @@ msgstr "Categoria d'anàlisi"
 
 #: bika/lims/profiles/default/types/AnalysisProfile.xml
 msgid "Analysis Profile"
-msgstr "Perfil de sol·licitud d'anàlisi"
+msgstr "Perfil de mostra"
 
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/AnalysisProfiles.xml
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Analysis Profiles"
-msgstr "Perfils de sol·licituds d'anàlisi"
+msgstr "Perfils de mostres"
 
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
-msgid "Analysis Request"
-msgstr "Sol·licitud d'anàlisi"
+msgid "Sample"
+msgstr "Mostra"
 
 #: bika/lims/profiles/default/actions.xml
 #: bika/lims/profiles/default/types/AnalysisRequestsFolder.xml
 #: bika/lims/profiles/default/types/Batch.xml
-msgid "Analysis Requests"
-msgstr "Sol·licituds d'anàlisi"
+msgid "Samples"
+msgstr "Mostres"
 
 #: bika/lims/profiles/default/types/AnalysisService.xml
 msgid "Analysis Service"
@@ -644,11 +644,11 @@ msgstr ""
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/SampleMatrices.xml
 msgid "Sample Matrices"
-msgstr "Sample Matrices"
+msgstr "Mostra Matrices"
 
 #: bika/lims/profiles/default/types/SampleMatrix.xml
 msgid "Sample Matrix"
-msgstr "Sample Matrix"
+msgstr "Mostra Matrix"
 
 #: bika/lims/profiles/default/types/SamplePartition.xml
 msgid "Sample Partition"
@@ -700,7 +700,7 @@ msgstr "Mostres"
 
 #: bika/lims/profiles/default/types/SamplesFolder.xml
 msgid "SamplesFolder"
-msgstr "SamplesFolder"
+msgstr "MostresFolder"
 
 #: bika/lims/profiles/default/types/SamplingDeviation.xml
 msgid "Sampling Deviation"
@@ -863,7 +863,7 @@ msgid "Worksheets"
 msgstr "Fulles de treball"
 
 #. Default: "AR Templates"
-msgid "label_schema_AR Templates"
+msgid "label_schema_Sample Templates"
 msgstr "AR Templates"
 
 #. Default: "Accounting"
@@ -948,7 +948,7 @@ msgstr "SR Templates"
 
 #. Default: "Sample Partitions"
 msgid "label_schema_Sample Partitions"
-msgstr "Sample Partitions"
+msgstr "Mostra Partitions"
 
 #. Default: "Security"
 msgid "label_schema_Security"

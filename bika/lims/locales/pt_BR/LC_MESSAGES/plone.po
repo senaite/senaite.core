@@ -22,21 +22,21 @@ msgstr ""
 "Preferred-Encodings: utf-8 latin1\n"
 
 #. Default: "AR Imports"
-msgid "AR Imports"
+msgid "Sample Imports"
 msgstr "Importações de RA"
 
 #: bika/lims/profiles/default/types/ARTemplate.xml
-msgid "AR Template"
+msgid "Sample Template"
 msgstr "AR Template"
 
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/ARTemplates.xml
 #: bika/lims/profiles/default/types/Client.xml
-msgid "AR Templates"
+msgid "Sample Templates"
 msgstr "Modelos de RA"
 
 #: bika/lims/profiles/default/types/ARReport.xml
-msgid "ARReport"
+msgid "SampleReport"
 msgstr "Relatório de RA"
 
 # Manual Workflow State and Transition MsgIds
@@ -99,14 +99,14 @@ msgid "Analysis Profiles"
 msgstr "Perfis de análise"
 
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
-msgid "Analysis Request"
-msgstr "Pedido de análise"
+msgid "Sample"
+msgstr "Amostra"
 
 #: bika/lims/profiles/default/actions.xml
 #: bika/lims/profiles/default/types/AnalysisRequestsFolder.xml
 #: bika/lims/profiles/default/types/Batch.xml
-msgid "Analysis Requests"
-msgstr "Pedidos de análise"
+msgid "Samples"
+msgstr "Amostras"
 
 #: bika/lims/profiles/default/types/AnalysisService.xml
 msgid "Analysis Service"
@@ -863,7 +863,7 @@ msgid "Worksheets"
 msgstr "Fichas de trabalho"
 
 #. Default: "AR Templates"
-msgid "label_schema_AR Templates"
+msgid "label_schema_Sample Templates"
 msgstr "Modelos de RA"
 
 #. Default: "Accounting"
