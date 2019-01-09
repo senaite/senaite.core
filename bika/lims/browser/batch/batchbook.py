@@ -48,7 +48,7 @@ class BatchBookView(BikaListingView):
 
         self.columns = {
             'AnalysisRequest': {
-                'title': _('Analysis Request'),
+                'title': _('Sample'),
                 'index': 'id',
                 'sortable': True,
             },

@@ -3,15 +3,16 @@
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # Translators:
 # Ramon Bartl <rb@ridingbytes.com>, 2018
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "POT-Creation-Date: 2018-10-08 13:50+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
+"PO-Revision-Date: 2018-06-01 18:46+0000\n"
 "Last-Translator: Ramon Bartl <rb@ridingbytes.com>, 2018\n"
 "Language-Team: Polish (https://www.transifex.com/senaite/teams/87045/pl/)\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=4; plural=(n==1 ? 0 : (n%10>=2 && n%10<=4) && (n%100<12 || n%100>14) ? 1 : n!=1 && (n%10>=0 && n%10<=1) || (n%10>=5 && n%10<=9) || (n%100>=12 && n%100<=14) ? 2 : 3);\n"
 "Language-Code: en\n"
@@ -19,24 +20,6 @@ msgstr ""
 "Preferred-Encodings: utf-8 latin1\n"
 "Domain: plone\n"
 "Language: pl\n"
-
-#. Default: "AR Imports"
-msgid "AR Imports"
-msgstr "Iportowanie AR"
-
-#: bika/lims/profiles/default/types/ARTemplate.xml
-msgid "AR Template"
-msgstr "Szablon AR"
-
-#: bika/lims/profiles/default/controlpanel.xml
-#: bika/lims/profiles/default/types/ARTemplates.xml
-#: bika/lims/profiles/default/types/Client.xml
-msgid "AR Templates"
-msgstr "Szablony AR"
-
-#: bika/lims/profiles/default/types/ARReport.xml
-msgid "ARReport"
-msgstr ""
 
 # Manual Workflow State and Transition MsgIds
 # Despite the fact, that these are defined in the "bika" domain, they are not
@@ -96,16 +79,6 @@ msgstr "Profil analizy"
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Analysis Profiles"
 msgstr "Profile analizy"
-
-#: bika/lims/profiles/default/types/AnalysisRequest.xml
-msgid "Analysis Request"
-msgstr "Zestaw analiz"
-
-#: bika/lims/profiles/default/actions.xml
-#: bika/lims/profiles/default/types/AnalysisRequestsFolder.xml
-#: bika/lims/profiles/default/types/Batch.xml
-msgid "Analysis Requests"
-msgstr "Zestawy analiz"
 
 #: bika/lims/profiles/default/types/AnalysisService.xml
 msgid "Analysis Service"
@@ -640,6 +613,10 @@ msgstr "Stan próbki"
 msgid "Sample Conditions"
 msgstr "Stan próbki"
 
+#. Default: "AR Imports"
+msgid "Sample Imports"
+msgstr "Iportowanie AR"
+
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/SampleMatrices.xml
 msgid "Sample Matrices"
@@ -666,6 +643,16 @@ msgstr "Punkt poboru próbki"
 msgid "Sample Points"
 msgstr "Punkty poboru próbek"
 
+#: bika/lims/profiles/default/types/ARTemplate.xml
+msgid "Sample Template"
+msgstr "Szablon AR"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/ARTemplates.xml
+#: bika/lims/profiles/default/types/Client.xml
+msgid "Sample Templates"
+msgstr "Szablony AR"
+
 #: bika/lims/profiles/default/types/SampleType.xml
 msgid "Sample Type"
 msgstr "Rodzaj próbki"
@@ -688,6 +675,10 @@ msgstr ""
 msgid "SamplePoints"
 msgstr "Punkty pobierania"
 
+#: bika/lims/profiles/default/types/ARReport.xml
+msgid "SampleReport"
+msgstr ""
+
 msgid "Sampled"
 msgstr ""
 
@@ -699,7 +690,7 @@ msgstr "Próbki"
 
 #: bika/lims/profiles/default/types/SamplesFolder.xml
 msgid "SamplesFolder"
-msgstr "SamplesFolder"
+msgstr "PróbkiFolder"
 
 #: bika/lims/profiles/default/types/SamplingDeviation.xml
 msgid "Sampling Deviation"
@@ -861,10 +852,6 @@ msgstr "Szablony kart pracy"
 msgid "Worksheets"
 msgstr "Karty pracy"
 
-#. Default: "AR Templates"
-msgid "label_schema_AR Templates"
-msgstr "Szablony zestawów analiz -AR-"
-
 #. Default: "Accounting"
 msgid "label_schema_Accounting"
 msgstr "Księgowość"
@@ -948,6 +935,10 @@ msgstr "SR Templates"
 #. Default: "Sample Partitions"
 msgid "label_schema_Sample Partitions"
 msgstr "Części próbki"
+
+#. Default: "AR Templates"
+msgid "label_schema_Sample Templates"
+msgstr "Szablony zestawów analiz -AR-"
 
 #. Default: "Security"
 msgid "label_schema_Security"

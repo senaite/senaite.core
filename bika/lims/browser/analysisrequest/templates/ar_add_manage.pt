@@ -40,7 +40,7 @@
 
     <metal:title fill-slot="content-title">
       <h1 i18n:translate="">
-        Manage Analysis Request Form Fields
+        Manage Sample Form Fields
       </h1>
     </metal:title>
     <metal:description fill-slot="content-description">
@@ -49,7 +49,7 @@
         request add forms.
       </p>
       <p i18n:translate="" class="discreet">
-        Note: The settings apply to all AR Add forms; Required fields can not be deselected.
+        Note: The settings apply to all Sample Add forms; Required fields can not be deselected.
       </p>
     </metal:description>
 

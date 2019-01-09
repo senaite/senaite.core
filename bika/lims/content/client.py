@@ -66,7 +66,7 @@ schema = Organisation.schema.copy() + Schema((
         widget=StringWidget(
             label=_("CC Emails"),
             description=_(
-                "Default Emails to CC all published ARs for this client"),
+                "Default Emails to CC all published Samples for this client"),
             visible={
                 "edit": "visible",
                 "view": "visible",

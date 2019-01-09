@@ -153,7 +153,7 @@ class ISamplingRound(model.Schema):
 
         sr_template = schema.Choice(
                 title=_(u"Sampling Rounds Template"),
-                description=_(u"Analysis request templates to be included in the Sampling Round Template"),
+                description=_(u"Sample templates to be included in the Sampling Round Template"),
                 source=SamplingRoundTemplates(),
                 required=False,
                 )
@@ -197,7 +197,7 @@ class ISamplingRound(model.Schema):
                 )
 
         ar_templates = schema.List(
-            title=_(u'Analysis Request Templates'),
+            title=_(u'Sample Templates'),
             value_type=schema.Choice(
                 source=AnalysisRequestTemplates()
             )

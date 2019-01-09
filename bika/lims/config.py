@@ -67,7 +67,7 @@ ARIMPORT_OPTIONS = DisplayList((
     # ('s', _('Special')),
 ))
 EMAIL_SUBJECT_OPTIONS = DisplayList((
-    ('ar', _('Analysis Request ID')),
+    ('ar', _('Sample ID')),
     ('co', _('Order ID')),
     ('cr', _('Client Reference')),
     ('cs', _('Client SID')),

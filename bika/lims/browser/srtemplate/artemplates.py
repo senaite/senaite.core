@@ -32,12 +32,12 @@ class AnalysisRequestTemplatesView(BikaListingView):
         self.show_categories = True
         self.expand_all_categories = True
         self.pagesize = 50
-        self.title = self.context.translate(_("AR Templates"))
+        self.title = self.context.translate(_("Sample Templates"))
         self.icon = self.portal_url + "/++resource++bika.lims.images/artemplate_big.png"
         self.form_id = "artemplates"
         self.columns = {
             'title': {
-                'title': _('AR Template Title'),
+                'title': _('Template Title'),
                 'index': 'sortable_title',
                 'sortable': True,
             },

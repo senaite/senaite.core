@@ -491,9 +491,9 @@ class AnalysesView(BaseView):
             item_obj = request
             item_title = api.get_id(request)
             item_url = api.get_url(request)
-            item_img = "analysisrequest.png"
+            item_img = "sample.png"
             item_img_url = api.get_url(request)
-            item_img_text = t(_("Analysis Request"))
+            item_img_text = t(_("Sample"))
             # additional item icons
             additional_item_icons.append(
                 self.render_remarks_tag(request))

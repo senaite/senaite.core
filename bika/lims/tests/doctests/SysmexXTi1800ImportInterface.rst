@@ -174,10 +174,10 @@ Check the rest of the importer logs to verify that the values were correctly imp
 
     >>> importer.logs[1:]
     ['End of file reached successfully: 1 objects, 21 analyses, 1 results',
-     'Allowed Analysis Request states: sample_received, attachment_due, to_be_verified',
+     'Allowed Sample states: sample_received, attachment_due, to_be_verified',
      'Allowed analysis states: unassigned, assigned, to_be_verified',
      "H2O-0001: [u'Analysis HCT', u'Analysis RBC', u'Analysis WBC', u'Analysis HGB'] imported sucessfully",
-     'Import finished successfully: 1 ARs and 4 results updated']
+     'Import finished successfully: 1 Samples and 4 results updated']
 
 And finally check if indeed the analysis has the imported results::
 

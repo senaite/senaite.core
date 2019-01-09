@@ -29,8 +29,8 @@ class Report(BrowserView):
         BrowserView.__init__(self, context, request)
         self.report = report
         self.headings = {
-            'header': _("Analysis requests and analyses per client"),
-            'subheader': _("Number of Analysis requests and analyses per client"),
+            'header': _("Samples and analyses per client"),
+            'subheader': _("Number of Samples and analyses per client"),
         }
         self.formats = {
             'columns': 3,
@@ -156,7 +156,7 @@ class Report(BrowserView):
         """
         fieldnames = [
             'Client',
-            'Analysis Requests',
+            'Samples',
             'Analyses',
         ]
         output = StringIO.StringIO()
@@ -166,7 +166,7 @@ class Report(BrowserView):
         for row in data_lines:
             dw.writerow({
                 'Client': row[0]['value'],
-                'Analysis Requests': row[1]['value'],
+                'Samples': row[1]['value'],
                 'Analyses': row[2]['value'],
             })
         report_data = output.getvalue()

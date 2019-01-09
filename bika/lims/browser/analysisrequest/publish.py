@@ -568,7 +568,7 @@ class AnalysisRequestPublishView(BrowserView):
         line_items = []
         if ais:
             ais.sort()
-            li = t(_('ARs: ${ars}', mapping={'ars': ', '.join(ais)}))
+            li = t(_('Samples: ${ars}', mapping={'ars': ', '.join(ais)}))
             line_items.append(li)
         if cos:
             cos.sort()

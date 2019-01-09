@@ -11,7 +11,7 @@
     <h3 style='margin-bottom:10px;margin-top:10px;'>Advanced options</h3>
     <table cellpadding="0" cellspacing="0">
         <tr>
-            <td style='vertical-align:top;padding-right:30px;'><label for="wsf_artoapply">Analysis Requests state</label>&nbsp;</td>
+            <td style='vertical-align:top;padding-right:30px;'><label for="wsf_artoapply">Samples state</label>&nbsp;</td>
             <td>
                 <select name="wsf_artoapply" id="wsf_artoapply">
                     <option value="received">Received</option>

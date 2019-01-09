@@ -3,15 +3,16 @@
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # Translators:
 # Ramon Bartl <rb@ridingbytes.com>, 2018
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "POT-Creation-Date: 2018-10-08 13:50+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
+"PO-Revision-Date: 2018-06-01 18:46+0000\n"
 "Last-Translator: Ramon Bartl <rb@ridingbytes.com>, 2018\n"
 "Language-Team: Danish (Denmark) (https://www.transifex.com/senaite/teams/87045/da_DK/)\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Language-Code: en\n"
@@ -19,24 +20,6 @@ msgstr ""
 "Preferred-Encodings: utf-8 latin1\n"
 "Domain: plone\n"
 "Language: da_DK\n"
-
-#. Default: "AR Imports"
-msgid "AR Imports"
-msgstr "AR Imports"
-
-#: bika/lims/profiles/default/types/ARTemplate.xml
-msgid "AR Template"
-msgstr "AR Template"
-
-#: bika/lims/profiles/default/controlpanel.xml
-#: bika/lims/profiles/default/types/ARTemplates.xml
-#: bika/lims/profiles/default/types/Client.xml
-msgid "AR Templates"
-msgstr "AR Templates"
-
-#: bika/lims/profiles/default/types/ARReport.xml
-msgid "ARReport"
-msgstr ""
 
 # Manual Workflow State and Transition MsgIds
 # Despite the fact, that these are defined in the "bika" domain, they are not
@@ -96,16 +79,6 @@ msgstr "Analyseprofil"
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Analysis Profiles"
 msgstr "Analyseprofiler"
-
-#: bika/lims/profiles/default/types/AnalysisRequest.xml
-msgid "Analysis Request"
-msgstr "Analyse Request"
-
-#: bika/lims/profiles/default/actions.xml
-#: bika/lims/profiles/default/types/AnalysisRequestsFolder.xml
-#: bika/lims/profiles/default/types/Batch.xml
-msgid "Analysis Requests"
-msgstr "Analyse requests"
 
 #: bika/lims/profiles/default/types/AnalysisService.xml
 msgid "Analysis Service"
@@ -640,6 +613,10 @@ msgstr ""
 msgid "Sample Conditions"
 msgstr ""
 
+#. Default: "AR Imports"
+msgid "Sample Imports"
+msgstr "AR Imports"
+
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/SampleMatrices.xml
 msgid "Sample Matrices"
@@ -655,7 +632,7 @@ msgstr "Prøve Partition"
 
 #: bika/lims/profiles/default/types/Sample.xml
 msgid "Sample Partitions"
-msgstr "Sample Partitions"
+msgstr "Prøve Partitions"
 
 #: bika/lims/profiles/default/types/SamplePoint.xml
 msgid "Sample Point"
@@ -665,6 +642,16 @@ msgstr "prøvepunkt"
 #: bika/lims/profiles/default/types/SamplePoints.xml
 msgid "Sample Points"
 msgstr "prøvepunkter"
+
+#: bika/lims/profiles/default/types/ARTemplate.xml
+msgid "Sample Template"
+msgstr "AR Template"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/ARTemplates.xml
+#: bika/lims/profiles/default/types/Client.xml
+msgid "Sample Templates"
+msgstr "AR Templates"
 
 #: bika/lims/profiles/default/types/SampleType.xml
 msgid "Sample Type"
@@ -686,6 +673,10 @@ msgstr ""
 
 #: bika/lims/profiles/default/types/Client.xml
 msgid "SamplePoints"
+msgstr ""
+
+#: bika/lims/profiles/default/types/ARReport.xml
+msgid "SampleReport"
 msgstr ""
 
 msgid "Sampled"
@@ -861,10 +852,6 @@ msgstr "Arbejdsark Templates"
 msgid "Worksheets"
 msgstr "Arbejdsark"
 
-#. Default: "AR Templates"
-msgid "label_schema_AR Templates"
-msgstr "AR Templates"
-
 #. Default: "Accounting"
 msgid "label_schema_Accounting"
 msgstr "Accounting"
@@ -947,7 +934,11 @@ msgstr "SR Templates"
 
 #. Default: "Sample Partitions"
 msgid "label_schema_Sample Partitions"
-msgstr "Sample Partitions"
+msgstr "Prøve Partitions"
+
+#. Default: "AR Templates"
+msgid "label_schema_Sample Templates"
+msgstr "AR Templates"
 
 #. Default: "Security"
 msgid "label_schema_Security"

@@ -89,7 +89,7 @@ schema = BikaSchema.copy() + Schema((
             size=20,
             helper_js=("bika_widgets/referencewidget.js",
                        "++resource++bika.lims.js/contact.js"),
-            description=_("The primary contact of this analysis request, "
+            description=_("The primary contact of this sample, "
                           "who will receive notifications and publications "
                           "via email"),
             visible={
@@ -197,7 +197,7 @@ schema = BikaSchema.copy() + Schema((
         write_permission=ModifyPortalContent,
         widget=ReferenceWidget(
             label=_("Sample"),
-            description=_("Select a sample to create a secondary AR"),
+            description=_("Select a sample to create a secondary Sample"),
             size=20,
             render_own_label=True,
             visible=False,
@@ -293,8 +293,8 @@ schema = BikaSchema.copy() + Schema((
         read_permission=View,
         write_permission="Field: Edit Template",
         widget=ReferenceWidget(
-            label=_("AR Template"),
-            description=_("The predefined values of the AR template are set "
+            label=_("Sample Template"),
+            description=_("The predefined values of the Sample template are set "
                           "in the request"),
             size=20,
             render_own_label=True,
@@ -559,7 +559,7 @@ schema = BikaSchema.copy() + Schema((
         write_permission="Field: Edit Specification",
         widget=ReferenceWidget(
             label=_("Analysis Specification"),
-            description=_("Choose default AR specification values"),
+            description=_("Choose default Sample specification values"),
             size=20,
             render_own_label=True,
             visible={
@@ -603,7 +603,7 @@ schema = BikaSchema.copy() + Schema((
         widget=ReferenceWidget(
             label=_("Publication Specification"),
             description=_(
-                "Set the specification to be used before publishing an AR."),
+                "Set the specification to be used before publishing a Sample."),
             size=20,
             render_own_label=True,
             visible={
@@ -879,7 +879,7 @@ schema = BikaSchema.copy() + Schema((
         widget=FileWidget(
             label=_("Attachment"),
             description=_("Add one or more attachments to describe the "
-                          "sample in this analysis request, or to specify "
+                          "sample in this sample, or to specify "
                           "your request."),
             render_own_label=True,
             visible={
@@ -1237,7 +1237,7 @@ schema = BikaSchema.copy() + Schema((
         read_permission=View,
         widget=StringWidget(
             label=_("Printed"),
-            description=_("Indicates if the last ARReport is printed,"),
+            description=_("Indicates if the last SampleReport is printed,"),
             visible=False,
         ),
     ),

@@ -413,7 +413,7 @@ class AnalysisResultsImporter(Logger):
         allowed_ar_states_msg = [t(_(s)) for s in self.getAllowedARStates()]
         allowed_an_states_msg = [
                 t(_(s)) for s in self.getAllowedAnalysisStates()]
-        self.log("Allowed Analysis Request states: ${allowed_states}",
+        self.log("Allowed Sample states: ${allowed_states}",
                  mapping={'allowed_states': ', '.join(allowed_ar_states_msg)})
         self.log("Allowed analysis states: ${allowed_states}",
                  mapping={'allowed_states': ', '.join(allowed_an_states_msg)})
@@ -456,7 +456,7 @@ class AnalysisResultsImporter(Logger):
                                      UID=self.instrument_uid)
                     if len(insts) == 0:
                         # No instrument found
-                        self.warn("No Analysis Request with "
+                        self.warn("No Sample with "
                                   "'${allowed_ar_states}' "
                                   "states found, And no QC"
                                   "analyses found for ${object_id}",
@@ -503,7 +503,7 @@ class AnalysisResultsImporter(Logger):
 
                 elif len(analyses) == 0:
                     # No analyses found
-                    self.warn("No Analysis Request with "
+                    self.warn("No Sample with "
                               "'${allowed_ar_states}' "
                               "states neither QC analyses found "
                               "for ${object_id}",
@@ -606,7 +606,7 @@ class AnalysisResultsImporter(Logger):
 
         if self.instrument_uid:
             self.log(
-                "Import finished successfully: ${nr_updated_ars} ARs, "
+                "Import finished successfully: ${nr_updated_ars} Samples, "
                 "${nr_updated_instruments} Instruments and "
                 "${nr_updated_results} "
                 "results updated",
@@ -615,7 +615,7 @@ class AnalysisResultsImporter(Logger):
                          "nr_updated_results": str(ancount)})
         else:
             self.log(
-                "Import finished successfully: ${nr_updated_ars} ARs and "
+                "Import finished successfully: ${nr_updated_ars} Samples and "
                 "${nr_updated_results} results updated",
                 mapping={"nr_updated_ars": str(len(importedars)),
                          "nr_updated_results": str(ancount)})
@@ -783,7 +783,7 @@ class AnalysisResultsImporter(Logger):
             return self._getZODBAnalysesFromReferenceAnalyses(objid, None)
 
         elif len(ars) > 1:
-            self.err("More than one Analysis Request found for ${object_id}",
+            self.err("More than one Sample found for ${object_id}",
                      mapping={"object_id": objid})
             return []
 

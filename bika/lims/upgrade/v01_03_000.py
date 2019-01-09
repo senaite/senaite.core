@@ -179,6 +179,9 @@ def upgrade(tool):
     # https://github.com/senaite/senaite.core/pull/1191
     fix_worksheet_status_inconsistencies(portal)
 
+    # Replaces Analysis Request string (and plural forms) by Sample
+    rename_analysis_requests_actions(portal)
+
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
 
@@ -1522,4 +1525,23 @@ def fix_worksheet_status_inconsistencies(portal):
             if success:
                 logger.info("Worksheet {} transitioned to 'verified'"
                             .format(worksheet.getId()))
+    commit_transaction(portal)
+
+def rename_analysis_requests_actions(portal):
+    logger.info("Renaming 'Analysis Request' to 'Sample' ...")
+
+    def rename_ar_action(content_type):
+        if hasattr(content_type, "analysisrequests"):
+            content_type.analysisrequests.setTitle("Samples")
+            content_type.reindexObject()
+        if hasattr(content_type, "artemplates"):
+            content_type.artemplates.setTitle("Sample Templates")
+            content_type.reindexObject()
+
+    rename_ar_action(portal)
+    for client in portal.clients.objectValues("Client"):
+        rename_ar_action(client)
+
+    for batch in portal.batches.objectValues("Batch"):
+        rename_ar_action(batch)
     commit_transaction(portal)

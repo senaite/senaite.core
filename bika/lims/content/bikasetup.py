@@ -301,7 +301,7 @@ schema = BikaFolderSchema.copy() + Schema((
             label=_("Include Previous Results From Batch"),
             description=_(
                 "If there are previous results for a service in the "
-                "same batch of Analysis Requests, they will be displayed "
+                "same batch of Samples, they will be displayed "
                 "in the report.")
         )
     ),
@@ -313,7 +313,7 @@ schema = BikaFolderSchema.copy() + Schema((
         widget=IntegerWidget(
             label=_("Maximum columns per results email"),
             description=_(
-                "Set the maximum number of analysis requests per results email. "
+                "Set the maximum number of samples per results email. "
                 "Too many columns per email are difficult to read for some clients "
                 "who prefer fewer results per email"),
         )
@@ -345,10 +345,10 @@ schema = BikaFolderSchema.copy() + Schema((
         schemata="Analyses",
         default=False,
         widget=BooleanWidget(
-            label=_("Enable AR Specifications"),
+            label=_("Enable Sample Specifications"),
             description=_(
                 "Analysis specifications which are edited directly on the "
-                "Analysis Request."),
+                "Sample."),
         ),
     ),
     IntegerField(
@@ -428,7 +428,7 @@ schema = BikaFolderSchema.copy() + Schema((
             visible=False,
             label=_("AR Import options"),
             description=_(
-                "'Classic' indicates importing analysis requests per sample and "
+                "'Classic' indicates importing samples per sample and "
                 "analysis service selection. With 'Profiles', analysis profile keywords "
                 "are used to select multiple analysis services together"),
         )
@@ -440,11 +440,11 @@ schema = BikaFolderSchema.copy() + Schema((
         vocabulary=ATTACHMENT_OPTIONS,
         widget=SelectionWidget(
             format='select',
-            label=_("AR Attachment Option"),
+            label=_("Sample Attachment Option"),
             description=_(
                 "The system wide default configuration to indicate "
                 "whether file attachments are required, permitted or not "
-                "per analysis request"),
+                "per sample"),
         )
     ),
     StringField(
@@ -504,9 +504,9 @@ schema = BikaFolderSchema.copy() + Schema((
             label=_("Default layout in worksheet view"),
             description=_("Preferred layout of the results entry table "
                           "in the Worksheet view. Classic layout displays "
-                          "the Analysis Requests in rows and the analyses "
+                          "the Samples in rows and the analyses "
                           "in columns. Transposed layout displays the "
-                          "Analysis Requests in columns and the analyses "
+                          "Samples in columns and the analyses "
                           "in rows."),
             format='select',
         )
@@ -622,7 +622,7 @@ schema = BikaFolderSchema.copy() + Schema((
         widget=RejectionSetupWidget(
             label=_("Enable sampling rejection"),
             description=_("Select this to activate the rejection workflow "
-                          "for Samples and Analysis Requests. A 'Reject' "
+                          "for Samples and Samples. A 'Reject' "
                           "option will be displayed in the actions menu for "
                           "these objects.")
         ),
@@ -643,7 +643,7 @@ schema = BikaFolderSchema.copy() + Schema((
         schemata="Notifications",
         default=True,
         widget=BooleanWidget(
-            label=_("Email notification on AR invalidation"),
+            label=_("Email notification on Sample invalidation"),
             description=_("Select this to activate automatic notifications "
                           "via email to the Client and Lab Managers when an Analysis "
                           "Request is invalidated.")
@@ -672,8 +672,8 @@ schema = BikaFolderSchema.copy() + Schema((
             label=_("Automatic sticker printing"),
             description=_(
                 "Select 'Register' if you want stickers to be automatically printed when "
-                "new ARs or sample records are created. Select 'Receive' to print stickers "
-                "when ARs or Samples are received. Select 'None' to disable automatic printing"),
+                "new Samples or sample records are created. Select 'Receive' to print stickers "
+                "when Samples or Samples are received. Select 'None' to disable automatic printing"),
         )
     ),
     StringField(
@@ -839,7 +839,7 @@ schema = BikaFolderSchema.copy() + Schema((
         widget=RejectionSetupWidget(
             label=_("Enable the rejection workflow"),
             description=_("Select this to activate the rejection workflow "
-                          "for Samples and Analysis Requests. A 'Reject' "
+                          "for Samples and Samples. A 'Reject' "
                           "option will be displayed in the actions menu for "
                           "these objects.")
         ),
@@ -861,8 +861,8 @@ schema = BikaFolderSchema.copy() + Schema((
         required=0,
         default=4,
         widget=IntegerWidget(
-            label=_("Default count of AR to add."),
-            description=_("Default value of the 'AR count' when users click 'ADD' button to create new Analysis Requests"),
+            label=_("Default count of Sample to add."),
+            description=_("Default value of the 'Sample count' when users click 'ADD' button to create new Samples"),
         )
     ),
     TextField(

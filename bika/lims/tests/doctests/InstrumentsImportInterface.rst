@@ -241,7 +241,7 @@ Create an `Instrument` and assign to it the tested Import Interface::
     ...     if 'Parsing file generic.two_dimension.csv' in test_results['log']:
     ...         # Testing also for interim fields, only for `generic.two_dimension` interface
     ...         # TODO: Test for - H2O-0001: calculated result for 'THCaCO3': '2.0'
-    ...         if 'Import finished successfully: 1 ARs and 3 results updated' not in test_results['log']:
+    ...         if 'Import finished successfully: 1 Samples and 3 results updated' not in test_results['log']:
     ...             self.fail("Results Update failed")
     ...         if "H2O-0001 result for 'TotalTerpenes:pest1': '1'" not in test_results['log']:
     ...             self.fail("pest1 did not get updated")
@@ -255,7 +255,7 @@ Create an `Instrument` and assign to it the tested Import Interface::
     ...                     msg = "{}:Result did not get updated".format(an.getKeyword())
     ...                     self.fail(msg)
     ...
-    ...     elif 'Import finished successfully: 1 ARs and 2 results updated' not in test_results['log']:
+    ...     elif 'Import finished successfully: 1 Samples and 2 results updated' not in test_results['log']:
     ...         self.fail("Results Update failed")
     ...
     ...     for an in analyses:

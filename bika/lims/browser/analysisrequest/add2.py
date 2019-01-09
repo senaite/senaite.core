@@ -80,7 +80,7 @@ class AnalysisRequestAddView(BrowserView):
         self.specifications = self.generate_specifications(self.ar_count)
         self.ShowPrices = self.bika_setup.getShowPrices()
         self.icon = self.portal_url + \
-            "/++resource++bika.lims.images/analysisrequest_big.png"
+            "/++resource++bika.lims.images/sample_big.png"
         logger.info("*** Prepared data for {} ARs ***".format(self.ar_count))
         return self.template()
 
@@ -1627,13 +1627,13 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
 
         level = "info"
         if len(ARs) == 0:
-            message = _('No Analysis Requests could be created.')
+            message = _('No Samples could be created.')
             level = "error"
         elif len(ARs) > 1:
-            message = _('Analysis requests ${ARs} were successfully created.',
+            message = _('Samples ${ARs} were successfully created.',
                         mapping={'ARs': safe_unicode(', '.join(ARs.keys()))})
         else:
-            message = _('Analysis request ${AR} was successfully created.',
+            message = _('Sample ${AR} was successfully created.',
                         mapping={'AR': safe_unicode(ARs.keys()[0])})
 
         # Display a portal message

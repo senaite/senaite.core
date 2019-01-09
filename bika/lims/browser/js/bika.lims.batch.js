@@ -15,7 +15,7 @@ function BatchFolderView() {
                 "<div id='batch-cancel-dialog' title='"+_("Cancel batch/es?")+"'>" +
                 "    <p style='padding:10px'>" +
                 "        <span class='ui-icon ui-icon-alert' style=''float: left; margin: 0 7px 30px 0;'><br/></span>" +
-                "        "+_("All linked Analysis Requests will be cancelled too.") +
+                "        "+_("All linked Samples will be cancelled too.") +
                 "    </p>" +
                 "    <p style='padding:0px 10px'>" +
                 "       "+_("Are you sure?") +

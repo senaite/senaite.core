@@ -26,7 +26,7 @@ class AnalysisRequestViewView(BrowserView):
             AnalysisRequestViewView, self).__init__(context, request)
         self.icon = "{}/{}".format(
             self.portal_url,
-            "/++resource++bika.lims.images/analysisrequest_big.png",
+            "/++resource++bika.lims.images/sample_big.png",
         )
 
     def __call__(self):

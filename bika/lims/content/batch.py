@@ -174,7 +174,7 @@ schema = BikaFolderSchema.copy() + Schema((
         widget=bikaRecordsWidget(
             label=_("Inherit From"),
             description=_(
-                "Include all analysis requests belonging to the selected objects."),
+                "Include all samples belonging to the selected objects."),
             innerJoin="<br/>",
             combogrid_options={
                 'Title': {

@@ -31,9 +31,9 @@ class Report(BrowserView):
         parm_lines = {}
         parms = []
         headings = {}
-        headings['header'] = _("Analysis requests not invoiced")
+        headings['header'] = _("Samples not invoiced")
         headings['subheader'] = _(
-            "Published Analysis Requests which have not been invoiced")
+            "Published Samples which have not been invoiced")
 
         count_all = 0
 

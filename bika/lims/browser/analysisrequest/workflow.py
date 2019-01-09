@@ -97,7 +97,7 @@ class AnalysisRequestWorkflowAction(AnalysesWorkflowAction):
                      remarks=addremarks,
                      lab_address=lab_address)
         body = Template("Some errors have been detected in the results report "
-                        "published from the Analysis Request $request_link. The Analysis "
+                        "published from the Sample $request_link. The Analysis "
                         "Request $new_request_link has been created automatically and the "
                         "previous has been invalidated.<br/>The possible mistake "
                         "has been picked up and is under investigation.<br/><br/>"
@@ -111,7 +111,7 @@ class AnalysisRequestWorkflowAction(AnalysesWorkflowAction):
             host.send(mime_msg.as_string(), immediate=True)
         except Exception as msg:
             message = _('Unable to send an email to alert lab '
-                        'client contacts that the Analysis Request has been '
+                        'client contacts that the Sample has been '
                         'retracted: ${error}',
                         mapping={'error': safe_unicode(msg)})
             self.context.plone_utils.addPortalMessage(message, 'warning')

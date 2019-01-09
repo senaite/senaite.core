@@ -51,11 +51,11 @@
   <permission value="View"/>
  </action>
 
- <action title="Analysis Requests"
+ <action title="Samples"
          action_id="view"
          category="object"
          condition_expr=""
-         icon_expr="string:${portal_url}/images/ar.png"
+         icon_expr="string:${portal_url}/images/sample.png"
          link_target=""
          url_expr="string:${object_url}/analysisrequests"
          i18n:attributes="title"
@@ -99,7 +99,7 @@
   <permission value="View"/>
  </action>
 
- <action title="AR Templates"
+ <action title="Sample Templates"
          action_id="templates"
          category="object"
          condition_expr=""

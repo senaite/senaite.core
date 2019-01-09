@@ -160,7 +160,7 @@ class WorkflowAction:
         uids = self.request.form.get("uids", [])
         if not uids:
             message = self.context.translate(
-                _("No ARs have been selected"))
+                _("No Samples have been selected"))
             self.context.plone_utils.addPortalMessage(message, 'info')
             self.destination_url = self.context.absolute_url()
             self.request.response.redirect(self.destination_url)

@@ -288,7 +288,7 @@ class ARImport(BaseFolder):
         bsc = getToolByName(self, 'bika_setup_catalog')
         client = self.aq_parent
 
-        title = _('Submitting AR Import')
+        title = _('Submitting Sample Import')
         description = _('Creating and initialising objects')
         bar = ProgressBar(self, self.REQUEST, title, description)
         notify(InitialiseProgressBar(bar))
