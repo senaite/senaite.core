@@ -335,5 +335,5 @@ class ARTemplateAnalysesWidget(TypesWidget):
 
 
 registerWidget(ARTemplateAnalysesWidget,
-               title="AR Template Analyses Layout",
-               description=("AR Template Analyses Layout"))
+               title="Sample Template Analyses Layout",
+               description=("Sample Template Analyses Layout"))

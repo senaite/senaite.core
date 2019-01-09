@@ -33,7 +33,7 @@ class ClientARTemplatesView(BikaListingView):
         self.form_id = "artemplates"
         self.icon = self.portal_url + \
                     "/++resource++bika.lims.images/artemplate_big.png"
-        self.title = self.context.translate(_("AR Templates"))
+        self.title = self.context.translate(_("Sample Templates"))
         self.description = ""
 
         self.columns = {

@@ -293,7 +293,7 @@ schema = BikaSchema.copy() + Schema((
         read_permission=View,
         write_permission="Field: Edit Template",
         widget=ReferenceWidget(
-            label=_("AR Template"),
+            label=_("Sample Template"),
             description=_("The predefined values of the Sample template are set "
                           "in the request"),
             size=20,

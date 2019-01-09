@@ -440,7 +440,7 @@ schema = BikaFolderSchema.copy() + Schema((
         vocabulary=ATTACHMENT_OPTIONS,
         widget=SelectionWidget(
             format='select',
-            label=_("AR Attachment Option"),
+            label=_("Sample Attachment Option"),
             description=_(
                 "The system wide default configuration to indicate "
                 "whether file attachments are required, permitted or not "
@@ -862,7 +862,7 @@ schema = BikaFolderSchema.copy() + Schema((
         default=4,
         widget=IntegerWidget(
             label=_("Default count of Sample to add."),
-            description=_("Default value of the 'AR count' when users click 'ADD' button to create new Samples"),
+            description=_("Default value of the 'Sample count' when users click 'ADD' button to create new Samples"),
         )
     ),
     TextField(

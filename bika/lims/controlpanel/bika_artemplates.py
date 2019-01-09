@@ -45,7 +45,7 @@ class TemplatesView(BikaListingView):
                 "icon": "++resource++bika.lims.images/add.png"}
         }
 
-        self.title = self.context.translate(_("AR Templates"))
+        self.title = self.context.translate(_("Sample Templates"))
         self.icon = "{}/{}".format(
             self.portal_url,
             "/++resource++bika.lims.images/artemplate_big.png"

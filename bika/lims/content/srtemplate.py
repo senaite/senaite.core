@@ -82,7 +82,7 @@ schema = BikaSchema.copy() + Schema((
         allowed_types = ('ARTemplate',),
         relationship = 'SRTemplateARTemplate',
         widget = SRTemplateARTemplatesWidget(
-            label=_("AR Templates"),
+            label=_("Sample Templates"),
             description=_("Select Sample Templates to include"),
         )
     ),
