@@ -22,21 +22,21 @@ msgstr ""
 "Preferred-Encodings: utf-8 latin1\n"
 
 #. Default: "AR Imports"
-msgid "Sample Imports"
+msgid "AR Imports"
 msgstr "Импорт ЗА"
 
 #: bika/lims/profiles/default/types/ARTemplate.xml
-msgid "Sample Template"
+msgid "AR Template"
 msgstr "Шаблон ЗА"
 
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/ARTemplates.xml
 #: bika/lims/profiles/default/types/Client.xml
-msgid "Sample Templates"
+msgid "AR Templates"
 msgstr "ЗА: Шаблоны"
 
 #: bika/lims/profiles/default/types/ARReport.xml
-msgid "SampleReport"
+msgid "ARReport"
 msgstr "Отчет ЗА"
 
 # Manual Workflow State and Transition MsgIds
@@ -99,14 +99,14 @@ msgid "Analysis Profiles"
 msgstr "Анализы: Профили"
 
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
-msgid "Sample"
-msgstr "Образец"
+msgid "Analysis Request"
+msgstr "Запрос на анализ"
 
 #: bika/lims/profiles/default/actions.xml
 #: bika/lims/profiles/default/types/AnalysisRequestsFolder.xml
 #: bika/lims/profiles/default/types/Batch.xml
-msgid "Samples"
-msgstr "Образцы"
+msgid "Analysis Requests"
+msgstr "Запросы на анализ"
 
 #: bika/lims/profiles/default/types/AnalysisService.xml
 msgid "Analysis Service"
@@ -863,7 +863,7 @@ msgid "Worksheets"
 msgstr "Рабочие листы"
 
 #. Default: "AR Templates"
-msgid "label_schema_Sample Templates"
+msgid "label_schema_AR Templates"
 msgstr "ЗА: Шаблоны"
 
 #. Default: "Accounting"
@@ -948,7 +948,7 @@ msgstr "SR Templates"
 
 #. Default: "Sample Partitions"
 msgid "label_schema_Sample Partitions"
-msgstr "Образец Partitions"
+msgstr "Sample Partitions"
 
 #. Default: "Security"
 msgid "label_schema_Security"

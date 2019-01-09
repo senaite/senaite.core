@@ -133,7 +133,7 @@ msgstr "%s não possui coluna '%s'"
 
 #: bika/lims/content/bikasetup.py:427
 msgid ""
-"'Classic' indicates importing samples per sample and analysis "
+"'Classic' indicates importing analysis requests per sample and analysis "
 "service selection. With 'Profiles', analysis profile keywords are used to "
 "select multiple analysis services together"
 msgstr ""
@@ -270,37 +270,37 @@ msgstr ""
 "identificada em formulários e menus drop-down"
 
 #: bika/lims/browser/analysisrequest/add.py:107
-msgid "Sample ${ar_number}"
+msgid "AR ${ar_number}"
 msgstr "RA ${ar_number}"
 
 #: bika/lims/content/bikasetup.py:440
-msgid "Sample Attachment Option"
+msgid "AR Attachment Option"
 msgstr "RA - Opção de Anexo"
 
 #: bika/lims/browser/arimports.py:47
-msgid "Sample Import"
+msgid "AR Import"
 msgstr "RA - Importar"
 
 #: bika/lims/content/bikasetup.py:426
-msgid "Sample Import options"
+msgid "AR Import options"
 msgstr "RA - Opções de importação"
 
 #: bika/lims/content/analysisrequest.py:436
-msgid "Sample Template"
+msgid "AR Template"
 msgstr ""
 
 #: bika/lims/browser/srtemplate/artemplates.py:40
-msgid "Sample Template Title"
+msgid "AR Template Title"
 msgstr "Titulo de Modelos de RA"
 
 #: bika/lims/browser/client/views/artemplates.py:36
 #: bika/lims/browser/srtemplate/artemplates.py:35
 #: bika/lims/content/srtemplate.py:85
-msgid "Sample Templates"
+msgid "AR Templates"
 msgstr "Modelos de RA"
 
 #: bika/lims/browser/analysisrequest/publish.py:571
-msgid "Samples: ${ars}"
+msgid "ARs: ${ars}"
 msgstr "RAs: ${ars}"
 
 #: bika/lims/content/organisation.py:95
@@ -384,7 +384,7 @@ msgid "Add Analyses"
 msgstr "Adicionar Análises"
 
 #: bika/lims/browser/sample/edit.py:61
-msgid "Add Sample"
+msgid "Add Analysis Request"
 msgstr ""
 
 #: bika/lims/browser/viewlets/templates/attachments.pt:296
@@ -427,7 +427,7 @@ msgstr ""
 
 #: bika/lims/content/analysisrequest.py:1369
 msgid ""
-"Add one or more attachments to describe the sample in this sample,"
+"Add one or more attachments to describe the sample in this analysis request,"
 " or to specify your request."
 msgstr ""
 
@@ -661,61 +661,61 @@ msgstr "Perfis de Análises"
 #: bika/lims/browser/aggregatedanalyses/aggregatedanalyses.py:50
 #: bika/lims/browser/batch/batchbook.py:51
 #: bika/lims/browser/templates/analyses_retractedlist.pt:17
-msgid "Sample"
-msgstr "Amostra"
+msgid "Analysis Request"
+msgstr "Pedido de Análise"
 
 #: bika/lims/config.py:70
-msgid "Sample ID"
-msgstr "Código do Amostra"
+msgid "Analysis Request ID"
+msgstr "Código do Pedido de Análise"
 
 #: bika/lims/browser/arimports.py:58
-msgid "Sample Imports"
-msgstr "Importação de Amostras"
+msgid "Analysis Request Imports"
+msgstr "Importação de Pedidos de Análise"
 
 #: bika/lims/content/samplinground.py:200
-msgid "Sample Templates"
+msgid "Analysis Request Templates"
 msgstr "Modelos de Requisição de Análise"
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:84
 #: bika/lims/browser/dashboard/dashboard.py:474
 #: bika/lims/skins/bika/portlet_to_be_verified.pt:69
-msgid "Samples"
-msgstr "Amostras"
+msgid "Analysis Requests"
+msgstr "Pedidos de Análise"
 
 #: bika/lims/browser/dashboard/dashboard.py:445
-msgid "Samples published"
+msgid "Analysis Requests published"
 msgstr ""
 
 #: bika/lims/browser/dashboard/dashboard.py:404
-msgid "Samples scheduled for sampling"
+msgid "Analysis Requests scheduled for sampling"
 msgstr ""
 
 #: bika/lims/browser/dashboard/dashboard.py:396
-msgid "Samples to be preserved"
+msgid "Analysis Requests to be preserved"
 msgstr "Requisição de Análise  a ser preservada"
 
 #: bika/lims/browser/dashboard/dashboard.py:454
-msgid "Samples to be printed"
+msgid "Analysis Requests to be printed"
 msgstr ""
 
 #: bika/lims/browser/dashboard/dashboard.py:412
-msgid "Samples to be received"
+msgid "Analysis Requests to be received"
 msgstr "Requisição de Análise  a ser recebida"
 
 #: bika/lims/browser/dashboard/dashboard.py:388
-msgid "Samples to be sampled"
+msgid "Analysis Requests to be sampled"
 msgstr "Requisição de Análise  a ser amostrada"
 
 #: bika/lims/browser/dashboard/dashboard.py:429
-msgid "Samples to be verified"
+msgid "Analysis Requests to be verified"
 msgstr "Requisição de Análise  para ser verificada"
 
 #: bika/lims/browser/dashboard/dashboard.py:437
-msgid "Samples verified"
+msgid "Analysis Requests verified"
 msgstr ""
 
 #: bika/lims/browser/dashboard/dashboard.py:420
-msgid "Samples with results pending"
+msgid "Analysis Requests with results pending"
 msgstr "Requisição de Análise  com resultados pendentes"
 
 #: bika/lims/browser/batch/publish.py:97
@@ -759,34 +759,34 @@ msgstr ""
 
 #: bika/lims/browser/analysisrequest/add.py:552
 #: bika/lims/browser/analysisrequest/add2.py:1868
-msgid "Sample ${Sample} was successfully created."
+msgid "Analysis request ${AR} was successfully created."
 msgstr "Requisição de Análise ${AR} criada com sucesso."
 
 #: bika/lims/content/samplinground.py:156
 msgid ""
-"Sample templates to be included in the Sampling Round Template"
+"Analysis request templates to be included in the Sampling Round Template"
 msgstr ""
 "Modelos de solicitação de análise a serem incluídos no modelo de amostragem "
 "da rodada"
 
 #: bika/lims/browser/analysisrequest/add.py:549
 #: bika/lims/browser/analysisrequest/add2.py:1865
-msgid "Samples ${Samples} were successfully created."
+msgid "Analysis requests ${ARs} were successfully created."
 msgstr "Requisições de Análises ${ARs} criadas com sucesso."
 
 #: bika/lims/browser/reports/templates/productivity.pt:254
-msgid "Samples and analyses"
-msgstr "Amostras e Análises"
+msgid "Analysis requests and analyses"
+msgstr "Pedidos de Análise e Análises"
 
 #: bika/lims/browser/reports/productivity_analysesperclient.py:32
 #: bika/lims/browser/reports/templates/productivity.pt:264
-msgid "Samples and analyses per client"
-msgstr "Amostras e Análises por cliente"
+msgid "Analysis requests and analyses per client"
+msgstr "Pedidos de Análise e Análises por cliente"
 
 #: bika/lims/browser/reports/administration_arsnotinvoiced.py:34
 #: bika/lims/browser/reports/templates/administration.pt:94
-msgid "Samples not invoiced"
-msgstr "Amostras não faturados"
+msgid "Analysis requests not invoiced"
+msgstr "Pedidos de Análise não faturados"
 
 #: bika/lims/browser/reports/qualitycontrol_analysesoutofrange.py:236
 msgid "Analysis result within error range"
@@ -819,7 +819,7 @@ msgstr "Serviço de análise"
 
 #: bika/lims/content/bikasetup.py:346
 msgid ""
-"Analysis specifications which are edited directly on the Sample."
+"Analysis specifications which are edited directly on the Analysis Request."
 msgstr ""
 "Especificações de análises que são editadas diretamente na requisição de "
 "análise."
@@ -909,7 +909,7 @@ msgid "Attach"
 msgstr "Anexar"
 
 #: bika/lims/browser/viewlets/templates/attachments.pt:232
-msgid "Attach to Sample"
+msgid "Attach to Analysis Request"
 msgstr ""
 
 #: bika/lims/browser/viewlets/templates/attachments.pt:29
@@ -1333,7 +1333,7 @@ msgstr ""
 "prefixos são configuráveis separadamente em cada site Bika"
 
 #: bika/lims/content/analysisrequest.py:757
-msgid "Choose default Sample specification values"
+msgid "Choose default AR specification values"
 msgstr "Escolha os valores de especificação padrões da RA"
 
 #: bika/lims/content/bikasetup.py:413
@@ -1864,7 +1864,7 @@ msgid "Default"
 msgstr "Padrão"
 
 #: bika/lims/profiles/default/registry.xml
-msgid "Default SampleReport Template"
+msgid "Default ARReport Template"
 msgstr "Modelo ARReport padrão"
 
 #: bika/lims/content/analysisrequest.py:1194
@@ -1883,7 +1883,7 @@ msgid "Default Department"
 msgstr ""
 
 #: bika/lims/content/client.py:69
-msgid "Default Emails to CC all published Samples for this client"
+msgid "Default Emails to CC all published ARs for this client"
 msgstr "Emails padrão para CC todos os ARs publicados para este cliente"
 
 #: bika/lims/content/abstractbaseanalysis.py:288
@@ -1911,7 +1911,7 @@ msgid "Default containers: ${container_list}"
 msgstr "Recipientes padrão: ${container_list}"
 
 #: bika/lims/content/bikasetup.py:947
-msgid "Default count of Sample to add."
+msgid "Default count of AR to add."
 msgstr ""
 
 #: bika/lims/content/bikasetup.py:264 bika/lims/content/client.py:128
@@ -1960,8 +1960,8 @@ msgstr "Valor Padrão"
 
 #: bika/lims/content/bikasetup.py:948
 msgid ""
-"Default value of the 'Sample count' when users click 'ADD' button to create new "
-"Samples"
+"Default value of the 'AR count' when users click 'ADD' button to create new "
+"Analysis Requests"
 msgstr ""
 
 #: bika/lims/browser/sample/templates/print_form.pt:72
@@ -2120,7 +2120,7 @@ msgid "Display an advanced filter bar in Analyses lists"
 msgstr ""
 
 #: bika/lims/content/bikasetup.py:906
-msgid "Display an advanced filter bar in Samples lists"
+msgid "Display an advanced filter bar in Analysis Requests lists"
 msgstr ""
 
 #: bika/lims/content/bikasetup.py:920
@@ -2268,7 +2268,7 @@ msgid "Email Address"
 msgstr "Endereço de Email"
 
 #: bika/lims/content/bikasetup.py:643
-msgid "Email notification on Sample invalidation"
+msgid "Email notification on AR invalidation"
 msgstr ""
 
 #: bika/lims/content/bikasetup.py:882
@@ -2280,7 +2280,7 @@ msgid "Email subject line"
 msgstr "Linha de assunto do email"
 
 #: bika/lims/content/bikasetup.py:345
-msgid "Enable Sample Specifications"
+msgid "Enable AR Specifications"
 msgstr "Habilitar especificações de RA"
 
 #: bika/lims/content/worksheettemplate.py:114
@@ -2434,7 +2434,7 @@ msgid "Evolution of Analyses"
 msgstr "Andamento das Análises"
 
 #: bika/lims/browser/dashboard/dashboard.py:467
-msgid "Evolution of Samples"
+msgid "Evolution of Analysis Requests"
 msgstr "Andamento das Requisições de Análises"
 
 #: bika/lims/browser/dashboard/dashboard.py:675
@@ -2834,7 +2834,7 @@ msgstr ""
 
 #: bika/lims/content/bikasetup.py:908
 msgid ""
-"If enabled, the Samples Lists will display an additional filter "
+"If enabled, the Analysis Requests Lists will display an additional filter "
 "bar which allows the user to filter the listed items by some several "
 "criteria.Warning: This may affect the listing performance."
 msgstr ""
@@ -2854,11 +2854,11 @@ msgstr "Se acionado, o nome da análise vai ser escrito em itálico."
 msgid ""
 "If enabled, this analysis and its results will not be displayed by default "
 "in reports. This setting can be overrided in Analysis Profile and/or "
-"Sample"
+"Analysis Request"
 msgstr ""
 "Se ativado, esta análise e seus resultados não serão exibidos por padrão nos"
 " laudos. Essa configuração pode ser alterada em Análise de Perfil e/ou "
-"Amostra "
+"Pedido de Análise "
 
 #: bika/lims/content/batch.py:219
 msgid "If no Title value is entered, the Batch ID will be used."
@@ -2962,7 +2962,7 @@ msgid "Import"
 msgstr "Importar"
 
 #: bika/lims/browser/templates/arimport_add.pt:17
-msgid "Import Sample Data"
+msgid "Import Analysis Request Data"
 msgstr "Importar Dados da Solicitação de Análise"
 
 #: bika/lims/content/instrument.py:197
@@ -2993,7 +2993,7 @@ msgid "Include Previous Results From Batch"
 msgstr "Incluir Resultados Anteriores do Lote"
 
 #: bika/lims/content/batch.py:176
-msgid "Include all samples belonging to the selected objects."
+msgid "Include all analysis requests belonging to the selected objects."
 msgstr ""
 "Inclua todas requisições de análises pertencentes aos objetos selecionados."
 
@@ -3014,7 +3014,7 @@ msgid "Incorrect NIB number: %s"
 msgstr "Número NIB incorreto: %s"
 
 #: bika/lims/content/analysisrequest.py:1769
-msgid "Indicates if the last SampleReport is printed,"
+msgid "Indicates if the last ARReport is printed,"
 msgstr ""
 
 #: bika/lims/content/abstractbaseanalysis.py:204
@@ -3579,7 +3579,7 @@ msgid "Male"
 msgstr "Masculino"
 
 #: bika/lims/browser/analysisrequest/templates/ar_add_manage.pt:42
-msgid "Manage Sample Form Fields"
+msgid "Manage Analysis Request Form Fields"
 msgstr ""
 
 #: bika/lims/browser/analysisrequest/templates/ar_add2.pt:293
@@ -3596,7 +3596,7 @@ msgstr "Gerenciar usuário vinculado"
 
 #: bika/lims/browser/analysisrequest/templates/ar_add_manage.pt:47
 msgid ""
-"Manage the order and visibility of the fields displayed in sample "
+"Manage the order and visibility of the fields displayed in analysis request "
 "add forms."
 msgstr ""
 
@@ -3890,16 +3890,16 @@ msgid "No"
 msgstr "Não"
 
 #: bika/lims/browser/bika_listing.py:153
-msgid "No Samples have been selected"
+msgid "No ARs have been selected"
 msgstr ""
 
 #: bika/lims/browser/analysisrequest/add2.py:1862
-msgid "No Samples could be created."
+msgid "No Analysis Requests could be created."
 msgstr ""
 
 #: bika/lims/browser/reports/productivity_dataentrydaybook.py:54
-msgid "No Samples matched your query"
-msgstr "Nenhuma amostra acompanhado sua consulta"
+msgid "No Analysis Requests matched your query"
+msgstr "Nenhuma pedido de análise acompanhado sua consulta"
 
 #: bika/lims/exportimport/instruments/eltra/cs/cs2000.py:40
 msgid "No Analysis Services defined"
@@ -4070,7 +4070,7 @@ msgstr ""
 
 #: bika/lims/browser/analysisrequest/templates/ar_add_manage.pt:51
 msgid ""
-"Note: The settings apply to all Sample Add forms; Required fields can not be "
+"Note: The settings apply to all AR Add forms; Required fields can not be "
 "deselected."
 msgstr ""
 
@@ -4089,7 +4089,7 @@ msgid "Number of Analyses"
 msgstr "Número de Análises"
 
 #: bika/lims/browser/reports/productivity_analysesperclient.py:33
-msgid "Number of Samples and analyses per client"
+msgid "Number of Analysis requests and analyses per client"
 msgstr "Número de requisições de análises e análises por cliente"
 
 #: bika/lims/content/samplinground.py:226
@@ -4125,7 +4125,7 @@ msgstr "Número de análises retestadas para o período"
 
 #: bika/lims/browser/reports/templates/productivity.pt:381
 msgid ""
-"Number of sampleed and published per department and expresed as a "
+"Number of analysis requested and published per department and expresed as a "
 "percentage of all analyses performed"
 msgstr ""
 "Número de análises publicadas e expressas como a porcentagem do total de "
@@ -4192,7 +4192,7 @@ msgstr ""
 "utilizado."
 
 #: bika/lims/browser/analysisrequest/add.py:593
-msgid "One job added to the Sample creation queue"
+msgid "One job added to the Analysis Request creation queue"
 msgstr ""
 
 #: bika/lims/browser/templates/login_details.pt:153
@@ -4492,8 +4492,8 @@ msgstr "Marca decimal preferida nos resultados"
 #: bika/lims/content/bikasetup.py:502
 msgid ""
 "Preferred layout of the results entry table in the Worksheet view. Classic "
-"layout displays the Samples in rows and the analyses in columns. "
-"Transposed layout displays the Samples in columns and the analyses"
+"layout displays the Analysis Requests in rows and the analyses in columns. "
+"Transposed layout displays the Analysis Requests in columns and the analyses"
 " in rows."
 msgstr ""
 "Layout predefinido da tabela de entrada de resultados na exibição Planilha. "
@@ -4713,7 +4713,7 @@ msgid "Published"
 msgstr "Publicado"
 
 #: bika/lims/browser/reports/administration_arsnotinvoiced.py:35
-msgid "Published Samples which have not been invoiced"
+msgid "Published Analysis Requests which have not been invoiced"
 msgstr "Requisições de Análises Publicadas que não foram faturadas."
 
 #: bika/lims/browser/analysisrequest/published_results.py:49
@@ -5019,7 +5019,7 @@ msgid "Report identification number"
 msgstr "Número de identificação do Laudo"
 
 #: bika/lims/browser/reports/templates/administration.pt:97
-msgid "Report of published samples which have not been invoiced"
+msgid "Report of published analysis requests which have not been invoiced"
 msgstr ""
 "Relatório de requisições de análises publicadas que não foram faturadas."
 
@@ -5041,7 +5041,7 @@ msgstr ""
 
 #: bika/lims/browser/reports/templates/productivity.pt:485
 msgid ""
-"Report tables of Samples and totals submitted between a period of "
+"Report tables of Analysis Requests and totals submitted between a period of "
 "time"
 msgstr ""
 "Emitir tabelas de Resultados de Análises Solicitadas e totais submetidos "
@@ -5594,8 +5594,8 @@ msgstr ""
 #: bika/lims/content/bikasetup.py:670
 msgid ""
 "Select 'Register' if you want stickers to be automatically printed when new "
-"Samples or sample records are created. Select 'Receive' to print stickers when "
-"Samples or Samples are received. Select 'None' to disable automatic printing"
+"ARs or sample records are created. Select 'Receive' to print stickers when "
+"ARs or Samples are received. Select 'None' to disable automatic printing"
 msgstr ""
 "Selecione 'Registrar' se você quiser que as etiquetas sejam automaticamente "
 "impressas quando novas RAs ou registros de amostras sejam criados. Selecione"
@@ -5603,7 +5603,7 @@ msgstr ""
 "Selecione 'Nenhum' para desabilitar a impressão automática"
 
 #: bika/lims/content/srtemplate.py:86
-msgid "Select Sample Templates to include"
+msgid "Select AR Templates to include"
 msgstr "Selecione Modelo AR para incluir"
 
 #: bika/lims/exportimport/dataimport.py:58
@@ -5621,7 +5621,7 @@ msgstr ""
 "preservação por tipo de amostra na tabela abaixo"
 
 #: bika/lims/browser/worksheet/views/add_duplicate.py:32
-msgid "Select a destinaton position and the Sample to duplicate."
+msgid "Select a destinaton position and the AR to duplicate."
 msgstr "Selecione uma posição de destino e RA a ser duplicada."
 
 #: bika/lims/content/department.py:32
@@ -5635,7 +5635,7 @@ msgstr ""
 "relatórios de resultados de análises contendo dados de seus departamentos."
 
 #: bika/lims/content/analysisrequest.py:273
-msgid "Select a sample to create a secondary Sample"
+msgid "Select a sample to create a secondary AR"
 msgstr "Selecione uma amostra para ciar uma RA secundária"
 
 #: bika/lims/browser/analysisrequest/templates/analysisrequest_analyses_not_requested.pt:60
@@ -5771,7 +5771,7 @@ msgstr "Selecione o instrumento preferencial."
 
 #: bika/lims/profiles/default/registry.xml
 msgid ""
-"Select the template which will be used, by default, when publishing Samples."
+"Select the template which will be used, by default, when publishing ARs."
 msgstr "Selecione o modelo que será usado por padrão, ao publicar ARs."
 
 #: bika/lims/content/identifiertype.py:48
@@ -5781,16 +5781,16 @@ msgstr "Selecione os tipos que esse ID é usado para identificar."
 #: bika/lims/content/bikasetup.py:644
 msgid ""
 "Select this to activate automatic notifications via email to the Client and "
-"Lab Managers when a Sample is invalidated."
+"Lab Managers when an Analysis Request is invalidated."
 msgstr ""
 
 #: bika/lims/content/bikasetup.py:633
 msgid ""
 "Select this to activate automatic notifications via email to the Client when"
-" a Sample or Sample is rejected."
+" a Sample or Analysis Request is rejected."
 msgstr ""
 "Selecione esta opção para ativar notificações automáticas via e-mail para o "
-"Cliente quando uma Amostra ou Amostra for rejeitada."
+"Cliente quando uma Amostra ou Pedido de Análise for rejeitada."
 
 #: bika/lims/content/bikasetup.py:517
 msgid "Select this to activate the dashboard as a default front page."
@@ -5826,7 +5826,7 @@ msgstr ""
 #: bika/lims/content/bikasetup.py:545
 msgid ""
 "Select this to allow the user to set an additional 'Printed' status to those"
-" Samples tha have been Published. Disabled by default."
+" Analysis Requests tha have been Published. Disabled by default."
 msgstr ""
 
 #: bika/lims/content/worksheettemplate.py:60
@@ -5913,7 +5913,7 @@ msgstr "Configurar a tarefa de manutenção como fechada."
 
 #: bika/lims/content/bikasetup.py:312
 msgid ""
-"Set the maximum number of samples per results email. Too many "
+"Set the maximum number of analysis requests per results email. Too many "
 "columns per email are difficult to read for some clients who prefer fewer "
 "results per email"
 msgstr ""
@@ -5922,7 +5922,7 @@ msgstr ""
 "clientes, que preferem um número menor de resultados por email."
 
 #: bika/lims/content/analysisrequest.py:817
-msgid "Set the specification to be used before publishing a Sample."
+msgid "Set the specification to be used before publishing an AR."
 msgstr "Defina a especificação a ser usada antes de publicar uma RA"
 
 #: bika/lims/content/storagelocation.py:78
@@ -6128,7 +6128,7 @@ msgid "Submitted and verified by the same user: {}"
 msgstr ""
 
 #: bika/lims/content/arimport.py:290
-msgid "Submitting Sample Import"
+msgid "Submitting AR Import"
 msgstr "Enviando AR Importação"
 
 #: bika/lims/browser/analysisrequest/templates/ar_add2.pt:592
@@ -6297,7 +6297,7 @@ msgstr ""
 
 #: bika/lims/browser/reports/productivity_analysesattachments.py:35
 #: bika/lims/browser/reports/templates/productivity.pt:455
-msgid "The attachments linked to samples and analyses"
+msgid "The attachments linked to analysis requests and analyses"
 msgstr "Anexos associados às requisições de análise e análises"
 
 #: bika/lims/content/abstractbaseanalysis.py:400
@@ -6552,7 +6552,7 @@ msgid "The person who took the sample"
 msgstr ""
 
 #: bika/lims/content/analysisrequest.py:437
-msgid "The predefined values of the Sample template are set in the request"
+msgid "The predefined values of the AR template are set in the request"
 msgstr ""
 
 #: bika/lims/content/abstractbaseanalysis.py:423
@@ -6562,7 +6562,7 @@ msgstr "O preço cobrado a clientes qualificados para descontos por volume"
 
 #: bika/lims/content/analysisrequest.py:102
 msgid ""
-"The primary contact of this sample, who will receive notifications"
+"The primary contact of this analysis request, who will receive notifications"
 " and publications via email"
 msgstr ""
 
@@ -6649,7 +6649,7 @@ msgstr "ID serviço do perfil para fins contábeis."
 #: bika/lims/content/bikasetup.py:441
 msgid ""
 "The system wide default configuration to indicate whether file attachments "
-"are required, permitted or not per sample"
+"are required, permitted or not per analysis request"
 msgstr ""
 "A configuração padrão para todo o sistema que define se anexos são "
 "requeridos, permitidos ou não por requisição de análise"
@@ -6696,7 +6696,7 @@ msgstr "O tempo de processamento das análises exibido em um período."
 #: bika/lims/content/abstractbaseanalysis.py:222
 msgid ""
 "The unique keyword used to identify the analysis service in import files of "
-"bulk Sample requests and results imports from instruments. It is also used to "
+"bulk AR requests and results imports from instruments. It is also used to "
 "identify dependent analysis services in user defined results calculations"
 msgstr ""
 "A palavra-chave única usada para identificar o serviço de análise em "
@@ -6730,8 +6730,8 @@ msgstr ""
 
 #: bika/lims/browser/viewlets/templates/retest_ar_viewlet.pt:15
 msgid ""
-"This Sample has been generated automatically due to the retraction"
-" of the Sample"
+"This Analysis Request has been generated automatically due to the retraction"
+" of the Analysis Request"
 msgstr ""
 
 #: bika/lims/content/bikasetup.py:597
@@ -7522,7 +7522,7 @@ msgid "activate"
 msgstr "ativar"
 
 #: bika/lims/browser/analysisrequest/templates/analysisrequest_publish.pt:63
-msgid "samples selected"
+msgid "analysis requests selected"
 msgstr "serviços de análises selecionados"
 
 #: bika/lims/browser/analysisrequest/publish.py:592
