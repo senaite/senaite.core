@@ -3,7 +3,7 @@
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # Translators:
 # Ramon Bartl <rb@ridingbytes.com>, 2018
-# 
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
@@ -14,30 +14,12 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Domain: plone\n"
-"Language: tr_TR\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "Language-Code: en\n"
 "Language-Name: English\n"
-"Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "Preferred-Encodings: utf-8 latin1\n"
-
-#. Default: "AR Imports"
-msgid "Sample Imports"
-msgstr ""
-
-#: bika/lims/profiles/default/types/ARTemplate.xml
-msgid "Sample Template"
-msgstr "AR Şablonlar"
-
-#: bika/lims/profiles/default/controlpanel.xml
-#: bika/lims/profiles/default/types/ARTemplates.xml
-#: bika/lims/profiles/default/types/Client.xml
-msgid "Sample Templates"
-msgstr "Numuneler -AR- Şablonları"
-
-#: bika/lims/profiles/default/types/ARReport.xml
-msgid "SampleReport"
-msgstr "Numune Raporları"
+"Domain: plone\n"
+"Language: tr_TR\n"
 
 # Manual Workflow State and Transition MsgIds
 # Despite the fact, that these are defined in the "bika" domain, they are not
@@ -97,16 +79,6 @@ msgstr "Analiz Profili"
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Analysis Profiles"
 msgstr "Analiz Profilleri"
-
-#: bika/lims/profiles/default/types/AnalysisRequest.xml
-msgid "Sample"
-msgstr "Numune"
-
-#: bika/lims/profiles/default/actions.xml
-#: bika/lims/profiles/default/types/AnalysisRequestsFolder.xml
-#: bika/lims/profiles/default/types/Batch.xml
-msgid "Samples"
-msgstr "Numuneler"
 
 #: bika/lims/profiles/default/types/AnalysisService.xml
 msgid "Analysis Service"
@@ -641,6 +613,10 @@ msgstr "Numunenin Durumu"
 msgid "Sample Conditions"
 msgstr "Numunenin Durumu"
 
+#. Default: "AR Imports"
+msgid "Sample Imports"
+msgstr ""
+
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/SampleMatrices.xml
 msgid "Sample Matrices"
@@ -667,6 +643,16 @@ msgstr "Örnekleme Noktası"
 msgid "Sample Points"
 msgstr "Örnekleme Noktaları"
 
+#: bika/lims/profiles/default/types/ARTemplate.xml
+msgid "Sample Template"
+msgstr "AR Şablonlar"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/ARTemplates.xml
+#: bika/lims/profiles/default/types/Client.xml
+msgid "Sample Templates"
+msgstr "Numuneler -AR- Şablonları"
+
 #: bika/lims/profiles/default/types/SampleType.xml
 msgid "Sample Type"
 msgstr "Numune Türü"
@@ -688,6 +674,10 @@ msgstr ""
 #: bika/lims/profiles/default/types/Client.xml
 msgid "SamplePoints"
 msgstr "ÖrneklemeNoktası"
+
+#: bika/lims/profiles/default/types/ARReport.xml
+msgid "SampleReport"
+msgstr "Numune Raporları"
 
 msgid "Sampled"
 msgstr ""
@@ -862,10 +852,6 @@ msgstr "Çalışma Şablonları"
 msgid "Worksheets"
 msgstr "Çalışmalar"
 
-#. Default: "AR Templates"
-msgid "label_schema_Sample Templates"
-msgstr "Numune Şablonları"
-
 #. Default: "Accounting"
 msgid "label_schema_Accounting"
 msgstr "Muhasebe"
@@ -949,6 +935,10 @@ msgstr "SR Templates"
 #. Default: "Sample Partitions"
 msgid "label_schema_Sample Partitions"
 msgstr "Numune parçaları"
+
+#. Default: "AR Templates"
+msgid "label_schema_Sample Templates"
+msgstr "Numune Şablonları"
 
 #. Default: "Security"
 msgid "label_schema_Security"
