@@ -14,7 +14,7 @@
 
     <h1>
         <img tal:attributes="src string:++resource++bika.lims.images/analysisprofile_big.png"/>
-        <span i18n:translate="">Import Analysis Request Data</span>
+        <span i18n:translate="">Import Sample Data</span>
     </h1>
 
     <form method="post" name="import_analysisrequest" enctype="multipart/form-data">

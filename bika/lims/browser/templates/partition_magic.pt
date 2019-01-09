@@ -63,7 +63,7 @@
                       <div class="row">
                         <!-- AR Title -->
                         <div class="col-sm-8">
-                          <div class="text-muted">Primary Analysis Request</div>
+                          <div class="text-muted">Primary Sample</div>
                           <h2>
                             <!-- AR Title -->
                             <span class="text-primary" tal:content="ar/title"/>

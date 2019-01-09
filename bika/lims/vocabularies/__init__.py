@@ -128,7 +128,7 @@ class BikaCatalogTypesVocabulary(object):
     def __call__(self, context):
         translate = context.translate
         types = (
-            ('AnalysisRequest', translate(to_utf8(_('Analysis Request')))),
+            ('AnalysisRequest', translate(to_utf8(_('Sample')))),
             ('Batch', translate(to_utf8(_('Batch')))),
             # TODO Remove in >v1.3.0
             ('Sample', translate(to_utf8(_('Sample')))),

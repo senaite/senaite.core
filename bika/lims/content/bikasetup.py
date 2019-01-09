@@ -348,7 +348,7 @@ schema = BikaFolderSchema.copy() + Schema((
             label=_("Enable AR Specifications"),
             description=_(
                 "Analysis specifications which are edited directly on the "
-                "Analysis Request."),
+                "Sample."),
         ),
     ),
     IntegerField(

@@ -197,7 +197,7 @@ class ISamplingRound(model.Schema):
                 )
 
         ar_templates = schema.List(
-            title=_(u'Analysis Request Templates'),
+            title=_(u'Sample Templates'),
             value_type=schema.Choice(
                 source=AnalysisRequestTemplates()
             )

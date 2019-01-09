@@ -12,7 +12,7 @@
       </button>
       <strong i18n:translate="">Info</strong>
       <p class="title">
-        <span i18n:translate="">This Analysis Request has been generated automatically due to the retraction of the Analysis Request </span>
+        <span i18n:translate="">This Sample has been generated automatically due to the retraction of the Sample </span>
         <a tal:attributes="href python:invalid.absolute_url()"
            tal:content="python:invalid.getId()"></a>
       </p>

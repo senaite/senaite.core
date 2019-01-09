@@ -146,7 +146,7 @@ Total price excl Tax,,,,,,,,,,,,,,
                   for a in analyses]
         ars_states = [ar.review_state for ar in ars]
         if ars_states != ['sample_due'] * 4:
-            self.fail('Analysis Requests states should all be sample_due, '
+            self.fail('Samples states should all be sample_due, '
                       'but are not!')
         if states != ['unassigned'] * 12:
             self.fail('Analysis states should all be unassigned, but are not!')

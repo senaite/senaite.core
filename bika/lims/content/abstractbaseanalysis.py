@@ -573,7 +573,7 @@ Hidden = BooleanField(
         description=_(
             "If enabled, this analysis and its results will not be displayed "
             "by default in reports. This setting can be overrided in Analysis "
-            "Profile and/or Analysis Request"),
+            "Profile and/or Sample"),
     )
 )
 

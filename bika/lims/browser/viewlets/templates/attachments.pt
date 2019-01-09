@@ -230,7 +230,7 @@
                                 tal:condition="attachments_view/global_ar_attachments_allowed"
                                 tal:attributes="value python:None">
                           <span tal:omit-tag="python:True"
-                                i18n:translate="">Attach to Analysis Request</span>
+                                i18n:translate="">Attach to Sample</span>
                         </option>
                         <tal:a tal:repeat="item a_analyses">
                           <option tal:attributes="value item/UID;"

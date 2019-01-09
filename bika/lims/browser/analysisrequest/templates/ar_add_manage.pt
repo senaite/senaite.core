@@ -40,7 +40,7 @@
 
     <metal:title fill-slot="content-title">
       <h1 i18n:translate="">
-        Manage Analysis Request Form Fields
+        Manage Sample Form Fields
       </h1>
     </metal:title>
     <metal:description fill-slot="content-description">
