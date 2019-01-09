@@ -1183,11 +1183,7 @@
       <permission-role>Manager</permission-role>
       <permission-role>Owner</permission-role>
     </permission-map>
-    <permission-map name="Field: Edit Container" acquired="False">
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-    </permission-map>
+    <permission-map name="Field: Edit Container" acquired="False"/>
     <permission-map name="Field: Edit Date Preserved" acquired="False"/>
     <permission-map name="Field: Edit Date Received" acquired="False">
       <permission-role>LabClerk</permission-role>

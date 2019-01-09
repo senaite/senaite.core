@@ -83,7 +83,7 @@ class PreservationFieldsVisibility(SenaiteATWidgetVisibility):
     def __init__(self, context):
         super(PreservationFieldsVisibility, self).__init__(
             context=context, sort=10,
-            field_names=["DatePreserved", "Preservation", "Preserver"])
+            field_names=["DatePreserved", "Preserver"])
 
     def isVisible(self, field, mode="view", default="visible"):
         if not self.context.bika_setup.getSamplePreservationEnabled():

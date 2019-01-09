@@ -207,7 +207,23 @@ class AnalysisRequestWorkflowAction(AnalysesWorkflowAction):
         items = [self.context,] if came_from == 'workflow_action' \
                 else self._get_selected_items().values()
         trans, dest = self.submitTransition(action, came_from, items)
-        if trans and 'receive' in self.context.bika_setup.getAutoPrintStickers():
+
+        with_partitions = list()
+        for item in items:
+            if not IAnalysisRequest.providedBy(item):
+                continue
+            ar_template = item.getTemplate()
+            partitions = ar_template and ar_template.getPartitions() or None
+            if partitions and len(partitions) > 1:
+                with_partitions.append(api.get_uid(item))
+
+        if with_partitions:
+            # Redirect to the partitioning magic view
+            back_url = self.context.absolute_url()
+            uids = ",".join(with_partitions)
+            url = "{}/partition_magic?uids={}".format(back_url, uids)
+            self.request.response.redirect(url)
+        elif trans and 'receive' in self.context.bika_setup.getAutoPrintStickers():
             transitioned = [item.UID() for item in items]
             tmpl = self.context.bika_setup.getAutoStickerTemplate()
             q = "/sticker?autoprint=1&template=%s&items=" % tmpl
