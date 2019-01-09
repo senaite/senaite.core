@@ -60,7 +60,7 @@ class AnalysisRequestsView(BikaListingView):
 
         ar_image_path = "/++resource++bika.lims.images/analysisrequest_big.png"
         self.icon = "{}{}".format(self.portal_url, ar_image_path)
-        self.title = self.context.translate(_("Analysis Requests"))
+        self.title = self.context.translate(_("Samples"))
         self.description = ""
 
         SamplingWorkflowEnabled = \

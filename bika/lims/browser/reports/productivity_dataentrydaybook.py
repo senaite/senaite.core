@@ -51,7 +51,7 @@ class Report(BrowserView):
             self.contentFilter, len(ars)))
 
         if not ars:
-            message = _("No Analysis Requests matched your query")
+            message = _("No Samples matched your query")
             self.context.plone_utils.addPortalMessage(message, "error")
             return self.default_template()
 

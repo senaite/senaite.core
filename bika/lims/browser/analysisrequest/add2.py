@@ -1627,7 +1627,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
 
         level = "info"
         if len(ARs) == 0:
-            message = _('No Analysis Requests could be created.')
+            message = _('No Samples could be created.')
             level = "error"
         elif len(ARs) > 1:
             message = _('Analysis requests ${ARs} were successfully created.',

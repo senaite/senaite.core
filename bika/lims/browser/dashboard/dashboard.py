@@ -372,45 +372,45 @@ class DashboardView(BrowserView):
         # elements by
         query = self._update_criteria_with_filters(query, 'analysisrequests')
 
-        # Active Analysis Requests (All)
+        # Active Samples (All)
         total = self.search_count(query, catalog.id)
 
         # Sampling workflow enabled?
         if self.context.bika_setup.getSamplingWorkflowEnabled():
-            # Analysis Requests awaiting to be sampled or scheduled
-            name = _('Analysis Requests to be sampled')
+            # Samples awaiting to be sampled or scheduled
+            name = _('Samples to be sampled')
             desc = _("To be sampled")
             purl = 'samples?samples_review_state=to_be_sampled'
             query['review_state'] = ['to_be_sampled', ]
             query['cancellation_state'] = ['active', ]
             out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
-            # Analysis Requests awaiting to be preserved
-            name = _('Analysis Requests to be preserved')
+            # Samples awaiting to be preserved
+            name = _('Samples to be preserved')
             desc = _("To be preserved")
             purl = 'samples?samples_review_state=to_be_preserved'
             query['review_state'] = ['to_be_preserved', ]
             query['cancellation_state'] = ['active', ]
             out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
-            # Analysis Requests scheduled for Sampling
-            name = _('Analysis Requests scheduled for sampling')
+            # Samples scheduled for Sampling
+            name = _('Samples scheduled for sampling')
             desc = _("Sampling scheduled")
             purl = 'samples?samples_review_state=scheduled_sampling'
             query['review_state'] = ['scheduled_sampling', ]
             query['cancellation_state'] = ['active', ]
             out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
-        # Analysis Requests awaiting for reception
-        name = _('Analysis Requests to be received')
+        # Samples awaiting for reception
+        name = _('Samples to be received')
         desc = _("Reception pending")
         purl = 'analysisrequests?analysisrequests_review_state=sample_due'
         query['review_state'] = ['sample_due', ]
         query['cancellation_state'] = ['active', ]
         out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
-        # Analysis Requests under way
-        name = _('Analysis Requests with results pending')
+        # Samples under way
+        name = _('Samples with results pending')
         desc = _("Results pending")
         purl = 'analysisrequests?analysisrequests_review_state=sample_received'
         query['review_state'] = ['attachment_due',
@@ -418,33 +418,33 @@ class DashboardView(BrowserView):
         query['cancellation_state'] = ['active', ]
         out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
-        # Analysis Requests to be verified
-        name = _('Analysis Requests to be verified')
+        # Samples to be verified
+        name = _('Samples to be verified')
         desc = _("To be verified")
         purl = 'analysisrequests?analysisrequests_review_state=to_be_verified'
         query['review_state'] = ['to_be_verified', ]
         query['cancellation_state'] = ['active', ]
         out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
-        # Analysis Requests verified (to be published)
-        name = _('Analysis Requests verified')
+        # Samples verified (to be published)
+        name = _('Samples verified')
         desc = _("Verified")
         purl = 'analysisrequests?analysisrequests_review_state=verified'
         query['review_state'] = ['verified', ]
         query['cancellation_state'] = ['active', ]
         out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
-        # Analysis Requests published
-        name = _('Analysis Requests published')
+        # Samples published
+        name = _('Samples published')
         desc = _("Published")
         purl = 'analysisrequests?analysisrequests_review_state=published'
         query['review_state'] = ['published', ]
         query['cancellation_state'] = ['active', ]
         out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
-        # Analysis Requests to be printed
+        # Samples to be printed
         if self.context.bika_setup.getPrintingWorkflowEnabled():
-            name = _('Analysis Requests to be printed')
+            name = _('Samples to be printed')
             desc = _("To be printed")
             purl = 'analysisrequests?analysisrequests_getPrinted=0'
             query['getPrinted'] = '0'
@@ -457,14 +457,14 @@ class DashboardView(BrowserView):
         # periodicity
         outevo = self.fill_dates_evo(catalog, query)
         out.append({'type':         'bar-chart-panel',
-                    'name':         _('Evolution of Analysis Requests'),
+                    'name':         _('Evolution of Samples'),
                     'class':        'informative',
-                    'description':  _('Evolution of Analysis Requests'),
+                    'description':  _('Evolution of Samples'),
                     'data':         json.dumps(outevo),
                     'datacolors':   json.dumps(self.get_colors_palette())})
 
         return {'id': 'analysisrequests',
-                'title': _('Analysis Requests'),
+                'title': _('Samples'),
                 'panels': out}
 
     def get_worksheets_section(self):

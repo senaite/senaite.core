@@ -11,7 +11,7 @@
 <h3>Advanced options</h3>
 <table cellpadding="0" cellspacing="0">
     <tr>
-        <td><label for="nuclisens_easyq_artoapply">Analysis Requests state</label>&nbsp;</td>
+        <td><label for="nuclisens_easyq_artoapply">Samples state</label>&nbsp;</td>
         <td>
             <select name="nuclisens_easyq_artoapply" id="nuclisens_easyq_artoapply">
                 <option value="received">Received</option>

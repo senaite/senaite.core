@@ -301,7 +301,7 @@ schema = BikaFolderSchema.copy() + Schema((
             label=_("Include Previous Results From Batch"),
             description=_(
                 "If there are previous results for a service in the "
-                "same batch of Analysis Requests, they will be displayed "
+                "same batch of Samples, they will be displayed "
                 "in the report.")
         )
     ),
@@ -504,9 +504,9 @@ schema = BikaFolderSchema.copy() + Schema((
             label=_("Default layout in worksheet view"),
             description=_("Preferred layout of the results entry table "
                           "in the Worksheet view. Classic layout displays "
-                          "the Analysis Requests in rows and the analyses "
+                          "the Samples in rows and the analyses "
                           "in columns. Transposed layout displays the "
-                          "Analysis Requests in columns and the analyses "
+                          "Samples in columns and the analyses "
                           "in rows."),
             format='select',
         )
@@ -622,7 +622,7 @@ schema = BikaFolderSchema.copy() + Schema((
         widget=RejectionSetupWidget(
             label=_("Enable sampling rejection"),
             description=_("Select this to activate the rejection workflow "
-                          "for Samples and Analysis Requests. A 'Reject' "
+                          "for Samples and Samples. A 'Reject' "
                           "option will be displayed in the actions menu for "
                           "these objects.")
         ),
@@ -839,7 +839,7 @@ schema = BikaFolderSchema.copy() + Schema((
         widget=RejectionSetupWidget(
             label=_("Enable the rejection workflow"),
             description=_("Select this to activate the rejection workflow "
-                          "for Samples and Analysis Requests. A 'Reject' "
+                          "for Samples and Samples. A 'Reject' "
                           "option will be displayed in the actions menu for "
                           "these objects.")
         ),
@@ -862,7 +862,7 @@ schema = BikaFolderSchema.copy() + Schema((
         default=4,
         widget=IntegerWidget(
             label=_("Default count of AR to add."),
-            description=_("Default value of the 'AR count' when users click 'ADD' button to create new Analysis Requests"),
+            description=_("Default value of the 'AR count' when users click 'ADD' button to create new Samples"),
         )
     ),
     TextField(

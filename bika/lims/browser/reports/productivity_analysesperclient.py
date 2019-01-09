@@ -156,7 +156,7 @@ class Report(BrowserView):
         """
         fieldnames = [
             'Client',
-            'Analysis Requests',
+            'Samples',
             'Analyses',
         ]
         output = StringIO.StringIO()
@@ -166,7 +166,7 @@ class Report(BrowserView):
         for row in data_lines:
             dw.writerow({
                 'Client': row[0]['value'],
-                'Analysis Requests': row[1]['value'],
+                'Samples': row[1]['value'],
                 'Analyses': row[2]['value'],
             })
         report_data = output.getvalue()
