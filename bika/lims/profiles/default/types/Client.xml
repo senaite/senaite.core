@@ -99,7 +99,7 @@
   <permission value="View"/>
  </action>
 
- <action title="AR Templates"
+ <action title="Sample Templates"
          action_id="templates"
          category="object"
          condition_expr=""

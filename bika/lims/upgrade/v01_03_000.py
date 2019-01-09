@@ -1534,6 +1534,9 @@ def rename_analysis_requests_actions(portal):
         if hasattr(content_type, "analysisrequests"):
             content_type.analysisrequests.setTitle("Samples")
             content_type.reindexObject()
+        if hasattr(content_type, "artemplates"):
+            content_type.artemplates.setTitle("Sample Templates")
+            content_type.reindexObject()
 
     rename_ar_action(portal)
     for client in portal.clients.objectValues("Client"):
