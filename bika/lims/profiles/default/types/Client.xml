@@ -55,7 +55,7 @@
          action_id="view"
          category="object"
          condition_expr=""
-         icon_expr="string:${portal_url}/images/ar.png"
+         icon_expr="string:${portal_url}/images/sample.png"
          link_target=""
          url_expr="string:${object_url}/analysisrequests"
          i18n:attributes="title"

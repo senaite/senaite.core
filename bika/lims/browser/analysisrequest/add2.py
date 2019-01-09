@@ -80,7 +80,7 @@ class AnalysisRequestAddView(BrowserView):
         self.specifications = self.generate_specifications(self.ar_count)
         self.ShowPrices = self.bika_setup.getShowPrices()
         self.icon = self.portal_url + \
-            "/++resource++bika.lims.images/analysisrequest_big.png"
+            "/++resource++bika.lims.images/sample_big.png"
         logger.info("*** Prepared data for {} ARs ***".format(self.ar_count))
         return self.template()
 
