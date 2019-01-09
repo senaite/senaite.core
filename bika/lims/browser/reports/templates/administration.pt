@@ -92,7 +92,7 @@
             <ul id="toc-reports">
                 <li>
                     <a href="#" id="arsnotinvoiced_selector"
-                            i18n:translate="">Analysis requests not
+                            i18n:translate="">Samples not
                         invoiced</a><br/>
             <span i18n:translate="">
                 Report of published analysis requests which have not been invoiced

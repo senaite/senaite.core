@@ -244,7 +244,7 @@
 <!-- Analyses requests and analyses -->
 <li tal:condition="here/member_is_client">
     <a href="#" id="analysesperclient_selector"
-            i18n:translate="">Analysis requests and analyses</a>
+            i18n:translate="">Samples and analyses</a>
     <br/>
             <span i18n:translate="">
                 The number of requests and analyses
@@ -254,7 +254,7 @@
 <!-- Analyses requests and analyses per client -->
 <li tal:condition="not:here/member_is_client">
     <a href="#" id="analysesperclient_selector"
-            i18n:translate="">Analysis requests and analyses per client</a>
+            i18n:translate="">Samples and analyses per client</a>
     <br/>
             <span i18n:translate="">
                 The number of requests and analyses per client

@@ -60,7 +60,7 @@
             <p tal:content="samplinground/instructions"></p>
         </div>
         <div id="samplinground-ar_templates" class="samplinground-field">
-            <p class='label' i18n:translate="">Analysis requests templates</p>
+            <p class='label' i18n:translate="">Samples templates</p>
             <p tal:define="arts view/getAnalysisRequestTemplatesInfo">
                 <a tal:repeat="art arts"
                    tal:attributes="href art/url">

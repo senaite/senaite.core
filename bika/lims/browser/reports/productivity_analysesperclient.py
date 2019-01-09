@@ -29,8 +29,8 @@ class Report(BrowserView):
         BrowserView.__init__(self, context, request)
         self.report = report
         self.headings = {
-            'header': _("Analysis requests and analyses per client"),
-            'subheader': _("Number of Analysis requests and analyses per client"),
+            'header': _("Samples and analyses per client"),
+            'subheader': _("Number of Samples and analyses per client"),
         }
         self.formats = {
             'columns': 3,

@@ -1630,7 +1630,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             message = _('No Samples could be created.')
             level = "error"
         elif len(ARs) > 1:
-            message = _('Analysis requests ${ARs} were successfully created.',
+            message = _('Samples ${ARs} were successfully created.',
                         mapping={'ARs': safe_unicode(', '.join(ARs.keys()))})
         else:
             message = _('Analysis request ${AR} was successfully created.',
