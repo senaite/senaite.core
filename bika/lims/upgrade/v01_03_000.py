@@ -1397,12 +1397,22 @@ def change_analysis_requests_id_formatting(portal, p_type="AnalysisRequest"):
     if p_type == "Sample":
         number_generator = getUtility(INumberGenerator)
         ar_keys = dict()
+        ar_keys_prev = dict()
         for key, value in number_generator.storage.items():
             if "sample-" in key:
                 ar_key = key.replace("sample-", "analysisrequest-")
                 ar_keys[ar_key] = api.to_int(value, 0)
+            elif "analysisrequest-" in key:
+                ar_keys_prev[key] = api.to_int(value, 0)
 
         for key, value in ar_keys.items():
+            if key in ar_keys_prev:
+                # Maybe this upgrade step has already been run, so we don't
+                # want the ar IDs to be reseeded again!
+                if value <= ar_keys_prev[key]:
+                    logger.info("ID for '{}' already seeded to '{}' [SKIP]"
+                                .format(key, ar_keys_prev[key]))
+                    continue
             logger.info("Seeding {} to {}".format(key, value))
             number_generator.set_number(key, value)
 
