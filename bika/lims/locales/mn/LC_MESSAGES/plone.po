@@ -5,955 +5,956 @@
 # Ramon Bartl <rb@ridingbytes.com>, 2018
 # 
 msgid ""
-msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2018-10-08 13:50+0000\n"
-"PO-Revision-Date: 2018-06-01 18:46+0000\n"
-"Last-Translator: Ramon Bartl <rb@ridingbytes.com>, 2018\n"
-"Language-Team: Mongolian (https://www.transifex.com/senaite/teams/87045/mn/)\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"Domain: plone\n"
-"Language: mn\n"
-"Language-Code: en\n"
-"Language-Name: English\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"Preferred-Encodings: utf-8 latin1\n"
-
-#. Default: "AR Imports"
-msgid "AR Imports"
-msgstr "AR Imports"
-
-#: bika/lims/profiles/default/types/ARTemplate.xml
-msgid "AR Template"
-msgstr ""
-
-#: bika/lims/profiles/default/controlpanel.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж"ДээжPДээжrДээжoДээжjДээжeДээжcДээжtДээж-ДээжIДээжdДээж-ДээжVДээжeДээжrДээжsДээжiДээжoДээжnДээж:Дээж ДээжPДээжAДээжCДээжKДээжAДээжGДээжEДээж ДээжVДээжEДээжRДээжSДээжIДээжOДээжNДээж\ДээжnДээж"Дээж
+ДээжДээж"ДээжPДээжOДээжTДээж-ДээжCДээжrДээжeДээжaДээжtДээжiДээжoДээжnДээж-ДээжDДээжaДээжtДээжeДээж:Дээж Дээж2Дээж0Дээж1Дээж8Дээж-Дээж1Дээж0Дээж-Дээж0Дээж8Дээж Дээж1Дээж3Дээж:Дээж5Дээж0Дээж+Дээж0Дээж0Дээж0Дээж0Дээж\ДээжnДээж"Дээж
+ДээжДээж"ДээжPДээжOДээж-ДээжRДээжeДээжvДээжiДээжsДээжiДээжoДээжnДээж-ДээжDДээжaДээжtДээжeДээж:Дээж Дээж2Дээж0Дээж1Дээж8Дээж-Дээж0Дээж6Дээж-Дээж0Дээж1Дээж Дээж1Дээж8Дээж:Дээж4Дээж6Дээж+Дээж0Дээж0Дээж0Дээж0Дээж\ДээжnДээж"Дээж
+ДээжДээж"ДээжLДээжaДээжsДээжtДээж-ДээжTДээжrДээжaДээжnДээжsДээжlДээжaДээжtДээжoДээжrДээж:Дээж ДээжRДээжaДээжmДээжoДээжnДээж ДээжBДээжaДээжrДээжtДээжlДээж Дээж<ДээжrДээжbДээж@ДээжrДээжiДээжdДээжiДээжnДээжgДээжbДээжyДээжtДээжeДээжsДээж.ДээжcДээжoДээжmДээж>Дээж,Дээж Дээж2Дээж0Дээж1Дээж8Дээж\ДээжnДээж"Дээж
+ДээжДээж"ДээжLДээжaДээжnДээжgДээжuДээжaДээжgДээжeДээж-ДээжTДээжeДээжaДээжmДээж:Дээж ДээжMДээжoДээжnДээжgДээжoДээжlДээжiДээжaДээжnДээж Дээж(ДээжhДээжtДээжtДээжpДээжsДээж:Дээж/Дээж/ДээжwДээжwДээжwДээж.ДээжtДээжrДээжaДээжnДээжsДээжiДээжfДээжeДээжxДээж.ДээжcДээжoДээжmДээж/ДээжsДээжeДээжnДээжaДээжiДээжtДээжeДээж/ДээжtДээжeДээжaДээжmДээжsДээж/Дээж8Дээж7Дээж0Дээж4Дээж5Дээж/ДээжmДээжnДээж/Дээж)Дээж\ДээжnДээж"Дээж
+ДээжДээж"ДээжMДээжIДээжMДээжEДээж-ДээжVДээжeДээжrДээжsДээжiДээжoДээжnДээж:Дээж Дээж1Дээж.Дээж0Дээж\ДээжnДээж"Дээж
+ДээжДээж"ДээжCДээжoДээжnДээжtДээжeДээжnДээжtДээж-ДээжTДээжyДээжpДээжeДээж:Дээж ДээжtДээжeДээжxДээжtДээж/ДээжpДээжlДээжaДээжiДээжnДээж;Дээж ДээжcДээжhДээжaДээжrДээжsДээжeДээжtДээж=ДээжUДээжTДээжFДээж-Дээж8Дээж\ДээжnДээж"Дээж
+ДээжДээж"ДээжCДээжoДээжnДээжtДээжeДээжnДээжtДээж-ДээжTДээжrДээжaДээжnДээжsДээжfДээжeДээжrДээж-ДээжEДээжnДээжcДээжoДээжdДээжiДээжnДээжgДээж:Дээж Дээж8ДээжbДээжiДээжtДээж\ДээжnДээж"Дээж
+ДээжДээж"ДээжDДээжoДээжmДээжaДээжiДээжnДээж:Дээж ДээжpДээжlДээжoДээжnДээжeДээж\ДээжnДээж"Дээж
+ДээжДээж"ДээжLДээжaДээжnДээжgДээжuДээжaДээжgДээжeДээж:Дээж ДээжmДээжnДээж\ДээжnДээж"Дээж
+ДээжДээж"ДээжLДээжaДээжnДээжgДээжuДээжaДээжgДээжeДээж-ДээжCДээжoДээжdДээжeДээж:Дээж ДээжeДээжnДээж\ДээжnДээж"Дээж
+ДээжДээж"ДээжLДээжaДээжnДээжgДээжuДээжaДээжgДээжeДээж-ДээжNДээжaДээжmДээжeДээж:Дээж ДээжEДээжnДээжgДээжlДээжiДээжsДээжhДээж\ДээжnДээж"Дээж
+ДээжДээж"ДээжPДээжlДээжuДээжrДээжaДээжlДээж-ДээжFДээжoДээжrДээжmДээжsДээж:Дээж ДээжnДээжpДээжlДээжuДээжrДээжaДээжlДээжsДээж=Дээж2Дээж;Дээж ДээжpДээжlДээжuДээжrДээжaДээжlДээж=Дээж(ДээжnДээж Дээж!Дээж=Дээж Дээж1Дээж)Дээж;Дээж\ДээжnДээж"Дээж
+ДээжДээж"ДээжPДээжrДээжeДээжfДээжeДээжrДээжrДээжeДээжdДээж-ДээжEДээжnДээжcДээжoДээжdДээжiДээжnДээжgДээжsДээж:Дээж ДээжuДээжtДээжfДээж-Дээж8Дээж ДээжlДээжaДээжtДээжiДээжnДээж1Дээж\ДээжnДээж"Дээж
+ДээжДээж
+Дээж#. Default: "AR Imports"
+msgid "Sample Imports"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"ДээжAДээжRДээж ДээжIДээжmДээжpДээжoДээжrДээжtДээжsДээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/ARTemplate.xml
+msgid "Sample Template"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/ARTemplates.xml
 #: bika/lims/profiles/default/types/Client.xml
-msgid "AR Templates"
-msgstr ""
-
-#: bika/lims/profiles/default/types/ARReport.xml
-msgid "ARReport"
-msgstr ""
-
-# Manual Workflow State and Transition MsgIds
+msgid "Sample Templates"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/ARReport.xml
+msgid "SampleReport"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж# Manual Workflow State and Transition MsgIds
 # Despite the fact, that these are defined in the "bika" domain, they are not
 # translated
 # in the action menu of Plone.
 # Please don't remove
 msgid "Activate"
-msgstr ""
-
-msgid "Active"
-msgstr ""
-
-#: bika/lims/profiles/default/types/Worksheet.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээжmsgid "Active"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Add Analyses"
-msgstr "Шинжилгээ нэмэх"
-
-#: bika/lims/profiles/default/types/Worksheet.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Add Blank Reference"
-msgstr "Банкны мэдээлэл нэмэх"
-
-#: bika/lims/profiles/default/types/Worksheet.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Add Control Reference"
-msgstr ""
-
-#: bika/lims/profiles/default/types/Worksheet.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Add Duplicate"
-msgstr "Хуулбар нэмэх"
-
-#: bika/lims/profiles/default/types/ReportFolder.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/ReportFolder.xml
 msgid "Administration"
-msgstr ""
-
-#: bika/lims/profiles/default/types/ReferenceSample.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/ReferenceSample.xml
 #: bika/lims/profiles/default/types/Sample.xml
 msgid "Analyses"
-msgstr "Шинжилгээнүүд"
-
-#: bika/lims/profiles/default/types/Analysis.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/Analysis.xml
 msgid "Analysis"
-msgstr "Шинжилгээ"
-
-#: bika/lims/profiles/default/controlpanel.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/AnalysisCategories.xml
 msgid "Analysis Categories"
-msgstr "Шинжилгээний төрлүүд"
-
-#: bika/lims/profiles/default/types/AnalysisCategory.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/AnalysisCategory.xml
 msgid "Analysis Category"
-msgstr "Шинжилгээний төрөл"
-
-#: bika/lims/profiles/default/types/AnalysisProfile.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/AnalysisProfile.xml
 msgid "Analysis Profile"
-msgstr ""
-
-#: bika/lims/profiles/default/controlpanel.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/AnalysisProfiles.xml
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Analysis Profiles"
-msgstr ""
-
-#: bika/lims/profiles/default/types/AnalysisRequest.xml
-msgid "Analysis Request"
-msgstr ""
-
-#: bika/lims/profiles/default/actions.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/AnalysisRequest.xml
+msgid "Sample"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/actions.xml
 #: bika/lims/profiles/default/types/AnalysisRequestsFolder.xml
 #: bika/lims/profiles/default/types/Batch.xml
-msgid "Analysis Requests"
-msgstr "Шинжилгээний хүсэлт"
-
-#: bika/lims/profiles/default/types/AnalysisService.xml
+msgid "Samples"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/AnalysisService.xml
 msgid "Analysis Service"
-msgstr ""
-
-#: bika/lims/profiles/default/controlpanel.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/AnalysisServices.xml
 msgid "Analysis Services"
-msgstr ""
-
-#: bika/lims/profiles/default/types/AnalysisSpec.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/AnalysisSpec.xml
 msgid "Analysis Specification"
-msgstr ""
-
-#: bika/lims/profiles/default/controlpanel.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/AnalysisSpecs.xml
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Analysis Specifications"
-msgstr ""
-
-msgid "Assign"
-msgstr ""
-
-msgid "Assigned"
-msgstr ""
-
-msgid "Attach"
-msgstr ""
-
-#: bika/lims/profiles/default/types/Attachment.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээжmsgid "Assign"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээжmsgid "Assigned"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээжmsgid "Attach"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/Attachment.xml
 msgid "Attachment"
-msgstr "Хавсралт"
-
-#: bika/lims/profiles/default/types/AttachmentType.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/AttachmentType.xml
 msgid "Attachment Type"
-msgstr "Хавсралтын төрөл"
-
-#: bika/lims/profiles/default/controlpanel.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/AttachmentTypes.xml
 msgid "Attachment Types"
-msgstr "Хавсралтын төрлүүд"
-
-msgid "Attachment due"
-msgstr ""
-
-#: bika/lims/profiles/default/types/Client.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж"Дээж
+ДээжДээж
+Дээжmsgid "Attachment due"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/Client.xml
 msgid "Attachments"
-msgstr "Хавсралтууд"
-
-#: bika/lims/profiles/default/types/Instrument.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/Instrument.xml
 msgid "Auto-Import Logs"
-msgstr ""
-
-#: bika/lims/profiles/default/types/Batch.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/Batch.xml
 msgid "Batch"
-msgstr ""
-
-#: bika/lims/profiles/default/types/Batch.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/Batch.xml
 msgid "Batch Book"
-msgstr ""
-
-#: bika/lims/profiles/default/types/BatchLabel.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/BatchLabel.xml
 msgid "Batch Label"
-msgstr ""
-
-#: bika/lims/profiles/default/controlpanel.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/BatchLabels.xml
 msgid "Batch Labels"
-msgstr ""
-
-#: bika/lims/profiles/default/types/BatchFolder.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/BatchFolder.xml
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Batches"
-msgstr ""
-
-#: bika/lims/profiles/default/types/BikaSetup.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/BikaSetup.xml
 msgid "Bika Setup"
-msgstr ""
-
-#: bika/lims/profiles/default/types/Calculation.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/Calculation.xml
 msgid "Calculation"
-msgstr ""
-
-#: bika/lims/profiles/default/controlpanel.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/Calculations.xml
 msgid "Calculations"
-msgstr ""
-
-#: bika/lims/profiles/default/types/Instrument.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/Instrument.xml
 msgid "Calibration Certificates"
-msgstr ""
-
-#: bika/lims/profiles/default/types/Instrument.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/Instrument.xml
 msgid "Calibrations"
-msgstr ""
-
-msgid "Cancel"
-msgstr ""
-
-#: bika/lims/profiles/default/types/Client.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээжmsgid "Cancel"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/Client.xml
 msgid "Client"
-msgstr "Үйлчлүүлэгч"
-
-#: bika/lims/profiles/default/actions.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/actions.xml
 #: bika/lims/profiles/default/types/ClientFolder.xml
 msgid "Clients"
-msgstr "Үйлчлүүлэгчид"
-
-msgid "Close"
-msgstr ""
-
-msgid "Complete"
-msgstr ""
-
-#: bika/lims/profiles/default/types/Contact.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж"Дээж
+ДээжДээж
+Дээжmsgid "Close"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээжmsgid "Complete"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/Contact.xml
 #: bika/lims/profiles/default/types/SupplierContact.xml
 msgid "Contact"
-msgstr ""
-
-#: bika/lims/profiles/default/types/Client.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/Client.xml
 #: bika/lims/profiles/default/types/Supplier.xml
 msgid "Contacts"
-msgstr ""
-
-#: bika/lims/profiles/default/types/Container.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/Container.xml
 msgid "Container"
-msgstr ""
-
-#: bika/lims/profiles/default/types/ContainerType.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/ContainerType.xml
 msgid "Container Type"
-msgstr ""
-
-#: bika/lims/profiles/default/controlpanel.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/ContainerTypes.xml
 msgid "Container Types"
-msgstr ""
-
-#: bika/lims/profiles/default/controlpanel.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/Containers.xml
 msgid "Containers"
-msgstr ""
-
-#: bika/lims/profiles/default/types/AnalysisRequest.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/AnalysisRequest.xml
 msgid "Create Invoice"
-msgstr ""
-
-msgid "Current"
-msgstr ""
-
-msgid "Deactivate"
-msgstr ""
-
-#: bika/lims/profiles/default/types/Department.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээжmsgid "Current"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээжmsgid "Deactivate"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/Department.xml
 msgid "Department"
-msgstr "Тасаг"
-
-#: bika/lims/profiles/default/types/Departments.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/Departments.xml
 msgid "Departments"
-msgstr "Тасгууд"
-
-msgid "Dispatch"
-msgstr ""
-
-msgid "Dispatched"
-msgstr ""
-
-msgid "Dispose"
-msgstr ""
-
-msgid "Disposed"
-msgstr ""
-
-#: bika/lims/profiles/default/types/Instrument.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж"Дээж
+ДээжДээж
+Дээжmsgid "Dispatch"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээжmsgid "Dispatched"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээжmsgid "Dispose"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээжmsgid "Disposed"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/Instrument.xml
 msgid "Documents"
-msgstr ""
-
-msgid "Dormant"
-msgstr ""
-
-#: bika/lims/profiles/default/types/DuplicateAnalysis.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээжmsgid "Dormant"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/DuplicateAnalysis.xml
 msgid "Duplicate Analysis"
-msgstr ""
-
-#: bika/lims/profiles/default/types/ARImport.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/ARImport.xml
 #: bika/lims/profiles/default/types/ARTemplate.xml
 #: bika/lims/profiles/default/types/AnalysisCategory.xml
 msgid "Edit"
-msgstr ""
-
-#: bika/lims/profiles/default/types/Pricelist.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/Pricelist.xml
 msgid "Email pricelist"
-msgstr ""
-
-msgid "Expire"
-msgstr ""
-
-msgid "Expired"
-msgstr ""
-
-#: bika/lims/profiles/default/types/Worksheet.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээжmsgid "Expire"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээжmsgid "Expired"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Export"
-msgstr ""
-
-#: bika/lims/profiles/default/types/InvoiceBatch.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/InvoiceBatch.xml
 msgid "Export Batch To CSV"
-msgstr ""
-
-#: bika/lims/profiles/default/actions.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/actions.xml
 msgid "Extracts"
-msgstr ""
-
-#: bika/lims/profiles/default/types/ReportFolder.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/ReportFolder.xml
 msgid "History"
-msgstr ""
-
-#: bika/lims/profiles/default/actions.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/actions.xml
 msgid "Home"
-msgstr ""
-
-#: bika/lims/profiles/default/types/IdentifierType.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/IdentifierType.xml
 msgid "Identifier Type"
-msgstr ""
-
-#: bika/lims/profiles/default/controlpanel.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/IdentifierTypes.xml
 msgid "Identifier Types"
-msgstr ""
-
-#: bika/lims/profiles/default/actions.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/actions.xml
 msgid "Import"
-msgstr ""
-
-msgid "Imported"
-msgstr ""
-
-#: bika/lims/profiles/default/types/Client.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээжmsgid "Imported"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/Client.xml
 msgid "Imports"
-msgstr ""
-
-msgid "Inactive"
-msgstr ""
-
-#: bika/lims/profiles/default/types/Instrument.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээжmsgid "Inactive"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/Instrument.xml
 msgid "Instrument"
-msgstr "Багаж"
-
-#: bika/lims/profiles/default/controlpanel.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/controlpanel.xml
 msgid "Instrument Locations"
-msgstr ""
-
-#: bika/lims/profiles/default/types/InstrumentType.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/InstrumentType.xml
 msgid "Instrument Type"
-msgstr "Багажны төрөл"
-
-#: bika/lims/profiles/default/controlpanel.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/InstrumentTypes.xml
 msgid "Instrument Types"
-msgstr "Багажны төрлүүд"
-
-#: bika/lims/profiles/default/controlpanel.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/InstrumentType.xml
 #: bika/lims/profiles/default/types/Instruments.xml
 msgid "Instruments"
-msgstr "Багажнууд"
-
-msgid "Invalid"
-msgstr ""
-
-msgid "Invalidate"
-msgstr ""
-
-#: bika/lims/profiles/default/types/AnalysisRequest.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж"Дээж
+ДээжДээж
+Дээжmsgid "Invalid"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээжmsgid "Invalidate"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/AnalysisRequest.xml
 #: bika/lims/profiles/default/types/Invoice.xml
 msgid "Invoice"
-msgstr ""
-
-#: bika/lims/profiles/default/types/LabContact.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/LabContact.xml
 msgid "Lab Contact"
-msgstr ""
-
-#: bika/lims/profiles/default/controlpanel.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/Department.xml
 #: bika/lims/profiles/default/types/LabContacts.xml
 msgid "Lab Contacts"
-msgstr ""
-
-#: bika/lims/profiles/default/controlpanel.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/controlpanel.xml
 msgid "Lab Departments"
-msgstr ""
-
-#: bika/lims/profiles/default/controlpanel.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/LabProducts.xml
 msgid "Lab Products"
-msgstr ""
-
-#: bika/lims/profiles/default/types/Laboratory.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/Laboratory.xml
 msgid "Laboratory"
-msgstr "Лаборатори"
-
-#: bika/lims/profiles/default/controlpanel.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/controlpanel.xml
 msgid "Laboratory Information"
-msgstr ""
-
-#: bika/lims/profiles/default/types/AnalysisRequest.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/AnalysisRequest.xml
 #: bika/lims/profiles/default/types/Sample.xml
 #: bika/lims/profiles/default/types/SamplePartition.xml
 msgid "Large Sticker"
-msgstr ""
-
-#: bika/lims/profiles/default/types/AnalysisProfile.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/AnalysisProfile.xml
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 #: bika/lims/profiles/default/types/AnalysisService.xml
 msgid "Log"
-msgstr ""
-
-#: bika/lims/profiles/default/types/Contact.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/Contact.xml
 #: bika/lims/profiles/default/types/LabContact.xml
 msgid "Login details"
-msgstr "Нэвтрэх мэдээлэлүүд"
-
-#: bika/lims/profiles/default/types/Instrument.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/Instrument.xml
 msgid "Maintenance"
-msgstr ""
-
-#: bika/lims/profiles/default/types/AnalysisRequest.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/AnalysisRequest.xml
 msgid "Manage Analyses"
-msgstr ""
-
-#: bika/lims/profiles/default/types/AnalysisRequest.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/AnalysisRequest.xml
 #: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Manage Results"
-msgstr ""
-
-#: bika/lims/profiles/default/types/Manufacturer.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/Manufacturer.xml
 msgid "Manufacturer"
-msgstr ""
-
-#: bika/lims/profiles/default/controlpanel.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/Manufacturers.xml
 msgid "Manufacturers"
-msgstr ""
-
-#: bika/lims/profiles/default/types/Method.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/Method.xml
 msgid "Method"
-msgstr "Арга зүй"
-
-#: bika/lims/profiles/default/controlpanel.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/Methods.xml
 msgid "Methods"
-msgstr "Арга зүйнүүд"
-
-msgid "No preservation required"
-msgstr ""
-
-msgid "No sampling workflow"
-msgstr ""
-
-msgid "Not requested"
-msgstr ""
-
-msgid "Open"
-msgstr ""
-
-#: bika/lims/profiles/default/types/Client.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж"Дээж
+ДээжДээж
+Дээжmsgid "No preservation required"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээжmsgid "No sampling workflow"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээжmsgid "Not requested"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээжmsgid "Open"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/Client.xml
 msgid "Orders"
-msgstr ""
-
-msgid "Pending"
-msgstr ""
-
-msgid "Prepublish"
-msgstr ""
-
-#: bika/lims/profiles/default/types/Preservation.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээжmsgid "Pending"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээжmsgid "Prepublish"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/Preservation.xml
 msgid "Preservation"
-msgstr ""
-
-msgid "Preservation required"
-msgstr ""
-
-#: bika/lims/profiles/default/controlpanel.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээжmsgid "Preservation required"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/Preservations.xml
 msgid "Preservations"
-msgstr ""
-
-msgid "Preserve"
-msgstr ""
-
-#: bika/lims/profiles/default/types/Pricelist.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээжmsgid "Preserve"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/Pricelist.xml
 msgid "Pricelist"
-msgstr ""
-
-#: bika/lims/profiles/default/types/PricelistFolder.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/PricelistFolder.xml
 msgid "Pricelists"
-msgstr ""
-
-#: bika/lims/profiles/default/actions.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/actions.xml
 msgid "Prices"
-msgstr ""
-
-#: bika/lims/profiles/default/types/AnalysisRequest.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/AnalysisRequest.xml
 #: bika/lims/profiles/default/types/Invoice.xml
 #: bika/lims/profiles/default/types/SupplyOrder.xml
 msgid "Print"
-msgstr ""
-
-#: bika/lims/profiles/default/types/Pricelist.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/Pricelist.xml
 msgid "Print pricelist"
-msgstr ""
-
-#: bika/lims/profiles/default/types/ReportFolder.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/ReportFolder.xml
 msgid "Productivity"
-msgstr ""
-
-msgid "Publish"
-msgstr ""
-
-msgid "Published"
-msgstr ""
-
-#: bika/lims/profiles/default/types/AnalysisRequest.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээжmsgid "Publish"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээжmsgid "Published"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/AnalysisRequest.xml
 msgid "Published results"
-msgstr ""
-
-#: bika/lims/profiles/default/types/Instrument.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/Instrument.xml
 msgid "QC Results"
-msgstr ""
-
-#: bika/lims/profiles/default/types/ReportFolder.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/ReportFolder.xml
 msgid "Quality Control"
-msgstr ""
-
-msgid "Receive"
-msgstr ""
-
-msgid "Receive sample"
-msgstr ""
-
-msgid "Received"
-msgstr ""
-
-#: bika/lims/profiles/default/types/ReferenceAnalysis.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээжmsgid "Receive"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээжmsgid "Receive sample"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээжmsgid "Received"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/ReferenceAnalysis.xml
 msgid "Reference Analysis"
-msgstr ""
-
-#: bika/lims/profiles/default/types/ReferenceDefinition.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/ReferenceDefinition.xml
 msgid "Reference Definition"
-msgstr ""
-
-#: bika/lims/profiles/default/controlpanel.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/ReferenceDefinitions.xml
 msgid "Reference Definitions"
-msgstr ""
-
-#: bika/lims/profiles/default/types/ReferenceSample.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/ReferenceSample.xml
 msgid "Reference Sample"
-msgstr ""
-
-#: bika/lims/profiles/default/actions.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/actions.xml
 #: bika/lims/profiles/default/types/ReferenceSamplesFolder.xml
 #: bika/lims/profiles/default/types/Supplier.xml
 msgid "Reference Samples"
-msgstr "Лавлагаа дээж"
-
-#: bika/lims/profiles/default/types/ReferenceSample.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/ReferenceSample.xml
 msgid "Reference Values"
-msgstr ""
-
-#: bika/lims/profiles/default/controlpanel.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/controlpanel.xml
 msgid "Reflex Rules"
-msgstr ""
-
-#: bika/lims/profiles/default/types/ReflexRuleFolder.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/ReflexRuleFolder.xml
 msgid "Reflex Rules Folder"
-msgstr ""
-
-#: bika/lims/profiles/default/types/ReflexRule.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/ReflexRule.xml
 msgid "ReflexRule"
-msgstr ""
-
-msgid "Registered"
-msgstr ""
-
-msgid "Reinstate"
-msgstr ""
-
-msgid "Reject"
-msgstr ""
-
-#: bika/lims/profiles/default/types/RejectAnalysis.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээжmsgid "Registered"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээжmsgid "Reinstate"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээжmsgid "Reject"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/RejectAnalysis.xml
 msgid "Reject Analysis"
-msgstr ""
-
-msgid "Rejected"
-msgstr ""
-
-msgid "Remove"
-msgstr ""
-
-#: bika/lims/profiles/default/actions.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээжmsgid "Rejected"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээжmsgid "Remove"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/actions.xml
 #: bika/lims/profiles/default/types/Report.xml
 msgid "Report"
-msgstr "Шинжилгээний хариу"
-
-#: bika/lims/profiles/default/types/ReportFolder.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/ReportFolder.xml
 msgid "Reports"
-msgstr ""
-
-msgid "Republish"
-msgstr ""
-
-#: bika/lims/profiles/default/types/AnalysisRequest.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээжmsgid "Republish"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/AnalysisRequest.xml
 msgid "Results not requested"
-msgstr ""
-
-msgid "Retract"
-msgstr ""
-
-msgid "Retracted"
-msgstr ""
-
-#: bika/lims/profiles/default/types/Sample.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээжmsgid "Retract"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээжmsgid "Retracted"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/Sample.xml
 msgid "Sample"
-msgstr "Дээж"
-
-#: bika/lims/profiles/default/types/SampleCondition.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/SampleCondition.xml
 msgid "Sample Condition"
-msgstr ""
-
-#: bika/lims/profiles/default/controlpanel.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/SampleConditions.xml
 msgid "Sample Conditions"
-msgstr ""
-
-#: bika/lims/profiles/default/controlpanel.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/SampleMatrices.xml
 msgid "Sample Matrices"
-msgstr ""
-
-#: bika/lims/profiles/default/types/SampleMatrix.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/SampleMatrix.xml
 msgid "Sample Matrix"
-msgstr ""
-
-#: bika/lims/profiles/default/types/SamplePartition.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/SamplePartition.xml
 msgid "Sample Partition"
-msgstr ""
-
-#: bika/lims/profiles/default/types/Sample.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/Sample.xml
 msgid "Sample Partitions"
-msgstr ""
-
-#: bika/lims/profiles/default/types/SamplePoint.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/SamplePoint.xml
 msgid "Sample Point"
-msgstr ""
-
-#: bika/lims/profiles/default/controlpanel.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/SamplePoints.xml
 msgid "Sample Points"
-msgstr ""
-
-#: bika/lims/profiles/default/types/SampleType.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/SampleType.xml
 msgid "Sample Type"
-msgstr "Дээжийн төрөл"
-
-#: bika/lims/profiles/default/controlpanel.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/SampleTypes.xml
 msgid "Sample Types"
-msgstr "Дээжийн төрлүүд"
-
-msgid "Sample due"
-msgstr ""
-
-msgid "Sample received"
-msgstr ""
-
-msgid "Sample registered"
-msgstr ""
-
-#: bika/lims/profiles/default/types/Client.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж�Дээж"Дээж
+ДээжДээж
+Дээжmsgid "Sample due"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээжmsgid "Sample received"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээжmsgid "Sample registered"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/Client.xml
 msgid "SamplePoints"
-msgstr ""
-
-msgid "Sampled"
-msgstr ""
-
-#: bika/lims/profiles/default/actions.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээжmsgid "Sampled"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/actions.xml
 #: bika/lims/profiles/default/types/Batch.xml
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Samples"
-msgstr ""
-
-#: bika/lims/profiles/default/types/SamplesFolder.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/SamplesFolder.xml
 msgid "SamplesFolder"
-msgstr ""
-
-#: bika/lims/profiles/default/types/SamplingDeviation.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/SamplingDeviation.xml
 msgid "Sampling Deviation"
-msgstr ""
-
-#: bika/lims/profiles/default/controlpanel.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/SamplingDeviations.xml
 msgid "Sampling Deviations"
-msgstr ""
-
-#: bika/lims/profiles/default/types/SRTemplate.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/SRTemplate.xml
 msgid "Sampling Round Template"
-msgstr ""
-
-#: bika/lims/profiles/default/controlpanel.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/Client.xml
 #: bika/lims/profiles/default/types/SRTemplates.xml
 msgid "Sampling Round Templates"
-msgstr ""
-
-#: bika/lims/profiles/default/controlpanel.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Sampling Rounds"
-msgstr ""
-
-msgid "Sampling workflow"
-msgstr ""
-
-#: bika/lims/profiles/default/types/Instrument.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээжmsgid "Sampling workflow"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/Instrument.xml
 msgid "Schedule"
-msgstr ""
-
-msgid "Schedule sampling"
-msgstr ""
-
-msgid "Scheduled sampling"
-msgstr ""
-
-#: bika/lims/profiles/default/actions.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээжmsgid "Schedule sampling"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээжmsgid "Scheduled sampling"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/actions.xml
 msgid "Sharing"
-msgstr ""
-
-#: bika/lims/profiles/default/types/AnalysisRequest.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/AnalysisRequest.xml
 #: bika/lims/profiles/default/types/Sample.xml
 #: bika/lims/profiles/default/types/SamplePartition.xml
 msgid "Small Sticker"
-msgstr ""
-
-#: bika/lims/profiles/default/types/InvoiceFolder.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/InvoiceFolder.xml
 msgid "Statements"
-msgstr ""
-
-#: bika/lims/profiles/default/types/Batch.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/Batch.xml
 #: bika/lims/profiles/default/types/ReferenceSample.xml
 #: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Sticker"
-msgstr ""
-
-#: bika/lims/profiles/default/types/AnalysisRequest.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/AnalysisRequest.xml
 #: bika/lims/profiles/default/types/Batch.xml
 #: bika/lims/profiles/default/types/Sample.xml
 msgid "Stickers preview"
-msgstr ""
-
-#: bika/lims/profiles/default/types/StorageLocation.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/StorageLocation.xml
 msgid "Storage Location"
-msgstr ""
-
-#: bika/lims/profiles/default/controlpanel.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/StorageLocations.xml
 msgid "Storage Locations"
-msgstr ""
-
-#: bika/lims/profiles/default/types/SubGroup.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/SubGroup.xml
 msgid "Sub-group"
-msgstr ""
-
-#: bika/lims/profiles/default/controlpanel.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/SubGroups.xml
 msgid "Sub-groups"
-msgstr ""
-
-msgid "Submit"
-msgstr ""
-
-msgid "Submit for verification"
-msgstr ""
-
-#: bika/lims/profiles/default/types/Supplier.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээжmsgid "Submit"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээжmsgid "Submit for verification"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/Supplier.xml
 msgid "Supplier"
-msgstr ""
-
-#: bika/lims/profiles/default/actions.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/actions.xml
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/Suppliers.xml
 msgid "Suppliers"
-msgstr ""
-
-#: bika/lims/profiles/default/types/SupplyOrder.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/SupplyOrder.xml
 msgid "Supply Order"
-msgstr ""
-
-#: bika/lims/profiles/default/types/SupplyOrderFolder.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/SupplyOrderFolder.xml
 msgid "Supply Orders"
-msgstr ""
-
-msgid "To be preserved"
-msgstr ""
-
-msgid "To be sampled"
-msgstr ""
-
-msgid "To be verified"
-msgstr ""
-
-msgid "Unpublished"
-msgstr ""
-
-msgid "Unsassign"
-msgstr ""
-
-msgid "Valid"
-msgstr ""
-
-msgid "Validate"
-msgstr ""
-
-#: bika/lims/profiles/default/types/Instrument.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээжmsgid "To be preserved"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээжmsgid "To be sampled"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээжmsgid "To be verified"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээжmsgid "Unpublished"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээжmsgid "Unsassign"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээжmsgid "Valid"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээжmsgid "Validate"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/Instrument.xml
 msgid "Validations"
-msgstr ""
-
-msgid "Verified"
-msgstr ""
-
-msgid "Verify"
-msgstr ""
-
-#: bika/lims/profiles/default/types/ARImport.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээжmsgid "Verified"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээжmsgid "Verify"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/ARImport.xml
 #: bika/lims/profiles/default/types/ARReport.xml
 #: bika/lims/profiles/default/types/ARTemplate.xml
 msgid "View"
-msgstr ""
-
-#: bika/lims/profiles/default/types/Worksheet.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Worksheet"
-msgstr ""
-
-#: bika/lims/profiles/default/types/WorksheetTemplate.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/types/WorksheetTemplate.xml
 msgid "Worksheet Template"
-msgstr ""
-
-#: bika/lims/profiles/default/controlpanel.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/WorksheetTemplates.xml
 msgid "Worksheet Templates"
-msgstr ""
-
-#: bika/lims/profiles/default/actions.xml
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#: bika/lims/profiles/default/actions.xml
 #: bika/lims/profiles/default/types/WorksheetFolder.xml
 msgid "Worksheets"
-msgstr ""
-
-#. Default: "AR Templates"
-msgid "label_schema_AR Templates"
-msgstr "AR Templates"
-
-#. Default: "Accounting"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"Дээж"Дээж
+ДээжДээж
+Дээж#. Default: "AR Templates"
+msgid "label_schema_Sample Templates"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"ДээжAДээжRДээж ДээжTДээжeДээжmДээжpДээжlДээжaДээжtДээжeДээжsДээж"Дээж
+ДээжДээж
+Дээж#. Default: "Accounting"
 msgid "label_schema_Accounting"
-msgstr "Accounting"
-
-#. Default: "Address"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"ДээжAДээжcДээжcДээжoДээжuДээжnДээжtДээжiДээжnДээжgДээж"Дээж
+ДээжДээж
+Дээж#. Default: "Address"
 msgid "label_schema_Address"
-msgstr "Address"
-
-#. Default: "Analyses"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"ДээжAДээжdДээжdДээжrДээжeДээжsДээжsДээж"Дээж
+ДээжДээж
+Дээж#. Default: "Analyses"
 msgid "label_schema_Analyses"
-msgstr "Analyses"
-
-#. Default: "Bank details"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"ДээжAДээжnДээжaДээжlДээжyДээжsДээжeДээжsДээж"Дээж
+ДээжДээж
+Дээж#. Default: "Bank details"
 msgid "label_schema_Bank details"
-msgstr "Bank details"
-
-#. Default: "Calculation"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"ДээжBДээжaДээжnДээжkДээж ДээжdДээжeДээжtДээжaДээжiДээжlДээжsДээж"Дээж
+ДээжДээж
+Дээж#. Default: "Calculation"
 msgid "label_schema_Calculation"
-msgstr "Calculation"
-
-#. Default: "Container and Preservation"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"ДээжCДээжaДээжlДээжcДээжuДээжlДээжaДээжtДээжiДээжoДээжnДээж"Дээж
+ДээжДээж
+Дээж#. Default: "Container and Preservation"
 msgid "label_schema_Container and Preservation"
-msgstr "Container and Preservation"
-
-#. Default: "Dates"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"ДээжCДээжoДээжnДээжtДээжaДээжiДээжnДээжeДээжrДээж ДээжaДээжnДээжdДээж ДээжPДээжrДээжeДээжsДээжeДээжrДээжvДээжaДээжtДээжiДээжoДээжnДээж"Дээж
+ДээжДээж
+Дээж#. Default: "Dates"
 msgid "label_schema_Dates"
-msgstr "Dates"
-
-#. Default: "Description"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"ДээжDДээжaДээжtДээжeДээжsДээж"Дээж
+ДээжДээж
+Дээж#. Default: "Description"
 msgid "label_schema_Description"
-msgstr "Description"
-
-#. Default: "Email Telephone Fax"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"ДээжDДээжeДээжsДээжcДээжrДээжiДээжpДээжtДээжiДээжoДээжnДээж"Дээж
+ДээжДээж
+Дээж#. Default: "Email Telephone Fax"
 msgid "label_schema_Email Telephone Fax"
-msgstr "Email Telephone Fax"
-
-#. Default: "ID Server"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"ДээжEДээжmДээжaДээжiДээжlДээж ДээжTДээжeДээжlДээжeДээжpДээжhДээжoДээжnДээжeДээж ДээжFДээжaДээжxДээж"Дээж
+ДээжДээж
+Дээж#. Default: "ID Server"
 msgid "label_schema_ID Server"
-msgstr "ID Server"
-
-#. Default: "Labels"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"ДээжIДээжDДээж ДээжSДээжeДээжrДээжvДээжeДээжrДээж"Дээж
+ДээжДээж
+Дээж#. Default: "Labels"
 msgid "label_schema_Labels"
-msgstr "Labels"
-
-#. Default: "Layout"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"ДээжLДээжaДээжbДээжeДээжlДээжsДээж"Дээж
+ДээжДээж
+Дээж#. Default: "Layout"
 msgid "label_schema_Layout"
-msgstr "Layout"
-
-#. Default: "Location"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"ДээжLДээжaДээжyДээжoДээжuДээжtДээж"Дээж
+ДээжДээж
+Дээж#. Default: "Location"
 msgid "label_schema_Location"
-msgstr "Location"
-
-#. Default: "Method"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"ДээжLДээжoДээжcДээжaДээжtДээжiДээжoДээжnДээж"Дээж
+ДээжДээж
+Дээж#. Default: "Method"
 msgid "label_schema_Method"
-msgstr "Method"
-
-#. Default: "Preferences"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"ДээжMДээжeДээжtДээжhДээжoДээжdДээж"Дээж
+ДээжДээж
+Дээж#. Default: "Preferences"
 msgid "label_schema_Preferences"
-msgstr "Preferences"
-
-#. Default: "Publication preference"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"ДээжPДээжrДээжeДээжfДээжeДээжrДээжeДээжnДээжcДээжeДээжsДээж"Дээж
+ДээжДээж
+Дээж#. Default: "Publication preference"
 msgid "label_schema_Publication preference"
-msgstr "Publication preference"
-
-#. Default: "Reference Values"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"ДээжPДээжuДээжbДээжlДээжiДээжcДээжaДээжtДээжiДээжoДээжnДээж ДээжpДээжrДээжeДээжfДээжeДээжrДээжeДээжnДээжcДээжeДээж"Дээж
+ДээжДээж
+Дээж#. Default: "Reference Values"
 msgid "label_schema_Reference Values"
-msgstr "Reference Values"
-
-#. Default: "Result Options"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"ДээжRДээжeДээжfДээжeДээжrДээжeДээжnДээжcДээжeДээж ДээжVДээжaДээжlДээжuДээжeДээжsДээж"Дээж
+ДээжДээж
+Дээж#. Default: "Result Options"
 msgid "label_schema_Result Options"
-msgstr "Result Options"
-
-#. Default: "Results Reports"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"ДээжRДээжeДээжsДээжuДээжlДээжtДээж ДээжOДээжpДээжtДээжiДээжoДээжnДээжsДээж"Дээж
+ДээжДээж
+Дээж#. Default: "Results Reports"
 msgid "label_schema_Results Reports"
-msgstr "Results Reports"
-
-#. Default: "SR Templates"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"ДээжRДээжeДээжsДээжuДээжlДээжtДээжsДээж ДээжRДээжeДээжpДээжoДээжrДээжtДээжsДээж"Дээж
+ДээжДээж
+Дээж#. Default: "SR Templates"
 msgid "label_schema_SR Templates"
-msgstr "SR Templates"
-
-#. Default: "Sample Partitions"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"ДээжSДээжRДээж ДээжTДээжeДээжmДээжpДээжlДээжaДээжtДээжeДээжsДээж"Дээж
+ДээжДээж
+Дээж#. Default: "Sample Partitions"
 msgid "label_schema_Sample Partitions"
-msgstr "Sample Partitions"
-
-#. Default: "Security"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"ДээжSДээжaДээжmДээжpДээжlДээжeДээж ДээжPДээжaДээжrДээжtДээжiДээжtДээжiДээжoДээжnДээжsДээж"Дээж
+ДээжДээж
+Дээж#. Default: "Security"
 msgid "label_schema_Security"
-msgstr "Security"
-
-#. Default: "Uncertainties"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"ДээжSДээжeДээжcДээжuДээжrДээжiДээжtДээжyДээж"Дээж
+ДээжДээж
+Дээж#. Default: "Uncertainties"
 msgid "label_schema_Uncertainties"
-msgstr "Uncertainties"
+ДээжmДээжsДээжgДээжsДээжtДээжrДээж Дээж"ДээжUДээжnДээжcДээжeДээжrДээжtДээжaДээжiДээжnДээжtДээжiДээжeДээжsДээж"Дээж
+Дээж

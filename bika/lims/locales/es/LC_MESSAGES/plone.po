@@ -22,22 +22,22 @@ msgstr ""
 "Preferred-Encodings: utf-8 latin1\n"
 
 #. Default: "AR Imports"
-msgid "AR Imports"
-msgstr "Importaciones de solicitudes de análisis"
+msgid "Sample Imports"
+msgstr "Importaciones de muestras"
 
 #: bika/lims/profiles/default/types/ARTemplate.xml
-msgid "AR Template"
-msgstr "Plantilla de solicitud de análisis"
+msgid "Sample Template"
+msgstr "Plantilla de muestra"
 
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/ARTemplates.xml
 #: bika/lims/profiles/default/types/Client.xml
-msgid "AR Templates"
-msgstr "Plantillas de solicitud de análisis"
+msgid "Sample Templates"
+msgstr "Plantillas de muestra"
 
 #: bika/lims/profiles/default/types/ARReport.xml
-msgid "ARReport"
-msgstr "Informe de solicitud de análisis"
+msgid "SampleReport"
+msgstr "Informe de muestra"
 
 # Manual Workflow State and Transition MsgIds
 # Despite the fact, that these are defined in the "bika" domain, they are not
@@ -90,23 +90,23 @@ msgstr "Categoría de análisis"
 
 #: bika/lims/profiles/default/types/AnalysisProfile.xml
 msgid "Analysis Profile"
-msgstr "Perfil de solicitud de análisis"
+msgstr "Perfil de muestra"
 
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/AnalysisProfiles.xml
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Analysis Profiles"
-msgstr "Perfiles de solicitud de análisis"
+msgstr "Perfiles de muestra"
 
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
-msgid "Analysis Request"
-msgstr "Solicitud de análisis"
+msgid "Sample"
+msgstr "Muestra"
 
 #: bika/lims/profiles/default/actions.xml
 #: bika/lims/profiles/default/types/AnalysisRequestsFolder.xml
 #: bika/lims/profiles/default/types/Batch.xml
-msgid "Analysis Requests"
-msgstr "Solicitudes de análisis"
+msgid "Samples"
+msgstr "Muestras"
 
 #: bika/lims/profiles/default/types/AnalysisService.xml
 msgid "Analysis Service"
@@ -863,8 +863,8 @@ msgid "Worksheets"
 msgstr "Hojas de trabajo"
 
 #. Default: "AR Templates"
-msgid "label_schema_AR Templates"
-msgstr "Plantillas de solicitudes de análisis"
+msgid "label_schema_Sample Templates"
+msgstr "Plantillas de muestras"
 
 #. Default: "Accounting"
 msgid "label_schema_Accounting"
