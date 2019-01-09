@@ -1633,7 +1633,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             message = _('Samples ${ARs} were successfully created.',
                         mapping={'ARs': safe_unicode(', '.join(ARs.keys()))})
         else:
-            message = _('Analysis request ${AR} was successfully created.',
+            message = _('Sample ${AR} was successfully created.',
                         mapping={'AR': safe_unicode(ARs.keys()[0])})
 
         # Display a portal message
