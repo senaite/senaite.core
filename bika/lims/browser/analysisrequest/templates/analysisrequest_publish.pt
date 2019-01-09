@@ -60,7 +60,7 @@
             </div>
             <div id='ar_publish_summary'>
                 <span tal:content="python:view.getAnalysisRequestsCount()"></span>&nbsp;
-                <span i18n:translate=""> analysis requests selected</span>:&nbsp;
+                <span i18n:translate=""> samples selected</span>:&nbsp;
                 <tal:ars repeat="ar python:view.getAnalysisRequests()">
                     <a tal:attributes="href python:'#'+ar.id" tal:content="python: ar.id"></a>&nbsp;
                 </tal:ars>

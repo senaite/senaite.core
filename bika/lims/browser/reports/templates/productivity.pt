@@ -437,7 +437,7 @@
                 i18n:translate="">Attachments</a>
         <br/>
             <span i18n:translate="">
-                The attachments linked to analysis requests and analyses
+                The attachments linked to samples and analyses
             </span>
 
         <div id="attachments" style="display:none" class="criteria">

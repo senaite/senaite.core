@@ -95,7 +95,7 @@
                             i18n:translate="">Samples not
                         invoiced</a><br/>
             <span i18n:translate="">
-                Report of published analysis requests which have not been invoiced
+                Report of published samples which have not been invoiced
             </span>
 
                     <div id="arsnotinvoiced" style="display:none"

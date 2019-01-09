@@ -313,7 +313,7 @@ schema = BikaFolderSchema.copy() + Schema((
         widget=IntegerWidget(
             label=_("Maximum columns per results email"),
             description=_(
-                "Set the maximum number of analysis requests per results email. "
+                "Set the maximum number of samples per results email. "
                 "Too many columns per email are difficult to read for some clients "
                 "who prefer fewer results per email"),
         )
@@ -428,7 +428,7 @@ schema = BikaFolderSchema.copy() + Schema((
             visible=False,
             label=_("AR Import options"),
             description=_(
-                "'Classic' indicates importing analysis requests per sample and "
+                "'Classic' indicates importing samples per sample and "
                 "analysis service selection. With 'Profiles', analysis profile keywords "
                 "are used to select multiple analysis services together"),
         )
