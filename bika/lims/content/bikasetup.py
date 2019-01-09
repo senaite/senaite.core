@@ -444,7 +444,7 @@ schema = BikaFolderSchema.copy() + Schema((
             description=_(
                 "The system wide default configuration to indicate "
                 "whether file attachments are required, permitted or not "
-                "per analysis request"),
+                "per sample"),
         )
     ),
     StringField(

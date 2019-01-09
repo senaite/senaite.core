@@ -89,7 +89,7 @@ schema = BikaSchema.copy() + Schema((
             size=20,
             helper_js=("bika_widgets/referencewidget.js",
                        "++resource++bika.lims.js/contact.js"),
-            description=_("The primary contact of this analysis request, "
+            description=_("The primary contact of this sample, "
                           "who will receive notifications and publications "
                           "via email"),
             visible={
@@ -879,7 +879,7 @@ schema = BikaSchema.copy() + Schema((
         widget=FileWidget(
             label=_("Attachment"),
             description=_("Add one or more attachments to describe the "
-                          "sample in this analysis request, or to specify "
+                          "sample in this sample, or to specify "
                           "your request."),
             render_own_label=True,
             visible={
