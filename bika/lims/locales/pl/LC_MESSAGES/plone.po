@@ -22,21 +22,21 @@ msgstr ""
 "Preferred-Encodings: utf-8 latin1\n"
 
 #. Default: "AR Imports"
-msgid "AR Imports"
+msgid "Sample Imports"
 msgstr "Iportowanie AR"
 
 #: bika/lims/profiles/default/types/ARTemplate.xml
-msgid "AR Template"
+msgid "Sample Template"
 msgstr "Szablon AR"
 
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/ARTemplates.xml
 #: bika/lims/profiles/default/types/Client.xml
-msgid "AR Templates"
+msgid "Sample Templates"
 msgstr "Szablony AR"
 
 #: bika/lims/profiles/default/types/ARReport.xml
-msgid "ARReport"
+msgid "SampleReport"
 msgstr ""
 
 # Manual Workflow State and Transition MsgIds
@@ -99,14 +99,14 @@ msgid "Analysis Profiles"
 msgstr "Profile analizy"
 
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
-msgid "Analysis Request"
-msgstr "Zestaw analiz"
+msgid "Sample"
+msgstr "Próbka pobrana"
 
 #: bika/lims/profiles/default/actions.xml
 #: bika/lims/profiles/default/types/AnalysisRequestsFolder.xml
 #: bika/lims/profiles/default/types/Batch.xml
-msgid "Analysis Requests"
-msgstr "Zestawy analiz"
+msgid "Samples"
+msgstr "Próbki"
 
 #: bika/lims/profiles/default/types/AnalysisService.xml
 msgid "Analysis Service"
@@ -700,7 +700,7 @@ msgstr "Próbki"
 
 #: bika/lims/profiles/default/types/SamplesFolder.xml
 msgid "SamplesFolder"
-msgstr "SamplesFolder"
+msgstr "PróbkiFolder"
 
 #: bika/lims/profiles/default/types/SamplingDeviation.xml
 msgid "Sampling Deviation"
@@ -863,7 +863,7 @@ msgid "Worksheets"
 msgstr "Karty pracy"
 
 #. Default: "AR Templates"
-msgid "label_schema_AR Templates"
+msgid "label_schema_Sample Templates"
 msgstr "Szablony zestawów analiz -AR-"
 
 #. Default: "Accounting"
