@@ -221,7 +221,7 @@ Keyword = StringField(
         label=_("Analysis Keyword"),
         description=_(
             "The unique keyword used to identify the analysis service in "
-            "import files of bulk AR requests and results imports from "
+            "import files of bulk Sample requests and results imports from "
             "instruments. It is also used to identify dependent analysis "
             "services in user defined results calculations"),
     )

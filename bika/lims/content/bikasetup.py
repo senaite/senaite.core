@@ -345,7 +345,7 @@ schema = BikaFolderSchema.copy() + Schema((
         schemata="Analyses",
         default=False,
         widget=BooleanWidget(
-            label=_("Enable AR Specifications"),
+            label=_("Enable Sample Specifications"),
             description=_(
                 "Analysis specifications which are edited directly on the "
                 "Sample."),
@@ -643,7 +643,7 @@ schema = BikaFolderSchema.copy() + Schema((
         schemata="Notifications",
         default=True,
         widget=BooleanWidget(
-            label=_("Email notification on AR invalidation"),
+            label=_("Email notification on Sample invalidation"),
             description=_("Select this to activate automatic notifications "
                           "via email to the Client and Lab Managers when an Analysis "
                           "Request is invalidated.")
@@ -861,7 +861,7 @@ schema = BikaFolderSchema.copy() + Schema((
         required=0,
         default=4,
         widget=IntegerWidget(
-            label=_("Default count of AR to add."),
+            label=_("Default count of Sample to add."),
             description=_("Default value of the 'AR count' when users click 'ADD' button to create new Samples"),
         )
     ),

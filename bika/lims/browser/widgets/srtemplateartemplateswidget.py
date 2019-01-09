@@ -103,6 +103,6 @@ class SRTemplateARTemplatesWidget(TypesWidget):
 
 registerWidget(
     SRTemplateARTemplatesWidget,
-    title = 'SR Template AR Templates Selector',
-    description = ('SR Template AR Templates Selector'),
+    title = 'SR Template Sample Templates Selector',
+    description = ('SR Template Sample Templates Selector'),
 )

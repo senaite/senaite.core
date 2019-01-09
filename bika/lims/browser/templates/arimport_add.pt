@@ -4,7 +4,7 @@
       i18n:domain="senaite.core">
 
 <head>< i18n:translate=""
-        tal:content="Add ARImport"/>
+        tal:content="Add SampleImport"/>
 </head>
 
 

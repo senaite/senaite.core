@@ -197,7 +197,7 @@ schema = BikaSchema.copy() + Schema((
         write_permission=ModifyPortalContent,
         widget=ReferenceWidget(
             label=_("Sample"),
-            description=_("Select a sample to create a secondary AR"),
+            description=_("Select a sample to create a secondary Sample"),
             size=20,
             render_own_label=True,
             visible=False,
@@ -294,7 +294,7 @@ schema = BikaSchema.copy() + Schema((
         write_permission="Field: Edit Template",
         widget=ReferenceWidget(
             label=_("AR Template"),
-            description=_("The predefined values of the AR template are set "
+            description=_("The predefined values of the Sample template are set "
                           "in the request"),
             size=20,
             render_own_label=True,
@@ -559,7 +559,7 @@ schema = BikaSchema.copy() + Schema((
         write_permission="Field: Edit Specification",
         widget=ReferenceWidget(
             label=_("Analysis Specification"),
-            description=_("Choose default AR specification values"),
+            description=_("Choose default Sample specification values"),
             size=20,
             render_own_label=True,
             visible={
@@ -603,7 +603,7 @@ schema = BikaSchema.copy() + Schema((
         widget=ReferenceWidget(
             label=_("Publication Specification"),
             description=_(
-                "Set the specification to be used before publishing an AR."),
+                "Set the specification to be used before publishing a Sample."),
             size=20,
             render_own_label=True,
             visible={
@@ -1237,7 +1237,7 @@ schema = BikaSchema.copy() + Schema((
         read_permission=View,
         widget=StringWidget(
             label=_("Printed"),
-            description=_("Indicates if the last ARReport is printed,"),
+            description=_("Indicates if the last SampleReport is printed,"),
             visible=False,
         ),
     ),
