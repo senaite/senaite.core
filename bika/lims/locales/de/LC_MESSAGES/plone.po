@@ -22,22 +22,22 @@ msgstr ""
 "Preferred-Encodings: utf-8 latin1\n"
 
 #. Default: "AR Imports"
-msgid "Sample Imports"
-msgstr "Probe Importe"
+msgid "AR Imports"
+msgstr "Analyseauftrag Importe"
 
 #: bika/lims/profiles/default/types/ARTemplate.xml
-msgid "Sample Template"
-msgstr "Probesvorlage"
+msgid "AR Template"
+msgstr "Analyseauftragsvorlage"
 
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/ARTemplates.xml
 #: bika/lims/profiles/default/types/Client.xml
-msgid "Sample Templates"
-msgstr "Probevorlagen"
+msgid "AR Templates"
+msgstr "Analyseauftragvorlagen"
 
 #: bika/lims/profiles/default/types/ARReport.xml
-msgid "SampleReport"
-msgstr "Bericht über Proben"
+msgid "ARReport"
+msgstr "Bericht über Analyseaufträge"
 
 # Manual Workflow State and Transition MsgIds
 # Despite the fact, that these are defined in the "bika" domain, they are not
@@ -99,14 +99,14 @@ msgid "Analysis Profiles"
 msgstr "Analyseprofile"
 
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
-msgid "Sample"
-msgstr "Probe"
+msgid "Analysis Request"
+msgstr "Analyseauftrag"
 
 #: bika/lims/profiles/default/actions.xml
 #: bika/lims/profiles/default/types/AnalysisRequestsFolder.xml
 #: bika/lims/profiles/default/types/Batch.xml
-msgid "Samples"
-msgstr "Proben"
+msgid "Analysis Requests"
+msgstr "Analyseaufträge"
 
 #: bika/lims/profiles/default/types/AnalysisService.xml
 msgid "Analysis Service"
@@ -863,8 +863,8 @@ msgid "Worksheets"
 msgstr "Arbeitsblätter"
 
 #. Default: "AR Templates"
-msgid "label_schema_Sample Templates"
-msgstr "Probesvorlagen"
+msgid "label_schema_AR Templates"
+msgstr "Analyseauftragsvorlagen"
 
 #. Default: "Accounting"
 msgid "label_schema_Accounting"

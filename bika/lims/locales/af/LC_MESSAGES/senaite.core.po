@@ -132,7 +132,7 @@ msgstr "%s het geen '%s' kolom."
 
 #: bika/lims/content/bikasetup.py:427
 msgid ""
-"'Classic' indicates importing samples per sample and analysis "
+"'Classic' indicates importing analysis requests per sample and analysis "
 "service selection. With 'Profiles', analysis profile keywords are used to "
 "select multiple analysis services together"
 msgstr ""
@@ -251,37 +251,37 @@ msgid ""
 msgstr ""
 
 #: bika/lims/browser/analysisrequest/add.py:107
-msgid "Sample ${ar_number}"
+msgid "AR ${ar_number}"
 msgstr "OV ${ar_number}"
 
 #: bika/lims/content/bikasetup.py:440
-msgid "Sample Attachment Option"
+msgid "AR Attachment Option"
 msgstr "OV Aanhangsel Keuse"
 
 #: bika/lims/browser/arimports.py:47
-msgid "Sample Import"
+msgid "AR Import"
 msgstr "OV Invoer"
 
 #: bika/lims/content/bikasetup.py:426
-msgid "Sample Import options"
+msgid "AR Import options"
 msgstr "OV Invoeropsies"
 
 #: bika/lims/content/analysisrequest.py:436
-msgid "Sample Template"
+msgid "AR Template"
 msgstr ""
 
 #: bika/lims/browser/srtemplate/artemplates.py:40
-msgid "Sample Template Title"
+msgid "AR Template Title"
 msgstr ""
 
 #: bika/lims/browser/client/views/artemplates.py:36
 #: bika/lims/browser/srtemplate/artemplates.py:35
 #: bika/lims/content/srtemplate.py:85
-msgid "Sample Templates"
+msgid "AR Templates"
 msgstr "OV Template"
 
 #: bika/lims/browser/analysisrequest/publish.py:571
-msgid "Samples: ${ars}"
+msgid "ARs: ${ars}"
 msgstr "OVs: ${ars}"
 
 #: bika/lims/content/organisation.py:95
@@ -363,7 +363,7 @@ msgid "Add Analyses"
 msgstr "Voeg Ontledings By"
 
 #: bika/lims/browser/sample/edit.py:61
-msgid "Add Sample"
+msgid "Add Analysis Request"
 msgstr ""
 
 #: bika/lims/browser/viewlets/templates/attachments.pt:296
@@ -406,7 +406,7 @@ msgstr ""
 
 #: bika/lims/content/analysisrequest.py:1369
 msgid ""
-"Add one or more attachments to describe the sample in this sample,"
+"Add one or more attachments to describe the sample in this analysis request,"
 " or to specify your request."
 msgstr ""
 
@@ -634,61 +634,61 @@ msgstr "OV profiele"
 #: bika/lims/browser/aggregatedanalyses/aggregatedanalyses.py:50
 #: bika/lims/browser/batch/batchbook.py:51
 #: bika/lims/browser/templates/analyses_retractedlist.pt:17
-msgid "Sample"
-msgstr "Monster"
+msgid "Analysis Request"
+msgstr "Ontledingsversoek"
 
 #: bika/lims/config.py:70
-msgid "Sample ID"
+msgid "Analysis Request ID"
 msgstr "Ontleding Versoek ID"
 
 #: bika/lims/browser/arimports.py:58
-msgid "Sample Imports"
+msgid "Analysis Request Imports"
 msgstr "Ontleding Versoek Invoere"
 
 #: bika/lims/content/samplinground.py:200
-msgid "Sample Templates"
+msgid "Analysis Request Templates"
 msgstr ""
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:84
 #: bika/lims/browser/dashboard/dashboard.py:474
 #: bika/lims/skins/bika/portlet_to_be_verified.pt:69
-msgid "Samples"
-msgstr "Monsters"
+msgid "Analysis Requests"
+msgstr "Ontledingsversoeke"
 
 #: bika/lims/browser/dashboard/dashboard.py:445
-msgid "Samples published"
+msgid "Analysis Requests published"
 msgstr ""
 
 #: bika/lims/browser/dashboard/dashboard.py:404
-msgid "Samples scheduled for sampling"
+msgid "Analysis Requests scheduled for sampling"
 msgstr ""
 
 #: bika/lims/browser/dashboard/dashboard.py:396
-msgid "Samples to be preserved"
+msgid "Analysis Requests to be preserved"
 msgstr ""
 
 #: bika/lims/browser/dashboard/dashboard.py:454
-msgid "Samples to be printed"
+msgid "Analysis Requests to be printed"
 msgstr ""
 
 #: bika/lims/browser/dashboard/dashboard.py:412
-msgid "Samples to be received"
+msgid "Analysis Requests to be received"
 msgstr ""
 
 #: bika/lims/browser/dashboard/dashboard.py:388
-msgid "Samples to be sampled"
+msgid "Analysis Requests to be sampled"
 msgstr ""
 
 #: bika/lims/browser/dashboard/dashboard.py:429
-msgid "Samples to be verified"
+msgid "Analysis Requests to be verified"
 msgstr ""
 
 #: bika/lims/browser/dashboard/dashboard.py:437
-msgid "Samples verified"
+msgid "Analysis Requests verified"
 msgstr ""
 
 #: bika/lims/browser/dashboard/dashboard.py:420
-msgid "Samples with results pending"
+msgid "Analysis Requests with results pending"
 msgstr ""
 
 #: bika/lims/browser/batch/publish.py:97
@@ -732,32 +732,32 @@ msgstr ""
 
 #: bika/lims/browser/analysisrequest/add.py:552
 #: bika/lims/browser/analysisrequest/add2.py:1868
-msgid "Sample ${Sample} was successfully created."
-msgstr "Monster ${AR} suksesvol geskep"
+msgid "Analysis request ${AR} was successfully created."
+msgstr "Ontledingsversoek ${AR} suksesvol geskep"
 
 #: bika/lims/content/samplinground.py:156
 msgid ""
-"Sample templates to be included in the Sampling Round Template"
+"Analysis request templates to be included in the Sampling Round Template"
 msgstr ""
 
 #: bika/lims/browser/analysisrequest/add.py:549
 #: bika/lims/browser/analysisrequest/add2.py:1865
-msgid "Samples ${Samples} were successfully created."
-msgstr "Monsters ${ARs} suksesvol geskep"
+msgid "Analysis requests ${ARs} were successfully created."
+msgstr "Ontledingsversoeke ${ARs} suksesvol geskep"
 
 #: bika/lims/browser/reports/templates/productivity.pt:254
-msgid "Samples and analyses"
-msgstr "Monsters en Ontledings"
+msgid "Analysis requests and analyses"
+msgstr "Ontledingsversoeke en Ontledings"
 
 #: bika/lims/browser/reports/productivity_analysesperclient.py:32
 #: bika/lims/browser/reports/templates/productivity.pt:264
-msgid "Samples and analyses per client"
-msgstr "Monsters en Ontledings per Klient"
+msgid "Analysis requests and analyses per client"
+msgstr "Ontledingsversoeke en Ontledings per Klient"
 
 #: bika/lims/browser/reports/administration_arsnotinvoiced.py:34
 #: bika/lims/browser/reports/templates/administration.pt:94
-msgid "Samples not invoiced"
-msgstr "Monsters Ongefaktureerd"
+msgid "Analysis requests not invoiced"
+msgstr "Ontledingsversoeke Ongefaktureerd"
 
 #: bika/lims/browser/reports/qualitycontrol_analysesoutofrange.py:236
 msgid "Analysis result within error range"
@@ -790,7 +790,7 @@ msgstr "Ontledingsdiens"
 
 #: bika/lims/content/bikasetup.py:346
 msgid ""
-"Analysis specifications which are edited directly on the Sample."
+"Analysis specifications which are edited directly on the Analysis Request."
 msgstr ""
 "Ontleding spesifikasies wat direk op die ontleding Versoek gewysig word."
 
@@ -879,7 +879,7 @@ msgid "Attach"
 msgstr ""
 
 #: bika/lims/browser/viewlets/templates/attachments.pt:232
-msgid "Attach to Sample"
+msgid "Attach to Analysis Request"
 msgstr ""
 
 #: bika/lims/browser/viewlets/templates/attachments.pt:29
@@ -1302,7 +1302,7 @@ msgstr ""
 "afsonderlik stelbaar in elke Bika-webwerf"
 
 #: bika/lims/content/analysisrequest.py:757
-msgid "Choose default Sample specification values"
+msgid "Choose default AR specification values"
 msgstr "Kies Verstek OV spesifikasie"
 
 #: bika/lims/content/bikasetup.py:413
@@ -1830,7 +1830,7 @@ msgid "Default"
 msgstr "Verstek"
 
 #: bika/lims/profiles/default/registry.xml
-msgid "Default SampleReport Template"
+msgid "Default ARReport Template"
 msgstr ""
 
 #: bika/lims/content/analysisrequest.py:1194
@@ -1849,7 +1849,7 @@ msgid "Default Department"
 msgstr ""
 
 #: bika/lims/content/client.py:69
-msgid "Default Emails to CC all published Samples for this client"
+msgid "Default Emails to CC all published ARs for this client"
 msgstr ""
 
 #: bika/lims/content/abstractbaseanalysis.py:288
@@ -1877,7 +1877,7 @@ msgid "Default containers: ${container_list}"
 msgstr "Verstekhouers: ${container_list}"
 
 #: bika/lims/content/bikasetup.py:947
-msgid "Default count of Sample to add."
+msgid "Default count of AR to add."
 msgstr ""
 
 #: bika/lims/content/bikasetup.py:264 bika/lims/content/client.py:128
@@ -1926,8 +1926,8 @@ msgstr "Verstek value"
 
 #: bika/lims/content/bikasetup.py:948
 msgid ""
-"Default value of the 'Sample count' when users click 'ADD' button to create new "
-"Samples"
+"Default value of the 'AR count' when users click 'ADD' button to create new "
+"Analysis Requests"
 msgstr ""
 
 #: bika/lims/browser/sample/templates/print_form.pt:72
@@ -2077,7 +2077,7 @@ msgid "Display an advanced filter bar in Analyses lists"
 msgstr ""
 
 #: bika/lims/content/bikasetup.py:906
-msgid "Display an advanced filter bar in Samples lists"
+msgid "Display an advanced filter bar in Analysis Requests lists"
 msgstr ""
 
 #: bika/lims/content/bikasetup.py:920
@@ -2225,7 +2225,7 @@ msgid "Email Address"
 msgstr "E-posadres"
 
 #: bika/lims/content/bikasetup.py:643
-msgid "Email notification on Sample invalidation"
+msgid "Email notification on AR invalidation"
 msgstr ""
 
 #: bika/lims/content/bikasetup.py:882
@@ -2237,7 +2237,7 @@ msgid "Email subject line"
 msgstr "E-pos Onderwerpnaam"
 
 #: bika/lims/content/bikasetup.py:345
-msgid "Enable Sample Specifications"
+msgid "Enable AR Specifications"
 msgstr "Skakel Verstek OV specifikasies aan of af"
 
 #: bika/lims/content/worksheettemplate.py:114
@@ -2388,7 +2388,7 @@ msgid "Evolution of Analyses"
 msgstr ""
 
 #: bika/lims/browser/dashboard/dashboard.py:467
-msgid "Evolution of Samples"
+msgid "Evolution of Analysis Requests"
 msgstr ""
 
 #: bika/lims/browser/dashboard/dashboard.py:675
@@ -2764,7 +2764,7 @@ msgstr ""
 
 #: bika/lims/content/bikasetup.py:908
 msgid ""
-"If enabled, the Samples Lists will display an additional filter "
+"If enabled, the Analysis Requests Lists will display an additional filter "
 "bar which allows the user to filter the listed items by some several "
 "criteria.Warning: This may affect the listing performance."
 msgstr ""
@@ -2784,7 +2784,7 @@ msgstr "Geaktiveer, word die ontleding nam skuinsdruk geskryf."
 msgid ""
 "If enabled, this analysis and its results will not be displayed by default "
 "in reports. This setting can be overrided in Analysis Profile and/or "
-"Sample"
+"Analysis Request"
 msgstr ""
 
 #: bika/lims/content/batch.py:219
@@ -2880,7 +2880,7 @@ msgid "Import"
 msgstr "Invoer"
 
 #: bika/lims/browser/templates/arimport_add.pt:17
-msgid "Import Sample Data"
+msgid "Import Analysis Request Data"
 msgstr ""
 
 #: bika/lims/content/instrument.py:197
@@ -2911,7 +2911,7 @@ msgid "Include Previous Results From Batch"
 msgstr "Sluit vroeër resultate vir hierdie groep in"
 
 #: bika/lims/content/batch.py:176
-msgid "Include all samples belonging to the selected objects."
+msgid "Include all analysis requests belonging to the selected objects."
 msgstr "Sluit all OVs in wat aan die geselekteerde objects behoort"
 
 #: bika/lims/content/bikasetup.py:208
@@ -2931,7 +2931,7 @@ msgid "Incorrect NIB number: %s"
 msgstr "Verkeerde NIB nommer: %s"
 
 #: bika/lims/content/analysisrequest.py:1769
-msgid "Indicates if the last SampleReport is printed,"
+msgid "Indicates if the last ARReport is printed,"
 msgstr ""
 
 #: bika/lims/content/abstractbaseanalysis.py:204
@@ -3479,7 +3479,7 @@ msgid "Male"
 msgstr "Manlik"
 
 #: bika/lims/browser/analysisrequest/templates/ar_add_manage.pt:42
-msgid "Manage Sample Form Fields"
+msgid "Manage Analysis Request Form Fields"
 msgstr ""
 
 #: bika/lims/browser/analysisrequest/templates/ar_add2.pt:293
@@ -3496,7 +3496,7 @@ msgstr ""
 
 #: bika/lims/browser/analysisrequest/templates/ar_add_manage.pt:47
 msgid ""
-"Manage the order and visibility of the fields displayed in sample "
+"Manage the order and visibility of the fields displayed in analysis request "
 "add forms."
 msgstr ""
 
@@ -3777,15 +3777,15 @@ msgid "No"
 msgstr "Nee"
 
 #: bika/lims/browser/bika_listing.py:153
-msgid "No Samples have been selected"
+msgid "No ARs have been selected"
 msgstr ""
 
 #: bika/lims/browser/analysisrequest/add2.py:1862
-msgid "No Samples could be created."
+msgid "No Analysis Requests could be created."
 msgstr ""
 
 #: bika/lims/browser/reports/productivity_dataentrydaybook.py:54
-msgid "No Samples matched your query"
+msgid "No Analysis Requests matched your query"
 msgstr "Geen ontledings versoekes voldoen aan navraag"
 
 #: bika/lims/exportimport/instruments/eltra/cs/cs2000.py:40
@@ -3952,7 +3952,7 @@ msgstr ""
 
 #: bika/lims/browser/analysisrequest/templates/ar_add_manage.pt:51
 msgid ""
-"Note: The settings apply to all Sample Add forms; Required fields can not be "
+"Note: The settings apply to all AR Add forms; Required fields can not be "
 "deselected."
 msgstr ""
 
@@ -3971,8 +3971,8 @@ msgid "Number of Analyses"
 msgstr "Hoeveelheid ontledings"
 
 #: bika/lims/browser/reports/productivity_analysesperclient.py:33
-msgid "Number of Samples and analyses per client"
-msgstr "Aantal monsters en ontledings per kliënt"
+msgid "Number of Analysis requests and analyses per client"
+msgstr "Aantal ontledingsversoeke en ontledings per kliënt"
 
 #: bika/lims/content/samplinground.py:226
 msgid "Number of Containers"
@@ -4007,7 +4007,7 @@ msgstr "Aantal ontledings hertoeds vir tydsinterval"
 
 #: bika/lims/browser/reports/templates/productivity.pt:381
 msgid ""
-"Number of sampleed and published per department and expresed as a "
+"Number of analysis requested and published per department and expresed as a "
 "percentage of all analyses performed"
 msgstr "Aantal Ontledings gepubliseer per departement as % vam totaal"
 
@@ -4064,7 +4064,7 @@ msgstr ""
 "word. Indien ongespesifiseerd, sal die monster-restensietyd gebruik word."
 
 #: bika/lims/browser/analysisrequest/add.py:593
-msgid "One job added to the Sample creation queue"
+msgid "One job added to the Analysis Request creation queue"
 msgstr ""
 
 #: bika/lims/browser/templates/login_details.pt:153
@@ -4353,8 +4353,8 @@ msgstr "Verkose desimale teken vir resultate."
 #: bika/lims/content/bikasetup.py:502
 msgid ""
 "Preferred layout of the results entry table in the Worksheet view. Classic "
-"layout displays the Samples in rows and the analyses in columns. "
-"Transposed layout displays the Samples in columns and the analyses"
+"layout displays the Analysis Requests in rows and the analyses in columns. "
+"Transposed layout displays the Analysis Requests in columns and the analyses"
 " in rows."
 msgstr ""
 
@@ -4570,8 +4570,8 @@ msgid "Published"
 msgstr "Gepubliseer"
 
 #: bika/lims/browser/reports/administration_arsnotinvoiced.py:35
-msgid "Published Samples which have not been invoiced"
-msgstr "Gepubliseerde ongefaktureerde monsters"
+msgid "Published Analysis Requests which have not been invoiced"
+msgstr "Gepubliseerde ongefaktureerde ontledingsversoeke"
 
 #: bika/lims/browser/analysisrequest/published_results.py:49
 msgid "Published By"
@@ -4871,9 +4871,9 @@ msgid "Report identification number"
 msgstr "Verslag identifikasie nommer"
 
 #: bika/lims/browser/reports/templates/administration.pt:97
-msgid "Report of published samples which have not been invoiced"
+msgid "Report of published analysis requests which have not been invoiced"
 msgstr ""
-"Verslag van gepubliseerde monsters wat nie gefaktureer is nie"
+"Verslag van gepubliseerde ontledingsversoeke wat nie gefaktureer is nie"
 
 #: bika/lims/browser/reports/templates/productivity.pt:418
 msgid ""
@@ -4893,9 +4893,9 @@ msgstr ""
 
 #: bika/lims/browser/reports/templates/productivity.pt:485
 msgid ""
-"Report tables of Samples and totals submitted between a period of "
+"Report tables of Analysis Requests and totals submitted between a period of "
 "time"
-msgstr "Hoeveelheid Monsters en totaal vir die periode"
+msgstr "Hoeveelheid Ontledingsversoeke en totaal vir die periode"
 
 #: bika/lims/content/report.py:30
 msgid "Report type"
@@ -5441,8 +5441,8 @@ msgstr ""
 #: bika/lims/content/bikasetup.py:670
 msgid ""
 "Select 'Register' if you want stickers to be automatically printed when new "
-"Samples or sample records are created. Select 'Receive' to print stickers when "
-"Samples or Samples are received. Select 'None' to disable automatic printing"
+"ARs or sample records are created. Select 'Receive' to print stickers when "
+"ARs or Samples are received. Select 'None' to disable automatic printing"
 msgstr ""
 "Kies 'Registreer' indien u outomaties etikette wil druk wanneer nuwe OV's of"
 " monster-rekords geskep word. Kies 'Ontvang' om etikette te druk wanneer "
@@ -5450,7 +5450,7 @@ msgstr ""
 "af te skakel. "
 
 #: bika/lims/content/srtemplate.py:86
-msgid "Select Sample Templates to include"
+msgid "Select AR Templates to include"
 msgstr "Kies OV Templaat on in te sluit"
 
 #: bika/lims/exportimport/dataimport.py:58
@@ -5468,8 +5468,8 @@ msgstr ""
 "in die tabel benede"
 
 #: bika/lims/browser/worksheet/views/add_duplicate.py:32
-msgid "Select a destinaton position and the Sample to duplicate."
-msgstr "Kies 'n posisie en die monster om te dupliseer"
+msgid "Select a destinaton position and the AR to duplicate."
+msgstr "Kies 'n posisie en die ontledingsversoek om te dupliseer"
 
 #: bika/lims/content/department.py:32
 msgid ""
@@ -5482,7 +5482,7 @@ msgstr ""
 "resultaatsverslae wat analises per afdeling bevat."
 
 #: bika/lims/content/analysisrequest.py:273
-msgid "Select a sample to create a secondary Sample"
+msgid "Select a sample to create a secondary AR"
 msgstr "Kies 'n monster 'n sekondêre OV te skep"
 
 #: bika/lims/browser/analysisrequest/templates/analysisrequest_analyses_not_requested.pt:60
@@ -5604,7 +5604,7 @@ msgstr "Kies die voorkeur instrument"
 
 #: bika/lims/profiles/default/registry.xml
 msgid ""
-"Select the template which will be used, by default, when publishing Samples."
+"Select the template which will be used, by default, when publishing ARs."
 msgstr ""
 
 #: bika/lims/content/identifiertype.py:48
@@ -5614,13 +5614,13 @@ msgstr ""
 #: bika/lims/content/bikasetup.py:644
 msgid ""
 "Select this to activate automatic notifications via email to the Client and "
-"Lab Managers when a Sample is invalidated."
+"Lab Managers when an Analysis Request is invalidated."
 msgstr ""
 
 #: bika/lims/content/bikasetup.py:633
 msgid ""
 "Select this to activate automatic notifications via email to the Client when"
-" a Sample or Sample is rejected."
+" a Sample or Analysis Request is rejected."
 msgstr ""
 
 #: bika/lims/content/bikasetup.py:517
@@ -5647,7 +5647,7 @@ msgstr ""
 #: bika/lims/content/bikasetup.py:545
 msgid ""
 "Select this to allow the user to set an additional 'Printed' status to those"
-" Samples tha have been Published. Disabled by default."
+" Analysis Requests tha have been Published. Disabled by default."
 msgstr ""
 
 #: bika/lims/content/worksheettemplate.py:60
@@ -5730,16 +5730,16 @@ msgstr "Sluit die onderhoud taak"
 
 #: bika/lims/content/bikasetup.py:312
 msgid ""
-"Set the maximum number of samples per results email. Too many "
+"Set the maximum number of analysis requests per results email. Too many "
 "columns per email are difficult to read for some clients who prefer fewer "
 "results per email"
 msgstr ""
-"Stel die maksimum aantal monsters per epos. Te veel kolomme per "
+"Stel die maksimum aantal ontledingsversoeke per epos. Te veel kolomme per "
 "epos maak hul moeilik om te lees en sommige kliënte verkies minder resultate"
 " per epos"
 
 #: bika/lims/content/analysisrequest.py:817
-msgid "Set the specification to be used before publishing a Sample."
+msgid "Set the specification to be used before publishing an AR."
 msgstr "Stel die spesifikasie om te gebruik voor publikasie van 'n OV."
 
 #: bika/lims/content/storagelocation.py:78
@@ -5930,7 +5930,7 @@ msgid "Submitted and verified by the same user: {}"
 msgstr ""
 
 #: bika/lims/content/arimport.py:290
-msgid "Submitting Sample Import"
+msgid "Submitting AR Import"
 msgstr ""
 
 #: bika/lims/browser/analysisrequest/templates/ar_add2.pt:592
@@ -6091,8 +6091,8 @@ msgstr ""
 
 #: bika/lims/browser/reports/productivity_analysesattachments.py:35
 #: bika/lims/browser/reports/templates/productivity.pt:455
-msgid "The attachments linked to samples and analyses"
-msgstr "Die aanhegsels verwant aan monster"
+msgid "The attachments linked to analysis requests and analyses"
+msgstr "Die aanhegsels verwant aan ontledingsversoek"
 
 #: bika/lims/content/abstractbaseanalysis.py:400
 msgid "The category the analysis service belongs to"
@@ -6333,7 +6333,7 @@ msgid "The person who took the sample"
 msgstr ""
 
 #: bika/lims/content/analysisrequest.py:437
-msgid "The predefined values of the Sample template are set in the request"
+msgid "The predefined values of the AR template are set in the request"
 msgstr ""
 
 #: bika/lims/content/abstractbaseanalysis.py:423
@@ -6343,7 +6343,7 @@ msgstr "Die prys per ontleding vir kliënte wat vir volume afslag kwalifiseer"
 
 #: bika/lims/content/analysisrequest.py:102
 msgid ""
-"The primary contact of this sample, who will receive notifications"
+"The primary contact of this analysis request, who will receive notifications"
 " and publications via email"
 msgstr ""
 
@@ -6419,10 +6419,10 @@ msgstr ""
 #: bika/lims/content/bikasetup.py:441
 msgid ""
 "The system wide default configuration to indicate whether file attachments "
-"are required, permitted or not per sample"
+"are required, permitted or not per analysis request"
 msgstr ""
 "Die stelsel verstek waarde wat aandui of aanhangsels toegelaat, verplig is "
-"of nie vir monsters"
+"of nie vir ontledingsversoeke"
 
 #: bika/lims/content/analysisservice.py:296
 msgid ""
@@ -6458,7 +6458,7 @@ msgstr "Die omkeertye vir ontledings gestip oor tyd"
 #: bika/lims/content/abstractbaseanalysis.py:222
 msgid ""
 "The unique keyword used to identify the analysis service in import files of "
-"bulk Sample requests and results imports from instruments. It is also used to "
+"bulk AR requests and results imports from instruments. It is also used to "
 "identify dependent analysis services in user defined results calculations"
 msgstr ""
 "Die unieke sleutel woorde word gebruik om ontledings te identifiseer in "
@@ -6488,8 +6488,8 @@ msgstr ""
 
 #: bika/lims/browser/viewlets/templates/retest_ar_viewlet.pt:15
 msgid ""
-"This Sample has been generated automatically due to the retraction"
-" of the Sample"
+"This Analysis Request has been generated automatically due to the retraction"
+" of the Analysis Request"
 msgstr ""
 
 #: bika/lims/content/bikasetup.py:597
@@ -7259,8 +7259,8 @@ msgid "activate"
 msgstr "aktiveer"
 
 #: bika/lims/browser/analysisrequest/templates/analysisrequest_publish.pt:63
-msgid "samples selected"
-msgstr "monsters gekies"
+msgid "analysis requests selected"
+msgstr "ontledingsversoeke gekies"
 
 #: bika/lims/browser/analysisrequest/publish.py:592
 msgid "and others"
