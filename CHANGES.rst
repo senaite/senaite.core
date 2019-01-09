@@ -23,6 +23,7 @@ Changelog
 
 **Changed**
 
+- #1192 Integrate Container and Preservation in Partition Magic
 - #1180 Analysis Request default ID Format becomes {sampleType}-{seq:04d}
 - #1180 `visibility` attr behavior (AR fields) in favour of field-specific perms
 - #1180 Sanitized `ar_workflow` regarding to guards, transitions and permissions
