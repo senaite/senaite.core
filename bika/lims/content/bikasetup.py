@@ -672,8 +672,8 @@ schema = BikaFolderSchema.copy() + Schema((
             label=_("Automatic sticker printing"),
             description=_(
                 "Select 'Register' if you want stickers to be automatically printed when "
-                "new ARs or sample records are created. Select 'Receive' to print stickers "
-                "when ARs or Samples are received. Select 'None' to disable automatic printing"),
+                "new Samples or sample records are created. Select 'Receive' to print stickers "
+                "when Samples or Samples are received. Select 'None' to disable automatic printing"),
         )
     ),
     StringField(

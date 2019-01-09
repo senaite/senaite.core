@@ -606,7 +606,7 @@ class AnalysisResultsImporter(Logger):
 
         if self.instrument_uid:
             self.log(
-                "Import finished successfully: ${nr_updated_ars} ARs, "
+                "Import finished successfully: ${nr_updated_ars} Samples, "
                 "${nr_updated_instruments} Instruments and "
                 "${nr_updated_results} "
                 "results updated",
@@ -615,7 +615,7 @@ class AnalysisResultsImporter(Logger):
                          "nr_updated_results": str(ancount)})
         else:
             self.log(
-                "Import finished successfully: ${nr_updated_ars} ARs and "
+                "Import finished successfully: ${nr_updated_ars} Samples and "
                 "${nr_updated_results} results updated",
                 mapping={"nr_updated_ars": str(len(importedars)),
                          "nr_updated_results": str(ancount)})
