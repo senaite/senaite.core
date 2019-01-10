@@ -390,7 +390,7 @@ class AjaxListingView(BrowserView):
             # obj.edit(**{field.getName(): value})
 
             # get the field mutator (works only for AT content types)
-            if hasattr(obj, "getMutator"):
+            if hasattr(field, "getMutator"):
                 mutator = field.getMutator(obj)
                 mapply(mutator, value)
             else:
