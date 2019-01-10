@@ -209,10 +209,9 @@ class AnalysisRequestWorkflowAction(AnalysesWorkflowAction):
         if not IAnalysisRequest.providedBy(obj):
             return False
         template = obj.getTemplate()
-        if not template or not template.getAutoPartition():
+        if not template:
             return False
-        partitions = template.getPartitions()
-        return partitions and len(partitions) > 0
+        return template.getAutoPartition()
 
     def workflow_action_receive(self):
         action, came_from = WorkflowAction._get_form_workflow_action(self)
