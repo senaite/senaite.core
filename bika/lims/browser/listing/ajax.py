@@ -10,8 +10,9 @@ from bika.lims.browser.listing.decorators import inject_runtime
 from bika.lims.browser.listing.decorators import returns_safe_json
 from bika.lims.browser.listing.decorators import set_application_json_header
 from bika.lims.browser.listing.decorators import translate
-from bika.lims.interfaces import IRoutineAnalysis
 from bika.lims.interfaces import IReferenceAnalysis
+from bika.lims.interfaces import IRoutineAnalysis
+from Products.Archetypes.utils import mapply
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.interface import implements
 from zope.publisher.interfaces import IPublishTraverse
@@ -386,9 +387,15 @@ class AjaxListingView(BrowserView):
             # N.B. We don't use the `edit` method here to bypass the instance
             #      permission check for `Modify portal content`.
             # obj.edit(**{field.getName(): value})
-            #
-            # Set the value on the field directly
-            field.set(obj, value)
+
+            # get the field mutator (works only for AT content types)
+            mutator = field.getMutator(obj)
+            if mutator:
+                mapply(mutator, value)
+            else:
+                # Set the value on the field directly
+                field.set(obj, value)
+
             updated_objects.append(obj)
 
         # check if the object is an analysis and has an interim
