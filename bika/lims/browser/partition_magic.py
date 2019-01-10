@@ -20,6 +20,7 @@ PARTITION_SKIP_FIELDS = [
     "Attachment",
     "Client",
     "Container",
+    "InternalUse",
     "Preservation",
     "Profile",
     "Profiles",
@@ -85,6 +86,7 @@ class PartitionMagicView(BrowserView):
                 container_uid = partition.get("container_uid")
                 preservation_uid = partition.get("preservation_uid")
                 analyses_uids = partition.get("analyses")
+                internal_use = partition.get("internal_use")
                 if not analyses_uids or not primary_uid:
                     # Cannot create a partition w/o analyses!
                     continue
@@ -94,6 +96,7 @@ class PartitionMagicView(BrowserView):
                     sampletype_uid=sampletype_uid,
                     container_uid=container_uid,
                     preservation_uid=preservation_uid,
+                    internal_use=internal_use,
                     analyses_uids=analyses_uids)
                 partitions.append(partition)
                 logger.info("Successfully created partition: {}".format(
@@ -121,14 +124,14 @@ class PartitionMagicView(BrowserView):
         return self.template()
 
     def create_partition(self, primary_uid, sampletype_uid, container_uid,
-                         preservation_uid, analyses_uids):
+                         preservation_uid, internal_use, analyses_uids):
         """Create a new partition (AR)
         """
         logger.info("*** CREATE PARTITION ***")
 
         ar = self.get_object_by_uid(primary_uid)
         record = {
-            "InternalUse": True,
+            "InternalUse": internal_use,
             "ParentAnalysisRequest": primary_uid,
             "SampleType": sampletype_uid,
             "Container": container_uid,
@@ -214,6 +217,7 @@ class PartitionMagicView(BrowserView):
                 "sampletype": self.get_base_info(obj.getSampleType()),
                 "number_of_partitions": self.get_number_of_partitions_for(obj),
                 "template": self.get_template_data_for(obj),
+                "internal_use": obj.getInternalUse(),
             })
             yield info
 
@@ -331,6 +335,7 @@ class PartitionMagicView(BrowserView):
             sampletypes_by_partition = defaultdict(list)
             containers_by_partition = defaultdict(list)
             preservations_by_partition = defaultdict(list)
+            internal_use_by_partition = defaultdict(list)
             for part in template.getPartitions():
                 part_id = part.get("part_id")
                 sampletype_uid = part.get('sampletype_uid', ar_sampletype_uid)
@@ -339,6 +344,9 @@ class PartitionMagicView(BrowserView):
                 containers_by_partition[part_id] = container_uid
                 preserv_uid = part.get("preservation_uid", ar_preservation_uid)
                 preservations_by_partition[part_id] = preserv_uid
+                internal_use = part.get("internal_use", ar.getInternalUse())
+                internal_use_by_partition[part_id] = internal_use
+
 
             partitions = map(lambda p: p.get("part_id"),
                              template.getPartitions())
@@ -348,6 +356,7 @@ class PartitionMagicView(BrowserView):
                 "sample_types": sampletypes_by_partition,
                 "containers": containers_by_partition,
                 "preservations": preservations_by_partition,
+                "internal_uses": internal_use_by_partition,
             })
         else:
             info = {
@@ -356,6 +365,7 @@ class PartitionMagicView(BrowserView):
                 "sample_types": {},
                 "containers": {},
                 "preservations": {},
+                "internal_uses": {},
             }
         return info
 

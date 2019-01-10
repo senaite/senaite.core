@@ -102,7 +102,9 @@
                                    partitions python:template.get('partitions', []);
                                    sample_types python:template.get('sample_types', {});
                                    containers python:template.get('containers', {});
-                                   preservations python:template.get('preservations', {});">
+                                   preservations python:template.get('preservations', {});
+                                   ar_internal_use python:ar.get('internal_use', False);
+                                   internal_uses python:template.get('internal_uses', {});">
                   <!-- No Partitions -->
                   <tr tal:condition="python:not number_of_partitions">
                     <td>
@@ -116,13 +118,24 @@
 
                       <td style="background-color: #fff;">
                         <!-- Partition number -->
-                        <div class="col-sm-6">
+                        <div class="col-sm-4">
                           <h3 class="text-muted">
                             <span i18n:translate="">Partition</span>
                             <strong tal:content="repeat/part_index/number"/>
                           </h3>
                           <!-- Remember the primary uid of this partition -->
                           <input type="hidden" name="partitions.primary_uid:records" tal:attributes="value ar/uid"/>
+                        </div>
+
+                        <!-- Internal Use -->
+                        <div class="col-sm-2">
+                          <div class="form-group">
+                            <label  i18n:translate="">Internal use</label>
+                            <input name="partitions.internal_use:records"
+                                   type="checkbox" class="input-sm checkbox"
+                                   tal:attributes="checked python:internal_uses.get(partition, ar_internal_use);
+                                                   value string:1">
+                          </div>
                         </div>
 
                         <!-- Sample Type Selection -->
