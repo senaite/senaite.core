@@ -202,25 +202,28 @@ class AnalysisRequestWorkflowAction(AnalysesWorkflowAction):
             message = _("Saved items: {}".format(", ".join(transitioned)))
         self.redirect(message=message)
 
+    def requires_partitioning(self, brain_or_object):
+        """Returns whether the passed in object needs to be partitioned
+        """
+        obj = api.get_object(brain_or_object)
+        if not IAnalysisRequest.providedBy(obj):
+            return False
+        template = obj.getTemplate()
+        if not template or not template.getAutoPartition():
+            return False
+        partitions = template.getPartitions()
+        return partitions and len(partitions) > 0
+
     def workflow_action_receive(self):
         action, came_from = WorkflowAction._get_form_workflow_action(self)
         items = [self.context,] if came_from == 'workflow_action' \
                 else self._get_selected_items().values()
         trans, dest = self.submitTransition(action, came_from, items)
-
-        with_partitions = list()
-        for item in items:
-            if not IAnalysisRequest.providedBy(item):
-                continue
-            ar_template = item.getTemplate()
-            partitions = ar_template and ar_template.getPartitions() or None
-            if partitions and len(partitions) > 1:
-                with_partitions.append(api.get_uid(item))
-
+        with_partitions = filter(self.requires_partitioning, items)
         if with_partitions:
             # Redirect to the partitioning magic view
             back_url = self.context.absolute_url()
-            uids = ",".join(with_partitions)
+            uids = ",".join(map(api.get_uid, with_partitions))
             url = "{}/partition_magic?uids={}".format(back_url, uids)
             self.request.response.redirect(url)
         elif trans and 'receive' in self.context.bika_setup.getAutoPrintStickers():

@@ -217,6 +217,17 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
+    BooleanField(
+        "AutoPartition",
+        schemata="Sample Partitions",
+        default=True,
+        widget=BooleanWidget(
+            label=_("Auto-partition on receive"),
+            description=_("Automatically redirect the user to the partitions "
+                          "creation view when Sample is received.")
+        ),
+    ),
+
     ReferenceField(
         "AnalysisProfile",
         schemata="Analyses",
