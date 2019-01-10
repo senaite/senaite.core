@@ -384,13 +384,14 @@ class AjaxListingView(BrowserView):
 
         # field exists, set it with the value
         if field:
+            # https://github.com/senaite/senaite.core/pull/1200
             # N.B. We don't use the `edit` method here to bypass the instance
             #      permission check for `Modify portal content`.
             # obj.edit(**{field.getName(): value})
 
             # get the field mutator (works only for AT content types)
-            mutator = field.getMutator(obj)
-            if mutator:
+            if hasattr(obj, "getMutator"):
+                mutator = field.getMutator(obj)
                 mapply(mutator, value)
             else:
                 # Set the value on the field directly
