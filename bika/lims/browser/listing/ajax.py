@@ -383,7 +383,12 @@ class AjaxListingView(BrowserView):
 
         # field exists, set it with the value
         if field:
-            obj.edit(**{field.getName(): value})
+            # N.B. We don't use the `edit` method here to bypass the instance
+            #      permission check for `Modify portal content`.
+            # obj.edit(**{field.getName(): value})
+            #
+            # Set the value on the field directly
+            field.set(obj, value)
             updated_objects.append(obj)
 
         # check if the object is an analysis and has an interim
@@ -578,7 +583,8 @@ class AjaxListingView(BrowserView):
         # sanity check
         for key, value in query.iteritems():
             if key not in valid_catalog_indexes:
-                return self.error("{} is not a valid catalog index".format(key))
+                return self.error(
+                    "{} is not a valid catalog index".format(key))
 
         # set the content filter
         self.contentFilter = query
