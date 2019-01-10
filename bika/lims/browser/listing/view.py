@@ -214,6 +214,13 @@ class ListingView(AjaxListingView):
         """
         return self.contents_table_template()
 
+    @view.memoize
+    def has_permission(self, permission):
+        """Checks if the current context has the given permission
+        """
+        sm = getSecurityManager()
+        return sm.checkPermission(permission, self.context)
+
     @property
     def review_state(self):
         """Get workflow state of object in wf_id.
