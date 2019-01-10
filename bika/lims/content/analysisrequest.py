@@ -1241,6 +1241,22 @@ schema = BikaSchema.copy() + Schema((
             visible=False,
         ),
     ),
+    BooleanField(
+        "InternalUse",
+        required=0,
+        default=False,
+        read_permission=View,
+        write_permission="Field: Edit Internal Use",
+        widget=BooleanWidget(
+            format="radio",
+            label=_("Internal use"),
+            description=_("This sample is only for internal use. Won't be "
+                          "displayed to client and results report will be "
+                          "sent internally only"),
+            render_own_label=True,
+            visible={'add': 'edit',}
+        ),
+    ),
 )
 )
 

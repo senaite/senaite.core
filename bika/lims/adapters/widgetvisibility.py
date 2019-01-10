@@ -5,6 +5,7 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
+from bika.lims import api
 from bika.lims import logger
 from bika.lims.interfaces import IATWidgetVisibility
 from bika.lims.interfaces import IBatch, IClient
@@ -188,3 +189,16 @@ class DateReceivedFieldVisibility(SenaiteATWidgetVisibility):
                         format(self.context.__class__.__name__))
             return default
         return self.context.isOpen() and "visible" or "invisible"
+
+
+class InternalUseFieldVisibility(SenaiteATWidgetVisibility):
+    """InternalUse field must only be visible to lab personnel
+    """
+    def __init__(self, context):
+        super(InternalUseFieldVisibility, self).__init__(
+            context=context, sort=3, field_names=["InternalUse"])
+
+    def isVisible(self, field, mode="view", default="visible"):
+        """Returns whether the field is visible in a given mode
+        """
+        return api.get_current_client() and "invisible" or default

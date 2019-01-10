@@ -117,6 +117,14 @@
       for="bika.lims.interfaces.IAnalysisRequest"
       name="PreservationFieldsVisibility"
     />
+
+    <!-- Hide/Display the InternalUse field to Client contact users -->
+    <adapter
+      factory=".widgetvisibility.InternalUseFieldVisibility"
+      provides="bika.lims.interfaces.IATWidgetVisibility"
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="InternalUseFieldVisibility"
+    />
     <!---
     END OF FIELDS/WIDGETS VISIBILITY
     -->
