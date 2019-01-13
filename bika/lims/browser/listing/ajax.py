@@ -10,8 +10,9 @@ from bika.lims.browser.listing.decorators import inject_runtime
 from bika.lims.browser.listing.decorators import returns_safe_json
 from bika.lims.browser.listing.decorators import set_application_json_header
 from bika.lims.browser.listing.decorators import translate
-from bika.lims.interfaces import IRoutineAnalysis
 from bika.lims.interfaces import IReferenceAnalysis
+from bika.lims.interfaces import IRoutineAnalysis
+from Products.Archetypes.utils import mapply
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.interface import implements
 from zope.publisher.interfaces import IPublishTraverse
@@ -383,7 +384,19 @@ class AjaxListingView(BrowserView):
 
         # field exists, set it with the value
         if field:
-            obj.edit(**{field.getName(): value})
+            # https://github.com/senaite/senaite.core/pull/1200
+            # N.B. We don't use the `edit` method here to bypass the instance
+            #      permission check for `Modify portal content`.
+            # obj.edit(**{field.getName(): value})
+
+            # get the field mutator (works only for AT content types)
+            if hasattr(field, "getMutator"):
+                mutator = field.getMutator(obj)
+                mapply(mutator, value)
+            else:
+                # Set the value on the field directly
+                field.set(obj, value)
+
             updated_objects.append(obj)
 
         # check if the object is an analysis and has an interim
@@ -578,7 +591,8 @@ class AjaxListingView(BrowserView):
         # sanity check
         for key, value in query.iteritems():
             if key not in valid_catalog_indexes:
-                return self.error("{} is not a valid catalog index".format(key))
+                return self.error(
+                    "{} is not a valid catalog index".format(key))
 
         # set the content filter
         self.contentFilter = query

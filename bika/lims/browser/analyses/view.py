@@ -1069,7 +1069,8 @@ class AnalysesView(BikaListingView):
         full_obj = self.get_object(analysis_brain)
         item['Hidden'] = full_obj.getHidden()
         if IRoutineAnalysis.providedBy(full_obj):
-            item['allow_edit'].append('Hidden')
+            if self.has_permission('Modify portal content'):
+                item['allow_edit'].append('Hidden')
 
     def _folder_item_fieldicons(self, analysis_brain):
         """Resolves if field-specific icons must be displayed for the object
