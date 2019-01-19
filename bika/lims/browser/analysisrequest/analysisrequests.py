@@ -235,18 +235,6 @@ class AnalysisRequestsView(BikaListingView):
                     "sort_on": "created",
                     "sort_order": "descending",
                 },
-                "transitions": [
-                    {"id": "sample"},
-                    {"id": "preserve"},
-                    {"id": "receive"},
-                    {"id": "create_partitions"},
-                    {"id": "retract"},
-                    {"id": "verify"},
-                    {"id": "prepublish"},
-                    {"id": "publish"},
-                    {"id": "republish"},
-                    {"id": "cancel"},
-                ],
                 "custom_transitions": [print_stickers],
                 "columns": self.columns.keys(),
             }, {
@@ -256,11 +244,6 @@ class AnalysisRequestsView(BikaListingView):
                     "review_state": ("to_be_sampled",),
                     "sort_on": "created",
                     "sort_order": "descending"},
-                "transitions": [
-                    {"id": "sample"},
-                    {"id": "submit"},
-                    {"id": "cancel"},
-                ],
                 "custom_transitions": [print_stickers],
                 "columns": self.columns.keys()
             }, {
@@ -271,10 +254,6 @@ class AnalysisRequestsView(BikaListingView):
                     "sort_on": "created",
                     "sort_order": "descending",
                 },
-                "transitions": [
-                    {"id": "preserve"},
-                    {"id": "cancel"},
-                ],
                 "custom_transitions": [print_stickers],
                 "columns": self.columns.keys(),
             }, {
@@ -285,10 +264,6 @@ class AnalysisRequestsView(BikaListingView):
                     "sort_on": "created",
                     "sort_order": "descending",
                 },
-                "transitions": [
-                    {"id": "sample"},
-                    {"id": "cancel"},
-                ],
                 "custom_transitions": [print_stickers],
                 "columns": self.columns.keys(),
             }, {
@@ -301,13 +276,6 @@ class AnalysisRequestsView(BikaListingView):
                         "sample_due"),
                     "sort_on": "created",
                     "sort_order": "descending"},
-                "transitions": [
-                    {"id": "sample"},
-                    {"id": "preserve"},
-                    {"id": "receive"},
-                    {"id": "cancel"},
-                    {"id": "reinstate"},
-                ],
                 "custom_transitions": [print_stickers],
                 "columns": self.columns.keys(),
             }, {
@@ -318,12 +286,6 @@ class AnalysisRequestsView(BikaListingView):
                     "sort_on": "created",
                     "sort_order": "descending",
                 },
-                "transitions": [
-                    {"id": "create_partitions"},
-                    {"id": "prepublish"},
-                    {"id": "cancel"},
-                    {"id": "reinstate"},
-                ],
                 "custom_transitions": [print_stickers],
                 "columns": self.columns.keys(),
             }, {
@@ -334,13 +296,6 @@ class AnalysisRequestsView(BikaListingView):
                     "sort_on": "created",
                     "sort_order": "descending",
                 },
-                "transitions": [
-                    {"id": "retract"},
-                    {"id": "verify"},
-                    {"id": "prepublish"},
-                    {"id": "cancel"},
-                    {"id": "reinstate"},
-                ],
                 "custom_transitions": [print_stickers],
                 "columns": self.columns.keys(),
             }, {
@@ -351,10 +306,6 @@ class AnalysisRequestsView(BikaListingView):
                     "sort_on": "created",
                     "sort_order": "descending",
                 },
-                "transitions": [
-                    {"id": "publish"},
-                    {"id": "cancel"},
-                ],
                 "custom_transitions": [print_stickers],
                 "columns": self.columns.keys(),
             }, {
@@ -365,9 +316,6 @@ class AnalysisRequestsView(BikaListingView):
                     "sort_on": "created",
                     "sort_order": "descending",
                 },
-                "transitions": [
-                    {"id": "republish"},
-                ],
                 "custom_transitions": [],
                 "columns": self.columns.keys(),
             }, {
@@ -378,9 +326,6 @@ class AnalysisRequestsView(BikaListingView):
                     "sort_on": "created",
                     "sort_order": "descending",
                 },
-                "transitions": [
-                    {"id": "reinstate"},
-                ],
                 "custom_transitions": [],
                 "columns": self.columns.keys(),
             }, {
@@ -391,7 +336,6 @@ class AnalysisRequestsView(BikaListingView):
                     "sort_on": "created",
                     "sort_order": "descending",
                 },
-                "transitions": [],
                 "custom_transitions": [print_stickers],
                 "columns": self.columns.keys(),
             }, {
@@ -401,7 +345,6 @@ class AnalysisRequestsView(BikaListingView):
                     "sort_on": "created",
                     "sort_order": "descending",
                 },
-                "transitions": [],
                 "custom_transitions": [print_stickers],
                 "columns": self.columns.keys(),
             }, {
@@ -412,7 +355,6 @@ class AnalysisRequestsView(BikaListingView):
                     "sort_on": "created",
                     "sort_order": "descending",
                 },
-                "transitions": [],
                 "custom_transitions": [
                     {
                         "id": "print_stickers",
@@ -431,12 +373,6 @@ class AnalysisRequestsView(BikaListingView):
                     "sort_on": "created",
                     "sort_order": "descending",
                 },
-                "transitions": [
-                    {"id": "receive"},
-                    {"id": "retract"},
-                    {"id": "prepublish"},
-                    {"id": "cancel"},
-                ],
                 "custom_transitions": [print_stickers],
                 "columns": self.columns.keys(),
             }, {
@@ -452,13 +388,6 @@ class AnalysisRequestsView(BikaListingView):
                     "sort_on": "created",
                     "sort_order": "descending",
                 },
-                "transitions": [
-                    {"id": "receive"},
-                    {"id": "create_partitions"},
-                    {"id": "retract"},
-                    {"id": "prepublish"},
-                    {"id": "cancel"},
-                ],
                 "custom_transitions": [print_stickers],
                 "columns": self.columns.keys(),
             }, {
