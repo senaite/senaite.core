@@ -45,6 +45,15 @@ from genexpert import genexpert
 from varian.vistapro import icp
 from cobasintegra.model_400_plus import model_400_plus
 
+from bika.lims import api
+from zope.component import getAdapters
+from zope.interface import Interface
+
+class IInstrumentImportInterface(Interface):
+    """Marker interface for instrument results importers
+    """
+
+
 __all__ = ['abaxis.vetscan.vs2',
            'abbott.m2000rt.m2000rt',
            'agilent.masshunter.masshunter',
@@ -137,7 +146,40 @@ PARSERS = [
            ]
 
 
+def get_instrument_import_interfaces():
+    """Returns a list of tuples. Each tuple has the id of the instrument import
+    interfae in first position and the importer in second
+    """
+    importers = list()
+    adapters = getAdapters((api.get_portal(),), IInstrumentImportInterface)
+    for name, adapter in adapters:
+        # We need a unique identifier for this instrument interface
+        full_qualified_name = "{}.{}".format(adapter.__module__,
+                                             adapter.__class__.__name__)
+        importers.append((full_qualified_name, adapter))
+
+    # TODO Remove the following code once clasic instrument interfaces migrated
+    # Now grab the information (the old way)
+    curr_module = sys.modules[__name__]
+    for name, obj in inspect.getmembers(curr_module):
+        if hasattr(obj, '__name__'):
+            obj_name = obj.__name__.replace(__name__, "")
+            if obj_name[1:] in __all__ and hasattr(obj, "Import"):
+                importers.append((obj.__name__, obj))
+    return importers
+
+
 def getExim(exim_id):
+    portal = api.get_portal()
+    adapters = getAdapters((portal,), IInstrumentImportInterface)
+    for name, adapter in adapters:
+        full_qualified_name = "{}.{}".format(adapter.__module__,
+                                             adapter.__class__.__name__)
+        if full_qualified_name == exim_id:
+            return adapter
+
+    # TODO Remove the following code once clasic instrument interfaces migrated
+    # Now grab the information (the old way)
     currmodule = sys.modules[__name__]
     members = [obj for name, obj in inspect.getmembers(currmodule)
                if hasattr(obj, '__name__')

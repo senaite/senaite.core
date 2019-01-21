@@ -370,13 +370,8 @@ def getImportDataInterfaces(context, import_only=False):
     """ Return the current list of import data interfaces
     """
     from bika.lims.exportimport import instruments
-    exims = []
-    for exim_id in instruments.__all__:
-        exim = instruments.getExim(exim_id)
-        if import_only and not hasattr(exim, 'Import'):
-            pass
-        else:
-            exims.append((exim_id, exim.title))
+    exims = instruments.get_instrument_import_interfaces()
+    exims = map(lambda imp: (imp[0], imp[1].title), exims)
     exims.sort(lambda x, y: cmp(x[1].lower(), y[1].lower()))
     exims.insert(0, ('', t(_('None'))))
     return DisplayList(exims)
