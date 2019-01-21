@@ -7,10 +7,9 @@
 
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
 from bika.lims.browser import BrowserView
-from bika.lims.content.instrument import getDataInterfaces
 from bika.lims.exportimport import instruments
+from bika.lims.exportimport.instruments import get_instrument_import_interfaces
 from bika.lims.exportimport.load_setup_data import LoadSetupData
 from bika.lims.interfaces import ISetupDataSetList
 from plone.app.layout.globals.interfaces import IViewView
@@ -60,7 +59,7 @@ class ImportView(BrowserView):
         request.set('disable_border', 1)
 
     def getDataInterfaces(self):
-        return getDataInterfaces(self.context)
+        return get_instrument_import_interfaces()
 
     def getSetupDatas(self):
         datasets = []

@@ -49,8 +49,16 @@ from bika.lims import api
 from zope.component import getAdapters
 from zope.interface import Interface
 
-class IInstrumentImportInterface(Interface):
-    """Marker interface for instrument results importers
+class IInstrumentInterface(Interface):
+    """Marker interface for instrument results import/export interfaces
+    """
+
+class IInstrumentExportInterface(IInstrumentInterface):
+    """Marker interface for instrument results export interfaces
+    """
+
+class IInstrumentImportInterface(IInstrumentInterface):
+    """Marker interface for instrument results import interfaces
     """
 
 
@@ -146,17 +154,15 @@ PARSERS = [
            ]
 
 
-def get_instrument_import_interfaces():
-    """Returns a list of tuples. Each tuple has the id of the instrument import
-    interfae in first position and the importer in second
+def get_instrument_interfaces():
+    """Returns all available instrument interfaces as a list of tuples. Each
+    tuple is (id_interface, adapter)
     """
-    importers = list()
-    adapters = getAdapters((api.get_portal(),), IInstrumentImportInterface)
-    for name, adapter in adapters:
+    interfaces = list()
+    for name, adapter in getAdapters((api.get_portal(),), IInstrumentInterface):
         # We need a unique identifier for this instrument interface
-        full_qualified_name = "{}.{}".format(adapter.__module__,
-                                             adapter.__class__.__name__)
-        importers.append((full_qualified_name, adapter))
+        id = "{}.{}".format(adapter.__module__, adapter.__class__.__name__)
+        interfaces.append((id, adapter))
 
     # TODO Remove the following code once clasic instrument interfaces migrated
     # Now grab the information (the old way)
@@ -164,27 +170,57 @@ def get_instrument_import_interfaces():
     for name, obj in inspect.getmembers(curr_module):
         if hasattr(obj, '__name__'):
             obj_name = obj.__name__.replace(__name__, "")
-            if obj_name[1:] in __all__ and hasattr(obj, "Import"):
-                importers.append((obj.__name__, obj))
-    return importers
+            if obj_name[1:] in __all__:
+                interfaces.append((obj.__name__, obj))
+    return interfaces
 
+
+def is_import_interface(instrument_interface):
+    """Returns whether the instrument interface passed in is for results import
+    """
+    if IInstrumentImportInterface.providedBy(instrument_interface):
+        return True
+
+    # TODO Remove this once classic instrument interface migrated
+    if hasattr(instrument_interface, '__name__'):
+        obj_name = instrument_interface.__name__.replace(__name__, "")
+        if obj_name[1:] in __all__ and hasattr(instrument_interface, "Import"):
+            return True
+
+
+def is_export_interface(instrument_interface):
+    """Returns whether the instrument interface passed in is for results export
+    """
+    if IInstrumentExportInterface.providedBy(instrument_interface):
+        return True
+
+    # TODO Remove this once classic instrument interface migrated
+    if hasattr(instrument_interface, '__name__'):
+        obj_name = instrument_interface.__name__.replace(__name__, "")
+        if obj_name[1:] in __all__ and hasattr(instrument_interface, "Export"):
+            return True
+
+
+def get_instrument_import_interfaces():
+    """Returns all available instrument results import interfaces as a list of
+    tuples (id_interface, adapter)
+    """
+    return filter(lambda i: is_import_interface(i[1]),
+                  get_instrument_interfaces())
+
+
+def get_instrument_export_interfaces():
+    """Returns all available instrument results expot interfaces as a list of
+    tuples (id_interface, adapter)
+    """
+    return filter(lambda i: is_export_interface(i[1]),
+                  get_instrument_interfaces())
 
 def getExim(exim_id):
-    portal = api.get_portal()
-    adapters = getAdapters((portal,), IInstrumentImportInterface)
-    for name, adapter in adapters:
-        full_qualified_name = "{}.{}".format(adapter.__module__,
-                                             adapter.__class__.__name__)
-        if full_qualified_name == exim_id:
-            return adapter
-
-    # TODO Remove the following code once clasic instrument interfaces migrated
-    # Now grab the information (the old way)
-    currmodule = sys.modules[__name__]
-    members = [obj for name, obj in inspect.getmembers(currmodule)
-               if hasattr(obj, '__name__')
-               and obj.__name__.endswith(exim_id)]
-    return members[0] if len(members) > 0 else None
+    """Returns the instrument interface for the exim_id passed in
+    """
+    interfaces = filter(lambda i: i[0]==exim_id, get_instrument_interfaces())
+    return interfaces and interfaces[0][1] or None
 
 
 def getParserName(exim_id):

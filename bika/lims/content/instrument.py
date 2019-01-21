@@ -53,6 +53,7 @@ from bika.lims import logger
 from bika.lims.utils import t
 from bika.lims.utils import to_utf8
 from bika.lims.config import PROJECTNAME
+from bika.lims.exportimport import instruments
 from bika.lims.interfaces import IInstrument
 from bika.lims.config import QCANALYSIS_TYPES
 from bika.lims.content.bikaschema import BikaSchema
@@ -350,32 +351,6 @@ schema.moveField('InstrumentTypeName', before='ManufacturerName')
 schema['description'].widget.visible = True
 schema['description'].schemata = 'default'
 
-
-def getDataInterfaces(context, export_only=False):
-    """ Return the current list of data interfaces
-    """
-    from bika.lims.exportimport import instruments
-    exims = []
-    for exim_id in instruments.__all__:
-        exim = instruments.getExim(exim_id)
-        if export_only and not hasattr(exim, 'Export'):
-            pass
-        else:
-            exims.append((exim_id, exim.title))
-    exims.sort(lambda x, y: cmp(x[1].lower(), y[1].lower()))
-    exims.insert(0, ('', t(_('None'))))
-    return DisplayList(exims)
-
-def getImportDataInterfaces(context, import_only=False):
-    """ Return the current list of import data interfaces
-    """
-    from bika.lims.exportimport import instruments
-    exims = instruments.get_instrument_import_interfaces()
-    exims = map(lambda imp: (imp[0], imp[1].title), exims)
-    exims.sort(lambda x, y: cmp(x[1].lower(), y[1].lower()))
-    exims.insert(0, ('', t(_('None'))))
-    return DisplayList(exims)
-
 def getMaintenanceTypes(context):
     types = [('preventive', 'Preventive'),
              ('repair', 'Repair'),
@@ -406,11 +381,22 @@ class Instrument(ATFolder):
     def Title(self):
         return to_utf8(safe_unicode(self.title))
 
+    def getDataInterfacesList(self, type_interface="import"):
+        interfaces = list()
+        if type_interface == "export":
+            interfaces = instruments.get_instrument_export_interfaces()
+        elif type_interface == "import":
+            interfaces = instruments.get_instrument_import_interfaces()
+        interfaces = map(lambda imp: (imp[0], imp[1].title), interfaces)
+        interfaces.sort(lambda x, y: cmp(x[1].lower(), y[1].lower()))
+        interfaces.insert(0, ('', t(_('None'))))
+        return DisplayList(interfaces)
+
     def getExportDataInterfacesList(self):
-        return getDataInterfaces(self, export_only=True)
+        return self.getDataInterfacesList("export")
 
     def getImportDataInterfacesList(self):
-        return getImportDataInterfaces(self, import_only=True)
+        return self.getDataInterfacesList("import")
 
     def getScheduleTaskTypesList(self):
         return getMaintenanceTypes(self)
