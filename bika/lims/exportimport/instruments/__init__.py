@@ -187,6 +187,7 @@ def is_import_interface(instrument_interface):
         obj_name = instrument_interface.__name__.replace(__name__, "")
         if obj_name[1:] in __all__ and hasattr(instrument_interface, "Import"):
             return True
+    return False
 
 
 def is_export_interface(instrument_interface):
@@ -200,6 +201,7 @@ def is_export_interface(instrument_interface):
         obj_name = instrument_interface.__name__.replace(__name__, "")
         if obj_name[1:] in __all__ and hasattr(instrument_interface, "Export"):
             return True
+    return False
 
 
 def get_instrument_import_interfaces():
