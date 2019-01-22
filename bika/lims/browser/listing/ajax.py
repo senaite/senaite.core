@@ -15,6 +15,7 @@ from bika.lims.interfaces import IRoutineAnalysis
 from Products.Archetypes.utils import mapply
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.interface import implements
+from zope.lifecycleevent import modified
 from zope.publisher.interfaces import IPublishTraverse
 
 
@@ -417,8 +418,8 @@ class AjaxListingView(BrowserView):
         # unify the list of updated objects
         updated_objects = list(set(updated_objects))
 
-        # reindex updated objects
-        map(lambda o: o.reindexObject(), updated_objects)
+        # notify that the objects were modified
+        map(modified, updated_objects)
 
         return updated_objects
 
