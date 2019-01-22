@@ -24,6 +24,7 @@ Changelog
 
 **Changed**
 
+- #1206 Make use of adapters for instrument import/export interfaces
 - #1203 Remove explicit definition of transitions in AR listing
 - #1192 Integrate Container and Preservation in Partition Magic
 - #1180 Analysis Request default ID Format becomes {sampleType}-{seq:04d}
