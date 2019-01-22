@@ -24,6 +24,7 @@ Changelog
 
 **Changed**
 
+- #1207 Make use of adapters for instrument auto-import
 - #1206 Make use of adapters for instrument import/export interfaces
 - #1203 Remove explicit definition of transitions in AR listing
 - #1192 Integrate Container and Preservation in Partition Magic
@@ -66,6 +67,7 @@ Changelog
 
 **Removed**
 
+- #1207 Remove results auto-import interval from Setup: no limitations to cron
 - #1180 Remove AdHoc field from Analysis Request
 - #1180 Remove support for "sampleId" and "sample" keywords in ID Formatting
 - #1180 Remove Sample views and accesses to Sample content types

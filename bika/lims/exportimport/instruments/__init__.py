@@ -61,7 +61,13 @@ class IInstrumentImportInterface(IInstrumentInterface):
     """Marker interface for instrument results import interfaces
     """
 
+class IInstrumentAutoImportInterface(IInstrumentInterface):
+    """Marker interface for instrument results import interfaces that are
+    capable of auto importing results with only a file as the input
+    """
 
+
+# TODO Remove this once classic instrument interface migrated
 __all__ = ['abaxis.vetscan.vs2',
            'abbott.m2000rt.m2000rt',
            'agilent.masshunter.masshunter',
@@ -108,6 +114,7 @@ __all__ = ['abaxis.vetscan.vs2',
 
 # Parsers are for auto-import. If empty, then auto-import won't wun for that
 # interface
+# TODO Remove this once classic instrument interface migrated
 PARSERS = [
            ['abaxis.vetscan.vs2', 'AbaxisVetScanCSVVS2Parser'],
            ['abbott.m2000rt.m2000rt', 'Abbottm2000rtTSVParser'],
@@ -224,8 +231,17 @@ def getExim(exim_id):
     return interfaces and interfaces[0][1] or None
 
 
-def getParserName(exim_id):
-    for pair in PARSERS:
-        if pair[0] == exim_id:
-            return pair[1]
-    return None
+def get_automatic_parser(exim_id, infile):
+    """Returns the parser to be used by default for the instrument id interface
+    and results file passed in.
+    """
+    adapter = getExim(exim_id)
+    if IInstrumentAutoImportInterface.providedBy(adapter):
+        return adapter.get_automatic_parser(infile)
+
+    # TODO Remove this once classic instrument interface migrated
+    parser_func = filter(lambda i: i[0] == exim_id, PARSERS)
+    parser_func = parser_func and parser_func[0][1] or None
+    if not parser_func or not hasattr(adapter, parser_func):
+        return None
+    return parser_func(infile)
