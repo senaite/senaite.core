@@ -170,8 +170,9 @@ def get_instrument_interfaces():
     for name, obj in inspect.getmembers(curr_module):
         if hasattr(obj, '__name__'):
             obj_name = obj.__name__.replace(__name__, "")
-            if obj_name[1:] in __all__:
-                interfaces.append((obj.__name__, obj))
+            obj_name = obj_name and obj_name[1:] or ""
+            if obj_name in __all__:
+                interfaces.append((obj_name, obj))
     return interfaces
 
 
