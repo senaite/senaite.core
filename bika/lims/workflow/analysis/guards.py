@@ -22,13 +22,13 @@ def guard_assign(analysis):
     """
 
     # TODO: Refactor this funtion to a more generic place
-    # only if the request was done from worksheet context
+    # only if the request was done from worksheet context.
     request = api.get_request()
-    parents = request.get("PARENTS", [])
-    path_portal_types = map(lambda p: getattr(p, "portal_type", None), parents)
-
-    if "Worksheet" not in path_portal_types:
-        return False
+    if request.get("bypass_ws_assign_check", 0) != 1:
+        parents = request.get("PARENTS", [])
+        portal_types = map(lambda p: getattr(p, "portal_type", None), parents)
+        if "Worksheet" not in portal_types:
+            return False
 
     # Cannot assign if the Sample has not been received
     if not analysis.isSampleReceived():

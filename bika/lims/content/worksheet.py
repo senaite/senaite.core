@@ -174,6 +174,8 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             self.updateLayout()
 
         # Cannot add an analysis if the assign transition is not possible
+        # We need to bypass the guard's check for current context!
+        api.get_request().set("bypass_ws_assign_check", 1)
         if not isTransitionAllowed(analysis, "assign"):
             return
 
