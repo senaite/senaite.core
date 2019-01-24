@@ -4,7 +4,7 @@
              title="Bika Analysis Workflow"
              description=""
              state_variable="review_state"
-             initial_state="unassigned"
+             initial_state="registered"
              manager_bypass="False"
              i18n:domain="senaite.core">
 
@@ -22,12 +22,54 @@
   needed in some guards and/or in rollback transitions. Double-check -->
   <permission>Review portal content</permission>
 
-  <!-- TODO Workflow - To remove in favour of Modify portal content -->
+  <!-- TODO: We need different Analysis objects for Field- and Lab- Analyses.
+  Then we can rely solely on the Workflow Field permission -->
   <permission>BIKA: Edit Field Results</permission>
   <permission>BIKA: Edit Results</permission>
 
+  <!-- Field-specific permissions
+       Are meant to be used for "read_permission" and "write_permission" in fields.
+       If not defined there, "read_permission" defaults to "View" and
+       "write_permission" defaults to "Modify portal content" -->
+  <permission>Field: Edit Result</permission>
+  <permission>Field: Edit Remarks</permission>
+  <permission>Field: Edit Hidden</permission>
 
-  <!-- State: unassigned (initial state)
+  <!-- State: registered (inital state)
+  The sample did not yet arrive at the Lab, so tha Analyses are registered.
+  No transitions are allowed in that state.
+  -->
+  <state state_id="registered" title="Registered" i18n:attributes="title">
+    <exit-transition transition_id="initialize" />
+    <!-- Only allow modification of fields explicitly granted -->
+    <permission-map name="Modify portal content" acquired="False">
+    </permission-map>
+    <!-- Field results should stay editable, even if the analysis is in registered state -->
+    <permission-map name="BIKA: Edit Field Results" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Sampler</permission-role>
+    </permission-map>
+    <!-- Lab results are not editable, because the sample did not yet arrive in the lab -->
+    <permission-map name="BIKA: Edit Results" acquired="False">
+    </permission-map>
+    <!-- These permissions are checked by the listing `set_field` endpoint if
+    the field was rendered as editable -->
+    <permission-map name="Field: Edit Result" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Sampler</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Remarks" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Sampler</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Hidden" acquired="False">
+    </permission-map>
+  </state>
+
+  <!-- State: unassigned
   Analysis is not assigned to a Worksheet.
   Same exit-transitions and Permissions as "assigned" state, cause by default,
   the system allows users to submit results directly from the Analysis Request
@@ -279,6 +321,20 @@
   </state>
 
 
+  <!-- Transition: initialize (Make the Analysis available for testing in the
+  lab, because the sample is received) -->
+  <transition transition_id="initialize" title="Initialize" new_state="unassigned"
+              trigger="USER" before_script="" after_script=""
+              i18n:attributes="title">
+    <action url="" category="workflow" icon="">Initialize</action>
+    <guard>
+      <!-- There is no guard-permission here (all roles can initialize) because
+          this transition takes place automatically as soon as the Analysis Request
+          is received. Hence, this transition is governed by the permission
+           "BIKA: Receive Sample" assigned to Analysis Request -->
+      <guard-expression>python:here.guard_handler("initialize")</guard-expression>
+    </guard>
+  </transition>
 
 
   <!-- Transition: assign (to a worksheet) -->

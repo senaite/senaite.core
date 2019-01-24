@@ -15,6 +15,7 @@ from Products.Archetypes.Widget import BooleanWidget, DecimalWidget, \
     IntegerWidget, SelectionWidget, StringWidget
 from Products.Archetypes.utils import DisplayList, IntDisplayList
 from Products.CMFCore.utils import getToolByName
+from Products.CMFCore.permissions import View
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import DurationField, UIDReferenceField
@@ -568,6 +569,8 @@ Hidden = BooleanField(
     'Hidden',
     schemata="Analysis",
     default=False,
+    read_permission=View,
+    write_permission="Field: Edit Hidden",
     widget=BooleanWidget(
         label=_("Hidden"),
         description=_(
@@ -641,6 +644,8 @@ ProtocolID = StringField(
 # Remarks are used in various ways by almost all objects in the system.
 Remarks = TextField(
     'Remarks',
+    read_permission=View,
+    write_permission="Field: Edit Remarks",
     schemata='Description'
 )
 

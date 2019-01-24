@@ -630,19 +630,25 @@ class AnalysesView(BikaListingView):
         item['CaptureDate'] = capture_date_str
         item['result_captured'] = capture_date_str
 
-        # If this analysis has a predefined set of options as result, tell the
-        # template that selection list (choices) must be rendered instead of an
-        # input field for the introduction of result.
-        choices = analysis_brain.getResultOptions
-        if choices:
-            # N.B.we copy here the list to avoid persistent changes
-            choices = copy(choices)
-            # By default set empty as the default selected choice
-            choices.insert(0, dict(ResultValue="", ResultText=""))
-            item['choices']['Result'] = choices
-
         if self.is_analysis_edition_allowed(analysis_brain):
-            item['allow_edit'].extend(['Result', 'Remarks'])
+            if self.has_permission("Field: Edit Remarks", analysis_brain):
+                item['allow_edit'].extend(['Remarks'])
+
+            # This permission will be finally checked by the Ajax set_field
+            if self.has_permission("Field: Edit Result", analysis_brain):
+                item['allow_edit'].extend(['Result'])
+
+                # If this analysis has a predefined set of options as result,
+                # tell the template that selection list (choices) must be
+                # rendered instead of an input field for the introduction of
+                # result.
+                choices = analysis_brain.getResultOptions
+                if choices:
+                    # N.B.we copy here the list to avoid persistent changes
+                    choices = copy(choices)
+                    # By default set empty as the default selected choice
+                    choices.insert(0, dict(ResultValue="", ResultText=""))
+                    item['choices']['Result'] = choices
 
         # Wake up the object only if necessary. If there is no result set, then
         # there is no need to go further with formatted result
@@ -1069,7 +1075,7 @@ class AnalysesView(BikaListingView):
         full_obj = self.get_object(analysis_brain)
         item['Hidden'] = full_obj.getHidden()
         if IRoutineAnalysis.providedBy(full_obj):
-            if self.has_permission('Modify portal content'):
+            if self.has_permission("Field: Edit Hidden", obj=full_obj):
                 item['allow_edit'].append('Hidden')
 
     def _folder_item_fieldicons(self, analysis_brain):

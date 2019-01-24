@@ -5,6 +5,7 @@ import json
 import urllib
 
 from bika.lims import api
+from bika.lims import logger
 from bika.lims.browser import BrowserView
 from bika.lims.browser.listing.decorators import inject_runtime
 from bika.lims.browser.listing.decorators import returns_safe_json
@@ -385,10 +386,12 @@ class AjaxListingView(BrowserView):
 
         # field exists, set it with the value
         if field:
-            # https://github.com/senaite/senaite.core/pull/1200
-            # N.B. We don't use the `edit` method here to bypass the instance
-            #      permission check for `Modify portal content`.
-            # obj.edit(**{field.getName(): value})
+
+            # Check the permission of the field
+            if not field.writeable(obj):
+                # Bail out if the field is not writeable by the user
+                logger.error("Field '{}' not writeable!".format(name))
+                return []
 
             # get the field mutator (works only for AT content types)
             if hasattr(field, "getMutator"):
@@ -417,6 +420,9 @@ class AjaxListingView(BrowserView):
 
         # unify the list of updated objects
         updated_objects = list(set(updated_objects))
+
+        # reindex the objects
+        map(lambda obj: obj.reindexObject(), updated_objects)
 
         # notify that the objects were modified
         map(modified, updated_objects)
