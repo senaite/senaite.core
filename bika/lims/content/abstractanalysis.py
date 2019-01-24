@@ -122,6 +122,8 @@ Calculation = HistoryAwareReferenceField(
 InterimFields = InterimFieldsField(
     'InterimFields',
     schemata='Method',
+    read_permission=View,
+    write_permission="Field: Edit Result",
     widget=RecordsWidget(
         label=_("Calculation Interim Fields"),
         description=_(

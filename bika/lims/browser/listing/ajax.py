@@ -372,6 +372,13 @@ class AjaxListingView(BrowserView):
                 field = obj.get(fieldname)
         return field
 
+    def is_field_writeable(self, obj, field):
+        """Checks if the field is writeable
+        """
+        if isinstance(field, basestring):
+            field = obj.getField(field)
+        return field.writeable(obj)
+
     def set_field(self, obj, name, value):
         """Set the value
 
@@ -388,8 +395,7 @@ class AjaxListingView(BrowserView):
         if field:
 
             # Check the permission of the field
-            if not field.writeable(obj):
-                # Bail out if the field is not writeable by the user
+            if not self.is_field_writeable(obj, field):
                 logger.error("Field '{}' not writeable!".format(name))
                 return []
 
@@ -405,6 +411,12 @@ class AjaxListingView(BrowserView):
 
         # check if the object is an analysis and has an interim
         if self.is_analysis(obj):
+
+            # check the permission of the interims field
+            if not self.is_field_writeable(obj, "InterimFields"):
+                logger.error("Field 'InterimFields' not writeable!")
+                return []
+
             interims = obj.getInterimFields()
             interim_keys = map(lambda i: i.get("keyword"), interims)
             if name in interim_keys:
@@ -413,6 +425,7 @@ class AjaxListingView(BrowserView):
                         interim["value"] = value
                 # set the new interim fields
                 obj.setInterimFields(interims)
+
             # recalculate dependent results for result and interim fields
             if name == "Result" or name in interim_keys:
                 updated_objects.append(obj)

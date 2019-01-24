@@ -7,15 +7,21 @@
 
 from bika.lims import workflow as wf
 
+
 def ObjectInitializedEventHandler(analysis, event):
     """Actions to be done when an analysis is added in an Analysis Request
     """
+
+    # Initialize the analysis if it was e.g. added by Manage Analysis
+    wf.doActionFor(analysis, "initialize")
+
     # Try to transition the analysis_request to "sample_received". There are
     # some cases that can end up with an inconsistent state between the AR
     # and the analyses it contains: retraction of an analysis when the state
     # of the AR was "to_be_verified", addition of a new analysis when the
     # state was "to_be_verified", etc.
-    wf.doActionFor(analysis.getRequest(), "rollback_to_receive")
+    request = analysis.getRequest()
+    wf.doActionFor(request, "rollback_to_receive")
 
     # Reindex the indexes for UIDReference fields on creation!
     analysis.reindexObject(idxs="getServiceUID")

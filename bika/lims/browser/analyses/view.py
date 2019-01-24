@@ -630,11 +630,12 @@ class AnalysesView(BikaListingView):
         item['CaptureDate'] = capture_date_str
         item['result_captured'] = capture_date_str
 
+        # Note: As soon as we have a separate content type for field analysis,
+        #       we can solely rely on the field permission "Field: Edit Result"
         if self.is_analysis_edition_allowed(analysis_brain):
             if self.has_permission("Field: Edit Remarks", analysis_brain):
                 item['allow_edit'].extend(['Remarks'])
 
-            # This permission will be finally checked by the Ajax set_field
             if self.has_permission("Field: Edit Result", analysis_brain):
                 item['allow_edit'].extend(['Result'])
 
@@ -681,8 +682,13 @@ class AnalysesView(BikaListingView):
             interim_field['formatted_value'] = interim_formatted
             item[interim_keyword] = interim_field
             item['class'][interim_keyword] = 'interim'
+
+            # Note: As soon as we have a separate content type for field
+            #       analysis, we can solely rely on the field permission
+            #       "Field: Edit Result"
             if is_editable:
-                item['allow_edit'].append(interim_keyword)
+                if self.has_permission("Field: Edit Result", analysis_brain):
+                    item['allow_edit'].append(interim_keyword)
 
             # Add this analysis' interim fields to the interim_columns list
             interim_hidden = interim_field.get('hidden', False)
