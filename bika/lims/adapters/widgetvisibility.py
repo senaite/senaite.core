@@ -119,7 +119,7 @@ class SamplingFieldsVisibility(SenaiteATWidgetVisibility):
 
     def isVisible(self, field, mode="view", default="visible"):
         # If object has been already created, get SWF statues from it.
-        sw_enabled = False
+        swf_enabled = False
         if hasattr(self.context, 'getSamplingWorkflowEnabled') and \
                 self.context.getSamplingWorkflowEnabled() is not '':
             swf_enabled = self.context.getSamplingWorkflowEnabled()
