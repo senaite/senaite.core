@@ -148,8 +148,8 @@ Total price excl Tax,,,,,,,,,,,,,,
         if ars_states != ['sample_due'] * 4:
             self.fail('Samples states should all be sample_due, '
                       'but are not!')
-        if states != ['unassigned'] * 12:
-            self.fail('Analysis states should all be unassigned, but are not!')
+        if states != ['registered'] * 12:
+            self.fail('Analysis states should all be registered, but are not!')
 
     def test_LIMS_2080_correctly_interpret_false_and_blank_values(self):
         client = self.portal.clients.objectValues()[0]
