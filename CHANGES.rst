@@ -90,6 +90,7 @@ Changelog
 
 **Fixed**
 
+- #1214 Disallow entry of analysis results if the sample is not yet received
 - #1191 Some worksheets pre-1.3 with published analyses remain in open/to_be_verified state
 - #1190 Fixed evolution chart for reference analyses
 - #1183 Fix results calculation of dependent calculations
