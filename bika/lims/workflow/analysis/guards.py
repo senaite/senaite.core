@@ -6,6 +6,7 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from bika.lims import api
+from bika.lims.interfaces import IWorksheet
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims import workflow as wf
 
@@ -24,10 +25,13 @@ def guard_assign(analysis):
     # TODO: Refactor this funtion to a more generic place
     # only if the request was done from worksheet context.
     request = api.get_request()
-    if request.get("bypass_ws_assign_check", 0) != 1:
-        parents = request.get("PARENTS", [])
-        portal_types = map(lambda p: getattr(p, "portal_type", None), parents)
-        if "Worksheet" not in portal_types:
+    parents = request.get("PARENTS", [])
+    portal_types_names = map(lambda p: getattr(p, "portal_type", None), parents)
+    if "Worksheet" not in portal_types_names:
+        # Check if the worksheet is declared in request explicitly
+        ws_uid = request.get("ws_uid", "")
+        obj = api.get_object_by_uid(ws_uid, None)
+        if not IWorksheet.providedBy(obj):
             return False
 
     # Cannot assign if the Sample has not been received

@@ -156,6 +156,8 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
            - position is overruled if a slot for this analysis' parent exists
            - if position is None, next available pos is used.
         """
+
+        # TODO Workflow - Move these initial checks to the assign guard
         # Cannot add an analysis if not open, unless a retest
         if api.get_review_status(self) != "open":
             retracted = analysis.getRetestOf()
@@ -175,7 +177,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
 
         # Cannot add an analysis if the assign transition is not possible
         # We need to bypass the guard's check for current context!
-        api.get_request().set("bypass_ws_assign_check", 1)
+        api.get_request().set("ws_uid", api.get_uid(self))
         if not isTransitionAllowed(analysis, "assign"):
             return
 
