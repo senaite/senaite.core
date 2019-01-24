@@ -279,6 +279,8 @@ InstrumentEntryOfResults = BooleanField(
 # See browser/js/bika.lims.analysisservice.edit.js
 Instrument = UIDReferenceField(
     'Instrument',
+    read_permission=View,
+    write_permission="Field: Edit Result",
     schemata="Method",
     searchable=True,
     required=0,
@@ -309,6 +311,8 @@ Instrument = UIDReferenceField(
 # See browser/js/bika.lims.analysisservice.edit.js
 Method = UIDReferenceField(
     'Method',
+    read_permission=View,
+    write_permission="Field: Edit Result",
     schemata="Method",
     required=0,
     searchable=True,

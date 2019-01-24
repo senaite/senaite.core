@@ -82,7 +82,9 @@ RetestOf = UIDReferenceField(
 # the operand (< or >) is stored here.  For routine analyses this is taken
 # from the Result, if the result entered explicitly startswith "<" or ">"
 DetectionLimitOperand = StringField(
-    'DetectionLimitOperand'
+    'DetectionLimitOperand',
+    read_permission=View,
+    write_permission="Field: Edit Result",
 )
 
 # The ID of the logged in user who submitted the result for this Analysis.
@@ -121,9 +123,9 @@ Calculation = HistoryAwareReferenceField(
 # before the calculation is performed.
 InterimFields = InterimFieldsField(
     'InterimFields',
-    schemata='Method',
     read_permission=View,
     write_permission="Field: Edit Result",
+    schemata='Method',
     widget=RecordsWidget(
         label=_("Calculation Interim Fields"),
         description=_(
