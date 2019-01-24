@@ -130,13 +130,19 @@ The new analysis is a copy of retracted one:
     >>> retest.getKeyword() == analysis.getKeyword()
     True
 
-And keeps the same results as the retracted one:
+But it does not keep the result:
 
-    >>> retest.getResult() == analysis.getResult()
+    >>> not retest.getResult()
+    True
+
+And Result capture date is None:
+
+    >>> not retest.getResultCaptureDate()
     True
 
 If I submit the result for the new analysis:
 
+    >>> retest.setResult(analysis.getResult())
     >>> try_transition(retest, "submit", "to_be_verified")
     True
 
