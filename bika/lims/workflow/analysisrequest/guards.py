@@ -67,7 +67,7 @@ def guard_submit(analysis_request):
         analysis_status = api.get_workflow_status_of(analysis)
         if analysis_status in ANALYSIS_DETACHED_STATES:
             continue
-        if analysis_status in ['assigned', 'unassigned']:
+        if analysis_status in ['assigned', 'unassigned', 'registered']:
             return False
         analyses_ready = True
     return analyses_ready
