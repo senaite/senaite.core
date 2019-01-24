@@ -486,6 +486,7 @@ In `verified` state, the analysis cannot be rejected:
 
     >>> bikasetup.setSelfVerificationEnabled(True)
     >>> analysis = analysis.getRetest()
+    >>> analysis.setResult(13)
     >>> success = do_action_for(analysis, "submit")
     >>> success = do_action_for(analysis, "verify")
     >>> api.get_workflow_status_of(analysis)

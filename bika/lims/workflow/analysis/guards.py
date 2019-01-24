@@ -15,7 +15,7 @@ def guard_initialize(analysis):
     """Return whether the transition "initialize" can be performed or not
     """
     request = analysis.getRequest()
-    return api.get_workflow_status_of(request) == "sample_received"
+    return wf.wasTransitionPerformed(request, "receive")
 
 
 def guard_assign(analysis):
