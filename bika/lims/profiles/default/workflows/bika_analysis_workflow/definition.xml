@@ -40,33 +40,40 @@
   No transitions are allowed in that state.
   -->
   <state state_id="registered" title="Registered" i18n:attributes="title">
+
+    <!-- TRANSITIONS -->
     <exit-transition transition_id="initialize" />
-    <!-- Only allow modification of fields explicitly granted -->
+    <!-- /TRANSITIONS -->
+
+    <!-- Only allow modification of fields explicitly granted
+    N.B. Permissions are *only* checked in process_form and *not* if we set the
+         field directly via the generated mutator -->
     <permission-map name="Modify portal content" acquired="False">
     </permission-map>
+
     <!-- Field results should stay editable, even if the analysis is in registered state -->
     <permission-map name="BIKA: Edit Field Results" acquired="False">
-      <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
       <permission-role>Sampler</permission-role>
     </permission-map>
+
     <!-- Lab results are not editable, because the sample did not yet arrive in the lab -->
     <permission-map name="BIKA: Edit Results" acquired="False">
     </permission-map>
-    <!-- These permissions are checked by the listing `set_field` endpoint if
-    the field was rendered as editable -->
+
+    <!-- FIELD PERMISSIONS (initialized) -->
     <permission-map name="Field: Edit Result" acquired="False">
-      <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
       <permission-role>Sampler</permission-role>
     </permission-map>
     <permission-map name="Field: Edit Remarks" acquired="False">
-      <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
       <permission-role>Sampler</permission-role>
     </permission-map>
     <permission-map name="Field: Edit Hidden" acquired="False">
     </permission-map>
+    <!-- /FIELD PERMISSIONS -->
+
   </state>
 
   <!-- State: unassigned
@@ -75,25 +82,32 @@
   the system allows users to submit results directly from the Analysis Request
   manage results view, without the need of assigning them to a Worksheet -->
   <state state_id="unassigned" title="Unassigned" i18n:attributes="title">
+
+    <!-- TRANSITIONS -->
     <exit-transition transition_id="assign" />
     <exit-transition transition_id="submit"/>
     <exit-transition transition_id="reject" />
     <exit-transition transition_id="cancel" />
+    <!-- /TRANSITIONS -->
+
+    <!-- Only allow modification of fields explicitly granted
+    N.B. Permissions are *only* checked in process_form and *not* if we set the
+         field directly via the generated mutator -->
     <permission-map name="Modify portal content" acquired="False">
-      <permission-role>Analyst</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
     </permission-map>
+
     <permission-map name="BIKA: Edit Field Results" acquired="False">
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
       <permission-role>Sampler</permission-role>
     </permission-map>
+
     <permission-map name="BIKA: Edit Results" acquired="False">
       <permission-role>Analyst</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>
+
     <permission-map name="BIKA: View Results" acquired="False">
       <permission-role>Analyst</permission-role>
       <permission-role>LabClerk</permission-role>
@@ -101,6 +115,7 @@
       <permission-role>Manager</permission-role>
       <permission-role>RegulatoryInspector</permission-role>
     </permission-map>
+
     <permission-map name="BIKA: Assign analyses" acquired="False">
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
@@ -111,33 +126,61 @@
       <permission-role>Analyst</permission-role>
       <permission-role>LabClerk</permission-role>
     </permission-map>
+
     <permission-map name="Reject" acquired="False">
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>
+
+    <!-- FIELD PERMISSIONS (unsassigned) -->
+    <permission-map name="Field: Edit Result" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Remarks" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Hidden" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>Publisher</permission-role>
+    </permission-map>
+    <!-- /FIELD PERMISSIONS -->
+
   </state>
 
   <!-- State: assigned
   Analysis is assigned to a Worksheet. -->
   <state state_id="assigned" title="Assigned" i18n:attributes="title">
+
+    <!-- TRANSITIONS -->
     <exit-transition transition_id="unassign" />
     <exit-transition transition_id="submit"/>
     <exit-transition transition_id="reject" />
+    <!-- /TRANSITIONS -->
+
+    <!-- Only allow modification of fields explicitly granted
+         N.B. Permissions are *only* checked in process_form and *not* if we set the
+         field directly via the generated mutator -->
     <permission-map name="Modify portal content" acquired="False">
-      <permission-role>Analyst</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
     </permission-map>
+
     <permission-map name="BIKA: Edit Field Results" acquired="False">
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
       <permission-role>Sampler</permission-role>
     </permission-map>
+
     <permission-map name="BIKA: Edit Results" acquired="False">
       <permission-role>Analyst</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>
+
     <permission-map name="BIKA: View Results" acquired="False">
       <permission-role>Analyst</permission-role>
       <permission-role>LabClerk</permission-role>
@@ -145,6 +188,7 @@
       <permission-role>Manager</permission-role>
       <permission-role>RegulatoryInspector</permission-role>
     </permission-map>
+
     <permission-map name="BIKA: Unassign analyses" acquired="False">
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
@@ -155,10 +199,31 @@
       <permission-role>Analyst</permission-role>
       <permission-role>LabClerk</permission-role>
     </permission-map>
+
     <permission-map name="Reject" acquired="False">
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>
+
+    <!-- FIELD PERMISSIONS (assigned) -->
+    <permission-map name="Field: Edit Result" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Remarks" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="Field: Edit Hidden" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>Publisher</permission-role>
+    </permission-map>
+    <!-- /FIELD PERMISSIONS -->
+
   </state>
 
   <!-- State: cancelled
@@ -169,37 +234,67 @@
   and the analyses are not considered in most places, including reports, etc.
   Analyses can only be cancelled before results being submitted -->
   <state state_id="cancelled" title="Cancelled" i18n:attributes="title">
+
+    <!-- TRANSITIONS -->
     <exit-transition transition_id="reinstate" />
+    <!-- /TRANSITIONS -->
+
+    <!-- Only allow modification of fields explicitly granted
+         N.B. Permissions are *only* checked in process_form and *not* if we set the
+         field directly via the generated mutator -->
     <permission-map name="Modify portal content" acquired="False">
     </permission-map>
+
     <permission-map name="BIKA: View Results" acquired="False">
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
       <permission-role>RegulatoryInspector</permission-role>
     </permission-map>
+
     <permission-map name="Review portal content" acquired="False">
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
       <permission-role>RegulatoryInspector</permission-role>
     </permission-map>
+
     <!-- Analysis cannot be rejected once cancelled -->
     <permission-map name="Reject" acquired="False">
     </permission-map>
+
+    <!-- FIELD PERMISSIONS (cancelled) -->
+    <permission-map name="Field: Edit Result" acquired="False">
+    </permission-map>
+    <permission-map name="Field: Edit Remarks" acquired="False">
+    </permission-map>
+    <permission-map name="Field: Edit Hidden" acquired="False">
+    </permission-map>
+    <!-- /FIELD PERMISSIONS -->
+
   </state>
 
   <!-- State: to_be_verified
   Results have been submitted and awaiting for review -->
   <state state_id="to_be_verified" title="To be verified" i18n:attributes="title">
+
+    <!-- TRANSITIONS -->
     <exit-transition transition_id="multi_verify" />
     <exit-transition transition_id="verify" />
     <exit-transition transition_id="retract" />
     <exit-transition transition_id="reject" />
+    <!-- /TRANSITIONS -->
+
+    <!-- Only allow modification of fields explicitly granted
+         N.B. Permissions are *only* checked in process_form and *not* if we set the
+         field directly via the generated mutator -->
     <permission-map name="Modify portal content" acquired="False">
     </permission-map>
+
     <permission-map name="BIKA: Edit Field Results" acquired="False">
     </permission-map>
+
     <permission-map name="BIKA: Edit Results" acquired="False">
     </permission-map>
+
     <permission-map name="BIKA: View Results" acquired="False">
       <permission-role>Analyst</permission-role>
       <permission-role>LabClerk</permission-role>
@@ -208,32 +303,59 @@
       <permission-role>RegulatoryInspector</permission-role>
       <permission-role>Verifier</permission-role>
     </permission-map>
+
     <permission-map name="BIKA: Retract" acquired="False">
       <permission-role>Analyst</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>
+
     <permission-map name="BIKA: Verify" acquired="False">
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
       <permission-role>Verifier</permission-role>
     </permission-map>
+
     <permission-map name="Reject" acquired="False">
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>
+
+    <!-- FIELD PERMISSIONS (to_be_verified) -->
+    <permission-map name="Field: Edit Result" acquired="False">
+    </permission-map>
+    <permission-map name="Field: Edit Remarks" acquired="False">
+    </permission-map>
+    <permission-map name="Field: Edit Hidden" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>Publisher</permission-role>
+    </permission-map>
+    <!-- /FIELD PERMISSIONS -->
+
   </state>
 
   <!-- State: retracted
   The analysis has been retracted and a retest has been created -->
   <state state_id="retracted" title="Retracted" i18n:attributes="title">
+
+    <!-- TRANSITIONS -->
     <exit-transition transition_id="" />
+    <!-- /TRANSITIONS -->
+
+    <!-- Only allow modification of fields explicitly granted
+         N.B. Permissions are *only* checked in process_form and *not* if we set the
+         field directly via the generated mutator -->
     <permission-map name="Modify portal content" acquired="False">
     </permission-map>
+
     <permission-map name="BIKA: Edit Field Results" acquired="False">
     </permission-map>
+
     <permission-map name="BIKA: Edit Results" acquired="False">
     </permission-map>
+
     <permission-map name="BIKA: View Results" acquired="False">
       <permission-role>Analyst</permission-role>
       <permission-role>LabClerk</permission-role>
@@ -243,45 +365,91 @@
       <permission-role>Sampler</permission-role>
       <permission-role>Verifier</permission-role>
     </permission-map>
+
     <!-- Analysis cannot be rejected once retracted -->
     <permission-map name="Reject" acquired="False">
     </permission-map>
+
+    <!-- FIELD PERMISSIONS (retracted) -->
+    <permission-map name="Field: Edit Result" acquired="False">
+    </permission-map>
+    <permission-map name="Field: Edit Remarks" acquired="False">
+    </permission-map>
+    <permission-map name="Field: Edit Hidden" acquired="False">
+    </permission-map>
+    <!-- /FIELD PERMISSIONS -->
+
   </state>
 
   <!-- State: rejected
   The analysis has been rejected and cannot be used anymore -->
   <state state_id="rejected" title="Rejected" i18n:attributes="title">
+
+    <!-- TRANSITIONS -->
     <exit-transition transition_id="" />
+    <!-- /TRANSITIONS -->
+
+    <!-- Only allow modification of fields explicitly granted
+         N.B. Permissions are *only* checked in process_form and *not* if we set the
+         field directly via the generated mutator -->
     <permission-map name="Modify portal content" acquired="False">
     </permission-map>
+
     <permission-map name="BIKA: Edit Field Results" acquired="False">
     </permission-map>
+
     <permission-map name="BIKA: Edit Results" acquired="False">
     </permission-map>
+
     <permission-map name="BIKA: View Results" acquired="False">
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
       <permission-role>RegulatoryInspector</permission-role>
     </permission-map>
+
     <permission-map name="Review portal content" acquired="False">
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>
+
     <permission-map name="BIKA: Retract" acquired="False">
     </permission-map>
+
     <!-- Analysis cannot be rejected again -->
     <permission-map name="Reject" acquired="False">
     </permission-map>
+
+    <!-- FIELD PERMISSIONS (rejected) -->
+    <permission-map name="Field: Edit Result" acquired="False">
+    </permission-map>
+    <permission-map name="Field: Edit Remarks" acquired="False">
+    </permission-map>
+    <permission-map name="Field: Edit Hidden" acquired="False">
+    </permission-map>
+    <!-- /FIELD PERMISSIONS -->
+
   </state>
 
+  <!-- State: verified
+       The analysis has been verified and cannot be edited anymore -->
   <state state_id="verified" title="Verified" i18n:attributes="title">
+
+    <!-- TRANSITIONS -->
     <exit-transition transition_id="publish" />
+    <!-- /TRANSITIONS -->
+
+    <!-- Only allow modification of fields explicitly granted
+         N.B. Permissions are *only* checked in process_form and *not* if we set the
+         field directly via the generated mutator -->
     <permission-map name="Modify portal content" acquired="False">
     </permission-map>
+
     <permission-map name="BIKA: Edit Field Results" acquired="False">
     </permission-map>
+
     <permission-map name="BIKA: Edit Results" acquired="False">
     </permission-map>
+
     <permission-map name="BIKA: View Results" acquired="False">
       <permission-role>Analyst</permission-role>
       <permission-role>LabClerk</permission-role>
@@ -290,9 +458,23 @@
       <permission-role>Owner</permission-role>
       <permission-role>RegulatoryInspector</permission-role>
     </permission-map>
+
     <!-- Analysis cannot be rejected once verified -->
     <permission-map name="Reject" acquired="False">
     </permission-map>
+
+    <!-- FIELD PERMISSIONS (verified) -->
+    <permission-map name="Field: Edit Result" acquired="False">
+    </permission-map>
+    <permission-map name="Field: Edit Remarks" acquired="False">
+    </permission-map>
+    <permission-map name="Field: Edit Hidden" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>Publisher</permission-role>
+    </permission-map>
+    <!-- /FIELD PERMISSIONS -->
   </state>
 
   <!-- State: published
@@ -300,13 +482,23 @@
   rather analyses transitions to this state automatically when the whole
   Analysis Request they belong to is published -->
   <state state_id="published" title="Published" i18n:attributes="title">
+
+    <!-- TRANSITIONS -->
     <exit-transition transition_id="" />
+    <!-- /TRANSITIONS -->
+
+    <!-- Only allow modification of fields explicitly granted
+         N.B. Permissions are *only* checked in process_form and *not* if we set the
+         field directly via the generated mutator -->
     <permission-map name="Modify portal content" acquired="False">
     </permission-map>
+
     <permission-map name="BIKA: Edit Field Results" acquired="False">
     </permission-map>
+
     <permission-map name="BIKA: Edit Results" acquired="False">
     </permission-map>
+
     <permission-map name="BIKA: View Results" acquired="False">
       <permission-role>Analyst</permission-role>
       <permission-role>LabClerk</permission-role>
@@ -315,10 +507,27 @@
       <permission-role>Owner</permission-role>
       <permission-role>RegulatoryInspector</permission-role>
     </permission-map>
+
     <!-- Analyses cannot be rejected once published -->
     <permission-map name="Reject" acquired="False">
     </permission-map>
+
+    <!-- FIELD PERMISSIONS (published) -->
+    <permission-map name="Field: Edit Result" acquired="False">
+    </permission-map>
+    <permission-map name="Field: Edit Remarks" acquired="False">
+    </permission-map>
+    <permission-map name="Field: Edit Hidden" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>Publisher</permission-role>
+    </permission-map>
+    <!-- /FIELD PERMISSIONS -->
   </state>
+
+
+  <!-- *** TRANSITIONS *** -->
 
 
   <!-- Transition: initialize (Make the Analysis available for testing in the
