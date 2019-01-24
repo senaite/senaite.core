@@ -41,4 +41,4 @@ class AnalysisRequestManageResultsView(AnalysisRequestViewView):
             message = _("Some analyses use out-of-date or uncalibrated "
                         "instruments. Results edition not allowed")
             message = "%s: %s" % (message, (', '.join(invalid)))
-            self.context.plone_utils.addPortalMessage(message, 'warn')
+            self.context.plone_utils.addPortalMessage(message, 'warning')
