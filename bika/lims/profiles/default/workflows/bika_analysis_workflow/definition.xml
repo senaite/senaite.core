@@ -38,6 +38,7 @@
 
   <!-- *** STATES *** -->
 
+
   <!-- State: registered (inital state)
   The sample did not yet arrive at the Lab, so tha Analyses are registered.
   No transitions are allowed in that state.
