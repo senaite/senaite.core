@@ -15,7 +15,9 @@ def guard_initialize(analysis):
     """Return whether the transition "initialize" can be performed or not
     """
     request = analysis.getRequest()
-    return wf.wasTransitionPerformed(request, "receive")
+    if request.getDateReceived():
+        return True
+    return False
 
 
 def guard_assign(analysis):
