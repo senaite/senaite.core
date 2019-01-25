@@ -19,6 +19,7 @@ from bika.lims.catalog.worksheet_catalog import CATALOG_WORKSHEET_LISTING
 from bika.lims.config import PROJECTNAME as product
 from bika.lims.interfaces import IDuplicateAnalysis, IReferenceAnalysis, \
     INumberGenerator
+from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
 from bika.lims.workflow import changeWorkflowState, ActionHandlerPool
@@ -963,7 +964,17 @@ def decouple_analyses_from_sample_workflow(portal):
     for num, brain in enumerate(brains):
         # Set state
         analysis = api.get_object(brain)
-        target_state = analysis.getWorksheet() and "assigned" or "unassigned"
+        target_state = "registered"
+        if analysis.getWorksheet():
+            target_state = "assigned"
+        elif IDuplicateAnalysis.providedBy(analysis):
+            logger.error("Duplicate analysis {} without worksheet!".
+                         format(api.get_id(analysis)))
+            continue
+        else:
+            request = analysis.getRequest()
+            if request.getDateReceived():
+                target_state = "unassigned"
 
         if num % 100 == 0:
             logger.info("Restoring state to '{}': {}/{}"
@@ -989,7 +1000,14 @@ def remove_attachment_due_from_analysis_workflow(portal):
     total = len(brains)
     for num, brain in enumerate(brains):
         analysis = api.get_object(brain)
-        target_state = analysis.getWorksheet() and "assigned" or "unassigned"
+        target_state = "unassigned"
+        if analysis.getWorksheet():
+            target_state = "assigned"
+        elif IRequestAnalysis.providedBy(analysis):
+            if not IDuplicateAnalysis.providedBy(analysis):
+                request = analysis.getRequest()
+                if not request.getDateReceived():
+                    target_state = "registered"
 
         if num % 100 == 0:
             logger.info("Restoring state to '{}': {}/{}"
