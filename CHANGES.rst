@@ -149,6 +149,7 @@ Changelog
 
 **Fixed**
 
+- #1216 Allow manual entry (if granted) of results if instrument is invalid
 - #1051 Analyses Requests w/o submitted results always appear as not late
 - #1047 Fix translate utility function
 - #1049 Secondary Analysis Request changes received date of Sample
