@@ -24,6 +24,8 @@ Changelog
 
 **Changed**
 
+- #1215 Do not copy CaptureDate and Result in retest analyses when created
+- #1215 Do not modify the ID of analysis on retraction
 - #1207 Make use of adapters for instrument auto-import
 - #1206 Make use of adapters for instrument import/export interfaces
 - #1203 Remove explicit definition of transitions in AR listing

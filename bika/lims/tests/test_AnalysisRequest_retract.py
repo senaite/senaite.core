@@ -83,6 +83,7 @@ class TestAnalysisRequestRetract(DataTestCase):
                 continue
 
             # Check "submit" transition -> to_be_verified
+            analysis.setResult(12)
             api.do_transition_for(analysis, "submit")
             self.assertEquals(
                 api.get_workflow_status_of(analysis, "review_state"),
