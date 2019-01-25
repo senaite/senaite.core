@@ -5,15 +5,13 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-import transaction
-from Products.CMFCore.utils import getToolByName
-
 from bika.lims import api
-from bika.lims.interfaces import IDuplicateAnalysis
+from bika.lims import logger
+from bika.lims.interfaces import IDuplicateAnalysis, IAnalysisRequest, \
+    IBaseAnalysis
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.utils.analysis import create_analysis
 from bika.lims.workflow import doActionFor, push_reindex_to_actions_pool
-from bika.lims.workflow import skip
 
 
 def after_assign(analysis):
@@ -111,22 +109,21 @@ def after_retract(analysis):
     # Support multiple retractions by renaming to *-0, *-1, etc
     parent = analysis.aq_parent
     keyword = analysis.getKeyword()
-    analyses = filter(lambda an: an.getKeyword() == keyword,
-                      parent.objectValues("Analysis"))
 
-    # Rename the retracted analysis
-    # https://docs.plone.org/develop/plone/content/rename.html
-    # _verifyObjectPaste permission check must be cancelled
-    parent._verifyObjectPaste = str
-    retracted_id = '{}-{}'.format(keyword, len(analyses))
-    # Make sure all persistent objects have _p_jar attribute
-    transaction.savepoint(optimistic=True)
-    parent.manage_renameObject(analysis.getId(), retracted_id)
-    delattr(parent, '_verifyObjectPaste')
+    # Get only those that are analyses and with same keyword as the original
+    analyses = parent.getAnalyses(full_objects=True)
+    analyses = filter(lambda an: an.getKeyword() == keyword, analyses)
+    # TODO This needs to get managed by Id server in a nearly future!
+    new_id = '{}-{}'.format(keyword, len(analyses))
 
     # Create a copy of the retracted analysis
-    analysis_uid = api.get_uid(analysis)
-    new_analysis = create_analysis(parent, analysis, RetestOf=analysis_uid)
+    an_uid = api.get_uid(analysis)
+    new_analysis = create_analysis(parent, analysis, id=new_id, RetestOf=an_uid)
+    new_analysis.setResult("")
+    new_analysis.setResultCaptureDate(None)
+    new_analysis.reindexObject()
+    logger.info("Retest for {} ({}) created: {}".format(
+        keyword, api.get_id(analysis), api.get_id(new_analysis)))
 
     # Assign the new analysis to this same worksheet, if any.
     worksheet = analysis.getWorksheet()
