@@ -47,6 +47,7 @@
 
     <!-- TRANSITIONS -->
     <exit-transition transition_id="initialize" />
+    <exit-transition transition_id="cancel" />
     <!-- /TRANSITIONS -->
 
     <!-- Only allow modification of fields explicitly granted
