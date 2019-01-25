@@ -46,8 +46,9 @@
   <state state_id="registered" title="Registered" i18n:attributes="title">
 
     <!-- TRANSITIONS -->
-    <exit-transition transition_id="initialize" />
     <exit-transition transition_id="cancel" />
+    <exit-transition transition_id="initialize" />
+    <exit-transition transition_id="submit"/>
     <!-- /TRANSITIONS -->
 
     <!-- Only allow modification of fields explicitly granted
@@ -64,6 +65,8 @@
 
     <!-- Lab results are not editable, because the sample did not yet arrive in the lab -->
     <permission-map name="BIKA: Edit Results" acquired="False">
+      <permission-role>Manager</permission-role>
+      <permission-role>Sampler</permission-role>
     </permission-map>
 
     <!-- FIELD PERMISSIONS (initialized) -->
