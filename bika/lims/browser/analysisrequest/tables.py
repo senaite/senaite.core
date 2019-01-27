@@ -29,15 +29,6 @@ class LabAnalysesTable(AnalysesView):
         self.show_select_column = True
         self.show_search = False
 
-        self.review_states = [
-            {
-                "id": "default",
-                "title": _("All"),
-                "contentFilter": {},
-                "columns": self.columns.keys()
-             },
-        ]
-
 
 class FieldAnalysesTable(AnalysesView):
     """Field Analyses Listing Table for ARs
@@ -56,15 +47,6 @@ class FieldAnalysesTable(AnalysesView):
         self.show_workflow_action_buttons = True
         self.show_select_column = True
         self.show_search = False
-
-        self.review_states = [
-            {
-                "id": "default",
-                "title": _("All"),
-                "contentFilter": {},
-                "columns": self.columns.keys()
-             },
-        ]
 
 
 class QCAnalysesTable(QCAnalysesView):
