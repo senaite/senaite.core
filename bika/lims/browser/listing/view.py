@@ -215,11 +215,17 @@ class ListingView(AjaxListingView):
         return self.contents_table_template()
 
     @view.memoize
-    def has_permission(self, permission):
-        """Checks if the current context has the given permission
+    def is_permission_granted_for(self, permission, context=None):
+        """Checks if the the given permission is granted
+
+        :param permission: Permission to check
+        :param brain_or_object: Object to check the permission
         """
         sm = getSecurityManager()
-        return sm.checkPermission(permission, self.context)
+        if context is None:
+            context = self.context
+        context = api.get_object(context)
+        return sm.checkPermission(permission, context)
 
     @property
     def review_state(self):

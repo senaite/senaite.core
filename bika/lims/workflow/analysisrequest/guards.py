@@ -67,7 +67,7 @@ def guard_submit(analysis_request):
         analysis_status = api.get_workflow_status_of(analysis)
         if analysis_status in ANALYSIS_DETACHED_STATES:
             continue
-        if analysis_status in ['assigned', 'unassigned']:
+        if analysis_status in ['assigned', 'unassigned', 'registered']:
             return False
         analyses_ready = True
     return analyses_ready
@@ -134,8 +134,9 @@ def guard_cancel(analysis_request):
     # Look through analyses. We've checked the partitions already, so there is
     # no need to look through analyses from partitions again, but through the
     # analyses directly bound to the current Analysis Request.
+    cancellable_states = ["unassigned", "registered"]
     for analysis in analysis_request.objectValues("Analysis"):
-        if api.get_workflow_status_of(analysis) != "unassigned":
+        if api.get_workflow_status_of(analysis) not in cancellable_states:
             return False
 
     return True

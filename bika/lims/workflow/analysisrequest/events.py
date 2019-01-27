@@ -127,9 +127,7 @@ def after_receive(analysis_request):
     passed in is performed
     """
     analysis_request.setDateReceived(DateTime())
-    idxs = ['getDateReceived', 'isSampleReceived']
-    for analysis in analysis_request.getAnalyses(full_objects=True):
-        analysis.reindexObject(idxs=idxs)
+    do_action_to_analyses(analysis_request, "initialize")
 
 
 def after_sample(analysis_request):

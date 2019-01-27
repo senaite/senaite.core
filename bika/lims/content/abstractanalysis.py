@@ -16,6 +16,7 @@ from Products.Archetypes.Field import BooleanField, DateTimeField, \
 from Products.Archetypes.Schema import Schema
 from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.utils import getToolByName
+from Products.CMFCore.permissions import View
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _, deprecated
 from bika.lims import logger
@@ -59,7 +60,9 @@ Attachment = UIDReferenceField(
 # String value, but the result itself is required to be numeric.  If
 # a non-numeric result is needed, ResultOptions can be used.
 Result = StringField(
-    'Result'
+    'Result',
+    read_permission=View,
+    write_permission="Field: Edit Result",
 )
 
 # When the result is changed, this value is updated to the current time.
@@ -79,7 +82,9 @@ RetestOf = UIDReferenceField(
 # the operand (< or >) is stored here.  For routine analyses this is taken
 # from the Result, if the result entered explicitly startswith "<" or ">"
 DetectionLimitOperand = StringField(
-    'DetectionLimitOperand'
+    'DetectionLimitOperand',
+    read_permission=View,
+    write_permission="Field: Edit Result",
 )
 
 # The ID of the logged in user who submitted the result for this Analysis.
@@ -118,6 +123,8 @@ Calculation = HistoryAwareReferenceField(
 # before the calculation is performed.
 InterimFields = InterimFieldsField(
     'InterimFields',
+    read_permission=View,
+    write_permission="Field: Edit Result",
     schemata='Method',
     widget=RecordsWidget(
         label=_("Calculation Interim Fields"),

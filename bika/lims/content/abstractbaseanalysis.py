@@ -15,6 +15,7 @@ from Products.Archetypes.Widget import BooleanWidget, DecimalWidget, \
     IntegerWidget, SelectionWidget, StringWidget
 from Products.Archetypes.utils import DisplayList, IntDisplayList
 from Products.CMFCore.utils import getToolByName
+from Products.CMFCore.permissions import View
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import DurationField, UIDReferenceField
@@ -278,6 +279,8 @@ InstrumentEntryOfResults = BooleanField(
 # See browser/js/bika.lims.analysisservice.edit.js
 Instrument = UIDReferenceField(
     'Instrument',
+    read_permission=View,
+    write_permission="Field: Edit Result",
     schemata="Method",
     searchable=True,
     required=0,
@@ -308,6 +311,8 @@ Instrument = UIDReferenceField(
 # See browser/js/bika.lims.analysisservice.edit.js
 Method = UIDReferenceField(
     'Method',
+    read_permission=View,
+    write_permission="Field: Edit Result",
     schemata="Method",
     required=0,
     searchable=True,
@@ -568,6 +573,8 @@ Hidden = BooleanField(
     'Hidden',
     schemata="Analysis",
     default=False,
+    read_permission=View,
+    write_permission="Field: Edit Hidden",
     widget=BooleanWidget(
         label=_("Hidden"),
         description=_(
@@ -641,6 +648,8 @@ ProtocolID = StringField(
 # Remarks are used in various ways by almost all objects in the system.
 Remarks = TextField(
     'Remarks',
+    read_permission=View,
+    write_permission="Field: Edit Remarks",
     schemata='Description'
 )
 
@@ -966,3 +975,11 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
         return: True if the WF state is either "assigned" or "unassigned"
         """
         return api.get_workflow_status_of(self) in ["assigned", "unassigned"]
+
+    @security.public
+    def isRegistered(self):
+        """Checks if the Analysis is in "registered" state
+
+        return: True if the WF state is "registered"
+        """
+        return api.get_workflow_status_of(self) in ["registered"]

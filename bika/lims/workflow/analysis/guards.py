@@ -6,21 +6,35 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from bika.lims import api
+from bika.lims.interfaces import IWorksheet
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims import workflow as wf
+
+
+def guard_initialize(analysis):
+    """Return whether the transition "initialize" can be performed or not
+    """
+    request = analysis.getRequest()
+    if request.getDateReceived():
+        return True
+    return False
 
 
 def guard_assign(analysis):
     """Return whether the transition "assign" can be performed or not
     """
-    # TODO Workflow - Analysis. Assign guard to return True only in WS.Add?
-    #      We need "unassigned" analyses to appear in Worksheet Add analyses.
-    #      Hence, it returns True if the analysis has not been assigned to any
-    #      worksheet yet. The problem is this can end up (if the 'assign'
-    #      transition is displayed in listings other than WS Add Analyses)
-    #      with an analysis transitioned to 'assigned' state, but without
-    #      a worksheet assigned!. This transition should only be triggered by
-    #      content.worksheet.addAnalysis (see that func for more info)
+
+    # TODO: Refactor this funtion to a more generic place
+    # only if the request was done from worksheet context.
+    request = api.get_request()
+    parents = request.get("PARENTS", [])
+    portal_types_names = map(lambda p: getattr(p, "portal_type", None), parents)
+    if "Worksheet" not in portal_types_names:
+        # Check if the worksheet is declared in request explicitly
+        ws_uid = request.get("ws_uid", "")
+        obj = api.get_object_by_uid(ws_uid, None)
+        if not IWorksheet.providedBy(obj):
+            return False
 
     # Cannot assign if the Sample has not been received
     if not analysis.isSampleReceived():
@@ -31,7 +45,10 @@ def guard_assign(analysis):
         return False
 
     # Cannot assign if user does not have permissions to manage worksheets
-    return user_can_manage_worksheets()
+    if not user_can_manage_worksheets():
+        return False
+
+    return True
 
 
 def guard_unassign(analysis):

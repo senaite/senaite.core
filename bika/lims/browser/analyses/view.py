@@ -630,19 +630,26 @@ class AnalysesView(BikaListingView):
         item['CaptureDate'] = capture_date_str
         item['result_captured'] = capture_date_str
 
-        # If this analysis has a predefined set of options as result, tell the
-        # template that selection list (choices) must be rendered instead of an
-        # input field for the introduction of result.
-        choices = analysis_brain.getResultOptions
-        if choices:
-            # N.B.we copy here the list to avoid persistent changes
-            choices = copy(choices)
-            # By default set empty as the default selected choice
-            choices.insert(0, dict(ResultValue="", ResultText=""))
-            item['choices']['Result'] = choices
-
+        # Note: As soon as we have a separate content type for field analysis,
+        #       we can solely rely on the field permission "Field: Edit Result"
         if self.is_analysis_edition_allowed(analysis_brain):
-            item['allow_edit'].extend(['Result', 'Remarks'])
+            if self.has_permission("Field: Edit Remarks", analysis_brain):
+                item['allow_edit'].extend(['Remarks'])
+
+            if self.has_permission("Field: Edit Result", analysis_brain):
+                item['allow_edit'].extend(['Result'])
+
+                # If this analysis has a predefined set of options as result,
+                # tell the template that selection list (choices) must be
+                # rendered instead of an input field for the introduction of
+                # result.
+                choices = analysis_brain.getResultOptions
+                if choices:
+                    # N.B.we copy here the list to avoid persistent changes
+                    choices = copy(choices)
+                    # By default set empty as the default selected choice
+                    choices.insert(0, dict(ResultValue="", ResultText=""))
+                    item['choices']['Result'] = choices
 
         # Wake up the object only if necessary. If there is no result set, then
         # there is no need to go further with formatted result
@@ -675,8 +682,13 @@ class AnalysesView(BikaListingView):
             interim_field['formatted_value'] = interim_formatted
             item[interim_keyword] = interim_field
             item['class'][interim_keyword] = 'interim'
+
+            # Note: As soon as we have a separate content type for field
+            #       analysis, we can solely rely on the field permission
+            #       "Field: Edit Result"
             if is_editable:
-                item['allow_edit'].append(interim_keyword)
+                if self.has_permission("Field: Edit Result", analysis_brain):
+                    item['allow_edit'].append(interim_keyword)
 
             # Add this analysis' interim fields to the interim_columns list
             interim_hidden = interim_field.get('hidden', False)
@@ -1068,9 +1080,8 @@ class AnalysesView(BikaListingView):
 
         full_obj = self.get_object(analysis_brain)
         item['Hidden'] = full_obj.getHidden()
-        if IRoutineAnalysis.providedBy(full_obj):
-            if self.has_permission('Modify portal content'):
-                item['allow_edit'].append('Hidden')
+        if self.has_permission("Field: Edit Hidden", obj=full_obj):
+            item['allow_edit'].append('Hidden')
 
     def _folder_item_fieldicons(self, analysis_brain):
         """Resolves if field-specific icons must be displayed for the object

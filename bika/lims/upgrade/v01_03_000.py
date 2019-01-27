@@ -19,6 +19,7 @@ from bika.lims.catalog.worksheet_catalog import CATALOG_WORKSHEET_LISTING
 from bika.lims.config import PROJECTNAME as product
 from bika.lims.interfaces import IDuplicateAnalysis, IReferenceAnalysis, \
     INumberGenerator
+from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
 from bika.lims.workflow import changeWorkflowState, ActionHandlerPool
@@ -924,6 +925,15 @@ def get_rm_candidates_for_analysisworkfklow(portal):
                       review_state=["assigned"]),
                  CATALOG_ANALYSIS_LISTING))
 
+    # Added new state "registered" in analysis_workflow. Also, new field
+    # permissions in analysis_workflow, duplicate_workflow and reference_wf
+    # Note this also affects ReferenceAnalysis and DuplicateAnalysis
+    if "initialize" not in workflow.transitions:
+        candidates.append(
+            (wf_id,
+             dict(not_review_state=["published"]),
+             CATALOG_ANALYSIS_LISTING)
+        )
 
     # Just in case (some buddies use 'retract' in 'verified' state)
     candidates.append(
@@ -954,7 +964,17 @@ def decouple_analyses_from_sample_workflow(portal):
     for num, brain in enumerate(brains):
         # Set state
         analysis = api.get_object(brain)
-        target_state = analysis.getWorksheet() and "assigned" or "unassigned"
+        target_state = "registered"
+        if analysis.getWorksheet():
+            target_state = "assigned"
+        elif IDuplicateAnalysis.providedBy(analysis):
+            logger.error("Duplicate analysis {} without worksheet!".
+                         format(api.get_id(analysis)))
+            continue
+        else:
+            request = analysis.getRequest()
+            if request.getDateReceived():
+                target_state = "unassigned"
 
         if num % 100 == 0:
             logger.info("Restoring state to '{}': {}/{}"
@@ -980,7 +1000,14 @@ def remove_attachment_due_from_analysis_workflow(portal):
     total = len(brains)
     for num, brain in enumerate(brains):
         analysis = api.get_object(brain)
-        target_state = analysis.getWorksheet() and "assigned" or "unassigned"
+        target_state = "unassigned"
+        if analysis.getWorksheet():
+            target_state = "assigned"
+        elif IRequestAnalysis.providedBy(analysis):
+            if not IDuplicateAnalysis.providedBy(analysis):
+                request = analysis.getRequest()
+                if not request.getDateReceived():
+                    target_state = "registered"
 
         if num % 100 == 0:
             logger.info("Restoring state to '{}': {}/{}"
@@ -1051,7 +1078,14 @@ def update_role_mappings(portal, queries):
         wf_tool = api.get_tool("portal_workflow")
         wf_id = rm_query[0]
         workflow = wf_tool.getWorkflowById(wf_id)
-        brains = api.search(rm_query[1], rm_query[2])
+
+        query = rm_query[1].copy()
+        exclude_states = []
+        if 'not_review_state' in query:
+            exclude_states = query.get('not_review_state', [])
+            del query['not_review_state']
+
+        brains = api.search(query, rm_query[2])
         total = len(brains)
         for num, brain in enumerate(brains):
             if num % 100 == 0:
@@ -1060,6 +1094,11 @@ def update_role_mappings(portal, queries):
             if api.get_uid(brain) in processed.get(wf_id, []):
                 # Already processed, skip
                 continue
+
+            if api.get_workflow_status_of(brain) in exclude_states:
+                # We explicitely want to exclude objs in these states
+                continue
+
             workflow.updateRoleMappingsFor(api.get_object(brain))
             if wf_id not in processed:
                 processed[wf_id] = []

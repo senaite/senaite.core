@@ -246,8 +246,18 @@ Create an Analysis Request:
 
     >>> ar = new_ar([Cu])
 
-The status of the analysis is `unassigned`:
+The status of the analysis is `registered`:
 
+    >>> analyses = ar.getAnalyses(full_objects=True)
+    >>> map(api.get_workflow_status_of, analyses)
+    ['registered']
+
+But `assign` is not allowed unless we receive the Analysis Request so the
+analysis is automatically transitioned to `unassigned` state:
+
+    >>> isTransitionAllowed(analysis, "assign")
+    False
+    >>> transitioned = do_action_for(ar, "receive")
     >>> analyses = ar.getAnalyses(full_objects=True)
     >>> map(api.get_workflow_status_of, analyses)
     ['unassigned']
@@ -257,12 +267,6 @@ Exactly these roles can assign:
     >>> analysis = analyses[0]
     >>> get_roles_for_permission("BIKA: Assign analyses", analysis)
     ['Analyst', 'LabClerk', 'LabManager', 'Manager']
-
-But `assign` is not allowed unless we receive the Analysis Request:
-
-    >>> isTransitionAllowed(analysis, "assign")
-    False
-    >>> transitioned = do_action_for(ar, "receive")
 
 Current user can assign because has the `LabManager` role:
 

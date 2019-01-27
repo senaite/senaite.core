@@ -5,6 +5,7 @@ import json
 import urllib
 
 from bika.lims import api
+from bika.lims import logger
 from bika.lims.browser import BrowserView
 from bika.lims.browser.listing.decorators import inject_runtime
 from bika.lims.browser.listing.decorators import returns_safe_json
@@ -371,6 +372,13 @@ class AjaxListingView(BrowserView):
                 field = obj.get(fieldname)
         return field
 
+    def is_field_writeable(self, obj, field):
+        """Checks if the field is writeable
+        """
+        if isinstance(field, basestring):
+            field = obj.getField(field)
+        return field.writeable(obj)
+
     def set_field(self, obj, name, value):
         """Set the value
 
@@ -385,10 +393,11 @@ class AjaxListingView(BrowserView):
 
         # field exists, set it with the value
         if field:
-            # https://github.com/senaite/senaite.core/pull/1200
-            # N.B. We don't use the `edit` method here to bypass the instance
-            #      permission check for `Modify portal content`.
-            # obj.edit(**{field.getName(): value})
+
+            # Check the permission of the field
+            if not self.is_field_writeable(obj, field):
+                logger.error("Field '{}' not writeable!".format(name))
+                return []
 
             # get the field mutator (works only for AT content types)
             if hasattr(field, "getMutator"):
@@ -402,6 +411,12 @@ class AjaxListingView(BrowserView):
 
         # check if the object is an analysis and has an interim
         if self.is_analysis(obj):
+
+            # check the permission of the interims field
+            if not self.is_field_writeable(obj, "InterimFields"):
+                logger.error("Field 'InterimFields' not writeable!")
+                return []
+
             interims = obj.getInterimFields()
             interim_keys = map(lambda i: i.get("keyword"), interims)
             if name in interim_keys:
@@ -410,6 +425,7 @@ class AjaxListingView(BrowserView):
                         interim["value"] = value
                 # set the new interim fields
                 obj.setInterimFields(interims)
+
             # recalculate dependent results for result and interim fields
             if name == "Result" or name in interim_keys:
                 updated_objects.append(obj)
@@ -417,6 +433,9 @@ class AjaxListingView(BrowserView):
 
         # unify the list of updated objects
         updated_objects = list(set(updated_objects))
+
+        # reindex the objects
+        map(lambda obj: obj.reindexObject(), updated_objects)
 
         # notify that the objects were modified
         map(modified, updated_objects)

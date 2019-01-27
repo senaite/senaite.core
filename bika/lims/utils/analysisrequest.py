@@ -315,10 +315,16 @@ def create_retest(ar):
     # 4. Transition the retest to "sample_received"!
     changeWorkflowState(retest, 'bika_ar_workflow', 'sample_received')
 
-    # 5. Reindex and other stuff
+    # 5. Initialize analyses
+    for analysis in retest.getAnalyses(full_objects=True):
+        if not IRoutineAnalysis.providedBy(analysis):
+            continue
+        changeWorkflowState(analysis, "bika_analysis_workflow", "unassigned")
+
+    # 6. Reindex and other stuff
     push_reindex_to_actions_pool(retest)
     push_reindex_to_actions_pool(retest.aq_parent)
 
-    # 6. Resume the actions pool
+    # 7. Resume the actions pool
     actions_pool.resume()
     return retest

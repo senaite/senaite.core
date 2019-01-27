@@ -34,11 +34,6 @@ class LabAnalysesTable(AnalysesView):
                 "id": "default",
                 "title": _("All"),
                 "contentFilter": {},
-                "transitions": [
-                    {"id": "submit"},
-                    {"id": "retract"},
-                    {"id": "verify"},
-                ],
                 "columns": self.columns.keys()
              },
         ]
@@ -67,11 +62,6 @@ class FieldAnalysesTable(AnalysesView):
                 "id": "default",
                 "title": _("All"),
                 "contentFilter": {},
-                "transitions": [
-                    {"id": "submit"},
-                    {"id": "retract"},
-                    {"id": "verify"},
-                ],
                 "columns": self.columns.keys()
              },
         ]

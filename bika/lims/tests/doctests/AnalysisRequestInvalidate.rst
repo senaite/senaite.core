@@ -11,7 +11,6 @@ Test Setup
 
 Needed Imports:
 
-    >>> import transaction
     >>> from DateTime import DateTime
     >>> from plone import api as ploneapi
 
@@ -231,6 +230,7 @@ retest will be created.
 First, submit all analyses from the retest:
 
     >>> for analysis in retest.getAnalyses(full_objects=True):
+    ...     analysis.setResult(12)
     ...     transitioned = do_action_for(analysis, 'submit')
     >>> transitioned[0]
     True
