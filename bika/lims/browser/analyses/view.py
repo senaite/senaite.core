@@ -237,7 +237,11 @@ class AnalysesView(BikaListingView):
         # Is the instrument out of date?
         # The user can assign a result to the analysis if it does not have any
         # instrument assigned or the instrument assigned is valid.
-        return self.is_analysis_instrument_valid(analysis_brain)
+        if not self.is_analysis_instrument_valid(analysis_brain):
+            # return if it is allowed to enter a manual result
+            return analysis_obj.getManualEntryOfResults()
+
+        return True
 
     @viewcache.memoize
     def is_analysis_instrument_valid(self, analysis_brain):
