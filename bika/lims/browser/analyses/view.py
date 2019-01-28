@@ -166,6 +166,33 @@ class AnalysesView(BikaListingView):
         self.review_states = [
             {
                 "id": "default",
+                "title": _("Valid"),
+                "contentFilter": {
+                    "review_state": [
+                        "registered",
+                        "unassigned",
+                        "assigned",
+                        "to_be_verified",
+                        "verified",
+                        "published",
+                    ]
+                },
+                "columns": self.columns.keys()
+            },
+            {
+                "id": "invalid",
+                "contentFilter": {
+                    "review_state": [
+                        "cancelled",
+                        "retracted",
+                        "rejected",
+                    ]
+                },
+                "title": _("Invalid"),
+                "columns": self.columns.keys(),
+            },
+            {
+                "id": "all",
                 "title": _("All"),
                 "contentFilter": {},
                 "columns": self.columns.keys()

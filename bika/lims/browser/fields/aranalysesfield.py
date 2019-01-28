@@ -84,7 +84,6 @@ class ARAnalysesField(ObjectField):
         :type specs: list
         :returns: list of new assigned Analyses
         """
-
         # This setter returns a list of new set Analyses
         new_analyses = []
 
