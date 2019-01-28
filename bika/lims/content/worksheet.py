@@ -222,6 +222,8 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         """ Unassigns the analysis passed in from the worksheet.
         Delegates to 'unassign' transition for the analysis passed in
         """
+        # We need to bypass the guard's check for current context!
+        api.get_request().set("ws_uid", api.get_uid(self))
         if analysis.getWorksheet() == self:
             doActionFor(analysis, "unassign")
 
