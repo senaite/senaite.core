@@ -116,6 +116,31 @@ class AnalysisRequestWorkflowAction(AnalysesWorkflowAction):
                         mapping={'error': safe_unicode(msg)})
             self.context.plone_utils.addPortalMessage(message, 'warning')
 
+    def get_specs_value(self, service, specs_key, default=None):
+        """Returns the specification value for the specs_key (min, max, etc.)
+        that must be assigned to new analyses for the service passed in
+        """
+        uid = api.get_uid(service)
+        spec_value = self.request.form.get(specs_key, [{}])[0].get(uid, None)
+        if spec_value is None and default is not None:
+            return default
+        return spec_value
+
+    def get_specs(self, service):
+        """Returns the analysis specs to assign to analyses created by using
+        the service passed in. It overrides the specs of the service with the
+        specs set manually in the manage analyses form (if any).
+        """
+        keyword = service.getKeyword()
+        uid = api.get_uid(service)
+        specs_keys = ("min", "max", "warn_min", "warn_max", "min_operator",
+                      "max_operator")
+        specs = ResultsRangeDict(keyword=keyword, uid=uid).copy()
+        for specs_key in specs_keys:
+            default = specs.get(specs_key, "")
+            specs[specs_key] = self.get_specs_value(service, specs_key, default)
+        return specs
+
     def workflow_action_save_analyses_button(self):
         form = self.request.form
         # AR Manage Analyses: save Analyses
@@ -135,15 +160,7 @@ class AnalysisRequestWorkflowAction(AnalysesWorkflowAction):
 
         specs = {}
         for service_uid, service in objects.items():
-            keyword = service.getKeyword()
-            results_range = ResultsRangeDict(keyword=keyword, uid=service_uid)
-            results_range.update({
-                "min": form["min"][0][service_uid],
-                "max": form["max"][0][service_uid],
-                "warn_min": form["warn_min"][0][service_uid],
-                "warn_max": form["warn_max"][0][service_uid],
-            })
-            specs[service_uid] = results_range
+            specs[service_uid] = self.get_specs(service)
 
         if ar.setAnalyses(objects_uids, prices=prices, specs=specs.values()):
             doActionFor(ar, "rollback_to_receive")
