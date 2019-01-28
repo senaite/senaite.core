@@ -11,6 +11,24 @@ from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims import workflow as wf
 
 
+def is_worksheet_context():
+    """Returns whether the current context from the request is a Worksheet
+    """
+    request = api.get_request()
+    parents = request.get("PARENTS", [])
+    portal_types_names = map(lambda p: getattr(p, "portal_type", None), parents)
+    if "Worksheet" in portal_types_names:
+        return True
+
+    # Check if the worksheet is declared in request explicitly
+    ws_uid = request.get("ws_uid", "")
+    obj = api.get_object_by_uid(ws_uid, None)
+    if IWorksheet.providedBy(obj):
+        return True
+
+    return False
+
+
 def guard_initialize(analysis):
     """Return whether the transition "initialize" can be performed or not
     """
@@ -23,18 +41,9 @@ def guard_initialize(analysis):
 def guard_assign(analysis):
     """Return whether the transition "assign" can be performed or not
     """
-
-    # TODO: Refactor this funtion to a more generic place
-    # only if the request was done from worksheet context.
-    request = api.get_request()
-    parents = request.get("PARENTS", [])
-    portal_types_names = map(lambda p: getattr(p, "portal_type", None), parents)
-    if "Worksheet" not in portal_types_names:
-        # Check if the worksheet is declared in request explicitly
-        ws_uid = request.get("ws_uid", "")
-        obj = api.get_object_by_uid(ws_uid, None)
-        if not IWorksheet.providedBy(obj):
-            return False
+    # Only if the request was done from worksheet context.
+    if not is_worksheet_context():
+        return False
 
     # Cannot assign if the Sample has not been received
     if not analysis.isSampleReceived():
@@ -54,6 +63,10 @@ def guard_assign(analysis):
 def guard_unassign(analysis):
     """Return whether the transition "unassign" can be performed or not
     """
+    # Only if the request was done from worksheet context.
+    if not is_worksheet_context():
+        return False
+
     # Cannot unassign if the analysis is not assigned to any worksheet
     if not analysis.getWorksheet():
         return False
