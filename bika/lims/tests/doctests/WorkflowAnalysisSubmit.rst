@@ -750,6 +750,9 @@ Exactly these roles can submit:
     >>> get_roles_for_permission("BIKA: Edit Results", analysis)
     ['Analyst', 'LabManager', 'Manager']
 
+    >>> get_roles_for_permission("BIKA: Edit Field Results", analysis)
+    ['LabManager', 'Manager', 'Sampler']
+
 And these roles can view results:
 
     >>> get_roles_for_permission("BIKA: View Results", analysis)
@@ -762,7 +765,7 @@ Current user can submit because has the `LabManager` role:
 
 But cannot for other roles:
 
-    >>> setRoles(portal, TEST_USER_ID, ['Authenticated', 'LabClerk', 'RegulatoryInspector', 'Sampler'])
+    >>> setRoles(portal, TEST_USER_ID, ['Authenticated', 'LabClerk', 'RegulatoryInspector'])
     >>> isTransitionAllowed(analysis, "submit")
     False
 
