@@ -262,7 +262,7 @@ class AnalysesView(BikaListingView):
             return False
 
         # Check if the user is allowed to enter a value to to Result field
-        elif not self.has_permission("Field: Edit Result", analysis_obj):
+        if not self.has_permission("Field: Edit Result", analysis_obj):
             return False
 
         # Is the instrument out of date?
