@@ -22,8 +22,15 @@
   needed in some guards and/or in rollback transitions. Double-check -->
   <permission>Review portal content</permission>
 
-  <!-- TODO: We need different Analysis objects for Field- and Lab- Analyses.
-  Then we can rely solely on the Workflow Field permission -->
+  <!-- TODO: We need different Analysis objects for Field- and Lab- Analyses,
+             then we can rely solely on the Workflow Field permission.
+
+  At the moment we need to grant the Sampler the edit field permission for field
+  analyses, but this should not be allowed for lab analyses.
+
+  Hence, the view needs to check *first* if the object is a field or lab
+  analysis and *afterwards* if the "Field: Edit Result" permission is granted.
+  -->
   <permission>BIKA: Edit Field Results</permission>
   <permission>BIKA: Edit Results</permission>
 
@@ -65,8 +72,6 @@
 
     <!-- Lab results are not editable, because the sample did not yet arrive in the lab -->
     <permission-map name="BIKA: Edit Results" acquired="False">
-      <permission-role>Manager</permission-role>
-      <permission-role>Sampler</permission-role>
     </permission-map>
 
     <!-- FIELD PERMISSIONS (initialized) -->
@@ -615,6 +620,7 @@
     <action url="" category="workflow" icon="">Submit for verification</action>
     <guard>
       <guard-permission>BIKA: Edit Results</guard-permission>
+      <guard-permission>BIKA: Edit Field Results</guard-permission>
       <guard-expression>python:here.guard_handler("submit")</guard-expression>
     </guard>
   </transition>

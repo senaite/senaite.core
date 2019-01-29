@@ -261,6 +261,10 @@ class AnalysesView(BikaListingView):
             # lab analyses.
             return False
 
+        # Check if the user is allowed to enter a value to to Result field
+        if not self.has_permission("Field: Edit Result", analysis_obj):
+            return False
+
         # Is the instrument out of date?
         # The user can assign a result to the analysis if it does not have any
         # instrument assigned or the instrument assigned is valid.
@@ -661,26 +665,21 @@ class AnalysesView(BikaListingView):
         item['CaptureDate'] = capture_date_str
         item['result_captured'] = capture_date_str
 
-        # Note: As soon as we have a separate content type for field analysis,
-        #       we can solely rely on the field permission "Field: Edit Result"
         if self.is_analysis_edition_allowed(analysis_brain):
-            if self.has_permission("Field: Edit Remarks", analysis_brain):
-                item['allow_edit'].extend(['Remarks'])
+            item['allow_edit'].extend(['Remarks'])
+            item['allow_edit'].extend(['Result'])
 
-            if self.has_permission("Field: Edit Result", analysis_brain):
-                item['allow_edit'].extend(['Result'])
-
-                # If this analysis has a predefined set of options as result,
-                # tell the template that selection list (choices) must be
-                # rendered instead of an input field for the introduction of
-                # result.
-                choices = analysis_brain.getResultOptions
-                if choices:
-                    # N.B.we copy here the list to avoid persistent changes
-                    choices = copy(choices)
-                    # By default set empty as the default selected choice
-                    choices.insert(0, dict(ResultValue="", ResultText=""))
-                    item['choices']['Result'] = choices
+            # If this analysis has a predefined set of options as result,
+            # tell the template that selection list (choices) must be
+            # rendered instead of an input field for the introduction of
+            # result.
+            choices = analysis_brain.getResultOptions
+            if choices:
+                # N.B.we copy here the list to avoid persistent changes
+                choices = copy(choices)
+                # By default set empty as the default selected choice
+                choices.insert(0, dict(ResultValue="", ResultText=""))
+                item['choices']['Result'] = choices
 
         # Wake up the object only if necessary. If there is no result set, then
         # there is no need to go further with formatted result
