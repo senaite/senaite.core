@@ -76,7 +76,7 @@ class AnalysisRequestsView(BikaListingView):
                 "sortable": False,
                 "toggle": True}),
             ("getId", {
-                "title": _("Request ID"),
+                "title": _("Sample ID"),
                 "attr": "getId",
                 "replace_url": "getURL",
                 "index": "getId"}),
