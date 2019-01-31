@@ -62,8 +62,8 @@ setup(
         "senaite.core.supermodel>=1.0.0",
         # Python 2.x is not supported by WeasyPrint v43
         'WeasyPrint==0.42.3',
-        # Replaces the built in publication engine in senaite.core >= 1.3.0
-        'senaite.impress>=1.2.0',
+        # Add this line *after* senaite.impress 1.2.0 was realeased!
+        # 'senaite.impress>=1.2.0',
     ],
     extras_require={
         'test': [
