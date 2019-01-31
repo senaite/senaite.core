@@ -30,14 +30,6 @@ from bika.lims.interfaces import ILabContact
 from bika.lims import bikaMessageFactory as _
 
 schema = Person.schema.copy() + atapi.Schema((
-    atapi.LinesField(
-        'PublicationPreference',
-        vocabulary_factory='bika.lims.vocabularies.CustomPubPrefVocabularyFactory',
-        default='email',
-        schemata='Publication preference',
-        widget=atapi.MultiSelectionWidget(
-            label=_("Publication preference"),
-        )),
     atapi.ImageField(
         'Signature',
         widget=atapi.ImageWidget(

@@ -12,14 +12,11 @@ from bika.lims import _
 from bika.lims import api
 from bika.lims.config import ARIMPORT_OPTIONS
 from bika.lims.config import DECIMAL_MARKS
-from bika.lims.config import EMAIL_SUBJECT_OPTIONS
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.organisation import Organisation
 from bika.lims.interfaces import IClient
 from Products.Archetypes.public import BooleanField
 from Products.Archetypes.public import BooleanWidget
-from Products.Archetypes.public import LinesField
-from Products.Archetypes.public import MultiSelectionWidget
 from Products.Archetypes.public import ReferenceField
 from Products.Archetypes.public import ReferenceWidget
 from Products.Archetypes.public import Schema
@@ -71,17 +68,6 @@ schema = Organisation.schema.copy() + Schema((
                 "edit": "visible",
                 "view": "visible",
             },
-        ),
-    ),
-
-    LinesField(
-        "EmailSubject",
-        schemata="Preferences",
-        default=["ar", ],
-        vocabulary=EMAIL_SUBJECT_OPTIONS,
-        widget=MultiSelectionWidget(
-            description=_("Items to be included in email subject lines"),
-            label=_("Email subject line"),
         ),
     ),
 

@@ -1932,7 +1932,6 @@ class Setup(WorksheetImporter):
             MemberDiscount=str(Float(values['MemberDiscount'])),
             VAT=str(Float(values['VAT'])),
             MinimumResults=int(values['MinimumResults']),
-            BatchEmail=int(values['BatchEmail']),
             SamplingWorkflowEnabled=values['SamplingWorkflowEnabled'],
             ScheduleSamplingEnabled=values.get('ScheduleSamplingEnabled', 0),
             CategoriseAnalysisServices=self.to_bool(

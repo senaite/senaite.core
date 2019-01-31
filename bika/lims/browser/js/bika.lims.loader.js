@@ -115,9 +115,6 @@ window.bika.lims.controllers =  {
   // AR Add 2
 	"#analysisrequest_add_form": ['AnalysisRequestAdd'],
 
-    "#ar_publish_container":
-        ['RangeGraph', 'AnalysisRequestPublishView'],
-
     // Supply Orders
     ".portaltype-supplyorder.template-base_edit":
         ['SupplyOrderEditView'],
