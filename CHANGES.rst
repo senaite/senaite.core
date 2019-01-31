@@ -70,6 +70,7 @@ Changelog
 
 **Removed**
 
+- #1224 Replace publication engine with SENAITE IMPRESS
 - #1207 Remove results auto-import interval from Setup: no limitations to cron
 - #1180 Remove AdHoc field from Analysis Request
 - #1180 Remove support for "sampleId" and "sample" keywords in ID Formatting
