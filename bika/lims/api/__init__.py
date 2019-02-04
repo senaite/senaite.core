@@ -5,47 +5,45 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-import Missing
 import re
-
-from Acquisition import aq_base
-from AccessControl.PermissionRole import rolesForPermissionOn
-
 from datetime import datetime
 from datetime import timedelta
+
+import Missing
+from AccessControl.PermissionRole import rolesForPermissionOn
+from Acquisition import aq_base
+from bika.lims import logger
+from bika.lims.interfaces import IClient
+from bika.lims.interfaces import IContact
+from bika.lims.interfaces import ILabContact
 from DateTime import DateTime
-
-from Products.CMFPlone.utils import base_hasattr, safe_unicode
-from Products.CMFCore.interfaces import ISiteRoot
-from Products.CMFCore.interfaces import IFolderish
-from Products.Archetypes.BaseObject import BaseObject
-from Products.ZCatalog.interfaces import ICatalogBrain
-from Products.CMFPlone.utils import _createObjectByType
-from Products.CMFCore.WorkflowCore import WorkflowException
-from Products.CMFCore.utils import getToolByName
-from bika.lims.interfaces import IClient, IContact, ILabContact
-
-from zope import globalrequest
-from zope.event import notify
-from zope.interface import implements
-from zope.component import getUtility
-from zope.component import getMultiAdapter
-from zope.component.interfaces import IFactory
-from zope.component.interfaces import ObjectEvent
-from zope.component.interfaces import IObjectEvent
-from zope.lifecycleevent import modified
-from zope.lifecycleevent import ObjectCreatedEvent
-from zope.security.interfaces import Unauthorized
-
 from plone import api as ploneapi
-from plone.memoize.volatile import DontCache
 from plone.api.exc import InvalidParameterError
-from plone.dexterity.interfaces import IDexterityContent
 from plone.app.layout.viewlets.content import ContentHistoryView
+from plone.dexterity.interfaces import IDexterityContent
 from plone.i18n.normalizer.interfaces import IFileNameNormalizer
 from plone.i18n.normalizer.interfaces import IIDNormalizer
-
-from bika.lims import logger
+from plone.memoize.volatile import DontCache
+from Products.Archetypes.BaseObject import BaseObject
+from Products.CMFCore.interfaces import IFolderish
+from Products.CMFCore.interfaces import ISiteRoot
+from Products.CMFCore.utils import getToolByName
+from Products.CMFCore.WorkflowCore import WorkflowException
+from Products.CMFPlone.utils import _createObjectByType
+from Products.CMFPlone.utils import base_hasattr
+from Products.CMFPlone.utils import safe_unicode
+from Products.ZCatalog.interfaces import ICatalogBrain
+from zope import globalrequest
+from zope.component import getMultiAdapter
+from zope.component import getUtility
+from zope.component.interfaces import IFactory
+from zope.component.interfaces import IObjectEvent
+from zope.component.interfaces import ObjectEvent
+from zope.event import notify
+from zope.interface import implements
+from zope.lifecycleevent import ObjectCreatedEvent
+from zope.lifecycleevent import modified
+from zope.security.interfaces import Unauthorized
 
 """Bika LIMS Framework API
 
