@@ -42,7 +42,6 @@ class ListingController extends React.Component
     @filterBySearchterm = @filterBySearchterm.bind @
     @sortBy = @sortBy.bind @
     @showMore = @showMore.bind @
-    @selectUID = @selectUID.bind @
     @doAction = @doAction.bind @
     @toggleContextMenu = @toggleContextMenu.bind @
     @toggleColumn = @toggleColumn.bind @
@@ -52,6 +51,7 @@ class ListingController extends React.Component
     @updateEditableField = @updateEditableField.bind @
     @saveAjaxQueue = @saveAjaxQueue.bind @
     @toggleRemarks = @toggleRemarks.bind @
+    @on_select_checkbox_checked = @on_select_checkbox_checked.bind @
 
     # root element
     @root_el = @props.root_el
@@ -391,8 +391,6 @@ class ListingController extends React.Component
      * select/deselect the UID
     ###
 
-    me = this
-
     # copy the selected UIDs from the state
     #
     # N.B. We use [].concat(@state.selecte_uids) to get a copy, otherwise it
@@ -426,19 +424,16 @@ class ListingController extends React.Component
         selected_uids.splice pos, 1
 
     # Only set the state and refetch transitions if the selected UIDs changed
-    added = selected_uids.filter((uid) ->
-       me.state.selected_uids.indexOf(uid)==-1).length > 0
-    removed = me.state.selected_uids.filter((uid) ->
+    added = selected_uids.filter((uid) =>
+       @state.selected_uids.indexOf(uid)==-1).length > 0
+    removed = @state.selected_uids.filter((uid) =>
        selected_uids.indexOf(uid)==-1).length > 0
     return unless added or removed
 
-    # set the new list of selected UIDs to the state
-    @setState
-     selected_uids: selected_uids
-    , ->
-      if me.state.fetch_transitions_on_select
-        # fetch all possible transitions
-        me.fetch_transitions()
+    # return a promise which is resolved when the state was successfully set
+    return new Promise (resolve, reject) =>
+      @setState
+        selected_uids: selected_uids, resolve
 
   saveAjaxQueue: ->
     ###
@@ -479,9 +474,18 @@ class ListingController extends React.Component
     ###
     console.debug "ListingController::updateEditableField: uid=#{uid} name=#{name} value=#{value}"
 
+    # immediately fill the `ajax_save_queue` to show the "Save" button
+    @saveEditableField uid, name, value, item
+
     # Select the whole row if an editable field changed its value
+    me = this
     if not @is_uid_selected uid
-      @selectUID uid, on
+      me = this
+      @selectUID(uid, on).then ->
+        # fetch all possible transitions
+        if me.state.fetch_transitions_on_select
+          me.fetch_transitions()
+
 
   is_uid_selected: (uid) ->
     ###
@@ -792,10 +796,39 @@ class ListingController extends React.Component
       # reload the folderitems
       if reload and uids.length > 0
         me.fetch_folderitems yes
+        # fetch all possible transitions
         if me.state.fetch_transitions_on_select
           me.fetch_transitions()
       # toggle loader off
       me.toggle_loader off
+
+
+  ###*
+    * EVENT HANDLERS
+    *
+    * N.B. All `event` objects are ReactJS events
+    *      https://reactjs.org/docs/handling-events.html
+  ###
+
+  on_select_checkbox_checked: (event) ->
+    ###
+     * Event handler when a folderitem (row) was selected
+    ###
+    console.debug "°°° ListingController::on_select_checkbox_checked"
+    me = this
+    el = event.currentTarget
+    uid = el.value
+    checked = el.checked
+
+    @selectUID(uid, checked).then ->
+      if me.state.fetch_transitions_on_select
+        # fetch all possible transitions
+        me.fetch_transitions()
+
+
+  ###*
+    * VIEW
+  ###
 
   render: ->
     ###
@@ -844,7 +877,7 @@ class ListingController extends React.Component
             className="contentstable table table-condensed table-hover small"
             allow_edit={@state.allow_edit}
             on_header_column_click={@sortBy}
-            on_select_checkbox_checked={@selectUID}
+            on_select_checkbox_checked={@on_select_checkbox_checked}
             on_context_menu={@toggleContextMenu}
             sort_on={@state.sort_on}
             sort_order={@state.sort_order}
