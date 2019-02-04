@@ -6,6 +6,7 @@ Changelog
 
 **Added**
 
+- #1222 Added User and Security API
 - #1217 Added filtering buttons in Analyses listings (Valid, Invalid, All)
 - #1193 Added viewlets for partition and primary ARs
 - #1180 Analysis Request field-specific permissions managed in `ar_workflow`
