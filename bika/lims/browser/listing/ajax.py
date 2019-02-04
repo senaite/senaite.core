@@ -13,11 +13,23 @@ from bika.lims.browser.listing.decorators import set_application_json_header
 from bika.lims.browser.listing.decorators import translate
 from bika.lims.interfaces import IReferenceAnalysis
 from bika.lims.interfaces import IRoutineAnalysis
+from plone.memoize.volatile import cache
+from plone.memoize.volatile import store_on_context
 from Products.Archetypes.utils import mapply
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.interface import implements
 from zope.lifecycleevent import modified
 from zope.publisher.interfaces import IPublishTraverse
+
+
+def cache_transitions(method, view, obj):
+    """Cache key for the possible transitions
+    """
+    keys = [
+        api.get_uid(obj),
+        api.get_workflow_status_of(obj),
+    ]
+    return "-".join(keys)
 
 
 class AjaxListingView(BrowserView):
@@ -142,6 +154,7 @@ class AjaxListingView(BrowserView):
         view_name = self.__name__
         return "{}/{}".format(url, view_name)
 
+    @cache(cache_transitions, store_on_context)
     def get_transitions_for(self, obj):
         """Get the allowed transitions for the given object
         """
@@ -326,25 +339,28 @@ class AjaxListingView(BrowserView):
 
         :returns: List of recalculated objects
         """
+
         if recalculated is None:
-            recalculated = []
+            recalculated = set()
+
         # avoid double recalculation in recursion
         if obj in recalculated:
-            return []
+            return set()
+
         # recalculate own result
         if obj.calculateResult(override=True):
             # append object to the list of recalculated results
-            recalculated.append(obj)
+            recalculated.add(obj)
         # recalculate dependent analyses
         for dep in obj.getDependents():
             if dep.calculateResult(override=True):
                 # TODO the `calculateResult` method should return False here!
                 if dep.getResult() in ["NA", "0/0"]:
                     continue
-                recalculated.append(dep)
+                recalculated.add(dep)
             # recalculate dependents of dependents
             for ddep in dep.getDependents():
-                recalculated.extend(
+                recalculated.update(
                     self.recalculate_results(
                         ddep, recalculated=recalculated))
         return recalculated
@@ -386,7 +402,7 @@ class AjaxListingView(BrowserView):
         """
 
         # set of updated objects
-        updated_objects = []
+        updated_objects = set()
 
         # lookup the schema field
         field = self.lookup_schema_field(obj, name)
@@ -407,7 +423,7 @@ class AjaxListingView(BrowserView):
                 # Set the value on the field directly
                 field.set(obj, value)
 
-            updated_objects.append(obj)
+            updated_objects.add(obj)
 
         # check if the object is an analysis and has an interim
         if self.is_analysis(obj):
@@ -428,11 +444,11 @@ class AjaxListingView(BrowserView):
 
             # recalculate dependent results for result and interim fields
             if name == "Result" or name in interim_keys:
-                updated_objects.append(obj)
-                updated_objects.extend(self.recalculate_results(obj))
+                updated_objects.add(obj)
+                updated_objects.update(self.recalculate_results(obj))
 
         # unify the list of updated objects
-        updated_objects = list(set(updated_objects))
+        updated_objects = list(updated_objects)
 
         # reindex the objects
         map(lambda obj: obj.reindexObject(), updated_objects)
