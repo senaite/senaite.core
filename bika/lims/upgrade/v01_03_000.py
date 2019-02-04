@@ -164,10 +164,6 @@ def upgrade(tool):
     # https://github.com/senaite/senaite.core/pull/1125
     hide_samples(portal)
 
-    # Add Listing JS to portal_javascripts registry
-    # https://github.com/senaite/senaite.core/pull/1131
-    add_listing_js_to_portal_javascripts(portal)
-
     # Fix Analysis Request - Analyses inconsistencies
     # https://github.com/senaite/senaite.core/pull/1138
     fix_ar_analyses_inconsistencies(portal)
@@ -1171,15 +1167,6 @@ def hide_samples(portal):
     for sample in api.search(dict(portal_type="Sample"), "bika_catalog"):
         remove_actions_from_sample(api.get_object(sample))
     commit_transaction(portal)
-
-
-def add_listing_js_to_portal_javascripts(portal):
-    """Adds senaite.core.listing.js to the portal_javascripts registry
-    """
-    id = "++resource++senaite.core.browser.listing.static/js/senaite.core.listing.js"
-    portal_javascripts = portal.portal_javascripts
-    if id not in portal_javascripts.getResourceIds():
-        portal_javascripts.registerResource(id=id)
 
 
 def fix_ar_analyses_inconsistencies(portal):

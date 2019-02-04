@@ -11,9 +11,9 @@ from bika.lims import PMF
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.api import get_object_by_uid
-from bika.lims.browser.listing.view import ListingView
 from bika.lims.workflow import ActionHandlerPool
 from bika.lims.workflow import doActionFor
+from senaite.core.listing import ListingView
 
 
 class WorkflowAction:
@@ -237,5 +237,6 @@ class WorkflowAction:
 class BikaListingView(ListingView):
     """BBB: Base View for Table Listings
 
-    Please use `bika.lims.browser.listing.view.ListingView` instead
+    Please use `senaite.core.listing.ListingView` instead
+    https://github.com/senaite/senaite.core/pull/1226
     """
