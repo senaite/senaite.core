@@ -191,4 +191,15 @@
     <permission value="View"/>
  </action>
 
+ <action title="Analysis Reports"
+         action_id="reports_listing"
+         category="object"
+         icon_expr=""
+         url_expr="string:${object_url}/reports_listing"
+         visible="True"
+         i18n:domain="senaite.core"
+         i18n:attributes="title">
+   <permission value="BIKA: Manage Analysis Requests"/>
+ </action>
+
 </object>

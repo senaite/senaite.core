@@ -9,7 +9,7 @@ from Acquisition import aq_get
 from bika.lims import bikaMessageFactory as _
 from bika.lims.api import is_active
 from bika.lims.utils import t
-from bika.lims.interfaces import IDisplayListVocabulary, ICustomPubPref
+from bika.lims.interfaces import IDisplayListVocabulary
 from bika.lims.utils import to_utf8
 from Products.Archetypes.public import DisplayList
 from Products.CMFCore.utils import getToolByName
@@ -458,42 +458,6 @@ def getTemplates(bikalims_path, restype, filter_by_type=False):
     return out
 
 
-def getARReportTemplates():
-    """ Returns an array with the AR Templates available in Bika LIMS  plus the
-        templates from the 'reports' resources directory type from each
-        additional product.
-
-        Each array item is a dictionary with the following structure:
-            {'id': <template_id>,
-             'title': <template_title>}
-
-        If the template lives outside the bika.lims add-on, both the template_id
-        and template_title include a prefix that matches with the add-on
-        identifier. template_title is the same name as the id, but with
-        whitespaces and without extension.
-
-        As an example, for a template from the my.product add-on located in
-        templates/reports dir, and with a filename "My_cool_report.pt", the
-        dictionary will look like:
-            {'id': 'my.product:My_cool_report.pt',
-             'title': 'my.product: My cool report'}
-    """
-    resdirname = 'reports'
-    p = os.path.join("browser", "analysisrequest", "templates", resdirname)
-    return getTemplates(p, resdirname)
-
-
-class ARReportTemplatesVocabulary(object):
-    """Locate all ARReport templates to allow user to set the default
-    """
-    implements(IVocabularyFactory)
-
-    def __call__(self, context):
-        out = [SimpleTerm(x['id'], x['id'], x['title']) for x in
-               getARReportTemplates()]
-        return SimpleVocabulary(out)
-
-
 def getStickerTemplates(filter_by_type=False):
     """ Returns an array with the sticker templates available. Retrieves the
         TAL templates saved in templates/stickers folder.
@@ -544,20 +508,3 @@ class StickerTemplatesVocabulary(object):
         out = [SimpleTerm(x['id'], x['id'], x['title']) for x in
                getStickerTemplates(filter_by_type=filter_by_type)]
         return SimpleVocabulary(out)
-
-
-ARReportTemplatesVocabularyFactory = ARReportTemplatesVocabulary()
-
-class CustomPubPrefVocabulary(object):
-    implements(IVocabularyFactory)
-
-    def __call__(self, context):
-        items = [
-            (_('Email'),'email'),
-            (_('PDF'), 'pdf')
-        ]
-        for name, item in getAdapters((context, ), ICustomPubPref):
-            items.append(item)
-        return SimpleVocabulary.fromItems(items)
-
-CustomPubPrefVocabularyFactory = CustomPubPrefVocabulary()

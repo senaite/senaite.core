@@ -744,11 +744,6 @@ class IHeaderTableFieldRenderer(Interface):
         """
 
 
-class ICustomPubPref(Interface):
-    """Marker interface for CustomPubPref
-    """
-
-
 class IReflexRule(Interface):
     """Marker interface for a Reflex Rule
     """
