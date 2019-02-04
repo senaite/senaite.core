@@ -471,16 +471,4 @@
               inline="False"
               insert-after="*"/>
 
-  <!-- Listing ReactJS (not managed by bika.lims.loader) -->
-  <javascript authenticated="False"
-              id="++resource++senaite.core.browser.listing.static/js/senaite.core.listing.js"
-              cacheable="True"
-              compression="safe"
-              conditionalcomment=""
-              cookable="True"
-              enabled="on"
-              expression=""
-              inline="False"
-              insert-after="*"/>
-
  </object>
