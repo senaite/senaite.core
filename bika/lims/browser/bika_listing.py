@@ -238,4 +238,5 @@ class BikaListingView(ListingView):
     """BBB: Base View for Table Listings
 
     Please use `senaite.core.listing.ListingView` instead
+    https://github.com/senaite/senaite.core/pull/1226
     """
