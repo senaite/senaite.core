@@ -551,6 +551,7 @@ class EmailView(BrowserView):
         # handle 'uids' GET parameter coming from a redirect
         if isinstance(uids, basestring):
             uids = uids.split(",")
+        uids = filter(api.is_uid, uids)
         unique_uids = OrderedDict().fromkeys(uids).keys()
         return map(self.get_object_by_uid, unique_uids)
 
