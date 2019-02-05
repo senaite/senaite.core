@@ -7,6 +7,7 @@
 
 from Products.Five import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from bika.lims.alphanumber import Alphanumber
 
 from zope.interface import Interface
 from zope.interface import implements
@@ -85,7 +86,10 @@ class IDServerView(BrowserView):
         number = self.storage.get(key) + 1
         spec = {
             "seq": number,
+            "alpha": Alphanumber(number),
             "year": get_current_year(),
+            "parent_analysisrequest": "ParentAR",
+            "parent_ar_id": "ParentARId",
             "sampleType": key.replace(portal_type, "").strip("-"),
         }
         return id_template.format(**spec)
