@@ -34,7 +34,8 @@ from bika.lims.config import PROJECTNAME
 from bika.lims.content.analysisspec import ResultsRangeDict
 from bika.lims.content.bikaschema import BikaSchema
 # Bika Interfaces
-from bika.lims.interfaces import IAnalysisRequest, ICancellable
+from bika.lims.interfaces import IAnalysisRequest, ICancellable, \
+    IAnalysisRequestPartition
 # Bika Permissions
 from bika.lims.permissions import ManageInvoices
 # Bika Utils
@@ -70,6 +71,8 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
 from Products.CMFPlone.utils import safe_unicode
 from zope.interface import implements
+from zope.interface import alsoProvides
+from zope.interface import noLongerProvides
 
 
 # SCHEMA DEFINITION
@@ -2373,5 +2376,15 @@ class AnalysisRequest(BaseFolder):
             if not api.get_object(analysis).isOpen():
                 return False
         return True
+
+    def setParentAnalysisRequest(self, value):
+        """Sets a parent analysis request, making the current a partition
+        """
+        self.Schema().getField("ParentAnalysisRequest").set(self, value)
+        if not value:
+            noLongerProvides(self, IAnalysisRequestPartition)
+        else:
+            alsoProvides(self, IAnalysisRequestPartition)
+
 
 registerType(AnalysisRequest, PROJECTNAME)

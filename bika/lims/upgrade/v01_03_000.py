@@ -18,7 +18,7 @@ from bika.lims.catalog.analysisrequest_catalog import \
 from bika.lims.catalog.worksheet_catalog import CATALOG_WORKSHEET_LISTING
 from bika.lims.config import PROJECTNAME as product
 from bika.lims.interfaces import IDuplicateAnalysis, IReferenceAnalysis, \
-    INumberGenerator
+    INumberGenerator, IAnalysisRequestPartition
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
@@ -28,6 +28,7 @@ from bika.lims.workflow import doActionFor as do_action_for
 from bika.lims.workflow.analysis.events import remove_analysis_from_worksheet, \
     reindex_request
 
+from zope.interface import alsoProvides
 from zope.component import getUtility
 
 version = '1.3.0'  # Remember version number in metadata.xml and setup.py
@@ -180,6 +181,9 @@ def upgrade(tool):
     # Replaces Analysis Request string (and plural forms) by Sample
     rename_analysis_requests_actions(portal)
 
+    # Apply IAnalysisRequestPartition marker interface to preexisting partitions
+    apply_analysis_request_partition_interface(portal)
+
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
 
@@ -233,6 +237,9 @@ def setup_partitioning(portal):
 
     # Adds metadata columns for partitioning
     add_partitioning_metadata(portal)
+
+    # Setup default ID formatting for partitions
+    set_partitions_id_formatting(portal)
 
 
 def add_create_partition_transition(portal):
@@ -1394,12 +1401,13 @@ def change_analysis_requests_id_formatting(portal, p_type="AnalysisRequest"):
     """Applies the system's Sample ID Formatting to Analysis Request
     """
     ar_id_format = dict(
-            form='{sampleType}-{seq:04d}',
-            portal_type='AnalysisRequest',
-            prefix='analysisrequest',
-            sequence_type='generated',
-            counter_type='',
-            split_length=1)
+        form='{sampleType}-{seq:04d}',
+        portal_type='AnalysisRequest',
+        prefix='analysisrequest',
+        sequence_type='generated',
+        counter_type='',
+        split_length=1)
+
     bs = portal.bika_setup
     id_formatting = bs.getIDFormatting()
     ar_format = filter(lambda id: id["portal_type"] == p_type, id_formatting)
@@ -1465,6 +1473,19 @@ def set_id_format(portal, format):
         ids.append(record)
     ids.append(format)
     bs.setIDFormatting(ids)
+
+
+def set_partitions_id_formatting(portal):
+    """Sets the default id formatting for AR-like partitions
+    """
+    part_id_format = dict(
+        context="parent_analysisrequest",
+        counter_reference="AnalysisRequestParentAnalysisRequest",
+        counter_type="backreference",
+        form="{parent_ar_id}-{seq:02d}",
+        portal_type="AnalysisRequestPartition",
+        sequence_type="counter")
+    set_id_format(portal, part_id_format)
 
 
 def remove_stale_javascripts(portal):
@@ -1554,6 +1575,7 @@ def fix_worksheet_status_inconsistencies(portal):
                             .format(worksheet.getId()))
     commit_transaction(portal)
 
+
 def rename_analysis_requests_actions(portal):
     logger.info("Renaming 'Analysis Request' to 'Sample' ...")
 
@@ -1571,4 +1593,24 @@ def rename_analysis_requests_actions(portal):
 
     for batch in portal.batches.objectValues("Batch"):
         rename_ar_action(batch)
+    commit_transaction(portal)
+
+
+def apply_analysis_request_partition_interface(portal):
+    """Walks trhough all AR-like partitions registered in the system and
+    applies the IAnalysisRequestPartition marker interface to them
+    """
+    logger.info("Applying 'IAnalysisRequestPartition' marker interface ...")
+    query = dict(portal_type="AnalysisRequest", isRootAncestor=False)
+    brains = api.search(query, CATALOG_ANALYSIS_REQUEST_LISTING)
+    total = len(brains)
+    for num, brain in enumerate(brains):
+        if num % 100 == 0:
+            logger.info("Applying 'IAnalysisRequestPartition' interface: {}/{}"
+                        .format(num, total))
+        ar = api.get_object(brain)
+        if IAnalysisRequestPartition.providedBy(ar):
+            continue
+        if ar.getParentAnalysisRequest():
+            alsoProvides(ar, IAnalysisRequestPartition)
     commit_transaction(portal)

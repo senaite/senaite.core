@@ -55,6 +55,11 @@ class IAnalysisRequest(Interface):
     """
 
 
+class IAnalysisRequestPartition(Interface):
+    """Marker interface for Analysis Requests that are also Partitions
+    """
+
+
 class IAnalysisRequestAddView(Interface):
     """AR Add view
     """
