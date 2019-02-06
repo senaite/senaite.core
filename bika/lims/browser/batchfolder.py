@@ -6,14 +6,10 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 import collections
-import json
-from operator import itemgetter
 
-import plone
 from bika.lims import api
 from bika.lims.api.security import check_permission
 from bika.lims import bikaMessageFactory as _
-from bika.lims.browser import BrowserView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.permissions import AddBatch
 from bika.lims.utils import get_link
@@ -159,49 +155,3 @@ class BatchFolderContentsView(BikaListingView):
             item["replace"]["Client"] = get_link(client_url, client_name)
 
         return item
-
-
-class ajaxGetBatches(BrowserView):
-    """Vocabulary source for jquery combo dropdown box
-    """
-
-    def __call__(self):
-        plone.protect.CheckAuthenticator(self.request)
-        searchTerm = self.request["searchTerm"].lower()
-        page = self.request["page"]
-        nr_rows = self.request["rows"]
-        sord = self.request["sord"]
-        sidx = self.request["sidx"]
-
-        rows = []
-
-        batches = self.bika_catalog(portal_type="Batch")
-
-        for batch in batches:
-            batch = batch.getObject()
-            if self.portal_workflow.getInfoFor(
-                    batch, "review_state", "open") != "open" or \
-               self.portal_workflow.getInfoFor(
-                   batch, "cancellation_state") == "cancelled":
-                continue
-            if batch.Title().lower().find(searchTerm) > -1 or \
-               batch.Description().lower().find(searchTerm) > -1:
-                rows.append({
-                    "BatchID": batch.getBatchID(),
-                    "Description": batch.Description(),
-                    "BatchUID": batch.UID()})
-
-        rows = sorted(rows, cmp=lambda x, y: cmp(x.lower(), y.lower()),
-                      key=itemgetter(sidx and sidx or "BatchID"))
-        if sord == "desc":
-            rows.reverse()
-        pages = len(rows) / int(nr_rows)
-        pages += divmod(len(rows), int(nr_rows))[1] and 1 or 0
-        ret = {
-            "page": page,
-            "total": pages,
-            "records": len(rows),
-            "rows": rows[
-                (int(page) - 1) * int(nr_rows): int(page) * int(nr_rows)]}
-
-        return json.dumps(ret)
