@@ -59,6 +59,9 @@ class BatchFolderContentsView(BikaListingView):
             ("ClientID", {
                 "title": _("Client ID"),
                 "index": "getClientID", }),
+            ("ClientBatchID", {
+                "title": _("Client Batch ID"),
+                "index": "getClientBatchID", }),
             ("state_title", {
                 "title": _("State"),
                 "sortable": False, }),
@@ -141,12 +144,14 @@ class BatchFolderContentsView(BikaListingView):
         obj = api.get_object(obj)
         url = "{}/analysisrequests".format(api.get_url(obj))
         bid = api.get_id(obj)
+        cbid = obj.getClientBatchID()
         title = api.get_title(obj)
         client = obj.getClient()
         created = api.get_creation_date(obj)
         date = obj.getBatchDate()
 
         item["BatchID"] = bid
+        item["ClientBatchID"] = cbid
         item["replace"]["BatchID"] = get_link(url, bid)
         item["Title"] = title
         item["replace"]["Title"] = get_link(url, title)

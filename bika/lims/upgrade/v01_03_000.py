@@ -1631,10 +1631,12 @@ def update_bika_catalog(portal):
     indexes_to_add = [
         # name, attribute, metatype
         ("getClientID", "getClientID", "FieldIndex"),
+        ("getClientBatchID", "getClientBatchID", "FieldIndex"),
     ]
 
     metadata_to_add = [
         "getClientID",
+        "getClientBatchID",
     ]
 
     for index in indexes_to_add:
