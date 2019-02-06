@@ -15,12 +15,11 @@ from bika.lims.config import PRIORITIES
 from bika.lims.permissions import AddAnalysisRequest
 from bika.lims.permissions import ManageAnalysisRequests
 from bika.lims.permissions import SampleSample
-from bika.lims.permissions import Verify as VerifyPermission
-from bika.lims.utils import get_image, get_progress_bar_html
+from bika.lims.utils import get_image
+from bika.lims.utils import get_progress_bar_html
 from bika.lims.utils import getUsers
 from bika.lims.utils import t
 from DateTime import DateTime
-from plone.api import user
 from Products.CMFCore.permissions import ModifyPortalContent
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
@@ -130,6 +129,12 @@ class AnalysisRequestsView(BikaListingView):
                 "title": _("Client"),
                 "index": "getClientTitle",
                 "attr": "getClientTitle",
+                "replace_url": "getClientURL",
+                "toggle": True}),
+            ("ClientID", {
+                "title": _("Client ID"),
+                "index": "getClientID",
+                "attr": "getClientID",
                 "replace_url": "getClientURL",
                 "toggle": True}),
             ("Province", {
