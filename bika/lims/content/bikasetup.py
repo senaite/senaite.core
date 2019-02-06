@@ -703,6 +703,13 @@ schema = BikaFolderSchema.copy() + Schema((
                 'prefix': 'analysisrequest',
                 'sequence_type': 'generated',
                 'split_length': 1
+            }, {
+                'context': 'parent_analysisrequest',
+                'counter_reference': 'AnalysisRequestParentAnalysisRequest',
+                'counter_type': 'backreference',
+                'form': '{parent_ar_id}-{seq:02d}',
+                'portal_type': 'AnalysisRequestPartition',
+                'sequence_type': 'counter',
             },
         ],
         widget=RecordsWidget(

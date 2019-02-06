@@ -8,16 +8,16 @@
 import re
 
 import transaction
+from DateTime import DateTime
+from Products.ATContentTypes.utils import DT2dt
 from bika.lims import api
 from bika.lims import logger
 from bika.lims.alphanumber import Alphanumber
 from bika.lims.alphanumber import to_alpha
 from bika.lims.browser.fields.uidreferencefield import \
     get_backreferences as get_backuidreferences
-from bika.lims.interfaces import IIdServer
+from bika.lims.interfaces import IIdServer, IAnalysisRequestPartition
 from bika.lims.numbergenerator import INumberGenerator
-from DateTime import DateTime
-from Products.ATContentTypes.utils import DT2dt
 from zope.component import getAdapters
 from zope.component import getUtility
 
@@ -55,6 +55,19 @@ def get_contained_items(obj, spec):
     return obj.objectItems(spec)
 
 
+def get_type_id(context, **kw):
+    """Returns the type id for the context passed in
+    """
+    portal_type = kw.get("portal_type", None)
+    if portal_type:
+        return portal_type
+
+    if IAnalysisRequestPartition.providedBy(context):
+        return "AnalysisRequestPartition"
+
+    return api.get_portal_type(context)
+
+
 def get_config(context, **kw):
     """Fetch the config dict from the Bika Setup for the given portal_type
     """
@@ -62,7 +75,7 @@ def get_config(context, **kw):
     config_map = api.get_bika_setup().getIDFormatting()
 
     # allow portal_type override
-    portal_type = kw.get("portal_type") or api.get_portal_type(context)
+    portal_type = get_type_id(context, **kw)
 
     # check if we have a config for the given portal_type
     for config in config_map:
@@ -81,9 +94,8 @@ def get_config(context, **kw):
 def get_variables(context, **kw):
     """Prepares a dictionary of key->value pairs usable for ID formatting
     """
-
     # allow portal_type override
-    portal_type = kw.get("portal_type") or api.get_portal_type(context)
+    portal_type = get_type_id(context, **kw)
 
     # The variables map hold the values that might get into the constructed id
     variables = {
@@ -97,7 +109,7 @@ def get_variables(context, **kw):
     }
 
     # Augment the variables map depending on the portal type
-    if portal_type == "AnalysisRequest":
+    if portal_type in ["AnalysisRequest", "AnalysisRequestPartition"]:
         now = DateTime()
         sampling_date = context.getSamplingDate()
         sampling_date = sampling_date and DT2dt(sampling_date) or DT2dt(now)
@@ -107,8 +119,14 @@ def get_variables(context, **kw):
             'clientId': context.getClientID(),
             'dateSampled': date_sampled,
             'samplingDate': sampling_date,
-            'sampleType': context.getSampleType().getPrefix(),
+            'sampleType': context.getSampleType().getPrefix()
         })
+        if portal_type == "AnalysisRequestPartition":
+            parent_ar = context.getParentAnalysisRequest()
+            variables.update({
+                "parent_analysisrequest": parent_ar,
+                "parent_ar_id": api.get_id(parent_ar)
+            })
 
     elif portal_type == "ARReport":
         variables.update({
@@ -246,7 +264,7 @@ def get_generated_number(context, config, variables, **kw):
     separator = kw.get('separator', '-')
 
     # allow portal_type override
-    portal_type = kw.get("portal_type") or api.get_portal_type(context)
+    portal_type = get_type_id(context, **kw)
 
     # The ID format for string interpolation, e.g. WS-{seq:03d}
     id_template = config.get("form", "")
