@@ -131,6 +131,12 @@ class AnalysisRequestsView(BikaListingView):
                 "attr": "getClientTitle",
                 "replace_url": "getClientURL",
                 "toggle": True}),
+            ("ClientID", {
+                "title": _("Client ID"),
+                "replace_url": "getClientURL",
+                "attr": "getClientID",
+                "replace_url": "getClientURL",
+                "toggle": True}),
             ("Province", {
                 "title": _("Province"),
                 "sortable": True,
