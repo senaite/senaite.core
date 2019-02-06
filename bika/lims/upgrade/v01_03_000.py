@@ -184,6 +184,10 @@ def upgrade(tool):
     # Apply IAnalysisRequestPartition marker interface to preexisting partitions
     apply_analysis_request_partition_interface(portal)
 
+    # Updates Indexes/Metadata of the bika_catalog
+    # https://github.com/senaite/senaite.core/pull/1231
+    update_bika_catalog(portal)
+
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
 
@@ -1614,3 +1618,28 @@ def apply_analysis_request_partition_interface(portal):
         if ar.getParentAnalysisRequest():
             alsoProvides(ar, IAnalysisRequestPartition)
     commit_transaction(portal)
+
+
+def update_bika_catalog(portal):
+    """Add Indexes/Metadata to bika_catalog
+    """
+    cat_id = "bika_catalog"
+    catalog = api.get_tool(cat_id)
+
+    logger.info("Updating Indexes/Metadata of Catalog '{}'".format(cat_id))
+
+    indexes_to_add = [
+        # name, attribute, metatype
+        ("getClientID", "getClientID", "FieldIndex"),
+    ]
+
+    metadata_to_add = [
+        "getClientID",
+    ]
+
+    for index in indexes_to_add:
+        add_index(portal, cat_id, *index)
+
+    for metadata in metadata_to_add:
+        refresh = metadata not in catalog.schema()
+        add_metadata(portal, cat_id, metadata, refresh_catalog=refresh)

@@ -56,11 +56,16 @@ class BatchFolderContentsView(BikaListingView):
             ("Client", {
                 "title": _("Client"),
                 "index": "getClientTitle", }),
+            ("ClientID", {
+                "title": _("ClientID"),
+                "index": "getClientID", }),
             ("state_title", {
                 "title": _("State"),
                 "sortable": False, }),
             ("created", {
-                "title": _("Created"), }),
+                "title": _("Created"),
+                "index": "created",
+            }),
         ))
 
         self.review_states = [
