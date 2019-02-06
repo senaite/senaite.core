@@ -62,6 +62,7 @@ _columns_list = [
     'getBatchURL',
     'getClientUID',
     'getClientTitle',
+    'getClientID',
     'getClientURL',
     'getContactUID',
     'getContactUsername',
