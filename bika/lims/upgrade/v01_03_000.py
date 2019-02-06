@@ -185,6 +185,7 @@ def upgrade(tool):
     apply_analysis_request_partition_interface(portal)
 
     # Updates Indexes/Metadata of bika_catalog_analysisrequest_listing
+    # https://github.com/senaite/senaite.core/pull/1230
     update_ar_listing_catalog(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
