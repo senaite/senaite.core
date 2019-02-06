@@ -133,7 +133,7 @@ class AnalysisRequestsView(BikaListingView):
                 "toggle": True}),
             ("ClientID", {
                 "title": _("Client ID"),
-                "replace_url": "getClientURL",
+                "index": "getClientID",
                 "attr": "getClientID",
                 "replace_url": "getClientURL",
                 "toggle": True}),
