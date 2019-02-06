@@ -20,6 +20,7 @@ _indexes_dict = {
     # TODO: Can be removed? Same as id
     'sortable_title': 'FieldIndex',
     'getClientUID': 'FieldIndex',
+    'getClientID': 'FieldIndex',
     'cancellation_state': 'FieldIndex',
     'getBatchUID': 'FieldIndex',
     'getDateSampled': 'DateIndex',
