@@ -1624,7 +1624,6 @@ def apply_analysis_request_partition_interface(portal):
     commit_transaction(portal)
 
 
-
 def update_ar_listing_catalog(portal):
     """Add Indexes/Metadata to bika_catalog_analysisrequest_listing
     """
