@@ -57,7 +57,7 @@ class BatchFolderContentsView(BikaListingView):
                 "title": _("Client"),
                 "index": "getClientTitle", }),
             ("ClientID", {
-                "title": _("ClientID"),
+                "title": _("Client ID"),
                 "index": "getClientID", }),
             ("state_title", {
                 "title": _("State"),
@@ -156,7 +156,10 @@ class BatchFolderContentsView(BikaListingView):
         if client:
             client_url = api.get_url(client)
             client_name = client.getName()
+            client_id = client.getClientID()
             item["Client"] = client_name
+            item["ClientID"] = client_id
             item["replace"]["Client"] = get_link(client_url, client_name)
+            item["replace"]["ClientID"] = get_link(client_url, client_id)
 
         return item
