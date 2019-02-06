@@ -27,7 +27,6 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + ManagedSchema((
         "Name",
         required=1,
         searchable=True,
-        validators=("uniquefieldvalidator", ),
         widget=StringWidget(
             label=_("Name"),
         ),
