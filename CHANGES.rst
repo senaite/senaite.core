@@ -151,6 +151,7 @@ Changelog
 
 **Removed**
 
+- #1232 Remove `uniquefieldvalidator` for Client Names
 - #1026 Removed auto-digest of results reports on verify transitions
 - #1005 Removed databasesanitize package
 - #992 Removed "Attach" report option for Attachments
