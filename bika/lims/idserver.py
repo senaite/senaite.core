@@ -58,10 +58,14 @@ def get_contained_items(obj, spec):
 def get_type_id(context, **kw):
     """Returns the type id for the context passed in
     """
-    portal_type = kw.get("portal_type") or api.get_portal_type(context)
+    portal_type = kw.get("portal_type", None)
+    if portal_type:
+        return portal_type
+
     if IAnalysisRequestPartition.providedBy(context):
-        portal_type = "{}Partition".format(portal_type)
-    return portal_type
+        return "AnalysisRequestPartition"
+
+    return api.get_portal_type(context)
 
 
 def get_config(context, **kw):
