@@ -39,8 +39,12 @@ Needed Imports:
     >>> import transaction
     >>> from DateTime import DateTime
     >>> from plone import api as ploneapi
+    >>> from zope.component import getUtility
 
+    >>> from bika.lims import alphanumber as alpha
     >>> from bika.lims import api
+    >>> from bika.lims import idserver
+    >>> from bika.lims.interfaces import INumberGenerator
     >>> from bika.lims.utils.analysisrequest import create_analysisrequest
 
 Functional Helpers:
@@ -254,10 +258,6 @@ Now generate 8 more ARs to force the alpha segment to change
 
 And try now without separators:
 
-    >>> sampletype3 = api.create(bika_sampletypes, "SampleType", Prefix="WB")
-    >>> sampletype3
-    <...sampletype-3>
-
     >>> values = [
     ...            {'form': '{sampleType}{alpha:3a1d}',
     ...             'portal_type': 'AnalysisRequest',
@@ -267,20 +267,182 @@ And try now without separators:
     ...          ]
 
     >>> bika_setup.setIDFormatting(values)
-    >>> values = {'SampleType': sampletype3.UID(),}
+    >>> values = {'SampleType': sampletype2.UID(),}
     >>> service_uids = [analysisservice.UID()]
     >>> ar = create_analysisrequest(client, request, values, service_uids)
+
+The system continues after the previous ID, even if no separator is used:
+
     >>> ar.getId()
-    'WBAAA1'
+    'WBAAB2'
 
     >>> ar = create_analysisrequest(client, request, values, service_uids)
     >>> ar.getId()
-    'WBAAA2'
+    'WBAAB3'
 
 Now generate 8 more ARs to force the alpha segment to change
     >>> for num in range(8):
     ...     ar = create_analysisrequest(client, request, values, service_uids)
     >>> ar.getId()
-    'WBAAB1'
+    'WBAAC2'
 
 TODO: Test the case when numbers are exhausted in a sequence!
+
+
+ID Slicing
+----------
+
+The ID slicing machinery that comes with ID Server takes into consideration both
+wildcards (e.g "{SampleType}") and separators (by default "-"):
+
+    >>> id_format = "AR-{sampleType}-{parentId}{alpha:3a2d}"
+
+If default separator "-" is used, the segments generated are:
+`["AR", "{sampleType}", "{parentId}", "{alpha:3a2d}"]`
+
+    >>> idserver.slice(id_format, separator="-", start=0, end=3)
+    'AR-{sampleType}-{parentId}'
+
+    >>> idserver.slice(id_format, separator="-", start=1, end=2)
+    '{sampleType}-{parentId}'
+
+If no separator is used, note the segments generated are like follows:
+`["AR-", "{sampleType}", "-", "{parentId}", "{alpha:3a2d}"]`
+
+    >>> idserver.slice(id_format, separator="", start=0, end=3)
+    'AR-{sampleType}-'
+
+    >>> idserver.slice(id_format, separator="", start=1, end=2)
+    '{sampleType}-'
+
+And if we use a separator other than "-", we have the same result as before:
+
+    >>> idserver.slice(id_format, separator=".", start=0, end=3)
+    'AR-{sampleType}-'
+
+    >>> idserver.slice(id_format, separator=".", start=1, end=2)
+    '{sampleType}-'
+
+Unless we define an ID format in accordance:
+
+    >>> id_format = "AR.{sampleType}.{parentId}{alpha:3a2d}"
+
+So we get the same results as the beginning:
+
+    >>> idserver.slice(id_format, separator=".", start=0, end=3)
+    'AR.{sampleType}.{parentId}'
+
+    >>> idserver.slice(id_format, separator=".", start=1, end=2)
+    '{sampleType}.{parentId}'
+
+If we define an ID format without separator, the result will always be the same
+regardless of setting a separator as a parm or not:
+
+    >>> id_format = "AR{sampleType}{parentId}{alpha:3a2d}"
+    >>> idserver.slice(id_format, separator="-", start=0, end=3)
+    'AR{sampleType}{parentId}'
+
+    >>> idserver.slice(id_format, separator="", start=0, end=3)
+    'AR{sampleType}{parentId}'
+
+    >>> idserver.slice(id_format, separator="-", start=1, end=2)
+    '{sampleType}{parentId}'
+
+Try now with a simpler and quite common ID:
+
+    >>> id_format = "WS-{seq:04d}"
+    >>> idserver.slice(id_format, separator="-", start=0, end=1)
+    'WS'
+
+    >>> id_format = "WS{seq:04d}"
+    >>> idserver.slice(id_format, separator="-", start=0, end=1)
+    'WS'
+
+    >>> idserver.slice(id_format, separator="", start=0, end=1)
+    'WS'
+
+Number generator storage behavior for IDs with/without separators
+-----------------------------------------------------------------
+
+Number generator machinery keeps track of the last IDs generated to:
+
+1. Make the creation of new IDs faster. The system does not need to find out the
+   last ID number generated for a given portal type by walking through all
+   objects each time an object is created.
+
+2. Allow to manually reseed the numbering through ng interface. Sometimes, the
+   lab wants an ID to start from a specific number, set manually.
+
+These last-generated IDs are stored in annotation storage.
+
+Set up `ID Server` configuration with an hyphen separated format and create an
+Analysis Request:
+
+    >>> id_formatting = [
+    ...            {'form': 'NG-{sampleType}-{alpha:2a3d}',
+    ...             'portal_type': 'AnalysisRequest',
+    ...             'prefix': 'analysisrequest',
+    ...             'sequence_type': 'generated',
+    ...             'split_length': 2},
+    ...          ]
+
+    >>> bika_setup.setIDFormatting(id_formatting)
+    >>> values = {'Client': client.UID(),
+    ...           'Contact': contact.UID(),
+    ...           'SamplingDate': sample_date,
+    ...           'DateSampled': sample_date,
+    ...           'SampleType': sampletype.UID(),
+    ...          }
+    >>> service_uids = [analysisservice.UID()]
+    >>> ar = create_analysisrequest(client, request, values, service_uids)
+    >>> ar.getId()
+    'NG-water-AA001'
+
+Check the ID was correctly seeded in storage:
+
+    >>> number_generator = getUtility(INumberGenerator)
+    >>> last_number = number_generator.get("analysisrequest-NG-water")
+    >>> alpha.to_decimal('AA001') == last_number
+    True
+
+Create a new Analysis Request with same format and check again:
+
+    >>> ar = create_analysisrequest(client, request, values, service_uids)
+    >>> ar.getId()
+    'NG-water-AA002'
+    >>> number_generator = getUtility(INumberGenerator)
+    >>> last_number = number_generator.get("analysisrequest-NG-water")
+    >>> alpha.to_decimal('AA002') == last_number
+    True
+
+Do the same, but with an ID formatting without separators:
+
+    >>> id_formatting = [
+    ...            {'form': 'NG{sampleType}{alpha:2a3d}',
+    ...             'portal_type': 'AnalysisRequest',
+    ...             'prefix': 'analysisrequest',
+    ...             'sequence_type': 'generated',
+    ...             'split_length': 2},
+    ...          ]
+
+    >>> bika_setup.setIDFormatting(id_formatting)
+    >>> ar = create_analysisrequest(client, request, values, service_uids)
+    >>> ar.getId()
+    'NGwaterAA001'
+
+Check if the ID was correctly seeded in storage:
+
+    >>> number_generator = getUtility(INumberGenerator)
+    >>> last_number = number_generator.get("analysisrequest-NGwater")
+    >>> alpha.to_decimal('AA001') == last_number
+    True
+
+Create a new Analysis Request with same format and check again:
+
+    >>> ar = create_analysisrequest(client, request, values, service_uids)
+    >>> ar.getId()
+    'NGwaterAA002'
+    >>> number_generator = getUtility(INumberGenerator)
+    >>> last_number = number_generator.get("analysisrequest-NGwater")
+    >>> alpha.to_decimal('AA002') == last_number
+    True

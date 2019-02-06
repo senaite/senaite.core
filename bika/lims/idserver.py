@@ -5,6 +5,7 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
+import itertools
 import re
 
 import transaction
@@ -154,20 +155,41 @@ def to_int(thing, default=0):
 
 
 def slice(string, separator="-", start=None, end=None):
-    """Slice out a segment of a string, which is splitted on separator.
+    """Slice out a segment of a string, which is splitted on both the wildcards
+    and the separator passed in, if any
     """
+    # split by wildcards/keywords first
+    # AR-{sampleType}-{parentId}{alpha:3a2d}
+    segments = filter(None, re.split('(\{.+?\})', string))
+    # ['AR-', '{sampleType}', '-', '{parentId}', '{alpha:3a2d}']
+    if separator:
+        # Keep track of singleton separators as empties
+        # We need to do this to prevent duplicates later, when splitting
+        segments = map(lambda seg: seg!=separator and seg or "", segments)
+        # ['AR-', '{sampleType}', '', '{parentId}', '{alpha:3a2d}']
+        # Split each segment at the given separator
+        segments = map(lambda seg: split(seg, separator), segments)
+        # [['AR', ''], ['{sampleType}'], [''], ['{parentId}'], ['{alpha:3a2d}']]
+        # Flatten the list
+        segments = list(itertools.chain.from_iterable(segments))
+        # ['AR', '', '{sampleType}', '', '{parentId}', '{alpha:3a2d}']
+        # And replace empties with separator
+        segments = map(lambda seg: seg!="" and seg or separator, segments)
+        # ['AR', '-', '{sampleType}', '-', '{parentId}', '{alpha:3a2d}']
 
-    # split the given string at the given separator
-    segments = split(string, separator)
+    # Get the start and end positions from the segments without separator
+    cleaned_segments = filter(lambda seg: seg!=separator, segments)
+    start_pos = to_int(start, 0)
+    # Note "end" is not a position, but the number of elements to join!
+    end_pos = to_int(end, len(cleaned_segments) - start_pos) + start_pos - 1
 
-    # get the start and endposition for slicing
-    length = len(segments)
-    start = to_int(start)
-    end = to_int(end, length)
+    # Map the positions against the segments with separator
+    start = segments.index(cleaned_segments[start_pos])
+    end = segments.index(cleaned_segments[end_pos]) + 1
 
-    # return the separator joined sliced segments
+    # Return all segments joined
     sliced_parts = segments[start:end]
-    return separator.join(sliced_parts)
+    return "".join(sliced_parts)
 
 
 def get_current_year():
@@ -259,7 +281,6 @@ def get_generated_number(context, config, variables, **kw):
     """Generate a new persistent number with the number generator for the
     sequence type "Generated"
     """
-
     # separator where to split the ID
     separator = kw.get('separator', '-')
 
