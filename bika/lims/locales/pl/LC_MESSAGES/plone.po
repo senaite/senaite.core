@@ -2,12 +2,13 @@
 # SOME DESCRIPTIVE TITLE.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # Translators:
+# Jordi Puiggené <jpuiggene@naralabs.com>, 2018
 # Ramon Bartl <rb@ridingbytes.com>, 2018
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2018-10-08 13:50+0000\n"
+"POT-Creation-Date: 2019-02-07 18:44+0000\n"
 "PO-Revision-Date: 2018-06-01 18:46+0000\n"
 "Last-Translator: Ramon Bartl <rb@ridingbytes.com>, 2018\n"
 "Language-Team: Polish (https://www.transifex.com/senaite/teams/87045/pl/)\n"
@@ -20,6 +21,20 @@ msgstr ""
 "Preferred-Encodings: utf-8 latin1\n"
 "Domain: plone\n"
 "Language: pl\n"
+
+#: bika/lims/profiles/default/types/ARTemplate.xml
+msgid "AR Template"
+msgstr "Szablon AR"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/ARTemplates.xml
+#: bika/lims/profiles/default/types/SRTemplate.xml
+msgid "AR Templates"
+msgstr "Szablony AR"
+
+#: bika/lims/profiles/default/types/ARReport.xml
+msgid "ARReport"
+msgstr ""
 
 # Manual Workflow State and Transition MsgIds
 # Despite the fact, that these are defined in the "bika" domain, they are not
@@ -53,7 +68,6 @@ msgid "Administration"
 msgstr "Administracja"
 
 #: bika/lims/profiles/default/types/ReferenceSample.xml
-#: bika/lims/profiles/default/types/Sample.xml
 msgid "Analyses"
 msgstr "Analizy"
 
@@ -383,8 +397,6 @@ msgid "Laboratory Information"
 msgstr "Informacje o laboratorium"
 
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
-#: bika/lims/profiles/default/types/Sample.xml
-#: bika/lims/profiles/default/types/SamplePartition.xml
 msgid "Large Sticker"
 msgstr "Duża naklejka"
 
@@ -507,10 +519,6 @@ msgstr "Opublikowane wyniki"
 msgid "QC Results"
 msgstr ""
 
-#: bika/lims/profiles/default/types/ReportFolder.xml
-msgid "Quality Control"
-msgstr "Kontrola jakości"
-
 msgid "Receive"
 msgstr ""
 
@@ -590,16 +598,13 @@ msgstr "Raporty"
 msgid "Republish"
 msgstr ""
 
-#: bika/lims/profiles/default/types/AnalysisRequest.xml
-msgid "Results not requested"
-msgstr "Wyniki nie zamówione"
-
 msgid "Retract"
 msgstr ""
 
 msgid "Retracted"
 msgstr ""
 
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
 #: bika/lims/profiles/default/types/Sample.xml
 msgid "Sample"
 msgstr "Próbka pobrana"
@@ -615,7 +620,7 @@ msgstr "Stan próbki"
 
 #. Default: "AR Imports"
 msgid "Sample Imports"
-msgstr "Iportowanie AR"
+msgstr ""
 
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/SampleMatrices.xml
@@ -630,10 +635,6 @@ msgstr "Matryca próbki"
 msgid "Sample Partition"
 msgstr "Część próbki"
 
-#: bika/lims/profiles/default/types/Sample.xml
-msgid "Sample Partitions"
-msgstr "Części próbki"
-
 #: bika/lims/profiles/default/types/SamplePoint.xml
 msgid "Sample Point"
 msgstr "Punkt poboru próbki"
@@ -643,15 +644,9 @@ msgstr "Punkt poboru próbki"
 msgid "Sample Points"
 msgstr "Punkty poboru próbek"
 
-#: bika/lims/profiles/default/types/ARTemplate.xml
-msgid "Sample Template"
-msgstr "Szablon AR"
-
-#: bika/lims/profiles/default/controlpanel.xml
-#: bika/lims/profiles/default/types/ARTemplates.xml
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Sample Templates"
-msgstr "Szablony AR"
+msgstr ""
 
 #: bika/lims/profiles/default/types/SampleType.xml
 msgid "Sample Type"
@@ -675,16 +670,12 @@ msgstr ""
 msgid "SamplePoints"
 msgstr "Punkty pobierania"
 
-#: bika/lims/profiles/default/types/ARReport.xml
-msgid "SampleReport"
-msgstr ""
-
 msgid "Sampled"
 msgstr ""
 
 #: bika/lims/profiles/default/actions.xml
+#: bika/lims/profiles/default/types/AnalysisRequestsFolder.xml
 #: bika/lims/profiles/default/types/Batch.xml
-#: bika/lims/profiles/default/types/Client.xml
 msgid "Samples"
 msgstr "Próbki"
 
@@ -734,8 +725,6 @@ msgid "Sharing"
 msgstr ""
 
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
-#: bika/lims/profiles/default/types/Sample.xml
-#: bika/lims/profiles/default/types/SamplePartition.xml
 msgid "Small Sticker"
 msgstr "Mała naklejka"
 
@@ -751,7 +740,7 @@ msgstr "Naklejka"
 
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 #: bika/lims/profiles/default/types/Batch.xml
-#: bika/lims/profiles/default/types/Sample.xml
+#: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Stickers preview"
 msgstr ""
 
@@ -938,7 +927,7 @@ msgstr "Części próbki"
 
 #. Default: "AR Templates"
 msgid "label_schema_Sample Templates"
-msgstr "Szablony zestawów analiz -AR-"
+msgstr ""
 
 #. Default: "Security"
 msgid "label_schema_Security"
