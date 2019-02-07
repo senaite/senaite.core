@@ -6,6 +6,8 @@ Changelog
 
 **Added**
 
+- #1231 Add Client ID Column in Batch Listing
+- #1230 Add Client ID Column in Sample Listing
 - #1222 Added User and Security API
 - #1217 Added filtering buttons in Analyses listings (Valid, Invalid, All)
 - #1193 Added viewlets for partition and primary ARs
@@ -149,6 +151,7 @@ Changelog
 
 **Removed**
 
+- #1232 Remove `uniquefieldvalidator` for Client Names
 - #1026 Removed auto-digest of results reports on verify transitions
 - #1005 Removed databasesanitize package
 - #992 Removed "Attach" report option for Attachments
