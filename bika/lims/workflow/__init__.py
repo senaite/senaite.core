@@ -39,8 +39,25 @@ def cache_transitions(func, instance, *args, **kw):
     request = getattr(instance, "REQUEST", api.get_request())
     if request.getURL() == "http://nohost":
         raise DontCache
-    # caching the possible transitions by UID is only safe within one request.
-    return api.get_uid(instance)
+
+    key = None
+
+    # Cache key for routine analyses within one request
+    if api.get_portal_type(instance) == "Analysis":
+        keys = [
+            api.get_uid(instance),
+            api.get_workflow_status_of(instance),
+            api.get_modification_date(instance).ISO(),
+        ]
+        key = "-".join(keys)
+
+    # No caching without a key
+    if key is None:
+        raise DontCache
+
+    logger.debug("CACHE TRANSITIONS KEY: {} -> {}"
+                 .format(api.get_path(instance), key))
+    return key
 
 
 def skip(instance, action, peek=False, unskip=False):
