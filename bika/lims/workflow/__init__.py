@@ -13,9 +13,8 @@ from bika.lims import PMF
 from bika.lims import api
 from bika.lims import enum
 from bika.lims import logger
-from bika.lims.api.security import get_user_id
-from bika.lims.api.security import get_roles
 from bika.lims.api.security import get_local_roles_for
+from bika.lims.api.security import get_roles
 from bika.lims.browser import ulocalized_time
 from bika.lims.interfaces import IJSONReadExtender
 from bika.lims.jsonapi import get_include_fields
@@ -24,10 +23,12 @@ from bika.lims.utils import t
 from bika.lims.workflow.indexes import ACTIONS_TO_INDEXES
 from plone.memoize.volatile import ATTR
 from plone.memoize.volatile import CONTAINER_FACTORY
+from plone.memoize.volatile import DontCache
 from plone.memoize.volatile import cache
 from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.WorkflowCore import WorkflowException
 from zope.interface import implements
+
 
 security = ModuleSecurityInfo('bika.lims.workflow')
 security.declarePublic('guard_handler')
@@ -44,13 +45,25 @@ def store_on_instance(func, instance, transition_id, *args, **kw):
 def cache_transitions(func, instance, transition_id, *args, **kw):
     """Cache key for the possible transitions of the object
     """
-    keys = [
-        get_user_id(),
-        "-".join(get_roles()),
-        "-".join(get_local_roles_for(instance)),
-        api.get_workflow_status_of(instance),
-        transition_id,
-    ]
+    keys = []
+
+    # Generate Cache key for Analyses
+    if api.get_portal_type(instance) == "Analysis":
+        # Possible transitions of analyes depend on the workflow state of the
+        # containing sample, on the workflow state of the analysis itself and
+        # on the roles the current user has.
+        parent = api.get_parent(instance)
+        keys = [
+            api.get_workflow_status_of(parent),
+            api.get_workflow_status_of(instance),
+            transition_id,
+            "-".join(get_roles()),
+            "-".join(get_local_roles_for(instance)),
+        ]
+
+    if len(keys) == 0:
+        raise DontCache
+
     key = "-".join(keys)
     logger.debug("--> cache_transitions for {} with key {}"
                  .format(repr(api.get_path(instance)), key))
