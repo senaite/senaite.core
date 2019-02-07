@@ -52,13 +52,19 @@ def cache_transitions(func, instance, transition_id, *args, **kw):
         # Possible transitions of analyes depend on the workflow state of the
         # containing sample, on the workflow state of the analysis itself and
         # on the roles the current user has.
+        # Furthermore, it relies on the type of muti-verification and the
+        # number of remaining verifications
         parent = api.get_parent(instance)
+        setup = api.get_setup()
         keys = [
             api.get_workflow_status_of(parent),
             api.get_workflow_status_of(instance),
             transition_id,
             "-".join(get_roles()),
             "-".join(get_local_roles_for(instance)),
+            str(setup.getSelfVerificationEnabled()),
+            str(instance.getNumberOfRemainingVerifications()),
+            setup.getTypeOfmultiVerification(),
         ]
 
     if len(keys) == 0:
