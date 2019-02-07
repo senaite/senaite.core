@@ -6,6 +6,7 @@ Changelog
 
 **Added**
 
+- #1233 Cache possible transitions
 - #1231 Add Client ID Column in Batch Listing
 - #1230 Add Client ID Column in Sample Listing
 - #1222 Added User and Security API
