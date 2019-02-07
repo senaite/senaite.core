@@ -13,6 +13,9 @@ from bika.lims import PMF
 from bika.lims import api
 from bika.lims import enum
 from bika.lims import logger
+from bika.lims.api.security import get_user_id
+from bika.lims.api.security import get_roles
+from bika.lims.api.security import get_local_roles_for
 from bika.lims.browser import ulocalized_time
 from bika.lims.interfaces import IJSONReadExtender
 from bika.lims.jsonapi import get_include_fields
@@ -32,21 +35,23 @@ security.declarePublic('guard_handler')
 _marker = object()
 
 
-def store_on_instance(func, instance, *args, **kw):
+def store_on_instance(func, instance, transition_id, *args, **kw):
     """Hold the cache storage on the portal
     """
     return instance.__dict__.setdefault(ATTR, CONTAINER_FACTORY())
 
 
-def cache_transitions(func, instance, *args, **kw):
+def cache_transitions(func, instance, transition_id, *args, **kw):
     """Cache key for the possible transitions of the object
     """
     keys = [
-        api.get_uid(instance),
+        get_user_id(),
+        "-".join(get_roles()),
+        "-".join(get_local_roles_for(instance)),
         api.get_workflow_status_of(instance),
+        transition_id,
     ]
-    keys.extend(args)
-    key = "->".join(keys)
+    key = "-".join(keys)
     logger.debug("--> cache_transitions for {} with key {}"
                  .format(repr(api.get_path(instance)), key))
     return key
