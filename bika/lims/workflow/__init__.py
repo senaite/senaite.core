@@ -13,19 +13,14 @@ from bika.lims import PMF
 from bika.lims import api
 from bika.lims import enum
 from bika.lims import logger
-from bika.lims.api.security import get_local_roles_for
-from bika.lims.api.security import get_roles
-from bika.lims.api.security import get_user_id
 from bika.lims.browser import ulocalized_time
 from bika.lims.interfaces import IJSONReadExtender
 from bika.lims.jsonapi import get_include_fields
 from bika.lims.utils import changeWorkflowState
 from bika.lims.utils import t
 from bika.lims.workflow.indexes import ACTIONS_TO_INDEXES
-from plone.memoize.volatile import ATTR
-from plone.memoize.volatile import CONTAINER_FACTORY
+from plone.memoize.request import cache as requestcache
 from plone.memoize.volatile import DontCache
-from plone.memoize.volatile import cache
 from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.WorkflowCore import WorkflowException
 from zope.interface import implements
@@ -37,59 +32,15 @@ security.declarePublic('guard_handler')
 _marker = object()
 
 
-def store_on_instance(func, instance, *args, **kw):
-    """Hold the cache storage on the portal
-    """
-    return instance.__dict__.setdefault(ATTR, CONTAINER_FACTORY())
-
-
 def cache_transitions(func, instance, *args, **kw):
     """Cache key for the possible transitions of the object
     """
-    keys = []
-
-    # Generate Cache key for Analyses
-    if api.get_portal_type(instance) == "Analysis":
-        # Possible transitions of analyes depend on the workflow state of the
-        # containing sample, on the workflow state of the analysis itself,
-        # the roles the current user and if it has a result.
-        # Furthermore, it relies on the type of muti-verification and the
-        # number of remaining verifications
-        parent = api.get_parent(instance)
-        setup = api.get_setup()
-        keys = [
-            get_user_id(),
-            api.get_workflow_status_of(parent),
-            api.get_modification_date(parent).ISO(),
-            api.get_workflow_status_of(instance),
-            api.get_modification_date(instance).ISO(),
-            api.get_modification_date(setup).ISO(),
-            str(instance.getResult()),
-            "-".join(map(lambda i: str(i.get("value", "")),
-                         instance.getInterimFields())),
-            "-".join(map(lambda d: api.get_workflow_status_of(d),
-                     instance.getDependents())),
-            "-".join(map(lambda d: api.get_modification_date(d).ISO(),
-                     instance.getDependents())),
-            "-".join(map(lambda d: api.get_workflow_status_of(d),
-                     instance.getDependencies())),
-            "-".join(map(lambda d: api.get_modification_date(d).ISO(),
-                     instance.getDependencies())),
-            "-".join(get_roles()),
-            "-".join(get_local_roles_for(instance)),
-        ]
-
-        # Append any further arguments if passed, e.g. the transition_id
-        for arg in args:
-            keys.append(str(arg))
-
-    if len(keys) == 0:
+    # Don't cache for tests, because the request is always the same
+    request = getattr(instance, "REQUEST", api.get_request())
+    if request.getURL() == "http://nohost":
         raise DontCache
-
-    key = "-".join(keys)
-    logger.debug("--> cache_transitions for {} with key {}"
-                 .format(repr(api.get_path(instance)), key))
-    return key
+    # caching the possible transitions by UID is only safe within one request.
+    return api.get_uid(instance)
 
 
 def skip(instance, action, peek=False, unskip=False):
@@ -303,7 +254,7 @@ def isBasicTransitionAllowed(context, permission=None):
     return True
 
 
-@cache(cache_transitions, store_on_instance)
+@requestcache(get_key=cache_transitions, get_request="instance.REQUEST")
 def isTransitionAllowed(instance, transition_id):
     """Checks if the object can perform the transition passed in.
     :returns: True if transition can be performed
