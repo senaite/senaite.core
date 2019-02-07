@@ -9,10 +9,9 @@ import collections
 import sys
 
 from AccessControl.SecurityInfo import ModuleSecurityInfo
-from Products.CMFCore.WorkflowCore import WorkflowException
-from Products.CMFCore.utils import getToolByName
 from bika.lims import PMF
-from bika.lims import enum, api
+from bika.lims import api
+from bika.lims import enum
 from bika.lims import logger
 from bika.lims.browser import ulocalized_time
 from bika.lims.interfaces import IJSONReadExtender
@@ -20,6 +19,11 @@ from bika.lims.jsonapi import get_include_fields
 from bika.lims.utils import changeWorkflowState
 from bika.lims.utils import t
 from bika.lims.workflow.indexes import ACTIONS_TO_INDEXES
+from plone.memoize.volatile import ATTR
+from plone.memoize.volatile import CONTAINER_FACTORY
+from plone.memoize.volatile import cache
+from Products.CMFCore.utils import getToolByName
+from Products.CMFCore.WorkflowCore import WorkflowException
 from zope.interface import implements
 
 security = ModuleSecurityInfo('bika.lims.workflow')
