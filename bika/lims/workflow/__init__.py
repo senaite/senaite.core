@@ -31,6 +31,27 @@ security.declarePublic('guard_handler')
 
 _marker = object()
 
+
+def store_on_instance(func, instance, *args, **kw):
+    """Hold the cache storage on the portal
+    """
+    return instance.__dict__.setdefault(ATTR, CONTAINER_FACTORY())
+
+
+def cache_transitions(func, instance, *args, **kw):
+    """Cache key for the possible transitions of the object
+    """
+    keys = [
+        api.get_uid(instance),
+        api.get_workflow_status_of(instance),
+    ]
+    keys.extend(args)
+    key = "->".join(keys)
+    logger.debug("--> cache_transitions for {} with key {}"
+                 .format(repr(api.get_path(instance)), key))
+    return key
+
+
 def skip(instance, action, peek=False, unskip=False):
     """Returns True if the transition is to be SKIPPED
 
@@ -242,6 +263,7 @@ def isBasicTransitionAllowed(context, permission=None):
     return True
 
 
+@cache(cache_transitions, store_on_instance)
 def isTransitionAllowed(instance, transition_id):
     """Checks if the object can perform the transition passed in.
     :returns: True if transition can be performed
