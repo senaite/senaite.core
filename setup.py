@@ -58,6 +58,7 @@ setup(
         'z3c.jbot',
         'plone.resource',
         'CairoSVG==1.0.20',
+        'cairocffi<1.0.0',
         'zopyx.txng3.ext==3.4.0',
         "senaite.core.supermodel>=1.0.0",
         "senaite.core.listing>=1.0.0",
