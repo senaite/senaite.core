@@ -395,12 +395,14 @@
     <permission-map name="Field: Edit Preservation" acquired="True"/>
     <permission-map name="Field: Edit Preserver" acquired="True"/>
     <permission-map name="Field: Edit Priority" acquired="True"/>
-    <permission-map name="Field: Edit Profiles" acquired="True"/>
+    <!-- Make the field 'Profiles' readonly -->
+    <permission-map name="Field: Edit Profiles" acquired="False"/>
     <permission-map name="Field: Edit Publication Specification" acquired="True"/>
     <permission-map name="Field: Edit Rejection Reasons" acquired="True"/>
     <permission-map name="Field: Edit Results Interpretation" acquired="True"/>
     <permission-map name="Field: Edit Sample Point" acquired="True"/>
-    <permission-map name="Field: Edit Sample Type" acquired="True"/>
+    <!-- Make the field 'SampleType' readonly -->
+    <permission-map name="Field: Edit Sample Type" acquired="False"/>
     <permission-map name="Field: Edit Sample Condition" acquired="True"/>
     <permission-map name="Field: Edit Sampler" acquired="True"/>
     <permission-map name="Field: Edit Sampling Date" acquired="True"/>
@@ -408,7 +410,8 @@
     <permission-map name="Field: Edit Sampling Round" acquired="True"/>
     <permission-map name="Field: Edit Scheduled Sampler" acquired="True"/>
     <permission-map name="Field: Edit Storage Location" acquired="True"/>
-    <permission-map name="Field: Edit Template" acquired="True"/>
+    <!-- Make the field 'Template' readonly -->
+    <permission-map name="Field: Edit Template" acquired="False"/>
     <permission-map name="Field: Edit Specification" acquired="True"/>
     <!-- /MANAGED PERMISSIONS -->
   </state>
