@@ -28,6 +28,105 @@
 
   <permissions>
 
+    <!-- Generic Permissions -->
+    <permission name="View" acquire="False">
+      <role name="Analyst"/>
+      <role name="Client"/>
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+      <role name="Preserver"/>
+      <role name="Publisher"/>
+      <role name="RegulatoryInspector"/>
+      <role name="Sampler"/>
+      <role name="SamplingCoordinator"/>
+      <role name="Verifier"/>
+    </permission>
+
+    <permission name="Modify portal content" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+
+    <permission name="BIKA: View Results" acquire="False">
+      <role name="Analyst"/>
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Preserver"/>
+      <role name="Publisher"/>
+      <role name="RegulatoryInspector"/>
+      <role name="Sampler"/>
+      <role name="Verifier"/>
+    </permission>
+
+    <permission name="BIKA: Schedule Sampling" acquire="False">
+    </permission>
+
+    <permission name="BIKA: Preserve Sample" acquire="False">
+    </permission>
+
+    <permission name="BIKA: Publish" acquire="False">
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Publisher"/>
+    </permission>
+
+    <permission name="BIKA: Manage Invoices" acquire="False">
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
+
+    <permission name="BIKA: Add Analysis" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
+
+    <permission name="BIKA: Edit Results" acquire="False">
+      <role name="Analyst"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
+
+    <permission name="BIKA: Edit Field Results" acquire="False">
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Sampler"/>
+    </permission>
+
+    <permission name="BIKA: Edit AR" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
+
+    <permission name="BIKA: Cancel and reinstate" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+
+    <permission name="BIKA: Add Attachment" acquire="False">
+      <role name="Analyst"/>
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
+
+    <!-- Guard Permission -->
+    <permission name="Reject Analysis Request" acquire="False">
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="LabClerk"/>
+    </permission>
+    <!-- /Generic Permissions -->
+
+
     <!-- Sample: Field Permissions -->
     <permission name="Field: Edit Batch" acquire="False">
       <role name="LabClerk"/>
