@@ -341,7 +341,7 @@
     <permission-map name="Field: Edit Specification" acquired="True"/>
     <!-- /MANAGED PERMISSIONS -->
   </state>
-  <!-- /State: sample_due --
+  <!-- /State: sample_due -->
 
 
   <!-- State: sample_received -->
