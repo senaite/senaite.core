@@ -8,7 +8,8 @@
              manager_bypass="False"
              i18n:domain="senaite.core">
 
-  <!-- Generic Permissions -->
+  <!-- *** MANAGED PERMISSIONS  *** -->
+
   <permission>BIKA: Add Analysis</permission>
   <permission>BIKA: Add Attachment</permission>
   <permission>BIKA: Cancel and reinstate</permission>
@@ -21,9 +22,11 @@
   <permission>BIKA: Receive Sample</permission>
   <permission>BIKA: Schedule Sampling</permission>
   <permission>BIKA: Verify</permission>
-  <!-- Display/hide results field in analyses listings -->
   <permission>BIKA: View Results</permission>
+  <!-- Client can only reject an AR when is not yet received.
+       Labman can only reject an AR when is not yet verified. -->
   <permission>Modify portal content</permission>
+  <permission>Reject Analysis Request</permission>
   <permission>View</permission>
 
   <!-- Field-specific permissions
@@ -31,10 +34,10 @@
   If not defined there, "read_permission" defaults to "View" and
   "write_permission" defaults to "Modify portal content" -->
   <permission>Field: Edit Batch</permission>
-  <permission>Field: Edit Client</permission>
   <permission>Field: Edit Client Order Number</permission>
   <permission>Field: Edit Client Reference</permission>
   <permission>Field: Edit Client Sample ID</permission>
+  <permission>Field: Edit Client</permission>
   <permission>Field: Edit Composite</permission>
   <permission>Field: Edit Contact</permission>
   <permission>Field: Edit Container</permission>
@@ -58,16 +61,10 @@
   <permission>Field: Edit Sampling Date</permission>
   <permission>Field: Edit Sampling Deviation</permission>
   <permission>Field: Edit Sampling Round</permission>
-  <permission>Field: Edit Specification</permission>
   <permission>Field: Edit Scheduled Sampler</permission>
+  <permission>Field: Edit Specification</permission>
   <permission>Field: Edit Storage Location</permission>
   <permission>Field: Edit Template</permission>
-
-  <!--
-  Client can only reject an AR when is not yet received.
-  Labman can only reject an AR when is not yet verified.
-   -->
-  <permission>Reject Analysis Request</permission>
 
 
   <!-- *** STATES *** -->
