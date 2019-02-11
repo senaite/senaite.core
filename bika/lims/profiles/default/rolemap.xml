@@ -68,9 +68,22 @@
     </permission>
 
     <permission name="BIKA: Schedule Sampling" acquire="False">
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="SamplingCoordinator"/>
+    </permission>
+
+    <permission name="BIKA: Sample Sample" acquire="False">
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Sampler"/>
+      <role name="SamplingCoordinator"/>
     </permission>
 
     <permission name="BIKA: Preserve Sample" acquire="False">
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Preserver"/>
     </permission>
 
     <permission name="BIKA: Publish" acquire="False">
@@ -80,6 +93,7 @@
     </permission>
 
     <permission name="BIKA: Manage Invoices" acquire="False">
+      <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
     </permission>
@@ -250,9 +264,11 @@
       <role name="Owner"/>
     </permission>
 
-    <!-- The analysis profiles are bound to the price and selected analyses.
-         Therefore it should not be changed after the sample was created -->
     <permission name="Field: Edit Profiles" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
     </permission>
 
     <permission name="Field: Edit Publication Specification" acquire="False">
@@ -284,9 +300,11 @@
       <role name="Owner"/>
     </permission>
 
-    <!-- The sample type is bound to the ID generation and specifications.
-         Therefore it should not be changed after the sample was created -->
     <permission name="Field: Edit Sample Type" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
     </permission>
 
     <permission name="Field: Edit Sample Condition" acquire="False">
@@ -338,10 +356,11 @@
       <role name="Owner"/>
     </permission>
 
-
-    <!-- The analysis template is bound to the partitioning and container selection.
-         Therefore it should not be changed after the sample was created -->
     <permission name="Field: Edit Template" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
     </permission>
 
     <permission name="Field: Edit Specification" acquire="False">
