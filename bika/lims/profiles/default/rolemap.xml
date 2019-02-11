@@ -123,6 +123,11 @@
       <role name="SamplingCoordinator"/>
     </permission>
 
+    <permission name="BIKA: Retract" acquire="False">
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
+
     <permission name="BIKA: Sample Sample" acquire="False">
       <role name="LabManager"/>
       <role name="Manager"/>
