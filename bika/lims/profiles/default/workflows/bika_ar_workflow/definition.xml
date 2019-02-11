@@ -919,13 +919,16 @@
     <exit-transition transition_id="" />
     <!-- /TRANSITIONS -->
 
-    <!-- MANAGED PERMISSIONS -->
-    <permission-map name="BIKA: Add Analysis" acquired="True"/>
+    <!-- MANAGED PERMISSIONS (partially readonly) -->
+
+    <!-- Hide the 'Manage Analyses' tab -->
+    <permission-map name="BIKA: Add Analysis" acquired="False"/>
     <permission-map name="BIKA: Add Attachment" acquired="True"/>
     <permission-map name="BIKA: Cancel and reinstate" acquired="True"/>
     <permission-map name="BIKA: Edit AR" acquired="True"/>
-    <permission-map name="BIKA: Edit Field Results" acquired="True"/>
-    <permission-map name="BIKA: Edit Results" acquired="True"/>
+    <!-- Hide the 'Manage Results' tab -->
+    <permission-map name="BIKA: Edit Field Results" acquired="False"/>
+    <permission-map name="BIKA: Edit Results" acquired="False"/>
     <permission-map name="BIKA: Manage Invoices" acquired="True"/>
     <permission-map name="BIKA: Preserve Sample" acquired="True"/>
     <permission-map name="BIKA: Publish" acquired="True"/>
@@ -937,39 +940,39 @@
     <permission-map name="Modify portal content" acquired="True"/>
     <permission-map name="Reject Analysis Request" acquired="True"/>
     <permission-map name="View" acquired="True"/>
-    <!-- Field Permissions -->
-    <permission-map name="Field: Edit Batch" acquired="True"/>
-    <permission-map name="Field: Edit Client Order Number" acquired="True"/>
-    <permission-map name="Field: Edit Client Reference" acquired="True"/>
-    <permission-map name="Field: Edit Client Sample ID" acquired="True"/>
-    <permission-map name="Field: Edit Client" acquired="True"/>
-    <permission-map name="Field: Edit Composite" acquired="True"/>
-    <permission-map name="Field: Edit Contact" acquired="True"/>
-    <permission-map name="Field: Edit Container" acquired="True"/>
-    <permission-map name="Field: Edit Date Preserved" acquired="True"/>
-    <permission-map name="Field: Edit Date Received" acquired="True"/>
-    <permission-map name="Field: Edit Date Sampled" acquired="True"/>
-    <permission-map name="Field: Edit Environmental Conditions" acquired="True"/>
-    <permission-map name="Field: Edit Invoice Exclude" acquired="True"/>
-    <permission-map name="Field: Edit Member Discount" acquired="True"/>
-    <permission-map name="Field: Edit Preservation" acquired="True"/>
-    <permission-map name="Field: Edit Preserver" acquired="True"/>
-    <permission-map name="Field: Edit Priority" acquired="True"/>
-    <permission-map name="Field: Edit Profiles" acquired="True"/>
-    <permission-map name="Field: Edit Publication Specification" acquired="True"/>
-    <permission-map name="Field: Edit Rejection Reasons" acquired="True"/>
-    <permission-map name="Field: Edit Results Interpretation" acquired="True"/>
-    <permission-map name="Field: Edit Sample Point" acquired="True"/>
-    <permission-map name="Field: Edit Sample Type" acquired="True"/>
-    <permission-map name="Field: Edit Sample Condition" acquired="True"/>
-    <permission-map name="Field: Edit Sampler" acquired="True"/>
-    <permission-map name="Field: Edit Sampling Date" acquired="True"/>
-    <permission-map name="Field: Edit Sampling Deviation" acquired="True"/>
-    <permission-map name="Field: Edit Sampling Round" acquired="True"/>
-    <permission-map name="Field: Edit Scheduled Sampler" acquired="True"/>
-    <permission-map name="Field: Edit Storage Location" acquired="True"/>
-    <permission-map name="Field: Edit Template" acquired="True"/>
-    <permission-map name="Field: Edit Specification" acquired="True"/>
+    <!-- Field Permissions (all readonly) -->
+    <permission-map name="Field: Edit Batch" acquired="False"/>
+    <permission-map name="Field: Edit Client Order Number" acquired="False"/>
+    <permission-map name="Field: Edit Client Reference" acquired="False"/>
+    <permission-map name="Field: Edit Client Sample ID" acquired="False"/>
+    <permission-map name="Field: Edit Client" acquired="False"/>
+    <permission-map name="Field: Edit Composite" acquired="False"/>
+    <permission-map name="Field: Edit Contact" acquired="False"/>
+    <permission-map name="Field: Edit Container" acquired="False"/>
+    <permission-map name="Field: Edit Date Preserved" acquired="False"/>
+    <permission-map name="Field: Edit Date Received" acquired="False"/>
+    <permission-map name="Field: Edit Date Sampled" acquired="False"/>
+    <permission-map name="Field: Edit Environmental Conditions" acquired="False"/>
+    <permission-map name="Field: Edit Invoice Exclude" acquired="False"/>
+    <permission-map name="Field: Edit Member Discount" acquired="False"/>
+    <permission-map name="Field: Edit Preservation" acquired="False"/>
+    <permission-map name="Field: Edit Preserver" acquired="False"/>
+    <permission-map name="Field: Edit Priority" acquired="False"/>
+    <permission-map name="Field: Edit Profiles" acquired="False"/>
+    <permission-map name="Field: Edit Publication Specification" acquired="False"/>
+    <permission-map name="Field: Edit Rejection Reasons" acquired="False"/>
+    <permission-map name="Field: Edit Results Interpretation" acquired="False"/>
+    <permission-map name="Field: Edit Sample Point" acquired="False"/>
+    <permission-map name="Field: Edit Sample Type" acquired="False"/>
+    <permission-map name="Field: Edit Sample Condition" acquired="False"/>
+    <permission-map name="Field: Edit Sampler" acquired="False"/>
+    <permission-map name="Field: Edit Sampling Date" acquired="False"/>
+    <permission-map name="Field: Edit Sampling Deviation" acquired="False"/>
+    <permission-map name="Field: Edit Sampling Round" acquired="False"/>
+    <permission-map name="Field: Edit Scheduled Sampler" acquired="False"/>
+    <permission-map name="Field: Edit Storage Location" acquired="False"/>
+    <permission-map name="Field: Edit Template" acquired="False"/>
+    <permission-map name="Field: Edit Specification" acquired="False"/>
     <!-- /MANAGED PERMISSIONS -->
   </state>
   <!-- /State: rejected -->
@@ -983,13 +986,16 @@
     <exit-transition transition_id=""/>
     <!-- /TRANSITIONS -->
 
-    <!-- MANAGED PERMISSIONS -->
-    <permission-map name="BIKA: Add Analysis" acquired="True"/>
+    <!-- MANAGED PERMISSIONS (partially readonly) -->
+
+    <!-- Hide the 'Manage Analyses' tab -->
+    <permission-map name="BIKA: Add Analysis" acquired="False"/>
     <permission-map name="BIKA: Add Attachment" acquired="True"/>
     <permission-map name="BIKA: Cancel and reinstate" acquired="True"/>
     <permission-map name="BIKA: Edit AR" acquired="True"/>
-    <permission-map name="BIKA: Edit Field Results" acquired="True"/>
-    <permission-map name="BIKA: Edit Results" acquired="True"/>
+    <!-- Hide the 'Manage Results' tab -->
+    <permission-map name="BIKA: Edit Field Results" acquired="False"/>
+    <permission-map name="BIKA: Edit Results" acquired="False"/>
     <permission-map name="BIKA: Manage Invoices" acquired="True"/>
     <permission-map name="BIKA: Preserve Sample" acquired="True"/>
     <permission-map name="BIKA: Publish" acquired="True"/>
@@ -1001,39 +1007,39 @@
     <permission-map name="Modify portal content" acquired="True"/>
     <permission-map name="Reject Analysis Request" acquired="True"/>
     <permission-map name="View" acquired="True"/>
-    <!-- Field Permissions -->
-    <permission-map name="Field: Edit Batch" acquired="True"/>
-    <permission-map name="Field: Edit Client Order Number" acquired="True"/>
-    <permission-map name="Field: Edit Client Reference" acquired="True"/>
-    <permission-map name="Field: Edit Client Sample ID" acquired="True"/>
-    <permission-map name="Field: Edit Client" acquired="True"/>
-    <permission-map name="Field: Edit Composite" acquired="True"/>
-    <permission-map name="Field: Edit Contact" acquired="True"/>
-    <permission-map name="Field: Edit Container" acquired="True"/>
-    <permission-map name="Field: Edit Date Preserved" acquired="True"/>
-    <permission-map name="Field: Edit Date Received" acquired="True"/>
-    <permission-map name="Field: Edit Date Sampled" acquired="True"/>
-    <permission-map name="Field: Edit Environmental Conditions" acquired="True"/>
-    <permission-map name="Field: Edit Invoice Exclude" acquired="True"/>
-    <permission-map name="Field: Edit Member Discount" acquired="True"/>
-    <permission-map name="Field: Edit Preservation" acquired="True"/>
-    <permission-map name="Field: Edit Preserver" acquired="True"/>
-    <permission-map name="Field: Edit Priority" acquired="True"/>
-    <permission-map name="Field: Edit Profiles" acquired="True"/>
-    <permission-map name="Field: Edit Publication Specification" acquired="True"/>
-    <permission-map name="Field: Edit Rejection Reasons" acquired="True"/>
-    <permission-map name="Field: Edit Results Interpretation" acquired="True"/>
-    <permission-map name="Field: Edit Sample Point" acquired="True"/>
-    <permission-map name="Field: Edit Sample Type" acquired="True"/>
-    <permission-map name="Field: Edit Sample Condition" acquired="True"/>
-    <permission-map name="Field: Edit Sampler" acquired="True"/>
-    <permission-map name="Field: Edit Sampling Date" acquired="True"/>
-    <permission-map name="Field: Edit Sampling Deviation" acquired="True"/>
-    <permission-map name="Field: Edit Sampling Round" acquired="True"/>
-    <permission-map name="Field: Edit Scheduled Sampler" acquired="True"/>
-    <permission-map name="Field: Edit Storage Location" acquired="True"/>
-    <permission-map name="Field: Edit Template" acquired="True"/>
-    <permission-map name="Field: Edit Specification" acquired="True"/>
+    <!-- Field Permissions (all readonly) -->
+    <permission-map name="Field: Edit Batch" acquired="False"/>
+    <permission-map name="Field: Edit Client Order Number" acquired="False"/>
+    <permission-map name="Field: Edit Client Reference" acquired="False"/>
+    <permission-map name="Field: Edit Client Sample ID" acquired="False"/>
+    <permission-map name="Field: Edit Client" acquired="False"/>
+    <permission-map name="Field: Edit Composite" acquired="False"/>
+    <permission-map name="Field: Edit Contact" acquired="False"/>
+    <permission-map name="Field: Edit Container" acquired="False"/>
+    <permission-map name="Field: Edit Date Preserved" acquired="False"/>
+    <permission-map name="Field: Edit Date Received" acquired="False"/>
+    <permission-map name="Field: Edit Date Sampled" acquired="False"/>
+    <permission-map name="Field: Edit Environmental Conditions" acquired="False"/>
+    <permission-map name="Field: Edit Invoice Exclude" acquired="False"/>
+    <permission-map name="Field: Edit Member Discount" acquired="False"/>
+    <permission-map name="Field: Edit Preservation" acquired="False"/>
+    <permission-map name="Field: Edit Preserver" acquired="False"/>
+    <permission-map name="Field: Edit Priority" acquired="False"/>
+    <permission-map name="Field: Edit Profiles" acquired="False"/>
+    <permission-map name="Field: Edit Publication Specification" acquired="False"/>
+    <permission-map name="Field: Edit Rejection Reasons" acquired="False"/>
+    <permission-map name="Field: Edit Results Interpretation" acquired="False"/>
+    <permission-map name="Field: Edit Sample Point" acquired="False"/>
+    <permission-map name="Field: Edit Sample Type" acquired="False"/>
+    <permission-map name="Field: Edit Sample Condition" acquired="False"/>
+    <permission-map name="Field: Edit Sampler" acquired="False"/>
+    <permission-map name="Field: Edit Sampling Date" acquired="False"/>
+    <permission-map name="Field: Edit Sampling Deviation" acquired="False"/>
+    <permission-map name="Field: Edit Sampling Round" acquired="False"/>
+    <permission-map name="Field: Edit Scheduled Sampler" acquired="False"/>
+    <permission-map name="Field: Edit Storage Location" acquired="False"/>
+    <permission-map name="Field: Edit Template" acquired="False"/>
+    <permission-map name="Field: Edit Specification" acquired="False"/>
     <!-- /MANAGED PERMISSIONS -->
   </state>
   <!-- /State: invalid -->
@@ -1052,13 +1058,16 @@
     <exit-transition transition_id="reinstate" />
     <!-- /TRANSITIONS -->
 
-    <!-- MANAGED PERMISSIONS -->
-    <permission-map name="BIKA: Add Analysis" acquired="True"/>
+    <!-- MANAGED PERMISSIONS (partially readonly) -->
+
+    <!-- Hide the 'Manage Analyses' tab -->
+    <permission-map name="BIKA: Add Analysis" acquired="False"/>
     <permission-map name="BIKA: Add Attachment" acquired="True"/>
     <permission-map name="BIKA: Cancel and reinstate" acquired="True"/>
     <permission-map name="BIKA: Edit AR" acquired="True"/>
-    <permission-map name="BIKA: Edit Field Results" acquired="True"/>
-    <permission-map name="BIKA: Edit Results" acquired="True"/>
+    <!-- Hide the 'Manage Results' tab -->
+    <permission-map name="BIKA: Edit Field Results" acquired="False"/>
+    <permission-map name="BIKA: Edit Results" acquired="False"/>
     <permission-map name="BIKA: Manage Invoices" acquired="True"/>
     <permission-map name="BIKA: Preserve Sample" acquired="True"/>
     <permission-map name="BIKA: Publish" acquired="True"/>
@@ -1070,39 +1079,39 @@
     <permission-map name="Modify portal content" acquired="True"/>
     <permission-map name="Reject Analysis Request" acquired="True"/>
     <permission-map name="View" acquired="True"/>
-    <!-- Field Permissions -->
-    <permission-map name="Field: Edit Batch" acquired="True"/>
-    <permission-map name="Field: Edit Client Order Number" acquired="True"/>
-    <permission-map name="Field: Edit Client Reference" acquired="True"/>
-    <permission-map name="Field: Edit Client Sample ID" acquired="True"/>
-    <permission-map name="Field: Edit Client" acquired="True"/>
-    <permission-map name="Field: Edit Composite" acquired="True"/>
-    <permission-map name="Field: Edit Contact" acquired="True"/>
-    <permission-map name="Field: Edit Container" acquired="True"/>
-    <permission-map name="Field: Edit Date Preserved" acquired="True"/>
-    <permission-map name="Field: Edit Date Received" acquired="True"/>
-    <permission-map name="Field: Edit Date Sampled" acquired="True"/>
-    <permission-map name="Field: Edit Environmental Conditions" acquired="True"/>
-    <permission-map name="Field: Edit Invoice Exclude" acquired="True"/>
-    <permission-map name="Field: Edit Member Discount" acquired="True"/>
-    <permission-map name="Field: Edit Preservation" acquired="True"/>
-    <permission-map name="Field: Edit Preserver" acquired="True"/>
-    <permission-map name="Field: Edit Priority" acquired="True"/>
-    <permission-map name="Field: Edit Profiles" acquired="True"/>
-    <permission-map name="Field: Edit Publication Specification" acquired="True"/>
-    <permission-map name="Field: Edit Rejection Reasons" acquired="True"/>
-    <permission-map name="Field: Edit Results Interpretation" acquired="True"/>
-    <permission-map name="Field: Edit Sample Point" acquired="True"/>
-    <permission-map name="Field: Edit Sample Type" acquired="True"/>
-    <permission-map name="Field: Edit Sample Condition" acquired="True"/>
-    <permission-map name="Field: Edit Sampler" acquired="True"/>
-    <permission-map name="Field: Edit Sampling Date" acquired="True"/>
-    <permission-map name="Field: Edit Sampling Deviation" acquired="True"/>
-    <permission-map name="Field: Edit Sampling Round" acquired="True"/>
-    <permission-map name="Field: Edit Scheduled Sampler" acquired="True"/>
-    <permission-map name="Field: Edit Storage Location" acquired="True"/>
-    <permission-map name="Field: Edit Template" acquired="True"/>
-    <permission-map name="Field: Edit Specification" acquired="True"/>
+    <!-- Field Permissions (all readonly) -->
+    <permission-map name="Field: Edit Batch" acquired="False"/>
+    <permission-map name="Field: Edit Client Order Number" acquired="False"/>
+    <permission-map name="Field: Edit Client Reference" acquired="False"/>
+    <permission-map name="Field: Edit Client Sample ID" acquired="False"/>
+    <permission-map name="Field: Edit Client" acquired="False"/>
+    <permission-map name="Field: Edit Composite" acquired="False"/>
+    <permission-map name="Field: Edit Contact" acquired="False"/>
+    <permission-map name="Field: Edit Container" acquired="False"/>
+    <permission-map name="Field: Edit Date Preserved" acquired="False"/>
+    <permission-map name="Field: Edit Date Received" acquired="False"/>
+    <permission-map name="Field: Edit Date Sampled" acquired="False"/>
+    <permission-map name="Field: Edit Environmental Conditions" acquired="False"/>
+    <permission-map name="Field: Edit Invoice Exclude" acquired="False"/>
+    <permission-map name="Field: Edit Member Discount" acquired="False"/>
+    <permission-map name="Field: Edit Preservation" acquired="False"/>
+    <permission-map name="Field: Edit Preserver" acquired="False"/>
+    <permission-map name="Field: Edit Priority" acquired="False"/>
+    <permission-map name="Field: Edit Profiles" acquired="False"/>
+    <permission-map name="Field: Edit Publication Specification" acquired="False"/>
+    <permission-map name="Field: Edit Rejection Reasons" acquired="False"/>
+    <permission-map name="Field: Edit Results Interpretation" acquired="False"/>
+    <permission-map name="Field: Edit Sample Point" acquired="False"/>
+    <permission-map name="Field: Edit Sample Type" acquired="False"/>
+    <permission-map name="Field: Edit Sample Condition" acquired="False"/>
+    <permission-map name="Field: Edit Sampler" acquired="False"/>
+    <permission-map name="Field: Edit Sampling Date" acquired="False"/>
+    <permission-map name="Field: Edit Sampling Deviation" acquired="False"/>
+    <permission-map name="Field: Edit Sampling Round" acquired="False"/>
+    <permission-map name="Field: Edit Scheduled Sampler" acquired="False"/>
+    <permission-map name="Field: Edit Storage Location" acquired="False"/>
+    <permission-map name="Field: Edit Template" acquired="False"/>
+    <permission-map name="Field: Edit Specification" acquired="False"/>
     <!-- /MANAGED PERMISSIONS -->
   </state>
   <!-- /State: cancelled -->
