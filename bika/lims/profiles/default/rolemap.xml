@@ -156,9 +156,11 @@
     </permission>
 
     <permission name="Reject Analysis Request" acquire="False">
+      <role name="Client"/>
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="LabClerk"/>
+      <role name="Owner"/>
     </permission>
     <!-- /GENERIC PERMISSIONS -->
 
