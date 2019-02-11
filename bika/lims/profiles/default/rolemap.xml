@@ -29,224 +29,219 @@
   <permissions>
 
     <!-- Sample: Field Permissions -->
-    <permission name="Field: Edit Batch" acquire="True">
+    <permission name="Field: Edit Batch" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
 
-    <permission name="Field: Edit Client" acquire="True">
+    <permission name="Field: Edit Client" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
 
-    <permission name="Field: Edit Client Order Number" acquire="True">
+    <permission name="Field: Edit Client Order Number" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
 
-    <permission name="Field: Edit Client Reference" acquire="True">
+    <permission name="Field: Edit Client Reference" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
 
-    <permission name="Field: Edit Client Sample ID" acquire="True">
+    <permission name="Field: Edit Client Sample ID" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
 
-    <permission name="Field: Edit Composite" acquire="True">
+    <permission name="Field: Edit Composite" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
 
-    <permission name="Field: Edit Contact" acquire="True">
+    <permission name="Field: Edit Contact" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
 
-    <permission name="Field: Edit Container" acquire="True">
+    <permission name="Field: Edit Container" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
 
-    <permission name="Field: Edit Date Preserved" acquire="True">
+    <permission name="Field: Edit Date Preserved" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
 
-    <permission name="Field: Edit Date Received" acquire="True">
+    <permission name="Field: Edit Date Received" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
 
-    <permission name="Field: Edit Date Sampled" acquire="True">
+    <permission name="Field: Edit Date Sampled" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
 
-    <permission name="Field: Edit Environmental Conditions" acquire="True">
+    <permission name="Field: Edit Environmental Conditions" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
 
-    <permission name="Field: Edit Invoice Exclude" acquire="True">
+    <permission name="Field: Edit Invoice Exclude" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
 
-    <permission name="Field: Edit Member Discount" acquire="True">
+    <permission name="Field: Edit Member Discount" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
 
-    <permission name="Field: Edit Preservation" acquire="True">
+    <permission name="Field: Edit Preservation" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
 
-    <permission name="Field: Edit Preserver" acquire="True">
+    <permission name="Field: Edit Preserver" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
 
-    <permission name="Field: Edit Priority" acquire="True">
+    <permission name="Field: Edit Priority" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
 
-    <permission name="Field: Edit Profiles" acquire="True">
+    <!-- The analysis profiles are bound to the price and selected analyses.
+         Therefore it should not be changed after the sample was created -->
+    <permission name="Field: Edit Profiles" acquire="False">
+    </permission>
+
+    <permission name="Field: Edit Publication Specification" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
 
-    <permission name="Field: Edit Publication Specification" acquire="True">
+    <permission name="Field: Edit Rejection Reasons" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
 
-    <permission name="Field: Edit Rejection Reasons" acquire="True">
+    <permission name="Field: Edit Results Interpretation" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
 
-    <permission name="Field: Edit Results Interpretation" acquire="True">
+    <permission name="Field: Edit Sample Point" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
 
-    <permission name="Field: Edit Sample Point" acquire="True">
+    <!-- The sample type is bound to the ID generation and specifications.
+         Therefore it should not be changed after the sample was created -->
+    <permission name="Field: Edit Sample Type" acquire="False">
+    </permission>
+
+    <permission name="Field: Edit Sample Condition" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
 
-    <permission name="Field: Edit Sample Type" acquire="True">
+    <permission name="Field: Edit Sampler" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
 
-    <permission name="Field: Edit Sample Condition" acquire="True">
+    <permission name="Field: Edit Sampling Date" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
 
-    <permission name="Field: Edit Sampler" acquire="True">
+    <permission name="Field: Edit Sampling Deviation" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
 
-    <permission name="Field: Edit Sampling Date" acquire="True">
+    <permission name="Field: Edit Sampling Round" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
 
-    <permission name="Field: Edit Sampling Deviation" acquire="True">
+    <permission name="Field: Edit Scheduled Sampler" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
 
-    <permission name="Field: Edit Sampling Round" acquire="True">
+    <permission name="Field: Edit Storage Location" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
 
-    <permission name="Field: Edit Scheduled Sampler" acquire="True">
-      <role name="LabClerk"/>
-      <role name="LabManager"/>
-      <role name="Manager"/>
-      <role name="Owner"/>
+
+    <!-- The analysis template is bound to the partitioning and container selection.
+         Therefore it should not be changed after the sample was created -->
+    <permission name="Field: Edit Template" acquire="False">
     </permission>
 
-    <permission name="Field: Edit Storage Location" acquire="True">
-      <role name="LabClerk"/>
-      <role name="LabManager"/>
-      <role name="Manager"/>
-      <role name="Owner"/>
-    </permission>
-
-    <permission name="Field: Edit Template" acquire="True">
-      <role name="LabClerk"/>
-      <role name="LabManager"/>
-      <role name="Manager"/>
-      <role name="Owner"/>
-    </permission>
-
-    <permission name="Field: Edit Specification" acquire="True">
+    <permission name="Field: Edit Specification" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
