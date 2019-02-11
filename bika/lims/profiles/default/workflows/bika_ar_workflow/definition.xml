@@ -1148,113 +1148,71 @@
     </permission-map>
 
     <!-- Field-specific permissions -->
-    <permission-map name="Field: Edit Batch" acquired="False">
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
+    <permission-map name="Field: Edit Batch" acquired="True">
     </permission-map>
-    <permission-map name="Field: Edit Client" acquired="False"/>
-    <permission-map name="Field: Edit Client Order Number" acquired="False">
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-      <permission-role>Owner</permission-role>
+    <permission-map name="Field: Edit Client" acquired="True">
     </permission-map>
-    <permission-map name="Field: Edit Client Reference" acquired="False">
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-      <permission-role>Owner</permission-role>
+    <permission-map name="Field: Edit Client Order Number" acquired="True">
     </permission-map>
-    <permission-map name="Field: Edit Client Sample ID" acquired="False">
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-      <permission-role>Owner</permission-role>
+    <permission-map name="Field: Edit Client Reference" acquired="True">
     </permission-map>
-    <permission-map name="Field: Edit Composite" acquired="False">
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
+    <permission-map name="Field: Edit Client Sample ID" acquired="True">
     </permission-map>
-    <permission-map name="Field: Edit Contact" acquired="False">
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-      <permission-role>Owner</permission-role>
+    <permission-map name="Field: Edit Composite" acquired="True">
     </permission-map>
-    <permission-map name="Field: Edit Container" acquired="False"/>
-    <permission-map name="Field: Edit Date Preserved" acquired="False"/>
-    <permission-map name="Field: Edit Date Received" acquired="False">
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
+    <permission-map name="Field: Edit Contact" acquired="True">
     </permission-map>
-    <permission-map name="Field: Edit Date Sampled" acquired="False"/>
-    <permission-map name="Field: Edit Environmental Conditions" acquired="False">
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
+    <permission-map name="Field: Edit Container" acquired="True">
     </permission-map>
-    <permission-map name="Field: Edit Invoice Exclude" acquired="False">
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
+    <permission-map name="Field: Edit Date Preserved" acquired="True">
     </permission-map>
-    <permission-map name="Field: Edit Member Discount" acquired="False">
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
+    <permission-map name="Field: Edit Date Received" acquired="True">
     </permission-map>
-    <permission-map name="Field: Edit Preservation" acquired="False"/>
-    <permission-map name="Field: Edit Preserver" acquired="False"/>
-    <permission-map name="Field: Edit Priority" acquired="False">
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-      <permission-role>Owner</permission-role>
+    <permission-map name="Field: Edit Date Sampled" acquired="True">
     </permission-map>
-    <permission-map name="Field: Edit Profiles" acquired="False"/>
-    <permission-map name="Field: Edit Publication Specification" acquired="False"/>
-    <permission-map name="Field: Edit Rejection Reasons" acquired="False">
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-      <permission-role>Owner</permission-role>
+    <permission-map name="Field: Edit Environmental Conditions" acquired="True">
     </permission-map>
-    <permission-map name="Field: Edit Results Interpretation" acquired="False">
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
+    <permission-map name="Field: Edit Invoice Exclude" acquired="True">
     </permission-map>
-    <permission-map name="Field: Edit Sample Point" acquired="False">
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
+    <permission-map name="Field: Edit Member Discount" acquired="True">
     </permission-map>
-    <permission-map name="Field: Edit Sample Type" acquired="False"/>
-    <permission-map name="Field: Edit Sample Condition" acquired="False">
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
+    <permission-map name="Field: Edit Preservation" acquired="True">
     </permission-map>
-    <permission-map name="Field: Edit Sampling Date" acquired="False"/>
-    <permission-map name="Field: Edit Sampling Deviation" acquired="False"/>
-    <permission-map name="Field: Edit Sampling Round" acquired="False"/>
-    <permission-map name="Field: Edit Scheduled Sampler" acquired="False"/>
-    <permission-map name="Field: Edit Storage Location" acquired="False">
-      <premission-role>Analyst</premission-role>
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-      <permission-role>Sampler</permission-role>
-      <permission-role>SamplingCoordinator</permission-role>
+    <permission-map name="Field: Edit Preserver" acquired="True">
     </permission-map>
-    <permission-map name="Field: Edit Template" acquired="False"/>
-    <permission-map name="Field: Edit Specification" acquired="False">
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
+    <permission-map name="Field: Edit Priority" acquired="True">
     </permission-map>
+    <permission-map name="Field: Edit Profiles" acquired="True">
+    </permission-map>
+    <permission-map name="Field: Edit Publication Specification" acquired="True">
+    </permission-map>
+    <permission-map name="Field: Edit Rejection Reasons" acquired="True">
+    </permission-map>
+    <permission-map name="Field: Edit Results Interpretation" acquired="True">
+    </permission-map>
+    <permission-map name="Field: Edit Sample Point" acquired="True">
+    </permission-map>
+    <permission-map name="Field: Edit Sample Type" acquired="True">
+    </permission-map>
+    <permission-map name="Field: Edit Sample Condition" acquired="True">
+    </permission-map>
+    <permission-map name="Field: Edit Sampler" acquired="True">
+    </permission-map>
+    <permission-map name="Field: Edit Sampling Date" acquired="True">
+    </permission-map>
+    <permission-map name="Field: Edit Sampling Deviation" acquired="True">
+    </permission-map>
+    <permission-map name="Field: Edit Sampling Round" acquired="True">
+    </permission-map>
+    <permission-map name="Field: Edit Scheduled Sampler" acquired="True">
+    </permission-map>
+    <permission-map name="Field: Edit Storage Location" acquired="True">
+    </permission-map>
+    <permission-map name="Field: Edit Template" acquired="True">
+    </permission-map>
+    <permission-map name="Field: Edit Specification" acquired="True">
+    </permission-map>
+    <!-- Field-specific permissions -->
 
     <!-- Reject Analysis Request -->
     <permission-map name="Reject Analysis Request" acquired="False">
