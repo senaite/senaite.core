@@ -1073,8 +1073,266 @@
     <permission-map name="Field: Edit Specification" acquired="True"/>
     <!-- /MANAGED PERMISSIONS -->
   </state>
-  <!-- /State: cancelled
+  <!-- /State: cancelled -->
 
 
+  <!-- *** TRANSITIONS *** -->
+
+
+  <transition transition_id="attach" title="Attach" new_state="to_be_verified" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Add attachment</action>
+    <guard>
+      <guard-expression>python:here.guard_attach_transition()</guard-expression>
+    </guard>
+  </transition>
+
+  <!-- Transition: cancel
+       Cancel transition can only be done when all analyses the request contains are
+       in unassigned state (see the guard) -->
+  <transition transition_id="cancel" title="Cancel" new_state="cancelled"
+              trigger="USER" before_script="" after_script=""
+              i18n:attributes="title">
+    <action url="" category="workflow" icon="">Cancel</action>
+    <guard>
+      <guard-permission>BIKA: Cancel and reinstate</guard-permission>
+      <guard-expression>python:here.guard_handler("cancel")</guard-expression>
+    </guard>
+  </transition>
+
+  <transition transition_id="no_sampling_workflow" title="No sampling workflow"
+              new_state="sample_due" trigger="USER" before_script=""
+              after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">No sampling workflow</action>
+    <guard>
+      <guard-permission>BIKA: Add Analysis Request</guard-permission>
+      <guard-expression>python:here.guard_handler("no_sampling_workflow")</guard-expression>
+    </guard>
+  </transition>
+
+  <transition transition_id="prepublish" title="Prepublish" new_state="" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Prepublish</action>
+    <guard>
+      <guard-permission>BIKA: Publish</guard-permission>
+      <guard-expression>python:here.guard_handler("prepublish")</guard-expression>
+    </guard>
+  </transition>
+
+  <transition transition_id="preserve" title="Preserve" new_state="sample_due" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Preserve</action>
+    <guard>
+      <guard-permission>BIKA: Preserve Sample</guard-permission>
+      <guard-expression>python:here.guard_handler("preserve")</guard-expression>
+    </guard>
+  </transition>
+
+  <transition transition_id="publish" title="Publish" new_state="published" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Publish</action>
+    <guard>
+      <guard-permission>BIKA: Publish</guard-permission>
+      <guard-expression>python:here.guard_handler("publish")</guard-expression>
+    </guard>
+  </transition>
+
+  <transition transition_id="receive" title="Receive" new_state="sample_received"
+              trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Receive sample</action>
+    <guard>
+      <guard-permission>BIKA: Receive Sample</guard-permission>
+      <guard-expression>python:here.guard_handler("receive")</guard-expression>
+    </guard>
+  </transition>
+
+  <!-- Transition: reinstate
+       There is no new_state defined explicitly defined, cause the new_state will be
+       the state before the request was cancelled. See after_reinstate -->
+  <transition transition_id="reinstate" title="Reinstate"
+              new_state="sample_registered"
+              trigger="USER" before_script="" after_script=""
+              i18n:attributes="title">
+    <action url="" category="workflow" icon="">Reinstate</action>
+    <guard>
+      <guard-permission>BIKA: Cancel and reinstate</guard-permission>
+      <guard-expression>python:here.guard_handler("reinstate")</guard-expression>
+    </guard>
+  </transition>
+
+  <!-- Transition: create_partitions -->
+  <transition transition_id="create_partitions" title="Create partitions"
+              new_state="sample_received" trigger="USER"
+              before_script="" after_script=""
+              i18n:attributes="title">
+    <action url="" category="workflow" icon="">Create partitions</action>
+    <guard>
+      <guard-permission>BIKA: Edit Results</guard-permission>
+      <guard-expression>python:here.guard_handler("create_partitions")</guard-expression>
+    </guard>
+  </transition>
+  <!-- /Transition: create_partitions -->
+
+  <transition transition_id="republish" title="Republish" new_state="" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Republish</action>
+    <guard>
+      <guard-permission>BIKA: Publish</guard-permission>
+      <guard-expression>python:here.guard_handler("republish")</guard-expression>
+    </guard>
+  </transition>
+
+  <transition transition_id="retract" title="Retract" new_state="sample_received" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Retract</action>
+    <guard>
+      <guard-expression>python:here.guard_handler('retract')</guard-expression>
+    </guard>
+  </transition>
+
+  <!-- Transition: rollback_to_receive
+       This transition is used for rolling back the Analysis Request to sample_due
+       state when transitions performed to its analyses might cause state an
+       inconsistent state. E.g. if the AR is in "to_be_verified" state and a single
+       analysis is retracted, then the AR must be transitioned to "sample_received".
+       This prevents the "bad" use of changeWorkflowState func in favor of a
+       consistent transition.
+       No need of guard-permission here, because:
+       1) This transition is governed by the permissions set in analysis workflow.
+       2) The guard always returns False unless there is an inconsistency
+  -->
+  <transition transition_id="rollback_to_receive" title="Rollback"
+              new_state="sample_received" trigger="USER" before_script=""
+              after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Rollback</action>
+    <guard>
+      <guard-expression>python:here.guard_handler("rollback_to_receive")</guard-expression>
+    </guard>
+  </transition>
+
+  <transition transition_id="invalidate" title="Invalidate" new_state="invalid" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Invalidate</action>
+    <guard>
+      <guard-permission>BIKA: Retract</guard-permission>
+      <guard-expression>python:here.guard_handler("invalidate")</guard-expression>
+    </guard>
+  </transition>
+
+  <!-- Transition: sample
+       The sample has been collected and is due for reception. This transition
+       requires the Sampler and DateSampled fields to be set -->
+  <transition transition_id="sample" title="Sample" new_state="sample_due"
+              trigger="USER" before_script="" after_script=""
+              i18n:attributes="title">
+    <action url="" category="workflow" icon="">Sample</action>
+    <guard>
+      <guard-permission>BIKA: Sample Sample</guard-permission>
+      <guard-expression>python:here.guard_handler("sample")</guard-expression>
+    </guard>
+  </transition>
+
+  <transition transition_id="sample_due" title="Sample due" new_state="sample_due" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Sample due</action>
+    <guard>
+    </guard>
+  </transition>
+
+  <!-- Transition: To be sampled
+       This transition takes place automatically when sample collection is enabled
+       for the current Analysis Request, either because the setting is enabled by
+       default in setup or because a template with this setting enabled has been
+       used to create the Analysis Request.
+       There is no need of guard-permission, cause this transition is triggered
+       automatically when the Analysis Request is created for the first time.
+  -->
+  <transition transition_id="to_be_sampled" title="To be sampled"
+              new_state="to_be_sampled" trigger="USER" before_script=""
+              after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">To be sampled</action>
+    <guard>
+      <guard-expression>python:here.guard_handler("to_be_sampled")</guard-expression>
+    </guard>
+  </transition>
+
+  <transition transition_id="schedule_sampling" title="Schedule sampling" new_state="scheduled_sampling" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Schedule sampling</action>
+    <guard>
+      <guard-permission>BIKA: Schedule Sampling</guard-permission>
+      <guard-expression>python:here.guard_handler("schedule_sampling")</guard-expression>
+    </guard>
+  </transition>
+
+  <transition transition_id="submit" title="Submit" new_state="to_be_verified" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Submit for verification</action>
+    <guard>
+      <guard-expression>python:here.guard_handler("submit")</guard-expression>
+    </guard>
+  </transition>
+
+  <transition transition_id="to_be_preserved" title="To be preserved" new_state="to_be_preserved" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">To be preserved</action>
+    <guard>
+    </guard>
+  </transition>
+
+  <transition transition_id="verify" title="Verify" new_state="verified" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Verify</action>
+    <guard>
+      <guard-expression>python:here.guard_handler("verify")</guard-expression>
+    </guard>
+  </transition>
+
+  <transition transition_id="reject" title="Reject" new_state="rejected" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Reject</action>
+    <guard>
+      <guard-expression>python:here.bika_setup.isRejectionWorkflowEnabled()</guard-expression>
+      <guard-permission>Reject Analysis Request</guard-permission>
+    </guard>
+  </transition>
+
+
+  <!-- *** VARIABLES *** -->
+
+
+  <variable variable_id="action" for_catalog="False" for_status="True" update_always="True">
+    <description>Previous transition</description>
+    <default>
+      <expression>transition/getId|nothing</expression>
+    </default>
+    <guard>
+    </guard>
+  </variable>
+
+  <variable variable_id="actor" for_catalog="False" for_status="True" update_always="True">
+    <description>The ID of the user who performed the last transition</description>
+    <default>
+      <expression>user/getId</expression>
+    </default>
+    <guard>
+    </guard>
+  </variable>
+
+  <variable variable_id="comments" for_catalog="False" for_status="True" update_always="True">
+    <description>Comment about the last transition</description>
+    <default>
+      <expression>python:state_change.kwargs.get('comment', '')</expression>
+    </default>
+    <guard>
+    </guard>
+  </variable>
+
+  <variable variable_id="review_history" for_catalog="False" for_status="False" update_always="False">
+    <description>Provides access to workflow history</description>
+    <default>
+      <expression>state_change/getHistory</expression>
+    </default>
+    <guard>
+      <guard-permission>Request review</guard-permission>
+      <guard-permission>Review portal content</guard-permission>
+    </guard>
+  </variable>
+
+  <variable variable_id="time" for_catalog="False" for_status="True" update_always="True">
+    <description>When the previous transition was performed</description>
+    <default>
+      <expression>state_change/getDateTime</expression>
+    </default>
+    <guard>
+    </guard>
+  </variable>
 
 </dc-workflow>
