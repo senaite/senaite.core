@@ -73,6 +73,9 @@
 <permission id="bika.lims.Publish" title="BIKA: Publish"/>
 <permission id="bika.lims.CancelAndReinstate" title="BIKA: Cancel and reinstate"/>
 
+<permission id="senaite.core.RejectAnalysisRequest" title="Reject Analysis Request"/>
+
+
 # For screen navigation:
 # ----------------------
 <permission id="bika.lims.EditSample" title="BIKA: Edit Sample"/>
