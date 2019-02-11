@@ -28,8 +28,9 @@
 
   <permissions>
 
-    <!-- Generic Permissions -->
-    <permission name="View" acquire="False">
+    <!-- PLONE PERMISSIONS
+    NOTE: We make only *add* (acquire="True") our permissions here -->
+    <permission name="View" acquire="True">
       <role name="Analyst"/>
       <role name="Client"/>
       <role name="LabClerk"/>
@@ -44,13 +45,16 @@
       <role name="Verifier"/>
     </permission>
 
-    <permission name="Modify portal content" acquire="False">
+    <permission name="Modify portal content" acquire="True">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
+    <!-- PLONE PERMISSIONS -->
 
+
+    <!-- GENERIC PERMISSIONS -->
     <permission name="BIKA: View Results" acquire="False">
       <role name="Analyst"/>
       <role name="LabClerk"/>
@@ -118,16 +122,15 @@
       <role name="Manager"/>
     </permission>
 
-    <!-- Guard Permission -->
     <permission name="Reject Analysis Request" acquire="False">
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="LabClerk"/>
     </permission>
-    <!-- /Generic Permissions -->
+    <!-- /GENERIC PERMISSIONS -->
 
 
-    <!-- Sample: Field Permissions -->
+    <!-- FIELD PERMISSIONS -->
     <permission name="Field: Edit Batch" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
@@ -257,6 +260,7 @@
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Owner"/>
+      <role name="Publisher"/>
     </permission>
 
     <permission name="Field: Edit Rejection Reasons" acquire="False">
@@ -346,7 +350,7 @@
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
-    <!-- /Sample: Field Permissions -->
+    <!-- /FIELD PERMISSIONS -->
 
   </permissions>
 
