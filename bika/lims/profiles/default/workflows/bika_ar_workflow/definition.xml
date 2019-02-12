@@ -403,7 +403,8 @@
     <permission-map name="Field: Edit Contact" acquired="True"/>
     <permission-map name="Field: Edit Container" acquired="True"/>
     <permission-map name="Field: Edit Date Preserved" acquired="True"/>
-    <permission-map name="Field: Edit Date Received" acquired="True"/>
+    <!-- Make the field 'DateReceived' readonly -->
+    <permission-map name="Field: Edit Date Received" acquired="False"/>
     <permission-map name="Field: Edit Date Sampled" acquired="True"/>
     <permission-map name="Field: Edit Environmental Conditions" acquired="True"/>
     <permission-map name="Field: Edit Invoice Exclude" acquired="True"/>
