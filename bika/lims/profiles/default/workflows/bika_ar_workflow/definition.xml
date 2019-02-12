@@ -839,7 +839,8 @@
     <permission-map name="Field: Edit Preserver" acquired="False"/>
     <permission-map name="Field: Edit Priority" acquired="False"/>
     <permission-map name="Field: Edit Profiles" acquired="False"/>
-    <permission-map name="Field: Edit Publication Specification" acquired="False"/>
+    <!-- Allow to change the publicatoin specification -->
+    <permission-map name="Field: Edit Publication Specification" acquired="True"/>
     <permission-map name="Field: Edit Rejection Reasons" acquired="False"/>
     <permission-map name="Field: Edit Results Interpretation" acquired="False"/>
     <permission-map name="Field: Edit Sample Point" acquired="False"/>
@@ -908,7 +909,8 @@
     <permission-map name="Field: Edit Preserver" acquired="False"/>
     <permission-map name="Field: Edit Priority" acquired="False"/>
     <permission-map name="Field: Edit Profiles" acquired="False"/>
-    <permission-map name="Field: Edit Publication Specification" acquired="False"/>
+    <!-- Allow to change the publicatoin specification -->
+    <permission-map name="Field: Edit Publication Specification" acquired="True"/>
     <permission-map name="Field: Edit Rejection Reasons" acquired="False"/>
     <permission-map name="Field: Edit Results Interpretation" acquired="False"/>
     <permission-map name="Field: Edit Sample Point" acquired="False"/>
