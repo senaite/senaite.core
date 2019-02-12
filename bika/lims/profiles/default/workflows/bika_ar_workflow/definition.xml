@@ -27,6 +27,7 @@
   <permission>BIKA: View Results</permission>
   <!-- Client can only reject an AR when is not yet received.
        Labman can only reject an AR when is not yet verified. -->
+  <permission>Access contents information</permission>
   <permission>Modify portal content</permission>
   <permission>Reject Analysis Request</permission>
   <permission>View</permission>
@@ -99,6 +100,7 @@
     <permission-map name="BIKA: Schedule Sampling" acquired="True"/>
     <permission-map name="BIKA: Verify" acquired="True"/>
     <permission-map name="BIKA: View Results" acquired="True"/>
+    <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
     <permission-map name="Reject Analysis Request" acquired="True"/>
     <permission-map name="View" acquired="True"/>
@@ -169,6 +171,7 @@
     <permission-map name="BIKA: Schedule Sampling" acquired="True"/>
     <permission-map name="BIKA: Verify" acquired="True"/>
     <permission-map name="BIKA: View Results" acquired="True"/>
+    <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
     <permission-map name="Reject Analysis Request" acquired="True"/>
     <permission-map name="View" acquired="True"/>
@@ -244,6 +247,7 @@
     <permission-map name="BIKA: Schedule Sampling" acquired="True"/>
     <permission-map name="BIKA: Verify" acquired="True"/>
     <permission-map name="BIKA: View Results" acquired="True"/>
+    <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
     <permission-map name="Reject Analysis Request" acquired="True"/>
     <permission-map name="Verify" acquired="True"/>
@@ -317,6 +321,7 @@
     <permission-map name="BIKA: Schedule Sampling" acquired="True"/>
     <permission-map name="BIKA: Verify" acquired="True"/>
     <permission-map name="BIKA: View Results" acquired="True"/>
+    <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
     <permission-map name="Reject Analysis Request" acquired="True"/>
     <permission-map name="View" acquired="True"/>
@@ -390,6 +395,7 @@
     <permission-map name="BIKA: Schedule Sampling" acquired="True"/>
     <permission-map name="BIKA: Verify" acquired="True"/>
     <permission-map name="BIKA: View Results" acquired="True"/>
+    <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
     <permission-map name="Reject Analysis Request" acquired="True"/>
     <permission-map name="View" acquired="True"/>
@@ -531,6 +537,7 @@
     <permission-map name="BIKA: Schedule Sampling" acquired="True"/>
     <permission-map name="BIKA: Verify" acquired="True"/>
     <permission-map name="BIKA: View Results" acquired="True"/>
+    <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
     <permission-map name="Reject Analysis Request" acquired="True"/>
     <permission-map name="View" acquired="True"/>
@@ -603,6 +610,7 @@
     <permission-map name="BIKA: Schedule Sampling" acquired="True"/>
     <permission-map name="BIKA: Verify" acquired="True"/>
     <permission-map name="BIKA: View Results" acquired="True"/>
+    <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
     <permission-map name="Reject Analysis Request" acquired="True"/>
     <permission-map name="View" acquired="True"/>
@@ -674,6 +682,7 @@
     <permission-map name="BIKA: Schedule Sampling" acquired="True"/>
     <permission-map name="BIKA: Verify" acquired="True"/>
     <permission-map name="BIKA: View Results" acquired="True"/>
+    <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
     <permission-map name="Reject Analysis Request" acquired="True"/>
     <permission-map name="View" acquired="True"/>
@@ -744,6 +753,7 @@
     <permission-map name="BIKA: Schedule Sampling" acquired="True"/>
     <permission-map name="BIKA: Verify" acquired="True"/>
     <permission-map name="BIKA: View Results" acquired="True"/>
+    <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
     <permission-map name="Reject Analysis Request" acquired="True"/>
     <permission-map name="View" acquired="True"/>
@@ -817,6 +827,7 @@
     <permission-map name="BIKA: Schedule Sampling" acquired="True"/>
     <permission-map name="BIKA: Verify" acquired="True"/>
     <permission-map name="BIKA: View Results" acquired="True"/>
+    <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
     <permission-map name="Reject Analysis Request" acquired="False"/>
     <permission-map name="View" acquired="True"/>
@@ -887,6 +898,7 @@
     <permission-map name="BIKA: Schedule Sampling" acquired="True"/>
     <permission-map name="BIKA: Verify" acquired="True"/>
     <permission-map name="BIKA: View Results" acquired="True"/>
+    <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
     <permission-map name="Reject Analysis Request" acquired="True"/>
     <permission-map name="View" acquired="True"/>
@@ -956,6 +968,7 @@
     <permission-map name="BIKA: Schedule Sampling" acquired="True"/>
     <permission-map name="BIKA: Verify" acquired="True"/>
     <permission-map name="BIKA: View Results" acquired="True"/>
+    <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
     <permission-map name="Reject Analysis Request" acquired="True"/>
     <permission-map name="View" acquired="True"/>
@@ -1024,6 +1037,7 @@
     <permission-map name="BIKA: Schedule Sampling" acquired="True"/>
     <permission-map name="BIKA: Verify" acquired="True"/>
     <permission-map name="BIKA: View Results" acquired="True"/>
+    <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
     <permission-map name="Reject Analysis Request" acquired="True"/>
     <permission-map name="View" acquired="True"/>
@@ -1097,6 +1111,7 @@
     <permission-map name="BIKA: Schedule Sampling" acquired="True"/>
     <permission-map name="BIKA: Verify" acquired="True"/>
     <permission-map name="BIKA: View Results" acquired="True"/>
+    <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
     <permission-map name="Reject Analysis Request" acquired="True"/>
     <permission-map name="View" acquired="True"/>
