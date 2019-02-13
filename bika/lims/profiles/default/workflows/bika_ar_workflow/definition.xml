@@ -711,7 +711,8 @@
     <!-- Allow to change the publicatoin specification -->
     <permission-map name="Field: Edit Publication Specification" acquired="True"/>
     <permission-map name="Field: Edit Rejection Reasons" acquired="False"/>
-    <permission-map name="Field: Edit Results Interpretation" acquired="False"/>
+    <!-- Allow to change the results interpretation -->
+    <permission-map name="Field: Edit Results Interpretation" acquired="True"/>
     <permission-map name="Field: Edit Sample Point" acquired="False"/>
     <permission-map name="Field: Edit Sample Type" acquired="False"/>
     <permission-map name="Field: Edit Sample Condition" acquired="False"/>
