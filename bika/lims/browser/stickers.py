@@ -141,14 +141,13 @@ class Sticker(BrowserView):
             templates.append(out)
         return templates
 
-    def getSelectedTemplate(self):
+    def getSelectedTemplate(self, default="Code_39_40x20mm.pt"):
         """Returns the id of the sticker template selected.
 
         If no specific template found in the request (parameter template),
         returns the default template set in Setup > Stickers.
 
-        If the template doesn't exist, uses the default Code_128_1x48mm.pt
-        template (was sticker_small.pt).
+        If the template doesn't exist, uses the default template.
 
         If no template selected but size param, get the sticker template set as
         default in Bika Setup for the size set.
@@ -179,7 +178,7 @@ class Sticker(BrowserView):
             if self.filter_by_type:
                 templates_dir = templates_dir + "/" + self.filter_by_type
         if not os.path.isfile(os.path.join(templates_dir, rq_template)):
-            rq_template = "Code_128_1x48mm.pt"
+            rq_template = default
         return "%s:%s" % (prefix, rq_template) if prefix else rq_template
 
     def getSelectedTemplateCSS(self):
@@ -240,8 +239,8 @@ class Sticker(BrowserView):
             return embed(self, item=item)
         except Exception:
             exc = traceback.format_exc()
-            msg = "<div>{} - {} '{}':<pre>{}</pre></div>".format(
-                repr(item), _("Failed to load sticker"), embedt, exc)
+            msg = "<div class='error'>{} - {} '{}':<pre>{}</pre></div>".format(
+                item.id, _("Failed to load sticker"), embedt, exc)
             return msg
 
     def getItemsURL(self):

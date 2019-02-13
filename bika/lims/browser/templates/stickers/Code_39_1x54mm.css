@@ -13,6 +13,10 @@ Sticker margins: 1mm, 1mm
     overflow: hidden;
 }
 
+.error {
+    color: red;
+}
+
 .sticker .barcode {
     margin: 0 !important;
     margin: 0 auto;
