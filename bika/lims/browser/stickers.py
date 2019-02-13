@@ -212,18 +212,7 @@ class Sticker(BrowserView):
                     content = content_file.read()
         return content
 
-    def nextItem(self):
-        """Iterates to the next item in the list and moves one position up the
-           item index. If the end of the list of items is reached, returns the
-           first item of the list.
-        """
-        if self.item_index == len(self.items):
-            self.item_index = 0
-        self.current_item = [self.items[self.item_index]]
-        self.item_index += 1
-        return self.current_item
-
-    def renderItem(self):
+    def renderItem(self, item):
         """Renders the next available sticker.
 
         Uses the template specified in the request ('template' parameter) by
@@ -233,7 +222,7 @@ class Sticker(BrowserView):
         If the template specified doesn't exist, uses the default bika.lims'
         Code_128_1x48mm.pt template (was sticker_small.pt).
         """
-        curritem = self.nextItem()
+        self.current_item = item
         templates_dir = "templates/stickers"
         embedt = self.getSelectedTemplate()
         if embedt.find(":") >= 0:
@@ -245,11 +234,11 @@ class Sticker(BrowserView):
 
         try:
             embed = ViewPageTemplateFile(fullpath)
-            return embed(self)
+            return embed(self, item=item)
         except Exception:
             exc = traceback.format_exc()
             msg = "<div>{} - {} '{}':<pre>{}</pre></div>".format(
-                repr(curritem), _("Failed to load sticker"), embedt, exc)
+                repr(item), _("Failed to load sticker"), embedt, exc)
             return msg
 
     def getItemsURL(self):
