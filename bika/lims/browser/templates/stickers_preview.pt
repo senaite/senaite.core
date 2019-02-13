@@ -173,12 +173,13 @@
         */
        function reload(template, copies_count) {
          var baseurl = $('body').attr('data-itemsurl');
+         var filter_by_type = $('body').attr('data-filter_by_type');
          $('#stickers-wrapper').fadeTo('fast', 0.4);
          $.ajax({
            url: baseurl,
            type: 'POST',
            async: true,
-           data: {"template": template, "copies_count": copies_count}
+           data: {"template": template, "copies_count": copies_count, "filter_by_type": filter_by_type}
          })
           .always(function(data) {
             var htmldata = data;
@@ -223,7 +224,7 @@
      });
     </script>
   </head>
-  <body tal:attributes="data-itemsurl python:view.getItemsURL();">
+  <body tal:attributes="data-itemsurl python:view.getItemsURL(); data-filter_by_type python:view.filter_by_type">
     <div id='sticker-preview-wrapper'>
       <div id="sticker-preview-header">
         <div id='options-handler'>
