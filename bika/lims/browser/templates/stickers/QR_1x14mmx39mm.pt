@@ -1,8 +1,3 @@
-<!--
-     Default template used to render one QR small sticker
-
-     To retrieve the item, use view.current_item.
--->
 <tal:sticker define="item python:view.current_item;
                      sample_id item/getId;
                      client_sample_id item/getClientSampleID">
