@@ -527,8 +527,9 @@ def update_workflows(portal):
     # Remove rejected duplicates
     remove_rejected_duplicates(portal)
 
-    # Re-import workflow tool
+    # Re-import rolemap and workflow tools
     setup = portal.portal_setup
+    setup.runImportStepFromProfile(profile, 'rolemap')
     setup.runImportStepFromProfile(profile, 'workflow')
 
     # Remove duplicates not assigned to any worksheet
