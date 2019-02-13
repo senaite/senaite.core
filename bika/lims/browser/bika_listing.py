@@ -175,6 +175,10 @@ class WorkflowAction:
         self.request.response.redirect(url)
 
     def __call__(self):
+
+        return self.redirect(message="bika_listing.WorkflowAction",
+                             level="error")
+
         request = self.request
 
         if self.destination_url == "":

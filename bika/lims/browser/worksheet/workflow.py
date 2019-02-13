@@ -24,6 +24,10 @@ class WorksheetFolderWorkflowAction(WorkflowAction):
     in the WorksheetFolder
     """
     def __call__(self):
+
+        return self.redirect(message="WorksheetFolderWorkflowAction",
+                             level="error")
+
         form = self.request.form
         CheckAuthenticator(form)
         action, came_from = WorkflowAction._get_form_workflow_action(self)
@@ -73,6 +77,10 @@ class WorksheetWorkflowAction(AnalysesWorkflowAction):
     """
 
     def __call__(self):
+
+        return self.redirect(message="WorksheetWorkflowAction",
+                             level="error")
+
         form = self.request.form
         CheckAuthenticator(form)
         analysis_uids = form.get("uids", [])
