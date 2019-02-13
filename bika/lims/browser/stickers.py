@@ -248,8 +248,8 @@ class Sticker(BrowserView):
         """Used in stickers_preview.pt
         """
         req_items = self.get_uids()
-        req_items = req_items or api.get_uid(self.context)
-        req = "{}?items={}".format(self.request.URL, req_items)
+        req_items = req_items or [api.get_uid(self.context)]
+        req = "{}?items={}".format(self.request.URL, ",".join(req_items))
         return req
 
     def _getStickersTemplatesDirectory(self, resource_name):
