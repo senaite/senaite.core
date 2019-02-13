@@ -1,0 +1,19 @@
+<tal:sticker define="item python:view.current_item;
+                     contact item/Contact;
+                     client item/getClient;
+                     print_address client/getPrintAddress|nothing">
+
+  <div class="contact-info">
+    <div tal:content="contact/Salutation|nothing"/>
+    <div tal:content="contact/Fullname|nothing"/>
+  </div>
+
+  <div class="client-info">
+    <strong tal:content="client/Name"/>
+  </div>
+
+  <div class="client-address" tal:repeat="line print_address">
+    <div tal:content="line"/>
+  </div>
+
+</tal:sticker>
