@@ -97,6 +97,7 @@ Changelog
 
 **Fixed**
 
+- #1239 Fix and Improve Stickers
 - #1214 Disallow entry of analysis results if the sample is not yet received
 - #1213 Fix instrument notification display in Manage Results View
 - #1212 Fix typo in SamplingFieldsVisibility
