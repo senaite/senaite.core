@@ -328,21 +328,18 @@
     </permission>
 
     <permission name="Field: Edit Results Interpretation" acquire="False">
-      <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
-      <role name="Owner"/>
+      <role name="Verifier"/>
     </permission>
 
     <permission name="Field: Edit Sample Point" acquire="False">
-      <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
 
     <permission name="Field: Edit Sample Type" acquire="False">
-      <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Owner"/>
