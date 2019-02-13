@@ -1,34 +1,31 @@
-<!--
-    Template used to render one barcode with dimensions of 40x20mm.
+<tal:sticker define="portal_state context/@@plone_portal_state;
+                     portal_url portal_state/portal_url;
+                     item python:view.current_item;
+                     item_id item/getId;
+                     hazardous item/getHazardous|nothing;">
 
-    To retrieve the item, use view.current_item, that will return an array with
-    the following structure:
+  <!-- Barcode -->
+  <div class="barcode"
+       tal:attributes="data-id item_id;"
+       data-code="code39"
+       data-barHeight="14"
+       data-addQuietZone="false"
+       data-showHRI="false">
+  </div>
 
-    [None, AssignedAnalyst, workhseet]
--->
-<tal:sticker define="
-    portal_state      context/@@plone_portal_state;
-    portal_url        portal_state/portal_url;
-    item              view/current_item;
-    analyst          python:item[1];
-    worksheet_id      python:item[2].getId();
-    ">
+  <!-- Some additional info about the item -->
+  <div class="item-info">
+    <table cellpadding="0" cellspacing="0" border="0">
+      <tr>
+        <td colspan="2">
+          <span class="hazardous">
+            <img tal:condition="hazardous"
+                 tal:attributes="src string:${portal_url}/++resource++bika.lims.images/hazardous_big.png"/>
+          </span>
+          <strong tal:content="item_id">Item ID</strong>
+        </td>
+      </tr>
+    </table>
+  </div>
 
-    <!-- Barcode -->
-    <div class="barcode"
-        tal:attributes="data-id worksheet_id;"
-        data-code="code93"
-        data-barHeight="14"
-        data-addQuietZone="true"
-        data-showHRI="false">
-    </div>
-
-    <!-- Some additional info about the worksheet -->
-    <div class="worksheet-info">
-        <table cellpadding="0" cellspacing="0" border="0">
-            <tr>
-                <td tal:content="python: analyst"/>
-            </tr>
-        </table>
-    </div>
 </tal:sticker>
