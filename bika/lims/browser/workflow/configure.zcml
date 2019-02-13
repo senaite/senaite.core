@@ -1,0 +1,45 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    i18n_domain="senaite.core">
+
+  <!-- Handler for "workflow_action"-like requests
+  This adapter is in charge to process workflow action requests from views
+  and/or delegate actions to third-party adapters or subscribers -->
+  <browser:page
+    for="*"
+    name="workflow_action"
+    class="bika.lims.browser.workflow.WorkflowActionHandler"
+    permission="zope.Public"
+    layer="bika.lims.interfaces.IBikaLIMS" />
+
+  <!-- Analysis Requests: "copy_to_new" -->
+  <adapter
+    name="workflow_action_copy_to_new"
+    for="bika.lims.interfaces.IAnalysisRequestsFolder
+         bika.lims.interfaces.IBikaLIMS"
+    factory=".analysisrequest.WorkflowActionCopyToNewAdapter"
+    provides="bika.lims.interfaces.IWorkflowActionAdapter"
+    permission="zope.Public" />
+
+  <adapter
+    name="workflow_action_copy_to_new"
+    for="bika.lims.interfaces.IClient
+         bika.lims.interfaces.IBikaLIMS"
+    factory=".analysisrequest.WorkflowActionCopyToNewAdapter"
+    provides="bika.lims.interfaces.IWorkflowActionAdapter"
+    permission="zope.Public" />
+
+  <!-- Analysis Request: "receive"
+  Note this applies wide, cause at the moment, transition "receive" only exists
+  for Analysis Requests and we always want this adapter to be in charge,
+  regardless of the context (Analysis Requests listing, Client folder, etc.) -->
+  <adapter
+    name="workflow_action_receive"
+    for="*
+         bika.lims.interfaces.IBikaLIMS"
+    factory=".analysisrequest.WorkflowActionReceiveAdapter"
+    provides="bika.lims.interfaces.IWorkflowActionAdapter"
+    permission="zope.Public" />
+
+</configure>

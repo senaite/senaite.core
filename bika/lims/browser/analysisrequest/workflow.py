@@ -219,39 +219,6 @@ class AnalysisRequestWorkflowAction(AnalysesWorkflowAction):
             message = _("Saved items: {}".format(", ".join(transitioned)))
         self.redirect(message=message)
 
-    def requires_partitioning(self, brain_or_object):
-        """Returns whether the passed in object needs to be partitioned
-        """
-        obj = api.get_object(brain_or_object)
-        if not IAnalysisRequest.providedBy(obj):
-            return False
-        template = obj.getTemplate()
-        return template and template.getAutoPartition()
-
-    def workflow_action_receive(self):
-        action, came_from = WorkflowAction._get_form_workflow_action(self)
-        items = [self.context,] if came_from == 'workflow_action' \
-                else self._get_selected_items().values()
-        trans, dest = self.submitTransition(action, came_from, items)
-        with_partitions = filter(self.requires_partitioning, items)
-        if with_partitions:
-            # Redirect to the partitioning magic view
-            back_url = self.context.absolute_url()
-            uids = ",".join(map(api.get_uid, with_partitions))
-            url = "{}/partition_magic?uids={}".format(back_url, uids)
-            self.request.response.redirect(url)
-        elif trans and 'receive' in self.context.bika_setup.getAutoPrintStickers():
-            transitioned = [item.UID() for item in items]
-            tmpl = self.context.bika_setup.getAutoStickerTemplate()
-            q = "/sticker?autoprint=1&template=%s&items=" % tmpl
-            q += ",".join(transitioned)
-            self.request.response.redirect(self.context.absolute_url() + q)
-        elif trans:
-            message = PMF('Changes saved.')
-            self.context.plone_utils.addPortalMessage(message, 'info')
-            self.destination_url = self.context.absolute_url()
-            self.request.response.redirect(self.destination_url)
-
     def workflow_action_submit(self):
         AnalysesWorkflowAction.workflow_action_submit(self)
         checkPermission = self.context.portal_membership.checkPermission
@@ -324,21 +291,6 @@ class AnalysisRequestWorkflowAction(AnalysesWorkflowAction):
                     mapping={'items': self.context.getId()})
         self.context.plone_utils.addPortalMessage(message, 'warning')
         self.request.response.redirect(retest.absolute_url())
-
-    def workflow_action_copy_to_new(self):
-        # Pass the selected AR UIDs in the request, to ar_add.
-        objects = WorkflowAction._get_selected_items(self)
-        if not objects:
-            message = _("No analyses have been selected")
-            self.context.plone_utils.addPortalMessage(message, 'info')
-            referer = self.request.get_header("referer")
-            self.request.response.redirect(referer)
-            return
-        url = self.context.absolute_url() + "/ar_add" + \
-            "?ar_count={0}".format(len(objects)) + \
-            "&copy_from={0}".format(",".join(objects.keys()))
-        self.request.response.redirect(url)
-        return
 
     def workflow_action_schedule_sampling(self):
         """

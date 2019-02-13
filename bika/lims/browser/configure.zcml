@@ -14,7 +14,6 @@
   <include file="artemplate.zcml"/>
   <include file="attachment.zcml"/>
   <include file="batchfolder.zcml"/>
-  <include file="bika_listing.zcml"/>
   <include file="calcs.zcml"/>
   <include file="clientfolder.zcml"/>
   <include file="invoicefolder.zcml"/>
@@ -48,6 +47,7 @@
   <include package=".samplinground"/>
   <include package=".srtemplate"/>
   <include package=".viewlets"/>
+  <include package=".workflow"/>
   <include package=".worksheet"/>
 
   <include package=".fields"/>
