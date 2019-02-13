@@ -166,7 +166,7 @@ class WorkflowAction:
             self.request.response.redirect(self.destination_url)
             return
 
-        url = '{0}/sticker?autoprint=1&template={1}&items={2}'.format(
+        url = '{0}/sticker?template={1}&items={2}'.format(
             self.context.absolute_url(),
             self.portal.bika_setup.getAutoStickerTemplate(),
             ','.join(uids)
