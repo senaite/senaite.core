@@ -1,39 +1,36 @@
-/*
-Sticker Dimensions: 72mm x 40mm
-Sticker margins: 1mm, 1mm
-*/
 .sticker {
-    margin:0 auto;
-    padding:1mm;
+    margin: 0 auto;
+    padding: 1mm;
     width: 70mm;    /* Total width  = 1 + 1 + 70 = 72mm */
     height: 38mm;   /* Total height = 1 + 1 + 38 = 40mm */
     font-family: Helvetica, Arial;
-    font-size:7pt;
-    text-align:center;
+    font-size: 7pt;
+    text-align: center;
 }
 
 .sticker .barcode {
-    margin: 0 !important;
     margin: 0 auto;
     padding: 1mm 0 !important;
-    text-align:center;
+    text-align: center;
 }
 
 table.info-container {
-    height:38mm;
-    border-collapse:collapse;
+    height: 38mm;
+    border-collapse: collapse;
     font-size: 6pt;
-    width:100%;
+    width: 100%;
 }
+
 table.info-container th {
     text-align: left;
     text-transform: none;
     border: 1pt solid #888;
-    padding:0.5mm;
+    padding: 0.5mm;
 }
+
 table.info-container td {
     border: 1pt solid #888;
-    padding:0.5mm;
+    padding: 0.5mm;
 }
 
 @media print {
