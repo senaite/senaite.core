@@ -16,14 +16,14 @@ Sticker margins: 1mm, 1mm
     margin: 0 !important;
     margin: 0 auto;
     padding: 1mm 0 !important;
-    text-align:center;
+    text-align: center;
 }
 
 .sample-info table {
     width:100%;
 }
 
-.client-sample-id {
+client-sample-id {
     text-align: center;
 }
 
