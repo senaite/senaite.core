@@ -13,7 +13,6 @@ Sticker margins: 1mm, 1mm
 }
 
 .sticker .barcode {
-    margin: 0 !important;
     margin: 0 auto;
     padding: 1mm 0 !important;
     text-align:center;
