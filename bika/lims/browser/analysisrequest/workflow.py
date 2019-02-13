@@ -232,12 +232,6 @@ class AnalysisRequestWorkflowAction(AnalysesWorkflowAction):
             self.destination_url = self.context.absolute_url()
         self.request.response.redirect(self.destination_url)
 
-    def workflow_action_prepublish(self):
-        self.workflow_action_publish()
-
-    def workflow_action_republish(self):
-        self.workflow_action_publish()
-
     def workflow_action_print(self):
         # Calls printLastReport method for selected ARs
         uids = self.request.get('uids',[])
@@ -247,19 +241,6 @@ class AnalysisRequestWorkflowAction(AnalysesWorkflowAction):
             ar.printLastReport()
         referer = self.request.get_header("referer")
         self.request.response.redirect(referer)
-
-    def workflow_action_publish(self):
-        if not isActive(self.context):
-            message = _('Item is inactive.')
-            self.context.plone_utils.addPortalMessage(message, 'info')
-            self.request.response.redirect(self.context.absolute_url())
-            return
-        # AR publish preview
-        uids = self.request.form.get('uids', [self.context.UID()])
-        items = ",".join(uids)
-        self.request.response.redirect(
-            self.context.portal_url() + "/analysisrequests/publish?items="
-            + items)
 
     def workflow_action_verify(self):
         # default bika_listing.py/WorkflowAction, but then go to view screen.

@@ -27,6 +27,18 @@ class WorkflowActionCreatePartitionsAdapter(RequestContextAware):
         return self.redirect(redirect_url=url)
 
 
+class WorkflowActionPublishAdapter(RequestContextAware):
+    """Adapter in charge of Analysis Requests 'publish'-like actions
+    """
+    implements(IWorkflowActionUIDsAdapter)
+
+    def __call__(self, action, uids):
+        purl = self.context.portal_url()
+        uids = ",".join(uids)
+        url = "{}/analysisrequests/publish?items={}".format(purl, uids)
+        return self.redirect(redirect_url=url)
+
+
 class WorkflowActionReceiveAdapter(WorkflowActionGenericAdapter):
     """Adapter in charge of Analysis Request receive action
     """

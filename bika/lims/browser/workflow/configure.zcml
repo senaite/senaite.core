@@ -63,4 +63,40 @@
     provides="bika.lims.interfaces.IWorkflowActionAdapter"
     permission="zope.Public" />
 
+  <!-- Analysis Request: "prepublish"
+  Note this applies wide, cause at the moment, this action only exists
+  for Analysis Requests and we always want this adapter to be in charge,
+  regardless of the context (Analysis Requests listing, Client folder, etc.) -->
+  <adapter
+    name="workflow_action_prepublish"
+    for="*
+         bika.lims.interfaces.IBikaLIMS"
+    factory=".analysisrequest.WorkflowActionPublishAdapter"
+    provides="bika.lims.interfaces.IWorkflowActionAdapter"
+    permission="zope.Public" />
+
+  <!-- Analysis Request: "publish"
+  Note this applies wide, cause at the moment, this action only exists
+  for Analysis Requests and we always want this adapter to be in charge,
+  regardless of the context (Analysis Requests listing, Client folder, etc.) -->
+  <adapter
+    name="workflow_action_publish"
+    for="*
+         bika.lims.interfaces.IBikaLIMS"
+    factory=".analysisrequest.WorkflowActionPublishAdapter"
+    provides="bika.lims.interfaces.IWorkflowActionAdapter"
+    permission="zope.Public" />
+
+  <!-- Analysis Request: "republish"
+  Note this applies wide, cause at the moment, this action only exists
+  for Analysis Requests and we always want this adapter to be in charge,
+  regardless of the context (Analysis Requests listing, Client folder, etc.) -->
+  <adapter
+    name="workflow_action_republish"
+    for="*
+         bika.lims.interfaces.IBikaLIMS"
+    factory=".analysisrequest.WorkflowActionPublishAdapter"
+    provides="bika.lims.interfaces.IWorkflowActionAdapter"
+    permission="zope.Public" />
+
 </configure>
