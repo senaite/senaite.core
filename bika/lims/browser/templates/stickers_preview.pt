@@ -251,7 +251,7 @@
             <input name="copies_count" id="copies_count"
                    type="number"
                    min="1"
-                   tal:attributes="value view/copies_count"/>
+                   tal:attributes="value view/get_copies_count"/>
           </div>
         </div>
         <div id='sticker-buttons'>

@@ -10,6 +10,7 @@ import os.path
 import tempfile
 import traceback
 
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.browser import BrowserView
@@ -18,9 +19,9 @@ from bika.lims.utils import createPdf
 from bika.lims.utils import to_int
 from bika.lims.vocabularies import getStickerTemplates
 from plone.resource.utils import queryResourceDirectory
-from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from senaite.core.supermodel import SuperModel
 from zope.component import getAdapters
 from zope.component.interfaces import ComponentLookupError
 
@@ -66,11 +67,9 @@ class Sticker(BrowserView):
 
     def __init__(self, context, request):
         super(Sticker, self).__init__(context, request)
-        self.item_index = 0
-        self.current_item = None
-        self.copies_count = None
         self.context = context
         self.request = request
+        self.current_item = None
 
     def __call__(self):
         # Need to generate a PDF with the stickers?
@@ -82,23 +81,13 @@ class Sticker(BrowserView):
             pdfstream = self.pdf_from_post()
             return pdfstream
 
-        self.copies_count = self.get_copies_count()
-
-        items = self.request.get("items", "")
         # If filter by type is given in the request, only the templates under
         # the path with the type name will be given as vocabulary.
         # Example: If filter_by_type=='worksheet', only *.pt files under a
         # folder with filter_by_type as name will be displayed.
         self.filter_by_type = self.request.get("filter_by_type", False)
-        catalog = getToolByName(self.context, "uid_catalog")
-        self.items = [o.getObject() for o in catalog(UID=items.split(","))]
-        if not self.items:
-            # Default fallback, load from context
-            self.items = [self.context, ]
 
-        # before retrieving the required data for each type of object copy
-        # each object as many times as the number of desired sticker copies
-        self.items = self._resolve_number_of_copies(self.items)
+        self.items = self.get_items()
         if not self.items:
             logger.warning(
                 "Cannot print stickers: no items specified in request")
@@ -106,6 +95,20 @@ class Sticker(BrowserView):
             return
 
         return self.template()
+
+    def get_items(self):
+        """Returns a list of SuperModel items
+        """
+        uids = self.get_uids()
+        if not uids:
+            return [SuperModel(self.context)]
+        items = map(lambda uid: SuperModel(uid), uids)
+        return self._resolve_number_of_copies(items)
+
+    def get_uids(self):
+        """Parse the UIDs from the request `items` parameter
+        """
+        return filter(None, self.request.get("items", "").split(","))
 
     def getAvailableTemplates(self):
         """Returns an array with the templates of stickers available.
@@ -242,9 +245,11 @@ class Sticker(BrowserView):
             return msg
 
     def getItemsURL(self):
-        req_items = self.request.get("items", "")
-        req_items = req_items if req_items else self.context.getId()
-        req = "%s?items=%s" % (self.request.URL, req_items)
+        """Used in stickers_preview.pt
+        """
+        req_items = self.request.get("items")
+        req_items = req_items or self.context.getId()
+        req = "{}?items={}".format(self.request.URL, req_items)
         return req
 
     def _getStickersTemplatesDirectory(self, resource_name):
@@ -274,19 +279,17 @@ class Sticker(BrowserView):
         return pdf_file
 
     def _resolve_number_of_copies(self, items):
-        """For the given objects generate as many copies as the desired
-        number of stickers. The desired number of stickers for each
-        object is given by copies_count
+        """For the given objects generate as many copies as the desired number
+        of stickers.
 
         :param items: list of objects whose stickers are going to be previewed.
         :type items: list
-        :returns: list containing n copies of each object in the items list,
-        where n is self.copies_count
+        :returns: list containing n copies of each object in the items list
         :rtype: list
         """
         copied_items = []
         for obj in items:
-            for copy in range(self.copies_count):
+            for copy in range(self.get_copies_count()):
                 copied_items.append(obj)
         return copied_items
 
@@ -297,6 +300,7 @@ class Sticker(BrowserView):
         in the request
         :rtype: int
         """
-        default_num = self.context.bika_setup.getDefaultNumberOfCopies()
+        setup = api.get_setup()
+        default_num = setup.getDefaultNumberOfCopies()
         request_num = self.request.form.get("copies_count")
         return to_int(request_num, default_num)
