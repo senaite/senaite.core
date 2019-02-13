@@ -13,10 +13,16 @@ Sticker margins: 1mm, 1mm
     overflow: hidden;
 }
 
+.sticker .error {
+    color: red;
+    font-size: 8pt;
+    z-index: 1000;
+}
+
 .sticker .barcode {
     margin: 0 auto;
     padding: 1mm 0 !important;
-    text-align:center;
+    text-align: center;
 }
 
 table.info-container {
@@ -25,15 +31,18 @@ table.info-container {
     font-size: 6pt;
     width:100%;
 }
+
 table.info-container th {
     text-align: left;
     text-transform: none;
     border: 1pt solid #888;
     padding:0.5mm;
 }
+
 table.info-container tr {
     border-collapse: separate;
 }
+
 table.info-container td {
     border: 1pt solid #888;
     padding:0.5mm;

@@ -12,9 +12,21 @@
     overflow: hidden;
 }
 
+.sticker .error {
+    color: red;
+    font-size: 8pt;
+    z-index: 1000;
+}
+
+.sticker .barcode {
+    margin: 0 auto;
+    padding: 1mm 0 !important;
+    text-align: center;
+}
+
 @media print {
     @page {
-        size: 40mm 85mm !important;
+        size: 85mm 40mm !important;
         margin: 0mm !important;
     }
     html, body {

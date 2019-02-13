@@ -17,6 +17,18 @@ Sticker margins: (1mm, 1mm) x 2
     background-color: #dcdcdc;
 }
 
+.sticker .error {
+    color: red;
+    font-size: 8pt;
+    z-index: 1000;
+}
+
+.sticker .barcode {
+    margin: 0 auto;
+    padding: 1mm 0 !important;
+    text-align: center;
+}
+
 /* Each sticker row contains 2 stickers */
 .sticker table.stickers-row {
     width: 100%;
@@ -51,13 +63,6 @@ Sticker margins: (1mm, 1mm) x 2
 .sticker .sampling-date-info table td {
     border: none;
     padding-left: 2mm;
-}
-
-.sticker .barcode {
-    margin: 0 !important;
-    margin: 0 auto;
-    padding: 0mm 0 !important;
-    text-align: center;
 }
 
 @media print {

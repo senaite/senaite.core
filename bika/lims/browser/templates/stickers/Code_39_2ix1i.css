@@ -13,9 +13,15 @@ Sticker margins: 2mm
     overflow: hidden;
 }
 
+.sticker .error {
+    color: red;
+    font-size: 8pt;
+    z-index: 1000;
+}
+
 .sticker .barcode {
     margin: 0 auto;
-    padding: 0 !important;
+    padding: 1mm 0 !important;
     text-align: center;
 }
 
