@@ -3,27 +3,27 @@ Sticker Dimensions: 48mm x 18mm
 Sticker margins: 8mm, 1mm
 */
 .sticker {
-    margin:0 auto;
-    padding:1mm;
+    margin: 0 auto;
+    padding: 1mm;
     width: 46mm;    /* Total width  = 1 + 1 + 46 = 48mm */
     height: 16mm;   /* Total height = 1 + 1 + 14 = 18mm */
     font-family: Helvetica, Arial;
-    font-size:7pt;
-    text-align:center;
+    font-size: 7pt;
+    text-align: center;
 }
 
 .sticker .barcode {
     margin: 0 !important;
     margin: 0 auto;
     padding: 1mm 0 !important;
-    text-align:center;
+    text-align: center;
 }
 
-.analysisrequest-info table {
-    width:100%;
+.sample-info table {
+    width: 100%;
 }
-.client-sample-id {
-    text-align:center;
+.sample-info table td {
+    padding: 0 1em;
 }
 
 @media print {
