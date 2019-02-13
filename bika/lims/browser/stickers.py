@@ -247,8 +247,8 @@ class Sticker(BrowserView):
     def getItemsURL(self):
         """Used in stickers_preview.pt
         """
-        req_items = self.request.get("items")
-        req_items = req_items or self.context.getId()
+        req_items = self.get_uids()
+        req_items = req_items or api.get_uid(self.context)
         req = "{}?items={}".format(self.request.URL, req_items)
         return req
 
