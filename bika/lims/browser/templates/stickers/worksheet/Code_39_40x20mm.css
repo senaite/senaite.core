@@ -11,6 +11,7 @@
     height: 20mm; min-height:20mm; max-height:20mm;
     margin: auto;
     vertical-align: middle;
+    overflow: hidden;
 }
 .sticker .worksheet-info {
     text-align: center;

@@ -6,6 +6,7 @@
     font-family: Helvetica, Arial;
     font-size: 7pt;
     text-align: center;
+    overflow: hidden;
 }
 
 .sticker .barcode {
