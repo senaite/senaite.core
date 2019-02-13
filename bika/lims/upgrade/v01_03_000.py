@@ -810,9 +810,13 @@ def get_rm_candidates_for_ar_workflow(portal):
     logger.info("Getting candidates for role mappings: {} ...".format(wf_id))
     workflow = get_workflow_by_id(portal, wf_id)
     candidates = list()
-    if "Field: Edit Priority" not in workflow.states.verified.permissions:
-        # Since we've introduced field-specific permissions in ar_workflow, there
-        # is no choice: we are forced to do a role mappings for all ARs :(
+
+    if workflow.title != "Sample Workflow":
+        # "Bika AR Workflow" will become "Sample Workflow" after the profile
+        # step "workflow" is run.
+        # Since we've introduced field-specific permissions in ar_workflow, and
+        # we've changed the whole rolemap.xml there is no choice: we are forced
+        # to do a role mappings for all ARs :(
         candidates.append(
             (wf_id,
              dict(portal_type="AnalysisRequest"),
