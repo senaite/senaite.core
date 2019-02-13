@@ -38,6 +38,10 @@ class AnalysisRequestWorkflowAction(AnalysesWorkflowAction):
     """
 
     def __call__(self):
+        return self.redirect(message="AnalysisRequestWorkflowAction",
+                             level="error")
+
+
         form = self.request.form
         plone.protect.CheckAuthenticator(form)
         action, came_from = WorkflowAction._get_form_workflow_action(self)
@@ -349,18 +353,3 @@ class AnalysisRequestWorkflowAction(AnalysesWorkflowAction):
         self.request.response.redirect(self.context.absolute_url())
         return success
 
-    def workflow_action_create_partitions(self):
-        """Redirects the user to the partition magic view
-        """
-        uids = list()
-        if IAnalysisRequest.providedBy(self.context):
-            uids = [api.get_uid(self.context)]
-        else:
-            uids = self.get_selected_uids()
-        if not uids:
-            message = "No items selected".format(repr(type(self.context)))
-            self.redirect(message=message, level="error")
-
-        # Redirect to the partitioning magic view
-        url = "{}/partition_magic?uids={}".format(self.back_url, ",".join(uids))
-        self.redirect(redirect_url=url)

@@ -13,7 +13,17 @@ class WorkflowActionCopyToNewAdapter(RequestContextAware):
 
     def __call__(self, action, uids):
         url = "{}/ar_add?ar_count={}&copy_from={}".format(
-            self.back_url, len(uids), uids)
+            self.back_url, len(uids), ",".join(uids))
+        return self.redirect(redirect_url=url)
+
+
+class WorkflowActionCreatePartitionsAdapter(RequestContextAware):
+    """Adapter in charge of Analysis Requests 'copy_to_new' action
+    """
+    implements(IWorkflowActionUIDsAdapter)
+
+    def __call__(self, action, uids):
+        url = "{}/partition_magic?uids={}".format(self.back_url, ",".join(uids))
         return self.redirect(redirect_url=url)
 
 
