@@ -187,7 +187,11 @@
             $('#stickers-wrapper').html(htmldata);
             $('#stickers-wrapper').fadeTo('fast', 1);
             // reload barcoding
-            bika.lims.BarcodeUtils.load();
+            // Note: The BarcodeUtils are not propery loaded on template change for QR codes.
+            //       Therefore, we create a new instance here.
+            // bika.lims.BarcodeUtils.load();
+            bu = new BarcodeUtils();
+            bu.load()
             var stickwidth = $('.sticker').first().width();
             $('#sticker-rule').css({'width':stickwidth,'max-width':stickwidth});
             $('#sticker-rule').fadeIn();
@@ -224,7 +228,7 @@
      });
     </script>
   </head>
-  <body tal:attributes="data-itemsurl python:view.getItemsURL(); data-filter_by_type python:view.filter_by_type">
+  <body tal:attributes="data-itemsurl python:view.getItemsURL(); data-filter_by_type python:view.filter_by_type or ''">
     <div id='sticker-preview-wrapper'>
       <div id="sticker-preview-header">
         <div id='options-handler'>
