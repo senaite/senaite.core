@@ -20,3 +20,15 @@
 .barcode {
     margin:0 auto;
 }
+
+@media print {
+    @page {
+        size:  40mm 20mm !important;
+        margin: 0mm !important;
+    }
+    html, body {
+        width: 40mm !important;
+        height: 20mm !important;
+        margin: 0mm !important;
+    }
+}

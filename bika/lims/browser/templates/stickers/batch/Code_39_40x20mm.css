@@ -7,8 +7,12 @@
     Total height: 18mm + 2x1mm (padding) = 20mm
     */
     padding: 1mm;
-    width: 38mm; min-width:38mm; max-width:38mm;
-    height: 20mm; min-height:20mm; max-height:20mm;
+    width: 38mm;
+    min-width: 38mm;
+    max-width: 38mm;
+    height: 20mm;
+    min-height: 20mm;
+    max-height: 20mm;
     text-align: center;
     overflow: hidden;
 
@@ -30,4 +34,16 @@
 
 .align-right {
     text-align:right;
+}
+
+@media print {
+    @page {
+        size:  40mm 20mm !important;
+        margin: 0mm !important;
+    }
+    html, body {
+        width: 40mm !important;
+        height: 20mm !important;
+        margin: 0mm !important;
+    }
 }
