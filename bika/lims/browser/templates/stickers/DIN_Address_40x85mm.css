@@ -1,0 +1,25 @@
+/* Address Sticker 40x85mm*/
+.sticker {
+    margin: 0 auto;
+    padding: 10mm;
+    width: 85mm;
+    height: 40mm;
+    max-width: 65mm;
+    max-height: 20mm;
+    font-family: Helvetica, Arial;
+    font-size: 10pt;
+    text-align: left;
+    overflow: hidden;
+}
+
+@media print {
+    @page {
+        size: 40mm 85mm !important;
+        margin: 0mm !important;
+    }
+    html, body {
+        width: 85mm !important;
+        height: 40mm !important;
+        margin: 0mm !important;
+    }
+}
