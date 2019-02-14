@@ -271,7 +271,7 @@ class WorkflowActionSampleAdapter(WorkflowActionGenericAdapter):
 
 
 class WorkflowActionPreserveAdapter(WorkflowActionGenericAdapter):
-    """Adapter in charge of Analysis Request preser action
+    """Adapter in charge of Analysis Request preserve action
     """
 
     def __call__(self, action, objects):
@@ -291,7 +291,7 @@ class WorkflowActionPreserveAdapter(WorkflowActionGenericAdapter):
     def set_preserver_info(self, sample):
         """Updates the Preserver and the Date Preserved with the values provided
         in the request. If neither Preserver nor DatePreserved are present in
-        the, returns False
+        the request, returns False
         """
         if sample.getPreserver() and sample.getDatePreserved():
             # Preserver and Date Preserved already set. This is correct
@@ -304,4 +304,40 @@ class WorkflowActionPreserveAdapter(WorkflowActionGenericAdapter):
             return False
         sample.setPreserver(preserver)
         sample.setDatePreserver(DateTime(preserved))
+        return True
+
+
+class WorkflowActionScheduleSamplingAdapter(WorkflowActionGenericAdapter):
+    """Adapter in charge of Analysis request schedule sampling action
+    """
+
+    def __call__(self, action, objects):
+        # Assign the scheduled Sampler and Sampling Date
+        transitioned = filter(lambda obj: self.set_sampling_info(obj), objects)
+        if not transitioned:
+            return self.redirect(message=_("No changes made"), level="warning")
+
+        # Trigger "schedule_sampling" transition
+        transitioned = self.do_action(action, transitioned)
+        if not transitioned:
+            return self.redirect(message=_("No changes made"), level="warning")
+
+        # Redirect the user to success page
+        return self.success(transitioned)
+
+    def set_sampling_info(self, sample):
+        """Updates the scheduled Sampling sampler and the Sampling Date with the
+        values provided in the request. If neither Sampling sampler nor Sampling
+        Date are present in the request, returns False
+        """
+        if sample.getScheduledSamplingSampler() and sample.getSamplingDate():
+            return True
+        sampler = self.get_form_value("getScheduledSamplingSampler", sample,
+                                      sample.getScheduledSamplingSampler())
+        sampled = self.get_form_value("getSamplingDate",
+                                      sample.getSamplingDate())
+        if not sampler or not sampled:
+            return False
+        sample.setScheduledSamplingSampler(sampler)
+        sample.setSamplingDate(DateTime(sampled))
         return True
