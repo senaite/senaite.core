@@ -1,8 +1,10 @@
 from operator import attrgetter
 
 from bika.lims import api
+from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.workflow import WorkflowActionGenericAdapter
 from bika.lims.catalog.analysis_catalog import CATALOG_ANALYSIS_LISTING
+from bika.lims.interfaces import IWorksheet
 
 
 class WorkflowActionAssignAdapter(WorkflowActionGenericAdapter):
@@ -10,15 +12,16 @@ class WorkflowActionAssignAdapter(WorkflowActionGenericAdapter):
     """
 
     def __call__(self, action, analyses):
-
         worksheet = self.context
+        if not IWorksheet.providedBy(worksheet):
+            return self.redirect(message=_("No changes made"), level="warning")
 
         # Sort the analyses by AR ID ascending + priority sort key, so the
         # positions of the ARs inside the WS are consistent with ARs order
         sorted_analyses = self.sorted_analyses(analyses)
 
         # Add analyses into the worksheet
-        self.context.addAnalyses(sorted_analyses)
+        worksheet.addAnalyses(sorted_analyses)
 
         # Redirect the user to success page
         return self.success([worksheet])
