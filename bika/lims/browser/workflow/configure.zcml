@@ -166,12 +166,21 @@
     provides="bika.lims.interfaces.IWorkflowActionAdapter"
     permission="zope.Public" />
 
-  <!-- Worksheet: "assign" -->
+  <!-- Worksheet: "assign" analyses -->
   <adapter
     name="workflow_action_assign"
     for="bika.lims.interfaces.IWorksheet
          bika.lims.interfaces.IBikaLIMS"
     factory=".worksheet.WorkflowActionAssignAdapter"
+    provides="bika.lims.interfaces.IWorkflowActionAdapter"
+    permission="zope.Public" />
+
+  <!-- Worksheet: "reassign" analyst -->
+  <adapter
+    name="workflow_action_reassign"
+    for="bika.lims.interfaces.IWorksheetFolder
+         bika.lims.interfaces.IBikaLIMS"
+    factory=".worksheet.WorkflowActionReassignAdapter"
     provides="bika.lims.interfaces.IWorkflowActionAdapter"
     permission="zope.Public" />
 

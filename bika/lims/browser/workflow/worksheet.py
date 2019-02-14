@@ -28,8 +28,8 @@ class WorkflowActionAssignAdapter(WorkflowActionGenericAdapter):
         """
         analyses = sorted(analyses, key=lambda an: an.getRequestID())
 
-        def sorted_by_sortkey(analyses):
-            return sorted(analyses, key=lambda an: an.getPrioritySortkey())
+        def sorted_by_sortkey(objs):
+            return sorted(objs, key=lambda an: an.getPrioritySortkey())
 
         # Now, we need the analyses within a request ID to be sorted by
         # sortkey (sortable_title index), so it will appear in the same
@@ -55,3 +55,26 @@ class WorkflowActionAssignAdapter(WorkflowActionGenericAdapter):
         current_analyses = sorted_by_sortkey(current_analyses)
         sorted_analyses.extend(current_analyses)
         return sorted_analyses
+
+
+class WorkflowActionReassignAdapter(WorkflowActionGenericAdapter):
+    """Adapter in charge of reassignment of an Analyst to a worksheet
+    """
+
+    def __call__(self, action, objects):
+        # Assign the Analyst
+        transitioned = filter(lambda obj: self.set_analyst(obj), objects)
+        if not transitioned:
+            return self.redirect(message=_("No changes made"), level="warning")
+
+        # Redirect the user to success page
+        return self.success(transitioned)
+
+    def set_analyst(self, worksheet):
+        analyst = self.get_form_value("Analyst", worksheet)
+        if not analyst:
+            # Cannot reassign if no analyst is set
+            return False
+        worksheet.setAnalyst(analyst)
+        worksheet.reindexObject(idxs=["getAnalyst"])
+        return True
