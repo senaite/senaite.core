@@ -49,6 +49,18 @@
     provides="bika.lims.interfaces.IWorkflowActionAdapter"
     permission="zope.Public" />
 
+    <!-- Analysis Request: "preserve"
+  Note this applies wide, cause at the moment, this action only exists
+  for Analysis Requests and we always want this adapter to be in charge,
+  regardless of the context (Analysis Requests listing, Client folder, etc.) -->
+  <adapter
+    name="workflow_action_preserve"
+    for="*
+         bika.lims.interfaces.IBikaLIMS"
+    factory=".analysisrequest.WorkflowActionPreserveAdapter"
+    provides="bika.lims.interfaces.IWorkflowActionAdapter"
+    permission="zope.Public" />
+
   <!-- Analysis Request: "receive"
   Note this applies wide, cause at the moment, transition "receive" only exists
   for Analysis Requests and we always want this adapter to be in charge,

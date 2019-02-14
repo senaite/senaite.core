@@ -116,30 +116,6 @@ class AnalysisRequestWorkflowAction(AnalysesWorkflowAction):
         self.destination_url = self.context.absolute_url()
         self.request.response.redirect(self.destination_url)
 
-
-    def workflow_action_preserve(self):
-        # TODO Workflow - Analysis Request - this should be managed by the guard
-        if IAnalysisRequest.providedBy(self.context):
-            objects = [{api.get_uid(self.context): self.context}]
-        else:
-            objects = self._get_selected_items(filter_active=True,
-                                               permissions=[PreserveSample])
-        transitioned = []
-        for uid, ar in objects.items():
-            preserver = self.get_form_value("Preserver", uid, default="")
-            preserved = self.get_form_value("getDatePreserved", uid, default="")
-            if not preserver or not preserved:
-                continue
-            ar.setPreserver(preserver)
-            ar.setDatePreserved(DateTime(preserved))
-            success, message = doActionFor(ar, "preserve")
-            if success:
-                transitioned.append(ar.getId())
-        message = _("No changes made")
-        if transitioned:
-            message = _("Saved items: {}".format(", ".join(transitioned)))
-        self.redirect(message=message)
-
     def workflow_action_schedule_sampling(self):
         """
         This function prevent the transition if the fields "SamplingDate"

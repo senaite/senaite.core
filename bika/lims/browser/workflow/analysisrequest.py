@@ -255,16 +255,53 @@ class WorkflowActionSampleAdapter(WorkflowActionGenericAdapter):
 
     def set_sampler_info(self, sample):
         """Updates the Sampler and the Sample Date with the values provided in
-        the request. If neither Sampler or SampleDate are present in the
+        the request. If neither Sampler nor SampleDate are present in the
         request, returns False
         """
         if sample.getSampler() and sample.getDateSampled():
             # Sampler and Date Sampled already set. This is correct
             return True
-        sampler = self.get_form_value("Sampler", sample)
-        sampled = self.get_form_value("getDateSampled", sample)
+        sampler = self.get_form_value("Sampler", sample, sample.getSampler())
+        sampled = self.get_form_value("getDateSampled", sample.getDateSampled())
         if not sampler or not sampled:
             return False
         sample.setSampler(sampler)
         sample.setDateSampled(DateTime(sampled))
+        return True
+
+
+class WorkflowActionPreserveAdapter(WorkflowActionGenericAdapter):
+    """Adapter in charge of Analysis Request preser action
+    """
+
+    def __call__(self, action, objects):
+        # Assign the Preserver and DatePreserved
+        transitioned = filter(lambda obj: self.set_preserver_info(obj), objects)
+        if not transitioned:
+            return self.redirect(message=_("No changes made"), level="warning")
+
+        # Trigger "preserve" transition
+        transitioned = self.do_action(action, transitioned)
+        if not transitioned:
+            return self.redirect(message=_("No changes made"), level="warning")
+
+        # Redirect the user to success page
+        return self.success(transitioned)
+
+    def set_preserver_info(self, sample):
+        """Updates the Preserver and the Date Preserved with the values provided
+        in the request. If neither Preserver nor DatePreserved are present in
+        the, returns False
+        """
+        if sample.getPreserver() and sample.getDatePreserved():
+            # Preserver and Date Preserved already set. This is correct
+            return True
+        preserver = self.get_form_value("Preserver", sample,
+                                        sample.getPreserver())
+        preserved = self.get_form_value("getDatePreserved",
+                                        sample.getDatePreserved())
+        if not preserver or not preserved:
+            return False
+        sample.setPreserver(preserver)
+        sample.setDatePreserver(DateTime(preserved))
         return True
