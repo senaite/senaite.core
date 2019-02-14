@@ -223,14 +223,6 @@ class AnalysisRequestWorkflowAction(AnalysesWorkflowAction):
             message = _("Saved items: {}".format(", ".join(transitioned)))
         self.redirect(message=message)
 
-    def workflow_action_submit(self):
-        AnalysesWorkflowAction.workflow_action_submit(self)
-        checkPermission = self.context.portal_membership.checkPermission
-        if checkPermission(EditResults, self.context):
-            self.destination_url = self.context.absolute_url() + "/manage_results"
-        else:
-            self.destination_url = self.context.absolute_url()
-        self.request.response.redirect(self.destination_url)
 
     def workflow_action_print(self):
         # Calls printLastReport method for selected ARs

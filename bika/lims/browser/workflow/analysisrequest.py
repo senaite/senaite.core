@@ -66,7 +66,7 @@ class WorkflowActionReceiveAdapter(WorkflowActionGenericAdapter):
             url = "{}/partition_magic?uids={}".format(self.back_url, uids)
             return self.redirect(redirect_url=url)
 
-        elif self.is_auto_print_stickers_enabled():
+        if self.is_auto_print_stickers_enabled():
             # Redirect to the auto-print stickers view
             uids = ",".join(map(api.get_uid, transitioned))
             sticker_template = self.context.bika_setup.getAutoStickerTemplate()
