@@ -17,6 +17,17 @@ class WorkflowActionCopyToNewAdapter(RequestContextAware):
         return self.redirect(redirect_url=url)
 
 
+class WorkflowActionPrintStickersAdapter(RequestContextAware):
+    """Adapter in charge of Analysis Requests 'print_stickers' action
+    """
+    implements(IWorkflowActionUIDsAdapter)
+
+    def __call__(self, action, uids):
+        url = "{}/sticker?template={}&items={}".format(self.back_url,
+            self.context.bika_setup.getAutoStickerTemplate(), ",".join(uids))
+        return self.redirect(redirect_url=url)
+
+
 class WorkflowActionCreatePartitionsAdapter(RequestContextAware):
     """Adapter in charge of Analysis Requests 'copy_to_new' action
     """

@@ -132,48 +132,6 @@ class WorkflowAction:
         self.request.response.redirect(self.destination_url)
         return
 
-    def workflow_action_copy_to_new(self):
-        """Invoke the ar_add form in the current context, passing the UIDs of
-        the source ARs as request parameters.
-        """
-        objects = self._get_selected_items()
-        if not objects:
-            message = self.context.translate(
-                _("No analyses have been selected"))
-            self.addPortalMessage(message, 'info')
-            self.destination_url = self.context.absolute_url() + "/batchbook"
-            self.request.response.redirect(self.destination_url)
-            return
-
-        url = self.context.absolute_url() + "/ar_add" + \
-            "?ar_count={0}".format(len(objects)) + \
-            "&copy_from={0}".format(",".join(objects.keys()))
-
-        self.request.response.redirect(url)
-        return
-
-    def workflow_action_print_stickers(self):
-        """Invoked from AR or Sample listings in the current context, passing
-        the uids of the selected items and default sticker template as request
-        parameters to the stickers rendering machinery, that generates the PDF
-        """
-        uids = self.request.form.get("uids", [])
-        if not uids:
-            message = self.context.translate(
-                _("No Samples have been selected"))
-            self.context.plone_utils.addPortalMessage(message, 'info')
-            self.destination_url = self.context.absolute_url()
-            self.request.response.redirect(self.destination_url)
-            return
-
-        url = '{0}/sticker?template={1}&items={2}'.format(
-            self.context.absolute_url(),
-            self.portal.bika_setup.getAutoStickerTemplate(),
-            ','.join(uids)
-        )
-        self.destination_url = url
-        self.request.response.redirect(url)
-
     def __call__(self):
 
         return self.redirect(message="bika_listing.WorkflowAction",

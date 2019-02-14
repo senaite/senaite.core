@@ -13,31 +13,29 @@
     permission="zope.Public"
     layer="bika.lims.interfaces.IBikaLIMS" />
 
-  <!-- Analysis Requests: "copy_to_new" -->
+  <!-- Analysis Requests: "copy_to_new"
+  Note this applies wide, cause at the moment, this action only exists
+  for Analysis Requests and we always want this adapter to be in charge,
+  regardless of the context (Analysis Requests listing, Client folder, etc.) -->
   <adapter
     name="workflow_action_copy_to_new"
-    for="bika.lims.interfaces.IAnalysisRequestsFolder
+    for="*
          bika.lims.interfaces.IBikaLIMS"
     factory=".analysisrequest.WorkflowActionCopyToNewAdapter"
     provides="bika.lims.interfaces.IWorkflowActionAdapter"
     permission="zope.Public" />
 
+  <!-- Analysis Request: "print_stickers"
+  Note this applies wide, cause at the moment, this action only exists
+  for Analysis Requests and we always want this adapter to be in charge,
+  regardless of the context (Analysis Requests listing, Client folder, etc.) -->
   <adapter
-    name="workflow_action_copy_to_new"
-    for="bika.lims.interfaces.IClient
+    name="workflow_action_print_stickers"
+    for="*
          bika.lims.interfaces.IBikaLIMS"
-    factory=".analysisrequest.WorkflowActionCopyToNewAdapter"
+    factory=".analysisrequest.WorkflowActionPrintStickersAdapter"
     provides="bika.lims.interfaces.IWorkflowActionAdapter"
     permission="zope.Public" />
-
-  <adapter
-    name="workflow_action_copy_to_new"
-    for="bika.lims.interfaces.IBatch
-         bika.lims.interfaces.IBikaLIMS"
-    factory=".analysisrequest.WorkflowActionCopyToNewAdapter"
-    provides="bika.lims.interfaces.IWorkflowActionAdapter"
-    permission="zope.Public" />
-
 
   <!-- Analysis Request: "receive"
   Note this applies wide, cause at the moment, transition "receive" only exists
