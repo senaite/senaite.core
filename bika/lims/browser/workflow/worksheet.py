@@ -1,9 +1,5 @@
-from operator import attrgetter
-
-from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.workflow import WorkflowActionGenericAdapter
-from bika.lims.catalog.analysis_catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.interfaces import IWorksheet
 
 
@@ -30,33 +26,32 @@ class WorkflowActionAssignAdapter(WorkflowActionGenericAdapter):
         """Sort the analyses by AR ID ascending and subsorted by priority
         sortkey within the AR they belong to
         """
-        analysis_uids = map(api.get_uid, analyses)
-        catalog = api.get_tool(CATALOG_ANALYSIS_LISTING)
-        brains = catalog({
-            "UID": analysis_uids,
-            "sort_on": "getRequestID"})
+        analyses = sorted(analyses, key=lambda an: an.getRequestID())
+
+        def sorted_by_sortkey(analyses):
+            return sorted(analyses, key=lambda an: an.getPrioritySortkey())
 
         # Now, we need the analyses within a request ID to be sorted by
         # sortkey (sortable_title index), so it will appear in the same
         # order as they appear in Analyses list from AR view
-        curr_arid = None
-        curr_brains = []
-        sorted_brains = []
-        for brain in brains:
-            arid = brain.getRequestID
-            if curr_arid != arid:
+        current_sample_id = None
+        current_analyses = []
+        sorted_analyses = []
+        for analysis in analyses:
+            sample_id = analysis.getRequestID()
+            if sample_id and current_sample_id != sample_id:
                 # Sort the brains we've collected until now, that
                 # belong to the same Analysis Request
-                curr_brains.sort(key=attrgetter("getPrioritySortkey"))
-                sorted_brains.extend(curr_brains)
-                curr_arid = arid
-                curr_brains = []
+                current_analyses = sorted_by_sortkey(current_analyses)
+                sorted_analyses.extend(current_analyses)
+                current_sample_id = sample_id
+                current_analyses = []
 
             # Now we are inside the same AR
-            curr_brains.append(brain)
+            current_analyses.append(analysis)
             continue
 
         # Sort the last set of brains we've collected
-        curr_brains.sort(key=attrgetter('getPrioritySortkey'))
-        sorted_brains.extend(curr_brains)
-        return map(api.get_object, sorted_brains)
+        current_analyses = sorted_by_sortkey(current_analyses)
+        sorted_analyses.extend(current_analyses)
+        return sorted_analyses
