@@ -9,6 +9,7 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.browser.workflow import WorkflowActionGenericAdapter, \
     RequestContextAware
+from bika.lims.content.analysisspec import ResultsRangeDict
 from bika.lims.interfaces import IAnalysisRequest, IWorkflowActionUIDsAdapter
 from bika.lims.utils import encode_header
 from bika.lims.utils import t
@@ -341,3 +342,55 @@ class WorkflowActionScheduleSamplingAdapter(WorkflowActionGenericAdapter):
         sample.setScheduledSamplingSampler(sampler)
         sample.setSamplingDate(DateTime(sampled))
         return True
+
+class WorkflowActionSaveAnalysesAdapter(WorkflowActionGenericAdapter):
+    """Adapter in charge of "save analyses" action in Analysis Request.
+    """
+
+    def __call__(self, action, services):
+        """The objects passed in are from Analysis Services and the context is
+        the Analysis Request
+        """
+        sample = self.context
+        if not IAnalysisRequest.providedBy(sample):
+            return self.redirect(message=_("No changes made"), level="warning")
+
+        # Get form values
+        form = self.request.form
+        prices = form.get("Price", [None])[0]
+        hiden = map(lambda o: {"uid": o, "hidden": self.is_hidden(o)}, services)
+        specs = map(lambda service: self.get_specs(service), services)
+
+        # Set new analyses to the sample
+        uids = map(api.get_uid, services)
+        sample.setAnalysisServicesSettings(hiden)
+        sample.setAnalyses(uids, prices=prices, specs=specs)
+
+        # Just in case new analyses have been added while the Sample was in a
+        # "non-open" state (e.g. "to_be_verified")
+        self.do_action("rollback_to_receive", [sample])
+
+        # Reindex the analyses that have been added
+        for analysis in sample.objectValues("Analysis"):
+            analysis.reindexObject()
+
+        # Redirect the user to success page
+        self.success([sample])
+
+    def is_hidden(self, service):
+        """Returns whether the request Hidden param for the given obj is True
+        """
+        uid = api.get_uid(service)
+        hidden_ans = self.request.form.get("Hidden", {})
+        return hidden_ans.get(uid, "") == "on"
+
+    def get_specs(self, service):
+        """Returns the analysis specs available in the request for the given uid
+        """
+        uid = api.get_uid(service)
+        keyword = service.getKeyword()
+        specs = ResultsRangeDict(keyword=keyword, uid=uid).copy()
+        for key in specs.keys():
+            specs_value = self.request.form.get(key, [{}])[0].get(uid, None)
+            specs[key] = specs_value or specs.get(key)
+        return specs

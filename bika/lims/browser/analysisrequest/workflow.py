@@ -5,27 +5,9 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-from string import Template
-
 import plone
-from DateTime import DateTime
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import safe_unicode
-from bika.lims import PMF, api
-from bika.lims import bikaMessageFactory as _
-from bika.lims import interfaces
 from bika.lims.browser.analyses.workflow import AnalysesWorkflowAction
 from bika.lims.browser.bika_listing import WorkflowAction
-from bika.lims.content.analysisspec import ResultsRangeDict
-from bika.lims.interfaces import IAnalysisRequest
-from bika.lims.permissions import *
-from bika.lims.utils import encode_header
-from bika.lims.utils import isActive
-from bika.lims.utils import t
-from bika.lims.workflow import doActionFor
-from email.Utils import formataddr
 
 
 # TODO Revisit AnalysisRequestWorkflowAction class
@@ -40,7 +22,6 @@ class AnalysisRequestWorkflowAction(AnalysesWorkflowAction):
     def __call__(self):
         return self.redirect(message="AnalysisRequestWorkflowAction",
                              level="error")
-
 
         form = self.request.form
         plone.protect.CheckAuthenticator(form)
@@ -57,61 +38,3 @@ class AnalysisRequestWorkflowAction(AnalysesWorkflowAction):
             method()
         else:
             WorkflowAction.__call__(self)
-
-    def get_specs_value(self, service, specs_key, default=None):
-        """Returns the specification value for the specs_key (min, max, etc.)
-        that must be assigned to new analyses for the service passed in
-        """
-        uid = api.get_uid(service)
-        spec_value = self.request.form.get(specs_key, [{}])[0].get(uid, None)
-        if spec_value is None and default is not None:
-            return default
-        return spec_value
-
-    def get_specs(self, service):
-        """Returns the analysis specs to assign to analyses created by using
-        the service passed in. It overrides the specs of the service with the
-        specs set manually in the manage analyses form (if any).
-        """
-        keyword = service.getKeyword()
-        uid = api.get_uid(service)
-        specs_keys = ("min", "max", "warn_min", "warn_max", "min_operator",
-                      "max_operator")
-        specs = ResultsRangeDict(keyword=keyword, uid=uid).copy()
-        for specs_key in specs_keys:
-            default = specs.get(specs_key, "")
-            specs[specs_key] = self.get_specs_value(service, specs_key, default)
-        return specs
-
-    def workflow_action_save_analyses_button(self):
-        form = self.request.form
-        # AR Manage Analyses: save Analyses
-        ar = self.context
-        objects = WorkflowAction._get_selected_items(self)
-        objects_uids = objects.keys()
-        prices = form.get("Price", [None])[0]
-
-        # Hidden analyses?
-        # https://jira.bikalabs.com/browse/LIMS-1324
-        outs = []
-        hidden_ans = form.get('Hidden', {})
-        for uid in objects.keys():
-            hidden = hidden_ans.get(uid, '') == "on" or False
-            outs.append({'uid': uid, 'hidden': hidden})
-        ar.setAnalysisServicesSettings(outs)
-
-        specs = {}
-        for service_uid, service in objects.items():
-            specs[service_uid] = self.get_specs(service)
-
-        if ar.setAnalyses(objects_uids, prices=prices, specs=specs.values()):
-            doActionFor(ar, "rollback_to_receive")
-
-        # Reindex the analyses
-        for analysis in ar.objectValues("Analysis"):
-            analysis.reindexObject()
-
-        message = PMF("Changes saved.")
-        self.context.plone_utils.addPortalMessage(message, 'info')
-        self.destination_url = self.context.absolute_url()
-        self.request.response.redirect(self.destination_url)

@@ -157,4 +157,13 @@
     provides="bika.lims.interfaces.IWorkflowActionAdapter"
     permission="zope.Public" />
 
+  <!-- Analysis Request: "save_analyses" -->
+  <adapter
+    name="workflow_action_save_analyses"
+    for="bika.lims.interfaces.IAnalysisRequest
+         bika.lims.interfaces.IBikaLIMS"
+    factory=".analysisrequest.WorkflowActionSaveAnalysesAdapter"
+    provides="bika.lims.interfaces.IWorkflowActionAdapter"
+    permission="zope.Public" />
+
 </configure>
