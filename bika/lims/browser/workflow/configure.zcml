@@ -184,4 +184,21 @@
     provides="bika.lims.interfaces.IWorkflowActionAdapter"
     permission="zope.Public" />
 
+  <!-- Analysis: "submit" from inside AnalysisRequest context -->
+  <adapter
+    name="workflow_action_submit"
+    for="bika.lims.interfaces.IAnalysisRequest
+         bika.lims.interfaces.IBikaLIMS"
+    factory=".analysis.WorkflowActionSubmitAdapter"
+    provides="bika.lims.interfaces.IWorkflowActionAdapter"
+    permission="zope.Public" />
+
+  <!-- Analysis: "submit" from inside Worksheet context -->
+  <adapter
+    name="workflow_action_submit"
+    for="bika.lims.interfaces.IWorksheet
+         bika.lims.interfaces.IBikaLIMS"
+    factory=".analysis.WorkflowActionSubmitAdapter"
+    provides="bika.lims.interfaces.IWorkflowActionAdapter"
+    permission="zope.Public" />
 </configure>

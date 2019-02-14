@@ -104,11 +104,6 @@ class WorkflowActionHandler(RequestContextAware):
     def get_action(self):
         """Returns the action to be taken from the request. Returns None if no
         action is found
-
-        While "workflow_action_button" is typically used by buttons in listings,
-        "workflow_action" is used in edit content action menus in content type
-        views (top-right selection list), with the following form:
-        <content_type>/content_status_modify?workflow_action=receive
         """
         action = self.request.get("workflow_action_id", None)
         action = self.request.get("workflow_action", action)
@@ -177,11 +172,21 @@ class WorkflowActionGenericAdapter(RequestContextAware):
         return self.redirect(message=message)
 
     def get_form_value(self, form_key, object_brain_uid, default=None):
-        """Returns a value from the request's form, if any
+        """Returns a value from the request's form for the given uid, if any
         """
+        if form_key not in self.request.form:
+            return default
+
         uid = object_brain_uid
         if not api.is_uid(uid):
             uid = api.get_uid(object_brain_uid)
-        val = self.request.form.get(form_key, None) or [{}]
-        val = val[0] or {}
-        return val.get(uid, default)
+
+        values = self.request.form.get(form_key)
+        if isinstance(values, list):
+            if len(values) == 0:
+                return default
+            if len(values) > 1:
+                logger.warn("Multiple set of values for {}".format(form_key))
+            values = values[0]
+
+        return values.get(uid, default)
