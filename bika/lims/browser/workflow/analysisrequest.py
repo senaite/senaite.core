@@ -348,8 +348,8 @@ class WorkflowActionSaveAnalysesAdapter(WorkflowActionGenericAdapter):
     """
 
     def __call__(self, action, services):
-        """The objects passed in are from Analysis Services and the context is
-        the Analysis Request
+        """The objects passed in are Analysis Services and the context is the
+        Analysis Request
         """
         sample = self.context
         if not IAnalysisRequest.providedBy(sample):
