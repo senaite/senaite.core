@@ -116,27 +116,6 @@ class AnalysisRequestWorkflowAction(AnalysesWorkflowAction):
         self.destination_url = self.context.absolute_url()
         self.request.response.redirect(self.destination_url)
 
-    def workflow_action_sample(self):
-        # TODO Workflow - Analysis Request - this should be managed by the guard
-        if IAnalysisRequest.providedBy(self.context):
-            objects = [{api.get_uid(self.context): self.context}]
-        else:
-            objects = self._get_selected_items(filter_active=True)
-        transitioned = []
-        for uid, ar in objects.items():
-            sampler = self.get_form_value("Sampler", uid, default="")
-            sampled = self.get_form_value("getDateSampled", uid, default="")
-            if not sampler or not sampled:
-                continue
-            ar.setSampler(sampler)
-            ar.setDateSampled(DateTime(sampled))
-            success, message = doActionFor(ar, "sample")
-            if success:
-                transitioned.append(ar.getId())
-        message = _("No changes made")
-        if transitioned:
-            message = _("Saved items: {}".format(", ".join(transitioned)))
-        self.redirect(message=message)
 
     def workflow_action_preserve(self):
         # TODO Workflow - Analysis Request - this should be managed by the guard

@@ -233,3 +233,38 @@ class WorkflowActionPrintSampleAdapter(WorkflowActionGenericAdapter):
             last_report.setDatePrinted(DateTime())
             sample.reindexObject(idxs=["getPrinted"])
         return True
+
+
+class WorkflowActionSampleAdapter(WorkflowActionGenericAdapter):
+    """Adapter in charge of Analysis Request sample action
+    """
+
+    def __call__(self, action, objects):
+        # Assign the Sampler and DateSampled
+        transitioned = filter(lambda obj: self.set_sampler_info(obj), objects)
+        if not transitioned:
+            return self.redirect(message=_("No changes made"), level="warning")
+
+        # Trigger "sample" transition
+        transitioned = self.do_action(action, transitioned)
+        if not transitioned:
+            return self.redirect(message=_("No changes made"), level="warning")
+
+        # Redirect the user to success page
+        return self.success(transitioned)
+
+    def set_sampler_info(self, sample):
+        """Updates the Sampler and the Sample Date with the values provided in
+        the request. If neither Sampler or SampleDate are present in the
+        request, returns False
+        """
+        if sample.getSampler() and sample.getDateSampled():
+            # Sampler and Date Sampled already set. This is correct
+            return True
+        sampler = self.get_form_value("Sampler", sample)
+        sampled = self.get_form_value("getDateSampled", sample)
+        if not sampler or not sampled:
+            return False
+        sample.setSampler(sampler)
+        sample.setDateSampled(DateTime(sampled))
+        return True

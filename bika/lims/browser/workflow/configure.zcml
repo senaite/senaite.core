@@ -37,6 +37,18 @@
     provides="bika.lims.interfaces.IWorkflowActionAdapter"
     permission="zope.Public" />
 
+  <!-- Analysis Request: "sample"
+  Note this applies wide, cause at the moment, this action only exists
+  for Analysis Requests and we always want this adapter to be in charge,
+  regardless of the context (Analysis Requests listing, Client folder, etc.) -->
+  <adapter
+    name="workflow_action_sample"
+    for="*
+         bika.lims.interfaces.IBikaLIMS"
+    factory=".analysisrequest.WorkflowActionSampleAdapter"
+    provides="bika.lims.interfaces.IWorkflowActionAdapter"
+    permission="zope.Public" />
+
   <!-- Analysis Request: "receive"
   Note this applies wide, cause at the moment, transition "receive" only exists
   for Analysis Requests and we always want this adapter to be in charge,
@@ -108,7 +120,6 @@
     factory=".analysisrequest.WorkflowActionInvalidateAdapter"
     provides="bika.lims.interfaces.IWorkflowActionAdapter"
     permission="zope.Public" />
-
 
   <!-- Analysis Request: "print_sample"
   Note this applies wide, cause at the moment, this action only exists

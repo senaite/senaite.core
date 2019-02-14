@@ -175,3 +175,13 @@ class WorkflowActionGenericAdapter(RequestContextAware):
         ids = map(api.get_id, objects)
         message = _("Saved items: {}").format(", ".join(ids))
         return self.redirect(message=message)
+
+    def get_form_value(self, form_key, object_brain_uid, default=None):
+        """Returns a value from the request's form, if any
+        """
+        uid = object_brain_uid
+        if not api.is_uid(uid):
+            uid = api.get_uid(object_brain_uid)
+        val = self.request.form.get(form_key, None) or [{}]
+        val = val[0] or {}
+        return val.get(uid, default)
