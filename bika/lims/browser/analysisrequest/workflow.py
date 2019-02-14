@@ -161,17 +161,6 @@ class AnalysisRequestWorkflowAction(AnalysesWorkflowAction):
             message = _("Saved items: {}".format(", ".join(transitioned)))
         self.redirect(message=message)
 
-
-    def workflow_action_print(self):
-        # Calls printLastReport method for selected ARs
-        uids = self.request.get('uids',[])
-        uc = getToolByName(self.context, 'uid_catalog')
-        for obj in uc(UID=uids):
-            ar=obj.getObject()
-            ar.printLastReport()
-        referer = self.request.get_header("referer")
-        self.request.response.redirect(referer)
-
     def workflow_action_schedule_sampling(self):
         """
         This function prevent the transition if the fields "SamplingDate"

@@ -1478,19 +1478,6 @@ class AnalysisRequest(BaseFolder):
                     return "2"
         return "0"
 
-    def printLastReport(self):
-        """Setting Printed Time of the last report, so its Printed value will be 1
-        """
-        workflow = getToolByName(self, 'portal_workflow')
-        review_state = workflow.getInfoFor(self, 'review_state', '')
-        if review_state not in ['published']:
-            return
-        last_report = sorted(self.objectValues('ARReport'),
-                             key=lambda report: report.getDatePublished())[-1]
-        if last_report and not last_report.getDatePrinted():
-            last_report.setDatePrinted(DateTime())
-            self.reindexObject(idxs=['getPrinted'])
-
     security.declareProtected(View, 'getBillableItems')
 
     def getBillableItems(self):

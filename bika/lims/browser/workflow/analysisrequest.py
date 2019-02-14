@@ -2,6 +2,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from string import Template
 
+from DateTime import DateTime
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
@@ -205,3 +206,30 @@ class WorkflowActionInvalidateAdapter(WorkflowActionGenericAdapter):
         """Returns an html formatted link for the given object
         """
         return "<a href='{}'>{}</a>".format(api.get_url(obj), api.get_id(obj))
+
+
+class WorkflowActionPrintSampleAdapter(WorkflowActionGenericAdapter):
+    """Adapter in charge of Analysis Request print_sample action
+    """
+
+    def __call__(self, action, objects):
+        # Update printed times
+        transitioned = filter(lambda obj: self.set_printed_time(obj), objects)
+        if not transitioned:
+            return self.redirect(message=_("No changes made"), level="warning")
+
+        # Redirect the user to success page
+        return self.success(transitioned)
+
+    def set_printed_time(self, sample):
+        """Updates the printed time of the last results report from the sample
+        """
+        if api.get_workflow_status_of(sample) != "published":
+            return False
+        reports = sample.objectValues("ARReport")
+        reports = sorted(reports, key=lambda report: report.getDatePublished())
+        last_report = reports[-1]
+        if not last_report.getDatePrinted():
+            last_report.setDatePrinted(DateTime())
+            sample.reindexObject(idxs=["getPrinted"])
+        return True
