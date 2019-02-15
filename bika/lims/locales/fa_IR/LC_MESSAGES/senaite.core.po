@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2019-02-07 18:44+0000\n"
+"POT-Creation-Date: 2019-02-15 08:16+0000\n"
 "PO-Revision-Date: 2018-06-01 18:44+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Persian (Iran) (https://www.transifex.com/senaite/teams/87045/fa_IR/)\n"
@@ -2036,6 +2036,10 @@ msgstr ""
 msgid "Exponential format threshold"
 msgstr ""
 
+#: bika/lims/browser/stickers.py:243
+msgid "Failed to load sticker"
+msgstr ""
+
 #: bika/lims/browser/publish/emailview.py:203
 msgid "Failed to send Email(s)"
 msgstr ""
@@ -3426,7 +3430,7 @@ msgstr ""
 msgid "Number of containers"
 msgstr ""
 
-#: bika/lims/browser/templates/stickers_preview.pt:245
+#: bika/lims/browser/templates/stickers_preview.pt:250
 #: bika/lims/content/bikasetup.py:651
 msgid "Number of copies"
 msgstr ""
@@ -5188,7 +5192,7 @@ msgstr ""
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:202
 #: bika/lims/browser/samplinground/analysisrequests.py:43
-#: bika/lims/browser/templates/stickers_preview.pt:231
+#: bika/lims/browser/templates/stickers_preview.pt:236
 msgid "Template"
 msgstr ""
 
@@ -5756,7 +5760,6 @@ msgid "Type of location"
 msgstr ""
 
 #: bika/lims/browser/samplinground/printform.py:104
-#: bika/lims/browser/stickers.py:234
 #: bika/lims/browser/worksheet/views/printview.py:134
 msgid "Unable to load the template"
 msgstr ""
