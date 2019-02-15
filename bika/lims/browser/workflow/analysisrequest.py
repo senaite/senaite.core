@@ -263,8 +263,9 @@ class WorkflowActionSampleAdapter(WorkflowActionGenericAdapter):
             # Sampler and Date Sampled already set. This is correct
             return True
         sampler = self.get_form_value("Sampler", sample, sample.getSampler())
-        sampled = self.get_form_value("getDateSampled", sample.getDateSampled())
-        if not sampler or not sampled:
+        sampled = self.get_form_value("getDateSampled", sample,
+                                      sample.getDateSampled())
+        if not all([sampler, sampled]):
             return False
         sample.setSampler(sampler)
         sample.setDateSampled(DateTime(sampled))
@@ -301,7 +302,7 @@ class WorkflowActionPreserveAdapter(WorkflowActionGenericAdapter):
                                         sample.getPreserver())
         preserved = self.get_form_value("getDatePreserved",
                                         sample.getDatePreserved())
-        if not preserver or not preserved:
+        if not all([preserver, preserved]):
             return False
         sample.setPreserver(preserver)
         sample.setDatePreserver(DateTime(preserved))
@@ -337,7 +338,7 @@ class WorkflowActionScheduleSamplingAdapter(WorkflowActionGenericAdapter):
                                       sample.getScheduledSamplingSampler())
         sampled = self.get_form_value("getSamplingDate",
                                       sample.getSamplingDate())
-        if not sampler or not sampled:
+        if not all([sampler, sampled]):
             return False
         sample.setScheduledSamplingSampler(sampler)
         sample.setSamplingDate(DateTime(sampled))
