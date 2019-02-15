@@ -449,23 +449,34 @@ def get_object_by_uid(uid, default=_marker):
     if uid == '0':
         return get_portal()
 
-    # we try to find the object with both catalogs
-    pc = get_portal_catalog()
-    uc = get_tool("uid_catalog")
+    brain = get_brain_by_uid(uid)
 
-    # try to find the object with the reference catalog first
-    brains = uc(UID=uid)
-    if brains:
-        return brains[0].getObject()
-
-    # try to find the object with the portal catalog
-    res = pc(UID=uid)
-    if not res:
+    if brain is None:
         if default is not _marker:
             return default
         fail("No object found for UID {}".format(uid))
 
-    return get_object(res[0])
+    return get_object(brain)
+
+
+def get_brain_by_uid(uid, default=None):
+    """Query a brain by a given UID
+
+    :param uid: The UID of the object to find
+    :type uid: string
+    :returns: ZCatalog brain or None
+    """
+    if not is_uid(uid):
+        return default
+
+    # we try to find the object with the UID catalog
+    uc = get_tool("uid_catalog")
+
+    # try to find the object with the reference catalog first
+    brains = uc(UID=uid)
+    if len(brains) != 1:
+        return default
+    return brains[0]
 
 
 def get_object_by_path(path, default=_marker):

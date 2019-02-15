@@ -374,6 +374,15 @@ Getting the Icon of a Content
     'http://nohost/plone/++resource++bika.lims.images/client.png'
 
 
+Getting a catalog brain by UID
+------------------------------
+
+This function finds a catalog brain by its uinique ID (UID)::
+
+    >>> api.get_brain_by_uid(api.get_uid(client))
+    <Products.Archetypes.UIDCatalog.plugbrains object at ...>
+
+
 Getting an object by UID
 ------------------------
 
