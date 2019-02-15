@@ -1,4 +1,5 @@
 import json
+from collections import defaultdict
 
 from DateTime import DateTime
 from Products.CMFPlone.i18nl10n import ulocalized_time
@@ -18,7 +19,7 @@ class WorkflowActionSubmitAdapter(WorkflowActionGenericAdapter):
 
     def __call__(self, action, objects):
         # Store invalid instruments-ref.analyses
-        invalid_instrument_refs = dict()
+        invalid_instrument_refs = defaultdict(set)
 
         # Get interims data
         interims_data = self.get_interims_data()
@@ -41,8 +42,6 @@ class WorkflowActionSubmitAdapter(WorkflowActionGenericAdapter):
                         # This reference analysis is out of range, so we have
                         # to retract all analyses assigned to this same
                         # instrument that are awaiting for verification
-                        if uid not in invalid_instrument_refs:
-                            invalid_instrument_refs[uid] = set()
                         invalid_instrument_refs[uid].add(analysis)
                     else:
                         # The reference result is valid, so make the instrument
