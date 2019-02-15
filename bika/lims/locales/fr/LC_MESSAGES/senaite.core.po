@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2019-02-07 18:44+0000\n"
+"POT-Creation-Date: 2019-02-15 08:16+0000\n"
 "PO-Revision-Date: 2018-06-01 18:44+0000\n"
 "Last-Translator: Ramon Bartl <rb@ridingbytes.com>, 2018\n"
 "Language-Team: French (https://www.transifex.com/senaite/teams/87045/fr/)\n"
@@ -2039,6 +2039,10 @@ msgstr "Précision pour le format exponentiel"
 msgid "Exponential format threshold"
 msgstr "sensibilité pour le format exponentiel"
 
+#: bika/lims/browser/stickers.py:243
+msgid "Failed to load sticker"
+msgstr ""
+
 #: bika/lims/browser/publish/emailview.py:203
 msgid "Failed to send Email(s)"
 msgstr ""
@@ -3429,7 +3433,7 @@ msgstr "Nombre d'analyses demandées et publiées par département et exprimées
 msgid "Number of containers"
 msgstr ""
 
-#: bika/lims/browser/templates/stickers_preview.pt:245
+#: bika/lims/browser/templates/stickers_preview.pt:250
 #: bika/lims/content/bikasetup.py:651
 msgid "Number of copies"
 msgstr ""
@@ -5191,7 +5195,7 @@ msgstr "Description technique et instructions destinées aux analystes"
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:202
 #: bika/lims/browser/samplinground/analysisrequests.py:43
-#: bika/lims/browser/templates/stickers_preview.pt:231
+#: bika/lims/browser/templates/stickers_preview.pt:236
 msgid "Template"
 msgstr "Modèle"
 
@@ -5759,7 +5763,6 @@ msgid "Type of location"
 msgstr "Type de localisation"
 
 #: bika/lims/browser/samplinground/printform.py:104
-#: bika/lims/browser/stickers.py:234
 #: bika/lims/browser/worksheet/views/printview.py:134
 msgid "Unable to load the template"
 msgstr "Impossible de charger le modèle"

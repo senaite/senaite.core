@@ -20,5 +20,3 @@ from views.samplingrounds import ClientSamplingRoundsView
 
 from ajax import ReferenceWidgetVocabulary
 from ajax import ajaxGetClientInfo
-
-from workflow import ClientWorkflowAction
