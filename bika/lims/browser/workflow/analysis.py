@@ -27,11 +27,11 @@ class WorkflowActionSubmitAdapter(WorkflowActionGenericAdapter):
             uid = api.get_uid(analysis)
 
             # Need to save remarks?
-            remarks = self.get_form_value("Remarks", analysis, default="")
+            remarks = self.get_form_value("Remarks", uid, default="")
             analysis.setRemarks(remarks)
 
             # Need to save the instrument?
-            instrument = self.get_form_value("Instrument", analysis, None)
+            instrument = self.get_form_value("Instrument", uid, None)
             if instrument is not None:
                 # Could be an empty string
                 instrument = instrument or None
@@ -50,22 +50,22 @@ class WorkflowActionSubmitAdapter(WorkflowActionGenericAdapter):
                         instrument.setDisposeUntilNextCalibrationTest(False)
 
             # Need to save the method?
-            method = self.get_form_value("Method", analysis, default=None)
+            method = self.get_form_value("Method", uid, default=None)
             if method is not None:
                 method = method or None
                 analysis.setMethod(method)
 
             # Need to save analyst?
-            analyst = self.get_form_value("Analyst", analysis, default=None)
+            analyst = self.get_form_value("Analyst", uid, default=None)
             if analyst is not None:
                 analysis.setAnalyst(analyst)
 
             # Save uncertainty
-            uncertainty = self.get_form_value("Uncertainty", analysis, "")
+            uncertainty = self.get_form_value("Uncertainty", uid, "")
             analysis.setUncertainty(uncertainty)
 
             # Save detection limit
-            dlimit = self.get_form_value("DetectionLimit", analysis, "")
+            dlimit = self.get_form_value("DetectionLimit", uid, "")
             analysis.setDetectionLimitOperand(dlimit)
 
             # Interim fields
@@ -73,11 +73,11 @@ class WorkflowActionSubmitAdapter(WorkflowActionGenericAdapter):
             analysis.setInterimFields(interims)
 
             # Save Hidden
-            hidden = self.get_form_value("Hidden", analysis, "")
+            hidden = self.get_form_value("Hidden", uid, "")
             analysis.setHidden(hidden == "on")
 
             # Result
-            result = self.get_form_value("Result", analysis,
+            result = self.get_form_value("Result", uid,
                                          default=analysis.getResult())
             analysis.setResult(result)
 
