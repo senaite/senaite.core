@@ -75,10 +75,11 @@
       <role name="LabManager"/>
       <role name="Manager"/>
       <!-- @xispa conflicts
-      scheduled_sampling: +Sampler, +Owner
-      to_be_sampled:      +Sampler, +Owner
-      sample_due:         +Owner
-      to_be_verified:     -LabClerk
+      ar_workflow permissions:
+      - scheduled_sampling: +Sampler, +Owner
+      - to_be_sampled:      +Sampler, +Owner
+      - sample_due:         +Owner
+      - to_be_verified:     -LabClerk
       -->
     </permission>
 
@@ -97,9 +98,10 @@
       <role name="Sampler"/>
       <role name="SamplingCoordinator"/>
       <!-- @xispa conflicts
-      sample_received: -Sampler, -SamplingCoordinator
-      to_be_preserved: -Sampler, -SamplingCoordinator
-      cancelled:       -LabClerk, -Owner, -Sampler, -SamplingCoordinator
+      ar_workflow permissions:
+      - sample_received: -Sampler, -SamplingCoordinator
+      - to_be_preserved: -Sampler, -SamplingCoordinator
+      - cancelled:       -LabClerk, -Owner, -Sampler, -SamplingCoordinator
       -->
     </permission>
 
@@ -108,7 +110,7 @@
       <role name="Manager"/>
       <role name="Sampler"/>
       <!-- @xispa conflicts
-      Usage in workflow:
+      Usage in workflows:
         - ar_workflow.xml: NOT BOUND TO ANY TRANSITION - DISPENSABLE
         - *analysis_workflow.xml (but explicitly set with acquire=False)
         - reject_analysis_workflow.xml (see https://github.com/senaite/senaite.core/commit/dcbaf44d481f22b87a80d10e920937ec2ca733dd)
@@ -127,6 +129,9 @@
           **analysis submit** guard to deal with it (check if the current user
           has "Edit Results" permission granted in AR for e.g., "sample_due"
           status).
+
+      ar_workflow permissions:
+        - ** TODO Consider to remove this permission in favour of Edit Results
       -->
     </permission>
 
@@ -152,9 +157,10 @@
       Additional notes:
         - Consider comments regarding "BIKA: Edit Field Results" above.
 
-      sample_received: -Sampler, -SamplingCoordinator
-      to_be_preserved: -Sampler, -SamplingCoordinator
-      cancelled:       -LabClerk, -Owner, -Sampler, -SamplingCoordinator
+      ar_workflow permissions:
+        - sample_received: -Sampler, -SamplingCoordinator
+        - to_be_preserved: -Sampler, -SamplingCoordinator
+        - cancelled:       -LabClerk, -Owner, -Sampler, -SamplingCoordinator
       -->
     </permission>
 
@@ -177,13 +183,27 @@
       Additional notes:
         - Invoicing functionality is wonky.
           Do we really want/need to support invoicing?
+
+      ar_workflow permissions:
+        - NO CHANGES REQUIRED
       -->
     </permission>
 
-    <permission name="BIKA: Preserve Sample" acquire="False">
+    <permission name="Transition: Preserve Sample" acquire="False">
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Preserver"/>
+      <!-- @xispa conflicts
+      WAS: "BIKA: Preserve Sample"
+      Usage in workflows:
+        - ar_workflow.xml: as guard_permission for "preserve" transition only
+
+      Usage in views:
+        - NO USE
+
+      Usage in code:
+        - NO USE
+      -->
     </permission>
 
     <permission name="BIKA: Publish" acquire="False">
