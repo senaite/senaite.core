@@ -102,8 +102,9 @@ This error can also be used for custom methods with the `fail` function::
 Getting an Object
 -----------------
 
-Getting a tool from a catalog brain is a common task in Bika LIMS. This function
-provides an unified interface to portal objects **and** brains.
+Getting the object from a catalog brain is a common task.
+
+This function provides an unified interface to portal objects **and** brains.
 Furthermore it is idempotent, so it can be called multiple times in a row::
 
 We will demonstrate the usage on the client object we created above::
@@ -129,7 +130,6 @@ Now we show it with catalog results::
     >>> api.get_object(api.get_object(brain))
     <Client at /plone/clients/client-1>
 
-
 The function also accepts a UID:
 
     >>> api.get_object(api.get_uid(brain))
@@ -151,6 +151,12 @@ No supported objects raise an error::
     Traceback (most recent call last):
     [...]
     BikaLIMSError: 'i_am_not_an_uid' is not supported.
+
+However, if a `default` value is provided, the default will be returned in such
+a case instead:
+
+    >>> api.get_object(object(), default=None) is None
+    True
 
 To check if an object is supported, e.g. is an ATCT, Dexterity, ZCatalog or
 Portal object, we can use the `is_object` function::

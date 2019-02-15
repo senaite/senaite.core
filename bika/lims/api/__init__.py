@@ -245,7 +245,7 @@ def is_object(brain_or_object):
     return False
 
 
-def get_object(brain_object_uid):
+def get_object(brain_object_uid, default=_marker):
     """Get the full content object
 
     :param brain_object_uid: A catalog brain or content object or uid
@@ -256,7 +256,9 @@ def get_object(brain_object_uid):
     if is_uid(brain_object_uid):
         return get_object_by_uid(brain_object_uid)
     if not is_object(brain_object_uid):
-        fail("{} is not supported.".format(repr(brain_object_uid)))
+        if default is _marker:
+            fail("{} is not supported.".format(repr(brain_object_uid)))
+        return default
     if is_brain(brain_object_uid):
         return brain_object_uid.getObject()
     return brain_object_uid
