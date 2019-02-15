@@ -158,7 +158,7 @@
     <permission-map name="BIKA: Add Attachment" acquired="True"/>
     <permission-map name="BIKA: Cancel and reinstate" acquired="True"/>
     <permission-map name="BIKA: Edit Field Results" acquired="True"/>
-    <permission-map name="BIKA: Edit Results" acquired="True"/>
+    <permission-map name="BIKA: Edit Results" acquired="False"/>
     <permission-map name="BIKA: Manage Invoices" acquired="True"/>
     <permission-map name="BIKA: Preserve Sample" acquired="True"/>
     <permission-map name="BIKA: Publish" acquired="True"/>
@@ -233,7 +233,7 @@
     <permission-map name="BIKA: Add Attachment" acquired="True"/>
     <permission-map name="BIKA: Cancel and reinstate" acquired="True"/>
     <permission-map name="BIKA: Edit Field Results" acquired="True"/>
-    <permission-map name="BIKA: Edit Results" acquired="True"/>
+    <permission-map name="BIKA: Edit Results" acquired="False"/>
     <permission-map name="BIKA: Manage Invoices" acquired="True"/>
     <permission-map name="BIKA: Preserve Sample" acquired="True"/>
     <permission-map name="BIKA: Publish" acquired="True"/>
@@ -306,7 +306,7 @@
     <permission-map name="BIKA: Add Attachment" acquired="True"/>
     <permission-map name="BIKA: Cancel and reinstate" acquired="True"/>
     <permission-map name="BIKA: Edit Field Results" acquired="True"/>
-    <permission-map name="BIKA: Edit Results" acquired="True"/>
+    <permission-map name="BIKA: Edit Results" acquired="False"/>
     <permission-map name="BIKA: Manage Invoices" acquired="True"/>
     <permission-map name="BIKA: Preserve Sample" acquired="True"/>
     <permission-map name="BIKA: Publish" acquired="True"/>

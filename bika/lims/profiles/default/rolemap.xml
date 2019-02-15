@@ -113,6 +113,21 @@
       <role name="Analyst"/>
       <role name="LabManager"/>
       <role name="Manager"/>
+      <!-- @xispa conflicts
+      Usage in workflows:
+        - ar_workflow.xml
+        - *analysis_workflow.xml (but explicitly set with acquire=False)
+        - reject_analysis_workflow.xml (see https://github.com/senaite/senaite.core/commit/dcbaf44d481f22b87a80d10e920937ec2ca733dd)
+
+      Usage in views:
+        - AnalysisRequest: Manage Results
+        - ?? Report: Edit
+        - ?? Attachment: Edit
+
+      sample_received: -Sampler, -SamplingCoordinator
+      to_be_preserved: -Sampler, -SamplingCoordinator
+      cancelled:       -LabClerk, -Owner, -Sampler, -SamplingCoordinator
+      -->
     </permission>
 
     <permission name="BIKA: Manage Invoices" acquire="False">
