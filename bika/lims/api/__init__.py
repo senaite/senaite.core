@@ -24,6 +24,7 @@ from plone.dexterity.interfaces import IDexterityContent
 from plone.i18n.normalizer.interfaces import IFileNameNormalizer
 from plone.i18n.normalizer.interfaces import IIDNormalizer
 from plone.memoize.volatile import DontCache
+from Products.Archetypes.atapi import DisplayList
 from Products.Archetypes.BaseObject import BaseObject
 from Products.CMFCore.interfaces import IFolderish
 from Products.CMFCore.interfaces import ISiteRoot
@@ -1388,3 +1389,37 @@ def get_registry_record(name, default=None):
     :returns: value of the registry record
     """
     return ploneapi.portal.get_registry_record(name, default=default)
+
+
+def to_display_list(pairs, sort_by="key", allow_empty=True):
+    """Create a Plone DisplayList from list items
+
+    :param pairs: list of key, value pairs
+    :param sort_by: Sort the items either by key or value
+    :param allow_empty: Allow to select an empty value
+    :returns: Plone DisplayList
+    """
+    dl = DisplayList()
+
+    if isinstance(pairs, basestring):
+        pairs = [pairs, pairs]
+    for pair in pairs:
+        # pairs is a list of lists -> add each pair
+        if isinstance(pair, (tuple, list)):
+            dl.add(*pair)
+        # pairs is just a single pair -> add it and stop
+        if isinstance(pair, basestring):
+            dl.add(*pairs)
+            break
+
+    # add the empty option
+    if allow_empty:
+        dl.add("", "")
+
+    # sort by key/value
+    if sort_by == "key":
+        dl = dl.sortedByKey()
+    elif sort_by == "value":
+        dl = dl.sortedByValue()
+
+    return dl

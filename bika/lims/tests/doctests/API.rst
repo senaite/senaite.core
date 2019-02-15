@@ -1530,3 +1530,36 @@ If the record is not found, the default is returned::
     >>> key = "non.existing.key"
     >>> api.get_registry_record(key, default="NX_KEY")
     'NX_KEY'
+
+
+Create a display list
+---------------------
+
+Static display lists, can look up on either side of the dict, and get them in
+sorted order. They are used in selection widgets.
+
+The function can handle a list of key->value pairs:
+
+    >>> pairs = [["a", "A"], ["b", "B"]]
+    >>> api.to_display_list(pairs)
+    <DisplayList [('', ''), ('a', 'A'), ('b', 'B')] at ...>
+
+It can also handle a single pair:
+
+    >>> pairs = ["z", "Z"]
+    >>> api.to_display_list(pairs)
+    <DisplayList [('', ''), ('z', 'Z')] at ...>
+
+It can also handle a single string:
+
+    >>> api.to_display_list("x")
+    <DisplayList [('', ''), ('x', 'x')] at ...>
+
+It can be sorted either by key or by value:
+
+    >>> pairs = [["b", 10], ["a", 100]]
+    >>> api.to_display_list(pairs)
+    <DisplayList [('', ''), ('a', 100), ('b', 10)] at ...>
+
+    >>> api.to_display_list(pairs, sort_by="value")
+    <DisplayList [('b', 10), ('a', 100), ('', '')] at ...>
