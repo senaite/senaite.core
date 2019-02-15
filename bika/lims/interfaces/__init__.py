@@ -864,3 +864,15 @@ class ICancellable(Interface):
     """Marker for those objects that can be cancelled, but their content
     type is not bound to cancellation_workflow
     """
+
+
+class IWorkflowActionAdapter(Interface):
+    """Marker for adapters in charge of processing workflow action requests
+    from views
+    """
+
+
+class IWorkflowActionUIDsAdapter(IWorkflowActionAdapter):
+    """Marker for adapters in charge of processing workflow action requests
+    from views, but meant for redirection only
+    """

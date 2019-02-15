@@ -99,7 +99,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
                 "transitions": [{"id": "disallow-all-possible-transitions"}],
                 "custom_transitions": [
                     {
-                        "id": "save_analyses_button",
+                        "id": "save_analyses",
                         "title": _("Save")
                     }
                 ],
