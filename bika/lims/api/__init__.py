@@ -131,10 +131,11 @@ def create(container, portal_type, *args, **kwargs):
         if hasattr(obj, '_setPortalTypeName'):
             obj._setPortalTypeName(fti.getId())
         notify(ObjectCreatedEvent(obj))
-        # notifies ObjectWillBeAddedEvent, ObjectAddedEvent and ContainerModifiedEvent
+        # notifies ObjectWillBeAddedEvent, ObjectAddedEvent and
+        # ContainerModifiedEvent
         container._setObject(tmp_id, obj)
-        # we get the object here with the current object id, as it might be renamed
-        # already by an event handler
+        # we get the object here with the current object id, as it might be
+        # renamed already by an event handler
         obj = container._getOb(obj.getId())
 
     # handle AT Content
@@ -164,7 +165,7 @@ def get_tool(name, context=None, default=_marker):
         try:
             context = get_object(context)
             return getToolByName(context, name)
-        except (BikaLIMSError, AttributeError) as e:
+        except (APIError, AttributeError) as e:
             # https://github.com/senaite/bika.lims/issues/396
             logger.warn("get_tool::getToolByName({}, '{}') failed: {} "
                         "-> falling back to plone.api.portal.get_tool('{}')"
@@ -181,11 +182,11 @@ def get_tool(name, context=None, default=_marker):
 
 
 def fail(msg=None):
-    """Bika LIMS Error
+    """API LIMS Error
     """
     if msg is None:
         msg = "Reason not given."
-    raise BikaLIMSError("{}".format(msg))
+    raise APIError("{}".format(msg))
 
 
 def is_object(brain_or_object):
@@ -414,7 +415,7 @@ def get_icon(brain_or_object, html_tag=True):
     :rtype: string
     """
     # Manual approach, because `plone.app.layout.getIcon` does not reliable
-    # work for Bika Contents coming from other catalogs than the
+    # work for Contents coming from other catalogs than the
     # `portal_catalog`
     portal_types = get_tool("portal_types")
     fti = portal_types.getTypeInfo(brain_or_object.portal_type)
@@ -618,7 +619,7 @@ def search(query, catalog=_marker):
 
     # We only support **single** catalog queries
     if len(catalogs) > 1:
-        fail("Multi Catalog Queries are not supported, please specify a catalog.")
+        fail("Multi Catalog Queries are not supported!")
 
     return catalogs[0](query)
 
@@ -1151,7 +1152,8 @@ def normalize_id(string):
     :rtype: str
     """
     if not isinstance(string, basestring):
-        fail("Type of argument must be string, found '{}'".format(type(string)))
+        fail("Type of argument must be string, found '{}'"
+             .format(type(string)))
     # get the id nomalizer utility
     normalizer = getUtility(IIDNormalizer).normalize
     return normalizer(string)
@@ -1166,7 +1168,8 @@ def normalize_filename(string):
     :rtype: str
     """
     if not isinstance(string, basestring):
-        fail("Type of argument must be string, found '{}'".format(type(string)))
+        fail("Type of argument must be string, found '{}'"
+             .format(type(string)))
     # get the file nomalizer utility
     normalizer = getUtility(IFileNameNormalizer).normalize
     return normalizer(string)
@@ -1241,7 +1244,7 @@ def to_minutes(days=0, hours=0, minutes=0, seconds=0, milliseconds=0,
     """Returns the computed total number of minutes
     """
     total = float(days)*24*60 + float(hours)*60 + float(minutes) + \
-            float(seconds)/60 + float(milliseconds)/1000/60
+        float(seconds)/60 + float(milliseconds)/1000/60
     return int(round(total)) if round_to_int else total
 
 
