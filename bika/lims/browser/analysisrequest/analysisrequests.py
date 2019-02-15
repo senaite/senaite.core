@@ -486,9 +486,9 @@ class AnalysisRequestsView(BikaListingView):
             review_states = []
             for review_state in self.review_states:
                 review_state.get("custom_transitions", []).extend(
-                    [{"id": "print",
+                    [{"id": "print_sample",
                       "title": _("Print"),
-                      "url": "workflow_action?action=print"}, ])
+                      "url": "workflow_action?action=print_sample"}, ])
                 review_states.append(review_state)
             self.review_states = review_states
 

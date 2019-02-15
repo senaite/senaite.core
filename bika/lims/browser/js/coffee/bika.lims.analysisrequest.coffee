@@ -27,9 +27,8 @@ window.AnalysisRequestView = ->
 
   transition_schedule_sampling = ->
 
-    ### Force the transition to use the "workflow_action" url instead of content_status_modify. workflow_action triggers a class from
-    analysisrequest/workflow/AnalysisRequestWorkflowAction which manage
-    workflow_actions from analysisrequest/sample/samplepartition objects.
+    ### Force the transition to use the "workflow_action" url instead of
+    content_status_modify.
     It is not possible to abort a transition using "workflow_script_*".
     The recommended way is to set a guard instead.
 

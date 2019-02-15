@@ -890,7 +890,7 @@ Getting a browser view is a common task in Bika LIMS::
     <Products.Five.metaclass.Plone object at 0x...>
 
     >>> api.get_view("workflow_action")
-    <Products.Five.metaclass.WorkflowAction object at 0x...>
+    <Products.Five.metaclass.WorkflowActionHandler object at 0x...>
 
 
 Getting the Request
