@@ -158,7 +158,7 @@ class WorkflowActionGenericAdapter(RequestContextAware):
         """
         if len(objects) > 1:
             return False
-        return api.get_object(objects[0]) == self.context
+        return self.context in objects
 
     def success(self, objects):
         """Redirects the user to success page with informative message
