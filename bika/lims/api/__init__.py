@@ -413,11 +413,13 @@ def get_description(brain_or_object):
 def get_uid(brain_or_object):
     """Get the Plone UID for this object
 
-    :param brain_or_object: A single catalog brain or content object
+    :param brain_or_object: A single catalog brain or content object or an UID
     :type brain_or_object: ATContentType/DexterityContentType/CatalogBrain
     :returns: Plone UID
     :rtype: string
     """
+    if is_uid(brain_or_object):
+        return brain_or_object
     if is_portal(brain_or_object):
         return '0'
     if is_brain(brain_or_object) and base_hasattr(brain_or_object, "UID"):

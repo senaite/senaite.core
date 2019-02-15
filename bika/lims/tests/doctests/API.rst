@@ -329,6 +329,12 @@ The portal object actually has no UID. This funciton defines it therefore to be 
     >>> uid_client is uid_client_brain
     True
 
+If a UID is passed to the function, it will return the value unchanged:
+
+    >>> api.get_uid(uid_client) == uid_client
+    True
+
+
 
 Getting the URL of a Content
 ----------------------------
