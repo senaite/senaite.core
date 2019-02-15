@@ -17,6 +17,7 @@ from bika.lims.interfaces import IClient
 from bika.lims.interfaces import IContact
 from bika.lims.interfaces import ILabContact
 from DateTime import DateTime
+from DateTime.interfaces import DateTimeError
 from plone import api as ploneapi
 from plone.api.exc import InvalidParameterError
 from plone.app.layout.viewlets.content import ContentHistoryView
@@ -1277,7 +1278,7 @@ def to_date(value, default=None):
             # https://docs.plone.org/develop/plone/misc/datetime.html#datetime-problems-and-pitfalls
             return DateTime(value, datefmt='international')
         return DateTime(value)
-    except:
+    except (TypeError, ValueError, DateTimeError):
         return to_date(default)
 
 
