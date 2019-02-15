@@ -359,12 +359,12 @@ class WorkflowActionSaveAnalysesAdapter(WorkflowActionGenericAdapter):
         # Get form values
         form = self.request.form
         prices = form.get("Price", [None])[0]
-        hiden = map(lambda o: {"uid": o, "hidden": self.is_hidden(o)}, services)
+        hidden = map(lambda o: {"uid": o, "hidden": self.is_hidden(o)}, services)
         specs = map(lambda service: self.get_specs(service), services)
 
         # Set new analyses to the sample
         uids = map(api.get_uid, services)
-        sample.setAnalysisServicesSettings(hiden)
+        sample.setAnalysisServicesSettings(hidden)
         sample.setAnalyses(uids, prices=prices, specs=specs)
 
         # Just in case new analyses have been added while the Sample was in a
