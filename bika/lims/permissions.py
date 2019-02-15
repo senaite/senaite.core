@@ -119,17 +119,6 @@ Unassign = 'BIKA: Unassign analyses'
 
 ViewLogTab = 'BIKA: View Log Tab'
 
-# Edit AR
-# -----------------------------------------------------------------------------
-# Allows to set values for AR fields in AR view
-#
-# Only takes effect if:
-#   - The AR's 'cancellation_state' is 'active'
-#   - The AR's 'review_state' is in:
-#       'sample_registered', 'to_be_sampled', 'to_be_preserved',
-# 'sample_due', 'sample_received', 'to_be_verified', 'attachment_due'
-EditAR = 'BIKA: Edit AR'
-
 # Edit Client
 # ----------------------------------------------
 # Allows access to 'Edit' and 'Contacts' tabs from Client View
@@ -230,7 +219,6 @@ def setup_permissions(portal):
     mp(Verify, ['Manager', 'LabManager', 'Verifier'], 1)
     mp(Publish, ['Manager', 'LabManager', 'Publisher'], 1)
     mp(EditSample, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner', 'SamplingCoordinator'], 1)
-    mp(EditAR, ['Manager', 'LabManager', 'LabClerk', 'Sampler', 'SamplingCoordinator'], 1)
     mp(EditWorksheet, ['Manager', 'LabManager', 'Analyst'], 1)
     mp(ManageInvoices, ['Manager', 'LabManager', 'Owner'], 1)
     mp(ViewResults, ['Manager', 'LabManager', 'Analyst', 'Sampler', 'RegulatoryInspector', 'SamplingCoordinator'], 1)

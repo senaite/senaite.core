@@ -74,6 +74,12 @@
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
+      <!-- @xispa conflicts
+      scheduled_sampling: +Sampler, +Owner
+      to_be_sampled:      +Sampler, +Owner
+      sample_due:         +Owner
+      to_be_verified:     -LabClerk
+      -->
     </permission>
 
     <permission name="BIKA: Add Attachment" acquire="False">
@@ -90,15 +96,11 @@
       <role name="Owner"/>
       <role name="Sampler"/>
       <role name="SamplingCoordinator"/>
-    </permission>
-
-    <permission name="BIKA: Edit AR" acquire="False">
-      <role name="LabClerk"/>
-      <role name="LabManager"/>
-      <role name="Manager"/>
-      <role name="Sampler"/>
-      <role name="SamplingCoordinator"/>
-      <role name="Preserver"/>
+      <!-- @xispa conflicts
+      sample_received: -Sampler, -SamplingCoordinator
+      to_be_preserved: -Sampler, -SamplingCoordinator
+      cancelled:       -LabClerk, -Owner, -Sampler, -SamplingCoordinator
+      -->
     </permission>
 
     <permission name="BIKA: Edit Field Results" acquire="False">
