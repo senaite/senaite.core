@@ -1,6 +1,5 @@
 import collections
 
-from Products.Archetypes import PloneMessageFactory as _p
 from Products.Archetypes.config import UID_CATALOG
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
@@ -165,7 +164,7 @@ class WorkflowActionGenericAdapter(RequestContextAware):
         """Redirects the user to success page with informative message
         """
         if self.is_context_only(objects):
-            return self.redirect(message=_p("Changes saved."))
+            return self.redirect(message=_("Changes saved."))
 
         ids = map(api.get_id, objects)
         message = _("Saved items: {}").format(", ".join(ids))
