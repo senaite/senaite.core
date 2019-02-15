@@ -107,6 +107,27 @@
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Sampler"/>
+      <!-- @xispa conflicts
+      Usage in workflow:
+        - ar_workflow.xml: NOT BOUND TO ANY TRANSITION - DISPENSABLE
+        - *analysis_workflow.xml (but explicitly set with acquire=False)
+        - reject_analysis_workflow.xml (see https://github.com/senaite/senaite.core/commit/dcbaf44d481f22b87a80d10e920937ec2ca733dd)
+
+      Usage in views:
+        - NOT USED ANYWHERE
+
+      Usage in code:
+        - Mimics "BIKA Edit Results" - DISPENSABLE
+
+      Additional notes:
+        - As long as this permission only grants results to be editable for a
+          subset of roles for analysis-specific statuses, this permission can
+          be entirely removed in favour of "Edit Results".
+          This permission has only effect at analysis level, so make the
+          **analysis submit** guard to deal with it (check if the current user
+          has "Edit Results" permission granted in AR for e.g., "sample_due"
+          status).
+      -->
     </permission>
 
     <permission name="BIKA: Edit Results" acquire="False">
@@ -114,8 +135,8 @@
       <role name="LabManager"/>
       <role name="Manager"/>
       <!-- @xispa conflicts
-      Usage in workflows:
-        - ar_workflow.xml
+      Usage in workflow:
+        - ar_workflow.xml (permission guard for "submit")
         - *analysis_workflow.xml (but explicitly set with acquire=False)
         - reject_analysis_workflow.xml (see https://github.com/senaite/senaite.core/commit/dcbaf44d481f22b87a80d10e920937ec2ca733dd)
 
@@ -123,6 +144,13 @@
         - AnalysisRequest: Manage Results
         - ?? Report: Edit
         - ?? Attachment: Edit
+
+      Usage in code:
+        - Various checks to know if analyses are editable
+        - Check before redirection to AR's "Manage results" view
+
+      Additional notes:
+        - Consider comments regarding "BIKA: Edit Field Results" above.
 
       sample_received: -Sampler, -SamplingCoordinator
       to_be_preserved: -Sampler, -SamplingCoordinator
@@ -134,6 +162,22 @@
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
+      <!-- @xispa conflicts
+      Usage in workflows:
+        - ar_workflow.xml: not bound to any transition/guard
+
+      Usage in views:
+        - AnalysisRequest: Invoice
+        - Invoice: Print
+        - InvoiceBatch: Export to CSV
+
+      Usage in code:
+        - Invoice and InvoiceBatch contexts
+
+      Additional notes:
+        - Invoicing functionality is wonky.
+          Do we really want/need to support invoicing?
+      -->
     </permission>
 
     <permission name="BIKA: Preserve Sample" acquire="False">
