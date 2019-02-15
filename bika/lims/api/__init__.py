@@ -39,15 +39,12 @@ from zope import globalrequest
 from zope.component import getMultiAdapter
 from zope.component import getUtility
 from zope.component.interfaces import IFactory
-from zope.component.interfaces import IObjectEvent
-from zope.component.interfaces import ObjectEvent
 from zope.event import notify
-from zope.interface import implements
 from zope.lifecycleevent import ObjectCreatedEvent
 from zope.lifecycleevent import modified
 from zope.security.interfaces import Unauthorized
 
-"""Bika LIMS Framework API
+"""SENAITE LIMS Framework API
 
 Please see bika.lims/docs/API.rst for documentation.
 
@@ -75,45 +72,8 @@ _marker = object()
 UID_RX = re.compile("[a-z0-9]{32}$")
 
 
-class BikaLIMSError(Exception):
+class APIError(Exception):
     """Base exception class for bika.lims errors."""
-
-
-class IBikaTransitionEvent(IObjectEvent):
-    """Bika WF transition event interface"""
-
-
-class IBikaBeforeTransitionEvent(IBikaTransitionEvent):
-    """Fired before the transition is invoked"""
-
-
-class IBikaAfterTransitionEvent(IBikaTransitionEvent):
-    """Fired after the transition done"""
-
-
-class IBikaTransitionFailedEvent(IBikaTransitionEvent):
-    """Fired if the transition failed"""
-
-
-class BikaTransitionEvent(ObjectEvent):
-    """Bika WF transition event"""
-    def __init__(self, obj, transition, exception=None):
-        ObjectEvent.__init__(self, obj)
-        self.obj = obj
-        self.transition = transition
-        self.exception = exception
-
-
-class BikaBeforeTransitionEvent(BikaTransitionEvent):
-    implements(IBikaBeforeTransitionEvent)
-
-
-class BikaAfterTransitionEvent(BikaTransitionEvent):
-    implements(IBikaAfterTransitionEvent)
-
-
-class BikaTransitionFailedEvent(BikaTransitionEvent):
-    implements(IBikaTransitionFailedEvent)
 
 
 def get_portal():
@@ -942,17 +902,11 @@ def do_transition_for(brain_or_object, transition):
     if not isinstance(transition, basestring):
         fail("Transition type needs to be string, got '%s'" % type(transition))
     obj = get_object(brain_or_object)
-    # notify the BeforeTransitionEvent
-    notify(BikaBeforeTransitionEvent(obj, transition))
     try:
         ploneapi.content.transition(obj, transition)
     except ploneapi.exc.InvalidParameterError as e:
-        # notify the TransitionFailedEvent
-        notify(BikaTransitionFailedEvent(obj, transition, exception=e))
         fail("Failed to perform transition '{}' on {}: {}".format(
              transition, obj, str(e)))
-    # notify the AfterTransitionEvent
-    notify(BikaAfterTransitionEvent(obj, transition))
     return obj
 
 
