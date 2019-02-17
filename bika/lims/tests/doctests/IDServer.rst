@@ -1,15 +1,14 @@
 ID Server
 =========
 
-The ID Server in Bika LIMS provides IDs for content items base of the given
+The ID Server in SENAITE LIMS provides IDs for content items base of the given
 format specification. The format string is constructed in the same way as a
 python format() method based predefined variables per content type. The only
 variable available to all type is 'seq'. Currently, seq can be constructed
 either using number generator or a counter of existing items. For generated IDs,
 one can specifypoint at which the format string will be split to create the
-generator key. For counter IDs, one must specify context and the type of
-counter which is either the number of backreferences or the number of contained
-objects.
+generator key. For counter IDs, one must specify context and the type of counter
+which is either the number of backreferences or the number of contained objects.
 
 Configuration Settings:
 * format:
@@ -64,17 +63,17 @@ Variables:
     >>> sample_date = DateTime(2017, 1, 31)
     >>> portal = self.portal
     >>> request = self.request
-    >>> bika_setup = portal.bika_setup
-    >>> bika_sampletypes = bika_setup.bika_sampletypes
-    >>> bika_samplepoints = bika_setup.bika_samplepoints
-    >>> bika_analysiscategories = bika_setup.bika_analysiscategories
-    >>> bika_analysisservices = bika_setup.bika_analysisservices
-    >>> bika_labcontacts = bika_setup.bika_labcontacts
-    >>> bika_storagelocations = bika_setup.bika_storagelocations
-    >>> bika_samplingdeviations = bika_setup.bika_samplingdeviations
-    >>> bika_sampleconditions = bika_setup.bika_sampleconditions
+    >>> setup = portal.bika_setup
+    >>> bika_sampletypes = setup.bika_sampletypes
+    >>> bika_samplepoints = setup.bika_samplepoints
+    >>> bika_analysiscategories = setup.bika_analysiscategories
+    >>> bika_analysisservices = setup.bika_analysisservices
+    >>> bika_labcontacts = setup.bika_labcontacts
+    >>> bika_storagelocations = setup.bika_storagelocations
+    >>> bika_samplingdeviations = setup.bika_samplingdeviations
+    >>> bika_sampleconditions = setup.bika_sampleconditions
     >>> portal_url = portal.absolute_url()
-    >>> bika_setup_url = portal_url + "/bika_setup"
+    >>> setup_url = portal_url + "/bika_setup"
     >>> browser = self.getBrowser()
     >>> current_user = ploneapi.user.get_current()
 
@@ -146,7 +145,7 @@ Set up `ID Server` configuration:
     ...             'value': ''},
     ...          ]
 
-    >>> bika_setup.setIDFormatting(values)
+    >>> setup.setIDFormatting(values)
 
 An `AnalysisRequest` can be created:
 
@@ -200,7 +199,7 @@ Change ID formats and create new `AnalysisRequest`::
     ...             'value': ''},
     ...          ]
 
-    >>> bika_setup.setIDFormatting(values)
+    >>> setup.setIDFormatting(values)
 
     >>> values = {'Client': client.UID(),
     ...           'Contact': contact.UID(),
@@ -239,7 +238,7 @@ Change ID formats and use alphanumeric ids::
     ...             'split_length': 1},
     ...          ]
 
-    >>> bika_setup.setIDFormatting(values)
+    >>> setup.setIDFormatting(values)
     >>> values = {'SampleType': sampletype2.UID(),}
     >>> service_uids = [analysisservice.UID()]
     >>> ar = create_analysisrequest(client, request, values, service_uids)
@@ -266,7 +265,7 @@ And try now without separators:
     ...             'split_length': 1},
     ...          ]
 
-    >>> bika_setup.setIDFormatting(values)
+    >>> setup.setIDFormatting(values)
     >>> values = {'SampleType': sampletype2.UID(),}
     >>> service_uids = [analysisservice.UID()]
     >>> ar = create_analysisrequest(client, request, values, service_uids)
@@ -386,7 +385,7 @@ Analysis Request:
     ...             'split_length': 2},
     ...          ]
 
-    >>> bika_setup.setIDFormatting(id_formatting)
+    >>> setup.setIDFormatting(id_formatting)
     >>> values = {'Client': client.UID(),
     ...           'Contact': contact.UID(),
     ...           'SamplingDate': sample_date,
@@ -425,7 +424,7 @@ Do the same, but with an ID formatting without separators:
     ...             'split_length': 2},
     ...          ]
 
-    >>> bika_setup.setIDFormatting(id_formatting)
+    >>> setup.setIDFormatting(id_formatting)
     >>> ar = create_analysisrequest(client, request, values, service_uids)
     >>> ar.getId()
     'NGwaterAA001'
