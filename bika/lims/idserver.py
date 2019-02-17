@@ -216,6 +216,9 @@ def get_variables(context, **kw):
             parent_ar = context.getInvalidated()
             parent_ar_id = api.get_id(parent_ar)
             parent_base_id = strip_suffix(parent_ar_id)
+            # keep the full ID if the retracted AR is a partition
+            if context.isPartition():
+                parent_base_id = parent_ar_id
             retest_count = get_retest_count(context)
             test_count = test_count + retest_count
             variables.update({
