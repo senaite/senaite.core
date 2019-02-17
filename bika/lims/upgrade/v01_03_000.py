@@ -198,6 +198,9 @@ def upgrade(tool):
     # Apply IAnalysisRequestRetest marker interface to retested ARs
     apply_analysis_request_retest_interface(portal)
 
+    # Set the ID formatting for AR restest
+    set_retest_id_formatting(portal)
+
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
 
@@ -1700,3 +1703,14 @@ def apply_analysis_request_retest_interface(portal):
         if ar.getInvalidated():
             alsoProvides(ar, IAnalysisRequestRetest)
     commit_transaction(portal)
+
+
+def set_retest_id_formatting(portal):
+    """Sets the default id formatting for AR retests
+    """
+    part_id_format = dict(
+        form="{parent_base_id}-{seq:02d}-R{seq:02d}",
+        portal_type="AnalysisRequestRetest",
+        prefix="analysisrequestretest",
+        sequence_type="")
+    set_id_format(portal, part_id_format)
