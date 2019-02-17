@@ -28,6 +28,7 @@ Changelog
 
 **Changed**
 
+- #1243 ID Server Suffix Support for Retested ARs
 - #1240 Support action-specific `workflow_action` requests with named adapters
 - #1215 Do not copy CaptureDate and Result in retest analyses when created
 - #1215 Do not modify the ID of analysis on retraction
