@@ -1,8 +1,8 @@
-=============
-Bika LIMS API
-=============
+================
+SENAITE LIMS API
+================
 
-The Bika LIMS API provides single functions for single purposes.
+The SENAITE LIMS API provides single functions for single purposes.
 This Test builds completely on the API without any further imports needed.
 
 Running this test from the buildout directory::
@@ -35,17 +35,17 @@ so here we will assume the role of Lab Manager.
 Getting the Portal
 ------------------
 
-The Portal is the Bika LIMS root object::
+The Portal is the SENAITE LIMS root object::
 
     >>> portal = api.get_portal()
     >>> portal
     <PloneSite at /plone>
 
 
-Getting the Bika Setup object
------------------------------
+Getting the SENAITE Setup object
+--------------------------------
 
-The Setup object gives access to all of the Bika configuration settings::
+The Setup object gives access to all of the SENAITE configuration settings::
 
     >>> setup = api.get_setup()
     >>> setup
@@ -62,7 +62,7 @@ The Setup object gives access to all of the Bika configuration settings::
 Creating new Content
 --------------------
 
-Creating new contents in Bika LIMS requires some special knowledge.
+Creating new contents in SENAITE LIMS requires some special knowledge.
 This function helps to do it right and creates a content for you.
 
 Here we create a new `Client` in the `plone/clients` folder::
@@ -78,32 +78,33 @@ Here we create a new `Client` in the `plone/clients` folder::
 Getting a Tool
 --------------
 
-There are many ways to get a tool in Bika LIMS / Plone. This function
+There are many ways to get a tool in SENAITE LIMS / Plone. This function
 centralizes this functionality and makes it painless::
 
     >>> api.get_tool("bika_setup_catalog")
     <BikaSetupCatalog at /plone/bika_setup_catalog>
 
-Trying to fetch an non-existing tool raises a custom `BikaLIMSError`.
+Trying to fetch an non-existing tool raises a custom `APIError`.
 
     >>> api.get_tool("NotExistingTool")
     Traceback (most recent call last):
     [...]
-    BikaLIMSError: No tool named 'NotExistingTool' found.
+    APIError: No tool named 'NotExistingTool' found.
 
 This error can also be used for custom methods with the `fail` function::
 
     >>> api.fail("This failed badly")
     Traceback (most recent call last):
     [...]
-    BikaLIMSError: This failed badly
+    APIError: This failed badly
 
 
 Getting an Object
 -----------------
 
-Getting a tool from a catalog brain is a common task in Bika LIMS. This function
-provides an unified interface to portal objects **and** brains.
+Getting the object from a catalog brain is a common task.
+
+This function provides an unified interface to portal objects **and** brains.
 Furthermore it is idempotent, so it can be called multiple times in a row::
 
 We will demonstrate the usage on the client object we created above::
@@ -129,7 +130,6 @@ Now we show it with catalog results::
     >>> api.get_object(api.get_object(brain))
     <Client at /plone/clients/client-1>
 
-
 The function also accepts a UID:
 
     >>> api.get_object(api.get_uid(brain))
@@ -145,12 +145,18 @@ No supported objects raise an error::
     >>> api.get_object(object())
     Traceback (most recent call last):
     [...]
-    BikaLIMSError: <object object at 0x...> is not supported.
+    APIError: <object object at 0x...> is not supported.
 
     >>> api.get_object("i_am_not_an_uid")
     Traceback (most recent call last):
     [...]
-    BikaLIMSError: 'i_am_not_an_uid' is not supported.
+    APIError: 'i_am_not_an_uid' is not supported.
+
+However, if a `default` value is provided, the default will be returned in such
+a case instead:
+
+    >>> api.get_object(object(), default=None) is None
+    True
 
 To check if an object is supported, e.g. is an ATCT, Dexterity, ZCatalog or
 Portal object, we can use the `is_object` function::
@@ -268,7 +274,7 @@ Catalog brains are also supported::
 Getting the ID of a Content
 ---------------------------
 
-Getting the ID is a common task in Bika LIMS.
+Getting the ID is a common task in SENAITE LIMS.
 This function takes care that catalog brains are not woken up for this task::
 
     >>> api.get_id(portal)
@@ -284,7 +290,7 @@ This function takes care that catalog brains are not woken up for this task::
 Getting the Title of a Content
 ------------------------------
 
-Getting the Title is a common task in Bika LIMS.
+Getting the Title is a common task in SENAITE LIMS.
 This function takes care that catalog brains are not woken up for this task::
 
     >>> api.get_title(portal)
@@ -300,7 +306,7 @@ This function takes care that catalog brains are not woken up for this task::
 Getting the Description of a Content
 ------------------------------------
 
-Getting the Description is a common task in Bika LIMS.
+Getting the Description is a common task in SENAITE LIMS.
 This function takes care that catalog brains are not woken up for this task::
 
     >>> api.get_description(portal)
@@ -316,7 +322,7 @@ This function takes care that catalog brains are not woken up for this task::
 Getting the UID of a Content
 ----------------------------
 
-Getting the UID is a common task in Bika LIMS.
+Getting the UID is a common task in SENAITE LIMS.
 This function takes care that catalog brains are not woken up for this task.
 
 The portal object actually has no UID. This funciton defines it therefore to be `0`::
@@ -329,11 +335,17 @@ The portal object actually has no UID. This funciton defines it therefore to be 
     >>> uid_client is uid_client_brain
     True
 
+If a UID is passed to the function, it will return the value unchanged:
+
+    >>> api.get_uid(uid_client) == uid_client
+    True
+
+
 
 Getting the URL of a Content
 ----------------------------
 
-Getting the URL is a common task in Bika LIMS.
+Getting the URL is a common task in SENAITE LIMS.
 This function takes care that catalog brains are not woken up for this task::
 
     >>> api.get_url(portal)
@@ -360,6 +372,15 @@ Getting the Icon of a Content
 
     >>> api.get_icon(client, html_tag=False)
     'http://nohost/plone/++resource++bika.lims.images/client.png'
+
+
+Getting a catalog brain by UID
+------------------------------
+
+This function finds a catalog brain by its uinique ID (UID)::
+
+    >>> api.get_brain_by_uid(api.get_uid(client))
+    <Products.Archetypes.UIDCatalog.plugbrains object at ...>
 
 
 Getting an object by UID
@@ -403,7 +424,7 @@ Paths outside the portal raise an error::
     >>> api.get_object_by_path('/root')
     Traceback (most recent call last):
     [...]
-    BikaLIMSError: Not a physical path inside the portal.
+    APIError: Not a physical path inside the portal.
 
 Any exception returns default value::
 
@@ -433,7 +454,7 @@ so in the most efficient way::
     >>> api.get_path(object())
     Traceback (most recent call last):
     [...]
-    BikaLIMSError: <object object at 0x...> is not supported.
+    APIError: <object object at 0x...> is not supported.
 
 
 Getting the Physical Parent Path of an Object
@@ -457,7 +478,7 @@ Like with the other functions, only portal objects are supported::
     >>> api.get_parent_path(object())
     Traceback (most recent call last):
     [...]
-    BikaLIMSError: <object object at 0x...> is not supported.
+    APIError: <object object at 0x...> is not supported.
 
 
 Getting the Parent Object
@@ -492,14 +513,14 @@ Like with the other functions, only portal objects are supported::
     >>> api.get_parent(object())
     Traceback (most recent call last):
     [...]
-    BikaLIMSError: <object object at 0x...> is not supported.
+    APIError: <object object at 0x...> is not supported.
 
 
 Searching Objects
 -----------------
 
-Searching in Bika LIMS requires knowledge in which catalog the object is indexed.
-This function unifies all Bika LIMS catalog to a single search interface::
+Searching in SENAITE LIMS requires knowledge in which catalog the object is indexed.
+This function unifies all SENAITE LIMS catalog to a single search interface::
 
     >>> results = api.search({'portal_type': 'Client'})
     >>> results
@@ -531,7 +552,7 @@ manual merging and sorting of the results afterwards. Thus, we fail here:
     >>> results = api.search({'portal_type': ['Client', 'ClientFolder', 'Instrument'], 'sort_on': 'getId'})
     Traceback (most recent call last):
     [...]
-    BikaLIMSError: Multi Catalog Queries are not supported, please specify a catalog.
+    APIError: Multi Catalog Queries are not supported!
 
 Catalog queries w/o any `portal_type`, default to the `portal_catalog`, which
 will not find the following items::
@@ -592,7 +613,7 @@ Or provide a correct query::
 Getting the registered Catalogs
 -------------------------------
 
-Bika LIMS uses multiple catalogs registered via the Archetype Tool. This
+SENAITE LIMS uses multiple catalogs registered via the Archetype Tool. This
 function returns a list of registered catalogs for a brain or object::
 
     >>> api.get_catalogs_for(client)
@@ -624,7 +645,7 @@ raising an `Unauthorized` error::
     >>> api.safe_getattr(brain, "NONEXISTING")
     Traceback (most recent call last):
     [...]
-    BikaLIMSError: Attribute 'NONEXISTING' not found.
+    APIError: Attribute 'NONEXISTING' not found.
 
     >>> api.safe_getattr(brain, "NONEXISTING", "")
     ''
@@ -848,7 +869,7 @@ for the passed in object::
 Checking if an Object is Versionable
 ------------------------------------
 
-Some contents in Bika LIMS support versioning. This function checks this for you.
+Some contents in SENAITE LIMS support versioning. This function checks this for you.
 
 Instruments are not versionable::
 
@@ -884,7 +905,7 @@ Calling `processForm` bumps the version::
 Getting a Browser View
 ----------------------
 
-Getting a browser view is a common task in Bika LIMS::
+Getting a browser view is a common task in SENAITE LIMS::
 
     >>> api.get_view("plone")
     <Products.Five.metaclass.Plone object at 0x...>
@@ -905,7 +926,7 @@ This function will return the global request object::
 Getting a Group
 ---------------
 
-Users in Bika LIMS are managed in groups. A common group is the `Clients` group,
+Users in SENAITE LIMS are managed in groups. A common group is the `Clients` group,
 where all users of client contacts are grouped.
 This function gives easy access and is also idempotent::
 
@@ -968,7 +989,7 @@ Getting Users by their Roles
 
     >>> from operator import methodcaller
 
-Roles in Bika LIMS are basically a name for one or more permissions. For
+Roles in SENAITE LIMS are basically a name for one or more permissions. For
 example, a `LabManager` describes a role which is granted the most permissions.
 
 So first I'll add some users with some different roles:
@@ -1119,8 +1140,8 @@ A workflow transition should also change the cache key::
     True
 
 
-Bika Cache Key decorator
-------------------------
+SENAITE Cache Key decorator
+---------------------------
 
 This decorator can be used for `plone.memoize` cache decorators in classes.
 The decorator expects that the first argument is the class instance (`self`) and
@@ -1128,7 +1149,7 @@ the second argument a brain or object::
 
     >>> from plone.memoize.volatile import cache
 
-    >>> class BikaClass(object):
+    >>> class SENAITEClass(object):
     ...     @cache(api.bika_cache_key_decorator)
     ...     def get_very_expensive_calculation(self, obj):
     ...         print "very expensive calculation"
@@ -1136,7 +1157,7 @@ the second argument a brain or object::
 
 Calling the (expensive) method of the class does the calculation just once::
 
-    >>> instance = BikaClass()
+    >>> instance = SENAITEClass()
     >>> instance.get_very_expensive_calculation(client)
     very expensive calculation
     'calculation result'
@@ -1145,7 +1166,7 @@ Calling the (expensive) method of the class does the calculation just once::
 
 The decorator can also handle brains::
 
-    >>> instance = BikaClass()
+    >>> instance = SENAITEClass()
     >>> portal_catalog = api.get_tool("portal_catalog")
     >>> brain = portal_catalog(portal_type="Client")[0]
     >>> instance.get_very_expensive_calculation(brain)
@@ -1169,7 +1190,7 @@ Normalizes a string to be usable as a system ID:
     >>> api.normalize_id(None)
     Traceback (most recent call last):
     [...]
-    BikaLIMSError: Type of argument must be string, found '<type 'NoneType'>'
+    APIError: Type of argument must be string, found '<type 'NoneType'>'
 
 
 File Normalizer
@@ -1186,7 +1207,7 @@ Normalizes a string to be usable as a file name:
     >>> api.normalize_filename(None)
     Traceback (most recent call last):
     [...]
-    BikaLIMSError: Type of argument must be string, found '<type 'NoneType'>'
+    APIError: Type of argument must be string, found '<type 'NoneType'>'
 
 
 Check if an UID is valid
@@ -1263,6 +1284,7 @@ Checks if a DateTime is valid:
 
     >>> api.is_date('2018-04-23')
     False
+
 
 Try conversions to Date
 -----------------------
@@ -1360,6 +1382,7 @@ Use a non-conversionable value as fallback:
     >>> zpdt is None
     True
 
+
 Check if floatable
 ------------------
 
@@ -1380,6 +1403,7 @@ Check if floatable
 
     >>> api.is_floatable("12,35")
     False
+
 
 Convert to a float number
 -------------------------
@@ -1412,6 +1436,7 @@ With default fallback:
 
     >>> api.to_float("2.1", "2")
     2.1
+
 
 Convert to an int number
 ------------------------
@@ -1450,6 +1475,7 @@ With default fallback:
 
     >>> api.to_int("as", "2")
     2
+
 
 Convert to minutes
 ------------------
@@ -1530,3 +1556,36 @@ If the record is not found, the default is returned::
     >>> key = "non.existing.key"
     >>> api.get_registry_record(key, default="NX_KEY")
     'NX_KEY'
+
+
+Create a display list
+---------------------
+
+Static display lists, can look up on either side of the dict, and get them in
+sorted order. They are used in selection widgets.
+
+The function can handle a list of key->value pairs:
+
+    >>> pairs = [["a", "A"], ["b", "B"]]
+    >>> api.to_display_list(pairs)
+    <DisplayList [('', ''), ('a', 'A'), ('b', 'B')] at ...>
+
+It can also handle a single pair:
+
+    >>> pairs = ["z", "Z"]
+    >>> api.to_display_list(pairs)
+    <DisplayList [('', ''), ('z', 'Z')] at ...>
+
+It can also handle a single string:
+
+    >>> api.to_display_list("x")
+    <DisplayList [('', ''), ('x', 'x')] at ...>
+
+It can be sorted either by key or by value:
+
+    >>> pairs = [["b", 10], ["a", 100]]
+    >>> api.to_display_list(pairs)
+    <DisplayList [('', ''), ('a', 100), ('b', 10)] at ...>
+
+    >>> api.to_display_list(pairs, sort_by="value")
+    <DisplayList [('b', 10), ('a', 100), ('', '')] at ...>
