@@ -9,25 +9,29 @@ import os
 import tempfile
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from email.Utils import formataddr
 
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import _createObjectByType
-from Products.CMFPlone.utils import safe_unicode
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.idserver import renameAfterCreation
-from bika.lims.interfaces import IAnalysisService, IRoutineAnalysis, \
-    IAnalysisRequest
+from bika.lims.interfaces import IAnalysisRequest
+from bika.lims.interfaces import IAnalysisRequestRetest
+from bika.lims.interfaces import IAnalysisService
+from bika.lims.interfaces import IRoutineAnalysis
 from bika.lims.utils import attachPdf
 from bika.lims.utils import changeWorkflowState
+from bika.lims.utils import copy_field_values
 from bika.lims.utils import createPdf
 from bika.lims.utils import encode_header
-from bika.lims.utils import tmpID, copy_field_values
+from bika.lims.utils import tmpID
 from bika.lims.utils import to_utf8
-from bika.lims.workflow import doActionFor, ActionHandlerPool, \
-    push_reindex_to_actions_pool
-from email.Utils import formataddr
+from bika.lims.workflow import ActionHandlerPool
+from bika.lims.workflow import doActionFor
+from bika.lims.workflow import push_reindex_to_actions_pool
+from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import _createObjectByType
+from Products.CMFPlone.utils import safe_unicode
 
 
 def create_analysisrequest(client, request, values, analyses=None,
