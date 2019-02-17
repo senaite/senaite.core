@@ -195,6 +195,9 @@ def upgrade(tool):
     # https://github.com/senaite/senaite.core/pull/1231
     update_bika_catalog(portal)
 
+    # Apply IAnalysisRequestRetest marker interface to retested ARs
+    apply_analysis_request_retest_interface(portal)
+
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
 
@@ -1679,3 +1682,21 @@ def update_bika_catalog(portal):
     for metadata in metadata_to_add:
         refresh = metadata not in catalog.schema()
         add_metadata(portal, cat_id, metadata, refresh_catalog=refresh)
+
+
+def apply_analysis_request_retest_interface(portal):
+    """Walks through all AR-like partitions registered in the system and
+    applies the IAnalysisRequestRetest marker interface to them
+    """
+    logger.info("Applying 'IAnalysisRequestRetest' marker interface ...")
+    query = dict(portal_type="AnalysisRequest")
+    brains = api.search(query, CATALOG_ANALYSIS_REQUEST_LISTING)
+    total = len(brains)
+    for num, brain in enumerate(brains):
+        if num % 100 == 0:
+            logger.info("Applying 'IAnalysisRequestRetest' interface: {}/{}"
+                        .format(num, total))
+        ar = api.get_object(brain)
+        if ar.getInvalidated():
+            alsoProvides(ar, IAnalysisRequestRetest)
+    commit_transaction(portal)
