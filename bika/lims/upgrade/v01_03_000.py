@@ -1695,4 +1695,3 @@ def update_notify_on_sample_invalidation(portal):
     # NotifyOnRejection --> NotifyOnSampleRejection
     old_value = setup.__dict__.get("NotifyOnRejection", False)
     setup.setNotifyOnSampleRejection(old_value)
-

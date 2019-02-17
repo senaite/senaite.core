@@ -166,20 +166,13 @@ class WorkflowActionInvalidateAdapter(WorkflowActionGenericAdapter):
         """
         retest = sample.getRetest()
         lab_address = api.get_bika_setup().laboratory.getPrintAddress()
-        body = Template(_(
-            "Some non-conformities have been detected in the results report "
-            "published for Sample $sample_link. "
-            "<br/><br/> "
-            "A new Sample $retest_link has been created automatically, and the "
-            "previous request has been invalidated. "
-            "<br/><br/> "
-            "The root cause is under investigation and corrective "
-            "action has been initiated. "
-            "<br/><br/> "
-            "$lab_address")
-        ).safe_substitute(
+        setup = api.get_setup()
+        body = Template(setup.getEmailBodySampleInvalidation())\
+            .safe_substitute(
             dict(sample_link=self.get_html_link(sample),
                  retest_link=self.get_html_link(retest),
+                 sample_id=api.get_id(sample),
+                 retest_id=api.get_id(retest),
                  lab_address="<br/>".join(lab_address)))
         return body
 
