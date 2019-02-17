@@ -32,6 +32,7 @@ from bika.lims.workflow import push_reindex_to_actions_pool
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
 from Products.CMFPlone.utils import safe_unicode
+from zope.interface import alsoProvides
 
 
 def create_analysisrequest(client, request, values, analyses=None,
@@ -288,17 +289,25 @@ def create_retest(ar):
         raise ValueError("Cannot do a retest from an invalid Analysis Request"
                          .format(repr(ar)))
 
-    # 0. Open the actions pool
+    # Open the actions pool
     actions_pool = ActionHandlerPool.get_instance()
     actions_pool.queue_pool()
 
-    # 1. Create the Retest (Analysis Request)
+    # Create the Retest (Analysis Request)
     ignore = ['Analyses', 'DatePublished', 'Invalidated', 'Sample']
     retest = _createObjectByType("AnalysisRequest", ar.aq_parent, tmpID())
     copy_field_values(ar, retest, ignore_fieldnames=ignore)
+
+    # Mark the retest with the `IAnalysisRequestRetest` interface
+    alsoProvides(retest, IAnalysisRequestRetest)
+
+    # Assign the source to retest
+    retest.setInvalidated(ar)
+
+    # Rename the retest according to the ID server setup
     renameAfterCreation(retest)
 
-    # 2. Copy the analyses from the source
+    # Copy the analyses from the source
     intermediate_states = ['retracted', 'reflexed']
     for an in ar.getAnalyses(full_objects=True):
         if (api.get_workflow_status_of(an) in intermediate_states):
@@ -313,22 +322,19 @@ def create_retest(ar):
         nan.unmarkCreationFlag()
         push_reindex_to_actions_pool(nan)
 
-    # 3. Assign the source to retest
-    retest.setInvalidated(ar)
-
-    # 4. Transition the retest to "sample_received"!
+    # Transition the retest to "sample_received"!
     changeWorkflowState(retest, 'bika_ar_workflow', 'sample_received')
 
-    # 5. Initialize analyses
+    # Initialize analyses
     for analysis in retest.getAnalyses(full_objects=True):
         if not IRoutineAnalysis.providedBy(analysis):
             continue
         changeWorkflowState(analysis, "bika_analysis_workflow", "unassigned")
 
-    # 6. Reindex and other stuff
+    # Reindex and other stuff
     push_reindex_to_actions_pool(retest)
     push_reindex_to_actions_pool(retest.aq_parent)
 
-    # 7. Resume the actions pool
+    # Resume the actions pool
     actions_pool.resume()
     return retest
