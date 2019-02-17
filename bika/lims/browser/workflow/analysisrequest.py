@@ -137,7 +137,6 @@ class WorkflowActionInvalidateAdapter(WorkflowActionGenericAdapter):
         # Email fields
         sample_id = api.get_id(sample)
         subject = t(_("Erroneous result publication from {}").format(sample_id))
-        lab_address = api.get_bika_setup().laboratory.getPrintAddress()
         emails_lab = self.get_lab_managers_formatted_emails()
         emails_sample = self.get_sample_contacts_formatted_emails(sample)
         recipients = list(set(emails_lab + emails_sample))
@@ -146,16 +145,7 @@ class WorkflowActionInvalidateAdapter(WorkflowActionGenericAdapter):
         msg["Subject"] = subject
         msg["From"] = self.get_laboratory_formatted_email()
         msg["To"] = ", ".join(recipients)
-        body = Template("Some errors have been detected in the results report "
-                        "published from the Sample $sample_link. The Sample "
-                        "$retest_link has been created automatically and the "
-                        "previous has been invalidated.<br/>"
-                        "The possible mistake has been picked up and is under "
-                        "investigation.<br/><br/>"
-                        "$lab_address").safe_substitute(
-            dict(sample_link=self.get_html_link(sample),
-                 retest_link=self.get_html_link(retest),
-                 lab_address = "<br/>".join(lab_address)))
+        body = self.get_email_body(sample)
         msg_txt = MIMEText(safe_unicode(body).encode('utf-8'), _subtype='html')
         msg.preamble = 'This is a multi-part MIME message.'
         msg.attach(msg_txt)
@@ -170,6 +160,28 @@ class WorkflowActionInvalidateAdapter(WorkflowActionGenericAdapter):
                         "retracted: ${error}",
                         mapping={'error': safe_unicode(err_msg)})
             self.context.plone_utils.addPortalMessage(message, 'warning')
+
+    def get_email_body(self, sample):
+        """Returns the email body text
+        """
+        retest = sample.getRetest()
+        lab_address = api.get_bika_setup().laboratory.getPrintAddress()
+        body = Template(_(
+            "Some non-conformities have been detected in the results report "
+            "published for Sample $sample_link. "
+            "<br/><br/> "
+            "A new Sample $retest_link has been created automatically, and the "
+            "previous request has been invalidated. "
+            "<br/><br/> "
+            "The root cause is under investigation and corrective "
+            "action has been initiated. "
+            "<br/><br/> "
+            "$lab_address")
+        ).safe_substitute(
+            dict(sample_link=self.get_html_link(sample),
+                 retest_link=self.get_html_link(retest),
+                 lab_address="<br/>".join(lab_address)))
+        return body
 
     def get_formatted_email(self, email_name):
         """Formats a email
