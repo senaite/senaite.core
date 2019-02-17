@@ -587,7 +587,7 @@ schema = BikaFolderSchema.copy() + Schema((
         ),
     ),
     BooleanField(
-        'NotifyOnARRetract',
+        'NotifyOnSampleInvalidation',
         schemata="Notifications",
         default=True,
         widget=BooleanWidget(

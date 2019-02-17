@@ -113,7 +113,7 @@ class WorkflowActionInvalidateAdapter(WorkflowActionGenericAdapter):
             return self.redirect(message=_("No changes made"), level="warning")
 
         # Need to notify client contacts?
-        if not self.context.bika_setup.getNotifyOnARRetract():
+        if not self.context.bika_setup.getNotifyOnSampleInvalidation():
             return self.success(transitioned)
 
         # Alert the client contacts who ordered the results, stating that a
