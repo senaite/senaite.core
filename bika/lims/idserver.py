@@ -149,13 +149,13 @@ def get_variables(context, **kw):
 
     # The variables map hold the values that might get into the constructed id
     variables = {
-        'context': context,
-        'id': api.get_id(context),
-        'portal_type': portal_type,
-        'year': get_current_year(),
-        'parent': api.get_parent(context),
-        'seq': 0,
-        'alpha': Alphanumber(0),
+        "context": context,
+        "id": api.get_id(context),
+        "portal_type": portal_type,
+        "year": get_current_year(),
+        "parent": api.get_parent(context),
+        "seq": 0,
+        "alpha": Alphanumber(0),
     }
 
     # Augment the variables map depending on the portal type
@@ -165,11 +165,12 @@ def get_variables(context, **kw):
         sampling_date = sampling_date and DT2dt(sampling_date) or DT2dt(now)
         date_sampled = context.getDateSampled()
         date_sampled = date_sampled and DT2dt(date_sampled) or DT2dt(now)
+
         variables.update({
-            'clientId': context.getClientID(),
-            'dateSampled': date_sampled,
-            'samplingDate': sampling_date,
-            'sampleType': context.getSampleType().getPrefix()
+            "clientId": context.getClientID(),
+            "dateSampled": date_sampled,
+            "samplingDate": sampling_date,
+            "sampleType": context.getSampleType().getPrefix(),
         })
 
         # Partition
@@ -212,7 +213,7 @@ def get_variables(context, **kw):
 
     elif portal_type == "ARReport":
         variables.update({
-            'clientId': context.aq_parent.getClientID(),
+            "clientId": context.aq_parent.getClientID(),
         })
 
     return variables
@@ -336,7 +337,7 @@ def get_alpha_or_number(number, template):
 def get_counted_number(context, config, variables, **kw):
     """Compute the number for the sequence type "Counter"
     """
-    # This "context" is defined by the user in Bika Setup and can be actually
+    # This "context" is defined by the user in the Setup and can be actually
     # anything. However, we assume it is something like "sample" or similar
     ctx = config.get("context")
 
@@ -435,18 +436,18 @@ def generateUniqueId(context, **kw):
 
     # Sequence Type is "Counter", so we use the length of the backreferences or
     # contained objects of the evaluated "context" defined in the config
-    if sequence_type == 'counter':
+    if sequence_type in ["counter"]:
         number = get_counted_number(context, config, variables, **kw)
 
     # Sequence Type is "Generated", so the ID is constructed according to the
     # configured split length
-    if sequence_type == 'generated':
+    if sequence_type in ["generated"]:
         number = get_generated_number(context, config, variables, **kw)
 
     # store the new sequence number to the variables map for str interpolation
     if isinstance(number, Alphanumber):
         variables["alpha"] = number
-    variables["seq"] = int(number)
+    variables["seq"] = to_int(number)
 
     # The ID formatting template from user config, e.g. {sampleId}-R{seq:02d}
     id_template = config.get("form", "")
