@@ -45,6 +45,7 @@ Needed Imports:
     >>> from bika.lims import idserver
     >>> from bika.lims.interfaces import INumberGenerator
     >>> from bika.lims.utils.analysisrequest import create_analysisrequest
+    >>> from bika.lims.workflow import doActionFor as do_action_for
 
 Functional Helpers:
 
@@ -129,6 +130,13 @@ An `AnalysisService` defines a analysis service offered by the laboratory:
     >>> analysisservice
     <...analysisservice-1>
 
+
+ID generation
+-------------
+
+IDs can contain *alphanumeric* or *numeric* numbers, depending on the provided
+ID Server configuration.
+
 Set up `ID Server` configuration:
 
     >>> values = [
@@ -177,14 +185,15 @@ Create a second `AnalysisRequest`:
     >>> ar.getId() == "water-{}-AA002".format(year)
     True
 
-Create a forth `Batch`::
+Create a `Batch`:
 
     >>> batches = self.portal.batches
     >>> batch = api.create(batches, "Batch", ClientID="RB")
     >>> batch.getId() == "BA-{}-0001".format(year)
     True
 
-Change ID formats and create new `AnalysisRequest`::
+Change ID formats and create new `AnalysisRequest`:
+
     >>> values = [
     ...            {'form': '{clientId}-{dateSampled:%Y%m%d}-{sampleType}-{seq:04d}',
     ...             'portal_type': 'AnalysisRequest',
@@ -213,7 +222,8 @@ Change ID formats and create new `AnalysisRequest`::
     >>> ar.getId()
     'RB-20170131-water-0001'
 
-Re-seed and create a new `Batch`::
+Re-seed and create a new `Batch`:
+
     >>> ploneapi.user.grant_roles(user=current_user,roles = ['Manager'])
     >>> transaction.commit()
     >>> browser.open(portal_url + '/ng_seed?prefix=batch-BA&seed=10')
@@ -225,7 +235,8 @@ Re-seed and create a new `Batch`::
     >>> ar.getId()
     'RB-20170131-water-0002'
 
-Change ID formats and use alphanumeric ids::
+Change ID formats and use alphanumeric ids:
+
     >>> sampletype2 = api.create(bika_sampletypes, "SampleType", Prefix="WB")
     >>> sampletype2
     <...sampletype-2>
@@ -249,7 +260,8 @@ Change ID formats and use alphanumeric ids::
     >>> ar.getId()
     'WB-AAA2'
 
-Now generate 8 more ARs to force the alpha segment to change
+Now generate 8 more ARs to force the alpha segment to change:
+
     >>> for num in range(8):
     ...     ar = create_analysisrequest(client, request, values, service_uids)
     >>> ar.getId()
@@ -286,6 +298,123 @@ Now generate 8 more ARs to force the alpha segment to change
     'WBAAC2'
 
 TODO: Test the case when numbers are exhausted in a sequence!
+
+
+IDs with Suffix
+---------------
+
+In SENAITE < 1.3.0 it was differentiated between an *Analysis Request* and a
+*Sample*. The *Analysis Request* acted as a "holder" of a *Sample* and the ID
+used to be the same as the holding *Sample* but with the suffix `-R01`.
+
+This suffix was incremented, e.g. `-R01` to `-R02`, when a retest was requested,
+while keeping the ID of the previous part constant.
+
+With SENAITE 1.3.0 there is no differentiation anymore between Analysis Request
+and Sample. However, some labs might still want to follow the old ID scheme with
+the suffix and incrementation of retests to keep their analysis reports in a
+sane state.
+
+Therefore, the ID Server also supports Suffixes and the logic to generated the
+next suffix number for retests:
+
+
+    >>> values = [
+    ...            {'form': '{sampleType}-{year}-{seq:04d}-R01',
+    ...             'portal_type': 'AnalysisRequest',
+    ...             'prefix': 'analysisrequest',
+    ...             'sequence_type': 'generated',
+    ...             'split_length': 2},
+    ...            {'form': '{invalidated_sample_id}-R{next_suffix_count:02d}',
+    ...             'portal_type': 'AnalysisRequestRetest',
+    ...             'prefix': 'analysisrequestretest',
+    ...             'sequence_type': 'counter',
+    ...             'counter_type': 'backreference',
+    ...             'counter_ref': 'AnalysisRequestRetracted',
+    ...             'split_length': 1},
+    ...          ]
+
+    >>> setup.setIDFormatting(values)
+
+Allow self-verification of results:
+
+    >>> setup.setSelfVerificationEnabled(True)
+
+Create a new `AnalysisRequest`:
+
+    >>> values = {'Client': client.UID(),
+    ...           'Contact': contact.UID(),
+    ...           'SamplingDate': sample_date,
+    ...           'DateSampled': sample_date,
+    ...           'SampleType': sampletype.UID(),
+    ...          }
+
+    >>> service_uids = [analysisservice.UID()]
+    >>> ar = create_analysisrequest(client, request, values, service_uids)
+    >>> ar.getId() == "water-{}-0001-R01".format(year)
+    True
+
+Receive the Sample:
+
+    >>> do_action_for(ar, "receive")[0]
+    True
+
+Submit and verify results:
+
+    >>> an = ar.getAnalyses(full_objects=True)[0]
+    >>> an.setResult(5)
+
+    >>> do_action_for(an, "submit")[0]
+    True
+
+    >>> do_action_for(an, "verify")[0]
+    True
+
+The AR should benow in the state `verified`:
+
+     >>> api.get_workflow_status_of(ar)
+     'verified'
+
+We can invalidate it now:
+
+    >>> do_action_for(ar, "invalidate")[0]
+    True
+
+
+Now a retest was created with the same ID as the invalidated AR, but an
+incremented suffix:
+
+    >>> retest = ar.getRetest()
+    >>> retest.getId() == "water-{}-0001-R02".format(year)
+    True
+
+Submit and verify results of the retest:
+
+    >>> an = retest.getAnalyses(full_objects=True)[0]
+    >>> an.setResult(5)
+
+    >>> do_action_for(an, "submit")[0]
+    True
+
+    >>> do_action_for(an, "verify")[0]
+    True
+
+The Retest should benow in the state `verified`:
+
+     >>> api.get_workflow_status_of(retest)
+     'verified'
+
+We can invalidate it now:
+
+    >>> do_action_for(retest, "invalidate")[0]
+    True
+
+Now a retest of the retest was created with the same ID as the invalidated AR,
+but an incremented suffix:
+
+    >>> retest = retest.getRetest()
+    >>> retest.getId() == "water-{}-0001-R03".format(year)
+    True
 
 
 ID Slicing
