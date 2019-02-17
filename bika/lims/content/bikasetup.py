@@ -710,6 +710,12 @@ schema = BikaFolderSchema.copy() + Schema((
                 'form': '{parent_ar_id}-{seq:02d}',
                 'portal_type': 'AnalysisRequestPartition',
                 'sequence_type': 'counter',
+            }, {
+                'form': '{parent_base_id}-R{retest_count:02d}',
+                'portal_type': 'AnalysisRequestRetest',
+                'prefix': 'analysisrequestretest',
+                'sequence_type': '',
+                'split-length': 1
             },
         ],
         widget=RecordsWidget(

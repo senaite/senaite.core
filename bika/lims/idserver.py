@@ -15,6 +15,7 @@ from bika.lims.alphanumber import Alphanumber
 from bika.lims.alphanumber import to_alpha
 from bika.lims.browser.fields.uidreferencefield import \
     get_backreferences as get_backuidreferences
+from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.interfaces import IAnalysisRequestPartition
 from bika.lims.interfaces import IAnalysisRequestRetest
 from bika.lims.interfaces import IIdServer
@@ -103,19 +104,40 @@ def strip_suffix(id):
     return re.split(suffix, id)[0]
 
 
-def get_next_suffix_count(id, default=1):
-    """Return the next suffix count
-
-    E.g.: "Water-0001-R01" -> 2
+def get_retest_count(context, default=0):
+    """Returns the number of retests of this AR
     """
-    suffix = get_suffix(id)
-    numbers = re.findall("[0-9]+", suffix)
-    if not numbers:
+    if not is_ar(context):
         return default
-    # get the last number part of the suffix, e.g. -R01 -> 01
-    number = numbers[-1]
-    # return the next number
-    return to_int(number) + 1
+
+    invalidated = context.getInvalidated()
+
+    count = 0
+    while invalidated:
+        count += 1
+        invalidated = invalidated.getInvalidated()
+
+    return count
+
+
+def get_partition_count(context, default=0):
+    """Returns the number of partitions of this AR
+    """
+    if not is_ar(context):
+        return default
+
+    parent = context.getParentAnalysisRequest()
+
+    if not parent:
+        return default
+
+    return len(parent.getDescendants())
+
+
+def is_ar(context):
+    """Checks if the context is an AR
+    """
+    return IAnalysisRequest.providedBy(context)
 
 
 def get_config(context, **kw):
@@ -165,50 +187,43 @@ def get_variables(context, **kw):
         sampling_date = sampling_date and DT2dt(sampling_date) or DT2dt(now)
         date_sampled = context.getDateSampled()
         date_sampled = date_sampled and DT2dt(date_sampled) or DT2dt(now)
+        test_count = 1
 
         variables.update({
             "clientId": context.getClientID(),
             "dateSampled": date_sampled,
             "samplingDate": sampling_date,
             "sampleType": context.getSampleType().getPrefix(),
+            "test_count": test_count
         })
 
         # Partition
         if portal_type == "AnalysisRequestPartition":
             parent_ar = context.getParentAnalysisRequest()
             parent_ar_id = api.get_id(parent_ar)
-            # BBB: Remove any suffix of the AR to mimic the old sample ID
-            parent_sample_id = strip_suffix(parent_ar_id)
-            # The current suffix of the parent AR
-            suffix = get_suffix(parent_ar_id)
-            # The next incremented suffix count
-            next_suffix_count = get_next_suffix_count(parent_ar_id)
-            # update the variables
+            parent_base_id = strip_suffix(parent_ar_id)
+            partition_count = get_partition_count(context)
             variables.update({
                 "parent_analysisrequest": parent_ar,
                 "parent_ar_id": parent_ar_id,
-                "parent_sample_id": parent_sample_id,
-                "parent_suffix": suffix,
-                "next_suffix_count": next_suffix_count,
+                "parent_base_id": parent_base_id,
+                "partition_count": partition_count,
             })
 
         # Retest
-        if portal_type == "AnalysisRequestRetest":
-            invalidated_ar = context.getInvalidated()
-            invalidated_ar_id = api.get_id(invalidated_ar)
-            # BBB: Remove any suffix of the AR to mimic the old sample ID
-            invalidated_sample_id = strip_suffix(invalidated_ar_id)
-            # The current suffix of the invalidated AR
-            suffix = get_suffix(invalidated_ar_id)
-            # The next incremented suffix count
-            next_suffix_count = get_next_suffix_count(invalidated_ar_id)
-            # update the variables
+        elif portal_type == "AnalysisRequestRetest":
+            # Note: we use "parent" instead of "invalidated" for simplicity
+            parent_ar = context.getInvalidated()
+            parent_ar_id = api.get_id(parent_ar)
+            parent_base_id = strip_suffix(parent_ar_id)
+            retest_count = get_retest_count(context)
+            test_count = test_count + retest_count
             variables.update({
-                "invalidated_analysisrequest": invalidated_ar,
-                "invalidated_ar_id": invalidated_ar_id,
-                "invalidated_sample_id": invalidated_sample_id,
-                "invalidated_suffix": suffix,
-                "next_suffix_count": next_suffix_count,
+                "parent_analysisrequest": parent_ar,
+                "parent_ar_id": parent_ar_id,
+                "parent_base_id": parent_base_id,
+                "retest_count": retest_count,
+                "test_count": test_count,
             })
 
     elif portal_type == "ARReport":
@@ -372,10 +387,10 @@ def get_generated_number(context, config, variables, **kw):
     # The ID format for string interpolation, e.g. WS-{seq:03d}
     id_template = config.get("form", "")
 
-    # The split length defines where the variable part of the ID template begins
+    # The split length defines where the key is splitted from the value
     split_length = config.get("split_length", 1)
 
-    # The prefix tempalte is the static part of the ID
+    # The prefix template is the static part of the ID
     prefix_template = slice(id_template, separator=separator, end=split_length)
 
     # get the number generator
