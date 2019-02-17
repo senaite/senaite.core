@@ -576,14 +576,13 @@ schema = BikaFolderSchema.copy() + Schema((
         ),
     ),
     BooleanField(
-        'NotifyOnRejection',
+        'NotifyOnSampleRejection',
         schemata="Notifications",
         default=False,
         widget=BooleanWidget(
-            label=_("Sample rejection email notification"),
+            label=_("Email notification on Sample rejection"),
             description=_("Select this to activate automatic notifications "
-                          "via email to the Client when a Sample or Analysis "
-                          "Request is rejected.")
+                          "via email to the Client when a Sample is rejected.")
         ),
     ),
     BooleanField(
@@ -593,8 +592,8 @@ schema = BikaFolderSchema.copy() + Schema((
         widget=BooleanWidget(
             label=_("Email notification on Sample invalidation"),
             description=_("Select this to activate automatic notifications "
-                          "via email to the Client and Lab Managers when an Analysis "
-                          "Request is invalidated.")
+                          "via email to the Client and Lab Managers when a "
+                          "Sample is invalidated.")
         ),
     ),
     StringField(
@@ -783,17 +782,6 @@ schema = BikaFolderSchema.copy() + Schema((
                           "for Samples and Samples. A 'Reject' "
                           "option will be displayed in the actions menu for "
                           "these objects.")
-        ),
-    ),
-    BooleanField(
-        'NotifyOnRejection',
-        schemata="Notifications",
-        default=False,
-        widget=BooleanWidget(
-            label=_("Email notification on rejection"),
-            description=_("Select this to activate automatic notifications "
-                          "via email to the Client when a Sample or Analysis "
-                          "Request is rejected.")
         ),
     ),
     IntegerField(

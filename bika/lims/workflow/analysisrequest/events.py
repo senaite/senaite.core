@@ -34,7 +34,7 @@ def after_reject(analysis_request):
     do_action_to_analyses(analysis_request, "reject")
 
     # TODO Workflow - AnalysisRequest - Revisit rejection notification
-    if not analysis_request.bika_setup.getNotifyOnRejection():
+    if not analysis_request.bika_setup.getNotifyOnSampleRejection():
         return
 
     ancestor = analysis_request.getParentAnalysisRequest()

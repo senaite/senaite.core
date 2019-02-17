@@ -1684,8 +1684,15 @@ def update_bika_catalog(portal):
 
 def update_notify_on_sample_invalidation(portal):
     """The name of the Setup field was NotifyOnARRetract, so it was
-    confusing
+    confusing. There was also two fields "NotifyOnRejection"
     """
     setup = api.get_setup()
+
+    # NotifyOnARRetract --> NotifyOnSampleInvalidation
     old_value = setup.__dict__.get("NotifyOnARRetract", True)
     setup.setNotifyOnSampleInvalidation(old_value)
+
+    # NotifyOnRejection --> NotifyOnSampleRejection
+    old_value = setup.__dict__.get("NotifyOnRejection", False)
+    setup.setNotifyOnSampleRejection(old_value)
+
