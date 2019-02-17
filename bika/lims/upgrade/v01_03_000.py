@@ -6,10 +6,8 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 import time
-import transaction
 
-from Products.DCWorkflow.Guard import Guard
-from Products.ZCatalog.ProgressHandler import ZLogHandler
+import transaction
 from bika.lims import api
 from bika.lims import logger
 from bika.lims.catalog.analysis_catalog import CATALOG_ANALYSIS_LISTING
@@ -17,19 +15,24 @@ from bika.lims.catalog.analysisrequest_catalog import \
     CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.catalog.worksheet_catalog import CATALOG_WORKSHEET_LISTING
 from bika.lims.config import PROJECTNAME as product
-from bika.lims.interfaces import IDuplicateAnalysis, IReferenceAnalysis, \
-    INumberGenerator, IAnalysisRequestPartition
+from bika.lims.interfaces import IAnalysisRequestPartition
+from bika.lims.interfaces import IAnalysisRequestRetest
+from bika.lims.interfaces import IDuplicateAnalysis
+from bika.lims.interfaces import INumberGenerator
+from bika.lims.interfaces import IReferenceAnalysis
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
-from bika.lims.workflow import changeWorkflowState, ActionHandlerPool
-from bika.lims.workflow import isTransitionAllowed
+from bika.lims.workflow import ActionHandlerPool
+from bika.lims.workflow import changeWorkflowState
 from bika.lims.workflow import doActionFor as do_action_for
-from bika.lims.workflow.analysis.events import remove_analysis_from_worksheet, \
-    reindex_request
-
-from zope.interface import alsoProvides
+from bika.lims.workflow import isTransitionAllowed
+from bika.lims.workflow.analysis.events import reindex_request
+from bika.lims.workflow.analysis.events import remove_analysis_from_worksheet
+from Products.DCWorkflow.Guard import Guard
+from Products.ZCatalog.ProgressHandler import ZLogHandler
 from zope.component import getUtility
+from zope.interface import alsoProvides
 
 version = '1.3.0'  # Remember version number in metadata.xml and setup.py
 profile = 'profile-{0}:default'.format(product)
