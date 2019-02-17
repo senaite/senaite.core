@@ -9,16 +9,18 @@ import itertools
 import re
 
 import transaction
-from DateTime import DateTime
-from Products.ATContentTypes.utils import DT2dt
 from bika.lims import api
 from bika.lims import logger
 from bika.lims.alphanumber import Alphanumber
 from bika.lims.alphanumber import to_alpha
 from bika.lims.browser.fields.uidreferencefield import \
     get_backreferences as get_backuidreferences
-from bika.lims.interfaces import IIdServer, IAnalysisRequestPartition
+from bika.lims.interfaces import IAnalysisRequestPartition
+from bika.lims.interfaces import IAnalysisRequestRetest
+from bika.lims.interfaces import IIdServer
 from bika.lims.numbergenerator import INumberGenerator
+from DateTime import DateTime
+from Products.ATContentTypes.utils import DT2dt
 from zope.component import getAdapters
 from zope.component import getUtility
 
