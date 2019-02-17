@@ -207,7 +207,7 @@ the invalidated:
 
     >>> retest = ar.getRetest()
     >>> retest
-    <AnalysisRequest at /plone/clients/client-1/water-0002>
+    <AnalysisRequest at /plone/clients/client-1/water-0001-R01>
 
     >>> retest.getInvalidated()
     <AnalysisRequest at /plone/clients/client-1/water-0001>
@@ -270,10 +270,10 @@ as the invalidated (retest):
 
     >>> retest2 = retest.getRetest()
     >>> retest2
-    <AnalysisRequest at /plone/clients/client-1/water-0003>
+    <AnalysisRequest at /plone/clients/client-1/water-0001-R02>
 
     >>> retest2.getInvalidated()
-    <AnalysisRequest at /plone/clients/client-1/water-0002>
+    <AnalysisRequest at /plone/clients/client-1/water-0001-R01>
 
     >>> retest2.getInvalidated().getInvalidated()
     <AnalysisRequest at /plone/clients/client-1/water-0001>
