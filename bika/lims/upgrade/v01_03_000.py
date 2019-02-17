@@ -1496,12 +1496,10 @@ def set_partitions_id_formatting(portal):
     """Sets the default id formatting for AR-like partitions
     """
     part_id_format = dict(
-        context="parent_analysisrequest",
-        counter_reference="AnalysisRequestParentAnalysisRequest",
-        counter_type="backreference",
-        form="{parent_ar_id}-{seq:02d}",
+        form="{parent_ar_id}-P{partition_count:02d}",
         portal_type="AnalysisRequestPartition",
-        sequence_type="counter")
+        prefix="analysisrequestretest",
+        sequence_type="")
     set_id_format(portal, part_id_format)
 
 

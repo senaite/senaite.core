@@ -704,12 +704,11 @@ schema = BikaFolderSchema.copy() + Schema((
                 'sequence_type': 'generated',
                 'split_length': 1
             }, {
-                'context': 'parent_analysisrequest',
-                'counter_reference': 'AnalysisRequestParentAnalysisRequest',
-                'counter_type': 'backreference',
-                'form': '{parent_ar_id}-{seq:02d}',
+                'form': '{parent_ar_id}-P{partition_count:02d}',
                 'portal_type': 'AnalysisRequestPartition',
-                'sequence_type': 'counter',
+                'prefix': 'analysisrequestpartition',
+                'sequence_type': '',
+                'split-length': 1
             }, {
                 'form': '{parent_base_id}-R{retest_count:02d}',
                 'portal_type': 'AnalysisRequestRetest',
