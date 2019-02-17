@@ -325,12 +325,10 @@ next suffix number for retests:
     ...             'prefix': 'analysisrequest',
     ...             'sequence_type': 'generated',
     ...             'split_length': 2},
-    ...            {'form': '{invalidated_sample_id}-R{next_suffix_count:02d}',
+    ...            {'form': '{parent_base_id}-R{test_count:02d}',
     ...             'portal_type': 'AnalysisRequestRetest',
     ...             'prefix': 'analysisrequestretest',
-    ...             'sequence_type': 'counter',
-    ...             'counter_type': 'backreference',
-    ...             'counter_ref': 'AnalysisRequestRetracted',
+    ...             'sequence_type': '',
     ...             'split_length': 1},
     ...          ]
 
