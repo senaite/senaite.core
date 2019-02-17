@@ -823,11 +823,11 @@ A new AR is automatically created for retesting:
 
     >>> ar_retest = ar3.getRetest()
     >>> ar_retest
-    <AnalysisRequest at /plone/clients/client-1/water-0004>
+    <AnalysisRequest at /plone/clients/client-1/water-0003-R01>
 
     >>> an_retest = ar3.getRetest()[analysisservice5.getKeyword()]
     >>> an_retest
-    <Analysis at /plone/clients/client-1/water-0004/NoCalc>
+    <Analysis at /plone/clients/client-1/water-0003-R01/NoCalc>
 
 However, this retest AR **references the same Attachments** as the original AR:
 
