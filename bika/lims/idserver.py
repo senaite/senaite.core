@@ -24,6 +24,12 @@ from Products.ATContentTypes.utils import DT2dt
 from zope.component import getAdapters
 from zope.component import getUtility
 
+AR_TYPES = [
+    "AnalysisRequest",
+    "AnalysisRequestRetest",
+    "AnalysisRequestPartition",
+]
+
 
 def get_objects_in_sequence(brain_or_object, ctype, cref):
     """Return a list of items
@@ -65,10 +71,51 @@ def get_type_id(context, **kw):
     if portal_type:
         return portal_type
 
+    # Override by provided marker interface
     if IAnalysisRequestPartition.providedBy(context):
         return "AnalysisRequestPartition"
+    elif IAnalysisRequestRetest.providedBy(context):
+        return "AnalysisRequestRetest"
 
     return api.get_portal_type(context)
+
+
+def get_suffix(id, regex="-[A-Z]{1}[0-9]{1,2}$"):
+    """Get the suffix of the ID, e.g. '-R01' or '-P05'
+
+    The current regex determines a pattern of a single uppercase character with
+    at most 2 numbers following at the end of the ID as the suffix.
+    """
+    parts = re.findall(regex, id)
+    if not parts:
+        return ""
+    return parts[0]
+
+
+def strip_suffix(id):
+    """Split off any suffix from ID
+
+    This mimics the old behavior of the Sample ID.
+    """
+    suffix = get_suffix(id)
+    if not suffix:
+        return id
+    return re.split(suffix, id)[0]
+
+
+def get_next_suffix_count(id, default=1):
+    """Return the next suffix count
+
+    E.g.: "Water-0001-R01" -> 2
+    """
+    suffix = get_suffix(id)
+    numbers = re.findall("[0-9]+", suffix)
+    if not numbers:
+        return default
+    # get the last number part of the suffix, e.g. -R01 -> 01
+    number = numbers[-1]
+    # return the next number
+    return to_int(number) + 1
 
 
 def get_config(context, **kw):
@@ -112,7 +159,7 @@ def get_variables(context, **kw):
     }
 
     # Augment the variables map depending on the portal type
-    if portal_type in ["AnalysisRequest", "AnalysisRequestPartition"]:
+    if portal_type in AR_TYPES:
         now = DateTime()
         sampling_date = context.getSamplingDate()
         sampling_date = sampling_date and DT2dt(sampling_date) or DT2dt(now)
@@ -124,11 +171,43 @@ def get_variables(context, **kw):
             'samplingDate': sampling_date,
             'sampleType': context.getSampleType().getPrefix()
         })
+
+        # Partition
         if portal_type == "AnalysisRequestPartition":
             parent_ar = context.getParentAnalysisRequest()
+            parent_ar_id = api.get_id(parent_ar)
+            # BBB: Remove any suffix of the AR to mimic the old sample ID
+            parent_sample_id = strip_suffix(parent_ar_id)
+            # The current suffix of the parent AR
+            suffix = get_suffix(parent_ar_id)
+            # The next incremented suffix count
+            next_suffix_count = get_next_suffix_count(parent_ar_id)
+            # update the variables
             variables.update({
                 "parent_analysisrequest": parent_ar,
-                "parent_ar_id": api.get_id(parent_ar)
+                "parent_ar_id": parent_ar_id,
+                "parent_sample_id": parent_sample_id,
+                "parent_suffix": suffix,
+                "next_suffix_count": next_suffix_count,
+            })
+
+        # Retest
+        if portal_type == "AnalysisRequestRetest":
+            invalidated_ar = context.getInvalidated()
+            invalidated_ar_id = api.get_id(invalidated_ar)
+            # BBB: Remove any suffix of the AR to mimic the old sample ID
+            invalidated_sample_id = strip_suffix(invalidated_ar_id)
+            # The current suffix of the invalidated AR
+            suffix = get_suffix(invalidated_ar_id)
+            # The next incremented suffix count
+            next_suffix_count = get_next_suffix_count(invalidated_ar_id)
+            # update the variables
+            variables.update({
+                "invalidated_analysisrequest": invalidated_ar,
+                "invalidated_ar_id": invalidated_ar_id,
+                "invalidated_sample_id": invalidated_sample_id,
+                "invalidated_suffix": suffix,
+                "next_suffix_count": next_suffix_count,
             })
 
     elif portal_type == "ARReport":
