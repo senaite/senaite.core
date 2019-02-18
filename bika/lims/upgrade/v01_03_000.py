@@ -93,6 +93,10 @@ def upgrade(tool):
     setup.runImportStepFromProfile(profile, 'typeinfo')
     setup.runImportStepFromProfile(profile, 'content')
 
+    # Notify on AR Retraction --> Notify on Sample Invalidation
+    # https://github.com/senaite/senaite.core/pull/1244
+    update_notify_on_sample_invalidation(portal)
+
     # Remove stale indexes from bika_catalog
     # https://github.com/senaite/senaite.core/pull/1180
     remove_stale_indexes_from_bika_catalog(portal)
@@ -1681,3 +1685,18 @@ def update_bika_catalog(portal):
     for metadata in metadata_to_add:
         refresh = metadata not in catalog.schema()
         add_metadata(portal, cat_id, metadata, refresh_catalog=refresh)
+
+
+def update_notify_on_sample_invalidation(portal):
+    """The name of the Setup field was NotifyOnARRetract, so it was
+    confusing. There was also two fields "NotifyOnRejection"
+    """
+    setup = api.get_setup()
+
+    # NotifyOnARRetract --> NotifyOnSampleInvalidation
+    old_value = setup.__dict__.get("NotifyOnARRetract", True)
+    setup.setNotifyOnSampleInvalidation(old_value)
+
+    # NotifyOnRejection --> NotifyOnSampleRejection
+    old_value = setup.__dict__.get("NotifyOnRejection", False)
+    setup.setNotifyOnSampleRejection(old_value)
