@@ -125,9 +125,7 @@ def get_services_uids(context=None, analyses_serv=None, values=None):
         analyses_profiles = [analyses_profiles]
 
     if not analyses_services and not analyses_profiles:
-        raise RuntimeError(
-                "create_analysisrequest: no analyses services or analysis"
-                " profile provided")
+        return []
 
     # Add analysis services UIDs from profiles to analyses_services variable.
     if analyses_profiles:
