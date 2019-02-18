@@ -275,7 +275,7 @@ class SelectionMacrosView(BrowserView):
     @ram.cache(_cache_key_select_client)
     def select_client(self, style=None):
         self.style = style
-        self.clients = self.pc(portal_type='Client', inactive_state='active',
+        self.clients = self.pc(portal_type='Client',
                                sort_on='sortable_title')
         return self.select_client_pt()
 

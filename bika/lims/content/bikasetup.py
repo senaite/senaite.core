@@ -7,6 +7,26 @@
 
 
 from AccessControl import ClassSecurityInfo
+from Products.ATExtensions.ateapi import RecordsField
+from Products.Archetypes.Field import TextField
+from Products.Archetypes.Widget import RichWidget
+from Products.Archetypes.atapi import BooleanField
+from Products.Archetypes.atapi import BooleanWidget
+from Products.Archetypes.atapi import DecimalWidget
+from Products.Archetypes.atapi import FixedPointField
+from Products.Archetypes.atapi import IntegerField
+from Products.Archetypes.atapi import IntegerWidget
+from Products.Archetypes.atapi import LinesField
+from Products.Archetypes.atapi import MultiSelectionWidget
+from Products.Archetypes.atapi import ReferenceField
+from Products.Archetypes.atapi import Schema
+from Products.Archetypes.atapi import SelectionWidget
+from Products.Archetypes.atapi import StringField
+from Products.Archetypes.atapi import TextAreaWidget
+from Products.Archetypes.atapi import registerType
+from Products.Archetypes.utils import DisplayList
+from Products.Archetypes.utils import IntDisplayList
+from Products.CMFCore.utils import getToolByName
 from archetypes.referencebrowserwidget import ReferenceBrowserWidget
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import DurationField
@@ -28,24 +48,6 @@ from bika.lims.locales import COUNTRIES
 from bika.lims.numbergenerator import INumberGenerator
 from bika.lims.vocabularies import getStickerTemplates as _getStickerTemplates
 from plone.app.folder import folder
-from Products.Archetypes.atapi import BooleanField
-from Products.Archetypes.atapi import BooleanWidget
-from Products.Archetypes.atapi import DecimalWidget
-from Products.Archetypes.atapi import FixedPointField
-from Products.Archetypes.atapi import IntegerField
-from Products.Archetypes.atapi import IntegerWidget
-from Products.Archetypes.atapi import LinesField
-from Products.Archetypes.atapi import MultiSelectionWidget
-from Products.Archetypes.atapi import ReferenceField
-from Products.Archetypes.atapi import Schema
-from Products.Archetypes.atapi import SelectionWidget
-from Products.Archetypes.atapi import StringField
-from Products.Archetypes.atapi import TextAreaWidget
-from Products.Archetypes.atapi import registerType
-from Products.Archetypes.utils import DisplayList
-from Products.Archetypes.utils import IntDisplayList
-from Products.ATExtensions.ateapi import RecordsField
-from Products.CMFCore.utils import getToolByName
 from zope.component import getUtility
 from zope.interface import implements
 
@@ -576,25 +578,55 @@ schema = BikaFolderSchema.copy() + Schema((
         ),
     ),
     BooleanField(
-        'NotifyOnRejection',
+        'NotifyOnSampleRejection',
         schemata="Notifications",
         default=False,
         widget=BooleanWidget(
-            label=_("Sample rejection email notification"),
+            label=_("Email notification on Sample rejection"),
             description=_("Select this to activate automatic notifications "
-                          "via email to the Client when a Sample or Analysis "
-                          "Request is rejected.")
+                          "via email to the Client when a Sample is rejected.")
         ),
     ),
     BooleanField(
-        'NotifyOnARRetract',
+        'NotifyOnSampleInvalidation',
         schemata="Notifications",
         default=True,
         widget=BooleanWidget(
             label=_("Email notification on Sample invalidation"),
             description=_("Select this to activate automatic notifications "
-                          "via email to the Client and Lab Managers when an Analysis "
-                          "Request is invalidated.")
+                          "via email to the Client and Lab Managers when a "
+                          "Sample is invalidated.")
+        ),
+    ),
+    TextField(
+        "EmailBodySampleInvalidation",
+        default_content_type='text/html',
+        default_output_type='text/x-html-safe',
+        schemata="Notifications",
+        label=_("Email body for Sample Invalidation notifications"),
+        default=
+            "Some non-conformities have been detected in the results report "
+            "published for Sample $sample_link. "
+            "<br/><br/> "
+            "A new Sample $retest_link has been created automatically, and the "
+            "previous request has been invalidated. "
+            "<br/><br/> "
+            "The root cause is under investigation and corrective "
+            "action has been initiated. "
+            "<br/><br/> "
+            "$lab_address",
+        widget=RichWidget(
+            label=_("Email body for Sample Invalidation notifications"),
+            description=_("Set the text for the body of the email to be sent, "
+                          ", if option 'Email notification on Sample "
+                          "'invalidation' enabled,  to the Sample's client "
+                          "contact. You can use reserved keywords: $sample_id, "
+                          "$sample_link, $retest_id, $retest_link, "
+                          "$lab_address"),
+            default_mime_type='text/x-rst',
+            output_mime_type='text/x-html',
+            allow_file_upload=False,
+            rows=10,
         ),
     ),
     StringField(
@@ -788,17 +820,6 @@ schema = BikaFolderSchema.copy() + Schema((
                           "for Samples and Samples. A 'Reject' "
                           "option will be displayed in the actions menu for "
                           "these objects.")
-        ),
-    ),
-    BooleanField(
-        'NotifyOnRejection',
-        schemata="Notifications",
-        default=False,
-        widget=BooleanWidget(
-            label=_("Email notification on rejection"),
-            description=_("Select this to activate automatic notifications "
-                          "via email to the Client when a Sample or Analysis "
-                          "Request is rejected.")
         ),
     ),
     IntegerField(
