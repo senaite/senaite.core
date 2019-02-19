@@ -6,7 +6,7 @@ from collections import defaultdict
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.decorators import returns_super_model
-from bika.lims.workflow import doActionFor
+from bika.lims import workflow as wf
 from bika.lims import api
 from bika.lims.interfaces import IProxyField
 from bika.lims.utils.analysisrequest import create_analysisrequest as crar
@@ -84,10 +84,13 @@ class PartitionMagicView(BrowserView):
                 sampletype_uid = partition.get("sampletype_uid")
                 container_uid = partition.get("container_uid")
                 preservation_uid = partition.get("preservation_uid")
-                analyses_uids = partition.get("analyses")
-                if not analyses_uids or not primary_uid:
-                    # Cannot create a partition w/o analyses!
+                if not primary_uid:
                     continue
+
+                # The creation of partitions w/o analyses is allowed. Maybe the
+                # user wants to add the analyses later manually or wants to keep
+                # this partition stored in a freezer for some time
+                analyses_uids = partition.get("analyses", [])
 
                 partition = self.create_partition(
                     primary_uid=primary_uid,
@@ -96,11 +99,9 @@ class PartitionMagicView(BrowserView):
                     preservation_uid=preservation_uid,
                     analyses_uids=analyses_uids)
                 partitions.append(partition)
+
                 logger.info("Successfully created partition: {}".format(
                     api.get_path(partition)))
-
-                # Force the reception of the partition
-                doActionFor(partition, "receive")
 
             if not partitions:
                 # If no partitions were created, show a warning message
@@ -166,9 +167,26 @@ class PartitionMagicView(BrowserView):
         self.push_primary_analyses_for_removal(ar, analyses)
 
         # Reindex Parent Analysis Request
-        # TODO Workflow - AnalysisRequest - Partitions creation
         ar.reindexObject(idxs=["isRootAncestor"])
 
+        # Manually set the Date Received to match with its parent. This is
+        # necessary because crar calls to processForm, so DateReceived is not
+        # set because the partition has not been received yet
+        partition.setDateReceived(ar.getDateReceived())
+        partition.reindexObject(idxs="getDateReceived")
+
+        # Force partition to same status as the primary
+        status = api.get_workflow_status_of(ar)
+        wf.changeWorkflowState(partition, "bika_ar_workflow", status)
+
+        # And initialize the analyses the partition contains. This is required
+        # here because the transition "initialize" of analyses rely on a guard,
+        # so the initialization can only be performed when the sample has been
+        # received (DateReceived is set)
+        wf.ActionHandlerPool.get_instance().queue_pool()
+        for analysis in partition.getAnalyses(full_objects=True):
+            wf.doActionFor(analysis, "initialize")
+        wf.ActionHandlerPool.get_instance().resume()
         return partition
 
     def push_primary_analyses_for_removal(self, analysis_request, analyses):
