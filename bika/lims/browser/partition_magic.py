@@ -3,38 +3,15 @@
 from collections import OrderedDict
 from collections import defaultdict
 
+from Products.Five.browser import BrowserView
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.decorators import returns_super_model
-from bika.lims import workflow as wf
-from bika.lims import api
-from bika.lims.interfaces import IProxyField
-from bika.lims.utils.analysisrequest import create_analysisrequest as crar
-from Products.Five.browser import BrowserView
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from bika.lims.utils.analysisrequest import create_partition
 
 DEFAULT_NUMBER_OF_PARTITIONS = 0
-
-PARTITION_SKIP_FIELDS = [
-    "Analyses",
-    "Attachment",
-    "Client",
-    "Container",
-    "Preservation",
-    "Profile",
-    "Profiles",
-    "RejectionReasons",
-    "Remarks",
-    "ResultsInterpretation",
-    "ResultsInterpretationDepts",
-    "Sample",
-    "SampleType",
-    "Template",
-    "creation_date",
-    "id",
-    "modification_date",
-    "ParentAnalysisRequest",
-]
 
 
 class PartitionMagicView(BrowserView):
@@ -90,14 +67,18 @@ class PartitionMagicView(BrowserView):
                 # The creation of partitions w/o analyses is allowed. Maybe the
                 # user wants to add the analyses later manually or wants to keep
                 # this partition stored in a freezer for some time
+                # Note we set "remove_primary_analyses" to False cause we want
+                # user to be able to add same analyses to different partitions.
                 analyses_uids = partition.get("analyses", [])
-
-                partition = self.create_partition(
-                    primary_uid=primary_uid,
-                    sampletype_uid=sampletype_uid,
-                    container_uid=container_uid,
-                    preservation_uid=preservation_uid,
-                    analyses_uids=analyses_uids)
+                partition = create_partition(
+                    request=self.request,
+                    analysis_request=primary_uid,
+                    sample_type=sampletype_uid,
+                    container=container_uid,
+                    preservation=preservation_uid,
+                    analyses=analyses_uids,
+                    remove_primary_analyses=False,
+                )
                 partitions.append(partition)
 
                 logger.info("Successfully created partition: {}".format(
@@ -121,74 +102,6 @@ class PartitionMagicView(BrowserView):
 
         return self.template()
 
-    def create_partition(self, primary_uid, sampletype_uid, container_uid,
-                         preservation_uid, analyses_uids):
-        """Create a new partition (AR)
-        """
-        logger.info("*** CREATE PARTITION ***")
-
-        ar = self.get_object_by_uid(primary_uid)
-        record = {
-            "InternalUse": True,
-            "ParentAnalysisRequest": primary_uid,
-            "SampleType": sampletype_uid,
-            "Container": container_uid,
-            "Preservation": preservation_uid,
-        }
-
-        for fieldname, field in api.get_fields(ar).items():
-            # if self.is_proxy_field(field):
-            #     logger.info("Skipping proxy field {}".format(fieldname))
-            #     continue
-            if self.is_computed_field(field):
-                logger.info("Skipping computed field {}".format(fieldname))
-                continue
-            if fieldname in PARTITION_SKIP_FIELDS:
-                logger.info("Skipping field {}".format(fieldname))
-                continue
-            fieldvalue = field.get(ar)
-            record[fieldname] = fieldvalue
-            logger.info("Update record '{}': {}".format(
-                fieldname, repr(fieldvalue)))
-
-        client = ar.getClient()
-        analyses = map(self.get_object_by_uid, analyses_uids)
-        services = map(lambda an: an.getAnalysisService(), analyses)
-
-        partition = crar(
-            client,
-            self.request,
-            record,
-            analyses=services,
-            specifications=self.get_specifications_for(ar)
-        )
-
-        # Remove selected analyses from the parent Analysis Request
-        self.push_primary_analyses_for_removal(ar, analyses)
-
-        # Reindex Parent Analysis Request
-        ar.reindexObject(idxs=["isRootAncestor"])
-
-        # Manually set the Date Received to match with its parent. This is
-        # necessary because crar calls to processForm, so DateReceived is not
-        # set because the partition has not been received yet
-        partition.setDateReceived(ar.getDateReceived())
-        partition.reindexObject(idxs="getDateReceived")
-
-        # Force partition to same status as the primary
-        status = api.get_workflow_status_of(ar)
-        wf.changeWorkflowState(partition, "bika_ar_workflow", status)
-
-        # And initialize the analyses the partition contains. This is required
-        # here because the transition "initialize" of analyses rely on a guard,
-        # so the initialization can only be performed when the sample has been
-        # received (DateReceived is set)
-        wf.ActionHandlerPool.get_instance().queue_pool()
-        for analysis in partition.getAnalyses(full_objects=True):
-            wf.doActionFor(analysis, "initialize")
-        wf.ActionHandlerPool.get_instance().resume()
-        return partition
-
     def push_primary_analyses_for_removal(self, analysis_request, analyses):
         """Stores the analyses to be removed after partitions creation
         """
@@ -203,24 +116,6 @@ class PartitionMagicView(BrowserView):
             analyses_ids = list(set(map(api.get_id, analyses)))
             ar.manage_delObjects(analyses_ids)
         self.analyses_to_remove = dict()
-
-    def get_specifications_for(self, ar):
-        """Returns a mapping of service uid -> specification
-        """
-        spec = ar.getSpecification()
-        if not spec:
-            return []
-        return spec.getResultsRange()
-
-    def is_proxy_field(self, field):
-        """Checks if the field is a proxy field
-        """
-        return IProxyField.providedBy(field)
-
-    def is_computed_field(self, field):
-        """Checks if the field is a coumputed field
-        """
-        return field.type == "computed"
 
     def get_ar_data(self):
         """Returns a list of AR data
