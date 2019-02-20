@@ -62,6 +62,7 @@
 <permission id="senaite.core.permissions.TransitionPublishResults" title="Transition: Publish Results"/>
 <permission id="senaite.core.permissions.TransitionReceiveSample" title="Transition: Receive Sample"/>
 <permission id="senaite.core.permissions.TransitionRejectAnalysisRequest" title="Reject Analysis Request"/>
+<permission id="senaite.core.permissions.TransitionRejectSample" title="Transition: Reject Sample"/>
 <permission id="senaite.core.permissions.TransitionRetract" title="Transition: Retract"/>
 <permission id="senaite.core.permissions.TransitionSampleSample" title="Transition: Sample Sample"/>
 <permission id="senaite.core.permissions.TransitionScheduleSampling" title="Transition: Schedule Sampling"/>
