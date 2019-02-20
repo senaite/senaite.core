@@ -88,6 +88,20 @@
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
+      <!-- @xispa conflicts
+      Usage in workflows:
+        - ar_workflow.xml: as regular permission
+        - worksheet_workflow: as regular permission
+
+      Usage in views:
+        - NO USE
+
+      Usage in code:
+        - checkpermission in Attachment viewlet for ARs and WS.
+
+      Additional notes:
+        - Needs to be added explicitly in worksheet_workflow
+      -->
     </permission>
 
     <permission name="BIKA: Cancel and reinstate" acquire="False">
@@ -102,6 +116,27 @@
       - sample_received: -Sampler, -SamplingCoordinator
       - to_be_preserved: -Sampler, -SamplingCoordinator
       - cancelled:       -LabClerk, -Owner, -Sampler, -SamplingCoordinator
+
+      Usage in workflows:
+        - ar_workflow.xml: as guard_permission (cancel + reinstate)
+        - rejectanalysis_workflow: as regular? permissions only...
+        - cancellation_workflow: as guard_permission (cancel + reinstate)
+
+      Usage in views:
+        - NO USE
+
+      Usage in code:
+        - Nowhere except in setuphandlers/permissions. And this should be
+          handled by workflows instead.
+
+      Additional notes:
+        - cancellation_workflow needs to be removed and cancel/reinstate
+          transition must be set up for each content_type-specific WF
+        - Analyses **cannot** be cancelled: remove from rejectanalysis WF.
+        - Only Samples + setup content types can be cancelled/reinstated.
+          Hence, split in 2 permissions:
+           - Transition: Cancel
+           - Transition: Reinstate
       -->
     </permission>
 
