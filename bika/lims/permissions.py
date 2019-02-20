@@ -5,6 +5,11 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
+from Products.CMFCore import permissions
+from Products.CMFEditions.Permissions import AccessPreviousVersions
+from Products.CMFEditions.Permissions import ApplyVersionControl
+from Products.CMFEditions.Permissions import SaveNewVersion
+
 """
 This file has two parts, the first one contains pseudoconstants to get
 permissions titles in other places.
@@ -25,12 +30,60 @@ The two files (permissions.py and permissions.zcml) must be kept in sync.
 bika.lims.__init__ imports * from this file, so
 bika.lims.PermName or bika.lims.permissions.PermName are
 both valid.
-
 """
-from Products.CMFCore import permissions
-from Products.CMFEditions.Permissions import AccessPreviousVersions
-from Products.CMFEditions.Permissions import ApplyVersionControl
-from Products.CMFEditions.Permissions import SaveNewVersion
+
+# SENAITE CORE Permissions
+# ========================
+
+# AR Permissions
+# --------------
+
+# Field Permissions
+FieldEditBatch = "Field: Edit Batch"
+FieldEditClient = "Field: Edit Client"
+FieldEditClientOrderNumber = "Field: Edit Client Order Number"
+FieldEditClientReference = "Field: Edit Client Reference"
+FieldEditClientSampleID = "Field: Edit Client Sample ID"
+FieldEditComposite = "Field: Edit Composite"
+FieldEditContact = "Field: Edit Contact"
+FieldEditContainer = "Field: Edit Container"
+FieldEditDatePreserved = "Field: Edit Date Preserved"
+FieldEditDateReceived = "Field: Edit Date Received"
+FieldEditDateSampled = "Field: Edit Date Sampled"
+FieldEditEnvironmentalConditions = "Field: Edit Environmental Conditions"
+FieldEditInvoiceExclude = "Field: Edit Invoice Exclude"
+FieldEditMemberDiscount = "Field: Edit Member Discount"
+FieldEditPreservation = "Field: Edit Preservation"
+FieldEditPreserver = "Field: Edit Preserver"
+FieldEditPriority = "Field: Edit Priority"
+FieldEditProfiles = "Field: Edit Profiles"
+FieldEditPublicationSpecifications = "Field: Edit Publication Specification"
+FieldEditRejectionReasons = "Field: Edit Rejection Reasons"
+FieldEditResultsInterpretation = "Field: Edit Results Interpretation"
+FieldEditSampleCondition = "Field: Edit Sample Condition"
+FieldEditSamplePoint = "Field: Edit Sample Point"
+FieldEditSampleType = "Field: Edit Sample Type"
+FieldEditSampler = "Field: Edit Sampler"
+FieldEditSamplingDate = "Field: Edit Sampling Date"
+FieldEditSamplingDeviation = "Field: Edit Sampling Deviation"
+FieldEditSamplingRound = "Field: Edit Sampling Round"
+FieldEditScheduledSampler = "Field: Edit Scheduled Sampler"
+FieldEditSpecification = "Field: Edit Specification"
+FieldEditStorageLocation = "Field: Edit Storage Location"
+FieldEditTemplate = "Field: Edit Template"
+TransitionPreserveSample = "Transition: Preserve Sample"
+
+# Transition Permissions
+TransitionPreserveSample = "Transition: Preserve Sample"
+TransitionPublishResults = "Transition: Publish Results"
+TransitionReceiveSample = "Transition: Receive Sample"
+TransitionRejectAnalysisRequest = "Reject Analysis Request"
+TransitionRetract = "Transition: Retract"
+TransitionSampleSample = "Transition: Sample Sample"
+TransitionScheduleSampling = "Transition: Schedule Sampling"
+TransitionVerify = "Transition: Verify"
+
+
 
 # Add Permissions:
 # ----------------
@@ -68,6 +121,7 @@ ADD_CONTENT_PERMISSIONS = {
     'SampleMatrix': AddSampleMatrix,
     'SamplingDeviation': AddSamplingDeviation,
     'SamplingRound': AddSamplingRound, 'SubGroup': AddSubGroup, }
+
 
 # Very Old permissions:
 # ---------------------
