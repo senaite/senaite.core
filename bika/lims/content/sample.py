@@ -22,7 +22,6 @@ from bika.lims.browser.widgets import RemarksWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import ISample
-from bika.lims.permissions import SampleSample
 from bika.lims.permissions import ScheduleSampling
 from Products.Archetypes import atapi
 from Products.Archetypes.public import *
@@ -30,7 +29,6 @@ from Products.Archetypes.references import HoldingReference
 from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.ATContentTypes.utils import DT2dt, dt2DT
 from Products.CMFCore import permissions
-from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from zope.interface import implements
 
@@ -154,7 +152,6 @@ schema = BikaSchema.copy() + Schema((
     DateTimeField('DateSampled',
         mode="rw",
         read_permission=permissions.View,
-        write_permission=SampleSample,
         widget = DateTimeWidget(
             label=_("Date Sampled"),
             show_time=True,
@@ -166,7 +163,6 @@ schema = BikaSchema.copy() + Schema((
     StringField('Sampler',
         mode="rw",
         read_permission=permissions.View,
-        write_permission=SampleSample,
         vocabulary='getSamplers',
         widget=BikaSelectionWidget(
             format='select',

@@ -20,7 +20,7 @@
   <permission>Transition: Publish Results</permission>
   <permission>Transition: Receive Sample</permission>
   <permission>Transition: Retract</permission>
-  <permission>BIKA: Sample Sample</permission>
+  <permission>Transition: Sample Sample</permission>
   <permission>BIKA: Schedule Sampling</permission>
   <permission>BIKA: Verify</permission>
   <permission>BIKA: View Results</permission>
@@ -94,7 +94,7 @@
     <permission-map name="Transition: Publish Results" acquired="True"/>
     <permission-map name="Transition: Receive Sample" acquired="True"/>
     <permission-map name="Transition: Retract" acquired="True"/>
-    <permission-map name="BIKA: Sample Sample" acquired="True"/>
+    <permission-map name="Transition: Sample Sample" acquired="True"/>
     <permission-map name="BIKA: Schedule Sampling" acquired="True"/>
     <permission-map name="BIKA: Verify" acquired="True"/>
     <permission-map name="BIKA: View Results" acquired="True"/>
@@ -164,7 +164,7 @@
     <permission-map name="Transition: Publish Results" acquired="True"/>
     <permission-map name="Transition: Receive Sample" acquired="True"/>
     <permission-map name="Transition: Retract" acquired="True"/>
-    <permission-map name="BIKA: Sample Sample" acquired="True"/>
+    <permission-map name="Transition: Sample Sample" acquired="True"/>
     <permission-map name="BIKA: Schedule Sampling" acquired="True"/>
     <permission-map name="BIKA: Verify" acquired="True"/>
     <permission-map name="BIKA: View Results" acquired="True"/>
@@ -239,7 +239,7 @@
     <permission-map name="Transition: Publish Results" acquired="True"/>
     <permission-map name="Transition: Receive Sample" acquired="True"/>
     <permission-map name="Transition: Retract" acquired="True"/>
-    <permission-map name="BIKA: Sample Sample" acquired="True"/>
+    <permission-map name="Transition: Sample Sample" acquired="True"/>
     <permission-map name="BIKA: Schedule Sampling" acquired="True"/>
     <permission-map name="BIKA: Verify" acquired="True"/>
     <permission-map name="BIKA: View Results" acquired="True"/>
@@ -312,7 +312,7 @@
     <permission-map name="Transition: Publish Results" acquired="True"/>
     <permission-map name="Transition: Receive Sample" acquired="True"/>
     <permission-map name="Transition: Retract" acquired="True"/>
-    <permission-map name="BIKA: Sample Sample" acquired="True"/>
+    <permission-map name="Transition: Sample Sample" acquired="True"/>
     <permission-map name="BIKA: Schedule Sampling" acquired="True"/>
     <permission-map name="BIKA: Verify" acquired="True"/>
     <permission-map name="BIKA: View Results" acquired="True"/>
@@ -385,7 +385,7 @@
     <permission-map name="Transition: Publish Results" acquired="True"/>
     <permission-map name="Transition: Receive Sample" acquired="True"/>
     <permission-map name="Transition: Retract" acquired="True"/>
-    <permission-map name="BIKA: Sample Sample" acquired="True"/>
+    <permission-map name="Transition: Sample Sample" acquired="True"/>
     <permission-map name="BIKA: Schedule Sampling" acquired="True"/>
     <permission-map name="BIKA: Verify" acquired="True"/>
     <permission-map name="BIKA: View Results" acquired="True"/>
@@ -456,7 +456,7 @@
     <permission-map name="Transition: Publish Results" acquired="True"/>
     <permission-map name="Transition: Receive Sample" acquired="True"/>
     <permission-map name="Transition: Retract" acquired="True"/>
-    <permission-map name="BIKA: Sample Sample" acquired="True"/>
+    <permission-map name="Transition: Sample Sample" acquired="True"/>
     <permission-map name="BIKA: Schedule Sampling" acquired="True"/>
     <permission-map name="BIKA: Verify" acquired="True"/>
     <permission-map name="BIKA: View Results" acquired="True"/>
@@ -528,7 +528,7 @@
     <permission-map name="Transition: Publish Results" acquired="True"/>
     <permission-map name="Transition: Receive Sample" acquired="True"/>
     <permission-map name="Transition: Retract" acquired="True"/>
-    <permission-map name="BIKA: Sample Sample" acquired="True"/>
+    <permission-map name="Transition: Sample Sample" acquired="True"/>
     <permission-map name="BIKA: Schedule Sampling" acquired="True"/>
     <permission-map name="BIKA: Verify" acquired="True"/>
     <permission-map name="BIKA: View Results" acquired="True"/>
@@ -598,7 +598,7 @@
     <permission-map name="Transition: Publish Results" acquired="True"/>
     <permission-map name="Transition: Receive Sample" acquired="True"/>
     <permission-map name="Transition: Retract" acquired="True"/>
-    <permission-map name="BIKA: Sample Sample" acquired="True"/>
+    <permission-map name="Transition: Sample Sample" acquired="True"/>
     <permission-map name="BIKA: Schedule Sampling" acquired="True"/>
     <permission-map name="BIKA: Verify" acquired="True"/>
     <permission-map name="BIKA: View Results" acquired="True"/>
@@ -671,7 +671,7 @@
     <permission-map name="Transition: Publish Results" acquired="True"/>
     <permission-map name="Transition: Receive Sample" acquired="True"/>
     <permission-map name="Transition: Retract" acquired="True"/>
-    <permission-map name="BIKA: Sample Sample" acquired="True"/>
+    <permission-map name="Transition: Sample Sample" acquired="True"/>
     <permission-map name="BIKA: Schedule Sampling" acquired="True"/>
     <permission-map name="BIKA: Verify" acquired="True"/>
     <permission-map name="BIKA: View Results" acquired="True"/>
@@ -742,7 +742,7 @@
     <permission-map name="Transition: Publish Results" acquired="True"/>
     <permission-map name="Transition: Receive Sample" acquired="True"/>
     <permission-map name="Transition: Retract" acquired="True"/>
-    <permission-map name="BIKA: Sample Sample" acquired="True"/>
+    <permission-map name="Transition: Sample Sample" acquired="True"/>
     <permission-map name="BIKA: Schedule Sampling" acquired="True"/>
     <permission-map name="BIKA: Verify" acquired="True"/>
     <permission-map name="BIKA: View Results" acquired="True"/>
@@ -811,7 +811,7 @@
     <permission-map name="Transition: Publish Results" acquired="True"/>
     <permission-map name="Transition: Receive Sample" acquired="True"/>
     <permission-map name="Transition: Retract" acquired="True"/>
-    <permission-map name="BIKA: Sample Sample" acquired="True"/>
+    <permission-map name="Transition: Sample Sample" acquired="True"/>
     <permission-map name="BIKA: Schedule Sampling" acquired="True"/>
     <permission-map name="BIKA: Verify" acquired="True"/>
     <permission-map name="BIKA: View Results" acquired="True"/>
@@ -879,7 +879,7 @@
     <permission-map name="Transition: Publish Results" acquired="True"/>
     <permission-map name="Transition: Receive Sample" acquired="True"/>
     <permission-map name="Transition: Retract" acquired="True"/>
-    <permission-map name="BIKA: Sample Sample" acquired="True"/>
+    <permission-map name="Transition: Sample Sample" acquired="True"/>
     <permission-map name="BIKA: Schedule Sampling" acquired="True"/>
     <permission-map name="BIKA: Verify" acquired="True"/>
     <permission-map name="BIKA: View Results" acquired="True"/>
@@ -952,7 +952,7 @@
     <permission-map name="Transition: Publish Results" acquired="True"/>
     <permission-map name="Transition: Receive Sample" acquired="True"/>
     <permission-map name="Transition: Retract" acquired="True"/>
-    <permission-map name="BIKA: Sample Sample" acquired="True"/>
+    <permission-map name="Transition: Sample Sample" acquired="True"/>
     <permission-map name="BIKA: Schedule Sampling" acquired="True"/>
     <permission-map name="BIKA: Verify" acquired="True"/>
     <permission-map name="BIKA: View Results" acquired="True"/>
@@ -1142,7 +1142,7 @@
               i18n:attributes="title">
     <action url="" category="workflow" icon="">Sample</action>
     <guard>
-      <guard-permission>BIKA: Sample Sample</guard-permission>
+      <guard-permission>Transition: Sample Sample</guard-permission>
       <guard-expression>python:here.guard_handler("sample")</guard-expression>
     </guard>
   </transition>

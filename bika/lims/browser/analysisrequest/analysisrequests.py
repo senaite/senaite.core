@@ -14,7 +14,6 @@ from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.config import PRIORITIES
 from bika.lims.permissions import AddAnalysisRequest
 from bika.lims.permissions import ManageAnalysisRequests
-from bika.lims.permissions import SampleSample
 from bika.lims.utils import get_image
 from bika.lims.utils import get_progress_bar_html
 from bika.lims.utils import getUsers
@@ -672,7 +671,9 @@ class AnalysisRequestsView(BikaListingView):
                 full_object = obj.getObject()
                 checkPermission =\
                     self.context.portal_membership.checkPermission
-                if checkPermission(SampleSample, full_object):
+
+                # TODO Do we really need this check?
+                if checkPermission("Transition: Sample Sample", full_object):
                     item["required"] = ["getSampler", "getDateSampled"]
                     item["allow_edit"] = ["getSampler", "getDateSampled"]
                     # TODO-performance: hit performance while getting the

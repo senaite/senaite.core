@@ -261,11 +261,25 @@
       -->
     </permission>
 
-    <permission name="BIKA: Sample Sample" acquire="False">
+    <permission name="Transition: Sample Sample" acquire="False">
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Sampler"/>
       <role name="SamplingCoordinator"/>
+      <!-- @xispa conflicts
+      WAS: "BIKA: Sample Sample"
+      Usage in workflows:
+        - ar_workflow.xml: as guard_permission
+
+      Usage in views:
+        - NO USE
+
+      Usage in code:
+        - In AR listing's folderitem (editable/non-editable items)
+
+      Additional notes:
+        - Remove permission check in AR listing
+      -->
     </permission>
 
     <permission name="BIKA: Schedule Sampling" acquire="False">
