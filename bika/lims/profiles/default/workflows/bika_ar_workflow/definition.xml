@@ -27,7 +27,7 @@
        Labman can only reject an AR when is not yet verified. -->
   <permission>Access contents information</permission>
   <permission>Modify portal content</permission>
-  <permission>Reject Analysis Request</permission>
+  <permission>Transition: Reject Sample</permission>
   <permission>View</permission>
 
   <!-- Field-specific permissions
@@ -98,7 +98,7 @@
     <permission-map name="BIKA: View Results" acquired="True"/>
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
-    <permission-map name="Reject Analysis Request" acquired="True"/>
+    <permission-map name="Transition: Reject Sample" acquired="True"/>
     <permission-map name="View" acquired="True"/>
     <!-- Field Permissions
          NOTE: This field-specific permissions for "sample_registered" apply to
@@ -167,7 +167,7 @@
     <permission-map name="BIKA: View Results" acquired="True"/>
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
-    <permission-map name="Reject Analysis Request" acquired="True"/>
+    <permission-map name="Transition: Reject Sample" acquired="True"/>
     <permission-map name="View" acquired="True"/>
     <!-- Field Permissions -->
     <permission-map name="Field: Edit Batch" acquired="True"/>
@@ -241,7 +241,7 @@
     <permission-map name="BIKA: View Results" acquired="True"/>
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
-    <permission-map name="Reject Analysis Request" acquired="True"/>
+    <permission-map name="Transition: Reject Sample" acquired="True"/>
     <permission-map name="Verify" acquired="True"/>
     <permission-map name="View" acquired="True"/>
     <!-- Field Permissions -->
@@ -313,7 +313,7 @@
     <permission-map name="BIKA: View Results" acquired="True"/>
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
-    <permission-map name="Reject Analysis Request" acquired="True"/>
+    <permission-map name="Transition: Reject Sample" acquired="True"/>
     <permission-map name="View" acquired="True"/>
     <!-- Field Permissions -->
     <permission-map name="Field: Edit Batch" acquired="True"/>
@@ -385,7 +385,7 @@
     <permission-map name="BIKA: View Results" acquired="True"/>
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
-    <permission-map name="Reject Analysis Request" acquired="True"/>
+    <permission-map name="Transition: Reject Sample" acquired="True"/>
     <permission-map name="View" acquired="True"/>
     <!-- Field Permissions -->
     <permission-map name="Field: Edit Batch" acquired="True"/>
@@ -455,7 +455,7 @@
     <permission-map name="BIKA: View Results" acquired="True"/>
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
-    <permission-map name="Reject Analysis Request" acquired="True"/>
+    <permission-map name="Transition: Reject Sample" acquired="True"/>
     <permission-map name="View" acquired="True"/>
     <!-- Field Permissions -->
     <permission-map name="Field: Edit Batch" acquired="True"/>
@@ -526,7 +526,7 @@
     <permission-map name="BIKA: View Results" acquired="True"/>
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
-    <permission-map name="Reject Analysis Request" acquired="True"/>
+    <permission-map name="Transition: Reject Sample" acquired="True"/>
     <permission-map name="View" acquired="True"/>
     <!-- Field Permissions -->
     <permission-map name="Field: Edit Batch" acquired="True"/>
@@ -595,7 +595,7 @@
     <permission-map name="BIKA: View Results" acquired="True"/>
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
-    <permission-map name="Reject Analysis Request" acquired="True"/>
+    <permission-map name="Transition: Reject Sample" acquired="True"/>
     <permission-map name="View" acquired="True"/>
     <!-- Field Permissions -->
     <permission-map name="Field: Edit Batch" acquired="True"/>
@@ -667,7 +667,7 @@
     <permission-map name="BIKA: View Results" acquired="True"/>
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
-    <permission-map name="Reject Analysis Request" acquired="False"/>
+    <permission-map name="Transition: Reject Sample" acquired="False"/>
     <permission-map name="View" acquired="True"/>
     <!-- Field Permissions (all readonly) -->
     <permission-map name="Field: Edit Batch" acquired="False"/>
@@ -737,7 +737,7 @@
     <permission-map name="BIKA: View Results" acquired="True"/>
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
-    <permission-map name="Reject Analysis Request" acquired="True"/>
+    <permission-map name="Transition: Reject Sample" acquired="True"/>
     <permission-map name="View" acquired="True"/>
     <!-- Field Permissions (all readonly) -->
     <permission-map name="Field: Edit Batch" acquired="False"/>
@@ -805,7 +805,7 @@
     <permission-map name="BIKA: View Results" acquired="True"/>
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
-    <permission-map name="Reject Analysis Request" acquired="True"/>
+    <permission-map name="Transition: Reject Sample" acquired="True"/>
     <permission-map name="View" acquired="True"/>
     <!-- Field Permissions (all readonly) -->
     <permission-map name="Field: Edit Batch" acquired="False"/>
@@ -872,7 +872,7 @@
     <permission-map name="BIKA: View Results" acquired="True"/>
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
-    <permission-map name="Reject Analysis Request" acquired="True"/>
+    <permission-map name="Transition: Reject Sample" acquired="True"/>
     <permission-map name="View" acquired="True"/>
     <!-- Field Permissions (all readonly) -->
     <permission-map name="Field: Edit Batch" acquired="False"/>
@@ -944,7 +944,7 @@
     <permission-map name="BIKA: View Results" acquired="True"/>
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
-    <permission-map name="Reject Analysis Request" acquired="True"/>
+    <permission-map name="Transition: Reject Sample" acquired="True"/>
     <permission-map name="View" acquired="True"/>
     <!-- Field Permissions (all readonly) -->
     <permission-map name="Field: Edit Batch" acquired="False"/>
@@ -1194,7 +1194,7 @@
     <action url="" category="workflow" icon="">Reject</action>
     <guard>
       <guard-expression>python:here.bika_setup.isRejectionWorkflowEnabled()</guard-expression>
-      <guard-permission>Reject Analysis Request</guard-permission>
+      <guard-permission>Transition: Reject Sample</guard-permission>
     </guard>
   </transition>
 

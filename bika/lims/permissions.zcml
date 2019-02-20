@@ -66,8 +66,6 @@
 
 <permission id="bika.lims.CancelAndReinstate" title="BIKA: Cancel and reinstate"/>
 
-<permission id="senaite.core.RejectAnalysisRequest" title="Reject Analysis Request"/>
-
 
 # For screen navigation:
 # ----------------------
