@@ -19,6 +19,58 @@
     The two files (permissions.py and permissions.zcml) must be kept in sync.
 /-->
 
+
+# SENAITE CORE Permissions
+# ------------------------
+
+# AR Field Permissions
+<permission id="senaite.core.permissions.FieldEditBatch" title="Field: Edit Batch"/>
+<permission id="senaite.core.permissions.FieldEditClient" title="Field: Edit Client"/>
+<permission id="senaite.core.permissions.FieldEditClientOrderNumber" title="Field: Edit Client Order Number"/>
+<permission id="senaite.core.permissions.FieldEditClientReference" title="Field: Edit Client Reference"/>
+<permission id="senaite.core.permissions.FieldEditClientSampleID" title="Field: Edit Client Sample ID"/>
+<permission id="senaite.core.permissions.FieldEditComposite" title="Field: Edit Composite"/>
+<permission id="senaite.core.permissions.FieldEditContact" title="Field: Edit Contact"/>
+<permission id="senaite.core.permissions.FieldEditContainer" title="Field: Edit Container"/>
+<permission id="senaite.core.permissions.FieldEditDatePreserved" title="Field: Edit Date Preserved"/>
+<permission id="senaite.core.permissions.FieldEditDateReceived" title="Field: Edit Date Received"/>
+<permission id="senaite.core.permissions.FieldEditDateSampled" title="Field: Edit Date Sampled"/>
+<permission id="senaite.core.permissions.FieldEditEnvironmentalConditions" title="Field: Edit Environmental Conditions"/>
+<permission id="senaite.core.permissions.FieldEditInvoiceExclude" title="Field: Edit Invoice Exclude"/>
+<permission id="senaite.core.permissions.FieldEditMemberDiscount" title="Field: Edit Member Discount"/>
+<permission id="senaite.core.permissions.FieldEditPreservation" title="Field: Edit Preservation"/>
+<permission id="senaite.core.permissions.FieldEditPreserver" title="Field: Edit Preserver"/>
+<permission id="senaite.core.permissions.FieldEditPriority" title="Field: Edit Priority"/>
+<permission id="senaite.core.permissions.FieldEditProfiles" title="Field: Edit Profiles"/>
+<permission id="senaite.core.permissions.FieldEditPublicationSpecifications" title="Field: Edit Publication Specification"/>
+<permission id="senaite.core.permissions.FieldEditRejectionReasons" title="Field: Edit Rejection Reasons"/>
+<permission id="senaite.core.permissions.FieldEditResultsInterpretation" title="Field: Edit Results Interpretation"/>
+<permission id="senaite.core.permissions.FieldEditSampleCondition" title="Field: Edit Sample Condition"/>
+<permission id="senaite.core.permissions.FieldEditSamplePoint" title="Field: Edit Sample Point"/>
+<permission id="senaite.core.permissions.FieldEditSampleType" title="Field: Edit Sample Type"/>
+<permission id="senaite.core.permissions.FieldEditSampler" title="Field: Edit Sampler"/>
+<permission id="senaite.core.permissions.FieldEditSamplingDate" title="Field: Edit Sampling Date"/>
+<permission id="senaite.core.permissions.FieldEditSamplingDeviation" title="Field: Edit Sampling Deviation"/>
+<permission id="senaite.core.permissions.FieldEditSamplingRound" title="Field: Edit Sampling Round"/>
+<permission id="senaite.core.permissions.FieldEditScheduledSampler" title="Field: Edit Scheduled Sampler"/>
+<permission id="senaite.core.permissions.FieldEditSpecification" title="Field: Edit Specification"/>
+<permission id="senaite.core.permissions.FieldEditStorageLocation" title="Field: Edit Storage Location"/>
+<permission id="senaite.core.permissions.FieldEditTemplate" title="Field: Edit Template"/>
+
+# AR Transition Permissions
+<permission id="senaite.core.permissions.TransitionPreserveSample" title="Transition: Preserve Sample"/>
+<permission id="senaite.core.permissions.TransitionPublishResults" title="Transition: Publish Results"/>
+<permission id="senaite.core.permissions.TransitionReceiveSample" title="Transition: Receive Sample"/>
+<permission id="senaite.core.permissions.TransitionRejectAnalysisRequest" title="Reject Analysis Request"/>
+<permission id="senaite.core.permissions.TransitionRetract" title="Transition: Retract"/>
+<permission id="senaite.core.permissions.TransitionSampleSample" title="Transition: Sample Sample"/>
+<permission id="senaite.core.permissions.TransitionScheduleSampling" title="Transition: Schedule Sampling"/>
+<permission id="senaite.core.permissions.TransitionVerify" title="Transition: Verify"/>
+
+
+# *** OBSOLETE PERMISSIONS START BELOW ***
+
+
 # Add Permissions:
 # ----------------
 <permission id="bika.lims.permissions.AddAnalysisProfile" title="BIKA: Add AnalysisProfile"/>
@@ -65,8 +117,6 @@
 <permission id="bika.lims.RejectWorksheet" title="BIKA: Reject Worksheet"/>
 
 <permission id="bika.lims.CancelAndReinstate" title="BIKA: Cancel and reinstate"/>
-
-<permission id="senaite.core.RejectAnalysisRequest" title="Reject Analysis Request"/>
 
 
 # For screen navigation:
