@@ -186,7 +186,7 @@ Get the control and submit:
 
 Exactly these roles can verify:
 
-    >>> get_roles_for_permission("BIKA: Verify", control)
+    >>> get_roles_for_permission("Transition: Verify", control)
     ['LabManager', 'Manager', 'Verifier']
 
 Current user can verify because has the `LabManager` role:

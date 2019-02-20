@@ -835,7 +835,7 @@ def get_rm_candidates_for_referenceanalysisworkflow(portal):
     logger.info("Getting candidates for role mappings: {} ...".format(wf_id))
     workflow = get_workflow_by_id(portal, wf_id)
     candidates = list()
-    if "BIKA: Verify" not in workflow.states.to_be_verified.permissions:
+    if "Transition: Verify" not in workflow.states.to_be_verified.permissions:
         candidates.append(
             (wf_id,
              dict(portal_type="ReferenceAnalysis",
@@ -874,7 +874,7 @@ def get_rm_candidates_for_duplicateanalysisworkflow(portal):
     workflow = get_workflow_by_id(portal, wf_id)
 
     candidates = list()
-    if "BIKA: Verify" not in workflow.states.to_be_verified.permissions:
+    if "Transition: Verify" not in workflow.states.to_be_verified.permissions:
         candidates.append(
             (wf_id,
              dict(portal_type="DuplicateAnalysis",
@@ -913,7 +913,7 @@ def get_rm_candidates_for_analysisworkfklow(portal):
     workflow = get_workflow_by_id(portal, wf_id)
 
     candidates = list()
-    if "BIKA: Verify" not in workflow.states.to_be_verified.permissions:
+    if "Transition: Verify" not in workflow.states.to_be_verified.permissions:
         candidates.append(
             (wf_id,
              dict(portal_type="Analysis",

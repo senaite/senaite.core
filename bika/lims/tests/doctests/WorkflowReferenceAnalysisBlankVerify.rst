@@ -186,7 +186,7 @@ Get the blank and submit:
 
 Exactly these roles can verify:
 
-    >>> get_roles_for_permission("BIKA: Verify", blank)
+    >>> get_roles_for_permission("Transition: Verify", blank)
     ['LabManager', 'Manager', 'Verifier']
 
 Current user can verify because has the `LabManager` role:

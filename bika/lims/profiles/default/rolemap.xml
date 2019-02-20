@@ -299,10 +299,18 @@
       -->
     </permission>
 
-    <permission name="BIKA: Verify" acquire="False">
+    <permission name="Transition: Verify" acquire="False">
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Verifier"/>
+      <!-- @xispa conflicts
+      WAS: "BIKA: Verify"
+
+      - Verify permission from ar_workflow has been removed, cause this
+        transition is triggered automatically when all analyses the Sample
+        contains are transitioned to verify. `guard_verify` from AR already
+        checks this.
+      -->
     </permission>
 
     <permission name="BIKA: View Results" acquire="False">

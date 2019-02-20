@@ -22,7 +22,6 @@
   <permission>Transition: Retract</permission>
   <permission>Transition: Sample Sample</permission>
   <permission>Transition: Schedule Sampling</permission>
-  <permission>BIKA: Verify</permission>
   <permission>BIKA: View Results</permission>
   <!-- Client can only reject an AR when is not yet received.
        Labman can only reject an AR when is not yet verified. -->
@@ -96,7 +95,6 @@
     <permission-map name="Transition: Retract" acquired="True"/>
     <permission-map name="Transition: Sample Sample" acquired="True"/>
     <permission-map name="Transition: Schedule Sampling" acquired="True"/>
-    <permission-map name="BIKA: Verify" acquired="True"/>
     <permission-map name="BIKA: View Results" acquired="True"/>
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
@@ -166,7 +164,6 @@
     <permission-map name="Transition: Retract" acquired="True"/>
     <permission-map name="Transition: Sample Sample" acquired="True"/>
     <permission-map name="Transition: Schedule Sampling" acquired="True"/>
-    <permission-map name="BIKA: Verify" acquired="True"/>
     <permission-map name="BIKA: View Results" acquired="True"/>
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
@@ -241,7 +238,6 @@
     <permission-map name="Transition: Retract" acquired="True"/>
     <permission-map name="Transition: Sample Sample" acquired="True"/>
     <permission-map name="Transition: Schedule Sampling" acquired="True"/>
-    <permission-map name="BIKA: Verify" acquired="True"/>
     <permission-map name="BIKA: View Results" acquired="True"/>
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
@@ -314,7 +310,6 @@
     <permission-map name="Transition: Retract" acquired="True"/>
     <permission-map name="Transition: Sample Sample" acquired="True"/>
     <permission-map name="Transition: Schedule Sampling" acquired="True"/>
-    <permission-map name="BIKA: Verify" acquired="True"/>
     <permission-map name="BIKA: View Results" acquired="True"/>
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
@@ -387,7 +382,6 @@
     <permission-map name="Transition: Retract" acquired="True"/>
     <permission-map name="Transition: Sample Sample" acquired="True"/>
     <permission-map name="Transition: Schedule Sampling" acquired="True"/>
-    <permission-map name="BIKA: Verify" acquired="True"/>
     <permission-map name="BIKA: View Results" acquired="True"/>
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
@@ -458,7 +452,6 @@
     <permission-map name="Transition: Retract" acquired="True"/>
     <permission-map name="Transition: Sample Sample" acquired="True"/>
     <permission-map name="Transition: Schedule Sampling" acquired="True"/>
-    <permission-map name="BIKA: Verify" acquired="True"/>
     <permission-map name="BIKA: View Results" acquired="True"/>
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
@@ -530,7 +523,6 @@
     <permission-map name="Transition: Retract" acquired="True"/>
     <permission-map name="Transition: Sample Sample" acquired="True"/>
     <permission-map name="Transition: Schedule Sampling" acquired="True"/>
-    <permission-map name="BIKA: Verify" acquired="True"/>
     <permission-map name="BIKA: View Results" acquired="True"/>
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
@@ -600,7 +592,6 @@
     <permission-map name="Transition: Retract" acquired="True"/>
     <permission-map name="Transition: Sample Sample" acquired="True"/>
     <permission-map name="Transition: Schedule Sampling" acquired="True"/>
-    <permission-map name="BIKA: Verify" acquired="True"/>
     <permission-map name="BIKA: View Results" acquired="True"/>
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
@@ -673,7 +664,6 @@
     <permission-map name="Transition: Retract" acquired="True"/>
     <permission-map name="Transition: Sample Sample" acquired="True"/>
     <permission-map name="Transition: Schedule Sampling" acquired="True"/>
-    <permission-map name="BIKA: Verify" acquired="True"/>
     <permission-map name="BIKA: View Results" acquired="True"/>
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
@@ -744,7 +734,6 @@
     <permission-map name="Transition: Retract" acquired="True"/>
     <permission-map name="Transition: Sample Sample" acquired="True"/>
     <permission-map name="Transition: Schedule Sampling" acquired="True"/>
-    <permission-map name="BIKA: Verify" acquired="True"/>
     <permission-map name="BIKA: View Results" acquired="True"/>
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
@@ -813,7 +802,6 @@
     <permission-map name="Transition: Retract" acquired="True"/>
     <permission-map name="Transition: Sample Sample" acquired="True"/>
     <permission-map name="Transition: Schedule Sampling" acquired="True"/>
-    <permission-map name="BIKA: Verify" acquired="True"/>
     <permission-map name="BIKA: View Results" acquired="True"/>
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
@@ -881,7 +869,6 @@
     <permission-map name="Transition: Retract" acquired="True"/>
     <permission-map name="Transition: Sample Sample" acquired="True"/>
     <permission-map name="Transition: Schedule Sampling" acquired="True"/>
-    <permission-map name="BIKA: Verify" acquired="True"/>
     <permission-map name="BIKA: View Results" acquired="True"/>
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
@@ -954,7 +941,6 @@
     <permission-map name="Transition: Retract" acquired="True"/>
     <permission-map name="Transition: Sample Sample" acquired="True"/>
     <permission-map name="Transition: Schedule Sampling" acquired="True"/>
-    <permission-map name="BIKA: Verify" acquired="True"/>
     <permission-map name="BIKA: View Results" acquired="True"/>
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
@@ -1191,6 +1177,12 @@
     </guard>
   </transition>
 
+  <!-- Transition: Verify
+       This transition takes place automatically when transition "verify" is
+       performed for all analyses this Analysis Request contains. Hence, this
+       transition actually relies on the "Transition: Verify" permission at
+       analyses level and there is no need of a guard-permission here.
+  -->
   <transition transition_id="verify" title="Verify" new_state="verified" trigger="USER" before_script="" after_script="" i18n:attributes="title">
     <action url="" category="workflow" icon="">Verify</action>
     <guard>

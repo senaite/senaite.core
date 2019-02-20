@@ -96,7 +96,6 @@ AccessJSONAPI = 'BIKA: Access JSON API'
 ExpireSample = 'BIKA: Expire Sample'
 DisposeSample = 'BIKA: Dispose Sample'
 ImportAnalysis = 'BIKA: Import Analysis'
-Verify = 'BIKA: Verify'
 EditSample = 'BIKA: Edit Sample'
 ManageInvoices = 'BIKA: Manage Invoices'
 ViewResults = 'BIKA: View Results'
@@ -205,7 +204,6 @@ def setup_permissions(portal):
     mp(ExpireSample, ['Manager', 'LabManager', 'LabClerk'], 1)
     mp(DisposeSample, ['Manager', 'LabManager', 'LabClerk'], 1)
     mp(ImportAnalysis, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
-    mp(Verify, ['Manager', 'LabManager', 'Verifier'], 1)
     mp(EditSample, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner', 'SamplingCoordinator'], 1)
     mp(EditWorksheet, ['Manager', 'LabManager', 'Analyst'], 1)
     mp(ManageInvoices, ['Manager', 'LabManager', 'Owner'], 1)
