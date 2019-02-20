@@ -35,7 +35,6 @@ from Products.CMFEditions.Permissions import SaveNewVersion
 # Add Permissions:
 # ----------------
 AddAnalysis = 'BIKA: Add Analysis'
-ScheduleSampling = 'BIKA: Schedule Sampling'
 AddAnalysisProfile = 'BIKA: Add AnalysisProfile'
 AddAnalysisRequest = 'BIKA: Add Analysis Request'
 AddAnalysisSpec = 'BIKA: Add AnalysisSpec'
@@ -203,7 +202,6 @@ def setup_permissions(portal):
     mp(CancelAndReinstate, ['Manager', 'LabManager'], 0)
     mp(ViewRetractedAnalyses, ['Manager', 'LabManager', 'LabClerk', 'Analyst', ], 0)
 
-    mp(ScheduleSampling, ['Manager', 'SamplingCoordinator'], 0)
     mp(ExpireSample, ['Manager', 'LabManager', 'LabClerk'], 1)
     mp(DisposeSample, ['Manager', 'LabManager', 'LabClerk'], 1)
     mp(ImportAnalysis, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)

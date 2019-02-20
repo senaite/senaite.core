@@ -22,7 +22,6 @@ from bika.lims.browser.widgets import RemarksWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import ISample
-from bika.lims.permissions import ScheduleSampling
 from Products.Archetypes import atapi
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
@@ -174,7 +173,6 @@ schema = BikaSchema.copy() + Schema((
     StringField('ScheduledSamplingSampler',
         mode="rw",
         read_permission=permissions.View,
-        write_permission=ScheduleSampling,
         vocabulary='getSamplers',
         widget=BikaSelectionWidget(
             description=_("Define the sampler supposed to do the sample in "

@@ -282,10 +282,21 @@
       -->
     </permission>
 
-    <permission name="BIKA: Schedule Sampling" acquire="False">
+    <permission name="Transition: Schedule Sampling" acquire="False">
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="SamplingCoordinator"/>
+      <!-- @xispa conflicts
+      WAS: "BIKA: Schedule Sampling"
+      Usage in workflows:
+        - ar_workflow.xml: as guard_permission
+
+      Usage in views:
+        - NO USE
+
+      Usage in code:
+        - NO USE
+      -->
     </permission>
 
     <permission name="BIKA: Verify" acquire="False">
