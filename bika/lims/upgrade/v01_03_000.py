@@ -6,10 +6,8 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 import time
-import transaction
 
-from Products.DCWorkflow.Guard import Guard
-from Products.ZCatalog.ProgressHandler import ZLogHandler
+import transaction
 from bika.lims import api
 from bika.lims import logger
 from bika.lims.catalog.analysis_catalog import CATALOG_ANALYSIS_LISTING
@@ -17,19 +15,24 @@ from bika.lims.catalog.analysisrequest_catalog import \
     CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.catalog.worksheet_catalog import CATALOG_WORKSHEET_LISTING
 from bika.lims.config import PROJECTNAME as product
-from bika.lims.interfaces import IDuplicateAnalysis, IReferenceAnalysis, \
-    INumberGenerator, IAnalysisRequestPartition
+from bika.lims.interfaces import IAnalysisRequestPartition
+from bika.lims.interfaces import IAnalysisRequestRetest
+from bika.lims.interfaces import IDuplicateAnalysis
+from bika.lims.interfaces import INumberGenerator
+from bika.lims.interfaces import IReferenceAnalysis
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
-from bika.lims.workflow import changeWorkflowState, ActionHandlerPool
-from bika.lims.workflow import isTransitionAllowed
+from bika.lims.workflow import ActionHandlerPool
+from bika.lims.workflow import changeWorkflowState
 from bika.lims.workflow import doActionFor as do_action_for
-from bika.lims.workflow.analysis.events import remove_analysis_from_worksheet, \
-    reindex_request
-
-from zope.interface import alsoProvides
+from bika.lims.workflow import isTransitionAllowed
+from bika.lims.workflow.analysis.events import reindex_request
+from bika.lims.workflow.analysis.events import remove_analysis_from_worksheet
+from Products.DCWorkflow.Guard import Guard
+from Products.ZCatalog.ProgressHandler import ZLogHandler
 from zope.component import getUtility
+from zope.interface import alsoProvides
 
 version = '1.3.0'  # Remember version number in metadata.xml and setup.py
 profile = 'profile-{0}:default'.format(product)
@@ -195,6 +198,14 @@ def upgrade(tool):
     # Updates Indexes/Metadata of the bika_catalog
     # https://github.com/senaite/senaite.core/pull/1231
     update_bika_catalog(portal)
+
+    # Apply IAnalysisRequestRetest marker interface to retested ARs
+    # https://github.com/senaite/senaite.core/pull/1243
+    apply_analysis_request_retest_interface(portal)
+
+    # Set the ID formatting for AR restest
+    # https://github.com/senaite/senaite.core/pull/1243
+    set_retest_id_formatting(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
@@ -1496,12 +1507,10 @@ def set_partitions_id_formatting(portal):
     """Sets the default id formatting for AR-like partitions
     """
     part_id_format = dict(
-        context="parent_analysisrequest",
-        counter_reference="AnalysisRequestParentAnalysisRequest",
-        counter_type="backreference",
-        form="{parent_ar_id}-{seq:02d}",
+        form="{parent_ar_id}-P{partition_count:02d}",
         portal_type="AnalysisRequestPartition",
-        sequence_type="counter")
+        prefix="analysisrequestretest",
+        sequence_type="")
     set_id_format(portal, part_id_format)
 
 
@@ -1700,3 +1709,33 @@ def update_notify_on_sample_invalidation(portal):
     # NotifyOnRejection --> NotifyOnSampleRejection
     old_value = setup.__dict__.get("NotifyOnRejection", False)
     setup.setNotifyOnSampleRejection(old_value)
+
+
+
+def apply_analysis_request_retest_interface(portal):
+    """Walks through all AR-like partitions registered in the system and
+    applies the IAnalysisRequestRetest marker interface to them
+    """
+    logger.info("Applying 'IAnalysisRequestRetest' marker interface ...")
+    query = dict(portal_type="AnalysisRequest")
+    brains = api.search(query, CATALOG_ANALYSIS_REQUEST_LISTING)
+    total = len(brains)
+    for num, brain in enumerate(brains):
+        if num % 100 == 0:
+            logger.info("Applying 'IAnalysisRequestRetest' interface: {}/{}"
+                        .format(num, total))
+        ar = api.get_object(brain)
+        if ar.getInvalidated():
+            alsoProvides(ar, IAnalysisRequestRetest)
+    commit_transaction(portal)
+
+
+def set_retest_id_formatting(portal):
+    """Sets the default id formatting for AR retests
+    """
+    part_id_format = dict(
+        form="{parent_base_id}-{seq:02d}-R{seq:02d}",
+        portal_type="AnalysisRequestRetest",
+        prefix="analysisrequestretest",
+        sequence_type="")
+    set_id_format(portal, part_id_format)

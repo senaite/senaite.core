@@ -60,6 +60,11 @@ class IAnalysisRequestPartition(Interface):
     """
 
 
+class IAnalysisRequestRetest(Interface):
+    """Marker interface for Analysis Requests that are Retests
+    """
+
+
 class IAnalysisRequestAddView(Interface):
     """AR Add view
     """
