@@ -211,7 +211,7 @@
       <role name="Manager"/>
       <role name="Publisher"/>
       <!-- @xispa conflicts
-      WAS: "Transition: Publish Results"
+      WAS: "BIKA: Publish"
       Usage in workflows:
         - ar_workflow.xml: as guard_permission
 
@@ -223,11 +223,22 @@
       -->
     </permission>
 
-    <permission name="BIKA: Receive Sample" acquire="False">
+    <permission name="Transition: Receive Sample" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="SamplingCoordinator"/>
+      <!-- @xispa conflicts
+      WAS: "BIKA: Receive Sample"
+      Usage in workflows:
+        - ar_workflow.xml: as guard_permission
+
+      Usage in views:
+        - NO USE
+
+      Usage in code:
+        - NO USE
+      -->
     </permission>
 
     <permission name="BIKA: Retract" acquire="False">

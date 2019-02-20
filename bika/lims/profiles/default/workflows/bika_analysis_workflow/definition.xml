@@ -553,7 +553,7 @@
       <!-- There is no guard-permission here (all roles can initialize) because
           this transition takes place automatically as soon as the Analysis Request
           is received. Hence, this transition is governed by the permission
-           "BIKA: Receive Sample" assigned to Analysis Request -->
+           "Transition: Receive Sample" assigned to Analysis Request -->
       <guard-expression>python:here.guard_handler("initialize")</guard-expression>
     </guard>
   </transition>

@@ -95,7 +95,6 @@ AccessJSONAPI = 'BIKA: Access JSON API'
 # New or changed permissions:
 # ---------------------------
 SampleSample = 'BIKA: Sample Sample'
-ReceiveSample = 'BIKA: Receive Sample'
 ExpireSample = 'BIKA: Expire Sample'
 DisposeSample = 'BIKA: Dispose Sample'
 ImportAnalysis = 'BIKA: Import Analysis'
@@ -208,7 +207,6 @@ def setup_permissions(portal):
 
     mp(ScheduleSampling, ['Manager', 'SamplingCoordinator'], 0)
     mp(SampleSample, ['Manager', 'LabManager', 'Sampler', 'SamplingCoordinator'], 0)
-    mp(ReceiveSample, ['Manager', 'LabManager', 'LabClerk', 'Sampler', 'SamplingCoordinator'], 1)
     mp(ExpireSample, ['Manager', 'LabManager', 'LabClerk'], 1)
     mp(DisposeSample, ['Manager', 'LabManager', 'LabClerk'], 1)
     mp(ImportAnalysis, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
