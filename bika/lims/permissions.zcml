@@ -66,7 +66,6 @@
 <permission id="bika.lims.ImportAnalysis" title="BIKA: Import Analysis"/>
 <permission id="bika.lims.RejectWorksheet" title="BIKA: Reject Worksheet"/>
 
-<permission id="bika.lims.Retract" title="BIKA: Retract"/>
 <permission id="bika.lims.Verify" title="BIKA: Verify"/>
 <permission id="bika.lims.CancelAndReinstate" title="BIKA: Cancel and reinstate"/>
 

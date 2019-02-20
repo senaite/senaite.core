@@ -241,9 +241,24 @@
       -->
     </permission>
 
-    <permission name="BIKA: Retract" acquire="False">
+    <permission name="Transition: Retract" acquire="False">
       <role name="LabManager"/>
       <role name="Manager"/>
+      <!-- @xispa conflicts
+      WAS: "BIKA: Retract"
+      Usage in workflows:
+        - ar_workflow.xml: as guard_permission
+        - analysis_workflow.xml: as guard_permission
+        - referenceanalysis_workflow.xml: as guard_permission
+        - duplicateanalysis_workflow.xml: as guard_permission
+        - worksheet_workflow.xml: as guard_permission
+
+      Usage in views:
+        - NO USE
+
+      Usage in code:
+        - NO USE
+      -->
     </permission>
 
     <permission name="BIKA: Sample Sample" acquire="False">

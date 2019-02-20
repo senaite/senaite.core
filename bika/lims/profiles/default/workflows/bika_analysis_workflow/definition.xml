@@ -10,7 +10,7 @@
 
   <permission>BIKA: Assign analyses</permission>
   <permission>BIKA: Unassign analyses</permission>
-  <permission>BIKA: Retract</permission>
+  <permission>Transition: Retract</permission>
   <permission>BIKA: Verify</permission>
   <permission>BIKA: View Results</permission>
   <permission>Reject</permission>
@@ -317,7 +317,7 @@
       <permission-role>Verifier</permission-role>
     </permission-map>
 
-    <permission-map name="BIKA: Retract" acquired="False">
+    <permission-map name="Transition: Retract" acquired="False">
       <permission-role>Analyst</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
@@ -425,7 +425,7 @@
       <permission-role>Manager</permission-role>
     </permission-map>
 
-    <permission-map name="BIKA: Retract" acquired="False">
+    <permission-map name="Transition: Retract" acquired="False">
     </permission-map>
 
     <!-- Analysis cannot be rejected again -->
@@ -635,7 +635,7 @@
               i18n:attributes="title">
     <action url="" category="workflow" icon="">Retract</action>
     <guard>
-      <guard-permission>BIKA: Retract</guard-permission>
+      <guard-permission>Transition: Retract</guard-permission>
       <guard-expression>python:here.guard_handler("retract")</guard-expression>
     </guard>
   </transition>

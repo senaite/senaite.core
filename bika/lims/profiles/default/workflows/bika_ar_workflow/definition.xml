@@ -19,7 +19,7 @@
   <permission>Transition: Preserve Sample</permission>
   <permission>Transition: Publish Results</permission>
   <permission>Transition: Receive Sample</permission>
-  <permission>BIKA: Retract</permission>
+  <permission>Transition: Retract</permission>
   <permission>BIKA: Sample Sample</permission>
   <permission>BIKA: Schedule Sampling</permission>
   <permission>BIKA: Verify</permission>
@@ -93,7 +93,7 @@
     <permission-map name="Transition: Preserve Sample" acquired="True"/>
     <permission-map name="Transition: Publish Results" acquired="True"/>
     <permission-map name="Transition: Receive Sample" acquired="True"/>
-    <permission-map name="BIKA: Retract" acquired="True"/>
+    <permission-map name="Transition: Retract" acquired="True"/>
     <permission-map name="BIKA: Sample Sample" acquired="True"/>
     <permission-map name="BIKA: Schedule Sampling" acquired="True"/>
     <permission-map name="BIKA: Verify" acquired="True"/>
@@ -163,7 +163,7 @@
     <permission-map name="Transition: Preserve Sample" acquired="True"/>
     <permission-map name="Transition: Publish Results" acquired="True"/>
     <permission-map name="Transition: Receive Sample" acquired="True"/>
-    <permission-map name="BIKA: Retract" acquired="True"/>
+    <permission-map name="Transition: Retract" acquired="True"/>
     <permission-map name="BIKA: Sample Sample" acquired="True"/>
     <permission-map name="BIKA: Schedule Sampling" acquired="True"/>
     <permission-map name="BIKA: Verify" acquired="True"/>
@@ -238,7 +238,7 @@
     <permission-map name="Transition: Preserve Sample" acquired="True"/>
     <permission-map name="Transition: Publish Results" acquired="True"/>
     <permission-map name="Transition: Receive Sample" acquired="True"/>
-    <permission-map name="BIKA: Retract" acquired="True"/>
+    <permission-map name="Transition: Retract" acquired="True"/>
     <permission-map name="BIKA: Sample Sample" acquired="True"/>
     <permission-map name="BIKA: Schedule Sampling" acquired="True"/>
     <permission-map name="BIKA: Verify" acquired="True"/>
@@ -311,7 +311,7 @@
     <permission-map name="Transition: Preserve Sample" acquired="True"/>
     <permission-map name="Transition: Publish Results" acquired="True"/>
     <permission-map name="Transition: Receive Sample" acquired="True"/>
-    <permission-map name="BIKA: Retract" acquired="True"/>
+    <permission-map name="Transition: Retract" acquired="True"/>
     <permission-map name="BIKA: Sample Sample" acquired="True"/>
     <permission-map name="BIKA: Schedule Sampling" acquired="True"/>
     <permission-map name="BIKA: Verify" acquired="True"/>
@@ -384,7 +384,7 @@
     <permission-map name="Transition: Preserve Sample" acquired="True"/>
     <permission-map name="Transition: Publish Results" acquired="True"/>
     <permission-map name="Transition: Receive Sample" acquired="True"/>
-    <permission-map name="BIKA: Retract" acquired="True"/>
+    <permission-map name="Transition: Retract" acquired="True"/>
     <permission-map name="BIKA: Sample Sample" acquired="True"/>
     <permission-map name="BIKA: Schedule Sampling" acquired="True"/>
     <permission-map name="BIKA: Verify" acquired="True"/>
@@ -455,7 +455,7 @@
     <permission-map name="Transition: Preserve Sample" acquired="True"/>
     <permission-map name="Transition: Publish Results" acquired="True"/>
     <permission-map name="Transition: Receive Sample" acquired="True"/>
-    <permission-map name="BIKA: Retract" acquired="True"/>
+    <permission-map name="Transition: Retract" acquired="True"/>
     <permission-map name="BIKA: Sample Sample" acquired="True"/>
     <permission-map name="BIKA: Schedule Sampling" acquired="True"/>
     <permission-map name="BIKA: Verify" acquired="True"/>
@@ -527,7 +527,7 @@
     <permission-map name="Transition: Preserve Sample" acquired="True"/>
     <permission-map name="Transition: Publish Results" acquired="True"/>
     <permission-map name="Transition: Receive Sample" acquired="True"/>
-    <permission-map name="BIKA: Retract" acquired="True"/>
+    <permission-map name="Transition: Retract" acquired="True"/>
     <permission-map name="BIKA: Sample Sample" acquired="True"/>
     <permission-map name="BIKA: Schedule Sampling" acquired="True"/>
     <permission-map name="BIKA: Verify" acquired="True"/>
@@ -597,7 +597,7 @@
     <permission-map name="Transition: Preserve Sample" acquired="True"/>
     <permission-map name="Transition: Publish Results" acquired="True"/>
     <permission-map name="Transition: Receive Sample" acquired="True"/>
-    <permission-map name="BIKA: Retract" acquired="True"/>
+    <permission-map name="Transition: Retract" acquired="True"/>
     <permission-map name="BIKA: Sample Sample" acquired="True"/>
     <permission-map name="BIKA: Schedule Sampling" acquired="True"/>
     <permission-map name="BIKA: Verify" acquired="True"/>
@@ -670,7 +670,7 @@
     <permission-map name="Transition: Preserve Sample" acquired="True"/>
     <permission-map name="Transition: Publish Results" acquired="True"/>
     <permission-map name="Transition: Receive Sample" acquired="True"/>
-    <permission-map name="BIKA: Retract" acquired="True"/>
+    <permission-map name="Transition: Retract" acquired="True"/>
     <permission-map name="BIKA: Sample Sample" acquired="True"/>
     <permission-map name="BIKA: Schedule Sampling" acquired="True"/>
     <permission-map name="BIKA: Verify" acquired="True"/>
@@ -741,7 +741,7 @@
     <permission-map name="Transition: Preserve Sample" acquired="True"/>
     <permission-map name="Transition: Publish Results" acquired="True"/>
     <permission-map name="Transition: Receive Sample" acquired="True"/>
-    <permission-map name="BIKA: Retract" acquired="True"/>
+    <permission-map name="Transition: Retract" acquired="True"/>
     <permission-map name="BIKA: Sample Sample" acquired="True"/>
     <permission-map name="BIKA: Schedule Sampling" acquired="True"/>
     <permission-map name="BIKA: Verify" acquired="True"/>
@@ -810,7 +810,7 @@
     <permission-map name="Transition: Preserve Sample" acquired="True"/>
     <permission-map name="Transition: Publish Results" acquired="True"/>
     <permission-map name="Transition: Receive Sample" acquired="True"/>
-    <permission-map name="BIKA: Retract" acquired="True"/>
+    <permission-map name="Transition: Retract" acquired="True"/>
     <permission-map name="BIKA: Sample Sample" acquired="True"/>
     <permission-map name="BIKA: Schedule Sampling" acquired="True"/>
     <permission-map name="BIKA: Verify" acquired="True"/>
@@ -878,7 +878,7 @@
     <permission-map name="Transition: Preserve Sample" acquired="True"/>
     <permission-map name="Transition: Publish Results" acquired="True"/>
     <permission-map name="Transition: Receive Sample" acquired="True"/>
-    <permission-map name="BIKA: Retract" acquired="True"/>
+    <permission-map name="Transition: Retract" acquired="True"/>
     <permission-map name="BIKA: Sample Sample" acquired="True"/>
     <permission-map name="BIKA: Schedule Sampling" acquired="True"/>
     <permission-map name="BIKA: Verify" acquired="True"/>
@@ -951,7 +951,7 @@
     <permission-map name="Transition: Preserve Sample" acquired="True"/>
     <permission-map name="Transition: Publish Results" acquired="True"/>
     <permission-map name="Transition: Receive Sample" acquired="True"/>
-    <permission-map name="BIKA: Retract" acquired="True"/>
+    <permission-map name="Transition: Retract" acquired="True"/>
     <permission-map name="BIKA: Sample Sample" acquired="True"/>
     <permission-map name="BIKA: Schedule Sampling" acquired="True"/>
     <permission-map name="BIKA: Verify" acquired="True"/>
@@ -1129,7 +1129,7 @@
   <transition transition_id="invalidate" title="Invalidate" new_state="invalid" trigger="USER" before_script="" after_script="" i18n:attributes="title">
     <action url="" category="workflow" icon="">Invalidate</action>
     <guard>
-      <guard-permission>BIKA: Retract</guard-permission>
+      <guard-permission>Transition: Retract</guard-permission>
       <guard-expression>python:here.guard_handler("invalidate")</guard-expression>
     </guard>
   </transition>
