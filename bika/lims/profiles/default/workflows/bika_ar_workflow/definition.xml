@@ -17,7 +17,7 @@
   <permission>BIKA: Edit Results</permission>
   <permission>BIKA: Manage Invoices</permission>
   <permission>Transition: Preserve Sample</permission>
-  <permission>BIKA: Publish</permission>
+  <permission>Transition: Publish Results</permission>
   <permission>BIKA: Receive Sample</permission>
   <permission>BIKA: Retract</permission>
   <permission>BIKA: Sample Sample</permission>
@@ -91,7 +91,7 @@
     <permission-map name="BIKA: Edit Results" acquired="True"/>
     <permission-map name="BIKA: Manage Invoices" acquired="True"/>
     <permission-map name="Transition: Preserve Sample" acquired="True"/>
-    <permission-map name="BIKA: Publish" acquired="True"/>
+    <permission-map name="Transition: Publish Results" acquired="True"/>
     <permission-map name="BIKA: Receive Sample" acquired="True"/>
     <permission-map name="BIKA: Retract" acquired="True"/>
     <permission-map name="BIKA: Sample Sample" acquired="True"/>
@@ -161,7 +161,7 @@
     <permission-map name="BIKA: Edit Results" acquired="False"/>
     <permission-map name="BIKA: Manage Invoices" acquired="True"/>
     <permission-map name="Transition: Preserve Sample" acquired="True"/>
-    <permission-map name="BIKA: Publish" acquired="True"/>
+    <permission-map name="Transition: Publish Results" acquired="True"/>
     <permission-map name="BIKA: Receive Sample" acquired="True"/>
     <permission-map name="BIKA: Retract" acquired="True"/>
     <permission-map name="BIKA: Sample Sample" acquired="True"/>
@@ -236,7 +236,7 @@
     <permission-map name="BIKA: Edit Results" acquired="False"/>
     <permission-map name="BIKA: Manage Invoices" acquired="True"/>
     <permission-map name="Transition: Preserve Sample" acquired="True"/>
-    <permission-map name="BIKA: Publish" acquired="True"/>
+    <permission-map name="Transition: Publish Results" acquired="True"/>
     <permission-map name="BIKA: Receive Sample" acquired="True"/>
     <permission-map name="BIKA: Retract" acquired="True"/>
     <permission-map name="BIKA: Sample Sample" acquired="True"/>
@@ -309,7 +309,7 @@
     <permission-map name="BIKA: Edit Results" acquired="False"/>
     <permission-map name="BIKA: Manage Invoices" acquired="True"/>
     <permission-map name="Transition: Preserve Sample" acquired="True"/>
-    <permission-map name="BIKA: Publish" acquired="True"/>
+    <permission-map name="Transition: Publish Results" acquired="True"/>
     <permission-map name="BIKA: Receive Sample" acquired="True"/>
     <permission-map name="BIKA: Retract" acquired="True"/>
     <permission-map name="BIKA: Sample Sample" acquired="True"/>
@@ -382,7 +382,7 @@
     <permission-map name="BIKA: Edit Results" acquired="True"/>
     <permission-map name="BIKA: Manage Invoices" acquired="True"/>
     <permission-map name="Transition: Preserve Sample" acquired="True"/>
-    <permission-map name="BIKA: Publish" acquired="True"/>
+    <permission-map name="Transition: Publish Results" acquired="True"/>
     <permission-map name="BIKA: Receive Sample" acquired="True"/>
     <permission-map name="BIKA: Retract" acquired="True"/>
     <permission-map name="BIKA: Sample Sample" acquired="True"/>
@@ -453,7 +453,7 @@
     <permission-map name="BIKA: Edit Results" acquired="True"/>
     <permission-map name="BIKA: Manage Invoices" acquired="True"/>
     <permission-map name="Transition: Preserve Sample" acquired="True"/>
-    <permission-map name="BIKA: Publish" acquired="True"/>
+    <permission-map name="Transition: Publish Results" acquired="True"/>
     <permission-map name="BIKA: Receive Sample" acquired="True"/>
     <permission-map name="BIKA: Retract" acquired="True"/>
     <permission-map name="BIKA: Sample Sample" acquired="True"/>
@@ -525,7 +525,7 @@
     <permission-map name="BIKA: Edit Results" acquired="False"/>
     <permission-map name="BIKA: Manage Invoices" acquired="True"/>
     <permission-map name="Transition: Preserve Sample" acquired="True"/>
-    <permission-map name="BIKA: Publish" acquired="True"/>
+    <permission-map name="Transition: Publish Results" acquired="True"/>
     <permission-map name="BIKA: Receive Sample" acquired="True"/>
     <permission-map name="BIKA: Retract" acquired="True"/>
     <permission-map name="BIKA: Sample Sample" acquired="True"/>
@@ -595,7 +595,7 @@
     <permission-map name="BIKA: Edit Results" acquired="True"/>
     <permission-map name="BIKA: Manage Invoices" acquired="True"/>
     <permission-map name="Transition: Preserve Sample" acquired="True"/>
-    <permission-map name="BIKA: Publish" acquired="True"/>
+    <permission-map name="Transition: Publish Results" acquired="True"/>
     <permission-map name="BIKA: Receive Sample" acquired="True"/>
     <permission-map name="BIKA: Retract" acquired="True"/>
     <permission-map name="BIKA: Sample Sample" acquired="True"/>
@@ -668,7 +668,7 @@
     <permission-map name="BIKA: Edit Results" acquired="False"/>
     <permission-map name="BIKA: Manage Invoices" acquired="True"/>
     <permission-map name="Transition: Preserve Sample" acquired="True"/>
-    <permission-map name="BIKA: Publish" acquired="True"/>
+    <permission-map name="Transition: Publish Results" acquired="True"/>
     <permission-map name="BIKA: Receive Sample" acquired="True"/>
     <permission-map name="BIKA: Retract" acquired="True"/>
     <permission-map name="BIKA: Sample Sample" acquired="True"/>
@@ -739,7 +739,7 @@
     <permission-map name="BIKA: Edit Results" acquired="False"/>
     <permission-map name="BIKA: Manage Invoices" acquired="True"/>
     <permission-map name="Transition: Preserve Sample" acquired="True"/>
-    <permission-map name="BIKA: Publish" acquired="True"/>
+    <permission-map name="Transition: Publish Results" acquired="True"/>
     <permission-map name="BIKA: Receive Sample" acquired="True"/>
     <permission-map name="BIKA: Retract" acquired="True"/>
     <permission-map name="BIKA: Sample Sample" acquired="True"/>
@@ -808,7 +808,7 @@
     <permission-map name="BIKA: Edit Results" acquired="False"/>
     <permission-map name="BIKA: Manage Invoices" acquired="True"/>
     <permission-map name="Transition: Preserve Sample" acquired="True"/>
-    <permission-map name="BIKA: Publish" acquired="True"/>
+    <permission-map name="Transition: Publish Results" acquired="True"/>
     <permission-map name="BIKA: Receive Sample" acquired="True"/>
     <permission-map name="BIKA: Retract" acquired="True"/>
     <permission-map name="BIKA: Sample Sample" acquired="True"/>
@@ -876,7 +876,7 @@
     <permission-map name="BIKA: Edit Results" acquired="False"/>
     <permission-map name="BIKA: Manage Invoices" acquired="True"/>
     <permission-map name="Transition: Preserve Sample" acquired="True"/>
-    <permission-map name="BIKA: Publish" acquired="True"/>
+    <permission-map name="Transition: Publish Results" acquired="True"/>
     <permission-map name="BIKA: Receive Sample" acquired="True"/>
     <permission-map name="BIKA: Retract" acquired="True"/>
     <permission-map name="BIKA: Sample Sample" acquired="True"/>
@@ -949,7 +949,7 @@
     <permission-map name="BIKA: Edit Results" acquired="False"/>
     <permission-map name="BIKA: Manage Invoices" acquired="True"/>
     <permission-map name="Transition: Preserve Sample" acquired="True"/>
-    <permission-map name="BIKA: Publish" acquired="True"/>
+    <permission-map name="Transition: Publish Results" acquired="True"/>
     <permission-map name="BIKA: Receive Sample" acquired="True"/>
     <permission-map name="BIKA: Retract" acquired="True"/>
     <permission-map name="BIKA: Sample Sample" acquired="True"/>
@@ -1034,7 +1034,7 @@
   <transition transition_id="prepublish" title="Prepublish" new_state="" trigger="USER" before_script="" after_script="" i18n:attributes="title">
     <action url="" category="workflow" icon="">Prepublish</action>
     <guard>
-      <guard-permission>BIKA: Publish</guard-permission>
+      <guard-permission>Transition: Publish Results</guard-permission>
       <guard-expression>python:here.guard_handler("prepublish")</guard-expression>
     </guard>
   </transition>
@@ -1050,7 +1050,7 @@
   <transition transition_id="publish" title="Publish" new_state="published" trigger="USER" before_script="" after_script="" i18n:attributes="title">
     <action url="" category="workflow" icon="">Publish</action>
     <guard>
-      <guard-permission>BIKA: Publish</guard-permission>
+      <guard-permission>Transition: Publish Results</guard-permission>
       <guard-expression>python:here.guard_handler("publish")</guard-expression>
     </guard>
   </transition>
@@ -1094,7 +1094,7 @@
   <transition transition_id="republish" title="Republish" new_state="" trigger="USER" before_script="" after_script="" i18n:attributes="title">
     <action url="" category="workflow" icon="">Republish</action>
     <guard>
-      <guard-permission>BIKA: Publish</guard-permission>
+      <guard-permission>Transition: Publish Results</guard-permission>
       <guard-expression>python:here.guard_handler("republish")</guard-expression>
     </guard>
   </transition>

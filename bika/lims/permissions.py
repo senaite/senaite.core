@@ -101,7 +101,6 @@ DisposeSample = 'BIKA: Dispose Sample'
 ImportAnalysis = 'BIKA: Import Analysis'
 Retract = "BIKA: Retract"
 Verify = 'BIKA: Verify'
-Publish = 'BIKA: Publish'
 EditSample = 'BIKA: Edit Sample'
 ManageInvoices = 'BIKA: Manage Invoices'
 ViewResults = 'BIKA: View Results'

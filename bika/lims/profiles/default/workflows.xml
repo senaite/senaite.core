@@ -12,7 +12,6 @@
   <object name="bika_client_workflow" meta_type="Workflow"/>
   <object name="bika_one_state_workflow" meta_type="Workflow"/>
   <object name="bika_order_workflow" meta_type="Workflow"/>
-  <object name="bika_publication_workflow" meta_type="Workflow"/>
   <object name="bika_referenceanalysis_workflow" meta_type="Workflow"/>
   <object name="bika_referencesample_workflow" meta_type="Workflow"/>
   <object name="bika_reject_analysis_workflow" meta_type="Workflow"/>

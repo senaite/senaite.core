@@ -198,7 +198,7 @@
       Usage in workflows:
         - ar_workflow.xml: as guard_permission for "preserve" transition only
 
-      Usage in views:
+      Usage in views:BIKA
         - NO USE
 
       Usage in code:
@@ -206,10 +206,21 @@
       -->
     </permission>
 
-    <permission name="BIKA: Publish" acquire="False">
+    <permission name="Transition: Publish Results" acquire="False">
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Publisher"/>
+      <!-- @xispa conflicts
+      WAS: "Transition: Publish Results"
+      Usage in workflows:
+        - ar_workflow.xml: as guard_permission
+
+      Usage in views:
+        - NO USE
+
+      Usage in code:
+        - NO USE
+      -->
     </permission>
 
     <permission name="BIKA: Receive Sample" acquire="False">
