@@ -9,25 +9,25 @@
              i18n:domain="senaite.core">
 
   <!-- *** MANAGED PERMISSIONS  *** -->
-
-  <permission>senaite.core: Add Analysis</permission>
-  <permission>senaite.core: Add Attachment</permission>
+  <!-- Transitions -->
   <permission>BIKA: Cancel and reinstate</permission>
-  <permission>BIKA: Edit Field Results</permission>
-  <permission>BIKA: Edit Results</permission>
-  <permission>BIKA: Manage Invoices</permission>
+  <permission>senaite.core: Transition: Invalidate</permission>
   <permission>senaite.core: Transition: Preserve Sample</permission>
   <permission>senaite.core: Transition: Publish Results</permission>
   <permission>senaite.core: Transition: Receive Sample</permission>
+  <permission>senaite.core: Transition: Reject Sample</permission>
   <permission>senaite.core: Transition: Retract</permission>
   <permission>senaite.core: Transition: Sample Sample</permission>
   <permission>senaite.core: Transition: Schedule Sampling</permission>
+
+  <permission>senaite.core: Add Analysis</permission>
+  <permission>senaite.core: Add Attachment</permission>
+  <permission>BIKA: Edit Field Results</permission>
+  <permission>BIKA: Edit Results</permission>
+  <permission>BIKA: Manage Invoices</permission>
   <permission>BIKA: View Results</permission>
-  <!-- Client can only reject an AR when is not yet received.
-       Labman can only reject an AR when is not yet verified. -->
   <permission>Access contents information</permission>
   <permission>Modify portal content</permission>
-  <permission>senaite.core: Transition: Reject Sample</permission>
   <permission>View</permission>
 
   <!-- Field-specific permissions
@@ -85,6 +85,7 @@
     <!-- MANAGED PERMISSIONS -->
     <!-- Permissions for Transitions (must match with exit transitions) -->
     <permission-map name="BIKA: Cancel and reinstate" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Invalidate" acquired="False"/>
     <permission-map name="senaite.core: Transition: Preserve Sample" acquired="False"/>
     <permission-map name="senaite.core: Transition: Publish Results" acquired="False"/>
     <permission-map name="senaite.core: Transition: Receive Sample" acquired="False"/>
@@ -156,6 +157,7 @@
     <!-- MANAGED PERMISSIONS -->
     <!-- Permissions for Transitions (must match with exit transitions) -->
     <permission-map name="BIKA: Cancel and reinstate" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Invalidate" acquired="False"/>
     <permission-map name="senaite.core: Transition: Preserve Sample" acquired="False"/>
     <permission-map name="senaite.core: Transition: Publish Results" acquired="False"/>
     <permission-map name="senaite.core: Transition: Receive Sample" acquired="False"/>
@@ -238,6 +240,7 @@
     <!-- MANAGED PERMISSIONS -->
     <!-- Permissions for Transitions (must match with exit transitions) -->
     <permission-map name="BIKA: Cancel and reinstate" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Invalidate" acquired="False"/>
     <permission-map name="senaite.core: Transition: Preserve Sample" acquired="False"/>
     <permission-map name="senaite.core: Transition: Publish Results" acquired="False"/>
     <permission-map name="senaite.core: Transition: Receive Sample" acquired="False"/>
@@ -260,7 +263,6 @@
     <permission-map name="BIKA: View Results" acquired="True"/>
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
-    <permission-map name="Verify" acquired="True"/>
     <permission-map name="View" acquired="True"/>
     <!-- Field Permissions -->
     <permission-map name="senaite.core: Field: Edit Batch" acquired="True"/>
@@ -318,6 +320,7 @@
     <!-- MANAGED PERMISSIONS -->
     <!-- Permissions for Transitions (must match with exit transitions) -->
     <permission-map name="BIKA: Cancel and reinstate" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Invalidate" acquired="False"/>
     <permission-map name="senaite.core: Transition: Preserve Sample" acquired="False"/>
     <permission-map name="senaite.core: Transition: Publish Results" acquired="False"/>
     <permission-map name="senaite.core: Transition: Receive Sample" acquired="True"/>
@@ -392,6 +395,7 @@
     <!-- MANAGED PERMISSIONS -->
     <!-- Permissions for Transitions (must match with exit transitions) -->
     <permission-map name="BIKA: Cancel and reinstate" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Invalidate" acquired="False"/>
     <permission-map name="senaite.core: Transition: Preserve Sample" acquired="False"/>
     <permission-map name="senaite.core: Transition: Publish Results" acquired="True"/>
     <permission-map name="senaite.core: Transition: Receive Sample" acquired="False"/>
@@ -464,6 +468,7 @@
     <!-- MANAGED PERMISSIONS -->
     <!-- Permissions for Transitions (must match with exit transitions) -->
     <permission-map name="BIKA: Cancel and reinstate" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Invalidate" acquired="False"/>
     <permission-map name="senaite.core: Transition: Preserve Sample" acquired="False"/>
     <permission-map name="senaite.core: Transition: Publish Results" acquired="True"/>
     <permission-map name="senaite.core: Transition: Receive Sample" acquired="False"/>
@@ -537,6 +542,7 @@
     <!-- MANAGED PERMISSIONS -->
     <!-- Permissions for Transitions (must match with exit transitions) -->
     <permission-map name="BIKA: Cancel and reinstate" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Invalidate" acquired="False"/>
     <permission-map name="senaite.core: Transition: Preserve Sample" acquired="False"/>
     <permission-map name="senaite.core: Transition: Publish Results" acquired="True"/>
     <permission-map name="senaite.core: Transition: Receive Sample" acquired="False"/>
@@ -612,6 +618,7 @@
     <!-- MANAGED PERMISSIONS -->
     <!-- Permissions for Transitions (must match with exit transitions) -->
     <permission-map name="BIKA: Cancel and reinstate" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Invalidate" acquired="False"/>
     <permission-map name="senaite.core: Transition: Preserve Sample" acquired="True"/>
     <permission-map name="senaite.core: Transition: Publish Results" acquired="False"/>
     <permission-map name="senaite.core: Transition: Receive Sample" acquired="False"/>
@@ -683,11 +690,12 @@
     <!-- MANAGED PERMISSIONS (partially readonly) -->
     <!-- Permissions for Transitions (must match with exit transitions) -->
     <permission-map name="BIKA: Cancel and reinstate" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Invalidate" acquired="True"/>
     <permission-map name="senaite.core: Transition: Preserve Sample" acquired="False"/>
     <permission-map name="senaite.core: Transition: Publish Results" acquired="True"/>
     <permission-map name="senaite.core: Transition: Receive Sample" acquired="False"/>
     <permission-map name="senaite.core: Transition: Reject Sample" acquired="False"/>
-    <permission-map name="senaite.core: Transition: Retract" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Retract" acquired="False"/>
     <permission-map name="senaite.core: Transition: Sample Sample" acquired="False"/>
     <permission-map name="senaite.core: Transition: Schedule Sampling" acquired="False"/>
 
@@ -754,11 +762,12 @@
     <!-- MANAGED PERMISSIONS (partially readonly) -->
     <!-- Permissions for Transitions (must match with exit transitions) -->
     <permission-map name="BIKA: Cancel and reinstate" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Invalidate" acquired="True"/>
     <permission-map name="senaite.core: Transition: Preserve Sample" acquired="False"/>
     <permission-map name="senaite.core: Transition: Publish Results" acquired="True"/>
     <permission-map name="senaite.core: Transition: Receive Sample" acquired="False"/>
     <permission-map name="senaite.core: Transition: Reject Sample" acquired="False"/>
-    <permission-map name="senaite.core: Transition: Retract" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Retract" acquired="False"/>
     <permission-map name="senaite.core: Transition: Sample Sample" acquired="False"/>
     <permission-map name="senaite.core: Transition: Schedule Sampling" acquired="False"/>
     <!-- Hide the 'Manage Analyses' tab -->
@@ -822,6 +831,7 @@
     <!-- MANAGED PERMISSIONS (partially readonly) -->
     <!-- Permissions for Transitions (must match with exit transitions) -->
     <permission-map name="BIKA: Cancel and reinstate" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Invalidate" acquired="False"/>
     <permission-map name="senaite.core: Transition: Preserve Sample" acquired="False"/>
     <permission-map name="senaite.core: Transition: Publish Results" acquired="False"/>
     <permission-map name="senaite.core: Transition: Receive Sample" acquired="False"/>
@@ -889,6 +899,7 @@
     <!-- MANAGED PERMISSIONS (partially readonly) -->
     <!-- Permissions for Transitions (must match with exit transitions) -->
     <permission-map name="BIKA: Cancel and reinstate" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Invalidate" acquired="False"/>
     <permission-map name="senaite.core: Transition: Preserve Sample" acquired="False"/>
     <permission-map name="senaite.core: Transition: Publish Results" acquired="False"/>
     <permission-map name="senaite.core: Transition: Receive Sample" acquired="False"/>
@@ -961,6 +972,7 @@
     <!-- MANAGED PERMISSIONS (partially readonly) -->
     <!-- Permissions for Transitions (must match with exit transitions) -->
     <permission-map name="BIKA: Cancel and reinstate" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Invalidate" acquired="False"/>
     <permission-map name="senaite.core: Transition: Preserve Sample" acquired="False"/>
     <permission-map name="senaite.core: Transition: Publish Results" acquired="False"/>
     <permission-map name="senaite.core: Transition: Receive Sample" acquired="False"/>
@@ -1149,7 +1161,7 @@
   <transition transition_id="invalidate" title="Invalidate" new_state="invalid" trigger="USER" before_script="" after_script="" i18n:attributes="title">
     <action url="" category="workflow" icon="">Invalidate</action>
     <guard>
-      <guard-permission>senaite.core: Transition: Retract</guard-permission>
+      <guard-permission>senaite.core: Transition: Invalidate</guard-permission>
       <guard-expression>python:here.guard_handler("invalidate")</guard-expression>
     </guard>
   </transition>

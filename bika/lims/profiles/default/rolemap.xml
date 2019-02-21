@@ -211,6 +211,12 @@
       -->
     </permission>
 
+
+    <permission name="senaite.core: Transition: Invalidate" acquire="False">
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
+
     <permission name="senaite.core: Transition: Preserve Sample" acquire="False">
       <role name="LabManager"/>
       <role name="Manager"/>
@@ -321,6 +327,7 @@
       -->
     </permission>
 
+    <!-- Transition: Verify permission only applies to analysis_workflow !! -->
     <permission name="senaite.core: Transition: Verify" acquire="False">
       <role name="LabManager"/>
       <role name="Manager"/>
