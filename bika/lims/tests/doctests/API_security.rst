@@ -193,7 +193,7 @@ Get the granted permissions of a role
 This function returns the permissions that are granted to a role:
 
     >>> get_permissions_for_role("Sampler", cu)
-    ['Field: Edit Remarks', 'Field: Edit Result']
+    ['senaite.core: Field: Edit Remarks', 'senaite.core: Field: Edit Result']
 
 
 Get the mapped roles of a permission
@@ -202,7 +202,7 @@ Get the mapped roles of a permission
 This function is the opposite of `get_permissions_for_role` and returns
 the roles for a given permission:
 
-    >>> get_roles_for_permission("Field: Edit Result", cu)
+    >>> get_roles_for_permission("senaite.core: Field: Edit Result", cu)
     ('Manager', 'Sampler')
 
 
@@ -284,12 +284,12 @@ Granting a permission to a role
 This function allows to grant a permission to one or more roles:
 
     >>> get_permissions_for_role("Sampler", cu)
-    ['Field: Edit Remarks', 'Field: Edit Result']
+    ['senaite.core: Field: Edit Remarks', 'senaite.core: Field: Edit Result']
 
-    >>> grant_permission_for(cu, "Field: Edit Hidden", "Sampler", acquire=0)
+    >>> grant_permission_for(cu, "senaite.core: Field: Edit Hidden", "Sampler", acquire=0)
 
     >>> get_permissions_for_role("Sampler", cu)
-    ['Field: Edit Hidden', 'Field: Edit Remarks', 'Field: Edit Result']
+    ['senaite.core: Field: Edit Hidden', 'senaite.core: Field: Edit Remarks', 'senaite.core: Field: Edit Result']
 
 
 Revoking a permission from a role
@@ -297,10 +297,10 @@ Revoking a permission from a role
 
 This function allows to revoke a permission of one or more roles:
 
-    >>> revoke_permission_for(cu, "Field: Edit Hidden", "Sampler", acquire=0)
+    >>> revoke_permission_for(cu, "senaite.core: Field: Edit Hidden", "Sampler", acquire=0)
 
     >>> get_permissions_for_role("Sampler", cu)
-    ['Field: Edit Remarks', 'Field: Edit Result']
+    ['senaite.core: Field: Edit Remarks', 'senaite.core: Field: Edit Result']
 
 
 Manage permissions
@@ -308,22 +308,22 @@ Manage permissions
 
 This function allows to set a permission explicitly  to the given roles (drop other roles):
 
-    >>> grant_permission_for(cu, "Field: Edit Result", ["Analyst", "LabClerk"])
+    >>> grant_permission_for(cu, "senaite.core: Field: Edit Result", ["Analyst", "LabClerk"])
 
     >>> get_permissions_for_role("Analyst", cu)
-    ['Field: Edit Result']
+    ['senaite.core: Field: Edit Result']
 
     >>> get_permissions_for_role("LabClerk", cu)
-    ['Field: Edit Result']
+    ['senaite.core: Field: Edit Result']
 
 Now we use `manage_permission_for` to grant this permission *only* for Samplers:
 
-    >>> manage_permission_for(cu, "Field: Edit Result", ["Sampler"])
+    >>> manage_permission_for(cu, "senaite.core: Field: Edit Result", ["Sampler"])
 
 The Sampler has now the permission granted:
 
     >>> get_permissions_for_role("Sampler", cu)
-    ['Field: Edit Remarks', 'Field: Edit Result']
+    ['senaite.core: Field: Edit Remarks', 'senaite.core: Field: Edit Result']
 
 But the Analyst and LabClerk not anymore:
 

@@ -34,38 +34,38 @@
   Are meant to be used for "read_permission" and "write_permission" in fields.
   If not defined there, "read_permission" defaults to "View" and
   "write_permission" defaults to "Modify portal content" -->
-  <permission>Field: Edit Batch</permission>
-  <permission>Field: Edit Client Order Number</permission>
-  <permission>Field: Edit Client Reference</permission>
-  <permission>Field: Edit Client Sample ID</permission>
-  <permission>Field: Edit Client</permission>
-  <permission>Field: Edit Composite</permission>
-  <permission>Field: Edit Contact</permission>
-  <permission>Field: Edit Container</permission>
-  <permission>Field: Edit Date Preserved</permission>
-  <permission>Field: Edit Date Received</permission>
-  <permission>Field: Edit Date Sampled</permission>
-  <permission>Field: Edit Environmental Conditions</permission>
-  <permission>Field: Edit Invoice Exclude</permission>
-  <permission>Field: Edit Member Discount</permission>
-  <permission>Field: Edit Preservation</permission>
-  <permission>Field: Edit Preserver</permission>
-  <permission>Field: Edit Priority</permission>
-  <permission>Field: Edit Profiles</permission>
-  <permission>Field: Edit Publication Specification</permission>
-  <permission>Field: Edit Rejection Reasons</permission>
-  <permission>Field: Edit Results Interpretation</permission>
-  <permission>Field: Edit Sample Condition</permission>
-  <permission>Field: Edit Sample Point</permission>
-  <permission>Field: Edit Sample Type</permission>
-  <permission>Field: Edit Sampler</permission>
-  <permission>Field: Edit Sampling Date</permission>
-  <permission>Field: Edit Sampling Deviation</permission>
-  <permission>Field: Edit Sampling Round</permission>
-  <permission>Field: Edit Scheduled Sampler</permission>
-  <permission>Field: Edit Specification</permission>
-  <permission>Field: Edit Storage Location</permission>
-  <permission>Field: Edit Template</permission>
+  <permission>senaite.core: Field: Edit Batch</permission>
+  <permission>senaite.core: Field: Edit Client Order Number</permission>
+  <permission>senaite.core: Field: Edit Client Reference</permission>
+  <permission>senaite.core: Field: Edit Client Sample ID</permission>
+  <permission>senaite.core: Field: Edit Client</permission>
+  <permission>senaite.core: Field: Edit Composite</permission>
+  <permission>senaite.core: Field: Edit Contact</permission>
+  <permission>senaite.core: Field: Edit Container</permission>
+  <permission>senaite.core: Field: Edit Date Preserved</permission>
+  <permission>senaite.core: Field: Edit Date Received</permission>
+  <permission>senaite.core: Field: Edit Date Sampled</permission>
+  <permission>senaite.core: Field: Edit Environmental Conditions</permission>
+  <permission>senaite.core: Field: Edit Invoice Exclude</permission>
+  <permission>senaite.core: Field: Edit Member Discount</permission>
+  <permission>senaite.core: Field: Edit Preservation</permission>
+  <permission>senaite.core: Field: Edit Preserver</permission>
+  <permission>senaite.core: Field: Edit Priority</permission>
+  <permission>senaite.core: Field: Edit Profiles</permission>
+  <permission>senaite.core: Field: Edit Publication Specification</permission>
+  <permission>senaite.core: Field: Edit Rejection Reasons</permission>
+  <permission>senaite.core: Field: Edit Results Interpretation</permission>
+  <permission>senaite.core: Field: Edit Sample Condition</permission>
+  <permission>senaite.core: Field: Edit Sample Point</permission>
+  <permission>senaite.core: Field: Edit Sample Type</permission>
+  <permission>senaite.core: Field: Edit Sampler</permission>
+  <permission>senaite.core: Field: Edit Sampling Date</permission>
+  <permission>senaite.core: Field: Edit Sampling Deviation</permission>
+  <permission>senaite.core: Field: Edit Sampling Round</permission>
+  <permission>senaite.core: Field: Edit Scheduled Sampler</permission>
+  <permission>senaite.core: Field: Edit Specification</permission>
+  <permission>senaite.core: Field: Edit Storage Location</permission>
+  <permission>senaite.core: Field: Edit Template</permission>
 
 
   <!-- *** STATES *** -->
@@ -103,39 +103,39 @@
     <!-- Field Permissions
          NOTE: This field-specific permissions for "sample_registered" apply to
          Analysis Request Add form! -->
-    <permission-map name="Field: Edit Batch" acquired="True"/>
-    <permission-map name="Field: Edit Client Order Number" acquired="True"/>
-    <permission-map name="Field: Edit Client Reference" acquired="True"/>
-    <permission-map name="Field: Edit Client Sample ID" acquired="True"/>
-    <permission-map name="Field: Edit Client" acquired="True"/>
-    <permission-map name="Field: Edit Composite" acquired="True"/>
-    <permission-map name="Field: Edit Contact" acquired="True"/>
-    <permission-map name="Field: Edit Container" acquired="True"/>
-    <permission-map name="Field: Edit Date Preserved" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Batch" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Client Order Number" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Client Reference" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Client Sample ID" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Client" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Composite" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Contact" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Container" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Date Preserved" acquired="True"/>
     <!-- Make the field 'DateReceived' readonly -->
-    <permission-map name="Field: Edit Date Received" acquired="False"/>
-    <permission-map name="Field: Edit Date Sampled" acquired="True"/>
-    <permission-map name="Field: Edit Environmental Conditions" acquired="True"/>
-    <permission-map name="Field: Edit Invoice Exclude" acquired="True"/>
-    <permission-map name="Field: Edit Member Discount" acquired="True"/>
-    <permission-map name="Field: Edit Preservation" acquired="True"/>
-    <permission-map name="Field: Edit Preserver" acquired="True"/>
-    <permission-map name="Field: Edit Priority" acquired="True"/>
-    <permission-map name="Field: Edit Profiles" acquired="True"/>
-    <permission-map name="Field: Edit Publication Specification" acquired="True"/>
-    <permission-map name="Field: Edit Rejection Reasons" acquired="True"/>
-    <permission-map name="Field: Edit Results Interpretation" acquired="True"/>
-    <permission-map name="Field: Edit Sample Point" acquired="True"/>
-    <permission-map name="Field: Edit Sample Type" acquired="True"/>
-    <permission-map name="Field: Edit Sample Condition" acquired="True"/>
-    <permission-map name="Field: Edit Sampler" acquired="True"/>
-    <permission-map name="Field: Edit Sampling Date" acquired="True"/>
-    <permission-map name="Field: Edit Sampling Deviation" acquired="True"/>
-    <permission-map name="Field: Edit Sampling Round" acquired="True"/>
-    <permission-map name="Field: Edit Scheduled Sampler" acquired="True"/>
-    <permission-map name="Field: Edit Storage Location" acquired="True"/>
-    <permission-map name="Field: Edit Template" acquired="True"/>
-    <permission-map name="Field: Edit Specification" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Date Received" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Date Sampled" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Environmental Conditions" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Invoice Exclude" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Member Discount" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Preservation" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Preserver" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Priority" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Profiles" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Publication Specification" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Rejection Reasons" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Results Interpretation" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Sample Point" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Sample Type" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Sample Condition" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Sampler" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Sampling Date" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Sampling Deviation" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Sampling Round" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Scheduled Sampler" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Storage Location" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Template" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Specification" acquired="True"/>
     <!-- /MANAGED PERMISSIONS -->
   </state>
   <!-- /State: sample_registered (inital state) -->
@@ -170,42 +170,42 @@
     <permission-map name="Transition: Reject Sample" acquired="True"/>
     <permission-map name="View" acquired="True"/>
     <!-- Field Permissions -->
-    <permission-map name="Field: Edit Batch" acquired="True"/>
-    <permission-map name="Field: Edit Client Order Number" acquired="True"/>
-    <permission-map name="Field: Edit Client Reference" acquired="True"/>
-    <permission-map name="Field: Edit Client Sample ID" acquired="True"/>
-    <permission-map name="Field: Edit Client" acquired="True"/>
-    <permission-map name="Field: Edit Composite" acquired="True"/>
-    <permission-map name="Field: Edit Contact" acquired="True"/>
-    <permission-map name="Field: Edit Container" acquired="True"/>
-    <permission-map name="Field: Edit Date Preserved" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Batch" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Client Order Number" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Client Reference" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Client Sample ID" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Client" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Composite" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Contact" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Container" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Date Preserved" acquired="True"/>
     <!-- Make the field 'DateReceived' readonly -->
-    <permission-map name="Field: Edit Date Received" acquired="False"/>
-    <permission-map name="Field: Edit Date Sampled" acquired="True"/>
-    <permission-map name="Field: Edit Environmental Conditions" acquired="True"/>
-    <permission-map name="Field: Edit Invoice Exclude" acquired="True"/>
-    <permission-map name="Field: Edit Member Discount" acquired="True"/>
-    <permission-map name="Field: Edit Preservation" acquired="True"/>
-    <permission-map name="Field: Edit Preserver" acquired="True"/>
-    <permission-map name="Field: Edit Priority" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Date Received" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Date Sampled" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Environmental Conditions" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Invoice Exclude" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Member Discount" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Preservation" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Preserver" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Priority" acquired="True"/>
     <!-- Make the field 'Profiles' readonly -->
-    <permission-map name="Field: Edit Profiles" acquired="False"/>
-    <permission-map name="Field: Edit Publication Specification" acquired="True"/>
-    <permission-map name="Field: Edit Rejection Reasons" acquired="True"/>
-    <permission-map name="Field: Edit Results Interpretation" acquired="True"/>
-    <permission-map name="Field: Edit Sample Point" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Profiles" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Publication Specification" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Rejection Reasons" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Results Interpretation" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Sample Point" acquired="True"/>
     <!-- Make the field 'SampleType' readonly -->
-    <permission-map name="Field: Edit Sample Type" acquired="False"/>
-    <permission-map name="Field: Edit Sample Condition" acquired="True"/>
-    <permission-map name="Field: Edit Sampler" acquired="True"/>
-    <permission-map name="Field: Edit Sampling Date" acquired="True"/>
-    <permission-map name="Field: Edit Sampling Deviation" acquired="True"/>
-    <permission-map name="Field: Edit Sampling Round" acquired="True"/>
-    <permission-map name="Field: Edit Scheduled Sampler" acquired="True"/>
-    <permission-map name="Field: Edit Storage Location" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Sample Type" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Sample Condition" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Sampler" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Sampling Date" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Sampling Deviation" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Sampling Round" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Scheduled Sampler" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Storage Location" acquired="True"/>
     <!-- Make the field 'Template' readonly -->
-    <permission-map name="Field: Edit Template" acquired="False"/>
-    <permission-map name="Field: Edit Specification" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Template" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Specification" acquired="True"/>
     <!-- /MANAGED PERMISSIONS -->
   </state>
   <!-- /State: scheduled_sampling -->
@@ -245,42 +245,42 @@
     <permission-map name="Verify" acquired="True"/>
     <permission-map name="View" acquired="True"/>
     <!-- Field Permissions -->
-    <permission-map name="Field: Edit Batch" acquired="True"/>
-    <permission-map name="Field: Edit Client Order Number" acquired="True"/>
-    <permission-map name="Field: Edit Client Reference" acquired="True"/>
-    <permission-map name="Field: Edit Client Sample ID" acquired="True"/>
-    <permission-map name="Field: Edit Client" acquired="True"/>
-    <permission-map name="Field: Edit Composite" acquired="True"/>
-    <permission-map name="Field: Edit Contact" acquired="True"/>
-    <permission-map name="Field: Edit Container" acquired="True"/>
-    <permission-map name="Field: Edit Date Preserved" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Batch" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Client Order Number" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Client Reference" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Client Sample ID" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Client" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Composite" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Contact" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Container" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Date Preserved" acquired="True"/>
     <!-- Make the field 'DateReceived' readonly -->
-    <permission-map name="Field: Edit Date Received" acquired="False"/>
-    <permission-map name="Field: Edit Date Sampled" acquired="True"/>
-    <permission-map name="Field: Edit Environmental Conditions" acquired="True"/>
-    <permission-map name="Field: Edit Invoice Exclude" acquired="True"/>
-    <permission-map name="Field: Edit Member Discount" acquired="True"/>
-    <permission-map name="Field: Edit Preservation" acquired="True"/>
-    <permission-map name="Field: Edit Preserver" acquired="True"/>
-    <permission-map name="Field: Edit Priority" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Date Received" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Date Sampled" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Environmental Conditions" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Invoice Exclude" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Member Discount" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Preservation" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Preserver" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Priority" acquired="True"/>
     <!-- Make the field 'Profiles' readonly -->
-    <permission-map name="Field: Edit Profiles" acquired="False"/>
-    <permission-map name="Field: Edit Publication Specification" acquired="True"/>
-    <permission-map name="Field: Edit Rejection Reasons" acquired="True"/>
-    <permission-map name="Field: Edit Results Interpretation" acquired="True"/>
-    <permission-map name="Field: Edit Sample Point" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Profiles" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Publication Specification" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Rejection Reasons" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Results Interpretation" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Sample Point" acquired="True"/>
     <!-- Make the field 'SampleType' readonly -->
-    <permission-map name="Field: Edit Sample Type" acquired="False"/>
-    <permission-map name="Field: Edit Sample Condition" acquired="True"/>
-    <permission-map name="Field: Edit Sampler" acquired="True"/>
-    <permission-map name="Field: Edit Sampling Date" acquired="True"/>
-    <permission-map name="Field: Edit Sampling Deviation" acquired="True"/>
-    <permission-map name="Field: Edit Sampling Round" acquired="True"/>
-    <permission-map name="Field: Edit Scheduled Sampler" acquired="True"/>
-    <permission-map name="Field: Edit Storage Location" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Sample Type" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Sample Condition" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Sampler" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Sampling Date" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Sampling Deviation" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Sampling Round" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Scheduled Sampler" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Storage Location" acquired="True"/>
     <!-- Make the field 'Template' readonly -->
-    <permission-map name="Field: Edit Template" acquired="False"/>
-    <permission-map name="Field: Edit Specification" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Template" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Specification" acquired="True"/>
     <!-- /MANAGED PERMISSIONS -->
   </state>
   <!-- /State: to_be_sampled -->
@@ -316,42 +316,42 @@
     <permission-map name="Transition: Reject Sample" acquired="True"/>
     <permission-map name="View" acquired="True"/>
     <!-- Field Permissions -->
-    <permission-map name="Field: Edit Batch" acquired="True"/>
-    <permission-map name="Field: Edit Client Order Number" acquired="True"/>
-    <permission-map name="Field: Edit Client Reference" acquired="True"/>
-    <permission-map name="Field: Edit Client Sample ID" acquired="True"/>
-    <permission-map name="Field: Edit Client" acquired="True"/>
-    <permission-map name="Field: Edit Composite" acquired="True"/>
-    <permission-map name="Field: Edit Contact" acquired="True"/>
-    <permission-map name="Field: Edit Container" acquired="True"/>
-    <permission-map name="Field: Edit Date Preserved" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Batch" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Client Order Number" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Client Reference" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Client Sample ID" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Client" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Composite" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Contact" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Container" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Date Preserved" acquired="True"/>
     <!-- Make the field 'DateReceived' readonly -->
-    <permission-map name="Field: Edit Date Received" acquired="False"/>
-    <permission-map name="Field: Edit Date Sampled" acquired="True"/>
-    <permission-map name="Field: Edit Environmental Conditions" acquired="True"/>
-    <permission-map name="Field: Edit Invoice Exclude" acquired="True"/>
-    <permission-map name="Field: Edit Member Discount" acquired="True"/>
-    <permission-map name="Field: Edit Preservation" acquired="True"/>
-    <permission-map name="Field: Edit Preserver" acquired="True"/>
-    <permission-map name="Field: Edit Priority" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Date Received" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Date Sampled" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Environmental Conditions" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Invoice Exclude" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Member Discount" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Preservation" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Preserver" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Priority" acquired="True"/>
     <!-- Make the field 'Profiles' readonly -->
-    <permission-map name="Field: Edit Profiles" acquired="False"/>
-    <permission-map name="Field: Edit Publication Specification" acquired="True"/>
-    <permission-map name="Field: Edit Rejection Reasons" acquired="True"/>
-    <permission-map name="Field: Edit Results Interpretation" acquired="True"/>
-    <permission-map name="Field: Edit Sample Point" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Profiles" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Publication Specification" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Rejection Reasons" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Results Interpretation" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Sample Point" acquired="True"/>
     <!-- Make the field 'SampleType' readonly -->
-    <permission-map name="Field: Edit Sample Type" acquired="False"/>
-    <permission-map name="Field: Edit Sample Condition" acquired="True"/>
-    <permission-map name="Field: Edit Sampler" acquired="True"/>
-    <permission-map name="Field: Edit Sampling Date" acquired="True"/>
-    <permission-map name="Field: Edit Sampling Deviation" acquired="True"/>
-    <permission-map name="Field: Edit Sampling Round" acquired="True"/>
-    <permission-map name="Field: Edit Scheduled Sampler" acquired="True"/>
-    <permission-map name="Field: Edit Storage Location" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Sample Type" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Sample Condition" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Sampler" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Sampling Date" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Sampling Deviation" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Sampling Round" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Scheduled Sampler" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Storage Location" acquired="True"/>
     <!-- Make the field 'Template' readonly -->
-    <permission-map name="Field: Edit Template" acquired="False"/>
-    <permission-map name="Field: Edit Specification" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Template" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Specification" acquired="True"/>
     <!-- /MANAGED PERMISSIONS -->
   </state>
   <!-- /State: sample_due -->
@@ -388,41 +388,41 @@
     <permission-map name="Transition: Reject Sample" acquired="True"/>
     <permission-map name="View" acquired="True"/>
     <!-- Field Permissions -->
-    <permission-map name="Field: Edit Batch" acquired="True"/>
-    <permission-map name="Field: Edit Client Order Number" acquired="True"/>
-    <permission-map name="Field: Edit Client Reference" acquired="True"/>
-    <permission-map name="Field: Edit Client Sample ID" acquired="True"/>
-    <permission-map name="Field: Edit Client" acquired="True"/>
-    <permission-map name="Field: Edit Composite" acquired="True"/>
-    <permission-map name="Field: Edit Contact" acquired="True"/>
-    <permission-map name="Field: Edit Container" acquired="True"/>
-    <permission-map name="Field: Edit Date Preserved" acquired="True"/>
-    <permission-map name="Field: Edit Date Received" acquired="True"/>
-    <permission-map name="Field: Edit Date Sampled" acquired="True"/>
-    <permission-map name="Field: Edit Environmental Conditions" acquired="True"/>
-    <permission-map name="Field: Edit Invoice Exclude" acquired="True"/>
-    <permission-map name="Field: Edit Member Discount" acquired="True"/>
-    <permission-map name="Field: Edit Preservation" acquired="True"/>
-    <permission-map name="Field: Edit Preserver" acquired="True"/>
-    <permission-map name="Field: Edit Priority" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Batch" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Client Order Number" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Client Reference" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Client Sample ID" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Client" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Composite" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Contact" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Container" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Date Preserved" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Date Received" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Date Sampled" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Environmental Conditions" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Invoice Exclude" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Member Discount" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Preservation" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Preserver" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Priority" acquired="True"/>
     <!-- Make the field 'Profiles' readonly -->
-    <permission-map name="Field: Edit Profiles" acquired="False"/>
-    <permission-map name="Field: Edit Publication Specification" acquired="True"/>
-    <permission-map name="Field: Edit Rejection Reasons" acquired="True"/>
-    <permission-map name="Field: Edit Results Interpretation" acquired="True"/>
-    <permission-map name="Field: Edit Sample Point" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Profiles" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Publication Specification" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Rejection Reasons" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Results Interpretation" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Sample Point" acquired="True"/>
     <!-- Make the field 'SampleType' readonly -->
-    <permission-map name="Field: Edit Sample Type" acquired="False"/>
-    <permission-map name="Field: Edit Sample Condition" acquired="True"/>
-    <permission-map name="Field: Edit Sampler" acquired="True"/>
-    <permission-map name="Field: Edit Sampling Date" acquired="True"/>
-    <permission-map name="Field: Edit Sampling Deviation" acquired="True"/>
-    <permission-map name="Field: Edit Sampling Round" acquired="True"/>
-    <permission-map name="Field: Edit Scheduled Sampler" acquired="True"/>
-    <permission-map name="Field: Edit Storage Location" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Sample Type" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Sample Condition" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Sampler" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Sampling Date" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Sampling Deviation" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Sampling Round" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Scheduled Sampler" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Storage Location" acquired="True"/>
     <!-- Make the field 'Template' readonly -->
-    <permission-map name="Field: Edit Template" acquired="False"/>
-    <permission-map name="Field: Edit Specification" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Template" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Specification" acquired="True"/>
     <!-- /MANAGED PERMISSIONS -->
   </state>
   <!-- State: sample_received -->
@@ -458,41 +458,41 @@
     <permission-map name="Transition: Reject Sample" acquired="True"/>
     <permission-map name="View" acquired="True"/>
     <!-- Field Permissions -->
-    <permission-map name="Field: Edit Batch" acquired="True"/>
-    <permission-map name="Field: Edit Client Order Number" acquired="True"/>
-    <permission-map name="Field: Edit Client Reference" acquired="True"/>
-    <permission-map name="Field: Edit Client Sample ID" acquired="True"/>
-    <permission-map name="Field: Edit Client" acquired="True"/>
-    <permission-map name="Field: Edit Composite" acquired="True"/>
-    <permission-map name="Field: Edit Contact" acquired="True"/>
-    <permission-map name="Field: Edit Container" acquired="True"/>
-    <permission-map name="Field: Edit Date Preserved" acquired="True"/>
-    <permission-map name="Field: Edit Date Received" acquired="True"/>
-    <permission-map name="Field: Edit Date Sampled" acquired="True"/>
-    <permission-map name="Field: Edit Environmental Conditions" acquired="True"/>
-    <permission-map name="Field: Edit Invoice Exclude" acquired="True"/>
-    <permission-map name="Field: Edit Member Discount" acquired="True"/>
-    <permission-map name="Field: Edit Preservation" acquired="True"/>
-    <permission-map name="Field: Edit Preserver" acquired="True"/>
-    <permission-map name="Field: Edit Priority" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Batch" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Client Order Number" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Client Reference" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Client Sample ID" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Client" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Composite" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Contact" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Container" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Date Preserved" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Date Received" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Date Sampled" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Environmental Conditions" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Invoice Exclude" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Member Discount" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Preservation" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Preserver" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Priority" acquired="True"/>
     <!-- Make the field 'Profiles' readonly -->
-    <permission-map name="Field: Edit Profiles" acquired="False"/>
-    <permission-map name="Field: Edit Publication Specification" acquired="True"/>
-    <permission-map name="Field: Edit Rejection Reasons" acquired="True"/>
-    <permission-map name="Field: Edit Results Interpretation" acquired="True"/>
-    <permission-map name="Field: Edit Sample Point" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Profiles" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Publication Specification" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Rejection Reasons" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Results Interpretation" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Sample Point" acquired="True"/>
     <!-- Make the field 'SampleType' readonly -->
-    <permission-map name="Field: Edit Sample Type" acquired="False"/>
-    <permission-map name="Field: Edit Sample Condition" acquired="True"/>
-    <permission-map name="Field: Edit Sampler" acquired="True"/>
-    <permission-map name="Field: Edit Sampling Date" acquired="True"/>
-    <permission-map name="Field: Edit Sampling Deviation" acquired="True"/>
-    <permission-map name="Field: Edit Sampling Round" acquired="True"/>
-    <permission-map name="Field: Edit Scheduled Sampler" acquired="True"/>
-    <permission-map name="Field: Edit Storage Location" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Sample Type" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Sample Condition" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Sampler" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Sampling Date" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Sampling Deviation" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Sampling Round" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Scheduled Sampler" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Storage Location" acquired="True"/>
     <!-- Make the field 'Template' readonly -->
-    <permission-map name="Field: Edit Template" acquired="False"/>
-    <permission-map name="Field: Edit Specification" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Template" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Specification" acquired="True"/>
     <!-- /MANAGED PERMISSIONS -->
   </state>
   <!-- /State: attachment_due -->
@@ -529,41 +529,41 @@
     <permission-map name="Transition: Reject Sample" acquired="True"/>
     <permission-map name="View" acquired="True"/>
     <!-- Field Permissions -->
-    <permission-map name="Field: Edit Batch" acquired="True"/>
-    <permission-map name="Field: Edit Client Order Number" acquired="True"/>
-    <permission-map name="Field: Edit Client Reference" acquired="True"/>
-    <permission-map name="Field: Edit Client Sample ID" acquired="True"/>
-    <permission-map name="Field: Edit Client" acquired="True"/>
-    <permission-map name="Field: Edit Composite" acquired="True"/>
-    <permission-map name="Field: Edit Contact" acquired="True"/>
-    <permission-map name="Field: Edit Container" acquired="True"/>
-    <permission-map name="Field: Edit Date Preserved" acquired="True"/>
-    <permission-map name="Field: Edit Date Received" acquired="True"/>
-    <permission-map name="Field: Edit Date Sampled" acquired="True"/>
-    <permission-map name="Field: Edit Environmental Conditions" acquired="True"/>
-    <permission-map name="Field: Edit Invoice Exclude" acquired="True"/>
-    <permission-map name="Field: Edit Member Discount" acquired="True"/>
-    <permission-map name="Field: Edit Preservation" acquired="True"/>
-    <permission-map name="Field: Edit Preserver" acquired="True"/>
-    <permission-map name="Field: Edit Priority" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Batch" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Client Order Number" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Client Reference" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Client Sample ID" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Client" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Composite" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Contact" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Container" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Date Preserved" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Date Received" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Date Sampled" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Environmental Conditions" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Invoice Exclude" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Member Discount" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Preservation" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Preserver" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Priority" acquired="True"/>
     <!-- Make the field 'Profiles' readonly -->
-    <permission-map name="Field: Edit Profiles" acquired="False"/>
-    <permission-map name="Field: Edit Publication Specification" acquired="True"/>
-    <permission-map name="Field: Edit Rejection Reasons" acquired="True"/>
-    <permission-map name="Field: Edit Results Interpretation" acquired="True"/>
-    <permission-map name="Field: Edit Sample Point" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Profiles" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Publication Specification" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Rejection Reasons" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Results Interpretation" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Sample Point" acquired="True"/>
     <!-- Make the field 'SampleType' readonly -->
-    <permission-map name="Field: Edit Sample Type" acquired="False"/>
-    <permission-map name="Field: Edit Sample Condition" acquired="True"/>
-    <permission-map name="Field: Edit Sampler" acquired="True"/>
-    <permission-map name="Field: Edit Sampling Date" acquired="True"/>
-    <permission-map name="Field: Edit Sampling Deviation" acquired="True"/>
-    <permission-map name="Field: Edit Sampling Round" acquired="True"/>
-    <permission-map name="Field: Edit Scheduled Sampler" acquired="True"/>
-    <permission-map name="Field: Edit Storage Location" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Sample Type" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Sample Condition" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Sampler" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Sampling Date" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Sampling Deviation" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Sampling Round" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Scheduled Sampler" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Storage Location" acquired="True"/>
     <!-- Make the field 'Template' readonly -->
-    <permission-map name="Field: Edit Template" acquired="False"/>
-    <permission-map name="Field: Edit Specification" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Template" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Specification" acquired="True"/>
     <!-- /MANAGED PERMISSIONS -->
   </state>
   <!-- State: sample_received -->
@@ -598,41 +598,41 @@
     <permission-map name="Transition: Reject Sample" acquired="True"/>
     <permission-map name="View" acquired="True"/>
     <!-- Field Permissions -->
-    <permission-map name="Field: Edit Batch" acquired="True"/>
-    <permission-map name="Field: Edit Client Order Number" acquired="True"/>
-    <permission-map name="Field: Edit Client Reference" acquired="True"/>
-    <permission-map name="Field: Edit Client Sample ID" acquired="True"/>
-    <permission-map name="Field: Edit Client" acquired="True"/>
-    <permission-map name="Field: Edit Composite" acquired="True"/>
-    <permission-map name="Field: Edit Contact" acquired="True"/>
-    <permission-map name="Field: Edit Container" acquired="True"/>
-    <permission-map name="Field: Edit Date Preserved" acquired="True"/>
-    <permission-map name="Field: Edit Date Received" acquired="True"/>
-    <permission-map name="Field: Edit Date Sampled" acquired="True"/>
-    <permission-map name="Field: Edit Environmental Conditions" acquired="True"/>
-    <permission-map name="Field: Edit Invoice Exclude" acquired="True"/>
-    <permission-map name="Field: Edit Member Discount" acquired="True"/>
-    <permission-map name="Field: Edit Preservation" acquired="True"/>
-    <permission-map name="Field: Edit Preserver" acquired="True"/>
-    <permission-map name="Field: Edit Priority" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Batch" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Client Order Number" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Client Reference" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Client Sample ID" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Client" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Composite" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Contact" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Container" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Date Preserved" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Date Received" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Date Sampled" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Environmental Conditions" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Invoice Exclude" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Member Discount" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Preservation" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Preserver" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Priority" acquired="True"/>
     <!-- Make the field 'Profiles' readonly -->
-    <permission-map name="Field: Edit Profiles" acquired="False"/>
-    <permission-map name="Field: Edit Publication Specification" acquired="True"/>
-    <permission-map name="Field: Edit Rejection Reasons" acquired="True"/>
-    <permission-map name="Field: Edit Results Interpretation" acquired="True"/>
-    <permission-map name="Field: Edit Sample Point" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Profiles" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Publication Specification" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Rejection Reasons" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Results Interpretation" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Sample Point" acquired="True"/>
     <!-- Make the field 'SampleType' readonly -->
-    <permission-map name="Field: Edit Sample Type" acquired="False"/>
-    <permission-map name="Field: Edit Sample Condition" acquired="True"/>
-    <permission-map name="Field: Edit Sampler" acquired="True"/>
-    <permission-map name="Field: Edit Sampling Date" acquired="True"/>
-    <permission-map name="Field: Edit Sampling Deviation" acquired="True"/>
-    <permission-map name="Field: Edit Sampling Round" acquired="True"/>
-    <permission-map name="Field: Edit Scheduled Sampler" acquired="True"/>
-    <permission-map name="Field: Edit Storage Location" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Sample Type" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Sample Condition" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Sampler" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Sampling Date" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Sampling Deviation" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Sampling Round" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Scheduled Sampler" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Storage Location" acquired="True"/>
     <!-- Make the field 'Template' readonly -->
-    <permission-map name="Field: Edit Template" acquired="False"/>
-    <permission-map name="Field: Edit Specification" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Template" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Specification" acquired="True"/>
     <!-- /MANAGED PERMISSIONS -->
   </state>
   <!-- /State: to_be_verified -->
@@ -670,40 +670,40 @@
     <permission-map name="Transition: Reject Sample" acquired="False"/>
     <permission-map name="View" acquired="True"/>
     <!-- Field Permissions (all readonly) -->
-    <permission-map name="Field: Edit Batch" acquired="False"/>
-    <permission-map name="Field: Edit Client Order Number" acquired="False"/>
-    <permission-map name="Field: Edit Client Reference" acquired="False"/>
-    <permission-map name="Field: Edit Client Sample ID" acquired="False"/>
-    <permission-map name="Field: Edit Client" acquired="False"/>
-    <permission-map name="Field: Edit Composite" acquired="False"/>
-    <permission-map name="Field: Edit Contact" acquired="False"/>
-    <permission-map name="Field: Edit Container" acquired="False"/>
-    <permission-map name="Field: Edit Date Preserved" acquired="False"/>
-    <permission-map name="Field: Edit Date Received" acquired="False"/>
-    <permission-map name="Field: Edit Date Sampled" acquired="False"/>
-    <permission-map name="Field: Edit Environmental Conditions" acquired="False"/>
-    <permission-map name="Field: Edit Invoice Exclude" acquired="False"/>
-    <permission-map name="Field: Edit Member Discount" acquired="False"/>
-    <permission-map name="Field: Edit Preservation" acquired="False"/>
-    <permission-map name="Field: Edit Preserver" acquired="False"/>
-    <permission-map name="Field: Edit Priority" acquired="False"/>
-    <permission-map name="Field: Edit Profiles" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Batch" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Client Order Number" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Client Reference" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Client Sample ID" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Client" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Composite" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Contact" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Container" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Date Preserved" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Date Received" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Date Sampled" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Environmental Conditions" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Invoice Exclude" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Member Discount" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Preservation" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Preserver" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Priority" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Profiles" acquired="False"/>
     <!-- Allow to change the publicatoin specification -->
-    <permission-map name="Field: Edit Publication Specification" acquired="True"/>
-    <permission-map name="Field: Edit Rejection Reasons" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Publication Specification" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Rejection Reasons" acquired="False"/>
     <!-- Allow to change the results interpretation -->
-    <permission-map name="Field: Edit Results Interpretation" acquired="True"/>
-    <permission-map name="Field: Edit Sample Point" acquired="False"/>
-    <permission-map name="Field: Edit Sample Type" acquired="False"/>
-    <permission-map name="Field: Edit Sample Condition" acquired="False"/>
-    <permission-map name="Field: Edit Sampler" acquired="False"/>
-    <permission-map name="Field: Edit Sampling Date" acquired="False"/>
-    <permission-map name="Field: Edit Sampling Deviation" acquired="False"/>
-    <permission-map name="Field: Edit Sampling Round" acquired="False"/>
-    <permission-map name="Field: Edit Scheduled Sampler" acquired="False"/>
-    <permission-map name="Field: Edit Storage Location" acquired="False"/>
-    <permission-map name="Field: Edit Template" acquired="False"/>
-    <permission-map name="Field: Edit Specification" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Results Interpretation" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Sample Point" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Sample Type" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Sample Condition" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Sampler" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Sampling Date" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Sampling Deviation" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Sampling Round" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Scheduled Sampler" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Storage Location" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Template" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Specification" acquired="False"/>
     <!-- /MANAGED PERMISSIONS -->
   </state>
   <!-- /State: verified -->
@@ -740,39 +740,39 @@
     <permission-map name="Transition: Reject Sample" acquired="True"/>
     <permission-map name="View" acquired="True"/>
     <!-- Field Permissions (all readonly) -->
-    <permission-map name="Field: Edit Batch" acquired="False"/>
-    <permission-map name="Field: Edit Client Order Number" acquired="False"/>
-    <permission-map name="Field: Edit Client Reference" acquired="False"/>
-    <permission-map name="Field: Edit Client Sample ID" acquired="False"/>
-    <permission-map name="Field: Edit Client" acquired="False"/>
-    <permission-map name="Field: Edit Composite" acquired="False"/>
-    <permission-map name="Field: Edit Contact" acquired="False"/>
-    <permission-map name="Field: Edit Container" acquired="False"/>
-    <permission-map name="Field: Edit Date Preserved" acquired="False"/>
-    <permission-map name="Field: Edit Date Received" acquired="False"/>
-    <permission-map name="Field: Edit Date Sampled" acquired="False"/>
-    <permission-map name="Field: Edit Environmental Conditions" acquired="False"/>
-    <permission-map name="Field: Edit Invoice Exclude" acquired="False"/>
-    <permission-map name="Field: Edit Member Discount" acquired="False"/>
-    <permission-map name="Field: Edit Preservation" acquired="False"/>
-    <permission-map name="Field: Edit Preserver" acquired="False"/>
-    <permission-map name="Field: Edit Priority" acquired="False"/>
-    <permission-map name="Field: Edit Profiles" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Batch" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Client Order Number" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Client Reference" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Client Sample ID" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Client" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Composite" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Contact" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Container" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Date Preserved" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Date Received" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Date Sampled" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Environmental Conditions" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Invoice Exclude" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Member Discount" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Preservation" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Preserver" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Priority" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Profiles" acquired="False"/>
     <!-- Allow to change the publicatoin specification -->
-    <permission-map name="Field: Edit Publication Specification" acquired="True"/>
-    <permission-map name="Field: Edit Rejection Reasons" acquired="False"/>
-    <permission-map name="Field: Edit Results Interpretation" acquired="False"/>
-    <permission-map name="Field: Edit Sample Point" acquired="False"/>
-    <permission-map name="Field: Edit Sample Type" acquired="False"/>
-    <permission-map name="Field: Edit Sample Condition" acquired="False"/>
-    <permission-map name="Field: Edit Sampler" acquired="False"/>
-    <permission-map name="Field: Edit Sampling Date" acquired="False"/>
-    <permission-map name="Field: Edit Sampling Deviation" acquired="False"/>
-    <permission-map name="Field: Edit Sampling Round" acquired="False"/>
-    <permission-map name="Field: Edit Scheduled Sampler" acquired="False"/>
-    <permission-map name="Field: Edit Storage Location" acquired="False"/>
-    <permission-map name="Field: Edit Template" acquired="False"/>
-    <permission-map name="Field: Edit Specification" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Publication Specification" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Rejection Reasons" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Results Interpretation" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Sample Point" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Sample Type" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Sample Condition" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Sampler" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Sampling Date" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Sampling Deviation" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Sampling Round" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Scheduled Sampler" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Storage Location" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Template" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Specification" acquired="False"/>
     <!-- /MANAGED PERMISSIONS -->
   </state>
   <!-- /State: published -->
@@ -808,38 +808,38 @@
     <permission-map name="Transition: Reject Sample" acquired="True"/>
     <permission-map name="View" acquired="True"/>
     <!-- Field Permissions (all readonly) -->
-    <permission-map name="Field: Edit Batch" acquired="False"/>
-    <permission-map name="Field: Edit Client Order Number" acquired="False"/>
-    <permission-map name="Field: Edit Client Reference" acquired="False"/>
-    <permission-map name="Field: Edit Client Sample ID" acquired="False"/>
-    <permission-map name="Field: Edit Client" acquired="False"/>
-    <permission-map name="Field: Edit Composite" acquired="False"/>
-    <permission-map name="Field: Edit Contact" acquired="False"/>
-    <permission-map name="Field: Edit Container" acquired="False"/>
-    <permission-map name="Field: Edit Date Preserved" acquired="False"/>
-    <permission-map name="Field: Edit Date Received" acquired="False"/>
-    <permission-map name="Field: Edit Date Sampled" acquired="False"/>
-    <permission-map name="Field: Edit Environmental Conditions" acquired="False"/>
-    <permission-map name="Field: Edit Invoice Exclude" acquired="False"/>
-    <permission-map name="Field: Edit Member Discount" acquired="False"/>
-    <permission-map name="Field: Edit Preservation" acquired="False"/>
-    <permission-map name="Field: Edit Preserver" acquired="False"/>
-    <permission-map name="Field: Edit Priority" acquired="False"/>
-    <permission-map name="Field: Edit Profiles" acquired="False"/>
-    <permission-map name="Field: Edit Publication Specification" acquired="False"/>
-    <permission-map name="Field: Edit Rejection Reasons" acquired="False"/>
-    <permission-map name="Field: Edit Results Interpretation" acquired="False"/>
-    <permission-map name="Field: Edit Sample Point" acquired="False"/>
-    <permission-map name="Field: Edit Sample Type" acquired="False"/>
-    <permission-map name="Field: Edit Sample Condition" acquired="False"/>
-    <permission-map name="Field: Edit Sampler" acquired="False"/>
-    <permission-map name="Field: Edit Sampling Date" acquired="False"/>
-    <permission-map name="Field: Edit Sampling Deviation" acquired="False"/>
-    <permission-map name="Field: Edit Sampling Round" acquired="False"/>
-    <permission-map name="Field: Edit Scheduled Sampler" acquired="False"/>
-    <permission-map name="Field: Edit Storage Location" acquired="False"/>
-    <permission-map name="Field: Edit Template" acquired="False"/>
-    <permission-map name="Field: Edit Specification" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Batch" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Client Order Number" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Client Reference" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Client Sample ID" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Client" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Composite" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Contact" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Container" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Date Preserved" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Date Received" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Date Sampled" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Environmental Conditions" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Invoice Exclude" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Member Discount" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Preservation" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Preserver" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Priority" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Profiles" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Publication Specification" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Rejection Reasons" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Results Interpretation" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Sample Point" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Sample Type" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Sample Condition" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Sampler" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Sampling Date" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Sampling Deviation" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Sampling Round" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Scheduled Sampler" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Storage Location" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Template" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Specification" acquired="False"/>
     <!-- /MANAGED PERMISSIONS -->
   </state>
   <!-- /State: rejected -->
@@ -875,38 +875,38 @@
     <permission-map name="Transition: Reject Sample" acquired="True"/>
     <permission-map name="View" acquired="True"/>
     <!-- Field Permissions (all readonly) -->
-    <permission-map name="Field: Edit Batch" acquired="False"/>
-    <permission-map name="Field: Edit Client Order Number" acquired="False"/>
-    <permission-map name="Field: Edit Client Reference" acquired="False"/>
-    <permission-map name="Field: Edit Client Sample ID" acquired="False"/>
-    <permission-map name="Field: Edit Client" acquired="False"/>
-    <permission-map name="Field: Edit Composite" acquired="False"/>
-    <permission-map name="Field: Edit Contact" acquired="False"/>
-    <permission-map name="Field: Edit Container" acquired="False"/>
-    <permission-map name="Field: Edit Date Preserved" acquired="False"/>
-    <permission-map name="Field: Edit Date Received" acquired="False"/>
-    <permission-map name="Field: Edit Date Sampled" acquired="False"/>
-    <permission-map name="Field: Edit Environmental Conditions" acquired="False"/>
-    <permission-map name="Field: Edit Invoice Exclude" acquired="False"/>
-    <permission-map name="Field: Edit Member Discount" acquired="False"/>
-    <permission-map name="Field: Edit Preservation" acquired="False"/>
-    <permission-map name="Field: Edit Preserver" acquired="False"/>
-    <permission-map name="Field: Edit Priority" acquired="False"/>
-    <permission-map name="Field: Edit Profiles" acquired="False"/>
-    <permission-map name="Field: Edit Publication Specification" acquired="False"/>
-    <permission-map name="Field: Edit Rejection Reasons" acquired="False"/>
-    <permission-map name="Field: Edit Results Interpretation" acquired="False"/>
-    <permission-map name="Field: Edit Sample Point" acquired="False"/>
-    <permission-map name="Field: Edit Sample Type" acquired="False"/>
-    <permission-map name="Field: Edit Sample Condition" acquired="False"/>
-    <permission-map name="Field: Edit Sampler" acquired="False"/>
-    <permission-map name="Field: Edit Sampling Date" acquired="False"/>
-    <permission-map name="Field: Edit Sampling Deviation" acquired="False"/>
-    <permission-map name="Field: Edit Sampling Round" acquired="False"/>
-    <permission-map name="Field: Edit Scheduled Sampler" acquired="False"/>
-    <permission-map name="Field: Edit Storage Location" acquired="False"/>
-    <permission-map name="Field: Edit Template" acquired="False"/>
-    <permission-map name="Field: Edit Specification" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Batch" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Client Order Number" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Client Reference" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Client Sample ID" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Client" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Composite" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Contact" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Container" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Date Preserved" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Date Received" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Date Sampled" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Environmental Conditions" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Invoice Exclude" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Member Discount" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Preservation" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Preserver" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Priority" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Profiles" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Publication Specification" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Rejection Reasons" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Results Interpretation" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Sample Point" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Sample Type" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Sample Condition" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Sampler" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Sampling Date" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Sampling Deviation" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Sampling Round" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Scheduled Sampler" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Storage Location" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Template" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Specification" acquired="False"/>
     <!-- /MANAGED PERMISSIONS -->
   </state>
   <!-- /State: invalid -->
@@ -947,38 +947,38 @@
     <permission-map name="Transition: Reject Sample" acquired="True"/>
     <permission-map name="View" acquired="True"/>
     <!-- Field Permissions (all readonly) -->
-    <permission-map name="Field: Edit Batch" acquired="False"/>
-    <permission-map name="Field: Edit Client Order Number" acquired="False"/>
-    <permission-map name="Field: Edit Client Reference" acquired="False"/>
-    <permission-map name="Field: Edit Client Sample ID" acquired="False"/>
-    <permission-map name="Field: Edit Client" acquired="False"/>
-    <permission-map name="Field: Edit Composite" acquired="False"/>
-    <permission-map name="Field: Edit Contact" acquired="False"/>
-    <permission-map name="Field: Edit Container" acquired="False"/>
-    <permission-map name="Field: Edit Date Preserved" acquired="False"/>
-    <permission-map name="Field: Edit Date Received" acquired="False"/>
-    <permission-map name="Field: Edit Date Sampled" acquired="False"/>
-    <permission-map name="Field: Edit Environmental Conditions" acquired="False"/>
-    <permission-map name="Field: Edit Invoice Exclude" acquired="False"/>
-    <permission-map name="Field: Edit Member Discount" acquired="False"/>
-    <permission-map name="Field: Edit Preservation" acquired="False"/>
-    <permission-map name="Field: Edit Preserver" acquired="False"/>
-    <permission-map name="Field: Edit Priority" acquired="False"/>
-    <permission-map name="Field: Edit Profiles" acquired="False"/>
-    <permission-map name="Field: Edit Publication Specification" acquired="False"/>
-    <permission-map name="Field: Edit Rejection Reasons" acquired="False"/>
-    <permission-map name="Field: Edit Results Interpretation" acquired="False"/>
-    <permission-map name="Field: Edit Sample Point" acquired="False"/>
-    <permission-map name="Field: Edit Sample Type" acquired="False"/>
-    <permission-map name="Field: Edit Sample Condition" acquired="False"/>
-    <permission-map name="Field: Edit Sampler" acquired="False"/>
-    <permission-map name="Field: Edit Sampling Date" acquired="False"/>
-    <permission-map name="Field: Edit Sampling Deviation" acquired="False"/>
-    <permission-map name="Field: Edit Sampling Round" acquired="False"/>
-    <permission-map name="Field: Edit Scheduled Sampler" acquired="False"/>
-    <permission-map name="Field: Edit Storage Location" acquired="False"/>
-    <permission-map name="Field: Edit Template" acquired="False"/>
-    <permission-map name="Field: Edit Specification" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Batch" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Client Order Number" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Client Reference" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Client Sample ID" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Client" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Composite" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Contact" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Container" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Date Preserved" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Date Received" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Date Sampled" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Environmental Conditions" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Invoice Exclude" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Member Discount" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Preservation" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Preserver" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Priority" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Profiles" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Publication Specification" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Rejection Reasons" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Results Interpretation" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Sample Point" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Sample Type" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Sample Condition" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Sampler" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Sampling Date" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Sampling Deviation" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Sampling Round" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Scheduled Sampler" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Storage Location" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Template" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Specification" acquired="False"/>
     <!-- /MANAGED PERMISSIONS -->
   </state>
   <!-- /State: cancelled -->

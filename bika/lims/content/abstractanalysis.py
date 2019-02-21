@@ -61,7 +61,7 @@ Attachment = UIDReferenceField(
 Result = StringField(
     'Result',
     read_permission=View,
-    write_permission="Field: Edit Result",
+    write_permission="senaite.core: Field: Edit Result",
 )
 
 # When the result is changed, this value is updated to the current time.
@@ -83,7 +83,7 @@ RetestOf = UIDReferenceField(
 DetectionLimitOperand = StringField(
     'DetectionLimitOperand',
     read_permission=View,
-    write_permission="Field: Edit Result",
+    write_permission="senaite.core: Field: Edit Result",
 )
 
 # The ID of the logged in user who submitted the result for this Analysis.
@@ -123,7 +123,7 @@ Calculation = HistoryAwareReferenceField(
 InterimFields = InterimFieldsField(
     'InterimFields',
     read_permission=View,
-    write_permission="Field: Edit Result",
+    write_permission="senaite.core: Field: Edit Result",
     schemata='Method',
     widget=RecordsWidget(
         label=_("Calculation Interim Fields"),

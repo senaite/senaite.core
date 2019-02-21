@@ -280,7 +280,7 @@ InstrumentEntryOfResults = BooleanField(
 Instrument = UIDReferenceField(
     'Instrument',
     read_permission=View,
-    write_permission="Field: Edit Result",
+    write_permission="senaite.core: Field: Edit Result",
     schemata="Method",
     searchable=True,
     required=0,
@@ -312,7 +312,7 @@ Instrument = UIDReferenceField(
 Method = UIDReferenceField(
     'Method',
     read_permission=View,
-    write_permission="Field: Edit Result",
+    write_permission="senaite.core: Field: Edit Result",
     schemata="Method",
     required=0,
     searchable=True,
@@ -574,7 +574,7 @@ Hidden = BooleanField(
     schemata="Analysis",
     default=False,
     read_permission=View,
-    write_permission="Field: Edit Hidden",
+    write_permission="senaite.core: Field: Edit Hidden",
     widget=BooleanWidget(
         label=_("Hidden"),
         description=_(
@@ -649,7 +649,7 @@ ProtocolID = StringField(
 Remarks = TextField(
     'Remarks',
     read_permission=View,
-    write_permission="Field: Edit Remarks",
+    write_permission="senaite.core: Field: Edit Remarks",
     schemata='Description'
 )
 

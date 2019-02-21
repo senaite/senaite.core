@@ -29,7 +29,7 @@
   analyses, but this should not be allowed for lab analyses.
 
   Hence, the view needs to check *first* if the object is a field or lab
-  analysis and *afterwards* if the "Field: Edit Result" permission is granted.
+  analysis and *afterwards* if the "senaite.core: Field: Edit Result" permission is granted.
   -->
   <permission>BIKA: Edit Field Results</permission>
   <permission>BIKA: Edit Results</permission>
@@ -38,9 +38,9 @@
        Are meant to be used for "read_permission" and "write_permission" in fields.
        If not defined there, "read_permission" defaults to "View" and
        "write_permission" defaults to "Modify portal content" -->
-  <permission>Field: Edit Result</permission>
-  <permission>Field: Edit Remarks</permission>
-  <permission>Field: Edit Hidden</permission>
+  <permission>senaite.core: Field: Edit Result</permission>
+  <permission>senaite.core: Field: Edit Remarks</permission>
+  <permission>senaite.core: Field: Edit Hidden</permission>
 
 
   <!-- *** STATES *** -->
@@ -75,15 +75,15 @@
     </permission-map>
 
     <!-- FIELD PERMISSIONS (initialized) -->
-    <permission-map name="Field: Edit Result" acquired="False">
+    <permission-map name="senaite.core: Field: Edit Result" acquired="False">
       <permission-role>Manager</permission-role>
       <permission-role>Sampler</permission-role>
     </permission-map>
-    <permission-map name="Field: Edit Remarks" acquired="False">
+    <permission-map name="senaite.core: Field: Edit Remarks" acquired="False">
       <permission-role>Manager</permission-role>
       <permission-role>Sampler</permission-role>
     </permission-map>
-    <permission-map name="Field: Edit Hidden" acquired="False">
+    <permission-map name="senaite.core: Field: Edit Hidden" acquired="False">
     </permission-map>
     <!-- /FIELD PERMISSIONS -->
 
@@ -146,17 +146,17 @@
     </permission-map>
 
     <!-- FIELD PERMISSIONS (unsassigned) -->
-    <permission-map name="Field: Edit Result" acquired="False">
+    <permission-map name="senaite.core: Field: Edit Result" acquired="False">
       <permission-role>Analyst</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>
-    <permission-map name="Field: Edit Remarks" acquired="False">
+    <permission-map name="senaite.core: Field: Edit Remarks" acquired="False">
       <permission-role>Analyst</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>
-    <permission-map name="Field: Edit Hidden" acquired="False">
+    <permission-map name="senaite.core: Field: Edit Hidden" acquired="False">
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
       <permission-role>LabClerk</permission-role>
@@ -219,17 +219,17 @@
     </permission-map>
 
     <!-- FIELD PERMISSIONS (assigned) -->
-    <permission-map name="Field: Edit Result" acquired="False">
+    <permission-map name="senaite.core: Field: Edit Result" acquired="False">
       <permission-role>Analyst</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>
-    <permission-map name="Field: Edit Remarks" acquired="False">
+    <permission-map name="senaite.core: Field: Edit Remarks" acquired="False">
       <permission-role>Analyst</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>
-    <permission-map name="Field: Edit Hidden" acquired="False">
+    <permission-map name="senaite.core: Field: Edit Hidden" acquired="False">
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
       <permission-role>LabClerk</permission-role>
@@ -275,11 +275,11 @@
     </permission-map>
 
     <!-- FIELD PERMISSIONS (cancelled) -->
-    <permission-map name="Field: Edit Result" acquired="False">
+    <permission-map name="senaite.core: Field: Edit Result" acquired="False">
     </permission-map>
-    <permission-map name="Field: Edit Remarks" acquired="False">
+    <permission-map name="senaite.core: Field: Edit Remarks" acquired="False">
     </permission-map>
-    <permission-map name="Field: Edit Hidden" acquired="False">
+    <permission-map name="senaite.core: Field: Edit Hidden" acquired="False">
     </permission-map>
     <!-- /FIELD PERMISSIONS -->
 
@@ -335,11 +335,11 @@
     </permission-map>
 
     <!-- FIELD PERMISSIONS (to_be_verified) -->
-    <permission-map name="Field: Edit Result" acquired="False">
+    <permission-map name="senaite.core: Field: Edit Result" acquired="False">
     </permission-map>
-    <permission-map name="Field: Edit Remarks" acquired="False">
+    <permission-map name="senaite.core: Field: Edit Remarks" acquired="False">
     </permission-map>
-    <permission-map name="Field: Edit Hidden" acquired="False">
+    <permission-map name="senaite.core: Field: Edit Hidden" acquired="False">
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
       <permission-role>LabClerk</permission-role>
@@ -384,11 +384,11 @@
     </permission-map>
 
     <!-- FIELD PERMISSIONS (retracted) -->
-    <permission-map name="Field: Edit Result" acquired="False">
+    <permission-map name="senaite.core: Field: Edit Result" acquired="False">
     </permission-map>
-    <permission-map name="Field: Edit Remarks" acquired="False">
+    <permission-map name="senaite.core: Field: Edit Remarks" acquired="False">
     </permission-map>
-    <permission-map name="Field: Edit Hidden" acquired="False">
+    <permission-map name="senaite.core: Field: Edit Hidden" acquired="False">
     </permission-map>
     <!-- /FIELD PERMISSIONS -->
 
@@ -433,11 +433,11 @@
     </permission-map>
 
     <!-- FIELD PERMISSIONS (rejected) -->
-    <permission-map name="Field: Edit Result" acquired="False">
+    <permission-map name="senaite.core: Field: Edit Result" acquired="False">
     </permission-map>
-    <permission-map name="Field: Edit Remarks" acquired="False">
+    <permission-map name="senaite.core: Field: Edit Remarks" acquired="False">
     </permission-map>
-    <permission-map name="Field: Edit Hidden" acquired="False">
+    <permission-map name="senaite.core: Field: Edit Hidden" acquired="False">
     </permission-map>
     <!-- /FIELD PERMISSIONS -->
 
@@ -477,11 +477,11 @@
     </permission-map>
 
     <!-- FIELD PERMISSIONS (verified) -->
-    <permission-map name="Field: Edit Result" acquired="False">
+    <permission-map name="senaite.core: Field: Edit Result" acquired="False">
     </permission-map>
-    <permission-map name="Field: Edit Remarks" acquired="False">
+    <permission-map name="senaite.core: Field: Edit Remarks" acquired="False">
     </permission-map>
-    <permission-map name="Field: Edit Hidden" acquired="False">
+    <permission-map name="senaite.core: Field: Edit Hidden" acquired="False">
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
       <permission-role>LabClerk</permission-role>
@@ -526,11 +526,11 @@
     </permission-map>
 
     <!-- FIELD PERMISSIONS (published) -->
-    <permission-map name="Field: Edit Result" acquired="False">
+    <permission-map name="senaite.core: Field: Edit Result" acquired="False">
     </permission-map>
-    <permission-map name="Field: Edit Remarks" acquired="False">
+    <permission-map name="senaite.core: Field: Edit Remarks" acquired="False">
     </permission-map>
-    <permission-map name="Field: Edit Hidden" acquired="False">
+    <permission-map name="senaite.core: Field: Edit Hidden" acquired="False">
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
       <permission-role>LabClerk</permission-role>

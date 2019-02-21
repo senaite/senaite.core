@@ -261,7 +261,7 @@ class AnalysesView(BikaListingView):
             return False
 
         # Check if the user is allowed to enter a value to to Result field
-        if not self.has_permission("Field: Edit Result", analysis_obj):
+        if not self.has_permission("senaite.core: Field: Edit Result", analysis_obj):
             return False
 
         # Is the instrument out of date?
@@ -714,9 +714,9 @@ class AnalysesView(BikaListingView):
 
             # Note: As soon as we have a separate content type for field
             #       analysis, we can solely rely on the field permission
-            #       "Field: Edit Result"
+            #       "senaite.core: Field: Edit Result"
             if is_editable:
-                if self.has_permission("Field: Edit Result", analysis_brain):
+                if self.has_permission("senaite.core: Field: Edit Result", analysis_brain):
                     item['allow_edit'].append(interim_keyword)
 
             # Add this analysis' interim fields to the interim_columns list
@@ -1109,7 +1109,7 @@ class AnalysesView(BikaListingView):
 
         full_obj = self.get_object(analysis_brain)
         item['Hidden'] = full_obj.getHidden()
-        if self.has_permission("Field: Edit Hidden", obj=full_obj):
+        if self.has_permission("senaite.core: Field: Edit Hidden", obj=full_obj):
             item['allow_edit'].append('Hidden')
 
     def _folder_item_fieldicons(self, analysis_brain):
