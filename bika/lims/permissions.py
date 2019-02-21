@@ -87,8 +87,9 @@ TransitionVerify = "Transition: Verify"
 # AR Permissions
 # --------------
 # Field Permissions
-FieldEditHidden = "senaite.core: Field Edit Hidden"
-FieldEditResult = "senaite.core: Field: Edit Result"
+FieldEditAnalysisHidden = "senaite.core: Field: Edit Analysis Hidden"
+FieldEditAnalysisResult = "senaite.core: Field: Edit Analysis Result"
+FieldEditAnalysisRemarks = "senaite.core: Field: Edit Analysis Remarks"
 
 
 # Add Permissions:

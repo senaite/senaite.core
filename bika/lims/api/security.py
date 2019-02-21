@@ -39,17 +39,19 @@ def get_mapped_permissions_for(brain_or_object):
 
     A mapped permission is one that is used in the object.
 
-    Each permission string, e.g. "senaite.core: Field: Edit Remarks" is translated by the
-    function `AccessControl.Permission.pname` to a valid attribute name:
+    Each permission string, e.g. "senaite.core: Field: Edit Analysis Remarks" is
+    translated by the function `AccessControl.Permission.pname` to a valid
+    attribute name:
 
+    >>> from bika.lims.permissions import FieldEditAnalysisResult
     >>> AccessControl.Permission import pname
-    >>> pname("senaite.core: Field: Edit Result")
+    >>> pname(FieldEditAnalysisResult)
     _Field__Edit_Result_Permission
 
     This attribute is looked up in the object by `getPermissionMapping`:
 
     >>> from AccessControl.PermissionMapping import getPermissionMapping
-    >>> getPermissionMapping("senaite.core: Field: Edit Result", wrapper)
+    >>> getPermissionMapping(FieldEditAnalysisResult, wrapper)
     ("Manager", "Sampler")
 
     Therefore, only those permissions which have roles mapped on the object

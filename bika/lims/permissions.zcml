@@ -69,6 +69,12 @@
 <permission id="senaite.core.permissions.TransitionVerify" title="Transition: Verify"/>
 
 
+# Analysis Field Permissions
+<permission id="senaite.core.permissions.FieldEditAnalysisHidden" title="senaite.core: Field: Edit Analysis Hidden"/>
+<permission id="senaite.core.permissions.FieldEditAnalysisResult" title="senaite.core: Field: Edit Analysis Result"/>
+<permission id="senaite.core.permissions.FieldEditAnalysisRemarks" title="senaite.core: Field: Edit Analysis Remarks"/>
+
+
 # *** OBSOLETE PERMISSIONS START BELOW ***
 
 

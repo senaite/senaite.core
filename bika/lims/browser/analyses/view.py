@@ -19,7 +19,8 @@ from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.interfaces import IFieldIcons
 from bika.lims.interfaces import IRoutineAnalysis
-from bika.lims.permissions import EditFieldResults
+from bika.lims.permissions import EditFieldResults, FieldEditAnalysisResult, \
+    FieldEditAnalysisHidden
 from bika.lims.permissions import EditResults
 from bika.lims.permissions import ViewResults
 from bika.lims.permissions import ViewRetractedAnalyses
@@ -261,7 +262,7 @@ class AnalysesView(BikaListingView):
             return False
 
         # Check if the user is allowed to enter a value to to Result field
-        if not self.has_permission("senaite.core: Field: Edit Result", analysis_obj):
+        if not self.has_permission(FieldEditAnalysisResult, analysis_obj):
             return False
 
         # Is the instrument out of date?
@@ -714,9 +715,9 @@ class AnalysesView(BikaListingView):
 
             # Note: As soon as we have a separate content type for field
             #       analysis, we can solely rely on the field permission
-            #       "senaite.core: Field: Edit Result"
+            #       "senaite.core: Field: Edit Analysis Result"
             if is_editable:
-                if self.has_permission("senaite.core: Field: Edit Result", analysis_brain):
+                if self.has_permission(FieldEditAnalysisResult, analysis_brain):
                     item['allow_edit'].append(interim_keyword)
 
             # Add this analysis' interim fields to the interim_columns list
@@ -1109,7 +1110,7 @@ class AnalysesView(BikaListingView):
 
         full_obj = self.get_object(analysis_brain)
         item['Hidden'] = full_obj.getHidden()
-        if self.has_permission("senaite.core: Field: Edit Hidden", obj=full_obj):
+        if self.has_permission(FieldEditAnalysisHidden, obj=full_obj):
             item['allow_edit'].append('Hidden')
 
     def _folder_item_fieldicons(self, analysis_brain):

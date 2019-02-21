@@ -406,7 +406,7 @@
     <!-- /GENERIC PERMISSIONS -->
 
 
-    <!-- FIELD PERMISSIONS -->
+    <!-- FIELD PERMISSIONS: Analysis Request -->
     <permission name="senaite.core: Field: Edit Batch" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
@@ -628,8 +628,28 @@
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
-    <!-- /FIELD PERMISSIONS -->
+    <!-- /FIELD PERMISSIONS Analysis Request -->
 
+    <!-- FIELD PERMISSIONS: Analysis -->
+
+    <permission name="senaite.core: Field: Edit Hidden" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Publisher"/>
+    </permission>
+
+    <permission name="senaite.core: Field: Edit Analysis Result" acquire="False">
+      <role name="Analyst"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
+
+    <permission name="senaite.core: Field: Edit Analysis Remarks" acquire="False">
+      <role name="Analyst"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
   </permissions>
 
 </rolemap>
