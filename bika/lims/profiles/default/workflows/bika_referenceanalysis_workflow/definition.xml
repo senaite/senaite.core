@@ -9,8 +9,8 @@
              i18n:domain="senaite.core">
 
   <permission>BIKA: Edit Results</permission>
-  <permission>Transition: Retract</permission>
-  <permission>Transition: Verify</permission>
+  <permission>senaite.core: Transition: Retract</permission>
+  <permission>senaite.core: Transition: Verify</permission>
   <permission>BIKA: View Results</permission>
   <permission>Delete objects</permission>
   <permission>Modify portal content</permission>
@@ -162,13 +162,13 @@
       <permission-role>Owner</permission-role>
     </permission-map>
 
-    <permission-map name="Transition: Retract" acquired="False">
+    <permission-map name="senaite.core: Transition: Retract" acquired="False">
       <permission-role>Analyst</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>
 
-    <permission-map name="Transition: Verify" acquired="False">
+    <permission-map name="senaite.core: Transition: Verify" acquired="False">
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
       <permission-role>Verifier</permission-role>
@@ -306,7 +306,7 @@
               i18n:attributes="title">
     <action url="" category="workflow" icon="">Retract</action>
     <guard>
-      <guard-permission>Transition: Retract</guard-permission>
+      <guard-permission>senaite.core: Transition: Retract</guard-permission>
       <guard-expression>python:here.guard_handler("retract")</guard-expression>
     </guard>
   </transition>
@@ -317,7 +317,7 @@
               i18n:attributes="title">
     <action url="" category="workflow" icon="">Verify</action>
     <guard>
-      <guard-permission>Transition: Verify</guard-permission>
+      <guard-permission>senaite.core: Transition: Verify</guard-permission>
       <guard-expression>python:here.guard_handler("multi_verify")</guard-expression>
     </guard>
   </transition>
@@ -328,7 +328,7 @@
               i18n:attributes="title">
     <action url="" category="workflow" icon="">Verify</action>
     <guard>
-      <guard-permission>Transition: Verify</guard-permission>
+      <guard-permission>senaite.core: Transition: Verify</guard-permission>
       <guard-expression>python:here.guard_handler("verify")</guard-expression>
     </guard>
   </transition>

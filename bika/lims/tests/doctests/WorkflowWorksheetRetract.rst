@@ -206,7 +206,7 @@ The status of the Worksheet and its analyses is `to_be_verified`:
 
 Exactly these roles can retract:
 
-    >>> get_roles_for_permission("Transition: Retract", ws)
+    >>> get_roles_for_permission("senaite.core: Transition: Retract", ws)
     ['LabManager', 'Manager']
 
 Current user can verify because has the `LabManager` role:

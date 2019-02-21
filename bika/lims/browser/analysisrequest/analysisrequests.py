@@ -673,7 +673,7 @@ class AnalysisRequestsView(BikaListingView):
                     self.context.portal_membership.checkPermission
 
                 # TODO Do we really need this check?
-                if checkPermission("Transition: Sample Sample", full_object):
+                if checkPermission("senaite.core: Transition: Sample Sample", full_object):
                     item["required"] = ["getSampler", "getDateSampled"]
                     item["allow_edit"] = ["getSampler", "getDateSampled"]
                     # TODO-performance: hit performance while getting the

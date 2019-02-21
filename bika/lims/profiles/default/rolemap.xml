@@ -135,8 +135,8 @@
         - Analyses **cannot** be cancelled: remove from rejectanalysis WF.
         - Only Samples + setup content types can be cancelled/reinstated.
           Hence, split in 2 permissions:
-           - Transition: Cancel
-           - Transition: Reinstate
+           - senaite.core: Transition: Cancel
+           - senaite.core: Transition: Reinstate
       -->
     </permission>
 
@@ -224,7 +224,7 @@
       -->
     </permission>
 
-    <permission name="Transition: Preserve Sample" acquire="False">
+    <permission name="senaite.core: Transition: Preserve Sample" acquire="False">
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Preserver"/>
@@ -241,7 +241,7 @@
       -->
     </permission>
 
-    <permission name="Transition: Publish Results" acquire="False">
+    <permission name="senaite.core: Transition: Publish Results" acquire="False">
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Publisher"/>
@@ -258,7 +258,7 @@
       -->
     </permission>
 
-    <permission name="Transition: Receive Sample" acquire="False">
+    <permission name="senaite.core: Transition: Receive Sample" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
@@ -276,7 +276,7 @@
       -->
     </permission>
 
-    <permission name="Transition: Retract" acquire="False">
+    <permission name="senaite.core: Transition: Retract" acquire="False">
       <role name="LabManager"/>
       <role name="Manager"/>
       <!-- @xispa conflicts
@@ -296,7 +296,7 @@
       -->
     </permission>
 
-    <permission name="Transition: Sample Sample" acquire="False">
+    <permission name="senaite.core: Transition: Sample Sample" acquire="False">
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Sampler"/>
@@ -317,7 +317,7 @@
       -->
     </permission>
 
-    <permission name="Transition: Schedule Sampling" acquire="False">
+    <permission name="senaite.core: Transition: Schedule Sampling" acquire="False">
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="SamplingCoordinator"/>
@@ -334,7 +334,7 @@
       -->
     </permission>
 
-    <permission name="Transition: Verify" acquire="False">
+    <permission name="senaite.core: Transition: Verify" acquire="False">
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Verifier"/>
@@ -385,7 +385,7 @@
       -->
     </permission>
 
-    <permission name="Transition: Reject Sample" acquire="False">
+    <permission name="senaite.core: Transition: Reject Sample" acquire="False">
       <role name="Client"/>
       <role name="LabManager"/>
       <role name="Manager"/>

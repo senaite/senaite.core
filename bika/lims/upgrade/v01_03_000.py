@@ -270,7 +270,7 @@ def add_create_partition_transition(portal):
     wf_tool = api.get_tool("portal_workflow")
     workflow = wf_tool.getWorkflowById("bika_ar_workflow")
 
-    # Transition: create_partitions
+    # senaite.core: Transition: create_partitions
     update_role_mappings = False
     transition_id = "create_partitions"
     if transition_id not in workflow.transitions:
@@ -846,7 +846,7 @@ def get_rm_candidates_for_referenceanalysisworkflow(portal):
     logger.info("Getting candidates for role mappings: {} ...".format(wf_id))
     workflow = get_workflow_by_id(portal, wf_id)
     candidates = list()
-    if "Transition: Verify" not in workflow.states.to_be_verified.permissions:
+    if "senaite.core: Transition: Verify" not in workflow.states.to_be_verified.permissions:
         candidates.append(
             (wf_id,
              dict(portal_type="ReferenceAnalysis",
@@ -885,7 +885,7 @@ def get_rm_candidates_for_duplicateanalysisworkflow(portal):
     workflow = get_workflow_by_id(portal, wf_id)
 
     candidates = list()
-    if "Transition: Verify" not in workflow.states.to_be_verified.permissions:
+    if "senaite.core: Transition: Verify" not in workflow.states.to_be_verified.permissions:
         candidates.append(
             (wf_id,
              dict(portal_type="DuplicateAnalysis",
@@ -924,7 +924,7 @@ def get_rm_candidates_for_analysisworkfklow(portal):
     workflow = get_workflow_by_id(portal, wf_id)
 
     candidates = list()
-    if "Transition: Verify" not in workflow.states.to_be_verified.permissions:
+    if "senaite.core: Transition: Verify" not in workflow.states.to_be_verified.permissions:
         candidates.append(
             (wf_id,
              dict(portal_type="Analysis",

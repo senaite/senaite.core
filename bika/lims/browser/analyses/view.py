@@ -1006,7 +1006,7 @@ class AnalysesView(BikaListingView):
             return
 
         # Check if the user has "Bika: Verify" privileges
-        if not self.has_permission("Transition: Verify"):
+        if not self.has_permission("senaite.core: Transition: Verify"):
             # User cannot verify, do nothing
             return
 

@@ -73,15 +73,15 @@ FieldEditStorageLocation = "senaite.core: Field: Edit Storage Location"
 FieldEditTemplate = "senaite.core: Field: Edit Template"
 
 # Transition Permissions
-TransitionPreserveSample = "Transition: Preserve Sample"
-TransitionPublishResults = "Transition: Publish Results"
-TransitionReceiveSample = "Transition: Receive Sample"
+TransitionPreserveSample = "senaite.core: Transition: Preserve Sample"
+TransitionPublishResults = "senaite.core: Transition: Publish Results"
+TransitionReceiveSample = "senaite.core: Transition: Receive Sample"
 TransitionRejectAnalysisRequest = "Reject Analysis Request"
-TransitionRejectSample = "Transition: Reject Sample"
-TransitionRetract = "Transition: Retract"
-TransitionSampleSample = "Transition: Sample Sample"
-TransitionScheduleSampling = "Transition: Schedule Sampling"
-TransitionVerify = "Transition: Verify"
+TransitionRejectSample = "senaite.core: Transition: Reject Sample"
+TransitionRetract = "senaite.core: Transition: Retract"
+TransitionSampleSample = "senaite.core: Transition: Sample Sample"
+TransitionScheduleSampling = "senaite.core: Transition: Schedule Sampling"
+TransitionVerify = "senaite.core: Transition: Verify"
 
 
 # AR Permissions

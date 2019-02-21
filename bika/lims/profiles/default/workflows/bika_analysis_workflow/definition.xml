@@ -10,8 +10,8 @@
 
   <permission>BIKA: Assign analyses</permission>
   <permission>BIKA: Unassign analyses</permission>
-  <permission>Transition: Retract</permission>
-  <permission>Transition: Verify</permission>
+  <permission>senaite.core: Transition: Retract</permission>
+  <permission>senaite.core: Transition: Verify</permission>
   <permission>BIKA: View Results</permission>
   <permission>Reject</permission>
   <permission>Modify portal content</permission>
@@ -317,13 +317,13 @@
       <permission-role>Verifier</permission-role>
     </permission-map>
 
-    <permission-map name="Transition: Retract" acquired="False">
+    <permission-map name="senaite.core: Transition: Retract" acquired="False">
       <permission-role>Analyst</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>
 
-    <permission-map name="Transition: Verify" acquired="False">
+    <permission-map name="senaite.core: Transition: Verify" acquired="False">
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
       <permission-role>Verifier</permission-role>
@@ -425,7 +425,7 @@
       <permission-role>Manager</permission-role>
     </permission-map>
 
-    <permission-map name="Transition: Retract" acquired="False">
+    <permission-map name="senaite.core: Transition: Retract" acquired="False">
     </permission-map>
 
     <!-- Analysis cannot be rejected again -->
@@ -553,7 +553,7 @@
       <!-- There is no guard-permission here (all roles can initialize) because
           this transition takes place automatically as soon as the Analysis Request
           is received. Hence, this transition is governed by the permission
-           "Transition: Receive Sample" assigned to Analysis Request -->
+           "senaite.core: Transition: Receive Sample" assigned to Analysis Request -->
       <guard-expression>python:here.guard_handler("initialize")</guard-expression>
     </guard>
   </transition>
@@ -635,7 +635,7 @@
               i18n:attributes="title">
     <action url="" category="workflow" icon="">Retract</action>
     <guard>
-      <guard-permission>Transition: Retract</guard-permission>
+      <guard-permission>senaite.core: Transition: Retract</guard-permission>
       <guard-expression>python:here.guard_handler("retract")</guard-expression>
     </guard>
   </transition>
@@ -659,7 +659,7 @@
               i18n:attributes="title">
     <action url="" category="workflow" icon="">Verify</action>
     <guard>
-      <guard-permission>Transition: Verify</guard-permission>
+      <guard-permission>senaite.core: Transition: Verify</guard-permission>
       <guard-expression>python:here.guard_handler("multi_verify")</guard-expression>
     </guard>
   </transition>
@@ -670,7 +670,7 @@
               i18n:attributes="title">
     <action url="" category="workflow" icon="">Verify</action>
     <guard>
-      <guard-permission>Transition: Verify</guard-permission>
+      <guard-permission>senaite.core: Transition: Verify</guard-permission>
       <guard-expression>python:here.guard_handler("verify")</guard-expression>
     </guard>
   </transition>

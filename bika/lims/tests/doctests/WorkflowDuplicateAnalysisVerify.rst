@@ -175,7 +175,7 @@ Get the duplicate and submit:
 
 Exactly these roles can verify:
 
-    >>> get_roles_for_permission("Transition: Verify", duplicate)
+    >>> get_roles_for_permission("senaite.core: Transition: Verify", duplicate)
     ['LabManager', 'Manager', 'Verifier']
 
 Current user can verify because has the `LabManager` role:

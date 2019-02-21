@@ -58,15 +58,15 @@
 <permission id="senaite.core.permissions.FieldEditTemplate" title="senaite.core: Field: Edit Template"/>
 
 # AR Transition Permissions
-<permission id="senaite.core.permissions.TransitionPreserveSample" title="Transition: Preserve Sample"/>
-<permission id="senaite.core.permissions.TransitionPublishResults" title="Transition: Publish Results"/>
-<permission id="senaite.core.permissions.TransitionReceiveSample" title="Transition: Receive Sample"/>
+<permission id="senaite.core.permissions.TransitionPreserveSample" title="senaite.core: Transition: Preserve Sample"/>
+<permission id="senaite.core.permissions.TransitionPublishResults" title="senaite.core: Transition: Publish Results"/>
+<permission id="senaite.core.permissions.TransitionReceiveSample" title="senaite.core: Transition: Receive Sample"/>
 <permission id="senaite.core.permissions.TransitionRejectAnalysisRequest" title="Reject Analysis Request"/>
-<permission id="senaite.core.permissions.TransitionRejectSample" title="Transition: Reject Sample"/>
-<permission id="senaite.core.permissions.TransitionRetract" title="Transition: Retract"/>
-<permission id="senaite.core.permissions.TransitionSampleSample" title="Transition: Sample Sample"/>
-<permission id="senaite.core.permissions.TransitionScheduleSampling" title="Transition: Schedule Sampling"/>
-<permission id="senaite.core.permissions.TransitionVerify" title="Transition: Verify"/>
+<permission id="senaite.core.permissions.TransitionRejectSample" title="senaite.core: Transition: Reject Sample"/>
+<permission id="senaite.core.permissions.TransitionRetract" title="senaite.core: Transition: Retract"/>
+<permission id="senaite.core.permissions.TransitionSampleSample" title="senaite.core: Transition: Sample Sample"/>
+<permission id="senaite.core.permissions.TransitionScheduleSampling" title="senaite.core: Transition: Schedule Sampling"/>
+<permission id="senaite.core.permissions.TransitionVerify" title="senaite.core: Transition: Verify"/>
 
 
 # Analysis Field Permissions

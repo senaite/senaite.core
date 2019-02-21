@@ -16,18 +16,18 @@
   <permission>BIKA: Edit Field Results</permission>
   <permission>BIKA: Edit Results</permission>
   <permission>BIKA: Manage Invoices</permission>
-  <permission>Transition: Preserve Sample</permission>
-  <permission>Transition: Publish Results</permission>
-  <permission>Transition: Receive Sample</permission>
-  <permission>Transition: Retract</permission>
-  <permission>Transition: Sample Sample</permission>
-  <permission>Transition: Schedule Sampling</permission>
+  <permission>senaite.core: Transition: Preserve Sample</permission>
+  <permission>senaite.core: Transition: Publish Results</permission>
+  <permission>senaite.core: Transition: Receive Sample</permission>
+  <permission>senaite.core: Transition: Retract</permission>
+  <permission>senaite.core: Transition: Sample Sample</permission>
+  <permission>senaite.core: Transition: Schedule Sampling</permission>
   <permission>BIKA: View Results</permission>
   <!-- Client can only reject an AR when is not yet received.
        Labman can only reject an AR when is not yet verified. -->
   <permission>Access contents information</permission>
   <permission>Modify portal content</permission>
-  <permission>Transition: Reject Sample</permission>
+  <permission>senaite.core: Transition: Reject Sample</permission>
   <permission>View</permission>
 
   <!-- Field-specific permissions
@@ -89,16 +89,16 @@
     <permission-map name="BIKA: Edit Field Results" acquired="True"/>
     <permission-map name="BIKA: Edit Results" acquired="True"/>
     <permission-map name="BIKA: Manage Invoices" acquired="True"/>
-    <permission-map name="Transition: Preserve Sample" acquired="True"/>
-    <permission-map name="Transition: Publish Results" acquired="True"/>
-    <permission-map name="Transition: Receive Sample" acquired="True"/>
-    <permission-map name="Transition: Retract" acquired="True"/>
-    <permission-map name="Transition: Sample Sample" acquired="True"/>
-    <permission-map name="Transition: Schedule Sampling" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Preserve Sample" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Publish Results" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Receive Sample" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Retract" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Sample Sample" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Schedule Sampling" acquired="True"/>
     <permission-map name="BIKA: View Results" acquired="True"/>
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
-    <permission-map name="Transition: Reject Sample" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Reject Sample" acquired="True"/>
     <permission-map name="View" acquired="True"/>
     <!-- Field Permissions
          NOTE: This field-specific permissions for "sample_registered" apply to
@@ -158,16 +158,16 @@
     <permission-map name="BIKA: Edit Field Results" acquired="True"/>
     <permission-map name="BIKA: Edit Results" acquired="False"/>
     <permission-map name="BIKA: Manage Invoices" acquired="True"/>
-    <permission-map name="Transition: Preserve Sample" acquired="True"/>
-    <permission-map name="Transition: Publish Results" acquired="True"/>
-    <permission-map name="Transition: Receive Sample" acquired="True"/>
-    <permission-map name="Transition: Retract" acquired="True"/>
-    <permission-map name="Transition: Sample Sample" acquired="True"/>
-    <permission-map name="Transition: Schedule Sampling" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Preserve Sample" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Publish Results" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Receive Sample" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Retract" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Sample Sample" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Schedule Sampling" acquired="True"/>
     <permission-map name="BIKA: View Results" acquired="True"/>
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
-    <permission-map name="Transition: Reject Sample" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Reject Sample" acquired="True"/>
     <permission-map name="View" acquired="True"/>
     <!-- Field Permissions -->
     <permission-map name="senaite.core: Field: Edit Batch" acquired="True"/>
@@ -232,16 +232,16 @@
     <permission-map name="BIKA: Edit Field Results" acquired="True"/>
     <permission-map name="BIKA: Edit Results" acquired="False"/>
     <permission-map name="BIKA: Manage Invoices" acquired="True"/>
-    <permission-map name="Transition: Preserve Sample" acquired="True"/>
-    <permission-map name="Transition: Publish Results" acquired="True"/>
-    <permission-map name="Transition: Receive Sample" acquired="True"/>
-    <permission-map name="Transition: Retract" acquired="True"/>
-    <permission-map name="Transition: Sample Sample" acquired="True"/>
-    <permission-map name="Transition: Schedule Sampling" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Preserve Sample" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Publish Results" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Receive Sample" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Retract" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Sample Sample" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Schedule Sampling" acquired="True"/>
     <permission-map name="BIKA: View Results" acquired="True"/>
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
-    <permission-map name="Transition: Reject Sample" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Reject Sample" acquired="True"/>
     <permission-map name="Verify" acquired="True"/>
     <permission-map name="View" acquired="True"/>
     <!-- Field Permissions -->
@@ -304,16 +304,16 @@
     <permission-map name="BIKA: Edit Field Results" acquired="True"/>
     <permission-map name="BIKA: Edit Results" acquired="False"/>
     <permission-map name="BIKA: Manage Invoices" acquired="True"/>
-    <permission-map name="Transition: Preserve Sample" acquired="True"/>
-    <permission-map name="Transition: Publish Results" acquired="True"/>
-    <permission-map name="Transition: Receive Sample" acquired="True"/>
-    <permission-map name="Transition: Retract" acquired="True"/>
-    <permission-map name="Transition: Sample Sample" acquired="True"/>
-    <permission-map name="Transition: Schedule Sampling" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Preserve Sample" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Publish Results" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Receive Sample" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Retract" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Sample Sample" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Schedule Sampling" acquired="True"/>
     <permission-map name="BIKA: View Results" acquired="True"/>
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
-    <permission-map name="Transition: Reject Sample" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Reject Sample" acquired="True"/>
     <permission-map name="View" acquired="True"/>
     <!-- Field Permissions -->
     <permission-map name="senaite.core: Field: Edit Batch" acquired="True"/>
@@ -376,16 +376,16 @@
     <permission-map name="BIKA: Edit Field Results" acquired="True"/>
     <permission-map name="BIKA: Edit Results" acquired="True"/>
     <permission-map name="BIKA: Manage Invoices" acquired="True"/>
-    <permission-map name="Transition: Preserve Sample" acquired="True"/>
-    <permission-map name="Transition: Publish Results" acquired="True"/>
-    <permission-map name="Transition: Receive Sample" acquired="True"/>
-    <permission-map name="Transition: Retract" acquired="True"/>
-    <permission-map name="Transition: Sample Sample" acquired="True"/>
-    <permission-map name="Transition: Schedule Sampling" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Preserve Sample" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Publish Results" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Receive Sample" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Retract" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Sample Sample" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Schedule Sampling" acquired="True"/>
     <permission-map name="BIKA: View Results" acquired="True"/>
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
-    <permission-map name="Transition: Reject Sample" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Reject Sample" acquired="True"/>
     <permission-map name="View" acquired="True"/>
     <!-- Field Permissions -->
     <permission-map name="senaite.core: Field: Edit Batch" acquired="True"/>
@@ -446,16 +446,16 @@
     <permission-map name="BIKA: Edit Field Results" acquired="True"/>
     <permission-map name="BIKA: Edit Results" acquired="True"/>
     <permission-map name="BIKA: Manage Invoices" acquired="True"/>
-    <permission-map name="Transition: Preserve Sample" acquired="True"/>
-    <permission-map name="Transition: Publish Results" acquired="True"/>
-    <permission-map name="Transition: Receive Sample" acquired="True"/>
-    <permission-map name="Transition: Retract" acquired="True"/>
-    <permission-map name="Transition: Sample Sample" acquired="True"/>
-    <permission-map name="Transition: Schedule Sampling" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Preserve Sample" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Publish Results" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Receive Sample" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Retract" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Sample Sample" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Schedule Sampling" acquired="True"/>
     <permission-map name="BIKA: View Results" acquired="True"/>
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
-    <permission-map name="Transition: Reject Sample" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Reject Sample" acquired="True"/>
     <permission-map name="View" acquired="True"/>
     <!-- Field Permissions -->
     <permission-map name="senaite.core: Field: Edit Batch" acquired="True"/>
@@ -517,16 +517,16 @@
     <permission-map name="BIKA: Edit Field Results" acquired="False"/>
     <permission-map name="BIKA: Edit Results" acquired="False"/>
     <permission-map name="BIKA: Manage Invoices" acquired="True"/>
-    <permission-map name="Transition: Preserve Sample" acquired="True"/>
-    <permission-map name="Transition: Publish Results" acquired="True"/>
-    <permission-map name="Transition: Receive Sample" acquired="True"/>
-    <permission-map name="Transition: Retract" acquired="True"/>
-    <permission-map name="Transition: Sample Sample" acquired="True"/>
-    <permission-map name="Transition: Schedule Sampling" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Preserve Sample" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Publish Results" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Receive Sample" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Retract" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Sample Sample" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Schedule Sampling" acquired="True"/>
     <permission-map name="BIKA: View Results" acquired="True"/>
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
-    <permission-map name="Transition: Reject Sample" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Reject Sample" acquired="True"/>
     <permission-map name="View" acquired="True"/>
     <!-- Field Permissions -->
     <permission-map name="senaite.core: Field: Edit Batch" acquired="True"/>
@@ -586,16 +586,16 @@
     <permission-map name="BIKA: Edit Field Results" acquired="True"/>
     <permission-map name="BIKA: Edit Results" acquired="True"/>
     <permission-map name="BIKA: Manage Invoices" acquired="True"/>
-    <permission-map name="Transition: Preserve Sample" acquired="True"/>
-    <permission-map name="Transition: Publish Results" acquired="True"/>
-    <permission-map name="Transition: Receive Sample" acquired="True"/>
-    <permission-map name="Transition: Retract" acquired="True"/>
-    <permission-map name="Transition: Sample Sample" acquired="True"/>
-    <permission-map name="Transition: Schedule Sampling" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Preserve Sample" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Publish Results" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Receive Sample" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Retract" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Sample Sample" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Schedule Sampling" acquired="True"/>
     <permission-map name="BIKA: View Results" acquired="True"/>
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
-    <permission-map name="Transition: Reject Sample" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Reject Sample" acquired="True"/>
     <permission-map name="View" acquired="True"/>
     <!-- Field Permissions -->
     <permission-map name="senaite.core: Field: Edit Batch" acquired="True"/>
@@ -658,16 +658,16 @@
     <permission-map name="BIKA: Edit Field Results" acquired="False"/>
     <permission-map name="BIKA: Edit Results" acquired="False"/>
     <permission-map name="BIKA: Manage Invoices" acquired="True"/>
-    <permission-map name="Transition: Preserve Sample" acquired="True"/>
-    <permission-map name="Transition: Publish Results" acquired="True"/>
-    <permission-map name="Transition: Receive Sample" acquired="True"/>
-    <permission-map name="Transition: Retract" acquired="True"/>
-    <permission-map name="Transition: Sample Sample" acquired="True"/>
-    <permission-map name="Transition: Schedule Sampling" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Preserve Sample" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Publish Results" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Receive Sample" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Retract" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Sample Sample" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Schedule Sampling" acquired="True"/>
     <permission-map name="BIKA: View Results" acquired="True"/>
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
-    <permission-map name="Transition: Reject Sample" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Reject Sample" acquired="False"/>
     <permission-map name="View" acquired="True"/>
     <!-- Field Permissions (all readonly) -->
     <permission-map name="senaite.core: Field: Edit Batch" acquired="False"/>
@@ -728,16 +728,16 @@
     <permission-map name="BIKA: Edit Field Results" acquired="False"/>
     <permission-map name="BIKA: Edit Results" acquired="False"/>
     <permission-map name="BIKA: Manage Invoices" acquired="True"/>
-    <permission-map name="Transition: Preserve Sample" acquired="True"/>
-    <permission-map name="Transition: Publish Results" acquired="True"/>
-    <permission-map name="Transition: Receive Sample" acquired="True"/>
-    <permission-map name="Transition: Retract" acquired="True"/>
-    <permission-map name="Transition: Sample Sample" acquired="True"/>
-    <permission-map name="Transition: Schedule Sampling" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Preserve Sample" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Publish Results" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Receive Sample" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Retract" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Sample Sample" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Schedule Sampling" acquired="True"/>
     <permission-map name="BIKA: View Results" acquired="True"/>
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
-    <permission-map name="Transition: Reject Sample" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Reject Sample" acquired="True"/>
     <permission-map name="View" acquired="True"/>
     <!-- Field Permissions (all readonly) -->
     <permission-map name="senaite.core: Field: Edit Batch" acquired="False"/>
@@ -796,16 +796,16 @@
     <permission-map name="BIKA: Edit Field Results" acquired="False"/>
     <permission-map name="BIKA: Edit Results" acquired="False"/>
     <permission-map name="BIKA: Manage Invoices" acquired="True"/>
-    <permission-map name="Transition: Preserve Sample" acquired="True"/>
-    <permission-map name="Transition: Publish Results" acquired="True"/>
-    <permission-map name="Transition: Receive Sample" acquired="True"/>
-    <permission-map name="Transition: Retract" acquired="True"/>
-    <permission-map name="Transition: Sample Sample" acquired="True"/>
-    <permission-map name="Transition: Schedule Sampling" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Preserve Sample" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Publish Results" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Receive Sample" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Retract" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Sample Sample" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Schedule Sampling" acquired="True"/>
     <permission-map name="BIKA: View Results" acquired="True"/>
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
-    <permission-map name="Transition: Reject Sample" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Reject Sample" acquired="True"/>
     <permission-map name="View" acquired="True"/>
     <!-- Field Permissions (all readonly) -->
     <permission-map name="senaite.core: Field: Edit Batch" acquired="False"/>
@@ -863,16 +863,16 @@
     <permission-map name="BIKA: Edit Field Results" acquired="False"/>
     <permission-map name="BIKA: Edit Results" acquired="False"/>
     <permission-map name="BIKA: Manage Invoices" acquired="True"/>
-    <permission-map name="Transition: Preserve Sample" acquired="True"/>
-    <permission-map name="Transition: Publish Results" acquired="True"/>
-    <permission-map name="Transition: Receive Sample" acquired="True"/>
-    <permission-map name="Transition: Retract" acquired="True"/>
-    <permission-map name="Transition: Sample Sample" acquired="True"/>
-    <permission-map name="Transition: Schedule Sampling" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Preserve Sample" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Publish Results" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Receive Sample" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Retract" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Sample Sample" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Schedule Sampling" acquired="True"/>
     <permission-map name="BIKA: View Results" acquired="True"/>
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
-    <permission-map name="Transition: Reject Sample" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Reject Sample" acquired="True"/>
     <permission-map name="View" acquired="True"/>
     <!-- Field Permissions (all readonly) -->
     <permission-map name="senaite.core: Field: Edit Batch" acquired="False"/>
@@ -935,16 +935,16 @@
     <permission-map name="BIKA: Edit Field Results" acquired="False"/>
     <permission-map name="BIKA: Edit Results" acquired="False"/>
     <permission-map name="BIKA: Manage Invoices" acquired="True"/>
-    <permission-map name="Transition: Preserve Sample" acquired="True"/>
-    <permission-map name="Transition: Publish Results" acquired="True"/>
-    <permission-map name="Transition: Receive Sample" acquired="True"/>
-    <permission-map name="Transition: Retract" acquired="True"/>
-    <permission-map name="Transition: Sample Sample" acquired="True"/>
-    <permission-map name="Transition: Schedule Sampling" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Preserve Sample" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Publish Results" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Receive Sample" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Retract" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Sample Sample" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Schedule Sampling" acquired="True"/>
     <permission-map name="BIKA: View Results" acquired="True"/>
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
-    <permission-map name="Transition: Reject Sample" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Reject Sample" acquired="True"/>
     <permission-map name="View" acquired="True"/>
     <!-- Field Permissions (all readonly) -->
     <permission-map name="senaite.core: Field: Edit Batch" acquired="False"/>
@@ -1020,7 +1020,7 @@
   <transition transition_id="prepublish" title="Prepublish" new_state="" trigger="USER" before_script="" after_script="" i18n:attributes="title">
     <action url="" category="workflow" icon="">Prepublish</action>
     <guard>
-      <guard-permission>Transition: Publish Results</guard-permission>
+      <guard-permission>senaite.core: Transition: Publish Results</guard-permission>
       <guard-expression>python:here.guard_handler("prepublish")</guard-expression>
     </guard>
   </transition>
@@ -1028,7 +1028,7 @@
   <transition transition_id="preserve" title="Preserve" new_state="sample_due" trigger="USER" before_script="" after_script="" i18n:attributes="title">
     <action url="" category="workflow" icon="">Preserve</action>
     <guard>
-      <guard-permission>Transition: Preserve Sample</guard-permission>
+      <guard-permission>senaite.core: Transition: Preserve Sample</guard-permission>
       <guard-expression>python:here.guard_handler("preserve")</guard-expression>
     </guard>
   </transition>
@@ -1036,7 +1036,7 @@
   <transition transition_id="publish" title="Publish" new_state="published" trigger="USER" before_script="" after_script="" i18n:attributes="title">
     <action url="" category="workflow" icon="">Publish</action>
     <guard>
-      <guard-permission>Transition: Publish Results</guard-permission>
+      <guard-permission>senaite.core: Transition: Publish Results</guard-permission>
       <guard-expression>python:here.guard_handler("publish")</guard-expression>
     </guard>
   </transition>
@@ -1045,7 +1045,7 @@
               trigger="USER" before_script="" after_script="" i18n:attributes="title">
     <action url="" category="workflow" icon="">Receive sample</action>
     <guard>
-      <guard-permission>Transition: Receive Sample</guard-permission>
+      <guard-permission>senaite.core: Transition: Receive Sample</guard-permission>
       <guard-expression>python:here.guard_handler("receive")</guard-expression>
     </guard>
   </transition>
@@ -1075,12 +1075,12 @@
       <guard-expression>python:here.guard_handler("create_partitions")</guard-expression>
     </guard>
   </transition>
-  <!-- /Transition: create_partitions -->
+  <!-- /senaite.core: Transition: create_partitions -->
 
   <transition transition_id="republish" title="Republish" new_state="" trigger="USER" before_script="" after_script="" i18n:attributes="title">
     <action url="" category="workflow" icon="">Republish</action>
     <guard>
-      <guard-permission>Transition: Publish Results</guard-permission>
+      <guard-permission>senaite.core: Transition: Publish Results</guard-permission>
       <guard-expression>python:here.guard_handler("republish")</guard-expression>
     </guard>
   </transition>
@@ -1115,7 +1115,7 @@
   <transition transition_id="invalidate" title="Invalidate" new_state="invalid" trigger="USER" before_script="" after_script="" i18n:attributes="title">
     <action url="" category="workflow" icon="">Invalidate</action>
     <guard>
-      <guard-permission>Transition: Retract</guard-permission>
+      <guard-permission>senaite.core: Transition: Retract</guard-permission>
       <guard-expression>python:here.guard_handler("invalidate")</guard-expression>
     </guard>
   </transition>
@@ -1128,7 +1128,7 @@
               i18n:attributes="title">
     <action url="" category="workflow" icon="">Sample</action>
     <guard>
-      <guard-permission>Transition: Sample Sample</guard-permission>
+      <guard-permission>senaite.core: Transition: Sample Sample</guard-permission>
       <guard-expression>python:here.guard_handler("sample")</guard-expression>
     </guard>
   </transition>
@@ -1159,7 +1159,7 @@
   <transition transition_id="schedule_sampling" title="Schedule sampling" new_state="scheduled_sampling" trigger="USER" before_script="" after_script="" i18n:attributes="title">
     <action url="" category="workflow" icon="">Schedule sampling</action>
     <guard>
-      <guard-permission>Transition: Schedule Sampling</guard-permission>
+      <guard-permission>senaite.core: Transition: Schedule Sampling</guard-permission>
       <guard-expression>python:here.guard_handler("schedule_sampling")</guard-expression>
     </guard>
   </transition>
@@ -1180,7 +1180,7 @@
   <!-- Transition: Verify
        This transition takes place automatically when transition "verify" is
        performed for all analyses this Analysis Request contains. Hence, this
-       transition actually relies on the "Transition: Verify" permission at
+       transition actually relies on the "senaite.core: Transition: Verify" permission at
        analyses level and there is no need of a guard-permission here.
   -->
   <transition transition_id="verify" title="Verify" new_state="verified" trigger="USER" before_script="" after_script="" i18n:attributes="title">
@@ -1194,7 +1194,7 @@
     <action url="" category="workflow" icon="">Reject</action>
     <guard>
       <guard-expression>python:here.bika_setup.isRejectionWorkflowEnabled()</guard-expression>
-      <guard-permission>Transition: Reject Sample</guard-permission>
+      <guard-permission>senaite.core: Transition: Reject Sample</guard-permission>
     </guard>
   </transition>
 

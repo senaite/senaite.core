@@ -370,7 +370,7 @@ The status of the Analysis Request and its analyses is `to_be_verified`:
 Exactly these roles can verify:
 
     >>> analysis = analyses[0]
-    >>> get_roles_for_permission("Transition: Verify", analysis)
+    >>> get_roles_for_permission("senaite.core: Transition: Verify", analysis)
     ['LabManager', 'Manager', 'Verifier']
 
 Current user can verify because has the `LabManager` role:

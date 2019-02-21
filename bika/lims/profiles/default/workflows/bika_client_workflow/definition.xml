@@ -146,7 +146,7 @@
       <guard-permission>Activate client</guard-permission>
     </guard>
   </transition>
-  <!-- /Transition: activate -->
+  <!-- /senaite.core: Transition: activate -->
 
   <!-- Transition: deactivate -->
   <transition transition_id="deactivate" title="Deactivate" new_state="inactive" trigger="USER" before_script="" after_script="" i18n:attributes="title">
@@ -156,7 +156,7 @@
       <guard-permission>Deactivate client</guard-permission>
     </guard>
   </transition>
-  <!-- /Transition: deactivate -->
+  <!-- /senaite.core: Transition: deactivate -->
 
   <variable variable_id="action" for_catalog="False" for_status="True" update_always="True">
     <description>Previous transition</description>
