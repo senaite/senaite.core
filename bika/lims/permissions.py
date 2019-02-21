@@ -84,6 +84,12 @@ TransitionScheduleSampling = "Transition: Schedule Sampling"
 TransitionVerify = "Transition: Verify"
 
 
+# AR Permissions
+# --------------
+# Field Permissions
+FieldEditHidden = "senaite.core: Field Edit Hidden"
+FieldEditResult = "senaite.core: Field: Edit Result"
+
 
 # Add Permissions:
 # ----------------
