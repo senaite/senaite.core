@@ -619,7 +619,7 @@
 
     <!-- FIELD PERMISSIONS: Analysis -->
 
-    <permission name="senaite.core: Field: Edit Hidden" acquire="False">
+    <permission name="senaite.core: Field: Edit Analysis Hidden" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>

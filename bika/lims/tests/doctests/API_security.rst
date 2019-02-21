@@ -15,6 +15,9 @@ Needed Imports:
 
     >>> from bika.lims import api
     >>> from bika.lims.api.security import *
+    >>> from bika.lims.permissions import FieldEditAnalysisHidden
+    >>> from bika.lims.permissions import FieldEditAnalysisResult
+    >>> from bika.lims.permissions improt FieldEditAnalysisRemarks
     >>> from bika.lims.utils.analysisrequest import create_analysisrequest
     >>> from bika.lims.workflow import doActionFor as do_action_for
     >>> from DateTime import DateTime
@@ -193,7 +196,7 @@ Get the granted permissions of a role
 This function returns the permissions that are granted to a role:
 
     >>> get_permissions_for_role("Sampler", cu)
-    ['senaite.core: Field: Edit Analysis Remarks', 'senaite.core: Field: Edit Result']
+    ['senaite.core: Field: Edit Analysis Remarks', 'senaite.core: Field: Edit Analysis Result']
 
 
 Get the mapped roles of a permission
@@ -202,7 +205,7 @@ Get the mapped roles of a permission
 This function is the opposite of `get_permissions_for_role` and returns
 the roles for a given permission:
 
-    >>> get_roles_for_permission("senaite.core: Field: Edit Analysis Result", cu)
+    >>> get_roles_for_permission(FieldEditAnalysisResult, cu)
     ('Manager', 'Sampler')
 
 
@@ -284,12 +287,12 @@ Granting a permission to a role
 This function allows to grant a permission to one or more roles:
 
     >>> get_permissions_for_role("Sampler", cu)
-    ['senaite.core: Field: Edit Analysis Remarks', 'senaite.core: Field: Edit Result']
+    ['senaite.core: Field: Edit Analysis Remarks', 'senaite.core: Field: Edit Analysis Result']
 
-    >>> grant_permission_for(cu, "senaite.core: Field: Edit Hidden", "Sampler", acquire=0)
+    >>> grant_permission_for(cu, FieldEditAnalysisHidden, "Sampler", acquire=0)
 
     >>> get_permissions_for_role("Sampler", cu)
-    ['senaite.core: Field: Edit Hidden', 'senaite.core: Field: Edit Analysis Remarks', 'senaite.core: Field: Edit Result']
+    ['senaite.core: Field: Edit Analysis Hidden', 'senaite.core: Field: Edit Analysis Remarks', 'senaite.core: Field: Edit Analysis Result']
 
 
 Revoking a permission from a role
@@ -297,10 +300,10 @@ Revoking a permission from a role
 
 This function allows to revoke a permission of one or more roles:
 
-    >>> revoke_permission_for(cu, "senaite.core: Field: Edit Hidden", "Sampler", acquire=0)
+    >>> revoke_permission_for(cu, FieldEditAnalysisHidden, "Sampler", acquire=0)
 
     >>> get_permissions_for_role("Sampler", cu)
-    ['senaite.core: Field: Edit Analysis Remarks', 'senaite.core: Field: Edit Result']
+    ['senaite.core: Field: Edit Analysis Remarks', 'senaite.core: Field: Edit Analysis Result']
 
 
 Manage permissions
@@ -308,22 +311,22 @@ Manage permissions
 
 This function allows to set a permission explicitly  to the given roles (drop other roles):
 
-    >>> grant_permission_for(cu, "senaite.core: Field: Edit Analysis Result", ["Analyst", "LabClerk"])
+    >>> grant_permission_for(cu, FieldEditAnalysisResult, ["Analyst", "LabClerk"])
 
     >>> get_permissions_for_role("Analyst", cu)
-    ['senaite.core: Field: Edit Result']
+    ['senaite.core: Field: Edit Analysis Result']
 
     >>> get_permissions_for_role("LabClerk", cu)
-    ['senaite.core: Field: Edit Result']
+    ['senaite.core: Field: Edit Analysis Result']
 
 Now we use `manage_permission_for` to grant this permission *only* for Samplers:
 
-    >>> manage_permission_for(cu, "senaite.core: Field: Edit Analysis Result", ["Sampler"])
+    >>> manage_permission_for(cu, FieldEditAnalysisResult, ["Sampler"])
 
 The Sampler has now the permission granted:
 
     >>> get_permissions_for_role("Sampler", cu)
-    ['senaite.core: Field: Edit Analysis Remarks', 'senaite.core: Field: Edit Result']
+    ['senaite.core: Field: Edit Analysis Remarks', 'senaite.core: Field: Edit Analysis Result']
 
 But the Analyst and LabClerk not anymore:
 

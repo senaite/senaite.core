@@ -24,7 +24,7 @@
        "write_permission" defaults to "Modify portal content" -->
   <permission>senaite.core: Field: Edit Analysis Result</permission>
   <permission>senaite.core: Field: Edit Analysis Remarks</permission>
-  <permission>senaite.core: Field: Edit Hidden</permission>
+  <permission>senaite.core: Field: Edit Analysis Hidden</permission>
 
 
   <!-- *** STATES *** -->
@@ -85,7 +85,7 @@
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>
-    <permission-map name="senaite.core: Field: Edit Hidden" acquired="False">
+    <permission-map name="senaite.core: Field: Edit Analysis Hidden" acquired="False">
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
       <permission-role>LabClerk</permission-role>
@@ -125,7 +125,7 @@
     </permission-map>
     <permission-map name="senaite.core: Field: Edit Analysis Remarks" acquired="False">
     </permission-map>
-    <permission-map name="senaite.core: Field: Edit Hidden" acquired="False">
+    <permission-map name="senaite.core: Field: Edit Analysis Hidden" acquired="False">
     </permission-map>
     <!-- /FIELD PERMISSIONS -->
 
@@ -179,7 +179,7 @@
     </permission-map>
     <permission-map name="senaite.core: Field: Edit Analysis Remarks" acquired="False">
     </permission-map>
-    <permission-map name="senaite.core: Field: Edit Hidden" acquired="False">
+    <permission-map name="senaite.core: Field: Edit Analysis Hidden" acquired="False">
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
       <permission-role>LabClerk</permission-role>
@@ -219,7 +219,7 @@
     </permission-map>
     <permission-map name="senaite.core: Field: Edit Analysis Remarks" acquired="False">
     </permission-map>
-    <permission-map name="senaite.core: Field: Edit Hidden" acquired="False">
+    <permission-map name="senaite.core: Field: Edit Analysis Hidden" acquired="False">
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
       <permission-role>LabClerk</permission-role>
@@ -261,7 +261,7 @@
     </permission-map>
     <permission-map name="senaite.core: Field: Edit Analysis Remarks" acquired="False">
     </permission-map>
-    <permission-map name="senaite.core: Field: Edit Hidden" acquired="False">
+    <permission-map name="senaite.core: Field: Edit Analysis Hidden" acquired="False">
     </permission-map>
     <!-- /FIELD PERMISSIONS -->
 
