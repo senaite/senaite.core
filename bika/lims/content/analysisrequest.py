@@ -37,7 +37,19 @@ from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IAnalysisRequest, ICancellable, \
     IAnalysisRequestPartition
 # Bika Permissions
-from bika.lims.permissions import ManageInvoices
+from bika.lims.permissions import ManageInvoices, FieldEditContact, \
+    FieldEditClient, FieldEditBatch, FieldEditSamplingRound, FieldEditTemplate, \
+    FieldEditProfiles, FieldEditDateSampled, FieldEditSampler, \
+    FieldEditScheduledSampler, FieldEditSamplingDate, FieldEditSampleType, \
+    FieldEditContainer, FieldEditPreservation, FieldEditDatePreserved, \
+    FieldEditPreserver, FieldEditRejectionReasons, FieldEditSpecification, \
+    FieldEditPublicationSpecifications, FieldEditSamplePoint, \
+    FieldEditStorageLocation, FieldEditClientOrderNumber, \
+    FieldEditClientReference, FieldEditClientSampleID, \
+    FieldEditSamplingDeviation, FieldEditSampleCondition, FieldEditPriority, \
+    FieldEditEnvironmentalConditions, FieldEditComposite, \
+    FieldEditInvoiceExclude, FieldEditDateReceived, FieldEditMemberDiscount, \
+    FieldEditResultsInterpretation
 # Bika Utils
 from bika.lims.utils import getUsers
 from bika.lims.utils import user_email
@@ -85,7 +97,7 @@ schema = BikaSchema.copy() + Schema((
         allowed_types=('Contact',),
         mode="rw",
         read_permission=View,
-        write_permission="senaite.core: Field: Edit Contact",
+        write_permission=FieldEditContact,
         widget=ReferenceWidget(
             label=_("Contact"),
             render_own_label=True,
@@ -121,7 +133,7 @@ schema = BikaSchema.copy() + Schema((
         relationship='AnalysisRequestCCContact',
         mode="rw",
         read_permission=View,
-        write_permission="senaite.core: Field: Edit Contact",
+        write_permission=FieldEditContact,
         widget=ReferenceWidget(
             label=_("CC Contacts"),
             description=_("The contacts used in CC for email notifications"),
@@ -148,7 +160,7 @@ schema = BikaSchema.copy() + Schema((
         'CCEmails',
         mode="rw",
         read_permission=View,
-        write_permission="senaite.core: Field: Edit Contact",
+        write_permission=FieldEditContact,
         acquire=True,
         acquire_fieldname="CCEmails",
         widget=StringWidget(
@@ -170,7 +182,7 @@ schema = BikaSchema.copy() + Schema((
         relationship='AnalysisRequestClient',
         mode="rw",
         read_permission=View,
-        write_permission="senaite.core: Field: Edit Client",
+        write_permission=FieldEditClient,
         widget=ReferenceWidget(
             label=_("Client"),
             description=_("The assigned client of this request"),
@@ -217,7 +229,7 @@ schema = BikaSchema.copy() + Schema((
         relationship='AnalysisRequestBatch',
         mode="rw",
         read_permission=View,
-        write_permission="senaite.core: Field: Edit Batch",
+        write_permission=FieldEditBatch,
         widget=ReferenceWidget(
             label=_("Batch"),
             size=20,
@@ -239,7 +251,7 @@ schema = BikaSchema.copy() + Schema((
         relationship='AnalysisRequestSamplingRound',
         mode="rw",
         read_permission=View,
-        write_permission="senaite.core: Field: Edit Sampling Round",
+        write_permission=FieldEditSamplingRound,
         widget=ReferenceWidget(
             label=_("Sampling Round"),
             description=_("The assigned sampling round of this request"),
@@ -262,7 +274,7 @@ schema = BikaSchema.copy() + Schema((
         relationship='AnalysisRequestSubGroup',
         mode="rw",
         read_permission=View,
-        write_permission="senaite.core: Field: Edit Batch",
+        write_permission=FieldEditBatch,
         widget=ReferenceWidget(
             label=_("Batch Sub-group"),
             description=_("The assigned batch sub group of this request"),
@@ -294,7 +306,7 @@ schema = BikaSchema.copy() + Schema((
         relationship='AnalysisRequestARTemplate',
         mode="rw",
         read_permission=View,
-        write_permission="senaite.core: Field: Edit Template",
+        write_permission=FieldEditTemplate,
         widget=ReferenceWidget(
             label=_("Sample Template"),
             description=_("The predefined values of the Sample template are set "
@@ -341,7 +353,7 @@ schema = BikaSchema.copy() + Schema((
         relationship='AnalysisRequestAnalysisProfiles',
         mode="rw",
         read_permission=View,
-        write_permission="senaite.core: Field: Edit Profiles",
+        write_permission=FieldEditProfiles,
         widget=ReferenceWidget(
             label=_("Analysis Profiles"),
             description=_("Analysis profiles apply a certain set of analyses"),
@@ -364,7 +376,7 @@ schema = BikaSchema.copy() + Schema((
         'DateSampled',
         mode="rw",
         read_permission=View,
-        write_permission="senaite.core: Field: Edit Date Sampled",
+        write_permission=FieldEditDateSampled,
         widget=DateTimeWidget(
             label=_("Date Sampled"),
             description=_("The date when the sample was taken"),
@@ -383,7 +395,7 @@ schema = BikaSchema.copy() + Schema((
         'Sampler',
         mode="rw",
         read_permission=View,
-        write_permission="senaite.core: Field: Edit Sampler",
+        write_permission=FieldEditSampler,
         vocabulary='getSamplers',
         widget=BikaSelectionWidget(
             format='select',
@@ -402,7 +414,7 @@ schema = BikaSchema.copy() + Schema((
         'ScheduledSamplingSampler',
         mode="rw",
         read_permission=View,
-        write_permission="senaite.core: Field: Edit Scheduled Sampler",
+        write_permission=FieldEditScheduledSampler,
         vocabulary='getSamplers',
         widget=BikaSelectionWidget(
             description=_("Define the sampler supposed to do the sample in "
@@ -420,7 +432,7 @@ schema = BikaSchema.copy() + Schema((
         'SamplingDate',
         mode="rw",
         read_permission=View,
-        write_permission="senaite.core: Field: Edit Sampling Date",
+        write_permission=FieldEditSamplingDate,
         widget=DateTimeWidget(
             label=_("Expected Sampling Date"),
             description=_("The date when the sample will be taken"),
@@ -441,7 +453,7 @@ schema = BikaSchema.copy() + Schema((
         allowed_types='SampleType',
         mode="rw",
         read_permission=View,
-        write_permission="senaite.core: Field: Edit Sample Type",
+        write_permission=FieldEditSampleType,
         widget=ReferenceWidget(
             label=_("Sample Type"),
             render_own_label=True,
@@ -461,7 +473,7 @@ schema = BikaSchema.copy() + Schema((
         allowed_types='Container',
         mode="rw",
         read_permission=View,
-        write_permission="senaite.core: Field: Edit Container",
+        write_permission=FieldEditContainer,
         widget=ReferenceWidget(
             label=_("Container"),
             render_own_label=True,
@@ -480,7 +492,7 @@ schema = BikaSchema.copy() + Schema((
         allowed_types='Preservation',
         mode="rw",
         read_permission=View,
-        write_permission="senaite.core: Field: Edit Preservation",
+        write_permission=FieldEditPreservation,
         widget=ReferenceWidget(
             label=_("Preservation"),
             render_own_label=True,
@@ -496,7 +508,7 @@ schema = BikaSchema.copy() + Schema((
     DateTimeField('DatePreserved',
         mode="rw",
         read_permission=View,
-        write_permission="senaite.core: Field: Edit Date Preserved",
+        write_permission=FieldEditDatePreserved,
         widget=DateTimeWidget(
             label=_("Date Preserved"),
             description=_("The date when the sample was preserved"),
@@ -513,7 +525,7 @@ schema = BikaSchema.copy() + Schema((
         required=0,
         mode="rw",
         read_permission=View,
-        write_permission="senaite.core: Field: Edit Preserver",
+        write_permission=FieldEditPreserver,
         vocabulary='getPreservers',
         widget=BikaSelectionWidget(
             format='select',
@@ -540,7 +552,7 @@ schema = BikaSchema.copy() + Schema((
         'RejectionReasons',
         mode="rw",
         read_permission=View,
-        write_permission="senaite.core: Field: Edit Rejection Reasons",
+        write_permission=FieldEditRejectionReasons,
         widget=RejectionWidget(
             label=_("Sample Rejection"),
             description=_("Set the Sample Rejection workflow and the reasons"),
@@ -559,7 +571,7 @@ schema = BikaSchema.copy() + Schema((
         relationship='AnalysisRequestAnalysisSpec',
         mode="rw",
         read_permission=View,
-        write_permission="senaite.core: Field: Edit Specification",
+        write_permission=FieldEditSpecification,
         widget=ReferenceWidget(
             label=_("Analysis Specification"),
             description=_("Choose default Sample specification values"),
@@ -602,7 +614,7 @@ schema = BikaSchema.copy() + Schema((
         relationship='AnalysisRequestPublicationSpec',
         mode="rw",
         read_permission=View,
-        write_permission="senaite.core: Field: Edit Publication Specification",
+        write_permission=FieldEditPublicationSpecifications,
         widget=ReferenceWidget(
             label=_("Publication Specification"),
             description=_(
@@ -625,7 +637,7 @@ schema = BikaSchema.copy() + Schema((
         allowed_types='SamplePoint',
         mode="rw",
         read_permission=View,
-        write_permission="senaite.core: Field: Edit Sample Point",
+        write_permission=FieldEditSamplePoint,
         widget=ReferenceWidget(
             label=_("Sample Point"),
             description=_("Location where sample was taken"),
@@ -646,7 +658,7 @@ schema = BikaSchema.copy() + Schema((
         allowed_types='StorageLocation',
         mode="rw",
         read_permission=View,
-        write_permission="senaite.core: Field: Edit Storage Location",
+        write_permission=FieldEditStorageLocation,
         widget=ReferenceWidget(
             label=_("Storage Location"),
             description=_("Location where sample is kept"),
@@ -666,7 +678,7 @@ schema = BikaSchema.copy() + Schema((
         'ClientOrderNumber',
         mode="rw",
         read_permission=View,
-        write_permission="senaite.core: Field: Edit Client Order Number",
+        write_permission=FieldEditClientOrderNumber,
         widget=StringWidget(
             label=_("Client Order Number"),
             description=_("The client side order number for this request"),
@@ -683,7 +695,7 @@ schema = BikaSchema.copy() + Schema((
         'ClientReference',
         mode="rw",
         read_permission=View,
-        write_permission="senaite.core: Field: Edit Client Reference",
+        write_permission=FieldEditClientReference,
         widget=StringWidget(
             label=_("Client Reference"),
             description=_("The client side reference for this request"),
@@ -699,7 +711,7 @@ schema = BikaSchema.copy() + Schema((
         'ClientSampleID',
         mode="rw",
         read_permission=View,
-        write_permission="senaite.core: Field: Edit Client Sample ID",
+        write_permission=FieldEditClientSampleID,
         widget=StringWidget(
             label=_("Client Sample ID"),
             description=_("The client side identifier of the sample"),
@@ -717,7 +729,7 @@ schema = BikaSchema.copy() + Schema((
         allowed_types='SamplingDeviation',
         mode="rw",
         read_permission=View,
-        write_permission="senaite.core: Field: Edit Sampling Deviation",
+        write_permission=FieldEditSamplingDeviation,
         widget=ReferenceWidget(
             label=_("Sampling Deviation"),
             description=_("Deviation between the sample and how it "
@@ -739,7 +751,7 @@ schema = BikaSchema.copy() + Schema((
         allowed_types='SampleCondition',
         mode="rw",
         read_permission=View,
-        write_permission="senaite.core: Field: Edit Sample Condition",
+        write_permission=FieldEditSampleCondition,
         widget=ReferenceWidget(
             label=_("Sample condition"),
             description=_("The condition of the sample"),
@@ -761,7 +773,7 @@ schema = BikaSchema.copy() + Schema((
         vocabulary=PRIORITIES,
         mode='rw',
         read_permission=View,
-        write_permission="senaite.core: Field: Edit Priority",
+        write_permission=FieldEditPriority,
         widget=PrioritySelectionWidget(
             label=_('Priority'),
             format='select',
@@ -774,7 +786,7 @@ schema = BikaSchema.copy() + Schema((
         'EnvironmentalConditions',
         mode="rw",
         read_permission=View,
-        write_permission="senaite.core: Field: Edit Environmental Conditions",
+        write_permission=FieldEditEnvironmentalConditions,
         widget=StringWidget(
             label=_("Environmental conditions"),
             description=_("The environmental condition during sampling"),
@@ -813,7 +825,7 @@ schema = BikaSchema.copy() + Schema((
         default=False,
         mode="rw",
         read_permission=View,
-        write_permission="senaite.core: Field: Edit Composite",
+        write_permission=FieldEditComposite,
         widget=BooleanWidget(
             label=_("Composite"),
             render_own_label=True,
@@ -829,7 +841,7 @@ schema = BikaSchema.copy() + Schema((
         default=False,
         mode="rw",
         read_permission=View,
-        write_permission="senaite.core: Field: Edit Invoice Exclude",
+        write_permission=FieldEditInvoiceExclude,
         widget=BooleanWidget(
             label=_("Invoice Exclude"),
             description=_("Should the analyses be excluded from the invoice?"),
@@ -914,7 +926,7 @@ schema = BikaSchema.copy() + Schema((
         'DateReceived',
         mode="rw",
         read_permission=View,
-        write_permission="senaite.core: Field: Edit Date Received",
+        write_permission=FieldEditDateReceived,
         widget=DateTimeWidget(
             label=_("Date Sample Received"),
             show_time=True,
@@ -957,7 +969,7 @@ schema = BikaSchema.copy() + Schema((
         default_method='getDefaultMemberDiscount',
         mode="rw",
         read_permission=View,
-        write_permission="senaite.core: Field: Edit Member Discount",
+        write_permission=FieldEditMemberDiscount,
         widget=DecimalWidget(
             label=_("Member discount %"),
             description=_("Enter percentage value eg. 33.0"),
@@ -1202,7 +1214,7 @@ schema = BikaSchema.copy() + Schema((
         # getResultsInterpretation returns a str with html tags
         # to conserve the txt format in the report.
         read_permission=View,
-        write_permission="senaite.core: Field: Edit Results Interpretation",
+        write_permission=FieldEditResultsInterpretation,
         widget=RichWidget(
             description=_("Comments or results interpretation"),
             label=_("Results Interpretation"),
@@ -1217,7 +1229,7 @@ schema = BikaSchema.copy() + Schema((
     RecordsField(
         'ResultsInterpretationDepts',
         read_permission=View,
-        write_permission="senaite.core: Field: Edit Results Interpretation",
+        write_permission=FieldEditResultsInterpretation,
         subfields=('uid', 'richtext'),
         subfield_labels={
             'uid': _('Department'),
