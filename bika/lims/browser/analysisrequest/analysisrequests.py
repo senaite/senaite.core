@@ -12,7 +12,7 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.config import PRIORITIES
-from bika.lims.permissions import AddAnalysisRequest
+from bika.lims.permissions import AddAnalysisRequest, TransitionSampleSample
 from bika.lims.permissions import ManageAnalysisRequests
 from bika.lims.utils import get_image
 from bika.lims.utils import get_progress_bar_html
@@ -673,7 +673,7 @@ class AnalysisRequestsView(BikaListingView):
                     self.context.portal_membership.checkPermission
 
                 # TODO Do we really need this check?
-                if checkPermission("senaite.core: Transition: Sample Sample", full_object):
+                if checkPermission(TransitionSampleSample, full_object):
                     item["required"] = ["getSampler", "getDateSampled"]
                     item["allow_edit"] = ["getSampler", "getDateSampled"]
                     # TODO-performance: hit performance while getting the

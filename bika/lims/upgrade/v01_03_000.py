@@ -21,6 +21,7 @@ from bika.lims.interfaces import IDuplicateAnalysis
 from bika.lims.interfaces import INumberGenerator
 from bika.lims.interfaces import IReferenceAnalysis
 from bika.lims.interfaces.analysis import IRequestAnalysis
+from bika.lims.permissions import TransitionVerify
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
 from bika.lims.workflow import ActionHandlerPool
@@ -270,7 +271,7 @@ def add_create_partition_transition(portal):
     wf_tool = api.get_tool("portal_workflow")
     workflow = wf_tool.getWorkflowById("bika_ar_workflow")
 
-    # senaite.core: Transition: create_partitions
+    # Transition: create_partitions
     update_role_mappings = False
     transition_id = "create_partitions"
     if transition_id not in workflow.transitions:
@@ -846,7 +847,7 @@ def get_rm_candidates_for_referenceanalysisworkflow(portal):
     logger.info("Getting candidates for role mappings: {} ...".format(wf_id))
     workflow = get_workflow_by_id(portal, wf_id)
     candidates = list()
-    if "senaite.core: Transition: Verify" not in workflow.states.to_be_verified.permissions:
+    if TransitionVerify not in workflow.states.to_be_verified.permissions:
         candidates.append(
             (wf_id,
              dict(portal_type="ReferenceAnalysis",
@@ -885,7 +886,7 @@ def get_rm_candidates_for_duplicateanalysisworkflow(portal):
     workflow = get_workflow_by_id(portal, wf_id)
 
     candidates = list()
-    if "senaite.core: Transition: Verify" not in workflow.states.to_be_verified.permissions:
+    if TransitionVerify not in workflow.states.to_be_verified.permissions:
         candidates.append(
             (wf_id,
              dict(portal_type="DuplicateAnalysis",
@@ -924,7 +925,7 @@ def get_rm_candidates_for_analysisworkfklow(portal):
     workflow = get_workflow_by_id(portal, wf_id)
 
     candidates = list()
-    if "senaite.core: Transition: Verify" not in workflow.states.to_be_verified.permissions:
+    if TransitionVerify not in workflow.states.to_be_verified.permissions:
         candidates.append(
             (wf_id,
              dict(portal_type="Analysis",

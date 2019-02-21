@@ -20,7 +20,7 @@ from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.interfaces import IFieldIcons
 from bika.lims.interfaces import IRoutineAnalysis
 from bika.lims.permissions import EditFieldResults, FieldEditAnalysisResult, \
-    FieldEditAnalysisHidden
+    FieldEditAnalysisHidden, TransitionVerify
 from bika.lims.permissions import EditResults
 from bika.lims.permissions import ViewResults
 from bika.lims.permissions import ViewRetractedAnalyses
@@ -1006,7 +1006,7 @@ class AnalysesView(BikaListingView):
             return
 
         # Check if the user has "Bika: Verify" privileges
-        if not self.has_permission("senaite.core: Transition: Verify"):
+        if not self.has_permission(TransitionVerify):
             # User cannot verify, do nothing
             return
 

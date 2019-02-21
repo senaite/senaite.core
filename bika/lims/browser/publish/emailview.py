@@ -257,7 +257,7 @@ class EmailView(BrowserView):
         transitions = {"verified": "publish",
                        "published": "republish"}
         transition = transitions.get(status, "prepublish")
-        logger.info("AR senaite.core: Transition: {} -> {}".format(status, transition))
+        logger.info("AR Transition: {} -> {}".format(status, transition))
         try:
             wf.doActionFor(ar, transition)
             return True
