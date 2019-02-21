@@ -27,7 +27,7 @@ from bika.lims.config import ATTACHMENT_OPTIONS, SERVICE_POINT_OF_CAPTURE
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IBaseAnalysis
 from bika.lims.permissions import FieldEditAnalysisResult, \
-    FieldEditAnalysisHidden
+    FieldEditAnalysisHidden, FieldEditAnalysisRemarks
 from bika.lims.utils import to_utf8 as _c
 from zope.interface import implements
 
@@ -651,7 +651,7 @@ ProtocolID = StringField(
 Remarks = TextField(
     'Remarks',
     read_permission=View,
-    write_permission=FieldEditRemarks,
+    write_permission=FieldEditAnalysisRemarks,
     schemata='Description'
 )
 
