@@ -17,7 +17,7 @@ Needed Imports:
     >>> from bika.lims.api.security import *
     >>> from bika.lims.permissions import FieldEditAnalysisHidden
     >>> from bika.lims.permissions import FieldEditAnalysisResult
-    >>> from bika.lims.permissions improt FieldEditAnalysisRemarks
+    >>> from bika.lims.permissions import FieldEditAnalysisRemarks
     >>> from bika.lims.utils.analysisrequest import create_analysisrequest
     >>> from bika.lims.workflow import doActionFor as do_action_for
     >>> from DateTime import DateTime
