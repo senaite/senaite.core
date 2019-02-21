@@ -88,18 +88,7 @@
       <role name="LabManager"/>
       <role name="Manager"/>
       <!-- @xispa conflicts
-      Usage in workflows:
-        - ar_workflow.xml: as regular permission
-        - worksheet_workflow: as regular permission
-
-      Usage in views:
-        - NO USE
-
-      Usage in code:
-        - checkpermission in Attachment viewlet for ARs and WS.
-
-      Additional notes:
-        - Needs to be added explicitly in worksheet_workflow
+      **NO CHANGES REQUIRED**
       -->
     </permission>
 
@@ -203,6 +192,8 @@
       <role name="LabManager"/>
       <role name="Manager"/>
       <!-- @xispa conflicts
+      **NO CHANGES REQUIRED**
+
       Usage in workflows:
         - ar_workflow.xml: not bound to any transition/guard
 
@@ -217,9 +208,6 @@
       Additional notes:
         - Invoicing functionality is wonky.
           Do we really want/need to support invoicing?
-
-      ar_workflow permissions:
-        - NO CHANGES REQUIRED
       -->
     </permission>
 
