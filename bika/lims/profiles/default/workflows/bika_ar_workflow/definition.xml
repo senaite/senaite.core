@@ -152,7 +152,13 @@
     <!-- /TRANSITIONS -->
 
     <!-- MANAGED PERMISSIONS -->
-    <permission-map name="senaite.core: Add Analysis" acquired="True"/>
+    <permission-map name="senaite.core: Add Analysis" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <!-- Roles with this permission not granted by default in rolemap -->
+      <permission-role>Sampler</permission-role>
+    </permission-map>
     <permission-map name="senaite.core: Add Attachment" acquired="True"/>
     <permission-map name="BIKA: Cancel and reinstate" acquired="True"/>
     <permission-map name="BIKA: Edit Field Results" acquired="True"/>
@@ -226,7 +232,13 @@
     <!-- /TRANSITIONS -->
 
     <!-- MANAGED PERMISSIONS -->
-    <permission-map name="senaite.core: Add Analysis" acquired="True"/>
+    <permission-map name="senaite.core: Add Analysis" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <!-- Roles with this permission not granted by default in rolemap -->
+      <permission-role>Sampler</permission-role>
+    </permission-map>
     <permission-map name="senaite.core: Add Attachment" acquired="True"/>
     <permission-map name="BIKA: Cancel and reinstate" acquired="True"/>
     <permission-map name="BIKA: Edit Field Results" acquired="True"/>
@@ -511,7 +523,11 @@
     <!-- /TRANSITIONS -->
 
     <!-- MANAGED PERMISSIONS -->
-    <permission-map name="senaite.core: Add Analysis" acquired="True"/>
+    <permission-map name="senaite.core: Add Analysis" acquired="False">
+      <!-- LabClerk role has this permission  granted by default in rolemap -->
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
     <permission-map name="senaite.core: Add Attachment" acquired="True"/>
     <permission-map name="BIKA: Cancel and reinstate" acquired="False"/>
     <permission-map name="BIKA: Edit Field Results" acquired="False"/>

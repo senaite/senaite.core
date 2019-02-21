@@ -76,10 +76,9 @@
       <role name="Manager"/>
       <!-- @xispa conflicts
       ar_workflow permissions:
-      - scheduled_sampling: +Sampler, +Owner
-      - to_be_sampled:      +Sampler, +Owner
+      - scheduled_sampling: +Owner
+      - to_be_sampled:      +Owner
       - sample_due:         +Owner
-      - to_be_verified:     -LabClerk
       -->
     </permission>
 
