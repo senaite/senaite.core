@@ -70,7 +70,7 @@
 
 
     <!-- GENERIC PERMISSIONS -->
-    <permission name="BIKA: Add Analysis" acquire="False">
+    <permission name="senaite.core: Add Analysis" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
@@ -83,7 +83,7 @@
       -->
     </permission>
 
-    <permission name="BIKA: Add Attachment" acquire="False">
+    <permission name="senaite.core: Add Attachment" acquire="False">
       <role name="Analyst"/>
       <role name="LabClerk"/>
       <role name="LabManager"/>

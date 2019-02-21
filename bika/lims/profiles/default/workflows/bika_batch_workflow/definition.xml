@@ -8,7 +8,7 @@
              manager_bypass="False"
              i18n:domain="senaite.core">
 
-  <permission>BIKA: Add Analysis Request</permission>
+  <permission>senaite.core: Add Analysis Request</permission>
   <permission>BIKA: Close Batch</permission>
   <permission>BIKA: Edit Batch</permission>
   <permission>BIKA: Reopen Batch</permission>
@@ -18,7 +18,7 @@
   <state state_id="closed" title="Closed" i18n:attributes="title">
     <description>The batch can't be edited and Samples cannot be attached</description>
     <exit-transition transition_id="open" />
-    <permission-map name="BIKA: Add Analysis Request" acquired="False">
+    <permission-map name="senaite.core: Add Analysis Request" acquired="False">
     </permission-map>
     <permission-map name="BIKA: Close Batch" acquired="False">
     </permission-map>
@@ -42,7 +42,7 @@
   <state state_id="open" title="Open" i18n:attributes="title">
     <description>The batch can be edited and Samples can be attached</description>
     <exit-transition transition_id="close" />
-    <permission-map name="BIKA: Add Analysis Request" acquired="False">
+    <permission-map name="senaite.core: Add Analysis Request" acquired="False">
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>

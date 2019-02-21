@@ -61,7 +61,6 @@
 <permission id="senaite.core.permissions.TransitionPreserveSample" title="senaite.core: Transition: Preserve Sample"/>
 <permission id="senaite.core.permissions.TransitionPublishResults" title="senaite.core: Transition: Publish Results"/>
 <permission id="senaite.core.permissions.TransitionReceiveSample" title="senaite.core: Transition: Receive Sample"/>
-<permission id="senaite.core.permissions.TransitionRejectAnalysisRequest" title="Reject Analysis Request"/>
 <permission id="senaite.core.permissions.TransitionRejectSample" title="senaite.core: Transition: Reject Sample"/>
 <permission id="senaite.core.permissions.TransitionRetract" title="senaite.core: Transition: Retract"/>
 <permission id="senaite.core.permissions.TransitionSampleSample" title="senaite.core: Transition: Sample Sample"/>
@@ -80,25 +79,25 @@
 
 # Add Permissions:
 # ----------------
-<permission id="bika.lims.permissions.AddAnalysisProfile" title="BIKA: Add AnalysisProfile"/>
-<permission id="bika.lims.permissions.AddARTemplate" title="BIKA: Add ARTemplate"/>
-<permission id="bika.lims.permissions.AddAnalysis" title="BIKA: Add Analysis"/>
-<permission id="bika.lims.permissions.AddAnalysisRequest" title="BIKA: Add Analysis Request"/>
-<permission id="bika.lims.permissions.AddAnalysisSpec" title="BIKA: Add AnalysisSpec"/>
-<permission id="bika.lims.permissions.AddAttachment" title="BIKA: Add Attachment"/>
-<permission id="bika.lims.permissions.AddBatch" title="BIKA: Add Batch"/>
-<permission id="bika.lims.permissions.AddClient" title="BIKA: Add Client"/>
-<permission id="bika.lims.permissions.AddInvoice" title="BIKA: Add Invoice"/>
-<permission id="bika.lims.permissions.AddMethod" title="BIKA: Add Method"/>
-<permission id="bika.lims.permissions.AddMultifile" title="BIKA: Add Multifile"/>
-<permission id="bika.lims.permissions.AddPricelist" title="BIKA: Add Pricelist"/>
-<permission id="bika.lims.permissions.AddSample" title="BIKA: Add Sample"/>
-<permission id="bika.lims.permissions.AddSupplyOrder" title="BIKA: Add SupplyOrder"/>
-<permission id="bika.lims.permissions.AddSamplePoint" title="BIKA: Add SamplePoint"/>
-<permission id="bika.lims.permissions.AddSampleMatrix" title="BIKA: Add SampleMatrix"/>
-<permission id="bika.lims.permissions.AddSamplingDeviation" title="BIKA: Add SamplingDeviation"/>
-<permission id="bika.lims.permissions.AddSRTemplate" title="BIKA: Add SRTemplate"/>
-<permission id="bika.lims.permissions.AddSubGroup" title="BIKA: Add Sub-group"/>
+<permission id="bika.lims.permissions.AddAnalysisProfile" title="senaite.core: Add AnalysisProfile"/>
+<permission id="bika.lims.permissions.AddARTemplate" title="senaite.core: Add ARTemplate"/>
+<permission id="bika.lims.permissions.AddAnalysis" title="senaite.core: Add Analysis"/>
+<permission id="bika.lims.permissions.AddAnalysisRequest" title="senaite.core: Add Analysis Request"/>
+<permission id="bika.lims.permissions.AddAnalysisSpec" title="senaite.core: Add AnalysisSpec"/>
+<permission id="bika.lims.permissions.AddAttachment" title="senaite.core: Add Attachment"/>
+<permission id="bika.lims.permissions.AddBatch" title="senaite.core: Add Batch"/>
+<permission id="bika.lims.permissions.AddClient" title="senaite.core: Add Client"/>
+<permission id="bika.lims.permissions.AddInvoice" title="senaite.core: Add Invoice"/>
+<permission id="bika.lims.permissions.AddMethod" title="senaite.core: Add Method"/>
+<permission id="bika.lims.permissions.AddMultifile" title="senaite.core: Add Multifile"/>
+<permission id="bika.lims.permissions.AddPricelist" title="senaite.core: Add Pricelist"/>
+<permission id="bika.lims.permissions.AddSample" title="senaite.core: Add Sample"/>
+<permission id="bika.lims.permissions.AddSupplyOrder" title="senaite.core: Add SupplyOrder"/>
+<permission id="bika.lims.permissions.AddSamplePoint" title="senaite.core: Add SamplePoint"/>
+<permission id="bika.lims.permissions.AddSampleMatrix" title="senaite.core: Add SampleMatrix"/>
+<permission id="bika.lims.permissions.AddSamplingDeviation" title="senaite.core: Add SamplingDeviation"/>
+<permission id="bika.lims.permissions.AddSRTemplate" title="senaite.core: Add SRTemplate"/>
+<permission id="bika.lims.permissions.AddSubGroup" title="senaite.core: Add Sub-group"/>
 <permission id="bika.lims.DispatchOrder" title="BIKA: Dispatch Order"/>
 <permission id="bika.lims.ManageARImport" title="BIKA: Manage ARImport"/>
 

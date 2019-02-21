@@ -10,8 +10,8 @@
 
   <!-- *** MANAGED PERMISSIONS  *** -->
 
-  <permission>BIKA: Add Analysis</permission>
-  <permission>BIKA: Add Attachment</permission>
+  <permission>senaite.core: Add Analysis</permission>
+  <permission>senaite.core: Add Attachment</permission>
   <permission>BIKA: Cancel and reinstate</permission>
   <permission>BIKA: Edit Field Results</permission>
   <permission>BIKA: Edit Results</permission>
@@ -83,8 +83,8 @@
     <!-- /TRANSITIONS -->
 
     <!-- MANAGED PERMISSIONS -->
-    <permission-map name="BIKA: Add Analysis" acquired="True"/>
-    <permission-map name="BIKA: Add Attachment" acquired="True"/>
+    <permission-map name="senaite.core: Add Analysis" acquired="True"/>
+    <permission-map name="senaite.core: Add Attachment" acquired="True"/>
     <permission-map name="BIKA: Cancel and reinstate" acquired="True"/>
     <permission-map name="BIKA: Edit Field Results" acquired="True"/>
     <permission-map name="BIKA: Edit Results" acquired="True"/>
@@ -152,8 +152,8 @@
     <!-- /TRANSITIONS -->
 
     <!-- MANAGED PERMISSIONS -->
-    <permission-map name="BIKA: Add Analysis" acquired="True"/>
-    <permission-map name="BIKA: Add Attachment" acquired="True"/>
+    <permission-map name="senaite.core: Add Analysis" acquired="True"/>
+    <permission-map name="senaite.core: Add Attachment" acquired="True"/>
     <permission-map name="BIKA: Cancel and reinstate" acquired="True"/>
     <permission-map name="BIKA: Edit Field Results" acquired="True"/>
     <permission-map name="BIKA: Edit Results" acquired="False"/>
@@ -226,8 +226,8 @@
     <!-- /TRANSITIONS -->
 
     <!-- MANAGED PERMISSIONS -->
-    <permission-map name="BIKA: Add Analysis" acquired="True"/>
-    <permission-map name="BIKA: Add Attachment" acquired="True"/>
+    <permission-map name="senaite.core: Add Analysis" acquired="True"/>
+    <permission-map name="senaite.core: Add Attachment" acquired="True"/>
     <permission-map name="BIKA: Cancel and reinstate" acquired="True"/>
     <permission-map name="BIKA: Edit Field Results" acquired="True"/>
     <permission-map name="BIKA: Edit Results" acquired="False"/>
@@ -298,8 +298,8 @@
     <!-- TRANSITIONS -->
 
     <!-- MANAGED PERMISSIONS -->
-    <permission-map name="BIKA: Add Analysis" acquired="True"/>
-    <permission-map name="BIKA: Add Attachment" acquired="True"/>
+    <permission-map name="senaite.core: Add Analysis" acquired="True"/>
+    <permission-map name="senaite.core: Add Attachment" acquired="True"/>
     <permission-map name="BIKA: Cancel and reinstate" acquired="True"/>
     <permission-map name="BIKA: Edit Field Results" acquired="True"/>
     <permission-map name="BIKA: Edit Results" acquired="False"/>
@@ -370,8 +370,8 @@
     <!-- /TRANSITIONS -->
 
     <!-- MANAGED PERMISSIONS -->
-    <permission-map name="BIKA: Add Analysis" acquired="True"/>
-    <permission-map name="BIKA: Add Attachment" acquired="True"/>
+    <permission-map name="senaite.core: Add Analysis" acquired="True"/>
+    <permission-map name="senaite.core: Add Attachment" acquired="True"/>
     <permission-map name="BIKA: Cancel and reinstate" acquired="True"/>
     <permission-map name="BIKA: Edit Field Results" acquired="True"/>
     <permission-map name="BIKA: Edit Results" acquired="True"/>
@@ -440,8 +440,8 @@
     <!-- TRANSITIONS -->
 
     <!-- MANAGED PERMISSIONS -->
-    <permission-map name="BIKA: Add Analysis" acquired="True"/>
-    <permission-map name="BIKA: Add Attachment" acquired="True"/>
+    <permission-map name="senaite.core: Add Analysis" acquired="True"/>
+    <permission-map name="senaite.core: Add Attachment" acquired="True"/>
     <permission-map name="BIKA: Cancel and reinstate" acquired="True"/>
     <permission-map name="BIKA: Edit Field Results" acquired="True"/>
     <permission-map name="BIKA: Edit Results" acquired="True"/>
@@ -511,8 +511,8 @@
     <!-- /TRANSITIONS -->
 
     <!-- MANAGED PERMISSIONS -->
-    <permission-map name="BIKA: Add Analysis" acquired="True"/>
-    <permission-map name="BIKA: Add Attachment" acquired="True"/>
+    <permission-map name="senaite.core: Add Analysis" acquired="True"/>
+    <permission-map name="senaite.core: Add Attachment" acquired="True"/>
     <permission-map name="BIKA: Cancel and reinstate" acquired="False"/>
     <permission-map name="BIKA: Edit Field Results" acquired="False"/>
     <permission-map name="BIKA: Edit Results" acquired="False"/>
@@ -580,8 +580,8 @@
     <!-- /TRANSITIONS -->
 
     <!-- MANAGED PERMISSIONS -->
-    <permission-map name="BIKA: Add Analysis" acquired="True"/>
-    <permission-map name="BIKA: Add Attachment" acquired="True"/>
+    <permission-map name="senaite.core: Add Analysis" acquired="True"/>
+    <permission-map name="senaite.core: Add Attachment" acquired="True"/>
     <permission-map name="BIKA: Cancel and reinstate" acquired="True"/>
     <permission-map name="BIKA: Edit Field Results" acquired="True"/>
     <permission-map name="BIKA: Edit Results" acquired="True"/>
@@ -651,8 +651,8 @@
     <!-- MANAGED PERMISSIONS (partially readonly) -->
 
     <!-- Hide the 'Manage Analyses' tab -->
-    <permission-map name="BIKA: Add Analysis" acquired="False"/>
-    <permission-map name="BIKA: Add Attachment" acquired="True"/>
+    <permission-map name="senaite.core: Add Analysis" acquired="False"/>
+    <permission-map name="senaite.core: Add Attachment" acquired="True"/>
     <permission-map name="BIKA: Cancel and reinstate" acquired="False"/>
     <!-- Hide the 'Manage Results' tab -->
     <permission-map name="BIKA: Edit Field Results" acquired="False"/>
@@ -721,8 +721,8 @@
     <!-- MANAGED PERMISSIONS (partially readonly) -->
 
     <!-- Hide the 'Manage Analyses' tab -->
-    <permission-map name="BIKA: Add Analysis" acquired="False"/>
-    <permission-map name="BIKA: Add Attachment" acquired="True"/>
+    <permission-map name="senaite.core: Add Analysis" acquired="False"/>
+    <permission-map name="senaite.core: Add Attachment" acquired="True"/>
     <permission-map name="BIKA: Cancel and reinstate" acquired="False"/>
     <!-- Hide the 'Manage Results' tab -->
     <permission-map name="BIKA: Edit Field Results" acquired="False"/>
@@ -789,8 +789,8 @@
     <!-- MANAGED PERMISSIONS (partially readonly) -->
 
     <!-- Hide the 'Manage Analyses' tab -->
-    <permission-map name="BIKA: Add Analysis" acquired="False"/>
-    <permission-map name="BIKA: Add Attachment" acquired="True"/>
+    <permission-map name="senaite.core: Add Analysis" acquired="False"/>
+    <permission-map name="senaite.core: Add Attachment" acquired="True"/>
     <permission-map name="BIKA: Cancel and reinstate" acquired="False"/>
     <!-- Hide the 'Manage Results' tab -->
     <permission-map name="BIKA: Edit Field Results" acquired="False"/>
@@ -856,8 +856,8 @@
     <!-- MANAGED PERMISSIONS (partially readonly) -->
 
     <!-- Hide the 'Manage Analyses' tab -->
-    <permission-map name="BIKA: Add Analysis" acquired="False"/>
-    <permission-map name="BIKA: Add Attachment" acquired="True"/>
+    <permission-map name="senaite.core: Add Analysis" acquired="False"/>
+    <permission-map name="senaite.core: Add Attachment" acquired="True"/>
     <permission-map name="BIKA: Cancel and reinstate" acquired="False"/>
     <!-- Hide the 'Manage Results' tab -->
     <permission-map name="BIKA: Edit Field Results" acquired="False"/>
@@ -928,8 +928,8 @@
     <!-- MANAGED PERMISSIONS (partially readonly) -->
 
     <!-- Hide the 'Manage Analyses' tab -->
-    <permission-map name="BIKA: Add Analysis" acquired="False"/>
-    <permission-map name="BIKA: Add Attachment" acquired="True"/>
+    <permission-map name="senaite.core: Add Analysis" acquired="False"/>
+    <permission-map name="senaite.core: Add Attachment" acquired="True"/>
     <permission-map name="BIKA: Cancel and reinstate" acquired="True"/>
     <!-- Hide the 'Manage Results' tab -->
     <permission-map name="BIKA: Edit Field Results" acquired="False"/>
@@ -1012,7 +1012,7 @@
               after_script="" i18n:attributes="title">
     <action url="" category="workflow" icon="">No sampling workflow</action>
     <guard>
-      <guard-permission>BIKA: Add Analysis Request</guard-permission>
+      <guard-permission>senaite.core: Add Analysis Request</guard-permission>
       <guard-expression>python:here.guard_handler("no_sampling_workflow")</guard-expression>
     </guard>
   </transition>

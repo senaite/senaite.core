@@ -8,7 +8,7 @@
              manager_bypass="False"
              i18n:domain="senaite.core">
 
-  <permission>BIKA: Add Attachment</permission>
+  <permission>senaite.core: Add Attachment</permission>
   <permission>BIKA: Assign analyses</permission>
   <permission>BIKA: Edit Worksheet</permission>
   <permission>senaite.core: Transition: Retract</permission>
@@ -19,7 +19,7 @@
   <state state_id="attachment_due" title="Attachment due" i18n:attributes="title">
     <exit-transition transition_id="attach" />
     <exit-transition transition_id="reject" />
-    <permission-map name="BIKA: Add Attachment" acquired="False">
+    <permission-map name="senaite.core: Add Attachment" acquired="False">
       <permission-role>Analyst</permission-role>
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -61,7 +61,7 @@
 
   <state state_id="open" title="Open" i18n:attributes="title">
     <exit-transition transition_id="submit" />
-    <permission-map name="BIKA: Add Attachment" acquired="False">
+    <permission-map name="senaite.core: Add Attachment" acquired="False">
       <permission-role>Analyst</permission-role>
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -103,7 +103,7 @@
 
   <state state_id="rejected" title="Rejected" i18n:attributes="title">
     <exit-transition transition_id="" />
-    <permission-map name="BIKA: Add Attachment" acquired="False">
+    <permission-map name="senaite.core: Add Attachment" acquired="False">
       <permission-role>Manager</permission-role>
     </permission-map>
     <permission-map name="BIKA: Assign analyses" acquired="False">
@@ -130,7 +130,7 @@
     <exit-transition transition_id="retract" />
     <exit-transition transition_id="reject" />
     <exit-transition transition_id="rollback_to_open" />
-    <permission-map name="BIKA: Add Attachment" acquired="False">
+    <permission-map name="senaite.core: Add Attachment" acquired="False">
       <permission-role>Analyst</permission-role>
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -174,7 +174,7 @@
 
   <state state_id="verified" title="Verified" i18n:attributes="title">
     <exit-transition transition_id="retract" />
-    <permission-map name="BIKA: Add Attachment" acquired="False">
+    <permission-map name="senaite.core: Add Attachment" acquired="False">
       <permission-role>Analyst</permission-role>
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>

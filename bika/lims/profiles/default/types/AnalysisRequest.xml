@@ -47,7 +47,7 @@
          i18n:attributes="title"
          i18n:domain="plone"
          visible="True">
-     <permission value="BIKA: Add Analysis"/>
+     <permission value="senaite.core: Add Analysis"/>
  </action>
 
  <action title="Manage Results"

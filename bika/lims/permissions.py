@@ -76,7 +76,6 @@ FieldEditTemplate = "senaite.core: Field: Edit Template"
 TransitionPreserveSample = "senaite.core: Transition: Preserve Sample"
 TransitionPublishResults = "senaite.core: Transition: Publish Results"
 TransitionReceiveSample = "senaite.core: Transition: Receive Sample"
-TransitionRejectAnalysisRequest = "Reject Analysis Request"
 TransitionRejectSample = "senaite.core: Transition: Reject Sample"
 TransitionRetract = "senaite.core: Transition: Retract"
 TransitionSampleSample = "senaite.core: Transition: Sample Sample"
@@ -94,26 +93,26 @@ FieldEditAnalysisRemarks = "senaite.core: Field: Edit Analysis Remarks"
 
 # Add Permissions:
 # ----------------
-AddAnalysis = 'BIKA: Add Analysis'
-AddAnalysisProfile = 'BIKA: Add AnalysisProfile'
-AddAnalysisRequest = 'BIKA: Add Analysis Request'
-AddAnalysisSpec = 'BIKA: Add AnalysisSpec'
-AddAttachment = 'BIKA: Add Attachment'
-AddARTemplate = 'BIKA: Add ARTemplate'
-AddBatch = 'BIKA: Add Batch'
-AddClient = 'BIKA: Add Client'
-AddInvoice = 'BIKA: Add Invoice'
-AddMethod = 'BIKA: Add Method'
-AddMultifile = 'BIKA: Add Multifile'
-AddPricelist = 'BIKA: Add Pricelist'
-AddSupplyOrder = 'BIKA: Add SupplyOrder'
-AddSample = 'BIKA: Add Sample'
-AddSampleMatrix = 'BIKA: Add SampleMatrix'
-AddSamplePoint = 'BIKA: Add SamplePoint'
-AddSamplingDeviation = 'BIKA: Add SamplingDeviation'
-AddSamplingRound = 'BIKA: Add SamplingRound'
-AddSRTemplate = 'BIKA: Add SRTemplate'
-AddSubGroup = 'BIKA: Add Sub-group'
+AddAnalysis = 'senaite.core: Add Analysis'
+AddAnalysisProfile = 'senaite.core: Add AnalysisProfile'
+AddAnalysisRequest = 'senaite.core: Add Analysis Request'
+AddAnalysisSpec = 'senaite.core: Add AnalysisSpec'
+AddAttachment = 'senaite.core: Add Attachment'
+AddARTemplate = 'senaite.core: Add ARTemplate'
+AddBatch = 'senaite.core: Add Batch'
+AddClient = 'senaite.core: Add Client'
+AddInvoice = 'senaite.core: Add Invoice'
+AddMethod = 'senaite.core: Add Method'
+AddMultifile = 'senaite.core: Add Multifile'
+AddPricelist = 'senaite.core: Add Pricelist'
+AddSupplyOrder = 'senaite.core: Add SupplyOrder'
+AddSample = 'senaite.core: Add Sample'
+AddSampleMatrix = 'senaite.core: Add SampleMatrix'
+AddSamplePoint = 'senaite.core: Add SamplePoint'
+AddSamplingDeviation = 'senaite.core: Add SamplingDeviation'
+AddSamplingRound = 'senaite.core: Add SamplingRound'
+AddSRTemplate = 'senaite.core: Add SRTemplate'
+AddSubGroup = 'senaite.core: Add Sub-group'
 
 # Default Archetypes Add Permission
 ADD_CONTENT_PERMISSION = permissions.AddPortalContent
