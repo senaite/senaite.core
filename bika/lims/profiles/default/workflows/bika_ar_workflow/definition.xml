@@ -1121,7 +1121,9 @@
     </guard>
   </transition>
 
-  <!-- Transition: create_partitions -->
+  <!-- Transition: create_partitions
+  TODO: Consider to add "Transition: Add Partition" permission (~ "Add Sample"?)
+  -->
   <transition transition_id="create_partitions" title="Create partitions"
               new_state="sample_received" trigger="USER"
               before_script="" after_script=""
