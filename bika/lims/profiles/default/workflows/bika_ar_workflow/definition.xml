@@ -9,7 +9,7 @@
              i18n:domain="senaite.core">
 
   <!-- *** MANAGED PERMISSIONS  *** -->
-  <!-- Transitions -->
+  <!-- Transitions (governs guards) -->
   <permission>BIKA: Cancel and reinstate</permission>
   <permission>senaite.core: Transition: Invalidate</permission>
   <permission>senaite.core: Transition: Preserve Sample</permission>
@@ -605,7 +605,9 @@
   <!-- State: sample_received -->
 
 
-  <!-- State: to_be_preserved -->
+  <!-- State: to_be_preserved
+  TODO: This status is not reachable! (no states with exit-transition "to_be_preserved")
+  -->
   <state state_id="to_be_preserved" title="To be preserved" i18n:attributes="title">
     <description>Sample was identified as requiring preservation</description>
 
@@ -1052,12 +1054,16 @@
     </guard>
   </transition>
 
+  <!-- Transition: no_sampling_workflow
+       No need of guard-permission: This transition is automatically triggered
+       as soon as it gets "registered". The success of this transition depends
+       on the guard only
+  -->
   <transition transition_id="no_sampling_workflow" title="No sampling workflow"
               new_state="sample_due" trigger="USER" before_script=""
               after_script="" i18n:attributes="title">
     <action url="" category="workflow" icon="">No sampling workflow</action>
     <guard>
-      <guard-permission>senaite.core: Add Analysis Request</guard-permission>
       <guard-expression>python:here.guard_handler("no_sampling_workflow")</guard-expression>
     </guard>
   </transition>
@@ -1070,6 +1076,11 @@
     </guard>
   </transition>
 
+  <!-- Transition: Preserve
+   TODO: Non-sense new_state="sample_due"
+   TODO: Not reachable transition (exit-transition="preserve" in "to_be_preserved" status, but "to_be_preserved" is not reachable)
+   TODO: "preserved" status does not exist!
+   -->
   <transition transition_id="preserve" title="Preserve" new_state="sample_due" trigger="USER" before_script="" after_script="" i18n:attributes="title">
     <action url="" category="workflow" icon="">Preserve</action>
     <guard>
@@ -1097,7 +1108,8 @@
 
   <!-- Transition: reinstate
        There is no new_state defined explicitly defined, cause the new_state will be
-       the state before the request was cancelled. See after_reinstate -->
+       the state before the request was cancelled. See after_reinstate
+  -->
   <transition transition_id="reinstate" title="Reinstate"
               new_state="sample_registered"
               trigger="USER" before_script="" after_script=""
@@ -1168,7 +1180,8 @@
 
   <!-- Transition: sample
        The sample has been collected and is due for reception. This transition
-       requires the Sampler and DateSampled fields to be set -->
+       requires the Sampler and DateSampled fields to be set
+  -->
   <transition transition_id="sample" title="Sample" new_state="sample_due"
               trigger="USER" before_script="" after_script=""
               i18n:attributes="title">
@@ -1217,6 +1230,9 @@
     </guard>
   </transition>
 
+  <!-- Transition: To be preserved
+    TODO: Orphan transition!. No states with exit-transition "to_be_preserved"
+  -->
   <transition transition_id="to_be_preserved" title="To be preserved" new_state="to_be_preserved" trigger="USER" before_script="" after_script="" i18n:attributes="title">
     <action url="" category="workflow" icon="">To be preserved</action>
     <guard>
@@ -1226,8 +1242,9 @@
   <!-- Transition: Verify
        This transition takes place automatically when transition "verify" is
        performed for all analyses this Analysis Request contains. Hence, this
-       transition actually relies on the "senaite.core: Transition: Verify" permission at
-       analyses level and there is no need of a guard-permission here.
+       transition actually relies on the "senaite.core: Transition: Verify"
+       permission at analyses level and there is no need of a guard-permission
+       here.
   -->
   <transition transition_id="verify" title="Verify" new_state="verified" trigger="USER" before_script="" after_script="" i18n:attributes="title">
     <action url="" category="workflow" icon="">Verify</action>
@@ -1236,9 +1253,31 @@
     </guard>
   </transition>
 
+  <!-- Transition: Reject
+       This transition is different from "cancel", from "invalidate" and
+       from "retract".
+
+       Reject vs Cancel:
+       "cancel" transition can be triggered by Client before the sample gets
+       received and by Lab personnel before results are grabbed, "reject"
+       transition requires the introduction of rejection reasons and a
+       notification email is sent automatically to Sample's client contact.
+
+       Reject vs Invalidate:
+       "reject" transition can only be triggered before the analysis request has
+       been verified, requires the introduction of rejection reasons and no
+       retest is created. Invalidate can only be triggered from "verified"
+       status onwards, a notification email is sent automatically to client and
+       a retest is automatically created.
+
+       Reject vs Retract:
+       "retract" transition causes the automatic creation of a retest, no
+       rejection reasons are required and no notification email is sent.
+  -->
   <transition transition_id="reject" title="Reject" new_state="rejected" trigger="USER" before_script="" after_script="" i18n:attributes="title">
     <action url="" category="workflow" icon="">Reject</action>
     <guard>
+      <!-- TODO: Better to move this guard-expression with guard.handler -->
       <guard-expression>python:here.bika_setup.isRejectionWorkflowEnabled()</guard-expression>
       <guard-permission>senaite.core: Transition: Reject Sample</guard-permission>
     </guard>
