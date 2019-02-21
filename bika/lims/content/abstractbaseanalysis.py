@@ -26,7 +26,8 @@ from bika.lims.browser.widgets.uidselectionwidget import UIDSelectionWidget
 from bika.lims.config import ATTACHMENT_OPTIONS, SERVICE_POINT_OF_CAPTURE
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IBaseAnalysis
-from bika.lims.permissions import FieldEditAnalysisResult
+from bika.lims.permissions import FieldEditAnalysisResult, \
+    FieldEditAnalysisHidden
 from bika.lims.utils import to_utf8 as _c
 from zope.interface import implements
 
@@ -575,7 +576,7 @@ Hidden = BooleanField(
     schemata="Analysis",
     default=False,
     read_permission=View,
-    write_permission=FieldEditHidden,
+    write_permission=FieldEditAnalysisHidden,
     widget=BooleanWidget(
         label=_("Hidden"),
         description=_(
