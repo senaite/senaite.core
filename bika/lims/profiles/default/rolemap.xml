@@ -96,7 +96,7 @@
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
-      <role name="Owner"/>
+      <role name="Client"/>
       <role name="Sampler"/>
       <role name="SamplingCoordinator"/>
       <!-- @xispa conflicts
@@ -379,22 +379,9 @@
     </permission>
 
     <permission name="senaite.core: Transition: Reject Sample" acquire="False">
-      <role name="Client"/>
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="LabClerk"/>
-      <role name="Owner"/>
-      <!-- @xispa conflicts
-      WAS: "Reject Analysis Request"
-      Usage in workflows:
-        - ar_workflow.xml: as guard_permission (reject transition)
-
-      Usage in views:
-        - NO USE
-
-      Usage in code:
-        - NO USE
-      -->
     </permission>
     <!-- /GENERIC PERMISSIONS -->
 
@@ -404,133 +391,127 @@
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
-      <role name="Owner"/>
+      <role name="Client"/>
     </permission>
 
     <permission name="senaite.core: Field: Edit Client" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
-      <role name="Owner"/>
     </permission>
 
     <permission name="senaite.core: Field: Edit Client Order Number" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
-      <role name="Owner"/>
+      <role name="Client"/>
     </permission>
 
     <permission name="senaite.core: Field: Edit Client Reference" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
-      <role name="Owner"/>
+      <role name="Client"/>
     </permission>
 
     <permission name="senaite.core: Field: Edit Client Sample ID" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
-      <role name="Owner"/>
+      <role name="Client"/>
     </permission>
 
     <permission name="senaite.core: Field: Edit Composite" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
-      <role name="Owner"/>
+      <role name="Client"/>
     </permission>
 
     <permission name="senaite.core: Field: Edit Contact" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
-      <role name="Owner"/>
+      <role name="Client"/>
     </permission>
 
     <permission name="senaite.core: Field: Edit Container" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
-      <role name="Owner"/>
+      <role name="Client"/>
     </permission>
 
     <permission name="senaite.core: Field: Edit Date Preserved" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
-      <role name="Owner"/>
+      <role name="Client"/>
     </permission>
 
     <permission name="senaite.core: Field: Edit Date Received" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
-      <role name="Owner"/>
     </permission>
 
     <permission name="senaite.core: Field: Edit Date Sampled" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
-      <role name="Owner"/>
+      <role name="Client"/>
     </permission>
 
     <permission name="senaite.core: Field: Edit Environmental Conditions" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
-      <role name="Owner"/>
+      <role name="Client"/>
     </permission>
 
     <permission name="senaite.core: Field: Edit Invoice Exclude" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
-      <role name="Owner"/>
     </permission>
 
     <permission name="senaite.core: Field: Edit Member Discount" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
-      <role name="Owner"/>
     </permission>
 
     <permission name="senaite.core: Field: Edit Preservation" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
-      <role name="Owner"/>
+      <role name="Client"/>
     </permission>
 
     <permission name="senaite.core: Field: Edit Preserver" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
-      <role name="Owner"/>
     </permission>
 
     <permission name="senaite.core: Field: Edit Priority" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
-      <role name="Owner"/>
+      <role name="Client"/>
     </permission>
 
     <permission name="senaite.core: Field: Edit Profiles" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
-      <role name="Owner"/>
+      <role name="Client"/>
     </permission>
 
     <permission name="senaite.core: Field: Edit Publication Specification" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
-      <role name="Owner"/>
       <role name="Publisher"/>
     </permission>
 
@@ -538,7 +519,6 @@
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
-      <role name="Owner"/>
     </permission>
 
     <permission name="senaite.core: Field: Edit Results Interpretation" acquire="False">
@@ -550,76 +530,72 @@
     <permission name="senaite.core: Field: Edit Sample Point" acquire="False">
       <role name="LabManager"/>
       <role name="Manager"/>
-      <role name="Owner"/>
+      <role name="Client"/>
     </permission>
 
     <permission name="senaite.core: Field: Edit Sample Type" acquire="False">
       <role name="LabManager"/>
       <role name="Manager"/>
-      <role name="Owner"/>
+      <role name="Client"/>
     </permission>
 
     <permission name="senaite.core: Field: Edit Sample Condition" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
-      <role name="Owner"/>
+      <role name="Client"/>
     </permission>
 
     <permission name="senaite.core: Field: Edit Sampler" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
-      <role name="Owner"/>
     </permission>
 
     <permission name="senaite.core: Field: Edit Sampling Date" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
-      <role name="Owner"/>
+      <role name="Client"/>
     </permission>
 
     <permission name="senaite.core: Field: Edit Sampling Deviation" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
-      <role name="Owner"/>
+      <role name="Client"/>
     </permission>
 
     <permission name="senaite.core: Field: Edit Sampling Round" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
-      <role name="Owner"/>
     </permission>
 
     <permission name="senaite.core: Field: Edit Scheduled Sampler" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
-      <role name="Owner"/>
     </permission>
 
     <permission name="senaite.core: Field: Edit Storage Location" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
-      <role name="Owner"/>
     </permission>
 
     <permission name="senaite.core: Field: Edit Template" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
-      <role name="Owner"/>
+      <role name="Client"/>
     </permission>
 
     <permission name="senaite.core: Field: Edit Specification" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
-      <role name="Owner"/>
+      <role name="Client"/>
     </permission>
     <!-- /FIELD PERMISSIONS Analysis Request -->
 

@@ -8,6 +8,13 @@
              manager_bypass="False"
              i18n:domain="senaite.core">
 
+  <!-- @xispa notes
+    [Client]
+    - "AR Add form":
+      - Invoice Exclude field displayed and editable
+      - Storage Location field displayed and editable
+  -->
+
   <!-- *** MANAGED PERMISSIONS  *** -->
   <!-- Transitions (governs guards) -->
   <permission>BIKA: Cancel and reinstate</permission>
@@ -79,7 +86,6 @@
     <!-- TRANSITIONS -->
     <exit-transition transition_id="to_be_sampled"/>
     <exit-transition transition_id="no_sampling_workflow"/>
-    <exit-transition transition_id="reject"/>
     <!-- /TRANSITIONS -->
 
     <!-- MANAGED PERMISSIONS -->
@@ -126,7 +132,7 @@
     <permission-map name="senaite.core: Field: Edit Priority" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Profiles" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Publication Specification" acquired="True"/>
-    <permission-map name="senaite.core: Field: Edit Rejection Reasons" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Rejection Reasons" acquired="False"/>
     <permission-map name="senaite.core: Field: Edit Results Interpretation" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Sample Point" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Sample Type" acquired="True"/>
