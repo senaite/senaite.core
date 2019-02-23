@@ -278,6 +278,54 @@ class AnalysesView(BikaListingView):
         return True
 
     @viewcache.memoize
+    def is_result_edition_allowed(self, analysis_brain):
+        """Checks if the edition of the result field is allowed
+
+        :param analysis_brain: Brain that represents an analysis
+        :return: True if the user can edit the result field, otherwise False
+        """
+
+        # Always check general edition first
+        if not self.is_analysis_edition_allowed(analysis_brain):
+            return False
+
+        # Get the ananylsis object
+        obj = api.get_object(analysis_brain)
+
+        # Detection limit selector is enabled in the Analysis Service
+        if obj.getDetectionLimitSelector():
+            # Manual detection limit entry is *not* allowed
+            if not obj.getAllowManualDetectionLimit():
+                return False
+
+        return True
+
+    @viewcache.memoize
+    def is_uncertainty_edition_allowed(self, analysis_brain):
+        """Checks if the edition of the uncertainty field is allowed
+
+        :param analysis_brain: Brain that represents an analysis
+        :return: True if the user can edit the result field, otherwise False
+        """
+
+        # Only allow to edit the uncertainty if result edition is allowed
+        if not self.is_result_edition_allowed(analysis_brain):
+            return False
+
+        # Get the ananylsis object
+        obj = api.get_object(analysis_brain)
+
+        # Manual setting of uncertainty is not allowed
+        if not obj.getAllowManualUncertainty():
+            return False
+
+        # Result is a detection limit -> uncertainty setting makes no sense!
+        if obj.getDetectionLimitOperand() in [LDL, UDL]:
+            return False
+
+        return True
+
+    @viewcache.memoize
     def is_analysis_instrument_valid(self, analysis_brain):
         """Return if the analysis has a valid instrument.
 
