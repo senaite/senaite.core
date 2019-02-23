@@ -62,7 +62,7 @@ class PricelistsView(BikaListingView):
              'transitions': [{'id': 'deactivate'}, ],
              'columns': ['Title', 'getExpirationDate']},
             {'id': 'inactive',
-             'title': _('Dormant'),
+             'title': _('Inactive'),
              'contentFilter': {'getEffectiveDate': {'query': now,
                                                     'range': 'min'},
                                'getExpirationDate': {'query': now,

@@ -24,10 +24,271 @@
   <object name="one_state_workflow" meta_type="Workflow"/>
   <object name="plone_workflow" meta_type="Workflow"/>
   <object name="simple_publication_workflow" meta_type="Workflow"/>
+
+  <!--- Workflow: senaite_basic_workflow
+  Basic workflow for senaite content types. Does not allow the deletion of
+  objects, but provides the transitions "activate" and "deactivate"
+  -->
+  <object name="senaite_basic_workflow" meta_type="Workflow"/>
+
+  <!-- Workflow: senaite_setup_folder_workflow
+  special one-state workflow for senaite/setup folders. It allows authenticated
+  users to Access and List contents from inside them, but keeps the view and
+  modification permissions to LabManager and Managers only.
+  -->
+  <object name="senaite_setup_folder_workflow" meta_type="Workflow"/>
+
+  <!-- NOT USED Workflow: senaite_clients_folder_workflow
+  Workflow for clients folder. Similar to senaite_generic_folder_workflow
+  -->
+  <object name="senaite_clients_folder_workflow" meta_type="Workflow"/>
+
+  <!-- Workflow: senaite_client_workflow
+  Workflow for client objects. This workflow deals with the fact that client
+  contacts can only access to their corresponding Client objects. This workflow
+  modifies the permission maps in accordance taking into consideration that the
+  Client contacts have the role Owner for the Client they belong to.
+  -->
+  <object name="senaite_client_workflow" meta_type="Workflow"/>
+
   <bindings>
+    <!-- Bind plone_workflow by default if type not known -->
     <default>
       <bound-workflow workflow_id="plone_workflow"/>
     </default>
+
+    <!-- Setup folders -->
+    <type type_id="BikaSetup">
+      <bound-workflow workflow_id="senaite_setup_folder_workflow"/>
+    </type>
+    <type type_id="AnalysisCategories">
+      <bound-workflow workflow_id="senaite_setup_folder_workflow"/>
+    </type>
+    <type type_id="AnalysisProfiles">
+      <bound-workflow workflow_id="senaite_setup_folder_workflow"/>
+    </type>
+    <type type_id="AnalysisServices">
+      <bound-workflow workflow_id="senaite_setup_folder_workflow"/>
+    </type>
+    <type type_id="AnalysisSpecs">
+      <bound-workflow workflow_id="senaite_setup_folder_workflow"/>
+    </type>
+    <type type_id="ARTemplates">
+      <bound-workflow workflow_id="senaite_setup_folder_workflow"/>
+    </type>
+    <type type_id="AttachmentTypes">
+      <bound-workflow workflow_id="senaite_setup_folder_workflow"/>
+    </type>
+    <type type_id="BatchLabels">
+      <bound-workflow workflow_id="senaite_setup_folder_workflow"/>
+    </type>
+    <type type_id="Calculations">
+      <bound-workflow workflow_id="senaite_setup_folder_workflow"/>
+    </type>
+    <type type_id="Containers">
+      <bound-workflow workflow_id="senaite_setup_folder_workflow"/>
+    </type>
+    <type type_id="ContainerTypes">
+      <bound-workflow workflow_id="senaite_setup_folder_workflow"/>
+    </type>
+    <type type_id="Departments">
+      <bound-workflow workflow_id="senaite_setup_folder_workflow"/>
+    </type>
+    <type type_id="IdentifierTypes">
+      <bound-workflow workflow_id="senaite_setup_folder_workflow"/>
+    </type>
+    <type type_id="Instruments">
+      <bound-workflow workflow_id="senaite_setup_folder_workflow"/>
+    </type>
+    <type type_id="InstrumentLocations">
+      <bound-workflow workflow_id="senaite_setup_folder_workflow"/>
+    </type>
+    <type type_id="InstrumentTypes">
+      <bound-workflow workflow_id="senaite_setup_folder_workflow"/>
+    </type>
+    <type type_id="LabContacts">
+      <bound-workflow workflow_id="senaite_setup_folder_workflow"/>
+    </type>
+    <type type_id="LabProducts">
+      <bound-workflow workflow_id="senaite_setup_folder_workflow"/>
+    </type>
+    <type type_id="Laboratory">
+      <bound-workflow workflow_id="senaite_setup_folder_workflow"/>
+    </type>
+    <type type_id="Manufacturers">
+      <bound-workflow workflow_id="senaite_setup_folder_workflow"/>
+    </type>
+    <type type_id="Preservations">
+      <bound-workflow workflow_id="senaite_setup_folder_workflow"/>
+    </type>
+    <type type_id="ReferenceDefinitions">
+      <bound-workflow workflow_id="senaite_setup_folder_workflow"/>
+    </type>
+    <type type_id="ReflexRuleFolder">
+      <bound-workflow workflow_id="senaite_setup_folder_workflow"/>
+    </type>
+    <type type_id="SampleConditions">
+      <bound-workflow workflow_id="senaite_setup_folder_workflow"/>
+    </type>
+    <type type_id="SampleMatrices">
+      <bound-workflow workflow_id="senaite_setup_folder_workflow"/>
+    </type>
+    <type type_id="SamplePoints">
+      <bound-workflow workflow_id="senaite_setup_folder_workflow"/>
+    </type>
+    <type type_id="SampleTypes">
+      <bound-workflow workflow_id="senaite_setup_folder_workflow"/>
+    </type>
+    <type type_id="StorageLocations">
+      <bound-workflow workflow_id="senaite_setup_folder_workflow"/>
+    </type>
+    <type type_id="SamplingDeviations">
+      <bound-workflow workflow_id="senaite_setup_folder_workflow"/>
+    </type>
+    <type type_id="SamplingRounds">
+      <bound-workflow workflow_id="senaite_setup_folder_workflow"/>
+    </type>
+    <type type_id="SRTemplates">
+      <bound-workflow workflow_id="senaite_setup_folder_workflow"/>
+    </type>
+    <type type_id="SubGroups">
+      <bound-workflow workflow_id="senaite_setup_folder_workflow"/>
+    </type>
+    <type type_id="Suppliers">
+      <bound-workflow workflow_id="senaite_setup_folder_workflow"/>
+    </type>
+    <type type_id="WorksheetTemplates">
+      <bound-workflow workflow_id="senaite_setup_folder_workflow"/>
+    </type>
+
+    <!-- Setup items -->
+    <type type_id="AnalysisCategory">
+      <bound-workflow workflow_id="senaite_basic_workflow"/>
+    </type>
+    <type type_id="AnalysisProfile">
+      <bound-workflow workflow_id="senaite_basic_workflow"/>
+    </type>
+    <type type_id="AnalysisService">
+      <bound-workflow workflow_id="senaite_basic_workflow"/>
+    </type>
+    <type type_id="AnalysisSpec">
+      <bound-workflow workflow_id="senaite_basic_workflow"/>
+    </type>
+    <type type_id="ARTemplate">
+      <bound-workflow workflow_id="senaite_basic_workflow"/>
+    </type>
+    <type type_id="AttachmentType">
+      <bound-workflow workflow_id="senaite_basic_workflow"/>
+    </type>
+    <type type_id="BatchLabel">
+      <bound-workflow workflow_id="senaite_basic_workflow"/>
+    </type>
+    <type type_id="Calculation">
+      <bound-workflow workflow_id="senaite_basic_workflow"/>
+    </type>
+    <type type_id="Container">
+      <bound-workflow workflow_id="senaite_basic_workflow"/>
+    </type>
+    <type type_id="ContainerType">
+      <bound-workflow workflow_id="senaite_basic_workflow"/>
+    </type>
+    <type type_id="Department">
+      <bound-workflow workflow_id="senaite_basic_workflow"/>
+    </type>
+    <type type_id="IdentifierType">
+      <bound-workflow workflow_id="senaite_basic_workflow"/>
+    </type>
+    <type type_id="Instrument">
+      <bound-workflow workflow_id="senaite_basic_workflow"/>
+    </type>
+    <type type_id="InstrumentLocation">
+      <bound-workflow workflow_id="senaite_basic_workflow"/>
+    </type>
+    <type type_id="InstrumentType">
+      <bound-workflow workflow_id="senaite_basic_workflow"/>
+    </type>
+    <type type_id="LabContact">
+      <bound-workflow workflow_id="senaite_basic_workflow"/>
+    </type>
+    <type type_id="LabProduct">
+      <bound-workflow workflow_id="senaite_basic_workflow"/>
+    </type>
+    <type type_id="Manufacturer">
+      <bound-workflow workflow_id="senaite_basic_workflow"/>
+    </type>
+    <type type_id="Preservation">
+      <bound-workflow workflow_id="senaite_basic_workflow"/>
+    </type>
+    <type type_id="ReferenceDefinition">
+      <bound-workflow workflow_id="senaite_basic_workflow"/>
+    </type>
+    <type type_id="ReflexRule">
+      <bound-workflow workflow_id="senaite_basic_workflow"/>
+    </type>
+    <type type_id="SampleCondition">
+      <bound-workflow workflow_id="senaite_basic_workflow"/>
+    </type>
+    <type type_id="SampleMatrix">
+      <bound-workflow workflow_id="senaite_basic_workflow"/>
+    </type>
+    <type type_id="SamplePoint">
+      <bound-workflow workflow_id="senaite_basic_workflow"/>
+    </type>
+    <type type_id="SampleType">
+      <bound-workflow workflow_id="senaite_basic_workflow"/>
+    </type>
+    <type type_id="SamplingDeviation">
+      <bound-workflow workflow_id="senaite_basic_workflow"/>
+    </type>
+    <type type_id="SamplingRound">
+      <bound-workflow workflow_id="senaite_basic_workflow"/>
+    </type>
+    <type type_id="SRTemplate">
+      <bound-workflow workflow_id="senaite_basic_workflow"/>
+    </type>
+    <type type_id="StorageLocation">
+      <bound-workflow workflow_id="senaite_basic_workflow"/>
+    </type>
+    <type type_id="SubGroup">
+      <bound-workflow workflow_id="senaite_basic_workflow"/>
+    </type>
+    <type type_id="Supplier">
+      <bound-workflow workflow_id="senaite_basic_workflow"/>
+    </type>
+    <type type_id="SupplierContact">
+      <bound-workflow workflow_id="senaite_basic_workflow"/>
+    </type>
+    <type type_id="WorksheetTemplate">
+      <bound-workflow workflow_id="senaite_basic_workflow"/>
+    </type>
+
+    <!-- Clients -->
+    <type type_id="Client">
+      <bound-workflow workflow_id="senaite_client_workflow"/>
+    </type>
+    <type type_id="ClientFolder">
+      <bound-workflow workflow_id="senaite_setup_folder_workflow"/>
+    </type>
+    <type type_id="Contact">
+      <bound-workflow workflow_id="senaite_basic_workflow"/>
+    </type>
+
+    <!-- Analysis-like types -->
+    <type type_id="Analysis">
+      <bound-workflow workflow_id="bika_analysis_workflow"/>
+    </type>
+    <type type_id="DuplicateAnalysis">
+      <bound-workflow workflow_id="bika_duplicateanalysis_workflow"/>
+    </type>
+    <type type_id="ReferenceAnalysis">
+      <bound-workflow workflow_id="bika_referenceanalysis_workflow"/>
+    </type>
+    <type type_id="RejectAnalysis">
+      <bound-workflow workflow_id="bika_reject_analysis_workflow"/>
+    </type>
+
+
+    <!-- OLD BINDINGS -->
 
     <!-- AR Imports -->
     <type type_id="ARImports">
@@ -40,50 +301,17 @@
       <bound-workflow workflow_id="bika_cancellation_workflow"/>
     </type>
 
-    <!-- AR Priorities -->
-    <type type_id="ARPriorities">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-    </type>
-    <type type_id="ARPriority">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-      <bound-workflow workflow_id="bika_inactive_workflow"/>
-    </type>
 
     <!-- Analysis Profiles -->
-    <type type_id="AnalysisProfiles">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-    </type>
-    <type type_id="AnalysisProfile">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-      <bound-workflow workflow_id="bika_inactive_workflow"/>
-    </type>
 
     <!-- AR Templates -->
-    <type type_id="ARTemplates">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-    </type>
-    <type type_id="ARTemplate">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-      <bound-workflow workflow_id="bika_inactive_workflow"/>
-    </type>
 
-    <!-- Analysis -->
-    <type type_id="Analysis">
-      <bound-workflow workflow_id="bika_analysis_workflow"/>
-    </type>
 
     <!-- Analysis Categories -->
-    <type type_id="AnalysisCategories">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-    </type>
-    <type type_id="AnalysisCategory">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-      <bound-workflow workflow_id="bika_inactive_workflow"/>
-    </type>
 
     <!-- Analysis Requests -->
     <type type_id="AnalysisRequestsFolder">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
+      <bound-workflow workflow_id="senaite_setup_folder_workflow"/>
     </type>
     <type type_id="AnalysisRequest">
       <bound-workflow workflow_id="bika_ar_workflow"/>
@@ -91,42 +319,21 @@
 
     <!-- AR Reports -->
     <type type_id="ARReport">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
+      <bound-workflow workflow_id="senaite_setup_folder_workflow"/>
     </type>
 
     <!-- Analysis Services -->
-    <type type_id="AnalysisServices">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-    </type>
-    <type type_id="AnalysisService">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-      <bound-workflow workflow_id="bika_inactive_workflow"/>
-    </type>
 
     <!-- Analysis Specifications -->
-    <type type_id="AnalysisSpecs">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-    </type>
-    <type type_id="AnalysisSpec">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-      <bound-workflow workflow_id="bika_inactive_workflow"/>
-    </type>
 
     <!-- Attachments -->
     <type type_id="Attachment">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-    </type>
-    <type type_id="AttachmentTypes">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-    </type>
-    <type type_id="AttachmentType">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-      <bound-workflow workflow_id="bika_inactive_workflow"/>
+      <bound-workflow workflow_id="senaite_setup_folder_workflow"/>
     </type>
 
     <!-- Batches -->
     <type type_id="BatchFolder">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
+      <bound-workflow workflow_id="senaite_setup_folder_workflow"/>
     </type>
     <type type_id="Batch">
       <bound-workflow workflow_id="bika_batch_workflow"/>
@@ -134,111 +341,33 @@
     </type>
 
     <!-- Batch Labels -->
-    <type type_id="BatchLabels">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-    </type>
-    <type type_id="BatchLabel">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-      <bound-workflow workflow_id="bika_inactive_workflow"/>
-    </type>
 
-    <!-- Bika Setup -->
-    <type type_id="BikaSetup">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-    </type>
 
     <!-- Calculations -->
-    <type type_id="Calculations">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-    </type>
-    <type type_id="Calculation">
-      <bound-workflow workflow_id="bika_inactive_workflow"/>
-    </type>
 
-    <!-- Clients -->
-    <type type_id="ClientFolder">
-      <!-- <bound-workflow workflow_id="bika_one_state_workflow"/> -->
-    </type>
-    <type type_id="Client">
-      <bound-workflow workflow_id="bika_client_workflow"/>
-    </type>
-
-    <!-- Client Types -->
-    <type type_id="ClientTypes">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-    </type>
-    <type type_id="ClientType">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-      <bound-workflow workflow_id="bika_inactive_workflow"/>
-    </type>
 
     <!-- Contacts live in Clients -->
-    <type type_id="Contact">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-      <bound-workflow workflow_id="bika_inactive_workflow"/>
-    </type>
 
     <!-- Containers -->
-    <type type_id="Containers">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-    </type>
-    <type type_id="Container">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-      <bound-workflow workflow_id="bika_inactive_workflow"/>
-    </type>
 
     <!-- Container Types -->
-    <type type_id="ContainerTypes">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-    </type>
-    <type type_id="ContainerType">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-      <bound-workflow workflow_id="bika_inactive_workflow"/>
-    </type>
 
     <!-- Departments -->
-    <type type_id="Departments">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-    </type>
-    <type type_id="Department">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-      <bound-workflow workflow_id="bika_inactive_workflow"/>
-    </type>
 
     <!-- Discussions -->
-    <type type_id="Discussion Item">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-    </type>
 
     <!-- Duplicate Analysis -->
-    <type type_id="DuplicateAnalysis">
-      <bound-workflow workflow_id="bika_duplicateanalysis_workflow"/>
-    </type>
 
     <!-- Identifier Types -->
-    <type type_id="IdentifierTypes">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-    </type>
-    <type type_id="IdentifierType">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-      <bound-workflow workflow_id="bika_inactive_workflow"/>
-    </type>
 
     <!-- Instruments -->
-    <type type_id="Instruments">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-    </type>
-    <type type_id="Instrument">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-      <bound-workflow workflow_id="bika_inactive_workflow"/>
-    </type>
 
     <!-- Instrument Calibrations -->
     <type type_id="InstrumentCalibration">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
+      <bound-workflow workflow_id="senaite_setup_folder_workflow"/>
     </type>
     <type type_id="InstrumentCertification">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
+      <bound-workflow workflow_id="senaite_setup_folder_workflow"/>
     </type>
     <type type_id="InstrumentMaintenanceTask">
       <bound-workflow workflow_id="bika_one_state_workflow"/>
@@ -248,38 +377,24 @@
     <!-- Instrument Scheduled Tasks -->
     <type type_id="InstrumentScheduledTask">
       <bound-workflow workflow_id="bika_one_state_workflow"/>
-      <bound-workflow workflow_id="bika_inactive_workflow"/>
+      <bound-workflow workflow_id="bika_cancellation_workflow"/>
     </type>
 
     <!-- Instrument Types -->
-    <type type_id="InstrumentTypes">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-    </type>
-    <type type_id="InstrumentType">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-      <bound-workflow workflow_id="bika_inactive_workflow"/>
-    </type>
 
     <!-- Instrument Locations -->
-    <type type_id="InstrumentLocations">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-    </type>
-    <type type_id="InstrumentLocation">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-      <bound-workflow workflow_id="bika_inactive_workflow"/>
-    </type>
 
     <!-- Instrument Validations -->
     <type type_id="InstrumentValidation">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
+      <bound-workflow workflow_id="senaite_setup_folder_workflow"/>
     </type>
 
     <!-- Invoices -->
     <type type_id="InvoiceFolder">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
+      <bound-workflow workflow_id="senaite_setup_folder_workflow"/>
     </type>
     <type type_id="Invoice">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
+      <bound-workflow workflow_id="senaite_setup_folder_workflow"/>
     </type>
     <type type_id="InvoiceBatch">
       <bound-workflow workflow_id="bika_one_state_workflow"/>
@@ -287,66 +402,33 @@
     </type>
 
     <!-- Lab Contacts -->
-    <type type_id="LabContacts">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-    </type>
-    <type type_id="LabContact">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-      <bound-workflow workflow_id="bika_inactive_workflow"/>
-    </type>
 
-    <!-- Laboratory -->
-    <type type_id="Laboratory">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-    </type>
 
     <!-- Lab Products -->
-    <type type_id="LabProducts">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-    </type>
-    <type type_id="LabProduct">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-      <bound-workflow workflow_id="bika_inactive_workflow"/>
-    </type>
 
     <!-- Manufacturers -->
-    <type type_id="Manufacturers">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-    </type>
-    <type type_id="Manufacturer">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-      <bound-workflow workflow_id="bika_inactive_workflow"/>
-    </type>
 
     <!-- Methods -->
     <type type_id="Methods">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
+      <bound-workflow workflow_id="senaite_setup_folder_workflow"/>
     </type>
     <type type_id="Method">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-      <bound-workflow workflow_id="bika_inactive_workflow"/>
+      <bound-workflow workflow_id="senaite_basic_workflow"/>
     </type>
 
     <!-- Reports -->
     <type type_id="ReportFolder">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
+      <bound-workflow workflow_id="senaite_setup_folder_workflow"/>
     </type>
     <type type_id="Report">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
+      <bound-workflow workflow_id="senaite_setup_folder_workflow"/>
     </type>
 
     <!-- Suppliers -->
-    <type type_id="Suppliers">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-    </type>
-    <type type_id="Supplier">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-      <bound-workflow workflow_id="bika_inactive_workflow"/>
-    </type>
 
     <!-- Supply Orders -->
     <type type_id="SupplyOrderFolder">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
+      <bound-workflow workflow_id="senaite_setup_folder_workflow"/>
     </type>
     <type type_id="SupplyOrder">
       <bound-workflow workflow_id="bika_order_workflow"/>
@@ -357,40 +439,22 @@
     <type type_id="Plone Site"/>
 
     <!-- Preservations -->
-    <type type_id="Preservations">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-    </type>
-    <type type_id="Preservation">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-      <bound-workflow workflow_id="bika_inactive_workflow"/>
-    </type>
 
     <!-- Price List Folders -->
     <type type_id="PricelistFolder">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
+      <bound-workflow workflow_id="senaite_setup_folder_workflow"/>
     </type>
     <type type_id="Pricelist">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-      <bound-workflow workflow_id="bika_inactive_workflow"/>
+      <bound-workflow workflow_id="senaite_basic_workflow"/>
     </type>
 
     <!-- Reference Analysis -->
-    <type type_id="ReferenceAnalysis">
-      <bound-workflow workflow_id="bika_referenceanalysis_workflow"/>
-    </type>
 
     <!-- Reference Definitions -->
-    <type type_id="ReferenceDefinitions">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-    </type>
-    <type type_id="ReferenceDefinition">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-      <bound-workflow workflow_id="bika_inactive_workflow"/>
-    </type>
 
     <!-- Reference Samples -->
     <type type_id="ReferenceSamplesFolder">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
+      <bound-workflow workflow_id="senaite_setup_folder_workflow"/>
     </type>
     <type type_id="ReferenceSample">
       <bound-workflow workflow_id="bika_referencesample_workflow"/>
@@ -398,40 +462,20 @@
     </type>
 
     <!-- Reflex Rules -->
-    <type type_id="ReflexRule">
-      <bound-workflow workflow_id="bika_inactive_workflow"/>
-    </type>
 
     <!-- Reject Analysis -->
-    <type type_id="RejectAnalysis">
-      <bound-workflow workflow_id="bika_reject_analysis_workflow"/>
-    </type>
 
     <!-- Samples -->
     <type type_id="SamplesFolder">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
+      <bound-workflow workflow_id="senaite_setup_folder_workflow"/>
     </type>
     <type type_id="Sample">
       <bound-workflow workflow_id="bika_sample_workflow"/>
     </type>
 
     <!-- Sample Conditions -->
-    <type type_id="SampleConditions">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-    </type>
-    <type type_id="SampleCondition">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-      <bound-workflow workflow_id="bika_inactive_workflow"/>
-    </type>
 
     <!-- Sample Matrices -->
-    <type type_id="SampleMatrices">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-    </type>
-    <type type_id="SampleMatrix">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-      <bound-workflow workflow_id="bika_inactive_workflow"/>
-    </type>
 
     <!-- Sample Partitions -->
     <type type_id="SamplePartition">
@@ -439,101 +483,31 @@
     </type>
 
     <!-- Sample Points -->
-    <type type_id="SamplePoints">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-    </type>
-    <type type_id="SamplePoint">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-      <bound-workflow workflow_id="bika_inactive_workflow"/>
-    </type>
 
     <!-- Storage Locations -->
-    <type type_id="StorageLocations">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-    </type>
-    <type type_id="StorageLocation">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-      <bound-workflow workflow_id="bika_inactive_workflow"/>
-    </type>
 
-    <!-- Sample Types -->
-    <type type_id="SampleTypes">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-    </type>
-    <type type_id="SampleType">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-      <bound-workflow workflow_id="bika_inactive_workflow"/>
-    </type>
+
 
     <!-- Sampling Deviations -->
-    <type type_id="SamplingDeviations">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-    </type>
-    <type type_id="SamplingDeviation">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-      <bound-workflow workflow_id="bika_inactive_workflow"/>
-    </type>
 
     <!-- SR Templates -->
-    <type type_id="SRTemplates">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-    </type>
-    <type type_id="SRTemplate">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-      <bound-workflow workflow_id="bika_inactive_workflow"/>
-    </type>
 
     <!-- Supplier Contacts -->
-    <type type_id="SupplierContact">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-      <bound-workflow workflow_id="bika_inactive_workflow"/>
-    </type>
 
     <!-- Worksheets -->
     <type type_id="WorksheetFolder">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
+      <bound-workflow workflow_id="senaite_setup_folder_workflow"/>
     </type>
     <type type_id="Worksheet">
       <bound-workflow workflow_id="bika_worksheet_workflow"/>
     </type>
 
     <!-- Worksheet Templates -->
-    <type type_id="WorksheetTemplates">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-    </type>
-    <type type_id="WorksheetTemplate">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-      <bound-workflow workflow_id="bika_inactive_workflow"/>
-    </type>
 
     <!-- Sub Groups -->
-    <type type_id="SubGroups">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-    </type>
-    <type type_id="SubGroup">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-      <bound-workflow workflow_id="bika_inactive_workflow"/>
-    </type>
 
     <!-- Sampling Rounds -->
-    <type type_id="SamplingRounds">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-    </type>
-    <type type_id="SamplingRound">
-      <bound-workflow workflow_id="bika_samplinground_workflow"/>
-      <bound-workflow workflow_id="bika_cancellation_workflow"/>
-    </type>
 
-    <!-- Client Departments -->
-    <type type_id="ClientDepartments">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-    </type>
-
-    <!-- Client Department -->
-    <type type_id="ClientDepartment">
-      <bound-workflow workflow_id="bika_one_state_workflow"/>
-      <bound-workflow workflow_id="bika_inactive_workflow"/>
-    </type>
 
   </bindings>
 </object>

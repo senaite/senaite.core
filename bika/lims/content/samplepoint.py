@@ -21,19 +21,19 @@ from Products.Archetypes.public import StringWidget
 from Products.Archetypes.public import registerType
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
-
-from plone.app.blob.field import FileField as BlobFileField
-
 from bika.lims import bikaMessageFactory as _
 from bika.lims import deprecated
 from bika.lims.browser.fields import CoordinateField
 from bika.lims.browser.fields import DurationField
 from bika.lims.browser.widgets import CoordinateWidget
 from bika.lims.browser.widgets import DurationWidget
+from bika.lims.browser.widgets.referencewidget import \
+    ReferenceWidget as BikaReferenceWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.browser.widgets.referencewidget import ReferenceWidget as BikaReferenceWidget
-
+from bika.lims.interfaces import IDeactivable
+from plone.app.blob.field import FileField as BlobFileField
+from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
     CoordinateField(
@@ -113,6 +113,7 @@ schema['description'].schemata = 'default'
 
 
 class SamplePoint(BaseContent, HistoryAwareMixin):
+    implements(IDeactivable)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema

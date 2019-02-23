@@ -871,6 +871,12 @@ class ICancellable(Interface):
     """
 
 
+class IDeactivable(Interface):
+    """Marker for those objects that can be deactivated, but their content type
+    is not bound to invalidate_workflow
+    """
+
+
 class IWorkflowActionAdapter(Interface):
     """Marker for adapters in charge of processing workflow action requests
     from views

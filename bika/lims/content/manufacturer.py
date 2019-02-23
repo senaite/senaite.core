@@ -12,7 +12,7 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.interfaces import IManufacturer
+from bika.lims.interfaces import IManufacturer, IDeactivable
 from zope.interface import implements
 
 schema = BikaSchema.copy()
@@ -21,7 +21,7 @@ schema['description'].schemata = 'default'
 schema['description'].widget.visible = True
 
 class Manufacturer(BaseContent):
-    implements(IManufacturer)
+    implements(IManufacturer, IDeactivable)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema

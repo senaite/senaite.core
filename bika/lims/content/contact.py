@@ -9,27 +9,23 @@
 """
 import types
 
-from Acquisition import aq_base
+from AccessControl import ClassSecurityInfo
 from Acquisition import aq_inner
 from Acquisition import aq_parent
-
-from AccessControl import ClassSecurityInfo
-
 from Products.Archetypes import atapi
+from Products.Archetypes.utils import DisplayList
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
-from Products.Archetypes.utils import DisplayList
-
+from bika.lims import bikaMessageFactory as _
+from bika.lims import logger
+from bika.lims.config import ManageClients
+from bika.lims.config import PROJECTNAME
+from bika.lims.content.person import Person
+from bika.lims.interfaces import IContact, IClient, IDeactivable
+from bika.lims.utils import isActive
+from bika.lims.api import get_workflow_status_of
 from plone import api
 from zope.interface import implements
-
-from bika.lims.utils import isActive
-from bika.lims.interfaces import IContact, IClient
-from bika.lims.content.person import Person
-from bika.lims.config import PROJECTNAME
-from bika.lims.config import ManageClients
-from bika.lims import logger
-from bika.lims import bikaMessageFactory as _
 
 ACTIVE_STATES = ["active"]
 
@@ -58,7 +54,7 @@ schema['title'].widget.visible = False
 class Contact(Person):
     """A Contact of a Client which can be linked to a System User
     """
-    implements(IContact)
+    implements(IContact, IDeactivable)
 
     schema = schema
     displayContentsTab = False
@@ -96,13 +92,7 @@ class Contact(Person):
     def isActive(self):
         """Checks if the Contact is active
         """
-        wftool = getToolByName(self, "portal_workflow")
-        status = wftool.getStatusOf("bika_inactive_workflow", self)
-        if status and status.get("inactive_state") in ACTIVE_STATES:
-            logger.debug("Contact '{}' is active".format(self.Title()))
-            return True
-        logger.debug("Contact '{}' is deactivated".format(self.Title()))
-        return False
+        return get_workflow_status_of(self) != "inactive"
 
     security.declareProtected(ManageClients, 'getUser')
     def getUser(self):

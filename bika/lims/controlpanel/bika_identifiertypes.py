@@ -52,7 +52,7 @@ class IdentifierTypesView(BikaListingView):
              'columns': ['Title',
                          'Description']},
             {'id': 'inactive',
-             'title': _('Dormant'),
+             'title': _('Inactive'),
              'contentFilter': {'inactive_state': 'inactive'},
              'transitions': [{'id': 'activate'}, ],
              'columns': ['Title',

@@ -17,7 +17,7 @@ from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.interfaces import IAnalysisCategory
+from bika.lims.interfaces import IAnalysisCategory, IDeactivable
 from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
@@ -60,7 +60,7 @@ schema['description'].schemata = 'default'
 
 
 class AnalysisCategory(BaseContent):
-    implements(IAnalysisCategory)
+    implements(IAnalysisCategory, IDeactivable)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema

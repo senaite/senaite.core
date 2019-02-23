@@ -13,7 +13,7 @@ import Missing
 from AccessControl.PermissionRole import rolesForPermissionOn
 from Acquisition import aq_base
 from bika.lims import logger
-from bika.lims.interfaces import IClient
+from bika.lims.interfaces import IClient, IDeactivable
 from bika.lims.interfaces import IContact
 from bika.lims.interfaces import ILabContact
 from DateTime import DateTime
@@ -831,11 +831,17 @@ def get_inactive_status(brain_or_object, default="active"):
         if state is not None:
             return state
 
-    workflows = get_workflows_for(brain_or_object)
-    if "bika_inactive_workflow" in workflows:
-        return get_workflow_status_of(brain_or_object, "inactive_state")
+    obj = get_object(brain_or_object)
+    if IDeactivable.providedBy(obj):
+        if get_workflow_status_of(obj) == "inactive":
+            return "inactive"
+        return "active"
 
-    state = get_workflow_status_of(brain_or_object)
+    workflows = get_workflows_for(obj)
+    if "bika_inactive_workflow" in workflows:
+        return get_workflow_status_of(obj, "inactive_state")
+
+    state = get_workflow_status_of(obj)
     if state not in ("active", "inactive"):
         return default
     return state
@@ -849,7 +855,7 @@ def is_active(brain_or_object):
     :returns: False if the object is in the state 'inactive' or 'cancelled'
     :rtype: bool
     """
-    if get_review_status(brain_or_object) == "cancelled":
+    if get_review_status(brain_or_object) in ["cancelled", "inactive"]:
         return False
     if get_inactive_status(brain_or_object) == "inactive":
         return False

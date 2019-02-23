@@ -18,7 +18,7 @@ from bika.lims.browser.widgets.uidselectionwidget import UIDSelectionWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.abstractbaseanalysis import AbstractBaseAnalysis
 from bika.lims.content.abstractbaseanalysis import schema
-from bika.lims.interfaces import IAnalysisService
+from bika.lims.interfaces import IAnalysisService, IDeactivable
 from bika.lims.interfaces import IHaveIdentifiers
 from bika.lims.utils import to_utf8 as _c
 from magnitude import mg
@@ -402,7 +402,7 @@ schema.moveField('InterimFields', after='Calculation')
 
 
 class AnalysisService(AbstractBaseAnalysis):
-    implements(IAnalysisService, IHaveIdentifiers)
+    implements(IAnalysisService, IHaveIdentifiers, IDeactivable)
     security = ClassSecurityInfo()
     schema = schema
     displayContentsTab = False

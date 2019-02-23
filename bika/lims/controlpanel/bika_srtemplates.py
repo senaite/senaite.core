@@ -61,7 +61,7 @@ class SamplingRoundTemplatesView(BikaListingView):
              'columns': ['Title',
                          'Description']},
             {'id':'inactive',
-             'title': _('Dormant'),
+             'title': _('Inactive'),
              'contentFilter': {'inactive_state':'inactive'},
              'columns': ['Title',
                          'Description']},

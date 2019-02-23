@@ -20,6 +20,7 @@ from bika.lims.browser.fields.uidreferencefield import get_backreferences
 from bika.lims.browser.widgets import RecordsWidget as BikaRecordsWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.interfaces import IDeactivable
 from bika.lims.interfaces.calculation import ICalculation
 from Products.Archetypes.atapi import BaseFolder
 from Products.Archetypes.atapi import ReferenceWidget
@@ -154,7 +155,7 @@ schema['description'].widget.visible = True
 class Calculation(BaseFolder, HistoryAwareMixin):
     """Calculation for Analysis Results
     """
-    implements(ICalculation)
+    implements(ICalculation, IDeactivable)
 
     security = ClassSecurityInfo()
     displayContentsTab = False

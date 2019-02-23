@@ -54,7 +54,7 @@ from bika.lims.utils import t
 from bika.lims.utils import to_utf8
 from bika.lims.config import PROJECTNAME
 from bika.lims.exportimport import instruments
-from bika.lims.interfaces import IInstrument
+from bika.lims.interfaces import IInstrument, IDeactivable
 from bika.lims.config import QCANALYSIS_TYPES
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.content.bikaschema import BikaFolderSchema
@@ -367,7 +367,7 @@ def getCalibrationAgents(context):
 class Instrument(ATFolder):
     """A physical gadget of the lab
     """
-    implements(IInstrument)
+    implements(IInstrument, IDeactivable)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema

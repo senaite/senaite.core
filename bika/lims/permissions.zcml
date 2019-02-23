@@ -76,6 +76,11 @@
 # Analysis Transition Permissions
 <permission id="senaite.core.permissions.TransitionVerify" title="senaite.core: Transition: Verify"/>
 
+# Setup items Transition Permissions
+<permission id="senaite.core.permissions.TransitionActivate" title="senaite.core: Transition: Activate"/>
+<permission id="senaite.core.permissions.TransitionDeactivate" title="senaite.core: Transition: Deactivate"/>
+
+
 
 # *** OBSOLETE PERMISSIONS START BELOW ***
 

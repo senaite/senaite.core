@@ -87,7 +87,7 @@ class SamplePointsView(BikaListingView):
                 "columns": self.columns.keys(),
             }, {
                 "id": "inactive",
-                "title": _("Dormant"),
+                "title": _("Inactive"),
                 "contentFilter": {"inactive_state": "inactive"},
                 "transitions": [{"id": "activate"}, ],
                 "columns": self.columns.keys(),

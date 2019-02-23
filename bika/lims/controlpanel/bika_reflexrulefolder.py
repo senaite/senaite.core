@@ -54,7 +54,7 @@ class ReflexRuleFolderView(BikaListingView):
              'contentFilter': {'inactive_state': 'active'},
              'columns': ['Title', 'Method', ]},
             {'id': 'inactive',
-             'title': _('Dormant'),
+             'title': _('Inactive'),
              'contentFilter': {'inactive_state': 'inactive'},
              'columns': ['Title', 'Method', ]},
             {'id': 'all',

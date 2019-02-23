@@ -35,6 +35,13 @@ both valid.
 # SENAITE CORE Permissions
 # ========================
 
+# Transition permissions
+# ------------------------------
+
+TransitionActivate="senaite.core: Transition: Activate"
+TransitionDeactivate="senaite.core: Transition: Deactivate"
+
+
 # AR Permissions
 # --------------
 
@@ -241,10 +248,7 @@ def setup_permissions(portal):
     mp(AddSubGroup, ['Manager', 'LabManager', 'LabClerk'], 0)
 
     mp(permissions.AddPortalContent, ['Manager', 'Owner', 'LabManager'], 1)
-    mp(permissions.ListFolderContents, ['Manager', 'Owner'], 1)
     mp(permissions.FTPAccess, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
-    mp(permissions.DeleteObjects, ['Manager', 'LabManager', 'LabClerk', 'Owner'], 1)
-    mp(permissions.ModifyPortalContent, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner'], 1)
     mp(permissions.ManageUsers, ['Manager', 'LabManager', ], 1)
 
     mp(ApplyVersionControl, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner', 'RegulatoryInspector'], 1)
@@ -274,48 +278,10 @@ def setup_permissions(portal):
     mp(EditResults, ['Manager', 'LabManager', 'Analyst'], 1)
     mp(EditFieldResults, ['Manager', 'LabManager', 'Sampler'], 1)
     mp('Access contents information', ['Authenticated'], 1)
-    mp(permissions.View, ['Authenticated'], 1)
 
     mp(ImportInstrumentResults, ['Manager', 'LabManager', 'Analyst'], 1)
 
     mp(ViewLogTab, ['Manager', 'LabManager'], 1)
-
-    # Bika Setup
-    # The `/bika_setup` folder follows the `bika_one_state_workflow`.
-    # Please refer to the workflow definition to see the default permissions
-    mp = portal.bika_setup.manage_permission
-    # We set explicit permissions to access methods to be persistent with the assigned workflow
-    mp(permissions.View, ['Authenticated'], 0)
-    mp(permissions.ListFolderContents, ['Authenticated'], 0)
-    # Front-Page Portlets need to access some information for Anonymous.
-    mp(permissions.AccessContentsInformation, ['Anonymous'], 0)
-
-    # Set modify permissions
-    mp(permissions.ModifyPortalContent, ['Manager', 'LabManager'], 0)
-    mp(ApplyVersionControl, ['Authenticated'], 0)
-    mp(SaveNewVersion, ['Authenticated'], 0)
-    mp(AccessPreviousVersions, ['Authenticated'], 0)
-
-    # Authenticated need to have access to bika_setup objects to create ARs
-    for obj in portal.bika_setup.objectValues():
-        mp = obj.manage_permission
-        mp(permissions.View, ['Authenticated'], 0)
-        mp(permissions.AccessContentsInformation, ['Authenticated'], 0)
-        mp(permissions.ListFolderContents, ['Authenticated'], 0)
-
-    portal.bika_setup.reindexObject()
-    # /Bika Setup
-
-    # Laboratory
-    # The `/bika_setup/laboratory` object follows the `bika_one_state_workflow`.
-    mp = portal.bika_setup.laboratory.manage_permission
-    # We set explicit permissions to access methods to be persistent with the assigned workflow
-    mp(permissions.View, ['Anonymous'], 0)
-    mp(permissions.ListFolderContents, ['Authenticated'], 0)
-    # Front-Page Portlets need to access some information for Anonymous.
-    mp(permissions.AccessContentsInformation, ['Anonymous'], 0)
-    portal.bika_setup.laboratory.reindexObject()
-    # /Laboratory
 
     # Clients
     # When modifying these defaults, look to subscribers/objectmodified.py
@@ -325,25 +291,25 @@ def setup_permissions(portal):
     mp = portal.clients.manage_permission
 
     # Allow authenticated users to see the contents of the client folder
-    mp(permissions.View, ['Authenticated'], 0)
-    mp(permissions.AccessContentsInformation, ['Authenticated'], 0)
-    mp(permissions.ListFolderContents, ['Authenticated'], 0)
+    #mp(permissions.View, ['Authenticated'], 0)
+    #mp(permissions.AccessContentsInformation, ['Authenticated'], 0)
+    #mp(permissions.ListFolderContents, ['Authenticated'], 0)
 
     # Set modify permissions
-    mp(permissions.ModifyPortalContent, ['Manager', 'LabManager', 'LabClerk', 'Owner'], 0)
+    #mp(permissions.ModifyPortalContent, ['Manager', 'LabManager', 'LabClerk', 'Owner'], 0)
     mp(ManageClients, ['Manager', 'LabManager', 'LabClerk'], 0)
-    mp(permissions.AddPortalContent, ['Manager', 'LabManager', 'LabClerk', 'Owner'], 0)
-    mp(AddAnalysisSpec, ['Manager', 'LabManager', 'LabClerk', 'Owner'], 0)
+    #mp(permissions.AddPortalContent, ['Manager', 'LabManager', 'LabClerk', 'Owner'], 0)
+    #mp(AddAnalysisSpec, ['Manager', 'LabManager', 'LabClerk', 'Owner'], 0)
     portal.clients.reindexObject()
 
     # We have to manually set the permissions of Contacts according to
     # bika.lims.subscribers.objectmodified, as these types do not contain an own workflow
-    contacts = portal.portal_catalog(portal_type="Contact")
-    for contact in contacts:
-        obj = contact.getObject()
-        mp = contact.manage_permission
-        mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Owner', 'Analyst', 'Sampler', 'Preserver', 'SamplingCoordinator'], 0)
-        mp(permissions.ModifyPortalContent, ['Manager', 'LabManager', 'Owner', 'SamplingCoordinator'], 0)
+    #contacts = portal.portal_catalog(portal_type="Contact")
+    #for contact in contacts:
+    #    obj = contact.getObject()
+    #    mp = contact.manage_permission
+    #    mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Owner', 'Analyst', 'Sampler', 'Preserver', 'SamplingCoordinator'], 0)
+    #    mp(permissions.ModifyPortalContent, ['Manager', 'LabManager', 'Owner', 'SamplingCoordinator'], 0)
 
     # /Clients
 
@@ -389,65 +355,51 @@ def setup_permissions(portal):
 
     # /reports folder permissions
     mp = portal.reports.manage_permission
-    mp(permissions.ListFolderContents, ['Manager', 'LabManager', 'Member', 'LabClerk', ], 0)
-    mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Member'], 0)
-    mp('Access contents information', ['Manager', 'LabManager', 'Member', 'LabClerk', 'Owner'], 0)
-    mp(permissions.AddPortalContent, ['Manager', 'LabManager', 'LabClerk', 'Owner', 'Member'], 0)
+    #mp(permissions.ListFolderContents, ['Manager', 'LabManager', 'Member', 'LabClerk', ], 0)
+    #mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Member'], 0)
+    #mp('Access contents information', ['Manager', 'LabManager', 'Member', 'LabClerk', 'Owner'], 0)
+    #mp(permissions.AddPortalContent, ['Manager', 'LabManager', 'LabClerk', 'Owner', 'Member'], 0)
     mp('ATContentTypes: Add Image', ['Manager', 'Labmanager', 'LabClerk', 'Member', ], 0)
     mp('ATContentTypes: Add File', ['Manager', 'Labmanager', 'LabClerk', 'Member', ], 0)
     portal.reports.reindexObject()
 
     # /invoices folder permissions
-    mp = portal.invoices.manage_permission
-    mp(CancelAndReinstate, ['Manager', 'LabManager', 'LabClerk'], 0)
-    mp(permissions.ListFolderContents, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
-    mp(permissions.AddPortalContent, ['Manager', 'LabManager', 'Owner'], 0)
-    mp(permissions.DeleteObjects, ['Manager', 'LabManager', 'Owner'], 0)
-    mp(permissions.View, ['Manager', 'LabManager'], 0)
-    portal.invoices.reindexObject()
+    #mp = portal.invoices.manage_permission
+    #mp(CancelAndReinstate, ['Manager', 'LabManager', 'LabClerk'], 0)
+    #mp(permissions.ListFolderContents, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
+    #mp(permissions.AddPortalContent, ['Manager', 'LabManager', 'Owner'], 0)
+    #mp(permissions.DeleteObjects, ['Manager', 'LabManager', 'Owner'], 0)
+    #mp(permissions.View, ['Manager', 'LabManager'], 0)
+    #portal.invoices.reindexObject()
 
     # /pricelists folder permissions
-    mp = portal.pricelists.manage_permission
-    mp(CancelAndReinstate, ['Manager', 'LabManager', 'LabClerk'], 0)
-    mp(permissions.ListFolderContents, ['Member'], 1)
-    mp(permissions.AddPortalContent, ['Manager', 'LabManager', 'Owner'], 0)
-    mp(permissions.DeleteObjects, ['Manager', 'LabManager', 'Owner'], 0)
-    mp(permissions.View, ['Manager', 'LabManager'], 0)
-    portal.pricelists.reindexObject()
+    #mp = portal.pricelists.manage_permission
+    #mp(CancelAndReinstate, ['Manager', 'LabManager', 'LabClerk'], 0)
+    #mp(permissions.ListFolderContents, ['Member'], 1)
+    #mp(permissions.AddPortalContent, ['Manager', 'LabManager', 'Owner'], 0)
+    #mp(permissions.DeleteObjects, ['Manager', 'LabManager', 'Owner'], 0)
+    #mp(permissions.View, ['Manager', 'LabManager'], 0)
+    #portal.pricelists.reindexObject()
 
     # /methods folder permissions
-    mp = portal.methods.manage_permission
-    mp(CancelAndReinstate, ['Manager', 'LabManager'], 0)
-    mp(permissions.ListFolderContents, ['Member', 'Authenticated'], 0)
-    mp(permissions.AddPortalContent, ['Manager', 'LabManager'], 0)
-    mp(permissions.DeleteObjects, ['Manager', 'LabManager'], 0)
-    mp(permissions.View, ['Manager', 'Member', 'Authenticated'], 0)
-    mp('Access contents information',
-       ['Manager', 'Member', 'Authenticated'], 0)
-    portal.methods.reindexObject()
+    #mp = portal.methods.manage_permission
+    #mp(CancelAndReinstate, ['Manager', 'LabManager'], 0)
+    #mp(permissions.ListFolderContents, ['Member', 'Authenticated'], 0)
+    #mp(permissions.AddPortalContent, ['Manager', 'LabManager'], 0)
+    #mp(permissions.DeleteObjects, ['Manager', 'LabManager'], 0)
+    #mp(permissions.View, ['Manager', 'Member', 'Authenticated'], 0)
+    #mp('Access contents information',
+    #   ['Manager', 'Member', 'Authenticated'], 0)
+    #portal.methods.reindexObject()
 
-    try:
-        # /supplyorders folder permissions
-        mp = portal.supplyorders.manage_permission
-        mp(CancelAndReinstate, ['Manager', 'LabManager', 'Owner', 'LabClerk'], 0)
-        mp(permissions.ListFolderContents, ['LabClerk', ''], 1)
-        mp(permissions.AddPortalContent, ['Manager', 'LabManager', 'Owner', 'LabClerk'], 0)
-        mp(permissions.DeleteObjects, ['Manager', 'LabManager', 'Owner'], 0)
-        mp(permissions.View, ['Manager', 'LabManager', 'LabClerk'], 0)
-        portal.supplyorders.reindexObject()
-    except:
-        pass
-
-    # Add Analysis Services View permission to Clients
-    # (allow Clients to add attachments to Analysis Services from an AR)
-    mp = portal.bika_setup.bika_analysisservices.manage_permission
-    mp('Access contents information', ['Authenticated', 'Analyst', 'Client'], 1)
-    mp(permissions.View, ['Authenticated', 'Analyst', 'Client'], 1)
-    portal.bika_setup.bika_analysisservices.reindexObject()
-
-    # Add Attachment Types View permission to Clients
-    # (allow Clients to add attachments to Analysis Services from an AR)
-    mp = portal.bika_setup.bika_attachmenttypes.manage_permission
-    mp('Access contents information', ['Authenticated', 'Analyst', 'Client'], 1)
-    mp(permissions.View, ['Authenticated', 'Analyst', 'Client'], 1)
-    portal.bika_setup.bika_attachmenttypes.reindexObject()
+    #try:
+    #    # /supplyorders folder permissions
+    #    mp = portal.supplyorders.manage_permission
+    #    mp(CancelAndReinstate, ['Manager', 'LabManager', 'Owner', 'LabClerk'], 0)
+    #    mp(permissions.ListFolderContents, ['LabClerk', ''], 1)
+    #    mp(permissions.AddPortalContent, ['Manager', 'LabManager', 'Owner', 'LabClerk'], 0)
+    #    mp(permissions.DeleteObjects, ['Manager', 'LabManager', 'Owner'], 0)
+    #    mp(permissions.View, ['Manager', 'LabManager', 'LabClerk'], 0)
+    #    portal.supplyorders.reindexObject()
+    #except:
+    #    pass

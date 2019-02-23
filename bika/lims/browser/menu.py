@@ -41,12 +41,12 @@ when viewing cancelled/inactive objects """
                     'state': state,
                     'stateTitle': stateTitle, }
         elif workflow.getInfoFor(self.context, 'inactive_state', '') == 'inactive':
-            title2 = t(_('Dormant'))
+            title2 = t(_('Inactive'))
             # cater for bika_one_state_workflow (always Active)
             if not stateTitle or \
                (workflow.getInfoFor(self.context, 'review_state', '') in
                                                     ('active', 'current')):
-                stateTitle = t(_('Dormant'))
+                stateTitle = t(_('Inactive'))
             else:
                 stateTitle = "%s (%s)" % (stateTitle, _(title2))
             return {'id': 'plone-contentmenu-workflow',

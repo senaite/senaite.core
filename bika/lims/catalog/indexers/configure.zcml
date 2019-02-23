@@ -11,5 +11,7 @@
   <adapter name="getAncestorsUIDs" factory=".requestanalysis.getAncestorsUIDs"/>
   <!-- Masking of cancellation_workflow -->
   <adapter name="cancellation_state" factory=".cancellation_state"/>
+  <!-- Masking of invalidate_workflow -->
+  <adapter name="inactive_state" factory=".inactive_state"/>
 
 </configure>

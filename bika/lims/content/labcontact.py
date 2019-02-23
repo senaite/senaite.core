@@ -26,7 +26,7 @@ from zope.interface import implements
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.person import Person
 from bika.lims.content.contact import Contact
-from bika.lims.interfaces import ILabContact
+from bika.lims.interfaces import ILabContact, IDeactivable
 from bika.lims import bikaMessageFactory as _
 
 schema = Person.schema.copy() + atapi.Schema((
@@ -75,7 +75,7 @@ schema['Department'].widget.visible = False
 class LabContact(Contact):
     """A Lab Contact, which can be linked to a System User
     """
-    implements(ILabContact)
+    implements(ILabContact, IDeactivable)
 
     schema = schema
     displayContentsTab = False

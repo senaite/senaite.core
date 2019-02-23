@@ -60,6 +60,21 @@
       <role name="Verifier"/>
     </permission>
 
+    <permission name="List folder contents" acquire="True">
+      <role name="Analyst"/>
+      <role name="Client"/>
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+      <role name="Preserver"/>
+      <role name="Publisher"/>
+      <role name="RegulatoryInspector"/>
+      <role name="Sampler"/>
+      <role name="SamplingCoordinator"/>
+      <role name="Verifier"/>
+    </permission>
+
     <permission name="Modify portal content" acquire="True">
       <role name="LabClerk"/>
       <role name="LabManager"/>
@@ -69,7 +84,20 @@
     <!-- PLONE PERMISSIONS -->
 
 
-    <!-- GENERIC PERMISSIONS -->
+    <!-- SENAITE PERMISSIONS -->
+    <!-- Transition permissions -->
+    <permission name="senaite.core: Transition: Activate" acquire="False">
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="senaite.core: Transition: Deactivate" acquire="False">
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+
+
     <permission name="senaite.core: Add Analysis" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>

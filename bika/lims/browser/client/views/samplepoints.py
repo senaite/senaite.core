@@ -49,7 +49,7 @@ class ClientSamplePointsView(BikaListingView):
              'transitions': [{'id': 'deactivate'}, ],
              'columns': ['title', 'Description']},
             {'id': 'inactive',
-             'title': _('Dormant'),
+             'title': _('Inactive'),
              'contentFilter': {'inactive_state': 'inactive'},
              'transitions': [{'id': 'activate'}, ],
              'columns': ['title', 'Description']},

@@ -8,13 +8,7 @@
 import sys
 
 from AccessControl import ClassSecurityInfo
-from bika.lims import _
-from bika.lims import api
-from bika.lims.config import ARIMPORT_OPTIONS
-from bika.lims.config import DECIMAL_MARKS
-from bika.lims.config import PROJECTNAME
-from bika.lims.content.organisation import Organisation
-from bika.lims.interfaces import IClient
+from Products.ATContentTypes.content import schemata
 from Products.Archetypes.public import BooleanField
 from Products.Archetypes.public import BooleanWidget
 from Products.Archetypes.public import ReferenceField
@@ -25,9 +19,14 @@ from Products.Archetypes.public import StringField
 from Products.Archetypes.public import StringWidget
 from Products.Archetypes.public import registerType
 from Products.Archetypes.utils import DisplayList
-from Products.ATContentTypes.content import schemata
+from bika.lims import _
+from bika.lims import api
+from bika.lims.config import ARIMPORT_OPTIONS
+from bika.lims.config import DECIMAL_MARKS
+from bika.lims.config import PROJECTNAME
+from bika.lims.content.organisation import Organisation
+from bika.lims.interfaces import IClient, IDeactivable
 from zope.interface import implements
-
 
 schema = Organisation.schema.copy() + Schema((
     StringField(
@@ -138,7 +137,7 @@ schema.moveField("ClientID", after="Name")
 
 
 class Client(Organisation):
-    implements(IClient)
+    implements(IClient, IDeactivable)
 
     security = ClassSecurityInfo()
     displayContentsTab = False

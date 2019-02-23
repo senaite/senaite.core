@@ -13,6 +13,8 @@ from Products.Archetypes.public import registerType
 from Products.CMFCore.utils import getToolByName
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.interfaces import IDeactivable
+from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
 
@@ -23,6 +25,7 @@ schema['description'].widget.visible = True
 
 
 class SampleCondition(BaseFolder):
+    implements(IDeactivable)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema

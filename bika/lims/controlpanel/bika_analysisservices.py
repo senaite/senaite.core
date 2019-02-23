@@ -248,13 +248,13 @@ class AnalysisServicesView(BikaListingView):
             {
                 "id": "default",
                 "title": _("Active"),
-                "contentFilter": {"inactive_state": "active"},
+                "contentFilter": {"review_state": "active"},
                 "columns": self.columns.keys(),
                 "custom_transitions": [copy_transition]
             }, {
                 "id": "inactive",
-                "title": _("Dormant"),
-                "contentFilter": {"inactive_state": "inactive"},
+                "title": _("Inactive"),
+                "contentFilter": {"review_state": "inactive"},
                 "columns": self.columns.keys(),
                 "custom_transitions": [copy_transition]
             }, {

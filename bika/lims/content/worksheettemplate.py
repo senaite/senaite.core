@@ -8,13 +8,7 @@
 import sys
 
 from AccessControl import ClassSecurityInfo
-from bika.lims import api
-from bika.lims import bikaMessageFactory as _
-from bika.lims.browser.widgets import ServicesWidget
-from bika.lims.browser.widgets import WorksheetTemplateLayoutWidget
-from bika.lims.config import ANALYSIS_TYPES
-from bika.lims.config import PROJECTNAME
-from bika.lims.content.bikaschema import BikaSchema
+from Products.ATExtensions.field.records import RecordsField
 from Products.Archetypes.public import BaseContent
 from Products.Archetypes.public import BooleanField
 from Products.Archetypes.public import BooleanWidget
@@ -27,8 +21,15 @@ from Products.Archetypes.public import StringField
 from Products.Archetypes.public import StringWidget
 from Products.Archetypes.public import registerType
 from Products.Archetypes.references import HoldingReference
-from Products.ATExtensions.field.records import RecordsField
-
+from bika.lims import api
+from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.widgets import ServicesWidget
+from bika.lims.browser.widgets import WorksheetTemplateLayoutWidget
+from bika.lims.config import ANALYSIS_TYPES
+from bika.lims.config import PROJECTNAME
+from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.interfaces import IDeactivable
+from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
     RecordsField(
@@ -145,6 +146,7 @@ schema["description"].widget.visible = True
 class WorksheetTemplate(BaseContent):
     """Worksheet Templates
     """
+    implements(IDeactivable)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
