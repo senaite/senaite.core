@@ -274,14 +274,25 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         Allowed detection limit operands are `<` and `>`.
         """
 
+        # Changing the detection limit operand has a side effect on the result
+        result = ""
+
         if value in [LDL, UDL]:
+            # flush uncertainty
             self.setUncertainty("")
+
+            # set the result according to the system default UDL/LDL values
+            if value == LDL:
+                result = self.getLowerDetectionLimit()
+            else:
+                result = self.getUpperDetectionLimit()
         else:
             value = ""
 
-        if not self.getDetectionLimitSelector():
-            value = ""
+        # Set the result
+        self.getField("Result").set(self, result)
 
+        # Set the detection limit to the field
         self.getField("DetectionLimitOperand").set(self, value)
 
     # Method getLowerDetectionLimit overrides method of class BaseAnalysis
@@ -411,47 +422,38 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         """
         # Always update ResultCapture date when this field is modified
         self.setResultCaptureDate(DateTime())
-        # Ensure result integrity regards to None, empty and 0 values
-        val = str('' if not value and value != 0 else value).strip()
-        # Only allow DL if manually enabled in AS
-        if val and val[0] in [LDL, UDL]:
-            self.setDetectionLimitOperand(None)
-            oper = val[0]
-            val = val.replace(oper, '', 1)
 
+        # Ensure result integrity regards to None, empty and 0 values
+        val = str("" if not value and value != 0 else value).strip()
+
+        if val == "":
+            self.setDetectionLimitOperand("")
+
+        # UDL/LDL directly entered in the results field
+        if val and val[0] in [LDL, UDL]:
+            # Result prefixed with LDL/UDL
+            oper = val[0]
+            # Strip off LDL/UDL from the result
+            val = val.replace(oper, "", 1)
             # Check if the value is indeterminate / non-floatable
             try:
                 str(float(val))
             except (ValueError, TypeError):
                 val = value
 
-            if self.getDetectionLimitSelector():
-                if self.getAllowManualDetectionLimit():
-                    # DL allowed, try to remove the operator and set the
-                    # result as a detection limit
-                    self.setDetectionLimitOperand(oper)
-                else:
-                    # Trying to set a result with an '<,>' operator,
-                    # but manual DL not allowed, so override the
-                    # value with the service's default LDL or UDL
-                    # according to the operator, but only if the value
-                    # is not an indeterminate.
-                    if oper == LDL:
-                        val = self.getLowerDetectionLimit()
-                    else:
-                        val = self.getUpperDetectionLimit()
-                    self.setDetectionLimitOperand(oper)
-        elif val == '':
-            # Reset DL
+            if self.getAllowManualDetectionLimit():
+                # Set the detection limit operand
+                self.setDetectionLimitOperand(oper)
+        else:
             self.setDetectionLimitOperand(None)
 
-        self.getField('Result').set(self, val)
+        self.getField("Result").set(self, val)
 
         # Uncertainty calculation on DL
-        # https://jira.bikalabs.com/browse/LIMS-1808
-        if self.isAboveUpperDetectionLimit() or \
-                self.isBelowLowerDetectionLimit():
-            self.getField('Uncertainty').set(self, None)
+        below_ldl = self.isBelowLowerDetectionLimit()
+        above_udl = self.isAboveUpperDetectionLimit()
+        if below_ldl or above_udl:
+            self.getField("Uncertainty").set(self, None)
 
     @security.public
     def getResultsRange(self):
