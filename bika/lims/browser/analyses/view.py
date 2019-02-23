@@ -131,6 +131,7 @@ class AnalysesView(BikaListingView):
                 "sortable": False}),
             ("Uncertainty", {
                 "title": _("+-"),
+                "ajax": True,
                 "sortable": False}),
             ("retested", {
                 "title": _("Retested"),
@@ -852,7 +853,12 @@ class AnalysesView(BikaListingView):
             item['replace']['Attachments'] = ''.join(attachments_html)
 
     def _folder_item_uncertainty(self, obj, item):
+
         item['Uncertainty'] = ''
+        after = '<em class="discreet" style="white-space:nowrap;"> {}</em>'
+        item['before']['Uncertainty'] = '&plusmn;&nbsp;'
+        item['after']['Uncertainty'] = after.format(obj.getUnit)
+
         if not self.has_permission(ViewResults, obj):
             return
 
@@ -864,23 +870,20 @@ class AnalysesView(BikaListingView):
                                        sciformat=int(self.scinot))
         if formatted:
             item['Uncertainty'] = formatted
-            item['structure'] = True
-            # Add before and after snippets
-            after = '<em class="discreet" style="white-space:nowrap;"> {}</em>'
-            item['before']['Uncertainty'] = '&plusmn;&nbsp;'
-            item['after']['Uncertainty'] = after.format(obj.getUnit)
+        else:
+            item['Uncertainty'] = full_obj.getUncertainty(result)
 
         is_editable = self.is_analysis_edition_allowed(obj)
-        if is_editable and full_obj.getAllowManualUncertainty():
-            # User can set the value of uncertainty manually
-            uncertainty = full_obj.getUncertainty(result)
-            item['Uncertainty'] = uncertainty or ''
-            item['allow_edit'].append('Uncertainty')
-            item['structure'] = False
-            # Add before and after snippets
-            after = '<em class="discreet" style="white-space:nowrap;"> {}</em>'
-            item['before']['Uncertainty'] = '&plusmn;&nbsp;'
-            item['after']['Uncertainty'] = after.format(obj.getUnit)
+        if not is_editable:
+            return None
+
+        # Logic ported from JavaScript
+        # Make the field readonly when a detection limit is selected
+        if full_obj.getDetectionLimitOperand() in [LDL, UDL]:
+            return None
+
+        if full_obj.getAllowManualUncertainty():
+            item["allow_edit"].append("Uncertainty")
 
     def _folder_item_detection_limits(self, obj, item):
         # TODO: Performance, we wake-up the full object here
