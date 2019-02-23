@@ -13,7 +13,7 @@ import Missing
 from AccessControl.PermissionRole import rolesForPermissionOn
 from Acquisition import aq_base
 from bika.lims import logger
-from bika.lims.interfaces import IClient, IDeactivable
+from bika.lims.interfaces import IClient, IDeactivable, ICancellable
 from bika.lims.interfaces import IContact
 from bika.lims.interfaces import ILabContact
 from DateTime import DateTime
@@ -807,14 +807,13 @@ def get_cancellation_status(brain_or_object, default="active"):
         if state is not None:
             return state
 
-    workflows = get_workflows_for(brain_or_object)
-    if "bika_cancellation_workflow" in workflows:
-        return get_workflow_status_of(brain_or_object, "cancellation_state")
+    obj = get_object(brain_or_object)
+    if ICancellable.providedBy(obj):
+        if get_workflow_status_of(obj) == "cancelled":
+            return "cancelled"
+        return "active"
 
-    state = get_workflow_status_of(brain_or_object)
-    if state not in ("active", "inactive"):
-        return default
-    return state
+    return default
 
 
 def get_inactive_status(brain_or_object, default="active"):
@@ -837,14 +836,7 @@ def get_inactive_status(brain_or_object, default="active"):
             return "inactive"
         return "active"
 
-    workflows = get_workflows_for(obj)
-    if "bika_inactive_workflow" in workflows:
-        return get_workflow_status_of(obj, "inactive_state")
-
-    state = get_workflow_status_of(obj)
-    if state not in ("active", "inactive"):
-        return default
-    return state
+    return default
 
 
 def is_active(brain_or_object):

@@ -11,8 +11,7 @@ from plone.indexer import indexer
 
 @indexer(ICancellable)
 def cancellation_state(instance):
-    """Acts as a mask for cancellation_workflow for those content types that are
-    not bound to this workflow. Returns 'active' or 'cancelled'
+    """Returns "cancelled" or "active"
     """
     if api.get_workflow_status_of(instance) == "cancelled":
         return "cancelled"
@@ -21,9 +20,16 @@ def cancellation_state(instance):
 
 @indexer(IDeactivable)
 def inactive_state(instance):
-    """Acts as a mask for inactive_wrofklow for those content types that are not
-    bound to this workflow. Returns 'active' or 'inactive'
+    """Returns "inactive" or "active"
     """
     if api.get_workflow_status_of(instance) == "inactive":
         return "inactive"
     return "active"
+
+
+@indexer(ICancellable, IDeactivable)
+def is_active(instance):
+    """Returns False if the status of the instance is 'cancelled' or 'inactive'.
+    Otherwise returns active
+    """
+    return api.get_review_status(instance) not in ["cancelled", "inactive"]

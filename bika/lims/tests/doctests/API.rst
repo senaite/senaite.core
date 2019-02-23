@@ -687,7 +687,7 @@ Getting the assigned Workflows of an Object
 This function returns all assigned workflows for a given object::
 
     >>> api.get_workflows_for(bika_setup)
-    ('bika_one_state_workflow',)
+    ('senaite_one_state_workflow',)
 
     >>> api.get_workflows_for(client)
     ('bika_client_workflow',)

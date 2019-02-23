@@ -433,10 +433,6 @@ class SelectionMacrosView(BrowserView):
     def select_state_analysis(self, workflow_id, field_id, field_title, style=None):
         return self._select_state(workflow_id, field_title, field_title, style)
 
-    @ram.cache(_cache_key_select_state)
-    def select_state_cancellation(self, workflow_id, field_id, field_title, style=None):
-        return self._select_state(workflow_id, field_title, field_title, style)
-
     def parse_state(self, request, workflow_id, field_id, field_title):
         val = request.form.get(field_id, "")
         states = self.portal_workflow[workflow_id].states

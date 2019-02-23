@@ -112,10 +112,6 @@
                                                      workflow_id='bika_analysis_workflow',
                                                      field_id='bika_analysis_workflow',
                                                      field_title='Analysis state')"/>
-                                <tal:x content="structure python:view.selection_macros.select_state(
-                                                     workflow_id='bika_cancellation_workflow',
-                                                     field_id='bika_cancellation_workflow',
-                                                     field_title='Cancellation state')"/>
                                 <tal:x content="structure context/@@selection_macros/select_output_format"/>
                             </fieldset>
                             <input tabindex=""

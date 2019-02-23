@@ -90,11 +90,11 @@ portal object::
 
     >>> bika_setup = portal.bika_setup
 
-The `bika_bika_setup` folder follows the `bika_one_state_workflow` and is
+The `bika_bika_setup` folder follows the `senaite_one_state_workflow` and is
 initially in the `active` state::
 
     >>> get_workflows_for(bika_setup)
-    ('bika_one_state_workflow',)
+    ('senaite_one_state_workflow',)
 
     >>> get_workflow_status_of(bika_setup)
     'active'
@@ -163,11 +163,11 @@ portal object::
 
     >>> laboratory = portal.bika_setup.laboratory
 
-The `laboratory` folder follows the `bika_one_state_workflow` and is
+The `laboratory` folder follows the `senaite_one_state_workflow` and is
 initially in the `active` state::
 
     >>> get_workflows_for(laboratory)
-    ('bika_one_state_workflow',)
+    ('senaite_one_state_workflow',)
 
     >>> get_workflow_status_of(laboratory)
     'active'
@@ -233,19 +233,19 @@ A `labcontact` lives in the `bika_setup/bika_labcontacts` folder::
     >>> setRoles(portal, TEST_USER_ID, ['LabManager',])
     >>> labcontact = create(labcontacts, "LabContact")
 
-The `bika_labcontacts` folder follows the `bika_one_state_workflow` and is
+The `bika_labcontacts` folder follows the `senaite_one_state_workflow` and is
 initially in the `active` state::
 
     >>> get_workflows_for(labcontacts)
-    ('bika_one_state_workflow',)
+    ('senaite_one_state_workflow',)
 
     >>> get_workflow_status_of(labcontacts)
     'active'
 
-A `labcontact` follows the `bika_inactive_workflow` and has an initial state of `active`::
+A `labcontact` follows the `senaite_deactivable_type_workflow` and has an initial state of `active`::
 
     >>> get_workflows_for(labcontact)
-    ('bika_one_state_workflow', 'bika_inactive_workflow')
+    ('senaite_deactivable_type_workflow')
 
     >>> get_workflow_status_of(labcontacts)
     'active'
@@ -353,20 +353,20 @@ The `clients` folder follows **no** workflow::
     >>> get_workflows_for(clients)
     ()
 
-A `client` follows the `bika_client_workflow` and the
-`bika_inactive_workflow` and has an initial state of `active`::
+A `client` follows the `senaite_client_workflow` and has an initial state of
+`active`::
 
     >>> get_workflows_for(client)
-    ('bika_client_workflow',)
+    ('senaite_client_workflow',)
 
     >>> get_workflow_status_of(client)
     'active'
 
-A `contact` follows the `bika_one_state_workflow` and the
-`bika_inactive_workflow` and has an initial state of `active`::
+A `contact` follows the `senaite_deactivable_type_workflow` and has an initial
+state of `active`::
 
     >>> get_workflows_for(contact)
-    ('bika_one_state_workflow', 'bika_inactive_workflow')
+    ('senaite_deactivable_type_workflow',)
 
     >>> get_workflow_status_of(contact)
     'active'
@@ -565,11 +565,11 @@ A `instrument` lives in the `bika_setup/bika_instruments` folder::
     >>> instruments = bika_setup.bika_instruments
     >>> instrument = create(instruments, "Instrument")
 
-The `bika_instruments` folder follows the `bika_one_state_workflow` and is
+The `bika_instruments` folder follows the `senaite_one_state_workflow` and is
 initially in the `active` state::
 
     >>> get_workflows_for(instruments)
-    ('bika_one_state_workflow',)
+    ('senaite_one_state_workflow',)
 
     >>> get_workflow_status_of(instruments)
     'active'
@@ -577,7 +577,7 @@ initially in the `active` state::
 A `instrument` follows the `bika_inactive_workflow` and has an initial state of `active`::
 
     >>> get_workflows_for(instrument)
-    ('bika_one_state_workflow', 'bika_inactive_workflow')
+    ('senaite_one_state_workflow', 'bika_inactive_workflow')
 
     >>> get_workflow_status_of(instruments)
     'active'
@@ -682,11 +682,11 @@ A `method` lives in the `methods` folder::
     >>> methods = portal.methods
     >>> method = create(methods, "Method")
 
-The `methods` folder follows the `bika_one_state_workflow` and is initially in
+The `methods` folder follows the `senaite_one_state_workflow` and is initially in
 the `active` state::
 
     >>> get_workflows_for(methods)
-    ('bika_one_state_workflow',)
+    ('senaite_one_state_workflow',)
 
     >>> get_workflow_status_of(methods)
     'active'
@@ -694,7 +694,7 @@ the `active` state::
 A `method` follows the `bika_inactive_workflow` and has an initial state of `active`::
 
     >>> get_workflows_for(method)
-    ('bika_one_state_workflow', 'bika_inactive_workflow')
+    ('senaite_one_state_workflow', 'bika_inactive_workflow')
 
     >>> get_workflow_status_of(methods)
     'active'
@@ -799,11 +799,11 @@ A `analysisservice` lives in the `bika_setup/bika_analysisservices` folder::
     >>> analysisservices = bika_setup.bika_analysisservices
     >>> analysisservice = create(analysisservices, "AnalysisService")
 
-The `bika_analysisservices` folder follows the `bika_one_state_workflow` and is
+The `bika_analysisservices` folder follows the `senaite_one_state_workflow` and is
 initially in the `active` state::
 
     >>> get_workflows_for(analysisservices)
-    ('bika_one_state_workflow',)
+    ('senaite_one_state_workflow',)
 
     >>> get_workflow_status_of(analysisservices)
     'active'
@@ -811,7 +811,7 @@ initially in the `active` state::
 A `analysisservice` follows the `bika_inactive_workflow` and has an initial state of `active`::
 
     >>> get_workflows_for(analysisservice)
-    ('bika_one_state_workflow', 'bika_inactive_workflow')
+    ('senaite_one_state_workflow', 'bika_inactive_workflow')
 
     >>> get_workflow_status_of(analysisservices)
     'active'

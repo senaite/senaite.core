@@ -74,16 +74,6 @@ class Report(BrowserView):
                  'value': review_state,
                  'type': 'text'})
 
-        if 'bika_cancellation_workflow' in self.request.form:
-            query['cancellation_state'] = self.request.form[
-                'bika_cancellation_workflow']
-            cancellation_state = workflow.getTitleForStateOnType(
-                self.request.form['bika_cancellation_workflow'], 'Analysis')
-            parms.append(
-                {'title': _('Active'),
-                 'value': cancellation_state,
-                 'type': 'text'})
-
         # and now lets do the actual report lines
         formats = {'columns': 2,
                    'col_heads': [_('Sample type'), _('Number of analyses')],

@@ -30,7 +30,7 @@ when viewing cancelled/inactive objects """
 
         if workflow.getInfoFor(self.context, 'cancellation_state', '') == 'cancelled':
             title2 = t(_('Cancelled'))
-            # cater for bika_one_state_workflow (always Active)
+            # cater for senaite_one_state_workflow (always Active)
             if not stateTitle or \
                workflow.getInfoFor(self.context, 'review_state', '') == 'active':
                 stateTitle = t(_('Cancelled'))
@@ -42,7 +42,7 @@ when viewing cancelled/inactive objects """
                     'stateTitle': stateTitle, }
         elif workflow.getInfoFor(self.context, 'inactive_state', '') == 'inactive':
             title2 = t(_('Inactive'))
-            # cater for bika_one_state_workflow (always Active)
+            # cater for senaite_one_state_workflow (always Active)
             if not stateTitle or \
                (workflow.getInfoFor(self.context, 'review_state', '') in
                                                     ('active', 'current')):

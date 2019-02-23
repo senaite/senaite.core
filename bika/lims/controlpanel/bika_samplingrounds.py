@@ -47,8 +47,7 @@ class SamplingRoundsView(BikaListingView):
         self.review_states = [
             {'id': 'default',
              'title':  _('Open'),
-             'contentFilter': {'review_state': 'open',
-                               'cancellation_state': 'active'},
+             'contentFilter': {'review_state': 'open'},
              'columns': ['title',
                          'Description',
                          'num_sample_points',
@@ -56,8 +55,7 @@ class SamplingRoundsView(BikaListingView):
                          ]
              },
              {'id': 'closed',
-             'contentFilter': {'review_state': 'closed',
-                               'cancellation_state': 'active'},
+             'contentFilter': {'review_state': 'closed'},
              'title': _('Closed'),
              'transitions': [{'id': 'open'}],
              'columns': ['title',
@@ -69,7 +67,7 @@ class SamplingRoundsView(BikaListingView):
             {'id': 'cancelled',
              'title': _('Cancelled'),
              'transitions': [{'id': 'reinstate'}],
-             'contentFilter': {'cancellation_state': 'cancelled'},
+             'contentFilter': {'review_state': 'cancelled'},
              'columns': ['title',
                          'Description',
                          'num_sample_points',

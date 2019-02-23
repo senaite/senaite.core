@@ -2,7 +2,7 @@
 Analysis Service - Activations and Inactivations
 ================================================
 
-The inactivation and activation of Analysis Services relies on `bika_inactive_workflow`.
+The inactivation and activation of Analysis Services relies on `senaite_deactivable_type_workflow`.
 To prevent inconsistencies that could have undesired effects, an Analysis Service
 can only be deactivated if it does not have active dependents (this is, other
 services that depends on the Analysis Service to calculate their results).

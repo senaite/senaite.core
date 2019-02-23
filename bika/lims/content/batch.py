@@ -15,7 +15,8 @@ from bika.lims.browser.widgets import DateTimeWidget, ReferenceWidget
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaFolderSchema
-from bika.lims.interfaces import IBatch, IBatchSearchableText, IClient
+from bika.lims.interfaces import IBatch, IBatchSearchableText, IClient, \
+    ICancellable
 from bika.lims.workflow import (BatchState, CancellationState, StateFlow,
                                 getCurrentState)
 from plone.app.folder.folder import ATFolder
@@ -230,7 +231,7 @@ schema.moveField('Client', after='title')
 class Batch(ATFolder):
     """A Batch combines multiple ARs into a logical unit
     """
-    implements(IBatch)
+    implements(IBatch, ICancellable)
 
     schema = schema
     displayContentsTab = False

@@ -15,6 +15,11 @@
   <permission>Modify portal content</permission>
   <permission>View</permission>
 
+  <!-- Senaite permissions for transitions (govern guards) -->
+  <permission>senaite.core: Transition: Reinstate</permission>
+  <permission>senaite.core: Transition: Cancel</permission>
+
+
   <state state_id="closed" title="Closed" i18n:attributes="title">
     <description>The batch can't be edited and Samples cannot be attached</description>
     <exit-transition transition_id="open" />
@@ -42,6 +47,7 @@
   <state state_id="open" title="Open" i18n:attributes="title">
     <description>The batch can be edited and Samples can be attached</description>
     <exit-transition transition_id="close" />
+    <exit-transition transition_id="cancel" />
     <permission-map name="senaite.core: Add Analysis Request" acquired="False">
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -73,6 +79,38 @@
       <permission-role>Verifier</permission-role>
     </permission-map>
   </state>
+
+  <!-- State: cancelled -->
+  <state state_id="cancelled" title="Cancelled" i18n:attributes="title">
+    <exit-transition transition_id="reinstate" />
+
+    <!-- Transition permissions -->
+    <permission-map name="senaite.core: Transition: Reinstate" acquired="True" />
+
+    <!-- Plone's permissions -->
+    <permission-map name="Access contents information" acquired="True" />
+    <permission-map name="Delete objects" acquired="False" />
+    <permission-map name="List folder contents" acquired="True" />
+    <permission-map name="Modify portal content" acquired="True" />
+    <permission-map name="View" acquired="True" />
+  </state>
+
+  <!-- Transition: reinstate -->
+  <transition transition_id="reinstate" title="Reinstate" new_state="open" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Reinstate</action>
+    <guard>
+      <guard-permission>senaite.core: Transition: Reinstate</guard-permission>
+      <guard-expression>python:here.guard_handler("reinstate")</guard-expression>
+    </guard>
+  </transition>
+  <!-- Transition: cancel -->
+  <transition transition_id="cancel" title="Cancel" new_state="cancelled" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Cancel</action>
+    <guard>
+      <guard-permission>senaite.core: Transition: Cancel</guard-permission>
+      <guard-expression>python:here.guard_handler("cancel")</guard-expression>
+    </guard>
+  </transition>
 
   <transition transition_id="close" title="Close" new_state="closed" trigger="USER" before_script="" after_script="" i18n:attributes="title">
     <action url="" category="workflow" icon="">Close</action>

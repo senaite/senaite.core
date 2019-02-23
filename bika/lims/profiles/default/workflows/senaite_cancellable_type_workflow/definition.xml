@@ -44,8 +44,8 @@
   <permission>View</permission>
 
   <!-- Senaite permissions for transitions (govern guards) -->
-  <permission>senaite.core: Transition: Activate</permission>
-  <permission>senaite.core: Transition: Deactivate</permission>
+  <permission>senaite.core: Transition: Reinstate</permission>
+  <permission>senaite.core: Transition: Cancel</permission>
 
   <!-- State: active -->
   <state state_id="active" title="Active" i18n:attributes="title">
@@ -77,7 +77,7 @@
     <permission-map name="View" acquired="True" />
   </state>
 
-  <!-- Transition: activate -->
+  <!-- Transition: reinstate -->
   <transition transition_id="reinstate" title="Reinstate" new_state="active" trigger="USER" before_script="" after_script="" i18n:attributes="title">
     <action url="" category="workflow" icon="">Reinstate</action>
     <guard>
@@ -85,7 +85,7 @@
       <guard-expression>python:here.guard_handler("reinstate")</guard-expression>
     </guard>
   </transition>
-  <!-- Transition: deactivate -->
+  <!-- Transition: cancel -->
   <transition transition_id="cancel" title="Cancel" new_state="cancelled" trigger="USER" before_script="" after_script="" i18n:attributes="title">
     <action url="" category="workflow" icon="">Cancel</action>
     <guard>
