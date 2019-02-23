@@ -94,6 +94,8 @@ Analyst = StringField(
 # specified in the analysis service when the result is submitted.
 Uncertainty = FixedPointField(
     'Uncertainty',
+    read_permission=View,
+    write_permission="Field: Edit Result",
     precision=10,
 )
 
