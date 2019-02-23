@@ -720,8 +720,12 @@ class AnalysesView(BikaListingView):
 
         # Edit mode enabled of this Analysis
         if self.is_analysis_edition_allowed(analysis_brain):
-            item['allow_edit'].extend(['Remarks'])
-            item['allow_edit'].extend(['Result'])
+            # Allow to set Remarks
+            item["allow_edit"].append("Remarks")
+
+            # Set the results field editable
+            if self.is_result_edition_allowed(analysis_brain):
+                item["allow_edit"].append("Result")
 
             # Prepare result options
             choices = analysis_brain.getResultOptions
@@ -922,12 +926,7 @@ class AnalysesView(BikaListingView):
         else:
             item["Uncertainty"] = obj.getUncertainty(result)
 
-        editable = self.is_analysis_edition_allowed(obj)
-        detection_limit_operand = full_obj.getDetectionLimitOperand()
-        has_detection_limit = detection_limit_operand in [LDL, UDL]
-        manual_uncertainty_allowed = full_obj.getAllowManualUncertainty()
-
-        if editable and manual_uncertainty_allowed and not has_detection_limit:
+        if self.is_uncertainty_edition_allowed(analysis_brain):
             item["allow_edit"].append("Uncertainty")
 
     def _folder_item_detection_limits(self, analysis_brain, item):
@@ -938,8 +937,7 @@ class AnalysesView(BikaListingView):
         """
         item["DetectionLimitOperand"] = ""
 
-        is_editable = self.is_analysis_edition_allowed(obj)
-        if not is_editable:
+        if not self.is_analysis_edition_allowed(analysis_brain):
             # Return immediately if the we are not in edit mode
             return
 
