@@ -449,12 +449,6 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
         self.getField("Result").set(self, val)
 
-        # Uncertainty calculation on DL
-        below_ldl = self.isBelowLowerDetectionLimit()
-        above_udl = self.isAboveUpperDetectionLimit()
-        if below_ldl or above_udl:
-            self.getField("Uncertainty").set(self, None)
-
     @security.public
     def getResultsRange(self):
         raise NotImplementedError("getResultsRange is not implemented.")
