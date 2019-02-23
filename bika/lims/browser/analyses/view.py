@@ -882,31 +882,29 @@ class AnalysesView(BikaListingView):
             item["allow_edit"].append("Uncertainty")
 
     def _folder_item_detection_limits(self, obj, item):
-        # TODO: Performance, we wake-up the full object here
-        obj = self.get_object(obj)
-        item["DetectionLimitOperand"] = obj.getDetectionLimitOperand()
+        item["DetectionLimitOperand"] = ""
 
         is_editable = self.is_analysis_edition_allowed(obj)
         if not is_editable:
             # Return immediately if the we are not in edit mode
             return None
 
+        # TODO: Performance, we wake-up the full object here
+        obj = self.get_object(obj)
+
         if not obj.getDetectionLimitSelector():
             return None
 
         # Allow editing the detection limit operand
+        item["DetectionLimitOperand"] = obj.getDetectionLimitOperand()
         item["allow_edit"].append("DetectionLimitOperand")
-        # Show the DetectionLimit column
         self.columns["DetectionLimitOperand"]["toggle"] = True
 
         choices = [
+            {"ResultValue": "", "ResultText": ""},
             {"ResultValue": LDL, "ResultText": LDL},
             {"ResultValue": UDL, "ResultText": UDL}
         ]
-
-        # inject the empty option if manual entry of detection limit is allowed
-        if obj.getAllowManualDetectionLimit():
-            choices.insert(0, {"ResultValue": "", "ResultText": ""})
 
         item["choices"]["DetectionLimitOperand"] = choices
 
