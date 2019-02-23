@@ -16,9 +16,10 @@ from bika.lims.api.analysis import get_formatted_interval
 from bika.lims.api.analysis import is_out_of_range
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
+from bika.lims.config import LDL
+from bika.lims.config import UDL
 from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.interfaces import IFieldIcons
-from bika.lims.interfaces import IRoutineAnalysis
 from bika.lims.permissions import EditFieldResults
 from bika.lims.permissions import EditResults
 from bika.lims.permissions import Verify as VerifyPermission

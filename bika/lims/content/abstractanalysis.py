@@ -10,38 +10,36 @@ import math
 from decimal import Decimal
 
 from AccessControl import ClassSecurityInfo
-from DateTime import DateTime
-from Products.Archetypes.Field import BooleanField, DateTimeField, \
-    FixedPointField, IntegerField, StringField
-from Products.Archetypes.Schema import Schema
-from Products.Archetypes.references import HoldingReference
-from Products.CMFCore.utils import getToolByName
-from Products.CMFCore.permissions import View
 from bika.lims import api
-from bika.lims import bikaMessageFactory as _, deprecated
+from bika.lims import bikaMessageFactory as _
+from bika.lims import deprecated
 from bika.lims import logger
+from bika.lims import workflow as wf
 from bika.lims.browser.fields import HistoryAwareReferenceField
-from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.fields import InterimFieldsField
+from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.fields.uidreferencefield import get_backreferences
-from bika.lims.browser.widgets import DateTimeWidget, RecordsWidget
+from bika.lims.browser.widgets import RecordsWidget
+from bika.lims.config import LDL
+from bika.lims.config import UDL
 from bika.lims.content.abstractbaseanalysis import AbstractBaseAnalysis
 from bika.lims.content.abstractbaseanalysis import schema
 from bika.lims.interfaces import IDuplicateAnalysis
-from bika.lims.permissions import *
-from bika.lims.permissions import Verify as VerifyPermission
-from bika.lims.utils import formatDecimalMark
 from bika.lims.utils import drop_trailing_zeros_decimal
+from bika.lims.utils import formatDecimalMark
 from bika.lims.utils.analysis import format_numeric_result
 from bika.lims.utils.analysis import get_significant_digits
-from bika.lims import workflow as wf
 from bika.lims.workflow import getTransitionActor
 from bika.lims.workflow import getTransitionDate
-from bika.lims.workflow import wasTransitionPerformed
-from bika.lims.workflow.analysis import events
-from bika.lims.workflow.analysis import guards
-from plone.api.user import has_permission
-from zope.interface import implements
+from DateTime import DateTime
+from Products.Archetypes.Field import DateTimeField
+from Products.Archetypes.Field import FixedPointField
+from Products.Archetypes.Field import IntegerField
+from Products.Archetypes.Field import StringField
+from Products.Archetypes.references import HoldingReference
+from Products.Archetypes.Schema import Schema
+from Products.CMFCore.permissions import View
+from Products.CMFCore.utils import getToolByName
 
 # A link directly to the AnalysisService object used to create the analysis
 AnalysisService = UIDReferenceField(
@@ -269,17 +267,20 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
     @security.public
     def setDetectionLimitOperand(self, value):
-        """Sets the detection limit operand for this analysis, so the result
-        will be interpreted as a detection limit. The value will only be set
-        if the Service has 'DetectionLimitSelector' field set to True,
-        otherwise, the detection limit operand will be set to None. See
-        LIMS-1775 for further information about the relation amongst
-        'DetectionLimitSelector' and 'AllowManualDetectionLimit'.
-        https://jira.bikalabs.com/browse/LIMS-1775
+        """Set detection limit operand for this analysis
+
+        Allowed detection limit operands are `<` and `>`.
         """
-        md = self.getDetectionLimitSelector()
-        val = value if (md and value and value in '<>') else None
-        self.getField('DetectionLimitOperand').set(self, val)
+
+        if value in [LDL, UDL]:
+            self.setUncertainty("")
+        else:
+            value = ""
+
+        if not self.getDetectionLimitSelector():
+            value = ""
+
+        self.getField("DetectionLimitOperand").set(self, value)
 
     # Method getLowerDetectionLimit overrides method of class BaseAnalysis
     @security.public
@@ -375,14 +376,14 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         """Returns True if the result for this analysis represents a Lower
         Detection Limit. Otherwise, returns False
         """
-        return self.getDetectionLimitOperand() == '<'
+        return self.getDetectionLimitOperand() == LDL
 
     @security.public
     def isUpperDetectionLimit(self):
         """Returns True if the result for this analysis represents an Upper
         Detection Limit. Otherwise, returns False
         """
-        return self.getDetectionLimitOperand() == '>'
+        return self.getDetectionLimitOperand() == UDL
 
     @security.public
     def getDependents(self):
@@ -411,7 +412,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         # Ensure result integrity regards to None, empty and 0 values
         val = str('' if not value and value != 0 else value).strip()
         # Only allow DL if manually enabled in AS
-        if val and val[0] in '<>':
+        if val and val[0] in [LDL, UDL]:
             self.setDetectionLimitOperand(None)
             oper = val[0]
             val = val.replace(oper, '', 1)
@@ -433,12 +434,12 @@ class AbstractAnalysis(AbstractBaseAnalysis):
                     # value with the service's default LDL or UDL
                     # according to the operator, but only if the value
                     # is not an indeterminate.
-                    if oper == '<':
+                    if oper == LDL:
                         val = self.getLowerDetectionLimit()
                     else:
                         val = self.getUpperDetectionLimit()
                     self.setDetectionLimitOperand(oper)
-        elif val is '':
+        elif val == '':
             # Reset DL
             self.setDetectionLimitOperand(None)
 
