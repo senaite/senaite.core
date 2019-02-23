@@ -534,10 +534,10 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         except ZeroDivisionError:
             self.setResult('0/0')
             return True
-        except KeyError as e:
+        except KeyError:
             self.setResult("NA")
             return True
-        except ImportError as e:
+        except ImportError:
             self.setResult("NA")
             return True
 
