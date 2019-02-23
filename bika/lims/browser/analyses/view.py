@@ -873,16 +873,12 @@ class AnalysesView(BikaListingView):
         else:
             item['Uncertainty'] = full_obj.getUncertainty(result)
 
-        is_editable = self.is_analysis_edition_allowed(obj)
-        if not is_editable:
-            return None
+        editable = self.is_analysis_edition_allowed(obj)
+        detection_limit_operand = full_obj.getDetectionLimitOperand()
+        has_detection_limit = detection_limit_operand in [LDL, UDL]
+        manual_uncertainty_allowed = full_obj.getAllowManualUncertainty()
 
-        # Logic ported from JavaScript
-        # Make the field readonly when a detection limit is selected
-        if full_obj.getDetectionLimitOperand() in [LDL, UDL]:
-            return None
-
-        if full_obj.getAllowManualUncertainty():
+        if editable and manual_uncertainty_allowed and not has_detection_limit:
             item["allow_edit"].append("Uncertainty")
 
     def _folder_item_detection_limits(self, obj, item):
