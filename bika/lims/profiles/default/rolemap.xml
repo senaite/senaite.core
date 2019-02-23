@@ -86,12 +86,22 @@
 
     <!-- SENAITE PERMISSIONS -->
     <!-- Transition permissions -->
+    <permission name="senaite.core: Transition: Deactivate" acquire="False">
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
     <permission name="senaite.core: Transition: Activate" acquire="False">
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
-    <permission name="senaite.core: Transition: Deactivate" acquire="False">
+    <permission name="senaite.core: Transition: Cancel" acquire="False">
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="senaite.core: Transition: Reinstate" acquire="False">
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Owner"/>

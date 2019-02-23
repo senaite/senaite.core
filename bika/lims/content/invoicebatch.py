@@ -15,7 +15,7 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.config import ManageInvoices, PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.content.invoice import InvoiceLineItem
-from bika.lims.interfaces import IInvoiceBatch
+from bika.lims.interfaces import IInvoiceBatch, ICancellable
 from bika.lims.utils import get_invoice_item_description
 from bika.lims.workflow import isBasicTransitionAllowed, getTransitionDate
 from zope.container.contained import ContainerModifiedEvent
@@ -46,7 +46,7 @@ schema['title'].default = DateTime().strftime('%b %Y')
 
 class InvoiceBatch(BaseFolder):
     """ Container for Invoice instances """
-    implements(IInvoiceBatch)
+    implements(IInvoiceBatch, ICancellable)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema

@@ -79,6 +79,8 @@
 # Setup items Transition Permissions
 <permission id="senaite.core.permissions.TransitionActivate" title="senaite.core: Transition: Activate"/>
 <permission id="senaite.core.permissions.TransitionDeactivate" title="senaite.core: Transition: Deactivate"/>
+<permission id="senaite.core.permissions.TransitionReinstate" title="senaite.core: Transition: Reinstate"/>
+<permission id="senaite.core.permissions.TransitionCancel" title="senaite.core: Transition: Cancel"/>
 
 
 

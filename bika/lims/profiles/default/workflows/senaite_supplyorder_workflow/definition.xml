@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <dc-workflow xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-             workflow_id="bika_order_workflow"
+             workflow_id="senaite_supply_order_workflow"
              title="Bika Order Workflow"
              description=""
              state_variable="review_state"
@@ -25,6 +25,7 @@
 
   <state state_id="pending" title="Pending" i18n:attributes="title">
     <exit-transition transition_id="dispatch" />
+    <exit-transition transition_id="cancel" />
     <permission-map name="Delete objects" acquired="False">
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -39,10 +40,30 @@
     </permission-map>
   </state>
 
+  <state state_id="cancelled" title="Cancelled" i18n:attributes="title">
+    <exit-transition transition_id="reinstate" />
+  </state>
+
   <transition transition_id="dispatch" title="Dispatch" new_state="dispatched" trigger="USER" before_script="" after_script="" i18n:attributes="title">
     <action url="" category="workflow" icon="">Dispatch order</action>
     <guard>
       <guard-permission>BIKA: Dispatch Order</guard-permission>
+    </guard>
+  </transition>
+
+  <transition transition_id="cancel" title="Cancel" new_state="cancelled" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Cancel</action>
+    <guard>
+      <guard-permission>BIKA: Cancel and reinstate</guard-permission>
+      <guard-expression>python:here.guard_handler("cancel")</guard-expression>
+    </guard>
+  </transition>
+
+  <transition transition_id="reinstate" title="Reinstate" new_state="pending" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Reinstate</action>
+    <guard>
+      <guard-permission>BIKA: Cancel and reinstate</guard-permission>
+      <guard-expression>python:here.guard_handler("reinstate")</guard-expression>
     </guard>
   </transition>
 

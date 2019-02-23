@@ -7,16 +7,16 @@
 
 from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
-from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
 from Products.Archetypes.public import *
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
 from bika.lims.browser.widgets import DateTimeWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.interfaces import ICancellable
+from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
 
@@ -134,6 +134,7 @@ class InstrumentMaintenanceTaskStatuses:
     INQUEUE = "In queue"
 
 class InstrumentMaintenanceTask(BaseFolder):
+    implements(ICancellable)
     security = ClassSecurityInfo()
     schema = schema
     displayContentsTab = False

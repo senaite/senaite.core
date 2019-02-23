@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <dc-workflow xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-             workflow_id="senaite_basic_workflow"
-             title="Senaite basic Workflow"
+             workflow_id="senaite_cancellable_type_workflow"
+             title="Senaite cancellable type Workflow"
              description=""
              state_variable="review_state"
              initial_state="active"
@@ -9,9 +9,9 @@
              i18n:domain="senaite.core">
 
   <!--
-  Basic workflow for senaite content types.
+  Basic workflow for senaite content types that implement ICancellable.
   Deletion of objects is not allowed, regardless of the role. Nevertheless, the
-  workflow provides the transition "deactivate".
+  workflow provides the transitions "cancel" and "reinstate".
 
   IMPORTANT(1)
   Some types can live either inside setup or inside client (e.g. Profiles,
@@ -21,11 +21,11 @@
   the permissions set at Client level will apply.
 
   IMPORTANT(2)
-  Some setup items may require changes to this workflow. E.g.:
+  Some types may require changes to this workflow. E.g.:
 
-    - By default, LabClerk cannot deactivate/activate an object unless he/she is
+    - By default, LabClerk cannot cancel/reinstate an object unless he/she is
       the Owner. This restriction maybe should not apply for objects like
-      Manufacturer.
+      InvoiceBatch.
 
   So, instead of hacking here (changing permissions wide or explicitly define
   them in setuphandlers, etc.), please create a new workflow using this one as
@@ -49,10 +49,10 @@
 
   <!-- State: active -->
   <state state_id="active" title="Active" i18n:attributes="title">
-    <exit-transition transition_id="deactivate" />
+    <exit-transition transition_id="cancel" />
 
     <!-- Transition permissions -->
-    <permission-map name="senaite.core: Transition: Deactivate" acquired="True" />
+    <permission-map name="senaite.core: Transition: Cancel" acquired="True" />
 
     <!-- Plone's permissions -->
     <permission-map name="Access contents information" acquired="True" />
@@ -62,12 +62,12 @@
     <permission-map name="View" acquired="True" />
   </state>
 
-  <!-- State: inactive -->
-  <state state_id="inactive" title="Inactive" i18n:attributes="title">
-    <exit-transition transition_id="activate" />
+  <!-- State: cancelled -->
+  <state state_id="cancelled" title="Cancelled" i18n:attributes="title">
+    <exit-transition transition_id="reinstate" />
 
     <!-- Transition permissions -->
-    <permission-map name="senaite.core: Transition: Activate" acquired="True" />
+    <permission-map name="senaite.core: Transition: Reinstate" acquired="True" />
 
     <!-- Plone's permissions -->
     <permission-map name="Access contents information" acquired="True" />
@@ -78,19 +78,19 @@
   </state>
 
   <!-- Transition: activate -->
-  <transition transition_id="activate" title="Activate" new_state="active" trigger="USER" before_script="" after_script="" i18n:attributes="title">
-    <action url="" category="workflow" icon="">Activate</action>
+  <transition transition_id="reinstate" title="Reinstate" new_state="active" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Reinstate</action>
     <guard>
-      <guard-permission>senaite.core: Transition: Deactivate</guard-permission>
-      <guard-expression>python:here.guard_handler("activate")</guard-expression>
+      <guard-permission>senaite.core: Transition: Reinstate</guard-permission>
+      <guard-expression>python:here.guard_handler("reinstate")</guard-expression>
     </guard>
   </transition>
   <!-- Transition: deactivate -->
-  <transition transition_id="deactivate" title="Deactivate" new_state="inactive" trigger="USER" before_script="" after_script="" i18n:attributes="title">
-    <action url="" category="workflow" icon="">Deactivate</action>
+  <transition transition_id="cancel" title="Cancel" new_state="cancelled" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Cancel</action>
     <guard>
-      <guard-permission>senaite.core: Transition: Activate</guard-permission>
-      <guard-expression>python:here.guard_handler("deactivate")</guard-expression>
+      <guard-permission>senaite.core: Transition: Cancel</guard-permission>
+      <guard-expression>python:here.guard_handler("cancel")</guard-expression>
     </guard>
   </transition>
 

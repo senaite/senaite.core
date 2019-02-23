@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <dc-workflow xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-             workflow_id="senaite_clients_folder_workflow"
-             title="Senaite clients folder Workflow"
+             workflow_id="senaite_one_state_workflow"
+             title="Senaite setup folder Workflow"
              description=""
              state_variable="review_state"
              initial_state="active"
@@ -9,7 +9,7 @@
              i18n:domain="senaite.core">
 
   <!--
-  One-state workflow for senaite clients folder
+  One-state (active) workflow, for folders mostly.
   -->
 
   <permission>Access contents information</permission>

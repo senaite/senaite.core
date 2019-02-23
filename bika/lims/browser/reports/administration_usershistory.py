@@ -115,8 +115,6 @@ class Report(BrowserView):
                     actiontitle = _('Created')
                     if not action['action'] or (
                         action['action'] and action['action'] == 'create'):
-                        if workflowid == 'bika_inactive_workflow':
-                            continue
                         actiontitle = _('Created')
                     else:
                         actiontitle = _(action['action'])
