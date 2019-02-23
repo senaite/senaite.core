@@ -737,7 +737,7 @@ class AnalysesView(BikaListingView):
                 item["choices"]["Result"] = choices
 
         if not result:
-            return None
+            return
 
         obj = self.get_object(analysis_brain)
         formatted_result = obj.getFormattedResult(
@@ -909,9 +909,6 @@ class AnalysesView(BikaListingView):
         """
 
         item["Uncertainty"] = ""
-        after = "<span class='unit'> {}</span>"
-        item["before"]["Uncertainty"] = "&plusmn;&nbsp;"
-        item["after"]["Uncertainty"] = after.format(analysis_brain.getUnit)
 
         if not self.has_permission(ViewResults, analysis_brain):
             return
