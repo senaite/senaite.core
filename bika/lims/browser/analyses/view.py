@@ -910,62 +910,6 @@ class AnalysesView(BikaListingView):
 
         item["choices"]["DetectionLimitOperand"] = choices
 
-    def _folder_item_detection_limits_orig(self, obj, item):
-        item['DetectionLimit'] = ''
-        is_editable = self.is_analysis_edition_allowed(obj)
-        if not is_editable:
-            return
-
-        # TODO: Performance, we wake-up the full object here
-        full_obj = self.get_object(obj)
-        uid = api.get_uid(obj)
-
-        is_below_ldl = full_obj.isBelowLowerDetectionLimit()
-        is_above_udl = full_obj.isAboveUpperDetectionLimit()
-
-        # Allow to use LDL and UDL in calculations.
-        # Since LDL, UDL, etc. are wildcards that can be used in calculations,
-        # these fields must be loaded always for 'live' calculations.
-        dls = {
-            'above_udl': is_above_udl,
-            'below_ldl': is_below_ldl,
-            'is_ldl': full_obj.isLowerDetectionLimit(),
-            'is_udl': full_obj.isUpperDetectionLimit(),
-            'default_ldl': full_obj.getLowerDetectionLimit(),
-            'default_udl': full_obj.getUpperDetectionLimit(),
-            'manual_allowed': full_obj.getAllowManualDetectionLimit(),
-            'dlselect_allowed': full_obj.getDetectionLimitSelector()
-        }
-        dlsin = \
-            '<input type="hidden" id="AnalysisDLS.%s" value=\'%s\'/>'
-        dlsin = dlsin % (uid, json.dumps(dls))
-        item['after']['Result'] = dlsin
-
-        if not full_obj.getDetectionLimitSelector():
-            # The user cannot manually set the Detection Limit
-            return
-
-        # User can manually set the Detection Limit for this analysis.
-        # A selector with options '', '<' and '>' must be displayed.
-        dl_operator = ''
-        if is_below_ldl or is_above_udl:
-            dl_operator = '<' if is_below_ldl else '>'
-
-        item['allow_edit'].append('DetectionLimit')
-        item['DetectionLimit'] = dl_operator
-        item['choices']['DetectionLimit'] = [
-            {'ResultValue': '<', 'ResultText': '<'},
-            {'ResultValue': '>', 'ResultText': '>'}
-        ]
-        self.columns['DetectionLimit']['toggle'] = True
-        defaults = {'min': full_obj.getLowerDetectionLimit(),
-                    'max': full_obj.getUpperDetectionLimit(),
-                    'manual': full_obj.getAllowManualDetectionLimit()}
-        defin = \
-            '<input type="hidden" id="DefaultDLS.%s" value=\'%s\'/>'
-        defin = defin % (uid, json.dumps(defaults))
-        item['after']['DetectionLimit'] = defin
-
     def _folder_item_specifications(self, analysis_brain, item):
         """Set the results range to the item passed in"""
         # Everyone can see valid-ranges
