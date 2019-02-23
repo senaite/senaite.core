@@ -72,6 +72,7 @@ class AnalysesView(BaseView):
             ("DetectionLimitOperand", {
                 "title": _("DL"),
                 "sortable": False,
+                "ajax": True,
                 "toggle": False}),
             ("Result", {
                 "title": _("Result"),
