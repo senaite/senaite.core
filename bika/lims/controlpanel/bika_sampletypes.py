@@ -93,13 +93,13 @@ class SampleTypesView(BikaListingView):
             {
                 "id": "default",
                 "title": _("Active"),
-                "contentFilter": {"inactive_state": "active"},
+                "contentFilter": {"is_active": True},
                 "transitions": [{"id": "deactivate"}, ],
                 "columns": self.columns.keys(),
             }, {
                 "id": "inactive",
                 "title": _("Inactive"),
-                "contentFilter": {"inactive_state": "inactive"},
+                "contentFilter": {'is_active': False},
                 "transitions": [{"id": "activate"}, ],
                 "columns": self.columns.keys(),
             }, {
@@ -201,7 +201,7 @@ class ajax_SampleTypes(BrowserView):
         if samplepoint and len(samplepoint) > 1:
             sp = bsc(
                 portal_type="SamplePoint",
-                inactive_state="active",
+                is_active=True,
                 title=samplepoint
             )
             if not sp:
@@ -211,7 +211,7 @@ class ajax_SampleTypes(BrowserView):
         if not items:
             items = bsc(
                 portal_type="SampleType",
-                inactive_state="active",
+                is_active=True,
                 sort_on="sortable_title",
             )
             if term and len(term) < 3:

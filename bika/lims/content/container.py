@@ -123,7 +123,7 @@ class Container(BaseContent):
         bsc = getToolByName(self, 'bika_setup_catalog')
         items = [('','')] + [(o.UID, o.Title) for o in
                                bsc(portal_type='Preservation',
-                                   inactive_state = 'active')]
+                                   apiis_active = True)]
         o = self.getPreservation()
         if o and o.UID() not in [i[0] for i in items]:
             items.append((o.UID(), o.Title()))
@@ -137,7 +137,7 @@ class ajaxGetContainers:
 
     catalog_name='bika_setup_catalog'
     contentFilter = {'portal_type': 'Container',
-                     'inactive_state': 'active'}
+                     'is_active': True}
 
     def __init__(self, context, request):
         self.context = context

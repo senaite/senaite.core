@@ -11,6 +11,7 @@ from Products.Archetypes import atapi
 from Products.Archetypes.public import *
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.widgets import DateTimeWidget
 from bika.lims.config import PROJECTNAME
@@ -159,7 +160,7 @@ class InstrumentMaintenanceTask(BaseFolder):
         workflow = getToolByName(self, 'portal_workflow')
         if self.getClosed():
             return InstrumentMaintenanceTaskStatuses.CLOSED
-        elif workflow.getInfoFor(self, 'cancellation_state', '') == 'cancelled':
+        elif not api.is_active(self):
             return InstrumentMaintenanceTaskStatuses.CANCELLED
         else:
             now = DateTime()

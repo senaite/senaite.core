@@ -50,7 +50,7 @@ schema = BikaSchema.copy() + Schema((
                 "secondary": "invisible",
             },
             catalog_name="bika_setup_catalog",
-            base_query={"inactive_state": "active"},
+            base_query={"is_active": True},
             showOn=True,
         ),
     ),
@@ -78,7 +78,7 @@ schema = BikaSchema.copy() + Schema((
                 "secondary": "invisible"
             },
             catalog_name="bika_setup_catalog",
-            base_query={"inactive_state": "active"},
+            base_query={"is_active": True},
             showOn=True,
         ),
     ),
@@ -246,7 +246,7 @@ schema = BikaSchema.copy() + Schema((
                 "secondary": "invisible"
             },
             catalog_name="bika_setup_catalog",
-            base_query={"inactive_state": "active"},
+            base_query={"is_active": True},
             showOn=True,
         ),
     ),
@@ -305,7 +305,7 @@ class ARTemplate(BaseContent):
         items = []
         for p in bsc(
                 portal_type="AnalysisProfile",
-                inactive_state="active",
+                is_active=True,
                 sort_on="sortable_title"):
             p = p.getObject()
             title = p.Title()

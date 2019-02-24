@@ -51,11 +51,11 @@ class ReflexRuleFolderView(BikaListingView):
         self.review_states = [
             {'id': 'default',
              'title': _('Active'),
-             'contentFilter': {'inactive_state': 'active'},
+             'contentFilter': {'is_active': True},
              'columns': ['Title', 'Method', ]},
             {'id': 'inactive',
              'title': _('Inactive'),
-             'contentFilter': {'inactive_state': 'inactive'},
+             'contentFilter': {'is_active': False},
              'columns': ['Title', 'Method', ]},
             {'id': 'all',
              'title': _('All'),

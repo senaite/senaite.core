@@ -395,7 +395,7 @@ class FolderView(BikaListingView):
         """
         query = {
             "portal_type": "WorksheetTemplate",
-            "inactive_state": "active",
+            "is_active": True,
         }
         return api.search(query, "bika_setup_catalog")
 
@@ -406,6 +406,6 @@ class FolderView(BikaListingView):
         """
         query = {
             "portal_type": "Instrument",
-            "inactive_state": "active"
+            "is_active": True
         }
         return api.search(query, "bika_setup_catalog")

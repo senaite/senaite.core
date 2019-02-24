@@ -111,7 +111,7 @@ schema = BikaSchema.copy() + Schema((
                 'add': 'edit',
                 'header_table': 'prominent',
             },
-            base_query={'inactive_state': 'active'},
+            base_query={'is_active': True},
             showOn=True,
             popup_width='400px',
             colModel=[
@@ -143,7 +143,7 @@ schema = BikaSchema.copy() + Schema((
                 'add': 'edit',
                 'header_table': 'prominent',
             },
-            base_query={'inactive_state': 'active'},
+            base_query={'is_active': True},
             showOn=True,
             popup_width='400px',
             colModel=[
@@ -217,7 +217,7 @@ schema = BikaSchema.copy() + Schema((
             render_own_label=True,
             visible=False,
             catalog_name='bika_catalog',
-            base_query={'cancellation_state': 'active',
+            base_query={'is_active': True,
                         'review_state': ['sample_due', 'sample_received', ]},
             showOn=True,
         ),
@@ -239,8 +239,7 @@ schema = BikaSchema.copy() + Schema((
                 'add': 'edit',
             },
             catalog_name='bika_catalog',
-            base_query={'review_state': 'open',
-                        'cancellation_state': 'active'},
+            base_query={'review_state': 'open'},
             showOn=True,
         ),
     ),
@@ -292,7 +291,7 @@ schema = BikaSchema.copy() + Schema((
                 {'columnName': 'SortKey', 'hidden': True},
                 {'columnName': 'UID', 'hidden': True},
             ],
-            base_query={'inactive_state': 'active'},
+            base_query={'is_active': True},
             sidx='SortKey',
             sord='asc',
             showOn=True,
@@ -318,7 +317,7 @@ schema = BikaSchema.copy() + Schema((
                 'secondary': 'disabled',
             },
             catalog_name='bika_setup_catalog',
-            base_query={'inactive_state': 'active'},
+            base_query={'is_active': True},
             showOn=True,
         ),
     ),
@@ -339,7 +338,7 @@ schema = BikaSchema.copy() + Schema((
             render_own_label=True,
             visible=False,
             catalog_name='bika_setup_catalog',
-            base_query={'inactive_state': 'active'},
+            base_query={'is_active': True},
             showOn=False,
         ),
     ),
@@ -363,7 +362,7 @@ schema = BikaSchema.copy() + Schema((
                 'add': 'edit',
             },
             catalog_name='bika_setup_catalog',
-            base_query={'inactive_state': 'active'},
+            base_query={'is_active': True},
             showOn=True,
         ),
     ),
@@ -462,7 +461,7 @@ schema = BikaSchema.copy() + Schema((
                 'secondary': 'disabled',
             },
             catalog_name='bika_setup_catalog',
-            base_query={'inactive_state': 'active'},
+            base_query={'is_active': True},
             showOn=True,
         ),
     ),
@@ -481,7 +480,7 @@ schema = BikaSchema.copy() + Schema((
                 'add': 'edit',
             },
             catalog_name='bika_setup_catalog',
-            base_query={'inactive_state': 'active'},
+            base_query={'is_active': True},
             showOn=True,
         ),
     ),
@@ -500,7 +499,7 @@ schema = BikaSchema.copy() + Schema((
                 'add': 'edit',
             },
             catalog_name='bika_setup_catalog',
-            base_query={'inactive_state': 'active'},
+            base_query={'is_active': True},
             showOn=True,
         ),
     ),
@@ -626,7 +625,7 @@ schema = BikaSchema.copy() + Schema((
                 'secondary': 'disabled',
             },
             catalog_name='bika_setup_catalog',
-            base_query={'inactive_state': 'active'},
+            base_query={'is_active': True},
             showOn=True,
         ),
     ),
@@ -648,7 +647,7 @@ schema = BikaSchema.copy() + Schema((
                 'secondary': 'disabled',
             },
             catalog_name='bika_setup_catalog',
-            base_query={'inactive_state': 'active'},
+            base_query={'is_active': True},
             showOn=True,
         ),
     ),
@@ -669,7 +668,7 @@ schema = BikaSchema.copy() + Schema((
                 'secondary': 'disabled',
             },
             catalog_name='bika_setup_catalog',
-            base_query={'inactive_state': 'active'},
+            base_query={'is_active': True},
             showOn=True,
         ),
     ),
@@ -741,7 +740,7 @@ schema = BikaSchema.copy() + Schema((
                 'secondary': 'disabled',
             },
             catalog_name='bika_setup_catalog',
-            base_query={'inactive_state': 'active'},
+            base_query={'is_active': True},
             showOn=True,
         ),
     ),
@@ -762,7 +761,7 @@ schema = BikaSchema.copy() + Schema((
                 'secondary': 'disabled',
             },
             catalog_name='bika_setup_catalog',
-            base_query={'inactive_state': 'active'},
+            base_query={'is_active': True},
             showOn=True,
         ),
     ),
@@ -815,7 +814,7 @@ schema = BikaSchema.copy() + Schema((
             render_own_label=True,
             visible=False,
             catalog_name='bika_setup_catalog',
-            base_query={'inactive_state': 'active'},
+            base_query={'is_active': True},
             showOn=True,
         ),
     ),
@@ -1513,7 +1512,7 @@ class AnalysisRequest(BaseFolder):
 
         # Get the analyses to be billed
         exclude_rs = ['retracted', 'rejected']
-        for analysis in self.getAnalyses(cancellation_state="active"):
+        for analysis in self.getAnalyses(is_active=True):
             if analysis.review_state in exclude_rs:
                 continue
             if analysis.getKeyword not in billable_keys:
@@ -1538,7 +1537,7 @@ class AnalysisRequest(BaseFolder):
         # the correct price later
         exclude_rs = ['retracted', 'rejected']
         analyses = filter(lambda an: an.review_state not in exclude_rs,
-                          self.getAnalyses(cancellation_state='active'))
+                          self.getAnalyses(is_active=True))
         analyses = map(api.get_object, analyses)
         profiles = self.getProfiles()
 

@@ -406,7 +406,7 @@ Category = UIDReferenceField(
         label=_("Analysis Category"),
         description=_("The category the analysis service belongs to"),
         catalog_name='bika_setup_catalog',
-        base_query={'inactive_state': 'active'},
+        base_query={'is_active': True},
     )
 )
 
@@ -458,7 +458,7 @@ Department = UIDReferenceField(
         label=_("Department"),
         description=_("The laboratory department"),
         catalog_name='bika_setup_catalog',
-        base_query={'inactive_state': 'active'},
+        base_query={'is_active': True},
     )
 )
 
@@ -801,7 +801,7 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
         """A vocabulary listing available (and activated) categories.
         """
         bsc = getToolByName(self, 'bika_setup_catalog')
-        cats = bsc(portal_type='AnalysisCategory', inactive_state='active')
+        cats = bsc(portal_type='AnalysisCategory', is_active=True)
         items = [(o.UID, o.Title) for o in cats]
         o = self.getCategory()
         if o and o.UID() not in [i[0] for i in items]:
@@ -816,7 +816,7 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
         bsc = getToolByName(self, 'bika_setup_catalog')
         items = [('', '')] + [(o.UID, o.Title) for o in
                               bsc(portal_type='Department',
-                                  inactive_state='active')]
+                                  is_active=True)]
         o = self.getDepartment()
         if o and o.UID() not in [i[0] for i in items]:
             items.append((o.UID(), o.Title()))

@@ -49,7 +49,7 @@ class ContainersView(BikaListingView):
 
         self.review_states = [ # leave these titles and ids alone
             {'id':'default',
-             'contentFilter': {'inactive_state':'active'},
+             'contentFilter': {'is_active': True},
              'title': _('Active'),
              'transitions': [{'id':'deactivate'}, ],
              'columns': ['Title',
@@ -59,7 +59,7 @@ class ContainersView(BikaListingView):
                          'Pre-preserved']},
             {'id':'inactive',
              'title': _('Inactive'),
-             'contentFilter': {'inactive_state': 'inactive'},
+             'contentFilter': {'is_active': False},
              'transitions': [{'id':'activate'}, ],
              'columns': ['Title',
                          'Description',

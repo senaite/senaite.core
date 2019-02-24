@@ -885,7 +885,7 @@ class BikaSetup(folder.ATFolder):
         """
         bsc = getToolByName(self, 'bika_setup_catalog')
         brains = bsc(portal_type='AnalysisService',
-                     inactive_state='active')
+                     is_active=True)
         items = [(b.UID, b.Title) for b in brains]
         items.insert(0, ("", ""))
         items.sort(lambda x, y: cmp(x[1], y[1]))

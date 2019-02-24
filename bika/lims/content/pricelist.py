@@ -127,7 +127,7 @@ def ObjectModifiedEventHandler(instance, event):
         # Remove existing line items
         instance.pricelist_lineitems = []
         for p in instance.portal_catalog(portal_type=instance.getType(),
-                                         inactive_state="active"):
+                                         is_active=True):
             obj = p.getObject()
             itemDescription = None
             itemAccredited = False

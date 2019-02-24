@@ -817,7 +817,7 @@ def get_cancellation_status(brain_or_object, default="active"):
 
 
 def get_inactive_status(brain_or_object, default="active"):
-    """Get the `cancellation_state` of an objct
+    """Get the `cancellation_state` of an object
 
     :param brain_or_object: A single catalog brain or content object
     :type brain_or_object: ATContentType/DexterityContentType/CatalogBrain

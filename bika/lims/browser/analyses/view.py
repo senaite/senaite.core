@@ -336,7 +336,7 @@ class AnalysesView(BikaListingView):
         """
         uids = analysis_brain.getAllowedMethodUIDs
         query = {'portal_type': 'Method',
-                 'inactive_state': 'active',
+                 'is_active': True,
                  'UID': uids}
         brains = api.search(query, 'bika_setup_catalog')
         if not brains:
@@ -381,7 +381,7 @@ class AnalysesView(BikaListingView):
 
         uids = analysis_brain.getAllowedInstrumentUIDs
         query = {'portal_type': 'Instrument',
-                 'inactive_state': 'active',
+                 'is_active': True,
                  'UID': uids}
         brains = api.search(query, 'bika_setup_catalog')
         vocab = [{'ResultValue': '', 'ResultText': _('None')}]

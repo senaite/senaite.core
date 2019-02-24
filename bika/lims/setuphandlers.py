@@ -287,9 +287,8 @@ class BikaGenerator(object):
         addIndex(bc, 'sortable_title', 'FieldIndex')
         addIndex(bc, 'description', 'FieldIndex', 'Description')
         addIndex(bc, 'review_state', 'FieldIndex')
-        addIndex(bc, 'inactive_state', 'FieldIndex')
-        addIndex(bc, 'cancellation_state', 'FieldIndex')
         addIndex(bc, 'Identifiers', 'KeywordIndex')
+        addIndex(bc, 'is_active', 'BooleanIndex')
 
         addIndex(bc, 'BatchDate', 'DateIndex')
         addIndex(bc, 'getClientTitle', 'FieldIndex')
@@ -420,8 +419,6 @@ class BikaGenerator(object):
         addIndex(bsc, 'description', 'FieldIndex', 'Description')
 
         addIndex(bsc, 'review_state', 'FieldIndex')
-        addIndex(bsc, 'inactive_state', 'FieldIndex')
-        addIndex(bsc, 'cancellation_state', 'FieldIndex')
 
         addIndex(bsc, 'getAccredited', 'FieldIndex')
         addIndex(bsc, 'getAnalyst', 'FieldIndex')
@@ -464,6 +461,7 @@ class BikaGenerator(object):
         addIndex(bsc, 'getUnit', 'FieldIndex')
         addIndex(bsc, 'getVATAmount', 'FieldIndex')
         addIndex(bsc, 'getVolume', 'FieldIndex')
+        addIndex(bsc, 'is_active', 'BooleanIndex')
 
         addColumn(bsc, 'path')
         addColumn(bsc, 'UID')

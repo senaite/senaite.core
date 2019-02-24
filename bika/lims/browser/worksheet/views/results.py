@@ -116,7 +116,7 @@ class ManageResultsView(BrowserView):
         bsc = getToolByName(self, 'bika_setup_catalog')
         items = [('', '')] + [(o.UID, o.Title) for o in
                               bsc(portal_type='Instrument',
-                                  inactive_state='active')]
+                                  is_active=True)]
         o = self.context.getInstrument()
         if o and o.UID() not in [i[0] for i in items]:
             items.append((o.UID(), o.Title()))

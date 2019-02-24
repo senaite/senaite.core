@@ -30,7 +30,7 @@ class TestAnalysisRequestRetract(DataTestCase):
     def get_services(self):
         query = {
             "portal_type": "AnalysisService",
-            "inactive_state": "active",
+            "is_active": True,
         }
         return api.search(query)
 

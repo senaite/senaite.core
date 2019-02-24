@@ -92,8 +92,7 @@ class WorkflowActionSubmitAdapter(WorkflowActionGenericAdapter):
         for invalid_instrument_uid in invalid_instrument_refs.keys():
             query = dict(getInstrumentUID=invalid_instrument_uid,
                          portal_type=['Analysis', 'DuplicateAnalysis'],
-                         review_state='to_be_verified',
-                         cancellation_state='active', )
+                         review_state='to_be_verified',)
             brains = api.search(query, CATALOG_ANALYSIS_LISTING)
             for brain in brains:
                 analysis = api.get_object(brain)

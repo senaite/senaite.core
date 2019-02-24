@@ -6,6 +6,7 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from bika.lims import bikaMessageFactory as _
+from bika.lims import api
 from bika.lims.utils import t
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.permissions import AddInvoice
@@ -40,14 +41,14 @@ class InvoiceFolderContentsView(BikaListingView):
         self.review_states = [
             {
                 'id': 'default',
-                'contentFilter': {'cancellation_state': 'active'},
+                'contentFilter': {'is_active': True},
                 'title': _('Active'),
                 'transitions': [{'id': 'cancel'}],
                 'columns': ['title', 'start', 'end'],
             },
             {
                 'id': 'cancelled',
-                'contentFilter': {'cancellation_state': 'cancelled'},
+                'contentFilter': {'is_active': False},
                 'title': _('Cancelled'),
                 'transitions': [{'id': 'reinstate'}],
                 'columns': ['title', 'start', 'end'],
@@ -67,10 +68,12 @@ class InvoiceFolderContentsView(BikaListingView):
 
     def getInvoiceBatches(self, contentFilter={}):
         wf = getToolByName(self.context, 'portal_workflow')
-        desired_state = contentFilter.get('cancellation_state', 'active')
+        active_state = contentFilter.get('is_active', True)
         values = self.context.objectValues()
-        return [ib for ib in values if
-                wf.getInfoFor(ib, 'cancellation_state') == desired_state]
+        if active_state:
+            return filter(api.is_active, values)
+        else:
+            return filter(lambda o: not api.is_active(o), values)
 
     def folderitems(self):
         self.contentsMethod = self.getInvoiceBatches

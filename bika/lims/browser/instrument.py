@@ -77,7 +77,7 @@ class InstrumentMaintenanceView(BikaListingView):
             {
                 "id": "default",
                 "title": _("Open"),
-                "contentFilter": {"cancellation_state": "active"},
+                "contentFilter": {"is_active": True},
                 "columns": [
                     "getCurrentState",
                     "Title",
@@ -89,7 +89,7 @@ class InstrumentMaintenanceView(BikaListingView):
             }, {
                 "id": "cancelled",
                 "title": _("Cancelled"),
-                "contentFilter": {"cancellation_state": "cancelled"},
+                "contentFilter": {"is_active": False},
                 "columns": [
                     "getCurrentState",
                     "Title",
@@ -390,7 +390,7 @@ class InstrumentScheduleView(BikaListingView):
             {
                 "id": "default",
                 "title": _("Active"),
-                "contentFilter": {"inactive_state": "active"},
+                "contentFilter": {"is_active": True},
                 "transitions": [{"id": "deactivate"}, ],
                 "columns": [
                     "Title",
@@ -402,7 +402,7 @@ class InstrumentScheduleView(BikaListingView):
             }, {
                 "id": "inactive",
                 "title": _("Inactive"),
-                "contentFilter": {"inactive_state": "inactive"},
+                "contentFilter": {'is_active': False},
                 "transitions": [{"id": "activate"}, ],
                 "columns": [
                     "Title",

@@ -203,7 +203,7 @@ def SamplePoints(self, instance=None, allow_blank=True, lab_only=True):
     items = []
     contentFilter = {
         'portal_type': 'SamplePoint',
-        'inactive_state': 'active',
+        'is_active': True,
         'sort_on': 'sortable_title'}
     if lab_only:
         lab_path = instance.bika_setup.bika_samplepoints.getPhysicalPath()

@@ -45,7 +45,7 @@ schema = BikaSchema.copy() + Schema((
             label = _("Department"),
             description = _("The laboratory department"),
             catalog_name='bika_setup_catalog',
-            base_query={'inactive_state': 'active'},
+            base_query={'is_active': True},
         ),
     ),
 
@@ -115,7 +115,7 @@ class SRTemplate(BaseContent):
         bsc = getToolByName(self, 'bika_setup_catalog')
         items = [('', '')] + [(o.UID, o.Title) for o in
                               bsc(portal_type='Department',
-                                  inactive_state='active')]
+                                  is_active=True)]
         o = self.getDepartment()
         if o and o.UID() not in [i[0] for i in items]:
             items.append((o.UID(), o.Title()))

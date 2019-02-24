@@ -75,7 +75,7 @@ class AnalysisCategory(BaseContent):
         bsc = getToolByName(self, 'bika_setup_catalog')
         deps = []
         for d in bsc(portal_type='Department',
-                     inactive_state='active'):
+                     is_active=True):
             deps.append((d.UID, d.Title))
         return DisplayList(deps)
 

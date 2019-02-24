@@ -110,7 +110,7 @@ schema = BikaSchema.copy() + Schema((
                 "services linked to this method. Calculations can be "
                 "configured under the calculations item in the LIMS set-up"),
             catalog_name='bika_setup_catalog',
-            base_query={'inactive_state': 'active'},
+            base_query={'is_active': True},
         )
     ),
     BooleanField('Accredited',
@@ -154,7 +154,7 @@ class Method(BaseFolder):
         bsc = getToolByName(self, 'bika_setup_catalog')
         items = [(c.UID, c.Title) \
                 for c in bsc(portal_type='Calculation',
-                             inactive_state = 'active')]
+                             is_active = True)]
         items.sort(lambda x,y: cmp(x[1], y[1]))
         items.insert(0, ('', t(_('None'))))
         return DisplayList(items)
@@ -183,7 +183,7 @@ class Method(BaseFolder):
         bsc = getToolByName(self, 'bika_setup_catalog')
         items = [(i.UID, i.Title) \
                 for i in bsc(portal_type='Instrument',
-                             inactive_state = 'active')]
+                             is_active = True)]
         items.sort(lambda x,y: cmp(x[1], y[1]))
         return DisplayList(list(items))
 

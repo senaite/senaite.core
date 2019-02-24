@@ -47,7 +47,7 @@ class AnalysisRequestsView(_ARV, _ARAV):
         self.review_states = [
             {'id': 'default',
              'title': _('Active'),
-             'contentFilter': {'cancellation_state': 'active',
+             'contentFilter': {'is_active': True,
                               'sort_on': 'created',
                               'sort_order': 'reverse'},
              'transitions': [{'id': 'sample'},
@@ -140,7 +140,7 @@ class AnalysisRequestsView(_ARV, _ARAV):
                          'state_title']},
             {'id': 'cancelled',
              'title': _('Cancelled'),
-             'contentFilter': {'cancellation_state': 'cancelled',
+             'contentFilter': {'is_active': False,
                                'sort_on': 'created',
                                'sort_order': 'reverse'},
              'transitions': [{'id': 'reinstate'}],

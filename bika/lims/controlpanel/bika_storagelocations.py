@@ -66,12 +66,12 @@ class StorageLocationsView(BikaListingView):
         self.review_states = [
             {'id':'default',
              'title': _('Active'),
-             'contentFilter': {'inactive_state': 'active'},
+             'contentFilter': {'is_active': True},
              'transitions': [{'id':'deactivate'}, ],
              'columns': ['Title', 'Description', 'Owner',  'SiteTitle', 'SiteCode', 'LocationTitle', 'LocationCode', 'ShelfTitle', 'ShelfCode']},
             {'id':'inactive',
              'title': _('Inactive'),
-             'contentFilter': {'inactive_state': 'inactive'},
+             'contentFilter': {'is_active': False},
              'transitions': [{'id':'activate'}, ],
              'columns': ['Title', 'Description', 'Owner', 'SiteTitle', 'SiteCodeShelfCode' ]},
             {'id':'all',
@@ -159,7 +159,7 @@ class ajax_StorageLocations(BrowserView):
             client_items = list(
                 bsc(portal_type = "StorageLocation",
                     path = {"query": "/".join(client_path), "level" : 0 },
-                    inactive_state = 'active',
+                    is_active = True,
                     sort_on='sortable_title'))
 
         # Global (lab) storage locations
@@ -168,7 +168,7 @@ class ajax_StorageLocations(BrowserView):
         lab_items = list(
             bsc(portal_type = "StorageLocation",
                 path = {"query": "/".join(lab_path), "level" : 0 },
-                inactive_state = 'active',
+                is_active = True,
                 sort_on='sortable_title'))
 
         client_items = [callable(s.Title) and s.Title() or s.title

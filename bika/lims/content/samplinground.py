@@ -34,7 +34,7 @@ class Departments(object):
     def __call__(self, context):
         catalog_name = 'portal_catalog'
         contentFilter = {'portal_type': 'Department',
-                         'inactive_state': 'active'}
+                         'is_active': True}
         catalog = getToolByName(context, catalog_name)
         brains = catalog(contentFilter)
         terms = []
@@ -52,7 +52,7 @@ class SamplingRoundTemplates(object):
     def __call__(self, context):
         catalog_name = 'portal_catalog'
         contentFilter = {'portal_type': 'SRTemplate',
-                         'inactive_state': 'active'}
+                         'is_active': True}
         catalog = getToolByName(context, catalog_name)
         brains = catalog(contentFilter)
         terms = []
@@ -77,7 +77,7 @@ class AnalysisRequestTemplates(object):
     def __call__(self, context):
         catalog_name = 'portal_catalog'
         contentFilter = {'portal_type': 'ARTemplate',
-                         'inactive_state': 'active'}
+                         'is_active': True}
         catalog = getToolByName(context, catalog_name)
         brains = catalog(contentFilter)
         terms = []
@@ -286,7 +286,7 @@ class SamplingRound(Item):
         # I have to get the catalog in this way because I can't do it with 'self'...
         pc = getToolByName(api.portal.get(), 'portal_catalog')
         contentFilter = {'portal_type': 'AnalysisRequest',
-                         'cancellation_state': 'active',
+                         'is_active': True,
                          'SamplingRoundUID': self.UID()}
         return pc(contentFilter)
 
@@ -431,11 +431,11 @@ class SamplingRound(Item):
         """
         if skip(self, "cancel"):
             return
-        self.reindexObject(idxs=["cancellation_state", ])
+        self.reindexObject(idxs=["is_active", ])
         # deactivate all analysis requests in this sampling round.
         analysis_requests = self.getAnalysisRequests()
         for ar in analysis_requests:
             ar_obj = ar.getObject()
             workflow = getToolByName(self, 'portal_workflow')
-            if workflow.getInfoFor(ar_obj, 'cancellation_state') != 'cancelled':
+            if workflow.getInfoFor(ar_obj, 'review_state') != 'cancelled':
                 doActionFor(ar.getObject(), 'cancel')

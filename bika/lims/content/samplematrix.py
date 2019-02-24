@@ -38,7 +38,7 @@ def SampleMatrices(self, instance=None, allow_blank=False):
     bsc = getToolByName(instance, 'bika_setup_catalog')
     items = []
     for sm in bsc(portal_type='SampleMatrix',
-                  inactive_state='active',
+                  is_active=True,
                   sort_on = 'sortable_title'):
         items.append((sm.UID, sm.Title))
     items = allow_blank and [['','']] + list(items) or list(items)

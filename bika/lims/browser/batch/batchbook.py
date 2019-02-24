@@ -131,11 +131,11 @@ class BatchBookView(BikaListingView):
                 if o not in ars:
                     ars.append(o)
             elif o.portal_type == 'Batch':
-                for ar in o.getAnalysisRequests(cancellation_state='active'):
+                for ar in o.getAnalysisRequests(is_active=True):
                     if ar not in ars:
                         ars.append(ar)
 
-        for ar in self.context.getAnalysisRequests(cancellation_state='active'):
+        for ar in self.context.getAnalysisRequests(is_active=True):
             if ar not in ars:
                 ars.append(ar)
 

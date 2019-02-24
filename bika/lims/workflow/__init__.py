@@ -475,9 +475,7 @@ def _load_wf_module(module_relative_name):
 
 
 # Enumeration of the available status flows
-StateFlow = enum(review='review_state',
-                 inactive='inactive_state',
-                 cancellation='cancellation_state')
+StateFlow = enum(review='review_state')
 
 # Enumeration of the different available states from the inactive flow
 InactiveState = enum(active='active')

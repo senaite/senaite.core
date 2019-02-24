@@ -102,7 +102,7 @@ class LabContact(Contact):
         bsc = getToolByName(self, 'portal_catalog')
         items = [(o.UID, o.Title) for o in
                  bsc(portal_type='Department',
-                     inactive_state='active')]
+                     is_active=True)]
         # Getting the departments uids
         deps_uids = [i[0] for i in items]
         # Getting the assigned departments
@@ -122,7 +122,7 @@ class LabContact(Contact):
         bsc = getToolByName(self, 'bika_setup_catalog')
         items = [(o.UID, o.Title) for o in
                  bsc(portal_type='Department',
-                     inactive_state='active')]
+                     is_active=True)]
         # Getting the departments uids
         deps_uids = [i[0] for i in items]
         # Getting the assigned departments

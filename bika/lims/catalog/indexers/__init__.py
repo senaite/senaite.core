@@ -27,9 +27,17 @@ def inactive_state(instance):
     return "active"
 
 
-@indexer(ICancellable, IDeactivable)
+@indexer(ICancellable)
 def is_active(instance):
     """Returns False if the status of the instance is 'cancelled' or 'inactive'.
-    Otherwise returns active
+    Otherwise returns True
+    """
+    return api.get_review_status(instance) not in ["cancelled", "inactive"]
+
+
+@indexer(IDeactivable)
+def is_active(instance):
+    """Returns False if the status of the instance is 'cancelled' or 'inactive'.
+    Otherwise returns True
     """
     return api.get_review_status(instance) not in ["cancelled", "inactive"]

@@ -449,7 +449,7 @@ class FormulaValidator:
 
         for keyword in keywords:
             # Check if the service keyword exists and is active.
-            dep_service = bsc(getKeyword=keyword, inactive_state="active")
+            dep_service = bsc(getKeyword=keyword, is_active=True)
             if not dep_service and keyword not in interim_keywords:
                 msg = _(
                     "Validation failed: Keyword '${keyword}' is invalid",
@@ -1320,7 +1320,7 @@ class ReflexRuleValidator:
             as_brain = pc(
                 UID=as_uid,
                 portal_type='AnalysisService',
-                inactive_state='active')
+                is_active=True)
             if as_brain[0] and as_brain[0].UID in method_ans_uids:
                 pass
             else:

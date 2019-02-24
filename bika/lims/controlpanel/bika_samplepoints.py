@@ -82,13 +82,13 @@ class SamplePointsView(BikaListingView):
             {
                 "id": "default",
                 "title": _("Active"),
-                "contentFilter": {"inactive_state": "active"},
+                "contentFilter": {"is_active": True},
                 "transitions": [{"id": "deactivate"}, ],
                 "columns": self.columns.keys(),
             }, {
                 "id": "inactive",
                 "title": _("Inactive"),
-                "contentFilter": {"inactive_state": "inactive"},
+                "contentFilter": {'is_active': False},
                 "transitions": [{"id": "activate"}, ],
                 "columns": self.columns.keys(),
             }, {
@@ -190,7 +190,7 @@ class ajax_SamplePoints(BrowserView):
             st = bsc(
                 portal_type="SampleType",
                 title=sampletype,
-                inactive_state="active",
+                is_active=True,
             )
             if not st:
                 return json.dumps([])
@@ -209,7 +209,7 @@ class ajax_SamplePoints(BrowserView):
                 client_items = list(
                     bsc(portal_type="SamplePoint",
                         path={"query": "/".join(client_path), "level": 0},
-                        inactive_state="active",
+                        is_active=True,
                         sort_on="sortable_title"))
 
             # Global (lab) sample points
@@ -218,7 +218,7 @@ class ajax_SamplePoints(BrowserView):
             lab_items = list(
                 bsc(portal_type="SamplePoint",
                     path={"query": "/".join(lab_path), "level": 0},
-                    inactive_state="active",
+                    is_active=True,
                     sort_on="sortable_title"))
             client_items = [callable(s.Title) and s.Title() or s.title
                             for s in self.filter_list(client_items, term)]

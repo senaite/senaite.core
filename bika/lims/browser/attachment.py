@@ -419,7 +419,7 @@ class AttachmentsView(BrowserView):
         """
         bika_setup_catalog = api.get_tool("bika_setup_catalog")
         attachment_types = bika_setup_catalog(portal_type='AttachmentType',
-                                              inactive_state='active',
+                                              is_active=True,
                                               sort_on="sortable_title",
                                               sort_order="ascending")
         return attachment_types

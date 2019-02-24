@@ -80,12 +80,12 @@ class AnalysisCategoriesView(BikaListingView):
             {
                 "id": "default",
                 "title": _("Active"),
-                "contentFilter": {"inactive_state": "active"},
+                "contentFilter": {"is_active": True},
                 "columns": self.columns.keys(),
             }, {
                 "id": "inactive",
                 "title": _("Inactive"),
-                "contentFilter": {"inactive_state": "inactive"},
+                "contentFilter": {'is_active': False},
                 "columns": self.columns.keys(),
             }, {
                 "id": "all",

@@ -188,7 +188,7 @@ class Client(Organisation):
         bsc = api.get_tool("bika_setup_catalog")
         cats = []
         for st in bsc(portal_type="AnalysisCategory",
-                      inactive_state="active",
+                      is_active=True,
                       sort_on="sortable_title"):
             cats.append((st.UID, st.Title))
         return DisplayList(cats)

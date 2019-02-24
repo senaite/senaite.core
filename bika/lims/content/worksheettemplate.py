@@ -174,7 +174,7 @@ class WorksheetTemplate(BaseContent):
     def getInstruments(self):
         """Get the allowed instruments
         """
-        query = {"portal_type": "Instrument", "inactive_state": "active"}
+        query = {"portal_type": "Instrument", "is_active": True}
 
         if self.getRestrictToMethod():
             query.update({
@@ -212,7 +212,7 @@ class WorksheetTemplate(BaseContent):
         """
         methods = api.search({
             "portal_type": "Method",
-            "inactive_state": "active"
+            "is_active": True
         }, "bika_setup_catalog")
 
         items = map(lambda m: (api.get_uid(m), api.get_title(m)), methods)

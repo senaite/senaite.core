@@ -330,7 +330,7 @@ class Batch(ATFolder):
         bsc = getToolByName(self, 'bika_setup_catalog')
         ret = []
         for p in bsc(portal_type='BatchLabel',
-                     inactive_state='active',
+                     is_active=True,
                      sort_on='sortable_title'):
             ret.append((p.UID, p.Title))
         return DisplayList(ret)

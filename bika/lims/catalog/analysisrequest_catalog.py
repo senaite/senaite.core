@@ -21,7 +21,6 @@ _indexes_dict = {
     'sortable_title': 'FieldIndex',
     'getClientUID': 'FieldIndex',
     'getClientID': 'FieldIndex',
-    'cancellation_state': 'FieldIndex',
     'getBatchUID': 'FieldIndex',
     'getDateSampled': 'DateIndex',
     'getSamplingDate': 'DateIndex',

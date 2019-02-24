@@ -87,7 +87,7 @@ class ReflexRule(BaseContent):
         """
         bsc = getToolByName(self, 'bika_setup_catalog')
         items = [(i.UID, i.Title)
-                 for i in bsc(portal_type='Method', inactive_state='active')]
+                 for i in bsc(portal_type='Method', is_active=True)]
         items.sort(lambda x, y: cmp(x[1], y[1]))
         return DisplayList(list(items))
 
