@@ -426,9 +426,6 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         # Ensure result integrity regards to None, empty and 0 values
         val = str("" if not value and value != 0 else value).strip()
 
-        if val == "":
-            self.setDetectionLimitOperand("")
-
         # UDL/LDL directly entered in the results field
         if val and val[0] in [LDL, UDL]:
             # Result prefixed with LDL/UDL
@@ -441,12 +438,23 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             except (ValueError, TypeError):
                 val = value
 
-            if self.getAllowManualDetectionLimit():
-                # Set the detection limit operand
-                self.setDetectionLimitOperand(oper)
+            # Ensure visibility of the detection limit selector
+            self.setDetectionLimitSelector(True)
+
+            # Set the detection limit operand
+            self.getField("DetectionLimitOperand").set(self, oper)
+
+            # No manual DL allowed, set the result to LDL/UDL from the AS
+            if not self.getAllowManualDetectionLimit():
+                if oper == LDL:
+                    val = self.getLowerDetectionLimit()
+                else:
+                    val = self.getUpperDetectionLimit()
         else:
+            # No DL operand found or unknown -> unset it.
             self.setDetectionLimitOperand(None)
 
+        # Set the result field
         self.getField("Result").set(self, val)
 
     @security.public

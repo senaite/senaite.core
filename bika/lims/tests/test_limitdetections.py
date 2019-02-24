@@ -176,13 +176,13 @@ class TestLimitDetections(DataTestCase):
             {'min'               : '10',
              'max'               : '20',
              'displaydl'         : True,
-             'manual'            : False,  # DL `<` from result does not get set if this is False!
+             'manual'            : False,
              'input'             : '<5',
-             'expresult'         : 5.0, # '<' assignment allowed, but not custom
+             'expresult'         : 10.0, # '<' assignment allowed, but not custom
              'expformattedresult': '< 10',
              'isbelowldl'        : True,
              'isaboveudl'        : False,
-             'isldl'             : False,
+             'isldl'             : True,
              'isudl'             : False},
 
             {'min'               : '10',
@@ -332,17 +332,17 @@ class TestLimitDetections(DataTestCase):
 
             an = ar.getAnalyses()[0].getObject()
             an.setResult(case['input'])
-            self.assertEqual(an.isBelowLowerDetectionLimit(), case['isbelowldl'])
-            self.assertEqual(an.isAboveUpperDetectionLimit(), case['isaboveudl'])
-            self.assertEqual(an.isLowerDetectionLimit(), case['isldl'])
-            self.assertEqual(an.isUpperDetectionLimit(), case['isudl'])
-            self.assertEqual(float(an.getResult()), case['expresult'])
-            self.assertEqual(an.getFormattedResult(html=False), case['expformattedresult'])
+            self.assertEqual(an.isBelowLowerDetectionLimit(), case['isbelowldl'], case)
+            self.assertEqual(an.isAboveUpperDetectionLimit(), case['isaboveudl'], case)
+            self.assertEqual(an.isLowerDetectionLimit(), case['isldl'], case)
+            self.assertEqual(an.isUpperDetectionLimit(), case['isudl'], case)
+            self.assertEqual(float(an.getResult()), case['expresult'], case)
+            self.assertEqual(an.getFormattedResult(html=False), case['expformattedresult'], case)
             expres = case['expformattedresult']
             expres = expres.replace('< ', '&lt; ') if an.isBelowLowerDetectionLimit() else expres
             expres = expres.replace('> ', '&gt; ') if an.isAboveUpperDetectionLimit() else expres
-            self.assertEqual(an.getFormattedResult(html=True), expres)
-            self.assertEqual(an.getFormattedResult(), expres)
+            self.assertEqual(an.getFormattedResult(html=True), expres, case)
+            self.assertEqual(an.getFormattedResult(), expres, case)
 
     def test_ar_manageresults_limitdetections(self):
         # Input results
@@ -441,8 +441,8 @@ class TestLimitDetections(DataTestCase):
                 self.assertEqual(an.getFormattedResult(), '15.00')
 
             # Set a DL result explicitely
-            an.setResult('15')
             an.setDetectionLimitOperand('<')
+            an.setResult('15')
             self.assertEqual(float(an.getResult()), 15)
             if self.lds[idx]['manual']:
                 self.assertTrue(an.isBelowLowerDetectionLimit())
@@ -459,8 +459,8 @@ class TestLimitDetections(DataTestCase):
                 self.assertEqual(an.getFormattedResult(html=True), '15.00')
                 self.assertEqual(an.getFormattedResult(), '15.00')
 
-            an.setResult('15')
             an.setDetectionLimitOperand('>')
+            an.setResult('15')
             self.assertEqual(float(an.getResult()), 15)
             if self.lds[idx]['manual']:
                 self.assertFalse(an.isBelowLowerDetectionLimit())
