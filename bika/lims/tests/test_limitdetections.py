@@ -176,13 +176,13 @@ class TestLimitDetections(DataTestCase):
             {'min'               : '10',
              'max'               : '20',
              'displaydl'         : True,
-             'manual'            : False,
+             'manual'            : False,  # DL `<` from result does not get set if this is False!
              'input'             : '<5',
-             'expresult'         : 10.0, # '<' assignment allowed, but not custom
+             'expresult'         : 5.0, # '<' assignment allowed, but not custom
              'expformattedresult': '< 10',
              'isbelowldl'        : True,
              'isaboveudl'        : False,
-             'isldl'             : True,
+             'isldl'             : False,
              'isudl'             : False},
 
             {'min'               : '10',
@@ -307,7 +307,7 @@ class TestLimitDetections(DataTestCase):
              'isudl'             : True},
         ]
 
-        for case in cases:
+        for num, case in enumerate(cases):
             s = self.services[0]
             s.setDetectionLimitSelector(case['displaydl'])
             s.setAllowManualDetectionLimit(case['manual'])
