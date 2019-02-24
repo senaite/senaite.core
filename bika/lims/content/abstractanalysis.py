@@ -344,7 +344,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             return True
 
         result = self.getResult()
-        if result and str(result).strip().startswith('<'):
+        if result and str(result).strip().startswith(LDL):
             return True
         elif result:
             ldl = self.getLowerDetectionLimit()
@@ -364,7 +364,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             return True
 
         result = self.getResult()
-        if result and str(result).strip().startswith('>'):
+        if result and str(result).strip().startswith(UDL):
             return True
         elif result:
             udl = self.getUpperDetectionLimit()
