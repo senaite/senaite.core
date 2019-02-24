@@ -7,7 +7,6 @@
   <object name="bika_arimport_workflow" meta_type="Workflow"/>
   <object name="bika_batch_workflow" meta_type="Workflow"/>
   <object name="bika_duplicateanalysis_workflow" meta_type="Workflow"/>
-  <object name="bika_client_workflow" meta_type="Workflow"/>
   <object name="bika_referenceanalysis_workflow" meta_type="Workflow"/>
   <object name="bika_referencesample_workflow" meta_type="Workflow"/>
   <object name="bika_reject_analysis_workflow" meta_type="Workflow"/>
@@ -43,6 +42,13 @@
 
 
   <!-- *** CUSTOM WORKFLOWS *** -->
+  <!-- Workflow: senaite_setup_workflow
+  Workflow for setup folder. A copy of senaite_one_state_workflow, but with
+  permission "Modify portal content" only granted to "LabManager" and "Manager".
+  Hence, all objects contained in setup folder will acquire same roles for
+  "Modify portal content" except for those types bound to custom workflows -->
+  <object name="senaite_setup_workflow" meta_type="Workflow"/>
+
   <!-- Workflow: senaite_client_workflow
   Workflow for client objects. This workflow deals with the fact that client
   contacts can only access to their corresponding Client objects. This workflow
@@ -75,9 +81,6 @@
     *** BINDINGS TO "senaite_one_state_workflow" ***
     -->
     <!-- Setup folders -->
-    <type type_id="BikaSetup">
-      <bound-workflow workflow_id="senaite_one_state_workflow"/>
-    </type>
     <type type_id="AnalysisCategories">
       <bound-workflow workflow_id="senaite_one_state_workflow"/>
     </type>
@@ -364,6 +367,9 @@
     <!--
     *** BINDINGS TO CUSTOM WORKFLOWS ***
     -->
+    <type type_id="BikaSetup">
+      <bound-workflow workflow_id="senaite_setup_workflow"/>
+    </type>
     <type type_id="AnalysisRequest">
       <bound-workflow workflow_id="bika_ar_workflow"/>
     </type>

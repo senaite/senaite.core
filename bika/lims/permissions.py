@@ -285,14 +285,6 @@ def setup_permissions(portal):
 
     mp(ViewLogTab, ['Manager', 'LabManager'], 1)
 
-    # Clients
-    # When modifying these defaults, look to subscribers/objectmodified.py
-    # Client role (from the Clients Group) must have view permission on /clients, to see the list.
-    # This means within a client, perms granted on Client role are available
-    # in clients not our own, allowing sideways entry if we're not careful.
-    mp = portal.clients.manage_permission
-    mp(ManageClients, ['Manager', 'LabManager', 'LabClerk'], 0)
-    portal.clients.reindexObject()
 
     # /reports folder permissions
     mp = portal.reports.manage_permission

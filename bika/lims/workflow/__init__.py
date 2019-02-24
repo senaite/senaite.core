@@ -474,27 +474,6 @@ def _load_wf_module(module_relative_name):
     return sys.modules.get(modulekey, None)
 
 
-# Enumeration of the available status flows
-StateFlow = enum(review='review_state')
-
-# Enumeration of the different available states from the inactive flow
-InactiveState = enum(active='active')
-
-# Enumeration of the different states can have a batch
-BatchState = enum(open='open',
-                  closed='closed',
-                  cancelled='cancelled')
-
-BatchTransitions = enum(open='open',
-                        close='close')
-
-CancellationState = enum(active='active',
-                         cancelled='cancelled')
-
-CancellationTransitions = enum(cancel='cancel',
-                               reinstate='reinstate')
-
-
 class JSONReadExtender(object):
 
     """- Adds the list of possible transitions to each object, if 'transitions'

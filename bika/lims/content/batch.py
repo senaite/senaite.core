@@ -6,30 +6,33 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from AccessControl import ClassSecurityInfo
+from Products.ATExtensions.ateapi import RecordsField
+from Products.Archetypes.public import DateTimeField
+from Products.Archetypes.public import DisplayList
+from Products.Archetypes.public import LinesField
+from Products.Archetypes.public import MultiSelectionWidget
+from Products.Archetypes.public import ReferenceField
+from Products.Archetypes.public import Schema
+from Products.Archetypes.public import StringField
+from Products.Archetypes.public import StringWidget
+from Products.Archetypes.public import registerType
+from Products.Archetypes.references import HoldingReference
+from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import safe_unicode
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import deprecated
 from bika.lims.browser.fields.remarksfield import RemarksField
+from bika.lims.browser.widgets import DateTimeWidget, ReferenceWidget
 from bika.lims.browser.widgets import RecordsWidget as bikaRecordsWidget
 from bika.lims.browser.widgets import RemarksWidget
-from bika.lims.browser.widgets import DateTimeWidget, ReferenceWidget
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaFolderSchema
 from bika.lims.interfaces import IBatch, IBatchSearchableText, IClient, \
     ICancellable
-from bika.lims.workflow import (BatchState, CancellationState, StateFlow,
-                                getCurrentState)
 from plone.app.folder.folder import ATFolder
 from plone.indexer import indexer
-from Products.Archetypes.public import (DateTimeField, DisplayList, LinesField,
-                                        MultiSelectionWidget, ReferenceField,
-                                        Schema, StringField, StringWidget,
-                                        TextAreaWidget, TextField,
-                                        registerType)
-from Products.Archetypes.references import HoldingReference
-from Products.ATExtensions.ateapi import RecordsField
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import safe_unicode
 from zope.component import getAdapters
 from zope.interface import implements
 
@@ -354,40 +357,13 @@ class Batch(ATFolder):
     def isOpen(self):
         """Returns true if the Batch is in 'open' state
         """
-        revstatus = getCurrentState(self, StateFlow.review)
-        canstatus = getCurrentState(self, StateFlow.cancellation)
-        return revstatus == BatchState.open \
-            and canstatus == CancellationState.active
+        return api.get_workflow_status_of(self) not in ["cancelled", "closed"]
 
     def getLabelNames(self):
         uc = getToolByName(self, 'uid_catalog')
         uids = [uid for uid in self.Schema().getField('BatchLabels').get(self)]
         labels = [label.getObject().title for label in uc(UID=uids)]
         return labels
-
-    def workflow_guard_open(self):
-        """Permitted if current review_state is 'closed' or 'cancelled'
-           The open transition is already controlled by 'Bika: Reopen Batch'
-           permission, but left here for security reasons and also for the
-           capability of being expanded/overrided by child products or
-           instance-specific-needs.
-        """
-        revstatus = getCurrentState(self, StateFlow.review)
-        canstatus = getCurrentState(self, StateFlow.cancellation)
-        return revstatus == BatchState.closed \
-            and canstatus == CancellationState.active
-
-    def workflow_guard_close(self):
-        """Permitted if current review_state is 'open'.
-           The close transition is already controlled by 'Bika: Close Batch'
-           permission, but left here for security reasons and also for the
-           capability of being expanded/overrided by child products or
-           instance-specific needs.
-        """
-        revstatus = getCurrentState(self, StateFlow.review)
-        canstatus = getCurrentState(self, StateFlow.cancellation)
-        return revstatus == BatchState.open \
-            and canstatus == CancellationState.active
 
     def SearchableText(self):
         """Override searchable text logic based on the requirements.

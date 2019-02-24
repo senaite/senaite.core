@@ -687,15 +687,15 @@ Getting the assigned Workflows of an Object
 This function returns all assigned workflows for a given object::
 
     >>> api.get_workflows_for(bika_setup)
-    ('senaite_one_state_workflow',)
+    ('senaite_setup_workflow',)
 
     >>> api.get_workflows_for(client)
-    ('bika_client_workflow',)
+    ('senaite_client_workflow',)
 
 This function also supports the portal_type as parameter::
 
     >>> api.get_workflows_for(api.get_portal_type(client))
-    ('bika_client_workflow',)
+    ('senaite_client_workflow',)
 
 
 Getting the Workflow Status of an Object
@@ -739,9 +739,8 @@ Getting the available transitions for an object
 This function returns all possible transitions from all workflows in the
 object's workflow chain.
 
-Let's create a Batch. It should allow us to invoke transitions from two
-workflows; 'close' from the bika_batch_workflow, and 'cancel' from the
-bika_cancellation_workflow::
+Let's create a Batch. It should allow us to invoke two different transitions:
+'close' and 'cancel':
 
     >>> batch1 = api.create(portal.batches, "Batch", title="Test Batch")
     >>> transitions = api.get_transitions_for(batch1)
@@ -836,7 +835,7 @@ of these workflows.
 In the search() test above, the is_active function's handling of brain states
 is tested.  Here, I just want to test if object states are handled correctly.
 
-For setup types, we use bika_inctive_workflow::
+For setup types, we use senaite_deactivable_type_workflow::
 
     >>> method1 = api.create(portal.methods, "Method", title="Test Method")
     >>> api.is_active(method1)
@@ -845,7 +844,17 @@ For setup types, we use bika_inctive_workflow::
     >>> api.is_active(method1)
     False
 
-For transactional types, bika_cancellation_workflow is used::
+For transactional types, senaite_cancellable_type_workflow is used::
+
+    >>> invoice_batch = api.create(portal.invoices, "InvoiceBatch", title="Test Invoice batch")
+    >>> api.is_active(invoice_batch)
+    True
+    >>> invoice_batch = api.do_transition_for(invoice_batch, "cancel")
+    >>> api.is_active(invoice_batch)
+    False
+
+But there are custom workflows that can also provide `cancel` transition, like
+`bika_batch_workflow`, to which `Batch` type is bound:
 
     >>> batch1 = api.create(portal.batches, "Batch", title="Test Batch")
     >>> api.is_active(batch1)
@@ -860,6 +869,9 @@ Getting the granted Roles for a certain Permission on an Object
 
 This function returns a list of Roles, which are granted the given Permission
 for the passed in object::
+
+    >>> api.get_roles_for_permission("Modify portal content", portal)
+    ['LabClerk', 'LabManager', 'Manager', 'Owner']
 
     >>> api.get_roles_for_permission("Modify portal content", bika_setup)
     ['LabManager', 'Manager']
