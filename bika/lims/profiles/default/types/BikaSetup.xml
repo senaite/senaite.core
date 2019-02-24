@@ -33,7 +33,21 @@
          i18n:attributes="title"
          i18n:domain="plone"
          visible="False">
-  <permission value="View"/>
+  <!--
+  This type needs the permission "View" granted for "Authenticated" role.
+  Otherwise, Client users and others will not be able to reach setup's
+  children (e.g. Sample Types, Profiles, etc.). Nevertheless, we don't want
+  users other than lab personnel to access to the plain view of this folder,
+  cause it displays high-level settings and other sensible information, such as
+  "Password lifetime", "Default turn around time for analyses", etc.
+
+  Note Authenticated users will still be able to get information from those
+  fields by other means (e.g. JSON.API), but at least, they won't be able to
+  reach the plain view
+
+  TODO: Security: Move all Schema's fields from Setup to a new type
+  -->
+  <permission value="senaite.core: View Setup"/>
  </action>
 
  <action title="Edit"

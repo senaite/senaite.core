@@ -90,11 +90,11 @@ portal object::
 
     >>> bika_setup = portal.bika_setup
 
-The `bika_bika_setup` folder follows the `senaite_one_state_workflow` and is
-initially in the `active` state::
+The `setup` folder follows the `senaite_setup_workflow` and is initially in the
+`active` state::
 
     >>> get_workflows_for(bika_setup)
-    ('senaite_one_state_workflow',)
+    ('senaite_setup_workflow',)
 
     >>> get_workflow_status_of(bika_setup)
     'active'
@@ -107,10 +107,15 @@ Exactly these roles have should have a `View` permission::
     >>> get_roles_for_permission("View", bika_setup)
     ['Authenticated']
 
+Exactly these roles have should have a `View Setup` permission::
+
+    >>> get_roles_for_permission("senaite.core: View Setup", bika_setup)
+    ['LabClerk', 'LabManager', 'Manager']
+
 Exactly these roles have should have the `Access contents information` permission::
 
     >>> get_roles_for_permission("Access contents information", bika_setup)
-    ['Anonymous']
+    ['Authenticated']
 
 Exactly these roles have should have the `List folder contents` permission::
 
@@ -122,10 +127,10 @@ Exactly these roles have should have the `Modify portal content` permission::
     >>> get_roles_for_permission("Modify portal content", bika_setup)
     ['LabManager', 'Manager']
 
-Exactly these roles have should have the `Delete objects` permission::
+Exactly these roles (nobody) should have the `Delete objects` permission::
 
     >>> get_roles_for_permission("Delete objects", bika_setup)
-    ['Manager']
+    []
 
 Anonymous Browser Test
 ......................
@@ -134,14 +139,14 @@ Ensure we are logged out::
 
     >>> logout()
 
-Anonymous should not be able to view the `bika_bika_setup` folder::
+Anonymous should not be able to view the `bika_setup` folder::
 
     >>> browser.open(bika_setup.absolute_url() + "/base_view")
     Traceback (most recent call last):
     ...
     Unauthorized: ...
 
-Anonymous should not be able to edit the `bika_bika_setup` folder::
+Anonymous should not be able to edit the `bika_setup` folder::
 
     >>> browser.open(bika_setup.absolute_url() + "/base_edit")
     Traceback (most recent call last):
@@ -163,11 +168,11 @@ portal object::
 
     >>> laboratory = portal.bika_setup.laboratory
 
-The `laboratory` folder follows the `senaite_one_state_workflow` and is
+The `laboratory` folder follows the `senaite_laboratory_workflow` and is
 initially in the `active` state::
 
     >>> get_workflows_for(laboratory)
-    ('senaite_one_state_workflow',)
+    ('senaite_laboratory_workflow',)
 
     >>> get_workflow_status_of(laboratory)
     'active'
@@ -178,12 +183,12 @@ Test Permissions
 Exactly these roles have should have a `View` permission::
 
     >>> get_roles_for_permission("View", laboratory)
-    ['Anonymous']
+    ['Authenticated']
 
 Exactly these roles have should have the `Access contents information` permission::
 
     >>> get_roles_for_permission("Access contents information", laboratory)
-    ['Anonymous']
+    ['Authenticated']
 
 Exactly these roles have should have the `List folder contents` permission::
 
@@ -193,12 +198,12 @@ Exactly these roles have should have the `List folder contents` permission::
 Exactly these roles have should have the `Modify portal content` permission::
 
     >>> get_roles_for_permission("Modify portal content", laboratory)
-    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner']
+    ['LabClerk', 'LabManager', 'Manager']
 
-Exactly these roles have should have the `Delete objects` permission::
+Exactly these roles (nobody) should have the `Delete objects` permission::
 
     >>> get_roles_for_permission("Delete objects", laboratory)
-    ['Manager']
+    []
 
 Anonymous Browser Test
 ......................
@@ -207,9 +212,12 @@ Ensure we are logged out::
 
     >>> logout()
 
-Anonymous should be able to view the `laboratory` folder::
+Anonymous should not be able to view the `laboratory` folder::
 
     >>> browser.open(laboratory.absolute_url() + "/base_view")
+    Traceback (most recent call last):
+    ...
+    Unauthorized: ...
 
 Anonymous should not be able to edit the `laboratory` folder::
 
@@ -245,7 +253,7 @@ initially in the `active` state::
 A `labcontact` follows the `senaite_deactivable_type_workflow` and has an initial state of `active`::
 
     >>> get_workflows_for(labcontact)
-    ('senaite_deactivable_type_workflow')
+    ('senaite_labcontact_workflow',)
 
     >>> get_workflow_status_of(labcontacts)
     'active'
@@ -259,7 +267,7 @@ Exactly these roles have should have a `View` permission::
     ['Authenticated']
 
     >>> get_roles_for_permission("View", labcontact)
-    ['Analyst', 'Authenticated', 'LabClerk', 'LabManager', 'Manager', 'Owner']
+    ['LabClerk', 'LabManager', 'Manager']
 
 Exactly these roles have should have the `Access contents information` permission::
 
@@ -267,7 +275,7 @@ Exactly these roles have should have the `Access contents information` permissio
     ['Authenticated']
 
     >>> get_roles_for_permission("Access contents information", labcontact)
-    ['Analyst', 'Authenticated', 'LabClerk', 'LabManager', 'Manager', 'Owner']
+    ['Authenticated']
 
 Exactly these roles have should have the `List folder contents` permission::
 
@@ -275,23 +283,23 @@ Exactly these roles have should have the `List folder contents` permission::
     ['Authenticated']
 
     >>> get_roles_for_permission("List folder contents", labcontact)
-    ['Analyst', 'Authenticated', 'LabClerk', 'LabManager', 'Manager', 'Owner']
+    []
 
 Exactly these roles have should have the `Modify portal content` permission::
 
     >>> get_roles_for_permission("Modify portal content", labcontacts)
-    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner']
+    ['LabManager', 'Manager']
 
     >>> get_roles_for_permission("Modify portal content", labcontact)
-    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner']
+    ['LabClerk', 'LabManager', 'Manager']
 
 Exactly these roles have should have the `Delete objects` permission::
 
     >>> get_roles_for_permission("Delete objects", labcontacts)
-    ['Manager']
+    []
 
     >>> get_roles_for_permission("Delete objects", labcontact)
-    ['Manager']
+    []
 
 Anonymous Browser Test
 ......................

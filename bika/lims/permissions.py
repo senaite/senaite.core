@@ -35,13 +35,17 @@ both valid.
 # SENAITE CORE Permissions
 # ========================
 
-# Transition permissions
-# ------------------------------
-
+# Generic Transition permissions
+# ----------------------
 TransitionActivate="senaite.core: Transition: Activate"
 TransitionDeactivate="senaite.core: Transition: Deactivate"
 TransitionReinstate="senaite.core: Transition: Reinstate"
 TransitionCancel="senaite.core: Transition: Cancel"
+
+# View permissions
+# ----------------
+ViewSetup="senaite.core: View Setup"
+
 
 
 # AR Permissions

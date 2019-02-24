@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <dc-workflow xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-             workflow_id="senaite_setup_workflow"
-             title="Senaite setup folder Workflow"
+             workflow_id="senaite_laboratory_workflow"
+             title="Senaite setup/laboratory Workflow"
              description=""
              state_variable="review_state"
              initial_state="active"
@@ -9,48 +9,27 @@
              i18n:domain="senaite.core">
 
   <!--
-  A one-state (active) workflow for setup.
-  Mostly a copy of senaite_one_state_workflow, but:
-   - "Modify portal content" granted to "LabManager" and "Manager" only
-   - "Access contents folder" granted to "Authenticated"
-   - "List folder contents" granted to "Authenticated"
-   - "View" granted to "Authenticated"
+  A one-state (active) workflow for setup/laboratory.
+  Almost a copy of one_state_workflow, but:
+   - Grants "Modify portal content" permission to LabClerk
   -->
 
-  <!-- PLONE permissions -->
   <permission>Access contents information</permission>
   <permission>Delete objects</permission>
   <permission>List folder contents</permission>
   <permission>Modify portal content</permission>
   <permission>View</permission>
 
-  <!-- SENAITE permissions -->
-  <permission>senaite.core: View Setup</permission>
-
   <!-- State: active -->
   <state state_id="active" title="Active" i18n:attributes="title">
     <exit-transition transition_id="" />
-    <!-- PLONE Permissions -->
-    <permission-map name="Access contents information" acquired="False">
-      <permission-role>Authenticated</permission-role>
-    </permission-map>
+    <permission-map name="Access contents information" acquired="True" />
     <permission-map name="Delete objects" acquired="False" />
-    <permission-map name="List folder contents" acquired="False">
-      <permission-role>Authenticated</permission-role>
+    <permission-map name="List folder contents" acquired="True" />
+    <permission-map name="Modify portal content" acquired="True">
+      <!-- With acquire=True, we add LabClerk to roles acquired from parent -->
+      <permission-role>LabClerk</permission-role>
     </permission-map>
-    <permission-map name="Modify portal content" acquired="False">
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-    </permission-map>
-    <permission-map name="View" acquired="False">
-      <!-- "View" permission for "Authenticated" role needs to be granted to
-       allow access to children objects. Otherwise, clients and other personnel
-       will not be able to query for e.g. Sample Types -->
-      <permission-role>Authenticated</permission-role>
-    </permission-map>
-
-    <!-- SENAITE Permissions -->
-    <permission-map name="senaite.core: View Setup" acquired="True"/>
   </state>
 
   <variable variable_id="action" for_catalog="False" for_status="True" update_always="True">
