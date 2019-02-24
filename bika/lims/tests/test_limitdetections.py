@@ -441,8 +441,8 @@ class TestLimitDetections(DataTestCase):
                 self.assertEqual(an.getFormattedResult(), '15.00')
 
             # Set a DL result explicitely
-            an.setDetectionLimitOperand('<')
             an.setResult('15')
+            an.setDetectionLimitOperand('<')
             self.assertEqual(float(an.getResult()), 15)
             if self.lds[idx]['manual']:
                 self.assertTrue(an.isBelowLowerDetectionLimit())
@@ -459,8 +459,8 @@ class TestLimitDetections(DataTestCase):
                 self.assertEqual(an.getFormattedResult(html=True), '15.00')
                 self.assertEqual(an.getFormattedResult(), '15.00')
 
-            an.setDetectionLimitOperand('>')
             an.setResult('15')
+            an.setDetectionLimitOperand('>')
             self.assertEqual(float(an.getResult()), 15)
             if self.lds[idx]['manual']:
                 self.assertFalse(an.isBelowLowerDetectionLimit())
