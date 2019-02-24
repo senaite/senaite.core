@@ -442,7 +442,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             self.setDetectionLimitSelector(True)
 
             # Set the detection limit operand
-            self.getField("DetectionLimitOperand").set(self, oper)
+            self.setDetectionLimitOperand(oper)
 
             # No manual DL allowed, set the result to LDL/UDL from the AS
             if not self.getAllowManualDetectionLimit():
