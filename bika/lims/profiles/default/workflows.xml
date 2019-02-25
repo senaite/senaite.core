@@ -96,11 +96,21 @@
   A "deactivable type" workflow for Contact (from client) type. A workflow meant
   to protect access to sensible data of Client contacts by preventing
   users other than LabClerk, LabManager, Manager and Owner to access to
-  personal information
+  personal information.
   A copy of "deactivable_type_workflow", but:
    - "View" granted to "LabClerk", "LabManager", "Manager" and "Owner" roles.
   -->
   <object name="senaite_clientcontact_workflow" meta_type="Workflow" />
+
+  <!-- workflow: senaite_instruments_workflow
+  One-state workflow for instruments base folder, that does not allow access to
+  users other than lab personnel.
+  A copy of one-state workflow, but:
+  - "Access content information" granted to lab personnel only
+  - "List folder contents" granted to lab personnel only
+  - "View" granted to lab personnel only
+  -->
+  <object name="senaite_instruments_workflow" meta_type="Workflow" />
 
   <!-- Workflow: senaite_supplyorder_workflow
   Workflow for Supply Orders. States "dispatched", "pending", "cancelled" -->
@@ -154,9 +164,6 @@
       <bound-workflow workflow_id="senaite_one_state_workflow"/>
     </type>
     <type type_id="IdentifierTypes">
-      <bound-workflow workflow_id="senaite_one_state_workflow"/>
-    </type>
-    <type type_id="Instruments">
       <bound-workflow workflow_id="senaite_one_state_workflow"/>
     </type>
     <type type_id="InstrumentLocations">
@@ -417,6 +424,9 @@
     </type>
     <type type_id="Contact">
       <bound-workflow workflow_id="senaite_clientcontact_workflow"/>
+    </type>
+    <type type_id="Instruments">
+      <bound-workflow workflow_id="senaite_instruments_workflow"/>
     </type>
     <type type_id="LabContact">
       <bound-workflow workflow_id="senaite_labcontact_workflow"/>

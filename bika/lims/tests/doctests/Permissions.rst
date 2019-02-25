@@ -579,15 +579,16 @@ The `bika_instruments` folder follows the `senaite_one_state_workflow` and is
 initially in the `active` state::
 
     >>> get_workflows_for(instruments)
-    ('senaite_one_state_workflow',)
+    ('senaite_instruments_workflow',)
 
     >>> get_workflow_status_of(instruments)
     'active'
 
-A `instrument` follows the `bika_inactive_workflow` and has an initial state of `active`::
+A `instrument` follows the `senaite_deactivable_type_workflow` and has an
+initial state of `active`::
 
     >>> get_workflows_for(instrument)
-    ('senaite_one_state_workflow', 'bika_inactive_workflow')
+    ('senaite_deactivable_type_workflow',)
 
     >>> get_workflow_status_of(instruments)
     'active'
@@ -598,42 +599,42 @@ Test Permissions
 Exactly these roles have should have a `View` permission::
 
     >>> get_roles_for_permission("View", instruments)
-    ['Authenticated']
+    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Preserver', 'Publisher', 'RegulatoryInspector', 'Sampler', 'SamplingCoordinator', 'Verifier']
 
     >>> get_roles_for_permission("View", instrument)
-    ['Analyst', 'Authenticated', 'LabClerk', 'LabManager', 'Manager', 'Owner']
+    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Preserver', 'Publisher', 'RegulatoryInspector', 'Sampler', 'SamplingCoordinator', 'Verifier']
 
 Exactly these roles have should have the `Access contents information` permission::
 
     >>> get_roles_for_permission("Access contents information", instruments)
-    ['Authenticated']
+    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Preserver', 'Publisher', 'RegulatoryInspector', 'Sampler', 'SamplingCoordinator', 'Verifier']
 
     >>> get_roles_for_permission("Access contents information", instrument)
-    ['Analyst', 'Authenticated', 'LabClerk', 'LabManager', 'Manager', 'Owner']
+    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Preserver', 'Publisher', 'RegulatoryInspector', 'Sampler', 'SamplingCoordinator', 'Verifier']
 
 Exactly these roles have should have the `List folder contents` permission::
 
     >>> get_roles_for_permission("List folder contents", instruments)
-    ['Authenticated']
+    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Preserver', 'Publisher', 'RegulatoryInspector', 'Sampler', 'SamplingCoordinator', 'Verifier']
 
     >>> get_roles_for_permission("List folder contents", instrument)
-    ['Analyst', 'Authenticated', 'LabClerk', 'LabManager', 'Manager', 'Owner']
+    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Preserver', 'Publisher', 'RegulatoryInspector', 'Sampler', 'SamplingCoordinator', 'Verifier']
 
 Exactly these roles have should have the `Modify portal content` permission::
 
     >>> get_roles_for_permission("Modify portal content", instruments)
-    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner']
+    ['LabManager', 'Manager']
 
     >>> get_roles_for_permission("Modify portal content", instrument)
-    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner']
+    ['LabManager', 'Manager']
 
 Exactly these roles have should have the `Delete objects` permission::
 
     >>> get_roles_for_permission("Delete objects", instruments)
-    ['Manager']
+    []
 
     >>> get_roles_for_permission("Delete objects", instrument)
-    ['Manager']
+    []
 
 Anonymous Browser Test
 ......................

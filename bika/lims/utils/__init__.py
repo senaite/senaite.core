@@ -335,7 +335,8 @@ def changeWorkflowState(content, wf_id, state_id, acquire_permissions=False,
         wf_def.updateRoleMappingsFor(content)
 
     # Map changes to the catalogs
-    content.reindexObject(idxs=['allowedRolesAndUsers', 'review_state'])
+    idxs = ["allowedRolesAndUsers", "review_state", "is_active"]
+    content.reindexObject(idxs=idxs)
     return
 
 
