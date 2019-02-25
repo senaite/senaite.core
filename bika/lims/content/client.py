@@ -8,6 +8,7 @@
 import sys
 
 from AccessControl import ClassSecurityInfo
+from AccessControl import Unauthorized
 from Products.ATContentTypes.content import schemata
 from Products.Archetypes.public import BooleanField
 from Products.Archetypes.public import BooleanWidget
@@ -19,11 +20,15 @@ from Products.Archetypes.public import StringField
 from Products.Archetypes.public import StringWidget
 from Products.Archetypes.public import registerType
 from Products.Archetypes.utils import DisplayList
+from Products.CMFCore import permissions
+from Products.CMFCore.PortalFolder import PortalFolderBase as PortalFolder
+from Products.CMFCore.utils import _checkPermission
 from bika.lims import _
 from bika.lims import api
 from bika.lims.config import ARIMPORT_OPTIONS
 from bika.lims.config import DECIMAL_MARKS
 from bika.lims.config import PROJECTNAME
+from bika.lims.content.attachment import Attachment
 from bika.lims.content.organisation import Organisation
 from bika.lims.interfaces import IClient, IDeactivable
 from zope.interface import implements
@@ -233,6 +238,36 @@ class Client(Organisation):
         physical_address = self.getPhysicalAddress().get("district", default)
         postal_address = self.getPostalAddress().get("district", default)
         return physical_address or postal_address
+
+    # TODO Security Make Attachments live inside ARs (instead of Client)
+    # Since the Attachments live inside Client, we are forced here to overcome
+    # the DeleteObjects permission when objects to delete are from Attachment
+    # type. And we want to keep the DeleteObjects permission at Client level
+    # because is the main container for Samples!
+    # For some statuses of the AnalysisRequest type (e.g. received), the
+    # permission "DeleteObjects" is granted, allowing the user to remove e.g.
+    # analyses. Attachments are closely bound to Analysis and Samples, so they
+    # should live inside Analysis Request.
+    # Then, we will be able to remove this function from here
+    def manage_delObjects(self, ids=None, REQUEST=None):
+        """Overrides parent function. If the ids passed in are from Attachment
+        types, the function ignores the DeleteObjects permission. For the rest
+        of types, it works as usual (checks the permission)
+        """
+        if ids is None:
+            ids = []
+        if isinstance(ids, basestring):
+            ids = [ids]
+
+        for id in ids:
+            item = self._getOb(id)
+            if isinstance(item, Attachment):
+                # Ignore DeleteObjects permission check
+                continue
+            if not _checkPermission(permissions.DeleteObjects, item):
+                raise Unauthorized, (
+                    "Do not have permissions to remove this object")
+        return PortalFolder.manage_delObjects(self, ids, REQUEST=REQUEST)
 
 
 schemata.finalizeATCTSchema(schema, folderish=True, moveDiscussion=False)
