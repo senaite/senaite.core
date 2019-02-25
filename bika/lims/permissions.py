@@ -176,10 +176,6 @@ Unassign = 'BIKA: Unassign analyses'
 
 ViewLogTab = 'BIKA: View Log Tab'
 
-# Edit Client
-# ----------------------------------------------
-# Allows access to 'Edit' and 'Contacts' tabs from Client View
-EditClient = 'BIKA: Edit Client'
 
 # Manage Supply Orders
 # ----------------------------------------------
