@@ -77,11 +77,6 @@ Bika Setup
 Bika Setup is a folderish object, which handles the labs' configuration items, like
 Laboratory information, Instruments, Analysis Services etc.
 
-.. Note::
-
-    All `base_views` with this folder are protected by the `bika.lims.ManageBika` permission.
-    Please see `bika/lims/controlpanel/configure.zcml` for further details.
-
 Test Workflow
 .............
 
@@ -798,8 +793,8 @@ A `analysisservice` lives in the `bika_setup/bika_analysisservices` folder::
     >>> analysisservices = bika_setup.bika_analysisservices
     >>> analysisservice = create(analysisservices, "AnalysisService")
 
-The `bika_analysisservices` folder follows the `senaite_one_state_workflow` and is
-initially in the `active` state::
+The `bika_analysisservices` folder follows the `senaite_one_state_workflow`
+and is initially in the `active` state::
 
     >>> get_workflows_for(analysisservices)
     ('senaite_one_state_workflow',)
@@ -807,10 +802,11 @@ initially in the `active` state::
     >>> get_workflow_status_of(analysisservices)
     'active'
 
-A `analysisservice` follows the `bika_inactive_workflow` and has an initial state of `active`::
+A `analysisservice` follows the `senaite_deactivable_type_workflow` and has an
+initial state of `active`::
 
     >>> get_workflows_for(analysisservice)
-    ('senaite_one_state_workflow', 'bika_inactive_workflow')
+    ('senaite_deactivable_type_workflow',)
 
     >>> get_workflow_status_of(analysisservices)
     'active'
@@ -821,18 +817,18 @@ Test Permissions
 Exactly these roles have should have a `View` permission::
 
     >>> get_roles_for_permission("View", analysisservices)
-    ['Analyst', 'Authenticated', 'Client']
+    ['Authenticated']
 
     >>> get_roles_for_permission("View", analysisservice)
-    ['Analyst', 'Authenticated', 'Client', 'LabClerk', 'LabManager', 'Manager', 'Owner']
+    ['Authenticated']
 
 Exactly these roles have should have the `Access contents information` permission::
 
     >>> get_roles_for_permission("Access contents information", analysisservices)
-    ['Analyst', 'Anonymous', 'Authenticated', 'Client']
+    ['Authenticated']
 
     >>> get_roles_for_permission("Access contents information", analysisservice)
-    ['Analyst', 'Anonymous', 'Authenticated', 'Client', 'LabClerk', 'LabManager', 'Manager', 'Owner']
+    ['Authenticated']
 
 Exactly these roles have should have the `List folder contents` permission::
 
@@ -840,23 +836,23 @@ Exactly these roles have should have the `List folder contents` permission::
     ['Authenticated']
 
     >>> get_roles_for_permission("List folder contents", analysisservice)
-    ['Analyst', 'Authenticated', 'LabClerk', 'LabManager', 'Manager', 'Owner']
+    ['Authenticated']
 
 Exactly these roles have should have the `Modify portal content` permission::
 
     >>> get_roles_for_permission("Modify portal content", analysisservices)
-    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner']
+    ['LabManager', 'Manager']
 
     >>> get_roles_for_permission("Modify portal content", analysisservice)
-    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner']
+    ['LabManager', 'Manager']
 
 Exactly these roles have should have the `Delete objects` permission::
 
     >>> get_roles_for_permission("Delete objects", analysisservices)
-    ['Manager']
+    []
 
     >>> get_roles_for_permission("Delete objects", analysisservice)
-    ['Manager']
+    []
 
 Anonymous Browser Test
 ......................
