@@ -179,7 +179,6 @@ ViewLogTab = 'BIKA: View Log Tab'
 
 # Batch-specific permissions
 # ----------------------------------------------
-EditBatch = 'BIKA: Edit Batch'
 CloseBatch = 'BIKA: Close Batch'
 ReopenBatch = 'BIKA: Reopen Batch'
 

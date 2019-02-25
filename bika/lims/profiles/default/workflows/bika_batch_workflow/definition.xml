@@ -10,7 +10,6 @@
 
   <permission>senaite.core: Add Analysis Request</permission>
   <permission>BIKA: Close Batch</permission>
-  <permission>BIKA: Edit Batch</permission>
   <permission>BIKA: Reopen Batch</permission>
   <permission>Modify portal content</permission>
   <permission>View</permission>
@@ -26,8 +25,6 @@
     <permission-map name="senaite.core: Add Analysis Request" acquired="False">
     </permission-map>
     <permission-map name="BIKA: Close Batch" acquired="False">
-    </permission-map>
-    <permission-map name="BIKA: Edit Batch" acquired="False">
     </permission-map>
     <permission-map name="BIKA: Reopen Batch" acquired="False">
       <permission-role>LabClerk</permission-role>
@@ -54,11 +51,6 @@
       <permission-role>Manager</permission-role>
     </permission-map>
     <permission-map name="BIKA: Close Batch" acquired="False">
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-    </permission-map>
-    <permission-map name="BIKA: Edit Batch" acquired="False">
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
