@@ -11,7 +11,7 @@ from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields.remarksfield import RemarksField
 from bika.lims.browser.widgets import RemarksWidget
-from bika.lims.config import PROJECTNAME, ManageSuppliers
+from bika.lims.config import PROJECTNAME
 from bika.lims.content.organisation import Organisation
 from bika.lims.interfaces import ISupplier, IDeactivable
 from zope.interface import implements
@@ -62,7 +62,7 @@ schema = Organisation.schema.copy() + ManagedSchema((
         ),
     ),
 ))
-schema['AccountNumber'].write_permission = ManageSuppliers
+
 
 class Supplier(Organisation):
     implements(ISupplier, IDeactivable)

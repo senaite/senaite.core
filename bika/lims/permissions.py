@@ -146,7 +146,6 @@ ADD_CONTENT_PERMISSIONS = {
 ManageBika = 'BIKA: Manage Bika'
 DispatchOrder = 'BIKA: Dispatch Order'
 ManageAnalysisRequests = 'BIKA: Manage Analysis Requests'
-ManageSuppliers = 'BIKA: Manage Reference Suppliers'
 ManageReference = 'BIKA: Manage Reference'
 
 
@@ -259,7 +258,6 @@ def setup_permissions(portal):
     mp(ManageBika, ['Manager', 'LabManager'], 1)
     mp(ManageLoginDetails, ['Manager', 'LabManager'], 1)
     mp(ManageReference, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
-    mp(ManageSuppliers, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
     mp(ManageWorksheets, ['Manager', 'LabManager'], 1)
 
     mp(CancelAndReinstate, ['Manager', 'LabManager'], 0)
