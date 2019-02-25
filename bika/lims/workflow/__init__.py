@@ -232,7 +232,7 @@ def isBasicTransitionAllowed(context, permission=None):
     """
     workflow = getToolByName(context, "portal_workflow")
     mtool = getToolByName(context, "portal_membership")
-    if not isActive(context) \
+    if not api.is_active(context) \
         or (permission and mtool.checkPermission(permission, context)):
         return False
     return True
@@ -275,12 +275,6 @@ def wasTransitionPerformed(instance, transition_id):
     """
     transitions = getReviewHistoryActionsList(instance)
     return transition_id in transitions
-
-
-def isActive(instance):
-    """Returns True if the object is neither in a cancelled nor inactive state
-    """
-    return api.is_active(instance)
 
 
 def getReviewHistoryActionsList(instance, reverse=False):

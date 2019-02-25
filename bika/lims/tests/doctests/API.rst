@@ -605,7 +605,7 @@ Unless we filter it out manually::
 
 Or provide a correct query::
 
-    >>> results = api.search({"portal_type": "AnalysisCategory", "id": "analysiscategory-1", "inactive_status": "active"})
+    >>> results = api.search({"portal_type": "AnalysisCategory", "id": "analysiscategory-1", is_active: True})
     >>> len(results)
     1
 
@@ -1145,8 +1145,8 @@ A custom event subscriber will update it therefore.
 A workflow transition should also change the cache key::
 
     >>> _ = api.do_transition_for(client, transition="deactivate")
-    >>> api.get_inactive_status(client)
-    'inactive'
+    >>> api.is_active(client)
+    False
     >>> key4 = api.get_cache_key(client)
     >>> key4 != key3
     True

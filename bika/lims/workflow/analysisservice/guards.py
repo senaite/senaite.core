@@ -17,16 +17,14 @@ def guard_activate(analysis_service):
         return True
 
     # If the calculation is inactive, we cannot activate the service
-    calc_status = api.get_workflow_status_of(calculation)
-    if calc_status == "inactive":
+    if not api.is_active(calculation):
         return False
 
     # All services that we depend on to calculate our result are active or we
     # don't depend on other services.
     dependencies = calculation.getDependentServices()
     for dependency in dependencies:
-        status = api.get_workflow_status_of(dependency)
-        if status == "inactive":
+        if not api.is_active(dependency):
             return False
 
     return True

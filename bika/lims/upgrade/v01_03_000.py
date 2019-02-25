@@ -774,7 +774,7 @@ def fix_cancelled_analyses_inconsistencies(portal):
         # Update role mappings
         workflow.updateRoleMappingsFor(analysis)
         # Reindex
-        analysis.reindexObject(idxs=["cancellation_state"])
+        analysis.reindexObject(idxs=["review_state", "is_active"])
 
 
 def get_role_mappings_candidates(portal):
@@ -1228,7 +1228,7 @@ def fix_ar_analyses_inconsistencies(portal):
             # Force the new state
             changeWorkflowState(analysis, wf_id, status)
             workflow.updateRoleMappingsFor(analysis)
-            analysis.reindexObject(idxs="review_state")
+            analysis.reindexObject(idxs=["review_state", "is_active"])
 
     def fix_ar_analyses(status, wf_state_id="review_state"):
         brains = api.search({wf_state_id: status},
@@ -1299,14 +1299,14 @@ def decouple_analysis_requests_from_cancellation_workflow(portal):
         analysis_request = api.get_object(brain)
         if api.get_workflow_status_of(analysis_request) == "cancelled":
             # The state of the analysis request is fine, only reindex
-            analysis_request.reindexObject(idxs=["cancellation_state"])
+            analysis_request.reindexObject(idxs=["is_active", "review_state"])
             continue
 
         changeWorkflowState(analysis_request, wf_id, "cancelled")
         # Update role mappings
         workflow.updateRoleMappingsFor(analysis_request)
         # Reindex
-        analysis_request.reindexObject(idxs=["cancellation_state"])
+        analysis_request.reindexObject(idxs=["is_active", "review_state"])
 
 
 def decouple_analysisrequests_from_sample(portal):

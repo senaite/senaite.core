@@ -14,16 +14,14 @@ from Acquisition import aq_inner
 from Acquisition import aq_parent
 from Products.Archetypes import atapi
 from Products.Archetypes.utils import DisplayList
-from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
+from bika.lims.api import is_active
 from bika.lims.config import ManageClients
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.person import Person
 from bika.lims.interfaces import IContact, IClient, IDeactivable
-from bika.lims.utils import isActive
-from bika.lims.api import get_workflow_status_of
 from plone import api
 from zope.interface import implements
 
@@ -92,7 +90,7 @@ class Contact(Person):
     def isActive(self):
         """Checks if the Contact is active
         """
-        return get_workflow_status_of(self) != "inactive"
+        return is_active(self)
 
     security.declareProtected(ManageClients, 'getUser')
     def getUser(self):
@@ -168,7 +166,7 @@ class Contact(Person):
         pairs = []
         objects = []
         for contact in self.aq_parent.objectValues('Contact'):
-            if isActive(contact) and contact.UID() != self.UID():
+            if is_active(contact) and contact.UID() != self.UID():
                 pairs.append((contact.UID(), contact.Title()))
                 if not dl:
                     objects.append(contact)

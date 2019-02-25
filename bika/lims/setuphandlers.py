@@ -228,7 +228,6 @@ class BikaGenerator(object):
         addIndex(bc, 'review_state', 'FieldIndex')
         addIndex(bc, 'Identifiers', 'KeywordIndex')
         addIndex(bc, 'is_active', 'BooleanIndex')
-
         addIndex(bc, 'BatchDate', 'DateIndex')
         addIndex(bc, 'getClientTitle', 'FieldIndex')
         addIndex(bc, 'getClientUID', 'FieldIndex')
@@ -258,9 +257,6 @@ class BikaGenerator(object):
         addColumn(bc, 'Title')
         addColumn(bc, 'Description')
         addColumn(bc, 'sortable_title')
-        addColumn(bc, 'review_state')
-        addColumn(bc, 'inactive_state')
-        addColumn(bc, 'cancellation_state')
         addColumn(bc, 'getClientTitle')
         addColumn(bc, 'getClientID')
         addColumn(bc, 'getClientBatchID')
@@ -415,11 +411,7 @@ class BikaGenerator(object):
         addColumn(bsc, 'title')
         addColumn(bsc, 'sortable_title')
         addColumn(bsc, 'description')
-
         addColumn(bsc, 'review_state')
-        addColumn(bsc, 'inactive_state')
-        addColumn(bsc, 'cancellation_state')
-
         addColumn(bsc, 'getAccredited')
         addColumn(bsc, 'getInstrumentType')
         addColumn(bsc, 'getInstrumentTypeName')

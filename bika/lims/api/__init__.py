@@ -793,52 +793,6 @@ def get_review_status(brain_or_object):
     return get_workflow_status_of(brain_or_object, state_var="review_state")
 
 
-def get_cancellation_status(brain_or_object, default="active"):
-    """Get the `cancellation_state` of an object
-
-    :param brain_or_object: A single catalog brain or content object
-    :type brain_or_object: ATContentType/DexterityContentType/CatalogBrain
-    :returns: Value of the review_status variable
-    :rtype: String
-    """
-
-    if is_brain(brain_or_object):
-        state = getattr(brain_or_object, "cancellation_state", None)
-        if state is not None:
-            return state
-
-    obj = get_object(brain_or_object)
-    if ICancellable.providedBy(obj):
-        if get_workflow_status_of(obj) == "cancelled":
-            return "cancelled"
-        return "active"
-
-    return default
-
-
-def get_inactive_status(brain_or_object, default="active"):
-    """Get the `cancellation_state` of an object
-
-    :param brain_or_object: A single catalog brain or content object
-    :type brain_or_object: ATContentType/DexterityContentType/CatalogBrain
-    :returns: Value of the review_status variable
-    :rtype: String
-    """
-
-    if is_brain(brain_or_object):
-        state = getattr(brain_or_object, "inactive_state", None)
-        if state is not None:
-            return state
-
-    obj = get_object(brain_or_object)
-    if IDeactivable.providedBy(obj):
-        if get_workflow_status_of(obj) == "inactive":
-            return "inactive"
-        return "active"
-
-    return default
-
-
 def is_active(brain_or_object):
     """Check if the workflow state of the object is 'inactive' or 'cancelled'.
 
@@ -848,10 +802,6 @@ def is_active(brain_or_object):
     :rtype: bool
     """
     if get_review_status(brain_or_object) in ["cancelled", "inactive"]:
-        return False
-    if get_inactive_status(brain_or_object) == "inactive":
-        return False
-    if get_cancellation_status(brain_or_object) == "cancelled":
         return False
     return True
 
