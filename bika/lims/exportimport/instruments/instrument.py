@@ -9,6 +9,7 @@
 """
 import json
 import traceback
+from bika.lims import bikaMessageFactory as _
 from bika.lims.exportimport.instruments.resultsimport import AnalysisResultsImporter
 
 def getFileFormat(request):
