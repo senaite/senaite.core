@@ -146,11 +146,6 @@ class AnalysisRequestAnalysesView(BikaListingView):
         currency = setup.getCurrency()
         return locale.numbers.currencies[currency].symbol
 
-    def is_submitted(self, obj):
-        """Check if the "submit" transition was performed
-        """
-        return wasTransitionPerformed(obj, "submit")
-
     @view.memoize
     def get_logged_in_client(self):
         """Return the logged in client

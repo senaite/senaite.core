@@ -12,7 +12,7 @@ from AccessControl.SecurityInfo import ModuleSecurityInfo
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
 from bika.lims import PMF
-from bika.lims import enum, api
+from bika.lims import api
 from bika.lims import logger
 from bika.lims.browser import ulocalized_time
 from bika.lims.interfaces import IJSONReadExtender
@@ -127,17 +127,6 @@ def doActionFor(instance, action_id, idxs=None):
     return succeed, message
 
 
-# TODO Workflow - remove doAction(s)For?
-def doActionsFor(instance, actions):
-    """Performs a set of transitions to the instance passed in
-    """
-    pool = ActionHandlerPool.get_instance()
-    pool.queue_pool()
-    for action in actions:
-        doActionFor(instance, action)
-    pool.resume()
-
-
 def call_workflow_event(instance, event, after=True):
     """Calls the instance's workflow event
     """
@@ -222,31 +211,11 @@ def get_workflow_actions(obj):
     return actions
 
 
-def isBasicTransitionAllowed(context, permission=None):
-    """Most transition guards need to check the same conditions:
-
-    - Is the object active (cancelled or inactive objects can't transition)
-    - Has the user a certain permission, required for transition.  This should
-    normally be set in the guard_permission in workflow definition.
-
-    """
-    workflow = getToolByName(context, "portal_workflow")
-    mtool = getToolByName(context, "portal_membership")
-    if not api.is_active(context) \
-        or (permission and mtool.checkPermission(permission, context)):
-        return False
-    return True
-
-
 def isTransitionAllowed(instance, transition_id):
     """Checks if the object can perform the transition passed in.
     :returns: True if transition can be performed
     :rtype: bool
     """
-    if transition_id not in ['reinstate', 'activate']:
-        if not api.is_active(instance):
-            return False
-
     wf_tool = getToolByName(instance, "portal_workflow")
     for wf_id in wf_tool.getChainFor(instance):
         wf = wf_tool.getWorkflowById(wf_id)

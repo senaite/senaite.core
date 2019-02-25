@@ -22,10 +22,7 @@ from bika.lims.content.analysisspec import ResultsRangeDict
 from bika.lims.content.reflexrule import doReflexRuleAction
 from bika.lims.interfaces import IAnalysis, IRoutineAnalysis, ICancellable
 from bika.lims.interfaces.analysis import IRequestAnalysis
-from bika.lims.workflow import doActionFor
 from bika.lims.workflow import getTransitionDate
-from bika.lims.workflow import skip
-from bika.lims.workflow import wasTransitionPerformed
 from zope.interface import implements
 
 

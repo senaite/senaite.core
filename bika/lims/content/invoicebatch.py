@@ -17,7 +17,7 @@ from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.content.invoice import InvoiceLineItem
 from bika.lims.interfaces import IInvoiceBatch, ICancellable
 from bika.lims.utils import get_invoice_item_description
-from bika.lims.workflow import isBasicTransitionAllowed, getTransitionDate
+from bika.lims.workflow import getTransitionDate
 from zope.container.contained import ContainerModifiedEvent
 from zope.interface import implements
 
@@ -110,16 +110,6 @@ class InvoiceBatch(BaseFolder):
         """ return current date """
         # noinspection PyCallingNonCallable
         return DateTime()
-
-    def guard_cancel_transition(self):
-        if not isBasicTransitionAllowed(self):
-            return False
-        return True
-
-    def guard_reinstate_transition(self):
-        if not isBasicTransitionAllowed(self):
-            return False
-        return True
 
 
 registerType(InvoiceBatch, PROJECTNAME)
