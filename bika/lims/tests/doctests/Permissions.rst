@@ -351,10 +351,10 @@ A `contact` lives in a `client`::
 
     >>> contact = create(client, "Contact")
 
-The `clients` folder follows **no** workflow::
+The `clients` folder follows `senaite_clients_workflow` workflow::
 
     >>> get_workflows_for(clients)
-    ()
+    ('senaite_clients_workflow',)
 
 A `client` follows the `senaite_client_workflow` and has an initial state of
 `active`::
@@ -369,7 +369,7 @@ A `contact` follows the `senaite_deactivable_type_workflow` and has an initial
 state of `active`::
 
     >>> get_workflows_for(contact)
-    ('senaite_deactivable_type_workflow',)
+    ('senaite_clientcontact_workflow',)
 
     >>> get_workflow_status_of(contact)
     'active'
@@ -377,16 +377,23 @@ state of `active`::
 Test Permissions
 ................
 
-Exactly these roles have should have a `View` permission::
+Exactly these roles have should have a `View` permission for clients folder::
 
     >>> get_roles_for_permission("View", clients)
     ['Authenticated']
 
+Exactly these roles should have a `View` permission for client object. Note that
+permissions for Client role are not granted, but for Owner. Lab Contacts are
+Owners of the Client they belong to, so client contacts only have access to the
+Client they belong to:
+
     >>> get_roles_for_permission("View", client)
-    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner', 'Sampler']
+    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner', 'Preserver', 'Publisher', 'RegulatoryInspector', 'Sampler', 'SamplingCoordinator', 'Verifier']
+
+Exactly these roles should have a `View` permission for client contact object:
 
     >>> get_roles_for_permission("View", contact)
-    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner', 'Preserver', 'Sampler']
+    ['LabClerk', 'LabManager', 'Manager', 'Owner']
 
 Exactly these roles have should have the `Access contents information` permission::
 
@@ -394,10 +401,10 @@ Exactly these roles have should have the `Access contents information` permissio
     ['Authenticated']
 
     >>> get_roles_for_permission("Access contents information", client)
-    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner', 'Sampler']
+    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner', 'Preserver', 'Publisher', 'RegulatoryInspector', 'Sampler', 'SamplingCoordinator', 'Verifier']
 
     >>> get_roles_for_permission("Access contents information", contact)
-    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner', 'Sampler']
+    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner', 'Preserver', 'Publisher', 'RegulatoryInspector', 'Sampler', 'SamplingCoordinator', 'Verifier']
 
 Exactly these roles have should have the `List folder contents` permission::
 
@@ -405,10 +412,10 @@ Exactly these roles have should have the `List folder contents` permission::
     ['Authenticated']
 
     >>> get_roles_for_permission("List folder contents", client)
-    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner', 'Sampler']
+    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner', 'Preserver', 'Publisher', 'RegulatoryInspector', 'Sampler', 'SamplingCoordinator', 'Verifier']
 
     >>> get_roles_for_permission("List folder contents", contact)
-    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner', 'Sampler']
+    []
 
 Exactly these roles have should have the `Modify portal content` permission::
 
@@ -421,10 +428,10 @@ Exactly these roles have should have the `Modify portal content` permission::
 Exactly these roles have should have the `Delete objects` permission::
 
     >>> get_roles_for_permission("Delete objects", clients)
-    ['LabClerk', 'LabManager', 'Manager', 'Owner']
+    []
 
     >>> get_roles_for_permission("Delete objects", client)
-    ['Manager']
+    []
 
 Anonymous Browser Test
 ......................

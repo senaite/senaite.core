@@ -41,11 +41,6 @@ def ObjectModifiedEventHandler(obj, event):
         mp(permissions.DeleteObjects, can_delete, 0)
 
     elif obj.portal_type == 'Contact':
-        # Contacts need to be given "Owner" local-role on their Client.
-        mp = obj.manage_permission
-        mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Owner', 'Analyst', 'Sampler', 'Preserver'], 0)
-        mp(permissions.ModifyPortalContent, ['Manager', 'LabManager', 'Owner', 'LabClerk'], 0)
-        mp(ManageLoginDetails, ['Manager', 'LabManager', 'LabClerk'], 0)
         # Verify that the Contact details are the same as the Plone user.
         contact_username = obj.Schema()['Username'].get(obj)
         if contact_username:

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <dc-workflow xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-             workflow_id="senaite_one_state_workflow"
-             title="Senaite one state (active) Workflow"
+             workflow_id="senaite_clients_workflow"
+             title="Senaite clients folder Workflow"
              description=""
              state_variable="review_state"
              initial_state="active"
@@ -9,9 +9,16 @@
              i18n:domain="senaite.core">
 
   <!--
-  One-state (active) workflow, for folders mostly.
+  A one-state (active) workflow for clients folder.
+
+  Mostly a copy of senaite_one_state_workflow, but:
+   - "Access contents folder" granted to "Authenticated"
+   - "Delete objects" not granted to anyone
+   - "List folder contents" granted to "Authenticated"
+   - "View" granted to "Authenticated"
   -->
 
+  <!-- PLONE permissions -->
   <permission>Access contents information</permission>
   <permission>Delete objects</permission>
   <permission>List folder contents</permission>
@@ -21,11 +28,18 @@
   <!-- State: active -->
   <state state_id="active" title="Active" i18n:attributes="title">
     <exit-transition transition_id="" />
-    <permission-map name="Access contents information" acquired="True" />
-    <permission-map name="Delete objects" acquired="True" />
-    <permission-map name="List folder contents" acquired="True" />
-    <permission-map name="Modify portal content" acquired="True" />
-    <permission-map name="View" acquired="True" />
+    <!-- PLONE Permissions -->
+    <permission-map name="Access contents information" acquired="False">
+      <permission-role>Authenticated</permission-role>
+    </permission-map>
+    <permission-map name="Delete objects" acquired="False" />
+    <permission-map name="List folder contents" acquired="False">
+      <permission-role>Authenticated</permission-role>
+    </permission-map>
+    <permission-map name="Modify portal content" acquired="True"/>
+    <permission-map name="View" acquired="False">
+      <permission-role>Authenticated</permission-role>
+    </permission-map>
   </state>
 
   <variable variable_id="action" for_catalog="False" for_status="True" update_always="True">

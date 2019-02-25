@@ -42,32 +42,65 @@
 
 
   <!-- *** CUSTOM WORKFLOWS *** -->
+
   <!-- Workflow: senaite_setup_workflow
-  Workflow for setup folder. A copy of senaite_one_state_workflow, but with
-  permission "Modify portal content" only granted to "LabManager" and "Manager".
-  Hence, all objects contained in setup folder will acquire same roles for
-  "Modify portal content" except for those types bound to custom workflows -->
+  A "one-state workflow" for setup folder.
+  A copy of senaite_one_state_workflow, but:
+   - "Access contents folder" granted to "Authenticated"
+   - "Delete objects" not granted to anyone
+   - "List folder contents" granted to "Authenticated"
+   - "Modify portal content" granted to "LabManager" and "Manager" only
+   - "View" granted to "Authenticated"
+  -->
   <object name="senaite_setup_workflow" meta_type="Workflow"/>
 
+  <!-- Workflow: senaite_clients_workflow
+  A "one-state workflow" for clients folder (ClientFolder type).
+  A copy of senaite_one_state_workflow, but:
+   - "Access contents folder" granted to "Authenticated"
+   - "Delete objects" not granted to anyone
+   - "List folder contents" granted to "Authenticated"
+   - "View" granted to "Authenticated"
+  -->
+  <object name="senaite_clients_workflow" meta_type="Workflow"/>
+
   <!-- Workflow: senaite_laboratory_workflow
-  Workflow for setup/laboratory. A copy of senaite_one_state_workflow that
-  grants "Modify portal content" permission to LabClerk. Since Laboratory type
-  is contained inside setup, this workflow acquires the permissions set in
-  senaite_setup_workflow -->
+  A "one-state workflow" for setup/laboratory folder
+  A copy of one_state_workflow, but:
+   - Grants "Modify portal content" permission to LabClerk
+  -->
   <object name="senaite_laboratory_workflow" meta_type="Workflow" />
 
   <!-- Workflow: senaite_labcontact_workflow
-  Workflow for LabContact type. Is a "deactivable type" workflow meant to
-  protect access to sensible data from Laboratory Contacts by preventing users
-  other than LabClerk, LabMan and Manager to access to personal information -->
+  A "deactivable type" workflow for LabContact type.
+  A copy of "deactivable_type_workflow", but:
+   - "Modify portal content" granted to LabClerk, LabManager and Manager only
+   - "View" granted to LabClerk, LabManager and Manager only
+  -->
   <object name="senaite_labcontact_workflow" meta_type="Workflow" />
 
   <!-- Workflow: senaite_client_workflow
-  Workflow for client objects. This workflow deals with the fact that client
-  contacts can only access to their corresponding Client objects. This workflow
-  modifies the permission maps in accordance taking into consideration that the
-  Client contacts have the role Owner for the Client they belong to. -->
+  A "deactivable type" workflow for Client type.
+  This workflow deals with the fact that client contacts can only access to
+  their corresponding Client objects. This workflow modifies the permission maps
+  in accordance taking into consideration that the Client contacts have the role
+  Owner for the Client they belong to.
+  A copy of "deactivable_type_workflow", but:
+   - "Access contents folder" not granted to Client role
+   - "List folder contents" not granted to Client role
+   - "View" not granted to Client role
+  -->
   <object name="senaite_client_workflow" meta_type="Workflow"/>
+
+  <!-- Workflow: senaite_labcontact_workflow
+  A "deactivable type" workflow for Contact (from client) type. A workflow meant
+  to protect access to sensible data of Client contacts by preventing
+  users other than LabClerk, LabManager, Manager and Owner to access to
+  personal information
+  A copy of "deactivable_type_workflow", but:
+   - "View" granted to "LabClerk", "LabManager", "Manager" and "Owner" roles.
+  -->
+  <object name="senaite_clientcontact_workflow" meta_type="Workflow" />
 
   <!-- Workflow: senaite_supplyorder_workflow
   Workflow for Supply Orders. States "dispatched", "pending", "cancelled" -->
@@ -195,9 +228,6 @@
       <bound-workflow workflow_id="senaite_one_state_workflow"/>
     </type>
     <type type_id="BatchFolder">
-      <bound-workflow workflow_id="senaite_one_state_workflow"/>
-    </type>
-    <type type_id="ClientFolder">
       <bound-workflow workflow_id="senaite_one_state_workflow"/>
     </type>
     <type type_id="InstrumentCalibration">
@@ -339,9 +369,6 @@
     </type>
 
     <!-- Other content types -->
-    <type type_id="Contact">
-      <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
-    </type>
     <type type_id="Method">
       <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
     </type>
@@ -367,15 +394,6 @@
     <!--
     *** BINDINGS TO CUSTOM WORKFLOWS ***
     -->
-    <type type_id="BikaSetup">
-      <bound-workflow workflow_id="senaite_setup_workflow"/>
-    </type>
-    <type type_id="Laboratory">
-      <bound-workflow workflow_id="senaite_laboratory_workflow"/>
-    </type>
-    <type type_id="LabContact">
-      <bound-workflow workflow_id="senaite_labcontact_workflow"/>
-    </type>
     <type type_id="AnalysisRequest">
       <bound-workflow workflow_id="bika_ar_workflow"/>
     </type>
@@ -388,8 +406,23 @@
     <type type_id="Batch">
       <bound-workflow workflow_id="bika_batch_workflow"/>
     </type>
+    <type type_id="BikaSetup">
+      <bound-workflow workflow_id="senaite_setup_workflow"/>
+    </type>
     <type type_id="Client">
       <bound-workflow workflow_id="senaite_client_workflow"/>
+    </type>
+    <type type_id="ClientFolder">
+      <bound-workflow workflow_id="senaite_clients_workflow"/>
+    </type>
+    <type type_id="Contact">
+      <bound-workflow workflow_id="senaite_clientcontact_workflow"/>
+    </type>
+    <type type_id="LabContact">
+      <bound-workflow workflow_id="senaite_labcontact_workflow"/>
+    </type>
+    <type type_id="Laboratory">
+      <bound-workflow workflow_id="senaite_laboratory_workflow"/>
     </type>
     <type type_id="ReferenceSample">
       <bound-workflow workflow_id="bika_referencesample_workflow"/>

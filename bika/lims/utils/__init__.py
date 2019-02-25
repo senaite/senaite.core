@@ -277,22 +277,9 @@ def sortable_title(portal, title):
             break
     return sortabletitle
 
-
+# TODO Remove this function
 def logged_in_client(context, member=None):
-    if not member:
-        membership_tool = getToolByName(context, 'portal_membership')
-        member = membership_tool.getAuthenticatedMember()
-
-    client = None
-    groups_tool = context.portal_groups
-    member_groups = [groups_tool.getGroupById(group.id).getGroupName()
-                     for group in groups_tool.getGroupsByUserId(member.id)]
-
-    if 'Clients' in member_groups:
-        for obj in context.clients.objectValues("Client"):
-            if member.id in obj.users_with_local_role('Owner'):
-                client = obj
-    return client
+    return api.get_current_client()
 
 # TODO: This function dismiss other state_variables than review_state (e.g. inactive_state)
 def changeWorkflowState(content, wf_id, state_id, acquire_permissions=False,

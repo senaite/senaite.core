@@ -16,7 +16,9 @@
 
   Almost all the permission maps here are the same as in rolemap.xml, but
   without Client role: allowing Owner but not Client has the following effect:
-  contacts only have permissions granted for the client they belong to
+  contacts only have permissions granted for the client they belong to.
+
+  Note this workflow acquires permissions settings from `senaite_clients_workflow`
   -->
 
   <!-- PERMISSIONS -->
@@ -53,7 +55,7 @@
       <permission-role>SamplingCoordinator</permission-role>
       <permission-role>Verifier</permission-role>
     </permission-map>
-    <permission-map name="Delete objects" acquired="False" />
+    <permission-map name="Delete objects" acquired="True" />
     <permission-map name="List folder contents" acquired="False">
       <!-- Same as in rolemap.xml, but without Client -->
       <permission-role>Analyst</permission-role>

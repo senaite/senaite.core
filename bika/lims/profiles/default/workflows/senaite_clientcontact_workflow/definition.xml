@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <dc-workflow xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-             workflow_id="senaite_cancellable_type_workflow"
-             title="Senaite cancellable type Workflow"
+             workflow_id="senaite_clientcontact_workflow"
+             title="Senaite Contact (from Client) type Workflow"
              description=""
              state_variable="review_state"
              initial_state="active"
@@ -9,30 +9,13 @@
              i18n:domain="senaite.core">
 
   <!--
-  Basic workflow for senaite content types that implement ICancellable.
-  Deletion of objects is not allowed, regardless of the role. Nevertheless, the
-  workflow provides the transitions "cancel" and "reinstate".
+  A "deactivable type" workflow for client/contact items
+  Almost a copy of "deactivable_type_workflow", but:
+   - Prevents users other than LabClerk, LabManager, Manager and Owner (all
+     client contacts have the role "Owner" for the client the current contact
+     belongs to) to access to personal information
 
-  IMPORTANT(1)
-  Some types can live either inside setup or inside client (e.g. Profiles,
-  Templates, Sample Points, Sample Types, etc.). Since all the permissions set
-  here (except "Delete objects") are acquired=True, they will acquire the roles
-  from their parent. Hence, if the container of an object is a Client object,
-  the permissions set at Client level will apply.
-
-  IMPORTANT(2)
-  Some types may require changes to this workflow. E.g.:
-
-    - By default, LabClerk cannot cancel/reinstate an object unless he/she is
-      the Owner. This restriction maybe should not apply for objects like
-      InvoiceBatch.
-
-  So, instead of hacking here (changing permissions wide or explicitly define
-  them in setuphandlers, etc.), please create a new workflow using this one as
-  a template and bind the type that does not fit 100% well to the new workflow
-  instead!
-
-  Follow this advice if you want the constellations to be happy. Thanks.
+  Note this workflow acquires permissions settings from `senaite_client_workflow`
   -->
 
   <!-- PERMISSIONS -->
@@ -44,53 +27,70 @@
   <permission>View</permission>
 
   <!-- Senaite permissions for transitions (govern guards) -->
-  <permission>senaite.core: Transition: Reinstate</permission>
-  <permission>senaite.core: Transition: Cancel</permission>
+  <permission>senaite.core: Transition: Activate</permission>
+  <permission>senaite.core: Transition: Deactivate</permission>
 
   <!-- State: active -->
   <state state_id="active" title="Active" i18n:attributes="title">
-    <exit-transition transition_id="cancel" />
+    <exit-transition transition_id="deactivate" />
 
     <!-- Transition permissions -->
-    <permission-map name="senaite.core: Transition: Cancel" acquired="True" />
+    <permission-map name="senaite.core: Transition: Deactivate" acquired="True" />
 
     <!-- Plone's permissions -->
     <permission-map name="Access contents information" acquired="True" />
     <permission-map name="Delete objects" acquired="True" />
-    <permission-map name="List folder contents" acquired="True" />
+    <!-- No contents to list inside -->
+    <permission-map name="List folder contents" acquired="False" />
     <permission-map name="Modify portal content" acquired="True" />
-    <permission-map name="View" acquired="True" />
+    <permission-map name="View" acquired="False">
+      <!-- We don't want users other than lab personnel and from same client
+      to access to personal information from this client contact -->
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+    </permission-map>
   </state>
 
-  <!-- State: cancelled -->
-  <state state_id="cancelled" title="Cancelled" i18n:attributes="title">
-    <exit-transition transition_id="reinstate" />
+  <!-- State: inactive -->
+  <state state_id="inactive" title="Inactive" i18n:attributes="title">
+    <exit-transition transition_id="activate" />
 
     <!-- Transition permissions -->
-    <permission-map name="senaite.core: Transition: Reinstate" acquired="True" />
+    <permission-map name="senaite.core: Transition: Activate" acquired="True" />
 
     <!-- Plone's permissions -->
+    <!-- TODO Security: Access contents info only to LabClerk + LabMan? -->
     <permission-map name="Access contents information" acquired="True" />
     <permission-map name="Delete objects" acquired="True" />
-    <permission-map name="List folder contents" acquired="True" />
+    <!-- No contents to list inside -->
+    <permission-map name="List folder contents" acquired="False" />
     <permission-map name="Modify portal content" acquired="True" />
-    <permission-map name="View" acquired="True" />
+    <permission-map name="View" acquired="False">
+      <!-- We don't want users other than lab personnel and from same client
+      to access to personal information from this client contact -->
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+    </permission-map>
   </state>
 
-  <!-- Transition: reinstate -->
-  <transition transition_id="reinstate" title="Reinstate" new_state="active" trigger="USER" before_script="" after_script="" i18n:attributes="title">
-    <action url="" category="workflow" icon="">Reinstate</action>
+  <!-- Transition: activate -->
+  <transition transition_id="activate" title="Activate" new_state="active" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Activate</action>
     <guard>
-      <guard-permission>senaite.core: Transition: Reinstate</guard-permission>
-      <guard-expression>python:here.guard_handler("reinstate")</guard-expression>
+      <guard-permission>senaite.core: Transition: Activate</guard-permission>
+      <guard-expression>python:here.guard_handler("activate")</guard-expression>
     </guard>
   </transition>
-  <!-- Transition: cancel -->
-  <transition transition_id="cancel" title="Cancel" new_state="cancelled" trigger="USER" before_script="" after_script="" i18n:attributes="title">
-    <action url="" category="workflow" icon="">Cancel</action>
+  <!-- Transition: deactivate -->
+  <transition transition_id="deactivate" title="Deactivate" new_state="inactive" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Deactivate</action>
     <guard>
-      <guard-permission>senaite.core: Transition: Cancel</guard-permission>
-      <guard-expression>python:here.guard_handler("cancel")</guard-expression>
+      <guard-permission>senaite.core: Transition: Deactivate</guard-permission>
+      <guard-expression>python:here.guard_handler("deactivate")</guard-expression>
     </guard>
   </transition>
 

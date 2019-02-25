@@ -10,10 +10,12 @@
 
   <!--
   A one-state (active) workflow for setup.
-  Mostly a copy of senaite_one_state_workflow, but:
-   - "Modify portal content" granted to "LabManager" and "Manager" only
+
+  A copy of senaite_one_state_workflow, but:
    - "Access contents folder" granted to "Authenticated"
+   - "Delete objects" not granted to anyone
    - "List folder contents" granted to "Authenticated"
+   - "Modify portal content" granted to "LabManager" and "Manager" only
    - "View" granted to "Authenticated"
   -->
 
@@ -40,9 +42,6 @@
       <permission-role>Manager</permission-role>
     </permission-map>
     <permission-map name="View" acquired="False">
-      <!-- "View" permission for "Authenticated" role needs to be granted to
-       allow access to children objects. Otherwise, clients and other personnel
-       will not be able to query for e.g. Sample Types -->
       <permission-role>Authenticated</permission-role>
     </permission-map>
   </state>

@@ -10,8 +10,10 @@
 
   <!--
   A one-state (active) workflow for setup/laboratory.
-  Almost a copy of one_state_workflow, but:
+  A copy of one_state_workflow, but:
    - Grants "Modify portal content" permission to LabClerk
+
+  Note this workflow acquires permissions settings from `senaite_setup_workflow`
   -->
 
   <permission>Access contents information</permission>
@@ -24,7 +26,7 @@
   <state state_id="active" title="Active" i18n:attributes="title">
     <exit-transition transition_id="" />
     <permission-map name="Access contents information" acquired="True" />
-    <permission-map name="Delete objects" acquired="False" />
+    <permission-map name="Delete objects" acquired="True" />
     <permission-map name="List folder contents" acquired="True" />
     <permission-map name="Modify portal content" acquired="True">
       <!-- With acquire=True, we add LabClerk to roles acquired from parent -->
