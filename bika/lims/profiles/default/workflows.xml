@@ -44,7 +44,7 @@
   <!-- *** CUSTOM WORKFLOWS *** -->
 
   <!-- Workflow: senaite_setup_workflow
-  A "one-state workflow" for setup folder.
+  A "one-state workflow" for setup and similar folders (e.g. methods)
   A copy of senaite_one_state_workflow, but:
    - "Access contents folder" granted to "Authenticated"
    - "Delete objects" not granted to anyone
@@ -252,9 +252,6 @@
     <type type_id="Invoice">
       <bound-workflow workflow_id="senaite_one_state_workflow"/>
     </type>
-    <type type_id="Methods">
-      <bound-workflow workflow_id="senaite_one_state_workflow"/>
-    </type>
     <type type_id="PricelistFolder">
       <bound-workflow workflow_id="senaite_one_state_workflow"/>
     </type>
@@ -433,6 +430,9 @@
     </type>
     <type type_id="Laboratory">
       <bound-workflow workflow_id="senaite_laboratory_workflow"/>
+    </type>
+    <type type_id="Methods">
+      <bound-workflow workflow_id="senaite_setup_workflow"/>
     </type>
     <type type_id="ReferenceSample">
       <bound-workflow workflow_id="bika_referencesample_workflow"/>

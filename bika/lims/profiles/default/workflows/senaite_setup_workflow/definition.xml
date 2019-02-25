@@ -9,7 +9,7 @@
              i18n:domain="senaite.core">
 
   <!--
-  A one-state (active) workflow for setup.
+  A one-state (active) workflow for setup and similar folders (e.g. methods).
 
   A copy of senaite_one_state_workflow, but:
    - "Access contents folder" granted to "Authenticated"

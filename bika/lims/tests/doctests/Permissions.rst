@@ -679,11 +679,6 @@ Methods describe the sampling methods of the lab.
 
 Methods should be viewable by unauthenticated users for information purpose.
 
-.. Note::
-
-    The permissions of the `methods` folder get explicitly set by the
-    `setuphandler` during the installation. Thus, the permissions deviate from
-    the assigned workflow.
 
 Test Workflow
 .............
@@ -693,19 +688,20 @@ A `method` lives in the `methods` folder::
     >>> methods = portal.methods
     >>> method = create(methods, "Method")
 
-The `methods` folder follows the `senaite_one_state_workflow` and is initially in
+The `methods` folder follows the `senaite_setup_workflow` and is initially in
 the `active` state::
 
     >>> get_workflows_for(methods)
-    ('senaite_one_state_workflow',)
+    ('senaite_setup_workflow',)
 
     >>> get_workflow_status_of(methods)
     'active'
 
-A `method` follows the `bika_inactive_workflow` and has an initial state of `active`::
+A `method` follows the `senaite_deactivable_type_workflow` and has an initial
+state of `active`::
 
     >>> get_workflows_for(method)
-    ('senaite_one_state_workflow', 'bika_inactive_workflow')
+    ('senaite_deactivable_type_workflow',)
 
     >>> get_workflow_status_of(methods)
     'active'
@@ -713,53 +709,45 @@ A `method` follows the `bika_inactive_workflow` and has an initial state of `act
 Test Permissions
 ................
 
-.. Note::
-
-    A method should have the its own defined roles for a certain permssion from
-    the `bika_inactive_workflow` and the inherited roles from its parent folder,
-    which got customized in the `setuphandler` explicitly. Therefore, please
-    refer to both, the assigned workflow and the setuphandler for the merged set
-    of alloed roles for a permission.
-
 Exactly these roles have should have a `View` permission::
 
     >>> get_roles_for_permission("View", methods)
-    ['Authenticated', 'Manager', 'Member']
+    ['Authenticated']
 
     >>> get_roles_for_permission("View", method)
-    ['Analyst', 'Authenticated', 'LabClerk', 'LabManager', 'Manager', 'Member', 'Owner']
+    ['Authenticated']
 
 Exactly these roles have should have the `Access contents information` permission::
 
     >>> get_roles_for_permission("Access contents information", methods)
-    ['Authenticated', 'Manager', 'Member']
+    ['Authenticated']
 
     >>> get_roles_for_permission("Access contents information", method)
-    ['Analyst', 'Authenticated', 'LabClerk', 'LabManager', 'Manager', 'Member', 'Owner']
+    ['Authenticated']
 
 Exactly these roles have should have the `List folder contents` permission::
 
     >>> get_roles_for_permission("List folder contents", methods)
-    ['Authenticated', 'Member']
+    ['Authenticated']
 
     >>> get_roles_for_permission("List folder contents", method)
-    ['Analyst', 'Authenticated', 'LabClerk', 'LabManager', 'Manager', 'Member', 'Owner']
+    ['Authenticated']
 
 Exactly these roles have should have the `Modify portal content` permission::
 
     >>> get_roles_for_permission("Modify portal content", methods)
-    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner']
+    ['LabManager', 'Manager']
 
     >>> get_roles_for_permission("Modify portal content", method)
-    ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner']
+    ['LabManager', 'Manager']
 
 Exactly these roles have should have the `Delete objects` permission::
 
     >>> get_roles_for_permission("Delete objects", methods)
-    ['LabManager', 'Manager']
+    []
 
     >>> get_roles_for_permission("Delete objects", method)
-    ['Manager']
+    []
 
 Anonymous Browser Test
 ......................
