@@ -155,11 +155,6 @@
 <permission id="bika.lims.Unassign" title="BIKA: Unassign analyses"/>
 
 
-# Manage Supply Orders
-# ----------------------------------------------
-# Allows access to 'Supply Orders' tab in Client context
-<permission id="bika.lims.ManageSupplyOrders" title="BIKA: Manage Supply Orders"/>
-
 # Batch specific permissions
 # ----------------------------------------------
 <permission id="bika.lims.EditBatch" title="BIKA: Edit Batch"/>

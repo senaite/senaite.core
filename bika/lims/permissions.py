@@ -177,11 +177,6 @@ Unassign = 'BIKA: Unassign analyses'
 ViewLogTab = 'BIKA: View Log Tab'
 
 
-# Manage Supply Orders
-# ----------------------------------------------
-# Allows access to 'Supply Orders' tab in Client context
-ManageSupplyOrders = 'BIKA: Manage Supply Orders'
-
 # Batch-specific permissions
 # ----------------------------------------------
 EditBatch = 'BIKA: Edit Batch'
