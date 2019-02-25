@@ -605,7 +605,7 @@ Unless we filter it out manually::
 
 Or provide a correct query::
 
-    >>> results = api.search({"portal_type": "AnalysisCategory", "id": "analysiscategory-1", "is_active": True})
+    >>> results = api.search({"portal_type": "AnalysisCategory", "id": "analysiscategory-1", "is_active": False})
     >>> len(results)
     1
 
