@@ -599,8 +599,8 @@ class ActionHandlerPool(object):
                 # Reindex all indexes!
                 return []
             idxs.extend(obj_idxs)
-        # Always reindex review_state
-        idxs.append("review_state")
+        # Always reindex review_state and is_active
+        idxs.extend(["review_state", "is_active"])
         return list(set(idxs))
 
 

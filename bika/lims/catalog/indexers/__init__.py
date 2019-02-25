@@ -5,9 +5,11 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
+from Products.Archetypes.interfaces import IBaseObject
 from bika.lims import api
 from bika.lims.interfaces import ICancellable, IDeactivable
 from plone.indexer import indexer
+
 
 @indexer(ICancellable)
 def cancellation_state(instance):
@@ -27,15 +29,7 @@ def inactive_state(instance):
     return "active"
 
 
-@indexer(ICancellable)
-def is_active(instance):
-    """Returns False if the status of the instance is 'cancelled' or 'inactive'.
-    Otherwise returns True
-    """
-    return api.get_review_status(instance) not in ["cancelled", "inactive"]
-
-
-@indexer(IDeactivable)
+@indexer(IBaseObject)
 def is_active(instance):
     """Returns False if the status of the instance is 'cancelled' or 'inactive'.
     Otherwise returns True
