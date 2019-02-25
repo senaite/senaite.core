@@ -146,12 +146,9 @@ ADD_CONTENT_PERMISSIONS = {
 ManageBika = 'BIKA: Manage Bika'
 DispatchOrder = 'BIKA: Dispatch Order'
 ManageAnalysisRequests = 'BIKA: Manage Analysis Requests'
-ManageSamples = 'BIKA: Manage Samples'
 ManageSuppliers = 'BIKA: Manage Reference Suppliers'
 ManageReference = 'BIKA: Manage Reference'
 
-# This allows to edit all client fields, and perform admin tasks on Clients.
-ManageClients = 'BIKA: Manage Clients'
 
 # this is for creating and transitioning worksheets
 ManageWorksheets = 'BIKA: Manage Worksheets'
@@ -260,11 +257,9 @@ def setup_permissions(portal):
     mp(DispatchOrder, ['Manager', 'LabManager', 'LabClerk'], 1)
     mp(ManageAnalysisRequests, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner', 'RegulatoryInspector', 'SamplingCoordinator'], 1)
     mp(ManageBika, ['Manager', 'LabManager'], 1)
-    mp(ManageClients, ['Manager', 'LabManager', 'LabClerk'], 1)
     mp(ManageLoginDetails, ['Manager', 'LabManager'], 1)
     mp(ManageReference, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
     mp(ManageSuppliers, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
-    mp(ManageSamples, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner', 'RegulatoryInspector', 'SamplingCoordinator'], 1)
     mp(ManageWorksheets, ['Manager', 'LabManager'], 1)
 
     mp(CancelAndReinstate, ['Manager', 'LabManager'], 0)

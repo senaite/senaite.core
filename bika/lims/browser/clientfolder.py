@@ -8,12 +8,13 @@
 import collections
 import json
 
-from bika.lims import bikaMessageFactory as _
+from Products.CMFCore.permissions import ModifyPortalContent
 from bika.lims import api, logger
+from bika.lims import bikaMessageFactory as _
 from bika.lims.browser import BrowserView
 from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims.permissions import (AddClient, ManageAnalysisRequests,
-                                   ManageClients)
+from bika.lims.permissions import AddClient
+from bika.lims.permissions import ManageAnalysisRequests
 from bika.lims.utils import (check_permission, get_email_link, get_link,
                              get_registry_value)
 from plone import protect
@@ -126,8 +127,9 @@ class ClientFolderContentsView(BikaListingView):
             }
 
         # Display a checkbox next to each client in the list if the user has
-        # rights for ManageClients
-        self.show_select_column = check_permission(ManageClients, self.context)
+        # rights for ModifyPortalContent
+        self.show_select_column = check_permission(ModifyPortalContent,
+                                                   self.context)
 
     def isItemAllowed(self, obj):
         """Returns true if the current user has Manage AR rights for the

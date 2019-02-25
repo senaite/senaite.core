@@ -18,12 +18,12 @@ from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.api import is_active
-from bika.lims.config import ManageClients
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.person import Person
 from bika.lims.interfaces import IContact, IClient, IDeactivable
 from plone import api
 from zope.interface import implements
+from Products.CMFCore.permissions import ModifyPortalContent
 
 ACTIVE_STATES = ["active"]
 
@@ -92,7 +92,7 @@ class Contact(Person):
         """
         return is_active(self)
 
-    security.declareProtected(ManageClients, 'getUser')
+    security.declareProtected(ModifyPortalContent, 'getUser')
     def getUser(self):
         """Returns the linked Plone User or None
         """
@@ -102,7 +102,7 @@ class Contact(Person):
         user = api.user.get(userid=username)
         return user
 
-    security.declareProtected(ManageClients, 'setUser')
+    security.declareProtected(ModifyPortalContent, 'setUser')
     def setUser(self, user_or_username):
         """Link the user to the Contact
 
@@ -128,7 +128,7 @@ class Contact(Person):
         # Link the User
         return self._linkUser(user)
 
-    security.declareProtected(ManageClients, 'unlinkUser')
+    security.declareProtected(ModifyPortalContent, 'unlinkUser')
     def unlinkUser(self, delete=False):
         """Unlink the user to the Contact
 
@@ -153,7 +153,7 @@ class Contact(Person):
             return True
         return False
 
-    security.declareProtected(ManageClients, 'hasUser')
+    security.declareProtected(ModifyPortalContent, 'hasUser')
     def hasUser(self):
         """Check if Contact has a linked a System User
         """
