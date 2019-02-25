@@ -85,12 +85,6 @@
 
 
     <!-- SENAITE PERMISSIONS -->
-    <!-- View permissions (for /base_view and /view routes) -->
-    <permission name="senaite.core: View Setup" acquire="False">
-      <role name="LabClerk"/>
-      <role name="LabManager"/>
-      <role name="Manager"/>
-    </permission>
 
     <!-- Transition permissions -->
     <permission name="senaite.core: Transition: Deactivate" acquire="False">

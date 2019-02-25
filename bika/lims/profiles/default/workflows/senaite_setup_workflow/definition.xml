@@ -24,9 +24,6 @@
   <permission>Modify portal content</permission>
   <permission>View</permission>
 
-  <!-- SENAITE permissions -->
-  <permission>senaite.core: View Setup</permission>
-
   <!-- State: active -->
   <state state_id="active" title="Active" i18n:attributes="title">
     <exit-transition transition_id="" />
@@ -48,9 +45,6 @@
        will not be able to query for e.g. Sample Types -->
       <permission-role>Authenticated</permission-role>
     </permission-map>
-
-    <!-- SENAITE Permissions -->
-    <permission-map name="senaite.core: View Setup" acquired="True"/>
   </state>
 
   <variable variable_id="action" for_catalog="False" for_status="True" update_always="True">

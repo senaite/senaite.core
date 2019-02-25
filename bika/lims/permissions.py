@@ -42,10 +42,6 @@ TransitionDeactivate="senaite.core: Transition: Deactivate"
 TransitionReinstate="senaite.core: Transition: Reinstate"
 TransitionCancel="senaite.core: Transition: Cancel"
 
-# View permissions
-# ----------------
-ViewSetup="senaite.core: View Setup"
-
 
 
 # AR Permissions

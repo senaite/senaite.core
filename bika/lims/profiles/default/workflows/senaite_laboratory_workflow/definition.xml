@@ -30,6 +30,7 @@
       <!-- With acquire=True, we add LabClerk to roles acquired from parent -->
       <permission-role>LabClerk</permission-role>
     </permission-map>
+    <permission-map name="View" acquired="True" />
   </state>
 
   <variable variable_id="action" for_catalog="False" for_status="True" update_always="True">

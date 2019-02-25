@@ -107,11 +107,6 @@ Exactly these roles have should have a `View` permission::
     >>> get_roles_for_permission("View", bika_setup)
     ['Authenticated']
 
-Exactly these roles have should have a `View Setup` permission::
-
-    >>> get_roles_for_permission("senaite.core: View Setup", bika_setup)
-    ['LabClerk', 'LabManager', 'Manager']
-
 Exactly these roles have should have the `Access contents information` permission::
 
     >>> get_roles_for_permission("Access contents information", bika_setup)
