@@ -160,14 +160,6 @@ schema = BikaFolderSchema.copy() + Schema((
         )
     ),
     BooleanField(
-        'AllowClerksToEditClients',
-        schemata="Security",
-        default=False,
-        widget=BooleanWidget(
-            label=_("Allow Lab Clerks to create and edit clients"),
-        )
-    ),
-    BooleanField(
         'RestrictWorksheetUsersAccess',
         schemata="Security",
         default=True,
