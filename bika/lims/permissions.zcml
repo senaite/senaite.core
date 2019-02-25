@@ -123,8 +123,6 @@
 # ==================
 # For workflow transitions:
 # -------------------------
-<permission id="bika.lims.DisposeSample" title="BIKA: Dispose Sample"/>
-
 <permission id="bika.lims.ImportAnalysis" title="BIKA: Import Analysis"/>
 <permission id="bika.lims.RejectWorksheet" title="BIKA: Reject Worksheet"/>
 
