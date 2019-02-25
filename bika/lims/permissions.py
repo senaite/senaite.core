@@ -161,7 +161,6 @@ AccessJSONAPI = 'BIKA: Access JSON API'
 
 # New or changed permissions:
 # ---------------------------
-EditSample = 'BIKA: Edit Sample'
 ManageInvoices = 'BIKA: Manage Invoices'
 ViewResults = 'BIKA: View Results'
 EditResults = 'BIKA: Edit Results'
@@ -259,7 +258,6 @@ def setup_permissions(portal):
 
     mp(CancelAndReinstate, ['Manager', 'LabManager'], 0)
     mp(ViewRetractedAnalyses, ['Manager', 'LabManager', 'LabClerk', 'Analyst', ], 0)
-    mp(EditSample, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner', 'SamplingCoordinator'], 1)
     mp(EditWorksheet, ['Manager', 'LabManager', 'Analyst'], 1)
     mp(ManageInvoices, ['Manager', 'LabManager', 'Owner'], 1)
     mp(ViewResults, ['Manager', 'LabManager', 'Analyst', 'Sampler', 'RegulatoryInspector', 'SamplingCoordinator'], 1)
