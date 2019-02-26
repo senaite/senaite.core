@@ -283,19 +283,17 @@ def changeWorkflowState(content, wf_id, state_id, **kw):
     @return: True if succeed. Otherwise, False
     """
     portal_workflow = api.get_tool("portal_workflow")
-    workflow = api.get_workflows_for(content)
-    workflow = filter(lambda wf: wf.getId() == wf_id, workflow)
+    workflow = portal_workflow.getWorkflowById(wf_id)
     if not workflow:
         logger.error("%s: Cannot find workflow id %s" % (content, wf_id))
         return False
 
-    workflow = workflow[0]
     wf_state = {
         'action': kw.get("action", None),
         'actor': kw.get("actor", api.get_current_user().id),
         'comments': "Setting state to %s" % state_id,
         'review_state': state_id,
-        'time': DateTime(),
+        'time': DateTime()
     }
 
     # Change status and update permissions
