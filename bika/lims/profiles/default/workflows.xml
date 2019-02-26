@@ -123,6 +123,17 @@
   -->
   <object name="senaite_invoices_workflow" meta_type="Workflow" />
 
+  <!-- workflow: senaite_referencesamples_workflow
+  One-state workflow for reference samples base folder, that does not allow
+  access to users other than lab personnel.
+  A copy of one-state workflow, but:
+  - "Access content information" granted to lab personnel only
+  - "List folder contents" granted to lab personnel only
+  - "Modify portal content" granted to lab personnel only
+  - "View" granted to lab personnel only
+  -->
+  <object name="senaite_referencesamples_workflow" meta_type="Workflow" />
+
   <!-- Workflow: senaite_supplyorder_workflow
   Workflow for Supply Orders. States "dispatched", "pending", "cancelled" -->
   <object name="senaite_supplyorder_workflow" meta_type="Workflow"/>
@@ -271,9 +282,6 @@
       <bound-workflow workflow_id="senaite_one_state_workflow"/>
     </type>
     <type type_id="PricelistFolder">
-      <bound-workflow workflow_id="senaite_one_state_workflow"/>
-    </type>
-    <type type_id="ReferenceSamplesFolder">
       <bound-workflow workflow_id="senaite_one_state_workflow"/>
     </type>
     <type type_id="ReportFolder">
@@ -454,6 +462,9 @@
     </type>
     <type type_id="ReferenceSample">
       <bound-workflow workflow_id="bika_referencesample_workflow"/>
+    </type>
+    <type type_id="ReferenceSamplesFolder">
+      <bound-workflow workflow_id="senaite_referencesamples_workflow"/>
     </type>
     <type type_id="SupplyOrder">
       <bound-workflow workflow_id="senaite_supplyorder_workflow"/>
