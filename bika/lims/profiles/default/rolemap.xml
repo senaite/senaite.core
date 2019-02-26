@@ -109,6 +109,16 @@
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
+    <permission name="senaite.core: Transition: Close" acquire="False">
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="senaite.core: Transition: Reopen" acquire="False">
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
 
     <!-- Transition permissions (Supply Orders) -->
     <permission name="senaite.core: Transition: Dispatch Order" acquire="False">

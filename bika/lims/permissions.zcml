@@ -23,6 +23,25 @@
 # SENAITE CORE Permissions
 # ------------------------
 
+# Transition Permissions
+# ----------------------
+<permission id="senaite.core.permissions.TransitionActivate" title="senaite.core: Transition: Activate"/>
+<permission id="senaite.core.permissions.TransitionDeactivate" title="senaite.core: Transition: Deactivate"/>
+<permission id="senaite.core.permissions.TransitionReinstate" title="senaite.core: Transition: Reinstate"/>
+<permission id="senaite.core.permissions.TransitionCancel" title="senaite.core: Transition: Cancel"/>
+<permission id="senaite.core.permissions.TransitionClose" title="senaite.core: Transition: Close"/>
+<permission id="senaite.core.permissions.TransitionReopen" title="senaite.core: Transition: Reopen"/>
+
+# Transition Permissions (Analysis)
+<permission id="senaite.core.permissions.TransitionVerify" title="senaite.core: Transition: Verify"/>
+
+# Transition Permissions (Supply Order)
+<permission id="senaite.core.permissions.TransitionDispatchOrder" title="senaite.core: Transition: Dispatch Order"/>
+
+
+
+
+
 # AR Field Permissions
 <permission id="senaite.core.permissions.FieldEditBatch" title="senaite.core: Field: Edit Batch"/>
 <permission id="senaite.core.permissions.FieldEditClient" title="senaite.core: Field: Edit Client"/>
@@ -73,17 +92,6 @@
 <permission id="senaite.core.permissions.FieldEditAnalysisResult" title="senaite.core: Field: Edit Analysis Result"/>
 <permission id="senaite.core.permissions.FieldEditAnalysisRemarks" title="senaite.core: Field: Edit Analysis Remarks"/>
 
-# Analysis Transition Permissions
-<permission id="senaite.core.permissions.TransitionVerify" title="senaite.core: Transition: Verify"/>
-
-# Generic Transition Permissions
-<permission id="senaite.core.permissions.TransitionActivate" title="senaite.core: Transition: Activate"/>
-<permission id="senaite.core.permissions.TransitionDeactivate" title="senaite.core: Transition: Deactivate"/>
-<permission id="senaite.core.permissions.TransitionReinstate" title="senaite.core: Transition: Reinstate"/>
-<permission id="senaite.core.permissions.TransitionCancel" title="senaite.core: Transition: Cancel"/>
-
-# Supply Order Transition Permissions
-<permission id="senaite.core.permissions.DispatchOrder" title="senaite.core: Transition: Dispatch Order"/>
 
 
 # *** OBSOLETE PERMISSIONS START BELOW ***
@@ -158,8 +166,6 @@
 
 # Batch specific permissions
 # ----------------------------------------------
-<permission id="bika.lims.CloseBatch" title="BIKA: Close Batch"/>
-<permission id="bika.lims.ReopenBatch" title="BIKA: Reopen Batch"/>
 
 # SamplingRound specific permissions
 # ----------------------------------------------

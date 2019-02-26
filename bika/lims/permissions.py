@@ -41,6 +41,8 @@ TransitionActivate="senaite.core: Transition: Activate"
 TransitionDeactivate="senaite.core: Transition: Deactivate"
 TransitionReinstate="senaite.core: Transition: Reinstate"
 TransitionCancel="senaite.core: Transition: Cancel"
+Close = 'senaite.core: Transition: Close'
+Reopen = 'senaite.core: Transition: Reopen'
 
 # Transition permissions (Supply Order)
 # -------------------------------------
@@ -180,10 +182,6 @@ Unassign = 'BIKA: Unassign analyses'
 ViewLogTab = 'BIKA: View Log Tab'
 
 
-# Batch-specific permissions
-# ----------------------------------------------
-CloseBatch = 'BIKA: Close Batch'
-ReopenBatch = 'BIKA: Reopen Batch'
 
 # Sampling Round permissions
 # --------------------------
