@@ -4,7 +4,7 @@
 #
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
-
+from Products.CMFCore.permissions import ModifyPortalContent
 from bika.lims import bikaMessageFactory as _
 from bika.lims import api
 from bika.lims.utils import t
@@ -30,7 +30,7 @@ class InvoiceFolderContentsView(BikaListingView):
 
         self.show_select_row = False
         self.show_select_all_checkbox = False
-        self.show_select_column = False
+        self.show_select_column = True
         self.pagesize = 25
         request.set('disable_border', 1)
         self.columns = {
@@ -62,7 +62,7 @@ class InvoiceFolderContentsView(BikaListingView):
                 'url': 'createObject?type_name=InvoiceBatch',
                 'icon': '++resource++bika.lims.images/add.png'
             }
-        if mtool.checkPermission(ManageInvoices, self.context):
+        if mtool.checkPermission(ModifyPortalContent, self.context):
             self.show_select_column = True
         return super(InvoiceFolderContentsView, self).__call__()
 

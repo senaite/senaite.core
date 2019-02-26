@@ -8,7 +8,7 @@
       for="bika.lims.interfaces.IInvoice"
       name="base_view"
       class="bika.lims.browser.invoice.InvoiceView"
-      permission="bika.lims.ManageInvoices"
+      permission="zope2.View"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
@@ -16,7 +16,7 @@
       for="bika.lims.interfaces.IInvoice"
       name="print"
       class="bika.lims.browser.invoice.InvoicePrintView"
-      permission="bika.lims.ManageInvoices"
+      permission="zope2.View"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
