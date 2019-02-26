@@ -8,15 +8,12 @@
              manager_bypass="False"
              i18n:domain="senaite.core">
 
-  <permission>BIKA: Cancel and reinstate</permission>
   <permission>BIKA: Edit Field Results</permission>
   <permission>BIKA: Edit Results</permission>
   <permission>BIKA: View Results</permission>
 
   <state state_id="rejected" title="Rejected" i18n:attributes="title">
     <exit-transition transition_id="" />
-    <permission-map name="BIKA: Cancel and reinstate" acquired="False">
-    </permission-map>
     <permission-map name="BIKA: Edit Field Results" acquired="False">
     </permission-map>
     <permission-map name="BIKA: Edit Results" acquired="False">

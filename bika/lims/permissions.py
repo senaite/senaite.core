@@ -171,7 +171,6 @@ ViewResults = 'BIKA: View Results'
 EditResults = 'BIKA: Edit Results'
 EditFieldResults = 'BIKA: Edit Field Results'
 ViewRetractedAnalyses = 'BIKA: View Retracted Analyses'
-CancelAndReinstate = 'BIKA: Cancel and reinstate'
 
 # For adding login credentials to Contacts.
 ManageLoginDetails = 'BIKA: Manage Login Details'
@@ -243,7 +242,6 @@ def setup_permissions(portal):
     mp(ManageReference, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
     mp(ManageWorksheets, ['Manager', 'LabManager'], 1)
 
-    mp(CancelAndReinstate, ['Manager', 'LabManager'], 0)
     mp(ViewRetractedAnalyses, ['Manager', 'LabManager', 'LabClerk', 'Analyst', ], 0)
     mp(EditWorksheet, ['Manager', 'LabManager', 'Analyst'], 1)
     mp(ManageInvoices, ['Manager', 'LabManager', 'Owner'], 1)

@@ -11,9 +11,15 @@
   <permission>Delete objects</permission>
   <permission>Modify portal content</permission>
   <permission>senaite.core: Transition: Dispatch Order</permission>
+  <permission>senaite.core: Transition: Cancel</permission>
+  <permission>senaite.core: Transition: Reinstate</permission>
 
   <state state_id="dispatched" title="Dispatched" i18n:attributes="title">
     <exit-transition transition_id="" />
+    <permission-map name="senaite.core: Transition: Cancel" acquired="False">
+    </permission-map>
+    <permission-map name="senaite.core: Transition: Reinstate" acquired="False">
+    </permission-map>
     <permission-map name="Delete objects" acquired="False">
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
@@ -27,6 +33,14 @@
   <state state_id="pending" title="Pending" i18n:attributes="title">
     <exit-transition transition_id="dispatch" />
     <exit-transition transition_id="cancel" />
+    <permission-map name="senaite.core: Transition: Cancel" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+    </permission-map>
+    <permission-map name="senaite.core: Transition: Reinstate" acquired="False">
+    </permission-map>
     <permission-map name="Delete objects" acquired="False">
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -43,6 +57,14 @@
 
   <state state_id="cancelled" title="Cancelled" i18n:attributes="title">
     <exit-transition transition_id="reinstate" />
+    <permission-map name="senaite.core: Transition: Reinstate" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+    </permission-map>
+    <permission-map name="senaite.core: Transition: Cancel" acquired="False">
+    </permission-map>
   </state>
 
   <transition transition_id="dispatch" title="Dispatch" new_state="dispatched" trigger="USER" before_script="" after_script="" i18n:attributes="title">
@@ -55,7 +77,7 @@
   <transition transition_id="cancel" title="Cancel" new_state="cancelled" trigger="USER" before_script="" after_script="" i18n:attributes="title">
     <action url="" category="workflow" icon="">Cancel</action>
     <guard>
-      <guard-permission>BIKA: Cancel and reinstate</guard-permission>
+      <guard-permission>senaite.core: Transition: Cancel</guard-permission>
       <guard-expression>python:here.guard_handler("cancel")</guard-expression>
     </guard>
   </transition>
@@ -63,7 +85,7 @@
   <transition transition_id="reinstate" title="Reinstate" new_state="pending" trigger="USER" before_script="" after_script="" i18n:attributes="title">
     <action url="" category="workflow" icon="">Reinstate</action>
     <guard>
-      <guard-permission>BIKA: Cancel and reinstate</guard-permission>
+      <guard-permission>senaite.core: Transition: Reinstate</guard-permission>
       <guard-expression>python:here.guard_handler("reinstate")</guard-expression>
     </guard>
   </transition>

@@ -134,7 +134,6 @@
 # -------------------------
 <permission id="bika.lims.RejectWorksheet" title="BIKA: Reject Worksheet"/>
 
-<permission id="bika.lims.CancelAndReinstate" title="BIKA: Cancel and reinstate"/>
 
 
 # For screen navigation:
