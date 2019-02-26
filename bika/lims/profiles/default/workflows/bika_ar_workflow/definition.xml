@@ -15,6 +15,8 @@
       - Storage Location field displayed and editable
   -->
 
+  <permission>Delete objects</permission>
+
   <!-- *** MANAGED PERMISSIONS  *** -->
   <!-- Transitions (governs guards) -->
   <permission>BIKA: Cancel and reinstate</permission>
@@ -88,6 +90,18 @@
     <exit-transition transition_id="no_sampling_workflow"/>
     <!-- /TRANSITIONS -->
 
+    <!-- PLONE PERMISSIONS -->
+    <permission-map name="Delete objects" acquired="False">
+      <!-- Allow the removal of analyses and attachments -->
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
+    </permission-map>
+
+
     <!-- MANAGED PERMISSIONS -->
     <!-- Permissions for Transitions (must match with exit transitions) -->
     <permission-map name="BIKA: Cancel and reinstate" acquired="False"/>
@@ -159,6 +173,17 @@
     <exit-transition transition_id="sample"/>
     <exit-transition transition_id="reject"/>
     <!-- /TRANSITIONS -->
+
+    <!-- PLONE PERMISSIONS -->
+    <permission-map name="Delete objects" acquired="False">
+      <!-- Allow the removal of analyses and attachments -->
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
+    </permission-map>
 
     <!-- MANAGED PERMISSIONS -->
     <!-- Permissions for Transitions (must match with exit transitions) -->
@@ -243,6 +268,18 @@
     <exit-transition transition_id="reject"/>
     <!-- /TRANSITIONS -->
 
+    <!-- PLONE PERMISSIONS -->
+    <permission-map name="Delete objects" acquired="False">
+      <!-- Allow the removal of analyses and attachments -->
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
+    </permission-map>
+
+
     <!-- MANAGED PERMISSIONS -->
     <!-- Permissions for Transitions (must match with exit transitions) -->
     <permission-map name="BIKA: Cancel and reinstate" acquired="True"/>
@@ -323,6 +360,16 @@
     <exit-transition transition_id="reject" />
     <!-- TRANSITIONS -->
 
+    <!-- PLONE PERMISSIONS -->
+    <permission-map name="Delete objects" acquired="False">
+      <!-- Allow the removal of analyses and attachments -->
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+    </permission-map>
+
+
     <!-- MANAGED PERMISSIONS -->
     <!-- Permissions for Transitions (must match with exit transitions) -->
     <permission-map name="BIKA: Cancel and reinstate" acquired="True"/>
@@ -398,6 +445,14 @@
     <exit-transition transition_id="create_partitions" />
     <!-- /TRANSITIONS -->
 
+    <!-- PLONE PERMISSIONS -->
+    <permission-map name="Delete objects" acquired="False">
+      <!-- Allow the removal of analyses and attachments -->
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+
+
     <!-- MANAGED PERMISSIONS -->
     <!-- Permissions for Transitions (must match with exit transitions) -->
     <permission-map name="BIKA: Cancel and reinstate" acquired="True"/>
@@ -470,6 +525,13 @@
     <exit-transition transition_id="retract" />
     <exit-transition transition_id="reject" />
     <!-- TRANSITIONS -->
+
+    <permission-map name="Delete objects" acquired="False">
+      <!-- Allow the removal of analyses and attachments -->
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+
 
     <!-- MANAGED PERMISSIONS -->
     <!-- Permissions for Transitions (must match with exit transitions) -->
@@ -544,6 +606,13 @@
     <exit-transition transition_id="reject" />
     <exit-transition transition_id="rollback_to_receive" />
     <!-- /TRANSITIONS -->
+
+    <permission-map name="Delete objects" acquired="False">
+      <!-- Allow the removal of analyses and attachments -->
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+
 
     <!-- MANAGED PERMISSIONS -->
     <!-- Permissions for Transitions (must match with exit transitions) -->
@@ -623,6 +692,13 @@
     <exit-transition transition_id="reject" />
     <!-- /TRANSITIONS -->
 
+    <permission-map name="Delete objects" acquired="False">
+      <!-- Allow the removal of analyses and attachments -->
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+
+
     <!-- MANAGED PERMISSIONS -->
     <!-- Permissions for Transitions (must match with exit transitions) -->
     <permission-map name="BIKA: Cancel and reinstate" acquired="True"/>
@@ -694,6 +770,13 @@
     <exit-transition transition_id="invalidate" />
     <exit-transition transition_id="rollback_to_receive" />
     <!-- /TRANSITIONS -->
+
+    <permission-map name="Delete objects" acquired="False">
+      <!-- Allow the removal of analyses and attachments -->
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+
 
     <!-- MANAGED PERMISSIONS (partially readonly) -->
     <!-- Permissions for Transitions (must match with exit transitions) -->
@@ -767,6 +850,9 @@
     <exit-transition transition_id="invalidate"/>
     <!-- /TRANSITIONS -->
 
+    <permission-map name="Delete objects" acquired="False"/>
+
+
     <!-- MANAGED PERMISSIONS (partially readonly) -->
     <!-- Permissions for Transitions (must match with exit transitions) -->
     <permission-map name="BIKA: Cancel and reinstate" acquired="False"/>
@@ -836,6 +922,9 @@
     <exit-transition transition_id="" />
     <!-- /TRANSITIONS -->
 
+    <!-- PLONE PERMISSIONS -->
+    <permission-map name="Delete objects" acquired="False"/>
+
     <!-- MANAGED PERMISSIONS (partially readonly) -->
     <!-- Permissions for Transitions (must match with exit transitions) -->
     <permission-map name="BIKA: Cancel and reinstate" acquired="False"/>
@@ -903,6 +992,9 @@
     <!-- TRANSITIONS -->
     <exit-transition transition_id=""/>
     <!-- /TRANSITIONS -->
+
+    <!-- PLONE PERMISSIONS -->
+    <permission-map name="Delete objects" acquired="False"/>
 
     <!-- MANAGED PERMISSIONS (partially readonly) -->
     <!-- Permissions for Transitions (must match with exit transitions) -->
@@ -976,6 +1068,9 @@
     <!-- TRANSITIONS -->
     <exit-transition transition_id="reinstate" />
     <!-- /TRANSITIONS -->
+
+    <!-- PLONE PERMISSIONS -->
+    <permission-map name="Delete objects" acquired="False"/>
 
     <!-- MANAGED PERMISSIONS (partially readonly) -->
     <!-- Permissions for Transitions (must match with exit transitions) -->
