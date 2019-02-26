@@ -35,12 +35,16 @@ both valid.
 # SENAITE CORE Permissions
 # ========================
 
-# Generic Transition permissions
-# ----------------------
+# Transition permissions (Generic)
+# --------------------------------
 TransitionActivate="senaite.core: Transition: Activate"
 TransitionDeactivate="senaite.core: Transition: Deactivate"
 TransitionReinstate="senaite.core: Transition: Reinstate"
 TransitionCancel="senaite.core: Transition: Cancel"
+
+# Transition permissions (Supply Order)
+# -------------------------------------
+DispatchOrder = 'senaite.core: Transition: Dispatch Order'
 
 
 
@@ -144,7 +148,6 @@ ADD_CONTENT_PERMISSIONS = {
 # Very Old permissions:
 # ---------------------
 ManageBika = 'BIKA: Manage Bika'
-DispatchOrder = 'BIKA: Dispatch Order'
 ManageAnalysisRequests = 'BIKA: Manage Analysis Requests'
 ManageReference = 'BIKA: Manage Reference'
 
@@ -236,7 +239,6 @@ def setup_permissions(portal):
     mp(SaveNewVersion, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner', 'RegulatoryInspector'], 1)
     mp(AccessPreviousVersions, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner', 'RegulatoryInspector'], 1)
 
-    mp(DispatchOrder, ['Manager', 'LabManager', 'LabClerk'], 1)
     mp(ManageAnalysisRequests, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner', 'RegulatoryInspector', 'SamplingCoordinator'], 1)
     mp(ManageBika, ['Manager', 'LabManager'], 1)
     mp(ManageLoginDetails, ['Manager', 'LabManager'], 1)

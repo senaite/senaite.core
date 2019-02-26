@@ -86,7 +86,9 @@
 
     <!-- SENAITE PERMISSIONS -->
 
-    <!-- Transition permissions -->
+    <!-- Add Permissions -->
+
+    <!-- Transition permissions (Generic) -->
     <permission name="senaite.core: Transition: Deactivate" acquire="False">
       <role name="LabManager"/>
       <role name="Manager"/>
@@ -108,6 +110,12 @@
       <role name="Owner"/>
     </permission>
 
+    <!-- Transition permissions (Supply Orders) -->
+    <permission name="senaite.core: Transition: Dispatch Order" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
 
     <permission name="senaite.core: Add Analysis" acquire="False">
       <role name="LabClerk"/>

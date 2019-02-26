@@ -82,6 +82,8 @@
 <permission id="senaite.core.permissions.TransitionReinstate" title="senaite.core: Transition: Reinstate"/>
 <permission id="senaite.core.permissions.TransitionCancel" title="senaite.core: Transition: Cancel"/>
 
+# Supply Order Transition Permissions
+<permission id="senaite.core.permissions.DispatchOrder" title="senaite.core: Transition: Dispatch Order"/>
 
 
 # *** OBSOLETE PERMISSIONS START BELOW ***
@@ -108,7 +110,6 @@
 <permission id="bika.lims.permissions.AddSamplingDeviation" title="senaite.core: Add SamplingDeviation"/>
 <permission id="bika.lims.permissions.AddSRTemplate" title="senaite.core: Add SRTemplate"/>
 <permission id="bika.lims.permissions.AddSubGroup" title="senaite.core: Add Sub-group"/>
-<permission id="bika.lims.DispatchOrder" title="BIKA: Dispatch Order"/>
 <permission id="bika.lims.ManageARImport" title="BIKA: Manage ARImport"/>
 
 
