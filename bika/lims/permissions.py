@@ -200,9 +200,6 @@ def setup_permissions(portal):
     the general Portal, bika_setup, laboratory, clients folder, contacts,
     batches, worksheets folder, etc
 
-    This permissions can be overridden lately using workflow definitions and/or
-    'manage_permission' method.
-
     :param portal: the site object
     :return: None
     """
