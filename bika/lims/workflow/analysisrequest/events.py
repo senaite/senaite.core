@@ -108,8 +108,7 @@ def after_reinstate(analysis_request):
     # Force the transition to previous state before the request was cancelled
     prev_status = get_prev_status_from_history(analysis_request, "cancelled")
     changeWorkflowState(analysis_request, AR_WORKFLOW_ID, prev_status,
-                        action="reinstate",
-                        actor=api.get_current_user().getId())
+                        action="reinstate")
     analysis_request.reindexObject()
 
 

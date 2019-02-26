@@ -275,62 +275,37 @@ def sortable_title(portal, title):
 def logged_in_client(context, member=None):
     return api.get_current_client()
 
-def changeWorkflowState(content, wf_id, state_id, acquire_permissions=False,
-                        portal_workflow=None, **kw):
+def changeWorkflowState(content, wf_id, state_id, **kw):
     """Change the workflow state of an object
     @param content: Content obj which state will be changed
     @param state_id: name of the state to put on content
-    @param acquire_permissions: True->All permissions unchecked and on riles and
-                                acquired
-                                False->Applies new state security map
-    @param portal_workflow: Provide workflow tool (optimisation) if known
     @param kw: change the values of same name of the state mapping
-    @return: None
+    @return: True if succeed. Otherwise, False
     """
-
-    if portal_workflow is None:
-        portal_workflow = getToolByName(content, 'portal_workflow')
-
-    # Might raise IndexError if no workflow is associated to this type
-    found_wf = 0
-    for wf_def in portal_workflow.getWorkflowsFor(content):
-        if wf_id == wf_def.getId():
-            found_wf = 1
-            break
-    if not found_wf:
+    portal_workflow = api.get_tool("portal_workflow")
+    workflow = api.get_workflows_for(content)
+    workflow = filter(lambda wf: wf.getId() == wf_id, workflow)
+    if not workflow:
         logger.error("%s: Cannot find workflow id %s" % (content, wf_id))
+        return False
 
+    workflow = workflow[0]
     wf_state = {
-        'action': None,
-        'actor': None,
+        'action': kw.get("action", None),
+        'actor': kw.get("actor", api.get_current_user().id),
         'comments': "Setting state to %s" % state_id,
         'review_state': state_id,
         'time': DateTime(),
     }
 
-    # Updating wf_state from keyword args
-    for k in kw.keys():
-        # Remove unknown items
-        if k not in wf_state:
-            del kw[k]
-    if 'review_state' in kw:
-        del kw['review_state']
-    wf_state.update(kw)
-
+    # Change status and update permissions
     portal_workflow.setStatusOf(wf_id, content, wf_state)
+    workflow.updateRoleMappingsFor(content)
 
-    if acquire_permissions:
-        # Acquire all permissions
-        for permission in content.possible_permissions():
-            content.manage_permission(permission, acquire=1)
-    else:
-        # Setting new state permissions
-        wf_def.updateRoleMappingsFor(content)
-
-    # Map changes to the catalogs
-    idxs = ["allowedRolesAndUsers", "review_state", "is_active"]
-    content.reindexObject(idxs=idxs)
-    return
+    # Map changes to catalog
+    indexes = ["allowedRolesAndUsers", "review_state", "is_active"]
+    content.reindexObject(idxs=indexes)
+    return True
 
 
 def tmpID():
