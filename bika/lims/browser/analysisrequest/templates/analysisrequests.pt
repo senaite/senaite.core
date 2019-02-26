@@ -19,7 +19,7 @@
              tal:attributes="src view/icon"
              style="height:32px;width:auto;"/>
         <span tal:content="python:view.context.translate(view.title)"/>
-          <span tal:condition="python:checkPermission('senaite.core: Add Analysis Request', context)"
+          <span tal:condition="python:checkPermission('senaite.core: Add AnalysisRequest', context)"
                 style="padding-left:0.5em;display:inline-block;">
           <form method="GET" class="form-inline" action="ar_add">
             <input type="number"

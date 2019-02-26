@@ -34,9 +34,13 @@ both valid.
 
 # Add Permissions
 # ===============
+# For "Add" permissions, keep the name of the variable as "Add<portal_type>".
+# When the module gets initialized (bika.lims.__init__), the function initialize
+# will look through these Add permissions attributes when registering types and
+# will automatically associate them with their types.
 AddAnalysis = 'senaite.core: Add Analysis'
 AddAnalysisProfile = 'senaite.core: Add AnalysisProfile'
-AddAnalysisRequest = 'senaite.core: Add Analysis Request'
+AddAnalysisRequest = 'senaite.core: Add AnalysisRequest'
 AddAnalysisSpec = 'senaite.core: Add AnalysisSpec'
 AddAttachment = 'senaite.core: Add Attachment'
 AddARTemplate = 'senaite.core: Add ARTemplate'
@@ -53,31 +57,6 @@ AddSamplingDeviation = 'senaite.core: Add SamplingDeviation'
 AddSamplingRound = 'senaite.core: Add SamplingRound'
 AddSRTemplate = 'senaite.core: Add SRTemplate'
 AddSubGroup = 'senaite.core: Add Sub-group'
-
-# In setuphandler, all senaite.core types will be registered and the "Add"
-# permission defined for each portal type here will be set accordingly.
-ADD_CONTENT_PERMISSIONS = {
-    # Dictionary of {portal_type: permission}
-    'Analysis': AddAnalysis,
-    'AnalysisProfile': AddAnalysisProfile,
-    'AnalysisRequest': AddAnalysisRequest,
-    'ARAnalysisSpec': AddAnalysisSpec,
-    'Attachment': AddAttachment,
-    'ARTemplate': AddARTemplate,
-    'Batch': AddBatch,
-    'Client': AddClient,
-    'Invoice': AddInvoice,
-    'Method': AddMethod,
-    'Multifile': AddMultifile,
-    'Pricelist': AddPricelist,
-    'SupplyOrder': AddSupplyOrder,
-    'SampleMatrix': AddSampleMatrix,
-    'SamplePoint': AddSamplePoint,
-    'SamplingDeviation': AddSamplingDeviation,
-    'SamplingRound': AddSamplingRound,
-    'SRTemplate': AddSRTemplate,
-    'SubGroup': AddSubGroup, }
-
 
 # Transition permissions
 # ======================
@@ -152,7 +131,7 @@ FieldEditSpecification = "senaite.core: Field: Edit Specification"
 FieldEditStorageLocation = "senaite.core: Field: Edit Storage Location"
 FieldEditTemplate = "senaite.core: Field: Edit Template"
 
-# Field Permissions (Analysis and alike)
+# Field permissions (Analysis and alike)
 FieldEditAnalysisHidden = "senaite.core: Field: Edit Analysis Hidden"
 FieldEditAnalysisResult = "senaite.core: Field: Edit Analysis Result"
 FieldEditAnalysisRemarks = "senaite.core: Field: Edit Analysis Remarks"
@@ -160,111 +139,24 @@ FieldEditAnalysisRemarks = "senaite.core: Field: Edit Analysis Remarks"
 
 # Behavioral permissions
 # ======================
+# TODO Security Review these "behavioral" permissions
+AccessJSONAPI = 'BIKA: Access JSON API'
+EditFieldResults = 'BIKA: Edit Field Results'
+EditResults = 'BIKA: Edit Results'
+EditWorksheet = 'BIKA: Edit Worksheet'
 ManageBika = 'BIKA: Manage Bika'
 ManageAnalysisRequests = 'BIKA: Manage Analysis Requests'
+ManageARImport = 'BIKA: Manage ARImport'
+ManageInvoices = 'BIKA: Manage Invoices'
+ManageLoginDetails = 'BIKA: Manage Login Details'
 ManageReference = 'BIKA: Manage Reference'
 ManageWorksheets = 'BIKA: Manage Worksheets'
-EditWorksheet = 'BIKA: Edit Worksheet'
+ViewResults = 'BIKA: View Results'
 
 
 # View/Action permissions
 # =======================
+# TODO Security Review these "view/action" permissions
 ImportInstrumentResults = "BIKA: Import Instrument Results"
-
-
-
-# Very Old permissions:
-# ---------------------
-
-
-
-
-AccessJSONAPI = 'BIKA: Access JSON API'
-
-# New or changed permissions:
-# ---------------------------
-ManageInvoices = 'BIKA: Manage Invoices'
-ViewResults = 'BIKA: View Results'
-EditResults = 'BIKA: Edit Results'
-EditFieldResults = 'BIKA: Edit Field Results'
 ViewRetractedAnalyses = 'BIKA: View Retracted Analyses'
-
-# For adding login credentials to Contacts.
-ManageLoginDetails = 'BIKA: Manage Login Details'
-
-
 ViewLogTab = 'BIKA: View Log Tab'
-
-
-# Manage AR Imports
-# ----------------------------------------------
-ManageARImport = 'BIKA: Manage ARImport'
-
-
-def setup_permissions(portal):
-    """
-    This function sets permissions for some general objects (or
-    folders) during Bika installation process.
-    Those objects are:
-    the general Portal, bika_setup, laboratory, clients folder, contacts,
-    batches, worksheets folder, etc
-
-    :param portal: the site object
-    :return: None
-    """
-    # @formatter:off
-    # Root permissions
-    mp = portal.manage_permission
-
-    mp(AccessJSONAPI, ['Manager', 'LabManager'], 0)
-
-    mp(AddAnalysis, ['Manager', 'Owner', 'LabManager', 'LabClerk', 'Sampler'], 1)
-    mp(AddAnalysisProfile, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
-    mp(AddAnalysisRequest, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
-    mp(AddAnalysisSpec, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
-    mp(AddARTemplate, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
-    mp(AddAttachment, ['Manager', 'LabManager', 'Owner' 'Analyst', 'LabClerk', 'Sampler', 'Client'], 0)
-    mp(AddBatch, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
-    mp(AddClient, ['Manager', 'Owner', 'LabManager'], 1)
-    mp(AddInvoice, ['Manager', 'LabManager'], 1)
-    mp(AddMethod, ['Manager', 'LabManager'], 1)
-    mp(AddMultifile, ['Manager', 'LabManager', 'LabClerk'], 1)
-    mp(AddPricelist, ['Manager', 'Owner', 'LabManager'], 1)
-    mp(AddSampleMatrix, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
-    mp(AddSamplePoint, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
-    mp(AddSamplingDeviation, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
-    mp(AddSRTemplate, ['Manager', 'Owner', 'LabManager'], 0)
-    mp(AddSubGroup, ['Manager', 'LabManager', 'LabClerk'], 0)
-
-    mp(permissions.AddPortalContent, ['Manager', 'Owner', 'LabManager'], 1)
-    mp(permissions.FTPAccess, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
-    mp(permissions.ManageUsers, ['Manager', 'LabManager', ], 1)
-
-    mp(ApplyVersionControl, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner', 'RegulatoryInspector'], 1)
-    mp(SaveNewVersion, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner', 'RegulatoryInspector'], 1)
-    mp(AccessPreviousVersions, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner', 'RegulatoryInspector'], 1)
-
-    mp(ManageAnalysisRequests, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner', 'RegulatoryInspector', 'SamplingCoordinator'], 1)
-    mp(ManageBika, ['Manager', 'LabManager'], 1)
-    mp(ManageLoginDetails, ['Manager', 'LabManager'], 1)
-    mp(ManageReference, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
-    mp(ManageWorksheets, ['Manager', 'LabManager'], 1)
-
-    mp(ViewRetractedAnalyses, ['Manager', 'LabManager', 'LabClerk', 'Analyst', ], 0)
-    mp(EditWorksheet, ['Manager', 'LabManager', 'Analyst'], 1)
-    mp(ManageInvoices, ['Manager', 'LabManager', 'Owner'], 1)
-    mp(ViewResults, ['Manager', 'LabManager', 'Analyst', 'Sampler', 'RegulatoryInspector', 'SamplingCoordinator'], 1)
-    mp(EditResults, ['Manager', 'LabManager', 'Analyst'], 1)
-    mp(EditFieldResults, ['Manager', 'LabManager', 'Sampler'], 1)
-    mp('Access contents information', ['Authenticated'], 1)
-
-    mp(ImportInstrumentResults, ['Manager', 'LabManager', 'Analyst'], 1)
-
-    mp(ViewLogTab, ['Manager', 'LabManager'], 1)
-
-
-    # /reports folder permissions
-    mp = portal.reports.manage_permission
-    mp('ATContentTypes: Add Image', ['Manager', 'Labmanager', 'LabClerk', 'Member', ], 0)
-    mp('ATContentTypes: Add File', ['Manager', 'Labmanager', 'LabClerk', 'Member', ], 0)
-    portal.reports.reindexObject()

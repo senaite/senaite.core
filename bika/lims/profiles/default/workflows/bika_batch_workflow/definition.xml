@@ -8,7 +8,7 @@
              manager_bypass="False"
              i18n:domain="senaite.core">
 
-  <permission>senaite.core: Add Analysis Request</permission>
+  <permission>senaite.core: Add AnalysisRequest</permission>
   <permission>senaite.core: Transition: Close</permission>
   <permission>senaite.core: Transition: Reopen</permission>
   <permission>Modify portal content</permission>
@@ -22,7 +22,7 @@
   <state state_id="closed" title="Closed" i18n:attributes="title">
     <description>The batch can't be edited and Samples cannot be attached</description>
     <exit-transition transition_id="open" />
-    <permission-map name="senaite.core: Add Analysis Request" acquired="False">
+    <permission-map name="senaite.core: Add AnalysisRequest" acquired="False">
     </permission-map>
     <permission-map name="senaite.core: Transition: Close" acquired="False">
     </permission-map>
@@ -45,7 +45,7 @@
     <description>The batch can be edited and Samples can be attached</description>
     <exit-transition transition_id="close" />
     <exit-transition transition_id="cancel" />
-    <permission-map name="senaite.core: Add Analysis Request" acquired="False">
+    <permission-map name="senaite.core: Add AnalysisRequest" acquired="False">
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>

@@ -14,7 +14,6 @@ from bika.lims.catalog import getCatalogDefinitions
 from bika.lims.catalog import setup_catalogs
 from bika.lims.config import *
 from bika.lims.interfaces import IARImportFolder, IHaveNoBreadCrumbs
-from bika.lims.permissions import setup_permissions
 from bika.lims.utils import tmpID
 from zope.interface import alsoProvides
 
@@ -126,11 +125,6 @@ class BikaGenerator(object):
         for group_id in groups_ids:
             portal.portal_groups.addGroup(group_id, title=group_id,
                                           roles=GROUPS[group_id])
-
-    def setupPermissions(self, portal):
-        """ Set up some suggested role to permission mappings.
-        """
-        setup_permissions(portal)
 
     def setupVersioning(self, portal):
         try:
@@ -503,7 +497,6 @@ def setupVarious(context):
     gen = BikaGenerator()
     gen.setupGroupsAndRoles(site)
     gen.setupPortalContent(site)
-    gen.setupPermissions(site)
     gen.setupTopLevelFolders(site)
     gen.setupVersioning(site)
     gen.setupCatalogs(site)

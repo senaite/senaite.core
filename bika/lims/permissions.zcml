@@ -1,9 +1,5 @@
 <configure
     xmlns="http://namespaces.zope.org/zope"
-    xmlns:five="http://namespaces.zope.org/five"
-    xmlns:cmf="http://namespaces.zope.org/cmf"
-    xmlns:i18n="http://namespaces.zope.org/i18n"
-    xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
     i18n_domain="senaite.core">
 
 <!--
@@ -18,10 +14,29 @@
 
     The two files (permissions.py and permissions.zcml) must be kept in sync.
 /-->
+  
+  # Add Permissions
+  # ---------------
+  <permission id="bika.lims.permissions.AddAnalysis" title="senaite.core: Add Analysis"/>
+  <permission id="bika.lims.permissions.AddAnalysisProfile" title="senaite.core: Add AnalysisProfile"/>
+  <permission id="bika.lims.permissions.AddAnalysisRequest" title="senaite.core: Add AnalysisRequest"/>
+  <permission id="bika.lims.permissions.AddAnalysisSpec" title="senaite.core: Add AnalysisSpec"/>
+  <permission id="bika.lims.permissions.AddAttachment" title="senaite.core: Add Attachment"/>
+  <permission id="bika.lims.permissions.AddARTemplate" title="senaite.core: Add ARTemplate"/>
+  <permission id="bika.lims.permissions.AddBatch" title="senaite.core: Add Batch"/>
+  <permission id="bika.lims.permissions.AddClient" title="senaite.core: Add Client"/>
+  <permission id="bika.lims.permissions.AddInvoice" title="senaite.core: Add Invoice"/>
+  <permission id="bika.lims.permissions.AddMethod" title="senaite.core: Add Method"/>
+  <permission id="bika.lims.permissions.AddMultifile" title="senaite.core: Add Multifile"/>
+  <permission id="bika.lims.permissions.AddPricelist" title="senaite.core: Add Pricelist"/>
+  <permission id="bika.lims.permissions.AddSupplyOrder" title="senaite.core: Add SupplyOrder"/>
+  <permission id="bika.lims.permissions.AddSampleMatrix" title="senaite.core: Add SampleMatrix"/>
+  <permission id="bika.lims.permissions.AddSamplePoint" title="senaite.core: Add SamplePoint"/>
+  <permission id="bika.lims.permissions.AddSamplingDeviation" title="senaite.core: Add SamplingDeviation"/>
+  <permission id="bika.lims.permissions.AddSamplingRound" title="senaite.core: Add SamplingRound"/>
+  <permission id="bika.lims.permissions.AddSRTemplate" title="senaite.core: Add SRTemplate"/>
+  <permission id="bika.lims.permissions.AddSubGroup" title="senaite.core: Add Sub-group"/>
 
-
-  # SENAITE CORE Permissions
-  # ------------------------
 
   # Transition Permissions
   # ----------------------
@@ -33,6 +48,7 @@
   <permission id="senaite.core.permissions.TransitionReopen" title="senaite.core: Transition: Reopen"/>
 
   # Transition Permissions (Analysis and alike)
+  <permission id="senaite.core.permissions.TransitionRetract" title="senaite.core: Transition: Retract"/>
   <permission id="senaite.core.permissions.TransitionVerify" title="senaite.core: Transition: Verify"/>
   <permission id="senaite.core.permissions.TransitionAssignAnalysis" title="senaite.core: Transition: Assign Analysis"/>
   <permission id="senaite.core.permissions.TransitionUnassignAnalysis" title="senaite.core: Transition: Unassign Analysis"/>
@@ -40,128 +56,87 @@
   # Transition Permissions (Analysis Request)
   <permission id="senaite.core.permissions.TransitionCancelAnalysisRequest" title="senaite.core: Transition: Cancel Analysis Request"/>
   <permission id="senaite.core.permissions.TransitionReinstateAnalysisRequest" title="senaite.core: Transition: Reinstate Analysis Request"/>
+  <permission id="senaite.core.permissions.TransitionInvalidate" title="senaite.core: Transition: Invalidate"/>
+  <permission id="senaite.core.permissions.TransitionPreserveSample" title="senaite.core: Transition: Preserve Sample"/>
+  <permission id="senaite.core.permissions.TransitionPublishResults" title="senaite.core: Transition: Publish Results"/>
+  <permission id="senaite.core.permissions.TransitionReceiveSample" title="senaite.core: Transition: Receive Sample"/>
+  <permission id="senaite.core.permissions.TransitionRejectSample" title="senaite.core: Transition: Reject Sample"/>
+  <permission id="senaite.core.permissions.TransitionSampleSample" title="senaite.core: Transition: Sample Sample"/>
+  <permission id="senaite.core.permissions.TransitionScheduleSampling" title="senaite.core: Transition: Schedule Sampling"/>
 
   # Transition Permissions (Supply Order)
   <permission id="senaite.core.permissions.TransitionDispatchOrder" title="senaite.core: Transition: Dispatch Order"/>
 
-  # Transition Permissions (Sampling Rounds)
+  # Transition Permissions (Sampling Round)
   <permission id="senaite.core.permissions.TransitionCloseSamplingRound" title="senaite.core: Transition: Close Sampling Round"/>
   <permission id="senaite.core.permissions.TransitionReopenSamplingRound" title="senaite.core: Transition: Reopen Sampling Round"/>
 
   # Transition Permissions (Worksheet)
-  <permission id="bika.lims.RejectWorksheet" title="senaite.core: Transition: Reject Worksheet"/>
+  <permission id="senaite.core.permissions.TransitionRejectWorksheet" title="senaite.core: Transition: Reject Worksheet"/>
 
 
+  # Field Permissions
+  # -----------------
+  # Field permissions (Analysis Request)
+  <permission id="senaite.core.permissions.FieldEditBatch" title="senaite.core: Field: Edit Batch"/>
+  <permission id="senaite.core.permissions.FieldEditClient" title="senaite.core: Field: Edit Client"/>
+  <permission id="senaite.core.permissions.FieldEditClientOrderNumber" title="senaite.core: Field: Edit Client Order Number"/>
+  <permission id="senaite.core.permissions.FieldEditClientReference" title="senaite.core: Field: Edit Client Reference"/>
+  <permission id="senaite.core.permissions.FieldEditClientSampleID" title="senaite.core: Field: Edit Client Sample ID"/>
+  <permission id="senaite.core.permissions.FieldEditComposite" title="senaite.core: Field: Edit Composite"/>
+  <permission id="senaite.core.permissions.FieldEditContact" title="senaite.core: Field: Edit Contact"/>
+  <permission id="senaite.core.permissions.FieldEditContainer" title="senaite.core: Field: Edit Container"/>
+  <permission id="senaite.core.permissions.FieldEditDatePreserved" title="senaite.core: Field: Edit Date Preserved"/>
+  <permission id="senaite.core.permissions.FieldEditDateReceived" title="senaite.core: Field: Edit Date Received"/>
+  <permission id="senaite.core.permissions.FieldEditDateSampled" title="senaite.core: Field: Edit Date Sampled"/>
+  <permission id="senaite.core.permissions.FieldEditEnvironmentalConditions" title="senaite.core: Field: Edit Environmental Conditions"/>
+  <permission id="senaite.core.permissions.FieldEditInvoiceExclude" title="senaite.core: Field: Edit Invoice Exclude"/>
+  <permission id="senaite.core.permissions.FieldEditMemberDiscount" title="senaite.core: Field: Edit Member Discount"/>
+  <permission id="senaite.core.permissions.FieldEditPreservation" title="senaite.core: Field: Edit Preservation"/>
+  <permission id="senaite.core.permissions.FieldEditPreserver" title="senaite.core: Field: Edit Preserver"/>
+  <permission id="senaite.core.permissions.FieldEditPriority" title="senaite.core: Field: Edit Priority"/>
+  <permission id="senaite.core.permissions.FieldEditProfiles" title="senaite.core: Field: Edit Profiles"/>
+  <permission id="senaite.core.permissions.FieldEditPublicationSpecifications" title="senaite.core: Field: Edit Publication Specification"/>
+  <permission id="senaite.core.permissions.FieldEditRejectionReasons" title="senaite.core: Field: Edit Rejection Reasons"/>
+  <permission id="senaite.core.permissions.FieldEditResultsInterpretation" title="senaite.core: Field: Edit Results Interpretation"/>
+  <permission id="senaite.core.permissions.FieldEditSampleCondition" title="senaite.core: Field: Edit Sample Condition"/>
+  <permission id="senaite.core.permissions.FieldEditSamplePoint" title="senaite.core: Field: Edit Sample Point"/>
+  <permission id="senaite.core.permissions.FieldEditSampleType" title="senaite.core: Field: Edit Sample Type"/>
+  <permission id="senaite.core.permissions.FieldEditSampler" title="senaite.core: Field: Edit Sampler"/>
+  <permission id="senaite.core.permissions.FieldEditSamplingDate" title="senaite.core: Field: Edit Sampling Date"/>
+  <permission id="senaite.core.permissions.FieldEditSamplingDeviation" title="senaite.core: Field: Edit Sampling Deviation"/>
+  <permission id="senaite.core.permissions.FieldEditSamplingRound" title="senaite.core: Field: Edit Sampling Round"/>
+  <permission id="senaite.core.permissions.FieldEditScheduledSampler" title="senaite.core: Field: Edit Scheduled Sampler"/>
+  <permission id="senaite.core.permissions.FieldEditSpecification" title="senaite.core: Field: Edit Specification"/>
+  <permission id="senaite.core.permissions.FieldEditStorageLocation" title="senaite.core: Field: Edit Storage Location"/>
+  <permission id="senaite.core.permissions.FieldEditTemplate" title="senaite.core: Field: Edit Template"/>
 
-# AR Field Permissions
-<permission id="senaite.core.permissions.FieldEditBatch" title="senaite.core: Field: Edit Batch"/>
-<permission id="senaite.core.permissions.FieldEditClient" title="senaite.core: Field: Edit Client"/>
-<permission id="senaite.core.permissions.FieldEditClientOrderNumber" title="senaite.core: Field: Edit Client Order Number"/>
-<permission id="senaite.core.permissions.FieldEditClientReference" title="senaite.core: Field: Edit Client Reference"/>
-<permission id="senaite.core.permissions.FieldEditClientSampleID" title="senaite.core: Field: Edit Client Sample ID"/>
-<permission id="senaite.core.permissions.FieldEditComposite" title="senaite.core: Field: Edit Composite"/>
-<permission id="senaite.core.permissions.FieldEditContact" title="senaite.core: Field: Edit Contact"/>
-<permission id="senaite.core.permissions.FieldEditContainer" title="senaite.core: Field: Edit Container"/>
-<permission id="senaite.core.permissions.FieldEditDatePreserved" title="senaite.core: Field: Edit Date Preserved"/>
-<permission id="senaite.core.permissions.FieldEditDateReceived" title="senaite.core: Field: Edit Date Received"/>
-<permission id="senaite.core.permissions.FieldEditDateSampled" title="senaite.core: Field: Edit Date Sampled"/>
-<permission id="senaite.core.permissions.FieldEditEnvironmentalConditions" title="senaite.core: Field: Edit Environmental Conditions"/>
-<permission id="senaite.core.permissions.FieldEditInvoiceExclude" title="senaite.core: Field: Edit Invoice Exclude"/>
-<permission id="senaite.core.permissions.FieldEditMemberDiscount" title="senaite.core: Field: Edit Member Discount"/>
-<permission id="senaite.core.permissions.FieldEditPreservation" title="senaite.core: Field: Edit Preservation"/>
-<permission id="senaite.core.permissions.FieldEditPreserver" title="senaite.core: Field: Edit Preserver"/>
-<permission id="senaite.core.permissions.FieldEditPriority" title="senaite.core: Field: Edit Priority"/>
-<permission id="senaite.core.permissions.FieldEditProfiles" title="senaite.core: Field: Edit Profiles"/>
-<permission id="senaite.core.permissions.FieldEditPublicationSpecifications" title="senaite.core: Field: Edit Publication Specification"/>
-<permission id="senaite.core.permissions.FieldEditRejectionReasons" title="senaite.core: Field: Edit Rejection Reasons"/>
-<permission id="senaite.core.permissions.FieldEditResultsInterpretation" title="senaite.core: Field: Edit Results Interpretation"/>
-<permission id="senaite.core.permissions.FieldEditSampleCondition" title="senaite.core: Field: Edit Sample Condition"/>
-<permission id="senaite.core.permissions.FieldEditSamplePoint" title="senaite.core: Field: Edit Sample Point"/>
-<permission id="senaite.core.permissions.FieldEditSampleType" title="senaite.core: Field: Edit Sample Type"/>
-<permission id="senaite.core.permissions.FieldEditSampler" title="senaite.core: Field: Edit Sampler"/>
-<permission id="senaite.core.permissions.FieldEditSamplingDate" title="senaite.core: Field: Edit Sampling Date"/>
-<permission id="senaite.core.permissions.FieldEditSamplingDeviation" title="senaite.core: Field: Edit Sampling Deviation"/>
-<permission id="senaite.core.permissions.FieldEditSamplingRound" title="senaite.core: Field: Edit Sampling Round"/>
-<permission id="senaite.core.permissions.FieldEditScheduledSampler" title="senaite.core: Field: Edit Scheduled Sampler"/>
-<permission id="senaite.core.permissions.FieldEditSpecification" title="senaite.core: Field: Edit Specification"/>
-<permission id="senaite.core.permissions.FieldEditStorageLocation" title="senaite.core: Field: Edit Storage Location"/>
-<permission id="senaite.core.permissions.FieldEditTemplate" title="senaite.core: Field: Edit Template"/>
-
-# AR Transition Permissions
-<permission id="senaite.core.permissions.TransitionInvalidate" title="senaite.core: Transition: Invalidate"/>
-<permission id="senaite.core.permissions.TransitionPreserveSample" title="senaite.core: Transition: Preserve Sample"/>
-<permission id="senaite.core.permissions.TransitionPublishResults" title="senaite.core: Transition: Publish Results"/>
-<permission id="senaite.core.permissions.TransitionReceiveSample" title="senaite.core: Transition: Receive Sample"/>
-<permission id="senaite.core.permissions.TransitionRejectSample" title="senaite.core: Transition: Reject Sample"/>
-<permission id="senaite.core.permissions.TransitionRetract" title="senaite.core: Transition: Retract"/>
-<permission id="senaite.core.permissions.TransitionSampleSample" title="senaite.core: Transition: Sample Sample"/>
-<permission id="senaite.core.permissions.TransitionScheduleSampling" title="senaite.core: Transition: Schedule Sampling"/>
+  # Field permissions (Analysis and alike)
+  <permission id="senaite.core.permissions.FieldEditAnalysisHidden" title="senaite.core: Field: Edit Analysis Hidden"/>
+  <permission id="senaite.core.permissions.FieldEditAnalysisResult" title="senaite.core: Field: Edit Analysis Result"/>
+  <permission id="senaite.core.permissions.FieldEditAnalysisRemarks" title="senaite.core: Field: Edit Analysis Remarks"/>
 
 
-# Analysis Field Permissions
-<permission id="senaite.core.permissions.FieldEditAnalysisHidden" title="senaite.core: Field: Edit Analysis Hidden"/>
-<permission id="senaite.core.permissions.FieldEditAnalysisResult" title="senaite.core: Field: Edit Analysis Result"/>
-<permission id="senaite.core.permissions.FieldEditAnalysisRemarks" title="senaite.core: Field: Edit Analysis Remarks"/>
+  # Behavioral Permissions
+  # ----------------------
+  <permission id="bika.lims.AccessJSONAPI" title="BIKA: Access JSON API"/>
+  <permission id="bika.lims.EditFieldResults" title="BIKA: Edit Field Results"/>
+  <permission id="bika.lims.EditResults" title="BIKA: Edit Results"/>
+  <permission id="bika.lims.EditWorksheet" title="BIKA: Edit Worksheet"/>
+  <permission id="bika.lims.ManageBika" title="BIKA: Manage Bika"/>
+  <permission id="bika.lims.ManageAnalysisRequests" title="BIKA: Manage Analysis Requests"/>
+  <permission id="bika.lims.ManageARImport" title="BIKA: Manage ARImport"/>
+  <permission id="bika.lims.ManageInvoices" title="BIKA: Manage Invoices"/>
+  <permission id="bika.lims.ManageLoginDetails" title="BIKA: Manage Login Details"/>
+  <permission id="bika.lims.ManageReference" title="BIKA: Manage Reference"/>
+  <permission id="bika.lims.ManageWorksheets" title="BIKA: Manage Worksheets"/>
+  <permission id="bika.lims.ViewResults" title="BIKA: View Results"/>
 
 
-
-# *** OBSOLETE PERMISSIONS START BELOW ***
-
-
-# Add Permissions:
-# ----------------
-<permission id="bika.lims.permissions.AddAnalysisProfile" title="senaite.core: Add AnalysisProfile"/>
-<permission id="bika.lims.permissions.AddARTemplate" title="senaite.core: Add ARTemplate"/>
-<permission id="bika.lims.permissions.AddAnalysis" title="senaite.core: Add Analysis"/>
-<permission id="bika.lims.permissions.AddAnalysisRequest" title="senaite.core: Add Analysis Request"/>
-<permission id="bika.lims.permissions.AddAnalysisSpec" title="senaite.core: Add AnalysisSpec"/>
-<permission id="bika.lims.permissions.AddAttachment" title="senaite.core: Add Attachment"/>
-<permission id="bika.lims.permissions.AddBatch" title="senaite.core: Add Batch"/>
-<permission id="bika.lims.permissions.AddClient" title="senaite.core: Add Client"/>
-<permission id="bika.lims.permissions.AddInvoice" title="senaite.core: Add Invoice"/>
-<permission id="bika.lims.permissions.AddMethod" title="senaite.core: Add Method"/>
-<permission id="bika.lims.permissions.AddMultifile" title="senaite.core: Add Multifile"/>
-<permission id="bika.lims.permissions.AddPricelist" title="senaite.core: Add Pricelist"/>
-<permission id="bika.lims.permissions.AddSupplyOrder" title="senaite.core: Add SupplyOrder"/>
-<permission id="bika.lims.permissions.AddSamplePoint" title="senaite.core: Add SamplePoint"/>
-<permission id="bika.lims.permissions.AddSampleMatrix" title="senaite.core: Add SampleMatrix"/>
-<permission id="bika.lims.permissions.AddSamplingDeviation" title="senaite.core: Add SamplingDeviation"/>
-<permission id="bika.lims.permissions.AddSRTemplate" title="senaite.core: Add SRTemplate"/>
-<permission id="bika.lims.permissions.AddSubGroup" title="senaite.core: Add Sub-group"/>
-<permission id="bika.lims.ManageARImport" title="BIKA: Manage ARImport"/>
-
-
-# Old stuff I haven't looked at
-# =============================
-<permission id="bika.lims.ManageBika" title="BIKA: Manage Bika"/>
-<permission id="bika.lims.ManageWorksheets" title="BIKA: Manage Worksheets"/>
-<permission id="bika.lims.ManageAnalysisRequests" title="BIKA: Manage Analysis Requests"/>
-<permission id="bika.lims.ManageReference" title="BIKA: Manage Reference"/>
-
-
-# For screen navigation:
-# ----------------------
-<permission id="bika.lims.EditWorksheet" title="BIKA: Edit Worksheet"/>
-
-<permission id="bika.lims.ImportInstrumentResults" title="BIKA: Import Instrument Results"/>
-
-<permission id="bika.lims.AccessJSONAPI" title="BIKA: Access JSON API"/>
-
-<permission id="bika.lims.ManageInvoices" title="BIKA: Manage Invoices"/>
-
-<permission id="bika.lims.ViewLogTab" title="BIKA: View Log Tab"/>
-
-# Other:
-# ------
-<permission id="bika.lims.ViewResults" title="BIKA: View Results"/>
-<permission id="bika.lims.EditResults" title="BIKA: Edit Results"/>
-# Sampling workflow - allows editing field results while in sample_due state
-<permission id="bika.lims.EditFieldResults" title="BIKA: Edit Field Results"/>
-# permission to prevent Client Contact from seeing Retracted analyses
-<permission id="bika.lims.ViewRetractedAnalyses" title="BIKA: View Retracted Analyses"/>
-
-<permission id="bika.lims.ManageLoginDetails" title="BIKA: Manage Login Details"/>
-
-
+  # View/Action Permissions
+  # -----------------------
+  <permission id="bika.lims.ImportInstrumentResults" title="BIKA: Import Instrument Results"/>
+  <permission id="bika.lims.ViewRetractedAnalyses" title="BIKA: View Retracted Analyses"/>
+  <permission id="bika.lims.ViewLogTab" title="BIKA: View Log Tab"/>
 
 </configure>

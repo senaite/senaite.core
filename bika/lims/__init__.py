@@ -10,7 +10,7 @@ import warnings
 
 import App
 from AccessControl import allow_module
-from bika.lims.permissions import ADD_CONTENT_PERMISSIONS
+from bika.lims import permissions
 from Products.Archetypes.atapi import listTypes
 from Products.Archetypes.atapi import process_types
 from Products.CMFCore.utils import ContentInit
@@ -39,7 +39,6 @@ allow_module("plone.registry.interfaces")
 debug_mode = App.config.getConfiguration().debug_mode
 if debug_mode:
     allow_module("pdb")
-
 
 # Implicit module imports used by others
 # XXX Refactor these dependencies to explicit imports!
@@ -170,8 +169,8 @@ def initialize(context):
     allTypes = zip(content_types, constructors)
     for atype, constructor in allTypes:
         kind = "%s: Add %s" % (PROJECTNAME, atype.portal_type)
-        perm = ADD_CONTENT_PERMISSIONS.get(atype.portal_type,
-                                           permissions.AddPortalContent)
+        perm_name = "Add{}".format(atype.portal_type)
+        perm = getattr(permissions, perm_name, permissions.AddPortalContent)
         ContentInit(kind,
                     content_types=(atype,),
                     permission=perm,

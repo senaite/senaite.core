@@ -9,7 +9,7 @@
              i18n:domain="senaite.core">
 
   <permission>Add portal content</permission>
-  <permission>senaite.core: Add Analysis Request</permission>
+  <permission>senaite.core: Add AnalysisRequest</permission>
   <permission>senaite.core: Transition: Close Sampling Round</permission>
   <permission>senaite.core: Transition: Reopen Sampling Round</permission>
   <permission>Modify portal content</permission>
@@ -20,7 +20,7 @@
     <exit-transition transition_id="open" />
     <permission-map name="Add portal content" acquired="False">
     </permission-map>
-    <permission-map name="senaite.core: Add Analysis Request" acquired="False">
+    <permission-map name="senaite.core: Add AnalysisRequest" acquired="False">
     </permission-map>
     <permission-map name="senaite.core: Transition: Close Sampling Round" acquired="False"/>
     <permission-map name="senaite.core: Transition: Reopen Sampling Round" acquired="True"/>
@@ -48,7 +48,7 @@
       <permission-role>Manager</permission-role>
       <permission-role>Owner</permission-role>
     </permission-map>
-    <permission-map name="senaite.core: Add Analysis Request" acquired="False">
+    <permission-map name="senaite.core: Add AnalysisRequest" acquired="False">
       <permission-role>Client</permission-role>
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
