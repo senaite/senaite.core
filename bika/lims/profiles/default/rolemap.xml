@@ -88,7 +88,7 @@
 
     <!-- Add Permissions -->
 
-    <!-- Transition permissions (Generic) -->
+    <!-- Transition permissions -->
     <permission name="senaite.core: Transition: Deactivate" acquire="False">
       <role name="LabManager"/>
       <role name="Manager"/>
@@ -120,9 +120,64 @@
       <role name="Owner"/>
     </permission>
 
-    <!-- Transition permissions (Supply Orders) -->
+    <!-- Transition permissions (Analysis and alike) -->
+    <permission name="senaite.core: Transition: Verify" acquire="False">
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Verifier"/>
+    </permission>
+    <permission name="senaite.core: Transition: Assign Analysis" acquire="False">
+      <role name="Analyst"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Verifier"/>
+    </permission>
+    <permission name="senaite.core: Transition: Unassign Analysis" acquire="False">
+      <role name="Analyst"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Verifier"/>
+    </permission>
+
+    <!-- Transition permissions (Analysis Request) -->
+    <permission name="senaite.core: Transition: Cancel Analysis Request" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="senaite.core: Transition: Reinstate Analysis Request" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+
+    <!-- Transition permissions (Supply Order) -->
     <permission name="senaite.core: Transition: Dispatch Order" acquire="False">
       <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
+
+    <!-- Transition permissions (Sampling Round) -->
+    <permission name="senaite.core: Transition: Close Sampling Round" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+      <role name="SamplingCoordinator"/>
+    </permission>
+    <permission name="senaite.core: Transition: Reopen Sampling Round" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+      <role name="SamplingCoordinator"/>
+    </permission>
+
+    <!-- Transition permissions (Worksheet) -->
+    <permission name="senaite.core: Transition: Reject Worksheet" acquire="False">
       <role name="LabManager"/>
       <role name="Manager"/>
     </permission>
@@ -347,20 +402,6 @@
       -->
     </permission>
 
-    <!-- Transition: Verify permission only applies to analysis_workflow !! -->
-    <permission name="senaite.core: Transition: Verify" acquire="False">
-      <role name="LabManager"/>
-      <role name="Manager"/>
-      <role name="Verifier"/>
-      <!-- @xispa conflicts
-      WAS: "BIKA: Verify"
-
-      - Verify permission from ar_workflow has been removed, cause this
-        transition is triggered automatically when all analyses the Sample
-        contains are transitioned to verify. `guard_verify` from AR already
-        checks this.
-      -->
-    </permission>
 
     <permission name="BIKA: View Results" acquire="False">
       <role name="Analyst"/>

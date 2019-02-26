@@ -19,8 +19,8 @@
 
   <!-- *** MANAGED PERMISSIONS  *** -->
   <!-- Transitions (governs guards) -->
-  <permission>senaite.core: Transition: Cancel</permission>
-  <permission>senaite.core: Transition: Reinstate</permission>
+  <permission>senaite.core: Transition: Cancel Analysis Request</permission>
+  <permission>senaite.core: Transition: Reinstate Analysis Request</permission>
   <permission>senaite.core: Transition: Invalidate</permission>
   <permission>senaite.core: Transition: Preserve Sample</permission>
   <permission>senaite.core: Transition: Publish Results</permission>
@@ -105,8 +105,8 @@
 
     <!-- MANAGED PERMISSIONS -->
     <!-- Permissions for Transitions (must match with exit transitions) -->
-    <permission-map name="senaite.core: Transition: Cancel" acquired="False"/>
-    <permission-map name="senaite.core: Transition: Reinstate" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Cancel Analysis Request" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Reinstate Analysis Request" acquired="False"/>
     <permission-map name="senaite.core: Transition: Invalidate" acquired="False"/>
     <permission-map name="senaite.core: Transition: Preserve Sample" acquired="False"/>
     <permission-map name="senaite.core: Transition: Publish Results" acquired="False"/>
@@ -189,15 +189,8 @@
 
     <!-- MANAGED PERMISSIONS -->
     <!-- Permissions for Transitions (must match with exit transitions) -->
-    <permission-map name="senaite.core: Transition: Cancel" acquired="False">
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-      <permission-role>Sampler</permission-role>
-      <permission-role>SamplingCoordinator</permission-role>
-      <permission-role>Owner</permission-role>
-    </permission-map>
-    <permission-map name="senaite.core: Transition: Reinstate" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Cancel Analysis Request" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Reinstate Analysis Request" acquired="False"/>
     <permission-map name="senaite.core: Transition: Invalidate" acquired="False"/>
     <permission-map name="senaite.core: Transition: Preserve Sample" acquired="False"/>
     <permission-map name="senaite.core: Transition: Publish Results" acquired="False"/>
@@ -292,15 +285,8 @@
 
     <!-- MANAGED PERMISSIONS -->
     <!-- Permissions for Transitions (must match with exit transitions) -->
-    <permission-map name="senaite.core: Transition: Cancel" acquired="False">
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-      <permission-role>Sampler</permission-role>
-      <permission-role>SamplingCoordinator</permission-role>
-      <permission-role>Owner</permission-role>
-    </permission-map>
-    <permission-map name="senaite.core: Transition: Reinstate" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Cancel Analysis Request" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Reinstate Analysis Request" acquired="False"/>
     <permission-map name="senaite.core: Transition: Invalidate" acquired="False"/>
     <permission-map name="senaite.core: Transition: Preserve Sample" acquired="False"/>
     <permission-map name="senaite.core: Transition: Publish Results" acquired="False"/>
@@ -390,13 +376,8 @@
 
     <!-- MANAGED PERMISSIONS -->
     <!-- Permissions for Transitions (must match with exit transitions) -->
-    <permission-map name="senaite.core: Transition: Cancel" acquired="False">
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-      <permission-role>Owner</permission-role>
-    </permission-map>
-    <permission-map name="senaite.core: Transition: Reinstate" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Cancel Analysis Request" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Reinstate Analysis Request" acquired="False"/>
     <permission-map name="senaite.core: Transition: Invalidate" acquired="False"/>
     <permission-map name="senaite.core: Transition: Preserve Sample" acquired="False"/>
     <permission-map name="senaite.core: Transition: Publish Results" acquired="False"/>
@@ -479,13 +460,8 @@
 
     <!-- MANAGED PERMISSIONS -->
     <!-- Permissions for Transitions (must match with exit transitions) -->
-    <permission-map name="senaite.core: Transition: Cancel" acquired="False">
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-      <permission-role>Owner</permission-role>
-    </permission-map>
-    <permission-map name="senaite.core: Transition: Reinstate" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Cancel Analysis Request" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Reinstate Analysis Request" acquired="False"/>
     <permission-map name="senaite.core: Transition: Invalidate" acquired="False"/>
     <permission-map name="senaite.core: Transition: Preserve Sample" acquired="False"/>
     <permission-map name="senaite.core: Transition: Publish Results" acquired="True"/>
@@ -565,8 +541,8 @@
 
     <!-- MANAGED PERMISSIONS -->
     <!-- Permissions for Transitions (must match with exit transitions) -->
-    <permission-map name="senaite.core: Transition: Cancel" acquired="False"/>
-    <permission-map name="senaite.core: Transition: Reinstate" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Cancel Analysis Request" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Reinstate Analysis Request" acquired="False"/>
     <permission-map name="senaite.core: Transition: Invalidate" acquired="False"/>
     <permission-map name="senaite.core: Transition: Preserve Sample" acquired="False"/>
     <permission-map name="senaite.core: Transition: Publish Results" acquired="True"/>
@@ -647,8 +623,8 @@
 
     <!-- MANAGED PERMISSIONS -->
     <!-- Permissions for Transitions (must match with exit transitions) -->
-    <permission-map name="senaite.core: Transition: Cancel" acquired="False"/>
-    <permission-map name="senaite.core: Transition: Reinstate" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Cancel Analysis Request" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Reinstate Analysis Request" acquired="False"/>
     <permission-map name="senaite.core: Transition: Invalidate" acquired="False"/>
     <permission-map name="senaite.core: Transition: Preserve Sample" acquired="False"/>
     <permission-map name="senaite.core: Transition: Publish Results" acquired="True"/>
@@ -733,13 +709,8 @@
 
     <!-- MANAGED PERMISSIONS -->
     <!-- Permissions for Transitions (must match with exit transitions) -->
-    <permission-map name="senaite.core: Transition: Cancel" acquired="False">
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-      <permission-role>Owner</permission-role>
-    </permission-map>
-    <permission-map name="senaite.core: Transition: Reinstate" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Cancel Analysis Request" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Reinstate Analysis Request" acquired="False"/>
     <permission-map name="senaite.core: Transition: Invalidate" acquired="False"/>
     <permission-map name="senaite.core: Transition: Preserve Sample" acquired="True"/>
     <permission-map name="senaite.core: Transition: Publish Results" acquired="False"/>
@@ -818,8 +789,8 @@
 
     <!-- MANAGED PERMISSIONS (partially readonly) -->
     <!-- Permissions for Transitions (must match with exit transitions) -->
-    <permission-map name="senaite.core: Transition: Cancel" acquired="False"/>
-    <permission-map name="senaite.core: Transition: Reinstate" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Cancel Analysis Request" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Reinstate Analysis Request" acquired="False"/>
     <permission-map name="senaite.core: Transition: Invalidate" acquired="True"/>
     <permission-map name="senaite.core: Transition: Preserve Sample" acquired="False"/>
     <permission-map name="senaite.core: Transition: Publish Results" acquired="True"/>
@@ -894,8 +865,8 @@
 
     <!-- MANAGED PERMISSIONS (partially readonly) -->
     <!-- Permissions for Transitions (must match with exit transitions) -->
-    <permission-map name="senaite.core: Transition: Cancel" acquired="False"/>
-    <permission-map name="senaite.core: Transition: Reinstate" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Cancel Analysis Request" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Reinstate Analysis Request" acquired="False"/>
     <permission-map name="senaite.core: Transition: Invalidate" acquired="True"/>
     <permission-map name="senaite.core: Transition: Preserve Sample" acquired="False"/>
     <permission-map name="senaite.core: Transition: Publish Results" acquired="True"/>
@@ -967,8 +938,8 @@
 
     <!-- MANAGED PERMISSIONS (partially readonly) -->
     <!-- Permissions for Transitions (must match with exit transitions) -->
-    <permission-map name="senaite.core: Transition: Cancel" acquired="False"/>
-    <permission-map name="senaite.core: Transition: Reinstate" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Cancel Analysis Request" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Reinstate Analysis Request" acquired="False"/>
     <permission-map name="senaite.core: Transition: Invalidate" acquired="False"/>
     <permission-map name="senaite.core: Transition: Preserve Sample" acquired="False"/>
     <permission-map name="senaite.core: Transition: Publish Results" acquired="False"/>
@@ -1039,8 +1010,8 @@
 
     <!-- MANAGED PERMISSIONS (partially readonly) -->
     <!-- Permissions for Transitions (must match with exit transitions) -->
-    <permission-map name="senaite.core: Transition: Cancel" acquired="False"/>
-    <permission-map name="senaite.core: Transition: Reinstate" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Cancel Analysis Request" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Reinstate Analysis Request" acquired="False"/>
     <permission-map name="senaite.core: Transition: Invalidate" acquired="False"/>
     <permission-map name="senaite.core: Transition: Preserve Sample" acquired="False"/>
     <permission-map name="senaite.core: Transition: Publish Results" acquired="False"/>
@@ -1116,13 +1087,8 @@
 
     <!-- MANAGED PERMISSIONS (partially readonly) -->
     <!-- Permissions for Transitions (must match with exit transitions) -->
-    <permission-map name="senaite.core: Transition: Cancel" acquired="False"/>
-    <permission-map name="senaite.core: Transition: Reinstate" acquired="False">
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-      <permission-role>Owner</permission-role>
-    </permission-map>
+    <permission-map name="senaite.core: Transition: Cancel Analysis Request" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Reinstate Analysis Request" acquired="True"/>
     <permission-map name="senaite.core: Transition: Invalidate" acquired="False"/>
     <permission-map name="senaite.core: Transition: Preserve Sample" acquired="False"/>
     <permission-map name="senaite.core: Transition: Publish Results" acquired="False"/>
@@ -1190,7 +1156,7 @@
     </guard>
   </transition>
 
-  <!-- Transition: cancel
+  <!-- Transition: Cancel Analysis Request
        Cancel transition can only be done when all analyses the request contains are
        in unassigned state (see the guard) -->
   <transition transition_id="cancel" title="Cancel" new_state="cancelled"
@@ -1198,7 +1164,7 @@
               i18n:attributes="title">
     <action url="" category="workflow" icon="">Cancel</action>
     <guard>
-      <guard-permission>senaite.core: Transition: Cancel</guard-permission>
+      <guard-permission>senaite.core: Transition: Cancel Analysis Request</guard-permission>
       <guard-expression>python:here.guard_handler("cancel")</guard-expression>
     </guard>
   </transition>
@@ -1265,7 +1231,7 @@
               i18n:attributes="title">
     <action url="" category="workflow" icon="">Reinstate</action>
     <guard>
-      <guard-permission>senaite.core: Transition: Reinstate</guard-permission>
+      <guard-permission>senaite.core: Transition: Reinstate Analysis Request</guard-permission>
       <guard-expression>python:here.guard_handler("reinstate")</guard-expression>
     </guard>
   </transition>

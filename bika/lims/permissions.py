@@ -32,28 +32,93 @@ bika.lims.PermName or bika.lims.permissions.PermName are
 both valid.
 """
 
-# SENAITE CORE Permissions
-# ========================
+# Add Permissions
+# ===============
+AddAnalysis = 'senaite.core: Add Analysis'
+AddAnalysisProfile = 'senaite.core: Add AnalysisProfile'
+AddAnalysisRequest = 'senaite.core: Add Analysis Request'
+AddAnalysisSpec = 'senaite.core: Add AnalysisSpec'
+AddAttachment = 'senaite.core: Add Attachment'
+AddARTemplate = 'senaite.core: Add ARTemplate'
+AddBatch = 'senaite.core: Add Batch'
+AddClient = 'senaite.core: Add Client'
+AddInvoice = 'senaite.core: Add Invoice'
+AddMethod = 'senaite.core: Add Method'
+AddMultifile = 'senaite.core: Add Multifile'
+AddPricelist = 'senaite.core: Add Pricelist'
+AddSupplyOrder = 'senaite.core: Add SupplyOrder'
+AddSampleMatrix = 'senaite.core: Add SampleMatrix'
+AddSamplePoint = 'senaite.core: Add SamplePoint'
+AddSamplingDeviation = 'senaite.core: Add SamplingDeviation'
+AddSamplingRound = 'senaite.core: Add SamplingRound'
+AddSRTemplate = 'senaite.core: Add SRTemplate'
+AddSubGroup = 'senaite.core: Add Sub-group'
 
-# Transition permissions (Generic)
-# --------------------------------
-TransitionActivate="senaite.core: Transition: Activate"
-TransitionDeactivate="senaite.core: Transition: Deactivate"
-TransitionReinstate="senaite.core: Transition: Reinstate"
-TransitionCancel="senaite.core: Transition: Cancel"
-Close = 'senaite.core: Transition: Close'
-Reopen = 'senaite.core: Transition: Reopen'
+# In setuphandler, all senaite.core types will be registered and the "Add"
+# permission defined for each portal type here will be set accordingly.
+ADD_CONTENT_PERMISSIONS = {
+    # Dictionary of {portal_type: permission}
+    'Analysis': AddAnalysis,
+    'AnalysisProfile': AddAnalysisProfile,
+    'AnalysisRequest': AddAnalysisRequest,
+    'ARAnalysisSpec': AddAnalysisSpec,
+    'Attachment': AddAttachment,
+    'ARTemplate': AddARTemplate,
+    'Batch': AddBatch,
+    'Client': AddClient,
+    'Invoice': AddInvoice,
+    'Method': AddMethod,
+    'Multifile': AddMultifile,
+    'Pricelist': AddPricelist,
+    'SupplyOrder': AddSupplyOrder,
+    'SampleMatrix': AddSampleMatrix,
+    'SamplePoint': AddSamplePoint,
+    'SamplingDeviation': AddSamplingDeviation,
+    'SamplingRound': AddSamplingRound,
+    'SRTemplate': AddSRTemplate,
+    'SubGroup': AddSubGroup, }
+
+
+# Transition permissions
+# ======================
+TransitionDeactivate = "senaite.core: Transition: Deactivate"
+TransitionActivate = "senaite.core: Transition: Activate"
+TransitionCancel = "senaite.core: Transition: Cancel"
+TransitionReinstate = "senaite.core: Transition: Reinstate"
+TransitionClose = 'senaite.core: Transition: Close'
+TransitionReopen = 'senaite.core: Transition: Reopen'
+
+# Transition permissions (Analysis and alike)
+TransitionRetract = "senaite.core: Transition: Retract"
+TransitionVerify = "senaite.core: Transition: Verify"
+TransitionAssignAnalysis = 'senaite.core: Transition: Assign Analysis'
+TransitionUnassignAnalysis = 'senaite.core: Transition: Unassign Analysis'
+
+# Transition permissions (Analysis Request)
+TransitionCancelAnalysisRequest = "senaite.core: Transition: Cancel Analysis Request"
+TransitionReinstateAnalysisRequest = "senaite.core: Transition: Reinstate Analysis Request"
+TransitionInvalidate = "senaite.core: Transition Invalidate"
+TransitionPreserveSample = "senaite.core: Transition: Preserve Sample"
+TransitionPublishResults = "senaite.core: Transition: Publish Results"
+TransitionReceiveSample = "senaite.core: Transition: Receive Sample"
+TransitionRejectSample = "senaite.core: Transition: Reject Sample"
+TransitionSampleSample = "senaite.core: Transition: Sample Sample"
+TransitionScheduleSampling = "senaite.core: Transition: Schedule Sampling"
 
 # Transition permissions (Supply Order)
-# -------------------------------------
-DispatchOrder = 'senaite.core: Transition: Dispatch Order'
+TransitionDispatchOrder = 'senaite.core: Transition: Dispatch Order'
 
+# Transition permissions (Sampling Round)
+TransitionCloseSamplingRound = 'senaite.core: Transition: Close Sampling Round'
+TransitionReopenSamplingRound = 'senaite.core: Transition: Reopen Sampling Round'
 
+# Transition permissions (Worksheet)
+TransitionRejectWorksheet = 'senaite.core: Transition: Reject Worksheet'
 
-# AR Permissions
-# --------------
 
 # Field Permissions
+# =================
+# Field permissions (Analysis Request)
 FieldEditBatch = "senaite.core: Field: Edit Batch"
 FieldEditClient = "senaite.core: Field: Edit Client"
 FieldEditClientOrderNumber = "senaite.core: Field: Edit Client Order Number"
@@ -87,80 +152,32 @@ FieldEditSpecification = "senaite.core: Field: Edit Specification"
 FieldEditStorageLocation = "senaite.core: Field: Edit Storage Location"
 FieldEditTemplate = "senaite.core: Field: Edit Template"
 
-# Transition Permissions
-TransitionInvalidate = "senaite.core: Transition Invalidate"
-TransitionPreserveSample = "senaite.core: Transition: Preserve Sample"
-TransitionPublishResults = "senaite.core: Transition: Publish Results"
-TransitionReceiveSample = "senaite.core: Transition: Receive Sample"
-TransitionRejectSample = "senaite.core: Transition: Reject Sample"
-TransitionRetract = "senaite.core: Transition: Retract"
-TransitionSampleSample = "senaite.core: Transition: Sample Sample"
-TransitionScheduleSampling = "senaite.core: Transition: Schedule Sampling"
-
-
-# Analysis Permissions
-# --------------
-# Field Permissions
+# Field Permissions (Analysis and alike)
 FieldEditAnalysisHidden = "senaite.core: Field: Edit Analysis Hidden"
 FieldEditAnalysisResult = "senaite.core: Field: Edit Analysis Result"
 FieldEditAnalysisRemarks = "senaite.core: Field: Edit Analysis Remarks"
 
-# Transition Permissions
-TransitionVerify = "senaite.core: Transition: Verify"
+
+# Behavioral permissions
+# ======================
+ManageBika = 'BIKA: Manage Bika'
+ManageAnalysisRequests = 'BIKA: Manage Analysis Requests'
+ManageReference = 'BIKA: Manage Reference'
+ManageWorksheets = 'BIKA: Manage Worksheets'
+EditWorksheet = 'BIKA: Edit Worksheet'
 
 
-# Add Permissions:
-# ----------------
-AddAnalysis = 'senaite.core: Add Analysis'
-AddAnalysisProfile = 'senaite.core: Add AnalysisProfile'
-AddAnalysisRequest = 'senaite.core: Add Analysis Request'
-AddAnalysisSpec = 'senaite.core: Add AnalysisSpec'
-AddAttachment = 'senaite.core: Add Attachment'
-AddARTemplate = 'senaite.core: Add ARTemplate'
-AddBatch = 'senaite.core: Add Batch'
-AddClient = 'senaite.core: Add Client'
-AddInvoice = 'senaite.core: Add Invoice'
-AddMethod = 'senaite.core: Add Method'
-AddMultifile = 'senaite.core: Add Multifile'
-AddPricelist = 'senaite.core: Add Pricelist'
-AddSupplyOrder = 'senaite.core: Add SupplyOrder'
-AddSample = 'senaite.core: Add Sample'
-AddSampleMatrix = 'senaite.core: Add SampleMatrix'
-AddSamplePoint = 'senaite.core: Add SamplePoint'
-AddSamplingDeviation = 'senaite.core: Add SamplingDeviation'
-AddSamplingRound = 'senaite.core: Add SamplingRound'
-AddSRTemplate = 'senaite.core: Add SRTemplate'
-AddSubGroup = 'senaite.core: Add Sub-group'
+# View/Action permissions
+# =======================
+ImportInstrumentResults = "BIKA: Import Instrument Results"
 
-# Default Archetypes Add Permission
-ADD_CONTENT_PERMISSION = permissions.AddPortalContent
-
-# Add Permissions for specific types, if required
-ADD_CONTENT_PERMISSIONS = {
-    'ARAnalysisSpec': AddAnalysisSpec, 'AnalysisProfile': AddAnalysisProfile,
-    'Analysis': AddAnalysis, 'AnalysisRequest': AddAnalysisRequest,
-    'Attachment': AddAttachment, 'Batch': AddBatch, 'Client': AddClient,
-    'Invoice': AddInvoice, 'Method': AddMethod, 'Multifile': AddMultifile,
-    'SupplyOrder': AddSupplyOrder,
-    'SampleMatrix': AddSampleMatrix,
-    'SamplingDeviation': AddSamplingDeviation,
-    'SamplingRound': AddSamplingRound, 'SubGroup': AddSubGroup, }
 
 
 # Very Old permissions:
 # ---------------------
-ManageBika = 'BIKA: Manage Bika'
-ManageAnalysisRequests = 'BIKA: Manage Analysis Requests'
-ManageReference = 'BIKA: Manage Reference'
 
 
-# this is for creating and transitioning worksheets
-ManageWorksheets = 'BIKA: Manage Worksheets'
-# this is for adding/editing/exporting analyses on worksheets
-EditWorksheet = 'BIKA: Edit Worksheet'
-RejectWorksheet = 'BIKA: Reject Worksheet'
 
-ImportInstrumentResults = "BIKA: Import Instrument Results"
 
 AccessJSONAPI = 'BIKA: Access JSON API'
 
@@ -175,17 +192,9 @@ ViewRetractedAnalyses = 'BIKA: View Retracted Analyses'
 # For adding login credentials to Contacts.
 ManageLoginDetails = 'BIKA: Manage Login Details'
 
-Assign = 'BIKA: Assign analyses'
-Unassign = 'BIKA: Unassign analyses'
 
 ViewLogTab = 'BIKA: View Log Tab'
 
-
-
-# Sampling Round permissions
-# --------------------------
-CloseSamplingRound = 'BIKA: Close SamplingRound'
-ReopenSamplingRound = 'BIKA: Reopen SamplingRound'
 
 # Manage AR Imports
 # ----------------------------------------------
@@ -221,7 +230,6 @@ def setup_permissions(portal):
     mp(AddMethod, ['Manager', 'LabManager'], 1)
     mp(AddMultifile, ['Manager', 'LabManager', 'LabClerk'], 1)
     mp(AddPricelist, ['Manager', 'Owner', 'LabManager'], 1)
-    mp(AddSample, ['Manager', 'Owner', 'LabManager', 'LabClerk', 'Sampler'], 1)
     mp(AddSampleMatrix, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
     mp(AddSamplePoint, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
     mp(AddSamplingDeviation, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)

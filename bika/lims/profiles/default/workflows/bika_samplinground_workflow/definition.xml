@@ -10,8 +10,8 @@
 
   <permission>Add portal content</permission>
   <permission>senaite.core: Add Analysis Request</permission>
-  <permission>BIKA: Close SamplingRound</permission>
-  <permission>BIKA: Reopen SamplingRound</permission>
+  <permission>senaite.core: Transition: Close Sampling Round</permission>
+  <permission>senaite.core: Transition: Reopen Sampling Round</permission>
   <permission>Modify portal content</permission>
   <permission>View</permission>
 
@@ -22,10 +22,8 @@
     </permission-map>
     <permission-map name="senaite.core: Add Analysis Request" acquired="False">
     </permission-map>
-    <permission-map name="BIKA: Close SamplingRound" acquired="False">
-    </permission-map>
-    <permission-map name="BIKA: Reopen SamplingRound" acquired="False">
-    </permission-map>
+    <permission-map name="senaite.core: Transition: Close Sampling Round" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Reopen Sampling Round" acquired="True"/>
     <permission-map name="Modify portal content" acquired="False">
     </permission-map>
     <permission-map name="View" acquired="False">
@@ -57,17 +55,8 @@
       <permission-role>Manager</permission-role>
       <permission-role>Owner</permission-role>
     </permission-map>
-    <permission-map name="BIKA: Close SamplingRound" acquired="False">
-      <permission-role>Client</permission-role>
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-      <permission-role>Owner</permission-role>
-    </permission-map>
-    <permission-map name="BIKA: Reopen SamplingRound" acquired="False">
-      <permission-role>Client</permission-role>
-      <permission-role>Owner</permission-role>
-    </permission-map>
+    <permission-map name="senaite.core: Transition: Close Sampling Round" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Reopen Sampling Round" acquired="False"/>
     <permission-map name="Modify portal content" acquired="False">
       <permission-role>Client</permission-role>
       <permission-role>LabClerk</permission-role>
@@ -90,7 +79,7 @@
   <transition transition_id="close" title="Close" new_state="closed" trigger="USER" before_script="" after_script="" i18n:attributes="title">
     <action url="" category="workflow" icon="">Close</action>
     <guard>
-      <guard-permission>BIKA: Close SamplingRound</guard-permission>
+      <guard-permission>senaite.core: Transition: Close Sampling Round</guard-permission>
       <guard-expression>python:here.workflow_guard_close() if hasattr(here, 'workflow_guard_close') else True</guard-expression>
     </guard>
 
@@ -98,7 +87,7 @@
   <transition transition_id="open" title="Open" new_state="open" trigger="USER" before_script="" after_script="" i18n:attributes="title">
     <action url="" category="workflow" icon="">Open</action>
     <guard>
-      <guard-permission>BIKA: Reopen SamplingRound</guard-permission>
+      <guard-permission>senaite.core: Transition: Reopen Sampling Round</guard-permission>
       <guard-expression>python:here.workflow_guard_open() if hasattr(here, 'workflow_guard_open') else True</guard-expression>
     </guard>
   </transition>

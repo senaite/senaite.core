@@ -7,7 +7,7 @@
              manager_bypass="False"
              i18n:domain="senaite.core">
 
-  <permission>BIKA: Unassign analyses</permission>
+  <permission>senaite.core: Transition: Unassign Analysis</permission>
   <permission>senaite.core: Transition: Retract</permission>
   <permission>senaite.core: Transition: Verify</permission>
   <permission>BIKA: View Results</permission>

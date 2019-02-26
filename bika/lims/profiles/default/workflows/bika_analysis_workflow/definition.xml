@@ -8,8 +8,8 @@
              manager_bypass="False"
              i18n:domain="senaite.core">
 
-  <permission>BIKA: Assign analyses</permission>
-  <permission>BIKA: Unassign analyses</permission>
+  <permission>senaite.core: Transition: Assign Analysis</permission>
+  <permission>senaite.core: Transition: Unassign Analysis</permission>
   <permission>senaite.core: Transition: Retract</permission>
   <permission>senaite.core: Transition: Verify</permission>
   <permission>BIKA: View Results</permission>
@@ -129,7 +129,7 @@
       <permission-role>RegulatoryInspector</permission-role>
     </permission-map>
 
-    <permission-map name="BIKA: Assign analyses" acquired="False">
+    <permission-map name="senaite.core: Transition: Assign Analysis" acquired="False">
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
       <!-- Although Analysts and Labclerks shouldn't be able to assign analyses
@@ -202,7 +202,7 @@
       <permission-role>RegulatoryInspector</permission-role>
     </permission-map>
 
-    <permission-map name="BIKA: Unassign analyses" acquired="False">
+    <permission-map name="senaite.core: Transition: Unassign Analysis" acquired="False">
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
       <!-- Although Analysts and Labclerks shouldn't be able to assign analyses
@@ -565,7 +565,7 @@
               i18n:attributes="title">
     <action url="" category="workflow" icon="">Assign to worksheet</action>
     <guard>
-      <guard-permission>BIKA: Assign analyses</guard-permission>
+      <guard-permission>senaite.core: Transition: Assign Analysis</guard-permission>
       <guard-expression>python:here.guard_handler("assign")</guard-expression>
     </guard>
   </transition>
@@ -576,7 +576,7 @@
               i18n:attributes="title">
     <action url="" category="workflow" icon="">Unassign from worksheet</action>
     <guard>
-      <guard-permission>BIKA: Unassign analyses</guard-permission>
+      <guard-permission>senaite.core: Transition: Unassign Analysis</guard-permission>
       <guard-expression>python:here.guard_handler("unassign")</guard-expression>
     </guard>
   </transition>
