@@ -6,6 +6,7 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 import logging
+import time
 
 import transaction
 from Acquisition import aq_base
@@ -355,7 +356,7 @@ class UpgradeUtils(object):
         for catid in cats:
             self.cleanAndRebuildCatalog(catid)
 
-    def recursiveUpdateRoleMappings(self, ob, wfs=None):
+    def recursiveUpdateRoleMappings(self, ob, wfs=None, commit_window=1000):
         """Code taken from Products.CMFPlone.WorkflowTool
 
         This version adds some commits and loggins
@@ -392,13 +393,27 @@ class UpgradeUtils(object):
         if hasattr(aq_base(ob), 'objectItems'):
             obs = ob.objectItems()
             if obs:
-                # Commit for every folderish object which contains further objects
-                transaction.commit()
-                logger.info("Updating role mappings for {}".format(repr(ob)))
                 for k, v in obs:
+                    if count % 100 == 0:
+                        logger.info(
+                            "Updating role mappings for {}: {0}".format(
+                                repr(ob), count))
                     changed = getattr(v, '_p_changed', 0)
-                    count = count + self.recursiveUpdateRoleMappings(v, wfs)
+                    count = count + self.recursiveUpdateRoleMappings(v, wfs,
+                                                                     commit_window)
                     if changed is None:
                         # Re-ghostify.
                         v._p_deactivate()
+
+                    if count % commit_window == 0:
+                        commit_transaction()
         return count
+
+
+def commit_transaction():
+    start = time.time()
+    logger.info("Commit transaction ...")
+    transaction.commit()
+    end = time.time()
+    logger.info("Commit transaction ... Took {:.2f}s [DONE]"
+                .format(end - start))
