@@ -393,6 +393,7 @@ class UpgradeUtils(object):
         if hasattr(aq_base(ob), 'objectItems'):
             obs = ob.objectItems()
             if obs:
+                committed = 0
                 for k, v in obs:
                     if count % 100 == 0:
                         logger.info(
@@ -405,8 +406,9 @@ class UpgradeUtils(object):
                         # Re-ghostify.
                         v._p_deactivate()
 
-                    if count % commit_window == 0:
+                    if count - committed >= commit_window:
                         commit_transaction()
+                        committed += count
         return count
 
 
