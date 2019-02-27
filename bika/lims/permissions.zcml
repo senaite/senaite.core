@@ -14,28 +14,28 @@
 
     The two files (permissions.py and permissions.zcml) must be kept in sync.
 /-->
-  
+
   # Add Permissions
   # ---------------
-  <permission id="bika.lims.permissions.AddAnalysis" title="senaite.core: Add Analysis"/>
-  <permission id="bika.lims.permissions.AddAnalysisProfile" title="senaite.core: Add AnalysisProfile"/>
-  <permission id="bika.lims.permissions.AddAnalysisRequest" title="senaite.core: Add AnalysisRequest"/>
-  <permission id="bika.lims.permissions.AddAnalysisSpec" title="senaite.core: Add AnalysisSpec"/>
-  <permission id="bika.lims.permissions.AddAttachment" title="senaite.core: Add Attachment"/>
-  <permission id="bika.lims.permissions.AddARTemplate" title="senaite.core: Add ARTemplate"/>
-  <permission id="bika.lims.permissions.AddBatch" title="senaite.core: Add Batch"/>
-  <permission id="bika.lims.permissions.AddClient" title="senaite.core: Add Client"/>
-  <permission id="bika.lims.permissions.AddInvoice" title="senaite.core: Add Invoice"/>
-  <permission id="bika.lims.permissions.AddMethod" title="senaite.core: Add Method"/>
-  <permission id="bika.lims.permissions.AddMultifile" title="senaite.core: Add Multifile"/>
-  <permission id="bika.lims.permissions.AddPricelist" title="senaite.core: Add Pricelist"/>
-  <permission id="bika.lims.permissions.AddSupplyOrder" title="senaite.core: Add SupplyOrder"/>
-  <permission id="bika.lims.permissions.AddSampleMatrix" title="senaite.core: Add SampleMatrix"/>
-  <permission id="bika.lims.permissions.AddSamplePoint" title="senaite.core: Add SamplePoint"/>
-  <permission id="bika.lims.permissions.AddSamplingDeviation" title="senaite.core: Add SamplingDeviation"/>
-  <permission id="bika.lims.permissions.AddSamplingRound" title="senaite.core: Add SamplingRound"/>
-  <permission id="bika.lims.permissions.AddSRTemplate" title="senaite.core: Add SRTemplate"/>
-  <permission id="bika.lims.permissions.AddSubGroup" title="senaite.core: Add Sub-group"/>
+  <permission id="senaite.core.permissions.AddAnalysis" title="senaite.core: Add Analysis"/>
+  <permission id="senaite.core.permissions.AddAnalysisProfile" title="senaite.core: Add AnalysisProfile"/>
+  <permission id="senaite.core.permissions.AddAnalysisRequest" title="senaite.core: Add AnalysisRequest"/>
+  <permission id="senaite.core.permissions.AddAnalysisSpec" title="senaite.core: Add AnalysisSpec"/>
+  <permission id="senaite.core.permissions.AddAttachment" title="senaite.core: Add Attachment"/>
+  <permission id="senaite.core.permissions.AddARTemplate" title="senaite.core: Add ARTemplate"/>
+  <permission id="senaite.core.permissions.AddBatch" title="senaite.core: Add Batch"/>
+  <permission id="senaite.core.permissions.AddClient" title="senaite.core: Add Client"/>
+  <permission id="senaite.core.permissions.AddInvoice" title="senaite.core: Add Invoice"/>
+  <permission id="senaite.core.permissions.AddMethod" title="senaite.core: Add Method"/>
+  <permission id="senaite.core.permissions.AddMultifile" title="senaite.core: Add Multifile"/>
+  <permission id="senaite.core.permissions.AddPricelist" title="senaite.core: Add Pricelist"/>
+  <permission id="senaite.core.permissions.AddSupplyOrder" title="senaite.core: Add SupplyOrder"/>
+  <permission id="senaite.core.permissions.AddSampleMatrix" title="senaite.core: Add SampleMatrix"/>
+  <permission id="senaite.core.permissions.AddSamplePoint" title="senaite.core: Add SamplePoint"/>
+  <permission id="senaite.core.permissions.AddSamplingDeviation" title="senaite.core: Add SamplingDeviation"/>
+  <permission id="senaite.core.permissions.AddSamplingRound" title="senaite.core: Add SamplingRound"/>
+  <permission id="senaite.core.permissions.AddSRTemplate" title="senaite.core: Add SRTemplate"/>
+  <permission id="senaite.core.permissions.AddSubGroup" title="senaite.core: Add Sub-group"/>
 
 
   # Transition Permissions
