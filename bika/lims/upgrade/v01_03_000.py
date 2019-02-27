@@ -34,6 +34,8 @@ from Products.DCWorkflow.Guard import Guard
 from Products.ZCatalog.ProgressHandler import ZLogHandler
 from zope.component import getUtility
 from zope.interface import alsoProvides
+from Products.ZCatalog.interfaces import IZCatalog
+from Products.CMFCore.interfaces import ICatalogTool
 
 version = '1.3.0'  # Remember version number in metadata.xml and setup.py
 profile = 'profile-{0}:default'.format(product)
@@ -228,7 +230,6 @@ def upgrade(tool):
     # https://github.com/senaite/senaite.core/pull/1243
     set_retest_id_formatting(portal)
 
-    logger.info("{0} upgraded to version {1}".format(product, version))
     return True
 
 
@@ -555,7 +556,11 @@ def update_workflows(portal):
     # mappings. This will allow us to update role mappings for those required
     # objects instead of all them. I know, would be easier to just do all them,
     # but we cannot afford such an approach for huge databases
-    rm_queries = get_role_mappings_candidates(portal)
+    # UPDATE:
+    # We don't use role_mappings_candidates anymore because we've changed
+    # security settings for most objects and also the workflows they are bound
+    # to new workflows: https://github.com/senaite/senaite.core/pull/1227
+    # rm_queries = get_role_mappings_candidates(portal)
 
     # Assign retracted analyses to retests
     assign_retracted_to_retests(portal)
@@ -584,19 +589,32 @@ def update_workflows(portal):
     remove_worksheet_analysis_workflow(portal)
 
     # Fix cancelled analyses inconsistencies
-    fix_cancelled_analyses_inconsistencies(portal)
+    # Superseded by resolve_cancellation_inactive_state(portal)
+    #fix_cancelled_analyses_inconsistencies(portal)
+
+    # Fix cancelled/inactive objects inconsistencies
+    # https://github.com/senaite/senaite.core/pull/1227
+    resolve_cancellation_inactive_inconsistencies(portal)
 
     # Decouple analysis requests from samples
     decouple_analysisrequests_from_sample(portal)
 
-    # Fix cancelled analysis requests inconsistencies
-    decouple_analysis_requests_from_cancellation_workflow(portal)
+    # Fix cancelled analyses inconsistencies
+    # Superseded by resolve_cancellation_inactive_state(portal)
+    #decouple_analysis_requests_from_cancellation_workflow(portal)
 
     # Fix Analysis Requests in sampled status
     fix_analysisrequests_in_sampled_status(portal)
 
     # Update role mappings
-    update_role_mappings(portal, rm_queries)
+    # UPDATE:
+    # We do a full rolemappings update because we've changed security settings
+    # for most objects and also the workflows they are bound to new workflows:
+    # https://github.com/senaite/senaite.core/pull/1227
+    # update_role_mappings(portal, rm_queries)
+    commit_transaction(portal)
+    setup.runImportStepFromProfile(profile, 'update-workflow-rolemap')
+    logger.info("{0} upgraded to version {1}".format(product, version))
 
     # Rollback to receive inconsistent ARs
     rollback_to_receive_inconsistent_ars(portal)
@@ -795,6 +813,84 @@ def fix_cancelled_analyses_inconsistencies(portal):
         workflow.updateRoleMappingsFor(analysis)
         # Reindex
         analysis.reindexObject(idxs=["review_state", "is_active"])
+
+
+def get_catalogs(portal):
+    """Returns the catalogs from the site
+    """
+    res = []
+    for object in portal.objectValues():
+        if ICatalogTool.providedBy(object):
+            res.append(object)
+        elif IZCatalog.providedBy(object):
+            res.append(object)
+    res.sort()
+    return res
+
+
+def resolve_cancellation_inactive_inconsistencies(portal):
+    resolve_inconsistencies_for_state(portal, "cancellation_state", "cancelled")
+    resolve_inconsistencies_for_state(portal, "inactive_state", "inactive")
+
+
+def resolve_inconsistencies_for_state(portal, state_idx, state_id):
+    logger.info("Resolving inconsistencies for {} state ...".format(state_id))
+    queries = []
+    for catalog in get_catalogs(portal):
+        if not catalog.Indexes.get(state_idx, None):
+            continue
+        catalog_id = catalog.getId()
+        queries.append(({state_idx: state_id}, catalog_id))
+
+    processed = []
+    for query in queries:
+        logger.info("Resolving '{}' state from '{}' ...".format(state_idx,
+                                                                query[1]))
+        brains = api.search(query[0], query[1])
+        total = len(brains)
+        for num, brain in enumerate(brains):
+            if num % 100 == 0:
+                logger.info("Resolving state to '{}': {}/{}".format(state_id,
+                                                                    num, total))
+            if api.get_uid(brain) in processed:
+                continue
+            if brain.review_state == state_id:
+                if api.get_review_status(api.get_object(brain)) == state_id:
+                    continue
+
+            # Set state
+            pt = api.get_portal_type(brain)
+            workflows = api.get_workflows_for(brain)
+            if not workflows:
+                logger.error("No workflows found for {}".format(pt))
+                continue
+            elif len(workflows) > 1:
+                logger.error("More than one workflow found for {}".format(pt))
+                continue
+
+            workflow = workflows[0]
+            wf_id = workflow.id
+            if "cancelled" not in workflow.states:
+                logger.error("'{}' state not found for {}".format(state_id,
+                                                                  wf_id))
+
+            obj = api.get_object(brain)
+            if changeWorkflowState(obj, wf_id, state_id):
+                processed.append(api.get_uid(obj))
+
+            if num % 1000 == 0:
+                commit_transaction(portal)
+
+    # Remove indexes and metadata
+    catalogs = map(lambda cat: cat[1], queries)
+    catalogs = list(set(catalogs))
+    for catalog_id in catalogs:
+        del_index(portal, catalog_id=catalog_id, index_name=state_idx)
+        del_metadata(portal, catalog_id=catalog_id, column=state_idx)
+        add_index(portal, catalog_id=catalog_id, index_name="is_active",
+                  index_attribute="is_active", index_metatype="BooleanIndex")
+
+    commit_transaction(portal)
 
 
 def get_role_mappings_candidates(portal):
@@ -1263,7 +1359,7 @@ def fix_ar_analyses_inconsistencies(portal):
     logger.info("Fixing Analysis Request - Analyses inconsistencies ...")
     pool = ActionHandlerPool.get_instance()
     pool.queue_pool()
-    fix_ar_analyses("cancelled", wf_state_id="cancellation_state")
+    fix_ar_analyses("cancelled")
     fix_ar_analyses("invalid")
     fix_ar_analyses("rejected")
     pool.resume()
