@@ -23,7 +23,6 @@ _indexes_dict = {
     'getAnalyst': 'FieldIndex',
     'getWorksheetTemplateTitle': 'FieldIndex',
     'getAnalysesUIDs': 'KeywordIndex',
-    'is_active': 'BooleanIndex',
 }
 # Defining the columns for this catalog
 _columns_list = [

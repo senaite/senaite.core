@@ -42,7 +42,6 @@ _indexes_dict = {
     # http://zope.readthedocs.io/en/latest/zope2book/SearchingZCatalog.html#textindexng
     'listing_searchable_text': 'TextIndexNG3',
     'isRootAncestor': 'BooleanIndex',
-    'is_active': 'BooleanIndex',
 }
 # Defining the columns for this catalog
 _columns_list = [

@@ -51,7 +51,6 @@ _indexes_dict = {
     'getAncestorsUIDs': 'KeywordIndex',
     'isSampleReceived': 'BooleanIndex',
     'isRetest': 'BooleanIndex',
-    'is_active': 'BooleanIndex',
 }
 # Defining the columns for this catalog
 _columns_list = [
