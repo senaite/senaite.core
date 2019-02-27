@@ -230,6 +230,7 @@ def upgrade(tool):
     # https://github.com/senaite/senaite.core/pull/1243
     set_retest_id_formatting(portal)
 
+    logger.info("{0} upgraded to version {1}".format(product, version))
     return True
 
 
