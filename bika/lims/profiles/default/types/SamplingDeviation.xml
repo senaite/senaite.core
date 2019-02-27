@@ -43,7 +43,7 @@
          i18n:attributes="title"
          i18n:domain="plone"
          visible="True">
-    <permission value="BIKA: Manage Bika"/>
+    <permission value="senaite.core: Manage Bika"/>
  </action>
 
 </object>

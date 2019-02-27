@@ -344,7 +344,7 @@
       <role name="Sampler"/>
       <role name="SamplingCoordinator"/>
       <!-- @xispa conflicts
-      WAS: "BIKA: Sample Sample"
+      WAS: "senaite.core: Sample Sample"
       Usage in workflows:
         - ar_workflow.xml: as guard_permission
 
@@ -596,11 +596,11 @@
     
     
     <!-- Behavioral permissions -->
-    <permission name="BIKA: Access JSON API" acquire="False">
+    <permission name="senaite.core: Access JSON API" acquire="False">
       <role name="LabManager"/>
       <role name="Manager"/>
     </permission>
-    <permission name="BIKA: Edit Field Results" acquire="False">
+    <permission name="senaite.core: Edit Field Results" acquire="False">
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Sampler"/>
@@ -629,7 +629,7 @@
         - ** TODO Consider to remove this permission in favour of Edit Results
       -->
     </permission>
-    <permission name="BIKA: Edit Results" acquire="False">
+    <permission name="senaite.core: Edit Results" acquire="False">
       <role name="Analyst"/>
       <role name="LabManager"/>
       <role name="Manager"/>
@@ -649,7 +649,7 @@
         - Check before redirection to AR's "Manage results" view
 
       Additional notes:
-        - Consider comments regarding "BIKA: Edit Field Results" above.
+        - Consider comments regarding "senaite.core: Edit Field Results" above.
 
       ar_workflow permissions:
         - sample_received: -Sampler, -SamplingCoordinator
@@ -657,47 +657,47 @@
         - cancelled:       -LabClerk, -Owner, -Sampler, -SamplingCoordinator
       -->
     </permission>
-    <permission name="BIKA: Edit Worksheet" acquire="False">
+    <permission name="senaite.core: Edit Worksheet" acquire="False">
       <role name="Analyst"/>
       <role name="LabManager"/>
       <role name="Manager"/>
     </permission>
-    <permission name="BIKA: Manage Bika" acquire="False">
+    <permission name="senaite.core: Manage Bika" acquire="False">
       <role name="LabManager"/>
       <role name="Manager"/>
     </permission>
-    <permission name="BIKA: Manage Analysis Requests" acquire="False">
+    <permission name="senaite.core: Manage Analysis Requests" acquire="False">
       <role name="Analyst"/>
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
-    <permission name="BIKA: Manage ARImport" acquire="False">
+    <permission name="senaite.core: Manage ARImport" acquire="False">
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
-    <permission name="BIKA: Manage Invoices" acquire="False">
+    <permission name="senaite.core: Manage Invoices" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
     </permission>
-    <permission name="BIKA: Manage Login Details" acquire="False">
+    <permission name="senaite.core: Manage Login Details" acquire="False">
       <role name="LabManager"/>
       <role name="Manager"/>
     </permission>
-    <permission name="BIKA: Manage Reference" acquire="False">
+    <permission name="senaite.core: Manage Reference" acquire="False">
       <role name="Analyst"/>
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
     </permission>
-    <permission name="BIKA: Manage Worksheets" acquire="False">
+    <permission name="senaite.core: Manage Worksheets" acquire="False">
       <role name="LabManager"/>
       <role name="Manager"/>
     </permission>
-    <permission name="BIKA: View Results" acquire="False">
+    <permission name="senaite.core: View Results" acquire="False">
       <role name="Analyst"/>
       <role name="LabClerk"/>
       <role name="LabManager"/>
@@ -735,12 +735,12 @@
     </permission>
 
     <!-- View/Action permissions -->
-    <permission name="BIKA: Import Instrument Results" acquire="False">
+    <permission name="senaite.core: Import Instrument Results" acquire="False">
       <role name="Analyst"/>
       <role name="LabManager"/>
       <role name="Manager"/>
     </permission>
-    <permission name="BIKA: View Retracted Analyses" acquire="False">
+    <permission name="senaite.core: View Retracted Analyses" acquire="False">
       <role name="Analyst"/>
       <role name="LabClerk"/>
       <role name="LabManager"/>
@@ -748,11 +748,11 @@
       <role name="Publisher"/>
       <role name="Verifier"/>
     </permission>
-    <permission name="BIKA: View Log Tab" acquire="False">
+    <permission name="senaite.core: View Log Tab" acquire="False">
       <role name="LabManager"/>
       <role name="Manager"/>
     </permission>
-    <permission name="BIKA: Import Instrument Results" acquire="False">
+    <permission name="senaite.core: Import Instrument Results" acquire="False">
       <role name="Analyst"/>
       <role name="LabManager"/>
       <role name="Manager"/>

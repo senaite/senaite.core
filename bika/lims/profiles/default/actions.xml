@@ -57,7 +57,7 @@
 			<property name="icon_expr"/>
 			<property name="available_expr"/>
 			<property name="permissions">
-				<element value="BIKA: Manage Analysis Requests"/>
+				<element value="senaite.core: Manage Analysis Requests"/>
 			</property>
 			<property name="visible">False</property>
 		</object>
@@ -69,7 +69,7 @@
 			<property name="icon_expr"/>
 			<property name="available_expr"/>
 			<property name="permissions">
-				<element value="BIKA: Manage Worksheets"/>
+				<element value="senaite.core: Manage Worksheets"/>
 			</property>
 			<property name="visible">False</property>
 		</object>
@@ -81,7 +81,7 @@
 			<property name="icon_expr"/>
 			<property name="available_expr"/>
 			<property name="permissions">
-				<element value="BIKA: Manage Reference Suppliers"/>
+				<element value="senaite.core: Manage Reference Suppliers"/>
 			</property>
 			<property name="visible">False</property>
 		</object>
@@ -93,7 +93,7 @@
 			<property name="icon_expr"/>
 			<property name="available_expr"/>
 			<property name="permissions">
-				<element value="BIKA: Manage Reference"/>
+				<element value="senaite.core: Manage Reference"/>
 			</property>
 			<property name="visible">False</property>
 		</object>
@@ -141,7 +141,7 @@
 			<property name="icon_expr"/>
 			<property name="available_expr"/>
 			<property name="permissions">
-				<element value="BIKA: Import Instrument Results"/>
+				<element value="senaite.core: Import Instrument Results"/>
 			</property>
 			<property name="visible">True</property>
 		</object>

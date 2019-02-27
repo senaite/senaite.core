@@ -12,7 +12,7 @@
   <permission>senaite.core: Transition: Unassign Analysis</permission>
   <permission>senaite.core: Transition: Retract</permission>
   <permission>senaite.core: Transition: Verify</permission>
-  <permission>BIKA: View Results</permission>
+  <permission>senaite.core: View Results</permission>
   <permission>Reject</permission>
   <permission>Modify portal content</permission>
 
@@ -31,8 +31,8 @@
   Hence, the view needs to check *first* if the object is a field or lab
   analysis and *afterwards* if the "senaite.core: Field: Edit Analysis Result" permission is granted.
   -->
-  <permission>BIKA: Edit Field Results</permission>
-  <permission>BIKA: Edit Results</permission>
+  <permission>senaite.core: Edit Field Results</permission>
+  <permission>senaite.core: Edit Results</permission>
 
   <!-- Field-specific permissions
        Are meant to be used for "read_permission" and "write_permission" in fields.
@@ -65,13 +65,13 @@
     </permission-map>
 
     <!-- Field results should stay editable, even if the analysis is in registered state -->
-    <permission-map name="BIKA: Edit Field Results" acquired="False">
+    <permission-map name="senaite.core: Edit Field Results" acquired="False">
       <permission-role>Manager</permission-role>
       <permission-role>Sampler</permission-role>
     </permission-map>
 
     <!-- Lab results are not editable, because the sample did not yet arrive in the lab -->
-    <permission-map name="BIKA: Edit Results" acquired="False">
+    <permission-map name="senaite.core: Edit Results" acquired="False">
     </permission-map>
 
     <!-- FIELD PERMISSIONS (initialized) -->
@@ -109,19 +109,19 @@
     <permission-map name="Modify portal content" acquired="False">
     </permission-map>
 
-    <permission-map name="BIKA: Edit Field Results" acquired="False">
+    <permission-map name="senaite.core: Edit Field Results" acquired="False">
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
       <permission-role>Sampler</permission-role>
     </permission-map>
 
-    <permission-map name="BIKA: Edit Results" acquired="False">
+    <permission-map name="senaite.core: Edit Results" acquired="False">
       <permission-role>Analyst</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>
 
-    <permission-map name="BIKA: View Results" acquired="False">
+    <permission-map name="senaite.core: View Results" acquired="False">
       <permission-role>Analyst</permission-role>
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -182,19 +182,19 @@
     <permission-map name="Modify portal content" acquired="False">
     </permission-map>
 
-    <permission-map name="BIKA: Edit Field Results" acquired="False">
+    <permission-map name="senaite.core: Edit Field Results" acquired="False">
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
       <permission-role>Sampler</permission-role>
     </permission-map>
 
-    <permission-map name="BIKA: Edit Results" acquired="False">
+    <permission-map name="senaite.core: Edit Results" acquired="False">
       <permission-role>Analyst</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>
 
-    <permission-map name="BIKA: View Results" acquired="False">
+    <permission-map name="senaite.core: View Results" acquired="False">
       <permission-role>Analyst</permission-role>
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -258,7 +258,7 @@
     <permission-map name="Modify portal content" acquired="False">
     </permission-map>
 
-    <permission-map name="BIKA: View Results" acquired="False">
+    <permission-map name="senaite.core: View Results" acquired="False">
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
       <permission-role>RegulatoryInspector</permission-role>
@@ -302,13 +302,13 @@
     <permission-map name="Modify portal content" acquired="False">
     </permission-map>
 
-    <permission-map name="BIKA: Edit Field Results" acquired="False">
+    <permission-map name="senaite.core: Edit Field Results" acquired="False">
     </permission-map>
 
-    <permission-map name="BIKA: Edit Results" acquired="False">
+    <permission-map name="senaite.core: Edit Results" acquired="False">
     </permission-map>
 
-    <permission-map name="BIKA: View Results" acquired="False">
+    <permission-map name="senaite.core: View Results" acquired="False">
       <permission-role>Analyst</permission-role>
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -363,13 +363,13 @@
     <permission-map name="Modify portal content" acquired="False">
     </permission-map>
 
-    <permission-map name="BIKA: Edit Field Results" acquired="False">
+    <permission-map name="senaite.core: Edit Field Results" acquired="False">
     </permission-map>
 
-    <permission-map name="BIKA: Edit Results" acquired="False">
+    <permission-map name="senaite.core: Edit Results" acquired="False">
     </permission-map>
 
-    <permission-map name="BIKA: View Results" acquired="False">
+    <permission-map name="senaite.core: View Results" acquired="False">
       <permission-role>Analyst</permission-role>
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -408,13 +408,13 @@
     <permission-map name="Modify portal content" acquired="False">
     </permission-map>
 
-    <permission-map name="BIKA: Edit Field Results" acquired="False">
+    <permission-map name="senaite.core: Edit Field Results" acquired="False">
     </permission-map>
 
-    <permission-map name="BIKA: Edit Results" acquired="False">
+    <permission-map name="senaite.core: Edit Results" acquired="False">
     </permission-map>
 
-    <permission-map name="BIKA: View Results" acquired="False">
+    <permission-map name="senaite.core: View Results" acquired="False">
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
       <permission-role>RegulatoryInspector</permission-role>
@@ -457,13 +457,13 @@
     <permission-map name="Modify portal content" acquired="False">
     </permission-map>
 
-    <permission-map name="BIKA: Edit Field Results" acquired="False">
+    <permission-map name="senaite.core: Edit Field Results" acquired="False">
     </permission-map>
 
-    <permission-map name="BIKA: Edit Results" acquired="False">
+    <permission-map name="senaite.core: Edit Results" acquired="False">
     </permission-map>
 
-    <permission-map name="BIKA: View Results" acquired="False">
+    <permission-map name="senaite.core: View Results" acquired="False">
       <permission-role>Analyst</permission-role>
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -506,13 +506,13 @@
     <permission-map name="Modify portal content" acquired="False">
     </permission-map>
 
-    <permission-map name="BIKA: Edit Field Results" acquired="False">
+    <permission-map name="senaite.core: Edit Field Results" acquired="False">
     </permission-map>
 
-    <permission-map name="BIKA: Edit Results" acquired="False">
+    <permission-map name="senaite.core: Edit Results" acquired="False">
     </permission-map>
 
-    <permission-map name="BIKA: View Results" acquired="False">
+    <permission-map name="senaite.core: View Results" acquired="False">
       <permission-role>Analyst</permission-role>
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -619,8 +619,8 @@
               i18n:attributes="title">
     <action url="" category="workflow" icon="">Submit for verification</action>
     <guard>
-      <guard-permission>BIKA: Edit Results</guard-permission>
-      <guard-permission>BIKA: Edit Field Results</guard-permission>
+      <guard-permission>senaite.core: Edit Results</guard-permission>
+      <guard-permission>senaite.core: Edit Field Results</guard-permission>
       <guard-expression>python:here.guard_handler("submit")</guard-expression>
     </guard>
   </transition>

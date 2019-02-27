@@ -119,24 +119,24 @@
 
   # Behavioral Permissions
   # ----------------------
-  <permission id="senaite.core.permissions.AccessJSONAPI" title="BIKA: Access JSON API"/>
-  <permission id="senaite.core.permissions.EditFieldResults" title="BIKA: Edit Field Results"/>
-  <permission id="senaite.core.permissions.EditResults" title="BIKA: Edit Results"/>
-  <permission id="senaite.core.permissions.EditWorksheet" title="BIKA: Edit Worksheet"/>
-  <permission id="senaite.core.permissions.ManageBika" title="BIKA: Manage Bika"/>
-  <permission id="senaite.core.permissions.ManageAnalysisRequests" title="BIKA: Manage Analysis Requests"/>
-  <permission id="senaite.core.permissions.ManageARImport" title="BIKA: Manage ARImport"/>
-  <permission id="senaite.core.permissions.ManageInvoices" title="BIKA: Manage Invoices"/>
-  <permission id="senaite.core.permissions.ManageLoginDetails" title="BIKA: Manage Login Details"/>
-  <permission id="senaite.core.permissions.ManageReference" title="BIKA: Manage Reference"/>
-  <permission id="senaite.core.permissions.ManageWorksheets" title="BIKA: Manage Worksheets"/>
-  <permission id="senaite.core.permissions.ViewResults" title="BIKA: View Results"/>
+  <permission id="senaite.core.permissions.AccessJSONAPI" title="senaite.core: Access JSON API"/>
+  <permission id="senaite.core.permissions.EditFieldResults" title="senaite.core: Edit Field Results"/>
+  <permission id="senaite.core.permissions.EditResults" title="senaite.core: Edit Results"/>
+  <permission id="senaite.core.permissions.EditWorksheet" title="senaite.core: Edit Worksheet"/>
+  <permission id="senaite.core.permissions.ManageBika" title="senaite.core: Manage Bika"/>
+  <permission id="senaite.core.permissions.ManageAnalysisRequests" title="senaite.core: Manage Analysis Requests"/>
+  <permission id="senaite.core.permissions.ManageARImport" title="senaite.core: Manage ARImport"/>
+  <permission id="senaite.core.permissions.ManageInvoices" title="senaite.core: Manage Invoices"/>
+  <permission id="senaite.core.permissions.ManageLoginDetails" title="senaite.core: Manage Login Details"/>
+  <permission id="senaite.core.permissions.ManageReference" title="senaite.core: Manage Reference"/>
+  <permission id="senaite.core.permissions.ManageWorksheets" title="senaite.core: Manage Worksheets"/>
+  <permission id="senaite.core.permissions.ViewResults" title="senaite.core: View Results"/>
 
 
   # View/Action Permissions
   # -----------------------
-  <permission id="senaite.core.permissions.ImportInstrumentResults" title="BIKA: Import Instrument Results"/>
-  <permission id="senaite.core.permissions.ViewRetractedAnalyses" title="BIKA: View Retracted Analyses"/>
-  <permission id="senaite.core.permissions.ViewLogTab" title="BIKA: View Log Tab"/>
+  <permission id="senaite.core.permissions.ImportInstrumentResults" title="senaite.core: Import Instrument Results"/>
+  <permission id="senaite.core.permissions.ViewRetractedAnalyses" title="senaite.core: View Retracted Analyses"/>
+  <permission id="senaite.core.permissions.ViewLogTab" title="senaite.core: View Log Tab"/>
 
 </configure>

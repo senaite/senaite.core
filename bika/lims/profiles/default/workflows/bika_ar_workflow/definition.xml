@@ -32,10 +32,10 @@
 
   <permission>senaite.core: Add Analysis</permission>
   <permission>senaite.core: Add Attachment</permission>
-  <permission>BIKA: Edit Field Results</permission>
-  <permission>BIKA: Edit Results</permission>
-  <permission>BIKA: Manage Invoices</permission>
-  <permission>BIKA: View Results</permission>
+  <permission>senaite.core: Edit Field Results</permission>
+  <permission>senaite.core: Edit Results</permission>
+  <permission>senaite.core: Manage Invoices</permission>
+  <permission>senaite.core: View Results</permission>
   <permission>Access contents information</permission>
   <permission>Modify portal content</permission>
   <permission>View</permission>
@@ -118,10 +118,10 @@
 
     <permission-map name="senaite.core: Add Analysis" acquired="True"/>
     <permission-map name="senaite.core: Add Attachment" acquired="True"/>
-    <permission-map name="BIKA: Edit Field Results" acquired="True"/>
-    <permission-map name="BIKA: Edit Results" acquired="True"/>
-    <permission-map name="BIKA: Manage Invoices" acquired="True"/>
-    <permission-map name="BIKA: View Results" acquired="True"/>
+    <permission-map name="senaite.core: Edit Field Results" acquired="True"/>
+    <permission-map name="senaite.core: Edit Results" acquired="True"/>
+    <permission-map name="senaite.core: Manage Invoices" acquired="True"/>
+    <permission-map name="senaite.core: View Results" acquired="True"/>
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
     <permission-map name="View" acquired="True"/>
@@ -208,10 +208,10 @@
       <permission-role>Sampler</permission-role>
     </permission-map>
     <permission-map name="senaite.core: Add Attachment" acquired="True"/>
-    <permission-map name="BIKA: Edit Field Results" acquired="True"/>
-    <permission-map name="BIKA: Edit Results" acquired="False"/>
-    <permission-map name="BIKA: Manage Invoices" acquired="True"/>
-    <permission-map name="BIKA: View Results" acquired="True"/>
+    <permission-map name="senaite.core: Edit Field Results" acquired="True"/>
+    <permission-map name="senaite.core: Edit Results" acquired="False"/>
+    <permission-map name="senaite.core: Manage Invoices" acquired="True"/>
+    <permission-map name="senaite.core: View Results" acquired="True"/>
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
     <permission-map name="View" acquired="True"/>
@@ -304,10 +304,10 @@
       <permission-role>Sampler</permission-role>
     </permission-map>
     <permission-map name="senaite.core: Add Attachment" acquired="True"/>
-    <permission-map name="BIKA: Edit Field Results" acquired="True"/>
-    <permission-map name="BIKA: Edit Results" acquired="False"/>
-    <permission-map name="BIKA: Manage Invoices" acquired="True"/>
-    <permission-map name="BIKA: View Results" acquired="True"/>
+    <permission-map name="senaite.core: Edit Field Results" acquired="True"/>
+    <permission-map name="senaite.core: Edit Results" acquired="False"/>
+    <permission-map name="senaite.core: Manage Invoices" acquired="True"/>
+    <permission-map name="senaite.core: View Results" acquired="True"/>
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
     <permission-map name="View" acquired="True"/>
@@ -389,10 +389,10 @@
 
     <permission-map name="senaite.core: Add Analysis" acquired="True"/>
     <permission-map name="senaite.core: Add Attachment" acquired="True"/>
-    <permission-map name="BIKA: Edit Field Results" acquired="True"/>
-    <permission-map name="BIKA: Edit Results" acquired="False"/>
-    <permission-map name="BIKA: Manage Invoices" acquired="True"/>
-    <permission-map name="BIKA: View Results" acquired="True"/>
+    <permission-map name="senaite.core: Edit Field Results" acquired="True"/>
+    <permission-map name="senaite.core: Edit Results" acquired="False"/>
+    <permission-map name="senaite.core: Manage Invoices" acquired="True"/>
+    <permission-map name="senaite.core: View Results" acquired="True"/>
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
     <permission-map name="View" acquired="True"/>
@@ -473,10 +473,10 @@
 
     <permission-map name="senaite.core: Add Analysis" acquired="True"/>
     <permission-map name="senaite.core: Add Attachment" acquired="True"/>
-    <permission-map name="BIKA: Edit Field Results" acquired="True"/>
-    <permission-map name="BIKA: Edit Results" acquired="True"/>
-    <permission-map name="BIKA: Manage Invoices" acquired="True"/>
-    <permission-map name="BIKA: View Results" acquired="True"/>
+    <permission-map name="senaite.core: Edit Field Results" acquired="True"/>
+    <permission-map name="senaite.core: Edit Results" acquired="True"/>
+    <permission-map name="senaite.core: Manage Invoices" acquired="True"/>
+    <permission-map name="senaite.core: View Results" acquired="True"/>
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
     <permission-map name="View" acquired="True"/>
@@ -554,10 +554,10 @@
 
     <permission-map name="senaite.core: Add Analysis" acquired="True"/>
     <permission-map name="senaite.core: Add Attachment" acquired="True"/>
-    <permission-map name="BIKA: Edit Field Results" acquired="True"/>
-    <permission-map name="BIKA: Edit Results" acquired="True"/>
-    <permission-map name="BIKA: Manage Invoices" acquired="True"/>
-    <permission-map name="BIKA: View Results" acquired="True"/>
+    <permission-map name="senaite.core: Edit Field Results" acquired="True"/>
+    <permission-map name="senaite.core: Edit Results" acquired="True"/>
+    <permission-map name="senaite.core: Manage Invoices" acquired="True"/>
+    <permission-map name="senaite.core: View Results" acquired="True"/>
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
     <permission-map name="View" acquired="True"/>
@@ -640,10 +640,10 @@
       <permission-role>Manager</permission-role>
     </permission-map>
     <permission-map name="senaite.core: Add Attachment" acquired="True"/>
-    <permission-map name="BIKA: Edit Field Results" acquired="False"/>
-    <permission-map name="BIKA: Edit Results" acquired="False"/>
-    <permission-map name="BIKA: Manage Invoices" acquired="True"/>
-    <permission-map name="BIKA: View Results" acquired="True"/>
+    <permission-map name="senaite.core: Edit Field Results" acquired="False"/>
+    <permission-map name="senaite.core: Edit Results" acquired="False"/>
+    <permission-map name="senaite.core: Manage Invoices" acquired="True"/>
+    <permission-map name="senaite.core: View Results" acquired="True"/>
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
     <permission-map name="View" acquired="True"/>
@@ -722,10 +722,10 @@
 
     <permission-map name="senaite.core: Add Analysis" acquired="True"/>
     <permission-map name="senaite.core: Add Attachment" acquired="True"/>
-    <permission-map name="BIKA: Edit Field Results" acquired="True"/>
-    <permission-map name="BIKA: Edit Results" acquired="True"/>
-    <permission-map name="BIKA: Manage Invoices" acquired="True"/>
-    <permission-map name="BIKA: View Results" acquired="True"/>
+    <permission-map name="senaite.core: Edit Field Results" acquired="True"/>
+    <permission-map name="senaite.core: Edit Results" acquired="True"/>
+    <permission-map name="senaite.core: Manage Invoices" acquired="True"/>
+    <permission-map name="senaite.core: View Results" acquired="True"/>
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
     <permission-map name="View" acquired="True"/>
@@ -804,10 +804,10 @@
     <permission-map name="senaite.core: Add Analysis" acquired="False"/>
     <permission-map name="senaite.core: Add Attachment" acquired="True"/>
     <!-- Hide the 'Manage Results' tab -->
-    <permission-map name="BIKA: Edit Field Results" acquired="False"/>
-    <permission-map name="BIKA: Edit Results" acquired="False"/>
-    <permission-map name="BIKA: Manage Invoices" acquired="True"/>
-    <permission-map name="BIKA: View Results" acquired="True"/>
+    <permission-map name="senaite.core: Edit Field Results" acquired="False"/>
+    <permission-map name="senaite.core: Edit Results" acquired="False"/>
+    <permission-map name="senaite.core: Manage Invoices" acquired="True"/>
+    <permission-map name="senaite.core: View Results" acquired="True"/>
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
     <permission-map name="View" acquired="True"/>
@@ -879,10 +879,10 @@
     <permission-map name="senaite.core: Add Analysis" acquired="False"/>
     <permission-map name="senaite.core: Add Attachment" acquired="True"/>
     <!-- Hide the 'Manage Results' tab -->
-    <permission-map name="BIKA: Edit Field Results" acquired="False"/>
-    <permission-map name="BIKA: Edit Results" acquired="False"/>
-    <permission-map name="BIKA: Manage Invoices" acquired="True"/>
-    <permission-map name="BIKA: View Results" acquired="True"/>
+    <permission-map name="senaite.core: Edit Field Results" acquired="False"/>
+    <permission-map name="senaite.core: Edit Results" acquired="False"/>
+    <permission-map name="senaite.core: Manage Invoices" acquired="True"/>
+    <permission-map name="senaite.core: View Results" acquired="True"/>
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
     <permission-map name="View" acquired="True"/>
@@ -952,10 +952,10 @@
     <permission-map name="senaite.core: Add Analysis" acquired="False"/>
     <permission-map name="senaite.core: Add Attachment" acquired="True"/>
     <!-- Hide the 'Manage Results' tab -->
-    <permission-map name="BIKA: Edit Field Results" acquired="False"/>
-    <permission-map name="BIKA: Edit Results" acquired="False"/>
-    <permission-map name="BIKA: Manage Invoices" acquired="True"/>
-    <permission-map name="BIKA: View Results" acquired="True"/>
+    <permission-map name="senaite.core: Edit Field Results" acquired="False"/>
+    <permission-map name="senaite.core: Edit Results" acquired="False"/>
+    <permission-map name="senaite.core: Manage Invoices" acquired="True"/>
+    <permission-map name="senaite.core: View Results" acquired="True"/>
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
     <permission-map name="View" acquired="True"/>
@@ -1024,10 +1024,10 @@
     <permission-map name="senaite.core: Add Analysis" acquired="False"/>
     <permission-map name="senaite.core: Add Attachment" acquired="True"/>
     <!-- Hide the 'Manage Results' tab -->
-    <permission-map name="BIKA: Edit Field Results" acquired="False"/>
-    <permission-map name="BIKA: Edit Results" acquired="False"/>
-    <permission-map name="BIKA: Manage Invoices" acquired="True"/>
-    <permission-map name="BIKA: View Results" acquired="True"/>
+    <permission-map name="senaite.core: Edit Field Results" acquired="False"/>
+    <permission-map name="senaite.core: Edit Results" acquired="False"/>
+    <permission-map name="senaite.core: Manage Invoices" acquired="True"/>
+    <permission-map name="senaite.core: View Results" acquired="True"/>
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
     <permission-map name="View" acquired="True"/>
@@ -1101,10 +1101,10 @@
     <permission-map name="senaite.core: Add Analysis" acquired="False"/>
     <permission-map name="senaite.core: Add Attachment" acquired="True"/>
     <!-- Hide the 'Manage Results' tab -->
-    <permission-map name="BIKA: Edit Field Results" acquired="False"/>
-    <permission-map name="BIKA: Edit Results" acquired="False"/>
-    <permission-map name="BIKA: Manage Invoices" acquired="True"/>
-    <permission-map name="BIKA: View Results" acquired="True"/>
+    <permission-map name="senaite.core: Edit Field Results" acquired="False"/>
+    <permission-map name="senaite.core: Edit Results" acquired="False"/>
+    <permission-map name="senaite.core: Manage Invoices" acquired="True"/>
+    <permission-map name="senaite.core: View Results" acquired="True"/>
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
     <permission-map name="View" acquired="True"/>
@@ -1245,7 +1245,7 @@
               i18n:attributes="title">
     <action url="" category="workflow" icon="">Create partitions</action>
     <guard>
-      <guard-permission>BIKA: Edit Results</guard-permission>
+      <guard-permission>senaite.core: Edit Results</guard-permission>
       <guard-expression>python:here.guard_handler("create_partitions")</guard-expression>
     </guard>
   </transition>

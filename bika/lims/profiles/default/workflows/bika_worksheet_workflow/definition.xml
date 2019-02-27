@@ -10,11 +10,11 @@
 
   <permission>senaite.core: Add Attachment</permission>
   <permission>senaite.core: Transition: Assign Analysis</permission>
-  <permission>BIKA: Edit Worksheet</permission>
+  <permission>senaite.core: Edit Worksheet</permission>
   <permission>senaite.core: Transition: Retract</permission>
   <permission>senaite.core: Transition: Reject Worksheet</permission>
   <permission>senaite.core: Transition: Unassign Analysis</permission>
-  <permission>BIKA: View Results</permission>
+  <permission>senaite.core: View Results</permission>
   <permission>Modify portal content</permission>
 
   <state state_id="attachment_due" title="Attachment due" i18n:attributes="title">
@@ -28,7 +28,7 @@
       <permission-role>Manager</permission-role>
     </permission-map>
     <permission-map name="senaite.core: Transition: Assign Analysis" acquired="True"/>
-    <permission-map name="BIKA: Edit Worksheet" acquired="False">
+    <permission-map name="senaite.core: Edit Worksheet" acquired="False">
       <permission-role>Analyst</permission-role>
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -37,7 +37,7 @@
     <permission-map name="senaite.core: Transition: Retract" acquired="False">
     </permission-map>
     <permission-map name="senaite.core: Transition: Unassign Analysis" acquired="True"/>
-    <permission-map name="BIKA: View Results" acquired="False">
+    <permission-map name="senaite.core: View Results" acquired="False">
       <permission-role>Analyst</permission-role>
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -61,7 +61,7 @@
       <permission-role>Manager</permission-role>
     </permission-map>
     <permission-map name="senaite.core: Transition: Assign Analysis" acquired="True"/>
-    <permission-map name="BIKA: Edit Worksheet" acquired="False">
+    <permission-map name="senaite.core: Edit Worksheet" acquired="False">
       <permission-role>Analyst</permission-role>
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -70,7 +70,7 @@
     <permission-map name="senaite.core: Transition: Retract" acquired="False">
     </permission-map>
     <permission-map name="senaite.core: Transition: Unassign Analysis" acquired="True"/>
-    <permission-map name="BIKA: View Results" acquired="False">
+    <permission-map name="senaite.core: View Results" acquired="False">
       <permission-role>Analyst</permission-role>
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -91,12 +91,12 @@
       <permission-role>Manager</permission-role>
     </permission-map>
     <permission-map name="senaite.core: Transition: Assign Analysis" acquired="False"/>
-    <permission-map name="BIKA: Edit Worksheet" acquired="False">
+    <permission-map name="senaite.core: Edit Worksheet" acquired="False">
     </permission-map>
     <permission-map name="senaite.core: Transition: Retract" acquired="False">
     </permission-map>
     <permission-map name="senaite.core: Transition: Unassign Analysis" acquired="False"/>
-    <permission-map name="BIKA: View Results" acquired="False">
+    <permission-map name="senaite.core: View Results" acquired="False">
       <permission-role>Analyst</permission-role>
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -120,7 +120,7 @@
       <permission-role>Manager</permission-role>
     </permission-map>
     <permission-map name="senaite.core: Transition: Assign Analysis" acquired="True"/>
-    <permission-map name="BIKA: Edit Worksheet" acquired="False">
+    <permission-map name="senaite.core: Edit Worksheet" acquired="False">
       <permission-role>Analyst</permission-role>
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -131,7 +131,7 @@
       <permission-role>Manager</permission-role>
     </permission-map>
     <permission-map name="senaite.core: Transition: Unassign Analysis" acquired="True"/>
-    <permission-map name="BIKA: View Results" acquired="False">
+    <permission-map name="senaite.core: View Results" acquired="False">
       <permission-role>Analyst</permission-role>
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -155,7 +155,7 @@
       <permission-role>Manager</permission-role>
     </permission-map>
     <permission-map name="senaite.core: Transition: Assign Analysis" acquired="False"/>
-    <permission-map name="BIKA: Edit Worksheet" acquired="False">
+    <permission-map name="senaite.core: Edit Worksheet" acquired="False">
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>
@@ -164,7 +164,7 @@
       <permission-role>Manager</permission-role>
     </permission-map>
     <permission-map name="senaite.core: Transition: Unassign Analysis" acquired="False"/>
-    <permission-map name="BIKA: View Results" acquired="False">
+    <permission-map name="senaite.core: View Results" acquired="False">
       <permission-role>Analyst</permission-role>
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>

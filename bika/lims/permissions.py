@@ -135,23 +135,23 @@ FieldEditAnalysisRemarks = "senaite.core: Field: Edit Analysis Remarks"
 # Behavioral permissions
 # ======================
 # TODO Security Review these "behavioral" permissions
-AccessJSONAPI = "BIKA: Access JSON API"
-EditFieldResults = "BIKA: Edit Field Results"
-EditResults = "BIKA: Edit Results"
-EditWorksheet = "BIKA: Edit Worksheet"
-ManageBika = "BIKA: Manage Bika"
-ManageAnalysisRequests = "BIKA: Manage Analysis Requests"
-ManageARImport = "BIKA: Manage ARImport"
-ManageInvoices = "BIKA: Manage Invoices"
-ManageLoginDetails = "BIKA: Manage Login Details"
-ManageReference = "BIKA: Manage Reference"
-ManageWorksheets = "BIKA: Manage Worksheets"
-ViewResults = "BIKA: View Results"
+AccessJSONAPI = "senaite.core: Access JSON API"
+EditFieldResults = "senaite.core: Edit Field Results"
+EditResults = "senaite.core: Edit Results"
+EditWorksheet = "senaite.core: Edit Worksheet"
+ManageBika = "senaite.core: Manage Bika"
+ManageAnalysisRequests = "senaite.core: Manage Analysis Requests"
+ManageARImport = "senaite.core: Manage ARImport"
+ManageInvoices = "senaite.core: Manage Invoices"
+ManageLoginDetails = "senaite.core: Manage Login Details"
+ManageReference = "senaite.core: Manage Reference"
+ManageWorksheets = "senaite.core: Manage Worksheets"
+ViewResults = "senaite.core: View Results"
 
 
 # View/Action permissions
 # =======================
 # TODO Security Review these "view/action" permissions
-ImportInstrumentResults = "BIKA: Import Instrument Results"
-ViewRetractedAnalyses = "BIKA: View Retracted Analyses"
-ViewLogTab = "BIKA: View Log Tab"
+ImportInstrumentResults = "senaite.core: Import Instrument Results"
+ViewRetractedAnalyses = "senaite.core: View Retracted Analyses"
+ViewLogTab = "senaite.core: View Log Tab"

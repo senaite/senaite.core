@@ -9,7 +9,7 @@
              i18n:domain="senaite.core">
 
   <permission>Add portal content</permission>
-  <permission>BIKA: Manage Reference</permission>
+  <permission>senaite.core: Manage Reference</permission>
   <permission>Delete objects</permission>
   <permission>Modify portal content</permission>
 
@@ -22,7 +22,7 @@
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>
-    <permission-map name="BIKA: Manage Reference" acquired="False">
+    <permission-map name="senaite.core: Manage Reference" acquired="False">
       <permission-role>Analyst</permission-role>
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -41,7 +41,7 @@
     <permission-map name="Add portal content" acquired="False">
       <permission-role>Manager</permission-role>
     </permission-map>
-    <permission-map name="BIKA: Manage Reference" acquired="False">
+    <permission-map name="senaite.core: Manage Reference" acquired="False">
       <permission-role>Analyst</permission-role>
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -66,7 +66,7 @@
     <permission-map name="Add portal content" acquired="False">
       <permission-role>Manager</permission-role>
     </permission-map>
-    <permission-map name="BIKA: Manage Reference" acquired="False">
+    <permission-map name="senaite.core: Manage Reference" acquired="False">
       <permission-role>Analyst</permission-role>
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -95,14 +95,14 @@
   <transition transition_id="dispose" title="Dispose" new_state="disposed" trigger="USER" before_script="" after_script="" i18n:attributes="title">
     <action url="" category="workflow" icon="">Dispose</action>
     <guard>
-      <guard-permission>BIKA: Manage Reference</guard-permission>
+      <guard-permission>senaite.core: Manage Reference</guard-permission>
     </guard>
   </transition>
 
   <transition transition_id="expire" title="Expire" new_state="expired" trigger="USER" before_script="" after_script="" i18n:attributes="title">
     <action url="" category="workflow" icon="">Expire</action>
     <guard>
-      <guard-permission>BIKA: Manage Reference</guard-permission>
+      <guard-permission>senaite.core: Manage Reference</guard-permission>
     </guard>
   </transition>
 

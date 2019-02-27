@@ -307,7 +307,7 @@ def add_create_partition_transition(portal):
         after_script_name='',
         actbox_name="Create partitions", )
     guard = transition.guard or Guard()
-    guard_props = {'guard_permissions': 'BIKA: Edit Results',
+    guard_props = {'guard_permissions': 'senaite.core: Edit Results',
                    'guard_roles': '',
                    'guard_expr': 'python:here.guard_handler("create_partitions")'}
     guard.changeFromProperties(guard_props)

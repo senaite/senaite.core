@@ -491,7 +491,7 @@ class AnalysisRequestsView(BikaListingView):
                 review_states.append(review_state)
             self.review_states = review_states
 
-        # Only "BIKA: ManageAnalysisRequests" may see the copy to new button.
+        # Only "senaite.core: ManageAnalysisRequests" may see the copy to new button.
         # elsewhere it is hacked in where required.
         if self.copy_to_new_allowed:
             review_states = []
