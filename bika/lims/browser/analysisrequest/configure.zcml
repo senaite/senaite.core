@@ -8,7 +8,7 @@
       for="*"
       name="ar_add_manage"
       class="bika.lims.browser.analysisrequest.AnalysisRequestManageView"
-      permission="bika.lims.ManageBika"
+      permission="senaite.core.permissions.ManageBika"
       layer="bika.lims.interfaces.IBikaLIMS"
       />
 
@@ -16,7 +16,7 @@
       for="bika.lims.interfaces.IClient"
       name="ar_add"
       class="bika.lims.browser.analysisrequest.AnalysisRequestAddView"
-      permission="bika.lims.permissions.AddAnalysisRequest"
+      permission="senaite.core.permissions.AddAnalysisRequest"
       layer="bika.lims.interfaces.IBikaLIMS"
       />
 
@@ -24,7 +24,7 @@
       for="bika.lims.interfaces.IAnalysisRequestsFolder"
       name="ar_add"
       class="bika.lims.browser.analysisrequest.AnalysisRequestAddView"
-      permission="bika.lims.permissions.AddAnalysisRequest"
+      permission="senaite.core.permissions.AddAnalysisRequest"
       layer="bika.lims.interfaces.IBikaLIMS"
       />
 
@@ -32,7 +32,7 @@
       for="bika.lims.interfaces.IBatch"
       name="ar_add"
       class="bika.lims.browser.analysisrequest.AnalysisRequestAddView"
-      permission="bika.lims.permissions.AddAnalysisRequest"
+      permission="senaite.core.permissions.AddAnalysisRequest"
       layer="bika.lims.interfaces.IBikaLIMS"
       />
 
@@ -81,7 +81,7 @@
       for="bika.lims.interfaces.IAnalysisRequestsFolder"
       name="base_view"
       class="bika.lims.browser.analysisrequest.analysisrequests.AnalysisRequestsView"
-      permission="bika.lims.ManageAnalysisRequests"
+      permission="senaite.core.permissions.ManageAnalysisRequests"
       layer="bika.lims.interfaces.IBikaLIMS"
       />
 
@@ -90,7 +90,7 @@
       for="bika.lims.interfaces.IAnalysisRequest"
       name="base_view"
       class="bika.lims.browser.analysisrequest.AnalysisRequestViewView"
-      permission="bika.lims.ManageAnalysisRequests"
+      permission="senaite.core.permissions.ManageAnalysisRequests"
       layer="bika.lims.interfaces.IBikaLIMS"
       />
 
@@ -99,7 +99,7 @@
       for="bika.lims.interfaces.IAnalysisRequest"
       name="table_lab_analyses"
       class=".tables.LabAnalysesTable"
-      permission="bika.lims.ManageAnalysisRequests"
+      permission="senaite.core.permissions.ManageAnalysisRequests"
       layer="bika.lims.interfaces.IBikaLIMS"
       />
 
@@ -108,7 +108,7 @@
       for="bika.lims.interfaces.IAnalysisRequest"
       name="table_field_analyses"
       class=".tables.FieldAnalysesTable"
-      permission="bika.lims.ManageAnalysisRequests"
+      permission="senaite.core.permissions.ManageAnalysisRequests"
       layer="bika.lims.interfaces.IBikaLIMS"
       />
 
@@ -117,7 +117,7 @@
       for="bika.lims.interfaces.IAnalysisRequest"
       name="table_qc_analyses"
       class=".tables.QCAnalysesTable"
-      permission="bika.lims.ManageAnalysisRequests"
+      permission="senaite.core.permissions.ManageAnalysisRequests"
       layer="bika.lims.interfaces.IBikaLIMS"
       />
 
@@ -126,7 +126,7 @@
       for="bika.lims.interfaces.IAnalysisRequest"
       name="analyses"
       class="bika.lims.browser.analysisrequest.AnalysisRequestAnalysesView"
-      permission="bika.lims.permissions.AddAnalysis"
+      permission="senaite.core.permissions.AddAnalysis"
       layer="bika.lims.interfaces.IBikaLIMS"
       />
 
@@ -135,7 +135,7 @@
       for="bika.lims.interfaces.IAnalysisRequest"
       name="manage_results"
       class="bika.lims.browser.analysisrequest.AnalysisRequestManageResultsView"
-      permission="bika.lims.EditResults"
+      permission="senaite.core.permissions.EditResults"
       layer="bika.lims.interfaces.IBikaLIMS"
       />
 
@@ -143,7 +143,7 @@
       for="bika.lims.interfaces.IAnalysisRequest"
       name="published_results"
       class="bika.lims.browser.analysisrequest.AnalysisRequestPublishedResults"
-      permission="bika.lims.ManageAnalysisRequests"
+      permission="senaite.core.permissions.ManageAnalysisRequests"
       layer="bika.lims.interfaces.IBikaLIMS"
       />
 
@@ -151,7 +151,7 @@
       for="bika.lims.interfaces.IAnalysisRequest"
       name="invoice"
       class="bika.lims.browser.analysisrequest.InvoiceView"
-      permission="bika.lims.ManageInvoices"
+      permission="senaite.core.permissions.ManageInvoices"
       layer="bika.lims.interfaces.IBikaLIMS"
       />
 
@@ -160,7 +160,7 @@
       for="bika.lims.interfaces.IAnalysisRequest"
       name="invoice_print"
       class="bika.lims.browser.analysisrequest.InvoicePrintView"
-      permission="bika.lims.ManageInvoices"
+      permission="senaite.core.permissions.ManageInvoices"
       layer="bika.lims.interfaces.IBikaLIMS"
       />
 
@@ -168,7 +168,7 @@
       for="bika.lims.interfaces.IAnalysisRequest"
       name="invoice_create"
       class="bika.lims.browser.analysisrequest.InvoiceCreate"
-      permission="bika.lims.ManageInvoices"
+      permission="senaite.core.permissions.ManageInvoices"
       layer="bika.lims.interfaces.IBikaLIMS"
       />
 

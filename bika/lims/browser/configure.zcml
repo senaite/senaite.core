@@ -82,7 +82,7 @@
       for="*"
       name="partition_magic"
       class=".partition_magic.PartitionMagicView"
-      permission="bika.lims.ManageAnalysisRequests"
+      permission="senaite.core.permissions.ManageAnalysisRequests"
       layer="bika.lims.interfaces.IBikaLIMS"
   />
 

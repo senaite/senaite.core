@@ -8,7 +8,7 @@
       for="bika.lims.interfaces.IBikaLogging"
       name="log"
       class="bika.lims.browser.log.Log"
-      permission="bika.lims.ViewLogTab"
+      permission="senaite.core.permissions.ViewLogTab"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 

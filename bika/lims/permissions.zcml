@@ -119,24 +119,24 @@
 
   # Behavioral Permissions
   # ----------------------
-  <permission id="bika.lims.AccessJSONAPI" title="BIKA: Access JSON API"/>
-  <permission id="bika.lims.EditFieldResults" title="BIKA: Edit Field Results"/>
-  <permission id="bika.lims.EditResults" title="BIKA: Edit Results"/>
-  <permission id="bika.lims.EditWorksheet" title="BIKA: Edit Worksheet"/>
-  <permission id="bika.lims.ManageBika" title="BIKA: Manage Bika"/>
-  <permission id="bika.lims.ManageAnalysisRequests" title="BIKA: Manage Analysis Requests"/>
-  <permission id="bika.lims.ManageARImport" title="BIKA: Manage ARImport"/>
-  <permission id="bika.lims.ManageInvoices" title="BIKA: Manage Invoices"/>
-  <permission id="bika.lims.ManageLoginDetails" title="BIKA: Manage Login Details"/>
-  <permission id="bika.lims.ManageReference" title="BIKA: Manage Reference"/>
-  <permission id="bika.lims.ManageWorksheets" title="BIKA: Manage Worksheets"/>
-  <permission id="bika.lims.ViewResults" title="BIKA: View Results"/>
+  <permission id="senaite.core.permissions.AccessJSONAPI" title="BIKA: Access JSON API"/>
+  <permission id="senaite.core.permissions.EditFieldResults" title="BIKA: Edit Field Results"/>
+  <permission id="senaite.core.permissions.EditResults" title="BIKA: Edit Results"/>
+  <permission id="senaite.core.permissions.EditWorksheet" title="BIKA: Edit Worksheet"/>
+  <permission id="senaite.core.permissions.ManageBika" title="BIKA: Manage Bika"/>
+  <permission id="senaite.core.permissions.ManageAnalysisRequests" title="BIKA: Manage Analysis Requests"/>
+  <permission id="senaite.core.permissions.ManageARImport" title="BIKA: Manage ARImport"/>
+  <permission id="senaite.core.permissions.ManageInvoices" title="BIKA: Manage Invoices"/>
+  <permission id="senaite.core.permissions.ManageLoginDetails" title="BIKA: Manage Login Details"/>
+  <permission id="senaite.core.permissions.ManageReference" title="BIKA: Manage Reference"/>
+  <permission id="senaite.core.permissions.ManageWorksheets" title="BIKA: Manage Worksheets"/>
+  <permission id="senaite.core.permissions.ViewResults" title="BIKA: View Results"/>
 
 
   # View/Action Permissions
   # -----------------------
-  <permission id="bika.lims.ImportInstrumentResults" title="BIKA: Import Instrument Results"/>
-  <permission id="bika.lims.ViewRetractedAnalyses" title="BIKA: View Retracted Analyses"/>
-  <permission id="bika.lims.ViewLogTab" title="BIKA: View Log Tab"/>
+  <permission id="senaite.core.permissions.ImportInstrumentResults" title="BIKA: Import Instrument Results"/>
+  <permission id="senaite.core.permissions.ViewRetractedAnalyses" title="BIKA: View Retracted Analyses"/>
+  <permission id="senaite.core.permissions.ViewLogTab" title="BIKA: View Log Tab"/>
 
 </configure>

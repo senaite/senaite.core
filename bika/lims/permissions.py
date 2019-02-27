@@ -33,25 +33,25 @@ both valid.
 # When the module gets initialized (bika.lims.__init__), the function initialize
 # will look through these Add permissions attributes when registering types and
 # will automatically associate them with their types.
-AddAnalysis = 'senaite.core: Add Analysis'
-AddAnalysisProfile = 'senaite.core: Add AnalysisProfile'
-AddAnalysisRequest = 'senaite.core: Add AnalysisRequest'
-AddAnalysisSpec = 'senaite.core: Add AnalysisSpec'
-AddAttachment = 'senaite.core: Add Attachment'
-AddARTemplate = 'senaite.core: Add ARTemplate'
-AddBatch = 'senaite.core: Add Batch'
-AddClient = 'senaite.core: Add Client'
-AddInvoice = 'senaite.core: Add Invoice'
-AddMethod = 'senaite.core: Add Method'
-AddMultifile = 'senaite.core: Add Multifile'
-AddPricelist = 'senaite.core: Add Pricelist'
-AddSupplyOrder = 'senaite.core: Add SupplyOrder'
-AddSampleMatrix = 'senaite.core: Add SampleMatrix'
-AddSamplePoint = 'senaite.core: Add SamplePoint'
-AddSamplingDeviation = 'senaite.core: Add SamplingDeviation'
-AddSamplingRound = 'senaite.core: Add SamplingRound'
-AddSRTemplate = 'senaite.core: Add SRTemplate'
-AddSubGroup = 'senaite.core: Add Sub-group'
+AddAnalysis = "senaite.core: Add Analysis"
+AddAnalysisProfile = "senaite.core: Add AnalysisProfile"
+AddAnalysisRequest = "senaite.core: Add AnalysisRequest"
+AddAnalysisSpec = "senaite.core: Add AnalysisSpec"
+AddAttachment = "senaite.core: Add Attachment"
+AddARTemplate = "senaite.core: Add ARTemplate"
+AddBatch = "senaite.core: Add Batch"
+AddClient = "senaite.core: Add Client"
+AddInvoice = "senaite.core: Add Invoice"
+AddMethod = "senaite.core: Add Method"
+AddMultifile = "senaite.core: Add Multifile"
+AddPricelist = "senaite.core: Add Pricelist"
+AddSupplyOrder = "senaite.core: Add SupplyOrder"
+AddSampleMatrix = "senaite.core: Add SampleMatrix"
+AddSamplePoint = "senaite.core: Add SamplePoint"
+AddSamplingDeviation = "senaite.core: Add SamplingDeviation"
+AddSamplingRound = "senaite.core: Add SamplingRound"
+AddSRTemplate = "senaite.core: Add SRTemplate"
+AddSubGroup = "senaite.core: Add Sub-group"
 
 # Transition permissions
 # ======================
@@ -59,14 +59,14 @@ TransitionDeactivate = "senaite.core: Transition: Deactivate"
 TransitionActivate = "senaite.core: Transition: Activate"
 TransitionCancel = "senaite.core: Transition: Cancel"
 TransitionReinstate = "senaite.core: Transition: Reinstate"
-TransitionClose = 'senaite.core: Transition: Close'
-TransitionReopen = 'senaite.core: Transition: Reopen'
+TransitionClose = "senaite.core: Transition: Close"
+TransitionReopen = "senaite.core: Transition: Reopen"
 
 # Transition permissions (Analysis and alike)
 TransitionRetract = "senaite.core: Transition: Retract"
 TransitionVerify = "senaite.core: Transition: Verify"
-TransitionAssignAnalysis = 'senaite.core: Transition: Assign Analysis'
-TransitionUnassignAnalysis = 'senaite.core: Transition: Unassign Analysis'
+TransitionAssignAnalysis = "senaite.core: Transition: Assign Analysis"
+TransitionUnassignAnalysis = "senaite.core: Transition: Unassign Analysis"
 
 # Transition permissions (Analysis Request)
 TransitionCancelAnalysisRequest = "senaite.core: Transition: Cancel Analysis Request"
@@ -80,14 +80,14 @@ TransitionSampleSample = "senaite.core: Transition: Sample Sample"
 TransitionScheduleSampling = "senaite.core: Transition: Schedule Sampling"
 
 # Transition permissions (Supply Order)
-TransitionDispatchOrder = 'senaite.core: Transition: Dispatch Order'
+TransitionDispatchOrder = "senaite.core: Transition: Dispatch Order"
 
 # Transition permissions (Sampling Round)
-TransitionCloseSamplingRound = 'senaite.core: Transition: Close Sampling Round'
-TransitionReopenSamplingRound = 'senaite.core: Transition: Reopen Sampling Round'
+TransitionCloseSamplingRound = "senaite.core: Transition: Close Sampling Round"
+TransitionReopenSamplingRound = "senaite.core: Transition: Reopen Sampling Round"
 
 # Transition permissions (Worksheet)
-TransitionRejectWorksheet = 'senaite.core: Transition: Reject Worksheet'
+TransitionRejectWorksheet = "senaite.core: Transition: Reject Worksheet"
 
 
 # Field Permissions
@@ -135,23 +135,23 @@ FieldEditAnalysisRemarks = "senaite.core: Field: Edit Analysis Remarks"
 # Behavioral permissions
 # ======================
 # TODO Security Review these "behavioral" permissions
-AccessJSONAPI = 'BIKA: Access JSON API'
-EditFieldResults = 'BIKA: Edit Field Results'
-EditResults = 'BIKA: Edit Results'
-EditWorksheet = 'BIKA: Edit Worksheet'
-ManageBika = 'BIKA: Manage Bika'
-ManageAnalysisRequests = 'BIKA: Manage Analysis Requests'
-ManageARImport = 'BIKA: Manage ARImport'
-ManageInvoices = 'BIKA: Manage Invoices'
-ManageLoginDetails = 'BIKA: Manage Login Details'
-ManageReference = 'BIKA: Manage Reference'
-ManageWorksheets = 'BIKA: Manage Worksheets'
-ViewResults = 'BIKA: View Results'
+AccessJSONAPI = "BIKA: Access JSON API"
+EditFieldResults = "BIKA: Edit Field Results"
+EditResults = "BIKA: Edit Results"
+EditWorksheet = "BIKA: Edit Worksheet"
+ManageBika = "BIKA: Manage Bika"
+ManageAnalysisRequests = "BIKA: Manage Analysis Requests"
+ManageARImport = "BIKA: Manage ARImport"
+ManageInvoices = "BIKA: Manage Invoices"
+ManageLoginDetails = "BIKA: Manage Login Details"
+ManageReference = "BIKA: Manage Reference"
+ManageWorksheets = "BIKA: Manage Worksheets"
+ViewResults = "BIKA: View Results"
 
 
 # View/Action permissions
 # =======================
 # TODO Security Review these "view/action" permissions
 ImportInstrumentResults = "BIKA: Import Instrument Results"
-ViewRetractedAnalyses = 'BIKA: View Retracted Analyses'
-ViewLogTab = 'BIKA: View Log Tab'
+ViewRetractedAnalyses = "BIKA: View Retracted Analyses"
+ViewLogTab = "BIKA: View Log Tab"
