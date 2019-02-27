@@ -5,11 +5,6 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from Products.CMFCore import permissions
-from Products.CMFEditions.Permissions import AccessPreviousVersions
-from Products.CMFEditions.Permissions import ApplyVersionControl
-from Products.CMFEditions.Permissions import SaveNewVersion
-
 """
 This file has two parts, the first one contains pseudoconstants to get
 permissions titles in other places.
