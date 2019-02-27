@@ -614,8 +614,9 @@ def update_workflows(portal):
     # https://github.com/senaite/senaite.core/pull/1227
     # update_role_mappings(portal, rm_queries)
     commit_transaction(portal)
-    setup.runImportStepFromProfile(profile, 'update-workflow-rolemap')
-    logger.info("{0} upgraded to version {1}".format(product, version))
+    # Recursively update the role mappings starting from the portal object
+    wf_tool = api.get_tool("portal_workflow")
+    wf_tool.updateRoleMappings()
 
     # Rollback to receive inconsistent ARs
     rollback_to_receive_inconsistent_ars(portal)
