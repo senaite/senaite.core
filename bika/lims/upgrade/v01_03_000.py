@@ -615,6 +615,7 @@ def update_workflows(portal):
     # update_role_mappings(portal, rm_queries)
     commit_transaction(portal)
     # Recursively update the role mappings starting from the portal object
+    logger.info("Recursively update role mappings ...")
     wf_tool = api.get_tool("portal_workflow")
     wf_tool.updateRoleMappings()
 
