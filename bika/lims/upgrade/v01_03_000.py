@@ -870,8 +870,10 @@ def resolve_inconsistencies_for_state(portal, state_idx, state_id):
                 logger.error("More than one workflow found for {}".format(pt))
                 continue
 
-            workflow = workflows[0]
-            wf_id = workflow.id
+            wf_id = workflows[0]
+            wf_tool = api.get_tool("portal_workflow")
+            workflow = wf_tool.getWorkflowById(wf_id)
+
             if "cancelled" not in workflow.states:
                 logger.error("'{}' state not found for {}".format(state_id,
                                                                   wf_id))
