@@ -616,8 +616,8 @@ def update_workflows(portal):
     commit_transaction(portal)
     # Recursively update the role mappings starting from the portal object
     logger.info("Recursively update role mappings ...")
-    wf_tool = api.get_tool("portal_workflow")
-    wf_tool.updateRoleMappings()
+    ut = UpgradeUtils(portal)
+    ut.recursiveUpdateRoleMappings(portal)
 
     # Rollback to receive inconsistent ARs
     rollback_to_receive_inconsistent_ars(portal)
