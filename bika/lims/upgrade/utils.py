@@ -396,7 +396,7 @@ class UpgradeUtils(object):
                 for k, v in obs:
                     if count % 100 == 0:
                         logger.info(
-                            "Updating role mappings for {}: {0}".format(
+                            "Updating role mappings for {}: {}".format(
                                 repr(ob), count))
                     changed = getattr(v, '_p_changed', 0)
                     count = count + self.recursiveUpdateRoleMappings(v, wfs,
