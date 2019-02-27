@@ -94,6 +94,9 @@ def upgrade(tool):
     logger.info("Upgrading {0}: {1} -> {2}".format(product, ver_from, version))
 
     # -------- ADD YOUR STUFF BELOW --------
+    setup.runImportStepFromProfile(profile, 'rolemap')
+    setup.runImportStepFromProfile(profile, 'workflow')
+    setup.runImportStepFromProfile(profile, 'update-workflow-rolemap')
     setup.runImportStepFromProfile(profile, 'typeinfo')
     setup.runImportStepFromProfile(profile, 'content')
 
@@ -199,6 +202,26 @@ def upgrade(tool):
     # Updates Indexes/Metadata of the bika_catalog
     # https://github.com/senaite/senaite.core/pull/1231
     update_bika_catalog(portal)
+
+    # Updates Indexes/Metadata of the bika_analysis_catalog
+    # https://github.com/senaite/senaite.core/pull/1227
+    update_bika_analysis_catalog(portal)
+
+    # Updates Indexes/Metadata of the bika_catalog_worksheet_listing
+    # https://github.com/senaite/senaite.core/pull/1227
+    update_bika_catalog_worksheet_listing(portal)
+
+    # Updates Indexes/Metadata of the bika_setup_catalog
+    # https://github.com/senaite/senaite.core/pull/1227
+    update_bika_setup_catalog(portal)
+
+    # Updates Indexes/Metadata of the bika_catalog_report
+    # https://github.com/senaite/senaite.core/pull/1227
+    update_bika_catalog_report(portal)
+
+    # Updates Indexes/Metadata of the portal_catalog
+    # https://github.com/senaite/senaite.core/pull/1227
+    update_portal_catalog(portal)
 
     # Apply IAnalysisRequestRetest marker interface to retested ARs
     # https://github.com/senaite/senaite.core/pull/1243
@@ -1655,6 +1678,7 @@ def update_ar_listing_catalog(portal):
     indexes_to_add = [
         # name, attribute, metatype
         ("getClientID", "getClientID", "FieldIndex"),
+        ("is_active", "is_active", "BooleanIndex"),
     ]
 
     metadata_to_add = [
@@ -1682,11 +1706,137 @@ def update_bika_catalog(portal):
         # name, attribute, metatype
         ("getClientID", "getClientID", "FieldIndex"),
         ("getClientBatchID", "getClientBatchID", "FieldIndex"),
+        ("is_active", "is_active", "BooleanIndex"),
     ]
 
     metadata_to_add = [
         "getClientID",
         "getClientBatchID",
+    ]
+
+    for index in indexes_to_add:
+        add_index(portal, cat_id, *index)
+
+    for metadata in metadata_to_add:
+        refresh = metadata not in catalog.schema()
+        add_metadata(portal, cat_id, metadata, refresh_catalog=refresh)
+
+
+def update_bika_analysis_catalog(portal):
+    """Add Indexes/Metadata to bika_analysis_catalog
+    """
+    cat_id = "bika_analysis_catalog"
+
+    catalog = api.get_tool(cat_id)
+
+    logger.info("Updating Indexes/Metadata of Catalog '{}'".format(cat_id))
+
+    indexes_to_add = [
+        # name, attribute, metatype
+        ("is_active", "is_active", "BooleanIndex"),
+    ]
+
+    metadata_to_add = [
+    ]
+
+    for index in indexes_to_add:
+        add_index(portal, cat_id, *index)
+
+    for metadata in metadata_to_add:
+        refresh = metadata not in catalog.schema()
+        add_metadata(portal, cat_id, metadata, refresh_catalog=refresh)
+
+
+def update_bika_catalog_worksheet_listing(portal):
+    """Add Indexes/Metadata to bika_analysis_catalog
+    """
+    cat_id = "bika_catalog_worksheet_listing"
+
+    catalog = api.get_tool(cat_id)
+
+    logger.info("Updating Indexes/Metadata of Catalog '{}'".format(cat_id))
+
+    indexes_to_add = [
+        # name, attribute, metatype
+        ("is_active", "is_active", "BooleanIndex"),
+    ]
+
+    metadata_to_add = [
+    ]
+
+    for index in indexes_to_add:
+        add_index(portal, cat_id, *index)
+
+    for metadata in metadata_to_add:
+        refresh = metadata not in catalog.schema()
+        add_metadata(portal, cat_id, metadata, refresh_catalog=refresh)
+
+
+def update_bika_setup_catalog(portal):
+    """Add Indexes/Metadata to bika_setup_catalog
+    """
+    cat_id = "bika_setup_catalog"
+
+    catalog = api.get_tool(cat_id)
+
+    logger.info("Updating Indexes/Metadata of Catalog '{}'".format(cat_id))
+
+    indexes_to_add = [
+        # name, attribute, metatype
+        ("is_active", "is_active", "BooleanIndex"),
+    ]
+
+    metadata_to_add = [
+    ]
+
+    for index in indexes_to_add:
+        add_index(portal, cat_id, *index)
+
+    for metadata in metadata_to_add:
+        refresh = metadata not in catalog.schema()
+        add_metadata(portal, cat_id, metadata, refresh_catalog=refresh)
+
+
+def update_bika_catalog_report(portal):
+    """Add Indexes/Metadata to bika_catalog_report
+    """
+    cat_id = "bika_catalog_report"
+
+    catalog = api.get_tool(cat_id)
+
+    logger.info("Updating Indexes/Metadata of Catalog '{}'".format(cat_id))
+
+    indexes_to_add = [
+        # name, attribute, metatype
+        ("is_active", "is_active", "BooleanIndex"),
+    ]
+
+    metadata_to_add = [
+    ]
+
+    for index in indexes_to_add:
+        add_index(portal, cat_id, *index)
+
+    for metadata in metadata_to_add:
+        refresh = metadata not in catalog.schema()
+        add_metadata(portal, cat_id, metadata, refresh_catalog=refresh)
+
+
+def update_portal_catalog(portal):
+    """Add Indexes/Metadata to portal_catalog
+    """
+    cat_id = "portal_catalog"
+
+    catalog = api.get_tool(cat_id)
+
+    logger.info("Updating Indexes/Metadata of Catalog '{}'".format(cat_id))
+
+    indexes_to_add = [
+        # name, attribute, metatype
+        ("is_active", "is_active", "BooleanIndex"),
+    ]
+
+    metadata_to_add = [
     ]
 
     for index in indexes_to_add:
@@ -1710,7 +1860,6 @@ def update_notify_on_sample_invalidation(portal):
     # NotifyOnRejection --> NotifyOnSampleRejection
     old_value = setup.__dict__.get("NotifyOnRejection", False)
     setup.setNotifyOnSampleRejection(old_value)
-
 
 
 def apply_analysis_request_retest_interface(portal):

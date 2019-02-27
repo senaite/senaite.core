@@ -18,6 +18,7 @@ CATALOG_AUTOIMPORTLOGS_LISTING = 'bika_catalog_autoimportlogs_listing'
 # Defining the indexes for this catalog
 _indexes_dict = {
     'getInstrumentUID': 'FieldIndex',
+    'is_active': 'BooleanIndex',
 }
 # Defining the columns for this catalog
 _columns_list = [

@@ -16,7 +16,9 @@ from bika.lims.catalog.catalog_basic_template import BASE_CATALOG_COLUMNS
 # Using a variable to avoid plain strings in code
 CATALOG_REPORT_LISTING = 'bika_catalog_report'
 # Defining the indexes for this catalog
-_indexes_dict = {'getClientUID': 'FieldIndex',
+_indexes_dict = {
+    'getClientUID': 'FieldIndex',
+    'is_active': 'BooleanIndex',
 }
 
 # Defining the columns for this catalog
