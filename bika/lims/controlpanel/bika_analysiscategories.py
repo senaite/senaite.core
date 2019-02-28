@@ -41,7 +41,7 @@ class AnalysisCategoriesView(BikaListingView):
         self.context_actions = {
             _("Add"): {
                 "url": "createObject?type_name=AnalysisCategory",
-                "permission": "Add portal content",
+                "permission": "senaite.core: Add AnalysisCategory",
                 "icon": "++resource++bika.lims.images/add.png"}
         }
 

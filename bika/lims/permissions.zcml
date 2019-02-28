@@ -18,6 +18,7 @@
   # Add Permissions
   # ---------------
   <permission id="senaite.core.permissions.AddAnalysis" title="senaite.core: Add Analysis"/>
+  <permission id="senaite.core.permissions.AddAnalysisCategory" title="senaite.core: Add AnalysisCategory"/>
   <permission id="senaite.core.permissions.AddAnalysisProfile" title="senaite.core: Add AnalysisProfile"/>
   <permission id="senaite.core.permissions.AddAnalysisRequest" title="senaite.core: Add AnalysisRequest"/>
   <permission id="senaite.core.permissions.AddAnalysisSpec" title="senaite.core: Add AnalysisSpec"/>

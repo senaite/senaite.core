@@ -34,6 +34,7 @@ both valid.
 # will look through these Add permissions attributes when registering types and
 # will automatically associate them with their types.
 AddAnalysis = "senaite.core: Add Analysis"
+AddAnalysisCategory = "senaite.core: Add AnalysisCategory"
 AddAnalysisProfile = "senaite.core: Add AnalysisProfile"
 AddAnalysisRequest = "senaite.core: Add AnalysisRequest"
 AddAnalysisSpec = "senaite.core: Add AnalysisSpec"
