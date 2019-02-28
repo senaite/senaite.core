@@ -7,15 +7,16 @@
 
 import collections
 
+from Products.ATContentTypes.content import schemata
+from Products.Archetypes import atapi
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import IInstruments
+from bika.lims.permissions import AddInstrument
+from bika.lims.utils import get_link
 from plone.app.folder.folder import ATFolder
 from plone.app.folder.folder import ATFolderSchema
-from bika.lims.utils import get_link
-from Products.Archetypes import atapi
-from Products.ATContentTypes.content import schemata
 from zope.interface.declarations import implements
 
 
@@ -37,7 +38,7 @@ class InstrumentsView(BikaListingView):
         self.context_actions = {
             _("Add"): {
                 "url": "createObject?type_name=Instrument",
-                "permisison": "Add portal content",
+                "permission": AddInstrument,
                 "icon": "++resource++bika.lims.images/add.png"}
         }
 

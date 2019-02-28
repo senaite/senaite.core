@@ -21,23 +21,44 @@
   <permission id="senaite.core.permissions.AddAnalysisCategory" title="senaite.core: Add AnalysisCategory"/>
   <permission id="senaite.core.permissions.AddAnalysisProfile" title="senaite.core: Add AnalysisProfile"/>
   <permission id="senaite.core.permissions.AddAnalysisRequest" title="senaite.core: Add AnalysisRequest"/>
+  <permission id="senaite.core.permissions.AddAnalysisService" title="senaite.core: Add AnalysisService"/>
   <permission id="senaite.core.permissions.AddAnalysisSpec" title="senaite.core: Add AnalysisSpec"/>
-  <permission id="senaite.core.permissions.AddAttachment" title="senaite.core: Add Attachment"/>
   <permission id="senaite.core.permissions.AddARTemplate" title="senaite.core: Add ARTemplate"/>
+  <permission id="senaite.core.permissions.AddAttachment" title="senaite.core: Add Attachment"/>
+  <permission id="senaite.core.permissions.AddAttachmentType" title="senaite.core: Add AttachmentType"/>
   <permission id="senaite.core.permissions.AddBatch" title="senaite.core: Add Batch"/>
+  <permission id="senaite.core.permissions.AddBatchLabel" title="senaite.core: Add BatchLabel"/>
+  <permission id="senaite.core.permissions.AddCalculation" title="senaite.core: Add Calculation"/>
   <permission id="senaite.core.permissions.AddClient" title="senaite.core: Add Client"/>
+  <permission id="senaite.core.permissions.AddContainer" title="senaite.core: Add Container"/>
+  <permission id="senaite.core.permissions.AddContainerType" title="senaite.core: Add ContainerType"/>
+  <permission id="senaite.core.permissions.AddDepartment" title="senaite.core: Add Department"/>
+  <permission id="senaite.core.permissions.AddIdentifierType" title="senaite.core: Add IdentifierType"/>
+  <permission id="senaite.core.permissions.AddInstrument" title="senaite.core: Add Instrument"/>
+  <permission id="senaite.core.permissions.AddInstrumentLocation" title="senaite.core: Add InstrumentLocation"/>
+  <permission id="senaite.core.permissions.AddInstrumentType" title="senaite.core: Add InstrumentType"/>
   <permission id="senaite.core.permissions.AddInvoice" title="senaite.core: Add Invoice"/>
+  <permission id="senaite.core.permissions.AddLabContact" title="senaite.core: Add LabContact"/>
+  <permission id="senaite.core.permissions.AddLabProduct" title="senaite.core: Add LabProduct"/>
+  <permission id="senaite.core.permissions.AddManufacturer" title="senaite.core: Add Manufacturer"/>
   <permission id="senaite.core.permissions.AddMethod" title="senaite.core: Add Method"/>
   <permission id="senaite.core.permissions.AddMultifile" title="senaite.core: Add Multifile"/>
+  <permission id="senaite.core.permissions.AddPreservation" title="senaite.core: Add Preservation"/>
   <permission id="senaite.core.permissions.AddPricelist" title="senaite.core: Add Pricelist"/>
-  <permission id="senaite.core.permissions.AddSupplyOrder" title="senaite.core: Add SupplyOrder"/>
+  <permission id="senaite.core.permissions.AddReferenceDefinition" title="senaite.core: Add ReferenceDefinition"/>
+  <permission id="senaite.core.permissions.AddReflexRule" title="senaite.core: Add ReflexRule"/>
+  <permission id="senaite.core.permissions.AddSampleCondition" title="senaite.core: Add SampleCondition"/>
   <permission id="senaite.core.permissions.AddSampleMatrix" title="senaite.core: Add SampleMatrix"/>
   <permission id="senaite.core.permissions.AddSamplePoint" title="senaite.core: Add SamplePoint"/>
   <permission id="senaite.core.permissions.AddSampleType" title="senaite.core: Add SampleType"/>
   <permission id="senaite.core.permissions.AddSamplingDeviation" title="senaite.core: Add SamplingDeviation"/>
   <permission id="senaite.core.permissions.AddSamplingRound" title="senaite.core: Add SamplingRound"/>
   <permission id="senaite.core.permissions.AddSRTemplate" title="senaite.core: Add SRTemplate"/>
-  <permission id="senaite.core.permissions.AddSubGroup" title="senaite.core: Add Sub-group"/>
+  <permission id="senaite.core.permissions.AddStorageLocation" title="senaite.core: Add StorageLocation"/>
+  <permission id="senaite.core.permissions.AddSubGroup" title="senaite.core: Add SubGroup"/>
+  <permission id="senaite.core.permissions.AddSupplier" title="senaite.core: Add Supplier"/>
+  <permission id="senaite.core.permissions.AddSupplyOrder" title="senaite.core: Add SupplyOrder"/>
+  <permission id="senaite.core.permissions.AddWorksheetTemplate" title="senaite.core: Add WorksheetTemplate"/>
 
 
   # Transition Permissions

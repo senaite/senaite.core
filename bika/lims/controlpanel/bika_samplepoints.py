@@ -9,20 +9,22 @@ import collections
 import json
 
 import plone
+from Products.ATContentTypes.content import schemata
+from Products.Archetypes import PloneMessageFactory as _p
+from Products.Archetypes import atapi
+from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser import BrowserView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import ISamplePoints
+from bika.lims.permissions import AddSamplePoint
 from bika.lims.utils import get_link
 from plone.app.folder.folder import ATFolder
 from plone.app.folder.folder import ATFolderSchema
-from Products.Archetypes import PloneMessageFactory as _p
-from Products.Archetypes import atapi
-from Products.ATContentTypes.content import schemata
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import safe_unicode
 from zope.interface.declarations import implements
+
 
 # TODO: Separate content and view into own modules!
 
@@ -42,7 +44,7 @@ class SamplePointsView(BikaListingView):
         self.context_actions = {
             _("Add"): {
                 "url": "createObject?type_name=SamplePoint",
-                "permission": "Add portal content",
+                "permission": AddSamplePoint,
                 "icon": "++resource++bika.lims.images/add.png"}
         }
 

@@ -11,6 +11,7 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import ICalculations
+from bika.lims.permissions import AddCalculation
 from bika.lims.utils import get_link
 from plone.app.folder.folder import ATFolder
 from plone.app.folder.folder import ATFolderSchema
@@ -37,7 +38,7 @@ class CalculationsView(BikaListingView):
         self.context_actions = {
             _("Add"): {
                 "url": "createObject?type_name=Calculation",
-                "permission": "Add portal content",
+                "permission": AddCalculation,
                 "icon": "++resource++bika.lims.images/add.png"}
         }
 

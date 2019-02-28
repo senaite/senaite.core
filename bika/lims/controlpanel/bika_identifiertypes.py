@@ -7,10 +7,11 @@
 
 from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
+from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
-from bika.lims import bikaMessageFactory as _
 from bika.lims.interfaces import IIdentifierTypes
+from bika.lims.permissions import AddIdentifierType
 from plone.app.folder.folder import ATFolder, ATFolderSchema
 from zope.interface.declarations import implements
 
@@ -25,6 +26,7 @@ class IdentifierTypesView(BikaListingView):
         self.context_actions = {
             _('Add'): {
                 'url': 'createObject?type_name=IdentifierType',
+                'permission': AddIdentifierType,
                 'icon': '++resource++bika.lims.images/add.png'}}
         self.title = self.context.translate(_("Identifier Types"))
         self.icon = self.portal_url + \

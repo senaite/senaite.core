@@ -7,16 +7,17 @@
 
 import collections
 
+from Products.ATContentTypes.content import schemata
+from Products.Archetypes import atapi
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import ILabContacts
+from bika.lims.permissions import AddLabContact
 from bika.lims.utils import get_email_link
 from bika.lims.utils import get_link
 from plone.app.folder.folder import ATFolder
 from plone.app.folder.folder import ATFolderSchema
-from Products.Archetypes import atapi
-from Products.ATContentTypes.content import schemata
 from zope.interface.declarations import implements
 
 
@@ -38,7 +39,7 @@ class LabContactsView(BikaListingView):
         self.context_actions = {
             _("Add"): {
                 "url": "createObject?type_name=LabContact",
-                "permission": "Add portal content",
+                "permission": AddLabContact,
                 "icon": "++resource++bika.lims.images/add.png"}
         }
 

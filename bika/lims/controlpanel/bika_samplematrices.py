@@ -9,6 +9,7 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import ISampleMatrices
+from bika.lims.permissions import AddSampleMatrix
 from plone.app.folder.folder import ATFolder
 from plone.app.folder.folder import ATFolderSchema
 from Products.Archetypes import atapi
@@ -25,6 +26,7 @@ class SampleMatricesView(BikaListingView):
                               'sort_on': 'sortable_title'}
         self.context_actions = {_('Add'): {
             'url': 'createObject?type_name=SampleMatrix',
+            'permission': AddSampleMatrix,
             'icon': '++resource++bika.lims.images/add.png'
         }}
         self.title = self.context.translate(_("Sample Matrices"))

@@ -7,10 +7,11 @@
 
 from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
+from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
-from bika.lims import bikaMessageFactory as _
 from bika.lims.interfaces import IContainerTypes
+from bika.lims.permissions import AddContainerType
 from plone.app.folder.folder import ATFolder, ATFolderSchema
 from zope.interface.declarations import implements
 
@@ -24,6 +25,7 @@ class ContainerTypesView(BikaListingView):
                               'sort_on': 'sortable_title'}
         self.context_actions = {_('Add'):
                                 {'url': 'createObject?type_name=ContainerType',
+                                 'permission': AddContainerType,
                                  'icon': '++resource++bika.lims.images/add.png'}}
         self.title = self.context.translate(_("Container Types"))
         self.icon = self.portal_url + "/++resource++bika.lims.images/container_big.png"

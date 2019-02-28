@@ -7,18 +7,19 @@
 
 import collections
 
+from Products.ATContentTypes.content import schemata
+from Products.Archetypes import atapi
+from Products.Archetypes.utils import DisplayList
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import IDepartments
+from bika.lims.permissions import AddDepartment
 from bika.lims.utils import get_email_link
 from bika.lims.utils import get_link
 from plone.app.folder.folder import ATFolder
 from plone.app.folder.folder import ATFolderSchema
-from Products.Archetypes import atapi
-from Products.Archetypes.utils import DisplayList
-from Products.ATContentTypes.content import schemata
 from zope.interface.declarations import implements
 
 
@@ -41,7 +42,7 @@ class DepartmentsView(BikaListingView):
         self.context_actions = {
             _("Add"): {
                 "url": "createObject?type_name=Department",
-                "permission": "Add portal content",
+                "permission": AddDepartment,
                 "icon": "++resource++bika.lims.images/add.png"}
         }
 

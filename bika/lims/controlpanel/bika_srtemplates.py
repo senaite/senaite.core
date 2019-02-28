@@ -82,6 +82,7 @@ class SamplingRoundTemplatesView(BikaListingView):
             self.context_actions = {
                 _('Add'): {
                     'url': 'createObject?type_name=SRTemplate',
+                    'permission': AddSRTemplate,
                     'icon': '++resource++bika.lims.images/add.png'
                 }
             }
