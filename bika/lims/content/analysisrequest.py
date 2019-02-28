@@ -13,19 +13,17 @@ from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import deprecated
 from bika.lims import logger
-# Bika Fields
 from bika.lims.browser.fields import ARAnalysesField
 from bika.lims.browser.fields import DateTimeField
 from bika.lims.browser.fields import DurationField
 from bika.lims.browser.fields import UIDReferenceField
-# Bika Widgets
 from bika.lims.browser.fields.remarksfield import RemarksField
 from bika.lims.browser.widgets import DateTimeWidget
-from bika.lims.browser.widgets import RemarksWidget
 from bika.lims.browser.widgets import DecimalWidget
 from bika.lims.browser.widgets import PrioritySelectionWidget
 from bika.lims.browser.widgets import ReferenceWidget
 from bika.lims.browser.widgets import RejectionWidget
+from bika.lims.browser.widgets import RemarksWidget
 from bika.lims.browser.widgets import SelectionWidget as BikaSelectionWidget
 from bika.lims.browser.widgets.durationwidget import DurationWidget
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
@@ -33,28 +31,46 @@ from bika.lims.config import PRIORITIES
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.analysisspec import ResultsRangeDict
 from bika.lims.content.bikaschema import BikaSchema
-# Bika Interfaces
-from bika.lims.interfaces import IAnalysisRequest, ICancellable, \
-    IAnalysisRequestPartition
-# Bika Permissions
-from bika.lims.permissions import ManageInvoices, FieldEditContact, \
-    FieldEditClient, FieldEditBatch, FieldEditSamplingRound, FieldEditTemplate, \
-    FieldEditProfiles, FieldEditDateSampled, FieldEditSampler, \
-    FieldEditScheduledSampler, FieldEditSamplingDate, FieldEditSampleType, \
-    FieldEditContainer, FieldEditPreservation, FieldEditDatePreserved, \
-    FieldEditPreserver, FieldEditRejectionReasons, FieldEditSpecification, \
-    FieldEditPublicationSpecifications, FieldEditSamplePoint, \
-    FieldEditStorageLocation, FieldEditClientOrderNumber, \
-    FieldEditClientReference, FieldEditClientSampleID, \
-    FieldEditSamplingDeviation, FieldEditSampleCondition, FieldEditPriority, \
-    FieldEditEnvironmentalConditions, FieldEditComposite, \
-    FieldEditInvoiceExclude, FieldEditDateReceived, FieldEditMemberDiscount, \
-    FieldEditResultsInterpretation
-# Bika Utils
+from bika.lims.interfaces import IAnalysisRequest
+from bika.lims.interfaces import IAnalysisRequestPartition
+from bika.lims.interfaces import ICancellable
+from bika.lims.permissions import FieldEditBatch
+from bika.lims.permissions import FieldEditClient
+from bika.lims.permissions import FieldEditClientOrderNumber
+from bika.lims.permissions import FieldEditClientReference
+from bika.lims.permissions import FieldEditClientSampleID
+from bika.lims.permissions import FieldEditComposite
+from bika.lims.permissions import FieldEditContact
+from bika.lims.permissions import FieldEditContainer
+from bika.lims.permissions import FieldEditDatePreserved
+from bika.lims.permissions import FieldEditDateReceived
+from bika.lims.permissions import FieldEditDateSampled
+from bika.lims.permissions import FieldEditEnvironmentalConditions
+from bika.lims.permissions import FieldEditInvoiceExclude
+from bika.lims.permissions import FieldEditMemberDiscount
+from bika.lims.permissions import FieldEditPreservation
+from bika.lims.permissions import FieldEditPreserver
+from bika.lims.permissions import FieldEditPriority
+from bika.lims.permissions import FieldEditProfiles
+from bika.lims.permissions import FieldEditPublicationSpecifications
+from bika.lims.permissions import FieldEditRejectionReasons
+from bika.lims.permissions import FieldEditRemarks
+from bika.lims.permissions import FieldEditResultsInterpretation
+from bika.lims.permissions import FieldEditSampleCondition
+from bika.lims.permissions import FieldEditSamplePoint
+from bika.lims.permissions import FieldEditSampler
+from bika.lims.permissions import FieldEditSampleType
+from bika.lims.permissions import FieldEditSamplingDate
+from bika.lims.permissions import FieldEditSamplingDeviation
+from bika.lims.permissions import FieldEditSamplingRound
+from bika.lims.permissions import FieldEditScheduledSampler
+from bika.lims.permissions import FieldEditSpecification
+from bika.lims.permissions import FieldEditStorageLocation
+from bika.lims.permissions import FieldEditTemplate
+from bika.lims.permissions import ManageInvoices
 from bika.lims.utils import getUsers
 from bika.lims.utils import user_email
 from bika.lims.utils import user_fullname
-# Bika Workflow
 from bika.lims.workflow import getTransitionDate
 from bika.lims.workflow import getTransitionUsers
 from DateTime import DateTime
@@ -71,19 +87,17 @@ from Products.Archetypes.atapi import StringField
 from Products.Archetypes.atapi import StringWidget
 from Products.Archetypes.atapi import TextField
 from Products.Archetypes.atapi import registerType
-from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import Schema
 from Products.Archetypes.references import HoldingReference
 from Products.Archetypes.Widget import RichWidget
-# AT Fields and AT Widgets
 from Products.ATExtensions.field import RecordsField
 from Products.CMFCore.permissions import ModifyPortalContent
 from Products.CMFCore.permissions import View
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
 from Products.CMFPlone.utils import safe_unicode
-from zope.interface import implements
 from zope.interface import alsoProvides
+from zope.interface import implements
 from zope.interface import noLongerProvides
 
 
@@ -952,6 +966,8 @@ schema = BikaSchema.copy() + Schema((
     RemarksField(
         'Remarks',
         searchable=True,
+        read_permission=View,
+        write_permission=FieldEditRemarks,
         widget=RemarksWidget(
             label=_("Remarks"),
             description=_("Remarks and comments for this request"),

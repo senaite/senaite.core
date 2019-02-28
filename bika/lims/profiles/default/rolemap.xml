@@ -645,6 +645,17 @@
       <role name="LabManager"/>
       <role name="Manager"/>
     </permission>
+    <permission name="senaite.core: Field: Edit Remarks" acquire="False">
+      <role name="Analyst"/>
+      <role name="Client"/>
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Publisher"/>
+      <role name="Sampler"/>
+      <role name="SamplingCoordinator"/>
+      <role name="Verifier"/>
+    </permission>
     <permission name="senaite.core: Field: Edit Results Interpretation" acquire="False">
       <role name="LabManager"/>
       <role name="Manager"/>
