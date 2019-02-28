@@ -119,6 +119,7 @@
   <permission id="senaite.core.permissions.FieldEditPreserver" title="senaite.core: Field: Edit Preserver"/>
   <permission id="senaite.core.permissions.FieldEditPriority" title="senaite.core: Field: Edit Priority"/>
   <permission id="senaite.core.permissions.FieldEditProfiles" title="senaite.core: Field: Edit Profiles"/>
+  <permission id="senaite.core.permissions.FieldEditRemarks" title="senaite.core: Field: Edit Remarks"/>
   <permission id="senaite.core.permissions.FieldEditPublicationSpecifications" title="senaite.core: Field: Edit Publication Specification"/>
   <permission id="senaite.core.permissions.FieldEditRejectionReasons" title="senaite.core: Field: Edit Rejection Reasons"/>
   <permission id="senaite.core.permissions.FieldEditResultsInterpretation" title="senaite.core: Field: Edit Results Interpretation"/>
