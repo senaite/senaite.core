@@ -138,6 +138,7 @@
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
+      <role name="Owner"/>
     </permission>
     <permission name="senaite.core: Add AnalysisProfile" acquire="False">
       <role name="LabClerk"/>
