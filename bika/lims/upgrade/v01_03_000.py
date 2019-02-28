@@ -207,6 +207,10 @@ def upgrade(tool):
     # https://github.com/senaite/senaite.core/pull/1243
     set_retest_id_formatting(portal)
 
+    # Reindex submitted analyses to update the analyst
+    # https://github.com/senaite/senaite.core/pull/1254
+    reindex_submitted_analyses(portal)
+
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
 
@@ -1734,3 +1738,22 @@ def set_retest_id_formatting(portal):
         prefix="analysisrequestretest",
         sequence_type="")
     set_id_format(portal, part_id_format)
+
+
+def reindex_submitted_analyses(portal):
+    """Reindex submitted analyses
+    """
+    logger.info("Reindex submitted analyses")
+    brains = api.search({"portal_type": "Analysis"}, "bika_analysis_catalog")
+
+    total = len(brains)
+    logger.info("Processing {} analyses".format(total))
+
+    for num, brain in enumerate(brains):
+        if brain.getResult not in ["", None]:
+            analysis = brain.getObject()
+            analysis.reindexObject()
+        if num > 0 and num % 5000 == 0:
+            logger.info("Comiting reindexed analyses {}/{} ..."
+                        .format(num, total))
+            transaction.commit()
