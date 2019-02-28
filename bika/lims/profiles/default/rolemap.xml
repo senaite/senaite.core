@@ -657,11 +657,13 @@
       <role name="Client"/>
     </permission>
     <permission name="senaite.core: Field: Edit Sample Point" acquire="False">
+      <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Client"/>
     </permission>
     <permission name="senaite.core: Field: Edit Sample Type" acquire="False">
+      <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Client"/>
