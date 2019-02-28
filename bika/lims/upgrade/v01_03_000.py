@@ -1744,7 +1744,7 @@ def reindex_submitted_analyses(portal):
     """Reindex submitted analyses
     """
     logger.info("Reindex submitted analyses")
-    brains = api.search({"portal_type": "Analysis"}, "bika_analysis_catalog")
+    brains = api.search({}, "bika_analysis_catalog")
 
     total = len(brains)
     logger.info("Processing {} analyses".format(total))
