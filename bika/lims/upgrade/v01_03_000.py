@@ -1754,6 +1754,6 @@ def reindex_submitted_analyses(portal):
             analysis = brain.getObject()
             analysis.reindexObject()
         if num > 0 and num % 5000 == 0:
-            logger.info("Comiting reindexed analyses {}/{} ..."
+            logger.info("Commiting reindexed analyses {}/{} ..."
                         .format(num, total))
             transaction.commit()
