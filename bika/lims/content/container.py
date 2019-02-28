@@ -5,21 +5,21 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
+import json
+import sys
+from operator import itemgetter
+
+import plone.protect
 from AccessControl import ClassSecurityInfo
-from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
-from bika.lims.config import PROJECTNAME
-from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.vocabularies import CatalogVocabulary
-from magnitude import mg, MagnitudeError
-from Missing import Value
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.utils import getToolByName
-from operator import itemgetter
-import json
-import plone.protect
-import sys
+from bika.lims import bikaMessageFactory as _
+from bika.lims.config import PROJECTNAME
+from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.interfaces import IDeactivable
+from magnitude import mg
+from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
     ReferenceField('ContainerType',
@@ -79,6 +79,7 @@ schema['description'].widget.visible = True
 schema['description'].schemata = 'default'
 
 class Container(BaseContent):
+    implements(IDeactivable)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
@@ -122,7 +123,7 @@ class Container(BaseContent):
         bsc = getToolByName(self, 'bika_setup_catalog')
         items = [('','')] + [(o.UID, o.Title) for o in
                                bsc(portal_type='Preservation',
-                                   inactive_state = 'active')]
+                                   apiis_active = True)]
         o = self.getPreservation()
         if o and o.UID() not in [i[0] for i in items]:
             items.append((o.UID(), o.Title()))
@@ -136,7 +137,7 @@ class ajaxGetContainers:
 
     catalog_name='bika_setup_catalog'
     contentFilter = {'portal_type': 'Container',
-                     'inactive_state': 'active'}
+                     'is_active': True}
 
     def __init__(self, context, request):
         self.context = context

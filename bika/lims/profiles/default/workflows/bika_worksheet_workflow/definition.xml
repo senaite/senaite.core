@@ -8,44 +8,36 @@
              manager_bypass="False"
              i18n:domain="senaite.core">
 
-  <permission>BIKA: Add Attachment</permission>
-  <permission>BIKA: Assign analyses</permission>
-  <permission>BIKA: Edit Worksheet</permission>
-  <permission>BIKA: Retract</permission>
-  <permission>BIKA: Unassign analyses</permission>
-  <permission>BIKA: View Results</permission>
+  <permission>senaite.core: Add Attachment</permission>
+  <permission>senaite.core: Transition: Assign Analysis</permission>
+  <permission>senaite.core: Edit Worksheet</permission>
+  <permission>senaite.core: Transition: Retract</permission>
+  <permission>senaite.core: Transition: Reject Worksheet</permission>
+  <permission>senaite.core: Transition: Unassign Analysis</permission>
+  <permission>senaite.core: View Results</permission>
   <permission>Modify portal content</permission>
 
   <state state_id="attachment_due" title="Attachment due" i18n:attributes="title">
     <exit-transition transition_id="attach" />
     <exit-transition transition_id="reject" />
-    <permission-map name="BIKA: Add Attachment" acquired="False">
+    <permission-map name="senaite.core: Transition: Reject Worksheet" acquired="True"/>
+    <permission-map name="senaite.core: Add Attachment" acquired="False">
       <permission-role>Analyst</permission-role>
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>
-    <permission-map name="BIKA: Assign analyses" acquired="False">
+    <permission-map name="senaite.core: Transition: Assign Analysis" acquired="True"/>
+    <permission-map name="senaite.core: Edit Worksheet" acquired="False">
       <permission-role>Analyst</permission-role>
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>
-    <permission-map name="BIKA: Edit Worksheet" acquired="False">
-      <permission-role>Analyst</permission-role>
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
+    <permission-map name="senaite.core: Transition: Retract" acquired="False">
     </permission-map>
-    <permission-map name="BIKA: Retract" acquired="False">
-    </permission-map>
-    <permission-map name="BIKA: Unassign analyses" acquired="False">
-      <permission-role>Analyst</permission-role>
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-    </permission-map>
-    <permission-map name="BIKA: View Results" acquired="False">
+    <permission-map name="senaite.core: Transition: Unassign Analysis" acquired="True"/>
+    <permission-map name="senaite.core: View Results" acquired="False">
       <permission-role>Analyst</permission-role>
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -61,33 +53,24 @@
 
   <state state_id="open" title="Open" i18n:attributes="title">
     <exit-transition transition_id="submit" />
-    <permission-map name="BIKA: Add Attachment" acquired="False">
+    <permission-map name="senaite.core: Transition: Reject Worksheet" acquired="False"/>
+    <permission-map name="senaite.core: Add Attachment" acquired="False">
       <permission-role>Analyst</permission-role>
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>
-    <permission-map name="BIKA: Assign analyses" acquired="False">
+    <permission-map name="senaite.core: Transition: Assign Analysis" acquired="True"/>
+    <permission-map name="senaite.core: Edit Worksheet" acquired="False">
       <permission-role>Analyst</permission-role>
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>
-    <permission-map name="BIKA: Edit Worksheet" acquired="False">
-      <permission-role>Analyst</permission-role>
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
+    <permission-map name="senaite.core: Transition: Retract" acquired="False">
     </permission-map>
-    <permission-map name="BIKA: Retract" acquired="False">
-    </permission-map>
-    <permission-map name="BIKA: Unassign analyses" acquired="False">
-      <permission-role>Analyst</permission-role>
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-    </permission-map>
-    <permission-map name="BIKA: View Results" acquired="False">
+    <permission-map name="senaite.core: Transition: Unassign Analysis" acquired="True"/>
+    <permission-map name="senaite.core: View Results" acquired="False">
       <permission-role>Analyst</permission-role>
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -103,18 +86,17 @@
 
   <state state_id="rejected" title="Rejected" i18n:attributes="title">
     <exit-transition transition_id="" />
-    <permission-map name="BIKA: Add Attachment" acquired="False">
+    <permission-map name="senaite.core: Transition: Reject Worksheet" acquired="False"/>
+    <permission-map name="senaite.core: Add Attachment" acquired="False">
       <permission-role>Manager</permission-role>
     </permission-map>
-    <permission-map name="BIKA: Assign analyses" acquired="False">
+    <permission-map name="senaite.core: Transition: Assign Analysis" acquired="False"/>
+    <permission-map name="senaite.core: Edit Worksheet" acquired="False">
     </permission-map>
-    <permission-map name="BIKA: Edit Worksheet" acquired="False">
+    <permission-map name="senaite.core: Transition: Retract" acquired="False">
     </permission-map>
-    <permission-map name="BIKA: Retract" acquired="False">
-    </permission-map>
-    <permission-map name="BIKA: Unassign analyses" acquired="False">
-    </permission-map>
-    <permission-map name="BIKA: View Results" acquired="False">
+    <permission-map name="senaite.core: Transition: Unassign Analysis" acquired="False"/>
+    <permission-map name="senaite.core: View Results" acquired="False">
       <permission-role>Analyst</permission-role>
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -130,35 +112,26 @@
     <exit-transition transition_id="retract" />
     <exit-transition transition_id="reject" />
     <exit-transition transition_id="rollback_to_open" />
-    <permission-map name="BIKA: Add Attachment" acquired="False">
+    <permission-map name="senaite.core: Transition: Reject Worksheet" acquired="True"/>
+    <permission-map name="senaite.core: Add Attachment" acquired="False">
       <permission-role>Analyst</permission-role>
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>
-    <permission-map name="BIKA: Assign analyses" acquired="False">
+    <permission-map name="senaite.core: Transition: Assign Analysis" acquired="True"/>
+    <permission-map name="senaite.core: Edit Worksheet" acquired="False">
       <permission-role>Analyst</permission-role>
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>
-    <permission-map name="BIKA: Edit Worksheet" acquired="False">
-      <permission-role>Analyst</permission-role>
-      <permission-role>LabClerk</permission-role>
+    <permission-map name="senaite.core: Transition: Retract" acquired="False">
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>
-    <permission-map name="BIKA: Retract" acquired="False">
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-    </permission-map>
-    <permission-map name="BIKA: Unassign analyses" acquired="False">
-      <permission-role>Analyst</permission-role>
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-    </permission-map>
-    <permission-map name="BIKA: View Results" acquired="False">
+    <permission-map name="senaite.core: Transition: Unassign Analysis" acquired="True"/>
+    <permission-map name="senaite.core: View Results" acquired="False">
       <permission-role>Analyst</permission-role>
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -174,25 +147,24 @@
 
   <state state_id="verified" title="Verified" i18n:attributes="title">
     <exit-transition transition_id="retract" />
-    <permission-map name="BIKA: Add Attachment" acquired="False">
+    <permission-map name="senaite.core: Transition: Reject Worksheet" acquired="False"/>
+    <permission-map name="senaite.core: Add Attachment" acquired="False">
       <permission-role>Analyst</permission-role>
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>
-    <permission-map name="BIKA: Assign analyses" acquired="False">
-    </permission-map>
-    <permission-map name="BIKA: Edit Worksheet" acquired="False">
+    <permission-map name="senaite.core: Transition: Assign Analysis" acquired="False"/>
+    <permission-map name="senaite.core: Edit Worksheet" acquired="False">
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>
-    <permission-map name="BIKA: Retract" acquired="False">
+    <permission-map name="senaite.core: Transition: Retract" acquired="False">
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>
-    <permission-map name="BIKA: Unassign analyses" acquired="False">
-    </permission-map>
-    <permission-map name="BIKA: View Results" acquired="False">
+    <permission-map name="senaite.core: Transition: Unassign Analysis" acquired="False"/>
+    <permission-map name="senaite.core: View Results" acquired="False">
       <permission-role>Analyst</permission-role>
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -216,7 +188,8 @@
   <transition transition_id="reject" title="Reject" new_state="rejected" trigger="USER" before_script="" after_script="" i18n:attributes="title">
     <action url="" category="workflow" icon="">Reject</action>
     <guard>
-      <guard-permission>BIKA: Reject Worksheet</guard-permission>
+      <guard-permission>senaite.core: Transition: Reject Worksheet</guard-permission>
+      <guard-expression>python:here.guard_handler("reject")</guard-expression>
     </guard>
   </transition>
 
@@ -229,7 +202,7 @@
               after_script="" i18n:attributes="title">
     <action url="" category="workflow" icon="">Retract</action>
     <guard>
-      <guard-permission>BIKA: Retract</guard-permission>
+      <guard-permission>senaite.core: Transition: Retract</guard-permission>
       <guard-expression>python:here.guard_handler("retract")</guard-expression>
     </guard>
   </transition>

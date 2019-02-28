@@ -54,10 +54,7 @@ def guard_assign(analysis):
         return False
 
     # Cannot assign if user does not have permissions to manage worksheets
-    if not user_can_manage_worksheets():
-        return False
-
-    return True
+    return user_can_manage_worksheets()
 
 
 def guard_unassign(analysis):

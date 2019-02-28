@@ -29,7 +29,6 @@ from bika.lims.content.abstractbaseanalysis import AbstractBaseAnalysis
 from bika.lims.content.abstractbaseanalysis import schema
 from bika.lims.interfaces import IDuplicateAnalysis
 from bika.lims.permissions import *
-from bika.lims.permissions import Verify as VerifyPermission
 from bika.lims.utils import formatDecimalMark
 from bika.lims.utils import drop_trailing_zeros_decimal
 from bika.lims.utils.analysis import format_numeric_result
@@ -62,7 +61,7 @@ Attachment = UIDReferenceField(
 Result = StringField(
     'Result',
     read_permission=View,
-    write_permission="Field: Edit Result",
+    write_permission=FieldEditAnalysisResult,
 )
 
 # When the result is changed, this value is updated to the current time.
@@ -84,7 +83,7 @@ RetestOf = UIDReferenceField(
 DetectionLimitOperand = StringField(
     'DetectionLimitOperand',
     read_permission=View,
-    write_permission="Field: Edit Result",
+    write_permission=FieldEditAnalysisResult,
 )
 
 # The ID of the logged in user who submitted the result for this Analysis.
@@ -124,7 +123,7 @@ Calculation = HistoryAwareReferenceField(
 InterimFields = InterimFieldsField(
     'InterimFields',
     read_permission=View,
-    write_permission="Field: Edit Result",
+    write_permission=FieldEditAnalysisResult,
     schemata='Method',
     widget=RecordsWidget(
         label=_("Calculation Interim Fields"),

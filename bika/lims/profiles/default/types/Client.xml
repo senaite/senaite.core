@@ -199,7 +199,7 @@
          visible="True"
          i18n:domain="senaite.core"
          i18n:attributes="title">
-   <permission value="BIKA: Manage Analysis Requests"/>
+   <permission value="senaite.core: Manage Analysis Requests"/>
  </action>
 
 </object>

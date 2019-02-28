@@ -9,6 +9,9 @@ import json
 from collections import OrderedDict
 from copy import copy
 
+from DateTime import DateTime
+from Products.Archetypes.config import REFERENCE_CATALOG
+from Products.CMFPlone.utils import safe_unicode
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
@@ -18,25 +21,20 @@ from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.interfaces import IFieldIcons
-from bika.lims.interfaces import IRoutineAnalysis
-from bika.lims.permissions import EditFieldResults
+from bika.lims.permissions import EditFieldResults, FieldEditAnalysisResult, \
+    FieldEditAnalysisHidden, TransitionVerify
 from bika.lims.permissions import EditResults
-from bika.lims.permissions import Verify as VerifyPermission
 from bika.lims.permissions import ViewResults
 from bika.lims.permissions import ViewRetractedAnalyses
 from bika.lims.utils import check_permission
-from bika.lims.utils import format_supsub
 from bika.lims.utils import formatDecimalMark
+from bika.lims.utils import format_supsub
+from bika.lims.utils import getUsers
 from bika.lims.utils import get_image
 from bika.lims.utils import get_link
-from bika.lims.utils import getUsers
 from bika.lims.utils import t
 from bika.lims.utils.analysis import format_uncertainty
-from bika.lims.workflow import isActive
-from DateTime import DateTime
 from plone.memoize import view as viewcache
-from Products.Archetypes.config import REFERENCE_CATALOG
-from Products.CMFPlone.utils import safe_unicode
 from zope.component import getAdapters
 
 
@@ -68,7 +66,7 @@ class AnalysesView(BikaListingView):
         self.show_column_toggles = False
         self.pagesize = 9999999
         self.form_id = "analyses_form"
-        self.context_active = isActive(context)
+        self.context_active = api.is_active(context)
         self.interim_fields = {}
         self.interim_columns = OrderedDict()
         self.specs = {}
@@ -262,7 +260,7 @@ class AnalysesView(BikaListingView):
             return False
 
         # Check if the user is allowed to enter a value to to Result field
-        if not self.has_permission("Field: Edit Result", analysis_obj):
+        if not self.has_permission(FieldEditAnalysisResult, analysis_obj):
             return False
 
         # Is the instrument out of date?
@@ -336,7 +334,7 @@ class AnalysesView(BikaListingView):
         """
         uids = analysis_brain.getAllowedMethodUIDs
         query = {'portal_type': 'Method',
-                 'inactive_state': 'active',
+                 'is_active': True,
                  'UID': uids}
         brains = api.search(query, 'bika_setup_catalog')
         if not brains:
@@ -381,7 +379,7 @@ class AnalysesView(BikaListingView):
 
         uids = analysis_brain.getAllowedInstrumentUIDs
         query = {'portal_type': 'Instrument',
-                 'inactive_state': 'active',
+                 'is_active': True,
                  'UID': uids}
         brains = api.search(query, 'bika_setup_catalog')
         vocab = [{'ResultValue': '', 'ResultText': _('None')}]
@@ -715,9 +713,9 @@ class AnalysesView(BikaListingView):
 
             # Note: As soon as we have a separate content type for field
             #       analysis, we can solely rely on the field permission
-            #       "Field: Edit Result"
+            #       "senaite.core: Field: Edit Analysis Result"
             if is_editable:
-                if self.has_permission("Field: Edit Result", analysis_brain):
+                if self.has_permission(FieldEditAnalysisResult, analysis_brain):
                     item['allow_edit'].append(interim_keyword)
 
             # Add this analysis' interim fields to the interim_columns list
@@ -1006,7 +1004,7 @@ class AnalysesView(BikaListingView):
             return
 
         # Check if the user has "Bika: Verify" privileges
-        if not self.has_permission(VerifyPermission):
+        if not self.has_permission(TransitionVerify):
             # User cannot verify, do nothing
             return
 
@@ -1110,7 +1108,7 @@ class AnalysesView(BikaListingView):
 
         full_obj = self.get_object(analysis_brain)
         item['Hidden'] = full_obj.getHidden()
-        if self.has_permission("Field: Edit Hidden", obj=full_obj):
+        if self.has_permission(FieldEditAnalysisHidden, obj=full_obj):
             item['allow_edit'].append('Hidden')
 
     def _folder_item_fieldicons(self, analysis_brain):

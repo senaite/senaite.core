@@ -844,7 +844,7 @@ class Instrument_Validations(WorksheetImporter):
                 )
                 # Getting lab contacts
                 bsc = getToolByName(self.context, 'bika_setup_catalog')
-                lab_contacts = [o.getObject() for o in bsc(portal_type="LabContact", inactive_state='active')]
+                lab_contacts = [o.getObject() for o in bsc(portal_type="LabContact", is_active=True)]
                 for contact in lab_contacts:
                     if contact.getFullname() == row.get('Worker', ''):
                         obj.setWorker(contact.UID())

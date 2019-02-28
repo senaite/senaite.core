@@ -32,7 +32,7 @@
          i18n:attributes="title"
          i18n:domain="plone"
          visible="True">
-    <permission value="BIKA: Edit Results"/>
+    <permission value="senaite.core: Edit Results"/>
  </action>
 
  <action title="View"

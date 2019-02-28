@@ -145,7 +145,7 @@ class Laboratory(UniqueObject, Organisation):
         # fallback - all Lab Contacts
         pairs = [['', '']]
         for contact in bsc(portal_type='LabContact',
-                           inactive_state='active',
+                           is_active=True,
                            sort_on='sortable_title'):
             pairs.append((contact.UID, contact.Title))
         return DisplayList(pairs)

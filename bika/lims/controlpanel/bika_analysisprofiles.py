@@ -7,17 +7,18 @@
 
 import collections
 
+from Products.ATContentTypes.content import schemata
+from Products.Archetypes import atapi
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import IAnalysisProfiles
+from bika.lims.permissions import AddAnalysisProfile
 from bika.lims.utils import get_link
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder
 from plone.app.folder.folder import ATFolderSchema
 from plone.app.layout.globals.interfaces import IViewView
-from Products.Archetypes import atapi
-from Products.ATContentTypes.content import schemata
 from zope.interface.declarations import implements
 
 
@@ -40,7 +41,7 @@ class AnalysisProfilesView(BikaListingView):
         self.context_actions = {
             _("Add"): {
                 "url": "createObject?type_name=AnalysisProfile",
-                "permission": "Add portal content",
+                "permission": AddAnalysisProfile,
                 "icon": "++resource++bika.lims.images/add.png"}
         }
 
@@ -74,13 +75,13 @@ class AnalysisProfilesView(BikaListingView):
             {
                 "id": "default",
                 "title": _("Active"),
-                "contentFilter": {"inactive_state": "active"},
+                "contentFilter": {"is_active": True},
                 "transitions": [{"id": "deactivate"}, ],
                 "columns": self.columns.keys(),
             }, {
                 "id": "inactive",
-                "title": _("Dormant"),
-                "contentFilter": {"inactive_state": "inactive"},
+                "title": _("Inactive"),
+                "contentFilter": {'is_active': False},
                 "transitions": [{"id": "activate"}, ],
                 "columns": self.columns.keys(),
             }, {

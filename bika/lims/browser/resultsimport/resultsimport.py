@@ -38,7 +38,7 @@ class ResultsImportView(BrowserView):
         bsc = getToolByName(self, 'bika_setup_catalog')
         # Getting instrumnets to run auto-import
         query = {'portal_type': 'Instrument',
-                 'inactive_state': 'active'}
+                 'is_active': True}
         if request.get('i_uid', ''):
             query['UID'] = request.get('i_uid')
         brains = bsc(query)

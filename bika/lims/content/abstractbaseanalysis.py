@@ -26,6 +26,8 @@ from bika.lims.browser.widgets.uidselectionwidget import UIDSelectionWidget
 from bika.lims.config import ATTACHMENT_OPTIONS, SERVICE_POINT_OF_CAPTURE
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IBaseAnalysis
+from bika.lims.permissions import FieldEditAnalysisResult, \
+    FieldEditAnalysisHidden, FieldEditAnalysisRemarks
 from bika.lims.utils import to_utf8 as _c
 from zope.interface import implements
 
@@ -280,7 +282,7 @@ InstrumentEntryOfResults = BooleanField(
 Instrument = UIDReferenceField(
     'Instrument',
     read_permission=View,
-    write_permission="Field: Edit Result",
+    write_permission=FieldEditAnalysisResult,
     schemata="Method",
     searchable=True,
     required=0,
@@ -312,7 +314,7 @@ Instrument = UIDReferenceField(
 Method = UIDReferenceField(
     'Method',
     read_permission=View,
-    write_permission="Field: Edit Result",
+    write_permission=FieldEditAnalysisResult,
     schemata="Method",
     required=0,
     searchable=True,
@@ -404,7 +406,7 @@ Category = UIDReferenceField(
         label=_("Analysis Category"),
         description=_("The category the analysis service belongs to"),
         catalog_name='bika_setup_catalog',
-        base_query={'inactive_state': 'active'},
+        base_query={'is_active': True},
     )
 )
 
@@ -456,7 +458,7 @@ Department = UIDReferenceField(
         label=_("Department"),
         description=_("The laboratory department"),
         catalog_name='bika_setup_catalog',
-        base_query={'inactive_state': 'active'},
+        base_query={'is_active': True},
     )
 )
 
@@ -574,7 +576,7 @@ Hidden = BooleanField(
     schemata="Analysis",
     default=False,
     read_permission=View,
-    write_permission="Field: Edit Hidden",
+    write_permission=FieldEditAnalysisHidden,
     widget=BooleanWidget(
         label=_("Hidden"),
         description=_(
@@ -649,7 +651,7 @@ ProtocolID = StringField(
 Remarks = TextField(
     'Remarks',
     read_permission=View,
-    write_permission="Field: Edit Remarks",
+    write_permission=FieldEditAnalysisRemarks,
     schemata='Description'
 )
 
@@ -799,7 +801,7 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
         """A vocabulary listing available (and activated) categories.
         """
         bsc = getToolByName(self, 'bika_setup_catalog')
-        cats = bsc(portal_type='AnalysisCategory', inactive_state='active')
+        cats = bsc(portal_type='AnalysisCategory', is_active=True)
         items = [(o.UID, o.Title) for o in cats]
         o = self.getCategory()
         if o and o.UID() not in [i[0] for i in items]:
@@ -814,7 +816,7 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
         bsc = getToolByName(self, 'bika_setup_catalog')
         items = [('', '')] + [(o.UID, o.Title) for o in
                               bsc(portal_type='Department',
-                                  inactive_state='active')]
+                                  is_active=True)]
         o = self.getDepartment()
         if o and o.UID() not in [i[0] for i in items]:
             items.append((o.UID(), o.Title()))

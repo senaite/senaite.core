@@ -119,7 +119,7 @@ Contact = ReferenceField(
         label=_('Primary Contact'),
         size=20,
         visible=True,
-        base_query={'inactive_state': 'active'},
+        base_query={'is_active': True},
         showOn=True,
         popup_width='300px',
         colModel=[{'columnName': 'UID', 'hidden': True},
@@ -136,7 +136,7 @@ Batch = ReferenceField(
         label=_('Batch'),
         visible=True,
         catalog_name='bika_catalog',
-        base_query={'review_state': 'open', 'cancellation_state': 'active'},
+        base_query={'review_state': 'open'},
         showOn=True,
     ),
 )

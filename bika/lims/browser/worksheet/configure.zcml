@@ -25,7 +25,7 @@
       for="bika.lims.interfaces.IWorksheet"
       name="manage_results"
       class="bika.lims.browser.worksheet.views.ManageResultsView"
-      permission="bika.lims.ViewResults"
+      permission="senaite.core.permissions.ViewResults"
       layer="bika.lims.interfaces.IBikaLIMS"
       />
 
@@ -33,7 +33,7 @@
       for="bika.lims.interfaces.IWorksheet"
       name="add_analyses"
       class="bika.lims.browser.worksheet.views.AddAnalysesView"
-      permission="bika.lims.EditWorksheet"
+      permission="senaite.core.permissions.EditWorksheet"
       layer="bika.lims.interfaces.IBikaLIMS"
       />
 
@@ -42,7 +42,7 @@
       for="bika.lims.interfaces.IWorksheet"
       name="analyses_classic_view"
       class="bika.lims.browser.worksheet.views.AnalysesView"
-      permission="bika.lims.EditWorksheet"
+      permission="senaite.core.permissions.EditWorksheet"
       layer="bika.lims.interfaces.IBikaLIMS"
       />
 
@@ -51,7 +51,7 @@
       for="bika.lims.interfaces.IWorksheet"
       name="analyses_transposed_view"
       class="bika.lims.browser.worksheet.views.AnalysesTransposedView"
-      permission="bika.lims.EditWorksheet"
+      permission="senaite.core.permissions.EditWorksheet"
       layer="bika.lims.interfaces.IBikaLIMS"
       />
 
@@ -59,7 +59,7 @@
       for="bika.lims.interfaces.IWorksheet"
       name="add_blank"
       class="bika.lims.browser.worksheet.views.AddBlankView"
-      permission="bika.lims.EditWorksheet"
+      permission="senaite.core.permissions.EditWorksheet"
       layer="bika.lims.interfaces.IBikaLIMS"
       />
 
@@ -67,7 +67,7 @@
       for="bika.lims.interfaces.IWorksheet"
       name="add_control"
       class="bika.lims.browser.worksheet.views.AddControlView"
-      permission="bika.lims.EditWorksheet"
+      permission="senaite.core.permissions.EditWorksheet"
       layer="bika.lims.interfaces.IBikaLIMS"
       />
 
@@ -75,7 +75,7 @@
       for="bika.lims.interfaces.IWorksheet"
       name="add_duplicate"
       class="bika.lims.browser.worksheet.views.AddDuplicateView"
-      permission="bika.lims.EditWorksheet"
+      permission="senaite.core.permissions.EditWorksheet"
       layer="bika.lims.interfaces.IBikaLIMS"
       />
 
@@ -83,7 +83,7 @@
       for="bika.lims.interfaces.IWorksheet"
       name="export"
       class="bika.lims.browser.worksheet.views.ExportView"
-      permission="bika.lims.EditWorksheet"
+      permission="senaite.core.permissions.EditWorksheet"
       layer="bika.lims.interfaces.IBikaLIMS"
       />
 
@@ -99,7 +99,7 @@
       for="bika.lims.interfaces.IWorksheet"
       name="print"
       class="bika.lims.browser.worksheet.views.PrintView"
-      permission="bika.lims.EditWorksheet"
+      permission="senaite.core.permissions.EditWorksheet"
       layer="bika.lims.interfaces.IBikaLIMS"
       />
 

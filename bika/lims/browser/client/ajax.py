@@ -8,6 +8,7 @@
 import json
 
 import plone
+from bika.lims import api
 from bika.lims.adapters.referencewidgetvocabulary import \
     DefaultReferenceWidgetVocabulary
 from bika.lims.browser import BrowserView
@@ -44,8 +45,7 @@ class ajaxGetClientInfo(BrowserView):
                'ClientUID': self.context.UID(),
                'ContactUIDs': [c.UID() for c in
                                self.context.objectValues('Contact') if
-                               wf.getInfoFor(c, 'inactive_state',
-                                             '') == 'active']
+                               api.is_active(c)]
                }
 
         return json.dumps(ret)

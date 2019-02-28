@@ -9,7 +9,7 @@
       for="bika.lims.interfaces.IClient"
       name="reports_listing"
       class=".reports_listing.ReportsListingView"
-      permission="bika.lims.ManageAnalysisRequests"
+      permission="senaite.core.permissions.ManageAnalysisRequests"
       layer="bika.lims.interfaces.IBikaLIMS"
       />
 
@@ -18,7 +18,7 @@
       for="*"
       name="download_pdf"
       class=".downloadview.DownloadView"
-      permission="bika.lims.ManageAnalysisRequests"
+      permission="senaite.core.permissions.ManageAnalysisRequests"
       layer="bika.lims.interfaces.IBikaLIMS"
       />
 
@@ -27,7 +27,7 @@
       for="bika.lims.interfaces.IClient"
       name="email"
       class=".emailview.EmailView"
-      permission="bika.lims.ManageAnalysisRequests"
+      permission="senaite.core.permissions.ManageAnalysisRequests"
       layer="bika.lims.interfaces.IBikaLIMS"
       />
 

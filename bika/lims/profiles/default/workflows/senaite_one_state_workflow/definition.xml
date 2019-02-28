@@ -1,36 +1,32 @@
 <?xml version="1.0"?>
 <dc-workflow xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-             workflow_id="bika_cancellation_workflow"
-             title="Bika Cancellation Workflow"
+             workflow_id="senaite_one_state_workflow"
+             title="Senaite one state (active) Workflow"
              description=""
-             state_variable="cancellation_state"
+             state_variable="review_state"
              initial_state="active"
              manager_bypass="False"
              i18n:domain="senaite.core">
 
+  <!--
+  One-state (active) workflow, for folders mostly.
+  -->
+
+  <permission>Access contents information</permission>
+  <permission>Delete objects</permission>
+  <permission>List folder contents</permission>
+  <permission>Modify portal content</permission>
+  <permission>View</permission>
+
+  <!-- State: active -->
   <state state_id="active" title="Active" i18n:attributes="title">
-    <exit-transition transition_id="cancel" />
+    <exit-transition transition_id="" />
+    <permission-map name="Access contents information" acquired="True" />
+    <permission-map name="Delete objects" acquired="True" />
+    <permission-map name="List folder contents" acquired="True" />
+    <permission-map name="Modify portal content" acquired="True" />
+    <permission-map name="View" acquired="True" />
   </state>
-
-  <state state_id="cancelled" title="Cancelled" i18n:attributes="title">
-    <exit-transition transition_id="reinstate" />
-  </state>
-
-  <transition transition_id="cancel" title="Cancel" new_state="cancelled" trigger="USER" before_script="" after_script="" i18n:attributes="title">
-    <action url="" category="workflow" icon="">Cancel</action>
-    <guard>
-      <guard-permission>BIKA: Cancel and reinstate</guard-permission>
-      <guard-expression>python:here.guard_handler("cancel")</guard-expression>
-    </guard>
-  </transition>
-
-  <transition transition_id="reinstate" title="Reinstate" new_state="active" trigger="USER" before_script="" after_script="" i18n:attributes="title">
-    <action url="" category="workflow" icon="">Reinstate</action>
-    <guard>
-      <guard-permission>BIKA: Cancel and reinstate</guard-permission>
-      <guard-expression>python:here.guard_handler("reinstate")</guard-expression>
-    </guard>
-  </transition>
 
   <variable variable_id="action" for_catalog="False" for_status="True" update_always="True">
     <description>Previous transition</description>

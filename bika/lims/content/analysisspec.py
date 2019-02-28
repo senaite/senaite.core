@@ -12,7 +12,7 @@ from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import AnalysisSpecificationWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.interfaces import IAnalysisSpec
+from bika.lims.interfaces import IAnalysisSpec, IDeactivable
 from Products.Archetypes import atapi
 from Products.Archetypes.public import BaseFolder
 from Products.Archetypes.public import ComputedField
@@ -121,7 +121,7 @@ schema['title'].required = True
 class AnalysisSpec(BaseFolder, HistoryAwareMixin):
     """Analysis Specification
     """
-    implements(IAnalysisSpec)
+    implements(IAnalysisSpec, IDeactivable)
     security = ClassSecurityInfo()
     schema = schema
     displayContentsTab = False

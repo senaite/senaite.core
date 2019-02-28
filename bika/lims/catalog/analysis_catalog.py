@@ -22,7 +22,6 @@ CATALOG_ANALYSIS_LISTING = 'bika_analysis_catalog'
 # Defining the indexes for this catalog
 _indexes_dict = {
     'sortable_title': 'FieldIndex',
-    'cancellation_state': 'FieldIndex',
     'getParentUID': 'FieldIndex',
     'getRequestUID': 'FieldIndex',
     'getDueDate': 'DateIndex',

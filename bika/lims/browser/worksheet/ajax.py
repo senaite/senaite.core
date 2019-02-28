@@ -32,7 +32,7 @@ class GetServices():
 
         query = {
             "portal_type": 'AnalysisService',
-            "inactive_state": 'active',
+            "is_active": True,
             "sort_on": 'sortable_title',
         }
 

@@ -77,7 +77,7 @@ class ServicesView(BikaListingView):
             {
                 "id": "default",
                 "title": _("All"),
-                "contentFilter": {"inactive_state": "active"},
+                "contentFilter": {"is_active": True},
                 "transitions": [{"id": "disallow-all-possible-transitions"}],
                 "columns": self.columns.keys(),
             }

@@ -9,27 +9,21 @@
 """
 import types
 
-from Acquisition import aq_base
+from AccessControl import ClassSecurityInfo
 from Acquisition import aq_inner
 from Acquisition import aq_parent
-
-from AccessControl import ClassSecurityInfo
-
 from Products.Archetypes import atapi
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import safe_unicode
 from Products.Archetypes.utils import DisplayList
-
+from Products.CMFPlone.utils import safe_unicode
+from bika.lims import bikaMessageFactory as _
+from bika.lims import logger
+from bika.lims.api import is_active
+from bika.lims.config import PROJECTNAME
+from bika.lims.content.person import Person
+from bika.lims.interfaces import IContact, IClient, IDeactivable
 from plone import api
 from zope.interface import implements
-
-from bika.lims.utils import isActive
-from bika.lims.interfaces import IContact, IClient
-from bika.lims.content.person import Person
-from bika.lims.config import PROJECTNAME
-from bika.lims.config import ManageClients
-from bika.lims import logger
-from bika.lims import bikaMessageFactory as _
+from Products.CMFCore.permissions import ModifyPortalContent
 
 ACTIVE_STATES = ["active"]
 
@@ -58,7 +52,7 @@ schema['title'].widget.visible = False
 class Contact(Person):
     """A Contact of a Client which can be linked to a System User
     """
-    implements(IContact)
+    implements(IContact, IDeactivable)
 
     schema = schema
     displayContentsTab = False
@@ -96,15 +90,9 @@ class Contact(Person):
     def isActive(self):
         """Checks if the Contact is active
         """
-        wftool = getToolByName(self, "portal_workflow")
-        status = wftool.getStatusOf("bika_inactive_workflow", self)
-        if status and status.get("inactive_state") in ACTIVE_STATES:
-            logger.debug("Contact '{}' is active".format(self.Title()))
-            return True
-        logger.debug("Contact '{}' is deactivated".format(self.Title()))
-        return False
+        return is_active(self)
 
-    security.declareProtected(ManageClients, 'getUser')
+    security.declareProtected(ModifyPortalContent, 'getUser')
     def getUser(self):
         """Returns the linked Plone User or None
         """
@@ -114,7 +102,7 @@ class Contact(Person):
         user = api.user.get(userid=username)
         return user
 
-    security.declareProtected(ManageClients, 'setUser')
+    security.declareProtected(ModifyPortalContent, 'setUser')
     def setUser(self, user_or_username):
         """Link the user to the Contact
 
@@ -140,7 +128,7 @@ class Contact(Person):
         # Link the User
         return self._linkUser(user)
 
-    security.declareProtected(ManageClients, 'unlinkUser')
+    security.declareProtected(ModifyPortalContent, 'unlinkUser')
     def unlinkUser(self, delete=False):
         """Unlink the user to the Contact
 
@@ -165,7 +153,7 @@ class Contact(Person):
             return True
         return False
 
-    security.declareProtected(ManageClients, 'hasUser')
+    security.declareProtected(ModifyPortalContent, 'hasUser')
     def hasUser(self):
         """Check if Contact has a linked a System User
         """
@@ -178,7 +166,7 @@ class Contact(Person):
         pairs = []
         objects = []
         for contact in self.aq_parent.objectValues('Contact'):
-            if isActive(contact) and contact.UID() != self.UID():
+            if is_active(contact) and contact.UID() != self.UID():
                 pairs.append((contact.UID(), contact.Title()))
                 if not dl:
                     objects.append(contact)

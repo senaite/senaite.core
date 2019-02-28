@@ -38,7 +38,7 @@ class ARImportsView(BikaListingView):
         self.catalog = "portal_catalog"
         self.contentFilter = {
             'portal_type': 'ARImport',
-            'cancellation_state': 'active',
+            'is_active': True,
             'sort_on': 'sortable_title',
         }
         self.context_actions = {}
@@ -83,20 +83,6 @@ class ARImportsView(BikaListingView):
             {'id': 'imported',
              'title': _('Imported'),
              'contentFilter': {'review_state': 'imported'},
-             'columns': ['Title',
-                         'Creator',
-                         'Filename',
-                         'Client',
-                         'DateCreated',
-                         'DateValidated',
-                         'DateImported',
-                         'state_title']},
-            {'id': 'cancelled',
-             'title': _('Cancelled'),
-             'contentFilter': {
-                 'review_state': ['initial', 'invalid', 'valid', 'imported'],
-                 'cancellation_state': 'cancelled'
-             },
              'columns': ['Title',
                          'Creator',
                          'Filename',
@@ -157,19 +143,6 @@ class ClientARImportsView(ARImportsView):
             {'id': 'imported',
              'title': _('Imported'),
              'contentFilter': {'review_state': 'imported'},
-             'columns': ['Title',
-                         'Creator',
-                         'Filename',
-                         'DateCreated',
-                         'DateValidated',
-                         'DateImported',
-                         'state_title']},
-            {'id': 'cancelled',
-             'title': _('Cancelled'),
-             'contentFilter': {
-                 'review_state': ['initial', 'invalid', 'valid', 'imported'],
-                 'cancellation_state': 'cancelled'
-             },
              'columns': ['Title',
                          'Creator',
                          'Filename',

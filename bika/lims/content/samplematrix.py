@@ -7,16 +7,10 @@
 
 from AccessControl import ClassSecurityInfo
 from Products.Archetypes.public import *
-from Products.Archetypes.references import HoldingReference
-from Products.ATExtensions.ateapi import RecordsField as RecordsField
-from Products.CMFCore.permissions import ModifyPortalContent, View
 from Products.CMFCore.utils import getToolByName
-from bika.lims.browser.widgets import RecordsWidget
-from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.config import PROJECTNAME
-import sys
-from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
+from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.interfaces import IDeactivable
 from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
@@ -27,6 +21,7 @@ schema['description'].schemata = 'default'
 schema['description'].widget.visible = True
 
 class SampleMatrix(BaseFolder):
+    implements(IDeactivable)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
@@ -43,7 +38,7 @@ def SampleMatrices(self, instance=None, allow_blank=False):
     bsc = getToolByName(instance, 'bika_setup_catalog')
     items = []
     for sm in bsc(portal_type='SampleMatrix',
-                  inactive_state='active',
+                  is_active=True,
                   sort_on = 'sortable_title'):
         items.append((sm.UID, sm.Title))
     items = allow_blank and [['','']] + list(items) or list(items)

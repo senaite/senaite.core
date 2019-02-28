@@ -235,7 +235,7 @@ class ReferenceResultsView(BikaListingView):
         self.contentFilter = {
             "portal_type": "AnalysisService",
             "UID": self.get_reference_results().keys(),
-            "inactive_state": "active",
+            "is_active": True,
             "sort_on": "sortable_title",
             "sort_order": "ascending",
         }

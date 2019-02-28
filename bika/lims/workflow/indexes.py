@@ -18,10 +18,10 @@ ACTIONS_TO_INDEXES = {
             "getWorksheetUID",
         ],
         "cancel": [
-            "cancellation_state",
+            "is_active",
         ],
         "reinstate": [
-            "cancellation_state",
+            "is_active",
         ],
         "reject": [
             "getWorksheetUID",
@@ -114,10 +114,10 @@ ACTIONS_TO_INDEXES = {
             "getDateVerified",
         ],
         "cancel": [
-            "cancellation_state",
+            "is_active",
         ],
         "reinstate": [
-            "cancellation_state",
+            "is_active",
         ],
     }
 }

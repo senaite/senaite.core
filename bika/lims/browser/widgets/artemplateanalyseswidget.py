@@ -33,7 +33,7 @@ class ARTemplateAnalysesView(BikaListingView):
             "portal_type": "AnalysisService",
             "sort_on": "sortable_title",
             "sort_order": "ascending",
-            "inactive_state": "active"
+            "is_active": True
         }
         self.context_actions = {}
 
@@ -93,7 +93,7 @@ class ARTemplateAnalysesView(BikaListingView):
             {
                 "id": "default",
                 "title": _("All"),
-                "contentFilter": {"inactive_state": "active"},
+                "contentFilter": {"is_active": True},
                 "transitions": [{"id": "disallow-all-possible-transitions"}],
                 "columns": columns,
             }

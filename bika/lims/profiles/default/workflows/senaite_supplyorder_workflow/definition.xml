@@ -1,67 +1,94 @@
 <?xml version="1.0"?>
 <dc-workflow xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-             workflow_id="bika_one_state_workflow"
-             title="Bika Single State Workflow"
+             workflow_id="senaite_supply_order_workflow"
+             title="Bika Order Workflow"
              description=""
              state_variable="review_state"
-             initial_state="active"
+             initial_state="pending"
              manager_bypass="False"
              i18n:domain="senaite.core">
 
-  <!-- This governs whether you are allowed to delete some content in this folder. -->
   <permission>Delete objects</permission>
-  <!-- This governs whether you are allowed to modify some content. -->
   <permission>Modify portal content</permission>
-  <!-- This governs whether you are allowed to view some content. -->
-  <permission>View</permission>
-  <!-- This permission allows access to an object, without necessarily viewing the -->
-  <!-- object. For example, a user may want to see the object's title in a list of -->
-  <!-- results, even though the user can't view the contents of that file. -->
-  <permission>Access contents information</permission>
-  <!-- This governs whether you can get a listing of the contents of a folder; it -->
-  <!-- doesn't check whether you have the right to view the objects listed. -->
-  <permission>List folder contents</permission>
+  <permission>senaite.core: Transition: Dispatch Order</permission>
+  <permission>senaite.core: Transition: Cancel</permission>
+  <permission>senaite.core: Transition: Reinstate</permission>
 
-  <!-- State: active -->
-  <state state_id="active" title="Active" i18n:attributes="title">
+  <state state_id="dispatched" title="Dispatched" i18n:attributes="title">
     <exit-transition transition_id="" />
-    <!-- Delete objects -->
+    <permission-map name="senaite.core: Transition: Cancel" acquired="False">
+    </permission-map>
+    <permission-map name="senaite.core: Transition: Reinstate" acquired="False">
+    </permission-map>
     <permission-map name="Delete objects" acquired="False">
+      <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>
-    <!-- Modify portal content -->
     <permission-map name="Modify portal content" acquired="False">
-      <permission-role>Analyst</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+  </state>
+
+  <state state_id="pending" title="Pending" i18n:attributes="title">
+    <exit-transition transition_id="dispatch" />
+    <exit-transition transition_id="cancel" />
+    <permission-map name="senaite.core: Transition: Cancel" acquired="False">
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
       <permission-role>Owner</permission-role>
     </permission-map>
-    <!-- View -->
-    <permission-map name="View" acquired="False">
-      <permission-role>Analyst</permission-role>
+    <permission-map name="senaite.core: Transition: Reinstate" acquired="False">
+    </permission-map>
+    <permission-map name="Delete objects" acquired="False">
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
       <permission-role>Owner</permission-role>
     </permission-map>
-    <!-- Access contents information -->
-    <permission-map name="Access contents information" acquired="False">
-      <permission-role>Analyst</permission-role>
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-      <permission-role>Owner</permission-role>
-    </permission-map>
-    <!-- List folder contents -->
-    <permission-map name="List folder contents" acquired="False">
-      <permission-role>Analyst</permission-role>
+    <permission-map name="Modify portal content" acquired="False">
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
       <permission-role>Owner</permission-role>
     </permission-map>
   </state>
+
+  <state state_id="cancelled" title="Cancelled" i18n:attributes="title">
+    <exit-transition transition_id="reinstate" />
+    <permission-map name="senaite.core: Transition: Reinstate" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+    </permission-map>
+    <permission-map name="senaite.core: Transition: Cancel" acquired="False">
+    </permission-map>
+  </state>
+
+  <transition transition_id="dispatch" title="Dispatch" new_state="dispatched" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Dispatch order</action>
+    <guard>
+      <guard-permission>senaite.core: Transition: Dispatch Order</guard-permission>
+    </guard>
+  </transition>
+
+  <transition transition_id="cancel" title="Cancel" new_state="cancelled" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Cancel</action>
+    <guard>
+      <guard-permission>senaite.core: Transition: Cancel</guard-permission>
+      <guard-expression>python:here.guard_handler("cancel")</guard-expression>
+    </guard>
+  </transition>
+
+  <transition transition_id="reinstate" title="Reinstate" new_state="pending" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Reinstate</action>
+    <guard>
+      <guard-permission>senaite.core: Transition: Reinstate</guard-permission>
+      <guard-expression>python:here.guard_handler("reinstate")</guard-expression>
+    </guard>
+  </transition>
 
   <variable variable_id="action" for_catalog="False" for_status="True" update_always="True">
     <description>Previous transition</description>

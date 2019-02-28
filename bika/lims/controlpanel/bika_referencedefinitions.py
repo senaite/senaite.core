@@ -7,11 +7,12 @@
 
 from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
+from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
-from bika.lims import bikaMessageFactory as _
-from plone.app.folder.folder import ATFolder, ATFolderSchema
 from bika.lims.interfaces import IReferenceDefinitions
+from bika.lims.permissions import AddReferenceDefinition
+from plone.app.folder.folder import ATFolder, ATFolderSchema
 from zope.interface.declarations import implements
 
 
@@ -23,6 +24,7 @@ class ReferenceDefinitionsView(BikaListingView):
                               'sort_on': 'sortable_title'}
         self.context_actions = {_('Add'):
                                 {'url': 'createObject?type_name=ReferenceDefinition',
+                                 'permission': AddReferenceDefinition,
                                  'icon': '++resource++bika.lims.images/add.png'}}
         self.icon = self.portal_url + "/++resource++bika.lims.images/referencedefinition_big.png"
         self.title = self.context.translate(_("Reference Definitions"))
@@ -45,12 +47,12 @@ class ReferenceDefinitionsView(BikaListingView):
         self.review_states = [
             {'id':'default',
              'title': _('Active'),
-             'contentFilter': {'inactive_state': 'active'},
+             'contentFilter': {'is_active': True},
              'transitions': [{'id':'deactivate'}, ],
              'columns': ['Title', 'Description']},
             {'id':'inactive',
-             'title': _('Dormant'),
-             'contentFilter': {'inactive_state': 'inactive'},
+             'title': _('Inactive'),
+             'contentFilter': {'is_active': False},
              'transitions': [{'id':'activate'}, ],
              'columns': ['Title', 'Description']},
             {'id':'all',

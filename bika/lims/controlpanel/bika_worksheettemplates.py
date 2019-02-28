@@ -7,16 +7,17 @@
 
 import collections
 
+from Products.ATContentTypes.content import schemata
+from Products.Archetypes import atapi
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import IWorksheetTemplates
+from bika.lims.permissions import AddWorksheetTemplate
 from bika.lims.utils import get_link
 from plone.app.folder.folder import ATFolder
 from plone.app.folder.folder import ATFolderSchema
-from Products.Archetypes import atapi
-from Products.ATContentTypes.content import schemata
 from zope.interface.declarations import implements
 
 
@@ -39,7 +40,7 @@ class WorksheetTemplatesView(BikaListingView):
             _("Add"):
             {
                 "url": "createObject?type_name=WorksheetTemplate",
-                "permission": "Add portal content",
+                "permission": AddWorksheetTemplate,
                 "icon": "++resource++bika.lims.images/add.png"
             }
         }
@@ -77,12 +78,12 @@ class WorksheetTemplatesView(BikaListingView):
             {
                 "id": "default",
                 "title": _("Active"),
-                "contentFilter": {"inactive_state": "active"},
+                "contentFilter": {"is_active": True},
                 "columns": self.columns.keys(),
             }, {
                 "id": "inactive",
-                "title": _("Dormant"),
-                "contentFilter": {"inactive_state": "inactive"},
+                "title": _("Inactive"),
+                "contentFilter": {'is_active': False},
                 "columns": self.columns.keys()
             }, {
                 "id": "all",

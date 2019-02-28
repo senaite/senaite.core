@@ -9,16 +9,28 @@
 
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
-from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.catalog import getCatalogDefinitions
 from bika.lims.catalog import setup_catalogs
 from bika.lims.config import *
 from bika.lims.interfaces import IARImportFolder, IHaveNoBreadCrumbs
-from bika.lims.permissions import setup_permissions
 from bika.lims.utils import tmpID
 from zope.interface import alsoProvides
 
+GROUPS = {
+    # Dictionary {group_name: [roles]}
+    "Analysts": ["Analyst", ],
+    "Clients": ["Client", ],
+    "LabClerks": ["LabClerk",],
+    # TODO Unbound LabManagers from Manager role
+    "LabManagers": ["LabManager", "Manager", ],
+    "Preservers": ["Perserver", ],
+    "Publishers": ["Publisher", ],
+    "Verifiers": ["Verifier", ],
+    "Samplers": ["Sampler", ],
+    "RegulatoryInspectors": ["RegulatoryInspector", ],
+    "SamplingCoordinators": ["SamplingCoordinator", ],
+}
 
 # noinspection PyClassHasNoInit
 class Empty:
@@ -31,7 +43,6 @@ class BikaGenerator(object):
 
     def setupPortalContent(self, portal):
         """ Setup Bika site structure """
-        self.fix_frontpage_permissions(portal)
         self.remove_default_content(portal)
         self.reindex_structure(portal)
 
@@ -107,91 +118,13 @@ class BikaGenerator(object):
         if del_ids:
             portal.manage_delObjects(ids=del_ids)
 
-    def fix_frontpage_permissions(self, portal):
-        if 'front-page' in portal:
-            obj = portal['front-page']
-            alsoProvides(obj, IHaveNoBreadCrumbs)
-            mp = obj.manage_permission
-            mp(permissions.View, ['Anonymous'], 1)
-
     def setupGroupsAndRoles(self, portal):
-        # add roles
-        for role in ('LabManager',
-                     'LabClerk',
-                     'Analyst',
-                     'Verifier',
-                     'Sampler',
-                     'Preserver',
-                     'Publisher',
-                     'Member',
-                     'Reviewer',
-                     'RegulatoryInspector',
-                     'Client',
-                     'SamplingCoordinator'):
-            if role not in portal.acl_users.portal_role_manager.listRoleIds():
-                portal.acl_users.portal_role_manager.addRole(role)
-            # add roles to the portal
-            portal._addRole(role)
-
         # Create groups
-        portal_groups = portal.portal_groups
-
-        if 'LabManagers' not in portal_groups.listGroupIds():
-            try:
-                portal_groups.addGroup('LabManagers', title="Lab Managers",
-                                       roles=['Member', 'LabManager',
-                                              'Site Administrator', ])
-            except KeyError:
-                portal_groups.addGroup('LabManagers', title="Lab Managers",
-                                       roles=['Member', 'LabManager',
-                                              'Manager', ])  # Plone < 4.1
-
-        if 'LabClerks' not in portal_groups.listGroupIds():
-            portal_groups.addGroup('LabClerks', title="Lab Clerks",
-                                   roles=['Member', 'LabClerk'])
-
-        if 'Analysts' not in portal_groups.listGroupIds():
-            portal_groups.addGroup('Analysts', title="Lab Technicians",
-                                   roles=['Member', 'Analyst'])
-
-        if 'Verifiers' not in portal_groups.listGroupIds():
-            portal_groups.addGroup('Verifiers', title="Verifiers",
-                                   roles=['Verifier'])
-
-        if 'Samplers' not in portal_groups.listGroupIds():
-            portal_groups.addGroup('Samplers', title="Samplers",
-                                   roles=['Sampler'])
-
-        if 'Preservers' not in portal_groups.listGroupIds():
-            portal_groups.addGroup('Preservers', title="Preservers",
-                                   roles=['Preserver'])
-
-        if 'Publishers' not in portal_groups.listGroupIds():
-            portal_groups.addGroup('Publishers', title="Publishers",
-                                   roles=['Publisher'])
-
-        if 'Clients' not in portal_groups.listGroupIds():
-            portal_groups.addGroup('Clients', title="Clients",
-                                   roles=['Member', 'Client'])
-
-        if 'Suppliers' not in portal_groups.listGroupIds():
-            portal_groups.addGroup('Suppliers', title="",
-                                   roles=['Member', ])
-
-        if 'RegulatoryInspectors' not in portal_groups.listGroupIds():
-            portal_groups.addGroup('RegulatoryInspectors',
-                                   title="Regulatory Inspectors",
-                                   roles=['Member', 'RegulatoryInspector'])
-
-        if 'SamplingCoordinators' not in portal_groups.listGroupIds():
-            portal_groups.addGroup(
-                'SamplingCoordinators', title="Sampling Coordinators",
-                roles=['SamplingCoordinator'])
-
-    def setupPermissions(self, portal):
-        """ Set up some suggested role to permission mappings.
-        """
-        setup_permissions(portal)
+        groups_ids = portal.portal_groups.listGroupIds()
+        groups_ids = filter(lambda gr: gr not in groups_ids, GROUPS.keys())
+        for group_id in groups_ids:
+            portal.portal_groups.addGroup(group_id, title=group_id,
+                                          roles=GROUPS[group_id])
 
     def setupVersioning(self, portal):
         try:
@@ -287,10 +220,8 @@ class BikaGenerator(object):
         addIndex(bc, 'sortable_title', 'FieldIndex')
         addIndex(bc, 'description', 'FieldIndex', 'Description')
         addIndex(bc, 'review_state', 'FieldIndex')
-        addIndex(bc, 'inactive_state', 'FieldIndex')
-        addIndex(bc, 'cancellation_state', 'FieldIndex')
         addIndex(bc, 'Identifiers', 'KeywordIndex')
-
+        addIndex(bc, 'is_active', 'BooleanIndex')
         addIndex(bc, 'BatchDate', 'DateIndex')
         addIndex(bc, 'getClientTitle', 'FieldIndex')
         addIndex(bc, 'getClientUID', 'FieldIndex')
@@ -320,9 +251,6 @@ class BikaGenerator(object):
         addColumn(bc, 'Title')
         addColumn(bc, 'Description')
         addColumn(bc, 'sortable_title')
-        addColumn(bc, 'review_state')
-        addColumn(bc, 'inactive_state')
-        addColumn(bc, 'cancellation_state')
         addColumn(bc, 'getClientTitle')
         addColumn(bc, 'getClientID')
         addColumn(bc, 'getClientBatchID')
@@ -420,8 +348,6 @@ class BikaGenerator(object):
         addIndex(bsc, 'description', 'FieldIndex', 'Description')
 
         addIndex(bsc, 'review_state', 'FieldIndex')
-        addIndex(bsc, 'inactive_state', 'FieldIndex')
-        addIndex(bsc, 'cancellation_state', 'FieldIndex')
 
         addIndex(bsc, 'getAccredited', 'FieldIndex')
         addIndex(bsc, 'getAnalyst', 'FieldIndex')
@@ -464,6 +390,7 @@ class BikaGenerator(object):
         addIndex(bsc, 'getUnit', 'FieldIndex')
         addIndex(bsc, 'getVATAmount', 'FieldIndex')
         addIndex(bsc, 'getVolume', 'FieldIndex')
+        addIndex(bsc, 'is_active', 'BooleanIndex')
 
         addColumn(bsc, 'path')
         addColumn(bsc, 'UID')
@@ -478,11 +405,7 @@ class BikaGenerator(object):
         addColumn(bsc, 'title')
         addColumn(bsc, 'sortable_title')
         addColumn(bsc, 'description')
-
         addColumn(bsc, 'review_state')
-        addColumn(bsc, 'inactive_state')
-        addColumn(bsc, 'cancellation_state')
-
         addColumn(bsc, 'getAccredited')
         addColumn(bsc, 'getInstrumentType')
         addColumn(bsc, 'getInstrumentTypeName')
@@ -574,7 +497,6 @@ def setupVarious(context):
     gen = BikaGenerator()
     gen.setupGroupsAndRoles(site)
     gen.setupPortalContent(site)
-    gen.setupPermissions(site)
     gen.setupTopLevelFolders(site)
     gen.setupVersioning(site)
     gen.setupCatalogs(site)

@@ -4,24 +4,20 @@
 #
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+import sys
 
 from AccessControl import ClassSecurityInfo
+from Products.Archetypes.public import *
+from Products.Archetypes.references import HoldingReference
+from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t, getUsers
-from bika.lims.browser.widgets import RecordsWidget as BikaRecordsWidget
 from bika.lims.browser.widgets import SRTemplateARTemplatesWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.idserver import renameAfterCreation
-from Products.Archetypes.public import *
-from Products.Archetypes.references import HoldingReference
-from Products.ATExtensions.field.records import RecordsField
-from bika.lims.interfaces import ISamplingRoundTemplate
-from Products.CMFCore.utils import getToolByName
+from bika.lims.interfaces import ISamplingRoundTemplate, IDeactivable
+from bika.lims.utils import getUsers
 from zope.interface import implements
-
-import sys
-
 
 schema = BikaSchema.copy() + Schema((
 
@@ -49,7 +45,7 @@ schema = BikaSchema.copy() + Schema((
             label = _("Department"),
             description = _("The laboratory department"),
             catalog_name='bika_setup_catalog',
-            base_query={'inactive_state': 'active'},
+            base_query={'is_active': True},
         ),
     ),
 
@@ -96,7 +92,7 @@ schema['title']._validationLayer()
 
 
 class SRTemplate(BaseContent):
-    implements(ISamplingRoundTemplate)
+    implements(ISamplingRoundTemplate, IDeactivable)
     security = ClassSecurityInfo()
     schema = schema
     displayContentsTab = False
@@ -119,7 +115,7 @@ class SRTemplate(BaseContent):
         bsc = getToolByName(self, 'bika_setup_catalog')
         items = [('', '')] + [(o.UID, o.Title) for o in
                               bsc(portal_type='Department',
-                                  inactive_state='active')]
+                                  is_active=True)]
         o = self.getDepartment()
         if o and o.UID() not in [i[0] for i in items]:
             items.append((o.UID(), o.Title()))

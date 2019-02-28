@@ -12,7 +12,7 @@ from AccessControl.SecurityInfo import ModuleSecurityInfo
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
 from bika.lims import PMF
-from bika.lims import enum, api
+from bika.lims import api
 from bika.lims import logger
 from bika.lims.browser import ulocalized_time
 from bika.lims.interfaces import IJSONReadExtender
@@ -127,17 +127,6 @@ def doActionFor(instance, action_id, idxs=None):
     return succeed, message
 
 
-# TODO Workflow - remove doAction(s)For?
-def doActionsFor(instance, actions):
-    """Performs a set of transitions to the instance passed in
-    """
-    pool = ActionHandlerPool.get_instance()
-    pool.queue_pool()
-    for action in actions:
-        doActionFor(instance, action)
-    pool.resume()
-
-
 def call_workflow_event(instance, event, after=True):
     """Calls the instance's workflow event
     """
@@ -222,31 +211,11 @@ def get_workflow_actions(obj):
     return actions
 
 
-def isBasicTransitionAllowed(context, permission=None):
-    """Most transition guards need to check the same conditions:
-
-    - Is the object active (cancelled or inactive objects can't transition)
-    - Has the user a certain permission, required for transition.  This should
-    normally be set in the guard_permission in workflow definition.
-
-    """
-    workflow = getToolByName(context, "portal_workflow")
-    mtool = getToolByName(context, "portal_membership")
-    if not isActive(context) \
-        or (permission and mtool.checkPermission(permission, context)):
-        return False
-    return True
-
-
 def isTransitionAllowed(instance, transition_id):
     """Checks if the object can perform the transition passed in.
     :returns: True if transition can be performed
     :rtype: bool
     """
-    if transition_id not in ['reinstate', 'activate']:
-        if not api.is_active(instance):
-            return False
-
     wf_tool = getToolByName(instance, "portal_workflow")
     for wf_id in wf_tool.getChainFor(instance):
         wf = wf_tool.getWorkflowById(wf_id)
@@ -275,12 +244,6 @@ def wasTransitionPerformed(instance, transition_id):
     """
     transitions = getReviewHistoryActionsList(instance)
     return transition_id in transitions
-
-
-def isActive(instance):
-    """Returns True if the object is neither in a cancelled nor inactive state
-    """
-    return api.is_active(instance)
 
 
 def getReviewHistoryActionsList(instance, reverse=False):
@@ -474,29 +437,6 @@ def _load_wf_module(module_relative_name):
     return sys.modules.get(modulekey, None)
 
 
-# Enumeration of the available status flows
-StateFlow = enum(review='review_state',
-                 inactive='inactive_state',
-                 cancellation='cancellation_state')
-
-# Enumeration of the different available states from the inactive flow
-InactiveState = enum(active='active')
-
-# Enumeration of the different states can have a batch
-BatchState = enum(open='open',
-                  closed='closed',
-                  cancelled='cancelled')
-
-BatchTransitions = enum(open='open',
-                        close='close')
-
-CancellationState = enum(active='active',
-                         cancelled='cancelled')
-
-CancellationTransitions = enum(cancel='cancel',
-                               reinstate='reinstate')
-
-
 class JSONReadExtender(object):
 
     """- Adds the list of possible transitions to each object, if 'transitions'
@@ -622,8 +562,8 @@ class ActionHandlerPool(object):
                 # Reindex all indexes!
                 return []
             idxs.extend(obj_idxs)
-        # Always reindex review_state
-        idxs.append("review_state")
+        # Always reindex review_state and is_active
+        idxs.extend(["review_state", "is_active"])
         return list(set(idxs))
 
 

@@ -21,6 +21,7 @@ from bika.lims.interfaces import IDuplicateAnalysis
 from bika.lims.interfaces import INumberGenerator
 from bika.lims.interfaces import IReferenceAnalysis
 from bika.lims.interfaces.analysis import IRequestAnalysis
+from bika.lims.permissions import TransitionVerify
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
 from bika.lims.workflow import ActionHandlerPool
@@ -33,6 +34,8 @@ from Products.DCWorkflow.Guard import Guard
 from Products.ZCatalog.ProgressHandler import ZLogHandler
 from zope.component import getUtility
 from zope.interface import alsoProvides
+from Products.ZCatalog.interfaces import IZCatalog
+from Products.CMFCore.interfaces import ICatalogTool
 
 version = '1.3.0'  # Remember version number in metadata.xml and setup.py
 profile = 'profile-{0}:default'.format(product)
@@ -199,6 +202,26 @@ def upgrade(tool):
     # https://github.com/senaite/senaite.core/pull/1231
     update_bika_catalog(portal)
 
+    # Updates Indexes/Metadata of the bika_analysis_catalog
+    # https://github.com/senaite/senaite.core/pull/1227
+    update_bika_analysis_catalog(portal)
+
+    # Updates Indexes/Metadata of the bika_catalog_worksheet_listing
+    # https://github.com/senaite/senaite.core/pull/1227
+    update_bika_catalog_worksheet_listing(portal)
+
+    # Updates Indexes/Metadata of the bika_setup_catalog
+    # https://github.com/senaite/senaite.core/pull/1227
+    update_bika_setup_catalog(portal)
+
+    # Updates Indexes/Metadata of the bika_catalog_report
+    # https://github.com/senaite/senaite.core/pull/1227
+    update_bika_catalog_report(portal)
+
+    # Updates Indexes/Metadata of the portal_catalog
+    # https://github.com/senaite/senaite.core/pull/1227
+    update_portal_catalog(portal)
+
     # Apply IAnalysisRequestRetest marker interface to retested ARs
     # https://github.com/senaite/senaite.core/pull/1243
     apply_analysis_request_retest_interface(portal)
@@ -287,7 +310,7 @@ def add_create_partition_transition(portal):
         after_script_name='',
         actbox_name="Create partitions", )
     guard = transition.guard or Guard()
-    guard_props = {'guard_permissions': 'BIKA: Edit Results',
+    guard_props = {'guard_permissions': 'senaite.core: Edit Results',
                    'guard_roles': '',
                    'guard_expr': 'python:here.guard_handler("create_partitions")'}
     guard.changeFromProperties(guard_props)
@@ -538,7 +561,11 @@ def update_workflows(portal):
     # mappings. This will allow us to update role mappings for those required
     # objects instead of all them. I know, would be easier to just do all them,
     # but we cannot afford such an approach for huge databases
-    rm_queries = get_role_mappings_candidates(portal)
+    # UPDATE:
+    # We don't use role_mappings_candidates anymore because we've changed
+    # security settings for most objects and also the workflows they are bound
+    # to new workflows: https://github.com/senaite/senaite.core/pull/1227
+    # rm_queries = get_role_mappings_candidates(portal)
 
     # Assign retracted analyses to retests
     assign_retracted_to_retests(portal)
@@ -546,8 +573,9 @@ def update_workflows(portal):
     # Remove rejected duplicates
     remove_rejected_duplicates(portal)
 
-    # Re-import workflow tool
+    # Re-import rolemap and workflow tools
     setup = portal.portal_setup
+    setup.runImportStepFromProfile(profile, 'rolemap')
     setup.runImportStepFromProfile(profile, 'workflow')
 
     # Remove duplicates not assigned to any worksheet
@@ -566,19 +594,34 @@ def update_workflows(portal):
     remove_worksheet_analysis_workflow(portal)
 
     # Fix cancelled analyses inconsistencies
-    fix_cancelled_analyses_inconsistencies(portal)
+    # Superseded by resolve_cancellation_inactive_state(portal)
+    #fix_cancelled_analyses_inconsistencies(portal)
+
+    # Fix cancelled/inactive objects inconsistencies
+    # https://github.com/senaite/senaite.core/pull/1227
+    resolve_cancellation_inactive_inconsistencies(portal)
 
     # Decouple analysis requests from samples
     decouple_analysisrequests_from_sample(portal)
 
-    # Fix cancelled analysis requests inconsistencies
-    decouple_analysis_requests_from_cancellation_workflow(portal)
+    # Fix cancelled analyses inconsistencies
+    # Superseded by resolve_cancellation_inactive_state(portal)
+    #decouple_analysis_requests_from_cancellation_workflow(portal)
 
     # Fix Analysis Requests in sampled status
     fix_analysisrequests_in_sampled_status(portal)
 
     # Update role mappings
-    update_role_mappings(portal, rm_queries)
+    # UPDATE:
+    # We do a full rolemappings update because we've changed security settings
+    # for most objects and also the workflows they are bound to new workflows:
+    # https://github.com/senaite/senaite.core/pull/1227
+    # update_role_mappings(portal, rm_queries)
+    commit_transaction(portal)
+    # Recursively update the role mappings starting from the portal object
+    logger.info("Recursively update role mappings ...")
+    ut = UpgradeUtils(portal)
+    ut.recursiveUpdateRoleMappings(portal)
 
     # Rollback to receive inconsistent ARs
     rollback_to_receive_inconsistent_ars(portal)
@@ -776,7 +819,87 @@ def fix_cancelled_analyses_inconsistencies(portal):
         # Update role mappings
         workflow.updateRoleMappingsFor(analysis)
         # Reindex
-        analysis.reindexObject(idxs=["cancellation_state"])
+        analysis.reindexObject(idxs=["review_state", "is_active"])
+
+
+def get_catalogs(portal):
+    """Returns the catalogs from the site
+    """
+    res = []
+    for object in portal.objectValues():
+        if ICatalogTool.providedBy(object):
+            res.append(object)
+        elif IZCatalog.providedBy(object):
+            res.append(object)
+    res.sort()
+    return res
+
+
+def resolve_cancellation_inactive_inconsistencies(portal):
+    resolve_inconsistencies_for_state(portal, "cancellation_state", "cancelled")
+    resolve_inconsistencies_for_state(portal, "inactive_state", "inactive")
+
+
+def resolve_inconsistencies_for_state(portal, state_idx, state_id):
+    logger.info("Resolving inconsistencies for {} state ...".format(state_id))
+    queries = []
+    for catalog in get_catalogs(portal):
+        if not catalog.Indexes.get(state_idx, None):
+            continue
+        catalog_id = catalog.getId()
+        queries.append(({state_idx: state_id}, catalog_id))
+
+    processed = []
+    for query in queries:
+        logger.info("Resolving '{}' state from '{}' ...".format(state_idx,
+                                                                query[1]))
+        brains = api.search(query[0], query[1])
+        total = len(brains)
+        for num, brain in enumerate(brains):
+            if num % 100 == 0:
+                logger.info("Resolving state to '{}': {}/{}".format(state_id,
+                                                                    num, total))
+            if api.get_uid(brain) in processed:
+                continue
+            if brain.review_state == state_id:
+                if api.get_review_status(api.get_object(brain)) == state_id:
+                    continue
+
+            # Set state
+            pt = api.get_portal_type(brain)
+            workflows = api.get_workflows_for(brain)
+            if not workflows:
+                logger.error("No workflows found for {}".format(pt))
+                continue
+            elif len(workflows) > 1:
+                logger.error("More than one workflow found for {}".format(pt))
+                continue
+
+            wf_id = workflows[0]
+            wf_tool = api.get_tool("portal_workflow")
+            workflow = wf_tool.getWorkflowById(wf_id)
+
+            if state_id not in workflow.states:
+                logger.error("'{}' state not found for {}".format(state_id,
+                                                                  wf_id))
+
+            obj = api.get_object(brain)
+            if changeWorkflowState(obj, wf_id, state_id):
+                processed.append(api.get_uid(obj))
+
+            if num % 1000 == 0:
+                commit_transaction(portal)
+
+    # Remove indexes and metadata
+    catalogs = map(lambda cat: cat[1], queries)
+    catalogs = list(set(catalogs))
+    for catalog_id in catalogs:
+        del_index(portal, catalog_id=catalog_id, index_name=state_idx)
+        del_metadata(portal, catalog_id=catalog_id, column=state_idx)
+        add_index(portal, catalog_id=catalog_id, index_name="is_active",
+                  index_attribute="is_active", index_metatype="BooleanIndex")
+
+    commit_transaction(portal)
 
 
 def get_role_mappings_candidates(portal):
@@ -829,9 +952,13 @@ def get_rm_candidates_for_ar_workflow(portal):
     logger.info("Getting candidates for role mappings: {} ...".format(wf_id))
     workflow = get_workflow_by_id(portal, wf_id)
     candidates = list()
-    if "Field: Edit Priority" not in workflow.states.verified.permissions:
-        # Since we've introduced field-specific permissions in ar_workflow, there
-        # is no choice: we are forced to do a role mappings for all ARs :(
+
+    if workflow.title != "Sample Workflow":
+        # "Bika AR Workflow" will become "Sample Workflow" after the profile
+        # step "workflow" is run.
+        # Since we've introduced field-specific permissions in ar_workflow, and
+        # we've changed the whole rolemap.xml there is no choice: we are forced
+        # to do a role mappings for all ARs :(
         candidates.append(
             (wf_id,
              dict(portal_type="AnalysisRequest"),
@@ -845,7 +972,7 @@ def get_rm_candidates_for_referenceanalysisworkflow(portal):
     logger.info("Getting candidates for role mappings: {} ...".format(wf_id))
     workflow = get_workflow_by_id(portal, wf_id)
     candidates = list()
-    if "BIKA: Verify" not in workflow.states.to_be_verified.permissions:
+    if TransitionVerify not in workflow.states.to_be_verified.permissions:
         candidates.append(
             (wf_id,
              dict(portal_type="ReferenceAnalysis",
@@ -884,7 +1011,7 @@ def get_rm_candidates_for_duplicateanalysisworkflow(portal):
     workflow = get_workflow_by_id(portal, wf_id)
 
     candidates = list()
-    if "BIKA: Verify" not in workflow.states.to_be_verified.permissions:
+    if TransitionVerify not in workflow.states.to_be_verified.permissions:
         candidates.append(
             (wf_id,
              dict(portal_type="DuplicateAnalysis",
@@ -923,7 +1050,7 @@ def get_rm_candidates_for_analysisworkfklow(portal):
     workflow = get_workflow_by_id(portal, wf_id)
 
     candidates = list()
-    if "BIKA: Verify" not in workflow.states.to_be_verified.permissions:
+    if TransitionVerify not in workflow.states.to_be_verified.permissions:
         candidates.append(
             (wf_id,
              dict(portal_type="Analysis",
@@ -1226,7 +1353,7 @@ def fix_ar_analyses_inconsistencies(portal):
             # Force the new state
             changeWorkflowState(analysis, wf_id, status)
             workflow.updateRoleMappingsFor(analysis)
-            analysis.reindexObject(idxs="review_state")
+            analysis.reindexObject(idxs=["review_state", "is_active"])
 
     def fix_ar_analyses(status, wf_state_id="review_state"):
         brains = api.search({wf_state_id: status},
@@ -1241,7 +1368,7 @@ def fix_ar_analyses_inconsistencies(portal):
     logger.info("Fixing Analysis Request - Analyses inconsistencies ...")
     pool = ActionHandlerPool.get_instance()
     pool.queue_pool()
-    fix_ar_analyses("cancelled", wf_state_id="cancellation_state")
+    fix_ar_analyses("cancelled")
     fix_ar_analyses("invalid")
     fix_ar_analyses("rejected")
     pool.resume()
@@ -1297,14 +1424,14 @@ def decouple_analysis_requests_from_cancellation_workflow(portal):
         analysis_request = api.get_object(brain)
         if api.get_workflow_status_of(analysis_request) == "cancelled":
             # The state of the analysis request is fine, only reindex
-            analysis_request.reindexObject(idxs=["cancellation_state"])
+            analysis_request.reindexObject(idxs=["is_active", "review_state"])
             continue
 
         changeWorkflowState(analysis_request, wf_id, "cancelled")
         # Update role mappings
         workflow.updateRoleMappingsFor(analysis_request)
         # Reindex
-        analysis_request.reindexObject(idxs=["cancellation_state"])
+        analysis_request.reindexObject(idxs=["is_active", "review_state"])
 
 
 def decouple_analysisrequests_from_sample(portal):
@@ -1653,6 +1780,7 @@ def update_ar_listing_catalog(portal):
     indexes_to_add = [
         # name, attribute, metatype
         ("getClientID", "getClientID", "FieldIndex"),
+        ("is_active", "is_active", "BooleanIndex"),
     ]
 
     metadata_to_add = [
@@ -1680,11 +1808,137 @@ def update_bika_catalog(portal):
         # name, attribute, metatype
         ("getClientID", "getClientID", "FieldIndex"),
         ("getClientBatchID", "getClientBatchID", "FieldIndex"),
+        ("is_active", "is_active", "BooleanIndex"),
     ]
 
     metadata_to_add = [
         "getClientID",
         "getClientBatchID",
+    ]
+
+    for index in indexes_to_add:
+        add_index(portal, cat_id, *index)
+
+    for metadata in metadata_to_add:
+        refresh = metadata not in catalog.schema()
+        add_metadata(portal, cat_id, metadata, refresh_catalog=refresh)
+
+
+def update_bika_analysis_catalog(portal):
+    """Add Indexes/Metadata to bika_analysis_catalog
+    """
+    cat_id = "bika_analysis_catalog"
+
+    catalog = api.get_tool(cat_id)
+
+    logger.info("Updating Indexes/Metadata of Catalog '{}'".format(cat_id))
+
+    indexes_to_add = [
+        # name, attribute, metatype
+        ("is_active", "is_active", "BooleanIndex"),
+    ]
+
+    metadata_to_add = [
+    ]
+
+    for index in indexes_to_add:
+        add_index(portal, cat_id, *index)
+
+    for metadata in metadata_to_add:
+        refresh = metadata not in catalog.schema()
+        add_metadata(portal, cat_id, metadata, refresh_catalog=refresh)
+
+
+def update_bika_catalog_worksheet_listing(portal):
+    """Add Indexes/Metadata to bika_analysis_catalog
+    """
+    cat_id = "bika_catalog_worksheet_listing"
+
+    catalog = api.get_tool(cat_id)
+
+    logger.info("Updating Indexes/Metadata of Catalog '{}'".format(cat_id))
+
+    indexes_to_add = [
+        # name, attribute, metatype
+        ("is_active", "is_active", "BooleanIndex"),
+    ]
+
+    metadata_to_add = [
+    ]
+
+    for index in indexes_to_add:
+        add_index(portal, cat_id, *index)
+
+    for metadata in metadata_to_add:
+        refresh = metadata not in catalog.schema()
+        add_metadata(portal, cat_id, metadata, refresh_catalog=refresh)
+
+
+def update_bika_setup_catalog(portal):
+    """Add Indexes/Metadata to bika_setup_catalog
+    """
+    cat_id = "bika_setup_catalog"
+
+    catalog = api.get_tool(cat_id)
+
+    logger.info("Updating Indexes/Metadata of Catalog '{}'".format(cat_id))
+
+    indexes_to_add = [
+        # name, attribute, metatype
+        ("is_active", "is_active", "BooleanIndex"),
+    ]
+
+    metadata_to_add = [
+    ]
+
+    for index in indexes_to_add:
+        add_index(portal, cat_id, *index)
+
+    for metadata in metadata_to_add:
+        refresh = metadata not in catalog.schema()
+        add_metadata(portal, cat_id, metadata, refresh_catalog=refresh)
+
+
+def update_bika_catalog_report(portal):
+    """Add Indexes/Metadata to bika_catalog_report
+    """
+    cat_id = "bika_catalog_report"
+
+    catalog = api.get_tool(cat_id)
+
+    logger.info("Updating Indexes/Metadata of Catalog '{}'".format(cat_id))
+
+    indexes_to_add = [
+        # name, attribute, metatype
+        ("is_active", "is_active", "BooleanIndex"),
+    ]
+
+    metadata_to_add = [
+    ]
+
+    for index in indexes_to_add:
+        add_index(portal, cat_id, *index)
+
+    for metadata in metadata_to_add:
+        refresh = metadata not in catalog.schema()
+        add_metadata(portal, cat_id, metadata, refresh_catalog=refresh)
+
+
+def update_portal_catalog(portal):
+    """Add Indexes/Metadata to portal_catalog
+    """
+    cat_id = "portal_catalog"
+
+    catalog = api.get_tool(cat_id)
+
+    logger.info("Updating Indexes/Metadata of Catalog '{}'".format(cat_id))
+
+    indexes_to_add = [
+        # name, attribute, metatype
+        ("is_active", "is_active", "BooleanIndex"),
+    ]
+
+    metadata_to_add = [
     ]
 
     for index in indexes_to_add:
@@ -1708,7 +1962,6 @@ def update_notify_on_sample_invalidation(portal):
     # NotifyOnRejection --> NotifyOnSampleRejection
     old_value = setup.__dict__.get("NotifyOnRejection", False)
     setup.setNotifyOnSampleRejection(old_value)
-
 
 
 def apply_analysis_request_retest_interface(portal):

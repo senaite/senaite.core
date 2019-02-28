@@ -32,7 +32,7 @@
             id="Batch"
             class="blurrable firstToFocus referencewidget"
             value=""
-            base_query='{"portal_type": "Contact", "cancellation_state": "active"}'
+            base_query='{"portal_type": "Contact", "is_active": True}'
             search_query='{}'
             catalog_name="portal_catalog"
             ui_item="id"

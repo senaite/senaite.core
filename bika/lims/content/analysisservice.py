@@ -18,7 +18,7 @@ from bika.lims.browser.widgets.uidselectionwidget import UIDSelectionWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.abstractbaseanalysis import AbstractBaseAnalysis
 from bika.lims.content.abstractbaseanalysis import schema
-from bika.lims.interfaces import IAnalysisService
+from bika.lims.interfaces import IAnalysisService, IDeactivable
 from bika.lims.interfaces import IHaveIdentifiers
 from bika.lims.utils import to_utf8 as _c
 from magnitude import mg
@@ -151,7 +151,7 @@ class PartitionSetupField(RecordsField):
         bsc = getToolByName(instance, 'bika_setup_catalog')
         items = []
         for st in bsc(portal_type='SampleType',
-                      inactive_state='active',
+                      is_active=True,
                       sort_on='sortable_title'):
             st = st.getObject()
             title = st.Title()
@@ -166,7 +166,7 @@ class PartitionSetupField(RecordsField):
         bsc = getToolByName(instance, 'bika_setup_catalog')
         items = [[c.UID, c.title] for c in
                  bsc(portal_type='Preservation',
-                     inactive_state='active',
+                     is_active=True,
                      sort_on='sortable_title')]
         items = [['', _('Any')]] + list(items)
         return DisplayList(items)
@@ -215,7 +215,7 @@ Preservation = UIDReferenceField(
             "preservation depends on the sample type combination, specify a "
             "preservation per sample type in the table below"),
         catalog_name='bika_setup_catalog',
-        base_query={'inactive_state': 'active'},
+        base_query={'is_active': True},
     )
 )
 
@@ -238,7 +238,7 @@ Container = UIDReferenceField(
             "and preservation combination, specify the container in the "
             "sample type table below"),
         catalog_name='bika_setup_catalog',
-        base_query={'inactive_state': 'active'},
+        base_query={'is_active': True},
     )
 )
 
@@ -355,7 +355,7 @@ Calculation = UIDReferenceField(
         label=_("Calculation"),
         description=_("Calculation to be assigned to this content."),
         catalog_name='bika_setup_catalog',
-        base_query={'inactive_state': 'active'},
+        base_query={'is_active': True},
     )
 )
 
@@ -402,7 +402,7 @@ schema.moveField('InterimFields', after='Calculation')
 
 
 class AnalysisService(AbstractBaseAnalysis):
-    implements(IAnalysisService, IHaveIdentifiers)
+    implements(IAnalysisService, IHaveIdentifiers, IDeactivable)
     security = ClassSecurityInfo()
     schema = schema
     displayContentsTab = False
@@ -443,7 +443,7 @@ class AnalysisService(AbstractBaseAnalysis):
     def getPreservations(self):
         bsc = getToolByName(self, 'bika_setup_catalog')
         items = [(o.UID, o.Title) for o in
-                 bsc(portal_type='Preservation', inactive_state='active')]
+                 bsc(portal_type='Preservation', is_active=True)]
         items.sort(lambda x, y: cmp(x[1], y[1]))
         return DisplayList(list(items))
 
@@ -511,7 +511,7 @@ class AnalysisService(AbstractBaseAnalysis):
         bsc = getToolByName(self, 'bika_setup_catalog')
         items = [(i.UID, i.Title)
                  for i in bsc(portal_type='Method',
-                              inactive_state='active')
+                              is_active=True)
                  if i.getObject().isManualEntryOfResults()]
         items.sort(lambda x, y: cmp(x[1], y[1]))
         items.insert(0, ('', _("None")))
@@ -526,7 +526,7 @@ class AnalysisService(AbstractBaseAnalysis):
         bsc = getToolByName(self, 'bika_setup_catalog')
         items = [(i.UID, i.Title)
                  for i in bsc(portal_type='Calculation',
-                              inactive_state='active')]
+                              is_active=True)]
         items.sort(lambda x, y: cmp(x[1], y[1]))
         items.insert(0, ('', _("None")))
         return DisplayList(list(items))
@@ -540,7 +540,7 @@ class AnalysisService(AbstractBaseAnalysis):
         bsc = getToolByName(self, 'bika_setup_catalog')
         items = [(i.UID, i.Title)
                  for i in bsc(portal_type='Instrument',
-                              inactive_state='active')]
+                              is_active=True)]
         items.sort(lambda x, y: cmp(x[1], y[1]))
         return DisplayList(list(items))
 
@@ -568,7 +568,7 @@ class AnalysisService(AbstractBaseAnalysis):
     @security.public
     def getServiceDependants(self):
         bsc = getToolByName(self, 'bika_setup_catalog')
-        active_calcs = bsc(portal_type='Calculation', inactive_state="active")
+        active_calcs = bsc(portal_type='Calculation', is_active=True)
         calculations = [c.getObject() for c in active_calcs]
         dependants = []
         for calc in calculations:

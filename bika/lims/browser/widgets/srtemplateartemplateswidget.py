@@ -24,7 +24,7 @@ class SRTemplateARTemplatesView(BikaListingView):
         self.contentFilter = {
             'portal_type': 'ARTemplate',
             'sort_on': 'title',
-            'inactive_state': 'active',
+            'is_active': True,
         }
         self.context_actions = {}
         self.base_url = self.context.absolute_url()

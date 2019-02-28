@@ -96,7 +96,7 @@ class ImportView(BrowserView):
         bsc = getToolByName(self, 'bika_setup_catalog')
         items = [('', '...Choose an Instrument...')] + [(o.UID, o.Title) for o in
                                bsc(portal_type = 'Instrument',
-                                   inactive_state = 'active')]
+                                   is_active = True)]
         items.sort(lambda x, y: cmp(x[1].lower(), y[1].lower()))
         return DisplayList(list(items))
 
@@ -125,7 +125,7 @@ class ajaxGetImportTemplate(BrowserView):
         bsc = getToolByName(self, 'bika_setup_catalog')
         items = [('', '')] + [(o.getObject().Keyword, o.Title) for o in
                                 bsc(portal_type = 'AnalysisService',
-                                   inactive_state = 'active')]
+                                    is_active = True)]
         items.sort(lambda x, y: cmp(x[1].lower(), y[1].lower()))
         return DisplayList(list(items))
 
@@ -148,7 +148,7 @@ class ajaxGetImportInterfaces(BrowserView):
         bsc = getToolByName(self, 'bika_setup_catalog')
         instrument=bsc(portal_type='Instrument',
                        UID=self.request.get('instrument_uid', ''),
-                       inactive_state='active',)
+                       is_active=True,)
         if instrument and len(instrument) == 1:
             instrument = instrument[0].getObject()
             for i in instrument.getImportDataInterface():

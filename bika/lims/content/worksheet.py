@@ -267,7 +267,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         bsc = getToolByName(self, 'bika_setup_catalog')
         items = [(i.UID, i.Title)
                  for i in bsc(portal_type='Method',
-                              inactive_state='active')]
+                              is_active=True)]
         items.sort(lambda x, y: cmp(x[1], y[1]))
         items.insert(0, ('', _("Not specified")))
         return DisplayList(list(items))
@@ -277,7 +277,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         This function returns the registered instruments in the system as a
         vocabulary. The instruments are filtered by the selected method.
         """
-        cfilter = {'portal_type': 'Instrument', 'inactive_state': 'active'}
+        cfilter = {'portal_type': 'Instrument', 'is_active': True}
         if self.getMethod():
             cfilter['getMethodUIDs'] = {"query": self.getMethod().UID(),
                                         "operator": "or"}
@@ -817,7 +817,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             "getServiceUID": wst_service_uids,
             "review_state": "unassigned",
             "isSampleReceived": True,
-            "cancellation_state": "active",
+            "is_active": True,
             "sort_on": "getPrioritySortkey"
         }
         # Filter analyses their Analysis Requests have been received
@@ -1021,7 +1021,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
 
             samples = bc(portal_type='ReferenceSample',
                          review_state='current',
-                         inactive_state='active',
+                         is_active=True,
                          getReferenceDefinitionUID=ref_definition_uid)
 
             # We only want the reference samples that fit better with the type

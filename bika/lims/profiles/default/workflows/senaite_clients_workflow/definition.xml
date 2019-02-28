@@ -1,36 +1,46 @@
 <?xml version="1.0"?>
 <dc-workflow xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-             workflow_id="bika_publication_workflow"
-             title="Bika Publication Workflow"
+             workflow_id="senaite_clients_workflow"
+             title="Senaite clients folder Workflow"
              description=""
-             state_variable="publish_state"
-             initial_state="unpublished"
+             state_variable="review_state"
+             initial_state="active"
              manager_bypass="False"
              i18n:domain="senaite.core">
 
-  <state state_id="published" title="Published" i18n:attributes="title">
-    <exit-transition transition_id="republish" />
+  <!--
+  A one-state (active) workflow for clients folder.
+
+  Mostly a copy of senaite_one_state_workflow, but:
+   - "Access contents folder" granted to "Authenticated"
+   - "Delete objects" not granted to anyone
+   - "List folder contents" granted to "Authenticated"
+   - "View" granted to "Authenticated"
+  -->
+
+  <!-- PLONE permissions -->
+  <permission>Access contents information</permission>
+  <permission>Delete objects</permission>
+  <permission>List folder contents</permission>
+  <permission>Modify portal content</permission>
+  <permission>View</permission>
+
+  <!-- State: active -->
+  <state state_id="active" title="Active" i18n:attributes="title">
+    <exit-transition transition_id="" />
+    <!-- PLONE Permissions -->
+    <permission-map name="Access contents information" acquired="False">
+      <permission-role>Authenticated</permission-role>
+    </permission-map>
+    <permission-map name="Delete objects" acquired="False" />
+    <permission-map name="List folder contents" acquired="False">
+      <permission-role>Authenticated</permission-role>
+    </permission-map>
+    <permission-map name="Modify portal content" acquired="True"/>
+    <permission-map name="View" acquired="False">
+      <permission-role>Authenticated</permission-role>
+    </permission-map>
   </state>
-
-  <state state_id="unpublished" title="Unpublished" i18n:attributes="title">
-    <exit-transition transition_id="publish" />
-  </state>
-
-  <transition transition_id="publish" title="Publish" new_state="published" trigger="USER" before_script="" after_script="bika.lims.workflow.default" i18n:attributes="title">
-    <action url="%(content_url)s/publish" category="workflow" icon="">Publish</action>
-    <guard>
-      <guard-permission>BIKA: Publish</guard-permission>
-      <guard-expression>python:here.workflow_guard_publish() if hasattr(here, 'workflow_guard_publish') else True</guard-expression>
-    </guard>
-  </transition>
-
-  <transition transition_id="republish" title="Republish" new_state="" trigger="USER" before_script="" after_script="bika.lims.workflow.default" i18n:attributes="title">
-    <action url="%(content_url)s/publish" category="workflow" icon="">Republish</action>
-    <guard>
-      <guard-permission>BIKA: Publish</guard-permission>
-      <guard-expression>python:here.workflow_guard_republish() if hasattr(here, 'workflow_guard_republish') else True</guard-expression>
-    </guard>
-  </transition>
 
   <variable variable_id="action" for_catalog="False" for_status="True" update_always="True">
     <description>Previous transition</description>

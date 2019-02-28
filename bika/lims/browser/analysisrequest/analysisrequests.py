@@ -12,9 +12,8 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.config import PRIORITIES
-from bika.lims.permissions import AddAnalysisRequest
+from bika.lims.permissions import AddAnalysisRequest, TransitionSampleSample
 from bika.lims.permissions import ManageAnalysisRequests
-from bika.lims.permissions import SampleSample
 from bika.lims.utils import get_image
 from bika.lims.utils import get_progress_bar_html
 from bika.lims.utils import getUsers
@@ -492,7 +491,7 @@ class AnalysisRequestsView(BikaListingView):
                 review_states.append(review_state)
             self.review_states = review_states
 
-        # Only "BIKA: ManageAnalysisRequests" may see the copy to new button.
+        # Only "senaite.core: ManageAnalysisRequests" may see the copy to new button.
         # elsewhere it is hacked in where required.
         if self.copy_to_new_allowed:
             review_states = []
@@ -672,7 +671,9 @@ class AnalysisRequestsView(BikaListingView):
                 full_object = obj.getObject()
                 checkPermission =\
                     self.context.portal_membership.checkPermission
-                if checkPermission(SampleSample, full_object):
+
+                # TODO Do we really need this check?
+                if checkPermission(TransitionSampleSample, full_object):
                     item["required"] = ["getSampler", "getDateSampled"]
                     item["allow_edit"] = ["getSampler", "getDateSampled"]
                     # TODO-performance: hit performance while getting the

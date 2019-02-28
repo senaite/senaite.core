@@ -11,11 +11,11 @@ from Products.Archetypes.utils import DisplayList
 from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import UIDReferenceField
+from bika.lims.browser.widgets.uidselectionwidget import UIDSelectionWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.interfaces import IMethod
+from bika.lims.interfaces import IMethod, IDeactivable
 from bika.lims.utils import t
-from bika.lims.browser.widgets.uidselectionwidget import UIDSelectionWidget
 from plone.app.blob.field import FileField as BlobFileField
 from zope.interface import implements
 
@@ -110,7 +110,7 @@ schema = BikaSchema.copy() + Schema((
                 "services linked to this method. Calculations can be "
                 "configured under the calculations item in the LIMS set-up"),
             catalog_name='bika_setup_catalog',
-            base_query={'inactive_state': 'active'},
+            base_query={'is_active': True},
         )
     ),
     BooleanField('Accredited',
@@ -128,7 +128,7 @@ schema['description'].widget.label = _("Description")
 schema['description'].widget.description = _("Describes the method in layman terms. This information is made available to lab clients")
 
 class Method(BaseFolder):
-    implements(IMethod)
+    implements(IMethod, IDeactivable)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
@@ -154,7 +154,7 @@ class Method(BaseFolder):
         bsc = getToolByName(self, 'bika_setup_catalog')
         items = [(c.UID, c.Title) \
                 for c in bsc(portal_type='Calculation',
-                             inactive_state = 'active')]
+                             is_active = True)]
         items.sort(lambda x,y: cmp(x[1], y[1]))
         items.insert(0, ('', t(_('None'))))
         return DisplayList(items)
@@ -183,7 +183,7 @@ class Method(BaseFolder):
         bsc = getToolByName(self, 'bika_setup_catalog')
         items = [(i.UID, i.Title) \
                 for i in bsc(portal_type='Instrument',
-                             inactive_state = 'active')]
+                             is_active = True)]
         items.sort(lambda x,y: cmp(x[1], y[1]))
         return DisplayList(list(items))
 

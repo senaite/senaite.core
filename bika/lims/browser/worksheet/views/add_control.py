@@ -22,7 +22,7 @@ class AddControlView(ReferenceSamplesView):
             "isValid": True,
             "getBlank": False,
             "review_state": "current",
-            "inactive_state": "active",
+            "is_active": True,
             "sort_on": "sortable_title",
             "sort_order": "ascending",
         }

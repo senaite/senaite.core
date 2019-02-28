@@ -5,17 +5,17 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
+from Products.ATContentTypes.content import schemata
+from Products.Archetypes import atapi
+from Products.CMFCore import permissions
+from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import IReflexRuleFolder
-from bika.lims.permissions import ManageBika
+from bika.lims.permissions import ManageBika, AddReflexRule
 from plone.app.folder.folder import ATFolder
 from plone.app.folder.folder import ATFolderSchema
-from Products.Archetypes import atapi
-from Products.ATContentTypes.content import schemata
-from Products.CMFCore import permissions
-from Products.CMFCore.utils import getToolByName
 from zope.interface.declarations import implements
 
 
@@ -51,11 +51,11 @@ class ReflexRuleFolderView(BikaListingView):
         self.review_states = [
             {'id': 'default',
              'title': _('Active'),
-             'contentFilter': {'inactive_state': 'active'},
+             'contentFilter': {'is_active': True},
              'columns': ['Title', 'Method', ]},
             {'id': 'inactive',
-             'title': _('Dormant'),
-             'contentFilter': {'inactive_state': 'inactive'},
+             'title': _('Inactive'),
+             'contentFilter': {'is_active': False},
              'columns': ['Title', 'Method', ]},
             {'id': 'all',
              'title': _('All'),
@@ -70,6 +70,7 @@ class ReflexRuleFolderView(BikaListingView):
                 self.context):
             self.context_actions[_('Add Reflex rule')] = {
                 'url': 'createObject?type_name=ReflexRule',
+                'permission': AddReflexRule,
                 'icon': '++resource++bika.lims.images/add.png'
             }
         if not mtool.checkPermission(ManageBika, self.context):

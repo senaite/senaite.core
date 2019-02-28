@@ -9,7 +9,7 @@ class get_sampletypes(object):
 
     catalog_name='bika_setup_catalog'
     contentFilter = {'portal_type': 'SampleType',
-                     'inactive_state': 'active'}
+                     'is_active': True}
 
     def __init__(self, context, request):
         self.context = context

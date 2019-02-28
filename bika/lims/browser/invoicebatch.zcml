@@ -14,7 +14,7 @@
       for="bika.lims.interfaces.IInvoiceBatch"
       name="base_view"
       class="bika.lims.browser.invoicebatch.InvoiceBatchInvoicesView"
-      permission="bika.lims.ManageInvoices"
+      permission="senaite.core.permissions.ManageInvoices"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
@@ -22,7 +22,7 @@
       for="bika.lims.interfaces.IInvoiceBatch"
       name="invoicebatch_export_csv"
       class=".invoicebatch.BatchFolderExportCSV"
-      permission="bika.lims.ManageInvoices"
+      permission="senaite.core.permissions.ManageInvoices"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 

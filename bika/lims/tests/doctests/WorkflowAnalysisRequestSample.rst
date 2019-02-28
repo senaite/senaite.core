@@ -175,7 +175,7 @@ Create an Analysis Request by using a template with Sampling workflow enabled:
 
 Exactly these roles can Sample:
 
-    >>> get_roles_for_permission("BIKA: Sample Sample", ar)
+    >>> get_roles_for_permission("senaite.core: Transition: Sample Sample", ar)
     ['LabManager', 'Manager', 'Sampler', 'SamplingCoordinator']
 
 Current user can sample because has the `LabManager` role:

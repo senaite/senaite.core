@@ -747,15 +747,15 @@ Set a result:
 
 Exactly these roles can submit:
 
-    >>> get_roles_for_permission("BIKA: Edit Results", analysis)
+    >>> get_roles_for_permission("senaite.core: Edit Results", analysis)
     ['Analyst', 'LabManager', 'Manager']
 
-    >>> get_roles_for_permission("BIKA: Edit Field Results", analysis)
+    >>> get_roles_for_permission("senaite.core: Edit Field Results", analysis)
     ['LabManager', 'Manager', 'Sampler']
 
 And these roles can view results:
 
-    >>> get_roles_for_permission("BIKA: View Results", analysis)
+    >>> get_roles_for_permission("senaite.core: View Results", analysis)
     ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'RegulatoryInspector']
 
 Current user can submit because has the `LabManager` role:

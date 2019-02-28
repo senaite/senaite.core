@@ -896,7 +896,7 @@
           catalog_name: "bika_setup_catalog",
           page_size: 0,
           UID: calculation_uid,
-          inactive_state: "active",
+          is_active: true,
           sort_on: "sortable_title"
         }
       };
