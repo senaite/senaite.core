@@ -953,7 +953,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         analyst = self.getField("Analyst").get(self)
         if not analyst:
             analyst = self.getSubmittedBy()
-        return analyst
+        return analyst or ""
 
     @security.public
     def getAssignedAnalyst(self):
@@ -963,17 +963,17 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         worksheet = self.getWorksheet()
         if not worksheet:
             return ""
-        return worksheet.getAnalyst()
+        return worksheet.getAnalyst() or ""
 
     @security.public
     def getAnalystName(self):
         """Returns the name of the currently assigned analyst
         """
         analyst = self.getAnalyst()
-        if analyst:
-            user = api.get_user(analyst.strip())
-            return user and user.getProperty("fullname") or ""
-        return ""
+        if not analyst:
+            return ""
+        user = api.get_user(analyst.strip())
+        return user and user.getProperty("fullname") or analyst
 
     @security.public
     def getObjectWorkflowStates(self):
