@@ -874,7 +874,7 @@ for the passed in object::
     ['LabClerk', 'LabManager', 'Manager', 'Owner']
 
     >>> api.get_roles_for_permission("Modify portal content", bika_setup)
-    ['LabManager', 'Manager']
+    ['LabClerk', 'LabManager', 'Manager']
 
 
 

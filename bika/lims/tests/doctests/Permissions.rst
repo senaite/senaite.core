@@ -115,7 +115,7 @@ Exactly these roles have should have the `List folder contents` permission::
 Exactly these roles have should have the `Modify portal content` permission::
 
     >>> get_roles_for_permission("Modify portal content", bika_setup)
-    ['LabManager', 'Manager']
+    ['LabClerk', 'LabManager', 'Manager']
 
 Exactly these roles (nobody) should have the `Delete objects` permission::
 
@@ -278,7 +278,7 @@ Exactly these roles have should have the `List folder contents` permission::
 Exactly these roles have should have the `Modify portal content` permission::
 
     >>> get_roles_for_permission("Modify portal content", labcontacts)
-    ['LabManager', 'Manager']
+    ['LabClerk', 'LabManager', 'Manager']
 
     >>> get_roles_for_permission("Modify portal content", labcontact)
     ['LabClerk', 'LabManager', 'Manager']
@@ -618,10 +618,10 @@ Exactly these roles have should have the `List folder contents` permission::
 Exactly these roles have should have the `Modify portal content` permission::
 
     >>> get_roles_for_permission("Modify portal content", instruments)
-    ['LabManager', 'Manager']
+    ['LabClerk', 'LabManager', 'Manager']
 
     >>> get_roles_for_permission("Modify portal content", instrument)
-    ['LabManager', 'Manager']
+    ['LabClerk', 'LabManager', 'Manager']
 
 Exactly these roles have should have the `Delete objects` permission::
 
@@ -731,10 +731,10 @@ Exactly these roles have should have the `List folder contents` permission::
 Exactly these roles have should have the `Modify portal content` permission::
 
     >>> get_roles_for_permission("Modify portal content", methods)
-    ['LabManager', 'Manager']
+    ['LabClerk', 'LabManager', 'Manager']
 
     >>> get_roles_for_permission("Modify portal content", method)
-    ['LabManager', 'Manager']
+    ['LabClerk', 'LabManager', 'Manager']
 
 Exactly these roles have should have the `Delete objects` permission::
 
@@ -841,10 +841,10 @@ Exactly these roles have should have the `List folder contents` permission::
 Exactly these roles have should have the `Modify portal content` permission::
 
     >>> get_roles_for_permission("Modify portal content", analysisservices)
-    ['LabManager', 'Manager']
+    ['LabClerk', 'LabManager', 'Manager']
 
     >>> get_roles_for_permission("Modify portal content", analysisservice)
-    ['LabManager', 'Manager']
+    ['LabClerk', 'LabManager', 'Manager']
 
 Exactly these roles have should have the `Delete objects` permission::
 
