@@ -141,11 +141,13 @@
       <role name="Owner"/>
     </permission>
     <permission name="senaite.core: Add AnalysisCategory" acquire="False">
+      <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
     <permission name="senaite.core: Add AnalysisProfile" acquire="False">
+      <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Owner"/>
@@ -157,16 +159,19 @@
       <role name="Owner"/>
     </permission>
     <permission name="senaite.core: Add AnalysisService" acquire="False">
+      <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
     <permission name="senaite.core: Add AnalysisSpec" acquire="False">
+      <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
     <permission name="senaite.core: Add ARTemplate" acquire="False">
+      <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Owner"/>
@@ -179,6 +184,7 @@
       <role name="Owner"/>
     </permission>
     <permission name="senaite.core: Add AttachmentType" acquire="False">
+      <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Owner"/>
@@ -190,11 +196,13 @@
       <role name="Owner"/>
     </permission>
     <permission name="senaite.core: Add BatchLabel" acquire="False">
+      <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
     <permission name="senaite.core: Add Calculation" acquire="False">
+      <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Owner"/>
@@ -205,36 +213,43 @@
       <role name="Manager"/>
     </permission>
     <permission name="senaite.core: Add Container" acquire="False">
+      <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
     <permission name="senaite.core: Add ContainerType" acquire="False">
+      <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
     <permission name="senaite.core: Add Department" acquire="False">
+      <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
     <permission name="senaite.core: Add IdentifierType" acquire="False">
+      <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
     <permission name="senaite.core: Add Instrument" acquire="False">
+      <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
     <permission name="senaite.core: Add InstrumentLocation" acquire="False">
+      <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
     <permission name="senaite.core: Add InstrumentType" acquire="False">
+      <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Owner"/>
@@ -245,21 +260,25 @@
       <role name="Manager"/>
     </permission>
     <permission name="senaite.core: Add LabContact" acquire="False">
+      <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
     <permission name="senaite.core: Add LabProduct" acquire="False">
+      <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
     <permission name="senaite.core: Add Manufacturer" acquire="False">
+      <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
     <permission name="senaite.core: Add Method" acquire="False">
+      <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Owner"/>
@@ -286,26 +305,31 @@
       <role name="Owner"/>
     </permission>
     <permission name="senaite.core: Add SampleCondition" acquire="False">
+      <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
     <permission name="senaite.core: Add SampleMatrix" acquire="False">
+      <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
     <permission name="senaite.core: Add SamplePoint" acquire="False">
+      <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
     <permission name="senaite.core: Add SampleType" acquire="False">
+      <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
     <permission name="senaite.core: Add SamplingDeviation" acquire="False">
+      <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Owner"/>
@@ -318,32 +342,38 @@
       <role name="Owner"/>
     </permission>
     <permission name="senaite.core: Add SRTemplate" acquire="False">
+      <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="SamplingCoordinator"/>
       <role name="Owner"/>
     </permission>
     <permission name="senaite.core: Add StorageLocation" acquire="False">
+      <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
     <permission name="senaite.core: Add SubGroup" acquire="False">
+      <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
     <permission name="senaite.core: Add Supplier" acquire="False">
+      <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
     <permission name="senaite.core: Add SupplyOrder" acquire="False">
+      <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
     <permission name="senaite.core: Add WorksheetTemplate" acquire="False">
+      <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Owner"/>
