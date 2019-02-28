@@ -948,13 +948,22 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
     @security.public
     def getAnalyst(self):
+        """Returns the stored Analyst or the user who submitted the result
+        """
+        analyst = self.getField("Analyst").get(self)
+        if not analyst:
+            analyst = self.getSubmittedBy()
+        return analyst
+
+    @security.public
+    def getAssignedAnalyst(self):
         """Returns the Analyst assigned to the worksheet this
         analysis is assigned to
         """
         worksheet = self.getWorksheet()
-        if worksheet:
-            return worksheet.getAnalyst() or ""
-        return ""
+        if not worksheet:
+            return ""
+        return worksheet.getAnalyst()
 
     @security.public
     def getAnalystName(self):
