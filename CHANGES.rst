@@ -124,6 +124,7 @@ Changelog
 
 **Security**
 
+- #1237 Global Permission and Role Mappings refactoring
 - #1077 Transitions and states strongly bound to DC Workflow + guards security
 
 
