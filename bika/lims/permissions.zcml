@@ -32,6 +32,7 @@
   <permission id="senaite.core.permissions.AddSupplyOrder" title="senaite.core: Add SupplyOrder"/>
   <permission id="senaite.core.permissions.AddSampleMatrix" title="senaite.core: Add SampleMatrix"/>
   <permission id="senaite.core.permissions.AddSamplePoint" title="senaite.core: Add SamplePoint"/>
+  <permission id="senaite.core.permissions.AddSampleType" title="senaite.core: Add SampleType"/>
   <permission id="senaite.core.permissions.AddSamplingDeviation" title="senaite.core: Add SamplingDeviation"/>
   <permission id="senaite.core.permissions.AddSamplingRound" title="senaite.core: Add SamplingRound"/>
   <permission id="senaite.core.permissions.AddSRTemplate" title="senaite.core: Add SRTemplate"/>

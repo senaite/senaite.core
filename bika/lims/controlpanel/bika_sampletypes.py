@@ -42,7 +42,7 @@ class SampleTypesView(BikaListingView):
         self.context_actions = {
             _("Add"): {
                 "url": "createObject?type_name=SampleType",
-                "permission": "Add portal content",
+                "permission": "senaite.core: Add SampleType",
                 "icon": "++resource++bika.lims.images/add.png"}
         }
 
