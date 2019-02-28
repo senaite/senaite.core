@@ -36,7 +36,7 @@
          action_id="view"
          category="object"
          condition_expr=""
-         url_expr="string:${object_url}"
+         url_expr="string:${object_url}/view"
          i18n:attributes="title"
          i18n:domain="plone"
          visible="True">
@@ -46,6 +46,7 @@
  <action title="Edit"
          action_id="edit"
          category="object"
+         condition_expr=""
          url_expr="string:${object_url}/edit"
          i18n:attributes="title"
          i18n:domain="plone"
