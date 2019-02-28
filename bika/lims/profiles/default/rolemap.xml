@@ -248,8 +248,8 @@
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
-    
-    
+
+
     <!-- Transition permissions -->
     <permission name="senaite.core: Transition: Deactivate" acquire="False">
       <role name="LabManager"/>
@@ -397,8 +397,8 @@
       <role name="LabManager"/>
       <role name="Manager"/>
     </permission>
-    
-    
+
+
     <!-- Field permissions -->
     <!-- Field permissions (Analysis Request) -->
     <permission name="senaite.core: Field: Edit Batch" acquire="False">
@@ -580,7 +580,7 @@
       <role name="Manager"/>
       <role name="Client"/>
     </permission>
-    
+
     <!-- Field permissions (Analysis and alike) -->
     <permission name="senaite.core: Field: Edit Analysis Hidden" acquire="False">
       <role name="LabClerk"/>
@@ -598,8 +598,7 @@
       <role name="LabManager"/>
       <role name="Manager"/>
     </permission>
-    
-    
+
     <!-- Behavioral permissions -->
     <permission name="senaite.core: Access JSON API" acquire="False">
       <role name="LabManager"/>
