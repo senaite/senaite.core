@@ -394,14 +394,18 @@ class UpgradeUtils(object):
             obs = ob.objectItems()
             if obs:
                 committed = 0
+                logged = 0
                 for k, v in obs:
-                    if count % 100 == 0:
+                    if count - logged >= 100:
                         logger.info(
                             "Updating role mappings for {}: {}".format(
                                 repr(ob), count))
+                        logged += count
+
                     changed = getattr(v, '_p_changed', 0)
-                    count = count + self.recursiveUpdateRoleMappings(v, wfs,
-                                                                     commit_window)
+                    processed = self.recursiveUpdateRoleMappings(v, wfs,
+                                                                 commit_window)
+                    count += processed
                     if changed is None:
                         # Re-ghostify.
                         v._p_deactivate()
