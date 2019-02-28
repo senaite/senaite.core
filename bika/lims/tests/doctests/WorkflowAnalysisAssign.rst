@@ -140,7 +140,7 @@ So the state of cu is now `unassigned`:
 
 The Analyst is no longer assigned to the analysis:
 
-    >>> cu.getAnalyst()
+    >>> cu.getAssignedAnalyst()
     ''
 
 From `assigned` state I can do submit:

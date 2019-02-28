@@ -947,23 +947,32 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
     @security.public
     def getAnalyst(self):
+        """Returns the stored Analyst or the user who submitted the result
+        """
+        analyst = self.getField("Analyst").get(self)
+        if not analyst:
+            analyst = self.getSubmittedBy()
+        return analyst or ""
+
+    @security.public
+    def getAssignedAnalyst(self):
         """Returns the Analyst assigned to the worksheet this
         analysis is assigned to
         """
         worksheet = self.getWorksheet()
-        if worksheet:
-            return worksheet.getAnalyst() or ""
-        return ""
+        if not worksheet:
+            return ""
+        return worksheet.getAnalyst() or ""
 
     @security.public
     def getAnalystName(self):
         """Returns the name of the currently assigned analyst
         """
         analyst = self.getAnalyst()
-        if analyst:
-            user = api.get_user(analyst.strip())
-            return user and user.getProperty("fullname") or ""
-        return ""
+        if not analyst:
+            return ""
+        user = api.get_user(analyst.strip())
+        return user and user.getProperty("fullname") or analyst
 
     @security.public
     def getObjectWorkflowStates(self):

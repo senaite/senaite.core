@@ -122,7 +122,7 @@ class AttachmentsView(BrowserView):
         service_uid = self.request.get('Service', None)
         AttachmentType = form.get('AttachmentType', '')
         AttachmentKeys = form.get('AttachmentKeys', '')
-        ReportOption = form.get('ReportOption', 'i')
+        ReportOption = form.get('ReportOption', 'r')
 
         # nothing to do if the attachment file is missing
         if attachment_file is None:
