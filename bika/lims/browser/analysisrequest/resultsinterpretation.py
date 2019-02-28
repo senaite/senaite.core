@@ -8,6 +8,7 @@
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.browser import BrowserView
+from bika.lims.permissions import FieldEditResultsInterpretation
 from plone import protect
 from plone.app.textfield import RichTextValue
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
@@ -47,7 +48,7 @@ class ARResultsInterpretationView(BrowserView):
         """Check if edit is allowed
         """
         checkPermission = self.context.portal_membership.checkPermission
-        return checkPermission("Modify portal content", self.context)
+        return checkPermission(FieldEditResultsInterpretation, self.context)
 
     def get_text(self, department, mode="raw"):
         """Returns the text saved for the selected department
