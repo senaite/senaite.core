@@ -664,6 +664,7 @@
       <role name="Manager"/>
     </permission>
     <permission name="senaite.core: Manage Bika" acquire="False">
+      <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
     </permission>
