@@ -81,7 +81,7 @@
       for="bika.lims.interfaces.IAnalysisRequestsFolder"
       name="base_view"
       class="bika.lims.browser.analysisrequest.analysisrequests.AnalysisRequestsView"
-      permission="senaite.core.permissions.ManageAnalysisRequests"
+      permission="cmf.ListFolderContents"
       layer="bika.lims.interfaces.IBikaLIMS"
       />
 
