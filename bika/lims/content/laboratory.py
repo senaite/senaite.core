@@ -9,7 +9,6 @@ from AccessControl import ClassSecurityInfo
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import UIDReferenceField
-from bika.lims.browser.widgets.uidselectionwidget import UIDSelectionWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.config import ManageBika
 from bika.lims.content.organisation import Organisation
@@ -21,6 +20,7 @@ from Products.Archetypes.public import ImageWidget
 from Products.Archetypes.public import IntegerField
 from Products.Archetypes.public import IntegerWidget
 from Products.Archetypes.public import Schema
+from Products.Archetypes.public import SelectionWidget
 from Products.Archetypes.public import StringField
 from Products.Archetypes.public import StringWidget
 from Products.Archetypes.public import TextAreaWidget
@@ -60,7 +60,8 @@ schema = Organisation.schema.copy() + Schema((
         allowed_types=("LabContact",),
         vocabulary="_getLabContacts",
         write_permission=ManageBika,
-        widget=UIDSelectionWidget(
+        accessor="getSupervisorUID",
+        widget=SelectionWidget(
             format="select",
             label=_("Supervisor"),
             description=_("Supervisor of the Lab")
@@ -194,6 +195,29 @@ class Laboratory(UniqueObject, Organisation):
                            sort_on="sortable_title"):
             pairs.append((contact.UID, contact.Title))
         return DisplayList(pairs)
+
+    @security.public
+    def getSupervisor(self):
+        """Returns the assigned supervisor
+
+        :returns: Supervisor object
+        """
+        return self.getField("Supervisor").get(self)
+
+    @security.public
+    def getSupervisorUID(self):
+        """Returns the UID of the assigned Supervisor
+
+        NOTE: This is the default accessor of the `Supervisor` schema field
+        and needed for the selection widget to render the selected value
+        properly in _view_ mode.
+
+        :returns: Supervisor UID
+        """
+        supervisor = self.getSupervisor()
+        if not supervisor:
+            return None
+        return api.get_uid(supervisor)
 
 
 registerType(Laboratory, PROJECTNAME)
