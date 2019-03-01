@@ -9,7 +9,6 @@ from AccessControl import ClassSecurityInfo
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import UIDReferenceField
-from bika.lims.browser.widgets.uidselectionwidget import UIDSelectionWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IDeactivable
@@ -24,6 +23,7 @@ from Products.Archetypes.public import FileWidget
 from Products.Archetypes.public import LinesField
 from Products.Archetypes.public import MultiSelectionWidget
 from Products.Archetypes.public import Schema
+from Products.Archetypes.public import SelectionWidget
 from Products.Archetypes.public import StringField
 from Products.Archetypes.public import StringWidget
 from Products.Archetypes.public import TextAreaWidget
@@ -128,7 +128,8 @@ schema = BikaSchema.copy() + Schema((
         "Calculation",
         vocabulary="_getCalculations",
         allowed_types=("Calculation",),
-        widget=UIDSelectionWidget(
+        accessor="getCalculationUID",
+        widget=SelectionWidget(
             visible={"edit": "visible", "view": "visible"},
             format="select",
             checkbox_bound=0,
@@ -172,6 +173,29 @@ class Method(BaseFolder):
     def _renameAfterCreation(self, check_auto_id=False):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
+
+    @security.public
+    def getCalculation(self):
+        """Returns the assigned calculation
+
+        :returns: Calculation object
+        """
+        return self.getField("Calculation").get(self)
+
+    @security.public
+    def getCalculationUID(self):
+        """Returns the UID of the assigned calculation
+
+        NOTE: This is the default accessor of the `Calculation` schema field
+        and needed for the selection widget to render the selected value
+        properly in _view_ mode.
+
+        :returns: Calculation UID
+        """
+        calculation = self.getCalculation()
+        if not calculation:
+            return None
+        return api.get_uid(calculation)
 
     def isManualEntryOfResults(self):
         """Indicates if manual entry of results is allowed.
