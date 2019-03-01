@@ -32,6 +32,15 @@ from Products.CMFCore.utils import UniqueObject
 from Products.CMFPlone.utils import safe_unicode
 from zope.interface import implements
 
+DEFAULT_ACCREDITATION_PAGE_HEADER = """${lab_name} has been accredited as
+${accreditation_standard} conformant by ${accreditation_body_abbr},
+${accreditation_body_name}<br/><br/> ${accreditation_body_abbr} is the single
+national accreditation body assessing testing and calibration laboratories for
+compliance to the ISO/IEC 17025 standard.<br/></br/>\n The following analysis
+services have been included in the ${accreditation_body_abbr} schedule of
+Accreditation for this Laboratory:
+"""
+
 schema = Organisation.schema.copy() + Schema((
 
     StringField(
@@ -136,9 +145,7 @@ schema = Organisation.schema.copy() + Schema((
     TextField(
         "AccreditationPageHeader",
         schemata="Accreditation",
-        default="${lab_name} has been accredited as ${accreditation_standard} conformant by ${accreditation_body_abbr}, ${accreditation_body_name}<br/><br/>" + \
-                "${accreditation_body_abbr} is the single national accreditation body assessing testing and calibration laboratories for compliance to the ISO/IEC 17025 standard.<br/></br/>\n" + \
-                "The following analysis services have been included in the ${accreditation_body_abbr} schedule of Accreditation for this Laboratory:",
+        default=DEFAULT_ACCREDITATION_PAGE_HEADER,
         widget=TextAreaWidget(
             label=_("Accreditation page header"),
             description=_(
@@ -176,7 +183,7 @@ class Laboratory(UniqueObject, Organisation):
 
     def Title(self):
         title = self.getName() and self.getName() or _("Laboratory")
-        return safe_unicode(title).encode('utf-8')
+        return safe_unicode(title).encode("utf-8")
 
     def _getLabContacts(self):
         bsc = api.get_tool("bika_setup_catalog")
