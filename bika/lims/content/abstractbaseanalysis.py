@@ -290,16 +290,17 @@ InstrumentEntryOfResults = BooleanField(
 # - If InstrumentEntry not checked, hide and set None
 # See browser/js/bika.lims.analysisservice.edit.js
 Instrument = UIDReferenceField(
-    'Instrument',
+    "Instrument",
     read_permission=View,
     write_permission=FieldEditAnalysisResult,
     schemata="Method",
     searchable=True,
     required=0,
-    vocabulary='_getAvailableInstrumentsDisplayList',
-    allowed_types=('Instrument',),
-    widget=UIDSelectionWidget(
-        format='select',
+    vocabulary="_getAvailableInstrumentsDisplayList",
+    allowed_types=("Instrument",),
+    accessor="getInstrumentUID",
+    widget=SelectionWidget(
+        format="select",
         label=_("Default Instrument"),
         description=_(
             "This is the instrument that is assigned to  tests from this type "
@@ -948,12 +949,27 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
             return instrument.Title()
 
     @security.public
+    def getInstrument(self):
+        """Returns the assigned instrument
+
+        :returns: Instrument object
+        """
+        return self.getField("Instrument").get(self)
+
+    @security.public
     def getInstrumentUID(self):
-        """Used to populate catalog values
+        """Returns the UID of the assigned instrument
+
+        NOTE: This is the default accessor of the `Instrument` schema field
+        and needed for the selection widget to render the selected value
+        properly in _view_ mode.
+
+        :returns: Method UID
         """
         instrument = self.getInstrument()
-        if instrument:
-            return instrument.UID()
+        if not instrument:
+            return None
+        return api.get_uid(instrument)
 
     @security.public
     def getInstrumentURL(self):
