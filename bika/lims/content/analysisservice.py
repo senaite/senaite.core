@@ -14,11 +14,11 @@ from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets.partitionsetupwidget import PartitionSetupWidget
 from bika.lims.browser.widgets.recordswidget import RecordsWidget
 from bika.lims.browser.widgets.referencewidget import ReferenceWidget
-from bika.lims.browser.widgets.uidselectionwidget import UIDSelectionWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.abstractbaseanalysis import AbstractBaseAnalysis
 from bika.lims.content.abstractbaseanalysis import schema
-from bika.lims.interfaces import IAnalysisService, IDeactivable
+from bika.lims.interfaces import IAnalysisService
+from bika.lims.interfaces import IDeactivable
 from bika.lims.interfaces import IHaveIdentifiers
 from bika.lims.utils import to_utf8 as _c
 from magnitude import mg
@@ -27,6 +27,7 @@ from Products.Archetypes.public import BooleanWidget
 from Products.Archetypes.public import DisplayList
 from Products.Archetypes.public import MultiSelectionWidget
 from Products.Archetypes.public import Schema
+from Products.Archetypes.public import SelectionWidget
 from Products.Archetypes.public import registerType
 from Products.Archetypes.Registry import registerField
 from Products.ATExtensions.ateapi import RecordsField
@@ -347,17 +348,18 @@ Instruments = UIDReferenceField(
 # - If UseDefaultCalculation is set to True, show this field
 #  See browser/js/bika.lims.analysisservice.edit.js
 Calculation = UIDReferenceField(
-    'Calculation',
+    "Calculation",
     schemata="Method",
     required=0,
-    vocabulary='_getAvailableCalculationsDisplayList',
-    allowed_types=('Calculation',),
-    widget=UIDSelectionWidget(
-        format='select',
+    vocabulary="_getAvailableCalculationsDisplayList",
+    allowed_types=("Calculation",),
+    accessor="getCalculationUID",
+    widget=SelectionWidget(
+        format="select",
         label=_("Calculation"),
         description=_("Calculation to be assigned to this content."),
-        catalog_name='bika_setup_catalog',
-        base_query={'is_active': True},
+        catalog_name="bika_setup_catalog",
+        base_query={"is_active": True},
     )
 )
 
@@ -424,8 +426,22 @@ class AnalysisService(AbstractBaseAnalysis):
             return calculation.Title()
 
     @security.public
+    def getCalculation(self):
+        """Returns the assigned calculation
+
+        :returns: Calculation object
+        """
+        return self.getField("Calculation").get(self)
+
+    @security.public
     def getCalculationUID(self):
-        """Used to populate catalog values
+        """Returns the UID of the assigned calculation
+
+        NOTE: This is the default accessor of the `Calculation` schema field
+        and needed for the selection widget to render the selected value
+        properly in _view_ mode.
+
+        :returns: Calculation UID
         """
         calculation = self.getCalculation()
         if calculation:
