@@ -17,7 +17,7 @@
       <!-- Service Info -->
       <div class="row"
            tal:define="service view/get_service"
-           tal:condition="service">
+           tal:condition="nocall:service">
         <div class="col-sm-12">
           <h3>
             <img tal:replace="structure python:view.get_icon_for('analysisservice')"/>
@@ -106,7 +106,7 @@
       <!-- Methods -->
       <div class="row"
            tal:define="methods view/get_methods"
-           tal:condition="methods">
+           tal:condition="nocall:methods">
         <div class="col-sm-12">
           <h3>
             <img tal:replace="structure python:view.get_icon_for('method')"/>
@@ -139,7 +139,7 @@
       <!-- Calculation -->
       <div class="row"
            tal:define="calc view/get_calculation"
-           tal:condition="calc">
+           tal:condition="nocall:calc">
         <div class="col-sm-12">
           <h3>
             <img tal:replace="structure python:view.get_icon_for('calculation')"/>
@@ -229,7 +229,7 @@
       <!-- Analyis Log Table -->
       <div class="row"
            tal:define="logview view/analysis_log_view"
-           tal:condition="logview">
+           tal:condition="nocall:logview">
         <div class="col-sm-12">
           <h3>
             <img tal:replace="structure python:view.get_icon_for('calendar')"/>
