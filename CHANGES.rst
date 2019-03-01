@@ -29,6 +29,7 @@ Changelog
 
 **Changed**
 
+- #1257 Fix Traceback for MultiSelectionWidgets in View Mode for UIDReferenceFields
 - #1249 Render attachments in report in worksheets too
 - #1243 ID Server Suffix Support for Retested ARs
 - #1240 Support action-specific `workflow_action` requests with named adapters
