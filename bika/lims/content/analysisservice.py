@@ -444,8 +444,9 @@ class AnalysisService(AbstractBaseAnalysis):
         :returns: Calculation UID
         """
         calculation = self.getCalculation()
-        if calculation:
-            return calculation.UID()
+        if not calculation:
+            return None
+        return api.get_uid(calculation)
 
     @security.public
     def getContainers(self, instance=None):
