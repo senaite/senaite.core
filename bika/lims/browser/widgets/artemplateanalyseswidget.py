@@ -11,7 +11,9 @@ import itertools
 from AccessControl import ClassSecurityInfo
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
+from bika.lims.api.security import check_permission
 from bika.lims.browser.bika_listing import BikaListingView
+from bika.lims.permissions import FieldEditTemplate
 from bika.lims.utils import get_image
 from bika.lims.utils import get_link
 from bika.lims.utils import t
@@ -172,13 +174,7 @@ class ARTemplateAnalysesView(BikaListingView):
     def is_edit_allowed(self):
         """Check if edit is allowed
         """
-        current_user = api.get_current_user()
-        roles = current_user.getRoles()
-        if "LabManager" in roles:
-            return True
-        if "Manager" in roles:
-            return True
-        return False
+        return check_permission(FieldEditTemplate, self.context)
 
     @view.memoize
     def get_editable_columns(self):
