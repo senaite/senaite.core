@@ -291,6 +291,7 @@ Methods = UIDReferenceField(
     multiValued=1,
     vocabulary='_getAvailableMethodsDisplayList',
     allowed_types=('Method',),
+    accessor="getMethodUIDs",
     widget=MultiSelectionWidget(
         label=_("Methods"),
         description=_(
@@ -318,6 +319,7 @@ Instruments = UIDReferenceField(
     multiValued=1,
     vocabulary='_getAvailableInstrumentsDisplayList',
     allowed_types=('Instrument',),
+    accessor="getInstrumentUIDs",
     widget=MultiSelectionWidget(
         label=_("Instruments"),
         description=_(
@@ -479,14 +481,47 @@ class AnalysisService(AbstractBaseAnalysis):
         return [m.UID() for m in self.getAvailableMethods()]
 
     @security.public
-    def getMethodUIDs(self):
-        """
-        Returns the UIDs of the assigned methods to this analysis service.
-        This method returns the selected methods in the 'Method' field.
+    def getMethods(self):
+        """Returns the assigned methods
+
         If you want to obtain the available methods to assign to the service,
         use getAvailableMethodUIDs.
+
+        :returns: List of method objects
         """
-        return [m.UID() for m in self.getMethods()]
+        return self.getField("Methods").get(self)
+
+    @security.public
+    def getMethodUIDs(self):
+        """Returns the UIDs of the assigned methods
+
+        NOTE: This is the default accessor of the `Methods` schema field
+        and needed for the multiselection widget to render the selected values
+        properly in _view_ mode.
+
+        :returns: List of method UIDs
+        """
+        return map(api.get_uid, self.getMethods())
+
+    @security.public
+    def getInstruments(self):
+        """Returns the assigned instruments
+
+        :returns: List of instrument objects
+        """
+        return self.getField("Instruments").get(self)
+
+    @security.public
+    def getInstrumentUIDs(self):
+        """Returns the UIDs of the assigned instruments
+
+        NOTE: This is the default accessor of the `Instruments` schema field
+        and needed for the multiselection widget to render the selected values
+        properly in _view_ mode.
+
+        :returns: List of instrument UIDs
+        """
+        return map(api.get_uid, self.getInstruments())
 
     @security.public
     def getAvailableInstruments(self):
