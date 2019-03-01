@@ -6,43 +6,65 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from AccessControl import ClassSecurityInfo
-from Products.Archetypes.public import *
-from Products.Archetypes.utils import DisplayList
-from Products.CMFCore.utils import getToolByName
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets.uidselectionwidget import UIDSelectionWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.interfaces import IMethod, IDeactivable
+from bika.lims.interfaces import IDeactivable
+from bika.lims.interfaces import IMethod
 from bika.lims.utils import t
 from plone.app.blob.field import FileField as BlobFileField
+from Products.Archetypes.public import BaseFolder
+from Products.Archetypes.public import BooleanField
+from Products.Archetypes.public import BooleanWidget
+from Products.Archetypes.public import ComputedField
+from Products.Archetypes.public import FileWidget
+from Products.Archetypes.public import LinesField
+from Products.Archetypes.public import MultiSelectionWidget
+from Products.Archetypes.public import Schema
+from Products.Archetypes.public import StringField
+from Products.Archetypes.public import StringWidget
+from Products.Archetypes.public import TextAreaWidget
+from Products.Archetypes.public import TextField
+from Products.Archetypes.public import registerType
+from Products.Archetypes.utils import DisplayList
+from Products.CMFCore.utils import getToolByName
 from zope.interface import implements
 
+
 schema = BikaSchema.copy() + Schema((
+
     # Method ID should be unique, specified on MethodSchemaModifier
-    StringField('MethodID',
+    StringField(
+        "MethodID",
         searchable=1,
         required=0,
-        validators=('uniquefieldvalidator',),
+        validators=("uniquefieldvalidator",),
         widget=StringWidget(
-            visible={'view': 'visible', 'edit': 'visible'},
-            label=_('Method ID'),
-            description=_('Define an identifier code for the method. It must be unique.'),
+            visible={"view": "visible", "edit": "visible"},
+            label=_("Method ID"),
+            description=_("Define an identifier code for the method. "
+                          "It must be unique."),
         ),
     ),
-    TextField('Instructions',
-        default_content_type = 'text/plain',
-        allowed_content_types= ('text/plain', ),
+
+    TextField(
+        "Instructions",
+        default_content_type="text/plain",
+        allowed_content_types=("text/plain", ),
         default_output_type="text/plain",
-        widget = TextAreaWidget(
-            label = _("Method Instructions",
-                      "Instructions"),
-            description=_("Technical description and instructions intended for analysts"),
+        widget=TextAreaWidget(
+            label=_("Instructions"),
+            description=_("Technical description and instructions "
+                          "intended for analysts"),
         ),
     ),
-    BlobFileField('MethodDocument',  # XXX Multiple Method documents please
-        widget = FileWidget(
+
+    BlobFileField(
+        "MethodDocument",  # XXX Multiple Method documents please
+        widget=FileWidget(
             label=_("Method Document"),
             description=_("Load documents describing the method here"),
         )
@@ -50,12 +72,13 @@ schema = BikaSchema.copy() + Schema((
 
     # The instruments linked to this method. Don't use this
     # method, use getInstrumentUIDs() or getInstruments() instead
-    LinesField('_Instruments',
-        vocabulary='getInstrumentsDisplayList',
+    LinesField(
+        "_Instruments",
+        vocabulary="getInstrumentsDisplayList",
         widget=MultiSelectionWidget(
-            modes = ('edit'),
+            modes=("edit"),
             label=_("Instruments"),
-            description =_(
+            description=_(
                 "The selected instruments have support for this method. "
                 "Use the Instrument edit view to assign "
                 "the method to a specific instrument"),
@@ -65,55 +88,61 @@ schema = BikaSchema.copy() + Schema((
     # All the instruments available in the system. Don't use this
     # method to retrieve the instruments linked to this method, use
     # getInstruments() or getInstrumentUIDs() instead.
-    LinesField('_AvailableInstruments',
-        vocabulary='_getAvailableInstrumentsDisplayList',
+    LinesField(
+        "_AvailableInstruments",
+        vocabulary="_getAvailableInstrumentsDisplayList",
         widget=MultiSelectionWidget(
-            modes = ('edit'),
+            modes=("edit"),
         )
     ),
 
     # If no instrument selected, always True. Otherwise, the user will
     # be able to set or unset the value. The behavior for this field
     # is controlled with javascript.
-    BooleanField('ManualEntryOfResults',
+    BooleanField(
+        "ManualEntryOfResults",
         default=False,
         widget=BooleanWidget(
             label=_("Manual entry of results"),
-            description=_("The results for the Analysis Services that use this method can be set manually"),
-            modes = ('edit'),
+            description=_("The results for the Analysis Services that use "
+                          "this method can be set manually"),
+            modes=("edit"),
         )
     ),
 
     # Only shown in readonly view. Not in edit view
-    ComputedField('ManualEntryOfResultsViewField',
-        expression = "context.isManualEntryOfResults()",
-        widget = BooleanWidget(
+    ComputedField(
+        "ManualEntryOfResultsViewField",
+        expression="context.isManualEntryOfResults()",
+        widget=BooleanWidget(
             label=_("Manual entry of results"),
-            description=_("The results for the Analysis Services that use this method can be set manually"),
-            modes = ('view'),
+            description=_("The results for the Analysis Services that use "
+                          "this method can be set manually"),
+            modes=("view"),
         ),
     ),
 
     # Calculations associated to this method. The analyses services
     # with this method assigned will use the calculation selected here.
     UIDReferenceField(
-        'Calculation',
-        vocabulary='_getCalculations',
-        allowed_types=('Calculation',),
+        "Calculation",
+        vocabulary="_getCalculations",
+        allowed_types=("Calculation",),
         widget=UIDSelectionWidget(
-            visible={'edit': 'visible', 'view': 'visible'},
-            format='select',
+            visible={"edit": "visible", "view": "visible"},
+            format="select",
             checkbox_bound=0,
             label=_("Calculation"),
             description=_(
                 "If required, select a calculation for the The analysis "
                 "services linked to this method. Calculations can be "
                 "configured under the calculations item in the LIMS set-up"),
-            catalog_name='bika_setup_catalog',
-            base_query={'is_active': True},
+            catalog_name="bika_setup_catalog",
+            base_query={"is_active": True},
         )
     ),
-    BooleanField('Accredited',
+    BooleanField(
+        "Accredited",
         schemata="default",
         default=True,
         widget=BooleanWidget(
@@ -122,69 +151,75 @@ schema = BikaSchema.copy() + Schema((
     ),
 ))
 
-schema['description'].schemata = 'default'
-schema['description'].widget.visible = True
-schema['description'].widget.label = _("Description")
-schema['description'].widget.description = _("Describes the method in layman terms. This information is made available to lab clients")
+schema["description"].schemata = "default"
+schema["description"].widget.visible = True
+schema["description"].widget.label = _("Description")
+schema["description"].widget.description = _(
+    "Describes the method in layman terms. "
+    "This information is made available to lab clients")
+
 
 class Method(BaseFolder):
+    """Method content
+    """
     implements(IMethod, IDeactivable)
+
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
-
     _at_rename_after_creation = True
+
     def _renameAfterCreation(self, check_auto_id=False):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
 
     def isManualEntryOfResults(self):
-        """ Indicates if manual entry of results is allowed.
-            If no instrument is selected for this method, returns True.
-            Otherwise, returns False by default, but its value can be
-            modified using the ManualEntryOfResults Boolean Field
+        """Indicates if manual entry of results is allowed.
+
+        If no instrument is selected for this method, returns True. Otherwise,
+        returns False by default, but its value can be modified using the
+        ManualEntryOfResults Boolean Field
         """
-        return len(self.getInstruments()) == 0 or self.getManualEntryOfResults()
+        instruments = self.getInstruments()
+        return len(instruments) == 0 or self.getManualEntryOfResults()
 
     def _getCalculations(self):
-        """ Returns a DisplayList with the available Calculations
-            registered in Bika-Setup. Used to fill the Calculation
-            ReferenceWidget.
+        """Available Calculations registered in Setup
         """
-        bsc = getToolByName(self, 'bika_setup_catalog')
-        items = [(c.UID, c.Title) \
-                for c in bsc(portal_type='Calculation',
-                             is_active = True)]
-        items.sort(lambda x,y: cmp(x[1], y[1]))
-        items.insert(0, ('', t(_('None'))))
+        bsc = getToolByName(self, "bika_setup_catalog")
+        items = [(c.UID, c.Title)
+                 for c in bsc(portal_type="Calculation",
+                              is_active=True)]
+        items.sort(lambda x, y: cmp(x[1], y[1]))
+        items.insert(0, ("", t(_("None"))))
         return DisplayList(items)
 
     def getInstruments(self):
-        """ Instruments capable to perform this method
+        """Instruments capable to perform this method
         """
-        return self.getBackReferences('InstrumentMethods')
+        return self.getBackReferences("InstrumentMethods")
 
     def getInstrumentUIDs(self):
-        """ UIDs of the instruments capable to perform this method
+        """UIDs of the instruments capable to perform this method
         """
-        return [i.UID() for i in self.getInstruments()]
+        return map(api.get_uid, self.getInstruments())
 
     def getInstrumentsDisplayList(self):
-        """ DisplayList containing the Instruments capable to perform
-            this method.
+        """Instruments capable to perform this method
         """
         items = [(i.UID(), i.Title()) for i in self.getInstruments()]
         return DisplayList(list(items))
 
     def _getAvailableInstrumentsDisplayList(self):
-        """ Available instruments registered in the system
-            Only instruments with state=active will be fetched
+        """Available instruments registered in the system
+
+        Only instruments with state=active will be fetched
         """
-        bsc = getToolByName(self, 'bika_setup_catalog')
-        items = [(i.UID, i.Title) \
-                for i in bsc(portal_type='Instrument',
-                             is_active = True)]
-        items.sort(lambda x,y: cmp(x[1], y[1]))
+        bsc = getToolByName(self, "bika_setup_catalog")
+        items = [(i.UID, i.Title)
+                 for i in bsc(portal_type="Instrument",
+                              is_active=True)]
+        items.sort(lambda x, y: cmp(x[1], y[1]))
         return DisplayList(list(items))
 
 
