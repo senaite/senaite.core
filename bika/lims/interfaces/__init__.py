@@ -354,6 +354,11 @@ class IARTemplates(Interface):
     """
 
 
+class ILaboratory(Interface):
+    """Marker interface for Laboratory
+    """
+
+
 class ILabContacts(Interface):
     """Marker interface for Lab contacts
     """

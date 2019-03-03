@@ -6,29 +6,39 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from AccessControl import ClassSecurityInfo
-from Products.ATExtensions.ateapi import RecordsField
-from Products.Archetypes.BaseContent import BaseContent
-from Products.Archetypes.Field import BooleanField, FixedPointField, \
-    FloatField, IntegerField, StringField, TextField
-from Products.Archetypes.Schema import Schema
-from Products.Archetypes.Widget import BooleanWidget, DecimalWidget, \
-    IntegerWidget, SelectionWidget, StringWidget
-from Products.Archetypes.utils import DisplayList, IntDisplayList
-from Products.CMFCore.utils import getToolByName
-from Products.CMFCore.permissions import View
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
-from bika.lims.browser.fields import DurationField, UIDReferenceField
+from bika.lims.browser.fields import DurationField
+from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets.durationwidget import DurationWidget
 from bika.lims.browser.widgets.recordswidget import RecordsWidget
 from bika.lims.browser.widgets.referencewidget import ReferenceWidget
-from bika.lims.browser.widgets.uidselectionwidget import UIDSelectionWidget
-from bika.lims.config import ATTACHMENT_OPTIONS, SERVICE_POINT_OF_CAPTURE
+from bika.lims.config import ATTACHMENT_OPTIONS
+from bika.lims.config import SERVICE_POINT_OF_CAPTURE
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IBaseAnalysis
-from bika.lims.permissions import FieldEditAnalysisResult, \
-    FieldEditAnalysisHidden, FieldEditAnalysisRemarks
+from bika.lims.permissions import FieldEditAnalysisHidden
+from bika.lims.permissions import FieldEditAnalysisRemarks
+from bika.lims.permissions import FieldEditAnalysisResult
 from bika.lims.utils import to_utf8 as _c
+from Products.Archetypes.BaseContent import BaseContent
+from Products.Archetypes.Field import BooleanField
+from Products.Archetypes.Field import FixedPointField
+from Products.Archetypes.Field import FloatField
+from Products.Archetypes.Field import IntegerField
+from Products.Archetypes.Field import StringField
+from Products.Archetypes.Field import TextField
+from Products.Archetypes.Schema import Schema
+from Products.Archetypes.utils import DisplayList
+from Products.Archetypes.utils import IntDisplayList
+from Products.Archetypes.Widget import BooleanWidget
+from Products.Archetypes.Widget import DecimalWidget
+from Products.Archetypes.Widget import IntegerWidget
+from Products.Archetypes.Widget import SelectionWidget
+from Products.Archetypes.Widget import StringWidget
+from Products.ATExtensions.ateapi import RecordsField
+from Products.CMFCore.permissions import View
+from Products.CMFCore.utils import getToolByName
 from zope.interface import implements
 
 # Anywhere that there just isn't space for unpredictably long names,
@@ -280,16 +290,17 @@ InstrumentEntryOfResults = BooleanField(
 # - If InstrumentEntry not checked, hide and set None
 # See browser/js/bika.lims.analysisservice.edit.js
 Instrument = UIDReferenceField(
-    'Instrument',
+    "Instrument",
     read_permission=View,
     write_permission=FieldEditAnalysisResult,
     schemata="Method",
     searchable=True,
     required=0,
-    vocabulary='_getAvailableInstrumentsDisplayList',
-    allowed_types=('Instrument',),
-    widget=UIDSelectionWidget(
-        format='select',
+    vocabulary="_getAvailableInstrumentsDisplayList",
+    allowed_types=("Instrument",),
+    accessor="getInstrumentUID",
+    widget=SelectionWidget(
+        format="select",
         label=_("Default Instrument"),
         description=_(
             "This is the instrument that is assigned to  tests from this type "
@@ -312,16 +323,17 @@ Instrument = UIDReferenceField(
 #   selected Methods, set the first method selected and non-readonly
 # See browser/js/bika.lims.analysisservice.edit.js
 Method = UIDReferenceField(
-    'Method',
+    "Method",
     read_permission=View,
     write_permission=FieldEditAnalysisResult,
     schemata="Method",
     required=0,
     searchable=True,
-    allowed_types=('Method',),
-    vocabulary='_getAvailableMethodsDisplayList',
-    widget=UIDSelectionWidget(
-        format='select',
+    allowed_types=("Method",),
+    vocabulary="_getAvailableMethodsDisplayList",
+    accessor="getMethodUID",
+    widget=SelectionWidget(
+        format="select",
         label=_("Default Method"),
         description=_(
             "If 'Allow instrument entry of results' is selected, the method "
@@ -898,12 +910,27 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
             return method.Title()
 
     @security.public
+    def getMethod(self):
+        """Returns the assigned method
+
+        :returns: Method object
+        """
+        return self.getField("Method").get(self)
+
+    @security.public
     def getMethodUID(self):
-        """This is used to populate catalog values
+        """Returns the UID of the assigned method
+
+        NOTE: This is the default accessor of the `Method` schema field
+        and needed for the selection widget to render the selected value
+        properly in _view_ mode.
+
+        :returns: Method UID
         """
         method = self.getMethod()
-        if method:
-            return method.UID()
+        if not method:
+            return None
+        return api.get_uid(method)
 
     @security.public
     def getMethodURL(self):
@@ -922,12 +949,27 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
             return instrument.Title()
 
     @security.public
+    def getInstrument(self):
+        """Returns the assigned instrument
+
+        :returns: Instrument object
+        """
+        return self.getField("Instrument").get(self)
+
+    @security.public
     def getInstrumentUID(self):
-        """Used to populate catalog values
+        """Returns the UID of the assigned instrument
+
+        NOTE: This is the default accessor of the `Instrument` schema field
+        and needed for the selection widget to render the selected value
+        properly in _view_ mode.
+
+        :returns: Method UID
         """
         instrument = self.getInstrument()
-        if instrument:
-            return instrument.UID()
+        if not instrument:
+            return None
+        return api.get_uid(instrument)
 
     @security.public
     def getInstrumentURL(self):
