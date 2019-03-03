@@ -117,6 +117,7 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         )
     ),
 
+    # TODO Remove Instrument.Method field (functionality provided by 'Methods')
     UIDReferenceField(
         'Method',
         vocabulary='_getAvailableMethods',
