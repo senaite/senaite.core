@@ -64,6 +64,8 @@ setup(
         "senaite.core.listing>=1.0.0",
         # Python 2.x is not supported by WeasyPrint v43
         'WeasyPrint==0.42.3',
+        # tinycss2 >= 1.0.0 does not support Python 2.x anymore
+        'tinycss2<1.0.0',
         # Add this line *after* senaite.impress 1.2.0 was realeased!
         # 'senaite.impress>=1.2.0',
     ],
