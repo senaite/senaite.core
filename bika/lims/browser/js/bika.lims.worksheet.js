@@ -1132,7 +1132,7 @@
       el = event.currentTarget;
       $(el).prepOverlay({
         subtype: "ajax",
-        filter: "h1,#archetypes-fieldname-Remarks span.remarks_history",
+        filter: "h1,span.remarks_history",
         config: {
           closeOnClick: true,
           closeOnEsc: true,

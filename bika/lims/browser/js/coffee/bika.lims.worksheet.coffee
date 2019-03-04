@@ -1058,7 +1058,7 @@ class window.WorksheetManageResultsView
     # https://github.com/plone/plone.app.jquerytools/blob/master/plone/app/jquerytools/browser/overlayhelpers.js
     $(el).prepOverlay
       subtype: "ajax"
-      filter: "h1,#archetypes-fieldname-Remarks span.remarks_history"
+      filter: "h1,span.remarks_history"
       config:
         closeOnClick: yes
         closeOnEsc: yes
