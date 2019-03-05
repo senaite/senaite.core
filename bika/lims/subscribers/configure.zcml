@@ -18,6 +18,13 @@
       handler="bika.lims.subscribers.analysis.ObjectInitializedEventHandler"
       />
 
+  <!-- Newly created Calculation (sets the initial version to 0) -->
+  <subscriber
+      for="bika.lims.interfaces.ICalculation
+           Products.Archetypes.interfaces.IObjectInitializedEvent"
+      handler=".calculation.ObjectInitializedEventHandler"/>
+
+
   <!-- Deleted analyses (applies to routine analyses only) -->
   <subscriber
       for="bika.lims.interfaces.IRoutineAnalysis
