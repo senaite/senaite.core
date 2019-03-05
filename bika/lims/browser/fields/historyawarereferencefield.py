@@ -5,15 +5,16 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
+import sys
+
 from AccessControl import ClassSecurityInfo
+from Acquisition import aq_base
+from Products.Archetypes.Registry import registerField
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import *
-from Products.Archetypes.Registry import registerField
 from Products.CMFCore.utils import getToolByName
-from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
-from bika.lims.utils import to_utf8
-import sys
+from bika.lims import api
 
 
 class HistoryAwareReferenceField(ReferenceField):
@@ -52,8 +53,6 @@ class HistoryAwareReferenceField(ReferenceField):
         elif not self.multiValued and len(value) > 1:
             raise ValueError("Multiple values given for single valued field %r" % self)
 
-        ts = getToolByName(instance, "translation_service").translate
-
         #convert objects to uids
         #convert uids to objects
         uids = []
@@ -77,8 +76,7 @@ class HistoryAwareReferenceField(ReferenceField):
         for uid in newuids:
             # update version_id of all existing references that aren't
             # about to be removed anyway (contents of sub)
-            version_id = hasattr(targets[uid], 'version_id') and \
-                       targets[uid].version_id or None
+            version_id = getattr(targets[uid], 'version_id', None)
             if not hasattr(instance, 'reference_versions'):
                 instance.reference_versions = {}
             instance.reference_versions[uid] = version_id
@@ -109,84 +107,51 @@ class HistoryAwareReferenceField(ReferenceField):
             #e.g. if i want to store the reference UIDs into an SQL field
             ObjectField.set(self, instance, self.getRaw(instance), **kwargs)
 
+    def get_referenced_version(self, instance, reference):
+        """Returns the object from the reference history that matches with the
+        version the instance points to
+        """
+        # Version of the referenced object to which the instance points to.
+        # If no version found or None, assume the instance points to the first
+        # version created (otherwise, it should have a value)
+        referenced_version = getattr(instance, "reference_versions", {})
+        referenced_version = referenced_version.get(reference.UID(), None) or 0
+
+        # Current version of the referenced object.
+        # If the object has not yet a version explicitly set (no history yet),
+        # assume this is the first version created
+        reference_version = getattr(reference, "version_id", None) or 0
+        if reference_version == referenced_version:
+            # The instance points to the latest version, no need to look for
+            # previous versions
+            return reference
+
+        # The instance points to a previous version, need to get the exact
+        # previous version the instance points to
+        pr = getToolByName(instance, 'portal_repository')
+        version_data = pr._retrieve(reference, selector=referenced_version,
+                                    preserve=(), countPurged=True)
+        return version_data.object
+
     security.declarePrivate('get')
 
-    def get(self, instance, aslist=False, **kwargs):
+    def get(self, instance, **kwargs):
         """get() returns the list of objects referenced under the relationship.
         """
-        try:
-            uc = getToolByName(instance, "uid_catalog")
-        except AttributeError as err:
-            logger.error("AttributeError: {0}".format(err))
-            return []
+        # Get the referenced objects
+        refs = instance.getRefs(relationship=self.relationship)
+        if not self.multiValued and len(refs) > 1:
+            msg = "%s references for non multivalued field %s of %s" % \
+                  (len(refs), self.getName(), instance)
+            logger.error(msg)
+            return None
 
-        try:
-            res = instance.getRefs(relationship=self.relationship)
-        except:
-            pass
-
-        pr = getToolByName(instance, 'portal_repository')
-
-        rd = {}
-        for r in res:
-            if r is None:
-                continue
-            uid = r.UID()
-            r = uc(UID=uid)[0].getObject()
-            if hasattr(instance, 'reference_versions') and \
-               hasattr(r, 'version_id') and \
-               uid in instance.reference_versions and \
-               instance.reference_versions[uid] != r.version_id and \
-               r.version_id is not None:
-
-                version_id = instance.reference_versions[uid]
-                try:
-                    result = pr._retrieve(r,
-                                     selector=version_id,
-                                     preserve=(),
-                                     countPurged=True)
-                    o = result.object
-                # except ArchivistRetrieveError:
-                #     o = r
-                except:
-                    # TODO Need to investigate
-                    # TypeError: can't pickle instancemethod objects.
-                    # At:
-                    # Products.CMFEditions-2.2.21-py2.7.egg/Products/CMFEditions/CopyModifyMergeRepositoryTool.py", line 494, in _retrieve:    saved = transaction.savepoint()
-                    # https://github.com/plone/Products.CMFEditions/blob/7360a8431c98fdcaecbaaaafd321fd3881a88f9b/Products/CMFEditions/CopyModifyMergeRepositoryTool.py#L494
-                    e = sys.exc_info()
-                    logger.error(
-                        "Caught exception in"
-                        " HistoryAwareReferenceField: %s" % str(e))
-                    o = r
-                rd[uid] = o
-            else:
-                rd[uid] = r
-
-        # singlevalued ref fields return only the object, not a list,
-        # unless explicitely specified by the aslist option
-
+        # Get the suitable version of each referenced object
+        refs = map(lambda ref: self.get_referenced_version(instance, ref), refs)
         if not self.multiValued:
-            if len(rd) > 1:
-                msg = "%s references for non multivalued field %s of %s" % \
-                    (len(rd), self.getName(), instance)
-                logger.warning(msg)
-            if not aslist:
-                if rd:
-                    rd = [rd[uid] for uid in rd.keys()][0]
-                else:
-                    rd = None
+            refs = refs and refs[0] or None
 
-        if not self.referencesSortable or not hasattr(aq_base(instance),
-                                                      'at_ordered_refs'):
-            if isinstance(rd, dict):
-                return [rd[uid] for uid in rd.keys()]
-            else:
-                return rd
-        refs = instance.at_ordered_refs
-        order = refs[self.relationship]
-
-        return [rd[uid] for uid in order if uid in rd.keys()]
+        return refs
 
 registerField(HistoryAwareReferenceField,
               title="History Aware Reference",
