@@ -33,7 +33,6 @@ class HistoryAwareReferenceField(ReferenceField):
 
     def set(self, instance, value, **kwargs):
         """ Mutator. """
-
         rc = getToolByName(instance, REFERENCE_CATALOG)
         targetUIDs = [ref.targetUID for ref in
                       rc.getReferences(instance, self.relationship)]
@@ -80,17 +79,9 @@ class HistoryAwareReferenceField(ReferenceField):
             # about to be removed anyway (contents of sub)
             version_id = hasattr(targets[uid], 'version_id') and \
                        targets[uid].version_id or None
-            if version_id is None:
-                # attempt initial save of unversioned targets
-                pr = getToolByName(instance, 'portal_repository')
-                if pr.isVersionable(targets[uid]):
-                    pr.save(obj=targets[uid],
-                            comment=to_utf8(ts(_("Initial revision"))))
             if not hasattr(instance, 'reference_versions'):
                 instance.reference_versions = {}
-            if not hasattr(targets[uid], 'version_id'):
-                targets[uid].version_id = None
-            instance.reference_versions[uid] = targets[uid].version_id
+            instance.reference_versions[uid] = version_id
 
         # tweak keyword arguments for addReference
         addRef_kw = kwargs.copy()
