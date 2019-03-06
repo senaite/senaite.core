@@ -5,7 +5,6 @@
   <object name="bika_analysis_workflow" meta_type="Workflow"/>
   <object name="bika_ar_workflow" meta_type="Workflow"/>
   <object name="bika_arimport_workflow" meta_type="Workflow"/>
-  <object name="bika_batch_workflow" meta_type="Workflow"/>
   <object name="bika_duplicateanalysis_workflow" meta_type="Workflow"/>
   <object name="bika_referenceanalysis_workflow" meta_type="Workflow"/>
   <object name="bika_referencesample_workflow" meta_type="Workflow"/>
@@ -159,6 +158,12 @@
   - "View" granted to lab personnel only
   -->
   <object name="senaite_worksheets_workflow" meta_type="Workflow" />
+
+  <!-- workflow: senaite_batch_workflow
+  Custom workflow for batches. Batches can be cancelled and closed.
+  Only lab personnel allowed.
+  -->
+  <object name="senaite_batch_workflow" meta_type="Workflow" />
 
   <!--
   *** BINDINGS ***
@@ -439,7 +444,7 @@
       <bound-workflow workflow_id="bika_arimport_workflow"/>
     </type>
     <type type_id="Batch">
-      <bound-workflow workflow_id="bika_batch_workflow"/>
+      <bound-workflow workflow_id="senaite_batch_workflow"/>
     </type>
     <type type_id="BikaSetup">
       <bound-workflow workflow_id="senaite_setup_workflow"/>
