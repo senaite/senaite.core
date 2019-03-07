@@ -5,155 +5,231 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-import sys
-
 from AccessControl import ClassSecurityInfo
 from Acquisition import aq_base
-from Products.Archetypes.Registry import registerField
-from Products.Archetypes.config import REFERENCE_CATALOG
-from Products.Archetypes.public import *
-from Products.CMFCore.utils import getToolByName
-from bika.lims import logger
 from bika.lims import api
+from bika.lims import logger
+from Products.Archetypes.public import ObjectField
+from Products.Archetypes.public import ReferenceField
+from Products.Archetypes.Registry import registerField
+
+VERSION_ID = "version_id"
+REFERENCE_VERSIONS = "reference_versions"
 
 
 class HistoryAwareReferenceField(ReferenceField):
-    """ Version aware references.
+    """Version aware references.
 
     Uses instance.reference_versions[uid] to record uid.version_id,
     to pin this reference to a specific version.
-
-    The 'auto_update_backrefs' is a list of reference relationship names
-    which will automatically be updated when this object's version is
-    incremented:  https://github.com/bikalabs/Bika-LIMS/issues/84
-
     """
     security = ClassSecurityInfo()
 
-    security.declarePrivate('set')
+    def get_versioned_references_for(self, instance):
+        """Returns the versioned references for the given instance
+        """
+        vrefs = []
 
-    def set(self, instance, value, **kwargs):
-        """ Mutator. """
-        rc = getToolByName(instance, REFERENCE_CATALOG)
-        targetUIDs = [ref.targetUID for ref in
-                      rc.getReferences(instance, self.relationship)]
+        # Retrieve the referenced objects
+        refs = instance.getRefs(relationship=self.relationship)
 
+        ref_versions = getattr(instance, REFERENCE_VERSIONS, None)
+        # No versions stored, return the original references
+        if ref_versions is None:
+            return refs
+
+        for ref in refs:
+            uid = api.get_uid(ref)
+            # get the linked version to the reference
+            version = ref_versions.get(uid)
+            # append the versioned reference
+            vrefs.append(self.retrieve_version(ref, version))
+
+        return vrefs
+
+    def retrieve_version(self, obj, version):
+        """Retrieve the version of the object
+        """
+        current_version = getattr(obj, VERSION_ID, None)
+
+        if current_version is None:
+            # No initial version
+            return obj
+
+        if str(current_version) == str(version):
+            # Same version
+            return obj
+
+        # Retrieve the object from the repository
+        pr = api.get_tool("portal_repository")
+        result = pr._retrieve(
+            obj, selector=version, preserve=(), countPurged=True)
+        return result.object
+
+    def get_backreferences_for(self, instance):
+        """Returns the backreferences for the given instance
+
+        :returns: list of UIDs
+        """
+        rc = api.get_tool("reference_catalog")
+        backreferences = rc.getReferences(instance, self.relationship)
+        return map(lambda ref: ref.targetUID, backreferences)
+
+    def preprocess_value(self, value, default=tuple()):
+        """Preprocess the value for set
+        """
         # empty value
         if not value:
-            value = ()
-        # list with one empty item
-        if type(value) in (list, tuple) and len(value) == 1 and not value[0]:
-            value = ()
+            return default
 
-        if not value and not targetUIDs:
-            return
+        # list with one empty item
+        if isinstance(value, (list, tuple)):
+            if len(value) == 1 and not value[0]:
+                return default
 
         if not isinstance(value, (list, tuple)):
             value = value,
-        elif not self.multiValued and len(value) > 1:
-            raise ValueError("Multiple values given for single valued field %r" % self)
 
-        #convert objects to uids
-        #convert uids to objects
-        uids = []
-        targets = {}
-        for v in value:
-            if isinstance(v, basestring):
-                uids.append(v)
-                targets[v] = rc.lookupObject(v)
-            elif hasattr(v, 'UID'):
-                target_uid = callable(v.UID) and v.UID() or v.UID
-                uids.append(target_uid)
-                targets[target_uid] = v
-            else:
-                logger.info("Target has no UID: %s/%s" % (v, value))
+        return value
 
-        sub = [t for t in targetUIDs if t not in uids]
-        add = [v for v in uids if v and v not in targetUIDs]
+    def link_version(self, source, target):
+        """Link the current version of the target on the source
+        """
+        if not hasattr(target, VERSION_ID):
+            # no initial version of this object!
+            logger.warn("No iniatial version found for '{}'"
+                        .format(repr(target)))
+            return
 
-        newuids = [t for t in list(targetUIDs) + list(uids) if t not in sub]
-        newuids = list(set(newuids))
-        for uid in newuids:
-            # update version_id of all existing references that aren't
-            # about to be removed anyway (contents of sub)
-            version_id = getattr(targets[uid], 'version_id', None)
-            if not hasattr(instance, 'reference_versions'):
-                instance.reference_versions = {}
-            instance.reference_versions[uid] = version_id
+        if not hasattr(source, REFERENCE_VERSIONS):
+            source.reference_versions = {}
 
-        # tweak keyword arguments for addReference
+        target_uid = api.get_uid(target)
+        # store the current version of the target on the source
+        source.reference_versions[target_uid] = target.version_id
+        # persist changes that occured referenced versions
+        source._p_changed = 1
+
+    def unlink_version(self, source, target):
+        """Unlink the current version of the target from the source
+        """
+        if not hasattr(source, REFERENCE_VERSIONS):
+            return
+        target_uid = api.get_uid(target)
+        if target_uid in source.reference_versions[target_uid]:
+            # delete the version
+            del source.reference_versions[target_uid]
+            # persist changes that occured referenced versions
+            source._p_changed = 1
+        else:
+            logger.warn("No version link found on '{}' -> '{}'"
+                        .format(repr(source), repr(target)))
+
+    def add_reference(self, source, target, **kwargs):
+        """Add a new reference
+        """
+        # Tweak keyword arguments for addReference
         addRef_kw = kwargs.copy()
-        addRef_kw.setdefault('referenceClass', self.referenceClass)
-        if 'schema' in addRef_kw:
-            del addRef_kw['schema']
-        for uid in add:
-            __traceback_info__ = (instance, uid, value, targetUIDs)
-            # throws IndexError if uid is invalid
-            rc.addReference(instance, uid, self.relationship, **addRef_kw)
+        addRef_kw.setdefault("referenceClass", self.referenceClass)
+        if "schema" in addRef_kw:
+            del addRef_kw["schema"]
+        uid = api.get_uid(target)
+        rc = api.get_tool("reference_catalog")
+        # throws IndexError if uid is invalid
+        rc.addReference(source, uid, self.relationship, **addRef_kw)
+        # link the version of the reference
+        self.link_version(source, target)
 
-        for uid in sub:
-            rc.deleteReference(instance, uid, self.relationship)
+    def del_reference(self, source, target, **kwargs):
+        """Remove existing reference
+        """
+        rc = api.get_tool("reference_catalog")
+        uid = api.get_uid(target)
+        rc.deleteReference(source, uid, self.relationship)
+        # unlink the version of the reference
+        self.link_version(source, target)
+
+    @security.private
+    def set(self, instance, value, **kwargs):
+        """Set (multi-)references
+        """
+        value = self.preprocess_value(value)
+        existing_uids = self.get_backreferences_for(instance)
+
+        if not value and not existing_uids:
+            return
+
+        if not self.multiValued and len(value) > 1:
+            raise ValueError("Multiple values given for single valued field {}"
+                             .format(repr(self)))
+
+        set_uids = []
+        for val in value:
+            if api.is_uid(val):
+                set_uids.append(val)
+            elif api.is_object(val):
+                set_uids.append(api.get_uid(val))
+            else:
+                logger.error("Target has no UID: %s/%s" % (val, value))
+
+        sub = filter(lambda uid: uid not in set_uids, existing_uids)
+        add = filter(lambda uid: uid not in existing_uids, set_uids)
+
+        for uid in set(existing_uids + set_uids):
+            # The object to link
+            target = api.get_object(uid)
+            # Add reference to object
+            if uid in add:
+                __traceback_info__ = (instance, uid, value, existing_uids)
+                self.add_reference(instance, target, **kwargs)
+            # Delete reference to object
+            elif uid in sub:
+                self.del_reference(instance, target, **kwargs)
 
         if self.referencesSortable:
-            if not hasattr(aq_base(instance), 'at_ordered_refs'):
+            if not hasattr(aq_base(instance), "at_ordered_refs"):
                 instance.at_ordered_refs = {}
-
-            instance.at_ordered_refs[self.relationship] = \
-                tuple(filter(None, uids))
+            instance.at_ordered_refs[
+                self.relationship] = tuple(filter(None, set_uids))
+            # persist changes that occured in at_ordered_refs
+            instance._p_changed = 1
 
         if self.callStorageOnSet:
-            #if this option is set the reference fields's values get written
-            #to the storage even if the reference field never use the storage
-            #e.g. if i want to store the reference UIDs into an SQL field
+            # if this option is set the reference fields's values get written
+            # to the storage even if the reference field never use the storage
+            # e.g. if i want to store the reference UIDs into an SQL field
             ObjectField.set(self, instance, self.getRaw(instance), **kwargs)
 
-    def get_referenced_version(self, instance, reference):
-        """Returns the object from the reference history that matches with the
-        version the instance points to
+    @security.private
+    def get(self, instance, aslist=False, **kwargs):
+        """Get (multi-)references
         """
-        # Version of the referenced object to which the instance points to.
-        # If no version found or None, assume the instance points to the first
-        # version created (otherwise, it should have a value)
-        referenced_version = getattr(instance, "reference_versions", {})
-        referenced_version = referenced_version.get(reference.UID(), None) or 0
+        refs = self.get_versioned_references_for(instance)
 
-        # Current version of the referenced object.
-        # If the object has not yet a version explicitly set (no history yet),
-        # assume this is the first version created
-        reference_version = getattr(reference, "version_id", None) or 0
-        if reference_version == referenced_version:
-            # The instance points to the latest version, no need to look for
-            # previous versions
-            return reference
-
-        # The instance points to a previous version, need to get the exact
-        # previous version the instance points to
-        pr = getToolByName(instance, 'portal_repository')
-        version_data = pr._retrieve(reference, selector=referenced_version,
-                                    preserve=(), countPurged=True)
-        return version_data.object
-
-    security.declarePrivate('get')
-
-    def get(self, instance, **kwargs):
-        """get() returns the list of objects referenced under the relationship.
-        """
-        # Get the referenced objects
-        refs = instance.getRefs(relationship=self.relationship)
-        if not self.multiValued and len(refs) > 1:
-            msg = "%s references for non multivalued field %s of %s" % \
-                  (len(refs), self.getName(), instance)
-            logger.error(msg)
-            return None
-
-        # Get the suitable version of each referenced object
-        refs = map(lambda ref: self.get_referenced_version(instance, ref), refs)
         if not self.multiValued:
-            refs = refs and refs[0] or None
+            if len(refs) > 1:
+                logger.warning("Found {} references for non-multivalued "
+                               "reference field '{}' of {}".format(
+                                   len(refs), self.getName(), repr(instance)))
+            if not aslist:
+                if refs:
+                    refs = refs[0]
+                else:
+                    refs = None
 
-        return refs
+        if not self.referencesSortable or not hasattr(
+                aq_base(instance), "at_ordered_refs"):
+            return refs
+
+        refs = instance.at_ordered_refs
+        order = refs[self.relationship]
+        if order is None:
+            return refs
+
+        by_uid = dict(map(lambda ob: (api.get_uid(ob), ob), refs))
+        return [by_uid[uid] for uid in order if uid in by_uid]
+
 
 registerField(HistoryAwareReferenceField,
               title="History Aware Reference",
-              description="",
-              )
+              description="")
