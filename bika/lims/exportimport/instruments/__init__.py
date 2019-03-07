@@ -109,7 +109,8 @@ __all__ = ['abaxis.vetscan.vs2',
            'thermoscientific.gallery.Ts9861x',
            'thermoscientific.multiskan.go',
            'varian.vistapro.icp',
-           'cobasintegra.model_400_plus.model_400_plus'
+           'cobasintegra.model_400_plus.model_400_plus',
+           'facscalibur.calibur.model_e9750'
            ]
 
 # Parsers are for auto-import. If empty, then auto-import won't wun for that
@@ -158,6 +159,7 @@ PARSERS = [
            ['genexpert.genexpert', 'GeneXpertParser'],
            ['varian.vistapro.icp', 'VistaPROICPParser'],
            ['cobasintegra.model_400_plus.model_400_plus','CobasIntegra400plus2CSVParser'],
+           ['facscalibur.calibur.model_e9750', 'FacsCalibur2Parser'],
            ]
 
 
