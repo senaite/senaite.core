@@ -13,7 +13,7 @@ import re
 import transaction
 from AccessControl import ClassSecurityInfo
 from bika.lims import bikaMessageFactory as _
-from bika.lims.api import is_active
+from bika.lims import api
 from bika.lims.api import get_object_by_uid
 from bika.lims.browser.fields import InterimFieldsField
 from bika.lims.browser.fields.uidreferencefield import UIDReferenceField
@@ -167,6 +167,12 @@ class Calculation(BaseFolder, HistoryAwareMixin):
     def _renameAfterCreation(self, check_auto_id=False):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
+
+    def at_post_create_script(self):
+        """Save initial version
+        """
+        pr = api.get_tool("portal_repository")
+        pr.save(obj=self, comment="First version")
 
     def setInterimFields(self, value):
         new_value = []
