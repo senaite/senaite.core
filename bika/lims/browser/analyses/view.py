@@ -6,26 +6,34 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 import json
+from collections import OrderedDict
+from copy import copy
 
 from DateTime import DateTime
 from Products.Archetypes.config import REFERENCE_CATALOG
-from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
-from bika.lims import api, logger
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
+from bika.lims import logger
+from bika.lims.api.analysis import get_formatted_interval
 from bika.lims.api.analysis import is_out_of_range
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
-from bika.lims.interfaces import (IAnalysisRequest, IFieldIcons,
-                                  IRoutineAnalysis)
-from bika.lims.permissions import (EditFieldResults, EditResults,
-                                   ViewResults, ViewRetractedAnalyses)
-from bika.lims.permissions import Verify as VerifyPermission
-from bika.lims.utils import (check_permission, format_supsub,
-                             formatDecimalMark, get_image, get_link, getUsers,
-                             t)
+from bika.lims.interfaces import IAnalysisRequest
+from bika.lims.interfaces import IFieldIcons
+from bika.lims.permissions import EditFieldResults, FieldEditAnalysisResult, \
+    FieldEditAnalysisHidden, TransitionVerify
+from bika.lims.permissions import EditResults
+from bika.lims.permissions import ViewResults
+from bika.lims.permissions import ViewRetractedAnalyses
+from bika.lims.utils import check_permission
+from bika.lims.utils import formatDecimalMark
+from bika.lims.utils import format_supsub
+from bika.lims.utils import getUsers
+from bika.lims.utils import get_image
+from bika.lims.utils import get_link
+from bika.lims.utils import t
 from bika.lims.utils.analysis import format_uncertainty
-from bika.lims.workflow import isActive, wasTransitionPerformed
 from plone.memoize import view as viewcache
 from zope.component import getAdapters
 
@@ -38,10 +46,7 @@ class AnalysesView(BikaListingView):
     """
 
     def __init__(self, context, request, **kwargs):
-        BikaListingView.__init__(
-            self, context, request,
-            show_categories=context.bika_setup.getCategoriseAnalysisServices(),
-            expand_all_categories=True)
+        super(AnalysesView, self).__init__(context, request, **kwargs)
 
         # prepare the content filter of this listing
         self.contentFilter = dict(kwargs)
@@ -53,134 +58,167 @@ class AnalysesView(BikaListingView):
 
         # set the listing view config
         self.catalog = CATALOG_ANALYSIS_LISTING
-        self.sort_order = 'ascending'
+        self.sort_order = "ascending"
         self.context_actions = {}
-        self.show_sort_column = False
+
         self.show_select_row = False
         self.show_select_column = False
         self.show_column_toggles = False
-        self.pagesize = 999999
-        self.form_id = 'analyses_form'
-        self.context_active = isActive(context)
+        self.pagesize = 9999999
+        self.form_id = "analyses_form"
+        self.context_active = api.is_active(context)
         self.interim_fields = {}
-        self.interim_columns = {}
+        self.interim_columns = OrderedDict()
         self.specs = {}
-        self.bsc = getToolByName(context, 'bika_setup_catalog')
-        self.portal = getToolByName(context, 'portal_url').getPortalObject()
-        self.portal_url = self.portal.absolute_url()
-        self.rc = getToolByName(context, REFERENCE_CATALOG)
+        self.bsc = api.get_tool("bika_setup_catalog")
+        self.portal = api.get_portal()
+        self.portal_url = api.get_url(self.portal)
+        self.rc = api.get_tool(REFERENCE_CATALOG)
         self.dmk = context.bika_setup.getResultsDecimalMark()
         self.scinot = context.bika_setup.getScientificNotationResults()
         self.categories = []
-        request.set('disable_plone.rightcolumn', 1)
 
         # each editable item needs it's own allow_edit
         # which is a list of field names.
         self.allow_edit = False
 
-        self.columns = {
+        self.columns = OrderedDict((
             # Although 'created' column is not displayed in the list (see
             # review_states to check the columns that will be rendered), this
             # column is needed to sort the list by create date
-            'created': {
-                'title': _('Date Created'),
-                'toggle': False},
-            'Service': {
-                'title': _('Analysis'),
-                'attr': 'Title',
-                'index': 'sortable_title',
-                'sortable': False},
-            'Partition': {
-                'title': _("Partition"),
-                'attr': 'getSamplePartitionID',
-                'sortable': False},
-            'Method': {
-                'title': _('Method'),
-                'sortable': False,
-                'toggle': True},
-            'Instrument': {
-                'title': _('Instrument'),
-                'sortable': False,
-                'toggle': True},
-            'Analyst': {
-                'title': _('Analyst'),
-                'sortable': False,
-                'toggle': True},
-            'state_title': {
-                'title': _('Status'),
-                'sortable': False},
-            'DetectionLimit': {
-                'title': _('DL'),
-                'sortable': False,
-                'toggle': False},
-            'Result': {
-                'title': _('Result'),
-                'input_width': '6',
-                'input_class': 'ajax_calculate numeric',
-                'sortable': False},
-            'Specification': {
-                'title': _('Specification'),
-                'sortable': False},
-            'Uncertainty': {
-                'title': _('+-'),
-                'sortable': False},
-            'retested': {
-                'title': "<img title='%s' "
-                         "src='%s/++resource++bika.lims.images/retested.png"
-                         "'/>" % \
-                         (t(_('Retested')), self.portal_url),
-                'type': 'boolean',
-                'sortable': False},
-            'Attachments': {
-                'title': _('Attachments'),
-                'sortable': False},
-            'CaptureDate': {
-                'title': _('Captured'),
-                'index': 'getResultCaptureDate',
-                'sortable': False},
-            'DueDate': {
-                'title': _('Due Date'),
-                'index': 'getDueDate',
-                'sortable': False},
-            'Hidden': {
-                'title': _('Hidden'),
-                'toggle': True,
-                'sortable': False,
-                'input_class': 'autosave',
-                'type': 'boolean'},
-        }
+            ("created", {
+                "title": _("Date Created"),
+                "toggle": False}),
+            ("Service", {
+                "title": _("Analysis"),
+                "attr": "Title",
+                "index": "sortable_title",
+                "sortable": False}),
+            ("Method", {
+                "title": _("Method"),
+                "sortable": False,
+                "ajax": True,
+                "toggle": True}),
+            ("Instrument", {
+                "title": _("Instrument"),
+                "ajax": True,
+                "sortable": False,
+                "toggle": True}),
+            ("Analyst", {
+                "title": _("Analyst"),
+                "sortable": False,
+                "ajax": True,
+                "toggle": True}),
+            ("state_title", {
+                "title": _("Status"),
+                "sortable": False}),
+            ("DetectionLimit", {
+                "title": _("DL"),
+                "sortable": False,
+                "toggle": False}),
+            ("Result", {
+                "title": _("Result"),
+                "input_width": "6",
+                "input_class": "ajax_calculate numeric",
+                "ajax": True,
+                "sortable": False}),
+            ("Specification", {
+                "title": _("Specification"),
+                "sortable": False}),
+            ("Uncertainty", {
+                "title": _("+-"),
+                "sortable": False}),
+            ("retested", {
+                "title": _("Retested"),
+                "type": "boolean",
+                "sortable": False}),
+            ("Attachments", {
+                "title": _("Attachments"),
+                "sortable": False}),
+            ("CaptureDate", {
+                "title": _("Captured"),
+                "index": "getResultCaptureDate",
+                "sortable": False}),
+            ("DueDate", {
+                "title": _("Due Date"),
+                "index": "getDueDate",
+                "sortable": False}),
+            ("Hidden", {
+                "title": _("Hidden"),
+                "toggle": True,
+                "sortable": False,
+                "ajax": True,
+                "type": "boolean"}),
+        ))
+
+        # Inject Remarks column for listing
+        if self.analysis_remarks_enabled():
+            self.columns["Remarks"] = {
+                "title": "Remarks",
+                "toggle": False,
+                "sortable": False,
+                "type": "remarks",
+                "ajax": True,
+            }
 
         self.review_states = [
-            {'id': 'default',
-             'title': _('All'),
-             'contentFilter': {},
-             'columns': ['Service',
-                         'Partition',
-                         'DetectionLimit',
-                         'Result',
-                         'Specification',
-                         'Method',
-                         'Instrument',
-                         'Analyst',
-                         'Uncertainty',
-                         'CaptureDate',
-                         'DueDate',
-                         'state_title',
-                         'Hidden']
+            {
+                "id": "default",
+                "title": _("Valid"),
+                "contentFilter": {
+                    "review_state": [
+                        "registered",
+                        "unassigned",
+                        "assigned",
+                        "to_be_verified",
+                        "verified",
+                        "published",
+                    ]
+                },
+                "columns": self.columns.keys()
+            },
+            {
+                "id": "invalid",
+                "contentFilter": {
+                    "review_state": [
+                        "cancelled",
+                        "retracted",
+                        "rejected",
+                    ]
+                },
+                "title": _("Invalid"),
+                "columns": self.columns.keys(),
+            },
+            {
+                "id": "all",
+                "title": _("All"),
+                "contentFilter": {},
+                "columns": self.columns.keys()
              },
         ]
-        if not context.bika_setup.getShowPartitions():
-            self.review_states[0]['columns'].remove('Partition')
-
-        # This is used to cache analysis keywords with Point of Capture to
-        # reduce the number objects that need to be woken up
-        # Is managed by `is_analysis_edition_allowed` function
-        self._keywords_poc_map = dict()
 
         # This is used to display method and instrument columns if there is at
-        # least one analysis to be rendered that allows the assignment of method
-        # and/or instrument
+        # least one analysis to be rendered that allows the assignment of
+        # method and/or instrument
         self.show_methodinstr_columns = False
+
+    def update(self):
+        """Update hook
+        """
+        super(AnalysesView, self).update()
+        self.load_analysis_categories()
+
+    def before_render(self):
+        """Before render hook
+        """
+        super(AnalysesView, self).before_render()
+        self.request.set("disable_plone.rightcolumn", 1)
+
+    @viewcache.memoize
+    def analysis_remarks_enabled(self):
+        """Check if analysis remarks are enabled
+        """
+        return self.context.bika_setup.getEnableAnalysisRemarks()
 
     @viewcache.memoize
     def has_permission(self, permission, obj=None):
@@ -195,7 +233,7 @@ class AnalysesView(BikaListingView):
             return False
         if obj is None:
             return check_permission(permission, self.context)
-        return check_permission(permission, obj)
+        return check_permission(permission, api.get_object(obj))
 
     @viewcache.memoize
     def is_analysis_edition_allowed(self, analysis_brain):
@@ -204,50 +242,35 @@ class AnalysesView(BikaListingView):
         :param analysis_brain: Brain that represents an analysis
         :return: True if the user can edit the analysis, otherwise False
         """
-
-        # TODO: Workflow. This function will be replaced by
-        # `isTransitionAllowed(submit)` as soon as all this logic gets moved
-        # into analysis' submit guard.... Very soon
         if not self.context_active:
             # The current context must be active. We cannot edit analyses from
             # inside a deactivated Analysis Request, for instance
             return False
 
-        if analysis_brain.review_state == 'retracted':
-            # Retracted analyses cannot be edited
-            return False
-
-        analysis_obj = None
-        analysis_keyword = analysis_brain.getKeyword
-        if analysis_keyword not in self._keywords_poc_map:
-            # Store the point of capture for this analysis keyword in cache, so
-            # waking up analyses with same keyword will not be longer required
-            analysis_obj = api.get_object(analysis_brain)
-            analysis_poc = analysis_obj.getPointOfCapture()
-            self._keywords_poc_map[analysis_keyword] = analysis_poc
-
-        poc = self._keywords_poc_map[analysis_keyword]
-        if poc == 'field':
+        analysis_obj = api.get_object(analysis_brain)
+        if analysis_obj.getPointOfCapture() == 'field':
             # This analysis must be captured on field, during sampling.
-            if not self.has_permission(EditFieldResults):
+            if not self.has_permission(EditFieldResults, analysis_obj):
                 # Current user cannot edit field analyses.
                 return False
 
-        elif not self.has_permission(EditResults):
+        elif not self.has_permission(EditResults, analysis_obj):
             # The Point of Capture is 'lab' and the current user cannot edit
             # lab analyses.
             return False
 
-        analysis_obj = analysis_obj or api.get_object(analysis_brain)
-        if wasTransitionPerformed(analysis_obj, 'submit'):
-            # Analysis has been already submitted. This analysis cannot be
-            # edited anymore.
+        # Check if the user is allowed to enter a value to to Result field
+        if not self.has_permission(FieldEditAnalysisResult, analysis_obj):
             return False
 
         # Is the instrument out of date?
         # The user can assign a result to the analysis if it does not have any
         # instrument assigned or the instrument assigned is valid.
-        return self.is_analysis_instrument_valid(analysis_brain)
+        if not self.is_analysis_instrument_valid(analysis_brain):
+            # return if it is allowed to enter a manual result
+            return analysis_obj.getManualEntryOfResults()
+
+        return True
 
     @viewcache.memoize
     def is_analysis_instrument_valid(self, analysis_brain):
@@ -311,7 +334,7 @@ class AnalysesView(BikaListingView):
         """
         uids = analysis_brain.getAllowedMethodUIDs
         query = {'portal_type': 'Method',
-                 'inactive_state': 'active',
+                 'is_active': True,
                  'UID': uids}
         brains = api.search(query, 'bika_setup_catalog')
         if not brains:
@@ -356,7 +379,7 @@ class AnalysesView(BikaListingView):
 
         uids = analysis_brain.getAllowedInstrumentUIDs
         query = {'portal_type': 'Instrument',
-                 'inactive_state': 'active',
+                 'is_active': True,
                  'UID': uids}
         brains = api.search(query, 'bika_setup_catalog')
         vocab = [{'ResultValue': '', 'ResultText': _('None')}]
@@ -393,25 +416,8 @@ class AnalysesView(BikaListingView):
             (b.Title, "{:04}".format(a)) for a, b in
             enumerate(analysis_categories)])
 
-    def before_render(self):
-        """Called before the template is rendered
-        """
-        # Load analysis categories available in the system
-        self.load_analysis_categories()
-
     def isItemAllowed(self, obj):
         """Checks if the passed in Analysis must be displayed in the list.
-
-        If the 'filtering by department' option is enabled in Bika Setup, this
-        function checks if the Analysis Service associated to the Analysis is
-        assigned to any of the currently selected departments (information
-        stored in a cookie).
-
-        If department filtering is disabled in bika_setup, returns True. If the
-        obj is None or empty, returns False.
-
-        If the obj has no department assigned, returns True
-
         :param obj: A single Analysis brain or content object
         :type obj: ATContentType/CatalogBrain
         :returns: True if the item can be added to the list.
@@ -424,17 +430,7 @@ class AnalysesView(BikaListingView):
         if obj.review_state == 'retracted' and \
                 not self.has_permission(ViewRetractedAnalyses):
             return False
-
-        if not self.context.bika_setup.getAllowDepartmentFiltering():
-            # Filtering by department is disabled. Return True
-            return True
-
-        # Department filtering is enabled. Check if the Analysis Service
-        # associated to this Analysis is assigned to at least one of the
-        # departments currently selected.
-        dep_uid = obj.getDepartmentUID
-        departments = self.request.get('filter_by_department_info', '')
-        return not dep_uid or dep_uid in departments.split(',')
+        return True
 
     def folderitem(self, obj, item, index):
         """Prepare a data item for the listing.
@@ -450,8 +446,16 @@ class AnalysesView(BikaListingView):
         item['service_uid'] = obj.getServiceUID
         item['Keyword'] = obj.getKeyword
         item['Unit'] = format_supsub(obj.getUnit) if obj.getUnit else ''
-        item['retested'] = obj.getRetested
+        item['retested'] = obj.getRetestOfUID and True or False
         item['class']['retested'] = 'center'
+
+        # Append info link before the service
+        # see: bika.lims.site.coffee for the attached event handler
+        item["before"]["Service"] = get_link(
+            "analysisservice_info?service_uid={}&analysis_uid={}"
+            .format(obj.getServiceUID, obj.UID),
+            value="<span class='glyphicon glyphicon-info-sign'></span>",
+            css_class="service_info")
 
         # Note that getSampleTypeUID returns the type of the Sample, no matter
         # if the sample associated to the analysis is a regular Sample (routine
@@ -500,9 +504,9 @@ class AnalysesView(BikaListingView):
         return item
 
     def folderitems(self):
-        # This shouldn't be required here, but there are some views that
-        # calls directly contents_table() instead of __call__, so  before_render
-        # is never called. :(
+        # This shouldn't be required here, but there are some views that calls
+        # directly contents_table() instead of __call__, so before_render is
+        # never called. :(
         self.before_render()
 
         # Gettin all the items
@@ -513,7 +517,7 @@ class AnalysesView(BikaListingView):
         for item in items:
             for field in self.interim_columns:
                 if field not in item:
-                    item[field] = ''
+                    item[field] = ""
 
         # XXX order the list of interim columns
         interim_keys = self.interim_columns.keys()
@@ -522,10 +526,14 @@ class AnalysesView(BikaListingView):
         # add InterimFields keys to columns
         for col_id in interim_keys:
             if col_id not in self.columns:
-                self.columns[col_id] = {'title': self.interim_columns[col_id],
-                                        'input_width': '6',
-                                        'input_class': 'ajax_calculate numeric',
-                                        'sortable': False}
+                self.columns[col_id] = {
+                    "title": self.interim_columns[col_id],
+                    "input_width": "6",
+                    "input_class": "ajax_calculate numeric",
+                    "sortable": False,
+                    "toggle": True,
+                    "ajax": True,
+                }
 
         if self.allow_edit:
             new_states = []
@@ -535,16 +543,18 @@ class AnalysesView(BikaListingView):
                 # In case of hidden fields, the calcs.py should check
                 # calcs/services
                 # for additional InterimFields!!
-                pos = 'Result' in state['columns'] and \
-                      state['columns'].index('Result') or len(state['columns'])
+                pos = "Result" in state["columns"] and \
+                      state["columns"].index("Result") or len(state["columns"])
                 for col_id in interim_keys:
-                    if col_id not in state['columns']:
-                        state['columns'].insert(pos, col_id)
+                    if col_id not in state["columns"]:
+                        state["columns"].insert(pos, col_id)
                 # retested column is added after Result.
-                pos = 'Result' in state['columns'] and \
-                      state['columns'].index('Uncertainty') + 1 or len(
-                    state['columns'])
-                state['columns'].insert(pos, 'retested')
+                pos = "Result" in state["columns"] and \
+                      state["columns"].index("Uncertainty") + 1 or len(
+                    state["columns"])
+                if "retested" in state["columns"]:
+                    state["columns"].remove("retested")
+                state["columns"].insert(pos, "retested")
                 new_states.append(state)
             self.review_states = new_states
             # Allow selecting individual analyses
@@ -564,8 +574,8 @@ class AnalysesView(BikaListingView):
         # same time, because the value assigned to one causes
         # a value reassignment to the other (one method can be performed
         # by different instruments)
-        self.columns['Method']['toggle'] = self.show_methodinstr_columns
-        self.columns['Instrument']['toggle'] = self.show_methodinstr_columns
+        self.columns["Method"]["toggle"] = self.show_methodinstr_columns
+        self.columns["Instrument"]["toggle"] = self.show_methodinstr_columns
 
         return items
 
@@ -579,7 +589,7 @@ class AnalysesView(BikaListingView):
             return
 
         cat = analysis_brain.getCategoryTitle
-        item['category'] = cat
+        item["category"] = cat
         cat_order = self.analysis_categories_order.get(cat)
         if (cat, cat_order) not in self.categories:
             self.categories.append((cat, cat_order))
@@ -618,6 +628,8 @@ class AnalysesView(BikaListingView):
         # returns the date when the ReferenceSample expires. If the analysis is
         # a duplicate, `getDueDate` returns the due date of the source analysis
         due_date = analysis_brain.getDueDate
+        if not due_date:
+            return None
         due_date_str = self.ulocalized_time(due_date, long_format=0)
         item['DueDate'] = due_date_str
 
@@ -651,15 +663,21 @@ class AnalysesView(BikaListingView):
         item['CaptureDate'] = capture_date_str
         item['result_captured'] = capture_date_str
 
-        # If this analysis has a predefined set of options as result, tell the
-        # template that selection list (choices) must be rendered instead of an
-        # input field for the introduction of result.
-        choices = analysis_brain.getResultOptions
-        if choices:
-            item['choices']['Result'] = choices
-
         if self.is_analysis_edition_allowed(analysis_brain):
-            item['allow_edit'].extend(['Result', 'Remarks'])
+            item['allow_edit'].extend(['Remarks'])
+            item['allow_edit'].extend(['Result'])
+
+            # If this analysis has a predefined set of options as result,
+            # tell the template that selection list (choices) must be
+            # rendered instead of an input field for the introduction of
+            # result.
+            choices = analysis_brain.getResultOptions
+            if choices:
+                # N.B.we copy here the list to avoid persistent changes
+                choices = copy(choices)
+                # By default set empty as the default selected choice
+                choices.insert(0, dict(ResultValue="", ResultText=""))
+                item['choices']['Result'] = choices
 
         # Wake up the object only if necessary. If there is no result set, then
         # there is no need to go further with formatted result
@@ -692,8 +710,13 @@ class AnalysesView(BikaListingView):
             interim_field['formatted_value'] = interim_formatted
             item[interim_keyword] = interim_field
             item['class'][interim_keyword] = 'interim'
+
+            # Note: As soon as we have a separate content type for field
+            #       analysis, we can solely rely on the field permission
+            #       "senaite.core: Field: Edit Analysis Result"
             if is_editable:
-                item['allow_edit'].append(interim_keyword)
+                if self.has_permission(FieldEditAnalysisResult, analysis_brain):
+                    item['allow_edit'].append(interim_keyword)
 
             # Add this analysis' interim fields to the interim_columns list
             interim_hidden = interim_field.get('hidden', False)
@@ -708,10 +731,6 @@ class AnalysesView(BikaListingView):
         calculation_uid = analysis_brain.getCalculationUID
         has_calculation = calculation_uid and True or False
         item['calculation'] = has_calculation
-        if is_editable and (not has_calculation or interim_fields):
-            # If the analysis is editable and doesn't have a calculation or it
-            # does, but has interim fields, it must be re-testable.
-            item['allow_edit'].append('retested')
 
     def _folder_item_method(self, analysis_brain, item):
         """Fills the analysis' method to the item passed in.
@@ -781,7 +800,6 @@ class AnalysesView(BikaListingView):
         # Analyst is editable
         item['Analyst'] = obj.getAnalyst or api.get_current_user().id
         item['choices']['Analyst'] = self.get_analysts()
-        item['allow_edit'].append('Analyst')
 
     def _folder_item_attachments(self, obj, item):
         item['Attachments'] = ''
@@ -923,14 +941,9 @@ class AnalysesView(BikaListingView):
         results_range = analysis_brain.getResultsRange
         if not results_range:
             return
-        min_str = results_range.get('min', '')
-        max_str = results_range.get('max', '')
-        min_str = api.is_floatable(min_str) and "{0}".format(min_str) or ""
-        max_str = api.is_floatable(max_str) and "{0}".format(max_str) or ""
-        specs = ", ".join([val for val in [min_str, max_str] if val])
-        if not specs:
-            return
-        item["Specification"] = "[{}]".format(specs)
+
+        # Display the specification interval
+        item["Specification"] = get_formatted_interval(results_range, "")
 
         # Show an icon if out of range
         out_range, out_shoulders = is_out_of_range(analysis_brain)
@@ -957,7 +970,7 @@ class AnalysesView(BikaListingView):
             # Don't display icons and additional info about verification
             return
 
-        verifiers = analysis_brain.getVerificators.split(',')
+        verifiers = analysis_brain.getVerificators
         in_verifiers = submitter in verifiers
         if in_verifiers:
             # If analysis has been submitted and verified by the same person,
@@ -968,8 +981,8 @@ class AnalysesView(BikaListingView):
 
         num_verifications = analysis_brain.getNumberOfRequiredVerifications
         if num_verifications > 1:
-            # More than one verification required, place an icon and display the
-            # number of verifications done vs. total required
+            # More than one verification required, place an icon and display
+            # the number of verifications done vs. total required
             done = analysis_brain.getNumberOfVerifications
             pending = num_verifications - done
             ratio = float(done) / float(num_verifications) if done > 0 else 0
@@ -991,7 +1004,7 @@ class AnalysesView(BikaListingView):
             return
 
         # Check if the user has "Bika: Verify" privileges
-        if not self.has_permission(VerifyPermission):
+        if not self.has_permission(TransitionVerify):
             # User cannot verify, do nothing
             return
 
@@ -1028,7 +1041,8 @@ class AnalysesView(BikaListingView):
         # Multi-verification by same user, but non-consecutively, is allowed
         if analysis_brain.getLastVerificator != username:
             # Current user was not the last user to verify
-            title = t(_("Can verify, but was already verified by current user"))
+            title = t(
+                _("Can verify, but was already verified by current user"))
             html = get_image('warning.png', title=title)
             self._append_html_element(item, 'state_title', html)
             return
@@ -1050,17 +1064,12 @@ class AnalysesView(BikaListingView):
             # We want this icon to only appear if the context is an AR
             return
 
-        if analysis_brain.worksheetanalysis_review_state != 'assigned':
-            # No need to go further. This analysis is not assigned to any WS
-            return
-
         analysis_obj = self.get_object(analysis_brain)
-        worksheet = analysis_obj.getBackReferences('WorksheetAnalysis')
+        worksheet = analysis_obj.getWorksheet()
         if not worksheet:
             # No worksheet assigned. Do nothing
             return
 
-        worksheet = worksheet[0]
         title = t(_("Assigned to: ${worksheet_id}",
                     mapping={'worksheet_id': safe_unicode(worksheet.id)}))
         img = get_image('worksheet.png', title=title)
@@ -1091,15 +1100,15 @@ class AnalysesView(BikaListingView):
         # current state of the Analysis Request (e.g. verified) does not allow
         # the edition of other fields. Note that an analyst has no privileges
         # by default to edit this value, cause this "visibility" field is
-        # related with results reporting and/or visibility from the client side.
-        # This behavior only applies to routine analyses, the visibility of QC
-        # analyses is managed in publish and are not visible to clients.
+        # related with results reporting and/or visibility from the client
+        # side. This behavior only applies to routine analyses, the visibility
+        # of QC analyses is managed in publish and are not visible to clients.
         if 'Hidden' not in self.columns:
             return
 
         full_obj = self.get_object(analysis_brain)
         item['Hidden'] = full_obj.getHidden()
-        if IRoutineAnalysis.providedBy(full_obj):
+        if self.has_permission(FieldEditAnalysisHidden, obj=full_obj):
             item['allow_edit'].append('Hidden')
 
     def _folder_item_fieldicons(self, analysis_brain):
@@ -1134,18 +1143,12 @@ class AnalysesView(BikaListingView):
             # remarks field will be displayed without the option to hide it
             return
 
-        if not self.context.bika_setup.getEnableAnalysisRemarks():
+        if not self.analysis_remarks_enabled():
             # Remarks not enabled in Setup, so don't display the balloon button
             return
 
-        # Analysis can be edited. Add the remarks toggle button
-        title = t(_("Add Remark"))
-        img = get_image('comment_ico.png', title=title)
-        kwargs = {'class': "add-remark"}
-        anchor = get_link('#', img, **kwargs)
-        self._append_html_element(item, 'Service', anchor, after=False)
-
-    def _append_html_element(self, item, element, html, glue="&nbsp;", after=True):
+    def _append_html_element(self, item, element, html, glue="&nbsp;",
+                             after=True):
         """Appends an html value after or before the element in the item dict
 
         :param item: dictionary that represents an analysis row

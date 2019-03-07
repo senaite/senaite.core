@@ -5,254 +5,224 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from AccessControl import getSecurityManager
-from DateTime import DateTime
-from plone.app.layout.globals.interfaces import IViewView
-from Products.Archetypes.config import REFERENCE_CATALOG
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.i18nl10n import ulocalized_time
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from zope.interface import implements
+import collections
+
+from bika.lims import api
+from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.bika_listing import BikaListingView
+from bika.lims.browser.worksheet.tools import showRejectionMessage
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.config import PRIORITIES
-from bika.lims import bikaMessageFactory as _
-from bika.lims import EditResults, EditWorksheet, ManageWorksheets
-from bika.lims import PMF, logger
-from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims.browser.worksheet.tools import checkUserManage
-from bika.lims.browser.worksheet.tools import showRejectionMessage
+from bika.lims.permissions import EditWorksheet
+from bika.lims.permissions import ManageWorksheets
+from bika.lims.utils import get_image
 from bika.lims.utils import t
 from bika.lims.vocabularies import CatalogVocabulary
+from DateTime import DateTime
+from plone.memoize import view
+from plone.protect import CheckAuthenticator
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
 
 class AddAnalysesView(BikaListingView):
-    implements(IViewView)
+    """Assign Analyses View for Worksheets
+    """
     template = ViewPageTemplateFile("../templates/add_analyses.pt")
 
     def __init__(self, context, request):
-        BikaListingView.__init__(self, context, request)
-        self.icon = self.portal_url + "/++resource++bika.lims.images/worksheet_big.png"
-        self.title = self.context.translate(_("Add Analyses"))
-        self.description = ""
+        super(AddAnalysesView, self).__init__(context, request)
+
         self.catalog = CATALOG_ANALYSIS_LISTING
+
+        self.contentFilter = {
+            "portal_type": "Analysis",
+            "review_state": "unassigned",
+            "isSampleReceived": True,
+            "sort_on": "getPrioritySortkey",
+        }
+
+        self.icon = "{}/{}".format(
+            self.portal_url,
+            "++resource++bika.lims.images/worksheet_big.png"
+        )
+
+        self.title = self.context.translate(_("Add Analyses"))
         self.context_actions = {}
+
         # initial review state for first form display of the worksheet
         # add_analyses search view - first batch of analyses, latest first.
-        self.sort_on = 'Priority'
-        self.contentFilter = {'portal_type': 'Analysis',
-                              'review_state':'sample_received',
-                              'worksheetanalysis_review_state':'unassigned',
-                              'sort_on': 'getPrioritySortkey',
-                              'cancellation_state':'active'}
-        self.base_url = self.context.absolute_url()
-        self.view_url = self.base_url + "/add_analyses"
-        self.show_sort_column = False
+
         self.show_select_row = False
         self.show_select_column = True
         self.pagesize = 50
 
-        self.columns = {
-            'Priority': {
-                'title': '',
-                'sortable': True,
-                'index': 'getPrioritySortkey' },
-            'Client': {
-                'title': _('Client'),
-                'attr': 'getClientTitle',
-                'replace_url': 'getClientURL',
-                'index':'getClientTitle'},
-            'getClientOrderNumber': {
-                'title': _('Order'),
-                'index': 'getClientOrderNumber'},
-            'getRequestID': {
-                'title': _('Request ID'),
-                'attr': 'getRequestID',
-                'replace_url': 'getRequestURL',
-                'index': 'getRequestID'},
-            'CategoryTitle': {
-                'title': _('Category'),
-                'attr': 'getCategoryTitle',
-                'sortable': False},
-            'Title': {
-                'title': _('Analysis'),
-                'index':'getId'},
-            'getDateReceived': {
-                'title': _('Date Received'),
-                'index': 'getDateReceived'},
-            'getDueDate': {
-                'title': _('Due Date'),
-                'index': 'getDueDate'},
-        }
-        self.filter_indexes = ['Title',]
+        self.columns = collections.OrderedDict((
+            ("Priority", {
+                "title": "",
+                "sortable": True,
+                "index": "getPrioritySortkey"}),
+            ("Client", {
+                "title": _("Client"),
+                "attr": "getClientTitle",
+                "replace_url": "getClientURL",
+                "index": "getClientTitle"}),
+            ("getClientOrderNumber", {
+                "title": _("Order"),
+                "toggle": False,
+                "index": "getClientOrderNumber"}),
+            ("getRequestID", {
+                "title": _("Request ID"),
+                "attr": "getRequestID",
+                "replace_url": "getRequestURL",
+                "index": "getRequestID"}),
+            ("getCategoryTitle", {
+                "title": _("Category"),
+                "attr": "getCategoryTitle"}),
+            ("Title", {
+                "title": _("Analysis"),
+                "index": "getId"}),
+            ("getDateReceived", {
+                "title": _("Date Received"),
+                "index": "getDateReceived"}),
+            ("getDueDate", {
+                "title": _("Due Date"),
+                "index": "getDueDate"}),
+        ))
+
         self.review_states = [
-            {'id':'default',
-             'title': _('All'),
-             'contentFilter': {},
-             'transitions': [{'id':'assign'}, ],
-             'columns':['Priority',
-                        'Client',
-                        'getClientOrderNumber',
-                        'getRequestID',
-                        'CategoryTitle',
-                        'Title',
-                        'getDateReceived',
-                        'getDueDate'],
+            {
+                "id": "default",
+                "title": _("All"),
+                "contentFilter": {},
+                "transitions": [{"id": "assign"}, ],
+                "columns": self.columns.keys(),
             },
         ]
 
     def __call__(self):
-        if not(getSecurityManager().checkPermission(EditWorksheet, self.context)):
-            self.request.response.redirect(self.context.absolute_url())
-            return
+        super(AddAnalysesView, self).__call__()
 
-        # Deny access to foreign analysts
-        if checkUserManage(self.context, self.request) == False:
-            return []
+        # TODO: Refactor Worfklow
+        grant = self.is_edit_allowed() and self.is_manage_allowed()
+        if not grant:
+            redirect_url = api.get_url(self.context)
+            return self.request.response.redirect(redirect_url)
 
+        # TODO: Refactor this function call
         showRejectionMessage(self.context)
 
-        form = self.request.form
-        rc = getToolByName(self.context, REFERENCE_CATALOG)
-        if 'submitted' in form:
-            if 'getWorksheetTemplate' in form and form['getWorksheetTemplate']:
-                layout = self.context.getLayout()
-                wst = rc.lookupObject(form['getWorksheetTemplate'])
-                self.request['context_uid'] = self.context.UID()
-                self.context.applyWorksheetTemplate(wst)
-                if len(self.context.getLayout()) != len(layout):
-                    self.context.plone_utils.addPortalMessage(
-                        PMF("Changes saved."))
-                    self.request.RESPONSE.redirect(self.context.absolute_url() +
-                                                   "/manage_results")
-                else:
-                    self.context.plone_utils.addPortalMessage(
-                        _("No analyses were added to this worksheet."))
-                    self.request.RESPONSE.redirect(self.context.absolute_url() +
-                                                   "/add_analyses")
-
-        filter_mapping = {
-            "FilterByCategory": "getCategoryUID",
-            "FilterByService": "getServiceUID",
-            "FilterByClient": "getClientUID",
-        }
-
-        for filter_key, cat_index in filter_mapping.items():
-            form_key = "{}_{}".format(self.form_id, filter_key)
-            value = form.get(form_key)
-            if value is None:
-                continue
-            self.contentFilter[cat_index] = value
-
-        self.update()
-
-        if self.request.get('table_only', '') == self.form_id or \
-                self.request.get('rows_only', '') == self.form_id:
-            return self.contents_table()
-        else:
+        # Handle form submission
+        if self.request.form.get("submitted"):
+            CheckAuthenticator(self.request)
+            success = self.handle_submit()
+            if success:
+                self.add_status_message(_("Changes saved."))
+                redirect_url = "{}/{}".format(
+                    api.get_url(self.context), "manage_results")
+                self.request.response.redirect(redirect_url)
+            else:
+                self.add_status_message(
+                    _("No analyses were added to this worksheet."),
+                    level="warning")
             return self.template()
 
-    def isItemAllowed(self, obj):
-        """
-        Checks if the passed in Analysis must be displayed in the list. If the
-        'filtering by department' option is enabled in Bika Setup, this
-        function checks if the Analysis Service associated to the Analysis
-        is assigned to any of the currently selected departments (information
-        stored in a cookie).
-        If department filtering is disabled in bika_setup, returns True.
-        If the obj is None or empty, returns False.
-        If the obj has no department assined, returns True.
+        # handle subpath calls
+        if len(self.traverse_subpath) > 0:
+            return self.handle_subpath()
 
-        :param obj: A single Analysis brain
-        :type obj: CatalogBrain
-        :returns: True if the item can be added to the list.
-        :rtype: bool
+        return self.template()
+
+    def update(self):
+        """Update hook
         """
-        if not obj:
+        super(AddAnalysesView, self).update()
+
+    def handle_submit(self):
+        """Handle form submission
+        """
+        wst_uid = self.request.form.get("getWorksheetTemplate")
+        if not wst_uid:
             return False
 
-        if not self.isAllowDepartmentFiltering:
-            return True
+        layout = self.context.getLayout()
+        wst = api.get_object_by_uid(wst_uid)
 
-        # Department filtering is enabled. Check if the Analysis Service
-        # associated to this Analysis is assigned to at least one of the
-        # departments currently selected.
-        depuid = obj.getDepartmentUID
-        deps = self.request.get('filter_by_department_info', '')
-        return not depuid or depuid in deps.split(',')
+        self.request["context_uid"] = api.get_uid(self.context)
+        self.context.applyWorksheetTemplate(wst)
+
+        if len(self.context.getLayout()) == len(layout):
+            return False
+        return True
+
+    @property
+    def worksheet_template_setup_url(self):
+        """Returns the Worksheet Template Setup URL
+        """
+        setup = api.get_setup()
+        return "{}/{}".format(api.get_url(setup), "bika_worksheettemplates")
+
+    @view.memoize
+    def is_edit_allowed(self):
+        """Check if edit is allowed
+        """
+        checkPermission = self.context.portal_membership.checkPermission
+        return checkPermission(EditWorksheet, self.context)
+
+    @view.memoize
+    def is_manage_allowed(self):
+        """Check if manage is allowed
+        """
+        checkPermission = self.context.portal_membership.checkPermission
+        return checkPermission(ManageWorksheets, self.context)
+
+    def add_status_message(self, message, level="info"):
+        """Set a portal status message
+        """
+        return self.context.plone_utils.addPortalMessage(message, level)
 
     def folderitems(self):
-        self.isAllowDepartmentFiltering =\
-            self.context.bika_setup.getAllowDepartmentFiltering()
-        # Check if mtool has been initialized
-        self.mtool = self.mtool if self.mtool\
-            else getToolByName(self.context, 'portal_membership')
-        # Getting the current user
-        self.member = self.member if self.member\
-            else self.mtool.getAuthenticatedMember()
-        self.roles = self.member.getRoles()
-        self.hideclientlink = 'RegulatoryInspector' in self.roles \
-            and 'Manager' not in self.roles \
-            and 'LabManager' not in self.roles \
-            and 'LabClerk' not in self.roles
-        items = BikaListingView.folderitems(self, classic=False)
+        """Return folderitems as brains
+        """
+        items = super(AddAnalysesView, self).folderitems(classic=False)
         return items
 
     def folderitem(self, obj, item, index):
+        """Service triggered each time an item is iterated in folderitems.
+
+        The use of this service prevents the extra-loops in child objects.
+
+        :obj: the instance of the class to be foldered
+        :item: dict containing the properties of the object to be used by
+            the template
+        :index: current index of the item
         """
-        :obj: is a brain
-        """
-        # Call the folderitem method from the base class
-        item = BikaListingView.folderitem(self, obj, item, index)
-        item['getDateReceived'] = self.ulocalized_time(obj.getDateReceived)
         DueDate = obj.getDueDate
-        item['getDueDate'] = self.ulocalized_time(DueDate)
-        if DueDate < DateTime():
-            item['after']['DueDate'] = '<img width="16" height="16"'
-            ' src="%s/++resource++bika.lims.images/late.png" title="%s"/>' % \
-                (self.context.absolute_url(),
-                 t(_("Late Analysis")))
-        if self.hideclientlink:
-            del item['replace']['Client']
+
+        item["getDateReceived"] = self.ulocalized_time(obj.getDateReceived)
+        item["getDueDate"] = self.ulocalized_time(DueDate)
+
+        if DueDate and DueDate < DateTime():
+            item["after"]["DueDate"] = get_image(
+                "late.png", title=t(_("Late Analysis")))
+
         # Add Priority column
         priority_sort_key = obj.getPrioritySortkey
         if not priority_sort_key:
             # Default priority is Medium = 3.
             # The format of PrioritySortKey is <priority>.<created>
-            priority_sort_key = '3.%s' % obj.created.ISO8601()
-        priority = priority_sort_key.split('.')[0]
-        priority_text = PRIORITIES.getValue(priority)
-        priority_div = '<div class="priority-ico priority-%s"><span class="notext">%s</span><div>'
-        item['replace']['Priority'] = priority_div % (priority, priority_text)
+            priority_sort_key = "3.%s" % obj.created.ISO8601()
+
+        priority = priority_sort_key.split(".")[0]
+        priority_text = t(PRIORITIES.getValue(priority))
+        html = "<div title='{}' class='priority-ico priority-{}'><div>"
+        item["replace"]["Priority"] = html.format(priority_text, priority)
+
         return item
 
-    def getServices(self):
-        vocabulary = CatalogVocabulary(self)
-        vocabulary.catalog = 'bika_setup_catalog'
-        categoryUID = self.request.get('list_getCategoryUID', '')
-        if categoryUID:
-            return vocabulary(
-                portal_type='AnalysisService',
-                getCategoryUID=categoryUID,
-                sort_on='sortable_title'
-            )
-        return vocabulary(
-            portal_type='AnalysisService',
-            sort_on='sortable_title'
-        )
-
-    def getClients(self):
-        vocabulary = CatalogVocabulary(self)
-        return vocabulary(portal_type='Client', sort_on='sortable_title')
-
-    def getCategories(self):
-        vocabulary = CatalogVocabulary(self)
-        vocabulary.catalog = 'bika_setup_catalog'
-        return vocabulary(
-            portal_type='AnalysisCategory',  sort_on='sortable_title')
-
     def getWorksheetTemplates(self):
-        """ Return WS Templates """
+        """Return WS Templates
+        """
         vocabulary = CatalogVocabulary(self)
-        vocabulary.catalog = 'bika_setup_catalog'
+        vocabulary.catalog = "bika_setup_catalog"
         return vocabulary(
-            portal_type='WorksheetTemplate', sort_on='sortable_title')
+            portal_type="WorksheetTemplate", sort_on="sortable_title")

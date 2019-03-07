@@ -2,16 +2,18 @@
 # SOME DESCRIPTIVE TITLE.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # Translators:
+# Jordi Puiggené <jpuiggene@naralabs.com>, 2018
 # Ramon Bartl <rb@ridingbytes.com>, 2018
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2018-07-02 20:01+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
+"POT-Creation-Date: 2019-02-15 08:16+0000\n"
+"PO-Revision-Date: 2018-06-01 18:46+0000\n"
 "Last-Translator: Ramon Bartl <rb@ridingbytes.com>, 2018\n"
 "Language-Team: Polish (https://www.transifex.com/senaite/teams/87045/pl/)\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=4; plural=(n==1 ? 0 : (n%10>=2 && n%10<=4) && (n%100<12 || n%100>14) ? 1 : n!=1 && (n%10>=0 && n%10<=1) || (n%10>=5 && n%10<=9) || (n%100>=12 && n%100<=14) ? 2 : 3);\n"
 "Language-Code: en\n"
@@ -20,17 +22,13 @@ msgstr ""
 "Domain: plone\n"
 "Language: pl\n"
 
-#. Default: "AR Imports"
-msgid "AR Imports"
-msgstr "Iportowanie AR"
-
 #: bika/lims/profiles/default/types/ARTemplate.xml
 msgid "AR Template"
 msgstr "Szablon AR"
 
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/ARTemplates.xml
-#: bika/lims/profiles/default/types/Client.xml
+#: bika/lims/profiles/default/types/SRTemplate.xml
 msgid "AR Templates"
 msgstr "Szablony AR"
 
@@ -70,7 +68,6 @@ msgid "Administration"
 msgstr "Administracja"
 
 #: bika/lims/profiles/default/types/ReferenceSample.xml
-#: bika/lims/profiles/default/types/Sample.xml
 msgid "Analyses"
 msgstr "Analizy"
 
@@ -96,16 +93,6 @@ msgstr "Profil analizy"
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Analysis Profiles"
 msgstr "Profile analizy"
-
-#: bika/lims/profiles/default/types/AnalysisRequest.xml
-msgid "Analysis Request"
-msgstr "Zestaw analiz"
-
-#: bika/lims/profiles/default/actions.xml
-#: bika/lims/profiles/default/types/AnalysisRequestsFolder.xml
-#: bika/lims/profiles/default/types/Batch.xml
-msgid "Analysis Requests"
-msgstr "Zestawy analiz"
 
 #: bika/lims/profiles/default/types/AnalysisService.xml
 msgid "Analysis Service"
@@ -410,8 +397,6 @@ msgid "Laboratory Information"
 msgstr "Informacje o laboratorium"
 
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
-#: bika/lims/profiles/default/types/Sample.xml
-#: bika/lims/profiles/default/types/SamplePartition.xml
 msgid "Large Sticker"
 msgstr "Duża naklejka"
 
@@ -534,10 +519,6 @@ msgstr "Opublikowane wyniki"
 msgid "QC Results"
 msgstr ""
 
-#: bika/lims/profiles/default/types/ReportFolder.xml
-msgid "Quality Control"
-msgstr "Kontrola jakości"
-
 msgid "Receive"
 msgstr ""
 
@@ -617,16 +598,13 @@ msgstr "Raporty"
 msgid "Republish"
 msgstr ""
 
-#: bika/lims/profiles/default/types/AnalysisRequest.xml
-msgid "Results not requested"
-msgstr "Wyniki nie zamówione"
-
 msgid "Retract"
 msgstr ""
 
 msgid "Retracted"
 msgstr ""
 
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
 #: bika/lims/profiles/default/types/Sample.xml
 msgid "Sample"
 msgstr "Próbka pobrana"
@@ -639,6 +617,10 @@ msgstr "Stan próbki"
 #: bika/lims/profiles/default/types/SampleConditions.xml
 msgid "Sample Conditions"
 msgstr "Stan próbki"
+
+#. Default: "AR Imports"
+msgid "Sample Imports"
+msgstr ""
 
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/SampleMatrices.xml
@@ -653,10 +635,6 @@ msgstr "Matryca próbki"
 msgid "Sample Partition"
 msgstr "Część próbki"
 
-#: bika/lims/profiles/default/types/Sample.xml
-msgid "Sample Partitions"
-msgstr "Części próbki"
-
 #: bika/lims/profiles/default/types/SamplePoint.xml
 msgid "Sample Point"
 msgstr "Punkt poboru próbki"
@@ -665,6 +643,10 @@ msgstr "Punkt poboru próbki"
 #: bika/lims/profiles/default/types/SamplePoints.xml
 msgid "Sample Points"
 msgstr "Punkty poboru próbek"
+
+#: bika/lims/profiles/default/types/Client.xml
+msgid "Sample Templates"
+msgstr ""
 
 #: bika/lims/profiles/default/types/SampleType.xml
 msgid "Sample Type"
@@ -676,12 +658,6 @@ msgid "Sample Types"
 msgstr "Rodzaje próbek"
 
 msgid "Sample due"
-msgstr ""
-
-msgid "Sample preparation"
-msgstr ""
-
-msgid "Sample preparation complete"
 msgstr ""
 
 msgid "Sample received"
@@ -698,14 +674,14 @@ msgid "Sampled"
 msgstr ""
 
 #: bika/lims/profiles/default/actions.xml
+#: bika/lims/profiles/default/types/AnalysisRequestsFolder.xml
 #: bika/lims/profiles/default/types/Batch.xml
-#: bika/lims/profiles/default/types/Client.xml
 msgid "Samples"
 msgstr "Próbki"
 
 #: bika/lims/profiles/default/types/SamplesFolder.xml
 msgid "SamplesFolder"
-msgstr "SamplesFolder"
+msgstr "PróbkiFolder"
 
 #: bika/lims/profiles/default/types/SamplingDeviation.xml
 msgid "Sampling Deviation"
@@ -749,8 +725,6 @@ msgid "Sharing"
 msgstr ""
 
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
-#: bika/lims/profiles/default/types/Sample.xml
-#: bika/lims/profiles/default/types/SamplePartition.xml
 msgid "Small Sticker"
 msgstr "Mała naklejka"
 
@@ -766,7 +740,7 @@ msgstr "Naklejka"
 
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 #: bika/lims/profiles/default/types/Batch.xml
-#: bika/lims/profiles/default/types/Sample.xml
+#: bika/lims/profiles/default/types/ReferenceSample.xml
 msgid "Stickers preview"
 msgstr ""
 
@@ -849,10 +823,6 @@ msgstr ""
 msgid "View"
 msgstr ""
 
-#: bika/lims/profiles/default/types/Client.xml
-msgid "WINE-40: Do not move or remove this entry."
-msgstr ""
-
 #: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Worksheet"
 msgstr "Karta pracy"
@@ -870,10 +840,6 @@ msgstr "Szablony kart pracy"
 #: bika/lims/profiles/default/types/WorksheetFolder.xml
 msgid "Worksheets"
 msgstr "Karty pracy"
-
-#. Default: "AR Templates"
-msgid "label_schema_AR Templates"
-msgstr "Szablony zestawów analiz -AR-"
 
 #. Default: "Accounting"
 msgid "label_schema_Accounting"
@@ -958,6 +924,10 @@ msgstr "SR Templates"
 #. Default: "Sample Partitions"
 msgid "label_schema_Sample Partitions"
 msgstr "Części próbki"
+
+#. Default: "AR Templates"
+msgid "label_schema_Sample Templates"
+msgstr ""
 
 #. Default: "Security"
 msgid "label_schema_Security"

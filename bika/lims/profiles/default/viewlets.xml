@@ -5,10 +5,6 @@
 
 <object>
 
-    <order manager="plone.portalheader" skinname="bika" based-on="Plone Default">
-        <viewlet name="bika.lims.checknewversions" insert-after="plone.global_sections"/>
-    </order>
-
     <order manager="plone.portalfooter" skinname="bika" based-on="Plone Default">
         <viewlet name="bika.lims.authenticator" insert-before="plone.colophon"/>
     </order>

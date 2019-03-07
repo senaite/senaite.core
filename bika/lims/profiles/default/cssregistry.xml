@@ -3,7 +3,7 @@
 
 <stylesheet
     id="++resource++bika.lims.css/hide_contentmenu.css"
-    expression="python:here.portal_type in ['Batch', 'Client', 'AnalysisRequest', 'Worksheet', 'Sample', 'AnalysisCategory', 'AnalysisProfile', 'ARTemplate', 'AnalysisService', 'AnalysisSpec', 'Attachment', 'Calculation', 'Instrument', 'LabContact', 'Laboratory', 'Method', 'Department', 'ReferenceDefinition', 'ReportFolder', 'SampleType', 'SamplePoint', 'StorageLocation', 'WorksheetTemplate', 'LabProduct', 'ReferenceSample', 'Preservation', 'PricelistFolder', 'Instrument', 'Instruments', 'SupplyOrderFolder']"
+    expression="python:here.portal_type in ['Batch', 'Client', 'AnalysisRequest', 'Worksheet', 'AnalysisCategory', 'AnalysisProfile', 'ARTemplate', 'AnalysisService', 'AnalysisSpec', 'Attachment', 'Calculation', 'Instrument', 'LabContact', 'Laboratory', 'Method', 'Department', 'ReferenceDefinition', 'ReportFolder', 'SampleType', 'SamplePoint', 'StorageLocation', 'WorksheetTemplate', 'LabProduct', 'ReferenceSample', 'Preservation', 'PricelistFolder', 'Instrument', 'Instruments', 'SupplyOrderFolder']"
     media="screen"
     rel="stylesheet"
     rendering="link"
@@ -11,18 +11,11 @@
 
 <stylesheet
     id="++resource++bika.lims.css/hide_editable_border.css"
-    expression="python:here.portal_type in ['AnalysisCategories', 'AnalysisCategory', 'AnalysisServices', 'AnalysisSpecs', 'AnalysisProfile', 'AnalysisProfiles', 'ARTemplate', 'ARTemplates', 'AttachmentType', 'AttachmentTypes', 'BatchFolder', 'BikaSetup', 'Calculations', 'ClientFolder', 'Container', 'Containers', 'ContainerType', 'ContainerTypes', 'Departments', 'Instruments', 'InstrumentTypes', 'LabContacts', 'Laboratory', 'LabProduct', 'LabProducts', 'Manufacturers', 'Methods', 'Preservation', 'Preservations', 'ReferenceDefinition', 'ReferenceDefinitions', 'SamplePoints', 'StorageLocations', 'SampleTypes', 'WorksheetTemplates', 'SamplingDeviations', 'SamplingDeviation', 'SampleMatrices', 'SampleMatrix', 'Suppliers', 'BatchLabel', 'BatchLabels', 'SampleConditions', 'SampleCondition', 'PricelistFolder', 'SupplyOrderFolder', 'SRTemplates', 'ReflexRuleFolder', 'ReflexRule', 'IdentifierTypes'] or 'aggregatedanalyses' in request.URL.split('/')"
+    expression="python:here.portal_type in ['AnalysisCategories', 'AnalysisCategory', 'AnalysisServices', 'AnalysisSpecs', 'AnalysisProfile', 'AnalysisProfiles', 'ARTemplate', 'ARTemplates', 'AttachmentType', 'AttachmentTypes', 'BatchFolder', 'BikaSetup', 'Calculations', 'ClientFolder', 'Container', 'Containers', 'ContainerType', 'ContainerTypes', 'Departments', 'Instruments', 'InstrumentTypes', 'LabContacts', 'Laboratory', 'LabProduct', 'LabProducts', 'Manufacturers', 'Methods', 'Preservation', 'Preservations', 'ReferenceDefinition', 'ReferenceDefinitions', 'SamplePoints', 'StorageLocations', 'SampleTypes', 'WorksheetTemplates', 'SamplingDeviations', 'SamplingDeviation', 'SampleMatrices', 'SampleMatrix', 'Suppliers', 'BatchLabel', 'BatchLabels', 'SampleConditions', 'SampleCondition', 'PricelistFolder', 'SupplyOrderFolder', 'SRTemplates', 'ReflexRuleFolder', 'ReflexRule', 'IdentifierTypes']"
     media="screen"
     rel="stylesheet"
     rendering="link"
     insert-before="*"/>
-
-<stylesheet
-    id="bika_listing.css"
-    media="screen"
-    rel="stylesheet"
-    rendering="link"
-    insert-after="*"/>
 
 <stylesheet
     id="bika_invoice.css"

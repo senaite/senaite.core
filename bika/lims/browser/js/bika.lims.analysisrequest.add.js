@@ -61,7 +61,7 @@
 
     AnalysisRequestAdd.prototype.load = function() {
       console.debug("AnalysisRequestAdd::load");
-      jarn.i18n.loadCatalog("senaite.core");
+      jarn.i18n.loadCatalog('senaite.core');
       this._ = window.jarn.i18n.MessageFactory("senaite.core");
       $('input[type=text]').prop('autocomplete', 'off');
       this.global_settings = {};
@@ -90,7 +90,6 @@
       $("body").on("click", ".service-listing-header", this.on_service_listing_header_click);
       $("body").on("click", "tr.category", this.on_service_category_click);
       $("body").on("click", "[name='save_button']", this.on_form_submit);
-      $("body").on("click", "tr[fieldname=AdHoc] input[type='checkbox']", this.recalculate_records);
       $("body").on("click", "tr[fieldname=Composite] input[type='checkbox']", this.recalculate_records);
       $("body").on("click", "tr[fieldname=InvoiceExclude] input[type='checkbox']", this.recalculate_records);
       $("body").on("click", "tr[fieldname=Analyses] input[type='checkbox']", this.on_analysis_checkbox_click);
@@ -562,8 +561,6 @@
       field = $("#ClientReference-" + arnum);
       value = sample.client_reference;
       field.val(value);
-      field = $("#AdHoc-" + arnum);
-      field.prop("checked", sample.adhoc);
       field = $("#Composite-" + arnum);
       field.prop("checked", sample.composite);
       field = $("#SampleCondition-" + arnum);
@@ -611,7 +608,7 @@
       /*
        * Apply the template data to all fields of arnum
        */
-      var field, me, part_selectors, template_uid, title, uid;
+      var field, me, template_uid, title, uid;
       me = this;
       field = $("#Template-" + arnum);
       uid = field.attr("uid");
@@ -642,35 +639,8 @@
       field.text(template.remarks);
       field = $("#Composite-" + arnum);
       field.prop("checked", template.composite);
-      $.each(template.service_uids, function(index, uid) {
+      return $.each(template.service_uids, function(index, uid) {
         return me.set_service(arnum, uid, true);
-      });
-      me = this;
-      part_selectors = $(".part-select-" + arnum);
-      return $.each(part_selectors, function(index, part_selector) {
-        var $el, context, partitions, parts, selected_part;
-        $el = $(part_selector);
-        $el.parent().show();
-        $el.empty();
-        uid = $el.attr("uid");
-        selected_part = "part-1";
-        if (uid in template.analyses_partitions) {
-          selected_part = template.analyses_partitions[uid];
-        }
-        partitions = [];
-        $.each(template.partitions, function(index, part) {
-          var part_id;
-          part_id = part.part_id;
-          return partitions.push({
-            part_id: part_id,
-            selected: part_id === selected_part
-          });
-        });
-        context = {
-          partitions: partitions
-        };
-        parts = me.render_template("part-select-template", context);
-        return $el.append(parts);
       });
     };
 
@@ -991,7 +961,7 @@
       /*
        * Eventhandler when an Analysis Template was changed.
        */
-      var $el, arnum, context, dialog, el, has_template_selected, me, record, template_metadata, template_services, uid, val;
+      var $el, $parent, arnum, context, dialog, el, existing_uids, field, has_template_selected, item, me, record, remove_index, template_metadata, template_services, title, uid, uids_field, val;
       me = this;
       el = event.currentTarget;
       $el = $(el);
@@ -1000,6 +970,11 @@
       arnum = $el.closest("[arnum]").attr("arnum");
       has_template_selected = $el.val();
       console.debug("°°° on_analysis_template_change::UID=" + uid + " Template=" + val + "°°°");
+      if (uid) {
+        $el.attr("previous_uid", uid);
+      } else {
+        uid = $el.attr("previous_uid");
+      }
       if (!has_template_selected && uid) {
         this.applied_templates[arnum] = null;
         $("input[type=hidden]", $el.parent()).val("");
@@ -1011,7 +986,7 @@
             return template_services.push(record.service_metadata[uid]);
           }
         });
-        if (template_services) {
+        if (template_services.length) {
           context = {};
           context["template"] = template_metadata;
           context["services"] = template_services;
@@ -1025,6 +1000,39 @@
           dialog.on("no", function() {
             return $(me).trigger("form:changed");
           });
+        }
+        if (template_metadata.analysis_profile_uid) {
+          field = $("#Profiles-" + arnum);
+          uid = template_metadata.analysis_profile_uid;
+          title = template_metadata.analysis_profile_title;
+          $parent = field.closest("div.field");
+          item = $(".reference_multi_item[uid=" + uid + "]", $parent);
+          if (item.length) {
+            item.remove();
+            uids_field = $("input[type=hidden]", $parent);
+            existing_uids = uids_field.val().split(",");
+            remove_index = existing_uids.indexOf(uid);
+            if (remove_index > -1) {
+              existing_uids.splice(remove_index, 1);
+            }
+            uids_field.val(existing_uids.join(","));
+          }
+        }
+        if (template_metadata.sample_point_uid) {
+          field = $("#SamplePoint-" + arnum);
+          this.flush_reference_field(field);
+        }
+        if (template_metadata.sample_type_uid) {
+          field = $("#SampleType-" + arnum);
+          this.flush_reference_field(field);
+        }
+        if (template_metadata.remarks) {
+          field = $("#Remarks-" + arnum);
+          field.text("");
+        }
+        if (template_metadata.composite) {
+          field = $("#Composite-" + arnum);
+          field.prop("checked", false);
         }
       }
       return $(me).trigger("form:changed");

@@ -117,8 +117,7 @@
                 </td>
                 <td class="attachment-report-option">
                   <!-- Attachment Report Option
-                       a=Attach to Report (default)
-                       i=Ignore in Report
+                       i=Ignore in Report (default)
                        r=Render in Report
                     -->
                   <select name="ReportOption"
@@ -231,7 +230,7 @@
                                 tal:condition="attachments_view/global_ar_attachments_allowed"
                                 tal:attributes="value python:None">
                           <span tal:omit-tag="python:True"
-                                i18n:translate="">Attach to Analysis Request</span>
+                                i18n:translate="">Attach to Sample</span>
                         </option>
                         <tal:a tal:repeat="item a_analyses">
                           <option tal:attributes="value item/UID;"

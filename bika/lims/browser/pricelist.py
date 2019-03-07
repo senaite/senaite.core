@@ -34,7 +34,7 @@ class PricelistsView(BikaListingView):
         self.title = self.context.translate(_("Pricelists"))
         self.icon = self.portal_url + "/++resource++bika.lims.images/pricelist_big.png"
         self.description = ""
-        self.show_sort_column = False
+
         self.show_select_row = False
         self.show_select_column = True
         self.pagesize = 25
@@ -58,16 +58,16 @@ class PricelistsView(BikaListingView):
                                                     'range': 'max'},
                                'getExpirationDate': {'query': now,
                                                      'range': 'min'},
-                               'inactive_state': 'active'},
+                               'is_active': True},
              'transitions': [{'id': 'deactivate'}, ],
              'columns': ['Title', 'getExpirationDate']},
             {'id': 'inactive',
-             'title': _('Dormant'),
+             'title': _('Inactive'),
              'contentFilter': {'getEffectiveDate': {'query': now,
                                                     'range': 'min'},
                                'getExpirationDate': {'query': now,
                                                      'range': 'max'},
-                               'inactive_state': 'inactive'},
+                               'is_active': False},
              'transitions': [{'id': 'activate'}, ],
              'columns': ['Title', 'getExpirationDate']},
             {'id': 'all',

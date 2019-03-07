@@ -27,9 +27,8 @@ window.AnalysisRequestView = ->
 
   transition_schedule_sampling = ->
 
-    ### Force the transition to use the "workflow_action" url instead of content_status_modify. workflow_action triggers a class from
-    analysisrequest/workflow/AnalysisRequestWorkflowAction which manage
-    workflow_actions from analysisrequest/sample/samplepartition objects.
+    ### Force the transition to use the "workflow_action" url instead of
+    content_status_modify.
     It is not possible to abort a transition using "workflow_script_*".
     The recommended way is to set a guard instead.
 
@@ -589,7 +588,7 @@ window.AnalysisRequestAnalysesView = ->
     ###jshint validthis:true ###
 
     auto_yes = auto_yes or false
-    jarn.i18n.loadCatalog 'bika'
+    jarn.i18n.loadCatalog 'senaite.core'
     _ = window.jarn.i18n.MessageFactory("senaite.core")
     dep = undefined
     i = undefined
@@ -718,52 +717,52 @@ window.AnalysisRequestAnalysesView = ->
     return
 
   that.load = ->
-    $('[name^=\'min\\.\'], [name^=\'max\\.\'], [name^=\'error\\.\']').live 'change', ->
-      validate_spec_field_entry this
-      return
-    #//////////////////////////////////////
-    # disable checkboxes for eg verified analyses.
-    $.each $('[name=\'uids:list\']'), (x, cb) ->
-      service_uid = $(cb).val()
-      row_data = $.parseJSON($('#' + service_uid + '_row_data').val())
-      if row_data.disabled == true
-        # disabled fields must be shadowed by hidden fields,
-        # or they don't appear in the submitted form.
-        $(cb).prop 'disabled', true
-        cbname = $(cb).attr('name')
-        cbid = $(cb).attr('id')
-        $(cb).removeAttr('name').removeAttr 'id'
-        $(cb).after '<input type=\'hidden\' name=\'' + cbname + '\' value=\'' + service_uid + '\' id=\'' + cbid + '\'/>'
-        el = $('[name=\'Price.' + service_uid + ':records\']')
-        elname = $(el).attr('name')
-        elval = $(el).val()
-        $(el).after '<input type=\'hidden\' name=\'' + elname + '\' value=\'' + elval + '\'/>'
-        $(el).prop 'disabled', true
-        el = $('[name=\'Partition.' + service_uid + ':records\']')
-        elname = $(el).attr('name')
-        elval = $(el).val()
-        $(el).after '<input type=\'hidden\' name=\'' + elname + '\' value=\'' + elval + '\'/>'
-        $(el).prop 'disabled', true
-        specfields = [
-          'min'
-          'max'
-          'error'
-        ]
-        for i of specfields
-          element = $('[name=\'' + specfields[i] + '.' + service_uid + ':records\']')
-          new_element = '' + '<input type=\'hidden\' field=\'' + specfields[i] + '\' value=\'' + element.val() + '\' ' + 'name=\'' + specfields[i] + '.' + service_uid + ':records\' uid=\'' + service_uid + '\'>'
-          $(element).replaceWith new_element
-      return
+    # $('[name^=\'min\\.\'], [name^=\'max\\.\'], [name^=\'error\\.\']').live 'change', ->
+    #   validate_spec_field_entry this
+    #   return
+    # #//////////////////////////////////////
+    # # disable checkboxes for eg verified analyses.
+    # $.each $('[name=\'uids:list\']'), (x, cb) ->
+    #   service_uid = $(cb).val()
+    #   row_data = $.parseJSON($('#' + service_uid + '_row_data').val())
+    #   if row_data.disabled == true
+    #     # disabled fields must be shadowed by hidden fields,
+    #     # or they don't appear in the submitted form.
+    #     $(cb).prop 'disabled', true
+    #     cbname = $(cb).attr('name')
+    #     cbid = $(cb).attr('id')
+    #     $(cb).removeAttr('name').removeAttr 'id'
+    #     $(cb).after '<input type=\'hidden\' name=\'' + cbname + '\' value=\'' + service_uid + '\' id=\'' + cbid + '\'/>'
+    #     el = $('[name=\'Price.' + service_uid + ':records\']')
+    #     elname = $(el).attr('name')
+    #     elval = $(el).val()
+    #     $(el).after '<input type=\'hidden\' name=\'' + elname + '\' value=\'' + elval + '\'/>'
+    #     $(el).prop 'disabled', true
+    #     el = $('[name=\'Partition.' + service_uid + ':records\']')
+    #     elname = $(el).attr('name')
+    #     elval = $(el).val()
+    #     $(el).after '<input type=\'hidden\' name=\'' + elname + '\' value=\'' + elval + '\'/>'
+    #     $(el).prop 'disabled', true
+    #     specfields = [
+    #       'min'
+    #       'max'
+    #       'error'
+    #     ]
+    #     for i of specfields
+    #       element = $('[name=\'' + specfields[i] + '.' + service_uid + ':records\']')
+    #       new_element = '' + '<input type=\'hidden\' field=\'' + specfields[i] + '\' value=\'' + element.val() + '\' ' + 'name=\'' + specfields[i] + '.' + service_uid + ':records\' uid=\'' + service_uid + '\'>'
+    #       $(element).replaceWith new_element
+    #   return
     #//////////////////////////////////////
     # checkboxes in services list
-    $('[name=\'uids:list\']').live 'click', ->
-      calcdependencies [ this ], true
-      service_uid = $(this).val()
-      if $(this).prop('checked')
-        check_service service_uid
-      else
-        uncheck_service service_uid
-      return
+    # $('[name=\'uids:list\']').live 'click', ->
+    #   calcdependencies [ this ], true
+    #   service_uid = $(this).val()
+    #   if $(this).prop('checked')
+    #     check_service service_uid
+    #   else
+    #     uncheck_service service_uid
+    #   return
     return
 
   return

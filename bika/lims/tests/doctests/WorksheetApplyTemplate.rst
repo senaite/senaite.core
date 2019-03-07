@@ -34,9 +34,7 @@ Needed Imports:
     >>> from bika.lims import api
     >>> from bika.lims.content.analysisrequest import AnalysisRequest
     >>> from bika.lims.content.sample import Sample
-    >>> from bika.lims.content.samplepartition import SamplePartition
     >>> from bika.lims.utils.analysisrequest import create_analysisrequest
-    >>> from bika.lims.utils.sample import create_sample
     >>> from bika.lims.utils import tmpID
     >>> from bika.lims.workflow import doActionFor
     >>> from bika.lims.workflow import getCurrentState
@@ -320,7 +318,7 @@ But if we remove only one duplicate analysis from slot number 5:
 
 And we manually add duplicates for analysis in position 4, a new slot will be
 added at the end of the worksheet (slot number 8), cause the slot number 5 is
-already occupied and slots 6 and 7, altough empty, are reserved for blank and
+already occupied and slots 6 and 7, although empty, are reserved for blank and
 control:
 
     >>> worksheet.get_analyses_at(8)

@@ -7,10 +7,9 @@
 
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
 from bika.lims.browser import BrowserView
-from bika.lims.content.instrument import getDataInterfaces
 from bika.lims.exportimport import instruments
+from bika.lims.exportimport.instruments import get_instrument_import_interfaces
 from bika.lims.exportimport.load_setup_data import LoadSetupData
 from bika.lims.interfaces import ISetupDataSetList
 from plone.app.layout.globals.interfaces import IViewView
@@ -60,7 +59,7 @@ class ImportView(BrowserView):
         request.set('disable_border', 1)
 
     def getDataInterfaces(self):
-        return getDataInterfaces(self.context)
+        return get_instrument_import_interfaces()
 
     def getSetupDatas(self):
         datasets = []
@@ -97,7 +96,7 @@ class ImportView(BrowserView):
         bsc = getToolByName(self, 'bika_setup_catalog')
         items = [('', '...Choose an Instrument...')] + [(o.UID, o.Title) for o in
                                bsc(portal_type = 'Instrument',
-                                   inactive_state = 'active')]
+                                   is_active = True)]
         items.sort(lambda x, y: cmp(x[1].lower(), y[1].lower()))
         return DisplayList(list(items))
 
@@ -126,7 +125,7 @@ class ajaxGetImportTemplate(BrowserView):
         bsc = getToolByName(self, 'bika_setup_catalog')
         items = [('', '')] + [(o.getObject().Keyword, o.Title) for o in
                                 bsc(portal_type = 'AnalysisService',
-                                   inactive_state = 'active')]
+                                    is_active = True)]
         items.sort(lambda x, y: cmp(x[1].lower(), y[1].lower()))
         return DisplayList(list(items))
 
@@ -149,7 +148,7 @@ class ajaxGetImportInterfaces(BrowserView):
         bsc = getToolByName(self, 'bika_setup_catalog')
         instrument=bsc(portal_type='Instrument',
                        UID=self.request.get('instrument_uid', ''),
-                       inactive_state='active',)
+                       is_active=True,)
         if instrument and len(instrument) == 1:
             instrument = instrument[0].getObject()
             for i in instrument.getImportDataInterface():

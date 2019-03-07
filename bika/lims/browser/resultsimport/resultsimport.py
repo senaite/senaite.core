@@ -8,9 +8,9 @@
 import csv
 from DateTime.DateTime import DateTime
 from bika.lims.browser import BrowserView
+from bika.lims.exportimport.instruments import get_automatic_parser
 from bika.lims.utils import tmpID
 from Products.CMFCore.utils import getToolByName
-from bika.lims.exportimport import instruments
 from bika.lims.exportimport.instruments.resultsimport import \
     AnalysisResultsImporter
 import traceback
@@ -35,12 +35,10 @@ class ResultsImportView(BrowserView):
 
     def __call__(self):
         request = self.request
-        if not self.is_import_allowed():
-            return 'Auto-import skipped due to interval...'
         bsc = getToolByName(self, 'bika_setup_catalog')
         # Getting instrumnets to run auto-import
         query = {'portal_type': 'Instrument',
-                 'inactive_state': 'active'}
+                 'is_active': True}
         if request.get('i_uid', ''):
             query['UID'] = request.get('i_uid')
         brains = bsc(query)
@@ -83,26 +81,17 @@ class ResultsImportView(BrowserView):
                     # To add this attribute we convert the file.
                     # CHECK should we add headers too?
                     result_file = ConvertToUploadFile(temp_file)
-                    exim = instruments.getExim(interface)
-                    parser_name = instruments.getParserName(interface)
-                    parser_function = getattr(exim, parser_name) \
-                        if hasattr(exim, parser_name) else ''
-                    if not parser_function:
+                    parser = get_automatic_parser(interface, result_file)
+                    if not parser:
                         self.add_to_logs(i, interface,
                                          'Parser not found...', file_name)
                         continue
                     # We will run import with some default parameters
                     # Expected to be modified in the future.
                     logger.info('Parsing ' + file_name)
-                    parser = parser_function(result_file)
-                    importer = GeneralImporter(
+                    importer = AnalysisResultsImporter(
                                 parser=parser,
                                 context=self.portal,
-                                idsearchcriteria=['getId',
-                                                  'getSampleID',
-                                                  'getClientSampleID'],
-                                allowed_ar_states=['sample_received'],
-                                allowed_analysis_states=None,
                                 override=[False, False],
                                 instrument_uid=i.UID())
                     tbex = ''
@@ -183,34 +172,6 @@ class ResultsImportView(BrowserView):
                 f.write(log+'\n')
                 f.close()
 
-    def is_import_allowed(self):
-        # Checking if auto-import enabled in bika setup. Return False if not.
-        interval = self.portal.bika_setup.getAutoImportInterval()
-        if interval < 10:
-            return False
-        caches = self.portal.listFolderContents(contentFilter={
-                                                "portal_type": 'BikaCache'})
-        cache = None
-        for c in caches:
-            if c and c.getKey() == 'LastAutoImport':
-                cache = c
-        now = DateTime.strftime(DateTime(), '%Y-%m-%d %H:%M:%S')
-        if not cache:
-            _id = self.portal.invokeFactory("BikaCache", id=tmpID(),
-                                            Key='LastAutoImport',
-                                            Value=now)
-            item = self.portal[_id]
-            item.markCreationFlag()
-            return True
-        else:
-            last_import = cache.getValue()
-            diff = datetime.now() - datetime.strptime(last_import,
-                                                      '%Y-%m-%d %H:%M:%S')
-            if diff.seconds < interval * 60:
-                return False
-            cache.edit(Value=now)
-            return True
-
     def format_log_data(self, instrument, interface, result, filename):
         log = DateTime.strftime(DateTime(), '%Y-%m-%d %H:%M:%S')
         log += ' - ' + instrument
@@ -219,18 +180,6 @@ class ResultsImportView(BrowserView):
         r = ''.join(result)
         log += ' - ' + r
         return log
-
-
-class GeneralImporter(AnalysisResultsImporter):
-
-    def __init__(self, parser, context, idsearchcriteria, override,
-                 allowed_ar_states=None, allowed_analysis_states=None,
-                 instrument_uid=None):
-        AnalysisResultsImporter.__init__(self, parser, context,
-                                         idsearchcriteria, override,
-                                         allowed_ar_states,
-                                         allowed_analysis_states,
-                                         instrument_uid)
 
 
 class ConvertToUploadFile:

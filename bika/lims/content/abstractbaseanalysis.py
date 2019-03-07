@@ -6,25 +6,39 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from AccessControl import ClassSecurityInfo
-from Products.ATExtensions.ateapi import RecordsField
-from Products.Archetypes.BaseContent import BaseContent
-from Products.Archetypes.Field import BooleanField, FixedPointField, \
-    FloatField, IntegerField, StringField, TextField
-from Products.Archetypes.Schema import Schema
-from Products.Archetypes.Widget import BooleanWidget, DecimalWidget, \
-    IntegerWidget, SelectionWidget, StringWidget
-from Products.Archetypes.utils import DisplayList, IntDisplayList
-from Products.CMFCore.utils import getToolByName
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
-from bika.lims.browser.fields import DurationField, UIDReferenceField
+from bika.lims.browser.fields import DurationField
+from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets.durationwidget import DurationWidget
 from bika.lims.browser.widgets.recordswidget import RecordsWidget
 from bika.lims.browser.widgets.referencewidget import ReferenceWidget
-from bika.lims.browser.widgets.uidselectionwidget import UIDSelectionWidget
-from bika.lims.config import ATTACHMENT_OPTIONS, SERVICE_POINT_OF_CAPTURE
+from bika.lims.config import ATTACHMENT_OPTIONS
+from bika.lims.config import SERVICE_POINT_OF_CAPTURE
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IBaseAnalysis
+from bika.lims.permissions import FieldEditAnalysisHidden
+from bika.lims.permissions import FieldEditAnalysisRemarks
+from bika.lims.permissions import FieldEditAnalysisResult
 from bika.lims.utils import to_utf8 as _c
+from Products.Archetypes.BaseContent import BaseContent
+from Products.Archetypes.Field import BooleanField
+from Products.Archetypes.Field import FixedPointField
+from Products.Archetypes.Field import FloatField
+from Products.Archetypes.Field import IntegerField
+from Products.Archetypes.Field import StringField
+from Products.Archetypes.Field import TextField
+from Products.Archetypes.Schema import Schema
+from Products.Archetypes.utils import DisplayList
+from Products.Archetypes.utils import IntDisplayList
+from Products.Archetypes.Widget import BooleanWidget
+from Products.Archetypes.Widget import DecimalWidget
+from Products.Archetypes.Widget import IntegerWidget
+from Products.Archetypes.Widget import SelectionWidget
+from Products.Archetypes.Widget import StringWidget
+from Products.ATExtensions.ateapi import RecordsField
+from Products.CMFCore.permissions import View
+from Products.CMFCore.utils import getToolByName
 from zope.interface import implements
 
 # Anywhere that there just isn't space for unpredictably long names,
@@ -220,7 +234,7 @@ Keyword = StringField(
         label=_("Analysis Keyword"),
         description=_(
             "The unique keyword used to identify the analysis service in "
-            "import files of bulk AR requests and results imports from "
+            "import files of bulk Sample requests and results imports from "
             "instruments. It is also used to identify dependent analysis "
             "services in user defined results calculations"),
     )
@@ -276,14 +290,17 @@ InstrumentEntryOfResults = BooleanField(
 # - If InstrumentEntry not checked, hide and set None
 # See browser/js/bika.lims.analysisservice.edit.js
 Instrument = UIDReferenceField(
-    'Instrument',
+    "Instrument",
+    read_permission=View,
+    write_permission=FieldEditAnalysisResult,
     schemata="Method",
     searchable=True,
     required=0,
-    vocabulary='_getAvailableInstrumentsDisplayList',
-    allowed_types=('Instrument',),
-    widget=UIDSelectionWidget(
-        format='select',
+    vocabulary="_getAvailableInstrumentsDisplayList",
+    allowed_types=("Instrument",),
+    accessor="getInstrumentUID",
+    widget=SelectionWidget(
+        format="select",
         label=_("Default Instrument"),
         description=_(
             "This is the instrument that is assigned to  tests from this type "
@@ -306,14 +323,17 @@ Instrument = UIDReferenceField(
 #   selected Methods, set the first method selected and non-readonly
 # See browser/js/bika.lims.analysisservice.edit.js
 Method = UIDReferenceField(
-    'Method',
+    "Method",
+    read_permission=View,
+    write_permission=FieldEditAnalysisResult,
     schemata="Method",
     required=0,
     searchable=True,
-    allowed_types=('Method',),
-    vocabulary='_getAvailableMethodsDisplayList',
-    widget=UIDSelectionWidget(
-        format='select',
+    allowed_types=("Method",),
+    vocabulary="_getAvailableMethodsDisplayList",
+    accessor="getMethodUID",
+    widget=SelectionWidget(
+        format="select",
         label=_("Default Method"),
         description=_(
             "If 'Allow instrument entry of results' is selected, the method "
@@ -398,7 +418,7 @@ Category = UIDReferenceField(
         label=_("Analysis Category"),
         description=_("The category the analysis service belongs to"),
         catalog_name='bika_setup_catalog',
-        base_query={'inactive_state': 'active'},
+        base_query={'is_active': True},
     )
 )
 
@@ -450,7 +470,7 @@ Department = UIDReferenceField(
         label=_("Department"),
         description=_("The laboratory department"),
         catalog_name='bika_setup_catalog',
-        base_query={'inactive_state': 'active'},
+        base_query={'is_active': True},
     )
 )
 
@@ -547,8 +567,9 @@ ResultOptions = RecordsField(
     subfield_validators={'ResultValue': 'resultoptionsvalidator',
                          'ResultText': 'resultoptionsvalidator'},
     subfield_sizes={'ResultValue': 5,
-                    'ResultText': 25,
-                    },
+                    'ResultText': 25,},
+    subfield_maxlength={'ResultValue': 5,
+                        'ResultText': 255,},
     widget=RecordsWidget(
         label=_("Result Options"),
         description=_(
@@ -566,12 +587,14 @@ Hidden = BooleanField(
     'Hidden',
     schemata="Analysis",
     default=False,
+    read_permission=View,
+    write_permission=FieldEditAnalysisHidden,
     widget=BooleanWidget(
         label=_("Hidden"),
         description=_(
             "If enabled, this analysis and its results will not be displayed "
             "by default in reports. This setting can be overrided in Analysis "
-            "Profile and/or Analysis Request"),
+            "Profile and/or Sample"),
     )
 )
 
@@ -639,6 +662,8 @@ ProtocolID = StringField(
 # Remarks are used in various ways by almost all objects in the system.
 Remarks = TextField(
     'Remarks',
+    read_permission=View,
+    write_permission=FieldEditAnalysisRemarks,
     schemata='Description'
 )
 
@@ -788,7 +813,7 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
         """A vocabulary listing available (and activated) categories.
         """
         bsc = getToolByName(self, 'bika_setup_catalog')
-        cats = bsc(portal_type='AnalysisCategory', inactive_state='active')
+        cats = bsc(portal_type='AnalysisCategory', is_active=True)
         items = [(o.UID, o.Title) for o in cats]
         o = self.getCategory()
         if o and o.UID() not in [i[0] for i in items]:
@@ -803,7 +828,7 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
         bsc = getToolByName(self, 'bika_setup_catalog')
         items = [('', '')] + [(o.UID, o.Title) for o in
                               bsc(portal_type='Department',
-                                  inactive_state='active')]
+                                  is_active=True)]
         o = self.getDepartment()
         if o and o.UID() not in [i[0] for i in items]:
             items.append((o.UID(), o.Title()))
@@ -885,12 +910,27 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
             return method.Title()
 
     @security.public
+    def getMethod(self):
+        """Returns the assigned method
+
+        :returns: Method object
+        """
+        return self.getField("Method").get(self)
+
+    @security.public
     def getMethodUID(self):
-        """This is used to populate catalog values
+        """Returns the UID of the assigned method
+
+        NOTE: This is the default accessor of the `Method` schema field
+        and needed for the selection widget to render the selected value
+        properly in _view_ mode.
+
+        :returns: Method UID
         """
         method = self.getMethod()
-        if method:
-            return method.UID()
+        if not method:
+            return None
+        return api.get_uid(method)
 
     @security.public
     def getMethodURL(self):
@@ -909,12 +949,27 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
             return instrument.Title()
 
     @security.public
+    def getInstrument(self):
+        """Returns the assigned instrument
+
+        :returns: Instrument object
+        """
+        return self.getField("Instrument").get(self)
+
+    @security.public
     def getInstrumentUID(self):
-        """Used to populate catalog values
+        """Returns the UID of the assigned instrument
+
+        NOTE: This is the default accessor of the `Instrument` schema field
+        and needed for the selection widget to render the selected value
+        properly in _view_ mode.
+
+        :returns: Method UID
         """
         instrument = self.getInstrument()
-        if instrument:
-            return instrument.UID()
+        if not instrument:
+            return None
+        return api.get_uid(instrument)
 
     @security.public
     def getInstrumentURL(self):
@@ -949,9 +1004,26 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
             return department.Title()
 
     @security.public
-    def getDepartmentUID(self):
-        """Used to populate catalog values
+    def getMaxTimeAllowed(self):
+        """Returns the maximum turnaround time for this analysis. If no TAT is
+        set for this particular analysis, it returns the value set at setup
+        return: a dictionary with the keys "days", "hours" and "minutes"
         """
-        department = self.getDepartment()
-        if department:
-            return department.UID()
+        tat = self.Schema().getField("MaxTimeAllowed").get(self)
+        return tat or self.bika_setup.getDefaultTurnaroundTime()
+
+    @security.public
+    def isOpen(self):
+        """Checks if the Analysis is either in "assigned" or "unassigned" state
+
+        return: True if the WF state is either "assigned" or "unassigned"
+        """
+        return api.get_workflow_status_of(self) in ["assigned", "unassigned"]
+
+    @security.public
+    def isRegistered(self):
+        """Checks if the Analysis is in "registered" state
+
+        return: True if the WF state is "registered"
+        """
+        return api.get_workflow_status_of(self) in ["registered"]

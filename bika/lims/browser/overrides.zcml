@@ -1,86 +1,51 @@
 <configure xmlns="http://namespaces.zope.org/zope"
-           xmlns:zcml="http://namespaces.zope.org/browser"
-           xmlns:fss="http://namespaces.zope.org/browser"
-           xmlns:browser="http://namespaces.zope.org/browser"
-           xmlns:five="http://namespaces.zope.org/five">
+           xmlns:browser="http://namespaces.zope.org/browser">
 
+  <!-- Overrides the plone-addsite browser view -->
+  <browser:page
+      for="OFS.interfaces.IApplication"
+      name="plone-addsite"
+      class="Products.CMFPlone.browser.admin.AddPloneSite"
+      permission="zope2.ViewManagementScreens"
+      template="templates/plone-addsite.pt"
+  />
 
-    <configure package="Products.CMFPlone.browser">
-        <!--
-        We have to use z3c.unconfigure to override the overridden
-        plone-addsite configuration in CMFPlone/browser/override.zcml
-        because we want to make a bika's custom installation page
-        -->
-        <include package="z3c.unconfigure" file="meta.zcml" />
-        <unconfigure>
-            <browser:page
-                for="OFS.interfaces.IApplication"
-                name="plone-addsite"
-                class=".admin.AddPloneSite"
-                permission="zope2.ViewManagementScreens"
-                template="templates/plone-addsite.pt"
-            />
+  <!-- Overrides the plone-overview browser view-->
+  <browser:page
+      for="OFS.interfaces.IApplication"
+      name="plone-overview"
+      class="Products.CMFPlone.browser.admin.Overview"
+      permission="zope.Public"
+      template="templates/plone-overview.pt"
+  />
 
-            <browser:page
-                for="OFS.interfaces.IApplication"
-                name="plone-overview"
-                class=".admin.Overview"
-                permission="zope.Public"
-                template="templates/plone-overview.pt"
-            />
+  <!---
+  jarn.jsi18n uses the first catalog it comes across for a particular domain
+  and language. Bika LIMS has additional plone.mo files that should
+  extend/override the translation strings set by default from Plone and other
+  add-ons:
+  https://github.com/collective/jarn.jsi18n/blob/0f5d8d6e9cf7925e63f97f35245492fcbcd5a789/jarn/jsi18n/view.py#L21
+  See https://github.com/collective/jarn.jsi18n/issues/1
+  -->
+  <browser:view
+      for="*"
+      name="jsi18n"
+      class=".jsi18n.i18njs"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+  />
 
-            <browser:view
-                 for="*"
-                 name="jsi18n"
-                 class="jarn.jsi18n.view.i18njs"
-                 permission="zope2.View"
-             />
-
-        </unconfigure>
-    </configure>
-
-    <browser:page
-        for="OFS.interfaces.IApplication"
-        name="plone-addsite"
-        class="Products.CMFPlone.browser.admin.AddPloneSite"
-        permission="zope2.ViewManagementScreens"
-        template="templates/plone-addsite.pt"
-    />
-
-    <browser:page
-        for="OFS.interfaces.IApplication"
-        name="plone-overview"
-        class="Products.CMFPlone.browser.admin.Overview"
-        permission="zope.Public"
-        template="templates/plone-overview.pt"
-    />
-
-    <!---
-    jarn.jsi18n uses the first catalog it comes across for a particular domain
-    and language. Bika LIMS has additional plone.mo files that should
-    extend/override the translation strings set by default from Plone and other
-    add-ons:
-    https://github.com/collective/jarn.jsi18n/blob/0f5d8d6e9cf7925e63f97f35245492fcbcd5a789/jarn/jsi18n/view.py#L21
-    See https://github.com/collective/jarn.jsi18n/issues/1
-    -->
-    <browser:view
-        for="*"
-        name="jsi18n"
-        class=".jsi18n.i18njs"
-        permission="zope2.View"
-    />
-
-    <!--
-    Overrides the workflow actions menu displayed top right in the object's
-    view. Displays the current state of the object, as well as a list with the
-    actions that can be performed.
-    With this override, the option "Advanced.." is not displayed and the list
-    is populated with all allowed transitions for the object.
-    -->
-    <browser:menu
-        id="plone_contentmenu_workflow"
-        title="The workflow actions menu"
-        class="bika.lims.browser.contentmenu.WorkflowMenu"
-    />
+  <!--
+  Overrides the workflow actions menu displayed top right in the object's
+  view. Displays the current state of the object, as well as a list with the
+  actions that can be performed.
+  With this override, the option "Advanced.." is not displayed and the list
+  is populated with all allowed transitions for the object.
+  -->
+  <browser:menu
+      id="plone_contentmenu_workflow"
+      title="The workflow actions menu"
+      class="bika.lims.browser.contentmenu.WorkflowMenu"
+  />
 
 </configure>

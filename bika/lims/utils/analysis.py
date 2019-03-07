@@ -5,16 +5,15 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
+import copy
 import math
 
 import zope.event
 from Products.Archetypes.event import ObjectInitializedEvent
-from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
-from bika.lims import bikaMessageFactory as _, logger
+from bika.lims import bikaMessageFactory as _
 from bika.lims.interfaces import IAnalysisService
-from bika.lims.utils import changeWorkflowState
 from bika.lims.utils import formatDecimalMark
 from bika.lims.utils import to_unicode
 
@@ -34,7 +33,6 @@ def duplicateAnalysis(analysis):
     cnt = [x for x in ar.objectValues("Analysis") if x.getId().startswith(kw)]
     a_id = "{0}-{1}".format(kw, len(cnt))
     dup = create_analysis(ar, analysis, id=a_id, Retested=True)
-    changeWorkflowState(dup, "bika_analysis_workflow", "sample_received")
     return dup
 
 
@@ -87,6 +85,12 @@ def create_analysis(context, source, **kwargs):
         analysis.setAnalysisService(source)
     else:
         analysis.setAnalysisService(source.getAnalysisService())
+
+    # Set the interims from the Service
+    service_interims = analysis.getAnalysisService().getInterimFields()
+    # Avoid references from the analysis interims to the service interims
+    service_interims = copy.deepcopy(service_interims)
+    analysis.setInterimFields(service_interims)
 
     analysis.unmarkCreationFlag()
     zope.event.notify(ObjectInitializedEvent(analysis))

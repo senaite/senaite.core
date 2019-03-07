@@ -5,20 +5,6 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-
-def get_instrument_import_search_criteria(sample):
-    sam = ['getRequestID', 'getSampleID', 'getClientSampleID']
-    if sample == 'requestid':
-        sam = ['getRequestID']
-    if sample == 'sampleid':
-        sam = ['getSampleID']
-    elif sample == 'clientsid':
-        sam = ['getClientSampleID']
-    elif sample == 'sample_clientsid':
-        sam = ['getSampleID', 'getClientSampleID']
-    return sam
-
-
 def get_instrument_import_override(override):
     over = [False, False]
     if override == 'nooverride':

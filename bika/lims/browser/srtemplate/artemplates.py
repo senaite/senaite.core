@@ -24,7 +24,7 @@ class AnalysisRequestTemplatesView(BikaListingView):
         self.context_actions = {}
         self.base_url = self.context.absolute_url()
         self.view_url = self.base_url
-        self.show_sort_column = False
+
         self.show_select_row = False
         self.show_select_all_checkbox = False
         self.show_column_toggles = False
@@ -32,12 +32,12 @@ class AnalysisRequestTemplatesView(BikaListingView):
         self.show_categories = True
         self.expand_all_categories = True
         self.pagesize = 50
-        self.title = self.context.translate(_("AR Templates"))
+        self.title = self.context.translate(_("Sample Templates"))
         self.icon = self.portal_url + "/++resource++bika.lims.images/artemplate_big.png"
         self.form_id = "artemplates"
         self.columns = {
             'title': {
-                'title': _('AR Template Title'),
+                'title': _('Template Title'),
                 'index': 'sortable_title',
                 'sortable': True,
             },
@@ -84,7 +84,7 @@ class AnalysisRequestTemplatesView(BikaListingView):
         self.review_states = [
             {'id': 'default',
              'title': _('Active'),
-             'contentFilter': {'inactive_state': 'active'},
+             'contentFilter': {'is_active': True},
              'transitions': [{'id': 'deactivate'}, ],
              'columns': ['title',
                          'SamplePoint',
@@ -96,8 +96,8 @@ class AnalysisRequestTemplatesView(BikaListingView):
                          #'Sampler',
                          'PreparationMethod']},
             {'id': 'inactive',
-             'title': _('Dormant'),
-             'contentFilter': {'inactive_state': 'inactive'},
+             'title': _('Inactive'),
+             'contentFilter': {'is_active': False},
              'transitions': [{'id': 'activate'}, ],
              'columns': ['title',
                          'SamplePoint',

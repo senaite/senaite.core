@@ -53,7 +53,6 @@ class TestAddDuplicateAnalysis(DataTestCase):
         services = [s.UID() for s in aservs]
         request = {}
         ar = create_analysisrequest(client, request, values, services)
-        sp = _createObjectByType('SamplePartition', ar.getSample(), tmpID())
         wf = getToolByName(ar, 'portal_workflow')
         wf.doActionFor(ar, 'receive')
 
@@ -72,7 +71,6 @@ class TestAddDuplicateAnalysis(DataTestCase):
         self.request['context_uid'] = ws.UID()
         for analysis in ar.getAnalyses():
             an = analysis.getObject()
-            an.setSamplePartition(sp)
             ws.addAnalysis(an)
         self.assertEquals(len(ws.getAnalyses()), 3)
 
@@ -124,12 +122,10 @@ class TestAddDuplicateAnalysis(DataTestCase):
 
         # Do the same process, but with two ARs
         ar = create_analysisrequest(client, request, values, services)
-        sp = _createObjectByType('SamplePartition', ar.getSample(), tmpID())
         wf.doActionFor(ar, 'receive')
         # Add analyses into the worksheet
         for analysis in ar.getAnalyses():
             an = analysis.getObject()
-            an.setSamplePartition(sp)
             ws.addAnalysis(an)
         ans = ws.getAnalyses()
         reg = [an for an in ans if an.portal_type == 'Analysis']

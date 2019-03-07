@@ -5,22 +5,20 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
+import json
+from operator import itemgetter
+
+import plone.protect
 from AccessControl import ClassSecurityInfo
+from Products.Archetypes.public import *
+from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
 from bika.lims.browser.fields import DurationField
 from bika.lims.browser.widgets import DurationWidget
 from bika.lims.config import PROJECTNAME, PRESERVATION_CATEGORIES
 from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.vocabularies import CatalogVocabulary
-from Missing import Value
-from operator import itemgetter
-from Products.Archetypes.public import *
-from Products.CMFCore.utils import getToolByName
-
-import json
-import plone.protect
-
+from bika.lims.interfaces import IDeactivable
+from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
     StringField('Category',
@@ -46,6 +44,7 @@ schema['description'].schemata = 'default'
 
 
 class Preservation(BaseContent):
+    implements(IDeactivable)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
@@ -63,7 +62,7 @@ class ajaxGetPreservations:
 
     catalog_name='bika_setup_catalog'
     contentFilter = {'portal_type': 'Preservation',
-                     'inactive_state': 'active'}
+                     'is_active': True}
 
     def __init__(self, context, request):
         self.context = context

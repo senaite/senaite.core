@@ -5,7 +5,7 @@
 
 from setuptools import setup, find_packages
 
-version = '1.2.8'
+version = '1.3.0'
 
 setup(
     name='senaite.core',
@@ -49,11 +49,8 @@ setup(
         'openpyxl==1.5.8',
         'plone.app.iterate',
         'magnitude',
-        'gpw',
         'jarn.jsi18n',
-        'WeasyPrint',
         'collective.progressbar',
-        'z3c.unconfigure==1.0.1',
         'plone.app.dexterity',
         'plone.app.relationfield',
         'plone.app.referenceablebehavior',
@@ -61,8 +58,16 @@ setup(
         'z3c.jbot',
         'plone.resource',
         'CairoSVG==1.0.20',
-        'collective.taskqueue',
-        'zopyx.txng3.ext==3.4.0'
+        'cairocffi<1.0.0',
+        'zopyx.txng3.ext==3.4.0',
+        "senaite.core.supermodel>=1.0.0",
+        "senaite.core.listing>=1.0.0",
+        # Python 2.x is not supported by WeasyPrint v43
+        'WeasyPrint==0.42.3',
+        # tinycss2 >= 1.0.0 does not support Python 2.x anymore
+        'tinycss2<1.0.0',
+        # Add this line *after* senaite.impress 1.2.0 was realeased!
+        # 'senaite.impress>=1.2.0',
     ],
     extras_require={
         'test': [

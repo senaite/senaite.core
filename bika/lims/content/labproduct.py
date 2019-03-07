@@ -12,6 +12,7 @@ from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from decimal import Decimal
 from bika.lims import bikaMessageFactory as _
+from bika.lims.interfaces import IDeactivable
 from bika.lims.utils import t
 from zope.interface import implements
 
@@ -59,6 +60,7 @@ schema['description'].schemata = 'default'
 schema['description'].widget.visible = True
 
 class LabProduct(BaseContent):
+    implements(IDeactivable)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema

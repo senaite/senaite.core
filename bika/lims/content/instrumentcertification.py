@@ -29,7 +29,9 @@ from Products.Archetypes.atapi import registerType
 from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
 # bika.lims imports
+from bika.lims.browser.fields.remarksfield import RemarksField
 from bika.lims.browser.widgets import ComboBoxWidget
+from bika.lims.browser.widgets import RemarksWidget
 from bika.lims.browser.widgets import DateTimeWidget
 from bika.lims.browser.widgets import ReferenceWidget
 from bika.lims import logger
@@ -141,7 +143,7 @@ schema = BikaSchema.copy() + Schema((
             label=_("Prepared by"),
             description=_("The person at the supplier who prepared the certificate"),
             size=30,
-            base_query={'inactive_state': 'active'},
+            base_query={'is_active': True},
             showOn=True,
             colModel=[
                 {'columnName': 'UID', 'hidden': True},
@@ -161,7 +163,7 @@ schema = BikaSchema.copy() + Schema((
             label=_("Approved by"),
             description=_("The person at the supplier who approved the certificate"),
             size=30,
-            base_query={'inactive_state': 'active'},
+            base_query={'is_active': True},
             showOn=True,
             colModel=[
                 {'columnName': 'UID', 'hidden': True},
@@ -179,17 +181,11 @@ schema = BikaSchema.copy() + Schema((
         )
     ),
 
-    TextField(
+    RemarksField(
         'Remarks',
         searchable=True,
-        default_content_type='text/x-web-intelligent',
-        allowable_content_types=('text/plain', ),
-        default_output_type="text/plain",
-        mode="rw",
-        widget=TextAreaWidget(
-            macro="bika_widgets/remarks",
+        widget=RemarksWidget(
             label=_("Remarks"),
-            append_only=True,
         ),
     ),
 
@@ -234,7 +230,7 @@ class InstrumentCertification(BaseFolder):
         # fallback - all Lab Contacts
         pairs = []
         for contact in bsc(portal_type='LabContact',
-                           inactive_state='active',
+                           is_active=True,
                            sort_on='sortable_title'):
             pairs.append((contact.UID, contact.Title))
         return DisplayList(pairs)

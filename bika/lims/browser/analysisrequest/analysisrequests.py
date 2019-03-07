@@ -6,40 +6,28 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 import collections
-import json
-import traceback
-from DateTime import DateTime
 
-from bika.lims import bikaMessageFactory as _
 from bika.lims import api
-from bika.lims import logger
-from bika.lims.browser.analysisrequest.analysisrequests_filter_bar import \
-    AnalysisRequestsBikaListingFilterBar
+from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.config import PRIORITIES
-from bika.lims.permissions import Verify as VerifyPermission
-from bika.lims.permissions import (AddAnalysisRequest, ManageAnalysisRequests,
-                                   SampleSample)
-from bika.lims.utils import getUsers, t
-from collective.taskqueue.interfaces import ITaskQueue
-from plone.api import user
-from plone.app.layout.globals.interfaces import IViewView
-from plone.protect import CheckAuthenticator, PostOnly
-from Products.Archetypes import PloneMessageFactory as PMF
+from bika.lims.permissions import AddAnalysisRequest, TransitionSampleSample
+from bika.lims.permissions import ManageAnalysisRequests
+from bika.lims.utils import get_image
+from bika.lims.utils import get_progress_bar_html
+from bika.lims.utils import getUsers
+from bika.lims.utils import t
+from DateTime import DateTime
 from Products.CMFCore.permissions import ModifyPortalContent
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from zope.component import queryUtility
-from zope.interface import implements
 
 
 class AnalysisRequestsView(BikaListingView):
     """Listing View for all Analysis Requests in the System
     """
-    implements(IViewView)
 
     template = ViewPageTemplateFile("templates/analysisrequests.pt")
-    ar_add = ViewPageTemplateFile("templates/ar_add.pt")
 
     def __init__(self, context, request):
         super(AnalysisRequestsView, self).__init__(context, request)
@@ -54,43 +42,27 @@ class AnalysisRequestsView(BikaListingView):
         # catalog used for the query
         self.catalog = CATALOG_ANALYSIS_REQUEST_LISTING
 
-        # see: https://docs.plone.org/develop/plone/searching_and_indexing/query.html#searching-for-content-within-a-folder
         self.contentFilter = {
             "sort_on": "created",
             "sort_order": "descending",
-            "cancellation_state": "active",
+            "isRootAncestor": True,  # only root ancestors
         }
-
-        # Filter by Department
-        if self.context.bika_setup.getAllowDepartmentFiltering():
-            deps = self.request.get('filter_by_department_info', '')
-            dep_uids = deps.split(",")
-            dep_query = {"query": dep_uids, "operator": "or"}
-            self.contentFilter['getDepartmentUIDs'] = dep_query
 
         self.context_actions = {}
 
-        if self.view_url.find("analysisrequests") == -1:
-            self.view_url = self.view_url + "/analysisrequests"
-
         self.allow_edit = True
-        self.show_sort_column = False
+
         self.show_select_row = False
         self.show_select_column = True
         self.form_id = "analysisrequests"
 
-        ar_image_path = "/++resource++bika.lims.images/analysisrequest_big.png"
+        ar_image_path = "/++resource++bika.lims.images/sample_big.png"
         self.icon = "{}{}".format(self.portal_url, ar_image_path)
-        self.title = self.context.translate(_("Analysis Requests"))
+        self.title = self.context.translate(_("Samples"))
         self.description = ""
 
         SamplingWorkflowEnabled = \
             self.context.bika_setup.getSamplingWorkflowEnabled()
-
-        # Check if the filter bar functionality is activated or not
-        self.filter_bar_enabled =\
-            self.context.bika_setup.\
-            getDisplayAdvancedFilterBarForAnalysisRequests()
 
         self.columns = collections.OrderedDict((
             ("Priority", {
@@ -102,7 +74,7 @@ class AnalysisRequestsView(BikaListingView):
                 "sortable": False,
                 "toggle": True}),
             ("getId", {
-                "title": _("Request ID"),
+                "title": _("Sample ID"),
                 "attr": "getId",
                 "replace_url": "getURL",
                 "index": "getId"}),
@@ -111,19 +83,41 @@ class AnalysisRequestsView(BikaListingView):
                 "sortable": True,
                 "toggle": False}),
             ("Creator", {
-                "title": PMF("Creator"),
+                "title": _("Creator"),
                 "index": "getCreatorFullName",
                 "sortable": True,
                 "toggle": True}),
             ("Created", {
-                "title": PMF("Date Created"),
+                "title": _("Date Registered"),
                 "index": "created",
                 "toggle": False}),
-            ("getSample", {
-                "title": _("Sample"),
-                "attr": "getSampleID",
-                "index": "getSampleID",
-                "replace_url": "getSampleURL",
+            ("SamplingDate", {
+                "title": _("Expected Sampling Date"),
+                "index": "getSamplingDate",
+                "toggle": SamplingWorkflowEnabled}),
+            ("getDateSampled", {
+                "title": _("Date Sampled"),
+                "toggle": True,
+                "input_class": "datetimepicker_nofuture",
+                "input_width": "10"}),
+            ("getDatePreserved", {
+                "title": _("Date Preserved"),
+                "toggle": False,
+                "input_class": "datetimepicker_nofuture",
+                "input_width": "10",
+                "sortable": False}),  # no datesort without index
+            ("getDateReceived", {
+                "title": _("Date Received"),
+                "toggle": False}),
+            ("getDueDate", {
+                "title": _("Due Date"),
+                "toggle": False}),
+            ("getDateVerified", {
+                "title": _("Date Verified"),
+                "input_width": "10",
+                "toggle": False}),
+            ("getDatePublished", {
+                "title": _("Date Published"),
                 "toggle": False}),
             ("BatchID", {
                 "title": _("Batch ID"),
@@ -134,6 +128,12 @@ class AnalysisRequestsView(BikaListingView):
                 "title": _("Client"),
                 "index": "getClientTitle",
                 "attr": "getClientTitle",
+                "replace_url": "getClientURL",
+                "toggle": True}),
+            ("ClientID", {
+                "title": _("Client ID"),
+                "index": "getClientID",
+                "attr": "getClientID",
                 "replace_url": "getClientURL",
                 "toggle": True}),
             ("Province", {
@@ -180,38 +180,12 @@ class AnalysisRequestsView(BikaListingView):
                 "sortable": True,
                 "index": "getSamplingDeviationTitle",
                 "toggle": False}),
-            ("SamplingDate", {
-                "title": _("Expected Sampling Date"),
-                "index": "getSamplingDate",
-                "toggle": SamplingWorkflowEnabled}),
-            ("getDateSampled", {
-                "title": _("Date Sampled"),
-                "toggle": True,
-                "input_class": "datetimepicker_nofuture",
-                "input_width": "10"}),
-            ("getDateVerified", {
-                "title": _("Date Verified"),
-                "input_width": "10",
-                "toggle": False,
-            }),
             ("getSampler", {
                 "title": _("Sampler"),
                 "toggle": SamplingWorkflowEnabled}),
-            ("getDatePreserved", {
-                "title": _("Date Preserved"),
-                "toggle": False,
-                "input_class": "datetimepicker_nofuture",
-                "input_width": "10",
-                "sortable": False}),  # no datesort without index
             ("getPreserver", {
                 "title": _("Preserver"),
                 "sortable": False,
-                "toggle": False}),
-            ("getDateReceived", {
-                "title": _("Date Received"),
-                "toggle": False}),
-            ("getDatePublished", {
-                "title": _("Date Published"),
                 "toggle": False}),
             ("getProfilesTitle", {
                 "title": _("Profile"),
@@ -251,21 +225,20 @@ class AnalysisRequestsView(BikaListingView):
                 "id": "default",
                 "title": _("Active"),
                 "contentFilter": {
+                    "review_state": (
+                        "sample_registered",
+                        "scheduled_sampling",
+                        "to_be_sampled",
+                        "sample_due",
+                        "sample_received",
+                        "attachment_due",
+                        "to_be_preserved",
+                        "to_be_verified",
+                        "verified",
+                    ),
                     "sort_on": "created",
                     "sort_order": "descending",
                 },
-                "transitions": [
-                    {"id": "sample"},
-                    {"id": "preserve"},
-                    {"id": "receive"},
-                    {"id": "retract"},
-                    {"id": "verify"},
-                    {"id": "prepublish"},
-                    {"id": "publish"},
-                    {"id": "republish"},
-                    {"id": "cancel"},
-                    {"id": "reinstate"},
-                ],
                 "custom_transitions": [print_stickers],
                 "columns": self.columns.keys(),
             }, {
@@ -275,11 +248,6 @@ class AnalysisRequestsView(BikaListingView):
                     "review_state": ("to_be_sampled",),
                     "sort_on": "created",
                     "sort_order": "descending"},
-                "transitions": [
-                    {"id": "sample"},
-                    {"id": "submit"},
-                    {"id": "cancel"},
-                ],
                 "custom_transitions": [print_stickers],
                 "columns": self.columns.keys()
             }, {
@@ -290,10 +258,6 @@ class AnalysisRequestsView(BikaListingView):
                     "sort_on": "created",
                     "sort_order": "descending",
                 },
-                "transitions": [
-                    {"id": "preserve"},
-                    {"id": "cancel"},
-                ],
                 "custom_transitions": [print_stickers],
                 "columns": self.columns.keys(),
             }, {
@@ -304,10 +268,6 @@ class AnalysisRequestsView(BikaListingView):
                     "sort_on": "created",
                     "sort_order": "descending",
                 },
-                "transitions": [
-                    {"id": "sample"},
-                    {"id": "cancel"},
-                ],
                 "custom_transitions": [print_stickers],
                 "columns": self.columns.keys(),
             }, {
@@ -320,13 +280,6 @@ class AnalysisRequestsView(BikaListingView):
                         "sample_due"),
                     "sort_on": "created",
                     "sort_order": "descending"},
-                "transitions": [
-                    {"id": "sample"},
-                    {"id": "preserve"},
-                    {"id": "receive"},
-                    {"id": "cancel"},
-                    {"id": "reinstate"},
-                ],
                 "custom_transitions": [print_stickers],
                 "columns": self.columns.keys(),
             }, {
@@ -337,11 +290,6 @@ class AnalysisRequestsView(BikaListingView):
                     "sort_on": "created",
                     "sort_order": "descending",
                 },
-                "transitions": [
-                    {"id": "prepublish"},
-                    {"id": "cancel"},
-                    {"id": "reinstate"},
-                ],
                 "custom_transitions": [print_stickers],
                 "columns": self.columns.keys(),
             }, {
@@ -352,13 +300,6 @@ class AnalysisRequestsView(BikaListingView):
                     "sort_on": "created",
                     "sort_order": "descending",
                 },
-                "transitions": [
-                    {"id": "retract"},
-                    {"id": "verify"},
-                    {"id": "prepublish"},
-                    {"id": "cancel"},
-                    {"id": "reinstate"},
-                ],
                 "custom_transitions": [print_stickers],
                 "columns": self.columns.keys(),
             }, {
@@ -369,10 +310,6 @@ class AnalysisRequestsView(BikaListingView):
                     "sort_on": "created",
                     "sort_order": "descending",
                 },
-                "transitions": [
-                    {"id": "publish"},
-                    {"id": "cancel"},
-                ],
                 "custom_transitions": [print_stickers],
                 "columns": self.columns.keys(),
             }, {
@@ -383,65 +320,16 @@ class AnalysisRequestsView(BikaListingView):
                     "sort_on": "created",
                     "sort_order": "descending",
                 },
-                "transitions": [
-                    {"id": "republish"},
-                ],
                 "custom_transitions": [],
-                "columns": self.columns.keys(),
-            }, {
-                "id": "unpublished",
-                "title": _("Unpublished"),
-                "contentFilter": {
-                    "cancellation_state": "active",
-                    "review_state": (
-                        "sample_registered",
-                        "to_be_sampled",
-                        "to_be_preserved",
-                        "sample_due",
-                        "sample_received",
-                        "to_be_verified",
-                        "attachment_due",
-                        "verified",
-                    ),
-                    "sort_on": "created",
-                    "sort_order": "descending",
-                },
-                "transitions": [
-                    {"id": "sample"},
-                    {"id": "preserve"},
-                    {"id": "receive"},
-                    {"id": "retract"},
-                    {"id": "verify"},
-                    {"id": "prepublish"},
-                    {"id": "publish"},
-                    {"id": "republish"},
-                    {"id": "cancel"},
-                    {"id": "reinstate"},
-                ],
-                "custom_transitions": [print_stickers],
                 "columns": self.columns.keys(),
             }, {
                 "id": "cancelled",
                 "title": _("Cancelled"),
                 "contentFilter": {
-                    "cancellation_state": "cancelled",
-                    "review_state": (
-                        "sample_registered",
-                        "to_be_sampled",
-                        "to_be_preserved",
-                        "sample_due",
-                        "sample_received",
-                        "to_be_verified",
-                        "attachment_due",
-                        "verified",
-                        "published",
-                    ),
+                    "review_state": "cancelled",
                     "sort_on": "created",
                     "sort_order": "descending",
                 },
-                "transitions": [
-                    {"id": "reinstate"},
-                ],
                 "custom_transitions": [],
                 "columns": self.columns.keys(),
             }, {
@@ -452,7 +340,15 @@ class AnalysisRequestsView(BikaListingView):
                     "sort_on": "created",
                     "sort_order": "descending",
                 },
-                "transitions": [],
+                "custom_transitions": [print_stickers],
+                "columns": self.columns.keys(),
+            }, {
+                "id": "all",
+                "title": _("All"),
+                "contentFilter": {
+                    "sort_on": "created",
+                    "sort_order": "descending",
+                },
                 "custom_transitions": [print_stickers],
                 "columns": self.columns.keys(),
             }, {
@@ -463,7 +359,6 @@ class AnalysisRequestsView(BikaListingView):
                     "sort_on": "created",
                     "sort_order": "descending",
                 },
-                "transitions": [],
                 "custom_transitions": [
                     {
                         "id": "print_stickers",
@@ -473,31 +368,23 @@ class AnalysisRequestsView(BikaListingView):
                 "columns": self.columns.keys(),
             }, {
                 "id": "assigned",
-                "title": "<img title='%s' src='%s/++resource++bika.lims.images/assigned.png'/>" % (
-                    t(_("Assigned")), self.portal_url),
+                "title": get_image("assigned.png",
+                                   title=t(_("Assigned"))),
                 "contentFilter": {
                     "assigned_state": "assigned",
-                    "cancellation_state": "active",
                     "review_state": ("sample_received",
                                      "attachment_due",),
                     "sort_on": "created",
                     "sort_order": "descending",
                 },
-                "transitions": [
-                    {"id": "receive"},
-                    {"id": "retract"},
-                    {"id": "prepublish"},
-                    {"id": "cancel"},
-                ],
                 "custom_transitions": [print_stickers],
                 "columns": self.columns.keys(),
             }, {
                 "id": "unassigned",
-                "title": "<img title='%s' src='%s/++resource++bika.lims.images/unassigned.png'/>" % (
-                    t(_("Unassigned")), self.portal_url),
+                "title": get_image("unassigned.png",
+                                   title=t(_("Unsassigned"))),
                 "contentFilter": {
                     "assigned_state": "unassigned",
-                    "cancellation_state": "active",
                     "review_state": (
                         "sample_received",
                         "attachment_due",
@@ -505,15 +392,30 @@ class AnalysisRequestsView(BikaListingView):
                     "sort_on": "created",
                     "sort_order": "descending",
                 },
-                "transitions": [
-                    {"id": "receive"},
-                    {"id": "retract"},
-                    {"id": "prepublish"},
-                    {"id": "cancel"},
-                ],
                 "custom_transitions": [print_stickers],
                 "columns": self.columns.keys(),
-            },
+            }, {
+                "id": "late",
+                "title": get_image("late.png",
+                                   title=t(_("Late"))),
+                "contentFilter": {
+                    # Query only for unpublished ARs that are late
+                    "review_state": (
+                        "sample_received",
+                        "attachment_due",
+                        "to_be_verified",
+                        "verified",
+                    ),
+                    "getDueDate": {
+                        "query": DateTime(),
+                        "range": "max",
+                    },
+                    "sort_on": "created",
+                    "sort_order": "descending",
+                },
+                "custom_transitions": [print_stickers],
+                "columns": self.columns.keys(),
+            }
         ]
 
     def update(self):
@@ -535,7 +437,8 @@ class AnalysisRequestsView(BikaListingView):
         # remove `scheduled_sampling` filter
         if not setup.getScheduleSamplingEnabled():
             self.review_states = filter(
-                lambda x: x.get("id") != "scheduled_sampling", self.review_states)
+                lambda x: x.get("id") != "scheduled_sampling",
+                self.review_states)
 
         # remove `to_be_preserved` filter
         if not setup.getSamplePreservationEnabled():
@@ -582,13 +485,13 @@ class AnalysisRequestsView(BikaListingView):
             review_states = []
             for review_state in self.review_states:
                 review_state.get("custom_transitions", []).extend(
-                    [{"id": "print",
+                    [{"id": "print_sample",
                       "title": _("Print"),
-                      "url": "workflow_action?action=print"}, ])
+                      "url": "workflow_action?action=print_sample"}, ])
                 review_states.append(review_state)
             self.review_states = review_states
 
-        # Only "BIKA: ManageAnalysisRequests" may see the copy to new button.
+        # Only "senaite.core: ManageAnalysisRequests" may see the copy to new button.
         # elsewhere it is hacked in where required.
         if self.copy_to_new_allowed:
             review_states = []
@@ -600,38 +503,27 @@ class AnalysisRequestsView(BikaListingView):
                 review_states.append(review_state)
             self.review_states = review_states
 
-        # Hide Preservation/Sampling workflow actions if the edit columns
-        # are not displayed.
-        toggle_cols = self.get_toggle_cols()
-        new_states = []
-        for i, state in enumerate(self.review_states):
-            if state["id"] == self.review_state:
-                if "getSampler" not in toggle_cols \
-                   or "getDateSampled" not in toggle_cols:
-                    if "hide_transitions" in state:
-                        state["hide_transitions"].append("sample")
-                    else:
-                        state["hide_transitions"] = ["sample", ]
-                if "getPreserver" not in toggle_cols \
-                   or "getDatePreserved" not in toggle_cols:
-                    if "hide_transitions" in state:
-                        state["hide_transitions"].append("preserve")
-                    else:
-                        state["hide_transitions"] = ["preserve", ]
-            new_states.append(state)
-        self.review_states = new_states
-
-    def isItemAllowed(self, obj):
-        """ If Adnvanced Filter bar is enabled, this method checks if the item
-        matches advanced filter bar criteria
+    def before_render(self):
+        """Before template render hook
         """
-        return not self.filter_bar_enabled or self.filter_bar_check_item(obj)
+        # If the current user is a client contact, display those analysis
+        # requests that belong to same client only
+        super(AnalysisRequestsView, self).before_render()
+        client = api.get_current_client()
+        if client:
+            self.contentFilter['path'] = {
+                "query": "/".join(client.getPhysicalPath()),
+                "level": 0}
+            # No need to display the Client column
+            self.remove_column('Client')
 
     def folderitems(self, full_objects=False, classic=False):
         # We need to get the portal catalog here in roder to save process
         # while iterating over folderitems
         self.portal_catalog = api.get_tool("portal_catalog")
-        return BikaListingView.folderitems(self, full_objects, classic)
+        items = BikaListingView.folderitems(self, full_objects, classic)
+        # Keep the original sorting, but display partitions below parents
+        return items
 
     def folderitem(self, obj, item, index):
         # Additional info from AnalysisRequest to be added in the item
@@ -668,25 +560,8 @@ class AnalysisRequestsView(BikaListingView):
             item["getAnalysesNum"] = ""
 
         # Progress
-        num_verified = 0
-        num_submitted = 0
-        num_total = 0
-        if analysesnum and len(analysesnum) > 1:
-            num_verified = analysesnum[0]
-            num_total = analysesnum[1]
-            num_submitted = num_total - num_verified
-            if len(analysesnum) > 2:
-                num_wo_results = analysesnum[2]
-                num_submitted = num_total - num_verified - num_wo_results
-        num_steps_total = num_total * 2
-        num_steps = (num_verified * 2) + (num_submitted)
-        progress_perc = 0
-        if num_steps > 0 and num_steps_total > 0:
-            progress_perc = (num_steps * 100) / num_steps_total
-        progress = '<div class="progress-bar-container">' + \
-                   '<div class="progress-bar" style="width:{0}%"></div>' + \
-                   '<div class="progress-perc">{0}%</div></div>'
-        item["replace"]["Progress"] = progress.format(progress_perc)
+        progress_perc = self.get_progress_percentage(obj)
+        item["replace"]["Progress"] = get_progress_bar_html(progress_perc)
 
         item["BatchID"] = obj.getBatchID
         if obj.getBatchID:
@@ -702,6 +577,9 @@ class AnalysisRequestsView(BikaListingView):
         date = obj.getDateReceived
         item["getDateReceived"] = \
             self.ulocalized_time(date, long_format=1) if date else ""
+        date = obj.getDueDate
+        item["getDueDate"] = \
+            self.ulocalized_time(date, long_format=1) if date else ""
         date = obj.getDatePublished
         item["getDatePublished"] = \
             self.ulocalized_time(date, long_format=1) if date else ""
@@ -714,22 +592,15 @@ class AnalysisRequestsView(BikaListingView):
             printed = obj.getPrinted if hasattr(obj, "getPrinted") else "0"
             print_icon = ""
             if printed == "0":
-                print_icon = \
-                    """<img src='%s/++resource++bika.lims.images/delete.png'
-                        title='%s'>
-                    """ % (self.portal_url, t(_("Not printed yet")))
+                print_icon = get_image("delete.png",
+                                       title=t(_("Not printed yet")))
             elif printed == "1":
-                print_icon = \
-                    """<img src='%s/++resource++bika.lims.images/ok.png'
-                        title='%s'>
-                    """ % (self.portal_url, t(_("Printed")))
+                print_icon = get_image("ok.png",
+                                       title=t(_("Printed")))
             elif printed == "2":
-                print_icon = \
-                    """<img
-                        src='%s/++resource++bika.lims.images/exclamation.png'
-                            title='%s'>
-                        """ \
-                    % (self.portal_url, t(_("Republished after last print")))
+                print_icon = get_image(
+                    "exclamation.png",
+                    title=t(_("Republished after last print")))
             item["after"]["Printed"] = print_icon
         item["SamplingDeviation"] = obj.getSamplingDeviationTitle
 
@@ -739,40 +610,31 @@ class AnalysisRequestsView(BikaListingView):
         # Getting a dictionary with each workflow id and current state in it
         states_dict = obj.getObjectWorkflowStates
         if obj.assigned_state == 'assigned':
-            after_icons += \
-                """<img src='%s/++resource++bika.lims.images/worksheet.png'
-                    title='%s'/>
-                """ % (self.portal_url, t(_("All analyses assigned")))
+            after_icons += get_image("worksheet.png",
+                                     title=t(_("All analyses assigned")))
         if states_dict.get('review_state', '') == 'invalid':
-            after_icons += \
-                """<img src='%s/++resource++bika.lims.images/delete.png'
-                    title='%s'/>
-                """ % (self.portal_url, t(_("Results have been withdrawn")))
-        if obj.getLate:
-            after_icons += \
-                """<img src='%s/++resource++bika.lims.images/late.png'
-                    title='%s'>
-                """ % (self.portal_url, t(_("Late Analyses")))
+            after_icons += get_image("delete.png",
+                                     title=t(_("Results have been withdrawn")))
+
+        due_date = obj.getDueDate
+        if due_date and due_date < (obj.getDatePublished or DateTime()):
+            due_date_str = self.ulocalized_time(due_date)
+            img_title = "{}: {}".format(t(_("Late Analyses")), due_date_str)
+            after_icons += get_image("late.png", title=img_title)
+
         if obj.getSamplingDate and obj.getSamplingDate > DateTime():
-            after_icons += \
-                """<img src='%s/++resource++bika.lims.images/calendar.png'
-                    title='%s'>
-                """ % (self.portal_url, t(_("Future dated sample")))
+            after_icons += get_image("calendar.png",
+                                     title=t(_("Future dated sample")))
         if obj.getInvoiceExclude:
-            after_icons += \
-                """<img
-                    src='%s/++resource++bika.lims.images/invoice_exclude.png'
-                    title='%s'>
-                """ % (self.portal_url, t(_("Exclude from invoice")))
+            after_icons += get_image("invoice_exclude.png",
+                                     title=t(_("Exclude from invoice")))
         if obj.getHazardous:
-            after_icons += \
-                """<img src='%s/++resource++bika.lims.images/hazardous.png'
-                    title='%s'>
-                """ % (self.portal_url, t(_("Hazardous")))
+            after_icons += get_image("hazardous.png",
+                                     title=t(_("Hazardous")))
         if after_icons:
             item['after']['getId'] = after_icons
 
-        item['Created'] = self.ulocalized_time(obj.created)
+        item['Created'] = self.ulocalized_time(obj.created, long_format=1)
         if obj.getContactUID:
             item['ClientContact'] = obj.getContactFullName
             item['replace']['ClientContact'] = "<a href='%s'>%s</a>" % \
@@ -809,15 +671,15 @@ class AnalysisRequestsView(BikaListingView):
                 full_object = obj.getObject()
                 checkPermission =\
                     self.context.portal_membership.checkPermission
-                if checkPermission(SampleSample, full_object):
+
+                # TODO Do we really need this check?
+                if checkPermission(TransitionSampleSample, full_object):
                     item["required"] = ["getSampler", "getDateSampled"]
                     item["allow_edit"] = ["getSampler", "getDateSampled"]
                     # TODO-performance: hit performance while getting the
                     # sample object...
                     # TODO Can LabManagers be a Sampler?!
-                    samplers = getUsers(
-                        full_object.getSample(),
-                        ["Sampler", ])
+                    samplers = getUsers(full_object, ["Sampler", ])
                     username = self.member.getUserName()
                     users = [({
                         "ResultValue": u,
@@ -841,52 +703,40 @@ class AnalysisRequestsView(BikaListingView):
         # XXX This should be a list of preservers...
         item["getPreserver"] = ""
         item["getDatePreserved"] = ""
-        # TODO-performance: If inline preservation wants to be used, we
-        # have to get the full object to check the user permissions, so
-        # far this is a performance hit.
-        # inline edits for Preserver and Date Preserved
-        # if checkPermission(PreserveSample, obj):
-        #     item['required'] = ['getPreserver', 'getDatePreserved']
-        #     item['allow_edit'] = ['getPreserver', 'getDatePreserved']
-        #     preservers = getUsers(obj, ['Preserver',
-        #                           'LabManager', 'Manager'])
-        #     username = self.member.getUserName()
-        #     users = [({'ResultValue': u,
-        #                'ResultText': preservers.getValue(u)})
-        #              for u in preservers]
-        #     item['choices'] = {'getPreserver': users}
-        #     preserver = username in preservers.keys() and username or ''
-        #     item['getPreserver'] = preserver
-        #     item['getDatePreserved'] = self.ulocalized_time(
-        #         DateTime(),
-        #         long_format=1)
-        #     item['class']['getPreserver'] = 'provisional'
-        #     item['class']['getDatePreserved'] = 'provisional'
 
-        # Submitting user may not verify results
-        # Thee conditions to improve performance, some functions to check
-        # the condition need to get the full analysis request.
-        if states_dict.get("review_state", "") == "to_be_verified":
-            allowed = user.has_permission(
-                VerifyPermission,
-                username=self.member.getUserName())
-            # TODO-performance: isUserAllowedToVerify getts all analysis
-            # objects inside the analysis request.
-            if allowed:
-                # Gettin the full object if not get before
-                full_object = full_object if full_object else obj.getObject()
-                if not full_object.isUserAllowedToVerify(self.member):
-                    item["after"]["state_title"] = \
-                        """<img src='++resource++bika.lims.images/submitted-by-current-user.png'
-                            title='%s'/>
-                        """ % t(_("Cannot verify: Submitted by current user"))
+        # Advanced partitioning
+        # append the UID of the primary AR as parent
+        item["parent"] = obj.getRawParentAnalysisRequest or ""
+        # append partition UIDs of this AR as children
+        item["children"] = obj.getDescendantsUIDs or []
+
         return item
 
-    def pending_tasks(self):
-        task_queue = queryUtility(ITaskQueue, name='ar-create')
-        if task_queue is None:
+    def get_progress_percentage(self, ar_brain):
+        """Returns the percentage of completeness of the Analysis Request
+        """
+        review_state = ar_brain.review_state
+        if review_state == "published":
+            return 100
+
+        numbers = ar_brain.getAnalysesNum
+
+        num_analyses = numbers[1] or 0
+        if not num_analyses:
             return 0
-        return len(task_queue)
+
+        # [verified, total, not_submitted, to_be_verified]
+        num_to_be_verified = numbers[3] or 0
+        num_verified = numbers[0] or 0
+
+        # 2 steps per analysis (submit, verify) plus one step for publish
+        max_num_steps = (num_analyses * 2) + 1
+        num_steps = num_to_be_verified + (num_verified * 2)
+        if not num_steps:
+            return 0
+        if num_steps > max_num_steps:
+            return 100
+        return (num_steps * 100) / max_num_steps
 
     @property
     def copy_to_new_allowed(self):
@@ -896,36 +746,5 @@ class AnalysisRequestsView(BikaListingView):
             return True
         return False
 
-    def getFilterBar(self):
-        """
-        This function creates an instance of BikaListingFilterBar if the
-        class has not created one yet.
-        :returns: a BikaListingFilterBar instance
-        """
-        self._advfilterbar = self._advfilterbar if self._advfilterbar else \
-            AnalysisRequestsBikaListingFilterBar(
-                context=self.context, request=self.request)
-        return self._advfilterbar
-
     def getDefaultAddCount(self):
         return self.context.bika_setup.getDefaultNumberOfARsToAdd()
-
-
-class QueuedAnalysisRequestsCount():
-
-    def __call__(self):
-        """Returns the number of tasks in the queue ar-create, responsible of
-        creating Analysis Requests asynchronously"""
-        try:
-            PostOnly(self.context.REQUEST)
-        except:
-            logger.error(traceback.format_exc())
-            return json.dumps({"count": 0})
-        try:
-            CheckAuthenticator(self.request.form)
-        except:
-            logger.error(traceback.format_exc())
-            return json.dumps({"count": 0})
-        task_queue = queryUtility(ITaskQueue, name="ar-create")
-        count = len(task_queue) if task_queue is not None else 0
-        return json.dumps({"count": count})

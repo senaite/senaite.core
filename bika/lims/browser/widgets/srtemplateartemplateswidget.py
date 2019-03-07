@@ -24,12 +24,12 @@ class SRTemplateARTemplatesView(BikaListingView):
         self.contentFilter = {
             'portal_type': 'ARTemplate',
             'sort_on': 'title',
-            'inactive_state': 'active',
+            'is_active': True,
         }
         self.context_actions = {}
         self.base_url = self.context.absolute_url()
         self.view_url = self.base_url
-        self.show_sort_column = False
+
         self.show_select_row = False
         self.show_select_all_checkbox = False
         self.show_column_toggles = False
@@ -103,6 +103,6 @@ class SRTemplateARTemplatesWidget(TypesWidget):
 
 registerWidget(
     SRTemplateARTemplatesWidget,
-    title = 'SR Template AR Templates Selector',
-    description = ('SR Template AR Templates Selector'),
+    title = 'SR Template Sample Templates Selector',
+    description = ('SR Template Sample Templates Selector'),
 )

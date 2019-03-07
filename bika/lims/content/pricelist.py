@@ -9,9 +9,11 @@ from AccessControl import ClassSecurityInfo
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
 from bika.lims.browser.widgets.datetimewidget import DateTimeWidget
+from bika.lims.browser.fields.remarksfield import RemarksField
+from bika.lims.browser.widgets import RemarksWidget
 from bika.lims.config import PRICELIST_TYPES, PROJECTNAME
 from bika.lims.content.bikaschema import BikaFolderSchema
-from bika.lims.interfaces import IPricelist
+from bika.lims.interfaces import IPricelist, IDeactivable
 from DateTime import DateTime
 from persistent.mapping import PersistentMapping
 from plone.app.folder import folder
@@ -51,15 +53,11 @@ schema = BikaFolderSchema.copy() + Schema((
             description=_("Select if the descriptions should be included"),
         ),
     ),
-    TextField('Remarks',
+    RemarksField(
+        'Remarks',
         searchable=True,
-        default_content_type='text/plain',
-        allowed_content_types=('text/plain', ),
-        default_output_type="text/plain",
-        widget=TextAreaWidget(
-            macro="bika_widgets/remarks",
+        widget=RemarksWidget(
             label=_("Remarks"),
-            append_only=True,
         ),
     ),
 ),
@@ -94,7 +92,7 @@ class PricelistLineItem(PersistentMapping):
 
 
 class Pricelist(folder.ATFolder):
-    implements(IPricelist)
+    implements(IPricelist, IDeactivable)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
@@ -129,7 +127,7 @@ def ObjectModifiedEventHandler(instance, event):
         # Remove existing line items
         instance.pricelist_lineitems = []
         for p in instance.portal_catalog(portal_type=instance.getType(),
-                                         inactive_state="active"):
+                                         is_active=True):
             obj = p.getObject()
             itemDescription = None
             itemAccredited = False

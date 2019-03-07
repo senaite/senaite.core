@@ -7,8 +7,6 @@
 
 from views.batches import ClientBatchesView
 from views.analysisrequests import ClientAnalysisRequestsView
-from views.analysisrequests import ClientBatchAnalysisRequestsView
-from views.samples import ClientSamplesView
 from views.analysisprofiles import ClientAnalysisProfilesView
 from views.artemplates import ClientARTemplatesView
 from views.srtemplates import ClientSamplingRoundTemplatesView
@@ -22,5 +20,3 @@ from views.samplingrounds import ClientSamplingRoundsView
 
 from ajax import ReferenceWidgetVocabulary
 from ajax import ajaxGetClientInfo
-
-from workflow import ClientWorkflowAction

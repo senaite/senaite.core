@@ -8,24 +8,16 @@
 import logging
 import warnings
 
-import pkg_resources
-
 import App
 from AccessControl import allow_module
-from bika.lims.permissions import ADD_CONTENT_PERMISSION
-from bika.lims.permissions import ADD_CONTENT_PERMISSIONS
+from bika.lims import permissions
 from Products.Archetypes.atapi import listTypes
 from Products.Archetypes.atapi import process_types
 from Products.CMFCore.utils import ContentInit
 from zope.i18nmessageid import MessageFactory
+from Products.CMFCore.permissions import AddPortalContent
 
 PROJECTNAME = "bika.lims"
-
-try:
-    __version__ = pkg_resources.get_distribution("senaite.core").version
-except TypeError:
-    __version__ = pkg_resources.get_distribution("bika.lims").version
-    print "Using old distribution name: bika.lims"
 
 # import this to create messages in the bika domain.
 bikaMessageFactory = MessageFactory("senaite.core")
@@ -48,7 +40,6 @@ allow_module("plone.registry.interfaces")
 debug_mode = App.config.getConfiguration().debug_mode
 if debug_mode:
     allow_module("pdb")
-
 
 # Implicit module imports used by others
 # XXX Refactor these dependencies to explicit imports!
@@ -175,12 +166,12 @@ def initialize(context):
         PROJECTNAME)
 
     # Register each type with it's own Add permission
-    # use ADD_CONTENT_PERMISSION as default
+    # use "Add portal content" as default
     allTypes = zip(content_types, constructors)
     for atype, constructor in allTypes:
         kind = "%s: Add %s" % (PROJECTNAME, atype.portal_type)
-        perm = ADD_CONTENT_PERMISSIONS.get(atype.portal_type,
-                                           ADD_CONTENT_PERMISSION)
+        perm_name = "Add{}".format(atype.portal_type)
+        perm = getattr(permissions, perm_name, AddPortalContent)
         ContentInit(kind,
                     content_types=(atype,),
                     permission=perm,

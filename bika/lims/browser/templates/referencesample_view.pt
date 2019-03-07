@@ -27,7 +27,6 @@
 
 <metal:content fill-slot="content-core" tal:define="
     review_state python:context.portal_workflow.getInfoFor(context, 'review_state', '');
-    inactive_state python:context.portal_workflow.getInfoFor(context, 'inactive_state', 'asdf');
     portal context/@@plone_portal_state/portal;">
 
     <table
@@ -122,14 +121,14 @@
 
     <form action="workflow_action">
         <input
-            tal:condition="python:inactive_state == 'active'"
+            tal:condition="python:review_state != 'inactive'"
             class="context workflow_action_button action_button"
             type="submit"
             value="deactivate"
             i18n:attributes="value"
             name="workflow_action"/>
         <input
-            tal:condition="python:inactive_state == 'inactive'"
+            tal:condition="python:review_state == 'inactive'"
             class="context workflow_action_button action_button"
             type="submit"
             value="activate"
@@ -138,12 +137,14 @@
     </form>
 
 	<br/>
-	<tal:remarks define="
-		field python:context.Schema()['Remarks'];
-		errors python:{};">
-		<p style="margin-top:2em;"/>
-		 <metal:widget use-macro="python:context.widget('Remarks', mode='edit')" />
-	</tal:remarks>
+
+  <tal:remarks tal:condition="python:hasattr(context.aq_inner, 'schema') and 'Remarks' in context.schema"
+               tal:define="checkPermission nocall: context/portal_membership/checkPermission;
+                           mode python:'edit' if checkPermission('Modify portal content', context) else 'view';
+                           field python:context.Schema()['Remarks'];
+                           errors python:{};">
+    <metal:widget use-macro="python:context.widget('Remarks', mode=mode)"/>
+  </tal:remarks>
 
 </metal:content>
 </body>

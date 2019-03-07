@@ -12,6 +12,15 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
+    <!-- Instrument Reference Analyses Table -->
+    <browser:page
+      for="bika.lims.interfaces.IInstrument"
+      name="table_instrument_referenceanalyses"
+      class="bika.lims.browser.instrument.InstrumentReferenceAnalysesView"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
     <browser:page
       for="bika.lims.interfaces.IInstrument"
       name="certifications"

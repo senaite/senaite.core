@@ -33,7 +33,6 @@ from plone.memoize import ram
 from plone.memoize import view as viewcache
 
 DASHBOARD_FILTER_COOKIE = 'dashboard_filter_cookie'
-FILTER_BY_DEPT_COOKIE_ID = 'filter_by_department_info'
 
 # Supported periodicities for evolution charts
 PERIODICITY_DAILY = "d"
@@ -326,8 +325,6 @@ class DashboardView(BrowserView):
             sections.append(self.get_analysisrequests_section())
         if is_panel_visible_for_user('worksheets', user):
             sections.append(self.get_worksheets_section())
-        if is_panel_visible_for_user('samples', user):
-            sections.append(self.get_samples_section())
         return sections
 
     def get_filter_options(self):
@@ -369,94 +366,81 @@ class DashboardView(BrowserView):
         out = []
         catalog = getToolByName(self.context, CATALOG_ANALYSIS_REQUEST_LISTING)
         query = {'portal_type': "AnalysisRequest",
-                 'cancellation_state': ['active']}
-        filtering_allowed = self.context.bika_setup.getAllowDepartmentFiltering()
-        if filtering_allowed:
-            cookie_dep_uid = self.request.get(FILTER_BY_DEPT_COOKIE_ID, '').split(',') if filtering_allowed else ''
-            query['getDepartmentUIDs'] = {"query": cookie_dep_uid, "operator": "or"}
+                 'is_active': True}
 
         # Check if dashboard_cookie contains any values to query
         # elements by
         query = self._update_criteria_with_filters(query, 'analysisrequests')
 
-        # Active Analysis Requests (All)
+        # Active Samples (All)
         total = self.search_count(query, catalog.id)
 
         # Sampling workflow enabled?
         if self.context.bika_setup.getSamplingWorkflowEnabled():
-            # Analysis Requests awaiting to be sampled or scheduled
-            name = _('Analysis Requests to be sampled')
+            # Samples awaiting to be sampled or scheduled
+            name = _('Samples to be sampled')
             desc = _("To be sampled")
             purl = 'samples?samples_review_state=to_be_sampled'
             query['review_state'] = ['to_be_sampled', ]
-            query['cancellation_state'] = ['active', ]
             out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
-            # Analysis Requests awaiting to be preserved
-            name = _('Analysis Requests to be preserved')
+            # Samples awaiting to be preserved
+            name = _('Samples to be preserved')
             desc = _("To be preserved")
             purl = 'samples?samples_review_state=to_be_preserved'
             query['review_state'] = ['to_be_preserved', ]
-            query['cancellation_state'] = ['active', ]
             out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
-            # Analysis Requests scheduled for Sampling
-            name = _('Analysis Requests scheduled for sampling')
+            # Samples scheduled for Sampling
+            name = _('Samples scheduled for sampling')
             desc = _("Sampling scheduled")
             purl = 'samples?samples_review_state=scheduled_sampling'
             query['review_state'] = ['scheduled_sampling', ]
-            query['cancellation_state'] = ['active', ]
             out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
-        # Analysis Requests awaiting for reception
-        name = _('Analysis Requests to be received')
+        # Samples awaiting for reception
+        name = _('Samples to be received')
         desc = _("Reception pending")
         purl = 'analysisrequests?analysisrequests_review_state=sample_due'
         query['review_state'] = ['sample_due', ]
-        query['cancellation_state'] = ['active', ]
         out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
-        # Analysis Requests under way
-        name = _('Analysis Requests with results pending')
+        # Samples under way
+        name = _('Samples with results pending')
         desc = _("Results pending")
         purl = 'analysisrequests?analysisrequests_review_state=sample_received'
         query['review_state'] = ['attachment_due',
                                  'sample_received', ]
-        query['cancellation_state'] = ['active', ]
         out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
-        # Analysis Requests to be verified
-        name = _('Analysis Requests to be verified')
+        # Samples to be verified
+        name = _('Samples to be verified')
         desc = _("To be verified")
         purl = 'analysisrequests?analysisrequests_review_state=to_be_verified'
         query['review_state'] = ['to_be_verified', ]
-        query['cancellation_state'] = ['active', ]
         out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
-        # Analysis Requests verified (to be published)
-        name = _('Analysis Requests verified')
+        # Samples verified (to be published)
+        name = _('Samples verified')
         desc = _("Verified")
         purl = 'analysisrequests?analysisrequests_review_state=verified'
         query['review_state'] = ['verified', ]
-        query['cancellation_state'] = ['active', ]
         out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
-        # Analysis Requests published
-        name = _('Analysis Requests published')
+        # Samples published
+        name = _('Samples published')
         desc = _("Published")
         purl = 'analysisrequests?analysisrequests_review_state=published'
         query['review_state'] = ['published', ]
-        query['cancellation_state'] = ['active', ]
         out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
-        # Analysis Requests to be printed
+        # Samples to be printed
         if self.context.bika_setup.getPrintingWorkflowEnabled():
-            name = _('Analysis Requests to be printed')
+            name = _('Samples to be printed')
             desc = _("To be printed")
             purl = 'analysisrequests?analysisrequests_getPrinted=0'
             query['getPrinted'] = '0'
             query['review_state'] = ['published', ]
-            query['cancellation_state'] = ['active', ]
             out.append(
                 self._getStatistics(name, desc, purl, catalog, query, total))
 
@@ -464,14 +448,14 @@ class DashboardView(BrowserView):
         # periodicity
         outevo = self.fill_dates_evo(catalog, query)
         out.append({'type':         'bar-chart-panel',
-                    'name':         _('Evolution of Analysis Requests'),
+                    'name':         _('Evolution of Samples'),
                     'class':        'informative',
-                    'description':  _('Evolution of Analysis Requests'),
+                    'description':  _('Evolution of Samples'),
                     'data':         json.dumps(outevo),
                     'datacolors':   json.dumps(self.get_colors_palette())})
 
         return {'id': 'analysisrequests',
-                'title': _('Analysis Requests'),
+                'title': _('Samples'),
                 'panels': out}
 
     def get_worksheets_section(self):
@@ -482,10 +466,6 @@ class DashboardView(BrowserView):
         out = []
         bc = getToolByName(self.context, CATALOG_WORKSHEET_LISTING)
         query = {'portal_type': "Worksheet", }
-        filtering_allowed = self.context.bika_setup.getAllowDepartmentFiltering()
-        if filtering_allowed:
-            cookie_dep_uid = self.request.get(FILTER_BY_DEPT_COOKIE_ID, '').split(',') if filtering_allowed else ''
-            query['getDepartmentUIDs'] = {"query": cookie_dep_uid, "operator": "or"}
 
         # Check if dashboard_cookie contains any values to query
         # elements by
@@ -533,20 +513,10 @@ class DashboardView(BrowserView):
         """ Returns the section dictionary related with Analyses,
             that contains some informative panels (analyses pending
             analyses assigned, etc.)
-
-            sample_registered, not_requested, published, retracted,
-            sample_due, sample_received, sample_prep, sampled, to_be_preserved,
-            to_be_sampled, , to_be_verified, rejected, verified, to_be_verified,
-            assigned
         """
         out = []
         bc = getToolByName(self.context, CATALOG_ANALYSIS_LISTING)
-        query = {'portal_type': "Analysis",
-                 'cancellation_state': 'active'}
-        filtering_allowed = self.context.bika_setup.getAllowDepartmentFiltering()
-        if filtering_allowed:
-            cookie_dep_uid = self.request.get(FILTER_BY_DEPT_COOKIE_ID, '').split(',') if filtering_allowed else ''
-            query['getDepartmentUID'] = { "query": cookie_dep_uid,"operator":"or" }
+        query = {'portal_type': "Analysis", 'is_active': True}
 
         # Check if dashboard_cookie contains any values to query elements by
         query = self._update_criteria_with_filters(query, 'analyses')
@@ -557,30 +527,28 @@ class DashboardView(BrowserView):
         # Analyses to be assigned
         name = _('Assignment pending')
         desc = _('Assignment pending')
-        purl = 'aggregatedanalyses?analyses_form_review_state=default'
-        query['review_state'] = ['sample_received', 'attachment_due', ]
-        query['worksheetanalysis_review_state'] = ['unassigned']
+        purl = '#'
+        query['review_state'] = ['unassigned']
         out.append(self._getStatistics(name, desc, purl, bc, query, total))
 
         # Analyses pending
         name = _('Results pending')
         desc = _('Results pending')
-        purl = 'aggregatedanalyses?analyses_form_review_state=results_pending'
-        query['review_state'] = ['sample_received', 'attachment_due', ]
-        del query['worksheetanalysis_review_state']
+        purl = '#'
+        query['review_state'] = ['unassigned', 'assigned', ]
         out.append(self._getStatistics(name, desc, purl, bc, query, total))
 
         # Analyses to be verified
         name = _('To be verified')
         desc = _('To be verified')
-        purl = 'aggregatedanalyses?analyses_form_review_state=to_be_verified'
+        purl = '#'
         query['review_state'] = ['to_be_verified', ]
         out.append(self._getStatistics(name, desc, purl, bc, query, total))
 
         # Analyses verified
         name = _('Verified')
         desc = _('Verified')
-        purl = 'aggregatedanalyses?analyses_form_review_state=verified'
+        purl = '#'
         query['review_state'] = ['verified', ]
         out.append(self._getStatistics(name, desc, purl, bc, query, total))
 
@@ -597,98 +565,10 @@ class DashboardView(BrowserView):
                 'title': _('Analyses'),
                 'panels': out}
 
-    def get_samples_section(self):
-        out = []
-        catalog = getToolByName(self.context, 'portal_catalog')
-        query = {'portal_type': "Sample",
-                 'cancellation_state': ['active']}
-        filtering_allowed = \
-            self.context.bika_setup.getAllowDepartmentFiltering()
-        if filtering_allowed:
-            cookie_dep_uid = self.request\
-                .get(FILTER_BY_DEPT_COOKIE_ID, '')\
-                .split(',') if filtering_allowed else ''
-            query['getDepartmentUIDs'] = {"query": cookie_dep_uid,
-                                          "operator": "or"}
-
-        # Check if dashboard_cookie contains any values to query
-        # elements by
-        query = self._update_criteria_with_filters(query, 'samples')
-
-        # Active Samples (All)
-        total = self.search_count(query, catalog.id)
-
-        # Sampling workflow enabled?
-        if self.context.bika_setup.getSamplingWorkflowEnabled():
-            # Analysis Requests awaiting to be sampled or scheduled
-            name = _('Samples to be sampled')
-            desc = _("To be sampled")
-            purl = 'samples?samples_review_state=to_be_sampled'
-            query['review_state'] = ['to_be_sampled', ]
-            out.append(
-                self._getStatistics(name, desc, purl, catalog, query, total))
-
-            # Samples awaiting to be preserved
-            name = _('Samples to be preserved')
-            desc = _("To be preserved")
-            purl = 'samples?samples_review_state=to_be_preserved'
-            query['review_state'] = ['to_be_preserved', ]
-            out.append(
-                self._getStatistics(name, desc, purl, catalog, query, total))
-
-            # Samples scheduled for Sampling
-            name = _('Samples scheduled for sampling')
-            desc = _("Sampling scheduled")
-            purl = 'samples?samples_review_state=scheduled_sampling'
-            query['review_state'] = ['scheduled_sampling', ]
-            out.append(
-                self._getStatistics(name, desc, purl, catalog, query, total))
-
-        # Samples awaiting for reception
-        name = _('Samples to be received')
-        desc = _("Reception pending")
-        purl = 'samples?samples_review_state=sample_due'
-        query['review_state'] = ['sample_due', ]
-        out.append(
-            self._getStatistics(name, desc, purl, catalog, query, total))
-
-        # Samples under way
-        name = _('Samples received')
-        desc = _("Samples received")
-        purl = 'samples?samples_review_state=sample_received'
-        query['review_state'] = ['sample_received', ]
-        out.append(
-            self._getStatistics(name, desc, purl, catalog, query, total))
-
-        # Samples rejected
-        name = _('Samples rejected')
-        desc = _("Samples rejected")
-        purl = 'samples?samples_review_state=rejected'
-        query['review_state'] = ['rejected', ]
-        out.append(
-            self._getStatistics(name, desc, purl, catalog, query, total))
-
-        # Chart with the evolution of samples over a period, grouped by
-        # periodicity
-        outevo = self.fill_dates_evo(catalog, query)
-        out.append({'type': 'bar-chart-panel',
-                    'name': _('Evolution of Samples'),
-                    'class': 'informative',
-                    'description': _('Evolution of Samples'),
-                    'data': json.dumps(outevo),
-                    'datacolors': json.dumps(self.get_colors_palette())})
-
-        return {'id': 'samples',
-                'title': _('Samples'),
-                'panels': out}
-
     def get_states_map(self, portal_type):
         if portal_type == 'Analysis':
-            return {'to_be_sampled':   _('Reception pending'),
-                    'sample_due':      _('Reception pending'),
-                    'sample_received': _('Assignment pending'),
+            return {'unassigned':      _('Assignment pending'),
                     'assigned':        _('Results pending'),
-                    'attachment_due':  _('Results pending'),
                     'to_be_verified':  _('To be verified'),
                     'rejected':        _('Rejected'),
                     'retracted':       _('Retracted'),
@@ -712,14 +592,6 @@ class DashboardView(BrowserView):
                     'attachment_due':  _('Results pending'),
                     'to_be_verified':  _('To be verified'),
                     'verified':        _('Verified')}
-
-        elif portal_type == 'Sample':
-            return {'to_be_sampled':       _('To be sampled'),
-                    'to_be_preserved':     _('To be preserved'),
-                    'scheduled_sampling':  _('Sampling scheduled'),
-                    'sample_due':          _('Reception pending'),
-                    'rejected':            _('Rejected'),
-                    'sample_received':     _('Sample received'), }
 
     def get_colors_palette(self):
         return {

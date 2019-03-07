@@ -8,15 +8,15 @@
       for="bika.lims.interfaces.ISupplier"
       name="contacts"
       class="bika.lims.browser.supplier.ContactsView"
-      permission="bika.lims.ManageSuppliers"
+      permission="zope2.View"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
     <browser:page
       for="bika.lims.interfaces.ISupplier"
-      name="base_view"
+      name="reference_samples"
       class="bika.lims.browser.supplier.SupplierReferenceSamplesView"
-      permission="bika.lims.ManageSuppliers"
+      permission="zope2.View"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
@@ -24,7 +24,7 @@
       for="bika.lims.interfaces.ISupplier"
       name="instruments"
       class="bika.lims.browser.supplier.SupplierInstrumentsView"
-      permission="bika.lims.ManageSuppliers"
+      permission="zope2.View"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 

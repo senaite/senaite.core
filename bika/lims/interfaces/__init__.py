@@ -55,6 +55,16 @@ class IAnalysisRequest(Interface):
     """
 
 
+class IAnalysisRequestPartition(Interface):
+    """Marker interface for Analysis Requests that are also Partitions
+    """
+
+
+class IAnalysisRequestRetest(Interface):
+    """Marker interface for Analysis Requests that are Retests
+    """
+
+
 class IAnalysisRequestAddView(Interface):
     """AR Add view
     """
@@ -106,7 +116,7 @@ class IReportFolder(Interface):
     """Report folder
     """
 
-
+# TODO Remove in >v1.3.0
 class ISample(Interface):
     """Sample
     """
@@ -341,6 +351,11 @@ class IARTemplate(Interface):
 
 class IARTemplates(Interface):
     """Marker interface for AR templates
+    """
+
+
+class ILaboratory(Interface):
+    """Marker interface for Laboratory
     """
 
 
@@ -689,23 +704,6 @@ class IProductivityReport(Interface):
     """
 
 
-class IQualityControlReport(Interface):
-    """Reports are enumerated manually in reports/*.pt - but addional reports
-    can be added to this list by extension packages using this adapter.
-
-    The adapter must return a dictionary:
-
-    {
-     title: text (i18n translated),
-     description: text (i18n translated),
-     query_form: html <fieldset> of controls used to enter report
-                 parameters (excluding <form> tags and <submit> button)
-     module: The name of the module containing a class named "Report"
-             an instance of this class will be used to create the report
-    }
-    """
-
-
 class IAdministrationReport(Interface):
     """Reports are enumerated manually in reports/*.pt - but addional reports
     can be added to this list by extension packages using this adapter.
@@ -761,17 +759,6 @@ class IHeaderTableFieldRenderer(Interface):
         """
 
 
-class ISamplePrepWorkflow(Interface):
-    """This flag enables the sample_prep workflow transitions to be inserted
-    into an object's workflow chain.
-    """
-
-
-class ICustomPubPref(Interface):
-    """Marker interface for CustomPubPref
-    """
-
-
 class IReflexRule(Interface):
     """Marker interface for a Reflex Rule
     """
@@ -820,6 +807,11 @@ class IProxyField(Interface):
     """A field that proxies transparently to the field of another object.
     Mainly needed for AnalysisRequest fields that are actually stored on the
     Sample.
+    """
+
+
+class IRemarksField(Interface):
+    """An append-only TextField which saves information about each edit
     """
 
 
@@ -875,4 +867,26 @@ class IGetStickerTemplates(Interface):
 
 class IARReport(Interface):
     """Marker interface for published AR Reports
+    """
+
+
+class ICancellable(Interface):
+    """Marker for those objects that can be cancelled (have state "cancelled")
+    """
+
+
+class IDeactivable(Interface):
+    """Marker for those objects that can be deactivated (have state "inactive")
+    """
+
+
+class IWorkflowActionAdapter(Interface):
+    """Marker for adapters in charge of processing workflow action requests
+    from views
+    """
+
+
+class IWorkflowActionUIDsAdapter(IWorkflowActionAdapter):
+    """Marker for adapters in charge of processing workflow action requests
+    from views, but meant for redirection only
     """

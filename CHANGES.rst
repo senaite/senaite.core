@@ -1,33 +1,261 @@
 Changelog
 =========
 
-1.2.8 (unreleased)
+1.3.0 (unreleased)
 ------------------
 
 **Added**
 
+- #1244 Added "Body for Sample Invalidation email" field in setup
+- #1231 Add Client ID Column in Batch Listing
+- #1230 Add Client ID Column in Sample Listing
+- #1222 Added User and Security API
+- #1217 Added filtering buttons in Analyses listings (Valid, Invalid, All)
+- #1193 Added viewlets for partition and primary ARs
+- #1180 Analysis Request field-specific permissions managed in `ar_workflow`
+- #1154 Default to "Active" Worksheets in listing
+- #1153 Progress bar in Worksheet listing
+- #1120 Listing: Confirm before transition
+- #1077 Creation of retests for blanks and controls via retraction
+- #1077 Creation of retests for duplicates via retraction
+- #1077 Auto-retraction of dependents on retract transitions
+- #1077 The removal of a routine analysis causes the removal of its duplicates
+- #1077 Added `rollback_to_received` transition in `ar_workflow`
+- #1077 Added `rollback_to_open` transition in `worksheet_workflow`
+- #1077 Battery of doctests for `referenceanalysis_workflow`
+- #1077 Battery of doctests for `duplicateanalysis_workflow`
+- #1077 Battery of doctests for `analysis_workflow`
+- #1066 Enhanced partitioning system (partition magic)
+
+**Changed**
+
+- #1257 Fix Traceback for MultiSelectionWidgets in View Mode for UIDReferenceFields
+- #1249 Render attachments in report in worksheets too
+- #1243 ID Server Suffix Support for Retested ARs
+- #1240 Support action-specific `workflow_action` requests with named adapters
+- #1215 Do not copy CaptureDate and Result in retest analyses when created
+- #1215 Do not modify the ID of analysis on retraction
+- #1207 Make use of adapters for instrument auto-import
+- #1206 Make use of adapters for instrument import/export interfaces
+- #1203 Remove explicit definition of transitions in AR listing
+- #1192 Integrate Container and Preservation in Partition Magic
+- #1180 Analysis Request default ID Format becomes {sampleType}-{seq:04d}
+- #1180 `visibility` attr behavior (AR fields) in favour of field-specific perms
+- #1180 Sanitized `ar_workflow` regarding to guards, transitions and permissions
+- #1180 Sample content type discarded in favour of Analysis Request
+- #1182 Allow open min/max values in analysis specifications
+- #1000 Refactor service calculation dependency/dependants functionality to API
+- #1176 Unbind `cancellation_workflow` from AnalysisRequest content type
+- #1173 Improve Resultsinterpretation Form
+- #1161 Listing: Transposed worksheet improvements
+- #1150 Completeness of not yet published Analysis Requests is not 100%
+- #1147 Set empty option selected by default in result options
+- #1148 Add "All" filter in Analysis Requests listings
+- #1148 Make "Active" filter to display ongoing Analysis Requests only
+- #1136 Skip objects w/o transitions in allowed transitions calculation
+- #1135 Listing: Separate Remarks Toggle-Handle
+- #1128 Listing: Removed non-conform handling of disabled fields
+- #1123 Listing: Handle visibility of selected rows
+- #1117 Removed `attachment_due` state and transition from analysis workflow
+- #1114 Listing integration for Worksheet Templates
+- #1109 Unassignment of an analysis causes the removal of its duplicates
+- #1077 Rejection of an analysis causes the removal of its duplicates
+- #1077 Don't allow to cancel Analysis Requests with assigned/submitted analyses
+- #1077 Decouple `cancellation_workflow` from Analysis content type
+- #1077 Refactored `referenceanalysis_workflow` + after transitions and guards
+- #1077 Refactored `duplicateanalysis_workflow` + after transitions and guards
+- #1077 Refactored `analysis_workflow` + after transitions and guards
+- #1095 New worksheet results listing
+- #1091 New Worksheet blank/control/duplicate listings
+- #1093 Listing integration for Analysis Specification Widget
+- #1092 Listing integration for Profile Analyses Widget
+- #1081 API functions improved
+- #1076 Instrument QC Viewlet Availability
+- #1071 Reinvented Listing Tables
+- #1066 Set default page size for listings to 50
+- #1063 Permission for ar_add changed to "AddAnalysisRequest"
+- #1064 Python 2.x is not supported by WeasyPrint v43. Pinned version: 0.42.3
+
+**Removed**
+
+- #1224 Replace publication engine with SENAITE IMPRESS
+- #1207 Remove results auto-import interval from Setup: no limitations to cron
+- #1180 Remove AdHoc field from Analysis Request
+- #1180 Remove support for "sampleId" and "sample" keywords in ID Formatting
+- #1180 Remove Sample views and accesses to Sample content types
+- #1180 Remove Sample Partitions classic functionality
+- #1167 Remove filtering by department
+- #1149 Remove "Unpublished" filter from Analysis Requests listing
+- #1132 Remove "Submitted by current user" icon from AR listing (performance)
+- #1125 Remove Sample views, listings and links to Sample(s) from everywhere
+- #1118 Removed all legacy Bika Listing / Advanced Filtering from Codebase
+- #1077 Remove Sample-specific states from analysis workflow
+- #1077 Remove `worksheetanalysis_workflow`
+- #1059 Remove updates alert viewlet
+- #1060 Remove classic portlets
+- #1058 Remove gpw dependency
+- #1058 Remove broken Quality Control reports
+- #1057 Remove z3c.unconfigure dependency
+- #1056 Remove collective.taskqueue dependency
+- #808 Remove old AR Add code
+
+
+**Fixed**
+
+- #1245 Not all clients are shown in clients drop menu for Productivity Reports
+- #1239 Fix and Improve Stickers
+- #1214 Disallow entry of analysis results if the sample is not yet received
+- #1213 Fix instrument notification display in Manage Results View
+- #1212 Fix typo in SamplingFieldsVisibility
+- #1191 Some worksheets pre-1.3 with published analyses remain in open/to_be_verified state
+- #1190 Fixed evolution chart for reference analyses
+- #1183 Fix results calculation of dependent calculations
+- #1175 Fixed Version Display of SENAITE CORE Add-on in the Quickinstaller Tool
+- #1142 Fix instrument QC Analyses Table
+- #1137 Fixed and refactored log view
+- #1124 Traceback when invalidating an Analysis Request with retracted analyses
+- #1090 Primary AR does not recognize created Partitions
+- #1089 Deepcopy Service Interims to Analyses
+- #1082 Worksheet folder listing fixtures for direct analyst assignment
+- #1080 Improve searchability of Client and Multifile fields
+- #1072 Calculations with dependents do not work after 1.2.9 update
+- #1070 Cannot get the allowed transitions (guard_sample_prep_transition)
+- #1065 Creation of reflex rules does not work with senaite.lims add-on
+
+
+**Security**
+
+- #1258 Fix widget permissions for Specs/Profiles/Templates Widgets
+- #1237 Global Permission and Role Mappings refactoring
+- #1077 Transitions and states strongly bound to DC Workflow + guards security
+
+
+1.2.9 (2018-10-08)
+------------------
+
+**Added**
+
+- #1051 Show the Due date in late's image tooltip in Analysis Requests listings
+- #1048 Allow to set the pagesize in listings and show total number of results
+- #1031 Added profiling and timing decorators
+- #1001 Option to show Interim fields on results reports
+- #1024 Function to get the Verifiers from an Analysis Request
+- #1019 Support for min and max warns in range charts
+- #1003 Alphanumeric numbering in sequential IDs generator
+
+**Changed**
+
+- #1050 Added Late filter button to analysisrequests listing
+- #1046 Show "Date Registered" instead of "Date Created" in Analysis Requests listings
+- #1044 State of analyses in retests is set to `received` by default (was `to_be_verified`)
+- #1042 Function api.get_object() supports UID as input param
+- #1036 Manage Analyses: Check permission of the AR to decide if it is frozen
+- #764 Code cleanup and redux of 2-Dimensional-CSV instrument interface
+- #1032 Refactored and fixed inconsistencies with Analysis TAT logic
+- #1027 Refactored relationship between invalidated ARs and retests
+- #1027 Rename `retract_ar` transition to `invalidate`
+- #1012 Refactored Contacts listing
+- #1010 Increased max length of Results options to 255 chars (was 40)
+- #899 Sample's Date Received editable only when `received` analyses exist
+
+**Removed**
+
+- #1232 Remove `uniquefieldvalidator` for Client Names
+- #1026 Removed auto-digest of results reports on verify transitions
+- #1005 Removed databasesanitize package
+- #992 Removed "Attach" report option for Attachments
+
+**Fixed**
+
+- #1216 Allow manual entry (if granted) of results if instrument is invalid
+- #1051 Analyses Requests w/o submitted results always appear as not late
+- #1047 Fix translate utility function
+- #1049 Secondary Analysis Request changes received date of Sample
+- #1041 Reject transition is available to Client once AR/Sample is received
+- #1043 Invalid AR Retested informative message is not prominent enough
+- #1039 Detection limit criteria from retracted analysis is preserved
+- #1037 Display supplier view instead of reference samples per default
+- #1030 Earliness of analysis is not expressed as minutes
+- #1029 TAT in Analysis TAT over time report does not display days
+- #1029 TAT in Analysis TAT over time report with decimals
+- #1029 Need to always choose an analyst in productivity reports
+- #1034 Attachments assigned to Analyses break and get orphaned when the referenced Analysis was removed
+- #1028 Numbers for productivity report "Analyses by client" are all zero
+- #1022 Date Received saved as UTC time
+- #1018 Fix AR Add cleanup after template removal
+- #1014 ReferenceWidget does not handle searches with null/None
+- #1008 Previous results from same batch are always displayed in reports
+- #1013 ARs and Samples from other clients are listed when logged in as contact
+- #991 New client contacts do not have access to their own AR Templates
+- #996 Hide checkbox labels on category expansion
+- #990 Fix client analysisspecs view
+- #888 Order of Interim Fields not maintained on ARs
+
+
+1.2.8 (2018-08-11)
+------------------
+
+**Added**
+
+- #965 Added operators for max and min values in Specifications
+- #947 Instrument import interface: Cobas Integra 400plus
 - #924 Added ExtProxyField for its use in SchemaExtender
 
 **Changed**
 
+- #971 Refactored Client's Analysis Requests, Samples and Batches listings
+- #945 Show AR Remarks in Worksheet ManageResults views
+- #953 Refactored Analysis Categories Listing
+- #956 Refactored LabContacts Listing
+- #955 Refactored Departments Listing
+- #954 Refactored Attachment Types Listing
+- #944 Remarks style in Manage Results/Analyses
+- #943 AnalysisRequest View Remarks Field Style
+- #938 Refactored Analysis Profiles Widget
+- #937 Refactored Analysis Specifications Widget
+- #936 Refactored AR Templates Listing
+- #933 Refactored SampleConditions Listing
+- #932 Refactored Calculation Listing
+- #931 Refactored AnalysisSpecs Listing
+- #935 Refactored SamplingDeviations Listing
+- #926 Refactored Analysis Services Listing
+- #916 Refactored Instruments Listing
+- #919 Refactored Profiles Listing
+- #915 Refactored SamplePoints Listing
+- #914 Refactored Sampletypes Listing
+- #913 Refactored Methods Listing View
 
 **Removed**
 
+- #972 Remove "Linked Sample" from Sample
 - #912 Remove "Default AR Specifications" Selection from Setup
 - #901 Remove explicit permission settings for clients
+- #900 Removed basic handling of custom Sample Preparation Workflows
 
 **Fixed**
 
+- #983 Traceback in Client's Analysis Specs view
+- #986 Result input fields are not read-only for analyst after submission
+- #985 Do not display content actions in listings from inside Client
+- #966 Traceback in Analyses listings when analysis unit is a numeric value
+- #959 Time not displayed for Date Created in Analysis Requests listings
+- #949 Retain AR Spec if Analyses were added/removed
+- #948 Inactive Sample Types shown in Analysis Specifications
+- #940 Label "Date Received" appears twice in Analysis Request view
 - #917 Localization of date and time strings in listings
 - #902 Attribute error when updating QC results using an import interface
 - #456 Date Published appears two times on the header table of AR view
-- #898 Cannot view/edit Supplier.  Tabs for different views now visible.
+- #898 Cannot view/edit Supplier. Tabs for different views now visible.
 - #905 Users created through LabContact's Login Details view are added to "Clients" group
 - #906 DateTime Widget does not display the Time
 - #909 List of clients cannot sort by Client ID
 - #921 Missing interim fields in worksheet/analyses_transposed view
-
-**Security**
+- #920 Refactored Remarks and created RemarksField and RemarksWidget
+- #958 Traceback on batch book view
+- #960 Traceback on AnalysisSpec Log
+- #962 Calculated results not marked for submission if zero
+- #964 Dormant Analysis Services displayed in AR Templates
+- #967 Avoid deepcopy, "Can't pickle acquisition wrappers"
 
 
 1.2.7 (2018-07-10)

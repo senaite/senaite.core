@@ -366,7 +366,7 @@ class ReflexRuleWidget(RecordsWidget):
         pc = getToolByName(self, 'portal_catalog')
         methods = [obj.getObject() for obj in pc(
                     portal_type='Method',
-                    inactive_state='active')]
+                    is_active=True)]
         bsc = getToolByName(self, 'bika_setup_catalog')
         for method in methods:
             # Get the analysis services related to each method
@@ -386,7 +386,7 @@ class ReflexRuleWidget(RecordsWidget):
                 service_methods_uid = analysiservice.getAvailableMethodUIDs()
                 query_dict = {
                     'portal_type': 'WorksheetTemplate',
-                    'inactive_state': 'active',
+                    'is_active': True,
                     'sort_on': 'sortable_title',
                     'getMethodUID': {
                         "query": service_methods_uid + [''],

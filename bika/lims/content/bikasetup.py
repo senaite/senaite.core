@@ -5,10 +5,11 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-import sys
 
 from AccessControl import ClassSecurityInfo
 from Products.ATExtensions.ateapi import RecordsField
+from Products.Archetypes.Field import TextField
+from Products.Archetypes.Widget import RichWidget
 from Products.Archetypes.atapi import BooleanField
 from Products.Archetypes.atapi import BooleanWidget
 from Products.Archetypes.atapi import DecimalWidget
@@ -18,15 +19,11 @@ from Products.Archetypes.atapi import IntegerWidget
 from Products.Archetypes.atapi import LinesField
 from Products.Archetypes.atapi import MultiSelectionWidget
 from Products.Archetypes.atapi import ReferenceField
-from Products.Archetypes.atapi import ReferenceWidget
 from Products.Archetypes.atapi import Schema
 from Products.Archetypes.atapi import SelectionWidget
 from Products.Archetypes.atapi import StringField
-from Products.Archetypes.atapi import StringWidget
 from Products.Archetypes.atapi import TextAreaWidget
-from Products.Archetypes.atapi import TextField
 from Products.Archetypes.atapi import registerType
-from Products.Archetypes.references import HoldingReference
 from Products.Archetypes.utils import DisplayList
 from Products.Archetypes.utils import IntDisplayList
 from Products.CMFCore.utils import getToolByName
@@ -163,20 +160,26 @@ schema = BikaFolderSchema.copy() + Schema((
         )
     ),
     BooleanField(
-        'AllowClerksToEditClients',
-        schemata="Security",
-        default=False,
-        widget=BooleanWidget(
-            label=_("Allow Lab Clerks to create and edit clients"),
-        )
-    ),
-    BooleanField(
         'RestrictWorksheetUsersAccess',
         schemata="Security",
         default=True,
         widget=BooleanWidget(
             label=_("Allow access to worksheets only to assigned analysts"),
             description=_("If unchecked, analysts will have access to all worksheets.")
+        )
+    ),
+    BooleanField(
+        'AllowToSubmitNotAssigned',
+        schemata="Security",
+        default=True,
+        widget=BooleanWidget(
+            label=_("Allow to submit results for unassigned analyses or for "
+                    "analyses assigned to others"),
+            description=_(
+                "If unchecked, users will only be able to submit results "
+                "for the analyses they are assigned to, and the submission of "
+                "results for unassigned analyses won't be permitted. This "
+                "setting does not apply to users with role Lab Manager")
         )
     ),
     BooleanField(
@@ -190,14 +193,6 @@ schema = BikaFolderSchema.copy() + Schema((
                           "users have restricted access only to those "
                           "worksheets for which they are assigned, "
                           "this option will be checked and readonly.")
-        )
-    ),
-    BooleanField(
-        'ShowNewReleasesInfo',
-        schemata="Notifications",
-        default=True,
-        widget=BooleanWidget(
-            label=_("Display an alert on new releases of Bika LIMS"),
         )
     ),
     BooleanField(
@@ -291,44 +286,6 @@ schema = BikaFolderSchema.copy() + Schema((
         )
     ),
     BooleanField(
-        'IncludePreviousFromBatch',
-        schemata="Results Reports",
-        default=False,
-        widget=BooleanWidget(
-            label=_("Include Previous Results From Batch"),
-            description=_(
-                "If there are previous results for a service in the "
-                "same batch of Analysis Requests, they will be displayed "
-                "in the report.")
-        )
-    ),
-    IntegerField(
-        'BatchEmail',
-        schemata="Results Reports",
-        required=1,
-        default=5,
-        widget=IntegerWidget(
-            label=_("Maximum columns per results email"),
-            description=_(
-                "Set the maximum number of analysis requests per results email. "
-                "Too many columns per email are difficult to read for some clients "
-                "who prefer fewer results per email"),
-        )
-    ),
-    TextField(
-        'ResultFooter',
-        schemata="Results Reports",
-        default_content_type='text/plain',
-        allowed_content_types=('text/plain', ),
-        default_output_type="text/plain",
-        default="",
-        widget=TextAreaWidget(
-            label=_("Result Footer"),
-            description=_("This text will be appended to results reports."),
-            append_only=False,
-        ),
-    ),
-    BooleanField(
         'CategoriseAnalysisServices',
         schemata="Analyses",
         default=False,
@@ -340,12 +297,12 @@ schema = BikaFolderSchema.copy() + Schema((
     BooleanField(
         'EnableARSpecs',
         schemata="Analyses",
-        default=True,
+        default=False,
         widget=BooleanWidget(
-            label=_("Enable AR Specifications"),
+            label=_("Enable Sample Specifications"),
             description=_(
                 "Analysis specifications which are edited directly on the "
-                "Analysis Request."),
+                "Sample."),
         ),
     ),
     IntegerField(
@@ -425,7 +382,7 @@ schema = BikaFolderSchema.copy() + Schema((
             visible=False,
             label=_("AR Import options"),
             description=_(
-                "'Classic' indicates importing analysis requests per sample and "
+                "'Classic' indicates importing samples per sample and "
                 "analysis service selection. With 'Profiles', analysis profile keywords "
                 "are used to select multiple analysis services together"),
         )
@@ -437,11 +394,11 @@ schema = BikaFolderSchema.copy() + Schema((
         vocabulary=ATTACHMENT_OPTIONS,
         widget=SelectionWidget(
             format='select',
-            label=_("AR Attachment Option"),
+            label=_("Sample Attachment Option"),
             description=_(
                 "The system wide default configuration to indicate "
                 "whether file attachments are required, permitted or not "
-                "per analysis request"),
+                "per sample"),
         )
     ),
     StringField(
@@ -480,18 +437,6 @@ schema = BikaFolderSchema.copy() + Schema((
             format='select',
         )
     ),
-    IntegerField(
-        'AutoImportInterval',
-        schemata="Sampling and COC",
-        default="0",
-        widget=IntegerWidget(
-            label=_("Interval of Auto-Importing Files in minutes"),
-            description=_("System will upload result files of different \
-                          instruments/interfaces periodically in the interval \
-                          of this value (Minutes). Any value below 10, will \
-                          disable Auto-Importing.")
-        )
-    ),
     StringField(
         'WorksheetLayout',
         schemata="Appearance",
@@ -501,9 +446,9 @@ schema = BikaFolderSchema.copy() + Schema((
             label=_("Default layout in worksheet view"),
             description=_("Preferred layout of the results entry table "
                           "in the Worksheet view. Classic layout displays "
-                          "the Analysis Requests in rows and the analyses "
+                          "the Samples in rows and the analyses "
                           "in columns. Transposed layout displays the "
-                          "Analysis Requests in columns and the analyses "
+                          "Samples in columns and the analyses "
                           "in rows."),
             format='select',
         )
@@ -538,7 +483,7 @@ schema = BikaFolderSchema.copy() + Schema((
     ),
     BooleanField(
         'PrintingWorkflowEnabled',
-        schemata="Sampling and COC",
+        schemata="Sampling",
         default=False,
         widget=BooleanWidget(
             label=_("Enable the Results Report Printing workflow"),
@@ -550,7 +495,7 @@ schema = BikaFolderSchema.copy() + Schema((
     ),
     BooleanField(
         'SamplingWorkflowEnabled',
-        schemata="Sampling and COC",
+        schemata="Sampling",
         default=False,
         widget=BooleanWidget(
             label=_("Enable Sampling"),
@@ -559,7 +504,7 @@ schema = BikaFolderSchema.copy() + Schema((
     ),
     BooleanField(
         'ScheduleSamplingEnabled',
-        schemata="Sampling and COC",
+        schemata="Sampling",
         default=False,
         widget=BooleanWidget(
             label=_("Enable Sampling Scheduling"),
@@ -571,7 +516,7 @@ schema = BikaFolderSchema.copy() + Schema((
     ),
     BooleanField(
         'ShowPartitions',
-        schemata="Sampling and COC",
+        schemata="Sampling",
         default=True,
         widget=BooleanWidget(
             label=_("Display individual sample partitions "),
@@ -580,7 +525,7 @@ schema = BikaFolderSchema.copy() + Schema((
     ),
     BooleanField(
         'SamplePreservationEnabled',
-        schemata="Sampling and COC",
+        schemata="Sampling",
         default=False,
         widget=BooleanWidget(
             label=_("Enable Sample Preservation"),
@@ -589,7 +534,7 @@ schema = BikaFolderSchema.copy() + Schema((
     ),
     DurationField(
         'DefaultTurnaroundTime',
-        schemata="Sampling and COC",
+        schemata="Sampling",
         required=1,
         default={"days": 5, "hours": 0, "minutes": 0},
         widget=DurationWidget(
@@ -602,7 +547,7 @@ schema = BikaFolderSchema.copy() + Schema((
     ),
     DurationField(
         'DefaultSampleLifetime',
-        schemata="Sampling and COC",
+        schemata="Sampling",
         required=1,
         default={"days": 30, "hours": 0, "minutes": 0},
         widget=DurationWidget(
@@ -615,50 +560,66 @@ schema = BikaFolderSchema.copy() + Schema((
     ),
     RecordsField(
         'RejectionReasons',
-        schemata="Sampling and COC",
+        schemata="Sampling",
         widget=RejectionSetupWidget(
             label=_("Enable sampling rejection"),
             description=_("Select this to activate the rejection workflow "
-                          "for Samples and Analysis Requests. A 'Reject' "
+                          "for Samples and Samples. A 'Reject' "
                           "option will be displayed in the actions menu for "
                           "these objects.")
         ),
     ),
     BooleanField(
-        'NotifyOnRejection',
+        'NotifyOnSampleRejection',
         schemata="Notifications",
         default=False,
         widget=BooleanWidget(
-            label=_("Sample rejection email notification"),
+            label=_("Email notification on Sample rejection"),
             description=_("Select this to activate automatic notifications "
-                          "via email to the Client when a Sample or Analysis "
-                          "Request is rejected.")
+                          "via email to the Client when a Sample is rejected.")
         ),
     ),
     BooleanField(
-        'NotifyOnARRetract',
+        'NotifyOnSampleInvalidation',
         schemata="Notifications",
         default=True,
         widget=BooleanWidget(
-            label=_("Email notification on AR invalidation"),
+            label=_("Email notification on Sample invalidation"),
             description=_("Select this to activate automatic notifications "
-                          "via email to the Client and Lab Managers when an Analysis "
-                          "Request is invalidated.")
+                          "via email to the Client and Lab Managers when a "
+                          "Sample is invalidated.")
         ),
     ),
     TextField(
-        'COCAttestationStatement',
-        schemata="Sampling and COC",
-        widget=TextAreaWidget(
-            label=_("COC Attestation Statement"),
-        )
-    ),
-    StringField(
-        'COCFooter',
-        schemata="Sampling and COC",
-        widget=StringWidget(
-            label=_("COC Footer"),
-        )
+        "EmailBodySampleInvalidation",
+        default_content_type='text/html',
+        default_output_type='text/x-html-safe',
+        schemata="Notifications",
+        label=_("Email body for Sample Invalidation notifications"),
+        default=
+            "Some non-conformities have been detected in the results report "
+            "published for Sample $sample_link. "
+            "<br/><br/> "
+            "A new Sample $retest_link has been created automatically, and the "
+            "previous request has been invalidated. "
+            "<br/><br/> "
+            "The root cause is under investigation and corrective "
+            "action has been initiated. "
+            "<br/><br/> "
+            "$lab_address",
+        widget=RichWidget(
+            label=_("Email body for Sample Invalidation notifications"),
+            description=_("Set the text for the body of the email to be sent, "
+                          ", if option 'Email notification on Sample "
+                          "'invalidation' enabled,  to the Sample's client "
+                          "contact. You can use reserved keywords: $sample_id, "
+                          "$sample_link, $retest_id, $retest_link, "
+                          "$lab_address"),
+            default_mime_type='text/x-rst',
+            output_mime_type='text/x-html',
+            allow_file_upload=False,
+            rows=10,
+        ),
     ),
     StringField(
         'AutoPrintStickers',
@@ -669,8 +630,8 @@ schema = BikaFolderSchema.copy() + Schema((
             label=_("Automatic sticker printing"),
             description=_(
                 "Select 'Register' if you want stickers to be automatically printed when "
-                "new ARs or sample records are created. Select 'Receive' to print stickers "
-                "when ARs or Samples are received. Select 'None' to disable automatic printing"),
+                "new Samples or sample records are created. Select 'Receive' to print stickers "
+                "when Samples or Samples are received. Select 'None' to disable automatic printing"),
         )
     ),
     StringField(
@@ -762,92 +723,74 @@ schema = BikaFolderSchema.copy() + Schema((
                 'split_length': 1
             }, {
                 'form': '{sampleType}-{seq:04d}',
-                'portal_type': 'Sample',
-                'prefix': 'sample',
+                'portal_type': 'AnalysisRequest',
+                'prefix': 'analysisrequest',
                 'sequence_type': 'generated',
                 'split_length': 1
             }, {
-                'context': 'sample',
-                'counter_reference': 'AnalysisRequestSample',
-                'counter_type': 'backreference',
-                'form': '{sampleId}-R{seq:02d}',
-                'portal_type': 'AnalysisRequest',
-                'sequence_type': 'counter'
+                'form': '{parent_ar_id}-P{partition_count:02d}',
+                'portal_type': 'AnalysisRequestPartition',
+                'prefix': 'analysisrequestpartition',
+                'sequence_type': '',
+                'split-length': 1
             }, {
-                'context': 'sample',
-                'counter_reference': 'SamplePartition',
-                'counter_type': 'contained',
-                'form': '{sampleId}-P{seq:d}',
-                'portal_type': 'SamplePartition',
-                'sequence_type': 'counter'
-            }
+                'form': '{parent_base_id}-R{retest_count:02d}',
+                'portal_type': 'AnalysisRequestRetest',
+                'prefix': 'analysisrequestretest',
+                'sequence_type': '',
+                'split-length': 1
+            },
         ],
         widget=RecordsWidget(
             label=_("Formatting Configuration"),
             allowDelete=True,
             description=_(
-                " <p>The Bika LIMS ID Server provides unique sequential IDs " 
-                "for objects such as Samples and Worksheets etc, based on a " 
-                "format specified for each content type.</p>" 
-                "<p>The format is constructed similarly to the Python format" 
-                " syntax, using predefined variables per content type, and" 
-                " advancing the IDs through a sequence number, 'seq' and its" 
-                " padding as a number of digits, e.g. '03d' for a sequence of" 
-                " IDs from 001 to 999.</p>" 
-                "<p>Alphanumeric prefixes for IDs are included as is in the" 
-                " formats, e.g. WS for Worksheet in WS-{seq:03d} produces" 
-                " sequential Worksheet IDs: WS-001, WS-002, WS-003 etc.</p>" 
-                "<p>Variables that can be used include:" 
-                "<table>" 
+                " <p>The Bika LIMS ID Server provides unique sequential IDs "
+                "for objects such as Samples and Worksheets etc, based on a "
+                "format specified for each content type.</p>"
+                "<p>The format is constructed similarly to the Python format"
+                " syntax, using predefined variables per content type, and"
+                " advancing the IDs through a sequence number, 'seq' and its"
+                " padding as a number of digits, e.g. '03d' for a sequence of"
+                " IDs from 001 to 999.</p>"
+                "<p>Alphanumeric prefixes for IDs are included as is in the"
+                " formats, e.g. WS for Worksheet in WS-{seq:03d} produces"
+                " sequential Worksheet IDs: WS-001, WS-002, WS-003 etc.</p>"
+                "<p>For dynamic generation of alphanumeric and sequential IDs,"
+                " the wildcard {alpha} can be used. E.g WS-{alpha:2a3d}"
+                " produces WS-AA001, WS-AA002, WS-AB034, etc.</p>"
+                "<p>Variables that can be used include:"
+                "<table>"
                 "<tr>"
-                "<th style='width:150px'>Content Type</th><th>Variables</th>" 
-                "</tr>" 
-                "<tr><td>Client</td><td>{client}</td></tr>" 
-                "<tr><td>Year</td><td>{year}</td></tr>" 
-                "<tr><td>Sample ID</td><td>{sampleId}</td></tr>" 
-                "<tr><td>Sample Type</td><td>{sampleType}</td></tr>" 
-                "<tr><td>Sampling Date</td><td>{samplingDate}</td></tr>" 
-                "<tr><td>Date Sampled</td><td>{dateSampled}</td></tr>" 
-                "</table>" 
-                "</p>" 
-                "<p>Configuration Settings:" 
-                "<ul>" 
-                "<li>format:" 
-                "<ul><li>a python format string constructed from predefined" 
-                " variables like sampleId, client, sampleType.</li>" 
-                "<li>special variable 'seq' must be positioned last in the"  
-                "format string</li></ul></li>" 
-                "<li>sequence type: [generated|counter]</li>" 
-                "<li>context: if type counter, provides context the counting" 
-                " function</li>" 
-                "<li>counter type: [backreference|contained]</li>" 
-                "<li>counter reference: a parameter to the counting" 
-                " function</li>" 
-                "<li>prefix: default prefix if none provided in format" 
-                " string</li>" 
-                "<li>split length: the number of parts to be included in the" 
-                " prefix</li>" 
+                "<th style='width:150px'>Content Type</th><th>Variables</th>"
+                "</tr>"
+                "<tr><td>Client</td><td>{client}</td></tr>"
+                "<tr><td>Year</td><td>{year}</td></tr>"
+                "<tr><td>Sample ID</td><td>{sampleId}</td></tr>"
+                "<tr><td>Sample Type</td><td>{sampleType}</td></tr>"
+                "<tr><td>Sampling Date</td><td>{samplingDate}</td></tr>"
+                "<tr><td>Date Sampled</td><td>{dateSampled}</td></tr>"
+                "</table>"
+                "</p>"
+                "<p>Configuration Settings:"
+                "<ul>"
+                "<li>format:"
+                "<ul><li>a python format string constructed from predefined"
+                " variables like sampleId, client, sampleType.</li>"
+                "<li>special variable 'seq' must be positioned last in the"
+                "format string</li></ul></li>"
+                "<li>sequence type: [generated|counter]</li>"
+                "<li>context: if type counter, provides context the counting"
+                " function</li>"
+                "<li>counter type: [backreference|contained]</li>"
+                "<li>counter reference: a parameter to the counting"
+                " function</li>"
+                "<li>prefix: default prefix if none provided in format"
+                " string</li>"
+                "<li>split length: the number of parts to be included in the"
+                " prefix</li>"
                 "</ul></p>")
         )
-    ),
-    BooleanField(
-        'ExternalIDServer',
-        schemata="ID Server",
-        default=False,
-        widget=BooleanWidget(
-            label=_("Use external ID server"),
-            description=_(
-                "Check this if you want to use a separate ID server. "
-                "Prefixes are configurable separately in each Bika site")
-        ),
-    ),
-    StringField(
-        'IDServerURL',
-        schemata="ID Server",
-        widget=StringWidget(
-            label=_("ID Server URL"),
-            description=_("The full URL: http://URL/path:port")
-        ),
     ),
     StringField(
         'IDServerValues',
@@ -866,73 +809,9 @@ schema = BikaFolderSchema.copy() + Schema((
         widget=RejectionSetupWidget(
             label=_("Enable the rejection workflow"),
             description=_("Select this to activate the rejection workflow "
-                          "for Samples and Analysis Requests. A 'Reject' "
+                          "for Samples and Samples. A 'Reject' "
                           "option will be displayed in the actions menu for "
                           "these objects.")
-        ),
-    ),
-    BooleanField(
-        'NotifyOnRejection',
-        schemata="Analyses",
-        default=False,
-        widget=BooleanWidget(
-            label=_("Email notification on rejection"),
-            description=_("Select this to activate automatic notifications "
-                          "via email to the Client when a Sample or Analysis "
-                          "Request is rejected.")
-        ),
-    ),
-    BooleanField(
-        'AllowDepartmentFiltering',
-        schemata="Security",
-        default=False,
-        widget=BooleanWidget(
-            label=_("Enable filtering by department"),
-            description=_("When enabled, only those items belonging to the "
-                          "same department as the logged user will be "
-                          "displayed. Since a user can belong to more than "
-                          "one department, a department filtering portlet "
-                          "will be displayed too. By default, disabled.")
-        )
-    ),
-    BooleanField(
-        'DisplayAdvancedFilterBarForAnalysisRequests',
-        schemata="Analyses",
-        default=False,
-        widget=BooleanWidget(
-            label=_(
-                "Display an advanced filter bar in Analysis Requests lists"),
-            description=_(
-                "If enabled, the Analysis Requests Lists will"
-                " display an additional filter bar which allows the user "
-                "to filter the listed items by some several criteria."
-                "Warning: This may affect the listing performance."),
-        ),
-    ),
-    BooleanField(
-        'DisplayAdvancedFilterBarForSamples',
-        schemata="Analyses",
-        default=False,
-        widget=BooleanWidget(
-            label=_("Display an advanced filter bar in Samples lists"),
-            description=_(
-                "If enabled, the Samples Lists will"
-                " display an additional filter bar which allows the user "
-                "to filter the listed items by some several criteria."
-                "Warning: This may affect the listing performance."),
-        ),
-    ),
-    BooleanField(
-        'DisplayAdvancedFilterBarForAnalyses',
-        schemata="Analyses",
-        default=False,
-        widget=BooleanWidget(
-            label=_("Display an advanced filter bar in Analyses lists"),
-            description=_(
-                "If enabled, the Analyses Lists will"
-                " display an additional filter bar which allows the user "
-                "to filter the listed items by some several criteria."
-                "Warning: This may affect the listing performance."),
         ),
     ),
     IntegerField(
@@ -941,22 +820,8 @@ schema = BikaFolderSchema.copy() + Schema((
         required=0,
         default=4,
         widget=IntegerWidget(
-            label=_("Default count of AR to add."),
-            description=_("Default value of the 'AR count' when users click 'ADD' button to create new Analysis Requests"),
-        )
-    ),
-    TextField(
-        'COCAttestationStatement',
-        schemata="Analyses",
-        widget=TextAreaWidget(
-            label=_("COC Attestation Statement"),
-        )
-    ),
-    StringField(
-        'COCFooter',
-        schemata="Analyses",
-        widget=StringWidget(
-            label=_("COC Footer"),
+            label=_("Default count of Sample to add."),
+            description=_("Default value of the 'Sample count' when users click 'ADD' button to create new Samples"),
         )
     ),
 ))
@@ -974,11 +839,6 @@ class BikaSetup(folder.ATFolder):
 
     schema = schema
     security = ClassSecurityInfo()
-
-    # needed to access the field for the front-page Portlet for Anonymous, w/o
-    # making the whole Laboratory viewable by Anonymous.
-    # Only the permission "Access contents information" is needed
-    security.declarePublic('getAllowDepartmentFiltering')
 
     def getAttachmentsPermitted(self):
         """Attachments permitted
@@ -1017,7 +877,7 @@ class BikaSetup(folder.ATFolder):
         """
         bsc = getToolByName(self, 'bika_setup_catalog')
         brains = bsc(portal_type='AnalysisService',
-                     inactive_state='active')
+                     is_active=True)
         items = [(b.UID, b.Title) for b in brains]
         items.insert(0, ("", ""))
         items.sort(lambda x, y: cmp(x[1], y[1]))

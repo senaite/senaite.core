@@ -6,10 +6,11 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from AccessControl import ClassSecurityInfo
+from datetime import timedelta
 from Products.Archetypes.Field import BooleanField, FixedPointField, \
     StringField
 from Products.Archetypes.Schema import Schema
-from Products.CMFCore.utils import getToolByName
+from Products.ATContentTypes.utils import DT2dt, dt2DT
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import UIDReferenceField
@@ -19,15 +20,13 @@ from bika.lims.content.abstractanalysis import AbstractAnalysis
 from bika.lims.content.abstractanalysis import schema
 from bika.lims.content.analysisspec import ResultsRangeDict
 from bika.lims.content.reflexrule import doReflexRuleAction
-from bika.lims.interfaces import IAnalysis, IRoutineAnalysis, \
-    ISamplePrepWorkflow
+from bika.lims.interfaces import IAnalysis, IRoutineAnalysis, ICancellable
 from bika.lims.interfaces.analysis import IRequestAnalysis
-from bika.lims.workflow import doActionFor
 from bika.lims.workflow import getTransitionDate
-from bika.lims.workflow import skip
-from bika.lims.workflow import wasTransitionPerformed
 from zope.interface import implements
 
+
+# TODO Remove in >v1.3.0 - This is kept for backwards-compatibility
 # The physical sample partition linked to the Analysis.
 SamplePartition = UIDReferenceField(
     'SamplePartition',
@@ -114,7 +113,7 @@ schema = schema.copy() + Schema((
 
 
 class AbstractRoutineAnalysis(AbstractAnalysis):
-    implements(IAnalysis, IRequestAnalysis, IRoutineAnalysis, ISamplePrepWorkflow)
+    implements(IAnalysis, IRequestAnalysis, IRoutineAnalysis, ICancellable)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
@@ -200,10 +199,24 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
     @security.public
     def getDateReceived(self):
         """Used to populate catalog values.
-        Returns the date on which the "receive" transition was invoked on this
-        analysis' Sample.
+        Returns the date the Analysis Request this analysis belongs to was
+        received. If the analysis was created after, then returns the date
+        the analysis was created.
         """
-        return getTransitionDate(self, 'receive', return_as_datetime=True)
+        request = self.getRequest()
+        if request:
+            ar_date = request.getDateReceived()
+            if ar_date and self.created() > ar_date:
+                return self.created()
+            return ar_date
+        return None
+
+    @security.public
+    def isSampleReceived(instance):
+        """Returns whether if the Analysis Request this analysis comes from has
+        been received or not
+        """
+        return instance.getDateReceived() and True or False
 
     @security.public
     def getDatePublished(self):
@@ -215,15 +228,25 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
 
     @security.public
     def getDateSampled(self):
-        """Used to populate catalog values.
-        Only has value when sampling_workflow is active.
+        """Returns the date when the Sample was Sampled
         """
-        return getTransitionDate(self, 'sample', return_as_datetime=True)
+        request = self.getRequest()
+        if request:
+            return request.getDateSampled()
+        return None
+
+    @security.public
+    def isSampleSampled(instance):
+        """Returns whether if the Analysis Request this analysis comes from has
+        been received or not
+        """
+        return instance.getDateSampled() and True or False
 
     @security.public
     def getStartProcessDate(self):
-        """Returns the date time when the analysis was received. If the
-        analysis hasn't yet been received, returns None
+        """Returns the date time when the analysis request the analysis belongs
+        to was received. If the analysis request hasn't yet been received,
+        returns None
         Overrides getStartProcessDateTime from the base class
         :return: Date time when the analysis is ready to be processed.
         :rtype: DateTime
@@ -231,61 +254,49 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
         return self.getDateReceived()
 
     @security.public
-    def getSamplePartitionUID(self):
-        part = self.getSamplePartition()
-        if part:
-            return part.UID()
+    def getSamplePoint(self):
+        request = self.getRequest()
+        if request:
+            return request.getSamplePoint()
+        return None
 
     @security.public
     def getSamplePointUID(self):
         """Used to populate catalog values.
         """
-        sample = self.getSample()
-        if sample:
-            samplepoint = sample.getSamplePoint()
-            if samplepoint:
-                return samplepoint.UID()
-
-    @security.public
-    def getSamplePartitionID(self):
-        """Used to populate catalog values.
-        Returns the sample partition ID
-        """
-        partition = self.getSamplePartition()
-        if partition:
-            return partition.getId()
-        return ''
+        sample_point = self.getSamplePoint()
+        if sample_point:
+            return api.get_uid(sample_point)
 
     @security.public
     def getDueDate(self):
         """Used to populate getDueDate index and metadata.
-        This calculates the difference between the time that the sample
-        partition associated with this analysis was recieved, and the
-        maximum turnaround time.
+        This calculates the difference between the time the analysis processing
+        started and the maximum turnaround time. If the analysis has no
+        turnaround time set or is not yet ready for proces, returns None
         """
-        maxtime = self.getMaxTimeAllowed()
-        if not maxtime:
-            maxtime = getToolByName(self, 'bika_setup').getDefaultTurnaroundTime()
-        max_days = float(maxtime.get('days', 0)) + (
-            (float(maxtime.get('hours', 0)) * 3600 +
-             float(maxtime.get('minutes', 0)) * 60)
-            / 86400
-        )
-        part = self.getSamplePartition()
-        if part:
-            starttime = part.getDateReceived()
-            duetime = starttime + max_days if starttime else ''
-            return duetime
+        tat = self.getMaxTimeAllowed()
+        if not tat:
+            return None
+        start = self.getStartProcessDate()
+        if not start:
+            return None
+        return dt2DT(DT2dt(start) + timedelta(minutes=api.to_minutes(**tat)))
+
+    @security.public
+    def getSampleType(self):
+        request = self.getRequest()
+        if request:
+            return request.getSampleType()
+        return None
 
     @security.public
     def getSampleTypeUID(self):
         """Used to populate catalog values.
         """
-        sample = self.getSample()
-        if sample:
-            sampletype = sample.getSampleType()
-            if sampletype:
-                return sampletype.UID()
+        sample_type = self.getSampleType()
+        if sample_type:
+            return api.get_uid(sample_type)
 
     @security.public
     def getBatchUID(self):
@@ -501,67 +512,3 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
             # Once we have the rules, the system has to execute its
             # instructions if the result has the expected result.
             doReflexRuleAction(self, action_row)
-
-    @security.public
-    def guard_to_be_preserved(self):
-        """Returns if the Sample Partition to which this Analysis belongs needs
-        to be prepreserved, so the Analysis. If the analysis has no Sample
-        Partition assigned, returns False.
-        Delegates to Sample Partitions's guard_to_be_preserved
-        """
-        part = self.getSamplePartition()
-        return part and part.guard_to_be_preserved()
-
-    @security.public
-    def workflow_script_submit(self):
-        """
-        Method triggered after a 'submit' transition for the current analysis
-        is performed. Responsible of triggering cascade actions such as
-        transitioning dependent analyses, transitioning worksheets, etc
-        depending on the current analysis and other analyses that belong to the
-        same Analysis Request or Worksheet.
-        This function is called automatically by
-        bika.lims.workfow.AfterTransitionEventHandler
-        """
-        # The analyses that depends on this analysis to calculate their results
-        # must be transitioned too, otherwise the user will be forced to submit
-        # them individually. Note that the automatic transition of dependents
-        # must only take place if all their dependencies have been submitted
-        # already.
-        for dependent in self.getDependents():
-            # If this submit transition has already been done for this
-            # dependent analysis within the current request, continue.
-            if skip(dependent, 'submit', peek=True):
-                continue
-
-            # TODO Workflow. All below and inside this loop should be moved to
-            # a guard_submit_transition inside analysis
-
-            # If this dependent has already been submitted, omit
-            if dependent.getSubmittedBy():
-                continue
-
-            # The dependent cannot be transitioned if doesn't have result
-            if not dependent.getResult():
-                continue
-
-            # If the calculation associated to the dependent analysis requires
-            # the manual introduction of interim fields, do not transition the
-            # dependent automatically, force the user to do it manually.
-            calculation = dependent.getCalculation()
-            if calculation and calculation.getInterimFields():
-                continue
-
-            # All dependencies from this dependent analysis are ok?
-            deps = dependent.getDependencies()
-            dsub = [dep for dep in deps if wasTransitionPerformed(dep, 'submit')]
-            if len(deps) == len(dsub):
-                # The statuses of all dependencies of this dependent are ok
-                # (at least, all of them have been submitted already)
-                doActionFor(dependent, 'submit')
-
-        # Do all the reflex rules process
-        self._reflex_rule_process('submit')
-
-        # Delegate the transition of Worksheet to base class AbstractAnalysis
-        super(AbstractRoutineAnalysis, self).workflow_script_submit()

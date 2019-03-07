@@ -6,9 +6,12 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser import BrowserView
 from bika.lims.browser.reports.selection_macros import SelectionMacrosView
+from bika.lims.catalog.analysisrequest_catalog import \
+    CATALOG_ANALYSIS_REQUEST_LISTING
 from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
 
@@ -29,10 +32,9 @@ class Report(BrowserView):
         parms = []
         titles = []
 
-        self.contentFilter = {'portal_type': 'Sample',
-                              'review_state': ['sample_received', 'expired',
-                                               'disposed'],
-                              'sort_on': 'getDateReceived'}
+        self.contentFilter = dict(portal_type="AnalysisRequest",
+                                  is_active=True,
+                                  sort_on="getDateReceived")
 
         val = self.selection_macros.parse_daterange(self.request,
                                                     'getDateReceived',
@@ -43,30 +45,28 @@ class Report(BrowserView):
             titles.append(val['titles'])
 
         # Query the catalog and store results in a dictionary
-        samples = self.bika_catalog(self.contentFilter)
-        if not samples:
-            message = _("No samples matched your query")
+        ars = api.search(self.contentFilter, CATALOG_ANALYSIS_REQUEST_LISTING)
+        if not ars:
+            message = _("No Samples matched your query")
             self.context.plone_utils.addPortalMessage(message, "error")
             return self.default_template()
 
         datalines = []
         analyses_count = 0
-        for sample in samples:
-            sample = sample.getObject()
-
+        for ar in ars:
+            ar = api.get_object(ar)
             # For each sample, retrieve the analyses and generate
             # a data line for each one
-            analyses = sample.getAnalyses({})
-            for analysis in analyses:
+            for analysis in ar.getAnalyses():
                 analysis = analysis.getObject()
-                ds = sample.getDateSampled()
-                sd = sample.getSamplingDate()
+                ds = ar.getDateSampled()
+                sd = ar.getSamplingDate()
                 dataline = {'AnalysisKeyword': analysis.getKeyword(),
                             'AnalysisTitle': analysis.Title(),
-                            'SampleID': sample.getSampleID(),
-                            'SampleType': sample.getSampleType().Title(),
+                            'SampleID': ar.getId(),
+                            'SampleType': ar.getSampleType().Title(),
                             'DateReceived': self.ulocalized_time(
-                                sample.getDateReceived(), long_format=1),
+                                ar.getDateReceived(), long_format=1),
                             'DateSampled': self.ulocalized_time(
                                 ds, long_format=1),
                             }

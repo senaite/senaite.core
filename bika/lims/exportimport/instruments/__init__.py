@@ -43,8 +43,31 @@ from myself import myinstrument
 from nuclisens import easyq
 from genexpert import genexpert
 from varian.vistapro import icp
+from cobasintegra.model_400_plus import model_400_plus
+
+from bika.lims import api
+from zope.component import getAdapters
+from zope.interface import Interface
+
+class IInstrumentInterface(Interface):
+    """Marker interface for instrument results import/export interfaces
+    """
+
+class IInstrumentExportInterface(IInstrumentInterface):
+    """Marker interface for instrument results export interfaces
+    """
+
+class IInstrumentImportInterface(IInstrumentInterface):
+    """Marker interface for instrument results import interfaces
+    """
+
+class IInstrumentAutoImportInterface(IInstrumentInterface):
+    """Marker interface for instrument results import interfaces that are
+    capable of auto importing results with only a file as the input
+    """
 
 
+# TODO Remove this once classic instrument interface migrated
 __all__ = ['abaxis.vetscan.vs2',
            'abbott.m2000rt.m2000rt',
            'agilent.masshunter.masshunter',
@@ -86,10 +109,12 @@ __all__ = ['abaxis.vetscan.vs2',
            'thermoscientific.gallery.Ts9861x',
            'thermoscientific.multiskan.go',
            'varian.vistapro.icp',
+           'cobasintegra.model_400_plus.model_400_plus'
            ]
 
 # Parsers are for auto-import. If empty, then auto-import won't wun for that
 # interface
+# TODO Remove this once classic instrument interface migrated
 PARSERS = [
            ['abaxis.vetscan.vs2', 'AbaxisVetScanCSVVS2Parser'],
            ['abbott.m2000rt.m2000rt', 'Abbottm2000rtTSVParser'],
@@ -132,19 +157,94 @@ PARSERS = [
            ['nuclisens.easyq', 'EasyQXMLParser'],
            ['genexpert.genexpert', 'GeneXpertParser'],
            ['varian.vistapro.icp', 'VistaPROICPParser'],
+           ['cobasintegra.model_400_plus.model_400_plus','CobasIntegra400plus2CSVParser'],
            ]
 
 
+def get_instrument_interfaces():
+    """Returns all available instrument interfaces as a list of tuples. Each
+    tuple is (id_interface, adapter)
+    """
+    interfaces = list()
+    for name, adapter in getAdapters((api.get_portal(),), IInstrumentInterface):
+        # We need a unique identifier for this instrument interface
+        id = "{}.{}".format(adapter.__module__, adapter.__class__.__name__)
+        interfaces.append((id, adapter))
+
+    # TODO Remove the following code once clasic instrument interfaces migrated
+    # Now grab the information (the old way)
+    curr_module = sys.modules[__name__]
+    for name, obj in inspect.getmembers(curr_module):
+        if hasattr(obj, '__name__'):
+            obj_name = obj.__name__.replace(__name__, "")
+            obj_name = obj_name and obj_name[1:] or ""
+            if obj_name in __all__:
+                interfaces.append((obj_name, obj))
+    return interfaces
+
+
+def is_import_interface(instrument_interface):
+    """Returns whether the instrument interface passed in is for results import
+    """
+    if IInstrumentImportInterface.providedBy(instrument_interface):
+        return True
+
+    # TODO Remove this once classic instrument interface migrated
+    if hasattr(instrument_interface, '__name__'):
+        obj_name = instrument_interface.__name__.replace(__name__, "")
+        if obj_name[1:] in __all__ and hasattr(instrument_interface, "Import"):
+            return True
+    return False
+
+
+def is_export_interface(instrument_interface):
+    """Returns whether the instrument interface passed in is for results export
+    """
+    if IInstrumentExportInterface.providedBy(instrument_interface):
+        return True
+
+    # TODO Remove this once classic instrument interface migrated
+    if hasattr(instrument_interface, '__name__'):
+        obj_name = instrument_interface.__name__.replace(__name__, "")
+        if obj_name[1:] in __all__ and hasattr(instrument_interface, "Export"):
+            return True
+    return False
+
+
+def get_instrument_import_interfaces():
+    """Returns all available instrument results import interfaces as a list of
+    tuples (id_interface, adapter)
+    """
+    return filter(lambda i: is_import_interface(i[1]),
+                  get_instrument_interfaces())
+
+
+def get_instrument_export_interfaces():
+    """Returns all available instrument results expot interfaces as a list of
+    tuples (id_interface, adapter)
+    """
+    return filter(lambda i: is_export_interface(i[1]),
+                  get_instrument_interfaces())
+
 def getExim(exim_id):
-    currmodule = sys.modules[__name__]
-    members = [obj for name, obj in inspect.getmembers(currmodule)
-               if hasattr(obj, '__name__')
-               and obj.__name__.endswith(exim_id)]
-    return members[0] if len(members) > 0 else None
+    """Returns the instrument interface for the exim_id passed in
+    """
+    interfaces = filter(lambda i: i[0]==exim_id, get_instrument_interfaces())
+    return interfaces and interfaces[0][1] or None
 
 
-def getParserName(exim_id):
-    for pair in PARSERS:
-        if pair[0] == exim_id:
-            return pair[1]
-    return None
+def get_automatic_parser(exim_id, infile):
+    """Returns the parser to be used by default for the instrument id interface
+    and results file passed in.
+    """
+    adapter = getExim(exim_id)
+    if IInstrumentAutoImportInterface.providedBy(adapter):
+        return adapter.get_automatic_parser(infile)
+
+    # TODO Remove this once classic instrument interface migrated
+    parser_func = filter(lambda i: i[0] == exim_id, PARSERS)
+    parser_func = parser_func and parser_func[0][1] or None
+    if not parser_func or not hasattr(adapter, parser_func):
+        return None
+    return parser_func(infile)
+  

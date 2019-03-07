@@ -6,9 +6,12 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser import BrowserView
 from bika.lims.browser.reports.selection_macros import SelectionMacrosView
+from bika.lims.catalog.analysisrequest_catalog import \
+    CATALOG_ANALYSIS_REQUEST_LISTING
 from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
 
@@ -33,10 +36,9 @@ class Report(BrowserView):
         parms = []
         titles = []
 
-        self.contentFilter = {'portal_type': 'Sample',
-                              'review_state': ['sample_received', 'expired',
-                                               'disposed'],
-                              'sort_on': 'getDateReceived'}
+        self.contentFilter = dict(portal_type="AnalysisRequest",
+                                  is_active=True,
+                                  sort_on="getDateReceived")
 
         val = self.selection_macros.parse_daterange(self.request,
                                                     'getDateReceived',
@@ -47,8 +49,8 @@ class Report(BrowserView):
             titles.append(val['titles'])
 
         # Query the catalog and store results in a dictionary
-        samples = self.bika_catalog(self.contentFilter)
-        if not samples:
+        ars = api.search(self.contentFilter, CATALOG_ANALYSIS_REQUEST_LISTING)
+        if not ars:
             message = _("No samples matched your query")
             self.context.plone_utils.addPortalMessage(message, "error")
             return self.default_template()
@@ -57,18 +59,10 @@ class Report(BrowserView):
         footlines = {}
         total_received_count = 0
         total_published_count = 0
-        for sample in samples:
-            sample = sample.getObject()
-
-            # Check if the sample has at least one Analysis Request published
-            published = False
-            for ar in sample.getAnalysisRequests():
-                datepublished = ar.getDatePublished()
-                if datepublished:
-                    published = True
-                    break
-
-            datereceived = sample.getDateReceived()
+        for ar in ars:
+            published = api.get_workflow_status_of(ar) == "published"
+            ar = api.get_object(ar)
+            datereceived = ar.getDateReceived()
             monthyear = datereceived.strftime("%B") + " " + datereceived.strftime(
                 "%Y")
             received = 1

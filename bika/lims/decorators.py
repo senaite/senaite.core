@@ -5,7 +5,28 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
+import cProfile
 import json
+import os
+import time
+from functools import wraps
+
+from bika.lims import api
+from bika.lims import logger
+from senaite.core.supermodel.interfaces import ISuperModel
+from zope.component import queryAdapter
+
+
+def XXX_REMOVEME(func):
+    """Decorator for dead code removal
+    """
+    @wraps(func)
+    def decorator(self, *args, **kwargs):
+        msg = "~~~~~~~ XXX REMOVEME marked method called: {}.{}".format(
+            self.__class__.__name__, func.func_name)
+        raise RuntimeError(msg)
+        return func(self, *args, **kwargs)
+    return decorator
 
 
 def returns_json(func):
@@ -18,3 +39,80 @@ def returns_json(func):
         result = func(*args, **kwargs)
         return json.dumps(result)
     return decorator
+
+
+def returns_super_model(func):
+    """Decorator to return standard content objects as SuperModels
+    """
+    def to_super_model(obj):
+        # avoid circular imports
+        from senaite.core.supermodel import SuperModel
+
+        # Object is already a SuperModel
+        if isinstance(obj, SuperModel):
+            return obj
+
+        # Only portal objects are supported
+        if not api.is_object(obj):
+            raise TypeError("Expected a portal object, got '{}'"
+                            .format(type(obj)))
+
+        # Wrap the object into a specific Publication Object Adapter
+        uid = api.get_uid(obj)
+        portal_type = api.get_portal_type(obj)
+
+        adapter = queryAdapter(uid, ISuperModel, name=portal_type)
+        if adapter is None:
+            return SuperModel(uid)
+        return adapter
+
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        obj = func(*args, **kwargs)
+        if isinstance(obj, (list, tuple)):
+            return map(to_super_model, obj)
+        return to_super_model(obj)
+
+    return wrapper
+
+
+def profileit(path=None):
+    """cProfile decorator to profile a function
+
+    :param path: output file path
+    :type path: str
+    :return: Function
+    """
+
+    def inner(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            prof = cProfile.Profile()
+            retval = prof.runcall(func, *args, **kwargs)
+            if path is not None:
+                print prof.print_stats()
+                prof.dump_stats(os.path.expanduser(path))
+            else:
+                print prof.print_stats()
+            return retval
+        return wrapper
+    return inner
+
+
+def timeit(threshold=0):
+    """Decorator to log the execution time of a function
+    """
+
+    def inner(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            start = time.time()
+            return_value = func(*args, **kwargs)
+            end = time.time()
+            duration = float(end-start)
+            if duration > threshold:
+                logger.info("Execution of '{}{}' took {:2f}s".format(
+                    func.__name__, args, duration))
+            return return_value
+        return wrapper
+    return inner

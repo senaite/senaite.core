@@ -527,7 +527,7 @@ class window.WorksheetManageResultsView
     console.debug "WorksheetManageResultsView::load"
 
     # load translations
-    jarn.i18n.loadCatalog 'bika'
+    jarn.i18n.loadCatalog "senaite.core"
     @_ = window.jarn.i18n.MessageFactory("senaite.core")
     @_pmf = window.jarn.i18n.MessageFactory('plone')
 
@@ -584,6 +584,8 @@ class window.WorksheetManageResultsView
     $("body").on "change", "#wideinterims_analyses", @on_wideiterims_analyses_change
     $("body").on "change", "#wideinterims_interims", @on_wideiterims_interims_change
     $("body").on "click", "#wideinterims_apply", @on_wideinterims_apply_click
+
+    $("body").on "click", "img.slot-remarks", @on_slot_remarks_click
 
     ### internal events ###
 
@@ -1045,6 +1047,31 @@ class window.WorksheetManageResultsView
     $("#wideinterims_value").val $(idinter).val()
 
 
+  on_slot_remarks_click: (event) =>
+    ###
+     * Eventhandler when the remarks icon was clicked
+    ###
+    console.debug "°°° WorksheetManageResultsView::on_slot_remarks_click °°°"
+    el = event.currentTarget
+
+    # https://jquerytools.github.io/documentation/overlay
+    # https://github.com/plone/plone.app.jquerytools/blob/master/plone/app/jquerytools/browser/overlayhelpers.js
+    $(el).prepOverlay
+      subtype: "ajax"
+      filter: "h1,span.remarks_history"
+      config:
+        closeOnClick: yes
+        closeOnEsc: yes
+        onBeforeLoad: (event) ->
+          overlay = this.getOverlay()
+          overlay.draggable()
+        onLoad: (event) ->
+          $.mask.close()
+
+    # workaround un-understandable overlay api
+    $(el).click()
+
+
   on_wideinterims_apply_click: (event) =>
     ###
      * Eventhandler when the wide interim apply button was clicked
@@ -1055,16 +1082,14 @@ class window.WorksheetManageResultsView
     event.preventDefault()
     $el = $(event.currentTarget)
 
-
     analysis = $("#wideinterims_analyses").val()
     interim = $("#wideinterims_interims").val()
     empty_only = $("#wideinterims_empty").is(":checked")
 
-    $("tr[keyword='#{analysis}'] input[field='#{interim}']").each (index, element) ->
+    $("tr td input[column_key='#{interim}']").each (index, element) ->
       if empty_only
         if $(this).val() == "" or $(this).val().match(/\d+/) == "0"
           $(this).val $("#wideinterims_value").val()
-          $(this).change()
       else
         $(this).val $("#wideinterims_value").val()
-        $(this).change()
+      $(this).trigger "change"

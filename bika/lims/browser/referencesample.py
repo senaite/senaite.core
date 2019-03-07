@@ -5,44 +5,47 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-import json
+import collections
 from datetime import datetime
-from operator import itemgetter
 
-from Products.ATContentTypes.utils import DT2dt
-from Products.Archetypes.config import REFERENCE_CATALOG
-from Products.CMFCore.utils import getToolByName
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from bika.lims import bikaMessageFactory as _, logger
+from bika.lims import api
+from bika.lims import bikaMessageFactory as _
+from bika.lims import logger
 from bika.lims.browser import BrowserView
 from bika.lims.browser.analyses import AnalysesView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.chart.analyses import EvolutionChart
+from bika.lims.utils import get_image
+from bika.lims.utils import get_link
 from bika.lims.utils import t
 from plone.app.layout.globals.interfaces import IViewView
+from plone.memoize import view
+from Products.ATContentTypes.utils import DT2dt
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.interface import implements
 
 
 class ViewView(BrowserView):
-    """ Reference Sample View
+    """Reference Sample View
     """
     implements(IViewView)
     template = ViewPageTemplateFile("templates/referencesample_view.pt")
 
     def __init__(self, context, request):
-        BrowserView.__init__(self, context, request)
-        self.icon = self.portal_url +\
-            "/++resource++bika.lims.images/referencesample_big.png"
+        super(ViewView, self).__init__(context, request)
+
+        self.icon = "{}/{}".format(
+            self.portal_url,
+            "++resource++bika.lims.images/referencesample_big.png")
 
     def __call__(self):
-        rc = getToolByName(self.context, REFERENCE_CATALOG)
         self.results = {}  # {category_title: listofdicts}
         for r in self.context.getReferenceResults():
-            service = rc.lookupObject(r['uid'])
+            service = api.get_object_by_uid(r["uid"])
             cat = service.getCategoryTitle()
             if cat not in self.results:
                 self.results[cat] = []
-            r['service'] = service
+            r["service"] = service
             self.results[cat].append(r)
         self.categories = self.results.keys()
         self.categories.sort()
@@ -54,15 +57,16 @@ class ReferenceAnalysesViewView(BrowserView):
     """
 
     implements(IViewView)
-    template = ViewPageTemplateFile("templates/referencesample_analyses.pt")
+    template = ViewPageTemplateFile(
+        "templates/referencesample_analyses.pt")
 
     def __init__(self, context, request):
         super(ReferenceAnalysesViewView, self).__init__(context, request)
-        self.icon = self.portal_url + \
-            "/++resource++bika.lims.images/referencesample_big.png"
+
         self.title = self.context.translate(_("Reference Analyses"))
-        self.description = ""
-        self._analysesview = None
+        self.icon = "{}/{}".format(
+            self.portal_url,
+            "++resource++bika.lims.images/referencesample_big.png")
 
     def __call__(self):
         return self.template()
@@ -72,117 +76,148 @@ class ReferenceAnalysesViewView(BrowserView):
         """
         return self.get_analyses_view().contents_table()
 
-    def get_analyses_view(self):
-        if not self._analysesview:
-            # Creates the Analyses View if not exists yet
-            self._analysesview = ReferenceAnalysesView(
-                self.context, self.request)
-            self._analysesview.allow_edit = False
-            self._analysesview.show_select_column = False
-            self._analysesview.show_workflow_action_buttons = False
-            self._analysesview.form_id = "%s_qcanalyses" % self.context.UID()
-            self._analysesview.review_states[0]['transitions'] = [{}]
-        return self._analysesview
+    def get_analyses_table_view(self):
+        view_name = "table_referenceanalyses"
+        view = api.get_view(
+            view_name, context=self.context, request=self.request)
+        # Call listing hooks
+        view.update()
+        view.before_render()
 
-    def getReferenceSampleId(self):
-        return self.context.id
-
-    def get_analyses_json(self):
-        return self.get_analyses_view().chart.get_json()
+        # TODO Refactor QC Charts as React Components
+        # The current QC Chart is rendered by looking at the value from a
+        # hidden input with id "graphdata", that is rendered below the contents
+        # listing (see referenceanalyses.pt).
+        # The value is a json, is built by folderitem function and is returned
+        # by self.chart.get_json(). This function is called directly by the
+        # template on render, but the template itself does not directly render
+        # the contents listing, but is done asyncronously.
+        # Hence the function at this point returns an empty dictionary because
+        # folderitems hasn't been called yet. As a result, the chart appears
+        # empty. Here, we force folderitems function to be called in order to
+        # ensure the graphdata is filled before the template is rendered.
+        view.get_folderitems()
+        return view
 
 
 class ReferenceAnalysesView(AnalysesView):
-    """ Reference Analyses on this sample
+    """Reference Analyses on this sample
     """
-    implements(IViewView)
 
     def __init__(self, context, request):
-        AnalysesView.__init__(self, context, request)
+        super(ReferenceAnalysesView, self).__init__(context, request)
+
+        self.form_id = "{}_qcanalyses".format(api.get_uid(context))
+        self.allow_edit = False
+        self.show_select_column = False
+        self.show_search = False
+        self.omit_form = True
+        self.show_search = False
+
         self.contentFilter = {
-            'portal_type': 'ReferenceAnalysis',
-            'path': {'query': "/".join(self.context.getPhysicalPath()),
-                     'level': 0}}
-        self.columns = {
-            'id': {'title': _('ID'), 'toggle': False},
-            'getReferenceAnalysesGroupID': {
-                'title': _('QC Sample ID'), 'toggle': True},
-            'Category': {'title': _('Category'), 'toggle': True},
-            'Service': {'title': _('Service'), 'toggle': True},
-            'Worksheet': {'title': _('Worksheet'), 'toggle': True},
-            'Method': {
-                'title': _('Method'),
-                'sortable': False,
-                'toggle': True},
-            'Instrument': {
-                'title': _('Instrument'),
-                'sortable': False,
-                'toggle': True},
-            'Result': {'title': _('Result'), 'toggle': True},
-            'CaptureDate': {
-                'title': _('Captured'),
-                'index': 'getResultCaptureDate',
-                'toggle': True},
-            'Uncertainty': {'title': _('+-'), 'toggle': True},
-            'DueDate': {'title': _('Due Date'),
-                        'index': 'getDueDate',
-                        'toggle': True},
-            'retested': {'title': _('Retested'),
-                         'type': 'boolean', 'toggle': True},
-            'state_title': {'title': _('State'), 'toggle': True},
+            "portal_type": "ReferenceAnalysis",
+            "path": {
+                "query": "/".join(self.context.getPhysicalPath()),
+                "level": 0}
         }
+
+        self.columns = collections.OrderedDict((
+            ("id", {
+                "title": _("ID"),
+                "sortable": False,
+                "toggle": False}),
+            ("getReferenceAnalysesGroupID", {
+                "title": _("QC Sample ID"),
+                "sortable": False,
+                "toggle": True}),
+            ("Category", {
+                "title": _("Category"),
+                "sortable": False,
+                "toggle": True}),
+            ("Service", {
+                "title": _("Service"),
+                "sortable": False,
+                "toggle": True}),
+            ("Worksheet", {
+                "title": _("Worksheet"),
+                "sortable": False,
+                "toggle": True}),
+            ("Method", {
+                "title": _("Method"),
+                "sortable": False,
+                "toggle": True}),
+            ("Instrument", {
+                "title": _("Instrument"),
+                "sortable": False,
+                "toggle": True}),
+            ("Result", {
+                "title": _("Result"),
+                "sortable": False,
+                "toggle": True}),
+            ("CaptureDate", {
+                "title": _("Captured"),
+                "sortable": False,
+                "toggle": True}),
+            ("Uncertainty", {
+                "title": _("+-"),
+                "sortable": False,
+                "toggle": True}),
+            ("DueDate", {
+                "title": _("Due Date"),
+                "sortable": False,
+                "toggle": True}),
+            ("retested", {
+                "title": _("Retested"),
+                "sortable": False,
+                "type": "boolean",
+                "toggle": True}),
+            ("state_title", {
+                "title": _("State"),
+                "sortable": False,
+                "toggle": True}),
+        ))
+
         self.review_states = [
-            {'id': 'default',
-             'title': _('All'),
-             'contentFilter': {},
-             'transitions': [],
-             'columns':['id',
-                        'getReferenceAnalysesGroupID',
-                        'Category',
-                        'Service',
-                        'Worksheet',
-                        'Method',
-                        'Instrument',
-                        'Result',
-                        'CaptureDate',
-                        'Uncertainty',
-                        'DueDate',
-                        'state_title'],
-             },
+            {
+                "id": "default",
+                "title": _("All"),
+                "contentFilter": {},
+                "transitions": [],
+                "columns": self.columns.keys()
+            },
         ]
         self.chart = EvolutionChart()
 
-    def isItemAllowed(self, obj):
+    def is_analysis_edition_allowed(self, analysis_brain):
+        """see AnalysesView.is_analysis_edition_allowed
         """
-        :obj: it is a brain
-        """
-        allowed = super(ReferenceAnalysesView, self).isItemAllowed(obj)
-        return allowed if not allowed else obj.getResult != ''
+        return False
 
     def folderitem(self, obj, item, index):
-        """
-        :obj: it is a brain
+        """Service triggered each time an item is iterated in folderitems.
+
+        The use of this service prevents the extra-loops in child objects.
+
+        :obj: the instance of the class to be foldered
+        :item: dict containing the properties of the object to be used by
+            the template
+        :index: current index of the item
         """
         item = super(ReferenceAnalysesView, self).folderitem(obj, item, index)
+
         if not item:
             return None
-        item['Category'] = obj.getCategoryTitle
-        wss = self.rc.getBackReferences(
-            obj.UID,
-            relationship="WorksheetAnalysis")
-        if not wss:
+        item["Category"] = obj.getCategoryTitle
+        ref_analysis = api.get_object(obj)
+        ws = ref_analysis.getWorksheet()
+        if not ws:
             logger.warn(
-                'No Worksheet found for ReferenceAnalysis {}'
+                "No Worksheet found for ReferenceAnalysis {}"
                 .format(obj.getId))
-        elif wss and len(wss) == 1:
-            # TODO-performance: We are getting the object here...
-            ws = wss[0].getSourceObject()
-            item['Worksheet'] = ws.Title()
-            anchor = '<a href="%s">%s</a>' % (ws.absolute_url(), ws.Title())
-            item['replace']['Worksheet'] = anchor
         else:
-            logger.warn(
-                'More than one Worksheet found for ReferenceAnalysis {}'
-                .format(obj.getId))
+            item["Worksheet"] = ws.Title()
+            anchor = "<a href='%s'>%s</a>" % (ws.absolute_url(), ws.Title())
+            item["replace"]["Worksheet"] = anchor
 
         # Add the analysis to the QC Chart
         self.chart.add_analysis(obj)
@@ -190,78 +225,132 @@ class ReferenceAnalysesView(AnalysesView):
 
 
 class ReferenceResultsView(BikaListingView):
+    """Listing of all reference results
     """
-    """
+
     def __init__(self, context, request):
         super(ReferenceResultsView, self).__init__(context, request)
-        self.title = self.context.translate(_("Reference Values"))
-        self.description = self.context.translate(_(
-            "Click on Analysis Categories (against shaded background) "
-            "to see Analysis Services in each category. Enter minimum "
-            "and maximum values to indicate a valid results range. "
-            "Any result outside this range will raise an alert. "
-            "The % Error field allows for an % uncertainty to be "
-            "considered when evaluating results against minimum and "
-            "maximum values. A result out of range but still in range "
-            "if the % error is taken into consideration, will raise a "
-            "less severe alert."))
-        self.contentFilter = {}
+
+        self.catalog = "bika_setup_catalog"
+        self.contentFilter = {
+            "portal_type": "AnalysisService",
+            "UID": self.get_reference_results().keys(),
+            "is_active": True,
+            "sort_on": "sortable_title",
+            "sort_order": "ascending",
+        }
         self.context_actions = {}
-        self.show_sort_column = False
+        self.title = self.context.translate(_("Reference Values"))
+        self.icon = "{}/{}".format(
+            self.portal_url,
+            "/++resource++bika.lims.images/referencesample_big.png"
+        )
+
         self.show_select_row = False
         self.show_workflow_action_buttons = False
         self.show_select_column = False
         self.pagesize = 999999
+        self.show_search = False
 
-        self.columns = {
-            'Service': {'title': _('Service')},
-            'result': {'title': _('Result')},
-            'min': {'title': _('Min')},
-            'max': {'title': _('Max')},
-        }
+        # Categories
+        if self.show_categories_enabled():
+            self.categories = []
+            self.show_categories = True
+            self.expand_all_categories = True
+            self.category_index = "getCategoryTitle"
+
+        self.columns = collections.OrderedDict((
+            ("Title", {
+                "title": _("Analysis Service"),
+                "sortable": False}),
+            ("result", {
+                "title": _("Expected Result"),
+                "sortable": False}),
+            ("error", {
+                "title": _("Permitted Error %"),
+                "sortable": False}),
+            ("min", {
+                "title": _("Min"),
+                "sortable": False}),
+            ("max", {
+                "title": _("Max"),
+                "sortable": False}),
+        ))
+
         self.review_states = [
-            {'id': 'default',
-             'title': _('All'),
-             'contentFilter': {},
-             'columns': ['Service',
-                         'result',
-                         'min',
-                         'max']},
+            {
+                "id": "default",
+                "title": _("All"),
+                "contentFilter": {},
+                "columns": self.columns.keys()
+            }
         ]
 
-    def folderitems(self):
-        items = []
-        uc = getToolByName(self.context, 'uid_catalog')
-        # not using <self.contentsMethod=bsc>
-        for x in self.context.getReferenceResults():
-            service = uc(UID=x['uid'])[0].getObject()
-            item = {
-                'obj': self.context,
-                'id': x['uid'],
-                'uid': x['uid'],
-                'result': x['result'],
-                'min': x['min'],
-                'max': x['max'],
-                'title': service.Title(),
-                'Service': service.Title(),
-                'type_class': 'contenttype-ReferenceResult',
-                'url': service.absolute_url(),
-                'relative_url': service.absolute_url(),
-                'view_url': self.context.absolute_url() + "/results",
-                'replace': {},
-                'before': {},
-                'after': {},
-                'choices': {},
-                'class': {},
-                'state_class': 'state-active',
-                'allow_edit': [],
-            }
-            item['replace']['Service'] = "<a href='%s'>%s</a>" % \
-                (service.absolute_url(), service.Title())
-            items.append(item)
+    def update(self):
+        """Update hook
+        """
+        super(ReferenceResultsView, self).update()
+        self.categories.sort()
 
-        items = sorted(items, key=itemgetter('Service'))
-        return items
+    @view.memoize
+    def show_categories_enabled(self):
+        """Check in the setup if categories are enabled
+        """
+        return self.context.bika_setup.getCategoriseAnalysisServices()
+
+    @view.memoize
+    def get_reference_results(self):
+        """Return a mapping of Analysis Service -> Reference Results
+        """
+        referenceresults = self.context.getReferenceResults()
+        return dict(map(lambda rr: (rr.get("uid"), rr), referenceresults))
+
+    def folderitem(self, obj, item, index):
+        """Service triggered each time an item is iterated in folderitems.
+
+        The use of this service prevents the extra-loops in child objects.
+
+        :obj: the instance of the class to be foldered
+        :item: dict containing the properties of the object to be used by
+            the template
+        :index: current index of the item
+        """
+
+        uid = api.get_uid(obj)
+        url = api.get_url(obj)
+        title = api.get_title(obj)
+
+        # get the category
+        if self.show_categories_enabled():
+            category = obj.getCategoryTitle()
+            if category not in self.categories:
+                self.categories.append(category)
+            item["category"] = category
+
+        ref_results = self.get_reference_results()
+        ref_result = ref_results.get(uid)
+
+        item["Title"] = title
+        item["replace"]["Title"] = get_link(url, value=title)
+        item["result"] = ref_result.get("result")
+        item["min"] = ref_result.get("min")
+        item["max"] = ref_result.get("max")
+
+        # Icons
+        after_icons = ""
+        if obj.getAccredited():
+            after_icons += get_image(
+                "accredited.png", title=_("Accredited"))
+        if obj.getAttachmentOption() == "r":
+            after_icons += get_image(
+                "attach_reqd.png", title=_("Attachment required"))
+        if obj.getAttachmentOption() == "n":
+            after_icons += get_image(
+                "attach_no.png", title=_("Attachment not permitted"))
+        if after_icons:
+            item["after"]["Title"] = after_icons
+
+        return item
 
 
 class ReferenceSamplesView(BikaListingView):

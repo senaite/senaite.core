@@ -59,7 +59,6 @@ ATTACHMENT_OPTIONS = DisplayList((
 ))
 ATTACHMENT_REPORT_OPTIONS = DisplayList((
     ('r', _('Render in Report')),
-    ('a', _('Attach to Report')),
     ('i', _('Ignore in Report')),
 ))
 ARIMPORT_OPTIONS = DisplayList((
@@ -67,13 +66,6 @@ ARIMPORT_OPTIONS = DisplayList((
     ('p', _('Profiles')),
     # ('s', _('Special')),
 ))
-EMAIL_SUBJECT_OPTIONS = DisplayList((
-    ('ar', _('Analysis Request ID')),
-    ('co', _('Order ID')),
-    ('cr', _('Client Reference')),
-    ('cs', _('Client SID')),
-))
-
 GENDERS = DisplayList((
     ('male', _('Male')),
     ('female', _('Female')),
@@ -128,4 +120,12 @@ PRIORITIES = DisplayList((
     ('3', _('Medium')),
     ('4', _('Low')),
     ('5', _('Lowest')),
+))
+MIN_OPERATORS = DisplayList((
+    ('geq', ">="),
+    ('gt', '>')
+))
+MAX_OPERATORS = DisplayList((
+    ('leq', "<="),
+    ('lt', '<')
 ))

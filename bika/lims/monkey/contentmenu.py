@@ -15,7 +15,6 @@ def contentmenu_factories_available(self):
         'Client',
         'AnalysisRequest',
         'Worksheet',
-        'Sample',
         'AnalysisCategory',
         'AnalysisProfile',
         'ARTemplate',

@@ -6,23 +6,19 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from AccessControl.SecurityInfo import ClassSecurityInfo
+from Products.ATContentTypes.content import schemata
+from Products.Archetypes import atapi
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
+from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import ISubGroups
-from bika.lims import bikaMessageFactory as _b
-from bika.lims.browser.bika_listing import BikaListingView
-from plone.app.content.browser.interfaces import IFolderContentsView
-from plone.app.folder.folder import ATFolderSchema, ATFolder
-from plone.app.layout.globals.interfaces import IViewView
-from Products.Archetypes import atapi
-from Products.ATContentTypes.content import schemata
-from Products.CMFCore.utils import getToolByName
+from bika.lims.permissions import AddSubGroup
+from plone.app.folder.folder import ATFolder
+from plone.app.folder.folder import ATFolderSchema
 from zope.interface.declarations import implements
 
 
 class SubGroupsView(BikaListingView):
-    implements(IFolderContentsView, IViewView)
 
     def __init__(self, context, request):
         super(SubGroupsView, self).__init__(context, request)
@@ -32,6 +28,7 @@ class SubGroupsView(BikaListingView):
         self.context_actions = {
             _('Add'): {
                 'url': 'createObject?type_name=SubGroup',
+                'permission': AddSubGroup,
                 'icon': '++resource++bika.lims.images/add.png'
             }
         }
@@ -39,7 +36,7 @@ class SubGroupsView(BikaListingView):
             "/++resource++bika.lims.images/batch_big.png"
         self.title = self.context.translate(_("Sub-groups"))
         self.description = ""
-        self.show_sort_column = False
+
         self.show_select_row = False
         self.show_select_column = True
         self.pagesize = 25
@@ -56,12 +53,12 @@ class SubGroupsView(BikaListingView):
         self.review_states = [
             {'id': 'default',
              'title': _('Active'),
-             'contentFilter': {'inactive_state': 'active'},
+             'contentFilter': {'is_active': True},
              'transitions': [{'id': 'deactivate'}, ],
              'columns': ['Title', 'Description', 'SortKey']},
             {'id': 'inactive',
              'title': _('Inactive'),
-             'contentFilter': {'inactive_state': 'inactive'},
+             'contentFilter': {'is_active': False},
              'transitions': [{'id': 'activate'}, ],
              'columns': ['Title', 'Description', 'SortKey']},
             {'id': 'all',
@@ -69,6 +66,12 @@ class SubGroupsView(BikaListingView):
              'contentFilter': {},
              'columns': ['Title', 'Description', 'SortKey']},
         ]
+
+    def before_render(self):
+        """Before template render hook
+        """
+        # Don't allow any context actions
+        self.request.set("disable_border", 1)
 
     def folderitems(self):
         items = BikaListingView.folderitems(self)
@@ -81,6 +84,7 @@ class SubGroupsView(BikaListingView):
                 (items[x]['url'], items[x]['Title'])
 
         return items
+
 
 schema = ATFolderSchema.copy()
 

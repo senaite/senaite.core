@@ -38,7 +38,7 @@ class ARImportsView(BikaListingView):
         self.catalog = "portal_catalog"
         self.contentFilter = {
             'portal_type': 'ARImport',
-            'cancellation_state': 'active',
+            'is_active': True,
             'sort_on': 'sortable_title',
         }
         self.context_actions = {}
@@ -47,7 +47,7 @@ class ARImportsView(BikaListingView):
                 _('AR Import'): {
                     'url': 'arimport_add',
                     'icon': '++resource++bika.lims.images/add.png'}}
-        self.show_sort_column = False
+
         self.show_select_row = False
         self.show_select_column = False
         self.pagesize = 50
@@ -55,7 +55,7 @@ class ARImportsView(BikaListingView):
 
         self.icon = \
             self.portal_url + "/++resource++bika.lims.images/arimport_big.png"
-        self.title = self.context.translate(_("Analysis Request Imports"))
+        self.title = self.context.translate(_("Sample Imports"))
         self.description = ""
 
         self.columns = {
@@ -83,20 +83,6 @@ class ARImportsView(BikaListingView):
             {'id': 'imported',
              'title': _('Imported'),
              'contentFilter': {'review_state': 'imported'},
-             'columns': ['Title',
-                         'Creator',
-                         'Filename',
-                         'Client',
-                         'DateCreated',
-                         'DateValidated',
-                         'DateImported',
-                         'state_title']},
-            {'id': 'cancelled',
-             'title': _('Cancelled'),
-             'contentFilter': {
-                 'review_state': ['initial', 'invalid', 'valid', 'imported'],
-                 'cancellation_state': 'cancelled'
-             },
              'columns': ['Title',
                          'Creator',
                          'Filename',
@@ -157,19 +143,6 @@ class ClientARImportsView(ARImportsView):
             {'id': 'imported',
              'title': _('Imported'),
              'contentFilter': {'review_state': 'imported'},
-             'columns': ['Title',
-                         'Creator',
-                         'Filename',
-                         'DateCreated',
-                         'DateValidated',
-                         'DateImported',
-                         'state_title']},
-            {'id': 'cancelled',
-             'title': _('Cancelled'),
-             'contentFilter': {
-                 'review_state': ['initial', 'invalid', 'valid', 'imported'],
-                 'cancellation_state': 'cancelled'
-             },
              'columns': ['Title',
                          'Creator',
                          'Filename',

@@ -34,16 +34,6 @@
   <permission value="View"/>
  </action>
 
- <action title="Quality Control"
-         action_id="qualitycontrol"
-         category="object"
-         condition_expr=""
-         url_expr="string:${object_url}/qualitycontrol"
-         i18n:attributes="title"
-         visible="True">
-  <permission value="Modify portal content"/>
- </action>
-
  <action title="Administration"
          action_id="administration"
          category="object"

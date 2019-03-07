@@ -19,6 +19,7 @@ from bika.lims.config import PROJECTNAME
 import sys
 import time
 from bika.lims import PMF, bikaMessageFactory as _
+from bika.lims.interfaces import IDeactivable
 from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
@@ -65,6 +66,7 @@ schema['description'].schemata = 'Description'
 schema['description'].widget.visible = True
 
 class ReferenceDefinition(BaseContent):
+    implements(IDeactivable)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema

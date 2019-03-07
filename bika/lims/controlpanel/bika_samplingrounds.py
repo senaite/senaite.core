@@ -5,19 +5,16 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from plone.supermodel import model
-from plone.dexterity.content import Container
-from zope.interface import implements
-from bika.lims.browser.bika_listing import BikaListingView
-from plone.app.content.browser.interfaces import IFolderContentsView
-from plone.app.layout.globals.interfaces import IViewView
 from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.bika_listing import BikaListingView
+from plone.dexterity.content import Container
+from plone.supermodel import model
+from zope.interface import implements
 
 
 class SamplingRoundsView(BikaListingView):
     """Displays all system's sampling rounds
     """
-    implements(IFolderContentsView, IViewView)
 
     def __init__(self, context, request):
         super(SamplingRoundsView, self).__init__(context, request)
@@ -26,8 +23,7 @@ class SamplingRoundsView(BikaListingView):
             'portal_type': 'SamplingRound',
             'sort_on': 'sortable_title'
         }
-        self.show_table_only = False
-        self.show_sort_column = False
+
         self.show_select_row = False
         self.show_select_column = True
         self.pagesize = 25
@@ -51,8 +47,7 @@ class SamplingRoundsView(BikaListingView):
         self.review_states = [
             {'id': 'default',
              'title':  _('Open'),
-             'contentFilter': {'review_state': 'open',
-                               'cancellation_state': 'active'},
+             'contentFilter': {'review_state': 'open'},
              'columns': ['title',
                          'Description',
                          'num_sample_points',
@@ -60,8 +55,7 @@ class SamplingRoundsView(BikaListingView):
                          ]
              },
              {'id': 'closed',
-             'contentFilter': {'review_state': 'closed',
-                               'cancellation_state': 'active'},
+             'contentFilter': {'review_state': 'closed'},
              'title': _('Closed'),
              'transitions': [{'id': 'open'}],
              'columns': ['title',
@@ -73,7 +67,7 @@ class SamplingRoundsView(BikaListingView):
             {'id': 'cancelled',
              'title': _('Cancelled'),
              'transitions': [{'id': 'reinstate'}],
-             'contentFilter': {'cancellation_state': 'cancelled'},
+             'contentFilter': {'review_state': 'cancelled'},
              'columns': ['title',
                          'Description',
                          'num_sample_points',
@@ -92,6 +86,12 @@ class SamplingRoundsView(BikaListingView):
              },
         ]
 
+    def before_render(self):
+        """Before template render hook
+        """
+        # Don't allow any context actions
+        self.request.set("disable_border", 1)
+
 
 class ISamplingRounds(model.Schema):
     """ A Sampling Rounds container.
@@ -101,4 +101,3 @@ class ISamplingRounds(model.Schema):
 class SamplingRounds(Container):
     implements(ISamplingRounds)
     displayContentsTab = False
-    pass

@@ -19,14 +19,17 @@ from Products.CMFCore.permissions import View
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
 from bika.lims import PMF, bikaMessageFactory as _, api
+from bika.lims.browser.fields.remarksfield import RemarksField
 from bika.lims.idserver import renameAfterCreation
 from bika.lims.utils import t
 from bika.lims.browser.fields import ReferenceResultsField
 from bika.lims.browser.widgets import DateTimeWidget as bika_DateTimeWidget
+from bika.lims.browser.widgets import RemarksWidget
 from bika.lims.browser.widgets import ReferenceResultsWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.interfaces import IReferenceSample
+from bika.lims.interfaces import IReferenceSample, IAnalysisService, \
+    IDeactivable
 from bika.lims.utils import sortable_title, tmpID
 from bika.lims.utils import to_unicode as _u
 from bika.lims.utils import to_utf8
@@ -84,16 +87,12 @@ schema = BikaSchema.copy() + Schema((
             label=_("Lot Number"),
         ),
     ),
-    TextField('Remarks',
-        schemata = 'Description',
-        searchable = True,
-        default_content_type = 'text/plain',
-        allowed_content_types= ('text/plain', ),
-        default_output_type="text/plain",
-        widget = TextAreaWidget(
-            macro = "bika_widgets/remarks",
+    RemarksField(
+        'Remarks',
+        schemata='Description',
+        searchable=True,
+        widget=RemarksWidget(
             label=_("Remarks"),
-            append_only = True,
         ),
     ),
     DateTimeField('DateSampled',
@@ -162,7 +161,7 @@ schema = BikaSchema.copy() + Schema((
 schema['title'].schemata = 'Description'
 
 class ReferenceSample(BaseFolder):
-    implements(IReferenceSample)
+    implements(IReferenceSample, IDeactivable)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
@@ -195,7 +194,7 @@ class ReferenceSample(BaseFolder):
         bsc = getToolByName(self, 'bika_setup_catalog')
         defs = [o.getObject() for o in
                 bsc(portal_type = 'ReferenceDefinition',
-                    inactive_state = 'active')]
+                    is_active = True)]
         items = [('','')] + [(o.UID(), make_title(o)) for o in defs]
         o = self.getReferenceDefinition()
         it = make_title(o)
@@ -208,7 +207,7 @@ class ReferenceSample(BaseFolder):
         bsc = getToolByName(self, 'bika_setup_catalog')
         items = [('','')] + [(o.UID, o.Title) for o in
                                bsc(portal_type='Manufacturer',
-                                   inactive_state = 'active')]
+                                   is_active = True)]
         o = self.getReferenceDefinition()
         if o and o.UID() not in [i[0] for i in items]:
             items.append((o.UID(), o.Title()))
@@ -255,25 +254,26 @@ class ReferenceSample(BaseFolder):
         return analyses
 
     security.declarePublic('addReferenceAnalysis')
-    def addReferenceAnalysis(self, service_uid, reference_type):
+    def addReferenceAnalysis(self, service):
         """
         Creates a new Reference Analysis object based on this Sample
         Reference, with the type passed in and associates the newly
         created object to the Analysis Service passed in.
 
-        :param service_uid: The UID of the Analysis Service to be associated
-        to the newly created Reference Analysis
-        :type service_uid: A string
+        :param service: Object, brain or UID of the Analysis Service
         :param reference_type: type of ReferenceAnalysis, where 'b' is is
         Blank and 'c' is Control
         :type reference_type: A String
-        :returns: the UID of the newly created Reference Analysis
+        :returns: the newly created Reference Analysis
         :rtype: string
         """
-        rc = getToolByName(self, REFERENCE_CATALOG)
-        service = rc.lookupObject(service_uid)
-        calc = service.getCalculation()
-        interim_fields = calc.getInterimFields() if calc else []
+        if api.is_uid(service) or api.is_brain(service):
+            return self.addReferenceAnalysis(api.get_object(service))
+
+        if not IAnalysisService.providedBy(service):
+            return None
+
+        interim_fields = service.getInterimFields()
         analysis = _createObjectByType("ReferenceAnalysis", self, id=tmpID())
         # Copy all the values from the schema
         # TODO Add Service as a param in ReferenceAnalysis constructor and do
@@ -295,12 +295,13 @@ class ReferenceSample(BaseFolder):
             mutator_name = analysis.getField(key).mutator
             mutator = getattr(analysis, mutator_name)
             mutator(val)
-        analysis.setAnalysisService(service_uid)
-        analysis.setReferenceType(reference_type)
+        analysis.setAnalysisService(service)
+        ref_type = self.getBlank() and 'b' or 'c'
+        analysis.setReferenceType(ref_type)
         analysis.setInterimFields(interim_fields)
         analysis.unmarkCreationFlag()
         renameAfterCreation(analysis)
-        return analysis.UID()
+        return analysis
 
 
     security.declarePublic('getServices')

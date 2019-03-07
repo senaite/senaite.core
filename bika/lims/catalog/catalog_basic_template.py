@@ -31,6 +31,7 @@ BASE_CATALOG_INDEXES = {
     # blob which contains all full-text searchable text for this content item.
     # https://docs.plone.org/develop/plone/searching_and_indexing/indexing.html#full-text-searching
     'SearchableText': 'ZCTextIndex',
+    'is_active': 'BooleanIndex',
 }
 BASE_CATALOG_COLUMNS = [
     'UID',

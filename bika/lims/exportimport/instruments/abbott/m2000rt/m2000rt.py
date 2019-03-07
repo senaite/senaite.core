@@ -36,8 +36,6 @@ def Import(context, request):
     fileformat = request.form['format']
     artoapply = request.form['artoapply']
     override = request.form['override']
-    sample = request.form.get('sample',
-                              'requestid')
     instrument = request.form.get('instrument', None)
     errors = []
     logs = []
@@ -70,22 +68,11 @@ def Import(context, request):
         elif override == 'overrideempty':
             over = [True, True]
 
-        sam = ['getId', 'getSampleID', 'getClientSampleID']
-        if sample == 'requestid':
-            sam = ['getId']
-        if sample == 'sampleid':
-            sam = ['getSampleID']
-        elif sample == 'clientsid':
-            sam = ['getClientSampleID']
-        elif sample == 'sample_clientsid':
-            sam = ['getSampleID', 'getClientSampleID']
-
         # Crate importer with the defined parser and the
         # rest of defined parameters. Then try to import the
         # results from the file
         importer = Abbottm2000rtImporter(parser=parser,
                                          context=context,
-                                         idsearchcriteria=sam,
                                          allowed_ar_states=status,
                                          allowed_analysis_states=None,
                                          override=over,
@@ -220,11 +207,11 @@ class Abbottm2000rtTSVParser(InstrumentCSVResultsFileParser):
 
 
 class Abbottm2000rtImporter(AnalysisResultsImporter):
-    def __init__(self, parser, context, idsearchcriteria, override,
+    def __init__(self, parser, context,  override,
                  allowed_ar_states=None, allowed_analysis_states=None,
                  instrument_uid=None):
         AnalysisResultsImporter.__init__(self, parser, context,
-                                         idsearchcriteria, override,
+                                          override,
                                          allowed_ar_states,
                                          allowed_analysis_states,
                                          instrument_uid)

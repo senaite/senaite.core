@@ -20,7 +20,7 @@ class ClientAttachmentsView(BikaListingView):
         self.contentFilter = {'portal_type': 'Attachment',
                               'sort_order': 'reverse'}
         self.context_actions = {}
-        self.show_sort_column = False
+
         self.show_select_row = False
         self.show_select_column = True
         self.pagesize = 50

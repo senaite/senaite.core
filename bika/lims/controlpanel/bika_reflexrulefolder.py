@@ -5,23 +5,21 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from plone.app.content.browser.interfaces import IFolderContentsView
-from plone.app.layout.globals.interfaces import IViewView
-from plone.app.folder.folder import ATFolder, ATFolderSchema
+from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
 from Products.CMFCore import permissions
-from zope.interface.declarations import implements
-from Products.ATContentTypes.content import schemata
 from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
-from bika.lims.permissions import ManageBika
-from bika.lims.config import PROJECTNAME
 from bika.lims.browser.bika_listing import BikaListingView
+from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import IReflexRuleFolder
+from bika.lims.permissions import ManageBika, AddReflexRule
+from plone.app.folder.folder import ATFolder
+from plone.app.folder.folder import ATFolderSchema
+from zope.interface.declarations import implements
 
 
 class ReflexRuleFolderView(BikaListingView):
-    implements(IFolderContentsView, IViewView)
 
     def __init__(self, context, request):
         super(ReflexRuleFolderView, self).__init__(context, request)
@@ -33,7 +31,7 @@ class ReflexRuleFolderView(BikaListingView):
                 "level": 0
             },
         }
-        self.show_sort_column = False
+
         self.show_select_row = False
         self.show_select_column = True
         self.icon = self.portal_url +\
@@ -53,11 +51,11 @@ class ReflexRuleFolderView(BikaListingView):
         self.review_states = [
             {'id': 'default',
              'title': _('Active'),
-             'contentFilter': {'inactive_state': 'active'},
+             'contentFilter': {'is_active': True},
              'columns': ['Title', 'Method', ]},
             {'id': 'inactive',
-             'title': _('Dormant'),
-             'contentFilter': {'inactive_state': 'inactive'},
+             'title': _('Inactive'),
+             'contentFilter': {'is_active': False},
              'columns': ['Title', 'Method', ]},
             {'id': 'all',
              'title': _('All'),
@@ -72,6 +70,7 @@ class ReflexRuleFolderView(BikaListingView):
                 self.context):
             self.context_actions[_('Add Reflex rule')] = {
                 'url': 'createObject?type_name=ReflexRule',
+                'permission': AddReflexRule,
                 'icon': '++resource++bika.lims.images/add.png'
             }
         if not mtool.checkPermission(ManageBika, self.context):
@@ -83,6 +82,12 @@ class ReflexRuleFolderView(BikaListingView):
                  'columns': ['Title']}
             ]
         return super(ReflexRuleFolderView, self).__call__()
+
+    def before_render(self):
+        """Before template render hook
+        """
+        # Don't allow any context actions
+        self.request.set("disable_border", 1)
 
     # TODO use folderitem in develop!
     def folderitems(self):
@@ -99,6 +104,7 @@ class ReflexRuleFolderView(BikaListingView):
                 (method.absolute_url(), items[x]['Method']) if method else ''
         return items
 
+
 schema = ATFolderSchema.copy()
 
 
@@ -107,8 +113,10 @@ class ReflexRuleFolder(ATFolder):
     displayContentsTab = False
     schema = schema
 
+
 schemata.finalizeATCTSchema(
     schema,
     folderish=True,
     moveDiscussion=False)
+
 atapi.registerType(ReflexRuleFolder, PROJECTNAME)

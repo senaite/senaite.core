@@ -42,7 +42,7 @@ class LabContactsView(LabContactsView):
         self.review_states = [{
             'id': 'default',
             'title': _('Active'),
-            'contentFilter': {'inactive_state': 'active'},
+            'contentFilter': {'is_active': True},
             'transitions': [{'id': 'empty'}, ],  # No transitions here
             # 'custom_transitions': [{'id': 'assign_labcontacts_button',
             #                     'title': _('Assign')}, ],

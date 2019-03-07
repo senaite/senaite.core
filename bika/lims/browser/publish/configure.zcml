@@ -1,0 +1,40 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    i18n_domain="senaite.core">
+
+  <!-- Reports listing view -->
+  <browser:page
+      for="bika.lims.interfaces.IClient"
+      name="reports_listing"
+      class=".reports_listing.ReportsListingView"
+      permission="senaite.core.permissions.ManageAnalysisRequests"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
+
+  <!-- Download View for AR Reports (PDFs) -->
+  <browser:page
+      for="*"
+      name="download_pdf"
+      class=".downloadview.DownloadView"
+      permission="senaite.core.permissions.ManageAnalysisRequests"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
+
+  <!-- Email View -->
+  <browser:page
+      for="bika.lims.interfaces.IClient"
+      name="email"
+      class=".emailview.EmailView"
+      permission="senaite.core.permissions.ManageAnalysisRequests"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
+
+  <!-- Static resource directory -->
+  <browser:resourceDirectory
+      name="senaite.core.browser.publish"
+      directory="static"
+      />
+
+</configure>

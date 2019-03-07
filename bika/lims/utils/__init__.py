@@ -5,6 +5,7 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
+import mimetypes
 import os
 import re
 import tempfile
@@ -13,14 +14,12 @@ import urllib2
 from email import Encoders
 from time import time
 
-import mimetypes
-
 from AccessControl import ModuleSecurityInfo
 from AccessControl import allow_module
 from AccessControl import getSecurityManager
 from DateTime import DateTime
-from Products.Archetypes.public import DisplayList
 from Products.Archetypes.interfaces.field import IComputedField
+from Products.Archetypes.public import DisplayList
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims import api
@@ -62,7 +61,9 @@ def t(i18n_msg):
     """
     text = to_unicode(i18n_msg)
     try:
-        text = translate(text)
+        request = api.get_request()
+        domain = getattr(i18n_msg, "domain", "senaite.core")
+        text = translate(text, domain=domain, context=request)
     except UnicodeDecodeError:
         # TODO: This is only a quick fix
         logger.warn("{} couldn't be translated".format(text))
@@ -140,12 +141,6 @@ def getUsers(context, roles, allow_empty=True):
     return DisplayList(pairs)
 
 
-def isActive(obj):
-    """ Check if obj is inactive or cancelled.
-    """
-    return api.is_active(obj)
-
-
 def formatDateQuery(context, date_id):
     """ Obtain and reformat the from and to dates
         into a date query construct
@@ -184,25 +179,6 @@ def formatDateParms(context, date_id):
         date_parms = 'to %s' % (to_date)
 
     return date_parms
-
-
-def formatDuration(context, totminutes):
-    """ Format a time period in a usable manner: eg. 3h24m
-    """
-    mins = totminutes % 60
-    hours = (totminutes - mins) / 60
-
-    if mins:
-        mins_str = '%sm' % mins
-    else:
-        mins_str = ''
-
-    if hours:
-        hours_str = '%sh' % hours
-    else:
-        hours_str = ''
-
-    return '%s%s' % (hours_str, mins_str)
 
 
 def formatDecimalMark(value, decimalmark='.'):
@@ -295,79 +271,39 @@ def sortable_title(portal, title):
             break
     return sortabletitle
 
-
+# TODO Remove this function
 def logged_in_client(context, member=None):
-    if not member:
-        membership_tool = getToolByName(context, 'portal_membership')
-        member = membership_tool.getAuthenticatedMember()
+    return api.get_current_client()
 
-    client = None
-    groups_tool = context.portal_groups
-    member_groups = [groups_tool.getGroupById(group.id).getGroupName()
-                     for group in groups_tool.getGroupsByUserId(member.id)]
-
-    if 'Clients' in member_groups:
-        for obj in context.clients.objectValues("Client"):
-            if member.id in obj.users_with_local_role('Owner'):
-                client = obj
-    return client
-
-# TODO: This function dismiss other state_variables than review_state (e.g. inactive_state)
-def changeWorkflowState(content, wf_id, state_id, acquire_permissions=False,
-                        portal_workflow=None, **kw):
+def changeWorkflowState(content, wf_id, state_id, **kw):
     """Change the workflow state of an object
     @param content: Content obj which state will be changed
     @param state_id: name of the state to put on content
-    @param acquire_permissions: True->All permissions unchecked and on riles and
-                                acquired
-                                False->Applies new state security map
-    @param portal_workflow: Provide workflow tool (optimisation) if known
     @param kw: change the values of same name of the state mapping
-    @return: None
+    @return: True if succeed. Otherwise, False
     """
-
-    if portal_workflow is None:
-        portal_workflow = getToolByName(content, 'portal_workflow')
-
-    # Might raise IndexError if no workflow is associated to this type
-    found_wf = 0
-    for wf_def in portal_workflow.getWorkflowsFor(content):
-        if wf_id == wf_def.getId():
-            found_wf = 1
-            break
-    if not found_wf:
+    portal_workflow = api.get_tool("portal_workflow")
+    workflow = portal_workflow.getWorkflowById(wf_id)
+    if not workflow:
         logger.error("%s: Cannot find workflow id %s" % (content, wf_id))
+        return False
 
     wf_state = {
-        'action': None,
-        'actor': None,
+        'action': kw.get("action", None),
+        'actor': kw.get("actor", api.get_current_user().id),
         'comments': "Setting state to %s" % state_id,
         'review_state': state_id,
-        'time': DateTime(),
+        'time': DateTime()
     }
 
-    # Updating wf_state from keyword args
-    for k in kw.keys():
-        # Remove unknown items
-        if k not in wf_state:
-            del kw[k]
-    if 'review_state' in kw:
-        del kw['review_state']
-    wf_state.update(kw)
-
+    # Change status and update permissions
     portal_workflow.setStatusOf(wf_id, content, wf_state)
+    workflow.updateRoleMappingsFor(content)
 
-    if acquire_permissions:
-        # Acquire all permissions
-        for permission in content.possible_permissions():
-            content.manage_permission(permission, acquire=1)
-    else:
-        # Setting new state permissions
-        wf_def.updateRoleMappingsFor(content)
-
-    # Map changes to the catalogs
-    content.reindexObject(idxs=['allowedRolesAndUsers', 'review_state'])
-    return
+    # Map changes to catalog
+    indexes = ["allowedRolesAndUsers", "review_state", "is_active"]
+    content.reindexObject(idxs=indexes)
+    return True
 
 
 def tmpID():
@@ -513,10 +449,9 @@ def attachPdf(mimemultipart, pdfreport, filename=None):
 
 def get_invoice_item_description(obj):
     if obj.portal_type == 'AnalysisRequest':
-        sample = obj.getSample()
-        samplepoint = sample.getSamplePoint()
+        samplepoint = obj.getSamplePoint()
         samplepoint = samplepoint and samplepoint.Title() or ''
-        sampletype = sample.getSampleType()
+        sampletype = obj.getSampleType()
         sampletype = sampletype and sampletype.Title() or ''
         description = sampletype + ' ' + samplepoint
     elif obj.portal_type == 'SupplyOrder':
@@ -595,7 +530,7 @@ def format_supsub(text):
     subsup = []
     clauses = []
     insubsup = True
-    for c in text:
+    for c in str(text):
         if c == '(':
             if insubsup is False:
                 out.append(c)
@@ -800,6 +735,14 @@ def get_image(name, **kwargs):
     return html.format(portal_url, name, attr)
 
 
+def get_progress_bar_html(percentage):
+    """Returns an html that represents a progress bar
+    """
+    return '<div class="progress md-progress">' \
+           '<div class="progress-bar" style="width: {0}%">{0}%</div>' \
+           '</div>'.format(percentage or 0)
+
+
 def render_html_attributes(**kwargs):
     """Returns a string representation of attributes for html entities
     :param kwargs: attributes and values
@@ -807,7 +750,7 @@ def render_html_attributes(**kwargs):
     attr = list()
     if kwargs:
         attr = ['{}="{}"'.format(key, val) for key, val in kwargs.items()]
-    return " ".join(attr)
+    return " ".join(attr).replace("css_class", "class")
 
 
 def get_registry_value(key, default=None):
@@ -931,3 +874,16 @@ def get_display_list(brains_or_objects=None, none_item=False):
         items.insert(0, ('', t('Select...')))
 
     return DisplayList(items)
+
+
+def to_choices(display_list):
+    """Converts a display list to a choices list
+    """
+    if not display_list:
+        return []
+
+    return map(
+        lambda item: {
+            "ResultValue": item[0],
+            "ResultText": item[1]},
+        display_list.items())

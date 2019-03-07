@@ -18,7 +18,6 @@ from copy import copy
 
 
 class AnalysisRequestsView(_ARV, _ARAV):
-    ar_add = ViewPageTemplateFile("../analysisrequest/templates/ar_add.pt")
     implements(IViewView)
 
     def __init__(self, context, request):
@@ -26,16 +25,12 @@ class AnalysisRequestsView(_ARV, _ARAV):
         self.catalog = "portal_catalog"
         SamplingWorkflowEnabled = self.context.bika_setup.getSamplingWorkflowEnabled()
         self.columns = {
-            'partition': {'title': _('Partition ID'),
-                          'toggle': True},
             'securitySealIntact': {'title': _('Security Seal Intact'),
                                   'toggle': True},
             'samplingRoundTemplate': {'title': _('Sampling Round Template'),
                                       'toggle': True},
             'getId': {'title': _('Request ID'),
                              'index': 'getId'},
-            'getSample': {'title': _("Sample"),
-                          'toggle': True, },
             'getDateSampled': {'title': _('Date Sampled'),
                                'index': 'getDateSampled',
                                'toggle': True,
@@ -52,7 +47,7 @@ class AnalysisRequestsView(_ARV, _ARAV):
         self.review_states = [
             {'id': 'default',
              'title': _('Active'),
-             'contentFilter': {'cancellation_state': 'active',
+             'contentFilter': {'is_active': True,
                               'sort_on': 'created',
                               'sort_order': 'reverse'},
              'transitions': [{'id': 'sample'},
@@ -66,11 +61,9 @@ class AnalysisRequestsView(_ARV, _ARAV):
                              {'id': 'cancel'},
                              {'id': 'reinstate'}],
              'custom_transitions': [],
-             'columns': ['partition',
-                         'securitySealIntact',
+             'columns': ['securitySealIntact',
                          'getId',
                          'samplingRoundTemplate',
-                         'getSample',
                          'getDateSampled',
                          'state_title']},
             {'id': 'sample_due',
@@ -86,11 +79,9 @@ class AnalysisRequestsView(_ARV, _ARAV):
                              {'id': 'cancel'},
                              {'id': 'reinstate'}],
              'custom_transitions': [],
-             'columns': ['partition',
-                         'securitySealIntact',
+             'columns': ['securitySealIntact',
                          'getId',
                          'samplingRoundTemplate',
-                         'getSample',
                          'getDateSampled',
                          'state_title']},
            {'id': 'sample_received',
@@ -102,11 +93,9 @@ class AnalysisRequestsView(_ARV, _ARAV):
                              {'id': 'cancel'},
                              {'id': 'reinstate'}],
              'custom_transitions': [],
-             'columns': ['partition',
-                         'securitySealIntact',
+             'columns': ['securitySealIntact',
                          'getId',
                          'samplingRoundTemplate',
-                         'getSample',
                          'getDateSampled',
                          'state_title']},
             {'id': 'to_be_verified',
@@ -120,11 +109,9 @@ class AnalysisRequestsView(_ARV, _ARAV):
                              {'id': 'cancel'},
                              {'id': 'reinstate'}],
              'custom_transitions': [],
-             'columns': ['partition',
-                         'securitySealIntact',
+             'columns': ['securitySealIntact',
                          'getId',
                          'samplingRoundTemplate',
-                         'getSample',
                          'getDateSampled',
                          'state_title']},
             {'id': 'verified',
@@ -134,11 +121,9 @@ class AnalysisRequestsView(_ARV, _ARAV):
                                'sort_order': 'reverse'},
              'transitions': [{'id': 'publish'}],
              'custom_transitions': [],
-             'columns': ['partition',
-                         'securitySealIntact',
+             'columns': ['securitySealIntact',
                          'getId',
                          'samplingRoundTemplate',
-                         'getSample',
                          'getDateSampled',
                          'state_title']},
             {'id': 'published',
@@ -148,29 +133,21 @@ class AnalysisRequestsView(_ARV, _ARAV):
                                'sort_order': 'reverse'},
              'transitions': [{'id': 'republish'}],
              'custom_transitions': [],
-             'columns': ['partition',
-                         'securitySealIntact',
+             'columns': ['securitySealIntact',
                          'getId',
                          'samplingRoundTemplate',
-                         'getSample',
                          'getDateSampled',
                          'state_title']},
             {'id': 'cancelled',
              'title': _('Cancelled'),
-             'contentFilter': {'cancellation_state': 'cancelled',
-                               'review_state': ('to_be_sampled', 'to_be_preserved',
-                                                'sample_due', 'sample_received',
-                                                'to_be_verified', 'attachment_due',
-                                                'verified', 'published'),
+             'contentFilter': {'is_active': False,
                                'sort_on': 'created',
                                'sort_order': 'reverse'},
              'transitions': [{'id': 'reinstate'}],
              'custom_transitions': [],
-             'columns': ['partition',
-                         'securitySealIntact',
+             'columns': ['securitySealIntact',
                          'getId',
                          'samplingRoundTemplate',
-                         'getSample',
                          'getDateSampled',
                          'state_title']},
             {'id': 'invalid',
@@ -180,11 +157,9 @@ class AnalysisRequestsView(_ARV, _ARAV):
                                'sort_order': 'reverse'},
              'transitions': [],
              'custom_transitions': [],
-             'columns': ['partition',
-                         'securitySealIntact',
+             'columns': ['securitySealIntact',
                          'getId',
                          'samplingRoundTemplate',
-                         'getSample',
                          'getDateSampled',
                          'state_title']},
             {'id': 'assigned',
@@ -205,11 +180,9 @@ class AnalysisRequestsView(_ARV, _ARAV):
                              {'id': 'cancel'},
                              {'id': 'reinstate'}],
              'custom_transitions': [],
-             'columns': ['partition',
-                         'securitySealIntact',
+             'columns': ['securitySealIntact',
                          'getId',
                          'samplingRoundTemplate',
-                         'getSample',
                          'getDateSampled',
                          'state_title']},
             {'id': 'unassigned',
@@ -231,11 +204,9 @@ class AnalysisRequestsView(_ARV, _ARAV):
                              {'id': 'cancel'},
                              {'id': 'reinstate'}],
              'custom_transitions': [],
-             'columns': ['partition',
-                         'securitySealIntact',
+             'columns': ['securitySealIntact',
                          'getId',
                          'samplingRoundTemplate',
-                         'getSample',
                          'getDateSampled',
                          'state_title']},
             ]
@@ -273,20 +244,11 @@ class AnalysisRequestsView(_ARV, _ARAV):
         # Getting the sampling round object
         catalog = getToolByName(self.context, 'uid_catalog')
         srTemplateObj = catalog(UID=srTemplateUID)[0].getObject() if catalog(UID=srTemplateUID) else None
-        # Getting the partitions and creating a row per partition
-        partitions = obj.getPartitions()
-        for part in partitions:
-            item['partition'] = part.id
-            if part.getContainer():
-                img_url = '<img src="'+self.portal_url+'/++resource++bika.lims.images/ok.png"/>'
-                item['securitySealIntact'] = part.getContainer().getSecuritySealIntact()
-                item['replace']['securitySealIntact'] = img_url \
-                    if part.getContainer().getSecuritySealIntact() else ' '
-            else:
-                item['securitySealIntact'] = ' '
-            item['replace']['partition'] = "<a href='%s'>%s</a>" % (part.absolute_url(), item['partition'])
-            item['samplingRoundTemplate'] = srTemplateObj.title if srTemplateObj else ''
-            if srTemplateObj:
-                item['replace']['samplingRoundTemplate'] = \
-                    "<a href='%s'>%s</a>" % (srTemplateObj.absolute_url, item['samplingRoundTemplate'])
+        item['samplingRoundTemplate'] = ''
+        if srTemplateObj:
+            item['samplingRoundTemplate'] = srTemplateObj.title
+            item['replace']['samplingRoundTemplate'] = \
+                "<a href='%s'>%s</a>" % (
+                srTemplateObj.absolute_url, item['samplingRoundTemplate'])
+        item['securitySealIntact'] = ''
         return item

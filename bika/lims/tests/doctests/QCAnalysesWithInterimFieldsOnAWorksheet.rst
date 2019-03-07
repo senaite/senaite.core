@@ -1,7 +1,7 @@
 QC Analyses With Interim Fields On A Worksheet
 ==============================================
 
-Creating analysis that has interims fields so that we can test for 
+Creating analysis that has interims fields so that we can test for
 Reference Analyses(Blank and Control) that have interim fields.
 
 Running this test from the buildout directory::
@@ -34,8 +34,6 @@ Functional Helpers:
 Variables:
 
     >>> portal = self.portal
-    >>> browser = self.getBrowser()
-    >>> portal_url = portal.absolute_url()
     >>> request = self.request
     >>> bika_setup = portal.bika_setup
     >>> bikasetup = portal.bika_setup
@@ -70,14 +68,12 @@ We need to create some basic objects for the test:
     >>> total_terpenes
     <AnalysisService at /plone/bika_setup/bika_analysisservices/analysisservice-1>
     >>> service_uids = [total_terpenes.UID()]
-    >>> transaction.commit()
 
 Create a Reference Definition for blank:
 
     >>> blankdef = api.create(bikasetup.bika_referencedefinitions, "ReferenceDefinition", title="Blank definition", Blank=True)
     >>> blank_refs = [{'uid': total_terpenes.UID(), 'result': '0', 'min': '0', 'max': '0'},]
     >>> blankdef.setReferenceResults(blank_refs)
-    >>> transaction.commit()
 
 And for control:
 
@@ -94,7 +90,6 @@ And for control:
     ...                      Blank=False, ExpiryDate=date_future,
     ...                      ReferenceResults=control_refs)
 
-    >>> transaction.commit()
 
 Create an Analysis Request:
 
@@ -109,8 +104,7 @@ Create an Analysis Request:
 
     >>> ar = create_analysisrequest(client, request, values, service_uids)
     >>> ar
-    <AnalysisRequest at /plone/clients/client-1/W-0001-R01>
-    >>> transaction.commit()
+    <AnalysisRequest at /plone/clients/client-1/W-0001>
     >>> success = doActionFor(ar, 'receive')
 
 Create a new Worksheet and add the analyses:
@@ -118,17 +112,14 @@ Create a new Worksheet and add the analyses:
     >>> worksheet = api.create(portal.worksheets, "Worksheet", Analyst='test_user_1_')
     >>> worksheet
     <Worksheet at /plone/worksheets/WS-001>
-    >>> transaction.commit()
-    >>> worksheets_url = worksheet.absolute_url() + '/manage_results'
 
     >>> analyses = map(api.get_object, ar.getAnalyses())
     >>> analysis = analyses[0]
     >>> analysis
-    <Analysis at /plone/clients/client-1/W-0001-R01/TotalTerpenes>
+    <Analysis at /plone/clients/client-1/W-0001/TotalTerpenes>
     >>> worksheet.addAnalysis(analysis)
-    >>> transaction.commit()
-    >>> api.get_workflow_status_of(analysis, state_var='worksheetanalysis_review_state')
-    'assigned'
+    >>> analysis.getWorksheet().UID() == worksheet.UID()
+    True
 
 Add a blank and a control:
 
@@ -139,13 +130,9 @@ Add a blank and a control:
     >>> transaction.commit()
     >>> controls.sort(key=lambda analysis: analysis.getKeyword(), reverse=False)
     >>> transaction.commit()
-    >>> browser.open(worksheets_url)
-    >>> contents = browser.contents
     >>> for analysis in worksheet.getAnalyses():
     ...     if analysis.portal_type == 'ReferenceAnalysis':
     ...         if analysis.getReferenceType() == 'b' or analysis.getReferenceType() == 'c':
     ...             # 3 is the number of interim fields on the analysis/calculation
     ...             if len(analysis.getInterimFields()) != 3:
     ...                 self.fail("Blank or Control Analyses interim field are not correct")
-    >>> if contents.count("12.3") != contents.count("14.8") or contents.count("14.8") != contents.count('16.82'):
-    ...     self.fail("One of the analyses on the worksheet does not have interim fields")

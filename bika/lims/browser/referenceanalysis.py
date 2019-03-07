@@ -59,9 +59,8 @@ class AnalysesRetractedListReport(BrowserView):
                     item['ar_html'] = \
                         "<a href='%s'>%s</a>" % (item['ar_url'], item['ar_id'])
 
-                ws = an.getBackReferences("WorksheetAnalysis")
-                if ws and len(ws) > 0:
-                    ws = ws[0]
+                ws = an.getWorksheet()
+                if ws:
                     item['ws'] = ws
                     item['ws_url'] = ws.absolute_url()
                     item['ws_id'] = ws.id

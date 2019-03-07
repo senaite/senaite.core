@@ -5,215 +5,301 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
+import collections
+import itertools
+
 from AccessControl import ClassSecurityInfo
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
+from bika.lims.api.security import check_permission
 from bika.lims.browser.bika_listing import BikaListingView
+from bika.lims.permissions import FieldEditProfiles
+from bika.lims.utils import get_image
+from bika.lims.utils import get_link
+from plone.memoize import view
 from Products.Archetypes.Registry import registerWidget
 from Products.Archetypes.Widget import TypesWidget
-from Products.CMFCore.utils import getToolByName
 from zope.i18n.locales import locales
 
 
 class AnalysisProfileAnalysesView(BikaListingView):
-    """View to display Analyses table for an Analysis Profile.
+    """Listing table to display Analyses Services for Analysis Profiles
     """
 
-    def __init__(self, context, request, fieldvalue=[], allow_edit=False):
+    def __init__(self, context, request):
         super(AnalysisProfileAnalysesView, self).__init__(context, request)
 
         self.catalog = "bika_setup_catalog"
         self.contentFilter = {
             "portal_type": "AnalysisService",
             "sort_on": "sortable_title",
-            "inactive_state": "active",
+            "sort_order": "ascending",
+            "is_active": True,
         }
         self.context_actions = {}
-        self.base_url = self.context.absolute_url()
-        self.view_url = self.base_url
-        self.show_sort_column = False
-        self.show_select_row = False
-        self.show_select_all_checkbox = False
+
         self.show_column_toggles = False
         self.show_select_column = True
-        self.allow_edit = allow_edit
-        self.form_id = "analyses"
-        self.profile = None
+        self.show_select_all_checkbox = False
         self.pagesize = 999999
+        self.allow_edit = True
+        self.show_search = True
+        self.omit_form = True
+        self.fetch_transitions_on_select = False
 
-        self.categories = []
-        self.do_cats = self.context.bika_setup.getCategoriseAnalysisServices()
-        if self.do_cats:
-            self.pagesize = 999999  # hide batching controls
+        # Categories
+        if self.show_categories_enabled():
+            self.categories = []
             self.show_categories = True
             self.expand_all_categories = False
-            self.ajax_categories = True
-            self.ajax_categories_url = self.context.absolute_url() + \
-                "/analysisprofile_analysesview"
-            self.category_index = "getCategoryTitle"
 
-        self.columns = {
-            "Title": {
+        self.columns = collections.OrderedDict((
+            ("Title", {
                 "title": _("Service"),
                 "index": "sortable_title",
-                "sortable": False,
-            },
-            "Unit": {
+                "sortable": False}),
+            ("Keyword", {
+                "title": _("Keyword"),
+                "sortable": False}),
+            ("Methods", {
+                "title": _("Methods"),
+                "sortable": False}),
+            ("Unit", {
                 "title": _("Unit"),
                 "index": "getUnit",
-                "sortable": False,
-            },
-            "Price": {
+                "sortable": False}),
+            ("Price", {
                 "title": _("Price"),
                 "sortable": False,
-            },
-        }
+            }),
+            ("Hidden", {
+                "title": _("Hidden"),
+                "sortable": False}),
+        ))
+
+        columns = ["Title", "Keyword", "Methods", "Unit", "Price", "Hidden"]
+        if not self.show_prices():
+            columns.remove("Price")
 
         self.review_states = [
             {
                 "id": "default",
                 "title": _("All"),
-                "contentFilter": {"inactive_state": "active"},
-                "columns": [
-                    "Title",
-                    "Unit",
-                    "Price",
-                ],
-                "transitions": [
-                    {"id": "empty"},
-                ],
+                "contentFilter": {"is_active": True},
+                "transitions": [{"id": "disallow-all-possible-transitions"}],
+                "columns": columns,
             },
         ]
 
-        if not self.context.bika_setup.getShowPrices():
-            self.review_states[0]["columns"].remove("Price")
+    def update(self):
+        """Update hook
+        """
+        super(AnalysisProfileAnalysesView, self).update()
+        self.allow_edit = self.is_edit_allowed()
+        self.configuration = self.get_configuration()
 
-        self.fieldvalue = fieldvalue
-        self.selected = [x.UID() for x in fieldvalue]
+    def get_settings(self):
+        """Returns a mapping of UID -> setting
+        """
+        settings = self.context.getAnalysisServicesSettings()
+        mapping = dict(map(lambda s: (s.get("uid"), s), settings))
+        return mapping
 
-        if self.aq_parent.portal_type == "AnalysisProfile":
-            # Custom settings for the Analysis Services assigned to
-            # the Analysis Profile
-            # https://jira.bikalabs.com/browse/LIMS-1324
-            self.profile = self.aq_parent
-            self.columns["Hidden"] = {
-                "title": _("Hidden"),
-                "sortable": False,
-                "type": "boolean",
+    def get_configuration(self):
+        """Returns a mapping of UID -> configuration
+        """
+        mapping = {}
+        settings = self.get_settings()
+        for service in self.context.getService():
+            uid = api.get_uid(service)
+            setting = settings.get(uid, {})
+            config = {
+                "hidden": setting.get("hidden", False),
             }
-            self.review_states[0]["columns"].insert(1, "Hidden")
+            mapping[uid] = config
+        return mapping
+
+    @view.memoize
+    def show_categories_enabled(self):
+        """Check in the setup if categories are enabled
+        """
+        return self.context.bika_setup.getCategoriseAnalysisServices()
+
+    @view.memoize
+    def show_prices(self):
+        """Checks if prices should be shown or not
+        """
+        setup = api.get_setup()
+        return setup.getShowPrices()
+
+    @view.memoize
+    def get_currency_symbol(self):
+        """Get the currency Symbol
+        """
+        locale = locales.getLocale("en")
+        setup = api.get_setup()
+        currency = setup.getCurrency()
+        return locale.numbers.currencies[currency].symbol
+
+    @view.memoize
+    def get_decimal_mark(self):
+        """Returns the decimal mark
+        """
+        setup = api.get_setup()
+        return setup.getDecimalMark()
+
+    @view.memoize
+    def format_price(self, price):
+        """Formats the price with the set decimal mark and correct currency
+        """
+        return u"{} {}{}{:02d}".format(
+            self.get_currency_symbol(),
+            price[0],
+            self.get_decimal_mark(),
+            price[1],
+        )
+
+    @view.memoize
+    def is_edit_allowed(self):
+        """Check if edit is allowed
+        """
+        return check_permission(FieldEditProfiles, self.context)
+
+    @view.memoize
+    def get_editable_columns(self):
+        """Return editable fields
+        """
+        columns = []
+        if self.is_edit_allowed():
+            columns = ["Hidden"]
+        return columns
 
     def folderitems(self):
-        """Processed once for all analyses
+        """TODO: Refactor to non-classic mode
         """
-        mtool = getToolByName(self.context, "portal_membership")
-        member = mtool.getAuthenticatedMember()
-        roles = member.getRoles()
-        self.allow_edit = "LabManager" in roles or "Manager" in roles
         items = super(AnalysisProfileAnalysesView, self).folderitems()
         self.categories.sort()
         return items
 
     def folderitem(self, obj, item, index):
-        """Processed once per analysis
+        """Service triggered each time an item is iterated in folderitems.
+
+        The use of this service prevents the extra-loops in child objects.
+
+        :obj: the instance of the class to be foldered
+        :item: dict containing the properties of the object to be used by
+            the template
+        :index: current index of the item
         """
-        cat = obj.getCategoryTitle()
-        # Category (upper C) is for display column value
-        item["Category"] = cat
-        if self.do_cats:
-            # category is for bika_listing to groups entries
-            item["category"] = cat
-            if cat not in self.categories:
-                self.categories.append(cat)
+        # ensure we have an object and not a brain
+        obj = api.get_object(obj)
+        uid = api.get_uid(obj)
+        url = api.get_url(obj)
+        title = api.get_title(obj)
 
-        analyses = [a.UID() for a in self.fieldvalue]
+        # get the category
+        if self.show_categories_enabled():
+            category = obj.getCategoryTitle()
+            if category not in self.categories:
+                self.categories.append(category)
+            item["category"] = category
 
-        item["selected"] = item["uid"] in analyses
-        item["class"]["Title"] = "service_title"
+        config = self.configuration.get(uid, {})
+        hidden = config.get("hidden", False)
 
-        calculation = obj.getCalculation()
-        item["Calculation"] = calculation and calculation.Title()
+        item["replace"]["Title"] = get_link(url, value=title)
+        item["Price"] = self.format_price(obj.Price)
+        item["allow_edit"] = self.get_editable_columns()
+        item["selected"] = False
+        item["Hidden"] = hidden
+        item["selected"] = uid in self.configuration
 
-        locale = locales.getLocale("en")
-        currency = self.context.bika_setup.getCurrency()
-        symbol = locale.numbers.currencies[currency].symbol
-        item["Price"] = u"{} {}".format(symbol, obj.getPrice())
-        item["class"]["Price"] = "nowrap"
+        # Add methods
+        methods = obj.getMethods()
+        if methods:
+            links = map(
+                lambda m: get_link(
+                    m.absolute_url(), value=m.Title(), css_class="link"),
+                methods)
+            item["replace"]["Methods"] = ", ".join(links)
+        else:
+            item["methods"] = ""
 
+        # Icons
         after_icons = ""
         if obj.getAccredited():
-            after_icons += u"<img src='{}/++resource++bika.lims.images/accredited.png' title='{}'>".format(
-                self.context.absolute_url(), _("Accredited"))
+            after_icons += get_image(
+                "accredited.png", title=_("Accredited"))
         if obj.getAttachmentOption() == "r":
-            after_icons += u"<img src='{}/++resource++bika.lims.images/attach_reqd.png' title='{}'>".format(
-                self.context.absolute_url(), _("Attachment required"))
+            after_icons += get_image(
+                "attach_reqd.png", title=_("Attachment required"))
         if obj.getAttachmentOption() == "n":
-            after_icons += u"<img src='%s/++resource++bika.lims.images/attach_no.png' title='%s'>".format(
-                self.context.absolute_url(), _('Attachment not permitted'))
+            after_icons += get_image(
+                "attach_no.png", title=_("Attachment not permitted"))
         if after_icons:
             item["after"]["Title"] = after_icons
-
-        if self.profile:
-            # Display analyses for this Analysis Service in results?
-            ser = self.profile.getAnalysisServiceSettings(obj.UID())
-            item["allow_edit"] = ["Hidden", ]
-            item["Hidden"] = ser.get("hidden", obj.getHidden())
 
         return item
 
 
 class AnalysisProfileAnalysesWidget(TypesWidget):
+    """Analysis Profile Analyses Widget
+    """
     _properties = TypesWidget._properties.copy()
     _properties.update({
-        'macro': "bika_widgets/analysisprofileanalyseswidget",
-        'helper_js': ("bika_widgets/analysisprofileanalyseswidget.js",),
-        'helper_css': ("bika_widgets/analysisprofileanalyseswidget.css",),
+        "macro": "bika_widgets/analysisprofileanalyseswidget",
+        "helper_js": ("bika_widgets/analysisprofileanalyseswidget.js",),
+        "helper_css": ("bika_widgets/analysisprofileanalyseswidget.css",),
     })
 
     security = ClassSecurityInfo()
 
-    security.declarePublic('process_form')
+    security.declarePublic("process_form")
 
     def process_form(self, instance, field, form, empty_marker=None,
                      emptyReturnsMarker=False):
-        """ Return a list of dictionaries fit for AnalysisProfile/Analyses field
-            consumption.
+        """Return UIDs of the selected services for the AnalysisProfile reference field
         """
-        service_uids = form.get("uids", None)
 
-        # remember the context, because we need to pass that later to the
-        # listing view (see method `Analyses` below)
-        self.instance = instance
+        # selected services
+        service_uids = form.get("uids", [])
+        # hidden services
+        hidden_services = form.get("Hidden", {})
 
-        if instance.portal_type == "AnalysisProfile":
-            # Hidden analyses?
-            outs = []
-            hiddenans = form.get("Hidden", {})
-            if service_uids:
-                for uid in service_uids:
-                    hidden = hiddenans.get(uid, "")
-                    hidden = True if hidden == "on" else False
-                    outs.append({"uid": uid, "hidden": hidden})
-            instance.setAnalysisServicesSettings(outs)
+        # get the service objects
+        services = map(api.get_object_by_uid, service_uids)
+        # get dependencies
+        dependencies = map(lambda s: s.getServiceDependencies(), services)
+        dependencies = list(itertools.chain.from_iterable(dependencies))
+        # Merge dependencies and services
+        services = set(services + dependencies)
 
-        return service_uids, {}
+        as_settings = []
+        for service in services:
+            service_uid = api.get_uid(service)
+            hidden = hidden_services.get(service_uid, "") == "on"
+            as_settings.append({"uid": service_uid, "hidden": hidden})
+
+        # set the analysis services settings
+        instance.setAnalysisServicesSettings(as_settings)
+
+        return map(api.get_uid, services), {}
 
     security.declarePublic("Analyses")
 
     def Analyses(self, field, allow_edit=False):
-        """ Print analyses table
+        """Render Analyses Listing Table
         """
-        fieldvalue = getattr(field, field.accessor)()
-
-        # N.B. we do not want to pass the field as the context to
-        # AnalysisProfileAnalysesView, but rather the holding instance
         instance = getattr(self, "instance", field.aq_parent)
-        view = AnalysisProfileAnalysesView(instance,
-                                           self.REQUEST,
-                                           fieldvalue=fieldvalue,
-                                           allow_edit=allow_edit)
-        return view.contents_table(table_only=True)
+        table = api.get_view("table_analysis_profile_analyses",
+                             context=instance,
+                             request=self.REQUEST)
+        # Call listing hooks
+        table.update()
+        table.before_render()
+        return table.ajax_contents_table()
 
 
 registerWidget(AnalysisProfileAnalysesWidget,
-               title='Analysis Profile Analyses selector',
-               description=('Analysis Profile Analyses selector'),)
+               title="Analysis Profile Analyses selector",
+               description=("Analysis Profile Analyses selector"),)

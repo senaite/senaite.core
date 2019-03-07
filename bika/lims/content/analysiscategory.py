@@ -17,7 +17,7 @@ from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.interfaces import IAnalysisCategory
+from bika.lims.interfaces import IAnalysisCategory, IDeactivable
 from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
@@ -60,7 +60,7 @@ schema['description'].schemata = 'default'
 
 
 class AnalysisCategory(BaseContent):
-    implements(IAnalysisCategory)
+    implements(IAnalysisCategory, IDeactivable)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
@@ -75,7 +75,7 @@ class AnalysisCategory(BaseContent):
         bsc = getToolByName(self, 'bika_setup_catalog')
         deps = []
         for d in bsc(portal_type='Department',
-                     inactive_state='active'):
+                     is_active=True):
             deps.append((d.UID, d.Title))
         return DisplayList(deps)
 
@@ -84,7 +84,7 @@ class AnalysisCategory(BaseContent):
         dept = field.get(self)
         return dept.Title() if dept else ''
 
-    def workflow_script_deactivat(self):
+    def workflow_script_deactivate(self):
         # A instance cannot be deactivated if it contains services
         pu = getToolByName(self, 'plone_utils')
         bsc = getToolByName(self, 'bika_setup_catalog')

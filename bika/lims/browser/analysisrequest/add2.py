@@ -13,9 +13,12 @@ from bika.lims import POINTS_OF_CAPTURE
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
+from bika.lims.api.analysisservice import get_calculation_dependencies_for
+from bika.lims.api.analysisservice import get_service_dependencies_for
 from bika.lims.interfaces import IGetDefaultFieldValueARAddHook
 from bika.lims.utils import tmpID
 from bika.lims.utils.analysisrequest import create_analysisrequest as crar
+from bika.lims.workflow import ActionHandlerPool
 from BTrees.OOBTree import OOBTree
 from DateTime import DateTime
 from plone import protect
@@ -32,7 +35,7 @@ from zope.interface import implements
 from zope.publisher.interfaces import IPublishTraverse
 
 AR_CONFIGURATION_STORAGE = "bika.lims.browser.analysisrequest.manage.add"
-SKIP_FIELD_ON_COPY = ["Sample"]
+SKIP_FIELD_ON_COPY = ["Sample", "Remarks"]
 
 
 def returns_json(func):
@@ -77,7 +80,7 @@ class AnalysisRequestAddView(BrowserView):
         self.specifications = self.generate_specifications(self.ar_count)
         self.ShowPrices = self.bika_setup.getShowPrices()
         self.icon = self.portal_url + \
-            "/++resource++bika.lims.images/analysisrequest_big.png"
+            "/++resource++bika.lims.images/sample_big.png"
         logger.info("*** Prepared data for {} ARs ***".format(self.ar_count))
         return self.template()
 
@@ -478,7 +481,7 @@ class AnalysisRequestAddView(BrowserView):
         bsc = api.get_tool("bika_setup_catalog")
         query = {
             "portal_type": "AnalysisCategory",
-            "inactive_state": "active",
+            "is_active": True,
             "sort_on": "sortable_title",
         }
         categories = bsc(query)
@@ -509,7 +512,7 @@ class AnalysisRequestAddView(BrowserView):
         query = {
             "portal_type": "AnalysisService",
             "getPointOfCapture": poc,
-            "inactive_state": "active",
+            "is_active": True,
             "sort_on": "sortable_title",
         }
         services = bsc(query)
@@ -531,139 +534,6 @@ class AnalysisRequestAddView(BrowserView):
         """
         analysis = api.get_object(analysis)
         return api.get_uid(analysis.getAnalysisService())
-
-    def get_calculation_dependencies_for(self, service):
-        """Calculation dependencies of this service and the calculation of each
-        dependent service (recursively).
-
-        TODO: This needs to go to bika.lims.api
-        """
-
-        def calc_dependencies_gen(service, collector=None):
-            """Generator for recursive dependency resolution.
-            """
-
-            # The UID of the service
-            service_uid = api.get_uid(service)
-
-            # maintain an internal dependency mapping
-            if collector is None:
-                collector = {}
-
-            # Stop iteration if we processed this service already
-            if service_uid in collector:
-                raise StopIteration
-
-            # Get the calculation of the service.
-            # The calculation comes either from an assigned method or the user
-            # has set a calculation manually (see content/analysisservice.py).
-            calculation = service.getCalculation()
-
-            # Stop iteration if there is no calculation
-            if not calculation:
-                raise StopIteration
-
-            # The services used in this calculation.
-            # These are the actual dependencies of the used formula.
-            dep_services = calculation.getDependentServices()
-            for dep_service in dep_services:
-                # get the UID of the dependent service
-                dep_service_uid = api.get_uid(dep_service)
-
-                # remember the dependent service
-                collector[dep_service_uid] = dep_service
-
-                # yield the dependent service
-                yield dep_service
-
-                # check the dependencies of the dependent services
-                for ddep_service in calc_dependencies_gen(dep_service,
-                                                          collector=collector):
-                    yield ddep_service
-
-        dependencies = {}
-        for dep_service in calc_dependencies_gen(service):
-            # Skip the initial (requested) service
-            if dep_service == service:
-                continue
-            uid = api.get_uid(dep_service)
-            dependencies[uid] = dep_service
-
-        return dependencies
-
-    def get_calculation_dependants_for(self, service):
-        """Calculation dependants of this service
-
-        TODO: This needs to go to bika.lims.api
-        """
-
-        def calc_dependants_gen(service, collector=None):
-            """Generator for recursive resolution of dependant sevices.
-            """
-
-            # The UID of the service
-            service_uid = api.get_uid(service)
-
-            # maintain an internal dependency mapping
-            if collector is None:
-                collector = {}
-
-            # Stop iteration if we processed this service already
-            if service_uid in collector:
-                raise StopIteration
-
-            # Get the dependant calculations of the service
-            # (calculations that use the service in their formula).
-            dep_calcs = service.getBackReferences('CalculationAnalysisService')
-            for dep_calc in dep_calcs:
-                # Get the methods linked to this calculation
-                dep_methods = dep_calc.getBackReferences('MethodCalculation')
-                for dep_method in dep_methods:
-                    # Get the services that have this method linked
-                    dep_services = dep_method.getBackReferences(
-                        'AnalysisServiceMethod')
-                    for dep_service in dep_services:
-
-                        # get the UID of the dependent service
-                        dep_service_uid = api.get_uid(dep_service)
-
-                        # skip services with a different calculation, e.g. when
-                        # the user selected a calculation manually.
-                        if dep_service.getCalculation() != dep_calc:
-                            continue
-
-                        # remember the dependent service
-                        collector[dep_service_uid] = dep_service
-
-                        # yield the dependent service
-                        yield dep_service
-
-                        # check the dependants of the dependant services
-                        for ddep_service in calc_dependants_gen(
-                                dep_service, collector=collector):
-                            yield ddep_service
-
-        dependants = {}
-        for dep_service in calc_dependants_gen(service):
-            # Skip the initial (requested) service
-            if dep_service == service:
-                continue
-            uid = api.get_uid(dep_service)
-            dependants[uid] = dep_service
-
-        return dependants
-
-    def get_service_dependencies_for(self, service):
-        """Calculate the dependencies for the given service.
-        """
-
-        dependants = self.get_calculation_dependants_for(service)
-        dependencies = self.get_calculation_dependencies_for(service)
-
-        return {
-            "dependencies": dependencies.values(),
-            "dependants": dependants.values(),
-        }
 
     def is_service_selected(self, service):
         """Checks if the given service is selected by one of the ARs.
@@ -1044,10 +914,8 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
 
         })
 
-        dependencies = self.get_calculation_dependencies_for(obj).values()
+        dependencies = get_calculation_dependencies_for(obj).values()
         info["dependencies"] = map(self.get_base_info, dependencies)
-        # dependants = self.get_calculation_dependants_for(obj).values()
-        # info["dependendants"] = map(self.get_base_info, dependants)
         return info
 
     @cache(cache_key)
@@ -1239,7 +1107,6 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             "client_sample_id": obj.getClientSampleID(),
             "client_reference": obj.getClientReference(),
             "sampling_workflow_enabled": obj.getSamplingWorkflowEnabled(),
-            "adhoc": obj.getAdHoc(),
             "remarks": obj.getRemarks(),
         })
         return info
@@ -1300,56 +1167,6 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         info = self.get_base_info(obj)
         info.update({})
         return info
-
-    def get_service_partitions(self, service, sampletype):
-        """Returns the Partition info for a Service and SampleType
-
-        N.B.: This is actually not used as the whole partition, preservation
-        and conservation settings are solely handled by AR Templates for all
-        selected services.
-        """
-
-        partitions = []
-
-        sampletype_uid = api.get_uid(sampletype)
-        # partition setup of this service
-        partition_setup = filter(
-            lambda p: p.get("sampletype") == sampletype_uid,
-            service.getPartitionSetup())
-
-        def get_containers(container_uids):
-            containers = []
-            for container_uid in container_uids:
-                container = api.get_object_by_uid(container_uid)
-                if container.portal_type == "ContainerTypes":
-                    containers.extend(container.getContainers())
-                else:
-                    containers.append(container)
-            return containers
-
-        for partition in partition_setup:
-            containers = get_containers(partition.get("container", []))
-            preservations = map(
-                api.get_object_by_uid, partition.get("preservation", []))
-            partitions.append({
-                "separate": partition.get("separate", False) and True or False,
-                "container": map(self.get_container_info, containers),
-                "preservations": map(
-                    self.get_preservation_info, preservations),
-                "minvol": partition.get("vol", ""),
-            })
-        else:
-            containers = [service.getContainer()] or []
-            preservations = [service.getPreservation()] or []
-            partitions.append({
-                "separate": service.getSeparate(),
-                "container": map(self.get_container_info, containers),
-                "preservations": map(
-                    self.get_preservation_info, preservations),
-                "minvol": sampletype.getMinimumVolume() or "",
-            })
-
-        return partitions
 
     def ajax_get_global_settings(self):
         """Returns the global Bika settings
@@ -1499,6 +1316,11 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                     else:
                         service_to_templates[service_uid] = [uid]
 
+                    # remember the service metadata
+                    if service_uid not in service_metadata:
+                        metadata = self.get_service_info(service)
+                        service_metadata[service_uid] = metadata
+
             # PROFILES
             for uid, obj in _profiles.iteritems():
                 # get the profile metadata
@@ -1542,21 +1364,13 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                 # get the service metadata
                 metadata = self.get_service_info(obj)
 
-                # N.B.: Partitions only handled via AR Template.
-                #
-                # # Partition setup for the give sample type
-                # for st_uid, st_obj in _sampletypes.iteritems():
-                #     # remember the partition setup for this service
-                #     metadata["partitions"] = self.get_service_partitions(
-                #         obj, st_obj)
-
                 # remember the services' metadata
                 service_metadata[uid] = metadata
 
             #  DEPENDENCIES
             for uid, obj in _services.iteritems():
                 # get the dependencies of this service
-                deps = self.get_service_dependencies_for(obj)
+                deps = get_service_dependencies_for(obj)
 
                 # check for unmet dependencies
                 for dep in deps["dependencies"]:
@@ -1572,8 +1386,6 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                 service_metadata[uid].update({
                     "dependencies": map(
                         self.get_base_info, deps["dependencies"]),
-                    "dependants": map(
-                        self.get_base_info, deps["dependants"]),
                 })
 
             # Each key `n` (1,2,3...) contains the form data for one AR Add
@@ -1754,50 +1566,6 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                 msg = _("Field '{}' is required".format(field))
                 fielderrors[fieldname] = msg
 
-            # Selected Analysis UIDs
-            selected_analysis_uids = record.get("Analyses", [])
-
-            # Partitions defined in Template
-            template_parts = {}
-            template_uid = record.get("Template_uid")
-            if template_uid:
-                template = api.get_object_by_uid(template_uid)
-                for part in template.getPartitions():
-                    # remember the part setup by part_id
-                    template_parts[part.get("part_id")] = part
-
-            # The final data structure should look like this:
-            # [{"part_id": "...", "container_uid": "...", "services": []}]
-            partitions = {}
-            parts = record.pop("Parts", [])
-            for part in parts:
-                part_id = part.get("part")
-                service_uid = part.get("uid")
-                # skip unselected Services
-                if service_uid not in selected_analysis_uids:
-                    continue
-                # Container UID for this part
-                container_uids = []
-                template_part = template_parts.get(part_id)
-                if template_part:
-                    container_uid = template_part.get("container_uid")
-                    if container_uid:
-                        container_uids.append(container_uid)
-
-                # remember the part id and the services
-                if part_id not in partitions:
-                    partitions[part_id] = {
-                        "part_id": part_id,
-                        "container_uid": container_uids,
-                        "services": [service_uid],
-                    }
-                else:
-                    partitions[part_id]["services"].append(service_uid)
-
-            # Inject the Partitions to the record (will be picked up during the
-            # AR creation)
-            record["Partitions"] = partitions.values()
-
             # Process valid record
             valid_record = dict()
             for fieldname, fieldvalue in record.iteritems():
@@ -1815,12 +1583,15 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             return {'errors': errors}
 
         # Process Form
+        actions = ActionHandlerPool.get_instance()
+        actions.queue_pool()
         ARs = OrderedDict()
         for n, record in enumerate(valid_records):
             client_uid = record.get("Client")
             client = self.get_object_by_uid(client_uid)
 
             if not client:
+                actions.resume()
                 raise RuntimeError("No client found")
 
             # get the specifications and pass them to the AR create function.
@@ -1835,6 +1606,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                     specifications=specifications
                 )
             except (KeyError, RuntimeError) as e:
+                actions.resume()
                 errors["message"] = e.message
                 return {"errors": errors}
             # We keep the title to check if AR is newly created
@@ -1851,16 +1623,17 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                 _attachments.append(att)
             if _attachments:
                 ar.setAttachment(_attachments)
+        actions.resume()
 
         level = "info"
         if len(ARs) == 0:
-            message = _('No Analysis Requests could be created.')
+            message = _('No Samples could be created.')
             level = "error"
         elif len(ARs) > 1:
-            message = _('Analysis requests ${ARs} were successfully created.',
+            message = _('Samples ${ARs} were successfully created.',
                         mapping={'ARs': safe_unicode(', '.join(ARs.keys()))})
         else:
-            message = _('Analysis request ${AR} was successfully created.',
+            message = _('Sample ${AR} was successfully created.',
                         mapping={'AR': safe_unicode(ARs.keys()[0])})
 
         # Display a portal message

@@ -32,7 +32,7 @@ class GetServices():
 
         query = {
             "portal_type": 'AnalysisService',
-            "inactive_state": 'active',
+            "is_active": True,
             "sort_on": 'sortable_title',
         }
 
@@ -61,8 +61,7 @@ class AttachAnalyses():
         nr_rows = self.request['rows']
         sord = self.request['sord']
         sidx = self.request['sidx']
-        attachable_states = ('assigned', 'sample_received', 'to_be_verified')
-        wf = getToolByName(self.context, 'portal_workflow')
+        attachable_states = ('assigned', 'unassigned', 'to_be_verified')
         analysis_to_slot = {}
         for s in self.context.getLayout():
             analysis_to_slot[s['analysis_uid']] = int(s['position'])

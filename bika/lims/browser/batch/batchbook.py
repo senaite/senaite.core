@@ -32,7 +32,7 @@ class BatchBookView(BikaListingView):
         self.title = context.Title()
         self.Description = context.Description()
         self.show_select_all_checkbox = True
-        self.show_sort_column = False
+
         self.show_column_toggles = True
         self.show_select_row = False
         self.show_select_column = True
@@ -48,7 +48,7 @@ class BatchBookView(BikaListingView):
 
         self.columns = {
             'AnalysisRequest': {
-                'title': _('Analysis Request'),
+                'title': _('Sample'),
                 'index': 'id',
                 'sortable': True,
             },
@@ -131,11 +131,11 @@ class BatchBookView(BikaListingView):
                 if o not in ars:
                     ars.append(o)
             elif o.portal_type == 'Batch':
-                for ar in o.getAnalysisRequests(cancellation_state='active'):
+                for ar in o.getAnalysisRequests(is_active=True):
                     if ar not in ars:
                         ars.append(ar)
 
-        for ar in self.context.getAnalysisRequests(cancellation_state='active'):
+        for ar in self.context.getAnalysisRequests(is_active=True):
             if ar not in ars:
                 ars.append(ar)
 
@@ -184,7 +184,7 @@ class BatchBookView(BikaListingView):
                 'url': ar.absolute_url(),
                 'relative_url': ar.absolute_url(),
                 'view_url': ar.absolute_url(),
-                'created': self.ulocalized_time(ar.created()),
+                'created': self.ulocalized_time(ar.created(), long_format=1),
                 'sort_key': ar.created(),
                 'replace': {
                     'Batch': batchlink,
@@ -211,8 +211,10 @@ class BatchBookView(BikaListingView):
         # Insert columns for analyses
         for d_a in distinct:
             keyword = d_a.getKeyword()
+            short = d_a.getShortTitle()
+            title = d_a.Title()
             self.columns[keyword] = {
-                'title': d_a.ShortTitle if d_a.ShortTitle else d_a.Title,
+                'title':  short if short else title,
                 'sortable': True
             }
             self.review_states[0]['columns'].insert(

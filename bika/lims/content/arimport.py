@@ -119,7 +119,7 @@ Contact = ReferenceField(
         label=_('Primary Contact'),
         size=20,
         visible=True,
-        base_query={'inactive_state': 'active'},
+        base_query={'is_active': True},
         showOn=True,
         popup_width='300px',
         colModel=[{'columnName': 'UID', 'hidden': True},
@@ -136,7 +136,7 @@ Batch = ReferenceField(
         label=_('Batch'),
         visible=True,
         catalog_name='bika_catalog',
-        base_query={'review_state': 'open', 'cancellation_state': 'active'},
+        base_query={'review_state': 'open'},
         showOn=True,
     ),
 )
@@ -249,6 +249,7 @@ class ARImport(BaseFolder):
         if data and len(data):
             return True
 
+    # TODO Workflow - ARImport - Remove
     def workflow_before_validate(self):
         """This function transposes values from the provided file into the
         ARImport object's fields, and checks for invalid values.
@@ -287,7 +288,7 @@ class ARImport(BaseFolder):
         bsc = getToolByName(self, 'bika_setup_catalog')
         client = self.aq_parent
 
-        title = _('Submitting AR Import')
+        title = _('Submitting Sample Import')
         description = _('Creating and initialising objects')
         bar = ProgressBar(self, self.REQUEST, title, description)
         notify(InitialiseProgressBar(bar))
@@ -327,19 +328,7 @@ class ARImport(BaseFolder):
                 client,
                 self.REQUEST,
                 row,
-                analyses=list(newanalyses),
-                partitions=None,)
-
-            # Container is special... it could be a containertype.
-            container = self.get_row_container(row)
-            if container:
-                if container.portal_type == 'ContainerType':
-                    containers = container.getContainers()
-                # TODO: Since containers don't work as is expected they
-                # should work, I am keeping the old logic for AR import...
-                part = ar.getPartitions()[0]
-                # XXX And so we must calculate the best container for this partition
-                part.edit(Container=containers[0])
+                analyses=list(newanalyses),)
 
             # progress marker update
             progress_index = float(row_cnt) / len(gridrows) * 100

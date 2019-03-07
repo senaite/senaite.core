@@ -4,9 +4,9 @@
         xmlns:i18n="http://xml.zope.org/namespaces/i18n"
         i18n:domain="plone"
         purge="True">
-<property name="title" i18n:translate="">Analysis Request</property>
+<property name="title" i18n:translate="">Sample</property>
  <property name="description"></property>
- <property name="content_icon">++resource++bika.lims.images/analysisrequest.png</property>
+ <property name="content_icon">++resource++bika.lims.images/sample.png</property>
  <property name="content_meta_type">AnalysisRequest</property>
  <property name="product">bika.lims</property>
  <property name="factory">addAnalysisRequest</property>
@@ -40,50 +40,38 @@
  <action title="Manage Analyses"
          action_id="analyses"
          category="object"
-         condition_expr="python:here.guard_cancelled_object()"
+         condition_expr=""
          icon_expr=""
          link_target=""
          url_expr="string:${object_url}/analyses"
          i18n:attributes="title"
          i18n:domain="plone"
          visible="True">
-     <permission value="BIKA: Add Analysis"/>
+     <permission value="senaite.core: Add Analysis"/>
  </action>
 
  <action title="Manage Results"
          action_id="manage_results"
          category="object"
-         condition_expr="python:here.guard_cancelled_object()"
+         condition_expr=""
          icon_expr=""
          link_target=""
          url_expr="string:${object_url}/manage_results"
          i18n:attributes="title"
          visible="True">
-     <permission value="BIKA: Edit Results"/>
- </action>
-
- <action title="Results not requested"
-         action_id="analyses_not_requested"
-         category="object"
-         condition_expr="python:here.guard_cancelled_object()"
-         icon_expr=""
-         link_target=""
-         url_expr="string:${object_url}/not_requested"
-         i18n:attributes="title"
-         visible="True">
-     <permission value="BIKA: Results not requested"/>
+     <permission value="senaite.core: Edit Results"/>
  </action>
 
  <action title="Published results"
          action_id="published_results"
          category="object"
-         condition_expr="python:here.guard_cancelled_object()"
+         condition_expr=""
          icon_expr=""
          link_target=""
          url_expr="string:${object_url}/published_results"
          i18n:attributes="title"
          visible="True">
-     <permission value="View"/>
+     <permission value="senaite.core: View Results"/>
  </action>
 
  <action title="Invoice"
@@ -93,7 +81,7 @@
          url_expr="string:${object_url}/invoice"
          i18n:attributes="title"
          visible="True">
-     <permission value="BIKA: Manage Invoices"/>
+     <permission value="senaite.core: Manage Invoices"/>
  </action>
 
  <action title="Log"
@@ -103,7 +91,7 @@
          url_expr="string:${object_url}/log"
          i18n:attributes="title"
          visible="True">
-     <permission value="BIKA: View Log Tab"/>
+     <permission value="senaite.core: View Log Tab"/>
  </action>
 
  <action title="Create Invoice"
@@ -114,7 +102,7 @@
          url_expr="string:${object_url}/invoice_create"
          i18n:attributes="title"
          visible="True">
-     <permission value="BIKA: Manage Invoices"/>
+     <permission value="senaite.core: Manage Invoices"/>
  </action>
 
  <action title="Print"
@@ -126,7 +114,7 @@
          url_expr="string:${object_url}/invoice_print"
          i18n:attributes="title"
          visible="True">
-     <permission value="BIKA: Manage Invoices"/>
+     <permission value="senaite.core: Manage Invoices"/>
  </action>
 
  <action title="Large Sticker"

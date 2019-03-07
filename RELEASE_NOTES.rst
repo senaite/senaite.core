@@ -1,6 +1,58 @@
 Release notes
 =============
 
+Update from 1.2.9 to 1.3.0
+--------------------------
+
+**IMPORTANT: Plan the upgrade with enough time**
+
+Version 1.3.0 is not a hotfixes release, so this update comes with a lot of
+changes that require additional care when planning the update. If you have your
+own add-on, please review the changes to see beforehand if some parts of your
+add-on need to be modified.
+
+Amongst these changes, the refactoring of Workflows logic will have a huge
+impact on how long this update will require for its completion.
+
+To reduce the time for the upgrade to complete, we suggest the following tips:
+
+  - Do a backup of both your code and the database before proceed.
+
+  - Try to have as much analyses in verified state as possible.
+
+
+Update from 1.2.8 to 1.2.9
+--------------------------
+
+**IMPORTANT: Plan the upgrade with enough time**
+This update might take long depending on the number of Analyses, Analysis
+Requests and Samples registered in the system:
+
+  - Role mappings updated for Analaysis Requests and Samples (rejection)
+    https://github.com/senaite/senaite.core/pull/1041
+
+  - Recatalog of invalidated/retest Analysis Requests (invalidation)
+    https://github.com/senaite/senaite.core/pull/1027
+
+  - Reindex and recatalog of getDueDate for Analysis Requests
+    https://github.com/senaite/senaite.core/pull/1051
+
+  - Reindex of getDueDate for Analyses
+    https://github.com/senaite/senaite.core/pull/1032
+
+- Workflow: `retract_ar` transition has been renamed to `invalidate`
+  https://github.com/senaite/senaite.core/pull/1027
+
+
+Update from 1.2.7 to 1.2.8
+--------------------------
+
+- Operators for min and max values have been added. For specifications already
+  present in the system, the result ranges are considered as bounded and closed:
+  `[min,max] = {result | min <= result <= max}`.
+  https://github.com/senaite/senaite.core/pull/965
+
+
 Update from 1.2.4 to 1.2.5
 --------------------------
 

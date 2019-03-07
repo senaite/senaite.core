@@ -7,8 +7,9 @@
 
 from Acquisition import aq_get
 from bika.lims import bikaMessageFactory as _
+from bika.lims.api import is_active
 from bika.lims.utils import t
-from bika.lims.interfaces import IDisplayListVocabulary, ICustomPubPref
+from bika.lims.interfaces import IDisplayListVocabulary
 from bika.lims.utils import to_utf8
 from Products.Archetypes.public import DisplayList
 from Products.CMFCore.utils import getToolByName
@@ -57,16 +58,8 @@ class CatalogVocabulary(object):
         # If a secondary deactivation/cancellation workflow is anbled,
         # Be sure and select only active objects, unless other instructions
         # are explicitly specified:
-        wf = getToolByName(site, 'portal_workflow')
-        if 'portal_type' in self.contentFilter:
-            portal_type = self.contentFilter['portal_type']
-            wf_ids = [x.id for x in wf.getWorkflowsFor(portal_type)]
-            if 'bika_inactive_workflow' in wf_ids \
-                    and 'bika_inactive_workflow' not in self.contentFilter:
-                self.contentFilter['inactive_state'] = 'active'
-            elif 'bika_cancellation_workflow' in wf_ids \
-                    and 'bika_inactive_workflow' not in self.contentFilter:
-                self.contentFilter['cancellation_state'] = 'active'
+        if "is_active" not in self.contentFilter:
+            self.contentFilter["is_active"] = True
 
         brains = catalog(self.contentFilter)
 
@@ -107,8 +100,7 @@ class BikaContentVocabulary(object):
             folder = site.restrictedTraverse(folder)
             for portal_type in self.portal_types:
                 objects = list(folder.objectValues(portal_type))
-                objects = [o for o in objects if
-                           wf.getInfoFor(o, 'inactive_state') == 'active']
+                objects = filter(is_active, objects)
                 if not objects:
                     continue
                 objects.sort(lambda x, y: cmp(x.Title().lower(),
@@ -128,8 +120,9 @@ class BikaCatalogTypesVocabulary(object):
     def __call__(self, context):
         translate = context.translate
         types = (
-            ('AnalysisRequest', translate(to_utf8(_('Analysis Request')))),
+            ('AnalysisRequest', translate(to_utf8(_('Sample')))),
             ('Batch', translate(to_utf8(_('Batch')))),
+            # TODO Remove in >v1.3.0
             ('Sample', translate(to_utf8(_('Sample')))),
             ('ReferenceSample', translate(to_utf8(_('Reference Sample')))),
             ('Worksheet', translate(to_utf8(_('Worksheet'))))
@@ -457,42 +450,6 @@ def getTemplates(bikalims_path, restype, filter_by_type=False):
     return out
 
 
-def getARReportTemplates():
-    """ Returns an array with the AR Templates available in Bika LIMS  plus the
-        templates from the 'reports' resources directory type from each
-        additional product.
-
-        Each array item is a dictionary with the following structure:
-            {'id': <template_id>,
-             'title': <template_title>}
-
-        If the template lives outside the bika.lims add-on, both the template_id
-        and template_title include a prefix that matches with the add-on
-        identifier. template_title is the same name as the id, but with
-        whitespaces and without extension.
-
-        As an example, for a template from the my.product add-on located in
-        templates/reports dir, and with a filename "My_cool_report.pt", the
-        dictionary will look like:
-            {'id': 'my.product:My_cool_report.pt',
-             'title': 'my.product: My cool report'}
-    """
-    resdirname = 'reports'
-    p = os.path.join("browser", "analysisrequest", "templates", resdirname)
-    return getTemplates(p, resdirname)
-
-
-class ARReportTemplatesVocabulary(object):
-    """Locate all ARReport templates to allow user to set the default
-    """
-    implements(IVocabularyFactory)
-
-    def __call__(self, context):
-        out = [SimpleTerm(x['id'], x['id'], x['title']) for x in
-               getARReportTemplates()]
-        return SimpleVocabulary(out)
-
-
 def getStickerTemplates(filter_by_type=False):
     """ Returns an array with the sticker templates available. Retrieves the
         TAL templates saved in templates/stickers folder.
@@ -543,20 +500,3 @@ class StickerTemplatesVocabulary(object):
         out = [SimpleTerm(x['id'], x['id'], x['title']) for x in
                getStickerTemplates(filter_by_type=filter_by_type)]
         return SimpleVocabulary(out)
-
-
-ARReportTemplatesVocabularyFactory = ARReportTemplatesVocabulary()
-
-class CustomPubPrefVocabulary(object):
-    implements(IVocabularyFactory)
-
-    def __call__(self, context):
-        items = [
-            (_('Email'),'email'),
-            (_('PDF'), 'pdf')
-        ]
-        for name, item in getAdapters((context, ), ICustomPubPref):
-            items.append(item)
-        return SimpleVocabulary.fromItems(items)
-
-CustomPubPrefVocabularyFactory = CustomPubPrefVocabulary()

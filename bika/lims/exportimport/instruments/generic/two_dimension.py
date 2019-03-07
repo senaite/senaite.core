@@ -1,7 +1,9 @@
-# This file is part of Bika LIMS
+# -*- coding: utf-8 -*-
 #
-# Copyright 2011-2016 by it's authors.
-# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+# This file is part of SENAITE.CORE
+#
+# Copyright 2018 by it's authors.
+# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 """ 2-Dimensional-CSV
 """
@@ -9,6 +11,9 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims import api
 import json
 import re
+from bika.lims.exportimport.instruments.utils import \
+    (get_instrument_import_override,
+     get_instrument_import_ar_allowed_states)
 from bika.lims.exportimport.instruments.resultsimport import \
     InstrumentCSVResultsFileParser, AnalysisResultsImporter
 import traceback
@@ -27,7 +32,7 @@ def Import(context, request):
         form['instrument_results_file']
     artoapply = form['artoapply']
     override = form['results_override']
-    sample = form.get('sample', 'requestid')
+
     instrument = form.get('instrument', None)
     errors = []
     logs = []
@@ -37,51 +42,25 @@ def Import(context, request):
     if not hasattr(infile, 'filename'):
         errors.append(_("No file selected"))
     parser = TwoDimensionCSVParser(infile)
-
-    if parser:
-        # Load the importer
-        status = ['sample_received', 'attachment_due', 'to_be_verified']
-        if artoapply == 'received':
-            status = ['sample_received']
-        elif artoapply == 'received_tobeverified':
-            status = ['sample_received', 'attachment_due', 'to_be_verified']
-
-        over = [False, False]
-        if override == 'nooverride':
-            over = [False, False]
-        elif override == 'override':
-            over = [True, False]
-        elif override == 'overrideempty':
-            over = [True, True]
-
-        sam = ['getId', 'getSampleID', 'getClientSampleID']
-        if sample == 'requestid':
-            sam = ['getId']
-        if sample == 'sampleid':
-            sam = ['getSampleID']
-        elif sample == 'clientsid':
-            sam = ['getClientSampleID']
-        elif sample == 'sample_clientsid':
-            sam = ['getSampleID', 'getClientSampleID']
-
-        importer = TwoDimensionImporter(parser=parser,
-                                        context=context,
-                                        idsearchcriteria=sam,
-                                        allowed_ar_states=status,
-                                        allowed_analysis_states=None,
-                                        override=over,
-                                        instrument_uid=instrument,
-                                        form=form)
-        tbex = ''
-        try:
-            importer.process()
-        except:
-            tbex = traceback.format_exc()
-        errors = importer.errors
-        logs = importer.logs
-        warns = importer.warns
-        if tbex:
-            errors.append(tbex)
+    status = get_instrument_import_ar_allowed_states(artoapply)
+    over = get_instrument_import_override(override)
+    importer = TwoDimensionImporter(parser=parser,
+                                    context=context,
+                                    allowed_ar_states=status,
+                                    allowed_analysis_states=None,
+                                    override=over,
+                                    instrument_uid=instrument,
+                                    form=form)
+    tbex = ''
+    try:
+        importer.process()
+    except:
+        tbex = traceback.format_exc()
+    errors = importer.errors
+    logs = importer.logs
+    warns = importer.warns
+    if tbex:
+        errors.append(tbex)
 
     results = {'errors': errors, 'log': logs, 'warns': warns}
 
@@ -104,12 +83,17 @@ def find_analyses(ar_or_sample):
     bc = api.get_tool(CATALOG_ANALYSIS_REQUEST_LISTING)
     ar = bc(portal_type='AnalysisRequest', id=ar_or_sample)
     if len(ar) == 0:
-        ar = bc(portal_type='AnalysisRequest', getSampleID=ar_or_sample)
+        ar = bc(portal_type='AnalysisRequest', getClientSampleID=ar_or_sample)
     if len(ar) == 1:
         obj = ar[0].getObject()
         analyses = obj.getAnalyses(full_objects=True)
         return analyses
     return []
+
+
+def get_interims_keywords(analysis):
+    interims = api.safe_getattr(analysis, 'getInterimFields')
+    return map(lambda item: item['keyword'], interims)
 
 
 def find_analysis_interims(ar_or_sample):
@@ -120,16 +104,11 @@ def find_analysis_interims(ar_or_sample):
         resultsimport.py or somewhere central where it can be used by other
         instrument interfaces.
     """
-    interim_fields = []
-    analyses = find_analyses(ar_or_sample)
-    for analysis in analyses:
-        interims = []
-        if hasattr(analysis, 'getInterimFields'):
-            interims = analysis.getInterimFields()
-        for interim in interims:
-            if interim['keyword'] not in interim_fields:
-                interim_fields.append(interim['keyword'])
-    return interim_fields
+    interim_fields = list()
+    for analysis in find_analyses(ar_or_sample):
+        keywords = get_interims_keywords(analysis)
+        interim_fields.extend(keywords)
+    return list(set(interim_fields))
 
 
 def find_kw(ar_or_sample, kw):
@@ -140,17 +119,10 @@ def find_kw(ar_or_sample, kw):
         resultsimport.py or somewhere central where it can be used by other
         instrument interfaces.
     """
-    keyword = None
-    analyses = find_analyses(ar_or_sample)
-    for analysis in analyses:
-        interims = []
-        if hasattr(analysis, 'getInterimFields'):
-            interims = analysis.getInterimFields()
-        for interim in interims:
-            if interim['keyword'] == kw:
-                keyword = analysis.getKeyword()
-                break
-    return keyword
+    for analysis in find_analyses(ar_or_sample):
+        if kw in get_interims_keywords(analysis):
+            return analysis.getKeyword()
+    return None
 
 
 class TwoDimensionCSVParser(InstrumentCSVResultsFileParser):
@@ -167,10 +139,9 @@ class TwoDimensionCSVParser(InstrumentCSVResultsFileParser):
         self._numline = 0
 
     def _parseline(self, line):
-        if self._end_header is False:
-            return self.parse_headerline(line)
-        else:
+        if self._end_header:
             return self.parse_resultsline(line)
+        return self.parse_headerline(line)
 
     def parse_headerline(self, line):
         """ Parses header lines
@@ -230,8 +201,7 @@ class TwoDimensionCSVParser(InstrumentCSVResultsFileParser):
 
             result = quantitation[quantitation['DefaultResult']]
             column_name = quantitation['DefaultResult']
-            result = self.zeroValueDefaultInstrumentResults(column_name,
-                                                            result, line)
+            result = self.get_result(column_name, result, line)
             quantitation[quantitation['DefaultResult']] = result
 
             kw = re.sub(r"\W", "", self._keywords[i])
@@ -263,32 +233,28 @@ class TwoDimensionCSVParser(InstrumentCSVResultsFileParser):
             quantitation = {}
             found = False
 
-    def zeroValueDefaultInstrumentResults(self, column_name, result, line):
+    def get_result(self, column_name, result, line):
         result = str(result)
         if result.startswith('--') or result == '' or result == 'ND':
             return 0.0
 
-        try:
-            result = float(result)
-            if result < 0.0:
-                result = 0.0
-        except ValueError:
-            self.err(
-                "No valid number ${result} in column (${column_name})",
-                mapping={"result": result,
-                         "column_name": column_name},
-                numline=self._numline, line=line)
-            return
-        return result
+        if api.is_floatable(result):
+            result = api.to_float(result)
+            return result > 0.0 and result or 0.0
+        self.err("No valid number ${result} in column (${column_name})",
+                 mapping={"result": result,
+                          "column_name": column_name},
+                 numline=self._numline, line=line)
+        return
+
 
 
 class TwoDimensionImporter(AnalysisResultsImporter):
 
-    def __init__(self, parser, context, idsearchcriteria, override,
+    def __init__(self, parser, context, override,
                  allowed_ar_states=None, allowed_analysis_states=None,
                  instrument_uid='', form=None):
         AnalysisResultsImporter.__init__(self, parser, context,
-                                         idsearchcriteria,
                                          override, allowed_ar_states,
                                          allowed_analysis_states,
                                          instrument_uid)

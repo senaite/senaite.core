@@ -59,7 +59,7 @@
          url_expr="string:${object_url}/invoicebatch_print"
          i18n:attributes="title"
          visible="True">
-    <permission value="BIKA: Manage Invoices"/>
+    <permission value="senaite.core: Manage Invoices"/>
  </action-->
 
  <action title="Export Batch To CSV"
@@ -71,7 +71,7 @@
          url_expr="string:${object_url}/invoicebatch_export_csv"
          i18n:attributes="title"
          visible="True">
-    <permission value="BIKA: Manage Invoices"/>
+    <permission value="senaite.core: Manage Invoices"/>
  </action>
 
 </object>

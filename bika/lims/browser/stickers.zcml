@@ -5,18 +5,18 @@
     xmlns:plone="http://namespaces.plone.org/plone"
     i18n_domain="senaite.core">
 
-   <plone:static
+  <plone:static
       directory="templates/stickers"
       type="stickers"
       name="bika.lims"
-    />
+      />
 
-    <browser:page
+  <browser:page
       for="*"
       name="sticker"
       class="bika.lims.browser.stickers.Sticker"
       permission="zope2.View"
       layer="bika.lims.interfaces.IBikaLIMS"
-    />
+      />
 
 </configure>

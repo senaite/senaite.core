@@ -137,10 +137,6 @@ Total price excl Tax,,,,,,,,,,,,,,
         l = len(ars)
         if l != 4:
             self.fail('4 AnalysisRequests were not created!  We found %s' % l)
-        bc = getToolByName(self.portal, 'bika_catalog')
-        l = len(bc(portal_type='Sample'))
-        if l != 4:
-            self.fail('4 Samples were not created!  We found %s' % l)
         bac = getToolByName(self.portal, CATALOG_ANALYSIS_LISTING)
         analyses = bac(portal_type='Analysis')
         l = len(analyses)
@@ -150,10 +146,10 @@ Total price excl Tax,,,,,,,,,,,,,,
                   for a in analyses]
         ars_states = [ar.review_state for ar in ars]
         if ars_states != ['sample_due'] * 4:
-            self.fail('Analysis Requests states should all be sample_due, '
+            self.fail('Samples states should all be sample_due, '
                       'but are not!')
-        if states != ['sample_due'] * 12:
-            self.fail('Analysis states should all be sample_due, but are not!')
+        if states != ['registered'] * 12:
+            self.fail('Analysis states should all be registered, but are not!')
 
     def test_LIMS_2080_correctly_interpret_false_and_blank_values(self):
         client = self.portal.clients.objectValues()[0]

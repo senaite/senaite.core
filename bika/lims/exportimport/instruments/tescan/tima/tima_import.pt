@@ -17,7 +17,7 @@
         <tr>
 
             <!-- Allowed states of the analysis requests to look for -->
-            <td style='vertical-align:top;padding-right:30px;'><label for="artoapply">Analysis Requests state</label>&nbsp;</td>
+            <td style='vertical-align:top;padding-right:30px;'><label for="artoapply">Samples state</label>&nbsp;</td>
             <td>
                 <select name="artoapply" id="artoapply">
                     <option value="received">Received</option>

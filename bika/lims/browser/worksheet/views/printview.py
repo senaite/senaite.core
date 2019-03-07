@@ -11,6 +11,7 @@ import traceback
 
 from DateTime import DateTime
 from bika.lims.api.analysis import is_out_of_range
+from bika.lims.interfaces import IReferenceSample, IReferenceAnalysis
 from plone.resource.utils import iterDirectoriesOfType, queryResourceDirectory
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
@@ -354,7 +355,11 @@ class PrintView(BrowserView):
 
                 ar = self._ar_data(arobj)
                 ar['client'] = self._client_data(arobj.aq_parent)
-                ar['sample'] = self._sample_data(an.getSample())
+                ar["sample"] = dict()
+                if IReferenceSample.providedBy(an):
+                    ar['sample'] = self._sample_data(an.getSample())
+                else:
+                    ar['sample'] = self._sample_data(an.getRequest())
                 ar['analyses'] = []
                 ar['tmp_position'] = andict['tmp_position']
                 ar['position'] = andict['position']
@@ -402,7 +407,7 @@ class PrintView(BrowserView):
             'formatted_result': '',
             'uncertainty': analysis.getUncertainty(),
             'formatted_uncertainty': '',
-            'retested': analysis.getRetested(),
+            'retested': analysis.isRetest(),
             'remarks': to_utf8(analysis.getRemarks()),
             'outofrange': False,
             'type': analysis.portal_type,
@@ -415,8 +420,8 @@ class PrintView(BrowserView):
         }
 
         andict['refsample'] = analysis.getSample().id \
-            if analysis.portal_type == 'Analysis' \
-            else '%s - %s' % (analysis.aq_parent.id, analysis.aq_parent.Title())
+            if IReferenceAnalysis.providedBy(analysis) \
+            else analysis.getRequestID()
 
         specs = analysis.getResultsRange()
         andict['specs'] = specs
@@ -441,8 +446,7 @@ class PrintView(BrowserView):
         """ Returns a dict that represents the sample
             Keys: obj, id, url, client_sampleid, date_sampled,
                   sampling_date, sampler, date_received, composite,
-                  date_expired, date_disposal, date_disposed, adhoc,
-                  remarks
+                  date_expired, date_disposal, date_disposed, remarks
         """
         data = {}
         if sample:

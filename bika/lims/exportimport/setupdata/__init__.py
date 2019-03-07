@@ -844,7 +844,7 @@ class Instrument_Validations(WorksheetImporter):
                 )
                 # Getting lab contacts
                 bsc = getToolByName(self.context, 'bika_setup_catalog')
-                lab_contacts = [o.getObject() for o in bsc(portal_type="LabContact", inactive_state='active')]
+                lab_contacts = [o.getObject() for o in bsc(portal_type="LabContact", is_active=True)]
                 for contact in lab_contacts:
                     if contact.getFullname() == row.get('Worker', ''):
                         obj.setWorker(contact.UID())
@@ -2176,44 +2176,6 @@ class Reference_Samples(WorksheetImporter):
             self.load_reference_sample_results(obj)
             self.load_reference_analyses(obj)
 
-class Samples(WorksheetImporter):
-
-    def Import(self):
-        folder = self.context.bika_setup.bika_attachmenttypes
-        pc = getToolByName(self.context, 'portal_catalog')
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
-        for row in self.get_rows(3):
-            if not row['id']:
-                continue
-            client = pc(portal_type="Client",
-                        getName=row['Client_title'])[0].getObject()
-            obj = _createObjectByType("Sample", client, row['id'])
-            obj.setSampleID(row['id'])
-            obj.setClientSampleID(row['ClientSampleID'])
-            obj.setSamplingWorkflowEnabled(False)
-            obj.setDateSampled(row['DateSampled'])
-            obj.setDateReceived(row['DateReceived'])
-            obj.setRemarks(row['Remarks'])
-            obj.setComposite(self.to_bool(row['Composite']))
-            obj.setDateExpired(row['DateExpired'])
-            obj.setDateDisposed(row['DateDisposed'])
-            obj.setAdHoc(self.to_bool(row['AdHoc']))
-            if row.get('SampleType_title', ''):
-                st = self.get_object(bsc, 'SampleType',
-                                     row.get('SampleType_title'))
-                obj.setSampleType(st)
-            if row.get('SamplePoint_title', ''):
-                sp = self.get_object(bsc, 'SamplePoint',
-                                     row.get('SamplePoint_title'))
-                obj.setSamplePoint(sp)
-            obj.unmarkCreationFlag()
-            # XXX hard-wired, Creating a single partition without proper init, no decent review_state ideas
-            part = _createObjectByType("SamplePartition", obj, "part-1")
-            container = bsc(portal_type='Container', title='None Specified')[0].UID
-            part.setContainer(container)
-            part.unmarkCreationFlag()
-            part.reindexObject()
-
 class Analysis_Requests(WorksheetImporter):
 
     def load_analyses(self, sample):
@@ -2244,8 +2206,6 @@ class Analysis_Requests(WorksheetImporter):
                 },
             )
 
-            part = sample.objectValues()[0].UID()
-            obj.setSamplePartition(part)
             analyses = ar.objectValues('Analyses')
             analyses = list(analyses)
             analyses.append(obj)
@@ -2286,8 +2246,6 @@ class Analysis_Requests(WorksheetImporter):
             obj = _createObjectByType("AnalysisRequest", client, row['id'])
             contact = pc(portal_type="Contact",
                          getFullname=row['Contact_Fullname'])[0].getObject()
-            sample = bc(portal_type="Sample",
-                        id=row['Sample_id'])[0].getObject()
             obj.edit(
                 RequestID=row['id'],
                 Contact=contact,

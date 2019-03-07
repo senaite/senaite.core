@@ -14,7 +14,6 @@
   <include file="artemplate.zcml"/>
   <include file="attachment.zcml"/>
   <include file="batchfolder.zcml"/>
-  <include file="bika_listing.zcml"/>
   <include file="calcs.zcml"/>
   <include file="clientfolder.zcml"/>
   <include file="invoicefolder.zcml"/>
@@ -25,9 +24,7 @@
   <include file="instrumenttype.zcml"/>
   <include file="instrumentlocation.zcml"/>
   <include file="manufacturer.zcml"/>
-  <include file="menu.zcml"/>
-  <include file="method.zcml"/>
-  <include file="remarks.zcml"/>
+  <include file="methodfolder.zcml"/>
   <include file="referenceanalysis.zcml"/>
   <include file="referencesample.zcml"/>
   <include file="pricelist.zcml"/>
@@ -38,19 +35,18 @@
   <include file="arimports.zcml"/>
   <include file="worksheettemplate.zcml"/>
 
-  <include package=".aggregatedanalyses"/>
-  <include package=".analyses"/>
   <include package=".analysisrequest"/>
   <include package=".batch"/>
   <include package=".client"/>
+  <include package=".publish"/>
   <include package=".idserver"/>
   <include package=".dashboard"/>
   <include package=".department"/>
   <include package=".resultsimport"/>
-  <include package=".sample"/>
   <include package=".samplinground"/>
   <include package=".srtemplate"/>
   <include package=".viewlets"/>
+  <include package=".workflow"/>
   <include package=".worksheet"/>
 
   <include package=".fields"/>
@@ -81,16 +77,25 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
+  <!-- AR Partition Magic View -->
   <browser:page
       for="*"
-      name="portletfilter_by_department"
-      class="bika.lims.browser.updateFilerByDepartmentCookie"
-      permission="zope2.View"
+      name="partition_magic"
+      class=".partition_magic.PartitionMagicView"
+      permission="senaite.core.permissions.ManageAnalysisRequests"
       layer="bika.lims.interfaces.IBikaLIMS"
-    />
+  />
+
+  <!-- Searches for sample types (TemplatePartitions) -->
+  <browser:page
+      for="*"
+      name="get_sampletypes"
+      class=".sampletype.get_sampletypes"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+  />
 
   <!-- Zope 3 browser resources -->
-
   <browser:resourceDirectory
       name="bika.lims.images"
       directory="images"

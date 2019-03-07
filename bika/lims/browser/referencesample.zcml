@@ -9,17 +9,7 @@
       for="bika.lims.interfaces.IReferenceSamplesFolder"
       name="base_view"
       class="bika.lims.browser.referencesample.ReferenceSamplesView"
-      permission="bika.lims.ManageReference"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <!-- Retrieve the ReferenceResultsWidget table, with a ReferenceDefinition
-    -->
-    <browser:page
-      for="bika.lims.interfaces.IReferenceSample"
-      name="referenceresults"
-      class="bika.lims.browser.widgets.referenceresultswidget.TableRenderShim"
-      permission="zope.Public"
+      permission="senaite.core.permissions.ManageReference"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
@@ -28,7 +18,7 @@
       for="bika.lims.interfaces.IReferenceSample"
       name="base_view"
       class="bika.lims.browser.referencesample.ViewView"
-      permission="bika.lims.ManageReference"
+      permission="senaite.core.permissions.ManageReference"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
@@ -36,7 +26,15 @@
       for="bika.lims.interfaces.IReferenceSample"
       name="analyses"
       class="bika.lims.browser.referencesample.ReferenceAnalysesViewView"
-      permission="bika.lims.ManageReference"
+      permission="senaite.core.permissions.ManageReference"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="bika.lims.interfaces.IReferenceSample"
+      name="table_referenceanalyses"
+      class="bika.lims.browser.referencesample.ReferenceAnalysesView"
+      permission="senaite.core.permissions.ManageReference"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
@@ -44,7 +42,7 @@
       for="bika.lims.interfaces.IReferenceSample"
       name="results"
       class="bika.lims.browser.referencesample.ReferenceResultsView"
-      permission="bika.lims.ManageReference"
+      permission="senaite.core.permissions.ManageReference"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 

@@ -2,16 +2,18 @@
 # SOME DESCRIPTIVE TITLE.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # Translators:
+# Jordi Puiggené <jpuiggene@naralabs.com>, 2018
 # Ramon Bartl <rb@ridingbytes.com>, 2018
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2018-07-02 20:01+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
+"POT-Creation-Date: 2019-02-15 08:16+0000\n"
+"PO-Revision-Date: 2018-06-01 18:46+0000\n"
 "Last-Translator: Ramon Bartl <rb@ridingbytes.com>, 2018\n"
 "Language-Team: Afrikaans (https://www.transifex.com/senaite/teams/87045/af/)\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Language-Code: en\n"
@@ -20,17 +22,13 @@ msgstr ""
 "Domain: plone\n"
 "Language: af\n"
 
-#. Default: "AR Imports"
-msgid "AR Imports"
-msgstr "AR Imports"
-
 #: bika/lims/profiles/default/types/ARTemplate.xml
 msgid "AR Template"
 msgstr "OV Templaat"
 
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/ARTemplates.xml
-#: bika/lims/profiles/default/types/Client.xml
+#: bika/lims/profiles/default/types/SRTemplate.xml
 msgid "AR Templates"
 msgstr "OV Template"
 
@@ -70,7 +68,6 @@ msgid "Administration"
 msgstr "Administrasie"
 
 #: bika/lims/profiles/default/types/ReferenceSample.xml
-#: bika/lims/profiles/default/types/Sample.xml
 msgid "Analyses"
 msgstr "Ontledings"
 
@@ -96,16 +93,6 @@ msgstr "Ontledingsprofiel"
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Analysis Profiles"
 msgstr "Ontledingsprofiele"
-
-#: bika/lims/profiles/default/types/AnalysisRequest.xml
-msgid "Analysis Request"
-msgstr "Ontledingsversoek"
-
-#: bika/lims/profiles/default/actions.xml
-#: bika/lims/profiles/default/types/AnalysisRequestsFolder.xml
-#: bika/lims/profiles/default/types/Batch.xml
-msgid "Analysis Requests"
-msgstr "Ontledingsversoeke"
 
 #: bika/lims/profiles/default/types/AnalysisService.xml
 msgid "Analysis Service"
@@ -410,8 +397,6 @@ msgid "Laboratory Information"
 msgstr "Laboratoriuminligting"
 
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
-#: bika/lims/profiles/default/types/Sample.xml
-#: bika/lims/profiles/default/types/SamplePartition.xml
 msgid "Large Sticker"
 msgstr "Groot plakker"
 
@@ -534,10 +519,6 @@ msgstr "Gepubliseerde resultate"
 msgid "QC Results"
 msgstr ""
 
-#: bika/lims/profiles/default/types/ReportFolder.xml
-msgid "Quality Control"
-msgstr "Kwaliteitsbeheer"
-
 msgid "Receive"
 msgstr ""
 
@@ -617,16 +598,13 @@ msgstr "Verslae"
 msgid "Republish"
 msgstr ""
 
-#: bika/lims/profiles/default/types/AnalysisRequest.xml
-msgid "Results not requested"
-msgstr "Uitslae nie versoek"
-
 msgid "Retract"
 msgstr ""
 
 msgid "Retracted"
 msgstr ""
 
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
 #: bika/lims/profiles/default/types/Sample.xml
 msgid "Sample"
 msgstr "Monster"
@@ -639,6 +617,10 @@ msgstr "Monster toestand"
 #: bika/lims/profiles/default/types/SampleConditions.xml
 msgid "Sample Conditions"
 msgstr "Monster Toestand"
+
+#. Default: "AR Imports"
+msgid "Sample Imports"
+msgstr ""
 
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/SampleMatrices.xml
@@ -653,10 +635,6 @@ msgstr "Monstermatriks"
 msgid "Sample Partition"
 msgstr "Monsterpartisie"
 
-#: bika/lims/profiles/default/types/Sample.xml
-msgid "Sample Partitions"
-msgstr "Monsterpartisies"
-
 #: bika/lims/profiles/default/types/SamplePoint.xml
 msgid "Sample Point"
 msgstr "Monsterpunt"
@@ -665,6 +643,10 @@ msgstr "Monsterpunt"
 #: bika/lims/profiles/default/types/SamplePoints.xml
 msgid "Sample Points"
 msgstr "Monsterpunte"
+
+#: bika/lims/profiles/default/types/Client.xml
+msgid "Sample Templates"
+msgstr ""
 
 #: bika/lims/profiles/default/types/SampleType.xml
 msgid "Sample Type"
@@ -676,12 +658,6 @@ msgid "Sample Types"
 msgstr "Monstertipes"
 
 msgid "Sample due"
-msgstr ""
-
-msgid "Sample preparation"
-msgstr ""
-
-msgid "Sample preparation complete"
 msgstr ""
 
 msgid "Sample received"
@@ -698,8 +674,8 @@ msgid "Sampled"
 msgstr ""
 
 #: bika/lims/profiles/default/actions.xml
+#: bika/lims/profiles/default/types/AnalysisRequestsFolder.xml
 #: bika/lims/profiles/default/types/Batch.xml
-#: bika/lims/profiles/default/types/Client.xml
 msgid "Samples"
 msgstr "Monsters"
 
@@ -749,8 +725,6 @@ msgid "Sharing"
 msgstr ""
 
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
-#: bika/lims/profiles/default/types/Sample.xml
-#: bika/lims/profiles/default/types/SamplePartition.xml
 msgid "Small Sticker"
 msgstr "Klein plakkertjie"
 
@@ -766,7 +740,7 @@ msgstr "Plakker"
 
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 #: bika/lims/profiles/default/types/Batch.xml
-#: bika/lims/profiles/default/types/Sample.xml
+#: bika/lims/profiles/default/types/ReferenceSample.xml
 msgid "Stickers preview"
 msgstr ""
 
@@ -849,10 +823,6 @@ msgstr ""
 msgid "View"
 msgstr ""
 
-#: bika/lims/profiles/default/types/Client.xml
-msgid "WINE-40: Do not move or remove this entry."
-msgstr ""
-
 #: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Worksheet"
 msgstr "Werksblad"
@@ -870,10 +840,6 @@ msgstr "Werksbladtemplate"
 #: bika/lims/profiles/default/types/WorksheetFolder.xml
 msgid "Worksheets"
 msgstr "Werksblaaie"
-
-#. Default: "AR Templates"
-msgid "label_schema_AR Templates"
-msgstr "AR Templates"
 
 #. Default: "Accounting"
 msgid "label_schema_Accounting"
@@ -957,7 +923,11 @@ msgstr "SR Templates"
 
 #. Default: "Sample Partitions"
 msgid "label_schema_Sample Partitions"
-msgstr "Sample Partitions"
+msgstr "Monster Partitions"
+
+#. Default: "AR Templates"
+msgid "label_schema_Sample Templates"
+msgstr ""
 
 #. Default: "Security"
 msgid "label_schema_Security"

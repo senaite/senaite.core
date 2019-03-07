@@ -6,6 +6,7 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from Products.CMFCore.utils import getToolByName
+from bika.lims import logger
 from bika.lims.interfaces import IATWidgetVisibility
 from types import DictType
 from plone import api
@@ -29,14 +30,14 @@ def editableFields(self, instance, visible_only=False):
             ret.append(field)
     return ret
 
+
 # Products.Archetypes.Widget.TypesWidget#isVisible
-def isVisible(self, instance, mode='view', default=None, field=None):
+def isVisible(self, instance, mode='view', default="visible", field=None):
     """decide if a field is visible in a given mode -> 'state'.
     """
-
-    # First get the original value, to use as our default
+    # Emulate Products.Archetypes.Widget.TypesWidget#isVisible first
     vis_dic = getattr(aq_base(self), 'visible', _marker)
-    state = default if default else 'visible'
+    state = default
     if vis_dic is _marker:
         return state
     if type(vis_dic) is DictType:
@@ -46,24 +47,25 @@ def isVisible(self, instance, mode='view', default=None, field=None):
     elif vis_dic < 0:
         state = 'hidden'
 
+    # Our custom code starts here
     if not field:
         return state
 
-    # call any IATWidgetVisibility adapters
-    adapters = {}
-    for name, adapter in getAdapters((instance, ), IATWidgetVisibility):
-        sort_val = getattr(adapter, 'sort', 1000)
-        if sort_val not in adapters:
-            adapters[sort_val] = []
-        adapters[sort_val].append(adapter)
-    keys = sorted(adapters.keys())
-    keys.reverse()
-    for key in keys:
-        for adapter in adapters[key]:
-            oldstate = state
-            state = adapter(instance, mode, field, state)
-            # if state != oldstate:
-            #     adapter_name = adapter[1].__repr__().split(" ")[0].split(".")[-1]
-            #     print "%-25s %-25s adapter:%s"%(field.getName(), "%s->%s"%(oldstate, state), adapter_name)
+    # Look for visibility from the adapters provided by IATWidgetVisibility
+    adapters = sorted(getAdapters([instance], IATWidgetVisibility),
+                      key=lambda adapter: getattr(adapter[1], "sort", 1000),
+                      reverse=True)
+    for adapter_name, adapter in adapters:
+        if field.getName() not in getattr(adapter, "field_names", []):
+            # Omit those adapters that are not suitable for this field
+            continue
+        adapter_state = adapter(instance, mode, field, state)
+        adapter_name = adapter.__class__.__name__
+        logger.info("IATWidgetVisibility rule {} for {}.{} ({}): {} -> {}"
+            .format(adapter_name, instance.id, field.getName(), mode, state,
+                    adapter_state))
+        if adapter_state == state:
+            continue
+        return adapter_state
 
     return state

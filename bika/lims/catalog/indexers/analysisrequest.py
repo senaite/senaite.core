@@ -16,19 +16,17 @@ from bika.lims.interfaces import IAnalysisRequest
 def assigned_state(instance):
     """Returns `assigned` or `unassigned` depending on the state of the
     analyses the analysisrequest contains. Return `unassigned` if the Analysis
-    Request does not contain any analysis or if has at least one in `unassigned`
-    state. Otherwise, returns `assigned`"""
+    Request has at least one analysis in `unassigned` state.
+    Otherwise, returns `assigned`
+    """
     analyses = instance.getAnalyses()
     if not analyses:
-        return 'unassigned'
-
-    state_var = 'worksheetanalysis_review_state'
+        return "unassigned"
     for analysis in analyses:
-        state = api.get_workflow_status_of(analysis, state_var)
-        if state != 'assigned':
-            return 'unassigned'
-
-    return 'assigned'
+        analysis_object = api.get_object(analysis)
+        if not analysis_object.getWorksheet():
+            return "unassigned"
+    return "assigned"
 
 
 @indexer(IAnalysisRequest)
@@ -47,6 +45,10 @@ def listing_searchable_text(instance):
         instance_value = api.safe_getattr(instance, column, None)
         parsed = api.to_searchable_text_metadata(brain_value or instance_value)
         entries.add(parsed)
+
+    # add metadata of all descendants
+    for descendant in instance.getDescendants():
+        entries.add(listing_searchable_text(descendant)())
 
     # Concatenate all strings to one text blob
     return " ".join(entries)

@@ -51,7 +51,7 @@ class Report(BrowserView):
             self.contentFilter, len(ars)))
 
         if not ars:
-            message = _("No Analysis Requests matched your query")
+            message = _("No Samples matched your query")
             self.context.plone_utils.addPortalMessage(message, "error")
             return self.default_template()
 
@@ -82,7 +82,7 @@ class Report(BrowserView):
                 "PublicationLag": publicationlag,
                 "TotalLag": receptionlag + publicationlag,
                 "BatchID": ar.getBatch().getId() if ar.getBatch() else '',
-                "SampleID": ar.getSample().Title(),
+                "SampleID": ar.getId(),
                 "SampleType": ar.getSampleTypeTitle(),
                 "NumAnalyses": anlcount,
                 "ClientID": ar.aq_parent.id,

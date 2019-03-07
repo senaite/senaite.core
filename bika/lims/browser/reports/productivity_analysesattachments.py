@@ -33,7 +33,7 @@ class Report(BrowserView):
         headings = {}
         headings['header'] = _("Attachments")
         headings['subheader'] = _(
-            "The attachments linked to analysis requests and analyses")
+            "The attachments linked to samples and analyses")
 
         count_all = 0
         query = {'portal_type': 'Attachment'}

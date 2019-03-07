@@ -151,12 +151,6 @@ msgstr ""
 msgid "Sample due"
 msgstr ""
 
-msgid "Sample preparation"
-msgstr ""
-
-msgid "Sample preparation complete"
-msgstr ""
-
 msgid "Sample received"
 msgstr ""
 
@@ -218,7 +212,7 @@ msgstr "Accounting"
 msgid "label_schema_Address"
 msgstr "Address"
 
-msgid "label_schema_AR Templates"
+msgid "label_schema_Sample Templates"
 msgstr "AR Templates"
 
 msgid "label_schema_Bank details"
@@ -284,7 +278,7 @@ msgstr "Analyses"
 msgid "label_schema_SR Templates"
 msgstr "SR Templates"
 
-msgid "AR Imports"
+msgid "Sample Imports"
 msgstr "AR Imports"
 
 msgid "Sampling Round Templates"

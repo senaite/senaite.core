@@ -7,12 +7,10 @@
 
 from AccessControl import ClassSecurityInfo
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
 from bika.lims.config import PROJECTNAME
-from bika.lims.interfaces import ISubGroup
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.fields import *
-from Products.Archetypes.public import *
+from bika.lims.interfaces import ISubGroup, IDeactivable
 from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
@@ -29,7 +27,7 @@ schema['description'].schemata = 'default'
 
 
 class SubGroup(BaseContent):
-    implements(ISubGroup)
+    implements(ISubGroup, IDeactivable)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema

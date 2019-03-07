@@ -31,9 +31,9 @@ class Report(BrowserView):
         parm_lines = {}
         parms = []
         headings = {}
-        headings['header'] = _("Analysis requests not invoiced")
+        headings['header'] = _("Samples not invoiced")
         headings['subheader'] = _(
-            "Published Analysis Requests which have not been invoiced")
+            "Published Samples which have not been invoiced")
 
         count_all = 0
 
@@ -53,15 +53,9 @@ class Report(BrowserView):
              'value': pubished,
              'type': 'text'})
 
-        if self.request.form.has_key('cancellation_state'):
-            query['cancellation_state'] = self.request.form['cancellation_state']
-            cancellation_state = wf_tool.getTitleForStateOnType(
-                self.request.form['cancellation_state'], 'AnalysisRequest')
-        else:
-            cancellation_state = 'Undefined'
         parms.append(
             {'title': _('Active'),
-             'value': cancellation_state,
+             'value': 'Undefined',
              'type': 'text'})
 
 

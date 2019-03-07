@@ -22,19 +22,4 @@
       handler="bika.lims.workflow.BeforeTransitionEventHandler"
     />
 
-    <!-- Sample preparation workflow transitions are enabled with these,
-         applies to all objects with ISamplePrepWorkflow
-    -->
-    <adapter
-      for="bika.lims.interfaces.ISamplePrepWorkflow
-           Products.CMFCore.interfaces.IWorkflowTool"
-      provides="Products.CMFPlone.interfaces.IWorkflowChain"
-      factory="bika.lims.workflow.SamplePrepWorkflowChain"/>
-
-    <subscriber
-      for="bika.lims.interfaces.ISamplePrepWorkflow
-           Products.DCWorkflow.interfaces.IAfterTransitionEvent"
-      handler="bika.lims.workflow.SamplePrepTransitionEventHandler"
-    />
-
 </configure>

@@ -140,7 +140,7 @@ Create an `AnalysisRequest` with this `AnalysisService` and receive it::
     >>> service_uids = [analysisservice.UID() for analysisservice in analysisservices]
     >>> ar = create_analysisrequest(client, request, values, service_uids)
     >>> ar
-    <AnalysisRequest at /plone/clients/client-1/H2O-0001-R01>
+    <AnalysisRequest at /plone/clients/client-1/H2O-0001>
     >>> ar.getReceivedBy()
     ''
     >>> wf = getToolByName(ar, 'portal_workflow')
@@ -159,7 +159,6 @@ Load results test file and import the results::
     >>> tx1800i_parser = TX1800iParser(test_file)
     >>> importer = SysmexXTImporter(parser=tx1800i_parser,
     ...                             context=portal,
-    ...                             idsearchcriteria=['getId', 'getSampleID', 'getClientSampleID'],
     ...                             allowed_ar_states=['sample_received', 'attachment_due', 'to_be_verified'],
     ...                             allowed_analysis_states=None,
     ...                             override=[True, True])
@@ -175,10 +174,10 @@ Check the rest of the importer logs to verify that the values were correctly imp
 
     >>> importer.logs[1:]
     ['End of file reached successfully: 1 objects, 21 analyses, 1 results',
-     'Allowed Analysis Request states: sample_received, attachment_due, to_be_verified',
-     'Allowed analysis states: sampled, sample_received, attachment_due, to_be_verified',
-     "H2O-0001-R01: [u'Analysis HCT', u'Analysis RBC', u'Analysis WBC', u'Analysis HGB'] imported sucessfully",
-     'Import finished successfully: 1 ARs and 4 results updated']
+     'Allowed Sample states: sample_received, attachment_due, to_be_verified',
+     'Allowed analysis states: unassigned, assigned, to_be_verified',
+     "H2O-0001: [u'Analysis HCT', u'Analysis RBC', u'Analysis WBC', u'Analysis HGB'] imported sucessfully",
+     'Import finished successfully: 1 Samples and 4 results updated']
 
 And finally check if indeed the analysis has the imported results::
 
@@ -195,3 +194,4 @@ And finally check if indeed the analysis has the imported results::
     >>> an = [analysis.getObject() for analysis in analyses if analysis.Title=='HCT'][0]
     >>> an.getResult()
     '40.0'
+

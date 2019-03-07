@@ -109,7 +109,7 @@ schema = BikaSchema.copy() + Schema((
             label=_("Performed by"),
             description=_("The person at the supplier who performed the task"),
             size=30,
-            base_query={'inactive_state': 'active'},
+            base_query={'is_active': True},
             showOn=True,
             colModel=[
                 {'columnName': 'UID', 'hidden': True},
@@ -160,7 +160,7 @@ class InstrumentValidation(BaseFolder):
         # fallback - all Lab Contacts
         pairs = []
         for contact in bsc(portal_type='LabContact',
-                           inactive_state='active',
+                           is_active=True,
                            sort_on='sortable_title'):
             pairs.append((contact.UID, contact.Title))
         return DisplayList(pairs)

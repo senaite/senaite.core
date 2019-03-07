@@ -11,18 +11,16 @@ from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import ISamplingRoundTemplates
 from bika.lims.permissions import AddSRTemplate
 from bika.lims.utils import checkPermissions
-from plone.app.content.browser.interfaces import IFolderContentsView
-from plone.app.folder.folder import ATFolder, ATFolderSchema
-from plone.app.layout.globals.interfaces import IViewView
-from Products.ATContentTypes.content import schemata
+from plone.app.folder.folder import ATFolder
+from plone.app.folder.folder import ATFolderSchema
 from Products.Archetypes import atapi
-from Products.CMFCore.utils import getToolByName
-from Products.CMFCore.permissions import ModifyPortalContent, AddPortalContent
+from Products.ATContentTypes.content import schemata
+from Products.CMFCore.permissions import AddPortalContent
+from Products.CMFCore.permissions import ModifyPortalContent
 from zope.interface.declarations import implements
 
 
 class SamplingRoundTemplatesView(BikaListingView):
-    implements(IFolderContentsView, IViewView)
     """
     Displays the list of Sampling Round Templates registered in the system.
     For users with 'Bika: Add SRTemplate' permission granted (along with
@@ -59,12 +57,12 @@ class SamplingRoundTemplatesView(BikaListingView):
         self.review_states = [
             {'id':'default',
              'title': _('Active'),
-             'contentFilter': {'inactive_state':'active'},
+             'contentFilter': {'is_active': True},
              'columns': ['Title',
                          'Description']},
             {'id':'inactive',
-             'title': _('Dormant'),
-             'contentFilter': {'inactive_state':'inactive'},
+             'title': _('Inactive'),
+             'contentFilter': {'is_active': False},
              'columns': ['Title',
                          'Description']},
             {'id':'all',
@@ -84,12 +82,22 @@ class SamplingRoundTemplatesView(BikaListingView):
             self.context_actions = {
                 _('Add'): {
                     'url': 'createObject?type_name=SRTemplate',
+                    'permission': AddSRTemplate,
                     'icon': '++resource++bika.lims.images/add.png'
                 }
             }
         return super(SamplingRoundTemplatesView, self).__call__()
 
+    def before_render(self):
+        """Before template render hook
+        """
+        # Don't allow any context actions
+        self.request.set("disable_border", 1)
+
+
 schema = ATFolderSchema.copy()
+
+
 class SRTemplates(ATFolder):
     implements(ISamplingRoundTemplates)
     displayContentsTab = False

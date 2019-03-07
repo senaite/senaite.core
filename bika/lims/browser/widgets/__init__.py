@@ -8,6 +8,7 @@
 from .datetimewidget import DateTimeWidget
 from .durationwidget import DurationWidget
 from .partitionsetupwidget import PartitionSetupWidget
+from .remarkswidget import RemarksWidget
 from .recordswidget import RecordsWidget
 from .referenceresultswidget import ReferenceResultsWidget
 from .referencewidget import ReferenceWidget

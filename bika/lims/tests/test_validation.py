@@ -25,8 +25,8 @@ class Tests(DataTestCase):
         clients = self.portal.clients
         client1 = clients['client-2']  # not Happy Hills
         self.assertEqual(
-            client1.schema.get('Name').validate('Happy Hills', client1),
-            u"Validation failed: 'Happy Hills' is not unique")
+            client1.schema.get('ClientID').validate('HH', client1),
+            u"Validation failed: 'HH' is not unique")
         self.assertEqual(
             None,
             client1.schema.get(

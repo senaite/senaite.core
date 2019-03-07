@@ -5,17 +5,71 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-import transaction
-from Products.CMFCore.utils import getToolByName
-
+from bika.lims import api
+from bika.lims import logger
+from bika.lims.interfaces import IDuplicateAnalysis, IAnalysisRequest, \
+    IBaseAnalysis
 from bika.lims.interfaces.analysis import IRequestAnalysis
-from bika.lims.utils import changeWorkflowState
 from bika.lims.utils.analysis import create_analysis
-from bika.lims.workflow import doActionFor
-from bika.lims.workflow import skip
+from bika.lims.workflow import doActionFor, push_reindex_to_actions_pool
 
 
-def after_submit(obj):
+def after_assign(analysis):
+    """Function triggered after an 'assign' transition for the analysis passed
+    in is performed.
+    """
+    reindex_request(analysis)
+
+
+def before_unassign(analysis):
+    """Function triggered before 'unassign' transition takes place
+    """
+    worksheet = analysis.getWorksheet()
+    if not worksheet:
+        return
+
+    # Removal of a routine analysis causes the removal of their duplicates
+    for dup in worksheet.get_duplicates_for(analysis):
+        doActionFor(dup, "unassign")
+
+
+def before_reject(analysis):
+    """Function triggered before 'unassign' transition takes place
+    """
+    worksheet = analysis.getWorksheet()
+    if not worksheet:
+        return
+
+    # Rejection of a routine analysis causes the removal of their duplicates
+    for dup in worksheet.get_duplicates_for(analysis):
+        doActionFor(dup, "unassign")
+
+
+def after_unassign(analysis):
+    """Function triggered after an 'unassign' transition for the analysis passed
+    in is performed.
+    """
+    # Remove from the worksheet
+    remove_analysis_from_worksheet(analysis)
+    # Reindex the Analysis Request
+    reindex_request(analysis)
+
+
+def after_cancel(analysis):
+    """Function triggered after a "cancel" transition is performed. Removes the
+    cancelled analysis from the worksheet, if any.
+    """
+    # Remove from the worksheet
+    remove_analysis_from_worksheet(analysis)
+
+
+def after_reinstate(analysis):
+    """Function triggered after a "reinstate" transition is performed.
+    """
+    pass
+
+
+def after_submit(analysis):
     """Method triggered after a 'submit' transition for the analysis passed in
     is performed. Promotes the submit transition to the Worksheet to which the
     analysis belongs to. Note that for the worksheet there is already a guard
@@ -24,73 +78,83 @@ def after_submit(obj):
     This function is called automatically by
     bika.lims.workfow.AfterTransitionEventHandler
     """
-    ws = obj.getWorksheet()
+    # Promote to analyses this analysis depends on
+    promote_to_dependencies(analysis, "submit")
+
+    # TODO: REFLEX TO REMOVE
+    # Do all the reflex rules process
+    if IRequestAnalysis.providedBy(analysis):
+        analysis._reflex_rule_process('submit')
+
+    # Promote transition to worksheet
+    ws = analysis.getWorksheet()
     if ws:
         doActionFor(ws, 'submit')
+        push_reindex_to_actions_pool(ws)
 
-    if IRequestAnalysis.providedBy(obj):
-        ar = obj.getRequest()
-        doActionFor(ar, 'submit')
+    # Promote transition to Analysis Request
+    if IRequestAnalysis.providedBy(analysis):
+        doActionFor(analysis.getRequest(), 'submit')
+        reindex_request(analysis)
 
 
-def after_retract(obj):
+def after_retract(analysis):
     """Function triggered after a 'retract' transition for the analysis passed
-    in is performed. Retracting an analysis cause its transition to 'retracted'
-    state and the creation of a new copy of the same analysis as a retest.
-    Note that retraction only affects to single Analysis and has no other
-    effect in the status of the Worksheet to which the Analysis is assigned or
-    to the Analysis Request to which belongs (transition is never proomoted)
-    This function is called automatically by
-    bika.lims.workflow.AfterTransitionEventHandler
+    in is performed. The analysis transitions to "retracted" state and a new
+    copy of the analysis is created. The copy initial state is "unassigned",
+    unless the the retracted analysis was assigned to a worksheet. In such case,
+    the copy is transitioned to 'assigned' state too
     """
-    # TODO Workflow Analysis - review this function
     # Rename the analysis to make way for it's successor.
     # Support multiple retractions by renaming to *-0, *-1, etc
-    parent = obj.aq_parent
-    kw = obj.getKeyword()
-    analyses = [x for x in parent.objectValues("Analysis")
-                if x.getId().startswith(obj.getId())]
+    parent = analysis.aq_parent
+    keyword = analysis.getKeyword()
 
-    # LIMS-1290 - Analyst must be able to retract, which creates a new
-    # Analysis.  So, _verifyObjectPaste permission check must be cancelled:
-    parent._verifyObjectPaste = str
-    # This is needed for tests:
-    # https://docs.plone.org/develop/plone/content/rename.html
-    # Testing warning: Rename mechanism relies of Persistent attribute
-    # called _p_jar to be present on the content object. By default, this is
-    # not the case on unit tests. You need to call transaction.savepoint() to
-    # make _p_jar appear on persistent objects.
-    # If you don't do this, you'll receive a "CopyError" when calling
-    # manage_renameObjects that the operation is not supported.
-    transaction.savepoint()
-    parent.manage_renameObject(kw, "{0}-{1}".format(kw, len(analyses)))
-    delattr(parent, '_verifyObjectPaste')
+    # Get only those that are analyses and with same keyword as the original
+    analyses = parent.getAnalyses(full_objects=True)
+    analyses = filter(lambda an: an.getKeyword() == keyword, analyses)
+    # TODO This needs to get managed by Id server in a nearly future!
+    new_id = '{}-{}'.format(keyword, len(analyses))
 
-    # Create new analysis from the retracted obj
-    analysis = create_analysis(parent, obj)
-    changeWorkflowState(
-        analysis, "bika_analysis_workflow", "sample_received")
+    # Create a copy of the retracted analysis
+    an_uid = api.get_uid(analysis)
+    new_analysis = create_analysis(parent, analysis, id=new_id, RetestOf=an_uid)
+    new_analysis.setResult("")
+    new_analysis.setResultCaptureDate(None)
+    new_analysis.reindexObject()
+    logger.info("Retest for {} ({}) created: {}".format(
+        keyword, api.get_id(analysis), api.get_id(new_analysis)))
 
     # Assign the new analysis to this same worksheet, if any.
-    ws = obj.getWorksheet()
-    if ws:
-        ws.addAnalysis(analysis)
-    analysis.reindexObject()
+    worksheet = analysis.getWorksheet()
+    if worksheet:
+        worksheet.addAnalysis(new_analysis)
 
-    # retract our dependencies
-    dependencies = obj.getDependencies()
-    for dependency in dependencies:
-        doActionFor(dependency, 'retract')
+    # Retract our dependents (analyses that depend on this analysis)
+    cascade_to_dependents(analysis, "retract")
 
-    # Retract our dependents
-    dependents = obj.getDependents()
-    for dependent in dependents:
-        doActionFor(dependent, 'retract')
-
-    _reindex_request(obj)
+    # Try to rollback the Analysis Request
+    if IRequestAnalysis.providedBy(analysis):
+        doActionFor(analysis.getRequest(), "rollback_to_receive")
+        reindex_request(analysis)
 
 
-def after_verify(obj):
+def after_reject(analysis):
+    """Function triggered after the "reject" transition for the analysis passed
+    in is performed."""
+    # Remove from the worksheet
+    remove_analysis_from_worksheet(analysis)
+
+    # Reject our dependents (analyses that depend on this analysis)
+    cascade_to_dependents(analysis, "reject")
+
+    # Try to rollback the Analysis Request (all analyses rejected)
+    if IRequestAnalysis.providedBy(analysis):
+        doActionFor(analysis.getRequest(), "rollback_to_receive")
+        reindex_request(analysis)
+
+
+def after_verify(analysis):
     """
     Method triggered after a 'verify' transition for the analysis passed in
     is performed. Promotes the transition to the Analysis Request and to
@@ -98,116 +162,86 @@ def after_verify(obj):
     This function is called automatically by
     bika.lims.workfow.AfterTransitionEventHandler
     """
+    # Promote to analyses this analysis depends on
+    promote_to_dependencies(analysis, "verify")
 
-    # If the analysis has dependencies, transition them
-    for dependency in obj.getDependencies():
-        doActionFor(dependency, 'verify')
-
+    # TODO: REFLEX TO REMOVE
     # Do all the reflex rules process
-    obj._reflex_rule_process('verify')
+    if IRequestAnalysis.providedBy(analysis):
+        analysis._reflex_rule_process('verify')
 
-    # Escalate to Analysis Request. Note that the guard for verify transition
-    # from Analysis Request will check if the AR can be transitioned, so there
-    # is no need to check here if all analyses within the AR have been
-    # transitioned already.
-    ar = obj.getRequest()
-    doActionFor(ar, 'verify')
-
-    # Ecalate to Worksheet. Note that the guard for verify transition from
-    # Worksheet will check if the Worksheet can be transitioned, so there is no
-    # need to check here if all analyses within the WS have been transitioned
-    # already
-    ws = obj.getWorksheet()
+    # Promote transition to worksheet
+    ws = analysis.getWorksheet()
     if ws:
         doActionFor(ws, 'verify')
-    _reindex_request(obj)
+        push_reindex_to_actions_pool(ws)
+
+    # Promote transition to Analysis Request
+    if IRequestAnalysis.providedBy(analysis):
+        doActionFor(analysis.getRequest(), 'verify')
+        reindex_request(analysis)
 
 
-def after_assign(obj):
-    """Function triggered after an 'assign' transition for the analysis passed
-    in is performed."""
-    # Reindex the entire request to update the FieldIndex `assigned_state`
-    _reindex_request(obj, idxs=['assigned_state',])
+def after_publish(analysis):
+    """Function triggered after a "publish" transition is performed.
+    """
+    pass
 
 
-def after_unassign(obj):
-    """Function triggered after an 'unassign' transition for the analysis passed
-    in is performed."""
-    # Reindex the entire request to update the FieldIndex `assigned_state`
-    _reindex_request(obj, idxs=['assigned_state',])
-
-
-def after_cancel(obj):
-    if skip(obj, "cancel"):
+# TODO Workflow - Analysis - revisit reindexing of ancestors
+def reindex_request(analysis, idxs=None):
+    """Reindex the Analysis Request the analysis belongs to, as well as the
+    ancestors recursively
+    """
+    if not IRequestAnalysis.providedBy(analysis) or \
+            IDuplicateAnalysis.providedBy(analysis):
+        # Analysis not directly bound to an Analysis Request. Do nothing
         return
-    workflow = getToolByName(obj, "portal_workflow")
-    # If it is assigned to a worksheet, unassign it.
-    state = workflow.getInfoFor(obj, 'worksheetanalysis_review_state')
-    if state == 'assigned':
-        ws = obj.getWorksheet()
-        skip(obj, "cancel", unskip=True)
-        ws.removeAnalysis(obj)
-    obj.reindexObject()
-    _reindex_request(obj)
+
+    n_idxs = ['assigned_state', 'getDueDate']
+    n_idxs = idxs and list(set(idxs + n_idxs)) or n_idxs
+    request = analysis.getRequest()
+    ancestors = [request] + request.getAncestors(all_ancestors=True)
+    for ancestor in ancestors:
+        push_reindex_to_actions_pool(ancestor, n_idxs)
 
 
-def after_reject(obj):
-    if skip(obj, "reject"):
+def remove_analysis_from_worksheet(analysis):
+    """Removes the analysis passed in from the worksheet, if assigned to any
+    """
+    worksheet = analysis.getWorksheet()
+    if not worksheet:
         return
-    workflow = getToolByName(obj, "portal_workflow")
-    # If it is assigned to a worksheet, unassign it.
-    state = workflow.getInfoFor(obj, 'worksheetanalysis_review_state')
-    if state == 'assigned':
-        ws = obj.getWorksheet()
-        ws.removeAnalysis(obj)
-    obj.reindexObject()
-    _reindex_request(obj)
 
-
-def after_attach(obj):
-    if skip(obj, "attach"):
-        return
-    workflow = getToolByName(obj, "portal_workflow")
-    # If all analyses in this AR have been attached escalate the action
-    # to the parent AR
-    ar = obj.aq_parent
-    state = workflow.getInfoFor(ar, "review_state")
-    if state == "attachment_due" and not skip(ar, "attach", peek=True):
-        can_attach = True
-        for a in ar.getAnalyses():
-            if a.review_state in ("to_be_sampled", "to_be_preserved",
-                                  "sample_due", "sample_received",
-                                  "attachment_due"):
-                can_attach = False
-                break
-        if can_attach:
-            workflow.doActionFor(ar, "attach")
-    # If assigned to a worksheet and all analyses on the worksheet have
-    # been attached, then attach the worksheet.
-    ws = obj.getBackReferences('WorksheetAnalysis')
-    if ws:
-        ws_state = workflow.getInfoFor(ws, "review_state")
-        if ws_state == "attachment_due" \
-                and not skip(ws, "attach", peek=True):
-            can_attach = True
-            for a in ws.getAnalyses():
-                state = workflow.getInfoFor(a, "review_state")
-                if state in ("to_be_sampled", "to_be_preserved",
-                             "sample_due", "sample_received",
-                             "attachment_due", "assigned"):
-                    can_attach = False
-                    break
-            if can_attach:
-                workflow.doActionFor(ws, "attach")
-    obj.reindexObject()
-    _reindex_request(obj)
-
-
-def _reindex_request(obj, idxs=None):
-    if not IRequestAnalysis.providedBy(obj):
-        return
-    request = obj.getRequest()
-    if idxs is None:
-        request.reindexObject()
+    analyses = filter(lambda an: an != analysis, worksheet.getAnalyses())
+    worksheet.setAnalyses(analyses)
+    worksheet.purgeLayout()
+    if analyses:
+        # Maybe this analysis was the only one that was not yet submitted or
+        # verified, so try to submit or verify the Worksheet to be aligned
+        # with the current states of the analyses it contains.
+        doActionFor(worksheet, "submit")
+        doActionFor(worksheet, "verify")
     else:
-        request.reindexObject(idxs=idxs)
+        # We've removed all analyses. Rollback to "open"
+        doActionFor(worksheet, "rollback_to_open")
+
+    # Reindex the Worksheet
+    idxs = ["getAnalysesUIDs"]
+    push_reindex_to_actions_pool(worksheet, idxs=idxs)
+
+
+def cascade_to_dependents(analysis, transition_id):
+    """Cascades the transition to dependent analyses (those that depend on the
+    analysis passed in), if any
+    """
+    for dependent in analysis.getDependents():
+        doActionFor(dependent, transition_id)
+
+
+def promote_to_dependencies(analysis, transition_id):
+    """Promotes the transition to the analyses this analysis depends on
+    (dependencies), if any
+    """
+    for dependency in analysis.getDependencies():
+        doActionFor(dependency, transition_id)

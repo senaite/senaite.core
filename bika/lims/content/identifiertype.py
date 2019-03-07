@@ -7,7 +7,7 @@
 
 from bika.lims import bikaMessageFactory as _, PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.interfaces import IHaveIdentifiers
+from bika.lims.interfaces import IHaveIdentifiers, IDeactivable
 
 from AccessControl import ClassSecurityInfo
 from Products.Archetypes import listTypes
@@ -17,6 +17,7 @@ from Products.Archetypes.Widget import PicklistWidget
 from Products.Archetypes.public import BaseContent
 from Products.Archetypes.public import registerType
 from Products.CMFCore.utils import getToolByName
+from zope.interface import implements
 
 from ZODB.POSException import ConflictError
 
@@ -69,6 +70,7 @@ schema['description'].schemata = 'default'
 
 
 class IdentifierType(BaseContent):
+    implements(IDeactivable)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema

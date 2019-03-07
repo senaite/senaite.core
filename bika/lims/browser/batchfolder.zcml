@@ -12,14 +12,6 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
-    <browser:page
-      for="*"
-      name="getBatches"
-      class="bika.lims.browser.batchfolder.ajaxGetBatches"
-      permission="zope.Public"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
     <!-- This has to be done here, because in portal_factory edit forms,
          the context is the parent folder, not the new batch
     -->

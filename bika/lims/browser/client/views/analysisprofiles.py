@@ -26,7 +26,7 @@ class ClientAnalysisProfilesView(BikaListingView):
                 "query": "/".join(self.context.getPhysicalPath()),
                 "level": 0},
         }
-        self.show_sort_column = False
+
         self.show_select_row = False
         self.show_select_column = True
         self.pagesize = 50
@@ -49,12 +49,12 @@ class ClientAnalysisProfilesView(BikaListingView):
         self.review_states = [
             {'id': 'default',
              'title': _('Active'),
-             'contentFilter': {'inactive_state': 'active'},
+             'contentFilter': {'is_active': True},
              'transitions': [{'id': 'deactivate'}, ],
              'columns': ['title', 'Description', 'getProfileKey']},
             {'id': 'inactive',
-             'title': _('Dormant'),
-             'contentFilter': {'inactive_state': 'inactive'},
+             'title': _('Inactive'),
+             'contentFilter': {'is_active': False},
              'transitions': [{'id': 'activate'}, ],
              'columns': ['title', 'Description', 'getProfileKey']},
             {'id': 'all',

@@ -13,12 +13,14 @@
 from AccessControl import ClassSecurityInfo
 from bika.lims import api
 from bika.lims import PMF, bikaMessageFactory as _
+from bika.lims.browser.fields.remarksfield import RemarksField
 from bika.lims.browser.widgets import AnalysisProfileAnalysesWidget
+from bika.lims.browser.widgets import RemarksWidget
 from bika.lims.browser.widgets import ServicesWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from Products.Archetypes.public import *
-from bika.lims.interfaces import IAnalysisProfile
+from bika.lims.interfaces import IAnalysisProfile, IDeactivable
 from Products.Archetypes.references import HoldingReference
 from Products.ATExtensions.field import RecordsField
 from Products.CMFCore.permissions import View, ModifyPortalContent
@@ -47,16 +49,11 @@ schema = BikaSchema.copy() + Schema((
             description = _("The analyses included in this profile, grouped per category"),
         )
     ),
-    TextField('Remarks',
-        searchable = True,
-        default_content_type = 'text/plain',
-        allowable_content_types = ('text/plain', ),
-        default_output_type="text/plain",
-        widget = TextAreaWidget(
-            macro = "bika_widgets/remarks",
-            label = _("Remarks"),
-            append_only = True,
-        ),
+    RemarksField('Remarks',
+        searchable=True,
+        widget=RemarksWidget(
+            label=_("Remarks")
+        )
     ),
     # Custom settings for the assigned analysis services
     # https://jira.bikalabs.com/browse/LIMS-1324
@@ -139,7 +136,7 @@ class AnalysisProfile(BaseContent):
     security = ClassSecurityInfo()
     schema = schema
     displayContentsTab = False
-    implements(IAnalysisProfile)
+    implements(IAnalysisProfile, IDeactivable)
 
     _at_rename_after_creation = True
     def _renameAfterCreation(self, check_auto_id=False):
@@ -147,7 +144,7 @@ class AnalysisProfile(BaseContent):
         renameAfterCreation(self)
 
     def getClientUID(self):
-        return self.aq_parent.UID();
+        return self.aq_parent.UID()
 
     def getAnalysisServiceSettings(self, uid):
         """ Returns a dictionary with the settings for the analysis
@@ -186,6 +183,11 @@ class AnalysisProfile(BaseContent):
         """
         price, vat = self.getAnalysisProfilePrice(), self.getAnalysisProfileVAT()
         return float(price) * float(vat) / 100
+
+    def getPrice(self):
+        """Returns the price of the profile, without VAT
+        """
+        return self.getAnalysisProfilePrice()
 
     def getTotalPrice(self):
         """

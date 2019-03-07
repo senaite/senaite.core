@@ -8,12 +8,10 @@
             id="Analyst"
             tal:attributes="style string:font-family:${here/base_properties/fontFamily};;font-size:100%;">
 
+        <option value=""/>
         <tal:analysts tal:repeat="analyst analysts">
-            <option
-                    value=""
-                    tal:attributes="
-                            value python:analyst;
-                            selected python:request.get('Analyst', '') == analyst and 'selected' or ''"
+            <option tal:attributes="value python:analyst;
+                                    selected python:request.get('Analyst', '') == analyst and 'selected' or ''"
                     tal:content="python:analysts.getValue(analyst)">
             </option>
         </tal:analysts>

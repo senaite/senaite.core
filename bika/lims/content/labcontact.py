@@ -26,18 +26,10 @@ from zope.interface import implements
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.person import Person
 from bika.lims.content.contact import Contact
-from bika.lims.interfaces import ILabContact
+from bika.lims.interfaces import ILabContact, IDeactivable
 from bika.lims import bikaMessageFactory as _
 
 schema = Person.schema.copy() + atapi.Schema((
-    atapi.LinesField(
-        'PublicationPreference',
-        vocabulary_factory='bika.lims.vocabularies.CustomPubPrefVocabularyFactory',
-        default='email',
-        schemata='Publication preference',
-        widget=atapi.MultiSelectionWidget(
-            label=_("Publication preference"),
-        )),
     atapi.ImageField(
         'Signature',
         widget=atapi.ImageWidget(
@@ -83,7 +75,7 @@ schema['Department'].widget.visible = False
 class LabContact(Contact):
     """A Lab Contact, which can be linked to a System User
     """
-    implements(ILabContact)
+    implements(ILabContact, IDeactivable)
 
     schema = schema
     displayContentsTab = False
@@ -110,7 +102,7 @@ class LabContact(Contact):
         bsc = getToolByName(self, 'portal_catalog')
         items = [(o.UID, o.Title) for o in
                  bsc(portal_type='Department',
-                     inactive_state='active')]
+                     is_active=True)]
         # Getting the departments uids
         deps_uids = [i[0] for i in items]
         # Getting the assigned departments
@@ -130,7 +122,7 @@ class LabContact(Contact):
         bsc = getToolByName(self, 'bika_setup_catalog')
         items = [(o.UID, o.Title) for o in
                  bsc(portal_type='Department',
-                     inactive_state='active')]
+                     is_active=True)]
         # Getting the departments uids
         deps_uids = [i[0] for i in items]
         # Getting the assigned departments
