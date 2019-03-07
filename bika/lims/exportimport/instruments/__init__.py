@@ -44,6 +44,7 @@ from nuclisens import easyq
 from genexpert import genexpert
 from varian.vistapro import icp
 from cobasintegra.model_400_plus import model_400_plus
+from facscalibur.calibur import model_e9750
 
 from bika.lims import api
 from zope.component import getAdapters
@@ -159,7 +160,7 @@ PARSERS = [
            ['genexpert.genexpert', 'GeneXpertParser'],
            ['varian.vistapro.icp', 'VistaPROICPParser'],
            ['cobasintegra.model_400_plus.model_400_plus','CobasIntegra400plus2CSVParser'],
-           ['facscalibur.calibur.model_e9750', 'FacsCalibur2Parser'],
+           ['facscalibur.calibur.model_e9750', 'FacsCalibur2CSVParser'],
            ]
 
 

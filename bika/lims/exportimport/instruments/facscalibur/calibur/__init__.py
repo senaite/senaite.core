@@ -21,8 +21,8 @@ class FacsCaliburCSVParser(InstrumentCSVResultsFileParser):
         self._end_header = False
         # self._includedcolumns =['Ca', 'Cu',
         #                         'Fe', 'Mg']
-        self._includedcolumns = ['CD3+CD4+ %Lymph', 'CD3+CD4+ Abs Cnt',
-                                  'CD3+CD8+ %Lymph', 'CD3+CD8+ Abs Cnt']
+        self._includedcolumns = ['CD4_PERC', 'CD4',
+                                  'CD8_PERC', 'CD8']
 
     def _parseline(self, line):
         sline = line.split(',')
@@ -30,14 +30,21 @@ class FacsCaliburCSVParser(InstrumentCSVResultsFileParser):
             self._columns = sline
             for column in self._columns:
                 self._columns = column.split('\t')
-            print(self._columns)
+            #print(self._columns)
             self._end_header = True
 
             for i, j in enumerate(self._columns):
                 if j.startswith('(Average)'):
                     j = j[len('(Average)')+1::]
                     self._columns[i] = j
-                    print(str(i)+' '+j)
+                if 'CD3+CD4+ %Lymph' in self._columns:
+                    self._columns[i] = 'CD4_PERC'
+                elif 'CD3+CD4+ Abs Cnt' in self._columns:
+                    self._columns[i] = 'CD4'
+                elif 'CD3+CD8+ %Lymph' in self._columns:
+                    self._columns[i] = 'CD8_PERC'
+                elif 'CD3+CD8+ Abs Cnt' in self._columns:
+                    self._columns[i] = 'CD8'
             return 0
         elif sline > 0 and self._end_header:
             self.parse_data_line(sline)
@@ -71,11 +78,14 @@ class FacsCaliburCSVParser(InstrumentCSVResultsFileParser):
 
 
 class FacsCaliburImporter(AnalysisResultsImporter):
-    def __init__(self, parser, context, idsearchcriteria, override,
+
+    def __init__(self, parser, context, override,
                  allowed_ar_states=None, allowed_analysis_states=None,
                  instrument_uid=None):
-        AnalysisResultsImporter.__init__(self, parser, context,
-                                         idsearchcriteria, override,
+        AnalysisResultsImporter.__init__(self,
+                                         parser,
+                                         context,
+                                         override,
                                          allowed_ar_states,
                                          allowed_analysis_states,
-instrument_uid)
+                                         instrument_uid)

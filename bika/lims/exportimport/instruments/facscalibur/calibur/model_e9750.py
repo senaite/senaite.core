@@ -9,14 +9,17 @@
 """
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
+
+from bhp.lims import PRODUCT_NAME
 from . import FacsCaliburCSVParser, FacsCaliburImporter
 import json
 import traceback
+import logging
 
 title = "FACS Calibur"
 
 
-def Import(context, request):
+def Import( context, request):
     """ Facs Calibur e9790 analysis results
     """
     infile = request.form['facs_calibur_file']
@@ -35,7 +38,7 @@ def Import(context, request):
     if not hasattr(infile, 'facs_calibur_file'):
         errors.append(_("No file selected"))
     if fileformat == 'exp':
-        parser = FacsCalibur2Parser(infile)
+        parser = FacsCalibur2CSVParser(infile)
     else:
         errors.append(t(_("Unrecognized file format ${fileformat}",
                           mapping={"fileformat": fileformat})))
@@ -67,12 +70,11 @@ def Import(context, request):
             sam = ['getSampleID', 'getClientSampleID']
 
         importer = FacsCalibur2Importer(parser=parser,
-                                              context=context,
-                                              idsearchcriteria=sam,
-                                              allowed_ar_states=status,
-                                              allowed_analysis_states=None,
-                                              override=over,
-                                              instrument_uid=instrument)
+                                        context=context,
+                                        allowed_ar_states=status,
+                                        allowed_analysis_states=None,
+                                        override=over,
+                                        instrument_uid=instrument)
         tbex = ''
         try:
             importer.process()
@@ -89,7 +91,7 @@ def Import(context, request):
     return json.dumps(results)
 
 
-class FacsCalibur2Parser(FacsCaliburCSVParser):
+class FacsCalibur2CSVParser(FacsCaliburCSVParser):
     def getAttachmentFileType(self):
         return "Facs Calibur"
 
