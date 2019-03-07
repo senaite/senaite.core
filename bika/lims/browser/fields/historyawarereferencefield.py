@@ -62,6 +62,7 @@ class HistoryAwareReferenceField(ReferenceField):
 
         # Retrieve the object from the repository
         pr = api.get_tool("portal_repository")
+        # bypass permission check to AccessPreviousVersions
         result = pr._retrieve(
             obj, selector=version, preserve=(), countPurged=True)
         return result.object
