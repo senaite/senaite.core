@@ -168,19 +168,6 @@ class Calculation(BaseFolder, HistoryAwareMixin):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
 
-    def at_post_create_script(self):
-        """This method is only called once after object creation
-
-        This hook is called in `processForm` before the
-        `ObjectInitializedEvent` is fired
-        """
-
-        if not hasattr(self, "version_id"):
-            # Ensure we have an initial version
-            # https://github.com/senaite/senaite.core/pull/1260
-            pr = api.get_tool("portal_repository")
-            pr.save(obj=self, comment="First version")
-
     def setInterimFields(self, value):
         new_value = []
 
@@ -411,7 +398,6 @@ class Calculation(BaseFolder, HistoryAwareMixin):
         return members.get(member)
 
     def workflow_script_activate(self):
-        wf = getToolByName(self, 'portal_workflow')
         pu = getToolByName(self, 'plone_utils')
         # A calculation cannot be re-activated if services it depends on
         # are deactivated.
