@@ -29,6 +29,7 @@ Changelog
 
 **Changed**
 
+- #873 Generalize the assignment of values into fields for Setup on import
 - #1257 Fix Traceback for MultiSelectionWidgets in View Mode for UIDReferenceFields
 - #1249 Render attachments in report in worksheets too
 - #1243 ID Server Suffix Support for Retested ARs
@@ -271,7 +272,6 @@ Changelog
 
 **Changed**
 
-- #873 Generalize the assignment of values into fields for Setup on import
 - #891 Better default styles for listing tables
 - #887 New icon set
 - #879 Upgrade lxml version from 2.3.6 to 3.6.0 and  Plone from 4.3.15 to 4.3.17
