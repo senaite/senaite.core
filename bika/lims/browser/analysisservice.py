@@ -77,9 +77,6 @@ class AnalysisServiceInfoView(BrowserView):
 
     @view.memoize
     def get_calculation(self):
-        analysis = self.get_analysis()
-        if analysis:
-            return analysis.getCalculation()
         if not self.get_service():
             return None
         return self.get_service().getCalculation()
