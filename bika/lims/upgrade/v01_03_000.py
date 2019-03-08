@@ -2007,6 +2007,10 @@ def reindex_submitted_analyses(portal):
     logger.info("Processing {} analyses".format(total))
 
     for num, brain in enumerate(brains):
+        # skip analyses which have an analyst
+        if brain.getAnalyst:
+            continue
+        # reindex analyses which have no annalyst set, but a result
         if brain.getResult not in ["", None]:
             analysis = brain.getObject()
             analysis.reindexObject()

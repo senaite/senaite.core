@@ -854,7 +854,7 @@ For transactional types, senaite_cancellable_type_workflow is used::
     False
 
 But there are custom workflows that can also provide `cancel` transition, like
-`bika_batch_workflow`, to which `Batch` type is bound:
+`senaite_batch_workflow`, to which `Batch` type is bound:
 
     >>> batch1 = api.create(portal.batches, "Batch", title="Test Batch")
     >>> api.is_active(batch1)
