@@ -18,6 +18,8 @@ from bika.lims import logger
 from bika.lims.utils.analysis import create_analysis
 from zope.interface import implements
 from pkg_resources import resource_filename
+from bika.lims import api
+from bika.lims.utils import getFromString
 import datetime
 import os.path
 import re
@@ -1912,45 +1914,103 @@ class Worksheet_Templates(WorksheetImporter):
 
 class Setup(WorksheetImporter):
 
+
+    def get_field_value(self, field, value):
+        if value is None:
+            return None
+        converters = {
+            "integer": self.to_integer_value,
+            "fixedpoint": self.to_fixedpoint_value,
+            "boolean": self.to_boolean_value,
+            "string": self.to_string_value,
+            "reference": self.to_reference_value,
+            "duration": self.to_duration_value
+        }
+        try:
+            return converters.get(field.type, None)(field, value)
+        except:
+            logger.error("No valid type for Setup.{} ({}): {}"
+                         .format(field.getName(), field.type, value))
+
+    def to_integer_value(self, field, value):
+        return str(int(value))
+
+    def to_fixedpoint_value(self, field, value):
+        return str(float(value))
+
+    def to_boolean_value(self, field, value):
+        return self.to_bool(value)
+
+    def to_string_value(self, field, value):
+        if field.vocabulary:
+            return self.to_string_vocab_value(field, value)
+        return value and str(value) or ""
+
+    def to_reference_value(self, field, value):
+        if not value:
+            return None
+
+        brains = api.search({"title": to_unicode(value)})
+        if brains:
+            return api.get_uid(brains[0])
+
+        msg = "No object found for Setup.{0} ({1}): {2}"
+        msg = msg.format(field.getName(), field.type, value)
+        logger.error(msg)
+        raise ValueError(msg)
+
+    def to_string_vocab_value(self, field, value):
+        vocabulary = field.vocabulary
+        if type(vocabulary) is str:
+            vocabulary = getFromString(api.get_setup(), vocabulary)
+        else:
+            vocabulary = vocabulary.items()
+
+        if not vocabulary:
+            raise ValueError("Empty vocabulary for {}".format(field.getName()))
+
+        if type(vocabulary) in (tuple, list):
+            vocabulary = {item[0]: item[1] for item in vocabulary}
+
+        for key, val in vocabulary.items():
+            key_low = str(to_utf8(key)).lower()
+            val_low = str(to_utf8(val)).lower()
+            value_low = str(value).lower()
+            if key_low == value_low or val_low == value_low:
+                return key
+        raise ValueError("Vocabulary entry not found")
+
+    def to_duration_value(self, field, values):
+        duration = ["days", "hours", "minutes"]
+        duration = map(lambda d: "{}_{}".format(field.getName(), d), duration)
+        return dict(
+            days=api.to_int(values.get(duration[0], 0), 0),
+            hours=api.to_int(values.get(duration[1], 0), 0),
+            minutes=api.to_int(values.get(duration[2], 0), 0))
+
     def Import(self):
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
         values = {}
         for row in self.get_rows(3):
             values[row['Field']] = row['Value']
 
-        DSL = {
-            'days': int(values['DefaultSampleLifetime_days'] and values['DefaultSampleLifetime_days'] or 0),
-            'hours': int(values['DefaultSampleLifetime_hours'] and values['DefaultSampleLifetime_hours'] or 0),
-            'minutes': int(values['DefaultSampleLifetime_minutes'] and values['DefaultSampleLifetime_minutes'] or 0),
-        }
-        self.context.bika_setup.edit(
-            PasswordLifetime=int(values['PasswordLifetime']),
-            AutoLogOff=int(values['AutoLogOff']),
-            ShowPricing=values.get('ShowPricing', True),
-            Currency=values['Currency'],
-            DefaultCountry=values.get('DefaultCountry', ''),
-            MemberDiscount=str(Float(values['MemberDiscount'])),
-            VAT=str(Float(values['VAT'])),
-            MinimumResults=int(values['MinimumResults']),
-            SamplingWorkflowEnabled=values['SamplingWorkflowEnabled'],
-            ScheduleSamplingEnabled=values.get('ScheduleSamplingEnabled', 0),
-            CategoriseAnalysisServices=self.to_bool(
-                values['CategoriseAnalysisServices']),
-            EnableAnalysisRemarks=self.to_bool(
-                values.get('EnableAnalysisRemarks', '')),
-            ARImportOption=values['ARImportOption'],
-            ARAttachmentOption=values['ARAttachmentOption'][0].lower(),
-            AnalysisAttachmentOption=values[
-                'AnalysisAttachmentOption'][0].lower(),
-            DefaultSampleLifetime=DSL,
-            AutoPrintStickers=values.get('AutoPrintStickers','receive').lower(),
-            AutoStickerTemplate=values.get('AutoStickerTemplate', 'Code_128_1x48mm.pt'),
-            YearInPrefix=self.to_bool(values['YearInPrefix']),
-            SampleIDPadding=int(values['SampleIDPadding']),
-            ARIDPadding=int(values['ARIDPadding']),
-            ExternalIDServer=self.to_bool(values['ExternalIDServer']),
-            IDServerURL=values['IDServerURL'],
-        )
+        bsetup = self.context.bika_setup
+        bschema = bsetup.Schema()
+        for field in bschema.fields():
+            value = None
+            field_name = field.getName()
+            if field_name in values:
+                value = self.get_field_value(field, values[field_name])
+            elif field.type == "duration":
+                value = self.get_field_value(field, values)
+
+            if value is None:
+                continue
+            try:
+                obj_field = bsetup.getField(field_name)
+                obj_field.set(bsetup, str(value))
+            except:
+                logger.error("No valid type for Setup.{} ({}): {}"
+                             .format(field_name, field.type, value))
 
 
 class ID_Prefixes(WorksheetImporter):
