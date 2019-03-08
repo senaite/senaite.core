@@ -18,6 +18,8 @@ from bika.lims import logger
 from bika.lims.utils.analysis import create_analysis
 from zope.interface import implements
 from pkg_resources import resource_filename
+from bika.lims import api
+from bika.lims.utils import getFromString
 import datetime
 import os.path
 import re
@@ -1912,8 +1914,81 @@ class Worksheet_Templates(WorksheetImporter):
 
 class Setup(WorksheetImporter):
 
+
+    def get_field_value(self, field, value):
+        if value is None:
+            return None
+        converters = {
+            "integer": self.to_integer_value,
+            "fixedpoint": self.to_fixedpoint_value,
+            "boolean": self.to_boolean_value,
+            "string": self.to_string_value,
+            "reference": self.to_reference_value,
+            "duration": self.to_duration_value
+        }
+        try:
+            return converters.get(field.type, None)(field, value)
+        except:
+            logger.error("No valid type for Setup.{} ({}): {}"
+                         .format(field.getName(), field.type, value))
+
+    def to_integer_value(self, field, value):
+        return str(int(value))
+
+    def to_fixedpoint_value(self, field, value):
+        return str(float(value))
+
+    def to_boolean_value(self, field, value):
+        return self.to_bool(value)
+
+    def to_string_value(self, field, value):
+        if field.vocabulary:
+            return self.to_string_vocab_value(field, value)
+        return value and str(value) or ""
+
+    def to_reference_value(self, field, value):
+        if not value:
+            return None
+
+        brains = api.search({"title": to_unicode(value)})
+        if brains:
+            return api.get_uid(brains[0])
+
+        msg = "No object found for Setup.{0} ({1}): {2}"
+        msg = msg.format(field.getName(), field.type, value)
+        logger.error(msg)
+        raise ValueError(msg)
+
+    def to_string_vocab_value(self, field, value):
+        vocabulary = field.vocabulary
+        if type(vocabulary) is str:
+            vocabulary = getFromString(api.get_setup(), vocabulary)
+        else:
+            vocabulary = vocabulary.items()
+
+        if not vocabulary:
+            raise ValueError("Empty vocabulary for {}".format(field.getName()))
+
+        if type(vocabulary) in (tuple, list):
+            vocabulary = {item[0]: item[1] for item in vocabulary}
+
+        for key, val in vocabulary.items():
+            key_low = str(to_utf8(key)).lower()
+            val_low = str(to_utf8(val)).lower()
+            value_low = str(value).lower()
+            if key_low == value_low or val_low == value_low:
+                return key
+        raise ValueError("Vocabulary entry not found")
+
+    def to_duration_value(self, field, values):
+        duration = ["days", "hours", "minutes"]
+        duration = map(lambda d: "{}_{}".format(field.getName(), d), duration)
+        return dict(
+            days=api.to_int(values.get(duration[0], 0), 0),
+            hours=api.to_int(values.get(duration[1], 0), 0),
+            minutes=api.to_int(values.get(duration[2], 0), 0))
+
     def Import(self):
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
         values = {}
         for row in self.get_rows(3):
             values[row['Field']] = row['Value']
@@ -1924,114 +1999,18 @@ class Setup(WorksheetImporter):
             value = None
             field_name = field.getName()
             if field_name in values:
-                value = values[field_name]
-                if value is None:
-                    continue
-                msg = "No valid type for BikaSetup.{0} ({1}): {2}"
-                if field.type == 'integer':
-                    try:
-                        value = str(int(value))
-                    except ValueError:
-                        msg = msg.format(field_name, field.type, value)
-                        logger.error(msg)
-                        continue
+                value = self.get_field_value(field, values[field_name])
+            elif field.type == "duration":
+                value = self.get_field_value(field, values)
 
-                elif field.type == 'fixedpoint':
-                    try:
-                        value = str(float(value))
-                    except ValueError:
-                        msg = msg.format(field_name, field.type, value)
-                        logger.error(msg)
-                        continue
-
-                elif field.type == 'boolean':
-                    value = str(self.to_bool(value))
-
-                elif field.type == 'string' and field.vocabulary:
-                    vocabulary = field.vocabulary
-                    if type(vocabulary) is str:
-                        from bika.lims.utils import getFromString
-                        vocabulary = getFromString(bsetup, vocabulary)
-                    else:
-                        vocabulary = vocabulary.items()
-                    if not vocabulary:
-                        continue
-                    if type(vocabulary) in (tuple, list):
-                        vocabulary = {item[0]: item[1] for item in vocabulary}
-
-                    found = False
-                    for key, val in vocabulary.items():
-                        key_low = str(to_utf8(key)).lower()
-                        val_low = str(to_utf8(val)).lower()
-                        value_low = str(value).lower()
-                        if key_low == value_low or val_low == value_low:
-                            value = key
-                            found = True
-                            break
-                    if not found:
-                        msg = "No valid value for BikaSetup.{0} ({1}): {2}"
-                        msg = msg.format(field_name, field.type, value)
-                        logger.error(msg)
-                        continue
-
-                elif field.type == 'reference' and field.allowed_types:
-                    if not value:
-                        continue
-                    found = False
-                    at = getToolByName(self.context, 'archetype_tool')
-                    at_map = at.catalog_map
-                    for allowed_type in field.allowed_types:
-                        if allowed_type in at_map:
-                            catalog_name = at_map[allowed_type][0]
-                            catalog = getToolByName(self.context, catalog_name)
-                            obj = self.get_object(catalog, allowed_type, value)
-                            if obj:
-                                value = obj.UID()
-                                found = True
-                                break
-
-                    if not found:
-                        msg = "No object found for BikaSetup.{0} ({1}): {2}"
-                        msg = msg.format(field_name, field.type, value)
-                        logger.error(msg)
-                        continue
-
-            elif field.type == 'duration':
-                duration_days = '{0}_{1}'.format(field_name, 'days')
-                duration_hours = '{0}_{1}'.format(field_name, 'hours')
-                duration_minutes = '{0}_{1}'.format(field_name, 'minutes')
-                if duration_days in values or duration_hours in values or \
-                                duration_minutes in values:
-                    days = values.get(duration_days, 0)
-                    hours = values.get(duration_hours, 0)
-                    minutes = values.get(duration_minutes, 0)
-                    try:
-                        days = int(days)
-                    except ValueError:
-                        msg = msg.format(duration_days, field.type, days)
-                        logger.error(msg)
-                        continue
-                    try:
-                        hours = int(hours)
-                    except ValueError:
-                        msg = msg.format(duration_hours, field.type, hours)
-                        logger.error(msg)
-                        continue
-                    try:
-                        minutes = int(minutes)
-                    except ValueError:
-                        msg = msg.format(duration_minutes, field.type, minutes)
-                        logger.error(msg)
-                        continue
-                    value = {'days': days, 'hours': hours, 'minutes': minutes}
             if value is None:
                 continue
             try:
                 obj_field = bsetup.getField(field_name)
                 obj_field.set(bsetup, str(value))
             except:
-                msg = msg.format(field_name, field.type, value)
-                logger.error(msg)
+                logger.error("No valid type for Setup.{} ({}): {}"
+                             .format(field_name, field.type, value))
 
 
 class ID_Prefixes(WorksheetImporter):
