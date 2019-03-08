@@ -12,8 +12,8 @@ import re
 
 import transaction
 from AccessControl import ClassSecurityInfo
-from bika.lims import bikaMessageFactory as _
 from bika.lims import api
+from bika.lims import bikaMessageFactory as _
 from bika.lims.api import get_object_by_uid
 from bika.lims.browser.fields import InterimFieldsField
 from bika.lims.browser.fields.uidreferencefield import UIDReferenceField
@@ -169,10 +169,17 @@ class Calculation(BaseFolder, HistoryAwareMixin):
         renameAfterCreation(self)
 
     def at_post_create_script(self):
-        """Save initial version
+        """This method is only called once after object creation
+
+        This hook is called in `processForm` before the
+        `ObjectInitializedEvent` is fired
         """
-        pr = api.get_tool("portal_repository")
-        pr.save(obj=self, comment="First version")
+
+        if not hasattr(self, "version_id"):
+            # Ensure we have an initial version
+            # https://github.com/senaite/senaite.core/pull/1260
+            pr = api.get_tool("portal_repository")
+            pr.save(obj=self, comment="First version")
 
     def setInterimFields(self, value):
         new_value = []
