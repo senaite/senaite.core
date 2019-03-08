@@ -5,23 +5,30 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from bika.lims.exportimport.dataimport import SetupDataSetList as SDL
-from bika.lims.idserver import renameAfterCreation
-from bika.lims.interfaces import ISetupDataSetList
-from Products.CMFPlone.utils import safe_unicode, _createObjectByType
-from bika.lims.utils import tmpID, to_unicode
-from bika.lims.utils import to_utf8
-from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
-from Products.CMFCore.utils import getToolByName
-from bika.lims import logger
-from bika.lims.utils.analysis import create_analysis
-from zope.interface import implements
-from pkg_resources import resource_filename
 import datetime
 import os.path
 import re
+
+from pkg_resources import resource_filename
+
 import transaction
+from bika.lims import api
+from bika.lims import bikaMessageFactory as _
+from bika.lims import logger
+from bika.lims.exportimport.dataimport import SetupDataSetList as SDL
+from bika.lims.idserver import renameAfterCreation
+from bika.lims.interfaces import ISetupDataSetList
+from bika.lims.utils import getFromString
+from bika.lims.utils import t
+from bika.lims.utils import tmpID
+from bika.lims.utils import to_unicode
+from bika.lims.utils.analysis import create_analysis
+from Products.Archetypes.event import ObjectInitializedEvent
+from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import _createObjectByType
+from Products.CMFPlone.utils import safe_unicode
+from zope.event import notify
+from zope.interface import implements
 
 
 def lookup(context, portal_type, **kwargs):
@@ -297,6 +304,7 @@ class Sub_Groups(WorksheetImporter):
                          SortKey=row['SortKey'])
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
+                notify(ObjectInitializedEvent(obj))
 
 
 class Lab_Information(WorksheetImporter):
@@ -382,6 +390,7 @@ class Lab_Contacts(WorksheetImporter):
             )
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
+            notify(ObjectInitializedEvent(obj))
             self.fill_contactfields(row, obj)
             self.fill_addressfields(row, obj)
 
@@ -483,6 +492,7 @@ class Lab_Departments(WorksheetImporter):
                     logger.info(message)
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
+                notify(ObjectInitializedEvent(obj))
 
 
 class Lab_Products(WorksheetImporter):
@@ -505,6 +515,7 @@ class Lab_Products(WorksheetImporter):
             )
             # Rename the new object
             renameAfterCreation(obj)
+            notify(ObjectInitializedEvent(obj))
 
 
 class Clients(WorksheetImporter):
@@ -531,6 +542,7 @@ class Clients(WorksheetImporter):
             self.fill_addressfields(row, obj)
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
+            notify(ObjectInitializedEvent(obj))
 
 
 class Client_Contacts(WorksheetImporter):
@@ -566,6 +578,7 @@ class Client_Contacts(WorksheetImporter):
             self.fill_addressfields(row, contact)
             contact.unmarkCreationFlag()
             renameAfterCreation(contact)
+            notify(ObjectInitializedEvent(contact))
             # CC Contacts
             if row['CCContacts']:
                 names = [x.strip() for x in row['CCContacts'].split(",")]
@@ -610,6 +623,7 @@ class Container_Types(WorksheetImporter):
                      description=row.get('description', ''))
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
+            notify(ObjectInitializedEvent(obj))
 
 
 class Preservations(WorksheetImporter):
@@ -631,6 +645,7 @@ class Preservations(WorksheetImporter):
                      RetentionPeriod=RP)
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
+            notify(ObjectInitializedEvent(obj))
 
 
 class Containers(WorksheetImporter):
@@ -658,6 +673,7 @@ class Containers(WorksheetImporter):
                     obj.setPreservation(pres)
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
+            notify(ObjectInitializedEvent(obj))
 
 
 class Suppliers(WorksheetImporter):
@@ -684,6 +700,7 @@ class Suppliers(WorksheetImporter):
                 self.fill_addressfields(row, obj)
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
+                notify(ObjectInitializedEvent(obj))
 
 
 class Supplier_Contacts(WorksheetImporter):
@@ -710,6 +727,7 @@ class Supplier_Contacts(WorksheetImporter):
             self.fill_addressfields(row, obj)
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
+            notify(ObjectInitializedEvent(obj))
 
 
 class Manufacturers(WorksheetImporter):
@@ -726,6 +744,7 @@ class Manufacturers(WorksheetImporter):
                 self.fill_addressfields(row, obj)
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
+                notify(ObjectInitializedEvent(obj))
 
 
 class Instrument_Types(WorksheetImporter):
@@ -739,6 +758,7 @@ class Instrument_Types(WorksheetImporter):
                     description=row.get('description', ''))
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
+                notify(ObjectInitializedEvent(obj))
 
 
 class Instruments(WorksheetImporter):
@@ -818,6 +838,7 @@ class Instruments(WorksheetImporter):
                 addDocument(self, row_dict, obj)
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
+            notify(ObjectInitializedEvent(obj))
 
 
 class Instrument_Validations(WorksheetImporter):
@@ -850,6 +871,7 @@ class Instrument_Validations(WorksheetImporter):
                         obj.setWorker(contact.UID())
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
+                notify(ObjectInitializedEvent(obj))
 
 
 class Instrument_Calibrations(WorksheetImporter):
@@ -882,6 +904,7 @@ class Instrument_Calibrations(WorksheetImporter):
                         obj.setWorker(contact.UID())
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
+                notify(ObjectInitializedEvent(obj))
 
 
 class Instrument_Certifications(WorksheetImporter):
@@ -933,6 +956,7 @@ class Instrument_Certifications(WorksheetImporter):
                         obj.setValidator(contact.UID())
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
+                notify(ObjectInitializedEvent(obj))
 
 
 class Instrument_Documents(WorksheetImporter):
@@ -987,6 +1011,7 @@ def addDocument(self, row_dict, folder):
                 )
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
+                notify(ObjectInitializedEvent(obj))
 
 
 class Instrument_Maintenance_Tasks(WorksheetImporter):
@@ -1020,6 +1045,7 @@ class Instrument_Maintenance_Tasks(WorksheetImporter):
                 )
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
+                notify(ObjectInitializedEvent(obj))
 
 
 class Instrument_Schedule(WorksheetImporter):
@@ -1053,6 +1079,7 @@ class Instrument_Schedule(WorksheetImporter):
                 )
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
+                notify(ObjectInitializedEvent(obj))
 
 
 class Sample_Matrices(WorksheetImporter):
@@ -1069,6 +1096,7 @@ class Sample_Matrices(WorksheetImporter):
             )
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
+            notify(ObjectInitializedEvent(obj))
 
 
 class Batch_Labels(WorksheetImporter):
@@ -1081,6 +1109,7 @@ class Batch_Labels(WorksheetImporter):
                 obj.edit(title=row['title'])
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
+                notify(ObjectInitializedEvent(obj))
 
 
 class Sample_Types(WorksheetImporter):
@@ -1116,6 +1145,7 @@ class Sample_Types(WorksheetImporter):
                 obj.setSamplePoints([samplepoint, ])
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
+            notify(ObjectInitializedEvent(obj))
 
 
 class Sample_Points(WorksheetImporter):
@@ -1156,6 +1186,7 @@ class Sample_Points(WorksheetImporter):
                 obj.setSampleTypes([sampletype, ])
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
+            notify(ObjectInitializedEvent(obj))
 
 
 class Sample_Point_Sample_Types(WorksheetImporter):
@@ -1207,6 +1238,7 @@ class Storage_Locations(WorksheetImporter):
             )
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
+            notify(ObjectInitializedEvent(obj))
 
 
 class Sample_Conditions(WorksheetImporter):
@@ -1222,6 +1254,7 @@ class Sample_Conditions(WorksheetImporter):
                 )
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
+                notify(ObjectInitializedEvent(obj))
 
 
 class Analysis_Categories(WorksheetImporter):
@@ -1242,6 +1275,7 @@ class Analysis_Categories(WorksheetImporter):
                 obj.setDepartment(department)
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
+                notify(ObjectInitializedEvent(obj))
             elif not row.get('title', None):
                 logger.warning("Error in in " + self.sheetname + ". Missing Title field")
             elif not row.get('Department_title', None):
@@ -1291,6 +1325,7 @@ class Methods(WorksheetImporter):
 
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
+                notify(ObjectInitializedEvent(obj))
 
 
 class Sampling_Deviations(WorksheetImporter):
@@ -1306,6 +1341,7 @@ class Sampling_Deviations(WorksheetImporter):
                 )
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
+                notify(ObjectInitializedEvent(obj))
 
 
 class Calculations(WorksheetImporter):
@@ -1361,6 +1397,7 @@ class Calculations(WorksheetImporter):
                            )
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
+            notify(ObjectInitializedEvent(obj))
 
         # Now we have the calculations registered, try to assign default calcs
         # to methods
@@ -1623,6 +1660,7 @@ class Analysis_Services(WorksheetImporter):
             )
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
+            notify(ObjectInitializedEvent(obj))
         self.load_result_options()
         self.load_service_uncertainties()
 
@@ -1688,6 +1726,7 @@ class Analysis_Specifications(WorksheetImporter):
                     obj.setSampleType(st_uid)
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
+                notify(ObjectInitializedEvent(obj))
 
 
 class Analysis_Profiles(WorksheetImporter):
@@ -1729,6 +1768,7 @@ class Analysis_Profiles(WorksheetImporter):
                 obj.setService(self.profile_services[row['title']])
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
+                notify(ObjectInitializedEvent(obj))
 
 
 class AR_Templates(WorksheetImporter):
@@ -1813,6 +1853,7 @@ class AR_Templates(WorksheetImporter):
             obj.setAnalyses(analyses)
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
+            notify(ObjectInitializedEvent(obj))
 
 
 class Reference_Definitions(WorksheetImporter):
@@ -1856,6 +1897,7 @@ class Reference_Definitions(WorksheetImporter):
                 Hazardous=self.to_bool(row['Hazardous']))
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
+            notify(ObjectInitializedEvent(obj))
 
 
 class Worksheet_Templates(WorksheetImporter):
@@ -1908,49 +1950,108 @@ class Worksheet_Templates(WorksheetImporter):
                 obj.setService(self.wst_services[row['title']])
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
+                notify(ObjectInitializedEvent(obj))
 
 
 class Setup(WorksheetImporter):
 
+
+    def get_field_value(self, field, value):
+        if value is None:
+            return None
+        converters = {
+            "integer": self.to_integer_value,
+            "fixedpoint": self.to_fixedpoint_value,
+            "boolean": self.to_boolean_value,
+            "string": self.to_string_value,
+            "reference": self.to_reference_value,
+            "duration": self.to_duration_value
+        }
+        try:
+            return converters.get(field.type, None)(field, value)
+        except:
+            logger.error("No valid type for Setup.{} ({}): {}"
+                         .format(field.getName(), field.type, value))
+
+    def to_integer_value(self, field, value):
+        return str(int(value))
+
+    def to_fixedpoint_value(self, field, value):
+        return str(float(value))
+
+    def to_boolean_value(self, field, value):
+        return self.to_bool(value)
+
+    def to_string_value(self, field, value):
+        if field.vocabulary:
+            return self.to_string_vocab_value(field, value)
+        return value and str(value) or ""
+
+    def to_reference_value(self, field, value):
+        if not value:
+            return None
+
+        brains = api.search({"title": to_unicode(value)})
+        if brains:
+            return api.get_uid(brains[0])
+
+        msg = "No object found for Setup.{0} ({1}): {2}"
+        msg = msg.format(field.getName(), field.type, value)
+        logger.error(msg)
+        raise ValueError(msg)
+
+    def to_string_vocab_value(self, field, value):
+        vocabulary = field.vocabulary
+        if type(vocabulary) is str:
+            vocabulary = getFromString(api.get_setup(), vocabulary)
+        else:
+            vocabulary = vocabulary.items()
+
+        if not vocabulary:
+            raise ValueError("Empty vocabulary for {}".format(field.getName()))
+
+        if type(vocabulary) in (tuple, list):
+            vocabulary = {item[0]: item[1] for item in vocabulary}
+
+        for key, val in vocabulary.items():
+            key_low = str(to_utf8(key)).lower()
+            val_low = str(to_utf8(val)).lower()
+            value_low = str(value).lower()
+            if key_low == value_low or val_low == value_low:
+                return key
+        raise ValueError("Vocabulary entry not found")
+
+    def to_duration_value(self, field, values):
+        duration = ["days", "hours", "minutes"]
+        duration = map(lambda d: "{}_{}".format(field.getName(), d), duration)
+        return dict(
+            days=api.to_int(values.get(duration[0], 0), 0),
+            hours=api.to_int(values.get(duration[1], 0), 0),
+            minutes=api.to_int(values.get(duration[2], 0), 0))
+
     def Import(self):
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
         values = {}
         for row in self.get_rows(3):
             values[row['Field']] = row['Value']
 
-        DSL = {
-            'days': int(values['DefaultSampleLifetime_days'] and values['DefaultSampleLifetime_days'] or 0),
-            'hours': int(values['DefaultSampleLifetime_hours'] and values['DefaultSampleLifetime_hours'] or 0),
-            'minutes': int(values['DefaultSampleLifetime_minutes'] and values['DefaultSampleLifetime_minutes'] or 0),
-        }
-        self.context.bika_setup.edit(
-            PasswordLifetime=int(values['PasswordLifetime']),
-            AutoLogOff=int(values['AutoLogOff']),
-            ShowPricing=values.get('ShowPricing', True),
-            Currency=values['Currency'],
-            DefaultCountry=values.get('DefaultCountry', ''),
-            MemberDiscount=str(Float(values['MemberDiscount'])),
-            VAT=str(Float(values['VAT'])),
-            MinimumResults=int(values['MinimumResults']),
-            SamplingWorkflowEnabled=values['SamplingWorkflowEnabled'],
-            ScheduleSamplingEnabled=values.get('ScheduleSamplingEnabled', 0),
-            CategoriseAnalysisServices=self.to_bool(
-                values['CategoriseAnalysisServices']),
-            EnableAnalysisRemarks=self.to_bool(
-                values.get('EnableAnalysisRemarks', '')),
-            ARImportOption=values['ARImportOption'],
-            ARAttachmentOption=values['ARAttachmentOption'][0].lower(),
-            AnalysisAttachmentOption=values[
-                'AnalysisAttachmentOption'][0].lower(),
-            DefaultSampleLifetime=DSL,
-            AutoPrintStickers=values.get('AutoPrintStickers','receive').lower(),
-            AutoStickerTemplate=values.get('AutoStickerTemplate', 'Code_128_1x48mm.pt'),
-            YearInPrefix=self.to_bool(values['YearInPrefix']),
-            SampleIDPadding=int(values['SampleIDPadding']),
-            ARIDPadding=int(values['ARIDPadding']),
-            ExternalIDServer=self.to_bool(values['ExternalIDServer']),
-            IDServerURL=values['IDServerURL'],
-        )
+        bsetup = self.context.bika_setup
+        bschema = bsetup.Schema()
+        for field in bschema.fields():
+            value = None
+            field_name = field.getName()
+            if field_name in values:
+                value = self.get_field_value(field, values[field_name])
+            elif field.type == "duration":
+                value = self.get_field_value(field, values)
+
+            if value is None:
+                continue
+            try:
+                obj_field = bsetup.getField(field_name)
+                obj_field.set(bsetup, str(value))
+            except:
+                logger.error("No valid type for Setup.{} ({}): {}"
+                             .format(field_name, field.type, value))
 
 
 class ID_Prefixes(WorksheetImporter):
@@ -1983,6 +2084,7 @@ class Attachment_Types(WorksheetImporter):
                 description=row.get('description', ''))
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
+            notify(ObjectInitializedEvent(obj))
 
 
 class Reference_Samples(WorksheetImporter):
@@ -2214,3 +2316,4 @@ class Invoice_Batches(WorksheetImporter):
                 BatchEndDate=row['end'],
             )
             renameAfterCreation(obj)
+            notify(ObjectInitializedEvent(obj))

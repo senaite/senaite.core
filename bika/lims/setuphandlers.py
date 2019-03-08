@@ -126,24 +126,6 @@ class BikaGenerator(object):
             portal.portal_groups.addGroup(group_id, title=group_id,
                                           roles=GROUPS[group_id])
 
-    def setupVersioning(self, portal):
-        try:
-            # noinspection PyUnresolvedReferences
-            from Products.CMFEditions.setuphandlers import DEFAULT_POLICIES
-        except ImportError:
-            return
-        portal_repository = getToolByName(portal, 'portal_repository')
-        versionable_types = list(portal_repository.getVersionableContentTypes())
-
-        for type_id in VERSIONABLE_TYPES:
-            if type_id not in versionable_types:
-                versionable_types.append(type_id)
-                # Add default versioning policies to the versioned type
-                for policy_id in DEFAULT_POLICIES:
-                    portal_repository.addPolicyForContentType(
-                        type_id, policy_id)
-        portal_repository.setVersionableContentTypes(versionable_types)
-
     def setupCatalogs(self, portal):
         # an item should belong to only one catalog.
         # that way looking it up means first looking up *the* catalog
@@ -498,7 +480,6 @@ def setupVarious(context):
     gen.setupGroupsAndRoles(site)
     gen.setupPortalContent(site)
     gen.setupTopLevelFolders(site)
-    gen.setupVersioning(site)
     gen.setupCatalogs(site)
 
     # Plone's jQuery gets clobbered when jsregistry is loaded.
