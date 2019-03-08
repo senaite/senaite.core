@@ -9,7 +9,6 @@ from AccessControl import ClassSecurityInfo
 from Acquisition import aq_base
 from bika.lims import api
 from bika.lims import logger
-from Products.Archetypes.public import ObjectField
 from Products.Archetypes.public import ReferenceField
 from Products.Archetypes.Registry import registerField
 
@@ -158,6 +157,7 @@ class HistoryAwareReferenceField(ReferenceField):
         existing_uids = self.get_backreferences_for(instance)
 
         if not value and not existing_uids:
+            logger.warning("Field and value is empty!")
             return
 
         if not self.multiValued and len(value) > 1:
@@ -186,20 +186,6 @@ class HistoryAwareReferenceField(ReferenceField):
             # Delete reference to object
             elif uid in sub:
                 self.del_reference(instance, target, **kwargs)
-
-        if self.referencesSortable:
-            if not hasattr(aq_base(instance), "at_ordered_refs"):
-                instance.at_ordered_refs = {}
-            instance.at_ordered_refs[
-                self.relationship] = tuple(filter(None, set_uids))
-            # persist changes that occured in at_ordered_refs
-            instance._p_changed = 1
-
-        if self.callStorageOnSet:
-            # if this option is set the reference fields's values get written
-            # to the storage even if the reference field never use the storage
-            # e.g. if i want to store the reference UIDs into an SQL field
-            ObjectField.set(self, instance, self.getRaw(instance), **kwargs)
 
     @security.private
     def get(self, instance, aslist=False, **kwargs):
