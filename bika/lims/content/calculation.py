@@ -398,7 +398,6 @@ class Calculation(BaseFolder, HistoryAwareMixin):
         return members.get(member)
 
     def workflow_script_activate(self):
-        wf = getToolByName(self, 'portal_workflow')
         pu = getToolByName(self, 'plone_utils')
         # A calculation cannot be re-activated if services it depends on
         # are deactivated.
