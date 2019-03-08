@@ -92,6 +92,7 @@
       <role name="LabManager"/>
       <role name="Manager"/>
     </permission>
+    <!-- This only applies to Calculation type -->
     <permission name="CMFEditions: Apply version control" acquire="True">
       <role name="Analyst"/>
       <role name="LabClerk"/>
@@ -105,6 +106,7 @@
       <role name="SamplingCoordinator"/>
       <role name="Verifier"/>
     </permission>
+    <!-- This only applies to Calculation type -->
     <permission name="CMFEditions: Save new version" acquire="True">
       <role name="Analyst"/>
       <role name="LabClerk"/>

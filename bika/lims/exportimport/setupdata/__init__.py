@@ -5,25 +5,30 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from bika.lims.exportimport.dataimport import SetupDataSetList as SDL
-from bika.lims.idserver import renameAfterCreation
-from bika.lims.interfaces import ISetupDataSetList
-from Products.CMFPlone.utils import safe_unicode, _createObjectByType
-from bika.lims.utils import tmpID, to_unicode
-from bika.lims.utils import to_utf8
-from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
-from Products.CMFCore.utils import getToolByName
-from bika.lims import logger
-from bika.lims.utils.analysis import create_analysis
-from zope.interface import implements
-from pkg_resources import resource_filename
-from bika.lims import api
-from bika.lims.utils import getFromString
 import datetime
 import os.path
 import re
+
+from pkg_resources import resource_filename
+
 import transaction
+from bika.lims import api
+from bika.lims import bikaMessageFactory as _
+from bika.lims import logger
+from bika.lims.exportimport.dataimport import SetupDataSetList as SDL
+from bika.lims.idserver import renameAfterCreation
+from bika.lims.interfaces import ISetupDataSetList
+from bika.lims.utils import getFromString
+from bika.lims.utils import t
+from bika.lims.utils import tmpID
+from bika.lims.utils import to_unicode
+from bika.lims.utils.analysis import create_analysis
+from Products.Archetypes.event import ObjectInitializedEvent
+from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import _createObjectByType
+from Products.CMFPlone.utils import safe_unicode
+from zope.event import notify
+from zope.interface import implements
 
 
 def lookup(context, portal_type, **kwargs):
@@ -299,6 +304,7 @@ class Sub_Groups(WorksheetImporter):
                          SortKey=row['SortKey'])
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
+                notify(ObjectInitializedEvent(obj))
 
 
 class Lab_Information(WorksheetImporter):
@@ -384,6 +390,7 @@ class Lab_Contacts(WorksheetImporter):
             )
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
+            notify(ObjectInitializedEvent(obj))
             self.fill_contactfields(row, obj)
             self.fill_addressfields(row, obj)
 
@@ -485,6 +492,7 @@ class Lab_Departments(WorksheetImporter):
                     logger.info(message)
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
+                notify(ObjectInitializedEvent(obj))
 
 
 class Lab_Products(WorksheetImporter):
@@ -507,6 +515,7 @@ class Lab_Products(WorksheetImporter):
             )
             # Rename the new object
             renameAfterCreation(obj)
+            notify(ObjectInitializedEvent(obj))
 
 
 class Clients(WorksheetImporter):
@@ -533,6 +542,7 @@ class Clients(WorksheetImporter):
             self.fill_addressfields(row, obj)
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
+            notify(ObjectInitializedEvent(obj))
 
 
 class Client_Contacts(WorksheetImporter):
@@ -568,6 +578,7 @@ class Client_Contacts(WorksheetImporter):
             self.fill_addressfields(row, contact)
             contact.unmarkCreationFlag()
             renameAfterCreation(contact)
+            notify(ObjectInitializedEvent(contact))
             # CC Contacts
             if row['CCContacts']:
                 names = [x.strip() for x in row['CCContacts'].split(",")]
@@ -612,6 +623,7 @@ class Container_Types(WorksheetImporter):
                      description=row.get('description', ''))
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
+            notify(ObjectInitializedEvent(obj))
 
 
 class Preservations(WorksheetImporter):
@@ -633,6 +645,7 @@ class Preservations(WorksheetImporter):
                      RetentionPeriod=RP)
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
+            notify(ObjectInitializedEvent(obj))
 
 
 class Containers(WorksheetImporter):
@@ -660,6 +673,7 @@ class Containers(WorksheetImporter):
                     obj.setPreservation(pres)
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
+            notify(ObjectInitializedEvent(obj))
 
 
 class Suppliers(WorksheetImporter):
@@ -686,6 +700,7 @@ class Suppliers(WorksheetImporter):
                 self.fill_addressfields(row, obj)
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
+                notify(ObjectInitializedEvent(obj))
 
 
 class Supplier_Contacts(WorksheetImporter):
@@ -712,6 +727,7 @@ class Supplier_Contacts(WorksheetImporter):
             self.fill_addressfields(row, obj)
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
+            notify(ObjectInitializedEvent(obj))
 
 
 class Manufacturers(WorksheetImporter):
@@ -728,6 +744,7 @@ class Manufacturers(WorksheetImporter):
                 self.fill_addressfields(row, obj)
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
+                notify(ObjectInitializedEvent(obj))
 
 
 class Instrument_Types(WorksheetImporter):
@@ -741,6 +758,7 @@ class Instrument_Types(WorksheetImporter):
                     description=row.get('description', ''))
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
+                notify(ObjectInitializedEvent(obj))
 
 
 class Instruments(WorksheetImporter):
@@ -820,6 +838,7 @@ class Instruments(WorksheetImporter):
                 addDocument(self, row_dict, obj)
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
+            notify(ObjectInitializedEvent(obj))
 
 
 class Instrument_Validations(WorksheetImporter):
@@ -852,6 +871,7 @@ class Instrument_Validations(WorksheetImporter):
                         obj.setWorker(contact.UID())
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
+                notify(ObjectInitializedEvent(obj))
 
 
 class Instrument_Calibrations(WorksheetImporter):
@@ -884,6 +904,7 @@ class Instrument_Calibrations(WorksheetImporter):
                         obj.setWorker(contact.UID())
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
+                notify(ObjectInitializedEvent(obj))
 
 
 class Instrument_Certifications(WorksheetImporter):
@@ -935,6 +956,7 @@ class Instrument_Certifications(WorksheetImporter):
                         obj.setValidator(contact.UID())
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
+                notify(ObjectInitializedEvent(obj))
 
 
 class Instrument_Documents(WorksheetImporter):
@@ -989,6 +1011,7 @@ def addDocument(self, row_dict, folder):
                 )
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
+                notify(ObjectInitializedEvent(obj))
 
 
 class Instrument_Maintenance_Tasks(WorksheetImporter):
@@ -1022,6 +1045,7 @@ class Instrument_Maintenance_Tasks(WorksheetImporter):
                 )
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
+                notify(ObjectInitializedEvent(obj))
 
 
 class Instrument_Schedule(WorksheetImporter):
@@ -1055,6 +1079,7 @@ class Instrument_Schedule(WorksheetImporter):
                 )
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
+                notify(ObjectInitializedEvent(obj))
 
 
 class Sample_Matrices(WorksheetImporter):
@@ -1071,6 +1096,7 @@ class Sample_Matrices(WorksheetImporter):
             )
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
+            notify(ObjectInitializedEvent(obj))
 
 
 class Batch_Labels(WorksheetImporter):
@@ -1083,6 +1109,7 @@ class Batch_Labels(WorksheetImporter):
                 obj.edit(title=row['title'])
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
+                notify(ObjectInitializedEvent(obj))
 
 
 class Sample_Types(WorksheetImporter):
@@ -1118,6 +1145,7 @@ class Sample_Types(WorksheetImporter):
                 obj.setSamplePoints([samplepoint, ])
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
+            notify(ObjectInitializedEvent(obj))
 
 
 class Sample_Points(WorksheetImporter):
@@ -1158,6 +1186,7 @@ class Sample_Points(WorksheetImporter):
                 obj.setSampleTypes([sampletype, ])
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
+            notify(ObjectInitializedEvent(obj))
 
 
 class Sample_Point_Sample_Types(WorksheetImporter):
@@ -1209,6 +1238,7 @@ class Storage_Locations(WorksheetImporter):
             )
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
+            notify(ObjectInitializedEvent(obj))
 
 
 class Sample_Conditions(WorksheetImporter):
@@ -1224,6 +1254,7 @@ class Sample_Conditions(WorksheetImporter):
                 )
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
+                notify(ObjectInitializedEvent(obj))
 
 
 class Analysis_Categories(WorksheetImporter):
@@ -1244,6 +1275,7 @@ class Analysis_Categories(WorksheetImporter):
                 obj.setDepartment(department)
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
+                notify(ObjectInitializedEvent(obj))
             elif not row.get('title', None):
                 logger.warning("Error in in " + self.sheetname + ". Missing Title field")
             elif not row.get('Department_title', None):
@@ -1293,6 +1325,7 @@ class Methods(WorksheetImporter):
 
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
+                notify(ObjectInitializedEvent(obj))
 
 
 class Sampling_Deviations(WorksheetImporter):
@@ -1308,6 +1341,7 @@ class Sampling_Deviations(WorksheetImporter):
                 )
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
+                notify(ObjectInitializedEvent(obj))
 
 
 class Calculations(WorksheetImporter):
@@ -1363,6 +1397,7 @@ class Calculations(WorksheetImporter):
                            )
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
+            notify(ObjectInitializedEvent(obj))
 
         # Now we have the calculations registered, try to assign default calcs
         # to methods
@@ -1625,6 +1660,7 @@ class Analysis_Services(WorksheetImporter):
             )
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
+            notify(ObjectInitializedEvent(obj))
         self.load_result_options()
         self.load_service_uncertainties()
 
@@ -1690,6 +1726,7 @@ class Analysis_Specifications(WorksheetImporter):
                     obj.setSampleType(st_uid)
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
+                notify(ObjectInitializedEvent(obj))
 
 
 class Analysis_Profiles(WorksheetImporter):
@@ -1731,6 +1768,7 @@ class Analysis_Profiles(WorksheetImporter):
                 obj.setService(self.profile_services[row['title']])
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
+                notify(ObjectInitializedEvent(obj))
 
 
 class AR_Templates(WorksheetImporter):
@@ -1815,6 +1853,7 @@ class AR_Templates(WorksheetImporter):
             obj.setAnalyses(analyses)
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
+            notify(ObjectInitializedEvent(obj))
 
 
 class Reference_Definitions(WorksheetImporter):
@@ -1858,6 +1897,7 @@ class Reference_Definitions(WorksheetImporter):
                 Hazardous=self.to_bool(row['Hazardous']))
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
+            notify(ObjectInitializedEvent(obj))
 
 
 class Worksheet_Templates(WorksheetImporter):
@@ -1910,6 +1950,7 @@ class Worksheet_Templates(WorksheetImporter):
                 obj.setService(self.wst_services[row['title']])
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
+                notify(ObjectInitializedEvent(obj))
 
 
 class Setup(WorksheetImporter):
@@ -2043,6 +2084,7 @@ class Attachment_Types(WorksheetImporter):
                 description=row.get('description', ''))
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
+            notify(ObjectInitializedEvent(obj))
 
 
 class Reference_Samples(WorksheetImporter):
@@ -2274,3 +2316,4 @@ class Invoice_Batches(WorksheetImporter):
                 BatchEndDate=row['end'],
             )
             renameAfterCreation(obj)
+            notify(ObjectInitializedEvent(obj))
