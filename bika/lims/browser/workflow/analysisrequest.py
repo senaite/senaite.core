@@ -363,6 +363,15 @@ class WorkflowActionSaveAnalysesAdapter(WorkflowActionGenericAdapter):
         if not IAnalysisRequest.providedBy(sample):
             return self.redirect(message=_("No changes made"), level="warning")
 
+        # NOTE: https://github.com/senaite/senaite.core/issues/1276
+        #
+        # Explicitly lookup the UIDs from the request, because the default
+        # behavior of the method `get_uids` in `WorkflowActionGenericAdapter`
+        # falls back to the UID of the current context if no UIDs were
+        # submitted, which is in that case an `AnalysisRequest`.
+        service_uids = self.get_uids_from_request()
+        services = map(api.get_object, service_uids)
+
         # Get form values
         form = self.request.form
         prices = form.get("Price", [None])[0]
