@@ -9,6 +9,7 @@ import collections
 import sys
 
 from AccessControl.SecurityInfo import ModuleSecurityInfo
+from Products.Archetypes.config import UID_CATALOG
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
 from bika.lims import PMF
@@ -289,6 +290,7 @@ def getCurrentState(obj, stateflowid='review_state'):
     """
     return api.get_workflow_status_of(obj, stateflowid)
 
+
 def in_state(obj, states, stateflowid='review_state'):
     """ Returns if the object passed matches with the states passed in
     """
@@ -296,6 +298,7 @@ def in_state(obj, states, stateflowid='review_state'):
         return False
     obj_state = getCurrentState(obj, stateflowid=stateflowid)
     return obj_state in states
+
 
 def getTransitionActor(obj, action_id):
     """Returns the actor that performed a given transition. If transition has
@@ -454,31 +457,6 @@ class JSONReadExtender(object):
             data['transitions'] = get_workflow_actions(self.context)
 
 
-# TODO Workflow - ActionsPool - Better use ActionHandlerPool
-class ActionsPool(object):
-    """Handles transitions of multiple objects at once
-    """
-    def __init__(self):
-        self.actions_pool = collections.OrderedDict()
-
-    def add(self, instance, action_id):
-        uid = api.get_uid(instance)
-        self.actions_pool[uid] = {"instance": instance,
-                                  "action_id": action_id}
-
-    def resume(self):
-        action_handler = ActionHandlerPool.get_instance()
-        action_handler.queue_pool()
-        outcome = collections.OrderedDict()
-        for uid, values in self.actions_pool.items():
-            instance = values["instance"]
-            action_id = values["action_id"]
-            outcome[uid] = doActionFor(instance, action_id)
-        self.actions_pool = collections.OrderedDict()
-        action_handler.resume()
-        return outcome
-
-
 class ActionHandlerPool(object):
     """Singleton to handle concurrent transitions
     """
@@ -515,7 +493,7 @@ class ActionHandlerPool(object):
         uid = api.get_uid(instance)
         info = self.objects.get(uid, {})
         idx = [] if idxs is _marker else idxs
-        info[action] = {'instance': instance, 'success': success, 'idxs': idx}
+        info[action] = {'success': success, 'idxs': idx}
         self.objects[uid] = info
 
     def succeed(self, instance, action):
@@ -531,16 +509,24 @@ class ActionHandlerPool(object):
         if self.num_calls > 0:
             return
         logger.info("Resume actions for {} objects".format(len(self)))
+
+        # Fetch the objects from the pool
         processed = list()
-        for uid, info in self.objects.items():
+        for brain in api.search(dict(UID=self.objects.keys()), UID_CATALOG):
+            uid = api.get_uid(brain)
             if uid in processed:
+                # This object has been processed already, do nothing
                 continue
-            instance = info[info.keys()[0]]["instance"]
+
+            # Reindex the object
+            obj = api.get_object(brain)
             idxs = self.get_indexes(uid)
             idxs_str = idxs and ', '.join(idxs) or "-- All indexes --"
-            logger.info("Reindexing {}: {}".format(instance.getId(), idxs_str))
-            instance.reindexObject(idxs=self.get_indexes(uid))
+            logger.info("Reindexing {}: {}".format(obj.getId(), idxs_str))
+            obj.reindexObject(idxs=idxs)
             processed.append(uid)
+
+        # Cleanup the pool
         logger.info("Objects processed: {}".format(len(processed)))
         self.objects = collections.OrderedDict()
 
