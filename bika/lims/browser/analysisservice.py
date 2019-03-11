@@ -66,20 +66,27 @@ class AnalysisServiceInfoView(BrowserView):
         service_uid = self.request.form.get("service_uid")
         return api.get_object_by_uid(service_uid, None)
 
+    def get_analysis_or_service(self):
+        analysis = self.get_analysis()
+        if analysis:
+            return analysis
+        return self.get_service()
+
     def get_methods(self):
         if not self.get_service():
             return None
         return self.get_service().getMethods()
 
+    @view.memoize
     def get_analysis(self):
         analysis_uid = self.request.form.get("analysis_uid")
         return api.get_object_by_uid(analysis_uid, None)
 
     @view.memoize
     def get_calculation(self):
-        if not self.get_service():
+        if not self.get_analysis_or_service():
             return None
-        return self.get_service().getCalculation()
+        return self.get_analysis_or_service().getCalculation()
 
     def get_dependent_services(self):
         if not self.get_calculation():

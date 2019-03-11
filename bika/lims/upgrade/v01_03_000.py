@@ -176,6 +176,10 @@ def upgrade(tool):
     # https://github.com/senaite/senaite.core/pull/1125
     hide_samples(portal)
 
+    # Fix Calculation versioning inconsistencies
+    # https://github.com/senaite/senaite.core/pull/1260
+    fix_calculation_version_inconsistencies(portal)
+
     # Fix Analysis Request - Analyses inconsistencies
     # https://github.com/senaite/senaite.core/pull/1138
     fix_ar_analyses_inconsistencies(portal)
@@ -2014,3 +2018,24 @@ def reindex_submitted_analyses(portal):
             logger.info("Commiting reindexed analyses {}/{} ..."
                         .format(num, total))
             transaction.commit()
+
+
+def fix_calculation_version_inconsistencies(portal):
+    """Creates the first version of all Calculations that hasn't been yet edited
+    See: https://github.com/senaite/senaite.core/pull/1260
+    """
+    logger.info("Fix Calculation version inconsistencies ...")
+    brains = api.search({"portal_type": "Calculation"}, "bika_setup_catalog")
+    total = len(brains)
+    for num, brain in enumerate(brains):
+        if num % 100 == 0:
+            logger.info("Fix Calculation version inconsistencies: {}/{}"
+                        .format(num, total))
+        calc = api.get_object(brain)
+        version = getattr(calc, "version_id", None)
+        if version is None:
+            pr = api.get_tool("portal_repository")
+            pr.save(obj=calc, comment="First version")
+            logger.info("First version created for {}".format(calc.Title()))
+    logger.info("Fix Calculation version inconsistencies [DONE]")
+
