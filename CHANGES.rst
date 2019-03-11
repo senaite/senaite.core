@@ -103,6 +103,7 @@ Changelog
 
 **Fixed**
 
+- #1277 Traceback in Manage Analyses
 - #1245 Not all clients are shown in clients drop menu for Productivity Reports
 - #1239 Fix and Improve Stickers
 - #1214 Disallow entry of analysis results if the sample is not yet received
