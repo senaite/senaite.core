@@ -574,6 +574,9 @@ class window.WorksheetManageResultsView
     # Analysis instrument changed
     $("body").on "change", "table.bika-listing-table select.listing_select_entry[field='Instrument']", @on_analysis_instrument_change
 
+    # Detection limit changed
+    $("body").on "change", 'select[name^="DetectionLimitOperand."]', @on_detection_limit_change
+
     # Remarks balloon clicked
     $("body").on "click", "a.add-remark", @on_remarks_balloon_clicked
 
@@ -673,6 +676,26 @@ class window.WorksheetManageResultsView
       analysis_uids.push uid
     return analysis_uids
 
+  get_analysis_element: (uid, id_elem) =>
+    ###
+     * Get the element for the given id_elem and analysis uid. If the element
+     * does not exist, returns null
+    ###
+    # element = $("input#"+id_elem+"\\."+uid+"\\:records")
+    element = $('input[name="'+id_elem+'.'+uid+':records"]')
+    if element.length == 1
+        return $(element)[0]
+    return null
+
+  get_analysis_element_value: (uid, id_elem) =>
+    ###
+     * Get the value for the given id_elem and analysis uid. If the element does
+     * not exists, returns null
+    ###
+    element = @get_analysis_element(uid, id_elem)
+    if element is null
+        return null
+    return $(element).val()
 
   get_method_by_analysis_uid: (analysis_uid) =>
     ###
@@ -955,6 +978,91 @@ class window.WorksheetManageResultsView
 
     # Enable 'None' option as well.
     $("table.bika-listing-table select.listing_select_entry[field='Instrument'] option[value='']").prop "disabled", no
+
+
+  on_detection_limit_change: (event) =>
+    ###
+     * Eventhandler when the detection limit changed
+    ###
+    console.debug "°°° WorksheetManageResultsView::on_detection_limit_change °°°"
+    $el = $(event.currentTarget)
+    uid = $el.attr "uid"
+    dl_operand = $el.val()
+
+    result_field = @get_analysis_element uid, "Result"
+
+    if dl_operand == "<"
+      # We cannot say there is no result, rather we can only say that, if in
+      # case that there is a result, it must be below the Lower Detection Limit
+      # (LDL) of the method or technique we've used.
+      # E.g.: we want to measure the concentration of Cu, but the method used
+      #       is not sensible enough to detect concentrations of this compound
+      #       below 0.005 mg/L. Hence, if we don't detect Cu in the sample, we
+      #       cannot say the compound is not present. But we can say that if
+      #       the compound is present, its concentration must be below 0.05mg/L.
+      # By storing the DetectionLimitOperand in Analysis, the system assumes
+      # the result is a detection limit instead of an exact result.
+      ldl = @get_analysis_element_value(uid, "ldl_default")
+      $(result_field).val ldl
+
+      # Make the result field editable only if the analyst is allowed to
+      # manually set a Lower Detection Limit other than the one set as default
+      # for this service.
+      # E.g.: Maybe the LDL set by default for this method/service/technique is
+      #       0.005 mg/L, but the analyst has done or requested a confirmative
+      #       test using a technique/method with more sensitivity. And although
+      #       the result is still negative (no result), the LDL is slightly
+      #       lower than default's, say 0.003 mg/L. Hence, the analyst must be
+      #       able to override the default LDL to 0.003mg/L
+      manual_dl = @get_analysis_element_value uid, "dl_manual"
+      $(result_field).prop "readonly", manual_dl
+
+    else if dl_operand == ">"
+      # We can say there is a result, but we cannot tell its exact value. We can
+      # only say that the value is above the Upper Detection Limit (UDL) of the
+      # method or technique we've used.
+      # E.g.: we want to measure the concentration of Cu, but the method used
+      #       is too sensible for the amount of compound present in the sample:
+      #       "sensor" gets flooded when the concentration is above 15 mg/L.
+      #       Hence, we can say Cu is present in the sample with a concentration
+      #       of at least 15mg/L, but we cannot say the exact concentration.
+      # By storing the DetectionLimitOperand in Analysis, the system assumes
+      # the result is a detection limit instead of an exact result.
+      udl = @get_analysis_element_value(uid, "udl_default")
+      $(result_field).val udl
+
+      # Make the result field editable only if the analyst is allowed to
+      # manually set an Upper Detection Limit other than the one set as default
+      # for this service.
+      # E.g.: Maybe the UDL set by default for this method/service/technique is
+      #       15 mg/L, but the analyst has done or requested a confirmative test
+      #       using a technique/method more suitable for higher concentrations.
+      #       With this new technique, the UDL is higher (say 20mg/L), but if
+      #       the concentration is still too high, the analyst must be able to
+      #       override the default UDL to 20mg/L.
+      manual_dl = @get_analysis_element_value uid, "dl_manual"
+      $(result_field).prop "readonly", manual_dl
+
+    else
+      # No detection limit selected. We expect the analyst to introduce the
+      # exact result.
+      # E.g: the concentration of "Cu" is higher than the LDL (0.005mg/L), but
+      #      is below the UDL (15mg/L).
+      $(result_field).val ""
+
+      # In this case, analyst should always be able to input a manual result!
+      $(result_field).prop "readonly", no
+
+    # Do not display uncertainty if a detection limit has been selected.
+    # If the result is below LDL or above UDL, it does not make sense to display
+    # the uncertainty value, cause actually, we don't know the exact result.
+    uncertainty_field = @get_analysis_element(uid, "Uncertainty")
+    if uncertainty_field != null
+      if dl_operand in ["<", ">"]
+        $(uncertainty_field).val ""
+        $(uncertainty_field).hide()
+      else
+        $(uncertainty_field).show()
 
 
   on_remarks_balloon_clicked: (event) =>
