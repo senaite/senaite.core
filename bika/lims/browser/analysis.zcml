@@ -12,7 +12,7 @@
       for="*"
       name="get_method_instrument_constraints"
       class="bika.lims.browser.analysis.ajaxGetMethodInstrumentConstraints"
-      permission="cmf.ModifyPortalContent"
+      permission="zope2.View"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 </configure>
