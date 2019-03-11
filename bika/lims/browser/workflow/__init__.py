@@ -33,6 +33,46 @@ class RequestContextAware(object):
         """
         return self.context.plone_utils.addPortalMessage(message, level)
 
+    def get_uids(self):
+        """Returns a uids list of the objects this action must be performed
+        against to. If no values for uids param found in the request, returns
+        the uid of the current context
+        """
+        uids = self.get_uids_from_request()
+        if not uids and api.is_object(self.context):
+            uids = [api.get_uid(self.context)]
+        return uids
+
+    def get_uids_from_request(self):
+        """Returns a list of uids from the request
+        """
+        uids = self.request.get("uids", "")
+        if isinstance(uids, basestring):
+            uids = uids.split(",")
+        unique_uids = collections.OrderedDict().fromkeys(uids).keys()
+        return filter(api.is_uid, unique_uids)
+
+    def get_action(self):
+        """Returns the action to be taken from the request. Returns None if no
+        action is found
+        """
+        action = self.request.get("workflow_action_id", None)
+        action = self.request.get("workflow_action", action)
+        if not action:
+            return None
+
+        # A condition in the form causes Plone to sometimes send two actions
+        # This usually happens when the previous action was not managed properly
+        # and the request was not able to complete, so the previous form value
+        # is kept, together with the new one.
+        if type(action) in (list, tuple):
+            actions = list(set(action))
+            if len(actions) > 0:
+                logger.warn("Multiple actions in request: {}. Fallback to '{}'"
+                            .format(repr(actions), actions[-1]))
+            action = actions[-1]
+        return action
+
 
 class WorkflowActionHandler(RequestContextAware):
     """Handler in charge of processing workflow action requests from views and
@@ -80,46 +120,6 @@ class WorkflowActionHandler(RequestContextAware):
         objects = api.search(dict(UID=uids), UID_CATALOG)
         objects = map(api.get_object, objects)
         return adapter(action, objects)
-
-    def get_uids(self):
-        """Returns a uids list of the objects this action must be performed
-        against to. If no values for uids param found in the request, returns
-        the uid of the current context
-        """
-        uids = self.get_uids_from_request()
-        if not uids and api.is_object(self.context):
-            uids = [api.get_uid(self.context)]
-        return uids
-
-    def get_uids_from_request(self):
-        """Returns a list of uids from the request
-        """
-        uids = self.request.get("uids", "")
-        if isinstance(uids, basestring):
-            uids = uids.split(",")
-        unique_uids = collections.OrderedDict().fromkeys(uids).keys()
-        return filter(api.is_uid, unique_uids)
-
-    def get_action(self):
-        """Returns the action to be taken from the request. Returns None if no
-        action is found
-        """
-        action = self.request.get("workflow_action_id", None)
-        action = self.request.get("workflow_action", action)
-        if not action:
-            return None
-
-        # A condition in the form causes Plone to sometimes send two actions
-        # This usually happens when the previous action was not managed properly
-        # and the request was not able to complete, so the previous form value
-        # is kept, together with the new one.
-        if type(action) in (list, tuple):
-            actions = list(set(action))
-            if len(actions) > 0:
-                logger.warn("Multiple actions in request: {}. Fallback to '{}'"
-                            .format(repr(actions), actions[-1]))
-            action = actions[-1]
-        return action
 
 
 class WorkflowActionGenericAdapter(RequestContextAware):

@@ -1,19 +1,20 @@
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from email.Utils import formataddr
 from string import Template
 
-from DateTime import DateTime
-from Products.CMFPlone.utils import safe_unicode
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
-from bika.lims.browser.workflow import WorkflowActionGenericAdapter, \
-    RequestContextAware
+from bika.lims.browser.workflow import RequestContextAware
+from bika.lims.browser.workflow import WorkflowActionGenericAdapter
 from bika.lims.content.analysisspec import ResultsRangeDict
-from bika.lims.interfaces import IAnalysisRequest, IWorkflowActionUIDsAdapter
+from bika.lims.interfaces import IAnalysisRequest
+from bika.lims.interfaces import IWorkflowActionUIDsAdapter
 from bika.lims.utils import encode_header
 from bika.lims.utils import t
-from email.Utils import formataddr
+from DateTime import DateTime
+from Products.CMFPlone.utils import safe_unicode
 from zope.component.interfaces import implements
 
 
@@ -349,17 +350,27 @@ class WorkflowActionScheduleSamplingAdapter(WorkflowActionGenericAdapter):
         sample.setSamplingDate(DateTime(sampled))
         return True
 
+
 class WorkflowActionSaveAnalysesAdapter(WorkflowActionGenericAdapter):
     """Adapter in charge of "save analyses" action in Analysis Request.
     """
 
-    def __call__(self, action, services):
+    def __call__(self, action, objects):
         """The objects passed in are Analysis Services and the context is the
         Analysis Request
         """
         sample = self.context
         if not IAnalysisRequest.providedBy(sample):
             return self.redirect(message=_("No changes made"), level="warning")
+
+        # NOTE: https://github.com/senaite/senaite.core/issues/1276
+        #
+        # Explicitly lookup the UIDs from the request, because the default
+        # behavior of the method `get_uids` in `WorkflowActionGenericAdapter`
+        # falls back to the UID of the current context if no UIDs were
+        # submitted, which is in that case an `AnalysisRequest`.
+        service_uids = self.get_uids_from_request()
+        services = map(api.get_object, service_uids)
 
         # Get form values
         form = self.request.form
