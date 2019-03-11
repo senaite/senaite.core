@@ -350,11 +350,12 @@ class WorkflowActionScheduleSamplingAdapter(WorkflowActionGenericAdapter):
         sample.setSamplingDate(DateTime(sampled))
         return True
 
+
 class WorkflowActionSaveAnalysesAdapter(WorkflowActionGenericAdapter):
     """Adapter in charge of "save analyses" action in Analysis Request.
     """
 
-    def __call__(self, action, services):
+    def __call__(self, action, objects):
         """The objects passed in are Analysis Services and the context is the
         Analysis Request
         """
