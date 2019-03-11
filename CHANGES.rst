@@ -104,6 +104,7 @@ Changelog
 
 **Fixed**
 
+- #1269 Render analysis remarks conditionally
 - #1277 Traceback in Manage Analyses
 - #1245 Not all clients are shown in clients drop menu for Productivity Reports
 - #1239 Fix and Improve Stickers

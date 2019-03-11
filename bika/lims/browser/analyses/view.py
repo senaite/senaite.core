@@ -664,7 +664,6 @@ class AnalysesView(BikaListingView):
         item['result_captured'] = capture_date_str
 
         if self.is_analysis_edition_allowed(analysis_brain):
-            item['allow_edit'].extend(['Remarks'])
             item['allow_edit'].extend(['Result'])
 
             # If this analysis has a predefined set of options as result,
@@ -1130,22 +1129,20 @@ class AnalysesView(BikaListingView):
             self.field_icons[uid].extend(alerts)
 
     def _folder_item_remarks(self, analysis_brain, item):
-        """Renders the Remarks field for the passed in analysis and if the
-        edition of the analysis is permitted, adds a button to toggle the
-        visibility of remarks field
+        """Renders the Remarks field for the passed in analysis
+
+        If the edition of the analysis is permitted, adds the field into the
+        list of editable fields.
 
         :param analysis_brain: Brain that represents an analysis
-        :param item: analysis' dictionary counterpart that represents a row"""
-        item['Remarks'] = analysis_brain.getRemarks
+        :param item: analysis' dictionary counterpart that represents a row
+        """
 
-        if not self.is_analysis_edition_allowed(analysis_brain):
-            # Edition not allowed, do not add the remarks toggle button, the
-            # remarks field will be displayed without the option to hide it
-            return
+        if self.analysis_remarks_enabled():
+            item["Remarks"] = analysis_brain.getRemarks
 
-        if not self.analysis_remarks_enabled():
-            # Remarks not enabled in Setup, so don't display the balloon button
-            return
+        if self.is_analysis_edition_allowed(analysis_brain):
+            item["allow_edit"].extend(["Remarks"])
 
     def _append_html_element(self, item, element, html, glue="&nbsp;",
                              after=True):
