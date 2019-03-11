@@ -1,19 +1,20 @@
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from email.Utils import formataddr
 from string import Template
 
-from DateTime import DateTime
-from Products.CMFPlone.utils import safe_unicode
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
-from bika.lims.browser.workflow import WorkflowActionGenericAdapter, \
-    RequestContextAware
+from bika.lims.browser.workflow import RequestContextAware
+from bika.lims.browser.workflow import WorkflowActionGenericAdapter
 from bika.lims.content.analysisspec import ResultsRangeDict
-from bika.lims.interfaces import IAnalysisRequest, IWorkflowActionUIDsAdapter
+from bika.lims.interfaces import IAnalysisRequest
+from bika.lims.interfaces import IWorkflowActionUIDsAdapter
 from bika.lims.utils import encode_header
 from bika.lims.utils import t
-from email.Utils import formataddr
+from DateTime import DateTime
+from Products.CMFPlone.utils import safe_unicode
 from zope.component.interfaces import implements
 
 
