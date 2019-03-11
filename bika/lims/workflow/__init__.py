@@ -515,7 +515,7 @@ class ActionHandlerPool(object):
         uid = api.get_uid(instance)
         info = self.objects.get(uid, {})
         idx = [] if idxs is _marker else idxs
-        info[action] = {'instance': instance, 'success': success, 'idxs': idx}
+        info[action] = {'success': success, 'idxs': idx}
         self.objects[uid] = info
 
     def succeed(self, instance, action):
@@ -535,11 +535,14 @@ class ActionHandlerPool(object):
         for uid, info in self.objects.items():
             if uid in processed:
                 continue
-            instance = info[info.keys()[0]]["instance"]
+
             idxs = self.get_indexes(uid)
             idxs_str = idxs and ', '.join(idxs) or "-- All indexes --"
-            logger.info("Reindexing {}: {}".format(instance.getId(), idxs_str))
-            instance.reindexObject(idxs=self.get_indexes(uid))
+            instance = api.get_object_by_uid(uid, default=None)
+            if instance:
+                logger.info(
+                    "Reindexing {}: {}".format(instance.getId(), idxs_str))
+                instance.reindexObject(idxs=self.get_indexes(uid))
             processed.append(uid)
         logger.info("Objects processed: {}".format(len(processed)))
         self.objects = collections.OrderedDict()
