@@ -55,10 +55,10 @@ class FacsCaliburCSVParser(InstrumentCSVResultsFileParser):
 
     def parse_data_line(self, sline):
         """
-                Parse the data line. If an AS was selected it can distinguish between data rows and information rows.
-                :param sline: a split data line to parse
-                :returns: the number of rows to jump and parse the next data line or return the code error -1
-                """
+        Parse the data line. If an AS was selected it can distinguish between data rows and information rows.
+        :param sline: a split data line to parse
+        :returns: the number of rows to jump and parse the next data line or return the code error -1
+        """
 
         temp_line = sline
         sline_ = ''.join(temp_line)
