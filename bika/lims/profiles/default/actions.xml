@@ -49,18 +49,6 @@
 			</property>
 			<property name="visible">False</property>
 		</object>
-		<object name="clients" meta_type="CMF Action" i18n:domain="plone">
-			<property name="title" i18n:translate="">Clients</property>
-			<property name="description" i18n:translate=""/>
-			<property name="url_expr">string:$portal_url/clients</property>
-			<property name="link_target"/>
-			<property name="icon_expr"/>
-			<property name="available_expr"/>
-			<property name="permissions">
-				<element value="BIKA: Manage Clients"/>
-			</property>
-			<property name="visible">False</property>
-		</object>
 		<object name="analysisrequests" meta_type="CMF Action" i18n:domain="plone">
 			<property name="title" i18n:translate="">Samples</property>
 			<property name="description" i18n:translate=""/>
@@ -69,7 +57,7 @@
 			<property name="icon_expr"/>
 			<property name="available_expr"/>
 			<property name="permissions">
-				<element value="BIKA: Manage Analysis Requests"/>
+				<element value="senaite.core: Manage Analysis Requests"/>
 			</property>
 			<property name="visible">False</property>
 		</object>
@@ -81,7 +69,7 @@
 			<property name="icon_expr"/>
 			<property name="available_expr"/>
 			<property name="permissions">
-				<element value="BIKA: Manage Worksheets"/>
+				<element value="senaite.core: Manage Worksheets"/>
 			</property>
 			<property name="visible">False</property>
 		</object>
@@ -93,7 +81,7 @@
 			<property name="icon_expr"/>
 			<property name="available_expr"/>
 			<property name="permissions">
-				<element value="BIKA: Manage Reference Suppliers"/>
+				<element value="senaite.core: Manage Reference Suppliers"/>
 			</property>
 			<property name="visible">False</property>
 		</object>
@@ -105,7 +93,7 @@
 			<property name="icon_expr"/>
 			<property name="available_expr"/>
 			<property name="permissions">
-				<element value="BIKA: Manage Reference"/>
+				<element value="senaite.core: Manage Reference"/>
 			</property>
 			<property name="visible">False</property>
 		</object>
@@ -153,7 +141,7 @@
 			<property name="icon_expr"/>
 			<property name="available_expr"/>
 			<property name="permissions">
-				<element value="BIKA: Import Instrument Results"/>
+				<element value="senaite.core: Import Instrument Results"/>
 			</property>
 			<property name="visible">True</property>
 		</object>

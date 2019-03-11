@@ -12,6 +12,7 @@ import re
 
 import transaction
 from AccessControl import ClassSecurityInfo
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.api import get_object_by_uid
 from bika.lims.browser.fields import InterimFieldsField
@@ -20,6 +21,7 @@ from bika.lims.browser.fields.uidreferencefield import get_backreferences
 from bika.lims.browser.widgets import RecordsWidget as BikaRecordsWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.interfaces import IDeactivable
 from bika.lims.interfaces.calculation import ICalculation
 from Products.Archetypes.atapi import BaseFolder
 from Products.Archetypes.atapi import ReferenceWidget
@@ -154,7 +156,7 @@ schema['description'].widget.visible = True
 class Calculation(BaseFolder, HistoryAwareMixin):
     """Calculation for Analysis Results
     """
-    implements(ICalculation)
+    implements(ICalculation, IDeactivable)
 
     security = ClassSecurityInfo()
     displayContentsTab = False
@@ -396,14 +398,13 @@ class Calculation(BaseFolder, HistoryAwareMixin):
         return members.get(member)
 
     def workflow_script_activate(self):
-        wf = getToolByName(self, 'portal_workflow')
         pu = getToolByName(self, 'plone_utils')
         # A calculation cannot be re-activated if services it depends on
         # are deactivated.
         services = self.getDependentServices()
         inactive_services = []
         for service in services:
-            if wf.getInfoFor(service, "inactive_state") == "inactive":
+            if not api.is_active(service):
                 inactive_services.append(service.Title())
         if inactive_services:
             msg = _("Cannot activate calculation, because the following "
@@ -418,7 +419,7 @@ class Calculation(BaseFolder, HistoryAwareMixin):
         bsc = getToolByName(self, 'bika_setup_catalog')
         pu = getToolByName(self, 'plone_utils')
         # A calculation cannot be deactivated if active services are using it.
-        services = bsc(portal_type="AnalysisService", inactive_state="active")
+        services = bsc(portal_type="AnalysisService", is_active=True)
         calc_services = []
         for service in services:
             service = service.getObject()

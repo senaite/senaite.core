@@ -6,7 +6,6 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from bika.lims import api
-from bika.lims.workflow import isBasicTransitionAllowed
 from bika.lims.workflow import isTransitionAllowed
 from bika.lims.workflow import wasTransitionPerformed
 
@@ -50,9 +49,6 @@ def guard_submit(obj):
     guard to return True. Otherwise, always returns False.
     Note this guard depends entirely on the current status of the children.
     """
-    if not isBasicTransitionAllowed(obj):
-        return False
-
     detached = ['rejected', 'retracted']
     return _children_are_ready(obj, 'submit', dettached_states=detached)
 
@@ -84,9 +80,6 @@ def guard_verify(obj):
     Note this guard depends entirely on the current status of the children
     :returns: true or false
     """
-    if not isBasicTransitionAllowed(obj):
-        return False
-
     dettached = ['rejected', 'retracted']
     return _children_are_ready(obj, 'verify', dettached_states=dettached)
 

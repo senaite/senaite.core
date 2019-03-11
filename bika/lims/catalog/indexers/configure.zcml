@@ -9,7 +9,8 @@
 
   <!-- Partitioning. Analyses masking in searches -->
   <adapter name="getAncestorsUIDs" factory=".requestanalysis.getAncestorsUIDs"/>
-  <!-- Masking of cancellation_workflow -->
-  <adapter name="cancellation_state" factory=".cancellation_state"/>
+
+  <!-- Whether the object is neither cancelled nor invalid -->
+  <adapter name="is_active" factory=".is_active"/>
 
 </configure>

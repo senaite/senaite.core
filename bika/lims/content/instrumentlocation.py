@@ -14,8 +14,7 @@ from Products.Archetypes import atapi
 
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.config import PROJECTNAME
-from bika.lims.interfaces import IInstrumentLocation
-
+from bika.lims.interfaces import IInstrumentLocation, IDeactivable
 
 schema = BikaSchema.copy()
 
@@ -26,7 +25,7 @@ schema['description'].widget.visible = True
 class InstrumentLocation(BaseContent):
     """A physical place, where an Instrument is located
     """
-    implements(IInstrumentLocation)
+    implements(IInstrumentLocation, IDeactivable)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema

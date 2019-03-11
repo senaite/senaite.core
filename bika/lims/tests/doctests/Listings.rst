@@ -130,7 +130,7 @@ Setup the view to behave like the `AnalysisRequestsView`:
     ...     'sort_on': 'created',
     ...     'sort_order': 'reverse',
     ...     'path': {"query": "/", "level": 0},
-    ...     'cancellation_state': 'active',}
+    ...     'is_active': True,}
 
 The listing view should now return all created ARs:
 

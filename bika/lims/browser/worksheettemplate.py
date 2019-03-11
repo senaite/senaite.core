@@ -21,7 +21,7 @@ class AJAXGetWorksheetTemplateInstruments(BrowserView):
             method_uid = str(json.loads(self.request.get('method_uid', '')))
             cfilter = {
                 'portal_type': 'Instrument',
-                'inactive_state': 'active',
+                'is_active': True,
                 'getMethodUIDs': {"query": method_uid,
                                   "operator": "or"}}
             bsc = getToolByName(self, 'bika_setup_catalog')

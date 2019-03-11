@@ -13,7 +13,7 @@ import Missing
 from AccessControl.PermissionRole import rolesForPermissionOn
 from Acquisition import aq_base
 from bika.lims import logger
-from bika.lims.interfaces import IClient
+from bika.lims.interfaces import IClient, IDeactivable, ICancellable
 from bika.lims.interfaces import IContact
 from bika.lims.interfaces import ILabContact
 from DateTime import DateTime
@@ -793,54 +793,6 @@ def get_review_status(brain_or_object):
     return get_workflow_status_of(brain_or_object, state_var="review_state")
 
 
-def get_cancellation_status(brain_or_object, default="active"):
-    """Get the `cancellation_state` of an object
-
-    :param brain_or_object: A single catalog brain or content object
-    :type brain_or_object: ATContentType/DexterityContentType/CatalogBrain
-    :returns: Value of the review_status variable
-    :rtype: String
-    """
-
-    if is_brain(brain_or_object):
-        state = getattr(brain_or_object, "cancellation_state", None)
-        if state is not None:
-            return state
-
-    workflows = get_workflows_for(brain_or_object)
-    if "bika_cancellation_workflow" in workflows:
-        return get_workflow_status_of(brain_or_object, "cancellation_state")
-
-    state = get_workflow_status_of(brain_or_object)
-    if state not in ("active", "inactive"):
-        return default
-    return state
-
-
-def get_inactive_status(brain_or_object, default="active"):
-    """Get the `cancellation_state` of an objct
-
-    :param brain_or_object: A single catalog brain or content object
-    :type brain_or_object: ATContentType/DexterityContentType/CatalogBrain
-    :returns: Value of the review_status variable
-    :rtype: String
-    """
-
-    if is_brain(brain_or_object):
-        state = getattr(brain_or_object, "inactive_state", None)
-        if state is not None:
-            return state
-
-    workflows = get_workflows_for(brain_or_object)
-    if "bika_inactive_workflow" in workflows:
-        return get_workflow_status_of(brain_or_object, "inactive_state")
-
-    state = get_workflow_status_of(brain_or_object)
-    if state not in ("active", "inactive"):
-        return default
-    return state
-
-
 def is_active(brain_or_object):
     """Check if the workflow state of the object is 'inactive' or 'cancelled'.
 
@@ -849,11 +801,7 @@ def is_active(brain_or_object):
     :returns: False if the object is in the state 'inactive' or 'cancelled'
     :rtype: bool
     """
-    if get_review_status(brain_or_object) == "cancelled":
-        return False
-    if get_inactive_status(brain_or_object) == "inactive":
-        return False
-    if get_cancellation_status(brain_or_object) == "cancelled":
+    if get_review_status(brain_or_object) in ["cancelled", "inactive"]:
         return False
     return True
 

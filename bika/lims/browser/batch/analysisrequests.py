@@ -17,4 +17,4 @@ class AnalysisRequestsView(BaseView):
                               'getBatchUID': api.get_uid(self.context),
                               'sort_on': 'created',
                               'sort_order': 'reverse',
-                              'cancellation_state':'active'}
+                              'is_active': True}

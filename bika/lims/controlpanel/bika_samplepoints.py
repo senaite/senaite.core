@@ -9,20 +9,22 @@ import collections
 import json
 
 import plone
+from Products.ATContentTypes.content import schemata
+from Products.Archetypes import PloneMessageFactory as _p
+from Products.Archetypes import atapi
+from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser import BrowserView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import ISamplePoints
+from bika.lims.permissions import AddSamplePoint
 from bika.lims.utils import get_link
 from plone.app.folder.folder import ATFolder
 from plone.app.folder.folder import ATFolderSchema
-from Products.Archetypes import PloneMessageFactory as _p
-from Products.Archetypes import atapi
-from Products.ATContentTypes.content import schemata
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import safe_unicode
 from zope.interface.declarations import implements
+
 
 # TODO: Separate content and view into own modules!
 
@@ -42,7 +44,7 @@ class SamplePointsView(BikaListingView):
         self.context_actions = {
             _("Add"): {
                 "url": "createObject?type_name=SamplePoint",
-                "permission": "Add portal content",
+                "permission": AddSamplePoint,
                 "icon": "++resource++bika.lims.images/add.png"}
         }
 
@@ -82,13 +84,13 @@ class SamplePointsView(BikaListingView):
             {
                 "id": "default",
                 "title": _("Active"),
-                "contentFilter": {"inactive_state": "active"},
+                "contentFilter": {"is_active": True},
                 "transitions": [{"id": "deactivate"}, ],
                 "columns": self.columns.keys(),
             }, {
                 "id": "inactive",
-                "title": _("Dormant"),
-                "contentFilter": {"inactive_state": "inactive"},
+                "title": _("Inactive"),
+                "contentFilter": {'is_active': False},
                 "transitions": [{"id": "activate"}, ],
                 "columns": self.columns.keys(),
             }, {
@@ -190,7 +192,7 @@ class ajax_SamplePoints(BrowserView):
             st = bsc(
                 portal_type="SampleType",
                 title=sampletype,
-                inactive_state="active",
+                is_active=True,
             )
             if not st:
                 return json.dumps([])
@@ -209,7 +211,7 @@ class ajax_SamplePoints(BrowserView):
                 client_items = list(
                     bsc(portal_type="SamplePoint",
                         path={"query": "/".join(client_path), "level": 0},
-                        inactive_state="active",
+                        is_active=True,
                         sort_on="sortable_title"))
 
             # Global (lab) sample points
@@ -218,7 +220,7 @@ class ajax_SamplePoints(BrowserView):
             lab_items = list(
                 bsc(portal_type="SamplePoint",
                     path={"query": "/".join(lab_path), "level": 0},
-                    inactive_state="active",
+                    is_active=True,
                     sort_on="sortable_title"))
             client_items = [callable(s.Title) and s.Title() or s.title
                             for s in self.filter_list(client_items, term)]

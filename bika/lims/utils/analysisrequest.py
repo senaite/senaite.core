@@ -82,12 +82,6 @@ def create_analysisrequest(client, request, values, analyses=None,
         # transition accordingly so it will be displayed later in the log tab
         logger.warn("Sync transition for secondary AR is still missing")
 
-    # Needs to be rejected from the very beginning?
-    reject_field = values.get("RejectionReasons", None)
-    if reject_field and reject_field.get("checkbox", False):
-        doActionFor(ar, "reject")
-        return ar
-
     # Try first with no sampling transition, cause it is the most common config
     success, message = doActionFor(ar, "no_sampling_workflow")
     if not success:

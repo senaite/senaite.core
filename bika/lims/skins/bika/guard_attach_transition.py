@@ -26,9 +26,6 @@ if context.portal_type == "AnalysisRequest":
             return False
     return True
 
-if workflow.getInfoFor(context, 'cancellation_state', 'active') == "cancelled":
-    return False
-
 if context.portal_type == "Worksheet":
     # Allow transition to 'to_be_verified'
     # if all analyses are at least to_be_verified

@@ -19,7 +19,7 @@ from datetime import datetime
 from bika.lims.config import PROJECTNAME
 from bika.lims import bikaMessageFactory as _
 from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.interfaces import IReflexRule
+from bika.lims.interfaces import IReflexRule, IDeactivable
 from bika.lims.browser.fields import ReflexRuleField
 from bika.lims.utils import isnumber
 from bika.lims.utils import getUsers
@@ -70,7 +70,7 @@ class ReflexRule(BaseContent):
     next available worksheet for reflex testing. These situations are caused by
     the indetermination of the result or by a failed test.
     """
-    implements(IReflexRule)
+    implements(IReflexRule, IDeactivable)
     security = ClassSecurityInfo()
     schema = schema
     _at_rename_after_creation = True
@@ -87,7 +87,7 @@ class ReflexRule(BaseContent):
         """
         bsc = getToolByName(self, 'bika_setup_catalog')
         items = [(i.UID, i.Title)
-                 for i in bsc(portal_type='Method', inactive_state='active')]
+                 for i in bsc(portal_type='Method', is_active=True)]
         items.sort(lambda x, y: cmp(x[1], y[1]))
         return DisplayList(list(items))
 

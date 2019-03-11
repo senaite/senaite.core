@@ -56,7 +56,7 @@ class JSONReadExtender(object):
 
     def ar_analysis_values(self):
         ret = []
-        analyses = self.context.getAnalyses(cancellation_state='active')
+        analyses = self.context.getAnalyses(is_active=True)
         for proxy in analyses:
             analysis = proxy.getObject()
             if proxy.review_state == 'retracted':

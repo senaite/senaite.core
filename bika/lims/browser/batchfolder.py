@@ -27,7 +27,7 @@ class BatchFolderContentsView(BikaListingView):
             "portal_type": "Batch",
             "sort_on": "created",
             "sort_order": "descending",
-            "cancellation_state": "active"
+            "is_active": True
         }
 
         self.context_actions = {}
@@ -88,7 +88,7 @@ class BatchFolderContentsView(BikaListingView):
                 "id": "cancelled",
                 "title": _("Cancelled"),
                 "transitions": [{"id": "reinstate"}],
-                "contentFilter": {"cancellation_state": "cancelled"},
+                "contentFilter": {"is_active": False},
                 "columns": self.columns.keys(),
             }, {
                 "id": "all",

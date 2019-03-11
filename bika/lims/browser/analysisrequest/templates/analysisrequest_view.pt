@@ -74,7 +74,7 @@
         <div id="remarks-widget"
              class="col-sm-12"
              tal:define="checkPermission nocall: context/portal_membership/checkPermission;
-                 mode python:'edit' if checkPermission('Modify portal content', context) else 'view';
+                 mode python:'edit' if checkPermission('senaite.core: Field: Edit Remarks', context) else 'view';
                  field python:context.Schema()['Remarks'];
                  errors python:{};">
           <h3>

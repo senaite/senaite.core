@@ -27,7 +27,6 @@
 
 <metal:content fill-slot="content-core" tal:define="
     review_state python:context.portal_workflow.getInfoFor(context, 'review_state', '');
-    inactive_state python:context.portal_workflow.getInfoFor(context, 'inactive_state', 'asdf');
     portal context/@@plone_portal_state/portal;">
 
     <table
@@ -122,14 +121,14 @@
 
     <form action="workflow_action">
         <input
-            tal:condition="python:inactive_state == 'active'"
+            tal:condition="python:review_state != 'inactive'"
             class="context workflow_action_button action_button"
             type="submit"
             value="deactivate"
             i18n:attributes="value"
             name="workflow_action"/>
         <input
-            tal:condition="python:inactive_state == 'inactive'"
+            tal:condition="python:review_state == 'inactive'"
             class="context workflow_action_button action_button"
             type="submit"
             value="activate"

@@ -11,9 +11,11 @@ from AccessControl import ClassSecurityInfo
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
+from bika.lims.api.security import check_permission
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import MAX_OPERATORS
 from bika.lims.config import MIN_OPERATORS
+from bika.lims.permissions import FieldEditSpecification
 from bika.lims.utils import get_image
 from bika.lims.utils import get_link
 from bika.lims.utils import to_choices
@@ -32,7 +34,7 @@ class AnalysisSpecificationView(BikaListingView):
         self.catalog = "bika_setup_catalog"
         self.contentFilter = {
             "portal_type": "AnalysisService",
-            "inactive_state": "active",
+            "is_active": True,
             "sort_on": "sortable_title",
             "sort_order": "ascending",
         }
@@ -125,13 +127,7 @@ class AnalysisSpecificationView(BikaListingView):
     def is_edit_allowed(self):
         """Check if edit is allowed
         """
-        current_user = api.get_current_user()
-        roles = current_user.getRoles()
-        if "LabManager" in roles:
-            return True
-        if "Manager" in roles:
-            return True
-        return False
+        return check_permission(FieldEditSpecification, self.context)
 
     @view.memoize
     def show_categories_enabled(self):

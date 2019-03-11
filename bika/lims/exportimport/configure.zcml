@@ -12,7 +12,7 @@
     for="Products.CMFPlone.interfaces.IPloneSiteRoot"
     name="import"
     class="bika.lims.exportimport.dataimport.ImportView"
-    permission="bika.lims.ImportInstrumentResults"
+    permission="senaite.core.permissions.ImportInstrumentResults"
     layer="bika.lims.interfaces.IBikaLIMS"
   />
 

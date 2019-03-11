@@ -37,7 +37,7 @@ class Report(BrowserView):
         titles = []
 
         self.contentFilter = dict(portal_type="AnalysisRequest",
-                                  cancellation_state=["active"],
+                                  is_active=True,
                                   sort_on="getDateReceived")
 
         val = self.selection_macros.parse_daterange(self.request,

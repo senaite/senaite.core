@@ -12,6 +12,9 @@ from Products.Archetypes.atapi import registerType
 
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.config import PROJECTNAME
+from bika.lims.interfaces import IDeactivable
+
+from zope.interface import implements
 
 schema = BikaSchema.copy()
 
@@ -22,6 +25,7 @@ schema['description'].schemata = 'default'
 class AttachmentType(BaseContent):
     """AttachmentType - the type of attachment
     """
+    implements(IDeactivable)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema

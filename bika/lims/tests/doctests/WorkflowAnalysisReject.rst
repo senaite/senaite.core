@@ -541,7 +541,7 @@ In rejected state, exactly these roles can view results:
     >>> success = do_action_for(analysis, "reject")
     >>> api.get_workflow_status_of(analysis)
     'rejected'
-    >>> get_roles_for_permission("BIKA: View Results", analysis)
+    >>> get_roles_for_permission("senaite.core: View Results", analysis)
     ['LabManager', 'Manager', 'RegulatoryInspector']
 
 And no transition can be done from this state:

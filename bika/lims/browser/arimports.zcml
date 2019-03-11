@@ -8,7 +8,7 @@
       for="bika.lims.interfaces.IARImportFolder"
       name="arimports"
       class="bika.lims.browser.arimports.ARImportsView"
-      permission="bika.lims.ManageARImport"
+      permission="senaite.core.permissions.ManageARImport"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
@@ -16,7 +16,7 @@
       for="bika.lims.interfaces.IClient"
       name="arimports"
       class="bika.lims.browser.arimports.ClientARImportsView"
-      permission="bika.lims.ManageARImport"
+      permission="senaite.core.permissions.ManageARImport"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
@@ -24,7 +24,7 @@
       for="bika.lims.interfaces.IClient"
       name="arimport_add"
       class="bika.lims.browser.arimports.ClientARImportAddView"
-      permission="bika.lims.ManageARImport"
+      permission="senaite.core.permissions.ManageARImport"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 

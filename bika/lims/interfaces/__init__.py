@@ -354,6 +354,11 @@ class IARTemplates(Interface):
     """
 
 
+class ILaboratory(Interface):
+    """Marker interface for Laboratory
+    """
+
+
 class ILabContacts(Interface):
     """Marker interface for Lab contacts
     """
@@ -866,8 +871,12 @@ class IARReport(Interface):
 
 
 class ICancellable(Interface):
-    """Marker for those objects that can be cancelled, but their content
-    type is not bound to cancellation_workflow
+    """Marker for those objects that can be cancelled (have state "cancelled")
+    """
+
+
+class IDeactivable(Interface):
+    """Marker for those objects that can be deactivated (have state "inactive")
     """
 
 

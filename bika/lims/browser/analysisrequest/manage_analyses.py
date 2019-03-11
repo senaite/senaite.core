@@ -35,7 +35,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
             "portal_type": "AnalysisService",
             "sort_on": "sortable_title",
             "sort_order": "ascending",
-            "inactive_state": "active"
+            "is_active": True
         }
         self.context_actions = {}
         self.icon = "{}/{}".format(
@@ -94,7 +94,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
             {
                 "id": "default",
                 "title": _("All"),
-                "contentFilter": {"inactive_state": "active"},
+                "contentFilter": {"is_active": True},
                 "columns": columns,
                 "transitions": [{"id": "disallow-all-possible-transitions"}],
                 "custom_transitions": [
@@ -145,11 +145,6 @@ class AnalysisRequestAnalysesView(BikaListingView):
         setup = api.get_setup()
         currency = setup.getCurrency()
         return locale.numbers.currencies[currency].symbol
-
-    def is_submitted(self, obj):
-        """Check if the "submit" transition was performed
-        """
-        return wasTransitionPerformed(obj, "submit")
 
     @view.memoize
     def get_logged_in_client(self):

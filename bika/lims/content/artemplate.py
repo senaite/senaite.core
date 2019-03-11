@@ -17,7 +17,7 @@ from bika.lims.browser.widgets import ReferenceWidget
 from bika.lims.browser.widgets import RemarksWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.interfaces import IARTemplate
+from bika.lims.interfaces import IARTemplate, IDeactivable
 from Products.Archetypes.public import BaseContent
 from Products.Archetypes.public import BooleanField
 from Products.Archetypes.public import BooleanWidget
@@ -50,7 +50,7 @@ schema = BikaSchema.copy() + Schema((
                 "secondary": "invisible",
             },
             catalog_name="bika_setup_catalog",
-            base_query={"inactive_state": "active"},
+            base_query={"is_active": True},
             showOn=True,
         ),
     ),
@@ -78,7 +78,7 @@ schema = BikaSchema.copy() + Schema((
                 "secondary": "invisible"
             },
             catalog_name="bika_setup_catalog",
-            base_query={"inactive_state": "active"},
+            base_query={"is_active": True},
             showOn=True,
         ),
     ),
@@ -246,7 +246,7 @@ schema = BikaSchema.copy() + Schema((
                 "secondary": "invisible"
             },
             catalog_name="bika_setup_catalog",
-            base_query={"inactive_state": "active"},
+            base_query={"is_active": True},
             showOn=True,
         ),
     ),
@@ -291,7 +291,7 @@ class ARTemplate(BaseContent):
     schema = schema
     displayContentsTab = False
     _at_rename_after_creation = True
-    implements(IARTemplate)
+    implements(IARTemplate, IDeactivable)
 
     def _renameAfterCreation(self, check_auto_id=False):
         from bika.lims.idserver import renameAfterCreation
@@ -305,7 +305,7 @@ class ARTemplate(BaseContent):
         items = []
         for p in bsc(
                 portal_type="AnalysisProfile",
-                inactive_state="active",
+                is_active=True,
                 sort_on="sortable_title"):
             p = p.getObject()
             title = p.Title()

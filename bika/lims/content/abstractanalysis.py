@@ -10,6 +10,15 @@ import math
 from decimal import Decimal
 
 from AccessControl import ClassSecurityInfo
+from DateTime import DateTime
+from Products.Archetypes.Field import DateTimeField
+from Products.Archetypes.Field import FixedPointField
+from Products.Archetypes.Field import IntegerField
+from Products.Archetypes.Field import StringField
+from Products.Archetypes.Schema import Schema
+from Products.Archetypes.references import HoldingReference
+from Products.CMFCore.permissions import View
+from Products.CMFCore.utils import getToolByName
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import deprecated
@@ -25,21 +34,13 @@ from bika.lims.config import UDL
 from bika.lims.content.abstractbaseanalysis import AbstractBaseAnalysis
 from bika.lims.content.abstractbaseanalysis import schema
 from bika.lims.interfaces import IDuplicateAnalysis
+from bika.lims.permissions import FieldEditAnalysisResult
 from bika.lims.utils import drop_trailing_zeros_decimal
 from bika.lims.utils import formatDecimalMark
 from bika.lims.utils.analysis import format_numeric_result
 from bika.lims.utils.analysis import get_significant_digits
 from bika.lims.workflow import getTransitionActor
 from bika.lims.workflow import getTransitionDate
-from DateTime import DateTime
-from Products.Archetypes.Field import DateTimeField
-from Products.Archetypes.Field import FixedPointField
-from Products.Archetypes.Field import IntegerField
-from Products.Archetypes.Field import StringField
-from Products.Archetypes.references import HoldingReference
-from Products.Archetypes.Schema import Schema
-from Products.CMFCore.permissions import View
-from Products.CMFCore.utils import getToolByName
 
 # A link directly to the AnalysisService object used to create the analysis
 AnalysisService = UIDReferenceField(
@@ -60,7 +61,7 @@ Attachment = UIDReferenceField(
 Result = StringField(
     'Result',
     read_permission=View,
-    write_permission="Field: Edit Result",
+    write_permission=FieldEditAnalysisResult,
 )
 
 # When the result is changed, this value is updated to the current time.
@@ -82,7 +83,7 @@ RetestOf = UIDReferenceField(
 DetectionLimitOperand = StringField(
     'DetectionLimitOperand',
     read_permission=View,
-    write_permission="Field: Edit Result",
+    write_permission=FieldEditAnalysisResult,
 )
 
 # The ID of the logged in user who submitted the result for this Analysis.
@@ -124,7 +125,7 @@ Calculation = HistoryAwareReferenceField(
 InterimFields = InterimFieldsField(
     'InterimFields',
     read_permission=View,
-    write_permission="Field: Edit Result",
+    write_permission=FieldEditAnalysisResult,
     schemata='Method',
     widget=RecordsWidget(
         label=_("Calculation Interim Fields"),
@@ -955,23 +956,32 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
     @security.public
     def getAnalyst(self):
+        """Returns the stored Analyst or the user who submitted the result
+        """
+        analyst = self.getField("Analyst").get(self)
+        if not analyst:
+            analyst = self.getSubmittedBy()
+        return analyst or ""
+
+    @security.public
+    def getAssignedAnalyst(self):
         """Returns the Analyst assigned to the worksheet this
         analysis is assigned to
         """
         worksheet = self.getWorksheet()
-        if worksheet:
-            return worksheet.getAnalyst() or ""
-        return ""
+        if not worksheet:
+            return ""
+        return worksheet.getAnalyst() or ""
 
     @security.public
     def getAnalystName(self):
         """Returns the name of the currently assigned analyst
         """
         analyst = self.getAnalyst()
-        if analyst:
-            user = api.get_user(analyst.strip())
-            return user and user.getProperty("fullname") or ""
-        return ""
+        if not analyst:
+            return ""
+        user = api.get_user(analyst.strip())
+        return user and user.getProperty("fullname") or analyst
 
     @security.public
     def getObjectWorkflowStates(self):

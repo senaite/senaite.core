@@ -24,6 +24,9 @@ class CobasIntegra400plusCSVParser(InstrumentCSVResultsFileParser):
         sline = line.split(',')
         if len(sline) > 0 and not self._end_header:
             self._columns = sline
+            for i, column in enumerate(self._columns):
+                column = column.strip()
+                self._columns[i] = column
             self._end_header = True
             return 0
         elif sline > 0 and self._end_header:

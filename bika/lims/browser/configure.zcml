@@ -24,7 +24,6 @@
   <include file="instrumenttype.zcml"/>
   <include file="instrumentlocation.zcml"/>
   <include file="manufacturer.zcml"/>
-  <include file="menu.zcml"/>
   <include file="methodfolder.zcml"/>
   <include file="referenceanalysis.zcml"/>
   <include file="referencesample.zcml"/>
@@ -83,7 +82,7 @@
       for="*"
       name="partition_magic"
       class=".partition_magic.PartitionMagicView"
-      permission="bika.lims.ManageAnalysisRequests"
+      permission="senaite.core.permissions.ManageAnalysisRequests"
       layer="bika.lims.interfaces.IBikaLIMS"
   />
 

@@ -4,8 +4,9 @@
 #
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
-
+from Products.CMFCore.permissions import ModifyPortalContent
 from bika.lims import bikaMessageFactory as _
+from bika.lims import api
 from bika.lims.utils import t
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.permissions import AddInvoice
@@ -29,7 +30,7 @@ class InvoiceFolderContentsView(BikaListingView):
 
         self.show_select_row = False
         self.show_select_all_checkbox = False
-        self.show_select_column = False
+        self.show_select_column = True
         self.pagesize = 25
         request.set('disable_border', 1)
         self.columns = {
@@ -40,14 +41,14 @@ class InvoiceFolderContentsView(BikaListingView):
         self.review_states = [
             {
                 'id': 'default',
-                'contentFilter': {'cancellation_state': 'active'},
+                'contentFilter': {'is_active': True},
                 'title': _('Active'),
                 'transitions': [{'id': 'cancel'}],
                 'columns': ['title', 'start', 'end'],
             },
             {
                 'id': 'cancelled',
-                'contentFilter': {'cancellation_state': 'cancelled'},
+                'contentFilter': {'is_active': False},
                 'title': _('Cancelled'),
                 'transitions': [{'id': 'reinstate'}],
                 'columns': ['title', 'start', 'end'],
@@ -61,16 +62,18 @@ class InvoiceFolderContentsView(BikaListingView):
                 'url': 'createObject?type_name=InvoiceBatch',
                 'icon': '++resource++bika.lims.images/add.png'
             }
-        if mtool.checkPermission(ManageInvoices, self.context):
+        if mtool.checkPermission(ModifyPortalContent, self.context):
             self.show_select_column = True
         return super(InvoiceFolderContentsView, self).__call__()
 
     def getInvoiceBatches(self, contentFilter={}):
         wf = getToolByName(self.context, 'portal_workflow')
-        desired_state = contentFilter.get('cancellation_state', 'active')
+        active_state = contentFilter.get('is_active', True)
         values = self.context.objectValues()
-        return [ib for ib in values if
-                wf.getInfoFor(ib, 'cancellation_state') == desired_state]
+        if active_state:
+            return filter(api.is_active, values)
+        else:
+            return filter(lambda o: not api.is_active(o), values)
 
     def folderitems(self):
         self.contentsMethod = self.getInvoiceBatches

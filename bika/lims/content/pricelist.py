@@ -13,7 +13,7 @@ from bika.lims.browser.fields.remarksfield import RemarksField
 from bika.lims.browser.widgets import RemarksWidget
 from bika.lims.config import PRICELIST_TYPES, PROJECTNAME
 from bika.lims.content.bikaschema import BikaFolderSchema
-from bika.lims.interfaces import IPricelist
+from bika.lims.interfaces import IPricelist, IDeactivable
 from DateTime import DateTime
 from persistent.mapping import PersistentMapping
 from plone.app.folder import folder
@@ -92,7 +92,7 @@ class PricelistLineItem(PersistentMapping):
 
 
 class Pricelist(folder.ATFolder):
-    implements(IPricelist)
+    implements(IPricelist, IDeactivable)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
@@ -127,7 +127,7 @@ def ObjectModifiedEventHandler(instance, event):
         # Remove existing line items
         instance.pricelist_lineitems = []
         for p in instance.portal_catalog(portal_type=instance.getType(),
-                                         inactive_state="active"):
+                                         is_active=True):
             obj = p.getObject()
             itemDescription = None
             itemAccredited = False

@@ -58,16 +58,8 @@ class CatalogVocabulary(object):
         # If a secondary deactivation/cancellation workflow is anbled,
         # Be sure and select only active objects, unless other instructions
         # are explicitly specified:
-        wf = getToolByName(site, 'portal_workflow')
-        if 'portal_type' in self.contentFilter:
-            portal_type = self.contentFilter['portal_type']
-            wf_ids = [x.id for x in wf.getWorkflowsFor(portal_type)]
-            if 'bika_inactive_workflow' in wf_ids \
-                    and 'bika_inactive_workflow' not in self.contentFilter:
-                self.contentFilter['inactive_state'] = 'active'
-            elif 'bika_cancellation_workflow' in wf_ids \
-                    and 'bika_inactive_workflow' not in self.contentFilter:
-                self.contentFilter['cancellation_state'] = 'active'
+        if "is_active" not in self.contentFilter:
+            self.contentFilter["is_active"] = True
 
         brains = catalog(self.contentFilter)
 

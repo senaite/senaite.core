@@ -160,14 +160,6 @@ schema = BikaFolderSchema.copy() + Schema((
         )
     ),
     BooleanField(
-        'AllowClerksToEditClients',
-        schemata="Security",
-        default=False,
-        widget=BooleanWidget(
-            label=_("Allow Lab Clerks to create and edit clients"),
-        )
-    ),
-    BooleanField(
         'RestrictWorksheetUsersAccess',
         schemata="Security",
         default=True,
@@ -885,7 +877,7 @@ class BikaSetup(folder.ATFolder):
         """
         bsc = getToolByName(self, 'bika_setup_catalog')
         brains = bsc(portal_type='AnalysisService',
-                     inactive_state='active')
+                     is_active=True)
         items = [(b.UID, b.Title) for b in brains]
         items.insert(0, ("", ""))
         items.sort(lambda x, y: cmp(x[1], y[1]))

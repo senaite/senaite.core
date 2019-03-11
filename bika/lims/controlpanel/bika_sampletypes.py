@@ -9,19 +9,21 @@ import collections
 import json
 
 import plone
+from Products.ATContentTypes.content import schemata
+from Products.Archetypes import atapi
+from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser import BrowserView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import ISampleTypes
+from bika.lims.permissions import AddSampleType
 from bika.lims.utils import get_link
 from plone.app.folder.folder import ATFolder
 from plone.app.folder.folder import ATFolderSchema
-from Products.Archetypes import atapi
-from Products.ATContentTypes.content import schemata
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import safe_unicode
 from zope.interface.declarations import implements
+
 
 # TODO: Separate content and view into own modules!
 
@@ -42,7 +44,7 @@ class SampleTypesView(BikaListingView):
         self.context_actions = {
             _("Add"): {
                 "url": "createObject?type_name=SampleType",
-                "permission": "Add portal content",
+                "permission": AddSampleType,
                 "icon": "++resource++bika.lims.images/add.png"}
         }
 
@@ -93,13 +95,13 @@ class SampleTypesView(BikaListingView):
             {
                 "id": "default",
                 "title": _("Active"),
-                "contentFilter": {"inactive_state": "active"},
+                "contentFilter": {"is_active": True},
                 "transitions": [{"id": "deactivate"}, ],
                 "columns": self.columns.keys(),
             }, {
                 "id": "inactive",
-                "title": _("Dormant"),
-                "contentFilter": {"inactive_state": "inactive"},
+                "title": _("Inactive"),
+                "contentFilter": {'is_active': False},
                 "transitions": [{"id": "activate"}, ],
                 "columns": self.columns.keys(),
             }, {
@@ -201,7 +203,7 @@ class ajax_SampleTypes(BrowserView):
         if samplepoint and len(samplepoint) > 1:
             sp = bsc(
                 portal_type="SamplePoint",
-                inactive_state="active",
+                is_active=True,
                 title=samplepoint
             )
             if not sp:
@@ -211,7 +213,7 @@ class ajax_SampleTypes(BrowserView):
         if not items:
             items = bsc(
                 portal_type="SampleType",
-                inactive_state="active",
+                is_active=True,
                 sort_on="sortable_title",
             )
             if term and len(term) < 3:

@@ -1,0 +1,34 @@
+<p></p>
+    <label for='facs_calibur_file'>File</label>&nbsp;
+    <input type="file" name="facs_calibur_file" id="facs_calibur_file"/>
+    &nbsp;&nbsp;
+    <label for='facs_calibur_format'>Format</label>&nbsp;
+    <select name="facs_calibur_format" id="facs_calibur_format">
+        <option value='exp'>exp</option>
+    </select>
+    <p></p>
+    <h3>Advanced options</h3>
+    <table cellpadding="0" cellspacing="0">
+        <tr>
+            <td><label for="facs_calibur_artoapply">Analysis Requests state</label>&nbsp;</td>
+            <td>
+                <select name="facs_calibur_artoapply" id="facs_calibur_artoapply">
+                    <option value="received">Received</option>
+                    <option value="received_tobeverified">Received and to be verified</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td><label for="facs_calibur_file_override">Results override</label></td>
+            <td>
+                <select name="facs_calibur_override" id="facs_calibur_file_override">
+                    <option value="nooverride">Don't override results</option>
+                    <option value="override">Override non-empty results</option>
+                    <option value="overrideempty">Override non-empty results (also with empty)</option>
+                </select>
+            </td>
+        </tr>
+    </table>
+    <p></p>
+    <input name="firstsubmit" type="submit" value="Submit" i18n:attributes="value"/>
+<p></p>

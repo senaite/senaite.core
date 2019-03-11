@@ -12,8 +12,9 @@ from Products.Archetypes import atapi
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
-from bika.lims.utils import get_link
 from bika.lims.interfaces import ISamplingDeviations
+from bika.lims.permissions import AddSamplingDeviation
+from bika.lims.utils import get_link
 from plone.app.folder.folder import ATFolder, ATFolderSchema
 from zope.interface.declarations import implements
 
@@ -33,7 +34,7 @@ class SamplingDeviationsView(BikaListingView):
         self.context_actions = {
             _("Add"): {
                 "url": "createObject?type_name=SamplingDeviation",
-                "permission": "Add portal content",
+                "permission": AddSamplingDeviation,
                 "icon": "++resource++bika.lims.images/add.png"}
         }
 
@@ -68,13 +69,13 @@ class SamplingDeviationsView(BikaListingView):
             }, {
                 "id": "active",
                 "title": _("Active"),
-                "contentFilter": {"inactive_state": "active"},
+                "contentFilter": {"is_active": True},
                 "transitions": [{"id": "deactivate"}, ],
                 "columns": self.columns.keys(),
             }, {
                 "id": "inactive",
-                "title": _("Dormant"),
-                "contentFilter": {"inactive_state": "inactive"},
+                "title": _("Inactive"),
+                "contentFilter": {'is_active': False},
                 "transitions": [{"id": "activate"}, ],
                 "columns": self.columns.keys(),
             }

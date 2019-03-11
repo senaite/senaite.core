@@ -6,18 +6,20 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 from AccessControl import ClassSecurityInfo
-from bika.lims import bikaMessageFactory as _
-from bika.lims.browser.widgets import ScheduleInputWidget
-from bika.lims.config import PROJECTNAME
-from bika.lims.content.bikaschema import BikaSchema
+from Products.ATExtensions.ateapi import RecordsField
 from Products.Archetypes import atapi
 from Products.Archetypes.public import (BaseFolder, ComputedField,
                                         ComputedWidget, DisplayList,
                                         ReferenceField, ReferenceWidget,
                                         Schema, StringField, StringWidget,
                                         TextAreaWidget, TextField)
-from Products.ATExtensions.ateapi import RecordsField
 from Products.CMFPlone.utils import safe_unicode
+from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.widgets import ScheduleInputWidget
+from bika.lims.config import PROJECTNAME
+from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.interfaces import ICancellable
+from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
 
@@ -82,6 +84,7 @@ schema['title']._validationLayer()
 
 
 class InstrumentScheduledTask(BaseFolder):
+    implements(ICancellable)
     security = ClassSecurityInfo()
     schema = schema
     displayContentsTab = False

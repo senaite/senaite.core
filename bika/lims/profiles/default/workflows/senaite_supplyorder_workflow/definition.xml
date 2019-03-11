@@ -1,92 +1,92 @@
 <?xml version="1.0"?>
 <dc-workflow xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-             workflow_id="bika_batch_workflow"
-             title="Bika Batch Workflow"
+             workflow_id="senaite_supply_order_workflow"
+             title="Bika Order Workflow"
              description=""
              state_variable="review_state"
-             initial_state="open"
+             initial_state="pending"
              manager_bypass="False"
              i18n:domain="senaite.core">
 
-  <permission>BIKA: Add Analysis Request</permission>
-  <permission>BIKA: Close Batch</permission>
-  <permission>BIKA: Edit Batch</permission>
-  <permission>BIKA: Reopen Batch</permission>
+  <permission>Delete objects</permission>
   <permission>Modify portal content</permission>
-  <permission>View</permission>
+  <permission>senaite.core: Transition: Dispatch Order</permission>
+  <permission>senaite.core: Transition: Cancel</permission>
+  <permission>senaite.core: Transition: Reinstate</permission>
 
-  <state state_id="closed" title="Closed" i18n:attributes="title">
-    <description>The batch can't be edited and Samples cannot be attached</description>
-    <exit-transition transition_id="open" />
-    <permission-map name="BIKA: Add Analysis Request" acquired="False">
+  <state state_id="dispatched" title="Dispatched" i18n:attributes="title">
+    <exit-transition transition_id="" />
+    <permission-map name="senaite.core: Transition: Cancel" acquired="False">
     </permission-map>
-    <permission-map name="BIKA: Close Batch" acquired="False">
+    <permission-map name="senaite.core: Transition: Reinstate" acquired="False">
     </permission-map>
-    <permission-map name="BIKA: Edit Batch" acquired="False">
-    </permission-map>
-    <permission-map name="BIKA: Reopen Batch" acquired="False">
-      <permission-role>LabClerk</permission-role>
+    <permission-map name="Delete objects" acquired="False">
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>
     <permission-map name="Modify portal content" acquired="False">
-    </permission-map>
-    <permission-map name="View" acquired="False">
-      <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
-      <permission-role>RegulatoryInspector</permission-role>
     </permission-map>
   </state>
 
-  <state state_id="open" title="Open" i18n:attributes="title">
-    <description>The batch can be edited and Samples can be attached</description>
-    <exit-transition transition_id="close" />
-    <permission-map name="BIKA: Add Analysis Request" acquired="False">
+  <state state_id="pending" title="Pending" i18n:attributes="title">
+    <exit-transition transition_id="dispatch" />
+    <exit-transition transition_id="cancel" />
+    <permission-map name="senaite.core: Transition: Cancel" acquired="False">
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
     </permission-map>
-    <permission-map name="BIKA: Close Batch" acquired="False">
+    <permission-map name="senaite.core: Transition: Reinstate" acquired="False">
+    </permission-map>
+    <permission-map name="Delete objects" acquired="False">
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
-    </permission-map>
-    <permission-map name="BIKA: Edit Batch" acquired="False">
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-    </permission-map>
-    <permission-map name="BIKA: Reopen Batch" acquired="False">
+      <permission-role>Owner</permission-role>
     </permission-map>
     <permission-map name="Modify portal content" acquired="False">
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
-    </permission-map>
-    <permission-map name="View" acquired="False">
-      <permission-role>Analyst</permission-role>
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-      <permission-role>RegulatoryInspector</permission-role>
-      <permission-role>Verifier</permission-role>
+      <permission-role>Owner</permission-role>
     </permission-map>
   </state>
 
-  <transition transition_id="close" title="Close" new_state="closed" trigger="USER" before_script="" after_script="" i18n:attributes="title">
-    <action url="" category="workflow" icon="">Close</action>
+  <state state_id="cancelled" title="Cancelled" i18n:attributes="title">
+    <exit-transition transition_id="reinstate" />
+    <permission-map name="senaite.core: Transition: Reinstate" acquired="False">
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+    </permission-map>
+    <permission-map name="senaite.core: Transition: Cancel" acquired="False">
+    </permission-map>
+  </state>
+
+  <transition transition_id="dispatch" title="Dispatch" new_state="dispatched" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Dispatch order</action>
     <guard>
-      <guard-permission>BIKA: Close Batch</guard-permission>
-      <guard-expression>python:here.workflow_guard_close() if hasattr(here, 'workflow_guard_close') else True</guard-expression>
+      <guard-permission>senaite.core: Transition: Dispatch Order</guard-permission>
     </guard>
   </transition>
 
-  <transition transition_id="open" title="Open" new_state="open" trigger="USER" before_script="" after_script="" i18n:attributes="title">
-    <action url="" category="workflow" icon="">Open</action>
+  <transition transition_id="cancel" title="Cancel" new_state="cancelled" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Cancel</action>
     <guard>
-      <guard-permission>BIKA: Reopen Batch</guard-permission>
-      <guard-expression>python:here.workflow_guard_open() if hasattr(here, 'workflow_guard_open') else True</guard-expression>
+      <guard-permission>senaite.core: Transition: Cancel</guard-permission>
+      <guard-expression>python:here.guard_handler("cancel")</guard-expression>
+    </guard>
+  </transition>
+
+  <transition transition_id="reinstate" title="Reinstate" new_state="pending" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Reinstate</action>
+    <guard>
+      <guard-permission>senaite.core: Transition: Reinstate</guard-permission>
+      <guard-expression>python:here.guard_handler("reinstate")</guard-expression>
     </guard>
   </transition>
 

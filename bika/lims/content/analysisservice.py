@@ -14,11 +14,11 @@ from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets.partitionsetupwidget import PartitionSetupWidget
 from bika.lims.browser.widgets.recordswidget import RecordsWidget
 from bika.lims.browser.widgets.referencewidget import ReferenceWidget
-from bika.lims.browser.widgets.uidselectionwidget import UIDSelectionWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.abstractbaseanalysis import AbstractBaseAnalysis
 from bika.lims.content.abstractbaseanalysis import schema
 from bika.lims.interfaces import IAnalysisService
+from bika.lims.interfaces import IDeactivable
 from bika.lims.interfaces import IHaveIdentifiers
 from bika.lims.utils import to_utf8 as _c
 from magnitude import mg
@@ -27,6 +27,7 @@ from Products.Archetypes.public import BooleanWidget
 from Products.Archetypes.public import DisplayList
 from Products.Archetypes.public import MultiSelectionWidget
 from Products.Archetypes.public import Schema
+from Products.Archetypes.public import SelectionWidget
 from Products.Archetypes.public import registerType
 from Products.Archetypes.Registry import registerField
 from Products.ATExtensions.ateapi import RecordsField
@@ -151,7 +152,7 @@ class PartitionSetupField(RecordsField):
         bsc = getToolByName(instance, 'bika_setup_catalog')
         items = []
         for st in bsc(portal_type='SampleType',
-                      inactive_state='active',
+                      is_active=True,
                       sort_on='sortable_title'):
             st = st.getObject()
             title = st.Title()
@@ -166,7 +167,7 @@ class PartitionSetupField(RecordsField):
         bsc = getToolByName(instance, 'bika_setup_catalog')
         items = [[c.UID, c.title] for c in
                  bsc(portal_type='Preservation',
-                     inactive_state='active',
+                     is_active=True,
                      sort_on='sortable_title')]
         items = [['', _('Any')]] + list(items)
         return DisplayList(items)
@@ -215,7 +216,7 @@ Preservation = UIDReferenceField(
             "preservation depends on the sample type combination, specify a "
             "preservation per sample type in the table below"),
         catalog_name='bika_setup_catalog',
-        base_query={'inactive_state': 'active'},
+        base_query={'is_active': True},
     )
 )
 
@@ -238,7 +239,7 @@ Container = UIDReferenceField(
             "and preservation combination, specify the container in the "
             "sample type table below"),
         catalog_name='bika_setup_catalog',
-        base_query={'inactive_state': 'active'},
+        base_query={'is_active': True},
     )
 )
 
@@ -291,6 +292,7 @@ Methods = UIDReferenceField(
     multiValued=1,
     vocabulary='_getAvailableMethodsDisplayList',
     allowed_types=('Method',),
+    accessor="getMethodUIDs",
     widget=MultiSelectionWidget(
         label=_("Methods"),
         description=_(
@@ -318,6 +320,7 @@ Instruments = UIDReferenceField(
     multiValued=1,
     vocabulary='_getAvailableInstrumentsDisplayList',
     allowed_types=('Instrument',),
+    accessor="getInstrumentUIDs",
     widget=MultiSelectionWidget(
         label=_("Instruments"),
         description=_(
@@ -345,17 +348,18 @@ Instruments = UIDReferenceField(
 # - If UseDefaultCalculation is set to True, show this field
 #  See browser/js/bika.lims.analysisservice.edit.js
 Calculation = UIDReferenceField(
-    'Calculation',
+    "Calculation",
     schemata="Method",
     required=0,
-    vocabulary='_getAvailableCalculationsDisplayList',
-    allowed_types=('Calculation',),
-    widget=UIDSelectionWidget(
-        format='select',
+    vocabulary="_getAvailableCalculationsDisplayList",
+    allowed_types=("Calculation",),
+    accessor="getCalculationUID",
+    widget=SelectionWidget(
+        format="select",
         label=_("Calculation"),
         description=_("Calculation to be assigned to this content."),
-        catalog_name='bika_setup_catalog',
-        base_query={'inactive_state': 'active'},
+        catalog_name="bika_setup_catalog",
+        base_query={"is_active": True},
     )
 )
 
@@ -402,7 +406,7 @@ schema.moveField('InterimFields', after='Calculation')
 
 
 class AnalysisService(AbstractBaseAnalysis):
-    implements(IAnalysisService, IHaveIdentifiers)
+    implements(IAnalysisService, IHaveIdentifiers, IDeactivable)
     security = ClassSecurityInfo()
     schema = schema
     displayContentsTab = False
@@ -422,12 +426,27 @@ class AnalysisService(AbstractBaseAnalysis):
             return calculation.Title()
 
     @security.public
+    def getCalculation(self):
+        """Returns the assigned calculation
+
+        :returns: Calculation object
+        """
+        return self.getField("Calculation").get(self)
+
+    @security.public
     def getCalculationUID(self):
-        """Used to populate catalog values
+        """Returns the UID of the assigned calculation
+
+        NOTE: This is the default accessor of the `Calculation` schema field
+        and needed for the selection widget to render the selected value
+        properly in _view_ mode.
+
+        :returns: Calculation UID
         """
         calculation = self.getCalculation()
-        if calculation:
-            return calculation.UID()
+        if not calculation:
+            return None
+        return api.get_uid(calculation)
 
     @security.public
     def getContainers(self, instance=None):
@@ -443,7 +462,7 @@ class AnalysisService(AbstractBaseAnalysis):
     def getPreservations(self):
         bsc = getToolByName(self, 'bika_setup_catalog')
         items = [(o.UID, o.Title) for o in
-                 bsc(portal_type='Preservation', inactive_state='active')]
+                 bsc(portal_type='Preservation', is_active=True)]
         items.sort(lambda x, y: cmp(x[1], y[1]))
         return DisplayList(list(items))
 
@@ -479,14 +498,47 @@ class AnalysisService(AbstractBaseAnalysis):
         return [m.UID() for m in self.getAvailableMethods()]
 
     @security.public
-    def getMethodUIDs(self):
-        """
-        Returns the UIDs of the assigned methods to this analysis service.
-        This method returns the selected methods in the 'Method' field.
+    def getMethods(self):
+        """Returns the assigned methods
+
         If you want to obtain the available methods to assign to the service,
         use getAvailableMethodUIDs.
+
+        :returns: List of method objects
         """
-        return [m.UID() for m in self.getMethods()]
+        return self.getField("Methods").get(self)
+
+    @security.public
+    def getMethodUIDs(self):
+        """Returns the UIDs of the assigned methods
+
+        NOTE: This is the default accessor of the `Methods` schema field
+        and needed for the multiselection widget to render the selected values
+        properly in _view_ mode.
+
+        :returns: List of method UIDs
+        """
+        return map(api.get_uid, self.getMethods())
+
+    @security.public
+    def getInstruments(self):
+        """Returns the assigned instruments
+
+        :returns: List of instrument objects
+        """
+        return self.getField("Instruments").get(self)
+
+    @security.public
+    def getInstrumentUIDs(self):
+        """Returns the UIDs of the assigned instruments
+
+        NOTE: This is the default accessor of the `Instruments` schema field
+        and needed for the multiselection widget to render the selected values
+        properly in _view_ mode.
+
+        :returns: List of instrument UIDs
+        """
+        return map(api.get_uid, self.getInstruments())
 
     @security.public
     def getAvailableInstruments(self):
@@ -511,7 +563,7 @@ class AnalysisService(AbstractBaseAnalysis):
         bsc = getToolByName(self, 'bika_setup_catalog')
         items = [(i.UID, i.Title)
                  for i in bsc(portal_type='Method',
-                              inactive_state='active')
+                              is_active=True)
                  if i.getObject().isManualEntryOfResults()]
         items.sort(lambda x, y: cmp(x[1], y[1]))
         items.insert(0, ('', _("None")))
@@ -526,7 +578,7 @@ class AnalysisService(AbstractBaseAnalysis):
         bsc = getToolByName(self, 'bika_setup_catalog')
         items = [(i.UID, i.Title)
                  for i in bsc(portal_type='Calculation',
-                              inactive_state='active')]
+                              is_active=True)]
         items.sort(lambda x, y: cmp(x[1], y[1]))
         items.insert(0, ('', _("None")))
         return DisplayList(list(items))
@@ -540,7 +592,7 @@ class AnalysisService(AbstractBaseAnalysis):
         bsc = getToolByName(self, 'bika_setup_catalog')
         items = [(i.UID, i.Title)
                  for i in bsc(portal_type='Instrument',
-                              inactive_state='active')]
+                              is_active=True)]
         items.sort(lambda x, y: cmp(x[1], y[1]))
         return DisplayList(list(items))
 
@@ -568,7 +620,7 @@ class AnalysisService(AbstractBaseAnalysis):
     @security.public
     def getServiceDependants(self):
         bsc = getToolByName(self, 'bika_setup_catalog')
-        active_calcs = bsc(portal_type='Calculation', inactive_state="active")
+        active_calcs = bsc(portal_type='Calculation', is_active=True)
         calculations = [c.getObject() for c in active_calcs]
         dependants = []
         for calc in calculations:

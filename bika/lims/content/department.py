@@ -17,7 +17,7 @@ import sys
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
 from zope.interface import implements
-from bika.lims.interfaces import IDepartment
+from bika.lims.interfaces import IDepartment, IDeactivable
 
 schema = BikaSchema.copy() + Schema((
     ReferenceField('Manager',
@@ -58,7 +58,7 @@ schema['description'].widget.visible = True
 schema['description'].schemata = 'default'
 
 class Department(BaseContent):
-    implements(IDepartment)
+    implements(IDepartment, IDeactivable)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema

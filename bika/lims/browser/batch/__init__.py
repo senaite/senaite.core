@@ -56,7 +56,7 @@ class getAnalysisContainers(BrowserView):
         catalog = getToolByName(self, CATALOG_ANALYSIS_REQUEST_LISTING)
         for x in [a.getObject() for a in
                 catalog(
-                    cancellation_state='active',
+                    is_active=True,
                     sort_on="created",
                     sort_order="desc")]:
             if searchTerm in x.Title().lower():
@@ -66,7 +66,7 @@ class getAnalysisContainers(BrowserView):
         for x in [a.getObject() for a in
                   self.bika_catalog(
                     portal_type='Batch',
-                    cancellation_state='active',
+                    is_active=True,
                     sort_on="created",
                     sort_order="desc")]:
             if searchTerm in x.Title().lower() \

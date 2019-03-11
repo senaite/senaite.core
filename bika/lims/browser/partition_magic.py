@@ -171,7 +171,7 @@ class PartitionMagicView(BrowserView):
             "portal_type": "SampleType",
             "sort_on": "sortable_title",
             "sort_order": "ascending",
-            "inactive_state": "active",
+            "is_active": True,
         }
         results = api.search(query, "bika_setup_catalog")
         return map(api.get_object, results)
@@ -182,7 +182,7 @@ class PartitionMagicView(BrowserView):
         query = dict(portal_type="Container",
                      sort_on="sortable_title",
                      sort_order="ascending",
-                     inactive_state="active")
+                     is_active=True)
         results = api.search(query, "bika_setup_catalog")
         return map(api.get_object, results)
 
@@ -192,7 +192,7 @@ class PartitionMagicView(BrowserView):
         query = dict(portal_type="Preservation",
                      sort_on="sortable_title",
                      sort_order="ascending",
-                     inactive_state="active")
+                     is_active=True)
         results = api.search(query, "bika_setup_catalog")
         return map(api.get_object, results)
 

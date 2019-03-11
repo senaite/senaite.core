@@ -30,7 +30,7 @@
          i18n:attributes="title"
          i18n:domain="plone"
          visible="False">
-  <permission value="View"/>
+  <permission value="List folder contents"/>
  </action>
 
  <action title="Edit"

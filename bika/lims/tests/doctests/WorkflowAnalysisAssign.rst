@@ -140,7 +140,7 @@ So the state of cu is now `unassigned`:
 
 The Analyst is no longer assigned to the analysis:
 
-    >>> cu.getAnalyst()
+    >>> cu.getAssignedAnalyst()
     ''
 
 From `assigned` state I can do submit:
@@ -265,7 +265,7 @@ analysis is automatically transitioned to `unassigned` state:
 Exactly these roles can assign:
 
     >>> analysis = analyses[0]
-    >>> get_roles_for_permission("BIKA: Assign analyses", analysis)
+    >>> get_roles_for_permission("senaite.core: Transition: Assign Analysis", analysis)
     ['Analyst', 'LabClerk', 'LabManager', 'Manager']
 
 Current user can assign because has the `LabManager` role:

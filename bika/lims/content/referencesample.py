@@ -28,7 +28,8 @@ from bika.lims.browser.widgets import RemarksWidget
 from bika.lims.browser.widgets import ReferenceResultsWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.interfaces import IReferenceSample, IAnalysisService
+from bika.lims.interfaces import IReferenceSample, IAnalysisService, \
+    IDeactivable
 from bika.lims.utils import sortable_title, tmpID
 from bika.lims.utils import to_unicode as _u
 from bika.lims.utils import to_utf8
@@ -160,7 +161,7 @@ schema = BikaSchema.copy() + Schema((
 schema['title'].schemata = 'Description'
 
 class ReferenceSample(BaseFolder):
-    implements(IReferenceSample)
+    implements(IReferenceSample, IDeactivable)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
@@ -193,7 +194,7 @@ class ReferenceSample(BaseFolder):
         bsc = getToolByName(self, 'bika_setup_catalog')
         defs = [o.getObject() for o in
                 bsc(portal_type = 'ReferenceDefinition',
-                    inactive_state = 'active')]
+                    is_active = True)]
         items = [('','')] + [(o.UID(), make_title(o)) for o in defs]
         o = self.getReferenceDefinition()
         it = make_title(o)
@@ -206,7 +207,7 @@ class ReferenceSample(BaseFolder):
         bsc = getToolByName(self, 'bika_setup_catalog')
         items = [('','')] + [(o.UID, o.Title) for o in
                                bsc(portal_type='Manufacturer',
-                                   inactive_state = 'active')]
+                                   is_active = True)]
         o = self.getReferenceDefinition()
         if o and o.UID() not in [i[0] for i in items]:
             items.append((o.UID(), o.Title()))

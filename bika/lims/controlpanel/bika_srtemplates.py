@@ -57,12 +57,12 @@ class SamplingRoundTemplatesView(BikaListingView):
         self.review_states = [
             {'id':'default',
              'title': _('Active'),
-             'contentFilter': {'inactive_state':'active'},
+             'contentFilter': {'is_active': True},
              'columns': ['Title',
                          'Description']},
             {'id':'inactive',
-             'title': _('Dormant'),
-             'contentFilter': {'inactive_state':'inactive'},
+             'title': _('Inactive'),
+             'contentFilter': {'is_active': False},
              'columns': ['Title',
                          'Description']},
             {'id':'all',
@@ -82,6 +82,7 @@ class SamplingRoundTemplatesView(BikaListingView):
             self.context_actions = {
                 _('Add'): {
                     'url': 'createObject?type_name=SRTemplate',
+                    'permission': AddSRTemplate,
                     'icon': '++resource++bika.lims.images/add.png'
                 }
             }

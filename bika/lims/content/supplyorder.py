@@ -17,7 +17,7 @@ from bika.lims.browser.widgets import RemarksWidget
 from bika.lims.browser.widgets import ReferenceWidget as BikaReferenceWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.interfaces import ISupplyOrder
+from bika.lims.interfaces import ISupplyOrder, ICancellable
 from bika.lims.utils import t
 from DateTime import DateTime
 from persistent.mapping import PersistentMapping
@@ -112,7 +112,7 @@ class SupplyOrderLineItem(PersistentMapping):
 
 class SupplyOrder(BaseFolder):
 
-    implements(ISupplyOrder, IConstrainTypes)
+    implements(ISupplyOrder, IConstrainTypes, ICancellable)
 
     security = ClassSecurityInfo()
     displayContentsTab = False

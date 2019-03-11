@@ -39,7 +39,6 @@ class AddAnalysesView(BikaListingView):
             "review_state": "unassigned",
             "isSampleReceived": True,
             "sort_on": "getPrioritySortkey",
-            "cancellation_state": "active",
         }
 
         self.icon = "{}/{}".format(

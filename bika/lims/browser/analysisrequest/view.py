@@ -104,7 +104,8 @@ class AnalysisRequestViewView(BrowserView):
     def is_verified(self):
         """Checks if the AR is verified
         """
-        return wasTransitionPerformed(self.context, "verify")
+        target_states = ["verified", "published", "invalid"]
+        return api.get_review_status(self.context) in target_states
 
     def is_cancelled(self):
         """Checks if the AR is cancelled

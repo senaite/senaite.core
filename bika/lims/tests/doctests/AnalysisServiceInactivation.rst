@@ -2,7 +2,7 @@
 Analysis Service - Activations and Inactivations
 ================================================
 
-The inactivation and activation of Analysis Services relies on `bika_inactive_workflow`.
+The inactivation and activation of Analysis Services relies on `senaite_deactivable_type_workflow`.
 To prevent inconsistencies that could have undesired effects, an Analysis Service
 can only be deactivated if it does not have active dependents (this is, other
 services that depends on the Analysis Service to calculate their results).
@@ -26,7 +26,6 @@ Needed Imports:
     >>> from bika.lims import api
     >>> from bika.lims.workflow import doActionFor
     >>> from bika.lims.workflow import getAllowedTransitions
-    >>> from bika.lims.workflow import isActive
     >>> from plone.app.testing import TEST_USER_ID
     >>> from plone.app.testing import TEST_USER_PASSWORD
     >>> from plone.app.testing import setRoles
@@ -93,7 +92,7 @@ Then, only `Au` can be deactivated, cause `harndess` is active and depends on
 If we deactivate `Hardness`:
 
     >>> performed = doActionFor(hardness, 'deactivate')
-    >>> isActive(hardness)
+    >>> api.is_active(hardness)
     False
 
     >>> getAllowedTransitions(hardness)
@@ -113,7 +112,7 @@ Activation of Analysis Service
 Deactivate the Analysis Service `Ca`:
 
     >>> performed = doActionFor(Ca, 'deactivate')
-    >>> isActive(Ca)
+    >>> api.is_active(Ca)
     False
 
     >>> getAllowedTransitions(Ca)
@@ -122,7 +121,7 @@ Deactivate the Analysis Service `Ca`:
 And now, we cannot activate `Hardness`, cause one of its dependencies (`Ca`) is
 not active:
 
-    >>> isActive(hardness)
+    >>> api.is_active(hardness)
     False
     >>> getAllowedTransitions(hardness)
     []
@@ -130,7 +129,7 @@ not active:
 But if we activate `Ca` again:
 
     >>> performed = doActionFor(Ca, 'activate')
-    >>> isActive(Ca)
+    >>> api.is_active(Ca)
     True
 
 `Hardness` can be activated again:
@@ -139,5 +138,5 @@ But if we activate `Ca` again:
     ['activate']
 
     >>> performed = doActionFor(hardness, 'activate')
-    >>> isActive(hardness)
+    >>> api.is_active(hardness)
     True

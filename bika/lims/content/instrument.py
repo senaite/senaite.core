@@ -54,7 +54,7 @@ from bika.lims.utils import t
 from bika.lims.utils import to_utf8
 from bika.lims.config import PROJECTNAME
 from bika.lims.exportimport import instruments
-from bika.lims.interfaces import IInstrument
+from bika.lims.interfaces import IInstrument, IDeactivable
 from bika.lims.config import QCANALYSIS_TYPES
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.content.bikaschema import BikaFolderSchema
@@ -117,6 +117,7 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         )
     ),
 
+    # TODO Remove Instrument.Method field (functionality provided by 'Methods')
     UIDReferenceField(
         'Method',
         vocabulary='_getAvailableMethods',
@@ -367,7 +368,7 @@ def getCalibrationAgents(context):
 class Instrument(ATFolder):
     """A physical gadget of the lab
     """
-    implements(IInstrument)
+    implements(IInstrument, IDeactivable)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
@@ -411,7 +412,7 @@ class Instrument(ATFolder):
         bsc = getToolByName(self, 'bika_setup_catalog')
         items = [(c.UID, c.Title)
                  for c in bsc(portal_type='Manufacturer',
-                              inactive_state='active')]
+                              is_active=True)]
         items.sort(lambda x, y: cmp(x[1], y[1]))
         return DisplayList(items)
 
@@ -425,7 +426,7 @@ class Instrument(ATFolder):
         bsc = getToolByName(self, 'bika_setup_catalog')
         items = [(c.UID, c.getName)
                  for c in bsc(portal_type='Supplier',
-                              inactive_state='active')]
+                              is_active=True)]
         items.sort(lambda x, y: cmp(x[1], y[1]))
         return DisplayList(items)
 
@@ -437,7 +438,7 @@ class Instrument(ATFolder):
         bsc = getToolByName(self, 'bika_setup_catalog')
         items = [(c.UID, c.Title)
                  for c in bsc(portal_type='Method',
-                              inactive_state='active')]
+                              is_active=True)]
         items.sort(lambda x, y: cmp(x[1], y[1]))
         items.insert(0, ('', t(_('None'))))
         return DisplayList(items)
@@ -446,7 +447,7 @@ class Instrument(ATFolder):
         bsc = getToolByName(self, 'bika_setup_catalog')
         items = [(c.UID, c.Title)
                  for c in bsc(portal_type='InstrumentType',
-                              inactive_state='active')]
+                              is_active=True)]
         items.sort(lambda x, y: cmp(x[1], y[1]))
         return DisplayList(items)
 
@@ -454,7 +455,7 @@ class Instrument(ATFolder):
         bsc = getToolByName(self, 'bika_setup_catalog')
         items = [(c.UID, c.Title)
                  for c in bsc(portal_type='InstrumentLocation',
-                              inactive_state='active')]
+                              is_active=True)]
         items.sort(lambda x, y: cmp(x[1], y[1]))
         items.insert(0, ('', t(_('None'))))
         return DisplayList(items)

@@ -30,11 +30,11 @@
          action_id="view"
          category="object"
          condition_expr=""
-         url_expr="string:${object_url}"
+         url_expr="string:${object_url}/view"
          i18n:attributes="title"
          i18n:domain="plone"
          visible="True">
-   <permission value="View"/>
+  <permission value="View"/>
  </action>
 
  <action title="Edit"
@@ -45,7 +45,7 @@
          i18n:attributes="title"
          i18n:domain="plone"
          visible="True">
-   <permission value="Modify portal content"/>
+  <permission value="Modify portal content"/>
  </action>
 
  <action action_id="reference_samples"

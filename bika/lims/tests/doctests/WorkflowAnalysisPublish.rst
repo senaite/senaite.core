@@ -135,7 +135,7 @@ In published state, exactly these roles can view results:
     >>> analysis = ar.getAnalyses(full_objects=True)[0]
     >>> api.get_workflow_status_of(analysis)
     'published'
-    >>> get_roles_for_permission("BIKA: View Results", analysis)
+    >>> get_roles_for_permission("senaite.core: View Results", analysis)
     ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'Owner', 'RegulatoryInspector']
 
 And no transition can be done from this state:

@@ -22,7 +22,7 @@ class AccreditationView(AnalysisServicesView):
             'portal_type': 'AnalysisService',
             'sort_on': 'sortable_title',
             'getAccredited': True,
-            'inactive_state': 'active'}
+            'is_active': True}
         self.context_actions = {}
         self.title = self.context.translate(_("Accreditation"))
         self.icon = self.portal_url + \
