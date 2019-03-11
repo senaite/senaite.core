@@ -10,7 +10,6 @@
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
 
-from bhp.lims import PRODUCT_NAME
 from . import FacsCaliburCSVParser, FacsCaliburImporter
 import json
 import traceback
