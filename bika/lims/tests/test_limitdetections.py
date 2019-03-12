@@ -307,7 +307,7 @@ class TestLimitDetections(DataTestCase):
              'isudl'             : True},
         ]
 
-        for case in cases:
+        for num, case in enumerate(cases):
             s = self.services[0]
             s.setDetectionLimitSelector(case['displaydl'])
             s.setAllowManualDetectionLimit(case['manual'])
@@ -332,17 +332,17 @@ class TestLimitDetections(DataTestCase):
 
             an = ar.getAnalyses()[0].getObject()
             an.setResult(case['input'])
-            self.assertEqual(an.isBelowLowerDetectionLimit(), case['isbelowldl'])
-            self.assertEqual(an.isAboveUpperDetectionLimit(), case['isaboveudl'])
-            self.assertEqual(an.isLowerDetectionLimit(), case['isldl'])
-            self.assertEqual(an.isUpperDetectionLimit(), case['isudl'])
-            self.assertEqual(float(an.getResult()), case['expresult'])
-            self.assertEqual(an.getFormattedResult(html=False), case['expformattedresult'])
+            self.assertEqual(an.isBelowLowerDetectionLimit(), case['isbelowldl'], case)
+            self.assertEqual(an.isAboveUpperDetectionLimit(), case['isaboveudl'], case)
+            self.assertEqual(an.isLowerDetectionLimit(), case['isldl'], case)
+            self.assertEqual(an.isUpperDetectionLimit(), case['isudl'], case)
+            self.assertEqual(float(an.getResult()), case['expresult'], case)
+            self.assertEqual(an.getFormattedResult(html=False), case['expformattedresult'], case)
             expres = case['expformattedresult']
             expres = expres.replace('< ', '&lt; ') if an.isBelowLowerDetectionLimit() else expres
             expres = expres.replace('> ', '&gt; ') if an.isAboveUpperDetectionLimit() else expres
-            self.assertEqual(an.getFormattedResult(html=True), expres)
-            self.assertEqual(an.getFormattedResult(), expres)
+            self.assertEqual(an.getFormattedResult(html=True), expres, case)
+            self.assertEqual(an.getFormattedResult(), expres, case)
 
     def test_ar_manageresults_limitdetections(self):
         # Input results

@@ -5,12 +5,9 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from AccessControl import ClassSecurityInfo
 from datetime import timedelta
-from Products.Archetypes.Field import BooleanField, FixedPointField, \
-    StringField
-from Products.Archetypes.Schema import Schema
-from Products.ATContentTypes.utils import DT2dt, dt2DT
+
+from AccessControl import ClassSecurityInfo
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import UIDReferenceField
@@ -20,9 +17,18 @@ from bika.lims.content.abstractanalysis import AbstractAnalysis
 from bika.lims.content.abstractanalysis import schema
 from bika.lims.content.analysisspec import ResultsRangeDict
 from bika.lims.content.reflexrule import doReflexRuleAction
-from bika.lims.interfaces import IAnalysis, IRoutineAnalysis, ICancellable
+from bika.lims.interfaces import IAnalysis
+from bika.lims.interfaces import ICancellable
+from bika.lims.interfaces import IRoutineAnalysis
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.workflow import getTransitionDate
+from Products.Archetypes.Field import BooleanField
+from Products.Archetypes.Field import FixedPointField
+from Products.Archetypes.Field import StringField
+from Products.Archetypes.Schema import Schema
+from Products.ATContentTypes.utils import DT2dt
+from Products.ATContentTypes.utils import dt2DT
+from Products.CMFCore.permissions import View
 from zope.interface import implements
 
 
@@ -82,6 +88,8 @@ ReflexRuleActionsTriggered = StringField(
 # is submitted.
 Uncertainty = FixedPointField(
     'Uncertainty',
+    read_permission=View,
+    write_permission="Field: Edit Result",
     precision=10,
     widget=DecimalWidget(
         label=_("Uncertainty")

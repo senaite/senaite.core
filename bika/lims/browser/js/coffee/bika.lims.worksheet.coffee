@@ -574,9 +574,6 @@ class window.WorksheetManageResultsView
     # Analysis instrument changed
     $("body").on "change", "table.bika-listing-table select.listing_select_entry[field='Instrument']", @on_analysis_instrument_change
 
-    # Detection limit changed
-    $("body").on "change", "select[name^='DetectionLimit.']", @on_detection_limit_change
-
     # Remarks balloon clicked
     $("body").on "click", "a.add-remark", @on_remarks_balloon_clicked
 
@@ -675,7 +672,6 @@ class window.WorksheetManageResultsView
     $.each data, (uid, value) ->
       analysis_uids.push uid
     return analysis_uids
-
 
   get_method_by_analysis_uid: (analysis_uid) =>
     ###
@@ -958,47 +954,6 @@ class window.WorksheetManageResultsView
 
     # Enable 'None' option as well.
     $("table.bika-listing-table select.listing_select_entry[field='Instrument'] option[value='']").prop "disabled", no
-
-
-  on_detection_limit_change: (event) =>
-    ###
-     * Eventhandler when the detection limit changed
-    ###
-    console.debug "°°° WorksheetManageResultsView::on_detection_limit_change °°°"
-    $el = $(event.currentTarget)
-
-    defdls = $el.closest("td").find("input[id^='DefaultDLS.']").first().val()
-    resfld = $el.closest("tr").find("input[name^='Result.']")[0]
-    uncfld = $el.closest("tr").find("input[name^='Uncertainty.']")
-
-    defdls = $.parseJSON(defdls)
-    $(resfld).prop "readonly", !defdls.manual
-
-    if $el.val() == "<"
-      $(resfld).val defdls['min']
-      # Inactivate uncertainty?
-      if uncfld.length > 0
-        $(uncfld).val ""
-        $(uncfld).prop "readonly", yes
-        $(uncfld).closest("td").children().hide()
-    else if $el.val() == ">"
-      $(resfld).val defdls["max"]
-      # Inactivate uncertainty?
-      if uncfld.length > 0
-        $(uncfld).val ""
-        $(uncfld).prop "readonly", yes
-        $(uncfld).closest("td").children().hide()
-    else
-      $(resfld).val ""
-      $(resfld).prop "readonly", no
-      # Activate uncertainty?
-      if uncfld.length > 0
-        $(uncfld).val ""
-        $(uncfld).prop "readonly", no
-        $(uncfld).closest("td").children().show()
-
-    # Maybe the result is used in calculations...
-    $(resfld).change()
 
 
   on_remarks_balloon_clicked: (event) =>

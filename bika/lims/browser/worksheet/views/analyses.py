@@ -69,9 +69,11 @@ class AnalysesView(BaseView):
                 "sortable": False,
                 "ajax": True,
                 "title": _("Instrument")}),
-            ("DetectionLimit", {
+            ("DetectionLimitOperand", {
                 "title": _("DL"),
                 "sortable": False,
+                "ajax": True,
+                "autosave": True,
                 "toggle": False}),
             ("Result", {
                 "title": _("Result"),

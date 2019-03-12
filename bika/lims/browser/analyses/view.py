@@ -19,11 +19,15 @@ from bika.lims.api.analysis import get_formatted_interval
 from bika.lims.api.analysis import is_out_of_range
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
+from bika.lims.config import LDL
+from bika.lims.config import UDL
 from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.interfaces import IFieldIcons
-from bika.lims.permissions import EditFieldResults, FieldEditAnalysisResult, \
-    FieldEditAnalysisHidden, TransitionVerify
+from bika.lims.permissions import EditFieldResults
 from bika.lims.permissions import EditResults
+from bika.lims.permissions import FieldEditAnalysisHidden
+from bika.lims.permissions import FieldEditAnalysisResult
+from bika.lims.permissions import TransitionVerify
 from bika.lims.permissions import ViewResults
 from bika.lims.permissions import ViewRetractedAnalyses
 from bika.lims.utils import check_permission
@@ -112,9 +116,11 @@ class AnalysesView(BikaListingView):
             ("state_title", {
                 "title": _("Status"),
                 "sortable": False}),
-            ("DetectionLimit", {
+            ("DetectionLimitOperand", {
                 "title": _("DL"),
                 "sortable": False,
+                "ajax": True,
+                "autosave": True,
                 "toggle": False}),
             ("Result", {
                 "title": _("Result"),
@@ -127,6 +133,7 @@ class AnalysesView(BikaListingView):
                 "sortable": False}),
             ("Uncertainty", {
                 "title": _("+-"),
+                "ajax": True,
                 "sortable": False}),
             ("retested", {
                 "title": _("Retested"),
@@ -269,6 +276,58 @@ class AnalysesView(BikaListingView):
         if not self.is_analysis_instrument_valid(analysis_brain):
             # return if it is allowed to enter a manual result
             return analysis_obj.getManualEntryOfResults()
+
+        return True
+
+    @viewcache.memoize
+    def is_result_edition_allowed(self, analysis_brain):
+        """Checks if the edition of the result field is allowed
+
+        :param analysis_brain: Brain that represents an analysis
+        :return: True if the user can edit the result field, otherwise False
+        """
+
+        # Always check general edition first
+        if not self.is_analysis_edition_allowed(analysis_brain):
+            return False
+
+        # Get the ananylsis object
+        obj = api.get_object(analysis_brain)
+
+        if not obj.getDetectionLimitOperand():
+            # This is a regular result (not a detection limit)
+            return True
+
+        # Detection limit selector is enabled in the Analysis Service
+        if obj.getDetectionLimitSelector():
+            # Manual detection limit entry is *not* allowed
+            if not obj.getAllowManualDetectionLimit():
+                return False
+
+        return True
+
+    @viewcache.memoize
+    def is_uncertainty_edition_allowed(self, analysis_brain):
+        """Checks if the edition of the uncertainty field is allowed
+
+        :param analysis_brain: Brain that represents an analysis
+        :return: True if the user can edit the result field, otherwise False
+        """
+
+        # Only allow to edit the uncertainty if result edition is allowed
+        if not self.is_result_edition_allowed(analysis_brain):
+            return False
+
+        # Get the ananylsis object
+        obj = api.get_object(analysis_brain)
+
+        # Manual setting of uncertainty is not allowed
+        if not obj.getAllowManualUncertainty():
+            return False
+
+        # Result is a detection limit -> uncertainty setting makes no sense!
+        if obj.getDetectionLimitOperand() in [LDL, UDL]:
+            return False
 
         return True
 
@@ -649,45 +708,47 @@ class AnalysesView(BikaListingView):
         :param item: analysis' dictionary counterpart that represents a row
         """
 
-        item['Result'] = ''
+        item["Result"] = ""
+
         if not self.has_permission(ViewResults, analysis_brain):
-            # If user has no permissions, don't display the result but an icon
-            img = get_image('to_follow.png', width='16px', height='16px')
-            item['before']['Result'] = img
+            # If user has no permissions, don"t display the result but an icon
+            img = get_image("to_follow.png", width="16px", height="16px")
+            item["before"]["Result"] = img
             return
 
         result = analysis_brain.getResult
         capture_date = analysis_brain.getResultCaptureDate
         capture_date_str = self.ulocalized_time(capture_date, long_format=0)
-        item['Result'] = result
-        item['CaptureDate'] = capture_date_str
-        item['result_captured'] = capture_date_str
 
+        item["Result"] = result
+        item["CaptureDate"] = capture_date_str
+        item["result_captured"] = capture_date_str
+
+        # Edit mode enabled of this Analysis
         if self.is_analysis_edition_allowed(analysis_brain):
-            item['allow_edit'].extend(['Result'])
+            # Allow to set Remarks
+            item["allow_edit"].append("Remarks")
 
-            # If this analysis has a predefined set of options as result,
-            # tell the template that selection list (choices) must be
-            # rendered instead of an input field for the introduction of
-            # result.
+            # Set the results field editable
+            if self.is_result_edition_allowed(analysis_brain):
+                item["allow_edit"].append("Result")
+
+            # Prepare result options
             choices = analysis_brain.getResultOptions
             if choices:
                 # N.B.we copy here the list to avoid persistent changes
                 choices = copy(choices)
                 # By default set empty as the default selected choice
                 choices.insert(0, dict(ResultValue="", ResultText=""))
-                item['choices']['Result'] = choices
+                item["choices"]["Result"] = choices
 
-        # Wake up the object only if necessary. If there is no result set, then
-        # there is no need to go further with formatted result
         if not result:
             return
 
-        # TODO: Performance, we wake-up the full object here
-        full_obj = self.get_object(analysis_brain)
-        formatted_result = full_obj.getFormattedResult(
+        obj = self.get_object(analysis_brain)
+        formatted_result = obj.getFormattedResult(
             sciformat=int(self.scinot), decimalmark=self.dmk)
-        item['formatted_result'] = formatted_result
+        item["formatted_result"] = formatted_result
 
     def _folder_item_calculation(self, analysis_brain, item):
         """Set the analysis' calculation and interims to the item passed in.
@@ -846,92 +907,63 @@ class AnalysesView(BikaListingView):
             attachments_html.append('</span>')
             item['replace']['Attachments'] = ''.join(attachments_html)
 
-    def _folder_item_uncertainty(self, obj, item):
-        item['Uncertainty'] = ''
-        if not self.has_permission(ViewResults, obj):
+    def _folder_item_uncertainty(self, analysis_brain, item):
+        """Fills the analysis' uncertainty to the item passed in.
+
+        :param analysis_brain: Brain that represents an analysis
+        :param item: analysis' dictionary counterpart that represents a row
+        """
+
+        item["Uncertainty"] = ""
+
+        if not self.has_permission(ViewResults, analysis_brain):
             return
 
-        result = obj.getResult
+        result = analysis_brain.getResult
 
-        # TODO: Performance, we wake-up the full object here
-        full_obj = self.get_object(obj)
-        formatted = format_uncertainty(full_obj, result, decimalmark=self.dmk,
+        obj = self.get_object(analysis_brain)
+        formatted = format_uncertainty(obj, result, decimalmark=self.dmk,
                                        sciformat=int(self.scinot))
         if formatted:
-            item['Uncertainty'] = formatted
-            item['structure'] = True
-            # Add before and after snippets
-            after = '<em class="discreet" style="white-space:nowrap;"> {}</em>'
-            item['before']['Uncertainty'] = '&plusmn;&nbsp;'
-            item['after']['Uncertainty'] = after.format(obj.getUnit)
+            item["Uncertainty"] = formatted
+        else:
+            item["Uncertainty"] = obj.getUncertainty(result)
 
-        is_editable = self.is_analysis_edition_allowed(obj)
-        if is_editable and full_obj.getAllowManualUncertainty():
-            # User can set the value of uncertainty manually
-            uncertainty = full_obj.getUncertainty(result)
-            item['Uncertainty'] = uncertainty or ''
-            item['allow_edit'].append('Uncertainty')
-            item['structure'] = False
-            # Add before and after snippets
-            after = '<em class="discreet" style="white-space:nowrap;"> {}</em>'
-            item['before']['Uncertainty'] = '&plusmn;&nbsp;'
-            item['after']['Uncertainty'] = after.format(obj.getUnit)
+        if self.is_uncertainty_edition_allowed(analysis_brain):
+            item["allow_edit"].append("Uncertainty")
 
-    def _folder_item_detection_limits(self, obj, item):
-        item['DetectionLimit'] = ''
-        is_editable = self.is_analysis_edition_allowed(obj)
-        if not is_editable:
+    def _folder_item_detection_limits(self, analysis_brain, item):
+        """Fills the analysis' detection limits to the item passed in.
+
+        :param analysis_brain: Brain that represents an analysis
+        :param item: analysis' dictionary counterpart that represents a row
+        """
+        item["DetectionLimitOperand"] = ""
+
+        if not self.is_analysis_edition_allowed(analysis_brain):
+            # Return immediately if the we are not in edit mode
             return
 
         # TODO: Performance, we wake-up the full object here
-        full_obj = self.get_object(obj)
-        uid = api.get_uid(obj)
+        obj = self.get_object(analysis_brain)
 
-        is_below_ldl = full_obj.isBelowLowerDetectionLimit()
-        is_above_udl = full_obj.isAboveUpperDetectionLimit()
+        # No Detection Limit Selection
+        if not obj.getDetectionLimitSelector():
+            return None
 
-        # Allow to use LDL and UDL in calculations.
-        # Since LDL, UDL, etc. are wildcards that can be used in calculations,
-        # these fields must be loaded always for 'live' calculations.
-        dls = {
-            'above_udl': is_above_udl,
-            'below_ldl': is_below_ldl,
-            'is_ldl': full_obj.isLowerDetectionLimit(),
-            'is_udl': full_obj.isUpperDetectionLimit(),
-            'default_ldl': full_obj.getLowerDetectionLimit(),
-            'default_udl': full_obj.getUpperDetectionLimit(),
-            'manual_allowed': full_obj.getAllowManualDetectionLimit(),
-            'dlselect_allowed': full_obj.getDetectionLimitSelector()
-        }
-        dlsin = \
-            '<input type="hidden" id="AnalysisDLS.%s" value=\'%s\'/>'
-        dlsin = dlsin % (uid, json.dumps(dls))
-        item['after']['Result'] = dlsin
+        # Show Detection Limit Operand Selector
+        item["DetectionLimitOperand"] = obj.getDetectionLimitOperand()
+        item["allow_edit"].append("DetectionLimitOperand")
+        self.columns["DetectionLimitOperand"]["toggle"] = True
 
-        if not full_obj.getDetectionLimitSelector():
-            # The user cannot manually set the Detection Limit
-            return
-
-        # User can manually set the Detection Limit for this analysis.
-        # A selector with options '', '<' and '>' must be displayed.
-        dl_operator = ''
-        if is_below_ldl or is_above_udl:
-            dl_operator = '<' if is_below_ldl else '>'
-
-        item['allow_edit'].append('DetectionLimit')
-        item['DetectionLimit'] = dl_operator
-        item['choices']['DetectionLimit'] = [
-            {'ResultValue': '<', 'ResultText': '<'},
-            {'ResultValue': '>', 'ResultText': '>'}
+        # Prepare selection list for LDL/UDL
+        choices = [
+            {"ResultValue": "", "ResultText": ""},
+            {"ResultValue": LDL, "ResultText": LDL},
+            {"ResultValue": UDL, "ResultText": UDL}
         ]
-        self.columns['DetectionLimit']['toggle'] = True
-        defaults = {'min': full_obj.getLowerDetectionLimit(),
-                    'max': full_obj.getUpperDetectionLimit(),
-                    'manual': full_obj.getAllowManualDetectionLimit()}
-        defin = \
-            '<input type="hidden" id="DefaultDLS.%s" value=\'%s\'/>'
-        defin = defin % (uid, json.dumps(defaults))
-        item['after']['DetectionLimit'] = defin
+        # Set the choices to the item
+        item["choices"]["DetectionLimitOperand"] = choices
 
     def _folder_item_specifications(self, analysis_brain, item):
         """Set the results range to the item passed in"""

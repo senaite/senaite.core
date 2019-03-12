@@ -22,6 +22,12 @@ GLOBALS = globals()
 VERSIONABLE_TYPES = ('Calculation',
                      )
 
+# Upper detection limit operand
+UDL = ">"
+
+# Lower detection limit operand
+LDL = "<"
+
 POINTS_OF_CAPTURE = DisplayList((
     ('field', _('Field Analyses')),
     ('lab', _('Lab Analyses')),
