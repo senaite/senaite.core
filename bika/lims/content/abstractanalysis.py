@@ -271,22 +271,23 @@ class AbstractAnalysis(AbstractBaseAnalysis):
     @security.public
     def setDetectionLimitOperand(self, value):
         """Set detection limit operand for this analysis
-
         Allowed detection limit operands are `<` and `>`.
         """
-
         # Changing the detection limit operand has a side effect on the result
-        result = ""
-
+        result = self.getResult()
         if value in [LDL, UDL]:
             # flush uncertainty
             self.setUncertainty("")
 
-            # set the result according to the system default UDL/LDL values
-            if value == LDL:
-                result = self.getLowerDetectionLimit()
-            else:
-                result = self.getUpperDetectionLimit()
+            # If no previous result or user is not allowed to manually set the
+            # the detection limit, override the result with default LDL/UDL
+            has_result = api.is_floatable(result)
+            if not has_result or not self.getAllowManualDetectionLimit():
+                # set the result according to the system default UDL/LDL values
+                if value == LDL:
+                    result = self.getLowerDetectionLimit()
+                else:
+                    result = self.getUpperDetectionLimit()
         else:
             value = ""
 
@@ -451,9 +452,6 @@ class AbstractAnalysis(AbstractBaseAnalysis):
                     val = self.getLowerDetectionLimit()
                 else:
                     val = self.getUpperDetectionLimit()
-        else:
-            # No DL operand found or unknown -> unset it.
-            self.setDetectionLimitOperand(None)
 
         # Set the result field
         self.getField("Result").set(self, val)

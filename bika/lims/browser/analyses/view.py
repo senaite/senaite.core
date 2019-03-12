@@ -120,6 +120,7 @@ class AnalysesView(BikaListingView):
                 "title": _("DL"),
                 "sortable": False,
                 "ajax": True,
+                "autosave": True,
                 "toggle": False}),
             ("Result", {
                 "title": _("Result"),
@@ -279,6 +280,33 @@ class AnalysesView(BikaListingView):
         return True
 
     @viewcache.memoize
+    def is_result_edition_allowed(self, analysis_brain):
+        """Checks if the edition of the result field is allowed
+
+        :param analysis_brain: Brain that represents an analysis
+        :return: True if the user can edit the result field, otherwise False
+        """
+
+        # Always check general edition first
+        if not self.is_analysis_edition_allowed(analysis_brain):
+            return False
+
+        # Get the ananylsis object
+        obj = api.get_object(analysis_brain)
+
+        if not obj.getDetectionLimitOperand():
+            # This is a regular result (not a detection limit)
+            return True
+
+        # Detection limit selector is enabled in the Analysis Service
+        if obj.getDetectionLimitSelector():
+            # Manual detection limit entry is *not* allowed
+            if not obj.getAllowManualDetectionLimit():
+                return False
+
+        return True
+
+    @viewcache.memoize
     def is_uncertainty_edition_allowed(self, analysis_brain):
         """Checks if the edition of the uncertainty field is allowed
 
@@ -287,7 +315,7 @@ class AnalysesView(BikaListingView):
         """
 
         # Only allow to edit the uncertainty if result edition is allowed
-        if not self.is_analysis_edition_allowed(analysis_brain):
+        if not self.is_result_edition_allowed(analysis_brain):
             return False
 
         # Get the ananylsis object
@@ -700,7 +728,10 @@ class AnalysesView(BikaListingView):
         if self.is_analysis_edition_allowed(analysis_brain):
             # Allow to set Remarks
             item["allow_edit"].append("Remarks")
-            item["allow_edit"].append("Result")
+
+            # Set the results field editable
+            if self.is_result_edition_allowed(analysis_brain):
+                item["allow_edit"].append("Result")
 
             # Prepare result options
             choices = analysis_brain.getResultOptions
@@ -718,7 +749,6 @@ class AnalysesView(BikaListingView):
         formatted_result = obj.getFormattedResult(
             sciformat=int(self.scinot), decimalmark=self.dmk)
         item["formatted_result"] = formatted_result
-
 
     def _folder_item_calculation(self, analysis_brain, item):
         """Set the analysis' calculation and interims to the item passed in.
@@ -934,17 +964,6 @@ class AnalysesView(BikaListingView):
         ]
         # Set the choices to the item
         item["choices"]["DetectionLimitOperand"] = choices
-
-        # Detection Limit defaults
-        uid = api.get_uid(analysis_brain)
-        input = "<input type='hidden' name='{}.{}:records' value='{}'/>"
-        ldl = input.format("ldl_default", uid, obj.getLowerDetectionLimit())
-        udl = input.format("udl_default", uid, obj.getUpperDetectionLimit())
-
-        # Manual entry of detection limit?
-        allowed_manual = obj.getAllowManualDetectionLimit() and 1 or 0
-        dl_manual = input.format("dl_manual", uid, allowed_manual)
-        item["after"]["DetectionLimitOperand"] = "".join([ldl,udl,dl_manual])
 
     def _folder_item_specifications(self, analysis_brain, item):
         """Set the results range to the item passed in"""
