@@ -273,6 +273,13 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         """Set detection limit operand for this analysis
         Allowed detection limit operands are `<` and `>`.
         """
+        manual_dl = self.getAllowManualDetectionLimit()
+        selector = self.getDetectionLimitSelector()
+        if not manual_dl and not selector:
+            # Don't allow the user to set the limit operand if manual assignment
+            # is not allowed and selector is not visible
+            return
+
         # Changing the detection limit operand has a side effect on the result
         result = self.getResult()
         if value in [LDL, UDL]:
@@ -282,23 +289,22 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             # If no previous result or user is not allowed to manually set the
             # the detection limit, override the result with default LDL/UDL
             has_result = api.is_floatable(result)
-            if not has_result or not self.getAllowManualDetectionLimit():
+            if not has_result or not manual_dl:
                 # set the result according to the system default UDL/LDL values
                 if value == LDL:
                     result = self.getLowerDetectionLimit()
                 else:
                     result = self.getUpperDetectionLimit()
+
         else:
             value = ""
-
             # Restore the DetectionLimitSelector, cause maybe its visibility
             # was changed because allow manual detection limit was enabled and
             # the user set a result with "<" or ">"
-            if self.getAllowManualDetectionLimit():
+            if manual_dl:
                 service = self.getAnalysisService()
                 selector = service.getDetectionLimitSelector()
                 self.setDetectionLimitSelector(selector)
-
 
         # Set the result
         self.getField("Result").set(self, result)
@@ -357,13 +363,10 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         result = self.getResult()
         if result and str(result).strip().startswith(LDL):
             return True
-        elif result:
-            ldl = self.getLowerDetectionLimit()
-            try:
-                result = float(result)
-                return result < ldl
-            except (TypeError, ValueError):
-                pass
+
+        if api.is_floatable(result):
+            return api.to_float(result) < self.getLowerDetectionLimit()
+
         return False
 
     @security.public
@@ -377,13 +380,10 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         result = self.getResult()
         if result and str(result).strip().startswith(UDL):
             return True
-        elif result:
-            udl = self.getUpperDetectionLimit()
-            try:
-                result = float(result)
-                return result > udl
-            except (TypeError, ValueError):
-                pass
+
+        if api.is_floatable(result):
+            return api.to_float(result) > self.getUpperDetectionLimit()
+
         return False
 
     @security.public
@@ -445,22 +445,28 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             val = val.replace(oper, "", 1)
             # Check if the value is indeterminate / non-floatable
             try:
-                str(float(val))
+                val = float(val)
             except (ValueError, TypeError):
                 val = value
 
-            # Ensure visibility of the detection limit selector
-            self.setDetectionLimitSelector(True)
+            # We dismiss the operand and the selector visibility unless the user
+            # is allowed to manually set the detection limit or the DL selector
+            # is visible.
+            allow_manual = self.getAllowManualDetectionLimit()
+            selector = self.getDetectionLimitSelector()
+            if allow_manual or selector:
+                # Ensure visibility of the detection limit selector
+                self.setDetectionLimitSelector(True)
 
-            # Set the detection limit operand
-            self.setDetectionLimitOperand(oper)
+                # Set the detection limit operand
+                self.setDetectionLimitOperand(oper)
 
-            # No manual DL allowed, set the result to LDL/UDL from the AS
-            if not self.getAllowManualDetectionLimit():
-                if oper == LDL:
-                    val = self.getLowerDetectionLimit()
-                else:
-                    val = self.getUpperDetectionLimit()
+                if not allow_manual:
+                    # Override value by default DL
+                    if oper == LDL:
+                        val = self.getLowerDetectionLimit()
+                    else:
+                        val = self.getUpperDetectionLimit()
 
         # Set the result field
         self.getField("Result").set(self, val)

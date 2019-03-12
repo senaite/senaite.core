@@ -73,6 +73,7 @@ class AnalysesView(BaseView):
                 "title": _("DL"),
                 "sortable": False,
                 "ajax": True,
+                "autosave": True,
                 "toggle": False}),
             ("Result", {
                 "title": _("Result"),
