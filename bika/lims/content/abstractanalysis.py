@@ -291,6 +291,15 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         else:
             value = ""
 
+            # Restore the DetectionLimitSelector, cause maybe its visibility
+            # was changed because allow manual detection limit was enabled and
+            # the user set a result with "<" or ">"
+            if self.getAllowManualDetectionLimit():
+                service = self.getAnalysisService()
+                selector = service.getDetectionLimitSelector()
+                self.setDetectionLimitSelector(selector)
+
+
         # Set the result
         self.getField("Result").set(self, result)
 
