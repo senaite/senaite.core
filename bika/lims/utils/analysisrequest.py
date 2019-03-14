@@ -78,6 +78,9 @@ def create_analysisrequest(client, request, values, analyses=None,
         # Mark the secondary with the `IAnalysisRequestSecondary` interface
         alsoProvides(ar, IAnalysisRequestSecondary)
 
+        # Rename the secondary according to the ID server setup
+        renameAfterCreation(ar)
+
         # Set dates to match with those from the primary
         ar.setDateSampled(primary.getDateSampled())
         ar.setSamplingDate(primary.getSamplingDate())
