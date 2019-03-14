@@ -7,8 +7,10 @@
 
 from collections import OrderedDict
 
+from bika.lims import _
 from bika.lims.browser.worksheet.views import AnalysesView
 from bika.lims.utils import get_link
+from bika.lims.utils import t
 from plone.memoize import view
 
 
@@ -52,7 +54,7 @@ class AnalysesTransposedView(AnalysesView):
         return item
 
     def folderitem(self, obj, item, index):
-        super(AnalysesTransposedView, self).folderitem(obj, item, index)
+        item = super(AnalysesTransposedView, self).folderitem(obj, item, index)
 
         pos = str(item["Pos"])
         service = item["Service"]
@@ -70,17 +72,17 @@ class AnalysesTransposedView(AnalysesView):
             value="<span class='glyphicon glyphicon-info-sign'></span>",
             css_class="service_info")
 
-        # remember the headers
+        # remember the column headers of the first row
         if "Pos" not in self.headers:
             self.headers["Pos"] = self.make_empty_item(
-                column_key="Positions", item_key="Pos")
+                column_key=t(_("Position")), item_key="Pos")
         if pos not in self.headers["Pos"]:
             header_item = self.make_empty_item()
             # Add the item with the Pos header
             header_item["replace"]["Pos"] = self.get_slot_header(item)
             self.headers["Pos"][pos] = header_item
 
-        # remember the services
+        # remember the services, e.g. Calcium, Magnesium, Total Hardness etc.
         if service not in self.services:
             self.services[service] = self.make_empty_item(
                 column_key=service, item_key="Result")
