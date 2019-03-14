@@ -186,14 +186,14 @@ class WorkflowActionInvalidateAdapter(WorkflowActionGenericAdapter):
         """Returns the laboratory email formatted
         """
         lab = api.get_bika_setup().laboratory
-        return self.get_formatted_email((lab.getEmailAddress(), lab.getName()))
+        return self.get_formatted_email((lab.getName(), lab.getEmailAddress()))
 
     def get_lab_managers_formatted_emails(self):
         """Returns a list with lab managers formatted emails
         """
         users = api.get_users_by_roles("LabManager")
-        users = map(lambda user: (user.getProperty("email"),
-                                  user.getProperty("fullname")), users)
+        users = map(lambda user: (user.getProperty("fullname"),
+                                  user.getProperty("email")), users)
         return map(self.get_formatted_email, users)
 
     def get_contact_formatted_email(self, contact):
@@ -201,7 +201,7 @@ class WorkflowActionInvalidateAdapter(WorkflowActionGenericAdapter):
         """
         contact_name = contact.Title()
         contact_email = contact.getEmailAddress()
-        return self.get_formatted_email((contact_email, contact_name))
+        return self.get_formatted_email((contact_name, contact_email))
 
     def get_sample_contacts_formatted_emails(self, sample):
         """Returns a list with the formatted emails from sample contacts
