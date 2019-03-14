@@ -256,6 +256,7 @@ schema = BikaSchema.copy() + Schema((
             render_own_label=True,
             visible={
                 'add': 'edit',
+                'header_table': 'prominent',
             },
             catalog_name=CATALOG_ANALYSIS_REQUEST_LISTING,
             colModel=[
@@ -1322,6 +1323,7 @@ schema['title'].widget.visible = False
 schema.moveField('Client', before='Contact')
 schema.moveField('ResultsInterpretation', pos='bottom')
 schema.moveField('ResultsInterpretationDepts', pos='bottom')
+schema.moveField("PrimaryAnalysisRequest", before="Client")
 
 
 class AnalysisRequest(BaseFolder):
@@ -2371,5 +2373,28 @@ class AnalysisRequest(BaseFolder):
         else:
             alsoProvides(self, IAnalysisRequestPartition)
 
+    def getSecondaryAnalysisRequests(self):
+        """Returns the secondary analysis requests from this analysis request
+        """
+        relationship = "AnalysisRequestPrimaryAnalysisRequest"
+        return self.getBackReferences(relationship=relationship)
+
+    def setDateReceived(self, value):
+        """Sets the date received to this analysis request and to secondary
+        analysis requests
+        """
+        self.Schema().getField('DateReceived').set(self, value)
+        for secondary in self.getSecondaryAnalysisRequests():
+            secondary.setDateReceived(value)
+            secondary.reindexObject(idxs="getDateReceived")
+
+    def setDateSampled(self, value):
+        """Sets the date sampled to this analysis request and to secondary
+        analysis requests
+        """
+        self.Schema().getField('DateSampled').set(self, value)
+        for secondary in self.getSecondaryAnalysisRequests():
+            secondary.setDateSampled(value)
+            secondary.reindexObject(idxs="getDateSampled")
 
 registerType(AnalysisRequest, PROJECTNAME)

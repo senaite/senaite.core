@@ -17,7 +17,7 @@ from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.idserver import renameAfterCreation
-from bika.lims.interfaces import IAnalysisRequest
+from bika.lims.interfaces import IAnalysisRequest, IAnalysisRequestSecondary
 from bika.lims.interfaces import IAnalysisRequestRetest
 from bika.lims.interfaces import IAnalysisService
 from bika.lims.interfaces import IRoutineAnalysis
@@ -75,12 +75,19 @@ def create_analysisrequest(client, request, values, analyses=None,
     # If Secondary Analysis Request, set same status as the
     primary = ar.getPrimaryAnalysisRequest()
     if primary:
+
+        # Mark the secondary with the `IAnalysisRequestSecondary` interface
+        alsoProvides(ar, IAnalysisRequestSecondary)
+
+        ar.setDateSampled(primary.getDateSampled())
+        ar.setSamplingDate(primary.getSamplingDate())
         # Secondary AR does not longer comes from a Sample, rather from an AR.
         # If the Primary AR has been received, then force the transition of the
         # secondary to received and set the description/comment in the
         # transition accordingly so it will be displayed later in the log tab
-        statuses = get_review_history_statuses(primary)
-        if "sample_received" in statuses:
+        date_received = primary.getDateReceived()
+        if date_received:
+            ar.setDateReceived(date_received)
             primary_id = primary.getId()
             comment = "Auto-received. Secondary Sample of {}".format(primary_id)
             changeWorkflowState(ar, AR_WORKFLOW_ID, "sample_received",
