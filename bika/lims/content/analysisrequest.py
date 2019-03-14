@@ -27,6 +27,8 @@ from bika.lims.browser.widgets import RemarksWidget
 from bika.lims.browser.widgets import SelectionWidget as BikaSelectionWidget
 from bika.lims.browser.widgets.durationwidget import DurationWidget
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
+from bika.lims.catalog.analysisrequest_catalog import \
+    CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.config import PRIORITIES
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.analysisspec import ResultsRangeDict
@@ -237,9 +239,47 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
+    # Field for the creation of Secondary Analysis Requests.
+    # This field is meant to be displayed in AR Add form only. A viewlet exists
+    # to inform the user this Analysis Request is secondary
+    ReferenceField(
+        "PrimaryAnalysisRequest",
+        allowed_types=("AnalysisRequest",),
+        relationship='AnalysisRequestPrimaryAnalysisRequest',
+        mode="rw",
+        read_permission=View,
+        write_permission=FieldEditClient,
+        widget=ReferenceWidget(
+            label=_("Primary Sample"),
+            description=_("Select a sample to create a secondary Sample"),
+            size=20,
+            render_own_label=True,
+            visible={
+                'add': 'edit',
+            },
+            catalog_name=CATALOG_ANALYSIS_REQUEST_LISTING,
+            colModel=[
+                {'columnName': 'getId', 'width': '20',
+                 'label': _('Sample ID'), 'align': 'left'},
+                {'columnName': 'getClientSampleID', 'width': '20',
+                 'label': _('Client SID'), 'align': 'left'},
+                {'columnName': 'getSampleTypeTitle', 'width': '30',
+                 'label': _('Sample Type'), 'align': 'left'},
+                {'columnName': 'getClientTitle', 'width': '30',
+                 'label': _('Client'), 'align': 'left'},
+                {'columnName': 'UID', 'hidden': True},
+            ],
+            base_query={'is_active': True},
+            sidx='getId',
+            sord='desc',
+            showOn=True,
+        )
+    ),
+
     ReferenceField(
         'Batch',
         allowed_types=('Batch',),
+        referenceClass=HoldingReference,
         relationship='AnalysisRequestBatch',
         mode="rw",
         read_permission=View,

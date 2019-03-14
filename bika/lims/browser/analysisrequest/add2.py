@@ -35,7 +35,7 @@ from zope.interface import implements
 from zope.publisher.interfaces import IPublishTraverse
 
 AR_CONFIGURATION_STORAGE = "bika.lims.browser.analysisrequest.manage.add"
-SKIP_FIELD_ON_COPY = ["Sample", "Remarks"]
+SKIP_FIELD_ON_COPY = ["Sample", "PrimaryAnalysisRequest", "Remarks"]
 
 
 def returns_json(func):
@@ -1088,8 +1088,14 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         container_type_uid = container_type and container_type.UID() or ""
         container_type_title = container_type and container_type.Title() or ""
 
+        # Sampling deviation
+        deviation = obj.getSamplingDeviation()
+        deviation_uid = deviation and deviation.UID() or ""
+        deviation_title = deviation and deviation.Title() or ""
+
         info.update({
-            "sample_id": obj.getSampleID(),
+            "sample_id": obj.getId(),
+            "batch_uid": obj.getBatchUID() or None,
             "date_sampled": self.to_iso_date(obj.getDateSampled()),
             "sampling_date": self.to_iso_date(obj.getSamplingDate()),
             "sample_type_uid": sample_type_uid,
@@ -1104,8 +1110,14 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             "sample_point_title": sample_point_title,
             "environmental_conditions": obj.getEnvironmentalConditions(),
             "composite": obj.getComposite(),
+            "client_uid": obj.getClientUID(),
+            "client_title": obj.getClientTitle(),
+            "contact": self.get_contact_info(obj.getContact()),
+            "client_order_number": obj.getClientOrderNumber(),
             "client_sample_id": obj.getClientSampleID(),
             "client_reference": obj.getClientReference(),
+            "sampling_deviation_uid": deviation_uid,
+            "sampling_deviation_title": deviation_title,
             "sampling_workflow_enabled": obj.getSamplingWorkflowEnabled(),
             "remarks": obj.getRemarks(),
         })
@@ -1247,7 +1259,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             _specifications = self.get_objs_from_record(
                 record, "Specification_uid")
             _templates = self.get_objs_from_record(record, "Template_uid")
-            _samples = self.get_objs_from_record(record, "Sample_uid")
+            _samples = self.get_objs_from_record(record, "PrimaryAnalysisRequest_uid")
             _profiles = self.get_objs_from_record(record, "Profiles_uid")
             _services = self.get_objs_from_record(record, "Analyses")
             _sampletypes = self.get_objs_from_record(record, "SampleType_uid")
@@ -1345,7 +1357,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                     else:
                         service_to_profiles[service_uid] = [uid]
 
-            # SAMPLES
+            # PRIMARY ANALYSIS REQUESTS
             for uid, obj in _samples.iteritems():
                 # get the sample metadata
                 metadata = self.get_sample_info(obj)

@@ -81,7 +81,7 @@ class window.AnalysisRequestAdd
     # Analysis info button clicked
     $("body").on "click", ".service-infobtn", @on_analysis_details_click
     # Sample changed
-    $("body").on "selected change", "tr[fieldname=Sample] input[type='text']", @on_sample_changed
+    $("body").on "selected change", "tr[fieldname=PrimaryAnalysisRequest] input[type='text']", @on_sample_changed
     # SampleType changed
     $("body").on "selected change", "tr[fieldname=SampleType] input[type='text']", @on_sampletype_changed
     # Specification changed
@@ -543,7 +543,7 @@ class window.AnalysisRequestAdd
     @set_reference_field_query field, query
 
     # filter Sample
-    field = $("#Sample-#{arnum}")
+    field = $("#PrimaryAnalysisRequest-#{arnum}")
     query = client.filter_queries.sample
     @set_reference_field_query field, query
 
@@ -566,12 +566,26 @@ class window.AnalysisRequestAdd
      * Apply the sample data to all fields of arnum
     ###
 
+    # set the client
+    field = $("#Client-#{arnum}")
+    uid = sample.client_uid
+    title = sample.client_title
+    @set_reference_field field, uid, title
+
+    # set the client contact
+    field = $("#Contact-#{arnum}")
+    contact = sample.contact
+    uid = contact.uid
+    fullname = contact.fullname
+    @set_reference_field field, uid, fullname
+    @set_contact(arnum, contact)
+
     # set the sampling date
     field = $("#SamplingDate-#{arnum}")
     value = sample.sampling_date
     field.val value
 
-    # set the date sampeld
+    # set the date sampled
     field = $("#DateSampled-#{arnum}")
     value = sample.date_sampled
     field.val value
@@ -595,6 +609,11 @@ class window.AnalysisRequestAdd
     # set client reference
     field = $("#ClientReference-#{arnum}")
     value = sample.client_reference
+    field.val value
+
+    # set the client order number
+    field = $("#ClientOrderNumber-#{arnum}")
+    value = sample.client_order_number
     field.val value
 
     # set composite
@@ -623,6 +642,12 @@ class window.AnalysisRequestAdd
     field = $("#DefaultContainerType-#{arnum}")
     uid = sample.container_type_uid
     title = sample.container_type_title
+    @set_reference_field field, uid, title
+
+    # set the sampling deviation
+    field = $("#SamplingDeviation-#{arnum}")
+    uid = sample.sampling_deviation_uid
+    title = sample.sampling_deviation_title
     @set_reference_field field, uid, title
 
 
@@ -830,6 +855,7 @@ class window.AnalysisRequestAdd
       "SamplePoint"
       "Template"
       "Profiles"
+      "PrimaryAnalysisRequest"
       "Specification"
     ]
     $.each field_ids, (index, id) ->
@@ -982,7 +1008,7 @@ class window.AnalysisRequestAdd
     val = $el.val()
     arnum = $el.closest("[arnum]").attr "arnum"
     has_sample_selected = $el.val()
-    console.debug "°°° on_sample_change::UID=#{uid} Sample=#{val}°°°"
+    console.debug "°°° on_sample_change::UID=#{uid} PrimaryAnalysisRequest=#{val}°°°"
 
     # deselect the sample if the field is empty
     if not has_sample_selected

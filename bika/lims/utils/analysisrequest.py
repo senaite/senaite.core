@@ -9,6 +9,8 @@ import os
 import tempfile
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+
+from bika.lims.workflow.analysisrequest import AR_WORKFLOW_ID
 from email.Utils import formataddr
 
 from bika.lims import api
@@ -26,7 +28,7 @@ from bika.lims.utils import createPdf
 from bika.lims.utils import encode_header
 from bika.lims.utils import tmpID
 from bika.lims.utils import to_utf8
-from bika.lims.workflow import ActionHandlerPool
+from bika.lims.workflow import ActionHandlerPool, get_review_history_statuses
 from bika.lims.workflow import doActionFor
 from bika.lims.workflow import push_reindex_to_actions_pool
 from Products.CMFCore.utils import getToolByName
@@ -61,10 +63,6 @@ def create_analysisrequest(client, request, values, analyses=None,
     # Don't pollute the dict param passed in
     values = dict(values.items())
 
-    # Create new sample or locate the existing for secondary AR
-    secondary = False
-    # TODO Sample Cleanup - Manage secondary ARs properly
-
     # Create the Analysis Request
     ar = _createObjectByType('AnalysisRequest', client, tmpID())
     ar.processForm(REQUEST=request, values=values)
@@ -74,13 +72,20 @@ def create_analysisrequest(client, request, values, analyses=None,
                                      analyses_serv=analyses)
     ar.setAnalyses(service_uids, prices=prices, specs=specifications)
 
-    # TODO Sample Cleanup - Manage secondary ARs properly
-    if secondary:
+    # If Secondary Analysis Request, set same status as the
+    primary = ar.getPrimaryAnalysisRequest()
+    if primary:
         # Secondary AR does not longer comes from a Sample, rather from an AR.
         # If the Primary AR has been received, then force the transition of the
         # secondary to received and set the description/comment in the
         # transition accordingly so it will be displayed later in the log tab
-        logger.warn("Sync transition for secondary AR is still missing")
+        statuses = get_review_history_statuses(primary)
+        if "sample_received" in statuses:
+            primary_id = primary.getId()
+            comment = "Auto-received. Secondary Sample of {}".format(primary_id)
+            changeWorkflowState(ar, AR_WORKFLOW_ID, "sample_received",
+                                action="receive", comments=comment)
+            return ar
 
     # Try first with no sampling transition, cause it is the most common config
     success, message = doActionFor(ar, "no_sampling_workflow")
