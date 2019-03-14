@@ -238,6 +238,7 @@ def upgrade(tool):
     # https://github.com/senaite/senaite.core/pull/1254
     reindex_submitted_analyses(portal)
 
+
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
 
@@ -1785,6 +1786,7 @@ def update_ar_listing_catalog(portal):
         # name, attribute, metatype
         ("getClientID", "getClientID", "FieldIndex"),
         ("is_active", "is_active", "BooleanIndex"),
+        ("is_received", "is_received", "BooleanIndex"),
     ]
 
     metadata_to_add = [

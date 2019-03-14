@@ -75,16 +75,15 @@ def create_analysisrequest(client, request, values, analyses=None,
     # If Secondary Analysis Request, set same status as the
     primary = ar.getPrimaryAnalysisRequest()
     if primary:
-
         # Mark the secondary with the `IAnalysisRequestSecondary` interface
         alsoProvides(ar, IAnalysisRequestSecondary)
 
+        # Set dates to match with those from the primary
         ar.setDateSampled(primary.getDateSampled())
         ar.setSamplingDate(primary.getSamplingDate())
-        # Secondary AR does not longer comes from a Sample, rather from an AR.
-        # If the Primary AR has been received, then force the transition of the
-        # secondary to received and set the description/comment in the
-        # transition accordingly so it will be displayed later in the log tab
+
+        # Force the transition of the secondary to received and set the
+        # description/comment in the transition accordingly.
         date_received = primary.getDateReceived()
         if date_received:
             ar.setDateReceived(date_received)

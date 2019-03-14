@@ -270,7 +270,7 @@ schema = BikaSchema.copy() + Schema((
                  'label': _('Client'), 'align': 'left'},
                 {'columnName': 'UID', 'hidden': True},
             ],
-            base_query={'is_active': True},
+            base_query={'is_active': True, 'is_received': True},
             sidx='getId',
             sord='desc',
             showOn=True,

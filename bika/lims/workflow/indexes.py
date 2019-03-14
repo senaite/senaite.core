@@ -101,6 +101,7 @@ ACTIONS_TO_INDEXES = {
         "receive": {
             "getDueDate",
             "getDateReceived",
+            "is_received",
         },
         "rollback_to_receive": [
             "assigned_state",

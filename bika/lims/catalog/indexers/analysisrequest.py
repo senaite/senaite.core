@@ -52,3 +52,13 @@ def listing_searchable_text(instance):
 
     # Concatenate all strings to one text blob
     return " ".join(entries)
+
+
+@indexer(IAnalysisRequest)
+def is_received(instance):
+    """Returns whether the Analysis Request has been received
+    """
+    if instance.getDateReceived():
+        return True
+
+    return False
