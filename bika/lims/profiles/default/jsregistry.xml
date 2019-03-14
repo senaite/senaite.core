@@ -107,16 +107,6 @@
               inline="False"
               insert-after="*"
               />
-  <javascript authenticated="True"
-              id="++resource++bika.lims.js/bika.lims.utils.calcs.js"
-              cacheable="True"
-              compression="safe"
-              conditionalcomment=""
-              cookable="True"
-              enabled="on"
-              expression=""
-              inline="False"
-              insert-after="*"/>
 
   <javascript authenticated="True"
               id="++resource++bika.lims.js/bika.lims.batch.js"
