@@ -27,8 +27,7 @@ from bika.lims.browser.widgets import RemarksWidget
 from bika.lims.browser.widgets import SelectionWidget as BikaSelectionWidget
 from bika.lims.browser.widgets.durationwidget import DurationWidget
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
-from bika.lims.catalog.analysisrequest_catalog import \
-    CATALOG_ANALYSIS_REQUEST_LISTING
+from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.config import PRIORITIES
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.analysisspec import ResultsRangeDict
@@ -245,6 +244,7 @@ schema = BikaSchema.copy() + Schema((
     ReferenceField(
         "PrimaryAnalysisRequest",
         allowed_types=("AnalysisRequest",),
+        referenceClass=HoldingReference,
         relationship='AnalysisRequestPrimaryAnalysisRequest',
         mode="rw",
         read_permission=View,
@@ -280,7 +280,6 @@ schema = BikaSchema.copy() + Schema((
     ReferenceField(
         'Batch',
         allowed_types=('Batch',),
-        referenceClass=HoldingReference,
         relationship='AnalysisRequestBatch',
         mode="rw",
         read_permission=View,

@@ -60,5 +60,4 @@ def is_received(instance):
     """
     if instance.getDateReceived():
         return True
-
     return False
