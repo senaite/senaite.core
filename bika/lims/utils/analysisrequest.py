@@ -32,8 +32,8 @@ from bika.lims.utils import to_utf8
 from bika.lims.workflow import ActionHandlerPool
 from bika.lims.workflow import doActionFor
 from bika.lims.workflow import push_reindex_to_actions_pool
-from bika.lims.workflow.analysisrequest import AR_WORKFLOW_ID, \
-    do_action_to_analyses
+from bika.lims.workflow.analysisrequest import AR_WORKFLOW_ID
+from bika.lims.workflow.analysisrequest import do_action_to_analyses
 from email.Utils import formataddr
 from zope.interface import alsoProvides
 
