@@ -5,9 +5,10 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from bika.lims import logger
-from bika.lims.interfaces import IATWidgetVisibility, IAnalysisRequestSecondary
-from bika.lims.interfaces import IBatch, IClient
+from bika.lims.interfaces import IATWidgetVisibility
+from bika.lims.interfaces import IAnalysisRequestSecondary
+from bika.lims.interfaces import IBatch
+from bika.lims.interfaces import IClient
 from bika.lims.utils import getHiddenAttributesForClass
 from zope.interface import implements
 
@@ -30,6 +31,14 @@ class SenaiteATWidgetVisibility(object):
 
     def isVisible(self, field, mode="view", default="visible"):
         """Returns if the field is visible in a given mode
+
+        Possible returned values are:
+        - hidden: Field rendered as a hidden input field
+        - invisible: Field not rendered at all
+        - visible: Field rendered as a label or editable field depending on the
+            mode. E.g. if mode is "edit" and the value returned is "visible",
+            the field will be rendered as an input. If the mode is "view", the
+            field will be rendered as a span.
         """
         raise NotImplementedError("Must be implemented by subclass")
 
