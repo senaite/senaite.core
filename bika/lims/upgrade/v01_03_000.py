@@ -235,12 +235,12 @@ def upgrade(tool):
     set_retest_id_formatting(portal)
 
     # Set the ID formatting for Secondary ARs
+    # https://github.com/senaite/senaite.core/pull/1284
     set_secondary_id_formatting(portal)
 
     # Reindex submitted analyses to update the analyst
     # https://github.com/senaite/senaite.core/pull/1254
     reindex_submitted_analyses(portal)
-
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True

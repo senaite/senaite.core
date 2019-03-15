@@ -15,9 +15,10 @@ from bika.lims.alphanumber import Alphanumber
 from bika.lims.alphanumber import to_alpha
 from bika.lims.browser.fields.uidreferencefield import \
     get_backreferences as get_backuidreferences
-from bika.lims.interfaces import IAnalysisRequest, IAnalysisRequestSecondary
+from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.interfaces import IAnalysisRequestPartition
 from bika.lims.interfaces import IAnalysisRequestRetest
+from bika.lims.interfaces import IAnalysisRequestSecondary
 from bika.lims.interfaces import IIdServer
 from bika.lims.numbergenerator import INumberGenerator
 from DateTime import DateTime
