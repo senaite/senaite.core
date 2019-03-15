@@ -9,8 +9,10 @@ import os
 import tempfile
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from email.Utils import formataddr
 
+from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import _createObjectByType
+from Products.CMFPlone.utils import safe_unicode
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
@@ -30,10 +32,9 @@ from bika.lims.utils import to_utf8
 from bika.lims.workflow import ActionHandlerPool
 from bika.lims.workflow import doActionFor
 from bika.lims.workflow import push_reindex_to_actions_pool
-from bika.lims.workflow.analysisrequest import AR_WORKFLOW_ID
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import _createObjectByType
-from Products.CMFPlone.utils import safe_unicode
+from bika.lims.workflow.analysisrequest import AR_WORKFLOW_ID, \
+    do_action_to_analyses
+from email.Utils import formataddr
 from zope.interface import alsoProvides
 
 
@@ -72,7 +73,7 @@ def create_analysisrequest(client, request, values, analyses=None,
                                      analyses_serv=analyses)
     ar.setAnalyses(service_uids, prices=prices, specs=specifications)
 
-    # If Secondary Analysis Request, set same status as the
+    # Handle secondary Analysis Request
     primary = ar.getPrimaryAnalysisRequest()
     if primary:
         # Mark the secondary with the `IAnalysisRequestSecondary` interface
@@ -84,16 +85,23 @@ def create_analysisrequest(client, request, values, analyses=None,
         # Set dates to match with those from the primary
         ar.setDateSampled(primary.getDateSampled())
         ar.setSamplingDate(primary.getSamplingDate())
+        ar.setDateReceived(primary.getDateReceived())
 
         # Force the transition of the secondary to received and set the
         # description/comment in the transition accordingly.
-        date_received = primary.getDateReceived()
-        if date_received:
-            ar.setDateReceived(date_received)
+        if primary.getDateReceived():
             primary_id = primary.getId()
             comment = "Auto-received. Secondary Sample of {}".format(primary_id)
             changeWorkflowState(ar, AR_WORKFLOW_ID, "sample_received",
                                 action="receive", comments=comment)
+
+            # Initialize analyses
+            do_action_to_analyses(ar, "initialize")
+
+            # Reindex the AR
+            ar.reindexObject()
+
+            # In "received" state already
             return ar
 
     # Try first with no sampling transition, cause it is the most common config
