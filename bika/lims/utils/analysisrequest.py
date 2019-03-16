@@ -385,6 +385,7 @@ def create_partition(analysis_request, request, analyses, sample_type=None,
         "id",
         "modification_date",
         "ParentAnalysisRequest",
+        "PrimaryAnalysisRequest",
     ]
     if skip_fields:
         partition_skip_fields.extend(skip_fields)
