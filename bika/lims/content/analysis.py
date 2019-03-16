@@ -7,11 +7,11 @@
 
 from AccessControl import ClassSecurityInfo
 from Products.Archetypes.public import Schema, registerType
+from bika.lims import api
 from bika.lims import PROJECTNAME
 from bika.lims.content.abstractroutineanalysis import AbstractRoutineAnalysis
 from bika.lims.content.abstractroutineanalysis import schema
 from bika.lims.interfaces import IRoutineAnalysis
-from bika.lims.workflow import getCurrentState, in_state
 from bika.lims.workflow.analysis import STATE_RETRACTED, STATE_REJECTED
 from zope.interface import implements
 
@@ -42,19 +42,19 @@ class Analysis(AbstractRoutineAnalysis):
 
         siblings = []
         retracted_states = [STATE_RETRACTED, STATE_REJECTED]
-        ans = request.getAnalyses(full_objects=True)
-        for sibling in ans:
-            if sibling.UID() == self.UID():
+        for sibling in request.getAnalyses(full_objects=False):
+            if api.get_uid(sibling) == self.UID():
                 # Exclude me from the list
                 continue
 
-            if retracted is False and in_state(sibling, retracted_states):
-                # Exclude retracted analyses
-                continue
+            if not retracted:
+                if api.get_workflow_status_of(sibling) in retracted_states:
+                    # Exclude retracted analyses
+                    continue
 
             siblings.append(sibling)
 
-        return siblings
+        return map(api.get_object, siblings)
 
     def workflow_script_publish(self):
         """

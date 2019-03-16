@@ -368,16 +368,21 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
         :return: Analyses the current analysis depends on
         :rtype: list of IAnalysis
         """
-        dependents = []
-        for sibling in self.getSiblings(retracted=retracted):
-            calculation = sibling.getCalculation()
+        def is_dependent(analysis):
+            calculation = analysis.getCalculation()
             if not calculation:
-                continue
-            depservices = calculation.getDependentServices()
-            dep_keywords = [dep.getKeyword() for dep in depservices]
-            if self.getKeyword() in dep_keywords:
-                dependents.append(sibling)
-        return dependents
+                return False
+
+            services = calculation.getRawDependentServices()
+            if not services:
+                return False
+
+            query = dict(UID=services, getKeyword=self.getKeyword())
+            services = api.search(query, "bika_setup_catalog")
+            return len(services) > 0
+
+        siblings = self.getSiblings(retracted=retracted)
+        return filter(lambda sib: is_dependent(sib), siblings)
 
     @security.public
     def getDependencies(self, retracted=False):
@@ -396,8 +401,7 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
         for sibling in self.getSiblings(retracted=retracted):
             # We get all analyses that depend on me, also if retracted (maybe
             # I am one of those that are retracted!)
-            deps = sibling.getDependents(retracted=True)
-            deps = [dep.UID() for dep in deps]
+            deps = map(api.get_uid, sibling.getDependents(retracted=True))
             if self.UID() in deps:
                 dependencies.append(sibling)
         return dependencies
