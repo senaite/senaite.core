@@ -2385,7 +2385,7 @@ class AnalysisRequest(BaseFolder):
         self.Schema().getField('DateReceived').set(self, value)
         for secondary in self.getSecondaryAnalysisRequests():
             secondary.setDateReceived(value)
-            secondary.reindexObject(idxs="getDateReceived")
+            secondary.reindexObject(idxs=["getDateReceived", "is_received"])
 
     def setDateSampled(self, value):
         """Sets the date sampled to this analysis request and to secondary
@@ -2395,5 +2395,15 @@ class AnalysisRequest(BaseFolder):
         for secondary in self.getSecondaryAnalysisRequests():
             secondary.setDateSampled(value)
             secondary.reindexObject(idxs="getDateSampled")
+
+    def setSamplingDate(self, value):
+        """Sets the sampling date to this analysis request and to secondary
+        analysis requests
+        """
+        self.Schema().getField('SamplingDate').set(self, value)
+        for secondary in self.getSecondaryAnalysisRequests():
+            secondary.setSamplingDate(value)
+            secondary.reindexObject(idxs="getSamplingDate")
+
 
 registerType(AnalysisRequest, PROJECTNAME)
