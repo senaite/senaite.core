@@ -2378,32 +2378,52 @@ class AnalysisRequest(BaseFolder):
         relationship = "AnalysisRequestPrimaryAnalysisRequest"
         return self.getBackReferences(relationship=relationship)
 
+    def syncPrimarySecondaryValue(self, field_name, value, idxs=None):
+        """Sets the value of the given field to this instance and promotes same
+        value to Primary Analysis Requests (if any) and cascades same value to
+        Secondaries (if any)
+        """
+        self.Schema().getField(field_name).set(self, value)
+        # Promote to primary if necessary
+        primary = self.getPrimaryAnalysisRequest()
+        if primary:
+            field = primary.getField(field_name)
+            primary_value = field.get(primary)
+            if primary_value != value:
+                field.getMutator(primary)(value)
+
+        # Cascade to secondaries
+        for secondary in self.getSecondaryAnalysisRequests():
+            field = secondary.getField(field_name)
+            secondary_value = field.get(secondary)
+            if secondary_value != value:
+                field.getMutator(secondary)(value)
+
+        if idxs:
+            self.reindexObject()
+        else:
+            self.reindexObject(idxs=idxs)
+
     def setDateReceived(self, value):
         """Sets the date received to this analysis request and to secondary
         analysis requests
         """
-        self.Schema().getField('DateReceived').set(self, value)
-        for secondary in self.getSecondaryAnalysisRequests():
-            secondary.setDateReceived(value)
-            secondary.reindexObject(idxs=["getDateReceived", "is_received"])
+        idxs = ["getDateReceived", "is_received"]
+        self.syncPrimarySecondaryValue("DateReceived", value, idxs=idxs)
 
     def setDateSampled(self, value):
         """Sets the date sampled to this analysis request and to secondary
         analysis requests
         """
-        self.Schema().getField('DateSampled').set(self, value)
-        for secondary in self.getSecondaryAnalysisRequests():
-            secondary.setDateSampled(value)
-            secondary.reindexObject(idxs="getDateSampled")
+        idxs = ["getDateSampled"]
+        self.syncPrimarySecondaryValue("DateSampled", value, idxs=idxs)
 
     def setSamplingDate(self, value):
         """Sets the sampling date to this analysis request and to secondary
         analysis requests
         """
-        self.Schema().getField('SamplingDate').set(self, value)
-        for secondary in self.getSecondaryAnalysisRequests():
-            secondary.setSamplingDate(value)
-            secondary.reindexObject(idxs="getSamplingDate")
+        idxs = ["getSamplingDate"]
+        self.syncPrimarySecondaryValue("SamplingDate", value, idxs=idxs)
 
 
 registerType(AnalysisRequest, PROJECTNAME)

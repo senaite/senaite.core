@@ -172,6 +172,17 @@ Dates for secondaries are updated in accordance:
     >>> third.getDateReceived() == secondary.getDateReceived() == primary.getDateReceived()
     True
 
+But even if I manually set a date for a secondary, the corresponding values for
+the rest (primary included) are kept in sync too:
+
+    >>> new_datetime = DateTime() +  20
+    >>> third.setDateReceived(new_datetime)
+    >>> third.getDateReceived() == new_datetime
+    True
+
+    >>> third.getDateReceived() == secondary.getDateReceived() == primary.getDateReceived()
+    True
+
 
 Secondary Analysis Requests and partitions
 ------------------------------------------
