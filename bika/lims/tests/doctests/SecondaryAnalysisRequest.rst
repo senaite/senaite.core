@@ -202,13 +202,53 @@ Create a single partition from the secondary Analysis Request:
     >>> partition
     <AnalysisRequest at /plone/clients/client-1/W-0001-S03-P01>
 
+    >>> partition.isPartition()
+    True
+
+    >>> partition.getParentAnalysisRequest()
+    <AnalysisRequest at /plone/clients/client-1/W-0001-S03>
+
 Partition does not provide `IAnalysisRequestSecondary`:
 
     >>> IAnalysisRequestSecondary.providedBy(partition)
     False
+
+And does not keep the original Primary Analysis Request:
+
+    >>> partition.getPrimaryAnalysisRequest() is None
+    True
 
 If we create another partition, the generated ID is increased in one unit:
 
     >>> partition = create_partition(secondary, request, analyses_2)
     >>> partition
     <AnalysisRequest at /plone/clients/client-1/W-0001-S03-P02>
+
+We can even create a secondary Analysis Request from a partition as the source:
+
+    >>> values = {
+    ...     "Client": client.UID(),
+    ...     "Contact": contact.UID(),
+    ...     "SampleType": sampletype.UID(),
+    ...     "PrimaryAnalysisRequest": partition }
+
+    >>> service_uids = map(api.get_uid, [Cu, Fe, Au])
+    >>> secondary = create_analysisrequest(client, request, values, service_uids)
+    >>> secondary
+    <AnalysisRequest at /plone/clients/client-1/W-0001-S03-P02-S01>
+
+But note this new secondary is not considered a partition of a partition:
+
+    >>> secondary.isPartition()
+    False
+
+But keeps the partition as the primary:
+
+    >>> secondary.getPrimaryAnalysisRequest()
+    <AnalysisRequest at /plone/clients/client-1/W-0001-S03-P02>
+
+We can also create new partitions from this weird secondary:
+
+    >>> partition = create_partition(secondary, request, secondary.getAnalyses())
+    >>> partition
+    <AnalysisRequest at /plone/clients/client-1/W-0001-S03-P02-S01-P01>
