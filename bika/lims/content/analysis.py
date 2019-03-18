@@ -42,7 +42,7 @@ class Analysis(AbstractRoutineAnalysis):
 
         siblings = []
         retracted_states = [STATE_RETRACTED, STATE_REJECTED]
-        for sibling in request.getAnalyses(full_objects=False):
+        for sibling in request.getAnalyses(full_objects=True):
             if api.get_uid(sibling) == self.UID():
                 # Exclude me from the list
                 continue
@@ -54,7 +54,7 @@ class Analysis(AbstractRoutineAnalysis):
 
             siblings.append(sibling)
 
-        return map(api.get_object, siblings)
+        return siblings
 
     def workflow_script_publish(self):
         """
