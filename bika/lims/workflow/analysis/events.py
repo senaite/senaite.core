@@ -105,6 +105,13 @@ def after_retract(analysis):
     unless the the retracted analysis was assigned to a worksheet. In such case,
     the copy is transitioned to 'assigned' state too
     """
+
+    # Retract our dependents (analyses that depend on this analysis)
+    cascade_to_dependents(analysis, "retract")
+
+    # Retract our dependencies (analyses this analysis depends on)
+    promote_to_dependencies(analysis, "retract")
+
     # Rename the analysis to make way for it's successor.
     # Support multiple retractions by renaming to *-0, *-1, etc
     parent = analysis.aq_parent
@@ -129,9 +136,6 @@ def after_retract(analysis):
     worksheet = analysis.getWorksheet()
     if worksheet:
         worksheet.addAnalysis(new_analysis)
-
-    # Retract our dependents (analyses that depend on this analysis)
-    cascade_to_dependents(analysis, "retract")
 
     # Try to rollback the Analysis Request
     if IRequestAnalysis.providedBy(analysis):
