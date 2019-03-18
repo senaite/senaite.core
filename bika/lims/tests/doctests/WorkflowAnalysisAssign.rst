@@ -180,17 +180,7 @@ to `to_be_verified`, cause all the analyses assigned are in this state:
     >>> api.get_workflow_status_of(worksheet)
     'to_be_verified'
 
-And now, I cannot add analyses anymore:
-
-    >>> worksheet.addAnalysis(fe)
-    >>> filter(lambda an: an.getKeyword() == "Fe", worksheet.getAnalyses())
-    []
-    >>> fe.getWorksheet() is None
-    True
-    >>> api.get_workflow_status_of(fe)
-    'unassigned'
-
-Neither remove:
+In `to_be_verified` status, I cannot remove analyses:
 
     >>> worksheet.removeAnalysis(au)
     >>> map(lambda an: an.getKeyword(), worksheet.getAnalyses())
@@ -198,6 +188,23 @@ Neither remove:
     >>> au.getWorksheetUID() == api.get_uid(worksheet)
     True
     >>> api.get_workflow_status_of(au)
+    'to_be_verified'
+
+But I can still add more analyses:
+
+    >>> worksheet.addAnalysis(fe)
+    >>> filter(lambda an: an.getKeyword() == "Fe", worksheet.getAnalyses())
+    [<Analysis at /plone/clients/client-1/W-0001/Fe>]
+
+Causing the Worksheet to roll back to `open` status:
+
+    >>> api.get_workflow_status_of(worksheet)
+    'open'
+
+If I remove `Fe` analysis again, worksheet is promoted to `to_be_verified`:
+
+    >>> worksheet.removeAnalysis(fe)
+    >>> api.get_workflow_status_of(worksheet)
     'to_be_verified'
 
 Let's create another worksheet and add the remaining analyses:
