@@ -27,6 +27,7 @@ from bika.lims.browser.widgets import RemarksWidget
 from bika.lims.browser.widgets import SelectionWidget as BikaSelectionWidget
 from bika.lims.browser.widgets.durationwidget import DurationWidget
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
+from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.config import PRIORITIES
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.analysisspec import ResultsRangeDict
@@ -235,6 +236,45 @@ schema = BikaSchema.copy() + Schema((
                         'review_state': ['sample_due', 'sample_received', ]},
             showOn=True,
         ),
+    ),
+
+    # Field for the creation of Secondary Analysis Requests.
+    # This field is meant to be displayed in AR Add form only. A viewlet exists
+    # to inform the user this Analysis Request is secondary
+    ReferenceField(
+        "PrimaryAnalysisRequest",
+        allowed_types=("AnalysisRequest",),
+        referenceClass=HoldingReference,
+        relationship='AnalysisRequestPrimaryAnalysisRequest',
+        mode="rw",
+        read_permission=View,
+        write_permission=FieldEditClient,
+        widget=ReferenceWidget(
+            label=_("Primary Sample"),
+            description=_("Select a sample to create a secondary Sample"),
+            size=20,
+            render_own_label=True,
+            visible={
+                'add': 'edit',
+                'header_table': 'prominent',
+            },
+            catalog_name=CATALOG_ANALYSIS_REQUEST_LISTING,
+            colModel=[
+                {'columnName': 'getId', 'width': '20',
+                 'label': _('Sample ID'), 'align': 'left'},
+                {'columnName': 'getClientSampleID', 'width': '20',
+                 'label': _('Client SID'), 'align': 'left'},
+                {'columnName': 'getSampleTypeTitle', 'width': '30',
+                 'label': _('Sample Type'), 'align': 'left'},
+                {'columnName': 'getClientTitle', 'width': '30',
+                 'label': _('Client'), 'align': 'left'},
+                {'columnName': 'UID', 'hidden': True},
+            ],
+            base_query={'is_active': True, 'is_received': True},
+            sidx='getId',
+            sord='desc',
+            showOn=True,
+        )
     ),
 
     ReferenceField(
@@ -1282,6 +1322,7 @@ schema['title'].widget.visible = False
 schema.moveField('Client', before='Contact')
 schema.moveField('ResultsInterpretation', pos='bottom')
 schema.moveField('ResultsInterpretationDepts', pos='bottom')
+schema.moveField("PrimaryAnalysisRequest", before="Client")
 
 
 class AnalysisRequest(BaseFolder):
@@ -2330,6 +2371,39 @@ class AnalysisRequest(BaseFolder):
             noLongerProvides(self, IAnalysisRequestPartition)
         else:
             alsoProvides(self, IAnalysisRequestPartition)
+
+    def getSecondaryAnalysisRequests(self):
+        """Returns the secondary analysis requests from this analysis request
+        """
+        relationship = "AnalysisRequestPrimaryAnalysisRequest"
+        return self.getBackReferences(relationship=relationship)
+
+    def setDateReceived(self, value):
+        """Sets the date received to this analysis request and to secondary
+        analysis requests
+        """
+        self.Schema().getField('DateReceived').set(self, value)
+        for secondary in self.getSecondaryAnalysisRequests():
+            secondary.setDateReceived(value)
+            secondary.reindexObject(idxs=["getDateReceived", "is_received"])
+
+    def setDateSampled(self, value):
+        """Sets the date sampled to this analysis request and to secondary
+        analysis requests
+        """
+        self.Schema().getField('DateSampled').set(self, value)
+        for secondary in self.getSecondaryAnalysisRequests():
+            secondary.setDateSampled(value)
+            secondary.reindexObject(idxs="getDateSampled")
+
+    def setSamplingDate(self, value):
+        """Sets the sampling date to this analysis request and to secondary
+        analysis requests
+        """
+        self.Schema().getField('SamplingDate').set(self, value)
+        for secondary in self.getSecondaryAnalysisRequests():
+            secondary.setSamplingDate(value)
+            secondary.reindexObject(idxs="getSamplingDate")
 
 
 registerType(AnalysisRequest, PROJECTNAME)

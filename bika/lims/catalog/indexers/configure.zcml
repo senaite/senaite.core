@@ -10,6 +10,9 @@
   <!-- Partitioning. Analyses masking in searches -->
   <adapter name="getAncestorsUIDs" factory=".requestanalysis.getAncestorsUIDs"/>
 
+  <!-- Whether the Analysis Request has been received -->
+  <adapter name="is_received" factory=".analysisrequest.is_received"/>
+
   <!-- Whether the object is neither cancelled nor invalid -->
   <adapter name="is_active" factory=".is_active"/>
 

@@ -117,6 +117,23 @@
       for="bika.lims.interfaces.IAnalysisRequest"
       name="PreservationFieldsVisibility"
     />
+
+    <!-- DateSampled cannot be edited in Secondary Analysis Requests -->
+    <adapter
+      factory=".widgetvisibility.SecondaryDateSampledFieldVisibility"
+      provides="bika.lims.interfaces.IATWidgetVisibility"
+      for="bika.lims.interfaces.IAnalysisRequestSecondary"
+      name="SecondaryDateSampledFieldVisibility"
+    />
+
+    <!-- Hide/Display PrimarySample field. Always hidden for non-secondary ARs,
+    otherwise readonly mode -->
+    <adapter
+      factory=".widgetvisibility.PrimaryAnalysisRequestFieldVisibility"
+      provides="bika.lims.interfaces.IATWidgetVisibility"
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="PrimaryAnalysisRequestFieldVisibility"
+    />
     <!---
     END OF FIELDS/WIDGETS VISIBILITY
     -->

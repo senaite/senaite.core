@@ -9,14 +9,17 @@ import os
 import tempfile
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from email.Utils import formataddr
 
+from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import _createObjectByType
+from Products.CMFPlone.utils import safe_unicode
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.idserver import renameAfterCreation
 from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.interfaces import IAnalysisRequestRetest
+from bika.lims.interfaces import IAnalysisRequestSecondary
 from bika.lims.interfaces import IAnalysisService
 from bika.lims.interfaces import IRoutineAnalysis
 from bika.lims.utils import attachPdf
@@ -29,9 +32,9 @@ from bika.lims.utils import to_utf8
 from bika.lims.workflow import ActionHandlerPool
 from bika.lims.workflow import doActionFor
 from bika.lims.workflow import push_reindex_to_actions_pool
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import _createObjectByType
-from Products.CMFPlone.utils import safe_unicode
+from bika.lims.workflow.analysisrequest import AR_WORKFLOW_ID
+from bika.lims.workflow.analysisrequest import do_action_to_analyses
+from email.Utils import formataddr
 from zope.interface import alsoProvides
 
 
@@ -61,10 +64,6 @@ def create_analysisrequest(client, request, values, analyses=None,
     # Don't pollute the dict param passed in
     values = dict(values.items())
 
-    # Create new sample or locate the existing for secondary AR
-    secondary = False
-    # TODO Sample Cleanup - Manage secondary ARs properly
-
     # Create the Analysis Request
     ar = _createObjectByType('AnalysisRequest', client, tmpID())
     ar.processForm(REQUEST=request, values=values)
@@ -74,13 +73,36 @@ def create_analysisrequest(client, request, values, analyses=None,
                                      analyses_serv=analyses)
     ar.setAnalyses(service_uids, prices=prices, specs=specifications)
 
-    # TODO Sample Cleanup - Manage secondary ARs properly
-    if secondary:
-        # Secondary AR does not longer comes from a Sample, rather from an AR.
-        # If the Primary AR has been received, then force the transition of the
-        # secondary to received and set the description/comment in the
-        # transition accordingly so it will be displayed later in the log tab
-        logger.warn("Sync transition for secondary AR is still missing")
+    # Handle secondary Analysis Request
+    primary = ar.getPrimaryAnalysisRequest()
+    if primary:
+        # Mark the secondary with the `IAnalysisRequestSecondary` interface
+        alsoProvides(ar, IAnalysisRequestSecondary)
+
+        # Rename the secondary according to the ID server setup
+        renameAfterCreation(ar)
+
+        # Set dates to match with those from the primary
+        ar.setDateSampled(primary.getDateSampled())
+        ar.setSamplingDate(primary.getSamplingDate())
+        ar.setDateReceived(primary.getDateReceived())
+
+        # Force the transition of the secondary to received and set the
+        # description/comment in the transition accordingly.
+        if primary.getDateReceived():
+            primary_id = primary.getId()
+            comment = "Auto-received. Secondary Sample of {}".format(primary_id)
+            changeWorkflowState(ar, AR_WORKFLOW_ID, "sample_received",
+                                action="receive", comments=comment)
+
+            # Initialize analyses
+            do_action_to_analyses(ar, "initialize")
+
+            # Reindex the AR
+            ar.reindexObject()
+
+            # In "received" state already
+            return ar
 
     # Try first with no sampling transition, cause it is the most common config
     success, message = doActionFor(ar, "no_sampling_workflow")
@@ -363,6 +385,7 @@ def create_partition(analysis_request, request, analyses, sample_type=None,
         "id",
         "modification_date",
         "ParentAnalysisRequest",
+        "PrimaryAnalysisRequest",
     ]
     if skip_fields:
         partition_skip_fields.extend(skip_fields)

@@ -254,6 +254,13 @@ def getReviewHistoryActionsList(instance, reverse=False):
     return map(lambda event: event["action"], review_history)
 
 
+def get_review_history_statuses(instance, reverse=False):
+    """Returns a list with the statuses of the instance from the review_history
+    """
+    review_history = getReviewHistory(instance, reverse=reverse)
+    return map(lambda event: event["review_state"], review_history)
+
+
 def get_prev_status_from_history(instance, status=None):
     """Returns the previous status of the object. If status is set, returns the
     previous status before the object reached the status passed in.

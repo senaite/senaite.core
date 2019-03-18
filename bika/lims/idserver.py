@@ -18,6 +18,7 @@ from bika.lims.browser.fields.uidreferencefield import \
 from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.interfaces import IAnalysisRequestPartition
 from bika.lims.interfaces import IAnalysisRequestRetest
+from bika.lims.interfaces import IAnalysisRequestSecondary
 from bika.lims.interfaces import IIdServer
 from bika.lims.numbergenerator import INumberGenerator
 from DateTime import DateTime
@@ -29,6 +30,7 @@ AR_TYPES = [
     "AnalysisRequest",
     "AnalysisRequestRetest",
     "AnalysisRequestPartition",
+    "AnalysisRequestSecondary",
 ]
 
 
@@ -77,6 +79,8 @@ def get_type_id(context, **kw):
         return "AnalysisRequestPartition"
     elif IAnalysisRequestRetest.providedBy(context):
         return "AnalysisRequestRetest"
+    elif IAnalysisRequestSecondary.providedBy(context):
+        return "AnalysisRequestSecondary"
 
     return api.get_portal_type(context)
 
@@ -132,6 +136,19 @@ def get_partition_count(context, default=0):
         return default
 
     return len(parent.getDescendants())
+
+def get_secondary_count(context, default=0):
+    """Returns the number of secondary ARs of this AR
+    """
+    if not is_ar(context):
+        return default
+
+    primary = context.getPrimaryAnalysisRequest()
+
+    if not primary:
+        return default
+
+    return len(primary.getSecondaryAnalysisRequests())
 
 
 def is_ar(context):
@@ -227,6 +244,19 @@ def get_variables(context, **kw):
                 "parent_base_id": parent_base_id,
                 "retest_count": retest_count,
                 "test_count": test_count,
+            })
+
+        # Secondary
+        elif portal_type == "AnalysisRequestSecondary":
+            primary_ar = context.getPrimaryAnalysisRequest()
+            primary_ar_id = api.get_id(primary_ar)
+            parent_base_id = strip_suffix(primary_ar_id)
+            secondary_count = get_secondary_count(context)
+            variables.update({
+                "parent_analysisrequest": primary_ar,
+                "parent_ar_id": primary_ar_id,
+                "parent_base_id": parent_base_id,
+                "secondary_count": secondary_count,
             })
 
     elif portal_type == "ARReport":

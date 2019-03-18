@@ -5,9 +5,10 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from bika.lims import logger
 from bika.lims.interfaces import IATWidgetVisibility
-from bika.lims.interfaces import IBatch, IClient
+from bika.lims.interfaces import IAnalysisRequestSecondary
+from bika.lims.interfaces import IBatch
+from bika.lims.interfaces import IClient
 from bika.lims.utils import getHiddenAttributesForClass
 from zope.interface import implements
 
@@ -30,6 +31,14 @@ class SenaiteATWidgetVisibility(object):
 
     def isVisible(self, field, mode="view", default="visible"):
         """Returns if the field is visible in a given mode
+
+        Possible returned values are:
+        - hidden: Field rendered as a hidden input field
+        - invisible: Field not rendered at all
+        - visible: Field rendered as a label or editable field depending on the
+            mode. E.g. if mode is "edit" and the value returned is "visible",
+            the field will be rendered as an input. If the mode is "view", the
+            field will be rendered as a span.
         """
         raise NotImplementedError("Must be implemented by subclass")
 
@@ -172,7 +181,7 @@ class AccountancyFieldsVisibility(SenaiteATWidgetVisibility):
 
 class DateReceivedFieldVisibility(SenaiteATWidgetVisibility):
     """DateReceived is editable in sample context, only if all related analyses
-    are not yet submitted.
+    are not yet submitted and if not a secondary sample.
     """
     def __init__(self, context):
         super(DateReceivedFieldVisibility, self).__init__(
@@ -183,8 +192,53 @@ class DateReceivedFieldVisibility(SenaiteATWidgetVisibility):
         """
         if mode != "edit":
             return default
-        if not hasattr(self.context, "isOpen"):
-            logger.warn("Object {}  does not have 'isOpen' method defined".
-                        format(self.context.__class__.__name__))
-            return default
+
+        # If this is a Secondary Analysis Request, this field is not editable
+        if IAnalysisRequestSecondary.providedBy(self.context):
+            return "invisible"
+
         return self.context.isOpen() and "visible" or "invisible"
+
+
+class SecondaryDateSampledFieldVisibility(SenaiteATWidgetVisibility):
+    """DateSampled is editable in sample unless secondary sample
+    """
+    def __init__(self, context):
+        super(SecondaryDateSampledFieldVisibility, self).__init__(
+            context=context, sort=3, field_names=["DateSampled"])
+
+    def isVisible(self, field, mode="view", default="visible"):
+        """Returns whether the field is visible in a given mode
+        """
+        if mode != "edit":
+            return default
+
+        # If this is a Secondary Analysis Request, this field is not editable
+        if IAnalysisRequestSecondary.providedBy(self.context):
+            return "invisible"
+        return default
+
+
+class PrimaryAnalysisRequestFieldVisibility(SenaiteATWidgetVisibility):
+    """PrimarySample field is not visible unless the current Sample is a
+    Secondary Sample. And even in such case, the field cannot be edited
+    """
+    def __init__(self, context):
+        super(PrimaryAnalysisRequestFieldVisibility, self).__init__(
+            context=context, sort=3, field_names=["PrimaryAnalysisRequest"])
+
+    def isVisible(self, field, mode="view", default="visible"):
+        """Returns whether the field is visible in a given mode
+        """
+        if mode == "add":
+            return default
+
+        if not IAnalysisRequestSecondary.providedBy(self.context):
+            # If not a secondary Analysis Request, don't render the field
+            return "hidden"
+
+        # No mather if the mode is edit or view, display it always as readonly
+        if mode == "edit":
+            return "invisible"
+
+        return default

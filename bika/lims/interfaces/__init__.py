@@ -65,6 +65,11 @@ class IAnalysisRequestRetest(Interface):
     """
 
 
+class IAnalysisRequestSecondary(Interface):
+    """Marker interface for Secondary Analysis Requests
+    """
+
+
 class IAnalysisRequestAddView(Interface):
     """AR Add view
     """

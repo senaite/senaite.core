@@ -159,4 +159,16 @@
     permission="zope2.View"
     layer="bika.lims.interfaces.IBikaLIMS"
   />
+
+  <!-- Secondary Analysis Request viewlet -->
+  <browser:viewlet
+    for="bika.lims.interfaces.IAnalysisRequestSecondary"
+    name="bika.lims.secondary_ar_viewlet"
+    class=".analysisrequest.SecondaryAnalysisRequestViewlet"
+    manager="plone.app.layout.viewlets.interfaces.IAboveContent"
+    template="templates/secondary_ar_viewlet.pt"
+    permission="zope2.View"
+    layer="bika.lims.interfaces.IBikaLIMS"
+  />
+
 </configure>

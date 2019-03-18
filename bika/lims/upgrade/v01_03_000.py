@@ -234,6 +234,10 @@ def upgrade(tool):
     # https://github.com/senaite/senaite.core/pull/1243
     set_retest_id_formatting(portal)
 
+    # Set the ID formatting for Secondary ARs
+    # https://github.com/senaite/senaite.core/pull/1284
+    set_secondary_id_formatting(portal)
+
     # Reindex submitted analyses to update the analyst
     # https://github.com/senaite/senaite.core/pull/1254
     reindex_submitted_analyses(portal)
@@ -1785,6 +1789,7 @@ def update_ar_listing_catalog(portal):
         # name, attribute, metatype
         ("getClientID", "getClientID", "FieldIndex"),
         ("is_active", "is_active", "BooleanIndex"),
+        ("is_received", "is_received", "BooleanIndex"),
     ]
 
     metadata_to_add = [
@@ -1990,11 +1995,22 @@ def set_retest_id_formatting(portal):
     """Sets the default id formatting for AR retests
     """
     part_id_format = dict(
-        form="{parent_base_id}-{seq:02d}-R{seq:02d}",
+        form="{parent_base_id}-R{retest_count:02d}",
         portal_type="AnalysisRequestRetest",
         prefix="analysisrequestretest",
         sequence_type="")
     set_id_format(portal, part_id_format)
+
+
+def set_secondary_id_formatting(portal):
+    """Sets the default id formatting for secondary ARs
+    """
+    secondary_id_format = dict(
+        form="{parent_ar_id}-S{secondary_count:02d}",
+        portal_type="AnalysisRequestSecondary",
+        prefix="analysisrequestsecondary",
+        sequence_type="")
+    set_id_format(portal, secondary_id_format)
 
 
 def reindex_submitted_analyses(portal):
