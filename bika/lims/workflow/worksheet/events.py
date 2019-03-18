@@ -27,3 +27,10 @@ def after_retract(worksheet):
     """
     for analysis in worksheet.getAnalyses():
        wf.doActionFor(analysis, "retract")
+
+
+def after_remove(worksheet):
+    """Removes the worksheet from the system
+    """
+    container = worksheet.aq_parent
+    container.manage_delObjects([worksheet.getId()])

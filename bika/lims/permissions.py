@@ -111,6 +111,7 @@ TransitionReopenSamplingRound = "senaite.core: Transition: Reopen Sampling Round
 
 # Transition permissions (Worksheet)
 TransitionRejectWorksheet = "senaite.core: Transition: Reject Worksheet"
+TransitionRemoveWorksheet = "senaite.core: Transition: Remove Worksheet"
 
 
 # Field Permissions
