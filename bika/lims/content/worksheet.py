@@ -156,10 +156,8 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
            - position is overruled if a slot for this analysis' parent exists
            - if position is None, next available pos is used.
         """
-
-        # TODO Workflow - Move these initial checks to the assign guard
         # Cannot add an analysis if not open, unless a retest
-        if api.get_review_status(self) != "open":
+        if api.get_review_status(self) not in ["open", "to_be_verified"]:
             retracted = analysis.getRetestOf()
             if retracted not in self.getAnalyses():
                 return
