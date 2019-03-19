@@ -93,7 +93,7 @@ class Contact(Person):
         """
         return is_active(self)
 
-    security.declareProtected(ModifyPortalContent, 'getUser')
+    @security.protected(ModifyPortalContent)
     def getUser(self):
         """Returns the linked Plone User or None
         """
@@ -103,7 +103,7 @@ class Contact(Person):
         user = api.user.get(userid=username)
         return user
 
-    security.declareProtected(ModifyPortalContent, 'setUser')
+    @security.protected(ModifyPortalContent)
     def setUser(self, user_or_username):
         """Link the user to the Contact
 
@@ -129,7 +129,7 @@ class Contact(Person):
         # Link the User
         return self._linkUser(user)
 
-    security.declareProtected(ModifyPortalContent, 'unlinkUser')
+    @security.protected(ModifyPortalContent)
     def unlinkUser(self, delete=False):
         """Unlink the user to the Contact
 
@@ -154,7 +154,7 @@ class Contact(Person):
             return True
         return False
 
-    security.declareProtected(ModifyPortalContent, 'hasUser')
+    @security.protected(ModifyPortalContent)
     def hasUser(self):
         """Check if Contact has a linked a System User
         """
@@ -235,7 +235,7 @@ class Contact(Person):
 
         return True
 
-    security.declarePrivate('_unlinkUser')
+    @security.private
     def _unlinkUser(self):
         """Remove the UID of the current Contact in the User properties and
         update all relevant own properties.
@@ -270,7 +270,7 @@ class Contact(Person):
 
         return True
 
-    security.declarePrivate('_addUserToGroup')
+    @security.private
     def _addUserToGroup(self, username, group="Clients"):
         """Add user to the goup
         """
@@ -296,7 +296,7 @@ class Contact(Person):
             if hasattr(parent, 'reindexObjectSecurity'):
                 parent.reindexObjectSecurity()
 
-    security.declarePrivate('_delLocalOwnerRole')
+    @security.private
     def _delLocalOwnerRole(self, username):
         """Remove local owner role from parent object
         """
