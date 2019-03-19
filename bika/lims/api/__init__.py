@@ -13,7 +13,7 @@ import Missing
 from AccessControl.PermissionRole import rolesForPermissionOn
 from Acquisition import aq_base
 from bika.lims import logger
-from bika.lims.interfaces import IClient, IDeactivable, ICancellable
+from bika.lims.interfaces import IClient
 from bika.lims.interfaces import IContact
 from bika.lims.interfaces import ILabContact
 from DateTime import DateTime
@@ -31,9 +31,11 @@ from Products.CMFCore.interfaces import IFolderish
 from Products.CMFCore.interfaces import ISiteRoot
 from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.WorkflowCore import WorkflowException
+from Products.CMFPlone.RegistrationTool import get_member_by_login_name
 from Products.CMFPlone.utils import _createObjectByType
 from Products.CMFPlone.utils import base_hasattr
 from Products.CMFPlone.utils import safe_unicode
+from Products.PlonePAS.tools.memberdata import MemberData
 from Products.ZCatalog.interfaces import ICatalogBrain
 from zope import globalrequest
 from zope.component import getMultiAdapter
@@ -959,11 +961,12 @@ def get_user(user_or_username):
     :param user_or_username: Plone user or user id
     :returns: Plone MemberData
     """
-    if not user_or_username:
-        return None
-    if hasattr(user_or_username, "getUserId"):
-        return ploneapi.user.get(user_or_username.getUserId())
-    return ploneapi.user.get(userid=user_or_username)
+    user = None
+    if isinstance(user_or_username, MemberData):
+        user = user_or_username
+    if isinstance(user_or_username, basestring):
+        user = get_member_by_login_name(get_portal(), user_or_username, False)
+    return user
 
 
 def get_user_properties(user_or_username):
