@@ -96,6 +96,7 @@
 
   # Transition Permissions (Worksheet)
   <permission id="senaite.core.permissions.TransitionRejectWorksheet" title="senaite.core: Transition: Reject Worksheet"/>
+  <permission id="senaite.core.permissions.TransitionRemoveWorksheet" title="senaite.core: Transition: Remove Worksheet"/>
 
 
   # Field Permissions

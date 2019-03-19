@@ -117,11 +117,7 @@ class FolderView(BikaListingView):
                     ],
                     "sort_on": "CreationDate",
                     "sort_order": "reverse"},
-                "transitions": [
-                    {"id": "retract"},
-                    {"id": "verify"},
-                    {"id": "reject"}
-                ],
+                "transitions": [],
                 "custom_transitions": [],
                 "columns": self.columns.keys(),
             }, {
@@ -141,11 +137,7 @@ class FolderView(BikaListingView):
                     "review_state": "to_be_verified",
                     "sort_on": "CreationDate",
                     "sort_order": "reverse"},
-                "transitions": [
-                    {"id": "retract"},
-                    {"id": "verify"},
-                    {"id": "reject"}
-                ],
+                "transitions": [],
                 "custom_transitions": [],
                 "columns": self.columns.keys()
             }, {
@@ -171,11 +163,7 @@ class FolderView(BikaListingView):
                     ],
                     "sort_on":"CreationDate",
                     "sort_order": "reverse"},
-                "transitions":[
-                    {"id": "retract"},
-                    {"id": "verify"},
-                    {"id": "reject"}
-                ],
+                "transitions":[],
                 "custom_transitions": [],
                 "columns": self.columns.keys(),
             }, {
@@ -192,11 +180,7 @@ class FolderView(BikaListingView):
                     ],
                     "sort_on":"CreationDate",
                     "sort_order": "reverse"},
-                "transitions":[
-                    {"id": "retract"},
-                    {"id": "verify"},
-                    {"id": "reject"}
-                ],
+                "transitions":[],
                 "custom_transitions": [],
                 "columns": self.columns.keys(),
             }

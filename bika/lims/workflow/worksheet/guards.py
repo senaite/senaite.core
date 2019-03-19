@@ -91,3 +91,12 @@ def guard_rollback_to_open(worksheet):
         if api.get_review_status(analysis) in ["assigned"]:
             return True
     return False
+
+
+def guard_remove(worksheet):
+    """Return whether the workflow can be removed. Returns true if the worksheet
+    does not contain any analysis
+    """
+    if worksheet.getAnalyses():
+        return False
+    return True
