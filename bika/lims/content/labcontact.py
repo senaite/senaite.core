@@ -5,71 +5,79 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-"""The lab staff
-"""
 import sys
 
 from AccessControl import ClassSecurityInfo
-
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import safe_unicode
-
-from Products.Archetypes import atapi
-# Bika Fields
+from bika.lims import api
+from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import UIDReferenceField
+from bika.lims.config import PROJECTNAME
+from bika.lims.content.contact import Contact
+from bika.lims.content.person import Person
+from bika.lims.interfaces import IDeactivable
+from bika.lims.interfaces import ILabContact
+from Products.Archetypes import atapi
+from Products.Archetypes.Field import ImageField
+from Products.Archetypes.Field import ImageWidget
+from Products.Archetypes.Field import ReferenceField
+from Products.Archetypes.Field import ReferenceWidget
 from Products.Archetypes.public import SelectionWidget
+from Products.Archetypes.public import registerType
 from Products.Archetypes.references import HoldingReference
-from Products.Archetypes.utils import DisplayList
-
+from Products.CMFPlone.utils import safe_unicode
 from zope.interface import implements
 
-from bika.lims.config import PROJECTNAME
-from bika.lims.content.person import Person
-from bika.lims.content.contact import Contact
-from bika.lims.interfaces import ILabContact, IDeactivable
-from bika.lims import bikaMessageFactory as _
 
 schema = Person.schema.copy() + atapi.Schema((
-    atapi.ImageField(
-        'Signature',
-        widget=atapi.ImageWidget(
+
+    ImageField(
+        "Signature",
+        widget=ImageWidget(
             label=_("Signature"),
             description=_(
-                "Upload a scanned signature to be used on printed"
-                " analysis results reports. Ideal size is 250 pixels"
-                " wide by 150 high"),
-        )),
-    atapi.ReferenceField('Departments',
-                         required=0,
-                         vocabulary_display_path_bound=sys.maxint,
-                         allowed_types=('Department',),
-                         relationship='LabContactDepartment',
-                         vocabulary='_departmentsVoc',
-                         referenceClass=HoldingReference,
-                         multiValued=1,
-                         widget=atapi.ReferenceWidget(
-                             checkbox_bound=0,
-                             label=_("Departments"),
-                             description=_("The laboratory departments"),
-                         )),
-    UIDReferenceField('DefaultDepartment',
-                required=0,
-                vocabulary_display_path_bound=sys.maxint,
-                vocabulary='_defaultDepsVoc',
-                widget=SelectionWidget(
-                    visible=True,
-                    format='select',
-                    label=_("Default Department"),
-                    description=_("Default Department"),
-                )),
+                "Upload a scanned signature to be used on printed "
+                "analysis results reports. Ideal size is 250 pixels "
+                "wide by 150 high"),
+        ),
+    ),
+
+    ReferenceField(
+        "Departments",
+        required=0,
+        vocabulary_display_path_bound=sys.maxint,
+        allowed_types=("Department",),
+        relationship="LabContactDepartment",
+        vocabulary="_departmentsVoc",
+        referenceClass=HoldingReference,
+        multiValued=1,
+        widget=ReferenceWidget(
+            checkbox_bound=0,
+            label=_("Departments"),
+            description=_("The laboratory departments"),
+        ),
+    ),
+
+    UIDReferenceField(
+        "DefaultDepartment",
+        required=0,
+        vocabulary_display_path_bound=sys.maxint,
+        vocabulary="_defaultDepsVoc",
+        accessor="getDefaultDepartmentUID",
+        widget=SelectionWidget(
+            visible=True,
+            format="select",
+            label=_("Default Department"),
+            description=_("Default Department"),
+        ),
+    ),
 ))
 
-schema['JobTitle'].schemata = 'default'
+schema["JobTitle"].schemata = "default"
 # Don't make title required - it will be computed from the Person's Fullname
-schema['title'].required = 0
-schema['title'].widget.visible = False
-schema['Department'].required = 0
-schema['Department'].widget.visible = False
+schema["title"].required = 0
+schema["title"].widget.visible = False
+schema["Department"].required = 0
+schema["Department"].widget.visible = False
 
 
 class LabContact(Contact):
@@ -87,109 +95,104 @@ class LabContact(Contact):
         renameAfterCreation(self)
 
     def Title(self):
-        """ Return the contact's Fullname as title """
-        return safe_unicode(self.getFullname()).encode('utf-8')
+        """Return the contact's Fullname as title
+        """
+        return safe_unicode(self.getFullname()).encode("utf-8")
+
+    @security.public
+    def getDefaultDepartment(self):
+        """Returns the assigned default department
+
+        :returns: Department object
+        """
+        return self.getField("DefaultDepartment").get(self)
+
+    @security.public
+    def getDefaultDepartmentUID(self):
+        """Returns the UID of the assigned default department
+
+        NOTE: This is the default accessor of the `DefaultDepartment` schema
+        field and needed for the selection widget to render the selected value
+        properly in _view_ mode.
+
+        :returns: Default Department UID
+        """
+        department = self.getDefaultDepartment()
+        if not department:
+            return None
+        return api.get_uid(department)
 
     def hasUser(self):
-        """ check if contact has user """
-        return self.portal_membership.getMemberById(
-            self.getUsername()) is not None
-
-    def getDepartments_voc(self):
+        """Check if contact has user
         """
-        Returns a vocabulary object with the available departments.
-        """
-        bsc = getToolByName(self, 'portal_catalog')
-        items = [(o.UID, o.Title) for o in
-                 bsc(portal_type='Department',
-                     is_active=True)]
-        # Getting the departments uids
-        deps_uids = [i[0] for i in items]
-        # Getting the assigned departments
-        objs = self.getDepartments()
-        # If one department assigned to the Lab Contact is disabled, it will
-        # be shown in the list until the department has been unassigned.
-        for o in objs:
-            if o and o.UID() not in deps_uids:
-                items.append((o.UID(), o.Title()))
-        items.sort(lambda x, y: cmp(x[1], y[1]))
-        return DisplayList(list(items))
+        username = self.getUsername()
+        if not username:
+            return False
+        user = api.get_user(username)
+        return user is not None
 
     def _departmentsVoc(self):
+        """Vocabulary of available departments
         """
-        Returns a vocabulary object with the available departments.
-        """
-        bsc = getToolByName(self, 'bika_setup_catalog')
-        items = [(o.UID, o.Title) for o in
-                 bsc(portal_type='Department',
-                     is_active=True)]
-        # Getting the departments uids
-        deps_uids = [i[0] for i in items]
-        # Getting the assigned departments
-        objs = self.getDepartments()
+        query = {
+            "portal_type": "Department",
+            "is_active": True
+        }
+        results = api.search(query, "bika_setup_catalog")
+        items = map(lambda dept: (api.get_uid(dept), api.get_title(dept)),
+                    results)
+        dept_uids = map(api.get_uid, results)
+        # Currently assigned departments
+        depts = self.getDepartments()
         # If one department assigned to the Lab Contact is disabled, it will
         # be shown in the list until the department has been unassigned.
-        for o in objs:
-            if o and o.UID() not in deps_uids:
-                items.append((o.UID(), o.Title()))
-        items.sort(lambda x, y: cmp(x[1], y[1]))
-        return DisplayList(list(items))
+        for dept in depts:
+            uid = api.get_uid(dept)
+            if uid in dept_uids:
+                continue
+            items.append((uid, api.get_title(dept)))
+
+        return api.to_display_list(items, sort_by="value", allow_empty=False)
 
     def _defaultDepsVoc(self):
-        """
-        Returns a vocabulary object containing all its departments.
+        """Vocabulary of all departments
         """
         # Getting the assigned departments
         deps = self.getDepartments()
-        items = [("", "")]
+        items = []
         for d in deps:
-            items.append((d.UID(), d.Title()))
-        items.sort(lambda x, y: cmp(x[1], y[1]))
-        return DisplayList(list(items))
+            items.append((api.get_uid(d), api.get_title(d)))
+        return api.to_display_list(items, sort_by="value", allow_empty=True)
 
     def addDepartment(self, dep):
+        """Adds a department
+
+        :param dep: UID or department object
+        :returns: True when the department was added
         """
-        It adds a new department to the departments content field.
-        @dep: is a uid or a department object
-        @return: True when the adding process has been done,
-            False otherwise.
-        """
-        # check if dep is an uid
-        if type(dep) is str:
-            deps = self.getDepartments()
-            deps = [d.UID() for d in deps]
-        else:
-            deps = self.getDepartments()
-        if dep and dep not in deps:
-            deps.append(dep)
-            self.setDepartments(deps)
+        if api.is_uid(dep):
+            dep = api.get_object_by_uid(dep)
+        deps = self.getDepartments()
+        if dep not in deps:
+            return False
+        deps.append(dep)
+        self.setDepartments(deps)
         return True
 
     def removeDepartment(self, dep):
+        """Removes a department
+
+        :param dep: UID or department object
+        :returns: True when the department was removed
         """
-        It removes a department to the departments content field.
-        @dep: is a uid or a department object
-        @return: True when the removing process has been done,
-            False otherwise.
-        """
-        # check if dep is an uid
-        if type(dep) is str:
-            deps = self.getDepartments()
-            deps = [d.UID() for d in deps]
-        else:
-            deps = self.getDepartments()
-        if dep and dep in deps:
-            deps.remove(dep)
-            self.setDepartments(deps)
+        if api.is_uid(dep):
+            dep = api.get_object_by_uid(dep)
+        deps = self.getDepartments()
+        if dep not in deps:
+            return False
+        deps.remove(dep)
+        self.setDepartments(deps)
         return True
 
-    def getSortedDepartments(self):
-        """
-        It returns the departments the departments sorted by title.
-        """
-        deps = self.getDepartments()
-        deps.sort(key=lambda department: department.title)
-        return deps
 
-
-atapi.registerType(LabContact, PROJECTNAME)
+registerType(LabContact, PROJECTNAME)
