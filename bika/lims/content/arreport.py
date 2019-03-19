@@ -37,10 +37,10 @@ schema = BikaSchema.copy() + Schema((
         allowed_types=("AnalysisRequest",),
         relationship="ARReportAnalysisRequest",
         widget=ReferenceWidget(
-            label=_("Contained Analysis Requests"),
+            label=_("Contained Samples"),
             render_own_label=False,
             size=20,
-            description=_("Referenced Analysis Requests in the PDF"),
+            description=_("Referenced Samples in the PDF"),
             visible={
                 "edit": "visible",
                 "view": "visible",

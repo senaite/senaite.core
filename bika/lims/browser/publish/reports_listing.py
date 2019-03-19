@@ -56,10 +56,10 @@ class ReportsListingView(BikaListingView):
 
         self.columns = collections.OrderedDict((
             ("AnalysisRequest", {
-                "title": _("Analysis Request"),
+                "title": _("Sample"),
                 "index": "sortable_title"},),
             ("ContainedAnalysisRequests", {
-                "title": _("Analysis Requests in PDF")},),
+                "title": _("Samples in PDF")},),
             ("Metadata", {
                 "title": _("Metadata")},),
             ("State", {
