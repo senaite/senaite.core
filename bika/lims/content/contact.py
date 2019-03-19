@@ -5,25 +5,26 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-"""The contact person at an organisation.
-"""
 import types
 
 from AccessControl import ClassSecurityInfo
+from Acquisition import aq_base
 from Acquisition import aq_inner
 from Acquisition import aq_parent
-from Products.Archetypes import atapi
-from Products.Archetypes.utils import DisplayList
-from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.api import is_active
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.person import Person
-from bika.lims.interfaces import IContact, IClient, IDeactivable
+from bika.lims.interfaces import IClient
+from bika.lims.interfaces import IContact
+from bika.lims.interfaces import IDeactivable
 from plone import api
-from zope.interface import implements
+from Products.Archetypes import atapi
+from Products.Archetypes.utils import DisplayList
 from Products.CMFCore.permissions import ModifyPortalContent
+from Products.CMFPlone.utils import safe_unicode
+from zope.interface import implements
 
 ACTIVE_STATES = ["active"]
 
