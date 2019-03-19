@@ -255,6 +255,16 @@ class ContactLoginDetailsView(BrowserView):
         # set the user to the contact
         contact.setUser(username)
 
+        # Additional groups for LabContact users only!
+        # -> This is not visible in the Client Contact Form
+        if "groups" in self.request and self.request["groups"]:
+            groups = self.request["groups"]
+            if not type(groups) in (list, tuple):
+                groups = [groups, ]
+            for group in groups:
+                group = self.portal_groups.getGroupById(group)
+                group.addMember(username)
+
         if self.request.get('mail_me', 0):
             try:
                 reg_tool.registeredNotify(username)

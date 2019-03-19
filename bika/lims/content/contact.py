@@ -184,16 +184,6 @@ class Contact(Person):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
 
-    def recursive_reindex_object_security(self, obj):
-        """Reindex object security after user linking
-        """
-        if hasattr(aq_base(obj), "objectValues"):
-            for obj in obj.objectValues():
-                self.recursive_reindex_object_security(obj)
-
-        logger.debug("Reindexing object security for {}".format(repr(obj)))
-        obj.reindexObjectSecurity()
-
     @security.private
     def _linkUser(self, user):
         """Set the UID of the current Contact in the User properties and update
@@ -238,13 +228,13 @@ class Contact(Person):
         # somehow the `getUsername` index gets out of sync
         self.reindexObject()
 
+        # N.B. Local owner role and client group applies only to client
+        #      contacts, but not lab contacts.
         if IClient.providedBy(self.aq_parent):
             # Grant local Owner role
             self._addLocalOwnerRole(username)
             # Add user to "Clients" group
             self._addUserToGroup(username, group="Clients")
-            # reindex object security
-            self.recursive_reindex_object_security(self.aq_parent)
 
         return True
 
@@ -273,17 +263,16 @@ class Contact(Person):
         # Unset the Email
         self.setEmailAddress(None)
 
-        # Revoke local Owner role
-        self._delLocalOwnerRole(username)
-
-        # Remove user from "Clients" group
-        self._delUserFromGroup(username, group="Clients")
-
-        # reindex object security
-        self.recursive_reindex_object_security(self.aq_parent)
-
         # somehow the `getUsername` index gets out of sync
         self.reindexObject()
+
+        # N.B. Local owner role and client group applies only to client
+        #      contacts, but not lab contacts.
+        if IClient.providedBy(self.aq_parent):
+            # Revoke local Owner role
+            self._delLocalOwnerRole(username)
+            # Remove user from "Clients" group
+            self._delUserFromGroup(username, group="Clients")
 
         return True
 
@@ -308,20 +297,30 @@ class Contact(Person):
         """Add local owner role from parent object
         """
         parent = self.getParent()
-        if parent.portal_type == 'Client':
-            parent.manage_setLocalRoles(username, ['Owner', ])
-            if hasattr(parent, 'reindexObjectSecurity'):
-                parent.reindexObjectSecurity()
+        if parent.portal_type == "Client":
+            parent.manage_setLocalRoles(username, ["Owner", ])
+            # reindex object security
+            self._recursive_reindex_object_security(parent)
 
     @security.private
     def _delLocalOwnerRole(self, username):
         """Remove local owner role from parent object
         """
         parent = self.getParent()
-        if parent.portal_type == 'Client':
+        if parent.portal_type == "Client":
             parent.manage_delLocalRoles([username])
-            if hasattr(parent, 'reindexObjectSecurity'):
-                parent.reindexObjectSecurity()
+            # reindex object security
+            self._recursive_reindex_object_security(parent)
+
+    def _recursive_reindex_object_security(self, obj):
+        """Reindex object security after user linking
+        """
+        if hasattr(aq_base(obj), "objectValues"):
+            for obj in obj.objectValues():
+                self._recursive_reindex_object_security(obj)
+
+        logger.debug("Reindexing object security for {}".format(repr(obj)))
+        obj.reindexObjectSecurity()
 
 
 atapi.registerType(Contact, PROJECTNAME)
