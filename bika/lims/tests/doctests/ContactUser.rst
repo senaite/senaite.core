@@ -228,20 +228,6 @@ Search for linkable users:
     >>> linkable_users = login_details_view.linkable_users()
     >>> linkable_user_ids = map(lambda x: x.get("id"), linkable_users)
 
-None of the two users should be in the search results, cause any of the two
-has the role `Client` assigned:
-
-    >>> user1.id in linkable_user_ids
-    False
-
-    >>> user2.id in linkable_user_ids
-    False
-
-So, we apply the `Client` roles to both users:
-
-    >>> setRoles(portal, "user-1", ['Authenticated', 'Member', 'Client'])
-    >>> setRoles(portal, "user-2", ['Authenticated', 'Member', 'Client'])
-
 Both users should be now in the search results:
 
     >>> linkable_users = login_details_view.linkable_users()
@@ -252,6 +238,16 @@ Both users should be now in the search results:
 
     >>> user2.id in linkable_user_ids
     True
+
+Users with higher roles should not be listed:
+
+    >>> setRoles(portal, "user-2", ['Member', 'Client', 'LabClerk'])
+
+    >>> linkable_users = login_details_view.linkable_users()
+    >>> linkable_user_ids = map(lambda x: x.get("id"), linkable_users)
+
+    >>> user2.id in linkable_user_ids
+    False
 
 This contact is not linked to a user::
 
