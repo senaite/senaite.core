@@ -6,22 +6,22 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 import re
-from Acquisition import aq_base
 
 import transaction
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import safe_unicode
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from plone import api
-from plone.app.controlpanel.usergroups import UsersOverviewControlPanel
-from plone.protect import CheckAuthenticator
-
 from bika.lims import PMF
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
+from bika.lims.api import security
 from bika.lims.browser import BrowserView
 from bika.lims.content.contact import Contact
 from bika.lims.content.labcontact import LabContact
+from plone.app.controlpanel.usergroups import UsersOverviewControlPanel
+from plone.memoize import view
+from plone.protect import CheckAuthenticator
+from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import safe_unicode
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
 
 class ContactLoginDetailsView(BrowserView):
