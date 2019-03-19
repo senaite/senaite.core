@@ -105,6 +105,7 @@ Changelog
 
 **Fixed**
 
+- #1109 Linking LabContacts to LDAP-user not possible
 - #1283 Retracting a calculated Analysis leads to an inconsistent state
 - #1281 Adding Analyses to an existing Worksheet fails
 - #1269 Render analysis remarks conditionally
