@@ -191,7 +191,9 @@ class AnalysisRequestAnalysesView(BikaListingView):
         if category not in self.categories:
             self.categories.append(category)
 
+        price = obj.getPrice()
         keyword = obj.getKeyword()
+
         if uid in self.analyses:
             analysis = self.analyses[uid]
             # Might differ from the service keyword
@@ -201,6 +203,8 @@ class AnalysisRequestAnalysesView(BikaListingView):
                                         analysis.isRegistered()])
             # get the hidden status of the analysis
             hidden = analysis.getHidden()
+            # get the price of the analysis
+            price = analysis.getPrice()
 
         # get the specification of this object
         rr = self.get_results_range()
@@ -208,7 +212,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
 
         item["Title"] = obj.Title()
         item["Unit"] = obj.getUnit()
-        item["Price"] = obj.getPrice()
+        item["Price"] = price
         item["before"]["Price"] = self.get_currency_symbol()
         item["allow_edit"] = self.get_editable_columns(obj)
         item["selected"] = uid in self.selected
