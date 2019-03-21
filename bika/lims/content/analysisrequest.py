@@ -1647,6 +1647,7 @@ class AnalysisRequest(BaseFolder):
             InvoicePDF=pdf
         )
         invoice.processForm()
+        self.setInvoice(invoice)
         return invoice
 
     @security.public
