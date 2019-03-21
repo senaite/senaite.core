@@ -10,6 +10,7 @@ from bika.lims.browser import BrowserView
 from bika.lims.interfaces import IAnalysis
 from bika.lims.interfaces import IAnalysisProfile
 from bika.lims.interfaces import IInvoiceView
+from bika.lims.utils import createPdf
 from plone.memoize import view
 from Products.CMFPlone.i18nl10n import ulocalized_time
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
@@ -122,6 +123,23 @@ class InvoicePrintView(InvoiceView):
     """Print view w/o outer contents
     """
     template = ViewPageTemplateFile("templates/invoice_print.pt")
+
+    def __call__(self):
+        invoice = self.template()
+        pdf = createPdf(invoice)
+        filename = "{}.pdf".format(self.context.getId())
+        return self.download(pdf, filename)
+
+    def download(self, data, filename, content_type="application/pdf"):
+        """Download the PDF
+        """
+        self.request.response.setHeader(
+            "Content-Disposition", "inline; filename=%s" % filename)
+        self.request.response.setHeader("Content-Type", content_type)
+        self.request.response.setHeader("Content-Length", len(data))
+        self.request.response.setHeader("Cache-Control", "no-store")
+        self.request.response.setHeader("Pragma", "no-cache")
+        self.request.response.write(data)
 
 
 class InvoiceCreate(InvoiceView):

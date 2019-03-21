@@ -5,13 +5,12 @@
 
   <tal:css>
     <style type="text/css">
+     #invoice { font-size: 9pt; }
      #invoice table { border: none; }
      #invoice table tr { background-color: transparent; }
      #invoice table th { border-style: solid none; }
-     #invoice table td { border-style: solid none; }
+     #invoice table td { border-style: solid none; border-width: 1px; border-color: #ddd; }
      #invoice table tfoot td:first-child { border-style: none; }
-     #invoice table tbody tr:last-child td { border-bottom: none; }
-     #invoice table tfoot tr:first-child>td:not(:first-child) { border-top: 2px solid #ddd; }
     </style>
   </tal:css>
 
@@ -79,8 +78,8 @@
           </td>
           <td>
             <tal:profiles repeat="profile sample/Profiles">
-              <div class="label label-default">
-                <div tal:replace="profile/Title|nothing"></div>
+              <div class="profile">
+                <div tal:replace="profile/Title|nothing"/><span tal:condition="not:repeat/profile/end">,</span>
               </div>
             </tal:profiles>
           </td>
@@ -140,9 +139,9 @@
 
       <table class="table table-striped invoice-items">
         <colgroup>
-          <col style="width:60%"/>
-          <col style="width:20%"/>
-          <col style="width:20%"/>
+          <col style="width:55%"/>
+          <col style="width:30%"/>
+          <col style="width:15%"/>
         </colgroup>
 
         <!-- Invoice Head -->
