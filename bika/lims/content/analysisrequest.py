@@ -1551,33 +1551,27 @@ class AnalysisRequest(BaseFolder):
     def getBillableItems(self):
         """Returns the items to be billed
         """
-        def get_keywords_set(profiles):
-            keys = list()
-            for profile in profiles:
-                keys += map(lambda s: s.getKeyword(), profile.getService())
-            return set(keys)
-
-        # Profiles with a fixed price, regardless of their analyses
+        # Assigned profiles
         profiles = self.getProfiles()
-        billable_items = filter(lambda pr: pr.getUseAnalysisProfilePrice(),
-                                 profiles)
-        # Profiles w/o a fixed price. The price is the sum of the individual
-        # price for each analysis
-        non_billable = filter(lambda p: p not in billable_items, profiles)
-        billable_keys = get_keywords_set(non_billable) - \
-                        get_keywords_set(billable_items)
-
+        # Billable profiles which have a fixed price set
+        billable_profiles = filter(
+            lambda pr: pr.getUseAnalysisProfilePrice(), profiles)
+        # All services contained in the billable profiles
+        billable_profile_services = reduce(lambda a, b: a+b, map(
+            lambda profile: profile.getService(), billable_profiles), [])
+        # Keywords of the contained services
+        billable_service_keys = map(
+            lambda s: s.getKeyword(), set(billable_profile_services))
+        # The billable items contain billable profiles and single selected analyses
+        billable_items = billable_profiles
         # Get the analyses to be billed
-        exclude_rs = ['retracted', 'rejected']
+        exclude_rs = ["retracted", "rejected"]
         for analysis in self.getAnalyses(is_active=True):
             if analysis.review_state in exclude_rs:
                 continue
-            if analysis.getKeyword not in billable_keys:
+            if analysis.getKeyword in billable_service_keys:
                 continue
             billable_items.append(api.get_object(analysis))
-
-        # Return the analyses that need to be billed individually, together with
-        # the profiles with a fixed price
         return billable_items
 
     security.declareProtected(View, 'getSubtotal')
