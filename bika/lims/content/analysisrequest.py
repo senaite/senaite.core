@@ -1580,41 +1580,6 @@ class AnalysisRequest(BaseFolder):
         # the profiles with a fixed price
         return billable_items
 
-    # TODO Cleanup - Remove this function, only used in invoice and too complex
-    def getServicesAndProfiles(self):
-        """This function gets all analysis services and all profiles and removes
-        the services belonging to a profile.
-
-        :returns: a tuple of three lists, where the first list contains the
-        analyses and the second list the profiles.
-        The third contains the analyses objects used by the profiles.
-        """
-        # profile_analyses contains the profile's analyses (analysis !=
-        # service") objects to obtain
-        # the correct price later
-        exclude_rs = ['retracted', 'rejected']
-        analyses = filter(lambda an: an.review_state not in exclude_rs,
-                          self.getAnalyses(is_active=True))
-        analyses = map(api.get_object, analyses)
-        profiles = self.getProfiles()
-
-        # Get the service keys from all profiles
-        profiles_keys = list()
-        for profile in profiles:
-            profile_keys = map(lambda s: s.getKeyword(), profile.getService())
-            profiles_keys.extend(profile_keys)
-
-        # Extract the analyses which service is present in at least one profile
-        # and those not present (orphan)
-        profile_analyses = list()
-        orphan_analyses = list()
-        for an in analyses:
-            if an.getKeyword() in profiles_keys:
-                profile_analyses.append(an)
-            else:
-                orphan_analyses.append(an)
-        return analyses, profiles, profile_analyses
-
     security.declareProtected(View, 'getSubtotal')
 
     def getSubtotal(self):
