@@ -54,7 +54,7 @@ schema = BikaSchema.copy() + Schema((
     DateTimeField(
         "InvoiceDate",
         required=1,
-        default_method="current_date",
+        default_method="get_current_date",
         widget=DateTimeWidget(
             label=_("Date"),
         ),
@@ -82,6 +82,10 @@ class Invoice(BaseFolder):
         """Return the Invoice ID as title
         """
         return safe_unicode(self.getId()).encode("utf-8")
+
+    def get_current_date(self):
+        """Return the current Date
+        """
 
 
 registerType(Invoice, PROJECTNAME)
