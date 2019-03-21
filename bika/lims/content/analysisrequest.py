@@ -70,6 +70,7 @@ from bika.lims.permissions import FieldEditStorageLocation
 from bika.lims.permissions import FieldEditTemplate
 from bika.lims.permissions import ManageInvoices
 from bika.lims.utils import getUsers
+from bika.lims.utils import tmpID
 from bika.lims.utils import user_email
 from bika.lims.utils import user_fullname
 from bika.lims.workflow import getTransitionDate
@@ -100,7 +101,6 @@ from Products.CMFPlone.utils import safe_unicode
 from zope.interface import alsoProvides
 from zope.interface import implements
 from zope.interface import noLongerProvides
-
 
 # SCHEMA DEFINITION
 schema = BikaSchema.copy() + Schema((
@@ -1632,45 +1632,22 @@ class AnalysisRequest(BaseFolder):
     getTotal = getTotalPrice
 
     @security.protected(ManageInvoices)
-    def createInvoice(self):
+    def createInvoice(self, pdf):
         """Issue invoice
         """
-        # check for an adhoc invoice batch for this month
-        now = DateTime()
-        batch_month = now.strftime('%b %Y')
-        batch_title = '%s - %s' % (batch_month, 'ad hoc')
-        invoice_batch = None
-        for b_proxy in self.portal_catalog(portal_type='InvoiceBatch',
-                                           Title=batch_title):
-            invoice_batch = b_proxy.getObject()
-        if not invoice_batch:
-            # noinspection PyCallingNonCallable
-            first_day = DateTime(now.year(), now.month(), 1)
-            start_of_month = first_day.earliestTime()
-            last_day = first_day + 31
-            # noinspection PyUnresolvedReferences
-            while last_day.month() != now.month():
-                last_day -= 1
-            # noinspection PyUnresolvedReferences
-            end_of_month = last_day.latestTime()
-
-            invoices = self.invoices
-            batch_id = invoices.generateUniqueId('InvoiceBatch')
-            invoice_batch = _createObjectByType("InvoiceBatch", invoices,
-                                                batch_id)
-            invoice_batch.edit(
-                title=batch_title,
-                BatchStartDate=start_of_month,
-                BatchEndDate=end_of_month,
-            )
-            invoice_batch.processForm()
-
-        client_uid = self.getClientUID()
-        # Get the created invoice
-        invoice = invoice_batch.createInvoice(client_uid, [self, ])
-        invoice.setAnalysisRequest(self)
-        # Set the created invoice in the schema
-        self.Schema()['Invoice'].set(self, invoice)
+        invoice = self.getInvoice()
+        if invoice:
+            return invoice
+        client = self.getClient()
+        invoice = _createObjectByType("Invoice", client, tmpID())
+        invoice.edit(
+            AnalysisRequest=self,
+            Client=client,
+            InvoiceDate=DateTime(),
+            InvoicePDF=pdf
+        )
+        invoice.processForm()
+        return invoice
 
     @security.public
     def printInvoice(self, REQUEST=None, RESPONSE=None):

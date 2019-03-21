@@ -6,29 +6,30 @@
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
 import sys
-from decimal import Decimal
 
 from AccessControl import ClassSecurityInfo
 from bika.lims import bikaMessageFactory as _
-from bika.lims.browser.fields.remarksfield import RemarksField
-from bika.lims.browser.widgets import RemarksWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IInvoice
-from DateTime import DateTime
-from persistent.mapping import PersistentMapping
+from plone.app.blob.field import FileField as BlobFileField
 from Products.Archetypes.public import BaseFolder
-from Products.Archetypes.public import ComputedField
-from Products.Archetypes.public import ComputedWidget
-from Products.ATExtensions.ateapi import DateTimeField
-from Products.ATExtensions.ateapi import DateTimeWidget
+from Products.Archetypes.public import FileWidget
 from Products.Archetypes.public import ReferenceField
 from Products.Archetypes.public import Schema
 from Products.Archetypes.public import registerType
+from Products.ATExtensions.ateapi import DateTimeField
+from Products.ATExtensions.ateapi import DateTimeWidget
 from Products.CMFPlone.utils import safe_unicode
 from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
+    BlobFileField(
+        "InvoicePDF",
+        widget=FileWidget(
+            label=_("Invoice PDF"),
+        )
+    ),
     ReferenceField(
         "Client",
         required=1,
@@ -58,60 +59,11 @@ schema = BikaSchema.copy() + Schema((
             label=_("Date"),
         ),
     ),
-    RemarksField(
-        "Remarks",
-        searchable=True,
-        widget=RemarksWidget(
-            label=_("Remarks"),
-        ),
-    ),
-    ComputedField(
-        "Subtotal",
-        expression="context.getSubtotal()",
-        widget=ComputedWidget(
-            label=_("Subtotal"),
-            visible=False,
-        ),
-    ),
-    ComputedField(
-        "VATAmount",
-        expression="context.getVATAmount()",
-        widget=ComputedWidget(
-            label=_("VAT Total"),
-            visible=False,
-        ),
-    ),
-    ComputedField(
-        "Total",
-        expression="context.getTotal()",
-        widget=ComputedWidget(
-            label=_("Total"),
-            visible=False,
-        ),
-    ),
-    ComputedField(
-        "ClientUID",
-        expression="here.getClient() and here.getClient().UID()",
-        widget=ComputedWidget(
-            visible=False,
-        ),
-    ),
-    ComputedField(
-        "InvoiceSearchableText",
-        expression="here.getInvoiceSearchableText()",
-        widget=ComputedWidget(
-            visible=False,
-        ),
-    ),
 ))
 
 TitleField = schema["title"]
 TitleField.required = 0
 TitleField.widget.visible = False
-
-
-class InvoiceLineItem(PersistentMapping):
-    pass
 
 
 class Invoice(BaseFolder):
@@ -127,38 +79,9 @@ class Invoice(BaseFolder):
         renameAfterCreation(self)
 
     def Title(self):
-        """ Return the Invoice Id as title """
-        return safe_unicode(self.getId()).encode('utf-8')
-
-    def getSubtotal(self):
-        """ Compute Subtotal """
-        return sum([float(obj['Subtotal']) for obj in self.invoice_lineitems])
-
-    def getVATAmount(self):
-        """ Compute VAT """
-        return Decimal(self.getTotal()) - Decimal(self.getSubtotal())
-
-    def getTotal(self):
-        """ Compute Total """
-        return sum([float(obj['Total']) for obj in self.invoice_lineitems])
-
-    def getInvoiceSearchableText(self):
-        """Aggregate text of all line items for querying
+        """Return the Invoice ID as title
         """
-        s = ""
-        for item in self.invoice_lineitems:
-            s = s + item["ItemDescription"]
-        return s
-
-    # XXX workflow script
-    def workflow_script_dispatch(self):
-        """ dispatch order """
-        self.setDateDispatched(DateTime())
-
-    def current_date(self):
-        """Get the current date
-        """
-        return DateTime()
+        return safe_unicode(self.getId()).encode("utf-8")
 
 
 registerType(Invoice, PROJECTNAME)
