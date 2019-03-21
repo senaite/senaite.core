@@ -1,8 +1,0 @@
-/*
-This is included for specific content types from portal_css.
-Doing this the Right Way is very, very messy.
-*/
-
-#edit-bar {
-  display:none !important;
-}

@@ -81,6 +81,13 @@ JAVASCRIPTS_TO_REMOVE = [
     "++resource++bika.lims.js/bika.lims.analysisrequest.publish.js",
 ]
 
+CSS_TO_REMOVE = [
+    "bika_invoice.css",
+    "++resource++bika.lims.css/hide_contentmenu.css",
+    "++resource++bika.lims.css/hide_editable_border.css",
+    "print.css",
+]
+
 @upgradestep(product, version)
 def upgrade(tool):
     portal = tool.aq_inner.aq_parent
@@ -110,6 +117,9 @@ def upgrade(tool):
     # Remove stale javascripts
     # https://github.com/senaite/senaite.core/pull/1180
     remove_stale_javascripts(portal)
+
+    # Remove stale CSS
+    remove_stale_css(portal)
 
     # Remove QC reports and gpw dependency
     # https://github.com/senaite/senaite.core/pull/1058
@@ -1655,6 +1665,15 @@ def remove_stale_javascripts(portal):
     for js in JAVASCRIPTS_TO_REMOVE:
         logger.info("Unregistering JS %s" % js)
         portal.portal_javascripts.unregisterResource(js)
+
+
+def remove_stale_css(portal):
+    """Removes stale CSS
+    """
+    logger.info("Removing stale css ...")
+    for css in CSS_TO_REMOVE:
+        logger.info("Unregistering CSS %s" % css)
+        portal.portal_css.unregisterResource(css)
 
 
 def remove_stale_indexes_from_bika_catalog(portal):
