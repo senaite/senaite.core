@@ -29,6 +29,7 @@
   <element value="SupplyOrder"/>
   <element value="Folder"/>
   <element value="SamplingRound"/>
+  <element value="Invoice"/>
  </property>
  <property name="allow_discussion">False</property>
  <property name="immediate_view">base_edit</property>

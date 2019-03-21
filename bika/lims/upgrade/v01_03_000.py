@@ -252,6 +252,10 @@ def upgrade(tool):
     # https://github.com/senaite/senaite.core/pull/1254
     reindex_submitted_analyses(portal)
 
+    # remove invoices
+    # https://github.com/senaite/senaite.core/pull/1296
+    remove_invoices(portal)
+
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
 
@@ -2074,3 +2078,32 @@ def fix_calculation_version_inconsistencies(portal):
             logger.info("First version created for {}".format(calc.Title()))
     logger.info("Fix Calculation version inconsistencies [DONE]")
 
+
+def remove_invoices(portal):
+    """Moves all existing invoices inside the client and removes the invoices
+    folder with the invoice batches
+    """
+    logger.info("Unlink Invoices")
+
+    invoices = portal.get("invoices")
+    if invoices is None:
+        return
+
+    for batch in invoices.objectValues():
+        for invoice in batch.objectValues():
+            invoice_id = invoice.getId()
+            client = invoice.getClient()
+            if not client:
+                # invoice w/o a client -> remove
+                batch.manage_delObjects(invoice_id)
+                continue
+
+            if invoice_id in client.objectIds():
+                continue
+
+            # move invoices inside the client
+            cp = batch.manage_cutObjects(invoice_id)
+            client.manage_pasteObjects(cp)
+
+    # delete the invoices folder
+    portal.manage_delObjects(invoices.getId())
