@@ -94,7 +94,7 @@
      <permission value="senaite.core: View Log Tab"/>
  </action>
 
- <action title="Create Invoice"
+ <action title="Create Invoice PDF"
          action_id="Create Invoice"
          category="document_actions"
          condition_expr="python:context.REQUEST.get('verified', '')"
