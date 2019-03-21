@@ -5,103 +5,107 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
+import sys
+from decimal import Decimal
+
 from AccessControl import ClassSecurityInfo
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields.remarksfield import RemarksField
 from bika.lims.browser.widgets import RemarksWidget
-from bika.lims.utils import t
-from bika.lims.config import ManageInvoices, ManageBika, PROJECTNAME
+from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IInvoice
 from DateTime import DateTime
-from decimal import Decimal
 from persistent.mapping import PersistentMapping
-from Products.Archetypes.public import *
-from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget
-from Products.CMFCore.permissions import View
+from Products.Archetypes.public import BaseFolder
+from Products.Archetypes.public import ComputedField
+from Products.Archetypes.public import ComputedWidget
+from Products.ATExtensions.ateapi import DateTimeField
+from Products.ATExtensions.ateapi import DateTimeWidget
+from Products.Archetypes.public import ReferenceField
+from Products.Archetypes.public import Schema
+from Products.Archetypes.public import registerType
 from Products.CMFPlone.utils import safe_unicode
 from zope.interface import implements
-import sys
 
 schema = BikaSchema.copy() + Schema((
     ReferenceField(
-        'Client',
+        "Client",
         required=1,
         vocabulary_display_path_bound=sys.maxsize,
-        allowed_types=('Client',),
-        relationship='ClientInvoice',
+        allowed_types=("Client",),
+        relationship="ClientInvoice",
     ),
     ReferenceField(
-        'AnalysisRequest',
+        "AnalysisRequest",
         required=1,
         vocabulary_display_path_bound=sys.maxsize,
-        allowed_types=('AnalysisRequest',),
-        relationship='AnalysisRequestInvoice',
+        allowed_types=("AnalysisRequest",),
+        relationship="AnalysisRequestInvoice",
     ),
     ReferenceField(
-        'SupplyOrder',
+        "SupplyOrder",
         required=1,
         vocabulary_display_path_bound=sys.maxsize,
-        allowed_types=('SupplyOrder',),
-        relationship='SupplyOrderInvoice',
+        allowed_types=("SupplyOrder",),
+        relationship="SupplyOrderInvoice",
     ),
     DateTimeField(
-        'InvoiceDate',
+        "InvoiceDate",
         required=1,
-        default_method='current_date',
+        default_method="current_date",
         widget=DateTimeWidget(
             label=_("Date"),
         ),
     ),
     RemarksField(
-        'Remarks',
+        "Remarks",
         searchable=True,
         widget=RemarksWidget(
             label=_("Remarks"),
         ),
     ),
     ComputedField(
-        'Subtotal',
-        expression='context.getSubtotal()',
+        "Subtotal",
+        expression="context.getSubtotal()",
         widget=ComputedWidget(
             label=_("Subtotal"),
             visible=False,
         ),
     ),
     ComputedField(
-        'VATAmount',
-        expression='context.getVATAmount()',
+        "VATAmount",
+        expression="context.getVATAmount()",
         widget=ComputedWidget(
             label=_("VAT Total"),
             visible=False,
         ),
     ),
     ComputedField(
-        'Total',
-        expression='context.getTotal()',
+        "Total",
+        expression="context.getTotal()",
         widget=ComputedWidget(
             label=_("Total"),
             visible=False,
         ),
     ),
     ComputedField(
-        'ClientUID',
-        expression='here.getClient() and here.getClient().UID()',
+        "ClientUID",
+        expression="here.getClient() and here.getClient().UID()",
         widget=ComputedWidget(
             visible=False,
         ),
     ),
     ComputedField(
-        'InvoiceSearchableText',
-        expression='here.getInvoiceSearchableText()',
+        "InvoiceSearchableText",
+        expression="here.getInvoiceSearchableText()",
         widget=ComputedWidget(
             visible=False,
         ),
     ),
-),
-)
+))
 
-TitleField = schema['title']
+TitleField = schema["title"]
 TitleField.required = 0
 TitleField.widget.visible = False
 
@@ -126,31 +130,24 @@ class Invoice(BaseFolder):
         """ Return the Invoice Id as title """
         return safe_unicode(self.getId()).encode('utf-8')
 
-    security.declareProtected(View, 'getSubtotal')
-
     def getSubtotal(self):
         """ Compute Subtotal """
         return sum([float(obj['Subtotal']) for obj in self.invoice_lineitems])
-
-    security.declareProtected(View, 'getVATAmount')
 
     def getVATAmount(self):
         """ Compute VAT """
         return Decimal(self.getTotal()) - Decimal(self.getSubtotal())
 
-    security.declareProtected(View, 'getTotal')
-
     def getTotal(self):
         """ Compute Total """
         return sum([float(obj['Total']) for obj in self.invoice_lineitems])
 
-    security.declareProtected(View, 'getInvoiceSearchableText')
-
     def getInvoiceSearchableText(self):
-        """ Aggregate text of all line items for querying """
-        s = ''
+        """Aggregate text of all line items for querying
+        """
+        s = ""
         for item in self.invoice_lineitems:
-            s = s + item['ItemDescription']
+            s = s + item["ItemDescription"]
         return s
 
     # XXX workflow script
@@ -158,10 +155,9 @@ class Invoice(BaseFolder):
         """ dispatch order """
         self.setDateDispatched(DateTime())
 
-    security.declarePublic('current_date')
-
     def current_date(self):
-        """ return current date """
+        """Get the current date
+        """
         return DateTime()
 
 
