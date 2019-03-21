@@ -1546,8 +1546,7 @@ class AnalysisRequest(BaseFolder):
                     return "2"
         return "0"
 
-    security.declareProtected(View, 'getBillableItems')
-
+    @security.protected(View)
     def getBillableItems(self):
         """Returns the items to be billed
         """
@@ -1574,29 +1573,25 @@ class AnalysisRequest(BaseFolder):
             billable_items.append(api.get_object(analysis))
         return billable_items
 
-    security.declareProtected(View, 'getSubtotal')
-
+    @security.protected(View)
     def getSubtotal(self):
         """Compute Subtotal (without member discount and without vat)
         """
         return sum([Decimal(obj.getPrice()) for obj in self.getBillableItems()])
 
-    security.declareProtected(View, 'getSubtotalVATAmount')
-
+    @security.protected(View)
     def getSubtotalVATAmount(self):
         """Compute VAT amount without member discount
         """
         return sum([Decimal(o.getVATAmount()) for o in self.getBillableItems()])
 
-    security.declareProtected(View, 'getSubtotalTotalPrice')
-
+    @security.protected(View)
     def getSubtotalTotalPrice(self):
         """Compute the price with VAT but no member discount
         """
         return self.getSubtotal() + self.getSubtotalVATAmount()
 
-    security.declareProtected(View, 'getDiscountAmount')
-
+    @security.protected(View)
     def getDiscountAmount(self):
         """It computes and returns the analysis service's discount amount
         without VAT
@@ -1608,6 +1603,7 @@ class AnalysisRequest(BaseFolder):
         else:
             return 0
 
+    @security.protected(View)
     def getVATAmount(self):
         """It computes the VAT amount from (subtotal-discount.)*VAT/100, but
         each analysis has its own VAT!
@@ -1622,8 +1618,7 @@ class AnalysisRequest(BaseFolder):
         else:
             return VATAmount
 
-    security.declareProtected(View, 'getTotalPrice')
-
+    @security.protected(View)
     def getTotalPrice(self):
         """It gets the discounted price from analyses and profiles to obtain the
         total value with the VAT and the discount applied
@@ -1636,10 +1631,8 @@ class AnalysisRequest(BaseFolder):
 
     getTotal = getTotalPrice
 
-    security.declareProtected(ManageInvoices, 'issueInvoice')
-
-    # noinspection PyUnusedLocal
-    def issueInvoice(self, REQUEST=None, RESPONSE=None):
+    @security.protected(ManageInvoices)
+    def createInvoice(self):
         """Issue invoice
         """
         # check for an adhoc invoice batch for this month
@@ -1680,9 +1673,7 @@ class AnalysisRequest(BaseFolder):
         # Set the created invoice in the schema
         self.Schema()['Invoice'].set(self, invoice)
 
-    security.declarePublic('printInvoice')
-
-    # noinspection PyUnusedLocal
+    @security.public
     def printInvoice(self, REQUEST=None, RESPONSE=None):
         """Print invoice
         """
@@ -1690,9 +1681,8 @@ class AnalysisRequest(BaseFolder):
         invoice_url = invoice.absolute_url()
         RESPONSE.redirect('{}/invoice_print'.format(invoice_url))
 
-    security.declarePublic('getVerifier')
-
     @deprecated("Use getVerifiers instead")
+    @security.public
     def getVerifier(self):
         """Returns the user that verified the whole Analysis Request. Since the
         verification is done automatically as soon as all the analyses it
@@ -1891,8 +1881,7 @@ class AnalysisRequest(BaseFolder):
         """
         return getTransitionDate(self, 'publish', return_as_datetime=True)
 
-    security.declarePublic('getSamplingDeviationTitle')
-
+    @security.public
     def getSamplingDeviationTitle(self):
         """
         It works as a metacolumn.
@@ -1902,8 +1891,7 @@ class AnalysisRequest(BaseFolder):
             return sd.Title()
         return ''
 
-    security.declarePublic('getHazardous')
-
+    @security.public
     def getHazardous(self):
         """
         It works as a metacolumn.
@@ -1913,8 +1901,7 @@ class AnalysisRequest(BaseFolder):
             return sample_type.getHazardous()
         return False
 
-    security.declarePublic('getContactURL')
-
+    @security.public
     def getContactURL(self):
         """
         It works as a metacolumn.
@@ -1924,8 +1911,7 @@ class AnalysisRequest(BaseFolder):
             return contact.absolute_url_path()
         return ''
 
-    security.declarePublic('getSamplingWorkflowEnabled')
-
+    @security.public
     def getSamplingWorkflowEnabled(self):
         """Returns True if the sample of this Analysis Request has to be
         collected by the laboratory personnel
