@@ -970,7 +970,7 @@ schema = BikaSchema.copy() + Schema((
         widget=ComputedWidget(
             visible={
                 'edit': 'invisible',
-                'view': 'invisible',
+                'view': 'visible',
             },
         )
     ),
@@ -1636,7 +1636,6 @@ class AnalysisRequest(BaseFolder):
         """Issue invoice
         """
         # check for an adhoc invoice batch for this month
-        # noinspection PyCallingNonCallable
         now = DateTime()
         batch_month = now.strftime('%b %Y')
         batch_title = '%s - %s' % (batch_month, 'ad hoc')
