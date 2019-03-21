@@ -1,141 +1,221 @@
-<div summary="Invoice Info">
-    <!-- Div Styled Table -->
-    <div class="div-table-first-row">
-        <label i18n:translate="">Invoice To</label>
-        <span tal:content="view/contact"></span>
+<div id="invoice"
+  i18n:domain="senaite.core"
+  tal:define="sample view/sample;
+              invoice sample/Invoice;">
+
+  <tal:css>
+    <style type="text/css">
+     #invoice table { border: none; }
+     #invoice table tr { background-color: transparent; }
+     #invoice table th { border-style: solid none; }
+     #invoice table td { border-style: solid none; }
+     #invoice table tfoot td:first-child { border-style: none; }
+     #invoice table tbody tr:last-child td { border-bottom: none; }
+     #invoice table tfoot tr:first-child>td:not(:first-child) { border-top: 2px solid #ddd; }
+    </style>
+  </tal:css>
+
+  <h1 i18n:translate="">Invoice</h1>
+
+  <!-- Invoice Header -->
+  <div class="row">
+    <div class="col-sm-6">
+      <table class="table table-condensed invoice-info">
+        <colgroup>
+          <col style="width:30%"/>
+          <col style="width:70%"/>
+        </colgroup>
+        <!-- Invoice To -->
+        <tr>
+          <td>
+            <label i18n:translate="">Invoice To</label>
+          </td>
+          <td>
+            <span tal:content="sample/Contact/Title|nothing"></span>
+          </td>
+        </tr>
+        <!-- Invoice ID -->
+        <tr>
+          <td>
+            <label i18n:translate="">Invoice ID</label>
+          </td>
+          <td>
+            <span tal:content="invoice/getId|default">
+              <span tal:omit-tag="" i18n:translate="">Proforma (Not yet invoiced)</span>
+            </span>
+          </td>
+        </tr>
+        <!-- Client Reference -->
+        <tr>
+          <td>
+            <label i18n:translate="">Client Reference</label>
+          </td>
+          <td>
+            <span tal:content="sample/ClientReference|nothing"></span>
+          </td>
+        </tr>
+        <!-- Sample Type -->
+        <tr>
+          <td>
+            <label i18n:translate="">Sample Type</label>
+          </td>
+          <td>
+            <span tal:content="sample/SampleTypeTitle|nothing"></span>
+          </td>
+        </tr>
+        <!-- Request ID -->
+        <tr>
+          <td>
+            <label i18n:translate="">Sample ID</label>
+          </td>
+          <td>
+            <span tal:content="sample/getId|nothing"></span>
+          </td>
+        </tr>
+        <!-- Profiles -->
+        <tr>
+          <td>
+            <label i18n:translate="">Analysis Profiles</label>
+          </td>
+          <td>
+            <tal:profiles repeat="profile sample/Profiles">
+              <div class="label label-default">
+                <div tal:replace="profile/Title|nothing"></div>
+              </div>
+            </tal:profiles>
+          </td>
+        </tr>
+        <!-- Date Received -->
+        <tr>
+          <td>
+            <label i18n:translate="">Date Received</label>
+          </td>
+          <td>
+            <span tal:content="python:view.to_localized_time(sample.DateReceived)"/>
+          </td>
+        </tr>
+        <!-- Client Order Number -->
+        <tr>
+          <td>
+            <label i18n:translate="">Client Order Number</label>
+          </td>
+          <td>
+            <span tal:content="sample/ClientOrderNumber|nothing"></span>
+          </td>
+        </tr>
+        <!-- Sample Point -->
+        <tr>
+          <td>
+            <label i18n:translate="">Sample Point</label>
+          </td>
+          <td>
+            <span tal:content="sample/SamplePointTitle|nothing"></span>
+          </td>
+        </tr>
+        <!-- Verified By -->
+        <tr>
+          <td>
+            <label i18n:translate="">Verified By</label>
+          </td>
+          <td>
+            <span tal:content="sample/getVerifier|nothing"></span>
+          </td>
+        </tr>
+        <!-- Date Published -->
+        <tr>
+          <td>
+            <label i18n:translate="">Date Published</label>
+          </td>
+          <td>
+            <span tal:content="python:view.to_localized_time(sample.DatePublished)"></span>
+          </td>
+        </tr>
+      </table>
     </div>
-    <tal:table tal:repeat="field view/headers">
-        <div tal:define="oddrow repeat/field/odd;"
-             tal:attributes="class python:oddrow and 'div-table-right' or 'div-table-left'">
-            <label i18n:translate="" tal:content="field/title">title</label>
-            <span tal:content="field/value"></span>
-        </div>
-    </tal:table>
+  </div>
+
+  <!-- Invoice Content -->
+  <div class="row">
+    <div class="col-sm-12">
+
+      <table class="table table-striped invoice-items">
+        <colgroup>
+          <col style="width:60%"/>
+          <col style="width:20%"/>
+          <col style="width:20%"/>
+        </colgroup>
+
+        <!-- Invoice Head -->
+        <thead>
+          <tr>
+            <th i18n:translate="">Position</th>
+            <th i18n:translate="">VAT</th>
+            <th i18n:translate="">Price</th>
+          </tr>
+        </thead>
+
+        <!-- Invoice Items -->
+        <tbody>
+          <!-- Billable Items -->
+          <tal:items repeat="item view/get_billable_items">
+            <tr>
+              <!-- Name -->
+              <td>
+                <span tal:content="item/title"/>
+              </td>
+              <!-- Profile VAT -->
+              <td>
+                <span tal:content="item/vat"/> %
+              </td>
+              <!-- Analysis Profile Price -->
+              <td>
+                <span tal:content="item/price"/>
+              </td>
+            </tr>
+          </tal:items>
+        </tbody>
+
+        <!-- Invoice Prices -->
+        <tfoot>
+          <tr>
+            <td></td>
+            <td>
+              <label i18n:translate="">Subtotal</label>
+            </td>
+            <td>
+              <span tal:content="python:view.format_price(sample.getSubtotal())"/>
+            </td>
+          </tr>
+          <tr tal:condition="sample/Client/MemberDiscountApplies">
+            <td></td>
+            <td>
+              <label i18n:translate="">Discount</label>
+              (<span tal:replace="sample/getDefaultMemberDiscount"/> %)
+            </td>
+            <td>
+              <span tal:content="python:view.format_price(sample.getDiscountAmount())"/>
+            </td>
+          </tr>
+          <tr>
+            <td></td>
+            <td>
+              <label i18n:translate="">Taxes</label>
+            </td>
+            <td>
+              <span tal:content="python:view.format_price(sample.getVATAmount())"/>
+            </td>
+          </tr>
+          <tr>
+            <td></td>
+            <td>
+              <label i18n:translate="">Total</label>
+            </td>
+            <td>
+              <span tal:content="python:view.format_price(sample.getTotalPrice())"/>
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
 </div>
-<br />
-
-<table class="invoice-items" summary="Analyses List">
-    <thead>
-    <tr>
-        <th colspan="2" i18n:translate="">Analyses</th>
-        <th i18n:translate="">Price</th>
-        <th i18n:translate="">VAT</th>
-        <th i18n:translate="">Price incl VAT</th>
-    </tr>
-    </thead>
-    <tbody>
-    <!-- Displaying the analysis profiles. -->
-    <tal:profiles repeat="profile view/profiles">
-        <tal:profile>
-            <tr class="profile">
-                <td colspan="2" class="profile" tal:content="profile/name"></td>
-                <!-- If profile's checkbox "Use Analysis Profile Price" is enabled, the profile prices
-                will be displayed.-->
-
-                <td tal:condition="profile/price" class="currency">
-                    <span tal:content="python:view.getPreferredCurrencyAbreviation()">R</span>
-                    <span tal:content="profile/price">0.00</span>
-                </td>
-                <td tal:condition="profile/price" class="currency">
-                    <span tal:content="python:view.getPreferredCurrencyAbreviation()">R</span>
-                    <span tal:content="profile/priceVat">0.00</span>
-                </td>
-                <td tal:condition="profile/price" class="currency">
-                    <span tal:content="python:view.getPreferredCurrencyAbreviation()">R</span>
-                    <span tal:content="profile/priceTotal">0.00</span>
-                </td>
-            </tr>
-            <!-- Displaying profile's analysis services -->
-            <tal:panalyses repeat="analysis profile/analyses">
-                <tal:panalysis>
-                    <tr class="panalysis">
-                        <td colspan="2" class="title" tal:content="analysis/title">Title</td>
-                        <!-- Analysis price -->
-                        <td tal:condition="analysis/price" class="currency">
-                            <span tal:content="python:view.getPreferredCurrencyAbreviation()">R</span>
-                            <span tal:content="analysis/price">0.00</span>
-                        </td>
-                        <!-- Analysis VAT amount -->
-                        <td tal:condition="analysis/price" class="currency">
-                            <span tal:content="python:view.getPreferredCurrencyAbreviation()">R</span>
-                            <span tal:content="analysis/priceVat">0.00</span>
-                        </td>
-                        <!-- Analysis price + VAT amount -->
-                        <td tal:condition="analysis/price" class="currency">
-                            <span tal:content="python:view.getPreferredCurrencyAbreviation()">R</span>
-                            <span tal:content="analysis/priceTotal">0.00</span>
-                        </td>
-                    </tr>
-                </tal:panalysis>
-            </tal:panalyses>
-        </tal:profile>
-    </tal:profiles>
-    <!-- Displaying solo analysis. -->
-    <tal:categories repeat="category view/analyses">
-        <tal:category>
-            <tr class="category">
-                <td colspan="5" tal:content="category/name"></td>
-            </tr>
-            <tal:analyses repeat="analysis category/analyses">
-                <tal:analysis>
-                    <tr>
-                        <td colspan="2" class="title" tal:content="analysis/title">Title</td>
-                        <!-- Analysis price -->
-                        <td class="currency">
-                            <span tal:content="python:view.getPreferredCurrencyAbreviation()">R</span>
-                            <span tal:content="analysis/price">0.00</span>
-                        </td>
-                        <!-- Analysis VAT amount -->
-                        <td class="currency">
-                            <span tal:content="python:view.getPreferredCurrencyAbreviation()">R</span>
-                            <span tal:content="analysis/priceVat">0.00</span>
-                        </td>
-                        <!-- Analysis price + VAT amount -->
-                        <td class="currency">
-                            <span tal:content="python:view.getPreferredCurrencyAbreviation()">R</span>
-                            <span tal:content="analysis/priceTotal">0.00</span>
-                        </td>
-                    </tr>
-                </tal:analysis>
-            </tal:analyses>
-        </tal:category>
-    </tal:categories>
-    <!-- Table line containing subtotal prices -->
-    <tr class="totals">
-        <td colspan="2" class="title" i18n:translate="">Subtotal</td>
-        <td class="currency">
-            <span tal:content="python:view.getPreferredCurrencyAbreviation()">R</span>
-            <span tal:content="view/subtotal"></span>
-        </td>
-        <td class="currency">
-            <span tal:content="python:view.getPreferredCurrencyAbreviation()">R</span>
-            <span tal:content="view/subtotalVATAmount"></span>
-        </td>
-        <td class="currency">
-            <span tal:content="python:view.getPreferredCurrencyAbreviation()">R</span>
-            <span tal:content="view/subtotalTotalPrice"></span>
-        </td>
-    </tr>
-    <!-- Last table line containing total prices -->
-    <tr class="totals">
-        <td class="title" i18n:translate="">Total</td>
-        <td class="currency">
-            <span i18n:translate="">Discount %</span>
-            <span tal:content="view/memberDiscount"></span>
-        </td>
-        <td class="currency">
-            <span tal:content="python:view.getPreferredCurrencyAbreviation()">R</span>
-            <span >-</span>
-            <span tal:content="view/discountAmount"></span>
-        </td>
-        <td class="currency">
-            <span tal:content="python:view.getPreferredCurrencyAbreviation()">R</span>
-            <span tal:content="view/VATAmount"></span>
-        </td>
-        <td class="currency">
-            <span tal:content="python:view.getPreferredCurrencyAbreviation()">R</span>
-            <span tal:content="view/totalPrice"></span>
-        </td>
-    </tr>
-    </tbody>
-</table>
