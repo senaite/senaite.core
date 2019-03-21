@@ -5,69 +5,71 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-"""InvoiceBatch is a container for Invoice instances.
-"""
 from AccessControl import ClassSecurityInfo
-from DateTime import DateTime
-from Products.Archetypes.public import *
-from Products.CMFPlone.utils import _createObjectByType
 from bika.lims import bikaMessageFactory as _
-from bika.lims.config import ManageInvoices, PROJECTNAME
+from bika.lims.config import PROJECTNAME
+from bika.lims.config import ManageInvoices
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.content.invoice import InvoiceLineItem
-from bika.lims.interfaces import IInvoiceBatch, ICancellable
+from bika.lims.interfaces import ICancellable
+from bika.lims.interfaces import IInvoiceBatch
 from bika.lims.utils import get_invoice_item_description
 from bika.lims.workflow import getTransitionDate
+from DateTime import DateTime
+from Products.Archetypes.public import DateTimeField
+from Products.Archetypes.public import CalendarWidget
+from Products.Archetypes.public import registerType
+from Products.Archetypes.public import Schema
+from Products.Archetypes.public import BaseFolder
+from Products.CMFPlone.utils import _createObjectByType
 from zope.container.contained import ContainerModifiedEvent
 from zope.interface import implements
 
-schema = BikaSchema.copy() + Schema((
-    DateTimeField('BatchStartDate',
-                  required=1,
-                  default_method='current_date',
-                  widget=CalendarWidget(
-                      label=_("Start Date"),
-                  ),
-                  ),
-    DateTimeField('BatchEndDate',
-                  required=1,
-                  default_method='current_date',
-                  validators=('invoicebatch_EndDate_validator',),
-                  widget=CalendarWidget(
-                      label=_("End Date"),
-                  ),
-                  ),
-),
-)
 
-# noinspection PyCallingNonCallable
-schema['title'].default = DateTime().strftime('%b %Y')
+schema = BikaSchema.copy() + Schema((
+    DateTimeField(
+        "BatchStartDate",
+        required=1,
+        default_method="current_date",
+        widget=CalendarWidget(
+            label=_("Start Date"),
+        ),
+    ),
+    DateTimeField(
+        "BatchEndDate",
+        required=1,
+        default_method="current_date",
+        validators=("invoicebatch_EndDate_validator",),
+        widget=CalendarWidget(
+            label=_("End Date"),
+        ),
+    ),
+))
+
+schema["title"].default = DateTime().strftime("%b %Y")
 
 
 class InvoiceBatch(BaseFolder):
-    """ Container for Invoice instances """
+    """Container for Invoice instances
+    """
     implements(IInvoiceBatch, ICancellable)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
 
-    security.declareProtected(ManageInvoices, 'invoices')
+    _at_rename_after_creation = True
 
+    def _renameAfterCreation(self, check_auto_id=False):
+        from bika.lims.idserver import renameAfterCreation
+        renameAfterCreation(self)
+
+    @security.protected(ManageInvoices)
     def invoices(self):
-        return self.objectValues('Invoice')
+        return self.objectValues("Invoice")
 
-    # security.declareProtected(PostInvoiceBatch, 'post')
-    # def post(self, REQUEST = None):
-    #     """ Post invoices
-    #     """
-    #     map (lambda e: e._post(), self.invoices())
-    #     if REQUEST:
-    #         REQUEST.RESPONSE.redirect('invoicebatch_invoices')
-
-    security.declareProtected(ManageInvoices, 'createInvoice')
-
+    @security.protected(ManageInvoices)
     def createInvoice(self, client_uid, items):
-        """ Creates and invoice for a client and a set of items
+        """Creates and invoice for a client and a set of items
         """
         plone_view = self.restrictedTraverse('@@plone')
         invoice_id = self.generateUniqueId('Invoice')
