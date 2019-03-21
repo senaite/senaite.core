@@ -36,18 +36,4 @@
         </value>
     </record>
 
-  <!-- Hidden Attributes-->
-  <record name="bika.lims.hiddenattributes">
-     <field type="plone.registry.field.Tuple">
-       <title>Site Hidden Attributes</title>
-       <description>One item per class</description>
-       <value_type type="plone.registry.field.List">
-         <title>Field list</title>
-         <description>First row is Class name followed by one Field name per row</description>
-         <value_type type="plone.registry.field.TextLine">
-           <title>Field Name</title>
-         </value_type>
-       </value_type>
-     </field>
-  </record>
 </registry>
