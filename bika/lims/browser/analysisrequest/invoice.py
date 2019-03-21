@@ -125,10 +125,15 @@ class InvoicePrintView(InvoiceView):
     template = ViewPageTemplateFile("templates/invoice_print.pt")
 
     def __call__(self):
-        invoice = self.template()
-        pdf = createPdf(invoice)
+        pdf = self.create_pdf()
         filename = "{}.pdf".format(self.context.getId())
         return self.download(pdf, filename)
+
+    def create_pdf(self):
+        """Create the invoice PDF
+        """
+        invoice = self.template()
+        return createPdf(invoice)
 
     def download(self, data, filename, content_type="application/pdf"):
         """Download the PDF
@@ -142,13 +147,14 @@ class InvoicePrintView(InvoiceView):
         self.request.response.write(data)
 
 
-class InvoiceCreate(InvoiceView):
+class InvoiceCreate(InvoicePrintView):
     """Create the invoice
     """
 
     def __call__(self):
         # Create the invoice object and link it to the current AR.
-        self.context.createInvoice()
+        pdf = self.create_pdf()
+        self.context.createInvoice(pdf)
 
         # Reload the page to see the the new fields
         self.request.response.redirect(
