@@ -1635,11 +1635,10 @@ class AnalysisRequest(BaseFolder):
     def createInvoice(self, pdf):
         """Issue invoice
         """
-        invoice = self.getInvoice()
-        if invoice:
-            return invoice
         client = self.getClient()
-        invoice = _createObjectByType("Invoice", client, tmpID())
+        invoice = self.getInvoice()
+        if not invoice:
+            invoice = _createObjectByType("Invoice", client, tmpID())
         invoice.edit(
             AnalysisRequest=self,
             Client=client,
