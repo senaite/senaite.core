@@ -846,11 +846,11 @@ For setup types, we use senaite_deactivable_type_workflow::
 
 For transactional types, senaite_cancellable_type_workflow is used::
 
-    >>> invoice_batch = api.create(portal.invoices, "InvoiceBatch", title="Test Invoice batch")
-    >>> api.is_active(invoice_batch)
+    >>> maintenance_task = api.create(instrument1, "InstrumentMaintenanceTask", title="Maintenance Task for Instrument 1")
+    >>> api.is_active(maintenance_task)
     True
-    >>> invoice_batch = api.do_transition_for(invoice_batch, "cancel")
-    >>> api.is_active(invoice_batch)
+    >>> maintenance_task = api.do_transition_for(maintenance_task, "cancel")
+    >>> api.is_active(maintenance_task)
     False
 
 But there are custom workflows that can also provide `cancel` transition, like
