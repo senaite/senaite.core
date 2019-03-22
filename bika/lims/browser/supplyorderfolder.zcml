@@ -6,7 +6,7 @@
 
   <browser:page
       for="bika.lims.interfaces.ISupplyOrderFolder"
-      name="base_view"
+      name="folder_view"
       class="bika.lims.browser.supplyorderfolder.SupplyOrderFolderView"
       permission="zope2.View"
       layer="bika.lims.interfaces.IBikaLIMS"

@@ -11,15 +11,11 @@ from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.utils import get_link
-from plone.app.content.browser.interfaces import IFolderContentsView
-from plone.app.layout.globals.interfaces import IViewView
-from zope.interface import implements
 
 
 class SupplyOrderFolderView(BikaListingView):
     """Listing View for Supply Orders
     """
-    implements(IFolderContentsView, IViewView)
 
     def __init__(self, context, request):
         super(SupplyOrderFolderView, self).__init__(context, request)
