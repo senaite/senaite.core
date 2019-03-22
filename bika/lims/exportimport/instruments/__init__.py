@@ -249,5 +249,6 @@ def get_automatic_parser(exim_id, infile):
     parser_func = parser_func and parser_func[0][1] or None
     if not parser_func or not hasattr(adapter, parser_func):
         return None
+    parser_func = getattr(adapter, parser_func)
     return parser_func(infile)
   
