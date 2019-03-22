@@ -5,6 +5,7 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
+from bika.lims import _
 from bika.lims import api
 from bika.lims.browser import BrowserView
 from bika.lims.interfaces import IAnalysis
@@ -118,6 +119,11 @@ class InvoiceView(BrowserView):
         """
         return IAnalysis.providedBy(obj)
 
+    def add_status_message(self, message, level="info"):
+        """Set a portal status message
+        """
+        return self.context.plone_utils.addPortalMessage(message, level)
+
 
 class InvoicePrintView(InvoiceView):
     """Print view w/o outer contents
@@ -154,7 +160,9 @@ class InvoiceCreate(InvoicePrintView):
     def __call__(self):
         # Create the invoice object and link it to the current AR.
         pdf = self.create_pdf()
-        self.context.createInvoice(pdf)
+        invoice = self.context.createInvoice(pdf)
+        self.add_status_message(_("Invoice {} created").format(
+            api.get_id(invoice)))
 
         # Reload the page to see the the new fields
         self.request.response.redirect(

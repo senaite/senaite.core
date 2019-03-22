@@ -12,6 +12,10 @@ from zope.interface import implements
 
 
 class InvoiceView(BrowserView):
+    """Base view for invoices
+
+    This view returns the invoice PDF
+    """
     implements(IInvoiceView)
 
     def __init__(self, context, request):
