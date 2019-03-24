@@ -94,10 +94,11 @@
      <permission value="senaite.core: View Log Tab"/>
  </action>
 
- <action title="Create Invoice"
+ <action title="Create Invoice PDF"
          action_id="Create Invoice"
          category="document_actions"
-         condition_expr="python: context.REQUEST.get('verified','') and context.portal_workflow.getInfoFor(context,'review_state') in ['verified', 'published'] and not context.getInvoice()"
+         condition_expr="python:context.REQUEST.get('verified', '')"
+         icon_expr="string:${object_url}/++resource++bika.lims.images/invoice_big.png"
          link_target=""
          url_expr="string:${object_url}/invoice_create"
          i18n:attributes="title"
@@ -105,11 +106,11 @@
      <permission value="senaite.core: Manage Invoices"/>
  </action>
 
- <action title="Print"
+ <action title="Print Invoice"
          action_id="invoice_print"
          category="document_actions"
-         condition_expr="context/REQUEST/verified|nothing"
-         icon_expr="string:${object_url}/print_icon.png"
+         condition_expr="python:context.REQUEST.get('verified', '')"
+         icon_expr="string:${object_url}/++resource++bika.lims.images/print_32.png"
          link_target=""
          url_expr="string:${object_url}/invoice_print"
          i18n:attributes="title"

@@ -369,19 +369,20 @@ class WorkflowActionSaveAnalysesAdapter(WorkflowActionGenericAdapter):
         # behavior of the method `get_uids` in `WorkflowActionGenericAdapter`
         # falls back to the UID of the current context if no UIDs were
         # submitted, which is in that case an `AnalysisRequest`.
-        service_uids = self.get_uids_from_request()
-        services = map(api.get_object, service_uids)
+        uids = self.get_uids_from_request()
+        services = map(api.get_object, uids)
 
         # Get form values
         form = self.request.form
         prices = form.get("Price", [None])[0]
-        hidden = map(lambda o: {"uid": o, "hidden": self.is_hidden(o)}, services)
+        hidden = map(lambda o: {
+            "uid": api.get_uid(o), "hidden": self.is_hidden(o)
+        }, services)
         specs = map(lambda service: self.get_specs(service), services)
 
         # Set new analyses to the sample
-        uids = map(api.get_uid, services)
         sample.setAnalysisServicesSettings(hidden)
-        sample.setAnalyses(uids, prices=prices, specs=specs)
+        sample.setAnalyses(uids, prices=prices, specs=specs, hidden=hidden)
 
         # Just in case new analyses have been added while the Sample was in a
         # "non-open" state (e.g. "to_be_verified")

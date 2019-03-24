@@ -81,6 +81,13 @@ JAVASCRIPTS_TO_REMOVE = [
     "++resource++bika.lims.js/bika.lims.analysisrequest.publish.js",
 ]
 
+CSS_TO_REMOVE = [
+    "bika_invoice.css",
+    "++resource++bika.lims.css/hide_contentmenu.css",
+    "++resource++bika.lims.css/hide_editable_border.css",
+    "print.css",
+]
+
 @upgradestep(product, version)
 def upgrade(tool):
     portal = tool.aq_inner.aq_parent
@@ -110,6 +117,9 @@ def upgrade(tool):
     # Remove stale javascripts
     # https://github.com/senaite/senaite.core/pull/1180
     remove_stale_javascripts(portal)
+
+    # Remove stale CSS
+    remove_stale_css(portal)
 
     # Remove QC reports and gpw dependency
     # https://github.com/senaite/senaite.core/pull/1058
@@ -241,6 +251,10 @@ def upgrade(tool):
     # Reindex submitted analyses to update the analyst
     # https://github.com/senaite/senaite.core/pull/1254
     reindex_submitted_analyses(portal)
+
+    # remove invoices
+    # https://github.com/senaite/senaite.core/pull/1296
+    remove_invoices(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
@@ -1657,6 +1671,15 @@ def remove_stale_javascripts(portal):
         portal.portal_javascripts.unregisterResource(js)
 
 
+def remove_stale_css(portal):
+    """Removes stale CSS
+    """
+    logger.info("Removing stale css ...")
+    for css in CSS_TO_REMOVE:
+        logger.info("Unregistering CSS %s" % css)
+        portal.portal_css.unregisterResource(css)
+
+
 def remove_stale_indexes_from_bika_catalog(portal):
     """Removes stale indexes and metadata from bika_catalog. Most of these
     indexes and metadata were used for Samples, but they are no longer used.
@@ -2055,3 +2078,32 @@ def fix_calculation_version_inconsistencies(portal):
             logger.info("First version created for {}".format(calc.Title()))
     logger.info("Fix Calculation version inconsistencies [DONE]")
 
+
+def remove_invoices(portal):
+    """Moves all existing invoices inside the client and removes the invoices
+    folder with the invoice batches
+    """
+    logger.info("Unlink Invoices")
+
+    invoices = portal.get("invoices")
+    if invoices is None:
+        return
+
+    for batch in invoices.objectValues():
+        for invoice in batch.objectValues():
+            invoice_id = invoice.getId()
+            client = invoice.getClient()
+            if not client:
+                # invoice w/o a client -> remove
+                batch.manage_delObjects(invoice_id)
+                continue
+
+            if invoice_id in client.objectIds():
+                continue
+
+            # move invoices inside the client
+            cp = batch.manage_cutObjects(invoice_id)
+            client.manage_pasteObjects(cp)
+
+    # delete the invoices folder
+    portal.manage_delObjects(invoices.getId())

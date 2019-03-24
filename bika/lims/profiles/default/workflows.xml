@@ -111,17 +111,6 @@
   -->
   <object name="senaite_instruments_workflow" meta_type="Workflow" />
 
-  <!-- workflow: senaite_invoices_workflow
-  One-state workflow for invoices base folder, that does not allow access to
-  users other than lab administrative personnel: LabClerk, LabManager, Manager
-  A copy of one-state workflow, but:
-  - "Access content information" granted to LabClerk, LabManager, Manager only
-  - "List folder contents" granted to LabClerk, LabManager, Manager only
-  - "Modify portal contents" granted to LabClerk, LabManager, Manager only
-  - "View" granted to lab LabClerk, LabManager, Manager only
-  -->
-  <object name="senaite_invoices_workflow" meta_type="Workflow" />
-
   <!-- workflow: senaite_referencesamples_workflow
   One-state workflow for reference samples base folder, that does not allow
   access to users other than lab personnel.
@@ -426,9 +415,6 @@
     <type type_id="InstrumentScheduledTask">
       <bound-workflow workflow_id="senaite_cancellable_type_workflow"/>
     </type>
-    <type type_id="InvoiceBatch">
-      <bound-workflow workflow_id="senaite_cancellable_type_workflow"/>
-    </type>
 
 
     <!--
@@ -460,9 +446,6 @@
     </type>
     <type type_id="Instruments">
       <bound-workflow workflow_id="senaite_instruments_workflow"/>
-    </type>
-    <type type_id="InvoiceFolder">
-      <bound-workflow workflow_id="senaite_invoices_workflow"/>
     </type>
     <type type_id="LabContact">
       <bound-workflow workflow_id="senaite_labcontact_workflow"/>

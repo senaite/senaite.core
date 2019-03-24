@@ -1246,11 +1246,11 @@ class Sample_Conditions(WorksheetImporter):
     def Import(self):
         folder = self.context.bika_setup.bika_sampleconditions
         for row in self.get_rows(3):
-            if row['Title']:
+            if row['title']:
                 obj = _createObjectByType("SampleCondition", folder, tmpID())
                 obj.edit(
-                    title=row['Title'],
-                    description=row.get('Description', '')
+                    title=row['title'],
+                    description=row.get('description', '')
                 )
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)

@@ -486,21 +486,6 @@ def getHiddenAttributesForClass(classname):
     return []
 
 
-def isAttributeHidden(classname, fieldname):
-    try:
-        registry = queryUtility(IRegistry)
-        hiddenattributes = registry.get('bika.lims.hiddenattributes', ())
-        if hiddenattributes is not None:
-            for alist in hiddenattributes:
-                if alist[0] == classname:
-                    return fieldname in alist[1:]
-    except:
-        logger.warning(
-            'Probem accessing optionally hidden attributes in registry')
-
-    return False
-
-
 def dicts_to_dict(dictionaries, key_subfieldname):
     """Convert a list of dictionaries into a dictionary of dictionaries.
 

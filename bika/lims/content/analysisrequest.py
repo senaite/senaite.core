@@ -70,6 +70,7 @@ from bika.lims.permissions import FieldEditStorageLocation
 from bika.lims.permissions import FieldEditTemplate
 from bika.lims.permissions import ManageInvoices
 from bika.lims.utils import getUsers
+from bika.lims.utils import tmpID
 from bika.lims.utils import user_email
 from bika.lims.utils import user_fullname
 from bika.lims.workflow import getTransitionDate
@@ -100,7 +101,6 @@ from Products.CMFPlone.utils import safe_unicode
 from zope.interface import alsoProvides
 from zope.interface import implements
 from zope.interface import noLongerProvides
-
 
 # SCHEMA DEFINITION
 schema = BikaSchema.copy() + Schema((
@@ -970,7 +970,7 @@ schema = BikaSchema.copy() + Schema((
         widget=ComputedWidget(
             visible={
                 'edit': 'invisible',
-                'view': 'invisible',
+                'view': 'visible',
             },
         )
     ),
@@ -1546,98 +1546,52 @@ class AnalysisRequest(BaseFolder):
                     return "2"
         return "0"
 
-    security.declareProtected(View, 'getBillableItems')
-
+    @security.protected(View)
     def getBillableItems(self):
         """Returns the items to be billed
         """
-        def get_keywords_set(profiles):
-            keys = list()
-            for profile in profiles:
-                keys += map(lambda s: s.getKeyword(), profile.getService())
-            return set(keys)
-
-        # Profiles with a fixed price, regardless of their analyses
+        # Assigned profiles
         profiles = self.getProfiles()
-        billable_items = filter(lambda pr: pr.getUseAnalysisProfilePrice(),
-                                 profiles)
-        # Profiles w/o a fixed price. The price is the sum of the individual
-        # price for each analysis
-        non_billable = filter(lambda p: p not in billable_items, profiles)
-        billable_keys = get_keywords_set(non_billable) - \
-                        get_keywords_set(billable_items)
-
+        # Billable profiles which have a fixed price set
+        billable_profiles = filter(
+            lambda pr: pr.getUseAnalysisProfilePrice(), profiles)
+        # All services contained in the billable profiles
+        billable_profile_services = reduce(lambda a, b: a+b, map(
+            lambda profile: profile.getService(), billable_profiles), [])
+        # Keywords of the contained services
+        billable_service_keys = map(
+            lambda s: s.getKeyword(), set(billable_profile_services))
+        # The billable items contain billable profiles and single selected analyses
+        billable_items = billable_profiles
         # Get the analyses to be billed
-        exclude_rs = ['retracted', 'rejected']
+        exclude_rs = ["retracted", "rejected"]
         for analysis in self.getAnalyses(is_active=True):
             if analysis.review_state in exclude_rs:
                 continue
-            if analysis.getKeyword not in billable_keys:
+            if analysis.getKeyword in billable_service_keys:
                 continue
             billable_items.append(api.get_object(analysis))
-
-        # Return the analyses that need to be billed individually, together with
-        # the profiles with a fixed price
         return billable_items
 
-    # TODO Cleanup - Remove this function, only used in invoice and too complex
-    def getServicesAndProfiles(self):
-        """This function gets all analysis services and all profiles and removes
-        the services belonging to a profile.
-
-        :returns: a tuple of three lists, where the first list contains the
-        analyses and the second list the profiles.
-        The third contains the analyses objects used by the profiles.
-        """
-        # profile_analyses contains the profile's analyses (analysis !=
-        # service") objects to obtain
-        # the correct price later
-        exclude_rs = ['retracted', 'rejected']
-        analyses = filter(lambda an: an.review_state not in exclude_rs,
-                          self.getAnalyses(is_active=True))
-        analyses = map(api.get_object, analyses)
-        profiles = self.getProfiles()
-
-        # Get the service keys from all profiles
-        profiles_keys = list()
-        for profile in profiles:
-            profile_keys = map(lambda s: s.getKeyword(), profile.getService())
-            profiles_keys.extend(profile_keys)
-
-        # Extract the analyses which service is present in at least one profile
-        # and those not present (orphan)
-        profile_analyses = list()
-        orphan_analyses = list()
-        for an in analyses:
-            if an.getKeyword() in profiles_keys:
-                profile_analyses.append(an)
-            else:
-                orphan_analyses.append(an)
-        return analyses, profiles, profile_analyses
-
-    security.declareProtected(View, 'getSubtotal')
-
+    @security.protected(View)
     def getSubtotal(self):
         """Compute Subtotal (without member discount and without vat)
         """
         return sum([Decimal(obj.getPrice()) for obj in self.getBillableItems()])
 
-    security.declareProtected(View, 'getSubtotalVATAmount')
-
+    @security.protected(View)
     def getSubtotalVATAmount(self):
         """Compute VAT amount without member discount
         """
         return sum([Decimal(o.getVATAmount()) for o in self.getBillableItems()])
 
-    security.declareProtected(View, 'getSubtotalTotalPrice')
-
+    @security.protected(View)
     def getSubtotalTotalPrice(self):
         """Compute the price with VAT but no member discount
         """
         return self.getSubtotal() + self.getSubtotalVATAmount()
 
-    security.declareProtected(View, 'getDiscountAmount')
-
+    @security.protected(View)
     def getDiscountAmount(self):
         """It computes and returns the analysis service's discount amount
         without VAT
@@ -1649,6 +1603,7 @@ class AnalysisRequest(BaseFolder):
         else:
             return 0
 
+    @security.protected(View)
     def getVATAmount(self):
         """It computes the VAT amount from (subtotal-discount.)*VAT/100, but
         each analysis has its own VAT!
@@ -1663,8 +1618,7 @@ class AnalysisRequest(BaseFolder):
         else:
             return VATAmount
 
-    security.declareProtected(View, 'getTotalPrice')
-
+    @security.protected(View)
     def getTotalPrice(self):
         """It gets the discounted price from analyses and profiles to obtain the
         total value with the VAT and the discount applied
@@ -1677,53 +1631,25 @@ class AnalysisRequest(BaseFolder):
 
     getTotal = getTotalPrice
 
-    security.declareProtected(ManageInvoices, 'issueInvoice')
-
-    # noinspection PyUnusedLocal
-    def issueInvoice(self, REQUEST=None, RESPONSE=None):
+    @security.protected(ManageInvoices)
+    def createInvoice(self, pdf):
         """Issue invoice
         """
-        # check for an adhoc invoice batch for this month
-        # noinspection PyCallingNonCallable
-        now = DateTime()
-        batch_month = now.strftime('%b %Y')
-        batch_title = '%s - %s' % (batch_month, 'ad hoc')
-        invoice_batch = None
-        for b_proxy in self.portal_catalog(portal_type='InvoiceBatch',
-                                           Title=batch_title):
-            invoice_batch = b_proxy.getObject()
-        if not invoice_batch:
-            # noinspection PyCallingNonCallable
-            first_day = DateTime(now.year(), now.month(), 1)
-            start_of_month = first_day.earliestTime()
-            last_day = first_day + 31
-            # noinspection PyUnresolvedReferences
-            while last_day.month() != now.month():
-                last_day -= 1
-            # noinspection PyUnresolvedReferences
-            end_of_month = last_day.latestTime()
+        client = self.getClient()
+        invoice = self.getInvoice()
+        if not invoice:
+            invoice = _createObjectByType("Invoice", client, tmpID())
+        invoice.edit(
+            AnalysisRequest=self,
+            Client=client,
+            InvoiceDate=DateTime(),
+            InvoicePDF=pdf
+        )
+        invoice.processForm()
+        self.setInvoice(invoice)
+        return invoice
 
-            invoices = self.invoices
-            batch_id = invoices.generateUniqueId('InvoiceBatch')
-            invoice_batch = _createObjectByType("InvoiceBatch", invoices,
-                                                batch_id)
-            invoice_batch.edit(
-                title=batch_title,
-                BatchStartDate=start_of_month,
-                BatchEndDate=end_of_month,
-            )
-            invoice_batch.processForm()
-
-        client_uid = self.getClientUID()
-        # Get the created invoice
-        invoice = invoice_batch.createInvoice(client_uid, [self, ])
-        invoice.setAnalysisRequest(self)
-        # Set the created invoice in the schema
-        self.Schema()['Invoice'].set(self, invoice)
-
-    security.declarePublic('printInvoice')
-
-    # noinspection PyUnusedLocal
+    @security.public
     def printInvoice(self, REQUEST=None, RESPONSE=None):
         """Print invoice
         """
@@ -1731,9 +1657,8 @@ class AnalysisRequest(BaseFolder):
         invoice_url = invoice.absolute_url()
         RESPONSE.redirect('{}/invoice_print'.format(invoice_url))
 
-    security.declarePublic('getVerifier')
-
     @deprecated("Use getVerifiers instead")
+    @security.public
     def getVerifier(self):
         """Returns the user that verified the whole Analysis Request. Since the
         verification is done automatically as soon as all the analyses it
@@ -1932,8 +1857,7 @@ class AnalysisRequest(BaseFolder):
         """
         return getTransitionDate(self, 'publish', return_as_datetime=True)
 
-    security.declarePublic('getSamplingDeviationTitle')
-
+    @security.public
     def getSamplingDeviationTitle(self):
         """
         It works as a metacolumn.
@@ -1943,8 +1867,7 @@ class AnalysisRequest(BaseFolder):
             return sd.Title()
         return ''
 
-    security.declarePublic('getHazardous')
-
+    @security.public
     def getHazardous(self):
         """
         It works as a metacolumn.
@@ -1954,8 +1877,7 @@ class AnalysisRequest(BaseFolder):
             return sample_type.getHazardous()
         return False
 
-    security.declarePublic('getContactURL')
-
+    @security.public
     def getContactURL(self):
         """
         It works as a metacolumn.
@@ -1965,8 +1887,7 @@ class AnalysisRequest(BaseFolder):
             return contact.absolute_url_path()
         return ''
 
-    security.declarePublic('getSamplingWorkflowEnabled')
-
+    @security.public
     def getSamplingWorkflowEnabled(self):
         """Returns True if the sample of this Analysis Request has to be
         collected by the laboratory personnel

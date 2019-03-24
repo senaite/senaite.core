@@ -1,9 +1,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
-             xmlns:tal="http://xml.zope.org/namespaces/tal"
-             xmlns:metal="http://xml.zope.org/namespaces/metal"
-             xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-             metal:use-macro="here/main_template/macros/master"
-             i18n:domain="senaite.core">
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="senaite.core">
   <body>
 
     <metal:content-title fill-slot="content-title">
@@ -16,7 +16,7 @@
 
       <!-- Service Info -->
       <div class="row"
-           tal:define="service view/get_service"
+           tal:define="service view/get_analysis_or_service"
            tal:condition="nocall:service">
         <div class="col-sm-12">
           <h3>

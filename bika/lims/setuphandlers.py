@@ -53,7 +53,6 @@ class BikaGenerator(object):
         # index objects - importing through GenericSetup doesn't
         for obj_id in ('clients',
                        'batches',
-                       'invoices',
                        'pricelists',
                        'bika_setup',
                        'methods',
