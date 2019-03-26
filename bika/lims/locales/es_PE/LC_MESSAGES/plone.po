@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2019-02-15 08:16+0000\n"
+"POT-Creation-Date: 2019-03-26 10:26+0000\n"
 "PO-Revision-Date: 2018-06-01 18:46+0000\n"
 "Last-Translator: Ramon Bartl <rb@ridingbytes.com>, 2018\n"
 "Language-Team: Spanish (Peru) (https://www.transifex.com/senaite/teams/87045/es_PE/)\n"
@@ -196,7 +196,6 @@ msgstr ""
 msgid "Client"
 msgstr "Cliente"
 
-#: bika/lims/profiles/default/actions.xml
 #: bika/lims/profiles/default/types/ClientFolder.xml
 msgid "Clients"
 msgstr "Clientes"
@@ -236,7 +235,7 @@ msgid "Containers"
 msgstr "Contenedores"
 
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
-msgid "Create Invoice"
+msgid "Create Invoice PDF"
 msgstr ""
 
 msgid "Current"
@@ -491,11 +490,14 @@ msgstr "Listas de precios"
 msgid "Prices"
 msgstr "Precios"
 
-#: bika/lims/profiles/default/types/AnalysisRequest.xml
 #: bika/lims/profiles/default/types/Invoice.xml
 #: bika/lims/profiles/default/types/SupplyOrder.xml
 msgid "Print"
 msgstr "Imprimir"
+
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
+msgid "Print Invoice"
+msgstr ""
 
 #: bika/lims/profiles/default/types/Pricelist.xml
 msgid "Print pricelist"
