@@ -6,36 +6,28 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
     i18n_domain="senaite.core">
 
-    <browser:page
+  <browser:page
       for="bika.lims.interfaces.IPricelistFolder"
-      name="base_view"
+      name="folder_view"
       class="bika.lims.browser.pricelist.PricelistsView"
       permission="zope2.View"
       layer="bika.lims.interfaces.IBikaLIMS"
-    />
+      />
 
-    <browser:page
+  <browser:page
       for="bika.lims.interfaces.IPricelist"
       name="base_view"
       class="bika.lims.browser.pricelist.PricelistView"
       permission="zope2.View"
       layer="bika.lims.interfaces.IBikaLIMS"
-    />
+      />
 
-    <browser:page
+  <browser:page
       for="bika.lims.interfaces.IPricelist"
       name="print"
       class="bika.lims.browser.pricelist.PricelistPrintView"
       permission="zope2.View"
       layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
-      for="bika.lims.interfaces.IPricelist"
-      name="email"
-      class="bika.lims.browser.pricelist.PricelistEmailView"
-      permission="zope2.View"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
+      />
 
 </configure>

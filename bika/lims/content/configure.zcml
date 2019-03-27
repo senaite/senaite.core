@@ -6,30 +6,24 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
     i18n_domain="senaite.core">
 
-    <adapter name="BatchDate" factory=".batch.BatchDate" />
-    <adapter name="analysisRequestTemplates" factory=".samplinground.analysisRequestTemplates" />
-    <adapter name="samplingRoundSamplingDate" factory=".samplinground.samplingRoundSamplingDate" />
+  <adapter name="BatchDate" factory=".batch.BatchDate" />
+  <adapter name="analysisRequestTemplates" factory=".samplinground.analysisRequestTemplates" />
+  <adapter name="samplingRoundSamplingDate" factory=".samplinground.samplingRoundSamplingDate" />
 
-    <subscriber
-      for="bika.lims.interfaces.IPricelist
-           zope.lifecycleevent.interfaces.IObjectModifiedEvent"
-      handler="bika.lims.content.pricelist.ObjectModifiedEventHandler"
-    />
-
-    <browser:page
+  <browser:page
       for="*"
       name="getcontainers"
       class=".container.ajaxGetContainers"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
-    />
+      />
 
-    <browser:page
+  <browser:page
       for="*"
       name="getpreservations"
       class=".preservation.ajaxGetPreservations"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
-    />
+      />
 
 </configure>

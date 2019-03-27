@@ -18,6 +18,7 @@
  </property>
  <property name="allow_discussion">False</property>
  <property name="default_view_fallback">False</property>
+ <property name="default_view">base_view</property>
 
  <alias from="(Default)" to="base_view"/>
  <alias from="view" to="base_view"/>
@@ -54,18 +55,6 @@
          url_expr="string:${object_url}/print"
          i18n:attributes="title"
          visible="True">
-    <permission value="View"/>
- </action>
-
- <action title="Email pricelist"
-         action_id="emailpricelist"
-         category="object"
-         condition_expr=""
-         icon_expr=""
-         link_target=""
-         url_expr="string:${object_url}/email"
-         i18n:attributes="title"
-         visible="False">
     <permission value="View"/>
  </action>
 
