@@ -5,29 +5,30 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-"""ReferenceSamplesFolder is a fake folder to live in the nav bar.  It has
-view from browser/referencesample.py wired to it.
-"""
-from Products.ATContentTypes.content import schemata
-from Products.Archetypes import atapi
-from Products.CMFCore import permissions
-from Products.CMFCore.utils import getToolByName
-from bika.lims.config import PROJECTNAME
 from AccessControl import ClassSecurityInfo
-from bika.lims.interfaces import IReferenceSamplesFolder, IHaveNoBreadCrumbs
+from bika.lims.config import PROJECTNAME
+from bika.lims.interfaces import IHaveNoBreadCrumbs
+from bika.lims.interfaces import IReferenceSamplesFolder
 from plone.app.folder import folder
+from Products.Archetypes.public import BaseFolder
+from Products.Archetypes.public import registerType
+from Products.ATContentTypes.content import schemata
 from zope.interface import implements
-from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
+
 
 schema = folder.ATFolderSchema.copy()
 
-class ReferenceSamplesFolder(folder.ATFolder):
+
+class ReferenceSamplesFolder(BaseFolder):
+    """Root folder for Reference Samples
+    """
     implements(IReferenceSamplesFolder, IHaveNoBreadCrumbs)
+
     displayContentsTab = False
     schema = schema
     security = ClassSecurityInfo()
 
-schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
 
-atapi.registerType(ReferenceSamplesFolder, PROJECTNAME)
+schemata.finalizeATCTSchema(schema, folderish=True, moveDiscussion=False)
+
+registerType(ReferenceSamplesFolder, PROJECTNAME)
