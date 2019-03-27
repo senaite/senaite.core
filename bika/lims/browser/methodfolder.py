@@ -16,7 +16,7 @@ from bika.lims.utils import get_link
 
 
 class MethodFolderContentsView(BikaListingView):
-    """Listing view for all Clients
+    """Listing view for all Methods
     """
 
     def __init__(self, context, request):
