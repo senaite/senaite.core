@@ -2171,61 +2171,155 @@ def remove_invoices(portal):
     portal.manage_delObjects(invoices.getId())
 
 
+workflow_ids_by_type = {}
+
+def get_workflow_ids_for(brain_or_object):
+    """Returns a list with the workflow ids bound to the type of the object
+    passed in
+    """
+    portal_type = api.get_portal_type(brain_or_object)
+    wf_ids = workflow_ids_by_type.get(portal_type, None)
+    if wf_ids:
+        return wf_ids
+
+    workflow_ids_by_type[portal_type] = api.get_workflows_for(brain_or_object)
+    return workflow_ids_by_type[portal_type]
+
+
+actions_by_type = {}
+
+def get_workflow_actions_for(brain_or_object):
+    """Returns a list with the actions (transitions) supported by the workflows
+    the object pass in is bound to. Note it returns all actions, not only those
+    allowed for the object based on its current state and permissions.
+    """
+    portal_type = api.get_portal_type(brain_or_object)
+    actions = actions_by_type.get(portal_type, None)
+    if actions:
+        return actions
+
+    # Retrieve the actions from the workflows this object is bound to
+    actions = []
+    wf_tool = api.get_tool("portal_workflow")
+    for wf_id in get_workflow_ids_for(brain_or_object):
+        workflow = wf_tool.getWorkflowById(wf_id)
+        wf_actions = map(lambda action: action[0], workflow.transitions.items())
+        actions.extend(wf_actions)
+
+    actions = list(set(actions))
+    actions_by_type[portal_type] = actions
+    return actions
+
+
+states_by_type = {}
+
+def get_workflow_states_for(brain_or_object):
+    """Returns a list with the states supported by the workflows the object
+    passed in is bound to
+    """
+    portal_type = api.get_portal_type(brain_or_object)
+    states = states_by_type.get(portal_type, None)
+    if states:
+        return states
+
+    # Retrieve the states from the workflows this object is bound to
+    states = []
+    wf_tool = api.get_tool("portal_workflow")
+    for wf_id in get_workflow_ids_for(brain_or_object):
+        workflow = wf_tool.getWorkflowById(wf_id)
+        wf_states = map(lambda state: state[0], workflow.states.items())
+        states.extend(wf_states)
+
+    states = list(set(states))
+    states_by_type[portal_type] = states
+    return states
+
+
 def restore_review_history_for_affected_objects(portal):
     """Applies the review history for objects that are bound to new senaite_*
     workflows
     """
-    actions_by_type = {}
-
-    def get_purged_review_history_for(brain_or_object):
-        """Returns the review history for the object passed in, but filtered
-        with the actions that match with the workflow currently bound to the
-        object plus those actions that are None (for initial state)
-        """
-        available_actions = get_available_actions_for(brain_or_object)
-        history = review_history_cache.get(api.get_uid(brain_or_object), [])
-        history = filter(lambda action: action["action"] in available_actions
-                         or action["action"] is None, history)
-        if not history:
-            history = create_initial_review_history(brain_or_object)
-        return history
-
-    def get_available_actions_for(brain_or_object):
-        """Returns the available actions for the workflows currently bound to
-        the object passed in
-        """
-        portal_type = api.get_portal_type(brain_or_object)
-        if portal_type not in actions_by_type:
-            # Retrieve the actions from the workflows this object is bound to
-            obj = api.get_object(brain_or_object)
-            actions_by_type[portal_type] = getAllowedTransitions(obj)
-
-        allowed_actions = actions_by_type.get(portal_type, None)
-        if not allowed_actions:
-            logger.warn("Cannot retrieve available actions for {}").format(
-                portal_type)
-            return []
-
-        return allowed_actions
-
     logger.info("Restoring review_history ...")
     query = dict(portal_type=NEW_SENAITE_WORKFLOW_BINDINGS)
     brains = api.search(query, UID_CATALOG)
     total = len(brains)
+    done = 0
     for num, brain in enumerate(brains):
         if num % 100 == 0:
             logger.info("Restoring review_history: {}/{}"
                         .format(num, total))
 
-        review_history = api.get_review_history(brain)
+        review_history = api.get_review_history(brain, rev=False)
         if review_history:
             # Nothing to do. The object already has the review history set
             continue
 
         # Object without review history. Set the review_history manually
-        review_history = get_purged_review_history_for(brain)
-        obj = aq_base(api.get_object(brain))
-        obj.workflow_history = review_history
+        restore_review_history_for(brain)
+
+        done += 1
+        if done % 1000 == 0:
+            commit_transaction(portal)
+
+    logger.info("Restoring review history: {} processed [DONE]".format(done))
+
+
+def restore_review_history_for(brain_or_object):
+    """Restores the review history for the given brain or object
+    """
+    # Get the review history. Note this comes sorted from oldest to newest
+    review_history = get_purged_review_history_for(brain_or_object)
+
+    obj = api.get_object(brain_or_object)
+    wf_tool = api.get_tool("portal_workflow")
+    wf_ids = get_workflow_ids_for(brain_or_object)
+    wfs = map(lambda wf_id: wf_tool.getWorkflowById(wf_id), wf_ids)
+    wfs = filter(lambda wf: wf.state_var == "review_state", wfs)
+    if not wfs:
+        logger.error("No valid workflow found for {}".format(api.get_id(obj)))
+    else:
+        # It should not be possible to have more than one workflow with same
+        # state_variable here. Anyhow, we don't care in this case (we only want
+        # the object to have a review history).
+        workflow = wfs[0]
+        create_action = False
+        for history in review_history:
+            action_id = history["action"]
+            if action_id is None:
+                if create_action:
+                    # We don't want multiple creation events, we only stick to
+                    # one workflow, so if this object had more thone one wf
+                    # bound in the past, we still want only one creation action
+                    continue
+                create_action = True
+
+            # Change status and reindex
+            wf_tool.setStatusOf(workflow.id, obj, history)
+            indexes = ["review_state", "is_active"]
+            obj.reindexObject(idxs=indexes)
+
+
+def get_purged_review_history_for(brain_or_object):
+    """Returns the review history for the object passed in, but filtered
+    with the actions and states that match with the workflow currently bound
+    to the object plus those actions that are None (for initial state)
+    """
+    history = review_history_cache.get(api.get_uid(brain_or_object), [])
+
+    # Boil out those actions not supported by object's current workflow
+    available_actions = get_workflow_actions_for(brain_or_object)
+    history = filter(lambda action: action["action"] in available_actions
+                                    or action["action"] is None, history)
+
+    # Boil out those states not supported by object's current workflow
+    available_states = get_workflow_states_for(brain_or_object)
+    history = filter(lambda act: act["review_state"] in available_states,
+                     history)
+
+    # If no meaning history found, create a default one for initial state
+    if not history:
+        history = create_initial_review_history(brain_or_object)
+    return history
 
 
 def cache_affected_objects_review_history(portal):
@@ -2248,15 +2342,27 @@ def get_review_history_for(brain_or_object):
     """Returns the review history list for the given object. If there is no
     review history for the object, it returns a default review history
     """
-    review_history = api.get_review_history(brain_or_object, rev=False)
-    if review_history:
-        return review_history
+    workflow_history = api.get_object(brain_or_object).workflow_history
+    if not workflow_history:
+        # No review_history for this object!. This object was probably
+        # migrated to 1.3.0 before review_history was handled in this
+        # upgrade step.
+        # https://github.com/senaite/senaite.core/issues/1270
+        return create_initial_review_history(brain_or_object)
 
-    # No review_history for this object!. This object was probably
-    # migrated to 1.3.0 before review_history was handled in this
-    # upgrade step.
-    # https://github.com/senaite/senaite.core/issues/1270
-    return create_initial_review_history(brain_or_object)
+    review_history = []
+    for wf_id, histories in workflow_history.items():
+        for history in histories:
+            hist = history.copy()
+            if "inactive_state" in history:
+                hist["review_state"] = history["inactive_state"]
+            elif "cancellation_state" in history:
+                hist["review_state"] = history["cancellation_state"]
+            review_history.append(hist)
+
+    # Sort by time (from oldest to newest)
+    return sorted(review_history, key=lambda st: st.get("time"))
+
 
 
 def create_initial_review_history(brain_or_object):
@@ -2276,6 +2382,7 @@ def create_initial_review_history(brain_or_object):
             'actor': obj.Creator(),
             'comments': 'Default review_history (by 1.3 upgrade step)',
             'review_state': wf.initial_state,
+            wf.state_variable: wf.initial_state,
             'time': obj.created(),
         })
 
