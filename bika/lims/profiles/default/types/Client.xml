@@ -64,6 +64,18 @@
     <permission value="View"/>
   </action>
 
+  <action title="Imports"
+          action_id="imports"
+          category="object"
+          condition_expr=""
+          icon_expr="string:${portal_url}/images/arimport.png"
+          link_target=""
+          url_expr="string:${object_url}/arimports"
+          i18n:attributes="title"
+          visible="False">
+    <permission value="View"/>
+  </action>
+
   <action title="SamplePoints"
           action_id="samplepoints"
           category="object"
