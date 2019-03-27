@@ -88,6 +88,12 @@ CSS_TO_REMOVE = [
     "print.css",
 ]
 
+NAV_BAR_ITEMS_TO_HIDE = (
+    # List of items to hide from navigation bar
+    "arimports",
+    "pricelists",
+)
+
 @upgradestep(product, version)
 def upgrade(tool):
     portal = tool.aq_inner.aq_parent
@@ -255,6 +261,10 @@ def upgrade(tool):
     # remove invoices
     # https://github.com/senaite/senaite.core/pull/1296
     remove_invoices(portal)
+
+    # Hide navbar items no longer used
+    # https://github.com/senaite/senaite.core/pull/1304
+    hide_navbar_items(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
@@ -2107,3 +2117,17 @@ def remove_invoices(portal):
 
     # delete the invoices folder
     portal.manage_delObjects(invoices.getId())
+
+
+def hide_navbar_items(portal):
+    """Remove navbar items that are no longer used
+    """
+    logger.info("Removing items from navigation bar ...")
+
+    # Get the list of object ids for portal
+    object_ids = portal.objectIds()
+    object_ids = filter(lambda id: id in object_ids, NAV_BAR_ITEMS_TO_HIDE)
+    for object_id in object_ids:
+        item = portal[object_id]
+        item.setExcludeFromNav(True)
+        item.reindexObject()
