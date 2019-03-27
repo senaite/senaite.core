@@ -689,7 +689,7 @@ def get_review_history(brain_or_object, rev=True):
         logger.error("Cannot retrieve review_history on {}: {}".format(
             obj, message))
     if not isinstance(review_history, (list, tuple)):
-        logger.error("get_review_history: expected list, recieved {}".format(
+        logger.error("get_review_history: expected list, received {}".format(
             review_history))
         review_history = []
     if rev is True:

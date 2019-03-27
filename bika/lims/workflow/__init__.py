@@ -12,7 +12,7 @@ from AccessControl.SecurityInfo import ModuleSecurityInfo
 from Products.Archetypes.config import UID_CATALOG
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
-from bika.lims import PMF
+from bika.lims import PMF, deprecated
 from bika.lims import api
 from bika.lims import logger
 from bika.lims.browser import ulocalized_time
@@ -279,17 +279,8 @@ def getReviewHistory(instance, reverse=True):
     """Returns the review history for the instance
     :returns: the list of historic events as dicts
     """
-    review_history = []
-    workflow = getToolByName(instance, 'portal_workflow')
-    try:
-        review_history = list(workflow.getInfoFor(instance, 'review_history'))
-    except WorkflowException:
-        logger.error("Unable to retrieve review history from {}:{}"
-                     .format(instance.portal_type, instance.getId()))
-    if reverse:
-        # invert the list, so we always see the most recent matching event
-        review_history.reverse()
-    return review_history
+    return api.get_review_history(instance, rev=reverse)
+
 
 def getCurrentState(obj, stateflowid='review_state'):
     """ The current state of the object for the state flow id specified
