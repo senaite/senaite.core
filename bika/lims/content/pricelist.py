@@ -11,7 +11,7 @@ from bika.lims.browser.fields.remarksfield import RemarksField
 from bika.lims.browser.widgets import RemarksWidget
 from bika.lims.config import PRICELIST_TYPES
 from bika.lims.config import PROJECTNAME
-from bika.lims.content.bikaschema import BikaFolderSchema
+from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IDeactivable
 from bika.lims.interfaces import IPricelist
 from DateTime import DateTime
@@ -28,7 +28,7 @@ from Products.Archetypes.public import registerType
 from zope.interface import implements
 
 
-schema = BikaFolderSchema.copy() + Schema((
+schema = BikaSchema.copy() + Schema((
 
     StringField(
         "Type",
@@ -117,8 +117,7 @@ class Pricelist(BaseFolder):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
 
-    security.declarePublic('current_date')
-
+    @security.public
     def current_date(self):
         """ return current date """
         return DateTime()
