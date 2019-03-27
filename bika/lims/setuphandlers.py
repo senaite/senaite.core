@@ -5,17 +5,11 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-""" Bika setup handlers. """
-
 from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import _createObjectByType
 from bika.lims import logger
 from bika.lims.catalog import getCatalogDefinitions
 from bika.lims.catalog import setup_catalogs
 from bika.lims.config import *
-from bika.lims.interfaces import IARImportFolder, IHaveNoBreadCrumbs
-from bika.lims.utils import tmpID
-from zope.interface import alsoProvides
 
 GROUPS = {
     # Dictionary {group_name: [roles]}
@@ -61,7 +55,6 @@ class BikaGenerator(object):
                        'supplyorders',
                        'worksheets',
                        'reports',
-                       'arimports',
                        ):
             try:
                 obj = portal[obj_id]
@@ -437,35 +430,6 @@ class BikaGenerator(object):
         # Setting up all LIMS catalogs defined in catalog folder
         setup_catalogs(portal, getCatalogDefinitions())
 
-    def setupTopLevelFolders(self, context):
-        workflow = getToolByName(context, "portal_workflow")
-        obj_id = 'arimports'
-        if obj_id in context.objectIds():
-            obj = context._getOb(obj_id)
-            # noinspection PyBroadException
-            try:
-                workflow.doActionFor(obj, "hide")
-            except:
-                pass
-            obj.setLayout('@@arimports')
-            alsoProvides(obj, IARImportFolder)
-            alsoProvides(obj, IHaveNoBreadCrumbs)
-
-
-def create_CAS_IdentifierType(portal):
-    """LIMS-1391 The CAS Nr IdentifierType is normally created by
-    setuphandlers during site initialisation.
-    """
-    bsc = getToolByName(portal, 'bika_setup_catalog', None)
-    idtypes = bsc(portal_type='IdentifierType', title='CAS Nr')
-    if not idtypes:
-        folder = portal.bika_setup.bika_identifiertypes
-        idtype = _createObjectByType('IdentifierType', folder, tmpID())
-        idtype.processForm()
-        idtype.edit(title='CAS Nr',
-                    description='Chemical Abstracts Registry number',
-                    portal_types=['Analysis Service'])
-
 
 def setupVarious(context):
     """
@@ -478,14 +442,4 @@ def setupVarious(context):
     gen = BikaGenerator()
     gen.setupGroupsAndRoles(site)
     gen.setupPortalContent(site)
-    gen.setupTopLevelFolders(site)
     gen.setupCatalogs(site)
-
-    # Plone's jQuery gets clobbered when jsregistry is loaded.
-    setup = site.portal_setup
-    setup.runImportStepFromProfile(
-        'profile-plone.app.jquery:default', 'jsregistry')
-    # setup.runImportStepFromProfile('profile-plone.app.jquerytools:default',
-    #  'jsregistry')
-
-    create_CAS_IdentifierType(site)
