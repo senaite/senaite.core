@@ -17,7 +17,6 @@ from Products.Archetypes.public import ManagedSchema
 from Products.Archetypes.public import StringField
 from Products.Archetypes.public import StringWidget
 from Products.Archetypes.public import registerType
-from Products.CMFCore import permissions as CMFCorePermissions
 from Products.CMFPlone.utils import safe_unicode
 
 
@@ -158,11 +157,6 @@ class Organisation(ATFolder):
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
-
-    security.declareProtected(CMFCorePermissions.View, "getSchema")
-
-    def getSchema(self):
-        return self.schema
 
     def Title(self):
         """Return the name of the Organisation

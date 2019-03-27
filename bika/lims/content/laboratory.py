@@ -27,7 +27,6 @@ from Products.Archetypes.public import TextAreaWidget
 from Products.Archetypes.public import TextField
 from Products.Archetypes.public import registerType
 from Products.Archetypes.utils import DisplayList
-from Products.CMFCore.permissions import View
 from Products.CMFCore.utils import UniqueObject
 from Products.CMFPlone.utils import safe_unicode
 from zope.interface import implements
@@ -174,13 +173,9 @@ class Laboratory(UniqueObject, Organisation):
     implements(ILaboratory)
 
     security = ClassSecurityInfo()
+    displayContentsTab = False
     schema = schema
     isPrincipiaFolderish = 0
-
-    security.declareProtected(View, "getSchema")
-
-    def getSchema(self):
-        return self.schema
 
     def Title(self):
         title = self.getName() and self.getName() or _("Laboratory")
