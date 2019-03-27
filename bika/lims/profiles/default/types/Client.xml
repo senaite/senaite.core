@@ -97,7 +97,7 @@
     <permission value="View"/>
   </action>
 
-  <action title="SamplePoints"
+  <action title="Sample Points"
           action_id="samplepoints"
           category="object"
           condition_expr=""
