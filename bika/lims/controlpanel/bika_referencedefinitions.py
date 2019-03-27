@@ -118,7 +118,7 @@ class ReferenceDefinitionsView(BikaListingView):
             after_icons += get_image(
                 "hazardous.png", title=t(_("Hazardous")))
         if after_icons:
-            item["after"]["ID"] = after_icons
+            item["after"]["Title"] = after_icons
 
         return item
 
