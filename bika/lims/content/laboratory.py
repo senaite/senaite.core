@@ -175,7 +175,6 @@ class Laboratory(UniqueObject, Organisation):
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
-    isPrincipiaFolderish = 0
 
     def Title(self):
         title = self.getName() and self.getName() or _("Laboratory")
