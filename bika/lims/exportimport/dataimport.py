@@ -43,20 +43,20 @@ class SetupDataSetList:
 
 
 class ImportView(BrowserView):
-
-    """
+    """Instrument/Setup Data Import
     """
     implements(IViewView)
+
     template = ViewPageTemplateFile("import.pt")
 
     def __init__(self, context, request):
         super(ImportView, self).__init__(context, request)
 
         self.icon = ""
-        self.title = self.context.translate(_("Import"))
-        self.description = self.context.translate(_("Select a data interface"))
+        self.title = ""
+        self.description = ""
 
-        request.set('disable_border', 1)
+        request.set("disable_border", 1)
 
     def getDataInterfaces(self):
         return get_instrument_import_interfaces()
