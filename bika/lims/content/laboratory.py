@@ -174,6 +174,7 @@ class Laboratory(UniqueObject, Organisation):
 
     security = ClassSecurityInfo()
     displayContentsTab = False
+    isPrincipiaFolderish = 0
     schema = schema
 
     def Title(self):
