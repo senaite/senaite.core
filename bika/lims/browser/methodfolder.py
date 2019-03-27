@@ -13,15 +13,11 @@ from bika.lims.permissions import AddMethod
 from bika.lims.utils import check_permission
 from bika.lims.utils import get_image
 from bika.lims.utils import get_link
-from plone.app.content.browser.interfaces import IFolderContentsView
-from plone.app.layout.globals.interfaces import IViewView
-from zope.interface import implements
 
 
 class MethodFolderContentsView(BikaListingView):
     """Listing view for all Clients
     """
-    implements(IFolderContentsView, IViewView)
 
     def __init__(self, context, request):
         super(MethodFolderContentsView, self).__init__(context, request)
@@ -36,9 +32,9 @@ class MethodFolderContentsView(BikaListingView):
 
         self.context_actions = {}
         self.title = self.context.translate(_("Methods"))
+        self.description = ""
         self.icon = "{}/{}".format(
             self.portal_url, "++resource++bika.lims.images/method_big.png")
-        self.description = ""
 
         self.show_select_column = True
         self.pagesize = 25
