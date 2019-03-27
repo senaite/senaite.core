@@ -10,7 +10,7 @@ from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import IHaveNoBreadCrumbs
 from bika.lims.interfaces import IReferenceSamplesFolder
 from plone.app.folder import folder
-from Products.Archetypes.public import BaseFolder
+from plone.app.folder.folder import ATFolder
 from Products.Archetypes.public import registerType
 from Products.ATContentTypes.content import schemata
 from zope.interface import implements
@@ -19,7 +19,7 @@ from zope.interface import implements
 schema = folder.ATFolderSchema.copy()
 
 
-class ReferenceSamplesFolder(BaseFolder):
+class ReferenceSamplesFolder(ATFolder):
     """Root folder for Reference Samples
     """
     implements(IReferenceSamplesFolder, IHaveNoBreadCrumbs)
