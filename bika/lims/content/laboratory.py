@@ -174,8 +174,8 @@ class Laboratory(UniqueObject, Organisation):
     implements(ILaboratory)
 
     security = ClassSecurityInfo()
-    displayContentsTab = False
     schema = schema
+    isPrincipiaFolderish = 0
 
     security.declareProtected(View, "getSchema")
 
