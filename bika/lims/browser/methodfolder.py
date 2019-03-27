@@ -40,7 +40,6 @@ class MethodFolderContentsView(BikaListingView):
             self.portal_url, "++resource++bika.lims.images/method_big.png")
         self.description = ""
 
-        self.show_select_row = False
         self.show_select_column = True
         self.pagesize = 25
 
