@@ -120,7 +120,7 @@
           link_target=""
           url_expr="string:${object_url}/sampling_rounds_view"
           i18n:attributes="title"
-          visible="True">
+          visible="False">
     <permission value="View"/>
   </action>
 
@@ -132,7 +132,7 @@
           link_target=""
           url_expr="string:${object_url}/srtemplates"
           i18n:attributes="title"
-          visible="True">
+          visible="False">
     <permission value="View"/>
   </action>
 
