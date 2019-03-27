@@ -5,65 +5,78 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-from Products.ATContentTypes.content import schemata
-from Products.Archetypes import atapi
+import collections
+
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import IIdentifierTypes
 from bika.lims.permissions import AddIdentifierType
-from plone.app.folder.folder import ATFolder, ATFolderSchema
+from bika.lims.utils import get_link
+from plone.app.folder.folder import ATFolder
+from plone.app.folder.folder import ATFolderSchema
+from Products.Archetypes.public import registerType
+from Products.ATContentTypes.content import schemata
 from zope.interface.declarations import implements
 
 
 class IdentifierTypesView(BikaListingView):
+    """Listing for identifier types
+    """
 
     def __init__(self, context, request):
         super(IdentifierTypesView, self).__init__(context, request)
-        self.catalog = 'bika_setup_catalog'
-        self.contentFilter = {'portal_type': 'IdentifierType',
-                              'sort_on': 'sortable_title'}
-        self.context_actions = {
-            _('Add'): {
-                'url': 'createObject?type_name=IdentifierType',
-                'permission': AddIdentifierType,
-                'icon': '++resource++bika.lims.images/add.png'}}
-        self.title = self.context.translate(_("Identifier Types"))
-        self.icon = self.portal_url + \
-                    "/++resource++bika.lims.images/identifiertype_big.png"
-        self.description = _(
-            "List of types of identifiers for multiple identifier records")
 
-        self.show_select_row = False
+        self.catalog = "bika_setup_catalog"
+
+        self.contentFilter = {
+            "portal_type": "IdentifierType",
+            "sort_on": "sortable_title",
+            "sort_order": "ascending"
+        }
+
+        self.context_actions = {
+            _("Add"): {
+                "url": "createObject?type_name=IdentifierType",
+                "permission": AddIdentifierType,
+                "icon": "++resource++bika.lims.images/add.png"}}
+
+        self.title = self.context.translate(_("Identifier Types"))
+        self.description = ""
+        self.icon = "{}/{}".format(
+            self.portal_url,
+            "++resource++bika.lims.images/identifiertype_big.png")
+
         self.show_select_column = True
         self.pagesize = 25
 
-        self.columns = {
-            'Title': {'title': _('Title'),
-                      'index': 'sortable_title'},
-            'Description': {'title': _('Description'),
-                            'index': 'description',
-                            'toggle': True},
-        }
+        self.columns = collections.OrderedDict((
+            ("Title", {
+                "title": _("Title"),
+                "index": "sortable_title"}),
+            ("Description", {
+                "title": _("Description"),
+                "index": "description",
+                "toggle": True}),
+        ))
 
         self.review_states = [
-            {'id': 'default',
-             'title': _('Active'),
-             'contentFilter': {'is_active': True},
-             'transitions': [{'id': 'deactivate'}, ],
-             'columns': ['Title',
-                         'Description']},
-            {'id': 'inactive',
-             'title': _('Inactive'),
-             'contentFilter': {'is_active': False},
-             'transitions': [{'id': 'activate'}, ],
-             'columns': ['Title',
-                         'Description']},
-            {'id': 'all',
-             'title': _('All'),
-             'contentFilter': {},
-             'columns': ['Title',
-                         'Description']},
+            {
+                "id": "default",
+                "title": _("Active"),
+                "contentFilter": {"is_active": True},
+                "columns": self.columns.keys(),
+            }, {
+                "id": "inactive",
+                "title": _("Inactive"),
+                "contentFilter": {"is_active": False},
+                "columns": self.columns.keys(),
+            }, {
+                "id": "all",
+                "title": _("All"),
+                "contentFilter": {},
+                "columns": self.columns.keys(),
+            },
         ]
 
     def before_render(self):
@@ -72,17 +85,27 @@ class IdentifierTypesView(BikaListingView):
         # Don't allow any context actions
         self.request.set("disable_border", 1)
 
-    def folderitems(self):
-        items = BikaListingView.folderitems(self)
-        for x in range(len(items)):
-            if not items[x].has_key('obj'):
-                continue
-            obj = items[x]['obj']
-            items[x]['Description'] = obj.Description()
-            items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
-                                           (items[x]['url'], items[x]['Title'])
+    def folderitem(self, obj, item, index):
+        """Applies new properties to the item (Client) that is currently being
+        rendered as a row in the list
 
-        return items
+        :param obj: client to be rendered as a row in the list
+        :param item: dict representation of the client, suitable for the list
+        :param index: current position of the item within the list
+        :type obj: ATContentType/DexterityContentType
+        :type item: dict
+        :type index: int
+        :return: the dict representation of the item
+        :rtype: dict
+        """
+
+        url = obj.absolute_url()
+        title = obj.Title()
+
+        item["Description"] = obj.Description()
+        item["replace"]["Title"] = get_link(url, value=title)
+
+        return item
 
 
 schema = ATFolderSchema.copy()
@@ -95,4 +118,5 @@ class IdentifierTypes(ATFolder):
 
 
 schemata.finalizeATCTSchema(schema, folderish=True, moveDiscussion=False)
-atapi.registerType(IdentifierTypes, PROJECTNAME)
+
+registerType(IdentifierTypes, PROJECTNAME)
