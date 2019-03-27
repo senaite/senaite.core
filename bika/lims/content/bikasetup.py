@@ -839,7 +839,7 @@ schema['title']._validationLayer()
 
 
 class BikaSetup(folder.ATFolder):
-    """
+    """LIMS Setup
     """
     implements(IBikaSetup, IHaveNoBreadCrumbs)
 
@@ -934,5 +934,6 @@ class BikaSetup(folder.ATFolder):
         for i in range(len(keys)):
             results.append('%s: %s' % (keys[i], values[i]))
         return "\n".join(results)
+
 
 registerType(BikaSetup, PROJECTNAME)
