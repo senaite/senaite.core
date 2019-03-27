@@ -24,8 +24,8 @@ class ReferenceSamplesFolder(ATFolder):
     """
     implements(IReferenceSamplesFolder, IHaveNoBreadCrumbs)
 
-    displayContentsTab = False
     schema = schema
+    displayContentsTab = False
     security = ClassSecurityInfo()
 
 
