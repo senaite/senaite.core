@@ -10,17 +10,17 @@ import string
 import types
 from time import strptime as _strptime
 
+from bika.lims import api
+from bika.lims import bikaMessageFactory as _
+from bika.lims import logger
+from bika.lims.api import APIError
+from bika.lims.utils import to_utf8
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
-from Products.ZCTextIndex.ParseTree import ParseError
 from Products.validation import validation
 from Products.validation.interfaces.IValidator import IValidator
+from Products.ZCTextIndex.ParseTree import ParseError
 from zope.interface import implements
-
-from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import to_utf8
-from bika.lims import api
-from bika.lims import logger
 
 
 class IdentifierTypeAttributesValidator:
@@ -110,7 +110,7 @@ class UniqueFieldValidator:
             catalogs = api.get_catalogs_for(context)
             catalog = catalogs[0]
             return map(api.get_object, catalog(query))
-        except (IndexError, UnicodeDecodeError, ParseError, api.BikaLIMSError) as e:
+        except (IndexError, UnicodeDecodeError, ParseError, APIError) as e:
             # fall back to the object values of the parent
             logger.warn("UniqueFieldValidator: Catalog query {} failed "
                         "for catalog {} ({}) -> returning object values of {}"
