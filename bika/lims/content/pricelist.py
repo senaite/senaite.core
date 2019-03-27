@@ -15,7 +15,6 @@ from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IDeactivable
 from bika.lims.interfaces import IPricelist
 from DateTime import DateTime
-from persistent.mapping import PersistentMapping
 from Products.Archetypes.public import BaseFolder
 from Products.Archetypes.public import BooleanField
 from Products.Archetypes.public import BooleanWidget
@@ -89,18 +88,6 @@ Field.schemata = "default"
 # If no date is chosen, it will never expire.
 Field.required = 0
 Field.widget.visible = True
-
-
-def apply_discount(price=None, discount=None):
-    return float(price) - (float(price) * float(discount)) / 100
-
-
-def get_vat_amount(price, vat_perc):
-    return float(price) * float(vat_perc) / 100
-
-
-class PricelistLineItem(PersistentMapping):
-    pass
 
 
 class Pricelist(BaseFolder):
