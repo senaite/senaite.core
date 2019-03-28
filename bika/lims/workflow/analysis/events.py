@@ -152,8 +152,14 @@ def after_reject(analysis):
     # Reject our dependents (analyses that depend on this analysis)
     cascade_to_dependents(analysis, "reject")
 
-    # Try to rollback the Analysis Request (all analyses rejected)
     if IRequestAnalysis.providedBy(analysis):
+        # Try verify (for when remaining analyses are in 'verified')
+        doActionFor(analysis.getRequest(), "verify")
+
+        # Try submit (remaining analyses are in 'to_be_verified')
+        doActionFor(analysis.getRequest(), "submit")
+
+        # Try rollback (no remaining analyses or some not submitted)
         doActionFor(analysis.getRequest(), "rollback_to_receive")
         reindex_request(analysis)
 
