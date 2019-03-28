@@ -52,16 +52,35 @@ class RejectSamplesView(BrowserView):
 
         # Handle rejection
         if form_submitted and form_continue:
-            logger.info("*** REJECT SAMPLES (1 of 2) ***")
+            logger.info("*** REJECT SAMPLES ***")
+            processed = []
+            for sample in form.get("samples", []):
+                sample_uid = sample.get("uid", "")
+                reasons = sample.get("reasons", [])
+                other = sample.get("other_reasons", "")
+                if not sample_uid:
+                    continue
 
-            selected_samples = []
+                # Omit if no rejection reason specified
+                if not any([reasons, other]):
+                    continue
 
+                # This is quite bizarre!
+                # AR's Rejection reasons is a RecordsField, but with one
+                # record only, that contains both predefined and other reasons.
+                sample = api.get_object_by_uid(sample_uid)
+                rejection_reasons = {
+                    "other": other,
+                    "selected": reasons }
+                sample.setRejectionReasons([rejection_reasons])
+                wf.doActionFor(sample, "reject")
+                processed.append(sample)
 
-            if not selected_samples:
+            if not processed:
                 return self.redirect(message=_("No samples were rejected"))
 
             message = _("Rejected {} samples: {}").format(
-                len(samples), ", ".join(map(api.get_id, selected_samples)))
+                len(processed), ", ".join(map(api.get_id, processed)))
             return self.redirect(message=message)
 
         # Handle cancel

@@ -67,43 +67,41 @@
                             <span tal:content="sample/client_title"/>
                           </div>
                         </h2>
-                        <input name="sample.uid:record"
-                               type="hidden"
-                               tal:attributes="value sample/uid;
-                                               name string:sample.${sample/uid}:record"/>
                       </div>
                     </th>
                   </tr>
                 </thead>
 
-                <!-- Sample line content (rejection reasons checkboxes) -->
+                <!-- Sample line content -->
                 <tbody>
                   <tr>
-                    <td>
-                      <!-- Rejection reasons -->
+                    <td tal:define="reasons python: view.get_rejection_reasons()">
                       <input type="hidden" name="samples.uid:records" tal:attributes="value sample/uid"/>
+
+                      <!-- Pre-defined rejection reasons -->
                       <div class="col-sm-12">
-                        <div class="form-group field"
-                             tal:define="reasons python: view.get_rejection_reasons()">
+                        <div class="form-group field">
+                          <label i18n:translate="">Rejection reasons</label>
                           <tal:reasons repeat="reason reasons" condition="reasons">
-                            <div>
+                            <div tal:define="index repeat/reason/index">
                               <input type="checkbox"
-                                     tal:attributes="name string:reason.${sample/uid};
-                                                     sample_uid string:${sample/uid};">
-                              <label tal:attributes="for string:reason.${sample/uid}"
-                                     tal:content="reason"></label>
+                                     tal:attributes="name string:samples.reasons:records:list;
+                                                     value reason">
+                              <span tal:content="reason"></span>
                             </div>
                           </tal:reasons>
                           <div tal:condition="python: not reasons"
                                i18n:translate="">There are no pre-defined conditions set</div>
                         </div>
                       </div>
+
+                      <!-- Other rejection reasons -->
                       <div class="col-sm-12">
                         <div class="form-group field">
-                          <label for="" i18n:translate="">Other reasons</label>
+                          <label tal:condition="reasons" i18n:translate="">Other reasons</label>
+                          <label tal:condition="python: not reasons" i18n:translate="">Rejection reasons</label>
                           <textarea cols="5"
-                            tal:attributes="name string:other_reason.${sample/uid};
-                                            sample_uid string:${sample/uid}"></textarea>
+                            tal:attributes="name string:samples.other_reasons:records"></textarea>
                         </div>
                       </div>
                     </td>
@@ -125,7 +123,7 @@
                      type="submit"
                      name="button_continue"
                      i18n:attributes="value"
-                     value="Continue (1/2) ⇶"/>
+                     value="Reject ⇶"/>
             </div>
 
           </form>
