@@ -81,6 +81,10 @@ class PartitionMagicView(BrowserView):
                 )
                 partitions.append(partition)
 
+                # Remove analyses from primary once all partitions are created
+                primary = api.get_object(primary_uid)
+                self.push_primary_analyses_for_removal(primary, analyses_uids)
+
                 logger.info("Successfully created partition: {}".format(
                     api.get_path(partition)))
 
@@ -107,7 +111,7 @@ class PartitionMagicView(BrowserView):
         """
         to_remove = self.analyses_to_remove.get(analysis_request, [])
         to_remove.extend(analyses)
-        self.analyses_to_remove[analysis_request] = to_remove
+        self.analyses_to_remove[analysis_request] = list(set(to_remove))
 
     def remove_primary_analyses(self):
         """Remove analyses relocated to partitions

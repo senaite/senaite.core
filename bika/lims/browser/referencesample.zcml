@@ -7,7 +7,7 @@
     <!-- Main reference samples view -->
     <browser:page
       for="bika.lims.interfaces.IReferenceSamplesFolder"
-      name="base_view"
+      name="folder_view"
       class="bika.lims.browser.referencesample.ReferenceSamplesView"
       permission="senaite.core.permissions.ManageReference"
       layer="bika.lims.interfaces.IBikaLIMS"

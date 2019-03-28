@@ -356,146 +356,155 @@ class ReferenceResultsView(BikaListingView):
 class ReferenceSamplesView(BikaListingView):
     """Main reference samples folder view
     """
+
     def __init__(self, context, request):
         super(ReferenceSamplesView, self).__init__(context, request)
-        self.icon = self.portal_url + \
-            "/++resource++bika.lims.images/referencesample_big.png"
-        self.title = self.context.translate(_("Reference Samples"))
-        self.catalog = 'bika_catalog'
-        self.contentFilter = {'portal_type': 'ReferenceSample',
-                              'sort_on': 'id',
-                              'sort_order': 'reverse',
-                              'path': {"query": ["/"], "level": 0}, }
-        self.context_actions = {}
-        self.show_select_column = True
 
-        self.columns = {
-            'ID': {
-                'title': _('ID'),
-                'index': 'id'},
-            'Title': {
-                'title': _('Title'),
-                'index': 'sortable_title',
-                'toggle': True},
-            'Supplier': {
-                'title': _('Supplier'),
-                'toggle': True,
-                'attr': 'aq_parent.Title',
-                'replace_url': 'aq_parent.absolute_url'},
-            'Manufacturer': {
-                'title': _('Manufacturer'),
-                'toggle': True,
-                'attr': 'getManufacturer.Title',
-                'replace_url': 'getManufacturer.absolute_url'},
-            'Definition': {
-                'title': _('Reference Definition'),
-                'toggle': True,
-                'attr': 'getReferenceDefinition.Title',
-                'replace_url': 'getReferenceDefinition.absolute_url'},
-            'DateSampled': {
-                'title': _('Date Sampled'),
-                'index': 'getDateSampled',
-                'toggle': True},
-            'DateReceived': {
-                'title': _('Date Received'),
-                'index': 'getDateReceived',
-                'toggle': True},
-            'DateOpened': {
-                'title': _('Date Opened'),
-                'toggle': True},
-            'ExpiryDate': {
-                'title': _('Expiry Date'),
-                'index': 'getExpiryDate',
-                'toggle': True},
-            'state_title': {
-                'title': _('State'),
-                'toggle': True},
+        self.catalog = "bika_catalog"
+
+        self.contentFilter = {
+            "portal_type": "ReferenceSample",
+            "sort_on": "sortable_title",
+            "sort_order": "ascending",
+            "path": {"query": ["/"], "level": 0},
         }
+
+        self.context_actions = {}
+        self.title = self.context.translate(_("Reference Samples"))
+        self.icon = "{}/{}".format(
+            self.portal_url,
+            "++resource++bika.lims.images/referencesample_big.png")
+
+        self.show_select_column = True
+        self.pagesize = 25
+
+        self.columns = collections.OrderedDict((
+            ("ID", {
+                "title": _("ID"),
+                "index": "id"}),
+            ("Title", {
+                "title": _("Title"),
+                "index": "sortable_title",
+                "toggle": True}),
+            ("Supplier", {
+                "title": _("Supplier"),
+                "toggle": True,
+                "attr": "aq_parent.Title",
+                "replace_url": "aq_parent.absolute_url"}),
+            ("Manufacturer", {
+                "title": _("Manufacturer"),
+                "toggle": True,
+                "attr": "getManufacturer.Title",
+                "replace_url": "getManufacturer.absolute_url"}),
+            ("Definition", {
+                "title": _("Reference Definition"),
+                "toggle": True,
+                "attr": "getReferenceDefinition.Title",
+                "replace_url": "getReferenceDefinition.absolute_url"}),
+            ("DateSampled", {
+                "title": _("Date Sampled"),
+                "index": "getDateSampled",
+                "toggle": True}),
+            ("DateReceived", {
+                "title": _("Date Received"),
+                "index": "getDateReceived",
+                "toggle": True}),
+            ("DateOpened", {
+                "title": _("Date Opened"),
+                "toggle": True}),
+            ("ExpiryDate", {
+                "title": _("Expiry Date"),
+                "index": "getExpiryDate",
+                "toggle": True}),
+            ("state_title", {
+                "title": _("State"),
+                "toggle": True}),
+        ))
+
         self.review_states = [
-            {'id': 'default',
-             'title': _('Current'),
-             'contentFilter': {'review_state': 'current'},
-             'columns': ['ID',
-                         'Title',
-                         'Supplier',
-                         'Manufacturer',
-                         'Definition',
-                         'DateSampled',
-                         'DateReceived',
-                         'DateOpened',
-                         'ExpiryDate']},
-            {'id': 'expired',
-             'title': _('Expired'),
-             'contentFilter': {'review_state': 'expired'},
-             'columns': ['ID',
-                         'Title',
-                         'Supplier',
-                         'Manufacturer',
-                         'Definition',
-                         'DateSampled',
-                         'DateReceived',
-                         'DateOpened',
-                         'ExpiryDate']},
-            {'id': 'disposed',
-             'title': _('Disposed'),
-             'contentFilter': {'review_state': 'disposed'},
-             'columns': ['ID',
-                         'Title',
-                         'Supplier',
-                         'Manufacturer',
-                         'Definition',
-                         'DateSampled',
-                         'DateReceived',
-                         'DateOpened',
-                         'ExpiryDate']},
-            {'id': 'all',
-             'title': _('All'),
-             'contentFilter': {},
-             'columns': ['ID',
-                         'Title',
-                         'Supplier',
-                         'Manufacturer',
-                         'Definition',
-                         'DateSampled',
-                         'DateReceived',
-                         'DateOpened',
-                         'ExpiryDate',
-                         'state_title']},
+            {
+                "id": "default",
+                "title": _("Current"),
+                "contentFilter": {"review_state": "current"},
+                "columns": self.columns.keys(),
+            }, {
+                "id": "expired",
+                "title": _("Expired"),
+                "contentFilter": {"review_state": "expired"},
+                "columns": self.columns.keys(),
+            }, {
+                "id": "disposed",
+                "title": _("Disposed"),
+                "contentFilter": {"review_state": "disposed"},
+                "columns": self.columns.keys(),
+            }, {
+                "id": "all",
+                "title": _("All"),
+                "contentFilter": {},
+                "columns": self.columns.keys(),
+            }
         ]
 
+    def before_render(self):
+        """Before template render hook
+        """
+        super(ReferenceSamplesView, self).before_render()
+        # Don't allow any context actions on the Methods folder
+        self.request.set("disable_border", 1)
+
     def folderitem(self, obj, item, index):
-        if item.get('review_state', 'current') == 'current':
+        """Applies new properties to the item (Client) that is currently being
+        rendered as a row in the list
+
+        :param obj: client to be rendered as a row in the list
+        :param item: dict representation of the client, suitable for the list
+        :param index: current position of the item within the list
+        :type obj: ATContentType/DexterityContentType
+        :type item: dict
+        :type index: int
+        :return: the dict representation of the item
+        :rtype: dict
+        """
+
+        # XXX Refactor expiration to a proper place
+        # ---------------------------- 8< -------------------------------------
+        if item.get("review_state", "current") == "current":
             # Check expiry date
             exdate = obj.getExpiryDate()
             if exdate:
                 expirydate = DT2dt(exdate).replace(tzinfo=None)
                 if (datetime.today() > expirydate):
                     # Trigger expiration
-                    self.workflow.doActionFor(obj, 'expire')
-                    item['review_state'] = 'expired'
-                    item['obj'] = obj
+                    self.workflow.doActionFor(obj, "expire")
+                    item["review_state"] = "expired"
+                    item["obj"] = obj
 
         if self.contentFilter.get('review_state', '') \
            and item.get('review_state', '') == 'expired':
             # This item must be omitted from the list
             return None
+        # ---------------------------- >8 -------------------------------------
 
-        item['ID'] = obj.id
-        item['DateSampled'] = self.ulocalized_time(
+        url = api.get_url(obj)
+        id = api.get_id(obj)
+
+        item["ID"] = id
+        item["replace"]["ID"] = get_link(url, value=id)
+        item["DateSampled"] = self.ulocalized_time(
             obj.getDateSampled(), long_format=True)
-        item['DateReceived'] = self.ulocalized_time(obj.getDateReceived())
-        item['DateOpened'] = self.ulocalized_time(obj.getDateOpened())
-        item['ExpiryDate'] = self.ulocalized_time(obj.getExpiryDate())
+        item["DateReceived"] = self.ulocalized_time(obj.getDateReceived())
+        item["DateOpened"] = self.ulocalized_time(obj.getDateOpened())
+        item["ExpiryDate"] = self.ulocalized_time(obj.getExpiryDate())
 
+        # Icons
         after_icons = ''
         if obj.getBlank():
-            after_icons += "<img\
-            src='%s/++resource++bika.lims.images/blank.png' \
-            title='%s'>" % (self.portal_url, t(_('Blank')))
+            after_icons += get_image(
+                "blank.png", title=t(_("Blank")))
         if obj.getHazardous():
-            after_icons += "<img\
-            src='%s/++resource++bika.lims.images/hazardous.png' \
-            title='%s'>" % (self.portal_url, t(_('Hazardous')))
-        item['replace']['ID'] = "<a href='%s/base_view'>%s</a>&nbsp;%s" % \
-            (item['url'], item['ID'], after_icons)
+            after_icons += get_image(
+                "hazardous.png", title=t(_("Hazardous")))
+        if after_icons:
+            item["after"]["ID"] = after_icons
+
         return item
