@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2019-03-26 10:26+0000\n"
+"POT-Creation-Date: 2019-03-28 06:03+0000\n"
 "PO-Revision-Date: 2018-06-01 18:44+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Spanish (Uruguay) (https://www.transifex.com/senaite/teams/87045/es_UY/)\n"
@@ -163,40 +163,40 @@ msgstr ""
 msgid "AR Import options"
 msgstr ""
 
-#: bika/lims/content/organisation.py:116
+#: bika/lims/content/organisation.py:115
 msgid "Account Name"
 msgstr ""
 
-#: bika/lims/content/organisation.py:124
+#: bika/lims/content/organisation.py:123
 msgid "Account Number"
 msgstr ""
 
-#: bika/lims/content/organisation.py:108
+#: bika/lims/content/organisation.py:107
 msgid "Account Type"
 msgstr ""
 
 #: bika/lims/browser/accreditation.py:27
-#: bika/lims/content/laboratory.py:117
+#: bika/lims/content/laboratory.py:116
 msgid "Accreditation"
 msgstr ""
 
-#: bika/lims/content/laboratory.py:97
+#: bika/lims/content/laboratory.py:96
 msgid "Accreditation Body Abbreviation"
 msgstr ""
 
-#: bika/lims/content/laboratory.py:107
+#: bika/lims/content/laboratory.py:106
 msgid "Accreditation Body URL"
 msgstr ""
 
-#: bika/lims/content/laboratory.py:138
+#: bika/lims/content/laboratory.py:137
 msgid "Accreditation Logo"
 msgstr ""
 
-#: bika/lims/content/laboratory.py:128
+#: bika/lims/content/laboratory.py:127
 msgid "Accreditation Reference"
 msgstr ""
 
-#: bika/lims/content/laboratory.py:151
+#: bika/lims/content/laboratory.py:150
 msgid "Accreditation page header"
 msgstr ""
 
@@ -708,11 +708,11 @@ msgstr ""
 msgid "Average late"
 msgstr ""
 
-#: bika/lims/content/organisation.py:140
+#: bika/lims/content/organisation.py:139
 msgid "Bank branch"
 msgstr ""
 
-#: bika/lims/content/organisation.py:132
+#: bika/lims/content/organisation.py:131
 msgid "Bank name"
 msgstr ""
 
@@ -759,11 +759,11 @@ msgid "Biannual"
 msgstr ""
 
 #: bika/lims/config.py:83
-#: bika/lims/content/organisation.py:95
+#: bika/lims/content/organisation.py:94
 msgid "Billing address"
 msgstr ""
 
-#: bika/lims/browser/referencesample.py:494
+#: bika/lims/browser/referencesample.py:503
 #: bika/lims/browser/templates/referencesample_view.pt:21
 #: bika/lims/browser/worksheet/views/analyses.py:482
 msgid "Blank"
@@ -782,7 +782,7 @@ msgid "Bulk Discount"
 msgstr ""
 
 #: bika/lims/content/client.py:51
-#: bika/lims/content/pricelist.py:40
+#: bika/lims/content/pricelist.py:46
 msgid "Bulk discount applies"
 msgstr ""
 
@@ -816,7 +816,7 @@ msgstr ""
 msgid "Calculate Precision from Uncertainties"
 msgstr ""
 
-#: bika/lims/browser/methodfolder.py:62
+#: bika/lims/browser/methodfolder.py:57
 #: bika/lims/browser/templates/analysisservice_info.pt:146
 #: bika/lims/browser/widgets/serviceswidget.py:73
 msgid "Calculation"
@@ -965,7 +965,7 @@ msgstr ""
 msgid "Check this box if this container is already preserved.Setting this will short-circuit the preservation workflow for sample partitions stored in this container."
 msgstr ""
 
-#: bika/lims/content/laboratory.py:88
+#: bika/lims/content/laboratory.py:87
 msgid "Check this box if your laboratory is accredited"
 msgstr ""
 
@@ -1123,7 +1123,7 @@ msgstr ""
 msgid "Composite sample"
 msgstr ""
 
-#: bika/lims/content/laboratory.py:75
+#: bika/lims/content/laboratory.py:74
 msgid "Confidence Level %"
 msgstr ""
 
@@ -1153,7 +1153,6 @@ msgstr ""
 
 #: bika/lims/browser/client/views/contacts.py:45
 #: bika/lims/browser/supplier.py:85
-#: bika/lims/browser/templates/pricelist_email_form.pt:27
 msgid "Contacts"
 msgstr ""
 
@@ -1272,7 +1271,7 @@ msgstr ""
 msgid "Created on"
 msgstr ""
 
-#: bika/lims/browser/partition_magic.py:94
+#: bika/lims/browser/partition_magic.py:98
 msgid "Created {} partitions: {}"
 msgstr ""
 
@@ -1294,7 +1293,7 @@ msgstr ""
 msgid "Currency"
 msgstr ""
 
-#: bika/lims/browser/referencesample.py:416
+#: bika/lims/browser/referencesample.py:427
 #: bika/lims/profiles/default/workflows/bika_referencesample_workflow/definition.xml
 msgid "Current"
 msgstr ""
@@ -1368,7 +1367,7 @@ msgstr ""
 msgid "Date Loaded"
 msgstr ""
 
-#: bika/lims/browser/referencesample.py:404
+#: bika/lims/browser/referencesample.py:413
 #: bika/lims/browser/templates/referencesample_sticker.pt:71
 #: bika/lims/browser/templates/referencesample_view.pt:94
 msgid "Date Opened"
@@ -1391,7 +1390,7 @@ msgstr ""
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:110
 #: bika/lims/browser/analysisrequest/templates/invoice_content.pt:90
-#: bika/lims/browser/referencesample.py:400
+#: bika/lims/browser/referencesample.py:409
 msgid "Date Received"
 msgstr ""
 
@@ -1410,7 +1409,7 @@ msgid "Date Sample Received"
 msgstr ""
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:99
-#: bika/lims/browser/referencesample.py:396
+#: bika/lims/browser/referencesample.py:405
 #: bika/lims/browser/samplinground/analysisrequests.py:34
 msgid "Date Sampled"
 msgstr ""
@@ -1669,7 +1668,7 @@ msgstr ""
 msgid "Discount"
 msgstr ""
 
-#: bika/lims/content/pricelist.py:45
+#: bika/lims/content/pricelist.py:53
 msgid "Discount %"
 msgstr ""
 
@@ -1702,7 +1701,7 @@ msgstr ""
 msgid "Dispose"
 msgstr ""
 
-#: bika/lims/browser/referencesample.py:440
+#: bika/lims/browser/referencesample.py:437
 #: bika/lims/profiles/default/workflows/bika_referencesample_workflow/definition.xml
 msgid "Disposed"
 msgstr ""
@@ -1795,7 +1794,7 @@ msgstr ""
 msgid "Duplicate of"
 msgstr ""
 
-#: bika/lims/content/laboratory.py:98
+#: bika/lims/content/laboratory.py:97
 msgid "E.g. SANAS, APLAC, etc."
 msgstr ""
 
@@ -1871,7 +1870,7 @@ msgstr ""
 msgid "Enable the rejection workflow"
 msgstr ""
 
-#: bika/lims/browser/pricelist.py:48
+#: bika/lims/browser/pricelist.py:53
 msgid "End Date"
 msgstr ""
 
@@ -1888,7 +1887,7 @@ msgstr ""
 msgid "Enter an email address. This is necessary in case the password is lost. We respect your privacy, and will not give the address away to any third parties or expose it anywhere."
 msgstr ""
 
-#: bika/lims/content/pricelist.py:46
+#: bika/lims/content/pricelist.py:54
 msgid "Enter discount percentage value"
 msgstr ""
 
@@ -1921,7 +1920,7 @@ msgstr ""
 msgid "Enter the details of each of the analysis services you want to copy."
 msgstr ""
 
-#: bika/lims/content/laboratory.py:152
+#: bika/lims/content/laboratory.py:151
 msgid "Enter the details of your lab's service accreditations here. The following fields are available:  lab_is_accredited, lab_name, lab_country, confidence, accreditation_body_name, accreditation_standard, accreditation_reference<br/>"
 msgstr ""
 
@@ -1982,12 +1981,12 @@ msgstr ""
 msgid "Expire"
 msgstr ""
 
-#: bika/lims/browser/referencesample.py:428
+#: bika/lims/browser/referencesample.py:432
 #: bika/lims/profiles/default/workflows/bika_referencesample_workflow/definition.xml
 msgid "Expired"
 msgstr ""
 
-#: bika/lims/browser/referencesample.py:407
+#: bika/lims/browser/referencesample.py:416
 #: bika/lims/browser/templates/referencesample_sticker.pt:81
 #: bika/lims/browser/templates/referencesample_view.pt:107
 msgid "Expiry Date"
@@ -2011,11 +2010,11 @@ msgstr ""
 
 #: bika/lims/browser/clientfolder.py:86
 #: bika/lims/browser/supplier.py:107
-#: bika/lims/content/organisation.py:52
+#: bika/lims/content/organisation.py:51
 msgid "Fax"
 msgstr ""
 
-#: bika/lims/content/person.py:82
+#: bika/lims/content/person.py:105
 msgid "Fax (business)"
 msgstr ""
 
@@ -2065,7 +2064,7 @@ msgstr ""
 msgid "Filesize"
 msgstr ""
 
-#: bika/lims/content/person.py:32
+#: bika/lims/content/person.py:39
 msgid "Firstname"
 msgstr ""
 
@@ -2111,7 +2110,7 @@ msgstr ""
 
 #: bika/lims/browser/client/views/contacts.py:50
 #: bika/lims/browser/templates/login_details.pt:63
-#: bika/lims/content/person.py:57
+#: bika/lims/content/person.py:72
 msgid "Full Name"
 msgstr ""
 
@@ -2140,7 +2139,7 @@ msgstr ""
 msgid "Go to worksheet template setup"
 msgstr ""
 
-#: bika/lims/content/person.py:26
+#: bika/lims/content/person.py:31
 msgid "Greeting title eg. Mr, Mrs, Dr"
 msgstr ""
 
@@ -2162,7 +2161,7 @@ msgid "Has not been Printed."
 msgstr ""
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:633
-#: bika/lims/browser/referencesample.py:498
+#: bika/lims/browser/referencesample.py:506
 #: bika/lims/browser/templates/referencesample_view.pt:16
 msgid "Hazardous"
 msgstr ""
@@ -2193,7 +2192,7 @@ msgstr ""
 msgid "Hours"
 msgstr ""
 
-#: bika/lims/content/supplier.py:51
+#: bika/lims/content/supplier.py:61
 msgid "IBN"
 msgstr ""
 
@@ -2219,7 +2218,7 @@ msgstr ""
 msgid "Identifier Type"
 msgstr ""
 
-#: bika/lims/controlpanel/bika_identifiertypes.py:31
+#: bika/lims/controlpanel/bika_identifiertypes.py:44
 msgid "Identifier Types"
 msgstr ""
 
@@ -2316,7 +2315,6 @@ msgid "Ignore in Report"
 msgstr ""
 
 #: bika/lims/browser/templates/arimport_add.pt:26
-#: bika/lims/exportimport/dataimport.py:56
 #: bika/lims/profiles/default/workflows/bika_arimport_workflow/definition.xml
 msgid "Import"
 msgstr ""
@@ -2356,7 +2354,7 @@ msgstr ""
 msgid "Include and display pricing information"
 msgstr ""
 
-#: bika/lims/content/pricelist.py:52
+#: bika/lims/content/pricelist.py:62
 msgid "Include descriptions"
 msgstr ""
 
@@ -2425,7 +2423,7 @@ msgid "Instructions for regular preventive and maintenance routines intended for
 msgstr ""
 
 #: bika/lims/browser/analyses/view.py:107
-#: bika/lims/browser/methodfolder.py:58
+#: bika/lims/browser/methodfolder.py:53
 #: bika/lims/browser/referencesample.py:150
 msgid "Instrument"
 msgstr ""
@@ -2635,7 +2633,7 @@ msgstr ""
 msgid "Job Title"
 msgstr ""
 
-#: bika/lims/content/person.py:99
+#: bika/lims/content/person.py:128
 msgid "Job title"
 msgstr ""
 
@@ -2688,7 +2686,7 @@ msgstr ""
 msgid "Lab Products"
 msgstr ""
 
-#: bika/lims/content/laboratory.py:52
+#: bika/lims/content/laboratory.py:51
 msgid "Lab URL"
 msgstr ""
 
@@ -2696,11 +2694,11 @@ msgstr ""
 msgid "Label"
 msgstr ""
 
-#: bika/lims/content/laboratory.py:186
+#: bika/lims/content/laboratory.py:181
 msgid "Laboratory"
 msgstr ""
 
-#: bika/lims/content/laboratory.py:87
+#: bika/lims/content/laboratory.py:86
 msgid "Laboratory Accredited"
 msgstr ""
 
@@ -2759,10 +2757,6 @@ msgstr ""
 
 #: bika/lims/browser/templates/login_details.pt:144
 msgid "Link an existing User"
-msgstr ""
-
-#: bika/lims/controlpanel/bika_identifiertypes.py:34
-msgid "List of types of identifiers for multiple identifier records"
 msgstr ""
 
 #: bika/lims/browser/reports/templates/productivity.pt:102
@@ -2931,7 +2925,7 @@ msgstr ""
 msgid "Manual"
 msgstr ""
 
-#: bika/lims/browser/methodfolder.py:66
+#: bika/lims/browser/methodfolder.py:61
 msgid "Manual entry"
 msgstr ""
 
@@ -2943,7 +2937,7 @@ msgstr ""
 msgid "Manual entry of results for method %s is not allowed and no valid instruments found: %s"
 msgstr ""
 
-#: bika/lims/browser/referencesample.py:386
+#: bika/lims/browser/referencesample.py:395
 #: bika/lims/browser/templates/referencesample_sticker.pt:51
 #: bika/lims/browser/templates/referencesample_view.pt:48
 msgid "Manufacturer"
@@ -3016,7 +3010,7 @@ msgid "Metadata"
 msgstr ""
 
 #: bika/lims/browser/analyses/view.py:102
-#: bika/lims/browser/methodfolder.py:49
+#: bika/lims/browser/methodfolder.py:44
 #: bika/lims/browser/referencesample.py:146
 msgid "Method"
 msgstr ""
@@ -3029,17 +3023,17 @@ msgstr ""
 msgid "Method ID"
 msgstr ""
 
-#: bika/lims/browser/methodfolder.py:38
+#: bika/lims/browser/methodfolder.py:34
 #: bika/lims/browser/templates/analysisservice_info.pt:113
 #: bika/lims/browser/widgets/analysisprofileanalyseswidget.py:65
 msgid "Methods"
 msgstr ""
 
-#: bika/lims/content/person.py:38
+#: bika/lims/content/person.py:47
 msgid "Middle initial"
 msgstr ""
 
-#: bika/lims/content/person.py:44
+#: bika/lims/content/person.py:55
 msgid "Middle name"
 msgstr ""
 
@@ -3126,7 +3120,7 @@ msgstr ""
 msgid "Multi-verification required"
 msgstr ""
 
-#: bika/lims/content/supplier.py:41
+#: bika/lims/content/supplier.py:49
 msgid "NIB"
 msgstr ""
 
@@ -3261,7 +3255,7 @@ msgstr ""
 msgid "No new items were created."
 msgstr ""
 
-#: bika/lims/browser/partition_magic.py:89
+#: bika/lims/browser/partition_magic.py:93
 msgid "No partitions were created"
 msgstr ""
 
@@ -3508,7 +3502,7 @@ msgstr ""
 msgid "Partition"
 msgstr ""
 
-#: bika/lims/browser/partition_magic.py:101
+#: bika/lims/browser/partition_magic.py:105
 msgid "Partitioning canceled"
 msgstr ""
 
@@ -3558,15 +3552,15 @@ msgstr ""
 msgid "Phone"
 msgstr ""
 
-#: bika/lims/content/person.py:76
+#: bika/lims/content/person.py:97
 msgid "Phone (business)"
 msgstr ""
 
-#: bika/lims/content/person.py:88
+#: bika/lims/content/person.py:113
 msgid "Phone (home)"
 msgstr ""
 
-#: bika/lims/content/person.py:94
+#: bika/lims/content/person.py:121
 msgid "Phone (mobile)"
 msgstr ""
 
@@ -3580,7 +3574,7 @@ msgstr ""
 
 #: bika/lims/browser/analysisrequest/templates/analysisrequest_retract_pdf.pt:84
 #: bika/lims/config.py:81
-#: bika/lims/content/organisation.py:69
+#: bika/lims/content/organisation.py:68
 msgid "Physical address"
 msgstr ""
 
@@ -3616,7 +3610,7 @@ msgstr ""
 msgid "Please specify preservations that differ from the analysis service's default preservation per sample type here."
 msgstr ""
 
-#: bika/lims/content/laboratory.py:139
+#: bika/lims/content/laboratory.py:138
 msgid "Please upload the logo you are authorised to use on your website and results reports by your accreditation body. Maximum size is 175 x 175 pixels."
 msgstr ""
 
@@ -3639,8 +3633,8 @@ msgstr ""
 msgid "Position"
 msgstr ""
 
-#: bika/lims/content/organisation.py:82
-#: bika/lims/content/person.py:148
+#: bika/lims/content/organisation.py:81
+#: bika/lims/content/person.py:187
 msgid "Postal address"
 msgstr ""
 
@@ -3756,11 +3750,11 @@ msgstr ""
 msgid "Price excluding VAT"
 msgstr ""
 
-#: bika/lims/content/pricelist.py:34
+#: bika/lims/content/pricelist.py:38
 msgid "Pricelist for"
 msgstr ""
 
-#: bika/lims/browser/pricelist.py:34
+#: bika/lims/browser/pricelist.py:36
 msgid "Pricelists"
 msgstr ""
 
@@ -3972,13 +3966,13 @@ msgstr ""
 msgid "Reference Analyses"
 msgstr ""
 
-#: bika/lims/browser/referencesample.py:391
+#: bika/lims/browser/referencesample.py:400
 #: bika/lims/browser/templates/referencesample_view.pt:63
 #: bika/lims/content/referencesample.py:48
 msgid "Reference Definition"
 msgstr ""
 
-#: bika/lims/controlpanel/bika_referencedefinitions.py:30
+#: bika/lims/controlpanel/bika_referencedefinitions.py:48
 msgid "Reference Definitions"
 msgstr ""
 
@@ -3988,7 +3982,7 @@ msgstr ""
 msgid "Reference Sample"
 msgstr ""
 
-#: bika/lims/browser/referencesample.py:363
+#: bika/lims/browser/referencesample.py:373
 msgid "Reference Samples"
 msgstr ""
 
@@ -4004,10 +3998,6 @@ msgstr ""
 #: bika/lims/content/referencedefinition.py:50
 #: bika/lims/content/referencesample.py:56
 msgid "Reference sample values are zero or 'blank'"
-msgstr ""
-
-#: bika/lims/controlpanel/bika_referencedefinitions.py:31
-msgid "ReferenceDefinition represents a Reference Definition or sample type used for quality control testing"
 msgstr ""
 
 #: bika/lims/content/arreport.py:43
@@ -4332,12 +4322,12 @@ msgstr ""
 msgid "SMTP server disconnected. User creation aborted."
 msgstr ""
 
-#: bika/lims/content/supplier.py:61
+#: bika/lims/content/supplier.py:73
 msgid "SWIFT code."
 msgstr ""
 
 #. Default: "Title"
-#: bika/lims/content/person.py:24
+#: bika/lims/content/person.py:30
 msgid "Salutation"
 msgstr ""
 
@@ -4699,10 +4689,6 @@ msgstr ""
 msgid "Select Sample Templates to include"
 msgstr ""
 
-#: bika/lims/exportimport/dataimport.py:57
-msgid "Select a data interface"
-msgstr ""
-
 #: bika/lims/content/analysisservice.py:214
 msgid "Select a default preservation for this analysis service. If the preservation depends on the sample type combination, specify a preservation per sample type in the table below"
 msgstr ""
@@ -4747,7 +4733,7 @@ msgstr ""
 msgid "Select if the calculation to be used is the calculation set by default in the default method. If unselected, the calculation can be selected manually"
 msgstr ""
 
-#: bika/lims/content/pricelist.py:53
+#: bika/lims/content/pricelist.py:63
 msgid "Select if the descriptions should be included"
 msgstr ""
 
@@ -4850,10 +4836,6 @@ msgstr ""
 
 #: bika/lims/browser/publish/templates/email.pt:23
 msgid "Send Analysis Reports via Email"
-msgstr ""
-
-#: bika/lims/browser/templates/pricelist_email_form.pt:63
-msgid "Send email"
 msgstr ""
 
 #: bika/lims/content/analysisservice.py:121
@@ -4997,7 +4979,7 @@ msgstr ""
 msgid "Specify the uncertainty value for a given range, e.g. for results in a range with minimum of 0 and maximum of 10, where the uncertainty value is 0.5 - a result of 6.67 will be reported as 6.67 +- 0.5. You can also specify the uncertainty value as a percentage of the result value, by adding a '%' to the value entered in the 'Uncertainty Value' column, e.g. for results in a range with minimum of 10.01 and a maximum of 100, where the uncertainty value is 2% - a result of 100 will be reported as 100 +- 2. Please ensure successive ranges are continuous, e.g. 0.00 - 10.00 is followed by 10.01 - 20.00, 20.01 - 30 .00 etc."
 msgstr ""
 
-#: bika/lims/browser/pricelist.py:45
+#: bika/lims/browser/pricelist.py:49
 msgid "Start Date"
 msgstr ""
 
@@ -5071,15 +5053,15 @@ msgstr ""
 msgid "Subtotal"
 msgstr ""
 
-#: bika/lims/content/laboratory.py:66
+#: bika/lims/content/laboratory.py:65
 msgid "Supervisor"
 msgstr ""
 
-#: bika/lims/content/laboratory.py:67
+#: bika/lims/content/laboratory.py:66
 msgid "Supervisor of the Lab"
 msgstr ""
 
-#: bika/lims/browser/referencesample.py:381
+#: bika/lims/browser/referencesample.py:390
 #: bika/lims/browser/worksheet/views/analyses.py:489
 #: bika/lims/content/instrument.py:99
 msgid "Supplier"
@@ -5097,7 +5079,7 @@ msgstr ""
 msgid "Supported Services"
 msgstr ""
 
-#: bika/lims/content/person.py:50
+#: bika/lims/content/person.py:63
 msgid "Surname"
 msgstr ""
 
@@ -5173,7 +5155,7 @@ msgstr ""
 msgid "The ID assigned to the client's sample by the lab"
 msgstr ""
 
-#: bika/lims/content/laboratory.py:53
+#: bika/lims/content/laboratory.py:52
 msgid "The Laboratory's web address"
 msgstr ""
 
@@ -5185,7 +5167,7 @@ msgstr ""
 msgid "The Upper Detection Limit is the highest value to which the measured parameter can be measured using the specified testing methodology. Results entered which are greater than this value will be reported as > UDL"
 msgstr ""
 
-#: bika/lims/content/laboratory.py:118
+#: bika/lims/content/laboratory.py:117
 msgid "The accreditation standard that applies, e.g. ISO 17025"
 msgstr ""
 
@@ -5439,7 +5421,7 @@ msgstr ""
 msgid "The profile's keyword is used to uniquely identify it in import files. It has to be unique, and it may not be the same as any Calculation Interim field ID."
 msgstr ""
 
-#: bika/lims/content/laboratory.py:129
+#: bika/lims/content/laboratory.py:128
 msgid "The reference code issued to the lab by the accreditation body"
 msgstr ""
 
@@ -5559,7 +5541,7 @@ msgstr ""
 msgid "This text is also displayed upon a mouse-over of the Title field"
 msgstr ""
 
-#: bika/lims/content/laboratory.py:76
+#: bika/lims/content/laboratory.py:75
 msgid "This value is reported at the bottom of all published results"
 msgstr ""
 
@@ -5847,7 +5829,7 @@ msgstr ""
 msgid "VAT Amount"
 msgstr ""
 
-#: bika/lims/content/organisation.py:38
+#: bika/lims/content/organisation.py:37
 msgid "VAT number"
 msgstr ""
 
@@ -6097,11 +6079,11 @@ msgstr ""
 msgid "Warning"
 msgstr ""
 
-#: bika/lims/content/laboratory.py:108
+#: bika/lims/content/laboratory.py:107
 msgid "Web address for the accreditation body"
 msgstr ""
 
-#: bika/lims/content/supplier.py:32
+#: bika/lims/content/supplier.py:38
 msgid "Website."
 msgstr ""
 

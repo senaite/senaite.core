@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2019-03-26 10:26+0000\n"
+"POT-Creation-Date: 2019-03-28 06:03+0000\n"
 "PO-Revision-Date: 2018-06-01 18:46+0000\n"
 "Last-Translator: Ramon Bartl <rb@ridingbytes.com>, 2018\n"
 "Language-Team: Hungarian (https://www.transifex.com/senaite/teams/87045/hu/)\n"
@@ -167,10 +167,6 @@ msgstr "Köteg címkék"
 msgid "Batches"
 msgstr "Kötegek"
 
-#: bika/lims/profiles/default/types/BikaSetup.xml
-msgid "Bika Setup"
-msgstr "Bika beállítás"
-
 #: bika/lims/profiles/default/types/Calculation.xml
 msgid "Calculation"
 msgstr "Számítás"
@@ -279,10 +275,6 @@ msgstr "Másolat vizsgálat"
 #: bika/lims/profiles/default/types/AnalysisCategory.xml
 msgid "Edit"
 msgstr "Szerkeszt"
-
-#: bika/lims/profiles/default/types/Pricelist.xml
-msgid "Email pricelist"
-msgstr "Árlista küldése Email-ben"
 
 msgid "Expire"
 msgstr "Lejár"
@@ -641,6 +633,7 @@ msgid "Sample Point"
 msgstr "Minta pont"
 
 #: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/Client.xml
 #: bika/lims/profiles/default/types/SamplePoints.xml
 msgid "Sample Points"
 msgstr "Minta pontok"
@@ -666,10 +659,6 @@ msgstr "Minta átvéve"
 
 msgid "Sample registered"
 msgstr "Minta bejegyzett"
-
-#: bika/lims/profiles/default/types/Client.xml
-msgid "SamplePoints"
-msgstr "Minta pontok"
 
 msgid "Sampled"
 msgstr "Mintázott"
@@ -720,6 +709,10 @@ msgstr "Mintavételezés ütemezése"
 
 msgid "Scheduled sampling"
 msgstr "Ütemezett mintázás"
+
+#: bika/lims/profiles/default/types/BikaSetup.xml
+msgid "Setup"
+msgstr ""
 
 #: bika/lims/profiles/default/actions.xml
 msgid "Sharing"

@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2019-03-26 10:26+0000\n"
+"POT-Creation-Date: 2019-03-28 06:03+0000\n"
 "PO-Revision-Date: 2018-06-01 18:46+0000\n"
 "Last-Translator: Ramon Bartl <rb@ridingbytes.com>, 2018\n"
 "Language-Team: Finnish (https://www.transifex.com/senaite/teams/87045/fi/)\n"
@@ -167,10 +167,6 @@ msgstr ""
 msgid "Batches"
 msgstr ""
 
-#: bika/lims/profiles/default/types/BikaSetup.xml
-msgid "Bika Setup"
-msgstr ""
-
 #: bika/lims/profiles/default/types/Calculation.xml
 msgid "Calculation"
 msgstr ""
@@ -278,10 +274,6 @@ msgstr ""
 #: bika/lims/profiles/default/types/ARTemplate.xml
 #: bika/lims/profiles/default/types/AnalysisCategory.xml
 msgid "Edit"
-msgstr ""
-
-#: bika/lims/profiles/default/types/Pricelist.xml
-msgid "Email pricelist"
 msgstr ""
 
 msgid "Expire"
@@ -641,6 +633,7 @@ msgid "Sample Point"
 msgstr ""
 
 #: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/Client.xml
 #: bika/lims/profiles/default/types/SamplePoints.xml
 msgid "Sample Points"
 msgstr ""
@@ -665,10 +658,6 @@ msgid "Sample received"
 msgstr ""
 
 msgid "Sample registered"
-msgstr ""
-
-#: bika/lims/profiles/default/types/Client.xml
-msgid "SamplePoints"
 msgstr ""
 
 msgid "Sampled"
@@ -719,6 +708,10 @@ msgid "Schedule sampling"
 msgstr ""
 
 msgid "Scheduled sampling"
+msgstr ""
+
+#: bika/lims/profiles/default/types/BikaSetup.xml
+msgid "Setup"
 msgstr ""
 
 #: bika/lims/profiles/default/actions.xml
