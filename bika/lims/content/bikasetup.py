@@ -558,17 +558,6 @@ schema = BikaFolderSchema.copy() + Schema((
                 "in the sample types setup"),
         )
     ),
-    RecordsField(
-        'RejectionReasons',
-        schemata="Sampling",
-        widget=RejectionSetupWidget(
-            label=_("Enable sampling rejection"),
-            description=_("Select this to activate the rejection workflow "
-                          "for Samples and Samples. A 'Reject' "
-                          "option will be displayed in the actions menu for "
-                          "these objects.")
-        ),
-    ),
     BooleanField(
         'NotifyOnSampleRejection',
         schemata="Notifications",
@@ -914,6 +903,16 @@ class BikaSetup(folder.ATFolder):
             return True if checkbox == 'on' and len(widget[0]) > 1 else False
         else:
             return False
+
+    def getRejectionReasonsItems(self):
+        """Return the list of predefined rejection reasons
+        """
+        reasons = self.getRejectionReasons()
+        if not reasons:
+            return []
+        reasons = reasons[0]
+        keys = filter(lambda key: key != "checkbox", reasons.keys())
+        return map(lambda key: reasons[key], sorted(keys)) or []
 
     def _getNumberOfRequiredVerificationsVocabulary(self):
         """

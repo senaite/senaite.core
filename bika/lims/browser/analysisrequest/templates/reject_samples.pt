@@ -1,0 +1,137 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="senaite.core">
+  <head>
+    <metal:block fill-slot="javascript_head_slot"
+                 tal:define="portal context/@@plone_portal_state/portal;">
+    </metal:block>
+    <metal:block fill-slot="style_slot"
+                 tal:define="portal context/@@plone_portal_state/portal;">
+    </metal:block>
+  </head>
+  <body>
+
+    <!-- Title -->
+    <metal:title fill-slot="content-title">
+      <h1 i18n:translate="">
+        Reject samples
+      </h1>
+    </metal:title>
+
+    <!-- Description -->
+    <metal:description fill-slot="content-description">
+      <p i18n:translate="">
+        <a tal:attributes="href view/back_url"
+           i18n:name="back_link"
+           i18n:translate="">
+          &larr; Back
+        </a>
+      </p>
+    </metal:description>
+
+    <!-- Content -->
+    <metal:core fill-slot="content-core">
+      <div id="reject-samples-view"
+           class="row"
+           tal:define="portal context/@@plone_portal_state/portal;">
+
+        <div class="col-sm-12">
+          <form class="form"
+                id="reject_samples_form"
+                name="reject_samples_form"
+                method="POST">
+
+            <!-- Hidden Fields -->
+            <input type="hidden" name="submitted" value="1"/>
+            <input tal:replace="structure context/@@authenticator/authenticator"/>
+
+            <tal:samples repeat="sample view/get_samples_data">
+
+              <!-- Remember the initial UIDs coming in -->
+              <input type="hidden" name="uids:list" tal:attributes="value sample/uid"/>
+
+              <table class="table table-bordered" style="margin-bottom:1.5em;">
+
+                <!-- Sample line header -->
+                <thead>
+                  <tr>
+                    <th class="info">
+                      <!-- Sample Title -->
+                      <div class="col-sm-12">
+                        <h2>
+                          <span class="text-primary" tal:content="sample/title"/>
+                          <span class="small" tal:content="sample/sample_type"/>
+                          <div class="small">
+                            <span tal:content="sample/client_title"/>
+                          </div>
+                        </h2>
+                        <input name="sample.uid:record"
+                               type="hidden"
+                               tal:attributes="value sample/uid;
+                                               name string:sample.${sample/uid}:record"/>
+                      </div>
+                    </th>
+                  </tr>
+                </thead>
+
+                <!-- Sample line content (rejection reasons checkboxes) -->
+                <tbody>
+                  <tr>
+                    <td>
+                      <!-- Rejection reasons -->
+                      <input type="hidden" name="samples.uid:records" tal:attributes="value sample/uid"/>
+                      <div class="col-sm-12">
+                        <div class="form-group field"
+                             tal:define="reasons python: view.get_rejection_reasons()">
+                          <tal:reasons repeat="reason reasons" condition="reasons">
+                            <div>
+                              <input type="checkbox"
+                                     tal:attributes="name string:reason.${sample/uid};
+                                                     sample_uid string:${sample/uid};">
+                              <label tal:attributes="for string:reason.${sample/uid}"
+                                     tal:content="reason"></label>
+                            </div>
+                          </tal:reasons>
+                          <div tal:condition="python: not reasons"
+                               i18n:translate="">There are no pre-defined conditions set</div>
+                        </div>
+                      </div>
+                      <div class="col-sm-12">
+                        <div class="form-group field">
+                          <label for="" i18n:translate="">Other reasons</label>
+                          <textarea cols="5"
+                            tal:attributes="name string:other_reason.${sample/uid};
+                                            sample_uid string:${sample/uid}"></textarea>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </tal:samples>
+
+            <!-- Form Controls -->
+            <div>
+              <!-- Cancel -->
+              <input class="btn btn-default btn-sm"
+                     type="submit"
+                     name="button_cancel"
+                     i18n:attributes="value"
+                     value="Cancel ⎋"/>
+              <!-- Continue -->
+              <input class="btn btn-success btn-sm"
+                     type="submit"
+                     name="button_continue"
+                     i18n:attributes="value"
+                     value="Continue (1/2) ⇶"/>
+            </div>
+
+          </form>
+        </div>
+
+      </div>
+    </metal:core>
+  </body>
+</html>

@@ -62,6 +62,16 @@ class WorkflowActionPublishAdapter(RequestContextAware):
         return self.redirect(redirect_url=url)
 
 
+class WorkflowActionRejectAdapter(RequestContextAware):
+    """Adapter in charge of Analysis Requests 'reject' action
+    """
+    implements(IWorkflowActionUIDsAdapter)
+
+    def __call__(self, action, uids):
+        url = "{}/reject_samples?uids={}".format(self.back_url, ",".join(uids))
+        return self.redirect(redirect_url=url)
+
+
 class WorkflowActionReceiveAdapter(WorkflowActionGenericAdapter):
     """Adapter in charge of Analysis Request receive action
     """
