@@ -1,8 +1,6 @@
 import json
 from collections import defaultdict
 
-from DateTime import DateTime
-from Products.CMFPlone.i18nl10n import ulocalized_time
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
@@ -10,7 +8,10 @@ from bika.lims.api.analysis import is_out_of_range
 from bika.lims.browser.referenceanalysis import AnalysesRetractedListReport
 from bika.lims.browser.workflow import WorkflowActionGenericAdapter
 from bika.lims.catalog.analysis_catalog import CATALOG_ANALYSIS_LISTING
+from bika.lims.interfaces import IAnalysis
 from bika.lims.interfaces import IReferenceAnalysis
+from DateTime import DateTime
+from Products.CMFPlone.i18nl10n import ulocalized_time
 
 
 class WorkflowActionSubmitAdapter(WorkflowActionGenericAdapter):
