@@ -31,4 +31,11 @@
       handler="bika.lims.subscribers.samplinground.SamplingRoundAddedEventHandler"
       />
 
+  <!-- Pricelists -->
+  <subscriber
+      for="bika.lims.interfaces.IPricelist
+           zope.lifecycleevent.interfaces.IObjectModifiedEvent"
+      handler="bika.lims.subscribers.pricelist.ObjectModifiedEventHandler"
+      />
+
 </configure>

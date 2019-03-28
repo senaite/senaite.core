@@ -5,28 +5,29 @@
 # Copyright 2018 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-"""PricelistFolder is a container for Pricelist instances.
-"""
 from AccessControl import ClassSecurityInfo
-from bika.lims.interfaces import IPricelistFolder
-from plone.app.folder import folder
-from bika.lims.content.bikaschema import BikaFolderSchema
 from bika.lims import PROJECTNAME
-from Products.Archetypes.public import *
-from zope.interface import implements
 from bika.lims.interfaces import IHaveNoBreadCrumbs
+from bika.lims.interfaces import IPricelistFolder
+from plone.app.folder.folder import ATFolder
+from plone.app.folder.folder import ATFolderSchema
+from Products.Archetypes.public import registerType
+from Products.ATContentTypes.content import schemata
+from zope.interface import implements
 
-schema = BikaFolderSchema.copy()
-IdField = schema['id']
-IdField.widget.visible = {'edit': 'hidden', 'view': 'invisible'}
-TitleField = schema['title']
-TitleField.widget.visible = {'edit': 'hidden', 'view': 'invisible'}
+schema = ATFolderSchema.copy()
 
 
-class PricelistFolder(folder.ATFolder):
+class PricelistFolder(ATFolder):
+    """Root folder for Pricelists
+    """
     implements(IPricelistFolder, IHaveNoBreadCrumbs)
-    security = ClassSecurityInfo()
-    displayContentsTab = False
+
     schema = schema
+    displayContentsTab = False
+    security = ClassSecurityInfo()
+
+
+schemata.finalizeATCTSchema(schema, folderish=True, moveDiscussion=False)
 
 registerType(PricelistFolder, PROJECTNAME)

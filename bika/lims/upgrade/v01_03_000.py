@@ -24,6 +24,7 @@ from bika.lims.interfaces import INumberGenerator
 from bika.lims.interfaces import IReferenceAnalysis
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.permissions import TransitionVerify
+from bika.lims.setuphandlers import hide_navbar_items
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
 from bika.lims.workflow import ActionHandlerPool, getAllowedTransitions
@@ -89,7 +90,6 @@ CSS_TO_REMOVE = [
     "++resource++bika.lims.css/hide_editable_border.css",
     "print.css",
 ]
-
 
 NEW_SENAITE_WORKFLOW_BINDINGS = (
     # List of portal types that will be bound to a new senaite_* workflow (the
@@ -311,6 +311,15 @@ def upgrade(tool):
     # remove invoices
     # https://github.com/senaite/senaite.core/pull/1296
     remove_invoices(portal)
+
+    # Hide navbar items no longer used
+    # https://github.com/senaite/senaite.core/pull/1304
+    hide_navbar_items(portal)
+
+    # Resort Client type actions (tabs)
+    # https://github.com/senaite/senaite.core/pull/1304
+    resort_client_actions(portal)
+
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
@@ -2364,7 +2373,6 @@ def get_review_history_for(brain_or_object):
     return sorted(review_history, key=lambda st: st.get("time"))
 
 
-
 def create_initial_review_history(brain_or_object):
     """Creates a new review history for the given object
     """
@@ -2388,3 +2396,33 @@ def create_initial_review_history(brain_or_object):
 
     # Sort by time (from oldest to newest)
     return sorted(review_history, key=lambda st: st.get("time"))
+
+
+def resort_client_actions(portal):
+    """Resorts client action views
+    """
+    sorted_actions = [
+        "edit",
+        "contacts",
+        "view", # this redirects to analysisrequests
+        "analysisrequests",
+        "batches",
+        "samplepoints",
+        "profiles",
+        "templates",
+        "specs",
+        "orders",
+        "reports_listing"
+    ]
+    type_info = portal.portal_types.getTypeInfo("Client")
+    actions = filter(lambda act: act.id in sorted_actions, type_info._actions)
+    missing = filter(lambda act: act.id not in sorted_actions, type_info._actions)
+
+    # Sort the actions
+    actions = sorted(actions, key=lambda act: sorted_actions.index(act.id))
+    if missing:
+        # Move the actions not explicitily sorted to the end
+        actions.extend(missing)
+
+    # Reset the actions to type info
+    type_info._actions = actions

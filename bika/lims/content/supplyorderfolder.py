@@ -7,9 +7,11 @@
 
 from AccessControl import ClassSecurityInfo
 from bika.lims.config import PROJECTNAME
+from bika.lims.interfaces import IHaveNoBreadCrumbs
 from bika.lims.interfaces import ISupplyOrderFolder
 from plone.app.folder import folder
-from Products.Archetypes import atapi
+from plone.app.folder.folder import ATFolder
+from Products.Archetypes.public import registerType
 from Products.ATContentTypes.content import schemata
 from zope.interface import implements
 
@@ -17,12 +19,16 @@ from zope.interface import implements
 schema = folder.ATFolderSchema.copy()
 
 
-class SupplyOrderFolder(folder.ATFolder):
-    implements(ISupplyOrderFolder)
+class SupplyOrderFolder(ATFolder):
+    """Root folder for Supply Orders
+    """
+    implements(ISupplyOrderFolder, IHaveNoBreadCrumbs)
+
     schema = schema
     displayContentsTab = False
     security = ClassSecurityInfo()
 
 
 schemata.finalizeATCTSchema(schema, folderish=True, moveDiscussion=False)
-atapi.registerType(SupplyOrderFolder, PROJECTNAME)
+
+registerType(SupplyOrderFolder, PROJECTNAME)
