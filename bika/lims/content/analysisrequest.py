@@ -2326,5 +2326,21 @@ class AnalysisRequest(BaseFolder):
             secondary.setSamplingDate(value)
             secondary.reindexObject(idxs="getSamplingDate")
 
+    def getSelectedRejectionReasons(self):
+        """Returns a list with the selected rejection reasons, if any
+        """
+        reasons = self.getRejectionReasons()
+        if not reasons:
+            return []
+        return reasons[0].get("selected", [])
+
+    def getOtherRejectionReasons(self):
+        """Returns other rejection reasons custom text, if any
+        """
+        reasons = self.getRejectionReasons()
+        if not reasons:
+            return ""
+        return reasons[0].get("other", "")
+
 
 registerType(AnalysisRequest, PROJECTNAME)
