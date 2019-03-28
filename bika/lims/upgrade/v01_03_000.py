@@ -24,6 +24,7 @@ from bika.lims.interfaces import INumberGenerator
 from bika.lims.interfaces import IReferenceAnalysis
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.permissions import TransitionVerify
+from bika.lims.setuphandlers import hide_navbar_items
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
 from bika.lims.workflow import ActionHandlerPool, getAllowedTransitions
@@ -89,13 +90,6 @@ CSS_TO_REMOVE = [
     "++resource++bika.lims.css/hide_editable_border.css",
     "print.css",
 ]
-
-NAV_BAR_ITEMS_TO_HIDE = (
-    # List of items to hide from navigation bar
-    "arimports",
-    "pricelists",
-    "supplyorders",
-)
 
 NEW_SENAITE_WORKFLOW_BINDINGS = (
     # List of portal types that will be bound to a new senaite_* workflow (the
@@ -2186,22 +2180,7 @@ def remove_invoices(portal):
     portal.manage_delObjects(invoices.getId())
 
 
-def hide_navbar_items(portal):
-    """Remove navbar items that are no longer used
-    """
-    logger.info("Removing items from navigation bar ...")
-
-    # Get the list of object ids for portal
-    object_ids = portal.objectIds()
-    object_ids = filter(lambda id: id in object_ids, NAV_BAR_ITEMS_TO_HIDE)
-    for object_id in object_ids:
-        item = portal[object_id]
-        item.setExcludeFromNav(True)
-        item.reindexObject()
-
-
 workflow_ids_by_type = {}
-
 
 def get_workflow_ids_for(brain_or_object):
     """Returns a list with the workflow ids bound to the type of the object

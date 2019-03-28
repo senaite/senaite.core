@@ -26,6 +26,13 @@ GROUPS = {
     "SamplingCoordinators": ["SamplingCoordinator", ],
 }
 
+NAV_BAR_ITEMS_TO_HIDE = (
+    # List of items to hide from navigation bar
+    "arimports",
+    "pricelists",
+    "supplyorders",
+)
+
 # noinspection PyClassHasNoInit
 class Empty:
     pass
@@ -443,3 +450,21 @@ def setupVarious(context):
     gen.setupGroupsAndRoles(site)
     gen.setupPortalContent(site)
     gen.setupCatalogs(site)
+
+    # Hide navbar items no longer used
+    # https://github.com/senaite/senaite.core/pull/1304
+    hide_navbar_items(site)
+
+
+def hide_navbar_items(portal):
+    """Remove navbar items that are no longer used
+    """
+    logger.info("Removing items from navigation bar ...")
+
+    # Get the list of object ids for portal
+    object_ids = portal.objectIds()
+    object_ids = filter(lambda id: id in object_ids, NAV_BAR_ITEMS_TO_HIDE)
+    for object_id in object_ids:
+        item = portal[object_id]
+        item.setExcludeFromNav(True)
+        item.reindexObject()
