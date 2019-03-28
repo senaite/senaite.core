@@ -104,6 +104,18 @@
                             tal:attributes="name string:samples.other_reasons:records"></textarea>
                         </div>
                       </div>
+
+                      <!-- Send email notification -->
+                      <div class="col-sm-12">
+                        <div class="form-group field">
+                          <input type="checkbox" name="samples.notify:records"
+                            tal:attributes="checked python:view.notify">
+                          <label i18n:translate="">Email notification</label><br/>
+                          <span i18n:translate="">
+                            Send an email notification to client contact
+                          </span>
+                        </div>
+                      </div>
                     </td>
                   </tr>
                 </tbody>

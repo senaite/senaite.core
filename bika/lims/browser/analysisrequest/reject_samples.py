@@ -13,6 +13,7 @@ from bika.lims import workflow as wf
 from bika.lims.browser import BrowserView, ulocalized_time
 from bika.lims.catalog.analysisrequest_catalog import \
     CATALOG_ANALYSIS_REQUEST_LISTING
+from bika.lims.utils.analysisrequest import notify_rejection
 from plone.memoize import view
 
 
@@ -26,6 +27,7 @@ class RejectSamplesView(BrowserView):
         self.context = context
         self.request = request
         self.back_url = self.context.absolute_url()
+        self.notify = api.get_setup().getNotifyOnSampleRejection()
 
     def __call__(self):
         form = self.request.form
@@ -68,13 +70,17 @@ class RejectSamplesView(BrowserView):
                 # This is quite bizarre!
                 # AR's Rejection reasons is a RecordsField, but with one
                 # record only, that contains both predefined and other reasons.
-                sample = api.get_object_by_uid(sample_uid)
+                obj = api.get_object_by_uid(sample_uid)
                 rejection_reasons = {
                     "other": other,
                     "selected": reasons }
-                sample.setRejectionReasons([rejection_reasons])
-                wf.doActionFor(sample, "reject")
-                processed.append(sample)
+                obj.setRejectionReasons([rejection_reasons])
+                wf.doActionFor(obj, "reject")
+                processed.append(obj)
+
+                # Client needs to be notified?
+                if sample.get("notify", "") == "on":
+                    notify_rejection(obj)
 
             if not processed:
                 return self.redirect(message=_("No samples were rejected"))
