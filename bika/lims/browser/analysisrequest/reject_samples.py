@@ -27,7 +27,18 @@ class RejectSamplesView(BrowserView):
         self.context = context
         self.request = request
         self.back_url = self.context.absolute_url()
-        self.notify = api.get_setup().getNotifyOnSampleRejection()
+
+    @property
+    def is_notification_enabled(self):
+        """Returns whether the notification on sample rejection is enabled
+        """
+        return api.get_setup().getNotifyOnSampleRejection()
+
+    @property
+    def is_rejection_workflow_enabled(self):
+        """Return whether the rejection workflow is enabled
+        """
+        return api.get_setup().isRejectionWorkflowEnabled()
 
     def __call__(self):
         form = self.request.form
@@ -40,7 +51,7 @@ class RejectSamplesView(BrowserView):
         form_cancel = form.get("button_cancel", False)
 
         # Is Rejection Workflow Enabled
-        if not api.get_setup().isRejectionWorkflowEnabled():
+        if not self.is_rejection_workflow_enabled:
             return self.redirect(message=_("Rejection workflow is not enabled"),
                                  level="warning")
 
@@ -124,7 +135,6 @@ class RejectSamplesView(BrowserView):
         """Returns a list of Samples data (dictionary)
         """
         for obj in self.get_samples_from_request():
-            obj = api.get_object(obj)
             yield {
                 "obj": obj,
                 "id": api.get_id(obj),
@@ -132,7 +142,7 @@ class RejectSamplesView(BrowserView):
                 "title": api.get_title(obj),
                 "path": api.get_path(obj),
                 "url": api.get_url(obj),
-                "sample_type": api.get_title(obj.getSampleType()),
+                "sample_type": obj.getSampleTypeTitle(),
                 "client_title": obj.getClientTitle(),
                 "date": ulocalized_time(obj.created(), long_format=True),
             }
