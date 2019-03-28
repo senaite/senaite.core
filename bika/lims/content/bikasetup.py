@@ -815,9 +815,8 @@ schema = BikaFolderSchema.copy() + Schema((
         widget=RejectionSetupWidget(
             label=_("Enable the rejection workflow"),
             description=_("Select this to activate the rejection workflow "
-                          "for Samples and Samples. A 'Reject' "
-                          "option will be displayed in the actions menu for "
-                          "these objects.")
+                          "for Samples. A 'Reject' option will be displayed in "
+                          "the actions menu.")
         ),
     ),
     IntegerField(
