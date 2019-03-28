@@ -81,6 +81,7 @@ Changelog
 
 **Removed**
 
+- #1308 Remove install screen
 - #1224 Replace publication engine with SENAITE IMPRESS
 - #1207 Remove results auto-import interval from Setup: no limitations to cron
 - #1180 Remove AdHoc field from Analysis Request
