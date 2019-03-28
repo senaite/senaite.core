@@ -26,6 +26,12 @@ class WorkflowActionSubmitAdapter(WorkflowActionGenericAdapter):
         interims_data = self.get_interims_data()
 
         for analysis in objects:
+
+            # Using the global WF menu passes the AR as context
+            # https://github.com/senaite/senaite.core/issues/1306
+            if not IAnalysis.providedBy(analysis):
+                continue
+
             uid = api.get_uid(analysis)
 
             # Need to save remarks?
