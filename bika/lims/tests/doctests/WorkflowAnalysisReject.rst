@@ -372,7 +372,7 @@ Retract one of the analyses:
     'retracted'
 
     >>> api.get_workflow_status_of(ar)
-    'received'
+    'sample_received'
 
 Reject the retest:
 
