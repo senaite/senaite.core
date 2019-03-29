@@ -62,14 +62,28 @@ class WorkflowActionPublishAdapter(RequestContextAware):
         return self.redirect(redirect_url=url)
 
 
-class WorkflowActionRejectAdapter(RequestContextAware):
+class WorkflowActionRejectAdapter(WorkflowActionGenericAdapter):
     """Adapter in charge of Analysis Requests 'reject' action
     """
-    implements(IWorkflowActionUIDsAdapter)
 
-    def __call__(self, action, uids):
-        url = "{}/reject_samples?uids={}".format(self.back_url, ",".join(uids))
-        return self.redirect(redirect_url=url)
+    def __call__(self, action, objects):
+        samples = filter(IAnalysisRequest.providedBy, objects)
+        if samples:
+            # Action reject applies to samples. Redirect to Sample Reject view
+            uids = map(api.get_uid, samples)
+            uids_str = ",".join(uids)
+            url = "{}/reject_samples?uids={}".format(self.back_url, uids_str)
+            return self.redirect(redirect_url=url)
+
+        # Generic transition if reject applies to other types (e.g. Analysis)
+        transitioned = self.do_action(action, objects)
+        if not transitioned:
+            return self.redirect(message=_("No changes made."), level="warning")
+
+        # Redirect the user to success page
+        ids =  map(api.get_id, transitioned)
+        message = _("Rejected items: {}").format(", ".join(ids))
+        return self.success(transitioned, message=message)
 
 
 class WorkflowActionReceiveAdapter(WorkflowActionGenericAdapter):
