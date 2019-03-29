@@ -2,14 +2,14 @@
 # SOME DESCRIPTIVE TITLE.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # Translators:
-# Jordi Puiggené <jpuiggene@naralabs.com>, 2018
 # Ramon Bartl <rb@ridingbytes.com>, 2018
+# Jordi Puiggené <jpuiggene@naralabs.com>, 2019
 # prosper wang <prosperwang@163.com>, 2019
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2019-03-28 06:03+0000\n"
+"POT-Creation-Date: 2019-03-29 12:23+0000\n"
 "PO-Revision-Date: 2018-06-01 18:46+0000\n"
 "Last-Translator: prosper wang <prosperwang@163.com>, 2019\n"
 "Language-Team: Chinese (China) (https://www.transifex.com/senaite/teams/87045/zh_CN/)\n"
