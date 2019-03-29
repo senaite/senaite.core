@@ -7,17 +7,17 @@ Contributions to master, excluding merge commits, sorted by number of
 contributions descending.
 
 - Campbell McKellar-Basset, rockfruit@users.noreply.github.com
-- Jordi Puiggené, jpuiggene@naralabs.com
+- Jordi Puiggené, jp@naralabs.com
 - Pau Soliva, psoliva@naralabs.com
 - Ramon Bartl, rb@ridingbytes.com
 - Nihad Mammadli, 1992.nihad@gmail.com
 - Anneline Sweetname, anneline@bikalabs.com
-- Juan Gallostra, jgallostra@naralabs.com
+- Juan Gallostra, juangallostra@users.noreply.github.com
 - Godfrey Leibbrandt, godfrey@bikalabs.com
 - Mike Metcalfe, mike@metcalfe.co.za
 - Jurie-Jan Botha, juriejanbotha@gmail.com
-- Inus Scheepers, inus@bikalabs.com
 - Lunga Baliwe, lunga001@gmail.com
+- Inus Scheepers, inus@bikalabs.com
 - Oliver Roch, oliver.roch@d9t.de
 - Alexander Karlsson, ak.zylinx@gmail.com
 - Anton Feun, anton@satides.co.za
@@ -25,15 +25,19 @@ contributions descending.
 - Lemoene, lemoene@bikalabs.com
 - Dhruv Khattar, dhruv@khattarindia.com
 - witekdev, witekdev@gmail.com
+- Anderson Smith, andersonsmith183@gmail.com
 - Javis Sullivan, javissullivan@gmail.com
 - Pieter van der Merwe, pieter_vdm@debortoli.com.au
-- Anderson Smith, andersonsmith183@gmail.com
 - Jean Jordaan, jean.jordaan@gmail.com
+- MoffatMore, 12894381+MoffatMore@users.noreply.github.com
+- krishan Chopra, krishanchopra61@yahoo.in
+- jpsinghgoud, jaipal.singh@research.iiit.ac.in
+- Stefan Gruber, s.gruber@liscon.de
 - Aleksandr Melnikov, aleksandr.melnikov@limelyte.com
 - Henrique Chehad, hchehad@gmail.com
-- jpsinghgoud, jaipal.singh@research.iiit.ac.in
 - goelakash, goelakash93@gmail.com
 - Manav Batra, manavbatra@outlook.com
+- mimishons, shoniwam@nmrl.org.zw
 
 
 Translators
@@ -134,5 +138,7 @@ Translators
 - yuan314159, yuan314159@gmail.com, Chinese (China) (zh_CN)
 - Cheng Jin, 17067405@qq.com, Chinese (China) (zh_CN)
 - Inus Scheepers, inus@animatica.co.za, Chinese (China) (zh_CN)
+- prosper wang, prosperwang@163.com, Chinese (China) (zh_CN)
 - Rui Tang, bio.nanoparticle@gmail.com, Chinese (Taiwan) (zh_TW)
 - Matthew Tsui, mtsui@app2one.com, Chinese (Taiwan) (zh_TW)
+- Liz Sung, lesliesong@gmail.com, Chinese (Taiwan) (zh_TW)
