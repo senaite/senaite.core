@@ -1,15 +1,6 @@
 <configure xmlns="http://namespaces.zope.org/zope"
            xmlns:browser="http://namespaces.zope.org/browser">
 
-  <!-- Overrides the plone-overview browser view-->
-  <browser:page
-      for="OFS.interfaces.IApplication"
-      name="plone-overview"
-      class="Products.CMFPlone.browser.admin.Overview"
-      permission="zope.Public"
-      template="templates/plone-overview.pt"
-  />
-
   <!---
   jarn.jsi18n uses the first catalog it comes across for a particular domain
   and language. Bika LIMS has additional plone.mo files that should
