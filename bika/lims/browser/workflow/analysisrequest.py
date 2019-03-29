@@ -82,7 +82,7 @@ class WorkflowActionRejectAdapter(WorkflowActionGenericAdapter):
 
         # Redirect the user to success page
         ids =  map(api.get_id, transitioned)
-        message = _("Rejected items: {}".format(", ".join(ids)))
+        message = _("Rejected items: {}").format(", ".join(ids))
         return self.success(transitioned, message=message)
 
 
