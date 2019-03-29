@@ -165,3 +165,10 @@ def guard_sample(analysis_request):
 
     current_user = api.get_current_user()
     return "Sampler" in current_user.getRolesInContext(analysis_request)
+
+
+def guard_reject(analysis_request):
+    """Returns whether 'reject' transition can be performed or not. Returns
+    True only if setup's isRejectionWorkflowEnabled is True
+    """
+    return analysis_request.bika_setup.isRejectionWorkflowEnabled()

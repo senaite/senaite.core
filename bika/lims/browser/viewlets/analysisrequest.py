@@ -37,3 +37,9 @@ class SecondaryAnalysisRequestViewlet(ViewletBase):
     """ Current Analysis Request is a secondary. Display the link to primary
     """
     template = ViewPageTemplateFile("templates/secondary_ar_viewlet.pt")
+
+
+class RejectedAnalysisRequestViewlet(ViewletBase):
+    """Current ANalysis Request was rejected. Display the reasons
+    """
+    template = ViewPageTemplateFile("templates/rejected_ar_viewlet.pt")

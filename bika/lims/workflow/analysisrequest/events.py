@@ -33,19 +33,6 @@ def after_reject(analysis_request):
     do_action_to_descendants(analysis_request, "reject")
     do_action_to_analyses(analysis_request, "reject")
 
-    # TODO Workflow - AnalysisRequest - Revisit rejection notification
-    if not analysis_request.bika_setup.getNotifyOnSampleRejection():
-        return
-
-    ancestor = analysis_request.getParentAnalysisRequest()
-    if ancestor and api.get_workflow_status_of(ancestor) == "rejected":
-        # No need to notify, notification done by the ancestor
-        return
-
-    # Notify the Client about the Rejection.
-    from bika.lims.utils.analysisrequest import notify_rejection
-    notify_rejection(analysis_request)
-
 
 def after_retract(analysis_request):
     """Method triggered after a 'retract' transition for the Analysis Request
