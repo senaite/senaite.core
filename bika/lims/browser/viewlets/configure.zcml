@@ -171,4 +171,14 @@
     layer="bika.lims.interfaces.IBikaLIMS"
   />
 
+  <!-- Rejected Analysis Request viewlet -->
+  <browser:viewlet
+    for="bika.lims.interfaces.IAnalysisRequest"
+    name="bika.lims.rejected_ar_viewlet"
+    class=".analysisrequest.RejectedAnalysisRequestViewlet"
+    manager="plone.app.layout.viewlets.interfaces.IAboveContent"
+    template="templates/rejected_ar_viewlet.pt"
+    permission="zope2.View"
+    layer="bika.lims.interfaces.IBikaLIMS"
+  />
 </configure>
