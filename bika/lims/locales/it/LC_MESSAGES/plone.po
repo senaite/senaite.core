@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2019-02-15 08:16+0000\n"
+"POT-Creation-Date: 2019-03-29 20:12+0000\n"
 "PO-Revision-Date: 2018-06-01 18:46+0000\n"
 "Last-Translator: Ramon Bartl <rb@ridingbytes.com>, 2018\n"
 "Language-Team: Italian (https://www.transifex.com/senaite/teams/87045/it/)\n"
@@ -167,10 +167,6 @@ msgstr "Etichette Batch"
 msgid "Batches"
 msgstr "Batches"
 
-#: bika/lims/profiles/default/types/BikaSetup.xml
-msgid "Bika Setup"
-msgstr "Impostazione Bika"
-
 #: bika/lims/profiles/default/types/Calculation.xml
 msgid "Calculation"
 msgstr "Calcolo"
@@ -195,7 +191,6 @@ msgstr ""
 msgid "Client"
 msgstr "Cliente"
 
-#: bika/lims/profiles/default/actions.xml
 #: bika/lims/profiles/default/types/ClientFolder.xml
 msgid "Clients"
 msgstr "Clienti"
@@ -235,7 +230,7 @@ msgid "Containers"
 msgstr "Contenitori"
 
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
-msgid "Create Invoice"
+msgid "Create Invoice PDF"
 msgstr ""
 
 msgid "Current"
@@ -280,10 +275,6 @@ msgstr "Duplicare Analisi"
 #: bika/lims/profiles/default/types/AnalysisCategory.xml
 msgid "Edit"
 msgstr ""
-
-#: bika/lims/profiles/default/types/Pricelist.xml
-msgid "Email pricelist"
-msgstr "Listino prezzi email"
 
 msgid "Expire"
 msgstr ""
@@ -490,11 +481,14 @@ msgstr "Listini prezzi"
 msgid "Prices"
 msgstr "Prezzi"
 
-#: bika/lims/profiles/default/types/AnalysisRequest.xml
 #: bika/lims/profiles/default/types/Invoice.xml
 #: bika/lims/profiles/default/types/SupplyOrder.xml
 msgid "Print"
 msgstr "Stampa"
+
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
+msgid "Print Invoice"
+msgstr ""
 
 #: bika/lims/profiles/default/types/Pricelist.xml
 msgid "Print pricelist"
@@ -639,6 +633,7 @@ msgid "Sample Point"
 msgstr "Punto Campione"
 
 #: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/Client.xml
 #: bika/lims/profiles/default/types/SamplePoints.xml
 msgid "Sample Points"
 msgstr "Punti Campione"
@@ -664,10 +659,6 @@ msgstr ""
 
 msgid "Sample registered"
 msgstr ""
-
-#: bika/lims/profiles/default/types/Client.xml
-msgid "SamplePoints"
-msgstr "Punti Campione"
 
 msgid "Sampled"
 msgstr ""
@@ -717,6 +708,10 @@ msgid "Schedule sampling"
 msgstr ""
 
 msgid "Scheduled sampling"
+msgstr ""
+
+#: bika/lims/profiles/default/types/BikaSetup.xml
+msgid "Setup"
 msgstr ""
 
 #: bika/lims/profiles/default/actions.xml
