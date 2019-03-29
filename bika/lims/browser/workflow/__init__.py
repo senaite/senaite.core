@@ -160,14 +160,15 @@ class WorkflowActionGenericAdapter(RequestContextAware):
             return False
         return self.context in objects
 
-    def success(self, objects):
+    def success(self, objects, message=None):
         """Redirects the user to success page with informative message
         """
         if self.is_context_only(objects):
             return self.redirect(message=_("Changes saved."))
 
         ids = map(api.get_id, objects)
-        message = _("Saved items: {}").format(", ".join(ids))
+        if not message:
+            message = _("Saved items: {}").format(", ".join(ids))
         return self.redirect(message=message)
 
     def get_form_value(self, form_key, object_brain_uid, default=None):
