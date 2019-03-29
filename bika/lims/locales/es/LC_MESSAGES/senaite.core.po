@@ -1,14 +1,14 @@
 # Translators:
 # Ramon Bartl <rb@ridingbytes.com>, 2018
-# Jordi Puiggené <jpuiggene@naralabs.com>, 2019
 # Pau Soliva <psoliva@naralabs.com>, 2019
+# Jordi Puiggené <jpuiggene@naralabs.com>, 2019
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2019-03-29 12:23+0000\n"
+"POT-Creation-Date: 2019-03-29 20:12+0000\n"
 "PO-Revision-Date: 2018-06-01 18:44+0000\n"
-"Last-Translator: Pau Soliva <psoliva@naralabs.com>, 2019\n"
+"Last-Translator: Jordi Puiggené <jpuiggene@naralabs.com>, 2019\n"
 "Language-Team: Spanish (https://www.transifex.com/senaite/teams/87045/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -2264,7 +2264,7 @@ msgstr "Si está marcado, el nombre del análisis se mostrará en cursiva."
 
 #: bika/lims/content/abstractbaseanalysis.py:594
 msgid "If enabled, this analysis and its results will not be displayed by default in reports. This setting can be overrided in Analysis Profile and/or Sample"
-msgstr ""
+msgstr "Si está marcado, este análisis y sus resultados no se mostrarán por defecto en los informes. Esta configuración también puede modificarse en perfiles de análisis y en muestras"
 
 #: bika/lims/content/batch.py:223
 msgid "If no Title value is entered, the Batch ID will be used."
@@ -2296,7 +2296,7 @@ msgstr "Método de conservación del recipiente."
 
 #: bika/lims/content/worksheettemplate.py:130
 msgid "If unchecked, Lab Managers won't be able to assign the same Instrument more than one Analyses while creating a Worksheet."
-msgstr ""
+msgstr "Si está marcado, los reponsables del laboratorio no podrán asignar el mismo instrumento a más de un análisis durante la creación de una hoja de trabajo."
 
 #: bika/lims/content/bikasetup.py:191
 msgid "If unchecked, analysts and lab clerks will be able to manage Worksheets, too. If the users have restricted access only to those worksheets for which they are assigned, this option will be checked and readonly."
@@ -2308,7 +2308,7 @@ msgstr "Si no se selecciona, los analistas tendrán acceso a todas las hojas de 
 
 #: bika/lims/content/bikasetup.py:178
 msgid "If unchecked, users will only be able to submit results for the analyses they are assigned to, and the submission of results for unassigned analyses won't be permitted. This setting does not apply to users with role Lab Manager"
-msgstr ""
+msgstr "Si no está marcado, los usuarios solo podrán introducir resultados para los análisis que tengan asignados. Esta configuración no tiene ningún efecto para responsables de laboratorio."
 
 #: bika/lims/content/calculation.py:86
 msgid "If your formula needs a special function from an external Python library, you can import it here. E.g. if you want to use the 'floor' function from the Python 'math' module, you add 'math' to the Module field and 'floor' to the function field. The equivalent in Python would be 'from math import floor'. In your calculation you could use then 'floor([Ca] + [Mg])'. "
@@ -3158,11 +3158,11 @@ msgstr "No hay disponibles definiciones de referencia para Blancos. <br /> Para 
 
 #: bika/lims/skins/bika/bika_widgets/worksheettemplatelayoutwidget.pt:38
 msgid "No Reference Definitions for Controls available. <br /> To add a Control in this Worksheet Template, create a Reference Definition for a Control sample first."
-msgstr ""
+msgstr "No hay definiciones de referencia disponibles para muestras control. <br /> Para añadir un control a la plantilla de hoja de trabajo, cree primero una definición de referencia para muestra control."
 
 #: bika/lims/skins/bika/bika_widgets/worksheettemplatelayoutwidget.pt:43
 msgid "No ReferenceDefinitions for Controls nor Blanks available. <br /> To add a Control or Blank in this Worksheet Template, create a Reference Definition first."
-msgstr ""
+msgstr "No hay definiciones de referencia disponibles para muestras control ni tampoco para muestras blanco. <br /> Para añadir un control o un blanco a la plantilla de hoja de trabajo, cree primero la definición de referencia correspondiente."
 
 #: bika/lims/browser/analysisrequest/add2.py:1642
 msgid "No Samples could be created."
@@ -3600,7 +3600,7 @@ msgstr "Por favor, corrige los errores indicados."
 
 #: bika/lims/browser/publish/templates/email_template.pt:11
 msgid "Please find attached the analysis result(s) for ${client_name}"
-msgstr ""
+msgstr "Se adjuntan los resultados de análisis para ${client_name}"
 
 #: bika/lims/content/abstractbaseanalysis.py:575
 msgid "Please list all options for the analysis result if you want to restrict it to specific options only, e.g. 'Positive', 'Negative' and 'Indeterminable'.  The option's result value must be a number"
@@ -3673,7 +3673,7 @@ msgstr "Marca decimal preferida para los resultados"
 
 #: bika/lims/content/bikasetup.py:447
 msgid "Preferred layout of the results entry table in the Worksheet view. Classic layout displays the Samples in rows and the analyses in columns. Transposed layout displays the Samples in columns and the analyses in rows."
-msgstr ""
+msgstr "Diseño de la vista de entada de resultados. El diseño clásico muestra las muestras en filas y los análisis en columnas. El diseño transpuesto muestra las muestras en columnas y los análisis en filas."
 
 #: bika/lims/content/bikasetup.py:271
 msgid "Preferred scientific notation format for reports"
@@ -3879,7 +3879,7 @@ msgstr "Fecha de publicación"
 
 #: bika/lims/browser/reports/administration_arsnotinvoiced.py:35
 msgid "Published Samples which have not been invoiced"
-msgstr ""
+msgstr "Muestras publicadas que no han sido facturadas"
 
 #: bika/lims/browser/analysisrequest/published_results.py:44
 msgid "Published results"
@@ -3935,7 +3935,7 @@ msgstr "Reasignar"
 
 #: bika/lims/browser/worksheet/views/analyses.py:350
 msgid "Reassignable Slot"
-msgstr ""
+msgstr "Disponible"
 
 #: bika/lims/content/bikasetup.py:135
 #: bika/lims/profiles/default/workflows/bika_ar_workflow/definition.xml
@@ -4006,7 +4006,7 @@ msgstr "Los valores para las muestras de referencia son cero o 'blanco'"
 
 #: bika/lims/content/arreport.py:43
 msgid "Referenced Samples in the PDF"
-msgstr ""
+msgstr "Muestras referenciadas en el PDF"
 
 #: bika/lims/controlpanel/bika_reflexrulefolder.py:43
 msgid "Reflex Rule"
@@ -4130,7 +4130,7 @@ msgstr "Número de identificación de informe"
 
 #: bika/lims/browser/reports/templates/administration.pt:97
 msgid "Report of published samples which have not been invoiced"
-msgstr ""
+msgstr "Informe de muestras publicadas que no han sido facturadas"
 
 #: bika/lims/browser/reports/templates/productivity.pt:390
 msgid "Report tables between a period of time the number of analyses published and expressed as a percentage of all analyses performed."
@@ -4142,7 +4142,7 @@ msgstr "Reportar tablas para un período de tiempo del número de muestras recib
 
 #: bika/lims/browser/reports/templates/productivity.pt:457
 msgid "Report tables of Samples and totals submitted between a period of time"
-msgstr ""
+msgstr "Informe de muestras procesadas y totales durante un período de tiempo"
 
 #: bika/lims/content/report.py:30
 msgid "Report type"
@@ -4201,7 +4201,7 @@ msgstr "Reset"
 
 #: bika/lims/browser/publish/templates/email.pt:89
 msgid "Responsibles"
-msgstr ""
+msgstr "Responsables"
 
 #: bika/lims/content/client.py:107
 msgid "Restrict categories"
@@ -4295,7 +4295,7 @@ msgstr "Retirados"
 
 #: bika/lims/browser/publish/reports_listing.py:66
 msgid "Review State"
-msgstr ""
+msgstr "Estado"
 
 #: bika/lims/browser/analysisrequest/templates/analysisrequest_retract_pdf.pt:144
 msgid "Reviewed by"
@@ -4304,7 +4304,7 @@ msgstr "Revisado por"
 #: bika/lims/profiles/default/workflows/bika_ar_workflow/definition.xml
 #: bika/lims/profiles/default/workflows/bika_worksheet_workflow/definition.xml
 msgid "Rollback"
-msgstr ""
+msgstr "Restablecer"
 
 #: bika/lims/browser/worksheet/views/folder.py:100
 msgid "Routine Analyses"
@@ -4346,11 +4346,11 @@ msgstr "Muestra"
 
 #: bika/lims/browser/analysisrequest/add2.py:1648
 msgid "Sample ${AR} was successfully created."
-msgstr ""
+msgstr "Se ha creado la muestra ${AR}."
 
 #: bika/lims/content/bikasetup.py:397
 msgid "Sample Attachment Option"
-msgstr ""
+msgstr "Ficheros adjuntos en muestras"
 
 #: bika/lims/content/sample.py:224
 #: bika/lims/controlpanel/bika_sampleconditions.py:57
@@ -4369,7 +4369,7 @@ msgstr "ID de muestra"
 
 #: bika/lims/browser/arimports.py:58
 msgid "Sample Imports"
-msgstr ""
+msgstr "Importaciones de muestras"
 
 #: bika/lims/controlpanel/bika_samplematrices.py:32
 msgid "Sample Matrices"
@@ -4403,13 +4403,13 @@ msgstr "Rechazo de muestra"
 
 #: bika/lims/content/analysisrequest.py:364
 msgid "Sample Template"
-msgstr ""
+msgstr "Plantilla de muestra"
 
 #: bika/lims/browser/client/views/artemplates.py:36
 #: bika/lims/browser/srtemplate/artemplates.py:35
 #: bika/lims/content/samplinground.py:203
 msgid "Sample Templates"
-msgstr ""
+msgstr "Plantillas de muestras"
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:165
 #: bika/lims/browser/analysisrequest/templates/invoice_content.pt:59
@@ -4429,7 +4429,7 @@ msgstr "Tipos de muestras"
 
 #: bika/lims/content/artemplate.py:104
 msgid "Sample collected by the laboratory"
-msgstr ""
+msgstr "Muestra recogida por el laboratorio"
 
 #: bika/lims/content/analysisrequest.py:809
 msgid "Sample condition"
@@ -4458,7 +4458,7 @@ msgstr "Reportes de muestras relacionadas"
 
 #: bika/lims/content/samplinground.py:159
 msgid "Sample templates to be included in the Sampling Round Template"
-msgstr ""
+msgstr "Plantillas de muestras a ser añadidas en la plantilla de rondas de muestreo"
 
 #: bika/lims/browser/analysisrequest/templates/analysisrequest_retract_pdf.pt:100
 #: bika/lims/browser/reports/administration_arsnotinvoiced.py:67
@@ -4494,25 +4494,25 @@ msgstr "Muestras"
 
 #: bika/lims/browser/analysisrequest/add2.py:1645
 msgid "Samples ${ARs} were successfully created."
-msgstr ""
+msgstr "Se han creado las muestras ${ARs}."
 
 #: bika/lims/browser/reports/templates/productivity.pt:238
 msgid "Samples and analyses"
-msgstr ""
+msgstr "Muestras y análisis"
 
 #: bika/lims/browser/reports/productivity_analysesperclient.py:32
 #: bika/lims/browser/reports/templates/productivity.pt:248
 msgid "Samples and analyses per client"
-msgstr ""
+msgstr "Muestras y análisis por cliente"
 
 #: bika/lims/browser/publish/reports_listing.py:62
 msgid "Samples in PDF"
-msgstr ""
+msgstr "Muestras en el PDF"
 
 #: bika/lims/browser/reports/administration_arsnotinvoiced.py:34
 #: bika/lims/browser/reports/templates/administration.pt:94
 msgid "Samples not invoiced"
-msgstr ""
+msgstr "Muestras no facturadas"
 
 #: bika/lims/content/referencedefinition.py:58
 #: bika/lims/content/referencesample.py:64
@@ -4522,7 +4522,7 @@ msgstr "Las muestras de este tipo deben ser tratadas como peligrosas"
 
 #: bika/lims/browser/dashboard/dashboard.py:431
 msgid "Samples published"
-msgstr ""
+msgstr "Muestras publicadas"
 
 #: bika/lims/browser/reports/productivity_samplereceivedvsreported.py:131
 #: bika/lims/browser/reports/templates/productivity_samplereceivedvsreported.pt:18
@@ -4547,7 +4547,7 @@ msgstr "Muestras a conservar"
 
 #: bika/lims/browser/dashboard/dashboard.py:439
 msgid "Samples to be printed"
-msgstr ""
+msgstr "Muestras pendientes de imprimir"
 
 #: bika/lims/browser/dashboard/dashboard.py:402
 msgid "Samples to be received"
@@ -4559,15 +4559,15 @@ msgstr "Muestras pendientes de recogida"
 
 #: bika/lims/browser/dashboard/dashboard.py:417
 msgid "Samples to be verified"
-msgstr ""
+msgstr "Muestras a verificar"
 
 #: bika/lims/browser/dashboard/dashboard.py:424
 msgid "Samples verified"
-msgstr ""
+msgstr "Muestras verificadas"
 
 #: bika/lims/browser/dashboard/dashboard.py:409
 msgid "Samples with results pending"
-msgstr ""
+msgstr "Muestras con resultados pendientes"
 
 #: bika/lims/browser/samplinground/printform.py:173
 #: bika/lims/browser/worksheet/templates/print/ar_by_column.pt:104
@@ -4641,7 +4641,7 @@ msgstr "Guardar comentarios"
 
 #: bika/lims/browser/workflow/__init__.py:170
 msgid "Saved items: {}"
-msgstr ""
+msgstr "Elementos guardados: {}"
 
 #: bika/lims/profiles/default/workflows/bika_ar_workflow/definition.xml
 msgid "Schedule sampling"
@@ -4682,15 +4682,15 @@ msgstr "Clave de siembra {} a {}"
 
 #: bika/lims/content/bikasetup.py:631
 msgid "Select 'Register' if you want stickers to be automatically printed when new Samples or sample records are created. Select 'Receive' to print stickers when Samples or Samples are received. Select 'None' to disable automatic printing"
-msgstr ""
+msgstr "Seleccione 'Registrar' si desea que las etiquetas se impriman automáticamente al registrar nuevas muestras. Seleccione 'Recibir' para imprimir etiquetas al recibir las muestras. Seleccione 'Ninguno' para desactivar la impresión automática de etiquetas."
 
 #: bika/lims/browser/templates/partition_magic.pt:190
 msgid "Select Partition Analyses"
-msgstr ""
+msgstr "Análisis de la partición"
 
 #: bika/lims/content/srtemplate.py:82
 msgid "Select Sample Templates to include"
-msgstr ""
+msgstr "Seleccione las plantillas de muestra que desea añadir"
 
 #: bika/lims/content/analysisservice.py:214
 msgid "Select a default preservation for this analysis service. If the preservation depends on the sample type combination, specify a preservation per sample type in the table below"
@@ -4702,7 +4702,7 @@ msgstr "Seleccione alguno de los responsables que están registrados en el apart
 
 #: bika/lims/content/analysisrequest.py:230
 msgid "Select a sample to create a secondary Sample"
-msgstr ""
+msgstr "Seleccione una muestra para la creación de una muestra secundaria"
 
 #: bika/lims/content/instrument.py:187
 msgid "Select an Export interface for this instrument."
@@ -4787,11 +4787,11 @@ msgstr "Seleccione los tipos que este ID se usa para identificar."
 
 #: bika/lims/content/bikasetup.py:588
 msgid "Select this to activate automatic notifications via email to the Client and Lab Managers when a Sample is invalidated."
-msgstr ""
+msgstr "Seleccione para activar las notificaciones automáticas por correo electrónico al cliente y responsables del laboratorio cuando se invalide una muestra."
 
 #: bika/lims/content/bikasetup.py:578
 msgid "Select this to activate automatic notifications via email to the Client when a Sample is rejected."
-msgstr ""
+msgstr "Seleccione para activar el envío automático de notificaciones por correo electrónico al cliente cuando una muestra sea rechazada"
 
 #: bika/lims/content/bikasetup.py:462
 msgid "Select this to activate the dashboard as a default front page."
@@ -4799,7 +4799,7 @@ msgstr "Seleccione para activar el tablero de control como página inicial prede
 
 #: bika/lims/content/bikasetup.py:566
 msgid "Select this to activate the rejection workflow for Samples and Samples. A 'Reject' option will be displayed in the actions menu for these objects."
-msgstr ""
+msgstr "Seleccione para activar el flujo de trabajo de rechazo para muestras. Se mostrará una opción 'Rechazar' en el menú de acciones."
 
 #: bika/lims/content/bikasetup.py:502
 msgid "Select this to activate the sample collection workflow steps."
@@ -4835,11 +4835,11 @@ msgstr "Autoverificación de resultados"
 
 #: bika/lims/browser/publish/templates/email.pt:204
 msgid "Send"
-msgstr ""
+msgstr "Enviar"
 
 #: bika/lims/browser/publish/templates/email.pt:23
 msgid "Send Analysis Reports via Email"
-msgstr ""
+msgstr "Enviar informes de análisis por correo electrónico"
 
 #: bika/lims/content/analysisservice.py:121
 msgid "Separate Container"
@@ -4886,7 +4886,7 @@ msgstr "Asignar la tarea de mantenimiento como cerrada"
 
 #: bika/lims/content/analysisrequest.py:673
 msgid "Set the specification to be used before publishing a Sample."
-msgstr ""
+msgstr "Indique la especificación que desea utilizar antes de publicar una muestra."
 
 #: bika/lims/content/bikasetup.py:612
 msgid "Set the text for the body of the email to be sent, , if option 'Email notification on Sample 'invalidation' enabled,  to the Sample's client contact. You can use reserved keywords: $sample_id, $sample_link, $retest_id, $retest_link, $lab_address"
@@ -5030,7 +5030,7 @@ msgstr "Se utilizará el valor de este campo para ordenar los subgrupos en las l
 
 #: bika/lims/browser/publish/templates/email.pt:115
 msgid "Subject"
-msgstr ""
+msgstr "Asunto"
 
 #: bika/lims/browser/batch/batchbook.py:253
 #: bika/lims/exportimport/import.pt:66
@@ -5229,7 +5229,7 @@ msgstr "La referencia que usa el cliente para la solicitud"
 
 #: bika/lims/content/analysisrequest.py:810
 msgid "The condition of the sample"
-msgstr ""
+msgstr "El estado actual de la muestra"
 
 #: bika/lims/content/analysisrequest.py:154
 msgid "The contacts used in CC for email notifications"
@@ -5285,7 +5285,7 @@ msgstr "Los siguientes servicios de análisis no pertenecen al método actual:"
 
 #: bika/lims/browser/viewlets/templates/primary_ar_viewlet.pt:15
 msgid "The following partitions have been created from this Sample:"
-msgstr ""
+msgstr "Se han creado las particiones siguientes:"
 
 #: bika/lims/content/samplepoint.py:62
 msgid "The height or depth at which the sample has to be taken"
