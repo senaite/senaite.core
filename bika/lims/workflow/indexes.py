@@ -2,15 +2,9 @@
 #
 # This file is part of SENAITE.CORE
 #
-# Copyright 2018 by it's authors.
+# Copyright 2018-2019 by it's authors.
 # Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
 
-# Mapping of indexes to be reindexed for each portal type after a given
-# transition is performed.
-# - If None is set for a given portal type and transition, doActionFor will
-#   only reindex "review_state"
-# - If a given transition is not present or contains an empty list, doActionFor
-#   will reindex all indexes.
 ACTIONS_TO_INDEXES = {
     "Analysis": {
         "assign": [
