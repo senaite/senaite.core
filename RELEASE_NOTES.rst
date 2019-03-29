@@ -31,7 +31,7 @@ objectives:
 - Boost performance: better experience, with no delays
 - Improve security: rely on Zope's security policies
 - Code responsibility: focus on core functionalities and let other add-ons to
-deal with the rest (`senaite.lims`, `senaite.core.listing`, etc.)
+  deal with the rest (`senaite.lims`, `senaite.core.listing`, etc.)
 
 Besides of this refactoring, this version also comes with a myriad of new
 functionalities and enhancements: full-fledged sample partitions, reinvented
