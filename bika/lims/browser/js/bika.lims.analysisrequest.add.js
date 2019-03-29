@@ -1441,6 +1441,27 @@
           return $(_el).val(value);
         });
       });
+      // Copy <input type="radio"> fields
+      $td1.find("input[type=radio]").each(function(index, el) {
+        var checked;
+        console.debug("-> Copy radio field");
+        $el = $(el);
+        checked = $(el).is(":checked");
+        return $.each((function() {
+          var results = [];
+          for (var i = 1; 1 <= ar_count ? i <= ar_count : i >= ar_count; 1 <= ar_count ? i++ : i--){ results.push(i); }
+          return results;
+        }).apply(this), function(arnum) {
+          var _el, _td;
+          // skip the first column
+          if (!(arnum > 0)) {
+            return;
+          }
+          _td = $tr.find(`td[arnum=${arnum}]`);
+          _el = $(_td).find("input[type=radio]")[index];
+          return $(_el).prop("checked", checked);
+        });
+      });
       // trigger form:changed event
       return $(me).trigger("form:changed");
     }

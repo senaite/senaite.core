@@ -6,6 +6,7 @@ Changelog
 
 **Added**
 
+- #1310 Support for radio copy in Sample Add view
 - #1309 Added Samples rejection view
 - #1291 "Remove" transition for empty Worksheets
 - #1259 Added Facscalibur instrument import interface

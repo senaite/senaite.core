@@ -1403,6 +1403,18 @@ class window.AnalysisRequestAdd
         _el = $(_td).find("textarea")[index]
         $(_el).val value
 
+    # Copy <input type="radio"> fields
+    $td1.find("input[type=radio]").each (index, el) ->
+      console.debug "-> Copy radio field"
+      $el = $(el)
+      checked = $(el).is ":checked"
+      $.each [1..ar_count], (arnum) ->
+        # skip the first column
+        return unless arnum > 0
+        _td = $tr.find("td[arnum=#{arnum}]")
+        _el = $(_td).find("input[type=radio]")[index]
+        $(_el).prop "checked", checked
+
     # trigger form:changed event
     $(me).trigger "form:changed"
 
