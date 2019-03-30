@@ -93,6 +93,3 @@ This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 GNU General Public License for more details.
-
-SENAITE.CORE uses third party libraries that are distributed under their own
-terms (see LICENSE-3RD-PARTY.rst)
