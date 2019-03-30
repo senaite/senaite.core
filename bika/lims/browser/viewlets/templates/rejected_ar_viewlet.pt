@@ -14,12 +14,9 @@
       <p class="title">
         <span i18n:translate="">This Sample has been rejected due to the following reasons: </span>
       </p>
-      <p tal:define="reasons python:sample.getSelectedRejectionReasons()"
-         tal:condition="reasons">
-        <ul>
+      <ul tal:define="reasons python:sample.getSelectedRejectionReasons()" tal:condition="reasons">
         <li tal:repeat="reason reasons" tal:content="reason"></li>
-        </ul>
-      </p>
+      </ul>
       <p tal:define="other_reasons python:sample.getOtherRejectionReasons()"
          tal:condition="other_reasons">
         <span i18n:translate="">Other reasons: </span>
