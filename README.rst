@@ -1,16 +1,10 @@
-.. raw:: html
+.. image:: https://raw.githubusercontent.com/senaite/senaite.core/master/static/logo_pypi.png
+   :target: https://github.com/senaite/senaite.core
+   :alt: senaite.core
+   :height: 128px
 
-  <div align="center">
-    <h1>
-      <a href="https://github.com/senaite/senaite.core">
-        <div>
-          <img src="https://raw.githubusercontent.com/senaite/senaite.core/master/static/senaite-logo.png" alt="senaite.core" height="64" />
-        </div>
-      </a>
-    </h1>
-  </div>
-
-— **SENAITE.CORE**: *Open Source LIMS Core based on the CMS Plone*
+*Open Source LIMS Core based on the CMS Plone*
+==============================================
 
 .. image:: https://img.shields.io/pypi/v/senaite.core.svg?style=flat-square
     :target: https://pypi.python.org/pypi/senaite.core
@@ -29,6 +23,12 @@
 
 .. image:: https://img.shields.io/github/contributors/senaite/senaite.core.svg?style=flat-square
     :target: https://github.com/senaite/senaite.core/blob/master/CONTRIBUTORS.rst
+
+.. image:: https://img.shields.io/badge/Built%20with-%E2%9D%A4-red.svg
+   :target: https://github.com/senaite/senaite.core
+
+.. image:: https://img.shields.io/badge/Made%20for%20SENAITE-%E2%AC%A1-lightgrey.svg
+   :target: https://www.senaite.com
 
 
 Introduction
