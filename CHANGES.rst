@@ -15,6 +15,8 @@ Changelog
 
 **Fixed**
 
+- #1316 Barcodes view does not render all labels once Samples are registered
+
 
 **Security**
 
