@@ -15,6 +15,7 @@ Changelog
 
 **Fixed**
 
+- #1317 Fix Analysis Service URL in Info Popup
 - #1316 Barcodes view does not render all labels once Samples are registered
 
 
