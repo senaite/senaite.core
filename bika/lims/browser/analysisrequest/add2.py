@@ -1663,17 +1663,14 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
 
         # Display a portal message
         self.context.plone_utils.addPortalMessage(message, level)
-        # Automatic label printing won't print "register" labels for sec. ARs
+
+        # Automatic label printing
         bika_setup = api.get_bika_setup()
         auto_print = bika_setup.getAutoPrintStickers()
-
-        # https://github.com/bikalabs/bika.lims/pull/2153
-        new_ars = [uid for key, uid in ARs.items() if key[-1] == '1']
-
-        if 'register' in auto_print and new_ars:
+        if 'register' in auto_print and ARs:
             return {
                 'success': message,
-                'stickers': new_ars,
+                'stickers': ARs.values(),
                 'stickertemplate': bika_setup.getAutoStickerTemplate()
             }
         else:
