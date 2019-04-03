@@ -79,6 +79,16 @@ class AnalysisServiceInfoView(BrowserView):
         service_uid = self.request.form.get("service_uid")
         return api.get_object_by_uid(service_uid, None)
 
+    @view.memoize
+    def get_service_url(self):
+        service = self.get_service()
+        return api.get_url(service)
+
+    @view.memoize
+    def is_accredited(self):
+        service = self.get_service()
+        return service.getAccredited()
+
     def get_analysis_or_service(self):
         analysis = self.get_analysis()
         if analysis:
