@@ -35,7 +35,13 @@
                 <td>
                   <a href="#"
                      target="_blank"
-                     tal:attributes="href service/absolute_url">
+                     tal:attributes="href python:view.get_service_url()">
+                    <span tal:content="string:★"
+                          style="font-family:Lucida Console, Courier, monospace;"
+                          title="Accredited"
+                          i18n:attributes="title"
+                          tal:condition="view/is_accredited">
+                    </span>
                     <span tal:content="service/Title"></span>
                   </a>
                 </td>
