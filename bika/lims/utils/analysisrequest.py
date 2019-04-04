@@ -250,10 +250,7 @@ def notify_rejection(analysisrequest):
         att.setAttachmentFile(attf)
         att.unmarkCreationFlag()
         renameAfterCreation(att)
-        atts = analysisrequest.getAttachment() + [att] if \
-            analysisrequest.getAttachment() else [att]
-        atts = [a.UID() for a in atts]
-        analysisrequest.setAttachment(atts)
+        analysisrequest.addAttachment(att)
         os.remove(pdf_fn)
 
     # This is the message for the email's body
