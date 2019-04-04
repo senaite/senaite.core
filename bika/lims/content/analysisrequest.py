@@ -2358,9 +2358,16 @@ class AnalysisRequest(BaseFolder):
     def addAttachment(self, attachment):
         """Adds an attachment or a list of attachments to the Analysis Request
         """
-        if not isinstance(attachment, list):
+        if not isinstance(attachment, (list, tuple)):
             attachment = [attachment]
+
         original = self.getAttachment() or []
+
+        # Function addAttachment can accept brain, objects or uids
+        original = map(api.get_uid, original)
+        attachment = map(api.get_uid, attachment)
+
+        # Boil out attachments already assigned to this Analysis Request
         attachment = filter(lambda at: at not in original, attachment)
         if attachment:
             original.extend(attachment)
