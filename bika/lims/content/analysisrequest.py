@@ -2355,5 +2355,15 @@ class AnalysisRequest(BaseFolder):
             return ""
         return reasons[0].get("other", "")
 
+    def addAttachment(self, attachment):
+        """Adds an attachment or a list of attachments to the Analysis Request
+        """
+        if not isinstance(attachment, list):
+            attachment = [attachment]
+        original = self.getAttachment() or []
+        attachment = filter(lambda at: at not in original, attachment)
+        if attachment:
+            original.extend(attachment)
+            self.setAttachment(original)
 
 registerType(AnalysisRequest, PROJECTNAME)

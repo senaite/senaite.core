@@ -1637,17 +1637,13 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             # We keep the title to check if AR is newly created
             # and UID to print stickers
             ARs[ar.Title()] = ar.UID()
-
-            _attachments = []
             for attachment in attachments.get(n, []):
                 if not attachment.filename:
                     continue
                 att = _createObjectByType("Attachment", client, tmpID())
                 att.setAttachmentFile(attachment)
                 att.processForm()
-                _attachments.append(att)
-            if _attachments:
-                ar.setAttachment(_attachments)
+                ar.addAttachment(att)
         actions.resume()
 
         level = "info"
