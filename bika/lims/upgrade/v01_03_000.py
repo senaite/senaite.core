@@ -2398,14 +2398,34 @@ def create_initial_review_history(brain_or_object):
     wf_tool = api.get_tool("portal_workflow")
     for wf_id in api.get_workflows_for(obj):
         wf = wf_tool.getWorkflowById(wf_id)
-        review_history.append({
+        if not hasattr(wf, "initial_state"):
+            logger.warn("No initial_state attr for workflow '{}': {}'"
+                        .format(wf_id, repr(obj)))
+        # If no initial_state found for this workflow and object, set
+        # "registered" as default. This upgrade step is smart enough to generate
+        # a new review_state for new workflow bound to this object later,
+        # if the current state does not match with any of the newly available.
+        # Hence, is totally safe to set the initial state here to "registered"
+        initial_state = getattr(wf, "initial_state", "registered")
+        initial_review_history = {
             'action': None,
             'actor': obj.Creator(),
             'comments': 'Default review_history (by 1.3 upgrade step)',
-            'review_state': wf.initial_state,
-            wf.state_variable: wf.initial_state,
+            'review_state': initial_state,
             'time': obj.created(),
-        })
+        }
+        if hasattr(wf, "state_variable"):
+            initial_review_history[wf.state_variable] = initial_state
+        else:
+            # This is totally weird, but as per same reasoning above (re
+            # initial_state), not having a "state_variable" won't cause any
+            # problem later. The logic responsible of the reassignment of
+            # initial review states after new workflows are bound will safely
+            # assign the default state_variable (review_state)
+            logger.warn("No state_variable attr for workflow '{}': {}"
+                        .format(wf_id, repr(obj)))
+
+        review_history.append(initial_review_history)
 
     # Sort by time (from oldest to newest)
     return sorted(review_history, key=lambda st: st.get("time"))
