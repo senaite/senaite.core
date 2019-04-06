@@ -705,6 +705,19 @@ def get_review_history(brain_or_object, rev=True):
         logger.error("get_review_history: expected list, received {}".format(
             review_history))
         review_history = []
+
+    if isinstance(review_history, tuple):
+        # Products.CMFDefault.DefaultWorkflow.getInfoFor always returns a
+        # tuple when "review_history" is passed in:
+        # https://github.com/zopefoundation/Products.CMFDefault/blob/master/Products/CMFDefault/DefaultWorkflow.py#L244
+        #
+        # On the other hand, Products.DCWorkflow.getInfoFor relies on
+        # Expression.StateChangeInfo, that always returns a list, except when no
+        # review_history is found:
+        # https://github.com/zopefoundation/Products.DCWorkflow/blob/master/Products/DCWorkflow/DCWorkflow.py#L310
+        # https://github.com/zopefoundation/Products.DCWorkflow/blob/master/Products/DCWorkflow/Expression.py#L94
+        review_history = list(review_history)
+
     if rev is True:
         review_history.reverse()
     return review_history
