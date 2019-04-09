@@ -18,6 +18,8 @@
 # Copyright 2018-2019 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import transaction
+from bika.lims import api
 from bika.lims import logger
 from bika.lims.config import PROJECTNAME as product
 from bika.lims.upgrade import upgradestep
@@ -43,6 +45,50 @@ def upgrade(tool):
 
     # -------- ADD YOUR STUFF BELOW --------
 
+    # initialize the auditlog
+    init_auditlog(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
+
+
+def init_auditlog(portal):
+    """Initialize the contents for the audit log
+    """
+    logger.info("Initialize contents for audit logging")
+
+    from bika.lims.subscribers.auditlog import has_snapshots
+    from bika.lims.subscribers.auditlog import take_snapshot
+    from bika.lims.subscribers.auditlog import is_auditable
+    from bika.lims.api.security import get_user
+    from bika.lims.api.security import get_roles
+    from DateTime import DateTime
+
+    uid_catalog = api.get_tool("uid_catalog")
+    brains = uid_catalog()
+    total = len(brains)
+
+    logger.info("Sending {} contents to the audit trail...".format(total))
+    for num, brain in enumerate(brains):
+        obj = api.get_object(brain)
+
+        if not is_auditable(obj):
+            continue
+
+        if has_snapshots(obj):
+            continue
+
+        # Take one snapshot per review history item
+        rh = api.get_review_history(obj, rev=False)
+        for item in rh:
+            actor = item.get("actor")
+            user = get_user(actor)
+            if user:
+                item["roles"] = get_roles(user)
+            ts = item.get("time", DateTime())
+            item["time"] = ts.ISO()
+            take_snapshot(obj, **item)
+
+        if num % 1000 == 0:
+            transaction.commit()
+            logger.info(">>>>>>> INITIALIZED {}/{} OBJECTS FOR AUDIT LOG".format(num, total))
