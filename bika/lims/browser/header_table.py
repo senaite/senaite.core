@@ -58,6 +58,8 @@ class HeaderTableView(BrowserView):
                         # other fields
                         field.getMutator(self.context)(form[fieldname])
             message = _p("Changes saved.")
+            # ensure that all events are called
+            self.context.processForm()
             self.context.plone_utils.addPortalMessage(message, "info")
         return self.template()
 
