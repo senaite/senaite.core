@@ -43,7 +43,7 @@ def make_metadata_for(obj, **kw):
     metadata = {
         "actor": get_user_id(),
         "roles": get_roles(),
-        "action": request.get("action", "edit"),
+        "action": request.form.get("action", "edit"),
         "review_state": api.get_review_status(obj),
         "active": api.is_active(obj),
         "time": DateTime().ISO(),
@@ -51,7 +51,7 @@ def make_metadata_for(obj, **kw):
         "remote_address": request.get_header("REMOTE_ADDR"),
         "user_agent": request.get_header("HTTP_USER_AGENT"),
         "referer": request.get_header("HTTP_REFERER"),
-        "comments": request.get("comments", ""),
+        "comments": request.form.get("comments", ""),
     }
 
     # allow metadata overrides
