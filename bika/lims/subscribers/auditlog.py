@@ -13,7 +13,6 @@ from senaite.core.supermodel import SuperModel
 from zope.annotation.interfaces import IAnnotatable
 from zope.annotation.interfaces import IAnnotations
 from zope.interface import alsoProvides
-from zope.publisher.browser import TestRequest
 
 SNAPSHOT_STORAGE = "senaite.core.snapshots"
 
@@ -34,26 +33,45 @@ def has_snapshots(obj):
     return len(storage) > 0
 
 
+def get_request_metadata():
+    """Get request based metadata
+    """
+    # get the request
+    request = api.get_request()
+
+    # Happens in the test runner
+    if not request:
+        return {}
+
+    return {
+        "comments": request.form.get("comments", ""),
+        "remote_address": request.get_header("REMOTE_ADDR"),
+        "user_agent": request.get_header("HTTP_USER_AGENT"),
+        "referer": request.get_header("HTTP_REFERER"),
+    }
+
+
 def make_metadata_for(obj, **kw):
     """Creates some metadata for the passed in object
     """
-    # get the request
-    request = api.get_request() or TestRequest()
 
     # inject metadata of volatile data
     metadata = {
         "actor": get_user_id(),
         "roles": get_roles(),
-        "action": request.form.get("action", "edit"),
+        "action": "",
         "review_state": api.get_review_status(obj),
         "active": api.is_active(obj),
         "time": DateTime().ISO(),
         "modified": api.get_modification_date(obj).ISO(),
-        "remote_address": request.get_header("REMOTE_ADDR"),
-        "user_agent": request.get_header("HTTP_USER_AGENT"),
-        "referer": request.get_header("HTTP_REFERER"),
-        "comments": request.form.get("comments", ""),
+        "remote_address": "",
+        "user_agent": "",
+        "referer": "",
+        "comments": "",
     }
+
+    # Update request based metadata
+    metadata.update(get_request_metadata())
 
     # allow metadata overrides
     metadata.update(**kw)
