@@ -87,6 +87,7 @@ def init_auditlog(portal):
                 item["roles"] = get_roles(user)
             ts = item.get("time", DateTime())
             item["time"] = ts.ISO()
+            item["remote_address"] = None
             take_snapshot(obj, **item)
 
         if num % 1000 == 0:
