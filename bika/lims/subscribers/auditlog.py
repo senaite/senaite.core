@@ -6,7 +6,6 @@ from bika.lims import api
 from bika.lims import logger
 from bika.lims.api.security import get_roles
 from bika.lims.api.security import get_user_id
-from bika.lims.decorators import timeit
 from bika.lims.interfaces import IAuditable
 from DateTime import DateTime
 from persistent.list import PersistentList
@@ -61,11 +60,10 @@ def make_metadata_for(obj, **kw):
     return metadata
 
 
-@timeit()
 def take_snapshot(obj, **kw):
     """Takes a snapshot of the passed in object
     """
-    logger.info("📷 Take new snapshot for {}".format(repr(obj)))
+    logger.debug("📷 Take new snapshot for {}".format(repr(obj)))
 
     # take a snapshot
     model = SuperModel(obj)

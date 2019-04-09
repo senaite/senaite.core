@@ -44,7 +44,9 @@ def upgrade(tool):
     logger.info("Upgrading {0}: {1} -> {2}".format(product, ver_from, version))
 
     # -------- ADD YOUR STUFF BELOW --------
+    setup.runImportStepFromProfile(profile, 'actions')
 
+    # https://github.com/senaite/senaite.core/pull/1324
     # initialize the auditlog
     init_auditlog(portal)
 
@@ -63,6 +65,7 @@ def init_auditlog(portal):
     from bika.lims.api.security import get_user
     from bika.lims.api.security import get_roles
     from DateTime import DateTime
+    from bika.lims.interfaces import IAnalysis
 
     uid_catalog = api.get_tool("uid_catalog")
     brains = uid_catalog()
@@ -73,6 +76,10 @@ def init_auditlog(portal):
         obj = api.get_object(brain)
 
         if not is_auditable(obj):
+            continue
+
+        # skip initial audit log for Analyses
+        if IAnalysis.providedBy(obj):
             continue
 
         if has_snapshots(obj):
@@ -92,4 +99,5 @@ def init_auditlog(portal):
 
         if num % 1000 == 0:
             transaction.commit()
-            logger.info(">>>>>>> INITIALIZED {}/{} OBJECTS FOR AUDIT LOG".format(num, total))
+            logger.info("Initialized {}/{} ojects for audit logging"
+                        .format(num, total))
