@@ -10,9 +10,10 @@ from bika.lims.interfaces import IAuditable
 from DateTime import DateTime
 from persistent.list import PersistentList
 from senaite.core.supermodel import SuperModel
-from zope.annotation.interfaces import IAnnotations
 from zope.annotation.interfaces import IAnnotatable
+from zope.annotation.interfaces import IAnnotations
 from zope.interface import alsoProvides
+from zope.publisher.browser import TestRequest
 
 SNAPSHOT_STORAGE = "senaite.core.snapshots"
 
@@ -37,7 +38,7 @@ def make_metadata_for(obj, **kw):
     """Creates some metadata for the passed in object
     """
     # get the request
-    request = api.get_request()
+    request = api.get_request() or TestRequest()
 
     # inject metadata of volatile data
     metadata = {
