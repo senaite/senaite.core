@@ -7,6 +7,7 @@
 
   <include file="senaite-frontpage.zcml"/>
 
+  <include file="auditlog.zcml"/>
   <include file="analysis.zcml"/>
   <include file="analysisprofile.zcml"/>
   <include file="analysisservice.zcml"/>

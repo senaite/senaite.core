@@ -28,6 +28,11 @@ class IBikaLIMS(Interface):
     """
 
 
+class IAuditable(Interface):
+    """Marker inteface for auditable contents
+    """
+
+
 class IGenerateID(Interface):
     """Marker Interface to generate an ID
     """
