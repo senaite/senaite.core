@@ -74,7 +74,7 @@ def make_metadata_for(obj, **kw):
     metadata.update(get_request_metadata())
 
     # allow metadata overrides
-    metadata.update(**kw)
+    metadata.update(kw)
 
     return metadata
 
