@@ -73,6 +73,18 @@ def init_auditlog(portal):
 
     logger.info("Initializing {} objects for the audit trail...".format(total))
     for num, brain in enumerate(brains):
+        # Progress notification
+        if num % 1000 == 0:
+            transaction.commit()
+            logger.info("{}/{} ojects initialized for audit logging"
+                        .format(num, total))
+        # End progress notification
+        if num + 1 == total:
+            end = time.time()
+            duration = float(end-start)
+            logger.info("{} ojects initialized for audit logging in {:.2f}s"
+                        .format(total, duration))
+
         obj = api.get_object(brain)
 
         if not is_auditable(obj):
@@ -100,14 +112,3 @@ def init_auditlog(portal):
             item["modified"] = timestamp.ISO()
             item["remote_address"] = None
             take_snapshot(obj, **item)
-
-        if num % 1000 == 0:
-            transaction.commit()
-            logger.info("{}/{} ojects initialized for audit logging"
-                        .format(num, total))
-
-        if num % total == 0:
-            end = time.time()
-            duration = float(end-start)
-            logger.info("All ojects initialized for audit logging in {:2f}s"
-                        .format(duration))
