@@ -223,8 +223,7 @@ def guard_retract(analysis):
         return True
 
     # Cannot retract if all dependencies have been verified
-    non_verified = filter(lambda an: not IVerified.providedBy(an), dependencies)
-    if not non_verified:
+    if all(map(lambda an: IVerified.providedBy(an), dependencies)):
         return False
 
     return True
@@ -307,19 +306,6 @@ def is_transition_allowed(analyses, transition_id):
         return is_transition_allowed([analyses], transition_id)
     for analysis in analyses:
         if not wf.isTransitionAllowed(analysis, transition_id):
-            return False
-    return True
-
-
-def was_transition_performed(analyses, transition_id):
-    """Returns whether all analyses were transitioned or not
-    """
-    if not analyses:
-        return False
-    if not isinstance(analyses, list):
-        return was_transition_performed([analyses], transition_id)
-    for analysis in analyses:
-        if not wf.wasTransitionPerformed(analysis, transition_id):
             return False
     return True
 

@@ -20,7 +20,7 @@
 
 from bika.lims import api
 from bika.lims import logger
-from bika.lims.interfaces import IDuplicateAnalysis
+from bika.lims.interfaces import IDuplicateAnalysis, IVerified
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.utils.analysis import create_analysis
 from bika.lims.workflow import doActionFor, push_reindex_to_actions_pool
