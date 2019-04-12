@@ -170,9 +170,10 @@ def guard_multi_verify(analysis):
             return False
 
     # Cannot verify unless all dependencies are verified or can be verified
-    dependencies = analysis.getDependencies()
-    transitions = ["verify", "multi_verify"]
-    return is_transition_allowed_or_performed(dependencies, transitions)
+    for dependency in analysis.getDependencies():
+        if not is_verified_or_verifiable(dependency):
+            return False
+    return True
 
 
 def guard_verify(analysis):
@@ -190,8 +191,10 @@ def guard_verify(analysis):
 
     # Cannot verify unless dependencies have been verified or can be verified
     if analysis.getNumberOfRequiredVerifications() <= 1:
-        dependencies = analysis.getDependencies()
-        return is_transition_allowed_or_performed(dependencies, "verify")
+        for dependency in analysis.getDependencies():
+            if not is_verified_or_verifiable(dependency):
+                return False
+        return True
 
     # This analysis has multi-verification enabled
     # Cannot verify if the user verified and multi verification is not allowed
@@ -206,9 +209,10 @@ def guard_verify(analysis):
             return False
 
     # Cannot verify unless all dependencies are verified or can be verified
-    dependencies = analysis.getDependencies()
-    transitions = ["verify", "multi_verify"]
-    return is_transition_allowed_or_performed(dependencies, transitions)
+    for dependency in analysis.getDependencies():
+        if not is_verified_or_verifiable(dependency):
+            return False
+    return True
 
 
 def guard_retract(analysis):
@@ -327,3 +331,15 @@ def is_transition_allowed_or_performed(analyses, transition_ids):
                 if not wf.wasTransitionPerformed(analysis, transition_id):
                     return False
     return True
+
+
+def is_verified_or_verifiable(analysis):
+    """Returns whether the analysis is verifiable or has already been verified
+    """
+    if IVerified.providedBy(analysis):
+        return True
+    if wf.isTransitionAllowed(analysis, "verify"):
+        return True
+    if wf.isTransitionAllowed(analysis, "multi_verify"):
+        return True
+    return False
