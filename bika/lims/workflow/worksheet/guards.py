@@ -38,6 +38,7 @@ def guard_submit(obj):
         # An empty worksheet cannot be submitted
         return False
 
+    can_submit = False
     for analysis in obj.getAnalyses():
         # Dismiss analyses that are not active
         if not api.is_active(analysis):
@@ -46,10 +47,14 @@ def guard_submit(obj):
         if api.get_workflow_status_of(analysis) in ["rejected", "retracted"]:
             continue
         # Worksheet cannot be submitted if there is one analysis not submitted
-        if not ISubmitted.providedBy(analysis):
+        can_submit = ISubmitted.providedBy(analysis)
+        if not can_submit:
+            # No need to look further
             return False
 
-    return True
+    # This prevents the submission of the worksheet if all its analyses are in
+    # a detached status (rejected, retracted or cancelled)
+    return can_submit
 
 
 def guard_retract(worksheet):
@@ -85,6 +90,7 @@ def guard_verify(obj):
         # An empty worksheet cannot be verified
         return False
 
+    can_verify = False
     for analysis in obj.getAnalyses():
         # Dismiss analyses that are not active
         if not api.is_active(analysis):
@@ -93,10 +99,14 @@ def guard_verify(obj):
         if api.get_workflow_status_of(analysis) in ["rejected", "retracted"]:
             continue
         # Worksheet cannot be verified if there is one analysis not verified
-        if not IVerified.providedBy(analysis):
+        can_verify = IVerified.providedBy(analysis)
+        if not can_verify:
+            # No need to look further
             return False
 
-    return True
+    # This prevents the verification of the worksheet if all its analyses are in
+    # a detached status (rejected, retracted or cancelled)
+    return can_verify
 
 
 def guard_rollback_to_open(worksheet):
