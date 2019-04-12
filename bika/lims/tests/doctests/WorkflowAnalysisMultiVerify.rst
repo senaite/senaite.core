@@ -17,7 +17,6 @@ Needed Imports:
     >>> from bika.lims.workflow import doActionFor as do_action_for
     >>> from bika.lims.workflow import getReviewHistory
     >>> from bika.lims.workflow import isTransitionAllowed
-    >>> from bika.lims.workflow import wasTransitionPerformed
     >>> from DateTime import DateTime
     >>> from plone.app.testing import setRoles
     >>> from plone.app.testing import TEST_USER_ID
@@ -206,7 +205,7 @@ But I can multi-verify:
     >>> try_transition(analysis, "multi_verify", "to_be_verified")
     True
 
-And while the status of the analysis and others is still `to_be_verified`:
+The status of the analysis and others is still `to_be_verified`:
 
     >>> api.get_workflow_status_of(analysis)
     'to_be_verified'
@@ -214,11 +213,6 @@ And while the status of the analysis and others is still `to_be_verified`:
     'to_be_verified'
     >>> api.get_workflow_status_of(worksheet)
     'to_be_verified'
-
-The transition `multi_verify` has taken place:
-
-    >>> wasTransitionPerformed(analysis, "multi_verify")
-    True
 
 And my user id is recorded as such:
 
@@ -263,7 +257,7 @@ But I can multi-verify if I change the type of multi-verification:
     >>> try_transition(analysis, "multi_verify", "to_be_verified")
     True
 
-And while the status of the analysis and others is still `to_be_verified`:
+The status of the analysis and others is still `to_be_verified`:
 
     >>> api.get_workflow_status_of(analysis)
     'to_be_verified'
@@ -271,11 +265,6 @@ And while the status of the analysis and others is still `to_be_verified`:
     'to_be_verified'
     >>> api.get_workflow_status_of(worksheet)
     'to_be_verified'
-
-The transition `multi_verify` has taken place:
-
-    >>> wasTransitionPerformed(analysis, "multi_verify")
-    True
 
 And now, there is only verifications remaining:
 

@@ -252,13 +252,6 @@ def getAllowedTransitions(instance):
     return [trans['id'] for trans in transitions]
 
 
-def getReviewHistoryActionsList(instance, reverse=False):
-    """Returns a list with the actions performed to the instance
-    """
-    review_history = getReviewHistory(instance, reverse=reverse)
-    return map(lambda event: event["action"], review_history)
-
-
 def get_review_history_statuses(instance, reverse=False):
     """Returns a list with the statuses of the instance from the review_history
     """
