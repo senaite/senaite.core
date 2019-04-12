@@ -252,14 +252,6 @@ def getAllowedTransitions(instance):
     return [trans['id'] for trans in transitions]
 
 
-def wasTransitionPerformed(instance, transition_id):
-    """Checks if the transition has already been performed to the object
-    Instance's workflow history is checked.
-    """
-    transitions = getReviewHistoryActionsList(instance)
-    return transition_id in transitions
-
-
 def getReviewHistoryActionsList(instance, reverse=False):
     """Returns a list with the actions performed to the instance
     """

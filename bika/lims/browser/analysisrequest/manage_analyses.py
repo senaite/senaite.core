@@ -29,7 +29,6 @@ from bika.lims.utils import get_image
 from bika.lims.utils import get_link
 from bika.lims.utils import logged_in_client
 from bika.lims.utils import t
-from bika.lims.workflow import wasTransitionPerformed
 from plone.memoize import view
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.i18n.locales import locales

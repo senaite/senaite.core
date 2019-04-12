@@ -25,7 +25,6 @@ from bika.lims.interfaces import IReceived
 from bika.lims.permissions import EditFieldResults
 from bika.lims.permissions import EditResults
 from bika.lims.utils import check_permission
-from bika.lims.workflow import wasTransitionPerformed
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from resultsinterpretation import ARResultsInterpretationView
 
