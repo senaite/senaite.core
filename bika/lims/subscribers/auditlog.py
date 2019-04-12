@@ -62,7 +62,6 @@ def make_metadata_for(obj, **kw):
         "action": "",
         "review_state": api.get_review_status(obj),
         "active": api.is_active(obj),
-        "time": DateTime().ISO(),
         "modified": api.get_modification_date(obj).ISO(),
         "remote_address": "",
         "user_agent": "",
@@ -112,8 +111,37 @@ def take_snapshot(obj, **kw):
 
 def is_auditable(obj):
     """Checks if the object is autiable
+
+    Only objects which can hold an annotation storage can be auditable
     """
     return IAnnotatable.providedBy(obj)
+
+
+def ObjectTransitionedEventHandler(obj, event):
+    """Object has been transitioned to an new state
+    """
+
+    # only snapshot supported objects
+    if not is_auditable(obj):
+        return
+
+    # default transition entry
+    entry = {
+        "modified": DateTime().ISO(),
+        "action": event.action,
+    }
+
+    # get the last history item
+    history = api.get_review_history(obj, rev=True)
+    if history:
+        entry = history[0]
+        # make transitions also a modification entry
+        timestamp = entry.pop("time", DateTime())
+        entry["modified"] = timestamp.ISO()
+        entry["action"] = event.action
+
+    # take a new snapshot
+    take_snapshot(obj, **entry)
 
 
 def ObjectModifiedEventHandler(obj, event):
@@ -125,7 +153,7 @@ def ObjectModifiedEventHandler(obj, event):
         return
 
     # take a new snapshot
-    take_snapshot(obj)
+    take_snapshot(obj, action="edit")
 
 
 def ObjectInitializedEventHandler(obj, event):
@@ -141,4 +169,4 @@ def ObjectInitializedEventHandler(obj, event):
         return
 
     # take a new snapshot
-    take_snapshot(obj)
+    take_snapshot(obj, action="create")

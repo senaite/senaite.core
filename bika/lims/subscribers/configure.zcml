@@ -22,7 +22,7 @@
   <subscriber
       for="*
            Products.CMFCore.interfaces.IActionSucceededEvent"
-      handler=".auditlog.ObjectModifiedEventHandler"
+      handler=".auditlog.ObjectTransitionedEventHandler"
       />
 
   <!-- Newly created analyses -->
