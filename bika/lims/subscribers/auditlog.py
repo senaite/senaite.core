@@ -137,6 +137,7 @@ def ObjectTransitionedEventHandler(obj, event):
         entry = history[0]
         # make transitions also a modification entry
         timestamp = entry.get("time", DateTime())
+        entry["time"] = timestamp.ISO()
         entry["modified"] = timestamp.ISO()
         entry["action"] = event.action
 
