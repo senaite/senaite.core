@@ -27,6 +27,7 @@ from bika.lims.workflow import get_prev_status_from_history
 from bika.lims.workflow.analysisrequest import AR_WORKFLOW_ID, \
     do_action_to_descendants, do_action_to_analyses, do_action_to_ancestors
 from zope.interface import alsoProvides
+from zope.interface import noLongerProvides
 
 
 def before_sample(analysis_request):
@@ -145,3 +146,10 @@ def after_sample(analysis_request):
     idxs = ['getDateSampled']
     for analysis in analysis_request.getAnalyses(full_objects=True):
         analysis.reindexObject(idxs=idxs)
+
+
+def after_rollback_to_receive(analysis_request):
+    """Function triggered after "rollback to receive" transition is performed
+    """
+    if IVerified.providedBy(analysis_request):
+        noLongerProvides(analysis_request, IVerified)
