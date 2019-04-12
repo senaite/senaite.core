@@ -95,8 +95,9 @@ def init_auditlog(portal):
                 item["roles"] = get_roles(user)
             # The review history contains the variable "time" which we will set
             # as the "modification" time
-            ts = item.get("time", DateTime())
-            item["modified"] = ts.ISO()
+            timestamp = item.pop("time", DateTime())
+            item["time"] = timestamp.ISO()
+            item["modified"] = timestamp.ISO()
             item["remote_address"] = None
             take_snapshot(obj, **item)
 
