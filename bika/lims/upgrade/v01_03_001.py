@@ -53,7 +53,8 @@ def upgrade(tool):
     logger.info("Upgrading {0}: {1} -> {2}".format(product, ver_from, version))
 
     # -------- ADD YOUR STUFF BELOW --------
-    setup.runImportStepFromProfile(profile, 'actions')
+    setup.runImportStepFromProfile(profile, "actions")
+    setup.runImportStepFromProfile(profile, "workflow")
 
     # https://github.com/senaite/senaite.core/pull/1324
     # initialize the auditlog

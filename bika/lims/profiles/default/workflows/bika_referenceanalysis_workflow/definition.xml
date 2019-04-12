@@ -370,8 +370,6 @@
       <expression>state_change/getHistory</expression>
     </default>
     <guard>
-      <guard-permission>Request review</guard-permission>
-      <guard-permission>Review portal content</guard-permission>
     </guard>
   </variable>
 
