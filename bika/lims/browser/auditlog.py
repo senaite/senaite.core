@@ -8,6 +8,7 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.interfaces import IAuditable
+from bika.lims.subscribers.auditlog import get_storage
 from bika.lims.utils import t
 from plone.memoize import view
 from Products.CMFPlone.i18nl10n import ulocalized_time
@@ -96,7 +97,6 @@ class AuditLogView(BikaListingView):
 
         :returns: List of snapshots
         """
-        from bika.lims.subscribers.auditlog import get_storage
         snapshots = get_storage(self.context)
         return map(json.loads, snapshots)
 
