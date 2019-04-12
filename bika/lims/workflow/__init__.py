@@ -25,7 +25,7 @@ from AccessControl.SecurityInfo import ModuleSecurityInfo
 from Products.Archetypes.config import UID_CATALOG
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
-from bika.lims import PMF, deprecated
+from bika.lims import PMF
 from bika.lims import api
 from bika.lims import logger
 from bika.lims.browser import ulocalized_time

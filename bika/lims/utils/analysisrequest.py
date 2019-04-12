@@ -30,7 +30,7 @@ from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.idserver import renameAfterCreation
-from bika.lims.interfaces import IAnalysisRequest
+from bika.lims.interfaces import IAnalysisRequest, IReceived
 from bika.lims.interfaces import IAnalysisRequestRetest
 from bika.lims.interfaces import IAnalysisRequestSecondary
 from bika.lims.interfaces import IAnalysisService
@@ -107,6 +107,9 @@ def create_analysisrequest(client, request, values, analyses=None,
             comment = "Auto-received. Secondary Sample of {}".format(primary_id)
             changeWorkflowState(ar, AR_WORKFLOW_ID, "sample_received",
                                 action="receive", comments=comment)
+
+            # Mark the secondary as received
+            alsoProvides(ar, IReceived)
 
             # Initialize analyses
             do_action_to_analyses(ar, "initialize")
@@ -348,6 +351,7 @@ def create_retest(ar):
 
     # Transition the retest to "sample_received"!
     changeWorkflowState(retest, 'bika_ar_workflow', 'sample_received')
+    alsoProvides(retest, IReceived)
 
     # Initialize analyses
     for analysis in retest.getAnalyses(full_objects=True):
@@ -443,6 +447,8 @@ def create_partition(analysis_request, request, analyses, sample_type=None,
     # Force partition to same status as the primary
     status = api.get_workflow_status_of(ar)
     changeWorkflowState(partition, "bika_ar_workflow", status)
+    if IReceived.providedBy(ar):
+        alsoProvides(partition, IReceived)
 
     # And initialize the analyses the partition contains. This is required
     # here because the transition "initialize" of analyses rely on a guard,
