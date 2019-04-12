@@ -917,3 +917,7 @@ class IVerified(Interface):
 class ISubmitted(Interface):
     """Marker interface for submitted objects
     """
+
+class IReceived(Interface):
+    """Marker interface for received objects
+    """
