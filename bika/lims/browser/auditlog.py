@@ -45,8 +45,6 @@ class AuditLogView(BikaListingView):
         self.columns = collections.OrderedDict((
             ("version", {
                 "title": _("Version"), "sortable": False}),
-            ("time", {
-                "title": _("Time"), "sortable": False}),
             ("modified", {
                 "title": _("Date Modified"), "sortable": False}),
             ("actor", {
@@ -262,10 +260,6 @@ class AuditLogView(BikaListingView):
 
             # get the metadata of the diff
             metadata = self.get_snapshot_metadata(snapshot)
-
-            # Time
-            m_time = metadata.get("time")
-            item["time"] = self.to_localized_time(m_time)
 
             # Modification Date
             m_date = metadata.get("modified")
