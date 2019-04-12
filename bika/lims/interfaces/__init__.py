@@ -913,3 +913,7 @@ class IWorkflowActionUIDsAdapter(IWorkflowActionAdapter):
 class IVerified(Interface):
     """Marker interface for verified objects
     """
+
+class ISubmitted(Interface):
+    """Marker interface for submitted objects
+    """

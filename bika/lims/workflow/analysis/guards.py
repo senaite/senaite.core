@@ -19,7 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
-from bika.lims.interfaces import IWorksheet, IVerified
+from bika.lims.interfaces import IWorksheet, IVerified, ISubmitted
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims import workflow as wf
 
@@ -139,8 +139,10 @@ def guard_submit(analysis):
                 return False
 
     # Cannot submit unless all dependencies are submitted or can be submitted
-    dependencies = analysis.getDependencies()
-    return is_transition_allowed_or_performed(dependencies, "submit")
+    for dependency in analysis.getDependencies():
+        if not is_submitted_or_submittable(dependency):
+            return False
+    return True
 
 
 def guard_multi_verify(analysis):
@@ -314,23 +316,14 @@ def is_transition_allowed(analyses, transition_id):
     return True
 
 
-def is_transition_allowed_or_performed(analyses, transition_ids):
-    """Return whether all analyses can be transitioned or all them were
-    transitioned.
+def is_submitted_or_submittable(analysis):
+    """Returns whether the analysis is submittable or has already been submitted
     """
-    if not analyses:
+    if ISubmitted.providedBy(analysis):
         return True
-    if not isinstance(analyses, list):
-        return is_transition_allowed_or_performed([analyses], transition_ids)
-    if not isinstance(transition_ids, list):
-        return is_transition_allowed_or_performed(analyses, [transition_ids])
-
-    for transition_id in transition_ids:
-        for analysis in analyses:
-            if not wf.isTransitionAllowed(analysis, transition_id):
-                if not wf.wasTransitionPerformed(analysis, transition_id):
-                    return False
-    return True
+    if wf.isTransitionAllowed(analysis, "submit"):
+        return True
+    return False
 
 
 def is_verified_or_verifiable(analysis):
