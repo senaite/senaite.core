@@ -128,11 +128,6 @@ class AnalysesView(BaseView):
                 "id": "default",
                 "title": _("All"),
                 "contentFilter": {},
-                "transitions": [
-                    {"id": "submit"},
-                    {"id": "verify"},
-                    {"id": "retract"},
-                    {"id": "unassign"}],
                 "columns": self.columns.keys(),
             },
         ]

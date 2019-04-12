@@ -12,6 +12,7 @@ Changelog
 
 **Removed**
 
+- #1328 Remove transition filtering in Worksheet listings
 
 **Fixed**
 
