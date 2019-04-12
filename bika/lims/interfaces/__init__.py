@@ -908,3 +908,8 @@ class IWorkflowActionUIDsAdapter(IWorkflowActionAdapter):
     """Marker for adapters in charge of processing workflow action requests
     from views, but meant for redirection only
     """
+
+
+class IVerified(Interface):
+    """Marker interface for verified objects
+    """

@@ -19,7 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
-from bika.lims.interfaces import IWorksheet
+from bika.lims.interfaces import IWorksheet, IVerified
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims import workflow as wf
 
@@ -218,8 +218,16 @@ def guard_retract(analysis):
     if not is_transition_allowed(analysis.getDependents(), "retract"):
         return False
 
+    dependencies = analysis.getDependencies()
+    if not dependencies:
+        return True
+
     # Cannot retract if all dependencies have been verified
-    return not was_transition_performed(analysis.getDependencies(), "verify")
+    non_verified = filter(lambda an: not IVerified.providedBy(an), dependencies)
+    if not non_verified:
+        return False
+
+    return True
 
 
 def guard_reject(analysis):
