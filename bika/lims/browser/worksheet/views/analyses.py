@@ -470,6 +470,16 @@ class AnalysesView(BaseView):
             parent_url = api.get_url(client)
             parent_img = "client.png"
             parent_img_text = t(_("Client"))
+            # parent
+            client_reference = request.getClientReference()
+            parent_obj = client_reference
+            parent_title = api.get_title(client_reference)
+            parent_url = api.get_url(client_reference)
+            # parent
+            client_sampleid = request.getClientSampleID()
+            parent_obj = client_sampleid
+            parent_title = api.get_title(client_sampleid)
+            parent_url = api.get_url(client_sampleid)
             # sample type
             sample_type = request.getSampleType()
             sample_type_title = request.getSampleTypeTitle()
@@ -514,6 +524,16 @@ class AnalysesView(BaseView):
             parent_url = api.get_url(client)
             parent_img = "client.png"
             parent_img_text = t(_("Client"))
+            # parent
+            client_reference = request.getClientReference()
+            parent_obj = client_reference
+            parent_title = api.get_title(client_reference)
+            parent_url = api.get_url(client_reference)
+            # parent
+            client_sampleid = request.getClientSampleID()
+            parent_obj = client_sampleid
+            parent_title = api.get_title(client_sampleid)
+            parent_url = api.get_url(client_sampleid)
             # sample type
             sample_type = obj.getSampleType()
             sample_type_title = obj.getSampleTypeTitle()
