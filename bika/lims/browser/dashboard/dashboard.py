@@ -393,21 +393,21 @@ class DashboardView(BrowserView):
             # Samples awaiting to be sampled or scheduled
             name = _('Samples to be sampled')
             desc = _("To be sampled")
-            purl = 'samples?samples_review_state=to_be_sampled'
+            purl = 'analysisrequests?analysisrequests_review_state=to_be_sampled'
             query['review_state'] = ['to_be_sampled', ]
             out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
             # Samples awaiting to be preserved
             name = _('Samples to be preserved')
             desc = _("To be preserved")
-            purl = 'samples?samples_review_state=to_be_preserved'
+            purl = 'sanalysisrequests?analysisrequests_review_state=to_be_preserved'
             query['review_state'] = ['to_be_preserved', ]
             out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
             # Samples scheduled for Sampling
             name = _('Samples scheduled for sampling')
             desc = _("Sampling scheduled")
-            purl = 'samples?samples_review_state=scheduled_sampling'
+            purl = 'analysisrequests?analysisrequests_review_state=scheduled_sampling'
             query['review_state'] = ['scheduled_sampling', ]
             out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
