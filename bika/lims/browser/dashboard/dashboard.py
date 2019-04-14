@@ -400,7 +400,7 @@ class DashboardView(BrowserView):
             # Samples awaiting to be preserved
             name = _('Samples to be preserved')
             desc = _("To be preserved")
-            purl = 'sanalysisrequests?analysisrequests_review_state=to_be_preserved'
+            purl = 'analysisrequests?analysisrequests_review_state=to_be_preserved'
             query['review_state'] = ['to_be_preserved', ]
             out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
