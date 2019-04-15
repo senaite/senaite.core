@@ -41,7 +41,7 @@ class AuditLogView(BikaListingView):
             "++resource++bika.lims.images",
             "%s_big.png" % context.portal_type.lower())
 
-        self.title = "{} Log".format(api.get_title(context))
+        self.title = "Audit Log for {}".format(api.get_title(context))
 
         self.columns = collections.OrderedDict((
             ("version", {
@@ -248,12 +248,6 @@ class AuditLogView(BikaListingView):
             item = self.make_empty_item(**snapshot)
             # get the version of the snapshot
             version = self.get_snapshot_version(snapshot)
-            # get the previous snapshot
-            prev_snapshot = self.get_snapshot_by_version(version-1)
-
-            diff = None
-            if prev_snapshot is not None:
-                diff = self.diff_snapshots(snapshot, prev_snapshot)
 
             # Version
             item["version"] = version
@@ -271,6 +265,7 @@ class AuditLogView(BikaListingView):
                 properties = api.get_user_properties(actor)
                 item["actor"] = properties.get("fullname", actor)
 
+            # Remote Address
             remote_address = metadata.get("remote_address")
             item["remote_address"] = remote_address
 
@@ -286,6 +281,8 @@ class AuditLogView(BikaListingView):
             comment = metadata.get("comment")
             item["comment"] = comment
 
+            # get the previous snapshot
+            prev_snapshot = self.get_snapshot_by_version(version-1)
             if prev_snapshot:
                 prev_metadata = self.get_snapshot_metadata(prev_snapshot)
                 prev_review_state = prev_metadata.get("review_state")
@@ -294,8 +291,9 @@ class AuditLogView(BikaListingView):
                         self.translate_state(prev_review_state),
                         self.translate_state(review_state))
 
-            # Rendered Diff
-            item["diff"] = self.render_diff(diff)
+                # Rendered Diff
+                diff = self.diff_snapshots(snapshot, prev_snapshot)
+                item["diff"] = self.render_diff(diff)
 
             # append the item
             items.append(item)
