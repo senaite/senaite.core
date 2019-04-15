@@ -25,7 +25,7 @@ from AccessControl.SecurityInfo import ModuleSecurityInfo
 from Products.Archetypes.config import UID_CATALOG
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
-from bika.lims import PMF, deprecated
+from bika.lims import PMF
 from bika.lims import api
 from bika.lims import logger
 from bika.lims.browser import ulocalized_time
@@ -250,21 +250,6 @@ def getAllowedTransitions(instance):
     wftool = getToolByName(instance, "portal_workflow")
     transitions = wftool.getTransitionsFor(instance)
     return [trans['id'] for trans in transitions]
-
-
-def wasTransitionPerformed(instance, transition_id):
-    """Checks if the transition has already been performed to the object
-    Instance's workflow history is checked.
-    """
-    transitions = getReviewHistoryActionsList(instance)
-    return transition_id in transitions
-
-
-def getReviewHistoryActionsList(instance, reverse=False):
-    """Returns a list with the actions performed to the instance
-    """
-    review_history = getReviewHistory(instance, reverse=reverse)
-    return map(lambda event: event["action"], review_history)
 
 
 def get_review_history_statuses(instance, reverse=False):

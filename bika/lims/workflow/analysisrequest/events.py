@@ -20,11 +20,14 @@
 
 from DateTime import DateTime
 from bika.lims import api
+from bika.lims.interfaces import IReceived, IVerified
 from bika.lims.utils import changeWorkflowState
 from bika.lims.utils.analysisrequest import create_retest
 from bika.lims.workflow import get_prev_status_from_history
 from bika.lims.workflow.analysisrequest import AR_WORKFLOW_ID, \
     do_action_to_descendants, do_action_to_analyses, do_action_to_ancestors
+from zope.interface import alsoProvides
+from zope.interface import noLongerProvides
 
 
 def before_sample(analysis_request):
@@ -79,6 +82,9 @@ def after_verify(analysis_request):
     passed in is performed. Promotes the 'verify' transition to ancestors,
     descendants and to the analyses that belong to the analysis request.
     """
+    # Mark this analysis request as IReceived
+    alsoProvides(analysis_request, IVerified)
+
     # This transition is not meant to be triggered manually by the user, rather
     # promoted by analyses. Hence, there is no need to cascade the transition
     # to the analyses the analysis request contains.
@@ -125,6 +131,9 @@ def after_receive(analysis_request):
     """Method triggered after "receive" transition for the Analysis Request
     passed in is performed
     """
+    # Mark this analysis request as IReceived
+    alsoProvides(analysis_request, IReceived)
+
     analysis_request.setDateReceived(DateTime())
     do_action_to_analyses(analysis_request, "initialize")
 
@@ -137,3 +146,10 @@ def after_sample(analysis_request):
     idxs = ['getDateSampled']
     for analysis in analysis_request.getAnalyses(full_objects=True):
         analysis.reindexObject(idxs=idxs)
+
+
+def after_rollback_to_receive(analysis_request):
+    """Function triggered after "rollback to receive" transition is performed
+    """
+    if IVerified.providedBy(analysis_request):
+        noLongerProvides(analysis_request, IVerified)
