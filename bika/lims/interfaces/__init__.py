@@ -33,6 +33,11 @@ class IAuditable(Interface):
     """
 
 
+class IAuditLogCatalog(Interface):
+    """Audit Log Catalog
+    """
+
+
 class IGenerateID(Interface):
     """Marker Interface to generate an ID
     """

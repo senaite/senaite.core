@@ -18,20 +18,18 @@
 # Copyright 2018-2019 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-import copy
-from Products.CMFCore.utils import getToolByName
-# Bika LIMS imports
 from bika.lims import logger
-from bika.lims.catalog.analysisrequest_catalog import\
-    bika_catalog_analysisrequest_listing_definition
 from bika.lims.catalog.analysis_catalog import \
     bika_catalog_analysis_listing_definition
+from bika.lims.catalog.analysisrequest_catalog import \
+    bika_catalog_analysisrequest_listing_definition
+from bika.lims.catalog.auditlog_catalog import catalog_auditlog_definition
 from bika.lims.catalog.autoimportlogs_catalog import \
     bika_catalog_autoimportlogs_listing_definition
+from bika.lims.catalog.report_catalog import bika_catalog_report_definition
 from bika.lims.catalog.worksheet_catalog import \
     bika_catalog_worksheet_listing_definition
-from bika.lims.catalog.report_catalog import \
-    bika_catalog_report_definition
+from Products.CMFCore.utils import getToolByName
 
 
 def getCatalogDefinitions():
@@ -44,12 +42,14 @@ def getCatalogDefinitions():
     autoimportlogs = bika_catalog_autoimportlogs_listing_definition
     worksheet = bika_catalog_worksheet_listing_definition
     report = bika_catalog_report_definition
+    auditlog = catalog_auditlog_definition
     # Merging the catalogs
     final.update(analysis_request)
     final.update(analysis)
     final.update(autoimportlogs)
     final.update(worksheet)
     final.update(report)
+    final.update(auditlog)
     return final
 
 
