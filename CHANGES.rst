@@ -9,6 +9,8 @@ Changelog
 
 **Changed**
 
+- #1330 Make guards to not rely on review history
+
 
 **Removed**
 
