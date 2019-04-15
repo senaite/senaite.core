@@ -16,12 +16,6 @@
   <permission>Reject</permission>
   <permission>Modify portal content</permission>
 
-  <!-- TODO Workflow - Analysis - Allowing only users with role "Review portal
-  content" to access to workflow history may cause problems when functions
-  "getReviewHistory", "wasTransitionPerformed" are used. These functions are
-  needed in some guards and/or in rollback transitions. Double-check -->
-  <permission>Review portal content</permission>
-
   <!-- TODO: We need different Analysis objects for Field- and Lab- Analyses,
              then we can rely solely on the Workflow Field permission.
 

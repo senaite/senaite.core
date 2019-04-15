@@ -21,10 +21,10 @@
 from bika.lims import api
 from bika.lims.browser import BrowserView
 from bika.lims.browser.header_table import HeaderTableView
+from bika.lims.interfaces import IReceived
 from bika.lims.permissions import EditFieldResults
 from bika.lims.permissions import EditResults
 from bika.lims.utils import check_permission
-from bika.lims.workflow import wasTransitionPerformed
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from resultsinterpretation import ARResultsInterpretationView
 
@@ -112,13 +112,12 @@ class AnalysisRequestViewView(BrowserView):
     def is_received(self):
         """Checks if the AR is received
         """
-        return wasTransitionPerformed(self.context, "receive")
+        return IReceived.providedBy(self.context)
 
     def is_verified(self):
         """Checks if the AR is verified
         """
-        target_states = ["verified", "published", "invalid"]
-        return api.get_review_status(self.context) in target_states
+        return IVerified.providedBy(self.context)
 
     def is_cancelled(self):
         """Checks if the AR is cancelled
