@@ -98,6 +98,9 @@ def init_auditlog(portal):
     index.index.autoexpand_limit = 3
     index._p_changed = 1
 
+    # reindex the audit log controlpanel
+    portal.bika_setup.auditlog.reindexObject()
+
     # Initialize contents for audit logging
     start = time.time()
     uid_catalog = api.get_tool("uid_catalog")
