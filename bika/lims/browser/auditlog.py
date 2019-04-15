@@ -193,6 +193,8 @@ class AuditLogView(BikaListingView):
         elif isinstance(value, (list, tuple)):
             value = map(self.process_value, value)
             value = "  ".join(value)
+        elif isinstance(value, unicode):
+            value = api.safe_unicode(value).encode("utf8")
         return str(value)
 
     def get_title_or_id_from_uid(self, uid):
