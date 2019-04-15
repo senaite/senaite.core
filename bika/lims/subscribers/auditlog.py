@@ -6,15 +6,28 @@ from bika.lims import api
 from bika.lims import logger
 from bika.lims.api.security import get_roles
 from bika.lims.api.security import get_user_id
+from bika.lims.catalog import CATALOG_AUDITLOG
 from bika.lims.interfaces import IAuditable
 from DateTime import DateTime
 from persistent.list import PersistentList
+from plone.memoize.ram import cache
 from senaite.core.supermodel import SuperModel
 from zope.annotation.interfaces import IAnnotatable
 from zope.annotation.interfaces import IAnnotations
 from zope.interface import alsoProvides
 
 SNAPSHOT_STORAGE = "senaite.core.snapshots"
+
+
+def snapshot_data_cache_key(func, brain_or_object):
+    """Generates a cache key for snapshot data lookup
+
+    N.B. the default RAM cache cleans up after 86400 seconds
+    """
+    # cache key expires in one hour
+    uid = api.get_uid(brain_or_object)
+    modified = api.get_modification_date(brain_or_object).millis()
+    return "{}-{}".format(uid, modified)
 
 
 def get_storage(obj):
@@ -26,6 +39,7 @@ def get_storage(obj):
     return annotation[SNAPSHOT_STORAGE]
 
 
+@cache(snapshot_data_cache_key)
 def has_snapshots(obj):
     """Checks if the object has snapshots
     """
@@ -51,8 +65,8 @@ def get_request_metadata():
     }
 
 
-def make_metadata_for(obj, **kw):
-    """Creates some metadata for the passed in object
+def get_snapshot_metadata_for(obj, **kw):
+    """Get object metadata
     """
 
     # inject metadata of volatile data
@@ -62,6 +76,7 @@ def make_metadata_for(obj, **kw):
         "action": "",
         "review_state": api.get_review_status(obj),
         "active": api.is_active(obj),
+        "snapshot_created": DateTime().ISO(),
         "modified": api.get_modification_date(obj).ISO(),
         "remote_address": "",
         "user_agent": "",
@@ -78,11 +93,10 @@ def make_metadata_for(obj, **kw):
     return metadata
 
 
-def take_snapshot(obj, **kw):
-    """Takes a snapshot of the passed in object
+@cache(snapshot_data_cache_key)
+def get_snapshot_data_for(obj):
+    """Get object schema data
     """
-    logger.debug("📷 Take new snapshot for {}".format(repr(obj)))
-
     # take a snapshot
     model = SuperModel(obj)
     try:
@@ -91,10 +105,21 @@ def take_snapshot(obj, **kw):
         # Fails for DuplicateAnalysis `getBulkPrice` with an AttributeError
         logger.error("Failed to create snapshot for {}: {}"
                      .format(repr(obj), str(exc)))
-        return
+        snapshot = {}
 
-    # generate the metadata
-    metadata = make_metadata_for(obj, **kw)
+    return snapshot
+
+
+def take_snapshot(obj, **kw):
+    """Takes a snapshot of the passed in object
+    """
+    logger.debug("📷 Take new snapshot for {}".format(repr(obj)))
+
+    # get the snapshot data
+    snapshot = get_snapshot_data_for(obj)
+
+    # get the metadata
+    metadata = get_snapshot_metadata_for(obj, **kw)
 
     # store the metadata
     snapshot["metadata"] = metadata
@@ -107,6 +132,12 @@ def take_snapshot(obj, **kw):
 
     # Mark the content as auditable
     alsoProvides(obj, IAuditable)
+
+    # Catalog the IAuditable object
+    catalog = api.get_tool(CATALOG_AUDITLOG)
+    catalog.reindexObject(obj)
+
+    return snapshot
 
 
 def is_auditable(obj):
