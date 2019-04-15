@@ -11,7 +11,6 @@ Changelog
 
 - #1330 Make guards to not rely on review history
 
-
 **Removed**
 
 - #1328 Remove transition filtering in Worksheet listings
