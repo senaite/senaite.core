@@ -47,6 +47,11 @@ from zope.interface import alsoProvides
 version = "1.3.1"  # Remember version number in metadata.xml and setup.py
 profile = "profile-{0}:default".format(product)
 
+SKIP_TYPES_FOR_AUDIT_LOG = [
+    "Sample",
+    "SamplePartition"
+]
+
 
 @upgradestep(product, version)
 def upgrade(tool):
@@ -128,6 +133,9 @@ def init_auditlog(portal):
             duration = float(end-start)
             logger.info("{} ojects initialized for audit logging in {:.2f}s"
                         .format(total, duration))
+
+        if api.get_portal_type(brain) in SKIP_TYPES_FOR_AUDIT_LOG:
+            continue
 
         obj = api.get_object(brain)
 
