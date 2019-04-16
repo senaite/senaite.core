@@ -65,12 +65,15 @@ def upgrade(tool):
     # -------- ADD YOUR STUFF BELOW --------
     setup.runImportStepFromProfile(profile, "actions")
     setup.runImportStepFromProfile(profile, "workflow")
+    setup.runImportStepFromProfile(profile, "typeinfo")
     setup.runImportStepFromProfile(profile, "toolset")
     setup.runImportStepFromProfile(profile, "content")
 
     # https://github.com/senaite/senaite.core/pull/1324
-    # initialize the auditlog
+    # initialize auditlogging
+    init_auditlog_catalog(portal)
     init_auditlog(portal)
+    remove_log_action(portal)
 
     # Mark objects based on the transitions performed to them
     # https://github.com/senaite/senaite.core/pull/1330
@@ -80,13 +83,12 @@ def upgrade(tool):
     return True
 
 
-def init_auditlog(portal):
-    """Initialize the contents for the audit log
+def init_auditlog_catalog(portal):
+    """Initialize the auditlog catalog
     """
     # setup the auditlog catalog
     logger.info("Setup Audit Log Catalog")
     setup_catalogs(portal, catalog_auditlog_definition)
-    logger.info("Setup Audit Log Catalog [DONE]")
 
     # XXX is there another way to do this?
     # Setup TXNG3 index
@@ -98,6 +100,12 @@ def init_auditlog(portal):
     index.index.autoexpand_limit = 3
     index._p_changed = 1
 
+    logger.info("Setup Audit Log Catalog [DONE]")
+
+
+def init_auditlog(portal):
+    """Initialize the contents for the audit log
+    """
     # reindex the audit log controlpanel
     portal.bika_setup.auditlog.reindexObject()
 
@@ -144,6 +152,22 @@ def init_auditlog(portal):
             item["modified"] = timestamp.ISO()
             item["remote_address"] = None
             take_snapshot(obj, **item)
+
+
+def remove_log_action(portal):
+    """Removes the old Log action from types
+    """
+    logger.info("Removing Log Tab ...")
+    portal_types = api.get_tool("portal_types")
+    for name in portal_types.listContentTypes():
+        ti = portal_types[name]
+        actions = map(lambda action: action.id, ti._actions)
+        for index, action in enumerate(actions):
+            if action == "log":
+                logger.info("Removing Log Action for {}".format(name))
+                ti.deleteActions([index])
+                break
+    logger.info("Removing Log Tab [DONE]")
 
 
 def mark_transitions_performed(portal):
