@@ -133,11 +133,23 @@ def take_snapshot(obj, **kw):
     # Mark the content as auditable
     alsoProvides(obj, IAuditable)
 
-    # Catalog the IAuditable object
-    catalog = api.get_tool(CATALOG_AUDITLOG)
-    catalog.reindexObject(obj)
+    # N.B. this check avoids that Analyses are indexed during the creation
+    #      process with an invalid path.
+    parent = api.get_parent()
+    if not is_temporary_object(parent):
+        # Catalog the IAuditable object
+        catalog = api.get_tool(CATALOG_AUDITLOG)
+        catalog.reindexObject(obj)
 
     return snapshot
+
+
+def is_temporary_object(obj):
+    """Checks if the object is in the creation process
+    """
+    if api.is_at_content(obj):
+        return obj.checkCreationFlag()
+    return api.is_uid(obj.id)
 
 
 def is_auditable(obj):
