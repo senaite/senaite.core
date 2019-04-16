@@ -50,8 +50,6 @@ class ARResultsInterpretationView(BrowserView):
         # Save the results interpretation
         res = self.request.form.get("ResultsInterpretationDepts", [])
         self.context.setResultsInterpretationDepts(res)
-        # notify modification event handlers
-        self.context.processForm()
         self.add_status_message(_("Changes Saved"), level="info")
 
     def add_status_message(self, message, level="info"):

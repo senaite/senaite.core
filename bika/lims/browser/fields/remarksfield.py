@@ -61,8 +61,6 @@ class RemarksField(ObjectField):
         existing_remarks = instance.getRawRemarks()
         remarks = '\n'.join([divider, value, existing_remarks])
         ObjectField.set(self, instance, remarks)
-        # notify modification event handlers
-        instance.processForm()
 
     def get_cooked_remarks(self, instance):
         text = self.get(instance)
