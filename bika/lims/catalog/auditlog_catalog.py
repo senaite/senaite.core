@@ -21,6 +21,7 @@ _indexes = {
     "modified": "DateIndex",
     "modifiers": "KeywordIndex",
     "actor": "FieldIndex",
+    "action": "FieldIndex",
     "listing_searchable_text": "TextIndexNG3",
     "snapshot_created": "DateIndex",
     "snapshot_version": "FieldIndex",

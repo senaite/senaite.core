@@ -78,6 +78,7 @@ class AuditLogView(BikaListingView):
                 "sortable": True}),
             ("action", {
                 "title": _("Action"),
+                "index": "action",
                 "sortable": True}),
             ("review_state", {
                 "title": _("Workflow State"),

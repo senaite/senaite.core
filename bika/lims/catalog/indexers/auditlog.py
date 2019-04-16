@@ -43,22 +43,45 @@ def get_last_snapshot(instance):
     return snapshots[-1]
 
 
+def get_meta_value_for(snapshot, key, default=None):
+    """Returns the metadata value for the given key
+    """
+    metadata = snapshot.get("metadata", {})
+    return metadata.get(key, default)
+
+
 def get_actor(snapshot):
     """Get the actor of the snapshot
     """
-    metadata = snapshot.get("metadata", {})
-    actor = metadata.get("actor")
+    actor = get_meta_value_for("actor")
     if not actor:
         return get_user_id()
     return actor
+
+
+def get_action(snapshot):
+    """Get the action of the snapshot
+    """
+    action = get_meta_value_for("action")
+    if not action:
+        return "Edit"
+    return action
+
+
+def get_created(snapshot):
+    """Get the created date of the snapshot
+    """
+    created = get_meta_value_for("snapshot_created")
+    if not created:
+        return ""
+    return created
 
 
 @indexer(IAuditable)
 def actor(instance):
     """Last modifiying user
     """
-    snapshots = get_snapshots(instance)
-    last_snapshot = snapshots[-1]
+    last_snapshot = get_last_snapshot()
     return get_actor(last_snapshot)
 
 
@@ -68,6 +91,14 @@ def modifiers(instance):
     """
     snapshots = get_snapshots(instance)
     return map(get_actor, snapshots)
+
+
+@indexer(IAuditable)
+def action(instance):
+    """Returns the last performed action
+    """
+    last_snapshot = get_last_snapshot()
+    return get_action(last_snapshot)
 
 
 @indexer(IAuditable)
@@ -83,8 +114,7 @@ def snapshot_created(instance):
     """Snapshot created date
     """
     last_snapshot = get_last_snapshot(instance)
-    metadata = last_snapshot.get("metadata", {})
-    snapshot_created = metadata.get("snapshot_created")
+    snapshot_created = get_created(last_snapshot)
     return to_date(snapshot_created)
 
 
