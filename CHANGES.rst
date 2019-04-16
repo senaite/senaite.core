@@ -18,6 +18,7 @@ Changelog
 
 **Fixed**
 
+- #1334 Number of analyses are not updated after modifying analyses in a Sample
 - #1319 Make api.get_review_history to always return a list
 - #1317 Fix Analysis Service URL in Info Popup
 - #1316 Barcodes view does not render all labels once Samples are registered

@@ -436,6 +436,9 @@ class WorkflowActionSaveAnalysesAdapter(WorkflowActionGenericAdapter):
         for analysis in sample.objectValues("Analysis"):
             analysis.reindexObject()
 
+        # Reindex the Sample
+        sample.reindexObject()
+
         # Redirect the user to success page
         self.success([sample])
 
