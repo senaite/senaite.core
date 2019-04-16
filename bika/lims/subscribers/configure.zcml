@@ -18,13 +18,6 @@
       handler=".auditlog.ObjectModifiedEventHandler"
       />
 
-  <!-- Audit Log: Object Modified -->
-  <subscriber
-      for="*
-           zope.lifecycleevent.IObjectModifiedEvent"
-      handler=".auditlog.ObjectModifiedEventHandler"
-      />
-
   <!-- Audit Log: After Transition Event -->
   <subscriber
       for="*

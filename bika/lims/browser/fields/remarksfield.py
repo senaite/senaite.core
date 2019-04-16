@@ -26,7 +26,6 @@ from Products.Archetypes.Registry import registerField
 from bika.lims.browser.widgets import RemarksWidget
 from bika.lims.interfaces import IRemarksField
 from zope.interface import implements
-from zope.lifecycleevent import modified
 
 
 class RemarksField(ObjectField):
@@ -62,8 +61,8 @@ class RemarksField(ObjectField):
         existing_remarks = instance.getRawRemarks()
         remarks = '\n'.join([divider, value, existing_remarks])
         ObjectField.set(self, instance, remarks)
-        # notify that the context has been modified
-        modified(instance)
+        # notify modification event handlers
+        instance.processForm()
 
     def get_cooked_remarks(self, instance):
         text = self.get(instance)
