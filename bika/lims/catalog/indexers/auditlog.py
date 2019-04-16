@@ -53,7 +53,7 @@ def get_meta_value_for(snapshot, key, default=None):
 def get_actor(snapshot):
     """Get the actor of the snapshot
     """
-    actor = get_meta_value_for("actor")
+    actor = get_meta_value_for(snapshot, "actor")
     if not actor:
         return get_user_id()
     return actor
@@ -62,7 +62,7 @@ def get_actor(snapshot):
 def get_action(snapshot):
     """Get the action of the snapshot
     """
-    action = get_meta_value_for("action")
+    action = get_meta_value_for(snapshot, "action")
     if not action:
         return "Edit"
     return action
@@ -71,7 +71,7 @@ def get_action(snapshot):
 def get_created(snapshot):
     """Get the created date of the snapshot
     """
-    created = get_meta_value_for("snapshot_created")
+    created = get_meta_value_for(snapshot, "snapshot_created")
     if not created:
         return ""
     return created
