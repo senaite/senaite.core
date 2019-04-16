@@ -118,7 +118,7 @@ def init_auditlog(portal):
     logger.info("Initializing {} objects for the audit trail...".format(total))
     for num, brain in enumerate(brains):
         # Progress notification
-        if num % 1000 == 0:
+        if num and num % 1000 == 0:
             transaction.commit()
             logger.info("{}/{} ojects initialized for audit logging"
                         .format(num, total))
