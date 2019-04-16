@@ -22,7 +22,6 @@ import itertools
 
 from AccessControl import ClassSecurityInfo
 from AccessControl import Unauthorized
-from AccessControl import getSecurityManager
 from bika.lims import api
 from bika.lims import logger
 from bika.lims.api.security import check_permission
@@ -241,6 +240,9 @@ class ARAnalysesField(ObjectField):
                     "Deleting attachment: {}".format(attachment.getId()))
                 attachment_id = api.get_id(attachment)
                 api.get_parent(attachment).manage_delObjects(attachment_id)
+
+        # notify modification event handlers
+        instance.processForm()
 
         return new_analyses
 
