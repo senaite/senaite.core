@@ -20,6 +20,7 @@ _indexes = {
     "is_active": "BooleanIndex",
     "modified": "DateIndex",
     "modifiers": "KeywordIndex",
+    "actor": "FieldIndex",
     "listing_searchable_text": "TextIndexNG3",
     "snapshot_created": "DateIndex",
     "snapshot_version": "FieldIndex",

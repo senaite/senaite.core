@@ -21,6 +21,7 @@
 import json
 
 from bika.lims.api import to_date
+from bika.lims.api.user import get_user_id
 from bika.lims.interfaces import IAuditable
 from bika.lims.subscribers.auditlog import get_storage
 from plone.indexer import indexer
@@ -42,12 +43,31 @@ def get_last_snapshot(instance):
     return snapshots[-1]
 
 
+def get_actor(snapshot):
+    """Get the actor of the snapshot
+    """
+    metadata = snapshot.get("metadata", {})
+    actor = metadata.get("actor")
+    if not actor:
+        return get_user_id()
+    return actor
+
+
 @indexer(IAuditable)
-def modifiers(instance):
-    """Returns the modifier
+def actor(instance):
+    """Last modifiying user
     """
     snapshots = get_snapshots(instance)
-    return map(lambda s: s.get("metadata", {}).get("actor"), snapshots)
+    last_snapshot = snapshots[-1]
+    return get_actor(last_snapshot)
+
+
+@indexer(IAuditable)
+def modifiers(instance):
+    """Returns a list of all users that modified
+    """
+    snapshots = get_snapshots(instance)
+    return map(get_actor, snapshots)
 
 
 @indexer(IAuditable)

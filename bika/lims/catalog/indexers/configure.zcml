@@ -17,6 +17,7 @@
   <adapter name="is_active" factory=".is_active"/>
 
   <!-- Auditlog -->
+  <adapter name="actor" factory=".auditlog.actor"/>
   <adapter name="modifiers" factory=".auditlog.modifiers"/>
   <adapter name="listing_searchable_text" factory=".auditlog.listing_searchable_text"/>
   <adapter name="snapshot_created" factory=".auditlog.snapshot_created"/>

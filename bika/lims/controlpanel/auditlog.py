@@ -60,16 +60,18 @@ class AuditLogView(BikaListingView):
         self.columns = collections.OrderedDict((
             ("title", {
                 "title": _("Title"),
-                "index": "sortable_title"}),
+                "index": "title"}),
             ("version", {
                 "title": _("Version"),
                 "index": "snapshot_version",
                 "sortable": True}),
             ("modified", {
                 "title": _("Date Modified"),
+                "index": "modified",
                 "sortable": True}),
             ("actor", {
                 "title": _("Actor"),
+                "index": "actor",
                 "sortable": True}),
             ("remote_address", {
                 "title": _("Remote IP"),
