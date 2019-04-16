@@ -49,7 +49,8 @@ profile = "profile-{0}:default".format(product)
 
 SKIP_TYPES_FOR_AUDIT_LOG = [
     "Sample",
-    "SamplePartition"
+    "SamplePartition",
+    "ARReport",
 ]
 
 
