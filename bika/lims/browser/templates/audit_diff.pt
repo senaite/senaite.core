@@ -12,7 +12,7 @@
          class="table table-condensed table-borderless diff-table">
     <tr tal:repeat="field python:diff.keys()">
       <td>
-        <strong class="field" i18n:translate="" tal:content="python:field.capitalize()"/>:
+        <strong class="field" i18n:translate="" tal:content="field"/>:
       </td>
       <td>
         <div tal:repeat="d python:diff[field]"

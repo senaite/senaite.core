@@ -151,13 +151,21 @@ class AuditLogView(BikaListingView):
             # skip non-schema keys
             if key_a not in fieldnames:
                 continue
+
             # get the value of the second snapshot
             value_b = snapshot_b.get(key_a)
             # get the diff between the two values
             diff = self.diff_values(value_a, value_b)
             if diff is not None:
-                diffs[key_a] = diff
+                field = self.get_field_by_name(key_a)
+                label = field.widget.label or key_a
+                diffs[label] = diff
         return diffs
+
+    def get_field_by_name(self, name):
+        """Get a schema field by name
+        """
+        return self.context.getField(name)
 
     def diff_values(self, value_a, value_b):
         """Returns a human-readable diff between two values
@@ -188,7 +196,7 @@ class AuditLogView(BikaListingView):
             value = _("Not set")
         elif api.is_uid(value):
             value = self.get_title_or_id_from_uid(value)
-        elif api.to_date(value):
+        elif api.is_date(value):
             value = self.to_localized_time(api.to_date(value))
         elif isinstance(value, (list, tuple)):
             value = map(self.process_value, value)
