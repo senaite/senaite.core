@@ -19,15 +19,12 @@ from zope.interface import alsoProvides
 SNAPSHOT_STORAGE = "senaite.core.snapshots"
 
 
-def snapshots_cache_key(func, obj):
+def snapshot_data_cache_key(func, obj):
     """Generates a cache key for snapshots data lookup
-
-    :returns: Number of snapshots + UID
     """
     uid = api.get_uid(obj)
-    storage = get_storage(obj)
-    count = len(storage)
-    return "{}-{}".format(count, uid)
+    modified = api.get_modified(obj).millis()
+    return "{}-{}".format(uid, modified)
 
 
 def get_storage(obj):
@@ -44,24 +41,6 @@ def has_snapshots(obj):
     """
     storage = get_storage(obj)
     return len(storage) > 0
-
-
-@cache(snapshots_cache_key)
-def get_snapshots(obj):
-    """Get all snapshots from the storage
-    """
-    snapshots = get_storage(obj)
-    return map(json.loads, snapshots)
-
-
-@cache(snapshots_cache_key)
-def get_last_snapshot(obj):
-    """Get the last snapshot
-    """
-    snapshots = get_snapshots(obj)
-    if not snapshots:
-        return {}
-    return snapshots[-1]
 
 
 def get_request_metadata():
@@ -110,7 +89,7 @@ def get_snapshot_metadata_for(obj, **kw):
     return metadata
 
 
-@cache(snapshots_cache_key)
+@cache(snapshot_data_cache_key)
 def get_snapshot_data_for(obj):
     """Get object schema data
     """
