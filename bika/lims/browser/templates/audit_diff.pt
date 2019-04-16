@@ -19,7 +19,7 @@
              class="diffline">
           <code class="value" tal:content="python:d[1]"/>
           &rarr;
-          <code class="value" tal:content="python:d[0]"/>
+          <code class="value bg-success text-success" tal:content="python:d[0]"/>
         </div>
       </td>
     </tr>
