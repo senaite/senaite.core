@@ -127,7 +127,7 @@ class AnalysisServiceInfoView(BrowserView):
         analysis = self.get_analysis()
         if analysis is None:
             return None
-        view = api.get_view("log", context=analysis, request=self.request)
+        view = api.get_view("auditlog", context=analysis, request=self.request)
         view.update()
         view.before_render()
         return view
