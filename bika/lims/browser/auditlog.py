@@ -238,7 +238,7 @@ class AuditLogView(BikaListingView):
     def get_snapshot_metadata(self, snapshot):
         """Returns the snapshot metadata
         """
-        return snapshot.get("metadata", {})
+        return snapshot.get("__metadata__", {})
 
     def translate_state(self, s):
         """Translate the given state string

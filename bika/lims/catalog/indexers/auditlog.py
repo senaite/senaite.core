@@ -46,7 +46,7 @@ def get_last_snapshot(instance):
 def get_meta_value_for(snapshot, key, default=None):
     """Returns the metadata value for the given key
     """
-    metadata = snapshot.get("metadata", {})
+    metadata = snapshot.get("__metadata__", {})
     return metadata.get(key, default)
 
 

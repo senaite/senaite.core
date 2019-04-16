@@ -122,7 +122,7 @@ def take_snapshot(obj, **kw):
     metadata = get_snapshot_metadata_for(obj, **kw)
 
     # store the metadata
-    snapshot["metadata"] = metadata
+    snapshot["__metadata__"] = metadata
 
     # get the snapshot storage
     storage = get_storage(obj)
