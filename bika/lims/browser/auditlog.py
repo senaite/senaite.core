@@ -208,7 +208,11 @@ class AuditLogView(BikaListingView):
     def get_title_or_id_from_uid(self, uid):
         """Returns the title or ID from the given UID
         """
-        obj = api.get_object_by_uid(uid)
+        try:
+            obj = api.get_object_by_uid(uid)
+        except api.APIError:
+            return "<Deleted Object {}>".format(uid)
+
         title_or_id = api.get_title(obj) or api.get_id(obj)
         logger.info("get_title_or_id_from_uid: {} -> {}"
                     .format(uid, title_or_id))
