@@ -194,6 +194,9 @@ class AuditLogView(BikaListingView):
         # XXX: bad data, e.g. in AS Method field
         elif value == "None":
             value = _("Not set")
+        # 0 is detected as the portal UID
+        elif value == "0":
+            value = "0"
         elif api.is_uid(value):
             value = self.get_title_or_id_from_uid(value)
         elif api.is_date(value):
