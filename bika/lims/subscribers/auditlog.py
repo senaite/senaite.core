@@ -16,7 +16,7 @@ from zope.annotation.interfaces import IAnnotatable
 from zope.annotation.interfaces import IAnnotations
 from zope.interface import alsoProvides
 
-LIMIT = 5*1024*1024
+LIMIT = 1*1024*1024  # 1MB
 SNAPSHOT_STORAGE = "senaite.core.snapshots"
 
 
