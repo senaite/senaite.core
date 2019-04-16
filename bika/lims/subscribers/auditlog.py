@@ -23,7 +23,7 @@ def snapshot_data_cache_key(func, obj):
     """Generates a cache key for snapshots data lookup
     """
     uid = api.get_uid(obj)
-    modified = api.get_modified(obj).millis()
+    modified = api.get_modification_date(obj).millis()
     return "{}-{}".format(uid, modified)
 
 
