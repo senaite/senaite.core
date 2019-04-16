@@ -16,6 +16,7 @@ from zope.annotation.interfaces import IAnnotatable
 from zope.annotation.interfaces import IAnnotations
 from zope.interface import alsoProvides
 
+LIMIT = 5*1024*1024
 SNAPSHOT_STORAGE = "senaite.core.snapshots"
 
 
@@ -128,7 +129,16 @@ def take_snapshot(obj, **kw):
     storage = get_storage(obj)
 
     # save the snapshot as JSON
-    storage.append(json.dumps(snapshot))
+    data = json.dumps(snapshot)
+
+    # Warn when the snapshot exceeded the size limit
+    size = len(data)
+    if size > LIMIT:
+        logger.warning("!!! Snaphot for {} exceeded size limit: {} MB !!!"
+                       .format(api.get_path(obj), size/1024/1024))
+
+    # store the snapshot data
+    storage.append(data)
 
     # Mark the content as auditable
     alsoProvides(obj, IAuditable)
