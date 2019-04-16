@@ -81,7 +81,7 @@ def get_created(snapshot):
 def actor(instance):
     """Last modifiying user
     """
-    last_snapshot = get_last_snapshot()
+    last_snapshot = get_last_snapshot(instance)
     return get_actor(last_snapshot)
 
 
@@ -97,7 +97,7 @@ def modifiers(instance):
 def action(instance):
     """Returns the last performed action
     """
-    last_snapshot = get_last_snapshot()
+    last_snapshot = get_last_snapshot(instance)
     return get_action(last_snapshot)
 
 
