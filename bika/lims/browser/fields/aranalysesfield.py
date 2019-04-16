@@ -241,9 +241,6 @@ class ARAnalysesField(ObjectField):
                 attachment_id = api.get_id(attachment)
                 api.get_parent(attachment).manage_delObjects(attachment_id)
 
-        # notify modification event handlers
-        instance.processForm()
-
         return new_analyses
 
     def _get_services(self, full_objects=False):
