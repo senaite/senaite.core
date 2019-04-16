@@ -175,12 +175,12 @@ class AuditLogView(BikaListingView):
         :returns a list of diff tuples
         """
 
-        # No changes
-        if value_a == value_b:
-            return None
-
         v_A = self.process_value(value_a)
         v_B = self.process_value(value_b)
+
+        # No changes
+        if v_A == v_B:
+            return None
 
         diffs = []
         diffs.append((v_A, v_B))
