@@ -20,11 +20,13 @@
 
 from AccessControl import ClassSecurityInfo
 from AccessControl import getSecurityManager
-from DateTime import DateTime
-from Products.Archetypes.Field import ObjectField
-from Products.Archetypes.Registry import registerField
 from bika.lims.browser.widgets import RemarksWidget
 from bika.lims.interfaces import IRemarksField
+from DateTime import DateTime
+from Products.Archetypes.event import ObjectEditedEvent
+from Products.Archetypes.Field import ObjectField
+from Products.Archetypes.Registry import registerField
+from zope import event
 from zope.interface import implements
 
 
@@ -61,6 +63,8 @@ class RemarksField(ObjectField):
         existing_remarks = instance.getRawRemarks()
         remarks = '\n'.join([divider, value, existing_remarks])
         ObjectField.set(self, instance, remarks)
+        # notify object edited event
+        event.notify(ObjectEditedEvent(instance))
 
     def get_cooked_remarks(self, instance):
         text = self.get(instance)

@@ -20,14 +20,16 @@
 
 from AccessControl import getSecurityManager
 from AccessControl.Permissions import view
-from Products.CMFCore.permissions import ModifyPortalContent
-from Products.CMFPlone import PloneMessageFactory as _p
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.browser import BrowserView
 from bika.lims.interfaces import IHeaderTableFieldRenderer
 from bika.lims.utils import t
+from Products.Archetypes.event import ObjectEditedEvent
+from Products.CMFCore.permissions import ModifyPortalContent
+from Products.CMFPlone import PloneMessageFactory as _p
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from zope import event
 from zope.component import getAdapter
 from zope.component.interfaces import ComponentLookupError
 
@@ -58,8 +60,8 @@ class HeaderTableView(BrowserView):
                         # other fields
                         field.getMutator(self.context)(form[fieldname])
             message = _p("Changes saved.")
-            # ensure that all events are called
-            self.context.processForm()
+            # notify object edited event
+            event.notify(ObjectEditedEvent(self.context))
             self.context.plone_utils.addPortalMessage(message, "info")
         return self.template()
 

@@ -24,7 +24,9 @@ from bika.lims.browser import BrowserView
 from bika.lims.permissions import FieldEditResultsInterpretation
 from plone import protect
 from plone.app.textfield import RichTextValue
+from Products.Archetypes.event import ObjectEditedEvent
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from zope import event
 
 
 class ARResultsInterpretationView(BrowserView):
@@ -51,6 +53,8 @@ class ARResultsInterpretationView(BrowserView):
         res = self.request.form.get("ResultsInterpretationDepts", [])
         self.context.setResultsInterpretationDepts(res)
         self.add_status_message(_("Changes Saved"), level="info")
+        # notify object edited event
+        event.notify(ObjectEditedEvent(self.context))
 
     def add_status_message(self, message, level="info"):
         """Set a portal status message
