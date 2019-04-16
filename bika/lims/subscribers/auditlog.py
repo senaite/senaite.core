@@ -19,15 +19,15 @@ from zope.interface import alsoProvides
 SNAPSHOT_STORAGE = "senaite.core.snapshots"
 
 
-def snapshot_data_cache_key(func, brain_or_object):
-    """Generates a cache key for snapshot data lookup
+def snapshots_cache_key(func, obj):
+    """Generates a cache key for snapshots data lookup
 
-    N.B. the default RAM cache cleans up after 86400 seconds
+    :returns: Number of snapshots + UID
     """
-    # cache key expires in one hour
-    uid = api.get_uid(brain_or_object)
-    modified = api.get_modification_date(brain_or_object).millis()
-    return "{}-{}".format(uid, modified)
+    uid = api.get_uid(obj)
+    storage = get_storage(obj)
+    count = len(storage)
+    return "{}-{}".format(count, uid)
 
 
 def get_storage(obj):
@@ -39,12 +39,29 @@ def get_storage(obj):
     return annotation[SNAPSHOT_STORAGE]
 
 
-@cache(snapshot_data_cache_key)
 def has_snapshots(obj):
     """Checks if the object has snapshots
     """
     storage = get_storage(obj)
     return len(storage) > 0
+
+
+@cache(snapshots_cache_key)
+def get_snapshots(obj):
+    """Get all snapshots from the storage
+    """
+    snapshots = get_storage(obj)
+    return map(json.loads, snapshots)
+
+
+@cache(snapshots_cache_key)
+def get_last_snapshot(obj):
+    """Get the last snapshot
+    """
+    snapshots = get_snapshots(obj)
+    if not snapshots:
+        return {}
+    return snapshots[-1]
 
 
 def get_request_metadata():
@@ -93,7 +110,7 @@ def get_snapshot_metadata_for(obj, **kw):
     return metadata
 
 
-@cache(snapshot_data_cache_key)
+@cache(snapshots_cache_key)
 def get_snapshot_data_for(obj):
     """Get object schema data
     """
