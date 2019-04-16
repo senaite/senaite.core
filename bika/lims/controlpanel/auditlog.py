@@ -53,8 +53,7 @@ class AuditLogView(BikaListingView):
             "/++resource++bika.lims.images/auditlog_big.png"
         )
 
-        self.show_select_row = False
-        self.show_select_column = True
+        self.show_select_column = False
         self.pagesize = 25
 
         self.columns = collections.OrderedDict((
