@@ -139,7 +139,7 @@ def take_snapshot(obj, **kw):
     # N.B. this check avoids that Analyses are indexed during the creation
     #      process with an invalid path.
     parent = api.get_parent(obj)
-    if not is_temporary_object(parent):
+    if not any(map(is_temporary_object, [obj, parent])):
         # Catalog the IAuditable object
         catalog = api.get_tool(CATALOG_AUDITLOG)
         catalog.reindexObject(obj)
