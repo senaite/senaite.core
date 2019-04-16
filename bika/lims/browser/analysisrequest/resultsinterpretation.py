@@ -25,6 +25,7 @@ from bika.lims.permissions import FieldEditResultsInterpretation
 from plone import protect
 from plone.app.textfield import RichTextValue
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from zope.lifecycleevent import modified
 
 
 class ARResultsInterpretationView(BrowserView):
@@ -50,6 +51,8 @@ class ARResultsInterpretationView(BrowserView):
         # Save the results interpretation
         res = self.request.form.get("ResultsInterpretationDepts", [])
         self.context.setResultsInterpretationDepts(res)
+        # notify that the context has been modified
+        modified(self.context)
         self.add_status_message(_("Changes Saved"), level="info")
 
     def add_status_message(self, message, level="info"):
