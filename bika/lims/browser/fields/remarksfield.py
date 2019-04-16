@@ -63,6 +63,8 @@ class RemarksField(ObjectField):
         existing_remarks = instance.getRawRemarks()
         remarks = '\n'.join([divider, value, existing_remarks])
         ObjectField.set(self, instance, remarks)
+        # reindex the object after save to update all catalog metadata
+        instance.reindexObject()
         # notify object edited event
         event.notify(ObjectEditedEvent(instance))
 

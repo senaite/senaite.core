@@ -53,6 +53,8 @@ class ARResultsInterpretationView(BrowserView):
         res = self.request.form.get("ResultsInterpretationDepts", [])
         self.context.setResultsInterpretationDepts(res)
         self.add_status_message(_("Changes Saved"), level="info")
+        # reindex the object after save to update all catalog metadata
+        self.context.reindexObject()
         # notify object edited event
         event.notify(ObjectEditedEvent(self.context))
 
