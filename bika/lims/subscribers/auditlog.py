@@ -6,7 +6,6 @@ from bika.lims import api
 from bika.lims import logger
 from bika.lims.api.security import get_roles
 from bika.lims.api.security import get_user_id
-from bika.lims.catalog import CATALOG_AUDITLOG
 from bika.lims.interfaces import IAuditable
 from DateTime import DateTime
 from persistent.list import PersistentList
@@ -156,14 +155,6 @@ def take_snapshot(obj, **kw):
 
     # Mark the content as auditable
     alsoProvides(obj, IAuditable)
-
-    # N.B. this check avoids that Analyses are indexed during the creation
-    #      process with an invalid path.
-    parent = api.get_parent(obj)
-    if not any(map(is_temporary_object, [obj, parent])):
-        # Catalog the IAuditable object
-        catalog = api.get_tool(CATALOG_AUDITLOG)
-        catalog.reindexObject(obj)
 
     return snapshot
 
