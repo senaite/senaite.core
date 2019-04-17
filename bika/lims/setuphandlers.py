@@ -494,7 +494,8 @@ def setup_auditlog_catalog(portal):
     """
     logger.info("*** Setup Audit Log Catalog ***")
 
-    catalog = api.get_tool(auditlog_catalog.CATALOG_AUDITLOG)
+    catalog_id = auditlog_catalog.CATALOG_AUDITLOG
+    catalog = api.get_tool(catalog_id)
 
     for name, meta_type in auditlog_catalog._indexes.iteritems():
         indexes = catalog.indexes()
@@ -518,3 +519,15 @@ def setup_auditlog_catalog(portal):
 
         logger.info("*** Added Index '%s' for field '%s' to catalog [DONE]"
                     % (meta_type, name))
+
+    # Attach the catalog to all known portal types
+    at = api.get_tool("archetype_tool")
+    # dictionary of portal_type -> list of catalog ids
+    catalog_mappings = at.listCatalogs()
+
+    for portal_type, catalogs in catalog_mappings.iteritems():
+        if catalog_id not in catalogs:
+            catalogs.append(catalog_id)
+            at.setCatalogsByType(portal_type, catalogs)
+            logger.info("*** Adding catalog '{}' for '{}'".format(
+                catalog_id, portal_type))
