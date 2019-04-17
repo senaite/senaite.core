@@ -102,10 +102,12 @@ class WorkflowActionSubmitAdapter(WorkflowActionGenericAdapter):
             hidden = self.get_form_value("Hidden", uid, "")
             analysis.setHidden(hidden == "on")
 
-            # Result
+            # Only set result if it differs from the actual value to preserve
+            # the result capture date
             result = self.get_form_value("Result", uid,
                                          default=analysis.getResult())
-            analysis.setResult(result)
+            if result != analysis.getResult():
+                analysis.setResult(result)
 
         # Submit all analyses
         transitioned = self.do_action(action, objects)
