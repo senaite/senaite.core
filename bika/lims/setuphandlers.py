@@ -522,12 +522,12 @@ def setup_auditlog_catalog(portal):
 
     # Attach the catalog to all known portal types
     at = api.get_tool("archetype_tool")
-    # dictionary of portal_type -> list of catalog ids
-    catalog_mappings = at.listCatalogs()
+    pt = api.get_tool("portal_types")
 
-    for portal_type, catalogs in catalog_mappings.iteritems():
-        if catalog_id not in catalogs:
-            catalogs.append(catalog_id)
-            at.setCatalogsByType(portal_type, catalogs)
+    for portal_type in pt.listContentTypes():
+        catalogs = at.getCatalogsByType(portal_type)
+        if catalog not in catalogs:
+            new_catalogs = map(lambda c: c.getId(), catalogs) + [catalog_id]
+            at.setCatalogsByType(portal_type, new_catalogs)
             logger.info("*** Adding catalog '{}' for '{}'".format(
                 catalog_id, portal_type))
