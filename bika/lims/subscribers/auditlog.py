@@ -19,12 +19,16 @@ from zope.interface import alsoProvides
 SNAPSHOT_STORAGE = "senaite.core.snapshots"
 
 
-def snapshot_data_cache_key(func, obj):
-    """Generates a cache key for snapshots data lookup
+def cache_key(func, obj):
+    """RAM Cache Key for Snapshot Data
+
+    Snapshots change when the object is either modified or when the workflow
+    state changed
     """
     uid = api.get_uid(obj)
     modified = api.get_modification_date(obj).millis()
-    return "{}-{}".format(uid, modified)
+    review_state = api.get_review_status(obj)
+    return "{}-{}-{}".format(uid, review_state, modified)
 
 
 def get_storage(obj):
@@ -34,6 +38,24 @@ def get_storage(obj):
     if annotation.get(SNAPSHOT_STORAGE) is None:
         annotation[SNAPSHOT_STORAGE] = PersistentList()
     return annotation[SNAPSHOT_STORAGE]
+
+
+@cache(cache_key)
+def get_snapshots(obj):
+    """Get all snapshots from the storage
+    """
+    snapshots = get_storage(obj)
+    return map(json.loads, snapshots)
+
+
+@cache(cache_key)
+def get_last_snapshot(obj):
+    """Get the last snapshot
+    """
+    snapshots = get_storage(obj)
+    if not snapshots:
+        return {}
+    return json.loads(snapshots[-1])
 
 
 def has_snapshots(obj):
@@ -63,6 +85,9 @@ def get_request_metadata():
 
 def get_snapshot_metadata_for(obj, **kw):
     """Get object metadata
+
+    We do not cache this function to be able to save the same snapshot data by
+    different users (with different metadata)
     """
 
     # inject metadata of volatile data
@@ -89,7 +114,7 @@ def get_snapshot_metadata_for(obj, **kw):
     return metadata
 
 
-@cache(snapshot_data_cache_key)
+@cache(cache_key)
 def get_snapshot_data_for(obj):
     """Get object schema data
     """

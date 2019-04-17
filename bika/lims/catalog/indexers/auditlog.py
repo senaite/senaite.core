@@ -18,34 +18,19 @@
 # Copyright 2018-2019 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-import re
 import itertools
-import json
+import re
 
 from bika.lims.api import to_date
 from bika.lims.api.user import get_user_id
 from bika.lims.interfaces import IAuditable
+from bika.lims.subscribers.auditlog import get_last_snapshot
+from bika.lims.subscribers.auditlog import get_snapshots
 from bika.lims.subscribers.auditlog import get_storage
 from plone.indexer import indexer
 
 UID_RX = re.compile(r"[a-z0-9]{32}$")
 DATE_RX = re.compile(r"\d{4}[-/]\d{2}[-/]\d{2}")
-
-
-def get_snapshots(obj):
-    """Get all snapshots from the storage
-    """
-    snapshots = get_storage(obj)
-    return map(json.loads, snapshots)
-
-
-def get_last_snapshot(obj):
-    """Get the last snapshot
-    """
-    snapshots = get_storage(obj)
-    if not snapshots:
-        return {}
-    return json.loads(snapshots[-1])
 
 
 def get_meta_value_for(snapshot, key, default=None):
