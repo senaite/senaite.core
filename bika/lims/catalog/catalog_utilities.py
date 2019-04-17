@@ -426,7 +426,10 @@ def _cleanAndRebuildIfNeeded(portal, cleanrebuild):
     for cat in cleanrebuild:
         catalog = getToolByName(portal, cat)
         if catalog:
-            catalog.softClearFindAndRebuild()
+            if hasattr(catalog, "softClearFindAndRebuild"):
+                catalog.softClearFindAndRebuild()
+            else:
+                catalog.clearFindAndRebuild()
         else:
             logger.warning('%s do not found' % cat)
 
