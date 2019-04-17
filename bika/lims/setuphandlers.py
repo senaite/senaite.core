@@ -18,11 +18,12 @@
 # Copyright 2018-2019 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from Products.CMFCore.utils import getToolByName
+from bika.lims import api
 from bika.lims import logger
 from bika.lims.catalog import getCatalogDefinitions
 from bika.lims.catalog import setup_catalogs
 from bika.lims.config import *
+from Products.CMFCore.utils import getToolByName
 
 GROUPS = {
     # Dictionary {group_name: [roles]}
@@ -65,17 +66,7 @@ class BikaGenerator(object):
 
     def reindex_structure(self, portal):
         # index objects - importing through GenericSetup doesn't
-        for obj_id in ('clients',
-                       'batches',
-                       'pricelists',
-                       'bika_setup',
-                       'methods',
-                       'analysisrequests',
-                       'referencesamples',
-                       'supplyorders',
-                       'worksheets',
-                       'reports',
-                       ):
+        for obj_id in portal.objectIds():
             try:
                 obj = portal[obj_id]
                 obj.unmarkCreationFlag()
@@ -83,39 +74,10 @@ class BikaGenerator(object):
             except AttributeError:
                 pass
 
-        for obj_id in ('bika_analysiscategories',
-                       'bika_analysisservices',
-                       'bika_attachmenttypes',
-                       'bika_batchlabels',
-                       'bika_calculations',
-                       'bika_departments',
-                       'bika_containers',
-                       'bika_containertypes',
-                       'bika_preservations',
-                       'bika_identifiertypes',
-                       'bika_instruments',
-                       'bika_instrumenttypes',
-                       'bika_instrumentlocations',
-                       'bika_analysisspecs',
-                       'bika_analysisprofiles',
-                       'bika_artemplates',
-                       'bika_labcontacts',
-                       'bika_labproducts',
-                       'bika_manufacturers',
-                       'bika_sampleconditions',
-                       'bika_samplematrices',
-                       'bika_samplingdeviations',
-                       'bika_samplepoints',
-                       'bika_sampletypes',
-                       'bika_srtemplates',
-                       'bika_reflexrulefolder',
-                       'bika_storagelocations',
-                       'bika_subgroups',
-                       'bika_suppliers',
-                       'bika_referencedefinitions',
-                       'bika_worksheettemplates'):
+        setup = api.get_setup()
+        for obj_id in setup.objectIds():
             try:
-                obj = portal.bika_setup[obj_id]
+                obj = setup[obj_id]
                 obj.unmarkCreationFlag()
                 obj.reindexObject()
             except AttributeError:
