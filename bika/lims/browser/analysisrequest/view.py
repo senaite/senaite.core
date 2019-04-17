@@ -22,6 +22,7 @@ from bika.lims import api
 from bika.lims.browser import BrowserView
 from bika.lims.browser.header_table import HeaderTableView
 from bika.lims.interfaces import IReceived
+from bika.lims.interfaces import IVerified
 from bika.lims.permissions import EditFieldResults
 from bika.lims.permissions import EditResults
 from bika.lims.utils import check_permission
