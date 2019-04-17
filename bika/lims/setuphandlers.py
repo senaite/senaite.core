@@ -18,27 +18,62 @@
 # Copyright 2018-2019 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import itertools
+
+from Acquisition import aq_base
 from bika.lims import api
 from bika.lims import logger
 from bika.lims.catalog import getCatalogDefinitions
 from bika.lims.catalog import setup_catalogs
-from bika.lims.config import *
-from Products.CMFCore.utils import getToolByName
+from bika.lims.catalog.catalog_utilities import addZCTextIndex
+from plone import api as ploneapi
 
-GROUPS = {
-    # Dictionary {group_name: [roles]}
-    "Analysts": ["Analyst", ],
-    "Clients": ["Client", ],
-    "LabClerks": ["LabClerk",],
-    # TODO Unbound LabManagers from Manager role
-    "LabManagers": ["LabManager", "Manager", ],
-    "Preservers": ["Perserver", ],
-    "Publishers": ["Publisher", ],
-    "Verifiers": ["Verifier", ],
-    "Samplers": ["Sampler", ],
-    "RegulatoryInspectors": ["RegulatoryInspector", ],
-    "SamplingCoordinators": ["SamplingCoordinator", ],
-}
+
+PROFILE_ID = "profile-bika.lims:default"
+
+GROUPS = [
+    {
+        "id": "Analysts",
+        "title": "Analysts",
+        "roles": ["Analyst", ],
+    }, {
+        "id": "Clients",
+        "title": "Clients",
+        "roles": ["Client", ],
+    }, {
+        "id": "LabClerks",
+        "title": "Lab Clerks",
+        "roles": ["LabClerk", ],
+    }, {
+        "id": "LabManagers",
+        "title": "Lab Managers",
+        "roles": ["LabManager", ],
+    }, {
+        "id": "Preservers",
+        "title": "Preservers",
+        "roles": ["Preserver", ],
+    }, {
+        "id": "Publishers",
+        "title": "Publishers",
+        "roles": ["Publisher", ],
+    }, {
+        "id": "Verifiers",
+        "title": "Verifiers",
+        "roles": ["Verifier", ],
+    }, {
+        "id": "Samplers",
+        "title": "Samplers",
+        "roles": ["Sampler", ],
+    }, {
+        "id": "RegulatoryInspectors",
+        "title": "Regulatory Inspectors",
+        "roles": ["RegulatoryInspector", ],
+    }, {
+        "id": "SamplingCoordinators",
+        "title": "Sampling Coordinator",
+        "roles": ["SamplingCoordinator", ],
+    }
+]
 
 NAV_BAR_ITEMS_TO_HIDE = (
     # List of items to hide from navigation bar
@@ -47,394 +82,294 @@ NAV_BAR_ITEMS_TO_HIDE = (
     "supplyorders",
 )
 
-# noinspection PyClassHasNoInit
-class Empty:
-    pass
+
+CONTENTS_TO_DELETE = (
+    # List of items to delete
+    "Members",
+    "news",
+    "events",
+)
+
+CATALOG_MAPPINGS = (
+    # portal_type, catalog_ids
+    ("ARTemplate", ["bika_setup_catalog", "portal_catalog"]),
+    ("AnalysisCategory", ["bika_setup_catalog", ]),
+    ("AnalysisProfile", ["bika_setup_catalog", "portal_catalog"]),
+    ("AnalysisService", ["bika_setup_catalog", "portal_catalog"]),
+    ("AnalysisSpec", ["bika_setup_catalog", ]),
+    ("Attachment", ["portal_catalog"]),
+    ("AttachmentType", ["bika_setup_catalog", ]),
+    ("BatchLabel", ["bika_setup_catalog", ]),
+    ("Calculation", ["bika_setup_catalog", "portal_catalog"]),
+    ("Container", ["bika_setup_catalog", ]),
+    ("ContainerType", ["bika_setup_catalog", ]),
+    ("Department", ["bika_setup_catalog", "portal_catalog", ]),
+    ("IdentifierType", ["bika_setup_catalog", ]),
+    ("Instrument", ["bika_setup_catalog", "portal_catalog"]),
+    ("InstrumentLocation", ["bika_setup_catalog", "portal_catalog"]),
+    ("InstrumentType", ["bika_setup_catalog", "portal_catalog"]),
+    ("LabContact", ["bika_setup_catalog", "portal_catalog"]),
+    ("LabProduct", ["bika_setup_catalog", "portal_catalog"]),
+    ("Manufacturer", ["bika_setup_catalog", "portal_catalog"]),
+    ("Method", ["bika_setup_catalog", "portal_catalog"]),
+    ("Multifile", ["bika_setup_catalog"]),
+    ("Preservation", ["bika_setup_catalog", ]),
+    ("ReferenceDefinition", ["bika_setup_catalog", "portal_catalog"]),
+    ("SRTemplate", ["bika_setup_catalog", "portal_catalog"]),
+    ("SampleCondition", ["bika_setup_catalog"]),
+    ("SampleMatrix", ["bika_setup_catalog", ]),
+    ("SamplePoint", ["bika_setup_catalog", "portal_catalog"]),
+    ("SampleType", ["bika_setup_catalog", "portal_catalog"]),
+    ("SamplingDeviation", ["bika_setup_catalog", ]),
+    ("StorageLocation", ["bika_setup_catalog", "portal_catalog"]),
+    ("SubGroup", ["bika_setup_catalog", ]),
+    ("Supplier", ["bika_setup_catalog", "portal_catalog"]),
+    ("WorksheetTemplate", ["bika_setup_catalog", "portal_catalog"]),
+)
+
+INDEXES = (
+    # catalog, id, indexed attribute, type
+    ("bika_catalog", "BatchDate", "", "DateIndex"),
+    ("bika_catalog", "Creator", "", "FieldIndex"),
+    ("bika_catalog", "Description", "", "ZCTextIndex"),
+    ("bika_catalog", "Identifiers", "", "KeywordIndex"),
+    ("bika_catalog", "Title", "", "ZCTextIndex"),
+    ("bika_catalog", "Type", "", "FieldIndex"),
+    ("bika_catalog", "UID", "", "FieldIndex"),
+    ("bika_catalog", "allowedRolesAndUsers", "", "KeywordIndex"),
+    ("bika_catalog", "created", "", "DateIndex"),
+    ("bika_catalog", "getBlank", "", "BooleanIndex"),
+    ("bika_catalog", "getClientBatchID", "", "FieldIndex"),
+    ("bika_catalog", "getClientID", "", "FieldIndex"),
+    ("bika_catalog", "getClientTitle", "", "FieldIndex"),
+    ("bika_catalog", "getClientUID", "", "FieldIndex"),
+    ("bika_catalog", "getDateReceived", "", "DateIndex"),
+    ("bika_catalog", "getDateSampled", "", "DateIndex"),
+    ("bika_catalog", "getDueDate", "", "DateIndex"),
+    ("bika_catalog", "getExpiryDate", "", "DateIndex"),
+    ("bika_catalog", "getId", "", "FieldIndex"),
+    ("bika_catalog", "getReferenceDefinitionUID", "", "FieldIndex"),
+    ("bika_catalog", "getSampleTypeTitle", "", "FieldIndex"),
+    ("bika_catalog", "getSampleTypeUID", "", "FieldIndex"),
+    ("bika_catalog", "getSupportedServices", "", "KeywordIndex"),
+    ("bika_catalog", "id", "getId", "FieldIndex"),
+    ("bika_catalog", "isValid", "", "BooleanIndex"),
+    ("bika_catalog", "is_active", "", "BooleanIndex"),
+    ("bika_catalog", "path", "getPhysicalPath", "ExtendedPathIndex"),
+    ("bika_catalog", "portal_type", "", "FieldIndex"),
+    ("bika_catalog", "review_state", "", "FieldIndex"),
+    ("bika_catalog", "sortable_title", "", "FieldIndex"),
+    ("bika_catalog", "title", "", "FieldIndex"),
+
+    ("bika_setup_catalog", "Creator", "", "FieldIndex"),
+    ("bika_setup_catalog", "Description", "", "ZCTextIndex"),
+    ("bika_setup_catalog", "Identifiers", "", "KeywordIndex"),
+    ("bika_setup_catalog", "Title", "", "ZCTextIndex"),
+    ("bika_setup_catalog", "Type", "", "FieldIndex"),
+    ("bika_setup_catalog", "UID", "", "FieldIndex"),
+    ("bika_setup_catalog", "allowedRolesAndUsers", "", "KeywordIndex"),
+    ("bika_setup_catalog", "created", "", "DateIndex"),
+    ("bika_setup_catalog", "getAccredited", "", "FieldIndex"),
+    ("bika_setup_catalog", "getAnalyst", "", "FieldIndex"),
+    ("bika_setup_catalog", "getAvailableMethodUIDs", "", "KeywordIndex"),
+    ("bika_setup_catalog", "getBlank", "", "FieldIndex"),
+    ("bika_setup_catalog", "getCalculationTitle", "", "FieldIndex"),
+    ("bika_setup_catalog", "getCalculationUID", "", "FieldIndex"),
+    ("bika_setup_catalog", "getCalibrationExpiryDate", "", "FieldIndex"),
+    ("bika_setup_catalog", "getCategoryTitle", "", "FieldIndex"),
+    ("bika_setup_catalog", "getCategoryUID", "", "FieldIndex"),
+    ("bika_setup_catalog", "getClientUID", "", "FieldIndex"),
+    ("bika_setup_catalog", "getDepartmentTitle", "", "FieldIndex"),
+    ("bika_setup_catalog", "getDocumentID", "", "FieldIndex"),
+    ("bika_setup_catalog", "getDuplicateVariation", "", "FieldIndex"),
+    ("bika_setup_catalog", "getFormula", "", "FieldIndex"),
+    ("bika_setup_catalog", "getFullname", "", "FieldIndex"),
+    ("bika_setup_catalog", "getHazardous", "", "FieldIndex"),
+    ("bika_setup_catalog", "getId", "", "FieldIndex"),
+    ("bika_setup_catalog", "getInstrumentLocationName", "", "FieldIndex"),
+    ("bika_setup_catalog", "getInstrumentTitle", "", "FieldIndex"),
+    ("bika_setup_catalog", "getInstrumentType", "", "FieldIndex"),
+    ("bika_setup_catalog", "getInstrumentTypeName", "", "FieldIndex"),
+    ("bika_setup_catalog", "getKeyword", "", "FieldIndex"),
+    ("bika_setup_catalog", "getManagerEmail", "", "FieldIndex"),
+    ("bika_setup_catalog", "getManagerName", "", "FieldIndex"),
+    ("bika_setup_catalog", "getManagerPhone", "", "FieldIndex"),
+    ("bika_setup_catalog", "getMaxTimeAllowed", "", "FieldIndex"),
+    ("bika_setup_catalog", "getMethodID", "", "FieldIndex"),
+    ("bika_setup_catalog", "getModel", "", "FieldIndex"),
+    ("bika_setup_catalog", "getName", "", "FieldIndex"),
+    ("bika_setup_catalog", "getPointOfCapture", "", "FieldIndex"),
+    ("bika_setup_catalog", "getPrice", "", "FieldIndex"),
+    ("bika_setup_catalog", "getSamplePointTitle", "", "KeywordIndex"),
+    ("bika_setup_catalog", "getSamplePointUID", "", "FieldIndex"),
+    ("bika_setup_catalog", "getSampleTypeTitle", "", "FieldIndex"),
+    ("bika_setup_catalog", "getSampleTypeTitles", "", "KeywordIndex"),
+    ("bika_setup_catalog", "getSampleTypeUID", "", "FieldIndex"),
+    ("bika_setup_catalog", "getServiceUID", "", "FieldIndex"),
+    ("bika_setup_catalog", "getServiceUIDs", "", "KeywordIndex"),
+    ("bika_setup_catalog", "getTotalPrice", "", "FieldIndex"),
+    ("bika_setup_catalog", "getUnit", "", "FieldIndex"),
+    ("bika_setup_catalog", "getVATAmount", "getVATAmount", "FieldIndex"),
+    ("bika_setup_catalog", "getVolume", "", "FieldIndex"),
+    ("bika_setup_catalog", "id", "getId", "FieldIndex"),
+    ("bika_setup_catalog", "is_active", "", "BooleanIndex"),
+    ("bika_setup_catalog", "path", "getPhysicalPath", "ExtendedPathIndex"),
+    ("bika_setup_catalog", "portal_type", "", "FieldIndex"),
+    ("bika_setup_catalog", "review_state", "", "FieldIndex"),
+    ("bika_setup_catalog", "sortable_title", "", "FieldIndex"),
+    ("bika_setup_catalog", "title", "", "FieldIndex"),
+
+    ("portal_catalog", "Analyst", "", "FieldIndex"),
+)
+
+COLUMNS = (
+    # catalog, column name
+    ("bika_catalog", "path"),
+    ("bika_catalog", "UID"),
+    ("bika_catalog", "id"),
+    ("bika_catalog", "getId"),
+    ("bika_catalog", "Type"),
+    ("bika_catalog", "portal_type"),
+    ("bika_catalog", "creator"),
+    ("bika_catalog", "Created"),
+    ("bika_catalog", "Title"),
+    ("bika_catalog", "Description"),
+    ("bika_catalog", "sortable_title"),
+    ("bika_catalog", "getClientTitle"),
+    ("bika_catalog", "getClientID"),
+    ("bika_catalog", "getClientBatchID"),
+    ("bika_catalog", "getSampleTypeTitle"),
+    ("bika_catalog", "getDateReceived"),
+    ("bika_catalog", "getDateSampled"),
+    ("bika_catalog", "review_state"),
+
+    ("bika_setup_catalog", "path"),
+    ("bika_setup_catalog", "UID"),
+    ("bika_setup_catalog", "id"),
+    ("bika_setup_catalog", "getId"),
+    ("bika_setup_catalog", "Type"),
+    ("bika_setup_catalog", "portal_type"),
+    ("bika_setup_catalog", "Title"),
+    ("bika_setup_catalog", "Description"),
+    ("bika_setup_catalog", "title"),
+    ("bika_setup_catalog", "sortable_title"),
+    ("bika_setup_catalog", "description"),
+    ("bika_setup_catalog", "review_state"),
+    ("bika_setup_catalog", "getAccredited"),
+    ("bika_setup_catalog", "getInstrumentType"),
+    ("bika_setup_catalog", "getInstrumentTypeName"),
+    ("bika_setup_catalog", "getInstrumentLocationName"),
+    ("bika_setup_catalog", "getBlank"),
+    ("bika_setup_catalog", "getCalculationTitle"),
+    ("bika_setup_catalog", "getCalculationUID"),
+    ("bika_setup_catalog", "getCalibrationExpiryDate"),
+    ("bika_setup_catalog", "getCategoryTitle"),
+    ("bika_setup_catalog", "getCategoryUID"),
+    ("bika_setup_catalog", "getClientUID"),
+    ("bika_setup_catalog", "getDepartmentTitle"),
+    ("bika_setup_catalog", "getDuplicateVariation"),
+    ("bika_setup_catalog", "getFormula"),
+    ("bika_setup_catalog", "getFullname"),
+    ("bika_setup_catalog", "getHazardous"),
+    ("bika_setup_catalog", "getInstrumentTitle"),
+    ("bika_setup_catalog", "getKeyword"),
+    ("bika_setup_catalog", "getManagerName"),
+    ("bika_setup_catalog", "getManagerPhone"),
+    ("bika_setup_catalog", "getManagerEmail"),
+    ("bika_setup_catalog", "getMaxTimeAllowed"),
+    ("bika_setup_catalog", "getModel"),
+    ("bika_setup_catalog", "getName"),
+    ("bika_setup_catalog", "getPointOfCapture"),
+    ("bika_setup_catalog", "getPrice"),
+    ("bika_setup_catalog", "getSamplePointTitle"),
+    ("bika_setup_catalog", "getSamplePointUID"),
+    ("bika_setup_catalog", "getSampleTypeTitle"),
+    ("bika_setup_catalog", "getSampleTypeUID"),
+    ("bika_setup_catalog", "getServiceUID"),
+    ("bika_setup_catalog", "getTotalPrice"),
+    ("bika_setup_catalog", "getUnit"),
+    ("bika_setup_catalog", "getVATAmount"),
+    ("bika_setup_catalog", "getVolume"),
+
+    ("portal_catalog", "Analyst"),
+)
 
 
-class BikaGenerator(object):
-    def __init__(self):
-        pass
+def pre_install(portal_setup):
+    """Runs before the first import step of the *default* profile
 
-    def setupPortalContent(self, portal):
-        """ Setup Bika site structure """
-        self.remove_default_content(portal)
-        self.reindex_structure(portal)
+    This handler is registered as a *pre_handler* in the generic setup profile
 
-        portal.bika_setup.laboratory.unmarkCreationFlag()
-        portal.bika_setup.laboratory.reindexObject()
-
-    def reindex_structure(self, portal):
-        # index objects - importing through GenericSetup doesn't
-        for obj_id in portal.objectIds():
-            try:
-                obj = portal[obj_id]
-                obj.unmarkCreationFlag()
-                obj.reindexObject()
-            except AttributeError:
-                pass
-
-        setup = api.get_setup()
-        for obj_id in setup.objectIds():
-            try:
-                obj = setup[obj_id]
-                obj.unmarkCreationFlag()
-                obj.reindexObject()
-            except AttributeError:
-                pass
-
-    def remove_default_content(self, portal):
-        # remove undesired content objects
-        del_ids = []
-        for obj_id in ['Members', 'news', 'events']:
-            if obj_id in portal:
-                del_ids.append(obj_id)
-        if del_ids:
-            portal.manage_delObjects(ids=del_ids)
-
-    def setupGroupsAndRoles(self, portal):
-        # Create groups
-        groups_ids = portal.portal_groups.listGroupIds()
-        groups_ids = filter(lambda gr: gr not in groups_ids, GROUPS.keys())
-        for group_id in groups_ids:
-            portal.portal_groups.addGroup(group_id, title=group_id,
-                                          roles=GROUPS[group_id])
-
-    def setupCatalogs(self, portal):
-        # an item should belong to only one catalog.
-        # that way looking it up means first looking up *the* catalog
-        # in which it is indexed, as well as making it cheaper to index.
-
-        def addIndex(cat, *args):
-            # noinspection PyBroadException
-            try:
-                cat.addIndex(*args)
-            except:
-                pass
-
-        def addColumn(cat, col):
-            # noinspection PyBroadException
-            try:
-                cat.addColumn(col)
-            except:
-                pass
-
-        # create lexicon
-        wordSplitter = Empty()
-        wordSplitter.group = 'Word Splitter'
-        wordSplitter.name = 'Unicode Whitespace splitter'
-        caseNormalizer = Empty()
-        caseNormalizer.group = 'Case Normalizer'
-        caseNormalizer.name = 'Unicode Case Normalizer'
-        stopWords = Empty()
-        stopWords.group = 'Stop Words'
-        stopWords.name = 'Remove listed and single char words'
-        elem = [wordSplitter, caseNormalizer, stopWords]
-        zc_extras = Empty()
-        zc_extras.index_type = 'Okapi BM25 Rank'
-        zc_extras.lexicon_id = 'Lexicon'
-
-        # bika_catalog
-
-        bc = getToolByName(portal, 'bika_catalog', None)
-        if bc is None:
-            logger.warning('Could not find the bika_catalog tool.')
-            return
-
-        # noinspection PyBroadException
-        try:
-            bc.manage_addProduct['ZCTextIndex'].manage_addLexicon(
-                'Lexicon', 'Lexicon', elem)
-        except:
-            logger.warning('Could not add ZCTextIndex to bika_catalog')
-            pass
-
-        at = getToolByName(portal, 'archetype_tool')
-        at.setCatalogsByType('Batch', ['bika_catalog', 'portal_catalog'])
-        # TODO Remove in >v1.3.0
-        at.setCatalogsByType('Sample', ['bika_catalog', 'portal_catalog'])
-        # TODO Remove in >v1.3.0
-        at.setCatalogsByType('SamplePartition',
-                             ['bika_catalog', 'portal_catalog'])
-        at.setCatalogsByType('ReferenceSample',
-                             ['bika_catalog', 'portal_catalog'])
-
-        addIndex(bc, 'path', 'ExtendedPathIndex', 'getPhysicalPath')
-        addIndex(bc, 'allowedRolesAndUsers', 'KeywordIndex')
-        addIndex(bc, 'UID', 'FieldIndex')
-        addIndex(bc, 'SearchableText', 'ZCTextIndex', zc_extras)
-        addIndex(bc, 'Title', 'ZCTextIndex', zc_extras)
-        addIndex(bc, 'Description', 'ZCTextIndex', zc_extras)
-        addIndex(bc, 'id', 'FieldIndex')
-        addIndex(bc, 'getId', 'FieldIndex')
-        addIndex(bc, 'Type', 'FieldIndex')
-        addIndex(bc, 'portal_type', 'FieldIndex')
-        addIndex(bc, 'created', 'DateIndex')
-        addIndex(bc, 'Creator', 'FieldIndex')
-        addIndex(bc, 'getObjPositionInParent', 'GopipIndex')
-        addIndex(bc, 'title', 'FieldIndex', 'Title')
-        addIndex(bc, 'sortable_title', 'FieldIndex')
-        addIndex(bc, 'description', 'FieldIndex', 'Description')
-        addIndex(bc, 'review_state', 'FieldIndex')
-        addIndex(bc, 'Identifiers', 'KeywordIndex')
-        addIndex(bc, 'is_active', 'BooleanIndex')
-        addIndex(bc, 'BatchDate', 'DateIndex')
-        addIndex(bc, 'getClientTitle', 'FieldIndex')
-        addIndex(bc, 'getClientUID', 'FieldIndex')
-        addIndex(bc, 'getClientID', 'FieldIndex')
-        addIndex(bc, 'getClientBatchID', 'FieldIndex')
-        addIndex(bc, 'getDateReceived', 'DateIndex')
-        addIndex(bc, 'getDateSampled', 'DateIndex')
-        addIndex(bc, 'getDueDate', 'DateIndex')
-        addIndex(bc, 'getExpiryDate', 'DateIndex')
-        addIndex(bc, 'getReferenceDefinitionUID', 'FieldIndex')
-        addIndex(bc, 'getSampleTypeTitle', 'FieldIndex')
-        addIndex(bc, 'getSampleTypeUID', 'FieldIndex')
-
-        # https://github.com/senaite/senaite.core/pull/1091
-        addIndex(bc, 'getSupportedServices', 'KeywordIndex')
-        addIndex(bc, 'getBlank', 'BooleanIndex')
-        addIndex(bc, 'isValid', 'BooleanIndex')
-
-        addColumn(bc, 'path')
-        addColumn(bc, 'UID')
-        addColumn(bc, 'id')
-        addColumn(bc, 'getId')
-        addColumn(bc, 'Type')
-        addColumn(bc, 'portal_type')
-        addColumn(bc, 'creator')
-        addColumn(bc, 'Created')
-        addColumn(bc, 'Title')
-        addColumn(bc, 'Description')
-        addColumn(bc, 'sortable_title')
-        addColumn(bc, 'getClientTitle')
-        addColumn(bc, 'getClientID')
-        addColumn(bc, 'getClientBatchID')
-        addColumn(bc, 'getSampleTypeTitle')
-        addColumn(bc, 'getDateReceived')
-        addColumn(bc, 'getDateSampled')
-        addColumn(bc, 'review_state')
-
-        # bika_setup_catalog
-
-        bsc = getToolByName(portal, 'bika_setup_catalog', None)
-        if bsc is None:
-            logger.warning('Could not find the setup catalog tool.')
-            return
-
-        # noinspection PyBroadException
-        try:
-            bsc.manage_addProduct['ZCTextIndex'].manage_addLexicon(
-                'Lexicon', 'Lexicon', elem)
-        except:
-            logger.warning('Could not add ZCTextIndex to bika_setup_catalog')
-            pass
-
-        at = getToolByName(portal, 'archetype_tool')
-        at.setCatalogsByType('Department',
-                             ['bika_setup_catalog', "portal_catalog", ])
-        at.setCatalogsByType('Container', ['bika_setup_catalog', ])
-        at.setCatalogsByType('ContainerType', ['bika_setup_catalog', ])
-        at.setCatalogsByType('AnalysisCategory', ['bika_setup_catalog', ])
-        at.setCatalogsByType('AnalysisService',
-                             ['bika_setup_catalog', 'portal_catalog'])
-        at.setCatalogsByType('AnalysisSpec', ['bika_setup_catalog', ])
-        at.setCatalogsByType('SampleCondition', ['bika_setup_catalog'])
-        at.setCatalogsByType('SampleMatrix', ['bika_setup_catalog', ])
-        at.setCatalogsByType('SampleType',
-                             ['bika_setup_catalog', 'portal_catalog'])
-        at.setCatalogsByType('SamplePoint',
-                             ['bika_setup_catalog', 'portal_catalog'])
-        at.setCatalogsByType('StorageLocation',
-                             ['bika_setup_catalog', 'portal_catalog'])
-        at.setCatalogsByType('SamplingDeviation', ['bika_setup_catalog', ])
-        at.setCatalogsByType('IdentifierType', ['bika_setup_catalog', ])
-        at.setCatalogsByType('Instrument',
-                             ['bika_setup_catalog', 'portal_catalog'])
-        at.setCatalogsByType('InstrumentType',
-                             ['bika_setup_catalog', 'portal_catalog'])
-        at.setCatalogsByType('InstrumentLocation',
-                             ['bika_setup_catalog', 'portal_catalog'])
-        at.setCatalogsByType('Method', ['bika_setup_catalog', 'portal_catalog'])
-        at.setCatalogsByType('Multifile', ['bika_setup_catalog'])
-        at.setCatalogsByType('AttachmentType', ['bika_setup_catalog', ])
-        at.setCatalogsByType('Attachment', ['portal_catalog'])
-        at.setCatalogsByType('Calculation',
-                             ['bika_setup_catalog', 'portal_catalog'])
-        at.setCatalogsByType('AnalysisProfile',
-                             ['bika_setup_catalog', 'portal_catalog'])
-        at.setCatalogsByType('ARTemplate',
-                             ['bika_setup_catalog', 'portal_catalog'])
-        at.setCatalogsByType('LabProduct',
-                             ['bika_setup_catalog', 'portal_catalog'])
-        at.setCatalogsByType('LabContact',
-                             ['bika_setup_catalog', 'portal_catalog'])
-        at.setCatalogsByType('Manufacturer',
-                             ['bika_setup_catalog', 'portal_catalog'])
-        at.setCatalogsByType('Preservation', ['bika_setup_catalog', ])
-        at.setCatalogsByType('ReferenceDefinition',
-                             ['bika_setup_catalog', 'portal_catalog'])
-        at.setCatalogsByType('SRTemplate',
-                             ['bika_setup_catalog', 'portal_catalog'])
-        at.setCatalogsByType('SubGroup', ['bika_setup_catalog', ])
-        at.setCatalogsByType('Supplier',
-                             ['bika_setup_catalog', 'portal_catalog'])
-        at.setCatalogsByType('Unit', ['bika_setup_catalog', ])
-        at.setCatalogsByType('WorksheetTemplate',
-                             ['bika_setup_catalog', 'portal_catalog'])
-        at.setCatalogsByType('BatchLabel', ['bika_setup_catalog', ])
-
-        addIndex(bsc, 'path', 'ExtendedPathIndex', 'getPhysicalPath')
-        addIndex(bsc, 'allowedRolesAndUsers', 'KeywordIndex')
-        addIndex(bsc, 'UID', 'FieldIndex')
-        addIndex(bsc, 'SearchableText', 'ZCTextIndex', zc_extras)
-        addIndex(bsc, 'Title', 'ZCTextIndex', zc_extras)
-        addIndex(bsc, 'Description', 'ZCTextIndex', zc_extras)
-        addIndex(bsc, 'id', 'FieldIndex')
-        addIndex(bsc, 'getId', 'FieldIndex')
-        addIndex(bsc, 'Type', 'FieldIndex')
-        addIndex(bsc, 'portal_type', 'FieldIndex')
-        addIndex(bsc, 'created', 'DateIndex')
-        addIndex(bsc, 'Creator', 'FieldIndex')
-        addIndex(bsc, 'getObjPositionInParent', 'GopipIndex')
-        addIndex(bc, 'Identifiers', 'KeywordIndex')
-
-        addIndex(bsc, 'title', 'FieldIndex', 'Title')
-        addIndex(bsc, 'sortable_title', 'FieldIndex')
-        addIndex(bsc, 'description', 'FieldIndex', 'Description')
-
-        addIndex(bsc, 'review_state', 'FieldIndex')
-
-        addIndex(bsc, 'getAccredited', 'FieldIndex')
-        addIndex(bsc, 'getAnalyst', 'FieldIndex')
-        addIndex(bsc, 'getBlank', 'FieldIndex')
-        addIndex(bsc, 'getCalculationTitle', 'FieldIndex')
-        addIndex(bsc, 'getCalculationUID', 'FieldIndex')
-        addIndex(bsc, 'getCalibrationExpiryDate', 'FieldIndex')
-        addIndex(bsc, 'getCategoryTitle', 'FieldIndex')
-        addIndex(bsc, 'getCategoryUID', 'FieldIndex')
-        addIndex(bsc, 'getClientUID', 'FieldIndex')
-        addIndex(bsc, 'getDepartmentTitle', 'FieldIndex')
-        addIndex(bsc, 'getDocumentID', 'FieldIndex')
-        addIndex(bsc, 'getDuplicateVariation', 'FieldIndex')
-        addIndex(bsc, 'getFormula', 'FieldIndex')
-        addIndex(bsc, 'getFullname', 'FieldIndex')
-        addIndex(bsc, 'getHazardous', 'FieldIndex')
-        addIndex(bsc, 'getInstrumentLocationName', 'FieldIndex')
-        addIndex(bsc, 'getInstrumentTitle', 'FieldIndex')
-        addIndex(bsc, 'getInstrumentType', 'FieldIndex')
-        addIndex(bsc, 'getInstrumentTypeName', 'FieldIndex')
-        addIndex(bsc, 'getKeyword', 'FieldIndex')
-        addIndex(bsc, 'getManagerEmail', 'FieldIndex')
-        addIndex(bsc, 'getManagerName', 'FieldIndex')
-        addIndex(bsc, 'getManagerPhone', 'FieldIndex')
-        addIndex(bsc, 'getMaxTimeAllowed', 'FieldIndex')
-        addIndex(bsc, 'getMethodID', 'FieldIndex')
-        addIndex(bsc, 'getAvailableMethodUIDs', 'KeywordIndex')
-        addIndex(bsc, 'getModel', 'FieldIndex')
-        addIndex(bsc, 'getName', 'FieldIndex')
-        addIndex(bsc, 'getPointOfCapture', 'FieldIndex')
-        addIndex(bsc, 'getPrice', 'FieldIndex')
-        addIndex(bsc, 'getSamplePointTitle', 'KeywordIndex')
-        addIndex(bsc, 'getSamplePointUID', 'FieldIndex')
-        addIndex(bsc, 'getSampleTypeTitle', 'FieldIndex')
-        addIndex(bsc, 'getSampleTypeTitles', 'KeywordIndex')
-        addIndex(bsc, 'getSampleTypeUID', 'FieldIndex')
-        addIndex(bsc, 'getServiceUID', 'FieldIndex')
-        addIndex(bsc, 'getServiceUIDs', 'KeywordIndex')
-        addIndex(bsc, 'getTotalPrice', 'FieldIndex')
-        addIndex(bsc, 'getUnit', 'FieldIndex')
-        addIndex(bsc, 'getVATAmount', 'FieldIndex')
-        addIndex(bsc, 'getVolume', 'FieldIndex')
-        addIndex(bsc, 'is_active', 'BooleanIndex')
-
-        addColumn(bsc, 'path')
-        addColumn(bsc, 'UID')
-        addColumn(bsc, 'id')
-        addColumn(bsc, 'getId')
-        addColumn(bsc, 'Type')
-        addColumn(bsc, 'portal_type')
-        addColumn(bsc, 'getObjPositionInParent')
-
-        addColumn(bsc, 'Title')
-        addColumn(bsc, 'Description')
-        addColumn(bsc, 'title')
-        addColumn(bsc, 'sortable_title')
-        addColumn(bsc, 'description')
-        addColumn(bsc, 'review_state')
-        addColumn(bsc, 'getAccredited')
-        addColumn(bsc, 'getInstrumentType')
-        addColumn(bsc, 'getInstrumentTypeName')
-        addColumn(bsc, 'getInstrumentLocationName')
-        addColumn(bsc, 'getBlank')
-        addColumn(bsc, 'getCalculationTitle')
-        addColumn(bsc, 'getCalculationUID')
-        addColumn(bsc, 'getCalibrationExpiryDate')
-        addColumn(bsc, 'getCategoryTitle')
-        addColumn(bsc, 'getCategoryUID')
-        addColumn(bsc, 'getClientUID')
-        addColumn(bsc, 'getDepartmentTitle')
-        addColumn(bsc, 'getDuplicateVariation')
-        addColumn(bsc, 'getFormula')
-        addColumn(bsc, 'getFullname')
-        addColumn(bsc, 'getHazardous')
-        addColumn(bsc, 'getInstrumentTitle')
-        addColumn(bsc, 'getKeyword')
-        addColumn(bsc, 'getManagerName')
-        addColumn(bsc, 'getManagerPhone')
-        addColumn(bsc, 'getManagerEmail')
-        addColumn(bsc, 'getMaxTimeAllowed')
-        addColumn(bsc, 'getModel')
-        addColumn(bsc, 'getName')
-        addColumn(bsc, 'getPointOfCapture')
-        addColumn(bsc, 'getPrice')
-        addColumn(bsc, 'getSamplePointTitle')
-        addColumn(bsc, 'getSamplePointUID')
-        addColumn(bsc, 'getSampleTypeTitle')
-        addColumn(bsc, 'getSampleTypeUID')
-        addColumn(bsc, 'getServiceUID')
-        addColumn(bsc, 'getTotalPrice')
-        addColumn(bsc, 'getUnit')
-        addColumn(bsc, 'getVATAmount')
-        addColumn(bsc, 'getVolume')
-
-        # portal_catalog
-        pc = getToolByName(portal, 'portal_catalog', None)
-        if pc is None:
-            logger.warning('Could not find the portal_catalog tool.')
-            return
-        addIndex(pc, 'Analyst', 'FieldIndex')
-        addColumn(pc, 'Analyst')
-        # TODO: Nmrl
-        addColumn(pc, 'getProvince')
-        addColumn(pc, 'getDistrict')
-
-        # Setting up all LIMS catalogs defined in catalog folder
-        setup_catalogs(portal, getCatalogDefinitions())
-
-
-def setupVarious(context):
+    :param portal_setup: SetupTool
     """
-    Final Bika import steps.
+    logger.info("SENAITE PRE-INSTALL handler [BEGIN]")
+
+    # https://docs.plone.org/develop/addons/components/genericsetup.html#custom-installer-code-setuphandlers-py
+    profile_id = PROFILE_ID
+
+    context = portal_setup._getImportContext(profile_id)
+    portal = context.getSite()  # noqa
+
+    logger.info("SENAITE PRE-INSTALL handler [DONE]")
+
+
+def post_install(portal_setup):
+    """Runs after the last import step of the *default* profile
+
+    This handler is registered as a *post_handler* in the generic setup profile
+
+    :param portal_setup: SetupTool
     """
-    if context.readDataFile('bika.lims_various.txt') is None:
+    logger.info("SENAITE POST-INSTALL handler [BEGIN]")
+
+    # https://docs.plone.org/develop/addons/components/genericsetup.html#custom-installer-code-setuphandlers-py
+    profile_id = PROFILE_ID
+
+    context = portal_setup._getImportContext(profile_id)
+    portal = context.getSite()  # noqa
+
+    logger.info("SENAITE POST-INSTALL handler [DONE]")
+
+
+def setup_handler(context):
+    """SENAITE setup handler
+    """
+
+    if context.readDataFile("bika.lims_various.txt") is None:
         return
 
-    site = context.getSite()
-    gen = BikaGenerator()
-    gen.setupGroupsAndRoles(site)
-    gen.setupPortalContent(site)
-    gen.setupCatalogs(site)
+    logger.info("SENAITE setup handler [BEGIN]")
 
-    # Hide navbar items no longer used
-    # https://github.com/senaite/senaite.core/pull/1304
-    hide_navbar_items(site)
+    portal = context.getSite()
+
+    # Run Installers
+    remove_default_content(portal)
+    hide_navbar_items(portal)
+    reindex_content_structure(portal)
+    setup_groups(portal)
+    setup_catalog_mappings(portal)
+    setup_core_catalogs(portal)
+    # Setting up all LIMS catalogs defined in catalog folder
+    setup_catalogs(portal, getCatalogDefinitions())
+
+    logger.info("SENAITE setup handler [DONE]")
+
+
+def remove_default_content(portal):
+    """Remove default Plone contents
+    """
+    logger.info("*** Delete Default Content ***")
+
+    # Get the list of object ids for portal
+    object_ids = portal.objectIds()
+    delete_ids = filter(lambda id: id in object_ids, CONTENTS_TO_DELETE)
+    portal.manage_delObjects(ids=delete_ids)
 
 
 def hide_navbar_items(portal):
-    """Remove navbar items that are no longer used
+    """Hide root items in navigation
     """
-    logger.info("Removing items from navigation bar ...")
+    logger.info("*** Hide Navigation Items ***")
 
     # Get the list of object ids for portal
     object_ids = portal.objectIds()
@@ -443,3 +378,110 @@ def hide_navbar_items(portal):
         item = portal[object_id]
         item.setExcludeFromNav(True)
         item.reindexObject()
+
+
+def reindex_content_structure(portal):
+    """Reindex contents generated by Generic Setup
+    """
+    logger.info("*** Reindex content structure ***")
+
+    def reindex(obj, recurse=False):
+        # skip catalog tools etc.
+        if api.is_object(obj):
+            obj.reindexObject()
+        if recurse and hasattr(aq_base(obj), "objectValues"):
+            map(reindex, obj.objectValues())
+
+    setup = api.get_setup()
+    setupitems = setup.objectValues()
+    rootitems = portal.objectValues()
+
+    for obj in itertools.chain(setupitems, rootitems):
+        logger.info("Reindexing {}".format(repr(obj)))
+        reindex(obj)
+
+
+def setup_groups(portal):
+    """Setup roles and groups for BECHEM
+    """
+    logger.info("*** Setup Roles and Groups ***")
+
+    portal_groups = api.get_tool("portal_groups")
+
+    for gdata in GROUPS:
+        group_id = gdata["id"]
+        # create the group and grant the roles
+        if group_id not in portal_groups.listGroupIds():
+            logger.info("+++ Adding group {title} ({id})".format(**gdata))
+            portal_groups.addGroup(group_id,
+                                   title=gdata["title"],
+                                   roles=gdata["roles"])
+        # grant the roles to the existing group
+        else:
+            ploneapi.group.grant_roles(
+                groupname=gdata["id"],
+                roles=gdata["roles"],)
+            logger.info("+++ Granted group {title} ({id}) the roles {roles}"
+                        .format(**gdata))
+
+
+def setup_catalog_mappings(portal):
+    """Setup portal_type -> catalog mappings
+    """
+    logger.info("*** Setup Catalog Mappings ***")
+
+    at = api.get_tool("archetype_tool")
+    for portal_type, catalogs in CATALOG_MAPPINGS:
+        at.setCatalogsByType(portal_type, catalogs)
+
+
+def setup_core_catalogs(portal):
+    """Setup core catalogs
+    """
+    logger.info("*** Setup Core Catalogs ***")
+
+    to_reindex = []
+    for catalog, name, attribute, meta_type in INDEXES:
+        c = api.get_tool(catalog)
+        indexes = c.indexes()
+        if name in indexes:
+            logger.info("*** Index '%s' already in Catalog [SKIP]" % name)
+            continue
+
+        logger.info("*** Adding Index '%s' for field '%s' to catalog ..."
+                    % (meta_type, name))
+
+        # do we still need ZCTextIndexes?
+        if meta_type == "ZCTextIndex":
+            addZCTextIndex(c, name)
+        else:
+            c.addIndex(name, meta_type)
+
+        # get the new created index
+        index = c._catalog.getIndex(name)
+        # set the indexed attributes
+        if hasattr(index, "indexed_attrs"):
+            index.indexed_attrs = [attribute or name]
+
+        to_reindex.append((c, name))
+        logger.info("*** Added Index '%s' for field '%s' to catalog [DONE]"
+                    % (meta_type, name))
+
+    # catalog columns
+    for catalog, name in COLUMNS:
+        c = api.get_tool(catalog)
+        if name not in c.schema():
+            logger.info("*** Adding Column '%s' to catalog '%s' ..."
+                        % (name, catalog))
+            c.addColumn(name)
+            logger.info("*** Added Column '%s' to catalog '%s' [DONE]"
+                        % (name, catalog))
+        else:
+            logger.info("*** Column '%s' already in catalog '%s'  [SKIP]"
+                        % (name, catalog))
+            continue
+
+    for catalog, name in to_reindex:
+        logger.info("*** Indexing new index '%s' ..." % name)
+        catalog.manage_reindexIndex(name)
+        logger.info("*** Indexing new index '%s' [DONE]" % name)
