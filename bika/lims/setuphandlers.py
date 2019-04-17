@@ -23,11 +23,11 @@ import itertools
 from Acquisition import aq_base
 from bika.lims import api
 from bika.lims import logger
+from bika.lims.catalog import auditlog_catalog
 from bika.lims.catalog import getCatalogDefinitions
 from bika.lims.catalog import setup_catalogs
 from bika.lims.catalog.catalog_utilities import addZCTextIndex
 from plone import api as ploneapi
-
 
 PROFILE_ID = "profile-bika.lims:default"
 
@@ -492,14 +492,29 @@ def setup_core_catalogs(portal):
 def setup_auditlog_catalog(portal):
     """Setup auditlog catalog
     """
-    logger.info("*** Setup Core Catalogs ***")
+    logger.info("*** Setup Audit Log Catalog ***")
 
-    # XXX is there another way to do this?
-    # Setup TXNG3 index
-    catalog = portal.auditlog_catalog
-    index = catalog.Indexes.get("listing_searchable_text")
-    index.index.default_encoding = "utf-8"
-    index.index.query_parser = "txng.parsers.en"
-    index.index.autoexpand = "always"
-    index.index.autoexpand_limit = 3
-    index._p_changed = 1
+    catalog = api.get_tool(auditlog_catalog.CATALOG_AUDITLOG)
+
+    for name, meta_type in auditlog_catalog._indexes.iteritems():
+        indexes = catalog.indexes()
+        if name in indexes:
+            logger.info("*** Index '%s' already in Catalog [SKIP]" % name)
+            continue
+
+        logger.info("*** Adding Index '%s' for field '%s' to catalog ..."
+                    % (meta_type, name))
+
+        catalog.addIndex(name, meta_type)
+
+        # Setup TextIndexNG3 for listings
+        # XXX is there another way to do this?
+        if meta_type == "TextIndexNG3":
+            index = catalog._catalog.getIndex(name)
+            index.index.default_encoding = "utf-8"
+            index.index.query_parser = "txng.parsers.en"
+            index.index.autoexpand = "always"
+            index.index.autoexpand_limit = 3
+
+        logger.info("*** Added Index '%s' for field '%s' to catalog [DONE]"
+                    % (meta_type, name))
