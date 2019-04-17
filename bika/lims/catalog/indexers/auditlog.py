@@ -18,6 +18,8 @@
 # Copyright 2018-2019 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import re
+import itertools
 import json
 
 from bika.lims.api import to_date
@@ -25,6 +27,9 @@ from bika.lims.api.user import get_user_id
 from bika.lims.interfaces import IAuditable
 from bika.lims.subscribers.auditlog import get_storage
 from plone.indexer import indexer
+
+UID_RX = re.compile(r"[a-z0-9]{32}$")
+DATE_RX = re.compile(r"\d{4}[-/]\d{2}[-/]\d{2}")
 
 
 def get_snapshots(obj):
@@ -105,8 +110,35 @@ def action(instance):
 def listing_searchable_text(instance):
     """Fulltext search for the audit metadata
     """
-    snapshots = get_storage(instance)
-    return " ".join(snapshots)
+    # get all snapshots
+    snapshots = get_snapshots(instance)
+    # extract all values
+    values = map(lambda s: s.values(), snapshots)
+    # unified catalog data
+    catalog_data = set()
+
+    def append(value):
+        if isinstance(value, (list, tuple)):
+            map(append, value)
+        elif isinstance(value, (dict)):
+            map(append, value.values())
+        elif isinstance(value, basestring):
+            # flush non meaningful values
+            if value in ["None"]:
+                value = ""
+            # flush ISO dates
+            if re.match(DATE_RX, value):
+                value = ""
+            # flus UIDs
+            if re.match(UID_RX, value):
+                value = ""
+            catalog_data.add(value)
+
+    # extract all strings
+    for value in itertools.chain(values):
+        append(value)
+
+    return " ".join(catalog_data)
 
 
 @indexer(IAuditable)
