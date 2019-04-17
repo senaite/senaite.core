@@ -29,14 +29,12 @@ from bika.lims.catalog.analysis_catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.catalog.analysisrequest_catalog import \
     CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.config import PROJECTNAME as product
-# from bika.lims.interfaces import IAnalysis
 from bika.lims.interfaces import IReceived
 from bika.lims.interfaces import ISubmitted
 from bika.lims.interfaces import IVerified
+from bika.lims.setuphandlers import setup_auditlog_catalog
 from bika.lims.subscribers.auditlog import has_snapshots
 from bika.lims.subscribers.auditlog import is_auditable
-from bika.lims.catalog import setup_catalogs
-from bika.lims.catalog.auditlog_catalog import catalog_auditlog_definition
 from bika.lims.subscribers.auditlog import take_snapshot
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
@@ -77,7 +75,7 @@ def upgrade(tool):
 
     # https://github.com/senaite/senaite.core/pull/1324
     # initialize auditlogging
-    init_auditlog_catalog(portal)
+    setup_auditlog_catalog(portal)
     init_auditlog(portal)
     remove_log_action(portal)
 
@@ -89,30 +87,10 @@ def upgrade(tool):
     return True
 
 
-def init_auditlog_catalog(portal):
-    """Initialize the auditlog catalog
-    """
-    # setup the auditlog catalog
-    logger.info("Setup Audit Log Catalog")
-    setup_catalogs(portal, catalog_auditlog_definition)
-
-    # XXX is there another way to do this?
-    # Setup TXNG3 index
-    catalog = portal.auditlog_catalog
-    index = catalog.Indexes.get("listing_searchable_text")
-    index.index.default_encoding = "utf-8"
-    index.index.query_parser = "txng.parsers.en"
-    index.index.autoexpand = "always"
-    index.index.autoexpand_limit = 3
-    index._p_changed = 1
-
-    logger.info("Setup Audit Log Catalog [DONE]")
-
-
 def init_auditlog(portal):
     """Initialize the contents for the audit log
     """
-    # reindex the audit log controlpanel
+    # reindex the auditlog folder to display the icon right in the setup
     portal.bika_setup.auditlog.reindexObject()
 
     # Initialize contents for audit logging
