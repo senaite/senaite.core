@@ -349,10 +349,12 @@ def setup_handler(context):
     setup_groups(portal)
     setup_catalog_mappings(portal)
     setup_core_catalogs(portal)
-    setup_auditlog_catalog(portal)
 
     # Setting up all LIMS catalogs defined in catalog folder
     setup_catalogs(portal, getCatalogDefinitions())
+
+    # Run after all catalogs have been setup
+    setup_auditlog_catalog(portal)
 
     logger.info("SENAITE setup handler [DONE]")
 
