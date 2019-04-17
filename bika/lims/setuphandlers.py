@@ -349,6 +349,8 @@ def setup_handler(context):
     setup_groups(portal)
     setup_catalog_mappings(portal)
     setup_core_catalogs(portal)
+    setup_auditlog_catalog(portal)
+
     # Setting up all LIMS catalogs defined in catalog folder
     setup_catalogs(portal, getCatalogDefinitions())
 
@@ -485,3 +487,19 @@ def setup_core_catalogs(portal):
         logger.info("*** Indexing new index '%s' ..." % name)
         catalog.manage_reindexIndex(name)
         logger.info("*** Indexing new index '%s' [DONE]" % name)
+
+
+def setup_auditlog_catalog(portal):
+    """Setup auditlog catalog
+    """
+    logger.info("*** Setup Core Catalogs ***")
+
+    # XXX is there another way to do this?
+    # Setup TXNG3 index
+    catalog = portal.auditlog_catalog
+    index = catalog.Indexes.get("listing_searchable_text")
+    index.index.default_encoding = "utf-8"
+    index.index.query_parser = "txng.parsers.en"
+    index.index.autoexpand = "always"
+    index.index.autoexpand_limit = 3
+    index._p_changed = 1
