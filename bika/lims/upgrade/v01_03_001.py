@@ -25,6 +25,9 @@ from bika.lims import api
 from bika.lims import logger
 from bika.lims.api.security import get_roles
 from bika.lims.api.security import get_user
+from bika.lims.api.snapshot import has_snapshots
+from bika.lims.api.snapshot import supports_snapshots
+from bika.lims.api.snapshot import take_snapshot
 from bika.lims.catalog.analysis_catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.catalog.analysisrequest_catalog import \
     CATALOG_ANALYSIS_REQUEST_LISTING
@@ -33,9 +36,6 @@ from bika.lims.interfaces import IReceived
 from bika.lims.interfaces import ISubmitted
 from bika.lims.interfaces import IVerified
 from bika.lims.setuphandlers import setup_auditlog_catalog
-from bika.lims.subscribers.auditlog import has_snapshots
-from bika.lims.subscribers.auditlog import is_auditable
-from bika.lims.subscribers.auditlog import take_snapshot
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
 from bika.lims.workflow import get_review_history_statuses
@@ -118,7 +118,7 @@ def init_auditlog(portal):
 
         obj = api.get_object(brain)
 
-        if not is_auditable(obj):
+        if not supports_snapshots(obj):
             continue
 
         if has_snapshots(obj):
