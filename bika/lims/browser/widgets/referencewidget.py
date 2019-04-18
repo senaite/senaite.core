@@ -217,7 +217,6 @@ class ajaxReferenceWidgetSearch(BrowserView):
             return int(num_rows_page)
         return 10
 
-
     def get_field_names(self):
         """Return the field names to get values for
         """

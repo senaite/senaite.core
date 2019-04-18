@@ -20,7 +20,7 @@
 
 import json
 
-from Products.AdvancedQuery import Or, MatchRegexp, Generic
+from Products.AdvancedQuery import MatchRegexp
 from bika.lims import api
 from bika.lims import logger
 from bika.lims.interfaces import IReferenceWidgetVocabulary
@@ -36,6 +36,7 @@ class DefaultReferenceWidgetVocabulary(object):
         self.context = context
         self.request = request
 
+    # TODO REMOVE (Only 1 search field allowed)!
     @property
     def search_fields(self):
         """Returns the object field names to search against
@@ -45,6 +46,10 @@ class DefaultReferenceWidgetVocabulary(object):
         if not search_fields:
             return ("Title",)
         return search_fields
+
+    @property
+    def search_field(self):
+        return self.search_fields[0]
 
     @property
     def search_term(self):
@@ -81,6 +86,30 @@ class DefaultReferenceWidgetVocabulary(object):
         """
         return self.get_query_from_request("search_query")
 
+    def to_utf8(self, data):
+        """
+        Convert unicode values to strings even if they belong to lists or dicts.
+        :param data: an object.
+        :return: The object with all unicode values converted to string.
+        """
+        # if this is a unicode string, return its string representation
+        if isinstance(data, unicode):
+            return data.encode('utf-8')
+
+        # if this is a list of values, return list of string values
+        if isinstance(data, list):
+            return [self.to_utf8(item) for item in data]
+
+        # if this is a dictionary, return dictionary of string keys and values
+        if isinstance(data, dict):
+            return {
+                self.to_utf8(key): self.to_utf8(value)
+                for key, value in data.iteritems()
+            }
+
+        # if it's anything else, return it in its original form
+        return data
+
     def get_query_from_request(self, name):
         """Returns the query inferred from the request
         """
@@ -99,7 +128,7 @@ class DefaultReferenceWidgetVocabulary(object):
         search_query = self.search_query.copy()
         query.update(search_query)
 
-        # Add sorting criterias
+        # Add sorting criteria
         sorting = self.resolve_sorting(query)
         query.update(sorting)
 
@@ -158,86 +187,57 @@ class DefaultReferenceWidgetVocabulary(object):
         """Returns the index of the catalog for the given field_name, if any
         """
         index = catalog.Indexes.get(field_name, None)
-        if index:
-            if index.meta_type == "DateIndex":
-                # For some reason, we do not handle DateIndex
-                logger.warn("Unhandled DateIndex search on '%s'" % field_name)
-                return None
-            return index
-
-        elif field_name == "Title":
+        if not index and field_name == "Title":
             # Legacy
             return self.get_index("sortable_title", catalog)
+        return index
 
-        return None
-
-    def try_advanced_query(self, query, search_term, search_fields, catalog):
+    def advanced_search(self, query, search_term, search_field, catalog):
         """Returns an advanced query object if suitable for the query passed in
         """
-        if not search_term:
-            return None
+        # Do the search
+        advanced_query = catalog.makeAdvancedQuery(query)
+        term = "{}*".format(search_term)
+        advanced_query &= MatchRegexp(search_field, term)
+        brains = catalog.evalAdvancedQuery(advanced_query)
 
-        criteria = []
-        for field in search_fields:
-            index = self.get_index(field, catalog)
-            if not index:
-                continue
+        # We need to manually apply the limit here
+        sort_limit = int(query.get("sort_limit", 0))
+        if sort_limit > 0 and len(brains) > sort_limit:
+            brains = brains[:sort_limit]
 
-            if index.meta_type == "TextIndexNG3":
-                # We can handle this search without AdvancedQuery, no need
-                # to go further
-                return None
+        return brains
 
-            elif index.meta_type == "ZCTextIndex":
-                # We need to add the * at the end to allow LIKE-searches
-                term = "{}*".format(search_term)
-                criteria.append(MatchRegexp(field, term))
-
-            elif index.meta_type == "FieldIndex":
-                criteria.append(MatchRegexp(field, search_term))
-
-            else:
-                criteria.append(Generic(field, search_term))
-
-        if criteria:
-            # Advanced search
-            advanced_query = catalog.makeAdvancedQuery(query)
-            aq_or = Or()
-            for criteria in criteria:
-                aq_or.addSubquery(criteria)
-            advanced_query &= aq_or
-            return advanced_query
-
-        # No need of advanced query
-        return None
-
-    def search(self, query, search_term, search_fields, catalog):
+    def search(self, query, search_term, search_field, catalog):
         """Performs a search against the catalog and returns the brains
         """
         logger.info("Reference Widget Catalog: {}".format(catalog.id))
-        # Try with an advanced query
-        advanced_query = self.try_advanced_query(query, search_term,
-                                                 search_fields, catalog)
-        if advanced_query:
-            logger.info("Reference Widget Query: {}".format(repr(query)))
-            logger.warn("Advanced query required. Consider to use TextIndexNG3")
-            brains = catalog.evalAdvancedQuery(advanced_query)
+        if not search_term:
+            return catalog(query)
 
-            # We need to apply the limit manually here
-            sort_limit = int(query.get("sort_limit", 0))
-            if sort_limit > 0 and len(brains) > sort_limit:
-                return brains[:sort_limit]
-            return brains
+        index = self.get_index(search_field, catalog)
+        if not index:
+            logger.warn("*** Index not found: '{}'".format(search_field))
+            return []
 
-        # Create a classic query
-        if search_term:
-            for field_name in search_fields:
-                index = self.get_index(field_name, catalog)
-                if index.meta_type == "TextIndexNG3":
-                    query[index.id] = "{}*".format(search_term)
-                else:
-                    logger.warn("Index '{}' not found in '{}'"
-                                .format(field_name, catalog.id))
+        meta = index.meta_type
+        if meta == "TextIndexNG3":
+            query[index.id] = "{}*".format(search_term)
+
+        elif meta in ["FieldIndex", "KeywordIndex"]:
+            logger.warn("*** Field '{}' ({}). Better use TextIndexNG3"
+                        .format(meta, search_field))
+            query[index.id] = search_term
+
+        elif meta == "ZCTextIndex":
+            logger.warn("*** Field '{}' ({}). Advanced query. TextIndexNG3 ?"
+                        .format(meta, search_field))
+            return self.advanced_search(query, search_term, search_field, catalog)
+
+        else:
+            logger.warn("*** Index '{}' ({}) not supported"
+                        .format(search_field, meta))
+            return []
 
         logger.info("Reference Widget Query: {}".format(repr(query)))
         return catalog(query)
@@ -255,7 +255,7 @@ class DefaultReferenceWidgetVocabulary(object):
 
         # Do the search
         logger.info("Reference Widget Raw Query: {}".format(repr(query)))
-        brains = self.search(query, self.search_term, self.search_fields, catalog)
+        brains = self.search(query, self.search_term, self.search_field, catalog)
 
         # If no matches, then just base_query alone ("show all if no match")
         if not brains and self.force_all:
@@ -265,27 +265,3 @@ class DefaultReferenceWidgetVocabulary(object):
 
         logger.info("Returned objects: {}".format(len(brains)))
         return brains
-
-    def to_utf8(self, data):
-        """
-        Convert unicode values to strings even if they belong to lists or dicts.
-        :param data: an object.
-        :return: The object with all unicode values converted to string.
-        """
-        # if this is a unicode string, return its string representation
-        if isinstance(data, unicode):
-            return data.encode('utf-8')
-
-        # if this is a list of values, return list of string values
-        if isinstance(data, list):
-            return [self.to_utf8(item) for item in data]
-
-        # if this is a dictionary, return dictionary of string keys and values
-        if isinstance(data, dict):
-            return {
-                self.to_utf8(key): self.to_utf8(value)
-                for key, value in data.iteritems()
-            }
-
-        # if it's anything else, return it in its original form
-        return data
