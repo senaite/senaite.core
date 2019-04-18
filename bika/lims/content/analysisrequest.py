@@ -143,7 +143,7 @@ schema = BikaSchema.copy() + Schema((
             base_query={"is_active": True,
                         "sort_limit": 30,
                         "sort_on": "sortable_title",
-                        "sort_order": "descending"},
+                        "sort_order": "ascending"},
             showOn=True,
             popup_width='400px',
             colModel=[
@@ -313,8 +313,11 @@ schema = BikaSchema.copy() + Schema((
             visible={
                 'add': 'edit',
             },
-            catalog_name='bika_catalog',
-            base_query={'review_state': 'open'},
+            catalog_name="bika_catalog",
+            base_query={"is_active": True,
+                        "sort_limit": 30,
+                        "sort_on": "sortable_title",
+                        "sort_order": "ascending"},
             showOn=True,
         ),
     ),
