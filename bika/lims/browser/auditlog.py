@@ -28,8 +28,8 @@ class HasAuditLog(BrowserView):
 class AuditLogView(BikaListingView):
     """Audit View
     """
-    template = ViewPageTemplateFile("templates/audit.pt")
-    diff_template = ViewPageTemplateFile("templates/audit_diff.pt")
+    template = ViewPageTemplateFile("templates/auditlog.pt")
+    diff_template = ViewPageTemplateFile("templates/auditlog_diff.pt")
 
     def __init__(self, context, request):
         super(AuditLogView, self).__init__(context, request)
