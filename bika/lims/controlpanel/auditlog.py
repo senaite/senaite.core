@@ -22,6 +22,11 @@ import collections
 
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
+from bika.lims.api.snapshot import compare_snapshots
+from bika.lims.api.snapshot import get_last_snapshot
+from bika.lims.api.snapshot import get_snapshot_by_version
+from bika.lims.api.snapshot import get_snapshot_metadata
+from bika.lims.api.snapshot import get_snapshot_version
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import IAuditLog
@@ -117,12 +122,11 @@ class AuditLogView(BikaListingView):
 
         # We are using the existing logic from the auditview
         logview = api.get_view("auditlog", context=obj, request=self.request)
-        snapshots = logview.get_snapshots()
 
         # get the last snapshot
-        snapshot = snapshots[-1]
+        snapshot = get_last_snapshot(obj)
         # get the metadata of the last snapshot
-        metadata = logview.get_snapshot_metadata(snapshot)
+        metadata = get_snapshot_metadata(snapshot)
 
         title = obj.Title()
         url = obj.absolute_url()
@@ -133,7 +137,7 @@ class AuditLogView(BikaListingView):
         item["replace"]["title"] = get_link(auditlog_url, value=title)
 
         # Version
-        version = logview.get_snapshot_version(snapshot)
+        version = get_snapshot_version(obj, snapshot)
         item["version"] = version
 
         # Modification Date
@@ -163,9 +167,9 @@ class AuditLogView(BikaListingView):
         item["comment"] = comment
 
         # get the previous snapshot
-        prev_snapshot = logview.get_snapshot_by_version(version-1)
+        prev_snapshot = get_snapshot_by_version(obj, version-1)
         if prev_snapshot:
-            prev_metadata = logview.get_snapshot_metadata(prev_snapshot)
+            prev_metadata = get_snapshot_metadata(prev_snapshot)
             prev_review_state = prev_metadata.get("review_state")
             if prev_review_state != review_state:
                 item["replace"]["review_state"] = "{} &rarr; {}".format(
@@ -173,7 +177,7 @@ class AuditLogView(BikaListingView):
                     logview.translate_state(review_state))
 
             # Rendered Diff
-            diff = logview.diff_snapshots(snapshot, prev_snapshot)
+            diff = compare_snapshots(snapshot, prev_snapshot)
             item["diff"] = logview.render_diff(diff)
 
         return item
