@@ -7,58 +7,49 @@
 
   <include file="senaite-frontpage.zcml"/>
 
-  <include file="auditlog.zcml"/>
   <include file="analysis.zcml"/>
   <include file="analysisprofile.zcml"/>
   <include file="analysisservice.zcml"/>
   <include file="analysisspec.zcml"/>
+  <include file="arimports.zcml"/>
   <include file="artemplate.zcml"/>
   <include file="attachment.zcml"/>
+  <include file="auditlog.zcml"/>
   <include file="batchfolder.zcml"/>
   <include file="calcs.zcml"/>
   <include file="clientfolder.zcml"/>
-  <include file="invoice.zcml"/>
   <include file="contact.zcml"/>
   <include file="instrument.zcml"/>
-  <include file="instrumenttype.zcml"/>
   <include file="instrumentlocation.zcml"/>
+  <include file="instrumenttype.zcml"/>
+  <include file="invoice.zcml"/>
   <include file="manufacturer.zcml"/>
   <include file="methodfolder.zcml"/>
+  <include file="pricelist.zcml"/>
   <include file="referenceanalysis.zcml"/>
   <include file="referencesample.zcml"/>
-  <include file="pricelist.zcml"/>
   <include file="stickers.zcml"/>
   <include file="supplier.zcml"/>
   <include file="supplyorder.zcml"/>
   <include file="supplyorderfolder.zcml"/>
-  <include file="arimports.zcml"/>
   <include file="worksheettemplate.zcml"/>
 
   <include package=".analysisrequest"/>
   <include package=".batch"/>
   <include package=".client"/>
-  <include package=".publish"/>
-  <include package=".idserver"/>
   <include package=".dashboard"/>
   <include package=".department"/>
+  <include package=".fields"/>
+  <include package=".idserver"/>
+  <include package=".publish"/>
+  <include package=".reports"/>
   <include package=".resultsimport"/>
   <include package=".samplinground"/>
   <include package=".srtemplate"/>
   <include package=".viewlets"/>
+  <include package=".widgets"/>
   <include package=".workflow"/>
   <include package=".worksheet"/>
-
-  <include package=".fields"/>
-  <include package=".reports"/>
-  <include package=".widgets"/>
-
-  <browser:page
-      for="*"
-      name="log"
-      class="bika.lims.browser.log.LogView"
-      permission="zope2.View"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
 
   <browser:page
       for="Products.CMFPlone.interfaces.IPloneSiteRoot"
