@@ -25,12 +25,14 @@ from AccessControl import ClassSecurityInfo
 from Products.Archetypes.Registry import registerWidget
 from Products.Archetypes.Widget import StringWidget
 from bika.lims import api
+from bika.lims import logger
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser import BrowserView
 from bika.lims.interfaces import IReferenceWidgetVocabulary
 from bika.lims.utils import to_unicode as _u
 from senaite.core.supermodel.model import SuperModel
 from zope.component import getAdapters
+from plone import protect
 
 
 class ReferenceWidget(StringWidget):
@@ -68,7 +70,7 @@ class ReferenceWidget(StringWidget):
         'resetButton': False,
         'sord': 'asc',
         'sidx': 'Title',
-        'force_all': True,
+        'force_all': False,
         'portal_types': {},
         'add_button': {
             'visible': False,
@@ -197,12 +199,6 @@ class ajaxReferenceWidgetSearch(BrowserView):
     """ Source for jquery combo dropdown box
     """
 
-    def get_column_names(self):
-        col_model = _u(self.request.get("colModel", "[]"))
-        col_model = json.loads(col_model)
-        names = map(lambda col: col.get("columnName", "").strip(), col_model)
-        return filter(None, names)
-
     @property
     def num_page(self):
         """Returns the number of page to render
@@ -221,20 +217,48 @@ class ajaxReferenceWidgetSearch(BrowserView):
             return int(num_rows_page)
         return 10
 
-    def get_data_record(self, brain, columns):
-        model = SuperModel(brain)
+
+    def get_field_names(self):
+        """Return the field names to get values for
+        """
+        col_model = _u(self.request.get("colModel", "[]"))
+        col_model = json.loads(col_model)
+        names = map(lambda col: col.get("columnName", "").strip(), col_model)
+
+        # UID is used by reference widget to know the object the user
+        # selected from the popup list
+        if "UID" not in names:
+            names.append("UID")
+
+        return filter(None, names)
+
+    def get_data_record(self, brain, field_names):
+        """Returns a dict with the column values for the given brain
+        """
         record = {}
-        for column in columns:
-            value = model.get(column, None)
-            if callable(value):
-                value = value()
+        model = None
+
+        for field_name in field_names:
+            # First try to get the value directly from the brain
+            value = getattr(brain, field_name, None)
+
+            # No metadata for this column name
+            if value is None:
+                logger.warn("Not a metadata field: {}".format(field_name))
+                model = model or SuperModel(brain)
+                value = model.get(field_name, None)
+                if callable(value):
+                    value = value()
+
             # '&nbsp;' instead of '' because empty div fields don't render
             # correctly in combo results table
-            record[column] = value or "&nbsp;"
-        record["UID"] = model.uid
+            record[field_name] = value or "&nbsp;"
+
         return record
 
     def search(self):
+        """Returns the list of brains that match with the request criteria
+        """
         brains = []
         # TODO Legacy
         for name, adapter in getAdapters((self.context, self.request),
@@ -242,19 +266,16 @@ class ajaxReferenceWidgetSearch(BrowserView):
             brains.extend(adapter())
         return brains
 
-    def __call__(self):
-        plone.protect.CheckAuthenticator(self.request)
-        nr_rows = self.request['rows']
+    def to_data_rows(self, brains):
+        """Returns a list of dictionaries representing the values of each brain
+        """
+        fields = self.get_field_names()
+        return map(lambda brain: self.get_data_record(brain, fields), brains)
 
-        # Do the search
-        brains = self.search()
-
-        # Get the rows
-        columns = self.get_column_names()
-        rows = map(lambda brain: self.get_data_record(brain, columns), brains)
-
-        # Generate the output
-        num_rows = len(rows)
+    def to_json_payload(self, data_rows):
+        """Returns the json payload
+        """
+        num_rows = len(data_rows)
         num_page = self.num_page
         num_rows_page = self.num_rows_page
 
@@ -262,9 +283,20 @@ class ajaxReferenceWidgetSearch(BrowserView):
         pages += divmod(num_rows, num_rows_page)[1] and 1 or 0
         start = (num_page - 1) * num_rows_page
         end = num_page * num_rows_page
-        ret = {'page': num_page,
-               'total': pages,
-               'records': num_rows,
-               'rows': rows[start:end]}
+        payload = {"page": num_page,
+                   "total": pages,
+                   "records": num_rows,
+                   "rows": data_rows[start:end]}
+        return json.dumps(payload)
 
-        return json.dumps(ret)
+    def __call__(self):
+        protect.CheckAuthenticator(self.request)
+
+        # Do the search
+        brains = self.search()
+
+        # Generate the data rows to display
+        data_rows = self.to_data_rows(brains)
+
+        # Return the payload
+        return self.to_json_payload(data_rows)

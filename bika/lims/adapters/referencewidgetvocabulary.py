@@ -89,12 +89,7 @@ class DefaultReferenceWidgetVocabulary(object):
         # search for some cases. So we need to convert the strings to utf8
         # https://github.com/senaite/senaite.core/issues/443
         query = json.loads(query)
-        query = self.to_utf8(query)
-
-        # Add sorting criterias
-        sorting = self.resolve_sorting(query)
-        query.update(sorting)
-        return query
+        return self.to_utf8(query)
 
     def get_raw_query(self):
         """Returns the raw query to use for current search, based on the
@@ -103,6 +98,10 @@ class DefaultReferenceWidgetVocabulary(object):
         query = self.base_query.copy()
         search_query = self.search_query.copy()
         query.update(search_query)
+
+        # Add sorting criterias
+        sorting = self.resolve_sorting(query)
+        query.update(sorting)
 
         # Check if sort_on is an index and if is sortable. Otherwise, assume
         # the sorting must be done manually
