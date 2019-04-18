@@ -150,9 +150,7 @@ class DefaultReferenceWidgetVocabulary(object):
     def is_sortable_index(self, index_name, catalog):
         """Returns whether the index is sortable
         """
-        if not index_name:
-            return False
-        index = catalog.Indexes.get(index_name, None)
+        index = self.get_index(index_name, catalog)
         if not index:
             return False
         return index.meta_type in ["FieldIndex", "DateIndex"]
