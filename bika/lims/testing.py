@@ -33,8 +33,12 @@ class BaseLayer(PloneSandboxLayer):
         import bika.lims
         self.loadZCML(package=bika.lims)
 
+        import Products.TextIndexNG3
+        self.loadZCML(package=Products.TextIndexNG3)
+
         # Install product and call its initialize() function
         z2.installProduct(app, 'bika.lims')
+        z2.installProduct(app, 'Products.TextIndexNG3')
 
     def setUpPloneSite(self, portal):
         # Install into Plone site using portal_setup
