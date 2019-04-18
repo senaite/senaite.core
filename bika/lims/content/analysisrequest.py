@@ -315,7 +315,7 @@ schema = BikaSchema.copy() + Schema((
             },
             catalog_name="bika_catalog",
             base_query={"is_active": True,
-                        "sort_limit": 30,
+                        "sort_limit": 50,
                         "sort_on": "sortable_title",
                         "sort_order": "ascending"},
             showOn=True,
