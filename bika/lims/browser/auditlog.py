@@ -194,7 +194,7 @@ class AuditLogView(BikaListingView):
             item["comment"] = comment
 
             # get the previous snapshot
-            prev_snapshot = get_snapshot_by_version(self.context, version - 1)
+            prev_snapshot = get_snapshot_by_version(self.context, version-1)
             if prev_snapshot:
                 prev_metadata = get_snapshot_metadata(prev_snapshot)
                 prev_review_state = prev_metadata.get("review_state")
