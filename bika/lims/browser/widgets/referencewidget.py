@@ -18,24 +18,20 @@
 # Copyright 2018-2019 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import json
+
+import plone
 from AccessControl import ClassSecurityInfo
-from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
-from bika.lims.browser import BrowserView
-from bika.lims.interfaces import IReferenceWidgetVocabulary
-from bika.lims.permissions import *
-from bika.lims.utils import to_unicode as _u
-from bika.lims.utils import to_utf8 as _c
-from bika.lims import logger
-from Acquisition import aq_base
-from types import DictType
-from operator import itemgetter
 from Products.Archetypes.Registry import registerWidget
 from Products.Archetypes.Widget import StringWidget
-from Products.CMFCore.utils import getToolByName
+from bika.lims import api
+from bika.lims import bikaMessageFactory as _
+from bika.lims.browser import BrowserView
+from bika.lims.interfaces import IReferenceWidgetVocabulary
+from bika.lims.utils import to_unicode as _u
+from senaite.core.supermodel.model import SuperModel
 from zope.component import getAdapters
-import json
-import plone
+
 
 class ReferenceWidget(StringWidget):
     _properties = StringWidget._properties.copy()
@@ -198,73 +194,77 @@ class ReferenceWidget(StringWidget):
 registerWidget(ReferenceWidget, title='Reference Widget')
 
 class ajaxReferenceWidgetSearch(BrowserView):
-
     """ Source for jquery combo dropdown box
     """
 
+    def get_column_names(self):
+        col_model = _u(self.request.get("colModel", "[]"))
+        col_model = json.loads(col_model)
+        names = map(lambda col: col.get("columnName", "").strip(), col_model)
+        return filter(None, names)
+
+    @property
+    def num_page(self):
+        """Returns the number of page to render
+        """
+        num_page = self.request.get("page", 1)
+        if api.is_floatable(num_page) and int(num_page) > 0:
+            return int(num_page)
+        return 1
+
+    @property
+    def num_rows_page(self):
+        """Returns the number of rows per page to render
+        """
+        num_rows_page = self.request.get("rows", 10)
+        if api.is_floatable(num_rows_page) and int(num_rows_page) > 0:
+            return int(num_rows_page)
+        return 10
+
+    def get_data_record(self, brain, columns):
+        model = SuperModel(brain)
+        record = {}
+        for column in columns:
+            value = model.get(column, None)
+            if callable(value):
+                value = value()
+            # '&nbsp;' instead of '' because empty div fields don't render
+            # correctly in combo results table
+            record[column] = value or "&nbsp;"
+        record["UID"] = model.uid
+        return record
+
+    def search(self):
+        brains = []
+        # TODO Legacy
+        for name, adapter in getAdapters((self.context, self.request),
+                                         IReferenceWidgetVocabulary):
+            brains.extend(adapter())
+        return brains
+
     def __call__(self):
         plone.protect.CheckAuthenticator(self.request)
-        page = self.request['page']
         nr_rows = self.request['rows']
-        sord = self.request['sord']
-        sidx = self.request['sidx']
-        colModel = json.loads(_u(self.request.get('colModel', '[]')))
-        discard_empty = json.loads(_c(self.request.get('discard_empty', "[]")))
-        rows = []
 
-        brains = []
-        for name, adapter in getAdapters((self.context, self.request), IReferenceWidgetVocabulary):
-            brains.extend(adapter())
+        # Do the search
+        brains = self.search()
 
-        for p in brains:
-            row = {'UID': getattr(p, 'UID'),
-                   'Title': getattr(p, 'Title')}
-            other_fields = [x for x in colModel
-                            if x['columnName'] not in row.keys()]
-            instance = schema = None
-            discard = False
-            # This will be faster if the columnNames are catalog indexes
-            for field in other_fields:
-                fieldname = field['columnName']
-                # Prioritize method retrieval over field retrieval from schema
-                obj = p.getObject()
-                value = getattr(obj, fieldname, None)
-                if not value or hasattr(value, 'im_self'):
-                    value = getattr(p, fieldname, None)
-                if not value:
-                    if instance is None:
-                        instance = p.getObject()
-                        schema = instance.Schema()
-                    if fieldname in schema:
-                        value = schema[fieldname].get(instance)
-                    elif hasattr(instance, fieldname):
-                        value = getattr(instance, fieldname)
-                        if callable(value):
-                            value = value()
+        # Get the rows
+        columns = self.get_column_names()
+        rows = map(lambda brain: self.get_data_record(brain, columns), brains)
 
-                if fieldname in discard_empty and not value:
-                    discard = True
-                    break
+        # Generate the output
+        num_rows = len(rows)
+        num_page = self.num_page
+        num_rows_page = self.num_rows_page
 
-                # '&nbsp;' instead of '' because empty div fields don't render
-                # correctly in combo results table
-                row[fieldname] = value and value or '&nbsp;'
-
-            if discard is False:
-                rows.append(row)
-
-        rows = sorted(rows, cmp=lambda x, y: cmp(
-            str(x).lower(), str(y).lower()),
-            key=itemgetter(sidx and sidx or 'Title'))
-        if sord == 'desc':
-            rows.reverse()
-        pages = len(rows) / int(nr_rows)
-        pages += divmod(len(rows), int(nr_rows))[1] and 1 or 0
-        start = (int(page) - 1) * int(nr_rows)
-        end = int(page) * int(nr_rows)
-        ret = {'page': page,
+        pages = num_rows / num_rows_page
+        pages += divmod(num_rows, num_rows_page)[1] and 1 or 0
+        start = (num_page - 1) * num_rows_page
+        end = num_page * num_rows_page
+        ret = {'page': num_page,
                'total': pages,
-               'records': len(rows),
+               'records': num_rows,
                'rows': rows[start:end]}
 
         return json.dumps(ret)

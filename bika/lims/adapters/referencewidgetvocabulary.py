@@ -217,6 +217,7 @@ class DefaultReferenceWidgetVocabulary(object):
     def search(self, query, search_term, search_fields, catalog):
         """Performs a search against the catalog and returns the brains
         """
+        logger.info("Reference Widget Catalog: {}".format(catalog.id))
         # Try with an advanced query
         advanced_query = self.try_advanced_query(query, search_term,
                                                  search_fields, catalog)
