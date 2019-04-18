@@ -22,11 +22,12 @@ import itertools
 import re
 
 from bika.lims.api import to_date
+from bika.lims.api.snapshot import get_last_snapshot
+from bika.lims.api.snapshot import get_snapshot_count
+from bika.lims.api.snapshot import get_snapshots
+from bika.lims.api.snapshot import get_snapshot_metadata
 from bika.lims.api.user import get_user_id
 from bika.lims.interfaces import IAuditable
-from bika.lims.subscribers.auditlog import get_last_snapshot
-from bika.lims.subscribers.auditlog import get_snapshots
-from bika.lims.subscribers.auditlog import get_storage
 from plone.indexer import indexer
 
 UID_RX = re.compile(r"[a-z0-9]{32}$")
@@ -36,7 +37,7 @@ DATE_RX = re.compile(r"\d{4}[-/]\d{2}[-/]\d{2}")
 def get_meta_value_for(snapshot, key, default=None):
     """Returns the metadata value for the given key
     """
-    metadata = snapshot.get("__metadata__", {})
+    metadata = get_snapshot_metadata(snapshot)
     return metadata.get(key, default)
 
 
@@ -139,5 +140,4 @@ def snapshot_created(instance):
 def snapshot_version(instance):
     """Snapshot created date
     """
-    snapshots = get_storage(instance)
-    return len(snapshots)
+    return get_snapshot_count(instance)
