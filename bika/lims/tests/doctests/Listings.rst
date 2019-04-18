@@ -147,6 +147,6 @@ Searching for a value should work:
     >>> map(lambda x: x.getObject().getSampleType().getPrefix(), results)
     ['s1', 's1', 's1']
 
-    >>> results = listing.search(searchterm="Client 3")
+    >>> results = listing.search(searchterm="client-3")
     >>> map(lambda x: x.getObject().getClient(), results)
     [<Client at /plone/clients/client-3>, <Client at /plone/clients/client-3>, <Client at /plone/clients/client-3>]
