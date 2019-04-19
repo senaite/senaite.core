@@ -34,6 +34,17 @@ class AuditLogView(BikaListingView):
     def __init__(self, context, request):
         super(AuditLogView, self).__init__(context, request)
 
+        # Query is ignored in `folderitems` method and only there to override
+        # the default settings
+        self.catalog = "uid_catalog"
+        self.contentFilter = {"UID": api.get_uid(context)}
+
+        # TODO: Fix in senaite.core.listing.get_api_url
+        #
+        # Set the view name with `@@` prefix to get the right API URL on the
+        # the setup folder
+        self.__name__ = "@@auditlog"
+
         self.show_select_column = False
         self.show_search = False
         self.pagesize = 5
