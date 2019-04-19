@@ -7,6 +7,23 @@ from bika.lims.api.snapshot import take_snapshot
 from DateTime import DateTime
 
 
+def reindex_object(obj):
+    """Reindex the object in the `auditlog_catalog` catalog
+
+    This is needed *after* the event handlers fired, because the indexing takes
+    place before the snapshot was created.
+
+    Also see here for more details:
+    https://docs.plone.org/develop/addons/components/events.html#modified-events
+
+    TL;DR: `Products.Archetypes.interfaces.IObjectEditedEvent` is fired after
+    `reindexObject()` is called. If you manipulate your content object in a
+    handler for this event, you need to manually reindex new values.
+    """
+    auditlog_catalog = api.get_tool("auditlog_catalog")
+    auditlog_catalog.reindexObject(obj)
+
+
 def ObjectTransitionedEventHandler(obj, event):
     """Object has been transitioned to an new state
     """
@@ -33,6 +50,9 @@ def ObjectTransitionedEventHandler(obj, event):
     # take a new snapshot
     take_snapshot(obj, **entry)
 
+    # reindex the object in the auditlog catalog
+    reindex_object(obj)
+
 
 def ObjectModifiedEventHandler(obj, event):
     """Object has been modified
@@ -44,6 +64,9 @@ def ObjectModifiedEventHandler(obj, event):
 
     # take a new snapshot
     take_snapshot(obj, action="edit")
+
+    # reindex the object in the auditlog catalog
+    reindex_object(obj)
 
 
 def ObjectInitializedEventHandler(obj, event):
@@ -60,3 +83,6 @@ def ObjectInitializedEventHandler(obj, event):
 
     # take a new snapshot
     take_snapshot(obj, action="create")
+
+    # reindex the object in the auditlog catalog
+    reindex_object(obj)
