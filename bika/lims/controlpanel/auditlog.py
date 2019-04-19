@@ -77,6 +77,14 @@ class AuditLogView(BikaListingView):
                 "title": _("Actor"),
                 "index": "actor",
                 "sortable": True}),
+            ("fullname", {
+                "title": _("Fullname"),
+                "index": "fullname",
+                "sortable": True}),
+            ("roles", {
+                "title": _("Roles"),
+                "sortable": False,
+                "toggle": False}),
             ("remote_address", {
                 "title": _("Remote IP"),
                 "sortable": True}),
@@ -88,9 +96,6 @@ class AuditLogView(BikaListingView):
                 "title": _("Workflow State"),
                 "index": "review_state",
                 "sortable": True}),
-            ("comment", {
-                "title": _("Comment"),
-                "sortable": False}),
             ("diff", {
                 "title": _("Changes"),
                 "sortable": False}),
@@ -134,6 +139,7 @@ class AuditLogView(BikaListingView):
 
         # Title
         item["title"] = title
+        # Link the title to the auditlog of the object
         item["replace"]["title"] = get_link(auditlog_url, value=title)
 
         # Version
@@ -146,9 +152,15 @@ class AuditLogView(BikaListingView):
 
         # Actor
         actor = metadata.get("actor")
-        if actor:
-            properties = api.get_user_properties(actor)
-            item["actor"] = properties.get("fullname", actor)
+        item["actor"] = actor
+
+        # Fullname
+        properties = api.get_user_properties(actor)
+        item["fullname"] = properties.get("fullname", actor)
+
+        # Roles
+        roles = metadata.get("roles", [])
+        item["roles"] = ", ".join(roles)
 
         # Remote Address
         remote_address = metadata.get("remote_address")
@@ -161,10 +173,6 @@ class AuditLogView(BikaListingView):
         # Review State
         review_state = metadata.get("review_state")
         item["review_state"] = logview.translate_state(review_state)
-
-        # Change Comment
-        comment = metadata.get("comment")
-        item["comment"] = comment
 
         # get the previous snapshot
         prev_snapshot = get_snapshot_by_version(obj, version-1)

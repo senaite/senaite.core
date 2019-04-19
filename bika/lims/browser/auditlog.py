@@ -52,14 +52,16 @@ class AuditLogView(BikaListingView):
                 "title": _("Date Modified"), "sortable": False}),
             ("actor", {
                 "title": _("Actor"), "sortable": False}),
+            ("fullname", {
+                "title": _("Fullname"), "sortable": False}),
+            ("roles", {
+                "title": _("Roles"), "sortable": False, "toggle": False}),
             ("remote_address", {
                 "title": _("Remote IP"), "sortable": False}),
             ("action", {
                 "title": _("Action"), "sortable": False}),
             ("review_state", {
                 "title": _("Workflow State"), "sortable": False}),
-            ("comment", {
-                "title": _("Comment"), "sortable": False}),
             ("diff", {
                 "title": _("Changes"), "sortable": False}),
         ))
@@ -173,9 +175,15 @@ class AuditLogView(BikaListingView):
 
             # Actor
             actor = metadata.get("actor")
-            if actor:
-                properties = api.get_user_properties(actor)
-                item["actor"] = properties.get("fullname", actor)
+            item["actor"] = actor
+
+            # Fullname
+            properties = api.get_user_properties(actor)
+            item["fullname"] = properties.get("fullname", actor)
+
+            # Roles
+            roles = metadata.get("roles", [])
+            item["roles"] = ", ".join(roles)
 
             # Remote Address
             remote_address = metadata.get("remote_address")
@@ -188,10 +196,6 @@ class AuditLogView(BikaListingView):
             # Review State
             review_state = metadata.get("review_state")
             item["review_state"] = self.translate_state(review_state)
-
-            # Change Comment
-            comment = metadata.get("comment")
-            item["comment"] = comment
 
             # get the previous snapshot
             prev_snapshot = get_snapshot_by_version(self.context, version-1)
