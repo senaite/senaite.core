@@ -96,8 +96,8 @@ Create an new Sample:
 Get the contained `Cu` Analysis:
 
     >>> cu = get_analysis(sample, Cu.getKeyword())
-    >>> fe = get_analysis(sample, Cu.getKeyword())
-    >>> au = get_analysis(sample, Cu.getKeyword())
+    >>> fe = get_analysis(sample, Fe.getKeyword())
+    >>> au = get_analysis(sample, Au.getKeyword())
 
 
 Check if an object supports snapshots
