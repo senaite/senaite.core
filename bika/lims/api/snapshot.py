@@ -359,10 +359,10 @@ def _process_value(value):
     elif api.is_uid(value):
         value = _get_title_or_id_from_uid(value)
     elif isinstance(value, (dict)):
-        value = sorted(value.items())
+        value = json.dumps(sorted(value.items()), indent=1)
     elif isinstance(value, (list, tuple)):
         value = sorted(map(_process_value, value))
-        value = ", ".join(value)
+        value = "; ".join(value)
     elif isinstance(value, unicode):
         value = api.safe_unicode(value).encode("utf8")
     return str(value)
@@ -374,6 +374,6 @@ def _get_title_or_id_from_uid(uid):
     try:
         obj = api.get_object_by_uid(uid)
     except api.APIError:
-        return "<Deleted Object {}>".format(uid)
+        return "<Deleted {}>".format(uid)
     title_or_id = api.get_title(obj) or api.get_id(obj)
     return title_or_id
