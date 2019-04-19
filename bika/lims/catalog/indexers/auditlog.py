@@ -21,8 +21,7 @@
 import itertools
 import re
 
-from bika.lims.api import get_user_properties
-from bika.lims.api import to_date
+from bika.lims import api
 from bika.lims.api.snapshot import get_last_snapshot
 from bika.lims.api.snapshot import get_snapshot_count
 from bika.lims.api.snapshot import get_snapshot_metadata
@@ -33,6 +32,17 @@ from plone.indexer import indexer
 
 UID_RX = re.compile(r"[a-z0-9]{32}$")
 DATE_RX = re.compile(r"\d{4}[-/]\d{2}[-/]\d{2}")
+
+
+def get_title_or_id_from_uid(uid, default=""):
+    """Returns the title or ID from the given UID
+    """
+    try:
+        obj = api.get_object_by_uid(uid)
+    except api.APIError:
+        return default
+    title_or_id = api.get_title(obj) or api.get_id(obj) or default
+    return title_or_id
 
 
 def get_meta_value_for(snapshot, key, default=None):
@@ -55,7 +65,7 @@ def get_fullname(snapshot):
     """Get the actor's fullname of the snapshot
     """
     actor = get_actor(snapshot)
-    properties = get_user_properties(actor)
+    properties = api.get_user_properties(actor)
     return properties.get("fullname", actor)
 
 
@@ -120,22 +130,37 @@ def listing_searchable_text(instance):
     values = map(lambda s: s.values(), snapshots)
     # prepare a set of unified catalog data
     catalog_data = set()
+    # internal UID -> title cache
+    uid_title_cache = {}
+    # values to skip
+    skip_values = ["None", "true", "True", "false", "False"]
 
     # helper function to recursively unpack the snapshot values
     def append(value):
         if isinstance(value, (list, tuple)):
             map(append, value)
         elif isinstance(value, (dict)):
-            map(append, value.values())
+            map(append, value.items())
         elif isinstance(value, basestring):
+            # convert unicode to UTF8
+            if isinstance(value, unicode):
+                value = api.safe_unicode(value).encode("utf8")
+            # skip single short values
+            if len(value) < 2:
+                return
             # flush non meaningful values
-            if value in ["None"]:
-                value = ""
+            if value in skip_values:
+                return
             # flush ISO dates
             if re.match(DATE_RX, value):
-                value = ""
+                return
+            # fetch the title
             if re.match(UID_RX, value):
-                value = ""
+                title_or_id = uid_title_cache.get(value)
+                if title_or_id is None:
+                    title_or_id = get_title_or_id_from_uid(value)
+                    uid_title_cache[value] = title_or_id
+                value = title_or_id
             catalog_data.add(value)
 
     # extract all meaningful values
@@ -151,7 +176,7 @@ def snapshot_created(instance):
     """
     last_snapshot = get_last_snapshot(instance)
     snapshot_created = get_created(last_snapshot)
-    return to_date(snapshot_created)
+    return api.to_date(snapshot_created)
 
 
 @indexer(IAuditable)
