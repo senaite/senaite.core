@@ -21,11 +21,12 @@
 import itertools
 import re
 
+from bika.lims.api import get_user_properties
 from bika.lims.api import to_date
 from bika.lims.api.snapshot import get_last_snapshot
 from bika.lims.api.snapshot import get_snapshot_count
-from bika.lims.api.snapshot import get_snapshots
 from bika.lims.api.snapshot import get_snapshot_metadata
+from bika.lims.api.snapshot import get_snapshots
 from bika.lims.api.user import get_user_id
 from bika.lims.interfaces import IAuditable
 from plone.indexer import indexer
@@ -48,6 +49,14 @@ def get_actor(snapshot):
     if not actor:
         return get_user_id()
     return actor
+
+
+def get_fullname(snapshot):
+    """Get the actor's fullname of the snapshot
+    """
+    actor = get_actor(snapshot)
+    properties = get_user_properties(actor)
+    return properties.get("fullname", actor)
 
 
 def get_action(snapshot):
@@ -74,6 +83,14 @@ def actor(instance):
     """
     last_snapshot = get_last_snapshot(instance)
     return get_actor(last_snapshot)
+
+
+@indexer(IAuditable)
+def fullname(instance):
+    """Last modifiying user
+    """
+    last_snapshot = get_last_snapshot(instance)
+    return get_fullname(last_snapshot)
 
 
 @indexer(IAuditable)
