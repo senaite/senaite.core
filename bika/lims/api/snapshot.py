@@ -358,9 +358,11 @@ def _process_value(value):
         pass
     elif api.is_uid(value):
         value = _get_title_or_id_from_uid(value)
+    elif isinstance(value, (dict)):
+        value = sorted(value.items())
     elif isinstance(value, (list, tuple)):
         value = sorted(map(_process_value, value))
-        value = "  ".join(value)
+        value = ", ".join(value)
     elif isinstance(value, unicode):
         value = api.safe_unicode(value).encode("utf8")
     return str(value)
