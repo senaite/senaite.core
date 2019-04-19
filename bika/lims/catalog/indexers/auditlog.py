@@ -115,11 +115,13 @@ def listing_searchable_text(instance):
     """
     # get all snapshots
     snapshots = get_snapshots(instance)
-    # extract all values
+    # extract all snapshot values, because we are not interested in the
+    # fieldnames (keys)
     values = map(lambda s: s.values(), snapshots)
-    # unified catalog data
+    # prepare a set of unified catalog data
     catalog_data = set()
 
+    # helper function to recursively unpack the snapshot values
     def append(value):
         if isinstance(value, (list, tuple)):
             map(append, value)
@@ -132,12 +134,11 @@ def listing_searchable_text(instance):
             # flush ISO dates
             if re.match(DATE_RX, value):
                 value = ""
-            # flus UIDs
             if re.match(UID_RX, value):
                 value = ""
             catalog_data.add(value)
 
-    # extract all strings
+    # extract all meaningful values
     for value in itertools.chain(values):
         append(value)
 
