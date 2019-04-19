@@ -285,7 +285,7 @@ It is also possible to process the values to get a more human readable diff:
 
    >>> diff = compare_snapshots(snap0, snap1, raw=False)
    >>> diff
-   {u'Analyses': [('Not set', 'Aurum  Copper  Iron')]}
+   {u'Analyses': [('Not set', 'Aurum; Copper; Iron')]}
 
 
 To directly compare the last two snapshots taken, we can call
