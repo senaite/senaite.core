@@ -47,7 +47,7 @@ class AuditLogView(BikaListingView):
 
         self.contentFilter = {
             "sort_on": "snapshot_created",
-            "sort_order": "descending",
+            "sort_order": "ascending",
         }
 
         self.context_actions = {}
