@@ -59,7 +59,7 @@ class LabContactsView(BikaListingView):
         self.title = self.context.translate(_("Lab Contacts"))
         self.icon = "{}/{}".format(
             self.portal_url,
-            "/++resource++bika.lims.images/lab_contact_big.png"
+            "/++resource++bika.lims.images/labcontact_big.png"
         )
 
         self.show_select_row = False
