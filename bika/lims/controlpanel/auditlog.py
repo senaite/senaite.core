@@ -135,7 +135,7 @@ class AuditLogView(BikaListingView):
 
         title = obj.Title()
         url = obj.absolute_url()
-        auditlog_url = "{}/auditlog".format(url)
+        auditlog_url = "{}/@@auditlog".format(url)
 
         # Title
         item["title"] = title
