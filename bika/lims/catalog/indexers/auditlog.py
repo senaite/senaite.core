@@ -48,10 +48,10 @@ def _uid_to_title_cache_key(func, uid):
 def get_title_or_id_from_uid(uid):
     """Returns the title or ID from the given UID
     """
-    brain = api.get_brain_by_uid(uid, default=None)
-    if brain is None:
+    obj = api.get_object_by_uid(uid, default=None)
+    if obj is None:
         return ""
-    title_or_id = api.get_title(brain) or api.get_id(brain)
+    title_or_id = api.get_title(obj) or api.get_id(obj)
     return title_or_id
 
 
