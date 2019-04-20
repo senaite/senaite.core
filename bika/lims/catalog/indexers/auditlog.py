@@ -37,11 +37,10 @@ DATE_RX = re.compile(r"\d{4}[-/]\d{2}[-/]\d{2}")
 def get_title_or_id_from_uid(uid, default=""):
     """Returns the title or ID from the given UID
     """
-    try:
-        obj = api.get_object_by_uid(uid)
-    except api.APIError:
-        return default
-    title_or_id = api.get_title(obj) or api.get_id(obj) or default
+    brain = api.get_brain_by_uid(uid, default=None)
+    if brain is None:
+        return None
+    title_or_id = api.get_title(brain) or api.get_id(brain) or default
     return title_or_id
 
 
