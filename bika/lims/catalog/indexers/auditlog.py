@@ -29,18 +29,29 @@ from bika.lims.api.snapshot import get_snapshots
 from bika.lims.api.user import get_user_id
 from bika.lims.interfaces import IAuditable
 from plone.indexer import indexer
+from plone.memoize.ram import DontCache
+from plone.memoize.ram import cache
 
 UID_RX = re.compile(r"[a-z0-9]{32}$")
 DATE_RX = re.compile(r"\d{4}[-/]\d{2}[-/]\d{2}")
 
 
-def get_title_or_id_from_uid(uid, default=""):
+def _uid_to_title_cache_key(func, uid):
+    brain = api.get_brain_by_uid(uid, default=None)
+    if brain is None:
+        raise DontCache
+    modified = api.get_modification_date(brain).millis()
+    return "{}-{}".format(uid, modified)
+
+
+@cache(_uid_to_title_cache_key)
+def get_title_or_id_from_uid(uid):
     """Returns the title or ID from the given UID
     """
     brain = api.get_brain_by_uid(uid, default=None)
     if brain is None:
-        return None
-    title_or_id = api.get_title(brain) or api.get_id(brain) or default
+        return ""
+    title_or_id = api.get_title(brain) or api.get_id(brain)
     return title_or_id
 
 
@@ -129,8 +140,6 @@ def listing_searchable_text(instance):
     values = map(lambda s: s.values(), snapshots)
     # prepare a set of unified catalog data
     catalog_data = set()
-    # internal UID -> title cache
-    uid_title_cache = {}
     # values to skip
     skip_values = ["None", "true", "True", "false", "False"]
 
@@ -155,11 +164,7 @@ def listing_searchable_text(instance):
                 return
             # fetch the title
             if re.match(UID_RX, value):
-                title_or_id = uid_title_cache.get(value)
-                if title_or_id is None:
-                    title_or_id = get_title_or_id_from_uid(value)
-                    uid_title_cache[value] = title_or_id
-                value = title_or_id
+                value = get_title_or_id_from_uid(value)
             catalog_data.add(value)
 
     # extract all meaningful values
