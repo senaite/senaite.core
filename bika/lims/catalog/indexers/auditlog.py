@@ -142,6 +142,8 @@ def listing_searchable_text(instance):
     catalog_data = set()
     # values to skip
     skip_values = ["None", "true", "True", "false", "False"]
+    # internal uid -> title cache
+    uid_title_cache = {}
 
     # helper function to recursively unpack the snapshot values
     def append(value):
@@ -164,7 +166,12 @@ def listing_searchable_text(instance):
                 return
             # fetch the title
             if re.match(UID_RX, value):
-                value = get_title_or_id_from_uid(value)
+                if value in uid_title_cache:
+                    value = uid_title_cache[value]
+                else:
+                    title_or_id = get_title_or_id_from_uid(value)
+                    uid_title_cache[value] = title_or_id
+                    value = title_or_id
             catalog_data.add(value)
 
     # extract all meaningful values
