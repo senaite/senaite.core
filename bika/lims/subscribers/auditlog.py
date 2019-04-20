@@ -83,6 +83,3 @@ def ObjectInitializedEventHandler(obj, event):
 
     # take a new snapshot
     take_snapshot(obj, action="create")
-
-    # reindex the object in the auditlog catalog
-    reindex_object(obj)
