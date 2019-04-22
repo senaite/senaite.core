@@ -84,16 +84,6 @@
      <permission value="senaite.core: Manage Invoices"/>
  </action>
 
- <action title="Log"
-         action_id="log"
-         category="object"
-         condition_expr=""
-         url_expr="string:${object_url}/log"
-         i18n:attributes="title"
-         visible="True">
-     <permission value="senaite.core: View Log Tab"/>
- </action>
-
  <action title="Create Invoice PDF"
          action_id="Create Invoice"
          category="document_actions"

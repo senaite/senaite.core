@@ -18,9 +18,9 @@
  <property name="allow_discussion">False</property>
  <property name="default_view_fallback">False</property>
 
- <alias from="(Default)" to="attachment_view"/>
- <alias from="view" to="attachment_view"/>
- <alias from="edit" to="attachment_edit"/>
+ <alias from="(Default)" to="base_view"/>
+ <alias from="view" to="base_view"/>
+ <alias from="edit" to="base_edit"/>
 
  <action title="Edit"
          action_id="edit"
@@ -28,7 +28,7 @@
          condition_expr=""
          icon_expr=""
          link_target=""
-         url_expr="string:${object_url}/attachment_edit"
+         url_expr="string:${object_url}/base_edit"
          i18n:attributes="title"
          i18n:domain="plone"
          visible="True">
@@ -41,7 +41,7 @@
          condition_expr=""
          icon_expr=""
          link_target=""
-         url_expr="string:${object_url}/attachment_view"
+         url_expr="string:${object_url}/base_view"
          i18n:attributes="title"
          i18n:domain="plone"
          visible="True">

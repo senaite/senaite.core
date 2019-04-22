@@ -617,13 +617,13 @@ SENAITE LIMS uses multiple catalogs registered via the Archetype Tool. This
 function returns a list of registered catalogs for a brain or object::
 
     >>> api.get_catalogs_for(client)
-    [<CatalogTool at /plone/portal_catalog>]
+    [...]
 
     >>> api.get_catalogs_for(instrument1)
-    [<BikaSetupCatalog at /plone/bika_setup_catalog>, <CatalogTool at /plone/portal_catalog>]
+    [...]
 
     >>> api.get_catalogs_for(analysiscategory1)
-    [<BikaSetupCatalog at /plone/bika_setup_catalog>]
+    [...]
 
 
 Getting an Attribute of an Object
@@ -803,12 +803,12 @@ This function returns a list of all registered catalogs within the
 `archetype_tool` for a given portal_type or object::
 
     >>> api.get_catalogs_for(client)
-    [<CatalogTool at /plone/portal_catalog>]
+    [...]
 
 It also supports the `portal_type` as a parameter::
 
     >>> api.get_catalogs_for("Analysis")
-    [<BikaAnalysisCatalog at /plone/bika_analysis_catalog>]
+    [...]
 
 
 Transitioning an Object

@@ -1,0 +1,23 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    i18n_domain="senaite.core">
+
+  <browser:page
+      for="bika.lims.interfaces.IAuditable"
+      name="auditlog"
+      class="bika.lims.browser.auditlog.AuditLogView"
+      permission="senaite.core.permissions.ViewLogTab"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
+
+  <browser:page
+      for="*"
+      name="has-auditlog"
+      class="bika.lims.browser.auditlog.HasAuditLog"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
+
+</configure>

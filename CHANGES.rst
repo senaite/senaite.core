@@ -6,6 +6,7 @@ Changelog
 
 **Added**
 
+- #1324 Audit Log
 
 **Changed**
 

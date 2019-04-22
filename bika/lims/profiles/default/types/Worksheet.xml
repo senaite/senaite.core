@@ -109,18 +109,6 @@
   <permission value="senaite.core: Edit Worksheet"/>
  </action>
 
- <action title="Log"
-         action_id="log"
-         category="object"
-         condition_expr=""
-         icon_expr=""
-         link_target=""
-         url_expr="string:${object_url}/log"
-         i18n:attributes="title"
-         visible="True">
-     <permission value="senaite.core: View Log Tab"/>
- </action>
-
 <action title="Sticker"
         action_id="sticker"
         category="document_actions"

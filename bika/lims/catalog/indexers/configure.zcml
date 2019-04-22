@@ -16,4 +16,13 @@
   <!-- Whether the object is neither cancelled nor invalid -->
   <adapter name="is_active" factory=".is_active"/>
 
+  <!-- Auditlog Catalog Index Adapters -->
+  <adapter name="action" factory=".auditlog.action"/>
+  <adapter name="actor" factory=".auditlog.actor"/>
+  <adapter name="fullname" factory=".auditlog.fullname"/>
+  <adapter name="listing_searchable_text" factory=".auditlog.listing_searchable_text"/>
+  <adapter name="modifiers" factory=".auditlog.modifiers"/>
+  <adapter name="snapshot_created" factory=".auditlog.snapshot_created"/>
+  <adapter name="snapshot_version" factory=".auditlog.snapshot_version"/>
+
 </configure>
