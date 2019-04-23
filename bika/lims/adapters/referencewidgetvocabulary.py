@@ -226,7 +226,7 @@ class DefaultReferenceWidgetVocabulary(object):
         logger.info("Reference Widget Query: {}".format(repr(query)))
         return catalog(query)
 
-    def __call__(self, result=None, specification=None, **kwargs):
+    def __call__(self):
 
         catalog = api.get_tool(self.catalog_name)
 
