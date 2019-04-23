@@ -172,6 +172,7 @@ function CommonUtils() {
             var col_model = options.colModel;
             var search_fields = options.search_fields;
             var discard_empty = options.discard_empty;
+            var min_length = options.minLength;
 
             options.url = options.url + "&colModel=" +
                 $.toJSON(col_model);
@@ -181,6 +182,9 @@ function CommonUtils() {
 
             options.url = options.url + "&discard_empty=" +
                 $.toJSON(discard_empty);
+
+            options.url = options.url + "&minLength=" +
+                $.toJSON(min_length);
 
             options.force_all = "false";
 

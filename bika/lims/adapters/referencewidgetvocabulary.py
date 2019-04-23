@@ -59,6 +59,13 @@ class DefaultReferenceWidgetVocabulary(object):
         return search_term.lower().strip()
 
     @property
+    def minimum_length(self):
+        """Minimum required length of the search term
+        """
+        min_length = self.request.get("minLength", 0)
+        return api.to_int(min_length, 0)
+
+    @property
     def force_all(self):
         """Returns whether all records must be displayed if no match is found
         """
@@ -147,18 +154,14 @@ class DefaultReferenceWidgetVocabulary(object):
         sorting = {}
 
         # Sort on
-        sort_on = self.request.get("sidx", None)
-        sort_on = sort_on or self.request.get("sort_on", None)
-        sort_on = sort_on or query.get("sidx", None)
+        sort_on = query.get("sidx", None)
         sort_on = sort_on or query.get("sort_on", None)
         sort_on = sort_on == "Title" and "sortable_title" or sort_on
         if sort_on:
             sorting["sort_on"] = sort_on
 
             # Sort order
-            sort_order = self.request.get("sord", None)
-            sort_order = sort_order or self.request.get("sort_order", None)
-            sort_order = sort_order or query.get("sord", None)
+            sort_order = query.get("sord", None)
             sort_order = sort_order or query.get("sort_order", None)
             if (sort_order in ["desc", "reverse", "rev", "descending"]):
                 sorting["sort_order"] = "descending"
@@ -167,9 +170,6 @@ class DefaultReferenceWidgetVocabulary(object):
 
             # Sort limit
             sort_limit = api.to_int(query.get("limit", 30), default=30)
-            sort_limit = sort_limit or api.to_int(
-                self.request.get("sort_limit", 30),
-                default=30)
             if sort_limit:
                 sorting["sort_limit"] = sort_limit
 
@@ -237,9 +237,14 @@ class DefaultReferenceWidgetVocabulary(object):
         if not query:
             return []
 
+        # If search term, check if its length is above the minLength
+        search_term = self.search_term
+        if search_term and len(search_term) < self.minimum_length:
+            return []
+
         # Do the search
         logger.info("Reference Widget Raw Query: {}".format(repr(query)))
-        brains = self.search(query, self.search_term, self.search_field, catalog)
+        brains = self.search(query, search_term, self.search_field, catalog)
 
         # If no matches, then just base_query alone ("show all if no match")
         if not brains and self.force_all:

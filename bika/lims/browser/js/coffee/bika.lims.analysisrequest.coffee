@@ -232,6 +232,7 @@ window.AnalysisRequestViewView = ->
             options.url = options.url + '&colModel=' + $.toJSON($.parseJSON($(spelement).attr('combogrid_options')).colModel)
             options.url = options.url + '&search_fields=' + $.toJSON($.parseJSON($(spelement).attr('combogrid_options')).search_fields)
             options.url = options.url + '&discard_empty=' + $.toJSON($.parseJSON($(spelement).attr('combogrid_options')).discard_empty)
+            options.url = options.url + '&minLength=' + $.toJSON($.parseJSON($(spelement).attr('combogrid_options')).minLength)
             options.force_all = 'false'
             $(spelement).combogrid options
             $(spelement).addClass 'has_combogrid_widget'
