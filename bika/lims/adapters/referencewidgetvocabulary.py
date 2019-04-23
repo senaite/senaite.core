@@ -226,8 +226,10 @@ class DefaultReferenceWidgetVocabulary(object):
         return catalog(query)
 
     def __call__(self):
-
-        catalog = api.get_tool(self.catalog_name)
+        # If search term, check if its length is above the minLength
+        search_term = self.search_term
+        if search_term and len(search_term) < self.minimum_length:
+            return []
 
         # Get the raw query to use
         # Raw query is built from base query baseline, including additional
@@ -236,13 +238,9 @@ class DefaultReferenceWidgetVocabulary(object):
         if not query:
             return []
 
-        # If search term, check if its length is above the minLength
-        search_term = self.search_term
-        if search_term and len(search_term) < self.minimum_length:
-            return []
-
         # Do the search
         logger.info("Reference Widget Raw Query: {}".format(repr(query)))
+        catalog = api.get_tool(self.catalog_name)
         brains = self.search(query, search_term, self.search_field, catalog)
 
         # If no matches, then just base_query alone ("show all if no match")
