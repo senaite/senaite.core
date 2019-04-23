@@ -18,20 +18,17 @@
 # Copyright 2018-2019 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-import copy
-from Products.CMFCore.utils import getToolByName
-# Bika LIMS imports
 from bika.lims import logger
-from bika.lims.catalog.analysisrequest_catalog import\
-    bika_catalog_analysisrequest_listing_definition
 from bika.lims.catalog.analysis_catalog import \
     bika_catalog_analysis_listing_definition
+from bika.lims.catalog.analysisrequest_catalog import \
+    bika_catalog_analysisrequest_listing_definition
 from bika.lims.catalog.autoimportlogs_catalog import \
     bika_catalog_autoimportlogs_listing_definition
+from bika.lims.catalog.report_catalog import bika_catalog_report_definition
 from bika.lims.catalog.worksheet_catalog import \
     bika_catalog_worksheet_listing_definition
-from bika.lims.catalog.report_catalog import \
-    bika_catalog_report_definition
+from Products.CMFCore.utils import getToolByName
 
 
 def getCatalogDefinitions():
@@ -429,7 +426,10 @@ def _cleanAndRebuildIfNeeded(portal, cleanrebuild):
     for cat in cleanrebuild:
         catalog = getToolByName(portal, cat)
         if catalog:
-            catalog.softClearFindAndRebuild()
+            if hasattr(catalog, "softClearFindAndRebuild"):
+                catalog.softClearFindAndRebuild()
+            else:
+                catalog.clearFindAndRebuild()
         else:
             logger.warning('%s do not found' % cat)
 

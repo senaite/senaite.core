@@ -3,21 +3,27 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
     i18n_domain="senaite.core">
 
+  <!-- Include Upgrade Steps -->
+  <include package=".upgrade"/>
+
+  <!-- Generic Setup *INSTALL* Profile -->
   <genericsetup:registerProfile
       name="default"
       title="SENAITE Core"
       directory="profiles/default"
-      description='Open Source Web based Laboratory Information Management System'
+      description="Open Source Web based Laboratory Information Management System"
+      pre_handler="bika.lims.setuphandlers.pre_install"
+      post_handler="bika.lims.setuphandlers.post_install"
       provides="Products.GenericSetup.interfaces.EXTENSION"/>
 
+  <!-- Run Setup Script -->
   <genericsetup:importStep
-      name="bika.lims.various"
-      title="bika: miscellaneous import steps"
-      description="Various import steps that are not handled by GS import/export handlers."
-      handler="bika.lims.setuphandlers.setupVarious">
+      name="senaite.core.setup_handler"
+      title="SENAITE: Run Setup Handler"
+      description="Run various configuration actions"
+      handler="bika.lims.setuphandlers.setup_handler">
     <depends name="content" />
+    <depends name="rolemap"/>
   </genericsetup:importStep>
-
-  <include package=".upgrade"/>
 
 </configure>

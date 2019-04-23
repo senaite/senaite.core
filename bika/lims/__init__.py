@@ -142,6 +142,7 @@ def initialize(context):
     from content.worksheetfolder import WorksheetFolder  # noqa
     from content.worksheettemplate import WorksheetTemplate  # noqa
 
+    from controlpanel.auditlog import AuditLog  # noqa
     from controlpanel.bika_analysiscategories import AnalysisCategories  # noqa
     from controlpanel.bika_analysisprofiles import AnalysisProfiles  # noqa
     from controlpanel.bika_analysisservices import AnalysisServices  # noqa

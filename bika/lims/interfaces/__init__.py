@@ -28,6 +28,21 @@ class IBikaLIMS(Interface):
     """
 
 
+class IAuditLog(Interface):
+    """Marker interface for Audit Log
+    """
+
+
+class IAuditable(Interface):
+    """Marker inteface for auditable contents
+    """
+
+
+class IAuditLogCatalog(Interface):
+    """Audit Log Catalog
+    """
+
+
 class IGenerateID(Interface):
     """Marker Interface to generate an ID
     """

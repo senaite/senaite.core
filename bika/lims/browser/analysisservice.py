@@ -23,6 +23,7 @@ import json
 import plone
 import plone.protect
 from bika.lims import api
+from bika.lims.api.security import check_permission
 from bika.lims.browser import BrowserView
 from bika.lims.config import POINTS_OF_CAPTURE
 from bika.lims.content.analysisservice import getContainers
@@ -30,14 +31,15 @@ from bika.lims.interfaces import IAnalysisService
 from bika.lims.interfaces import IJSONReadExtender
 from bika.lims.jsonapi import get_include_fields
 from bika.lims.jsonapi import load_field_values
+from bika.lims.permissions import ViewLogTab
 from bika.lims.utils import get_image
 from magnitude import mg
 from plone.memoize import view
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.component import adapts
-from zope.interface import implements
 from zope.i18n.locales import locales
+from zope.interface import implements
 
 
 class AnalysisServiceInfoView(BrowserView):
@@ -121,13 +123,18 @@ class AnalysisServiceInfoView(BrowserView):
             return []
         return self.get_calculation().getCalculationDependencies()
 
+    def can_view_logs_of(self, obj):
+        """Checks if the current user is allowed to see the logs
+        """
+        return check_permission(ViewLogTab, obj)
+
     def analysis_log_view(self):
         """Get the log view of the requested analysis
         """
-        analysis = self.get_analysis()
-        if analysis is None:
+        service = self.get_analysis_or_service()
+        if not self.can_view_logs_of(service):
             return None
-        view = api.get_view("log", context=analysis, request=self.request)
+        view = api.get_view("auditlog", context=service, request=self.request)
         view.update()
         view.before_render()
         return view

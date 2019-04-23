@@ -21,20 +21,35 @@
 import time
 
 import transaction
+from bika.lims import api
 from bika.lims import logger
+from bika.lims.api.security import get_roles
+from bika.lims.api.security import get_user
+from bika.lims.api.snapshot import has_snapshots
+from bika.lims.api.snapshot import supports_snapshots
+from bika.lims.api.snapshot import take_snapshot
+from bika.lims.catalog.analysis_catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.catalog.analysisrequest_catalog import \
     CATALOG_ANALYSIS_REQUEST_LISTING
-from bika.lims.catalog.analysis_catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.config import PROJECTNAME as product
-from bika.lims.interfaces import IReceived, IVerified, ISubmitted
+from bika.lims.interfaces import IReceived
+from bika.lims.interfaces import ISubmitted
+from bika.lims.interfaces import IVerified
+from bika.lims.setuphandlers import setup_auditlog_catalog
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
-from bika.lims import api
-from zope.interface import alsoProvides
 from bika.lims.workflow import get_review_history_statuses
+from DateTime import DateTime
+from zope.interface import alsoProvides
 
-version = '1.3.1'  # Remember version number in metadata.xml and setup.py
-profile = 'profile-{0}:default'.format(product)
+version = "1.3.1"  # Remember version number in metadata.xml and setup.py
+profile = "profile-{0}:default".format(product)
+
+SKIP_TYPES_FOR_AUDIT_LOG = [
+    "Sample",
+    "SamplePartition",
+    "ARReport",
+]
 
 
 @upgradestep(product, version)
@@ -52,7 +67,17 @@ def upgrade(tool):
     logger.info("Upgrading {0}: {1} -> {2}".format(product, ver_from, version))
 
     # -------- ADD YOUR STUFF BELOW --------
-    setup.runImportStepFromProfile(profile, 'workflow')
+    setup.runImportStepFromProfile(profile, "actions")
+    setup.runImportStepFromProfile(profile, "workflow")
+    setup.runImportStepFromProfile(profile, "typeinfo")
+    setup.runImportStepFromProfile(profile, "toolset")
+    setup.runImportStepFromProfile(profile, "content")
+
+    # https://github.com/senaite/senaite.core/pull/1324
+    # initialize auditlogging
+    setup_auditlog_catalog(portal)
+    init_auditlog(portal)
+    remove_log_action(portal)
 
     # Mark objects based on the transitions performed to them
     # https://github.com/senaite/senaite.core/pull/1330
@@ -60,6 +85,76 @@ def upgrade(tool):
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
+
+
+def init_auditlog(portal):
+    """Initialize the contents for the audit log
+    """
+    # reindex the auditlog folder to display the icon right in the setup
+    portal.bika_setup.auditlog.reindexObject()
+
+    # Initialize contents for audit logging
+    start = time.time()
+    uid_catalog = api.get_tool("uid_catalog")
+    brains = uid_catalog()
+    total = len(brains)
+
+    logger.info("Initializing {} objects for the audit trail...".format(total))
+    for num, brain in enumerate(brains):
+        # Progress notification
+        if num and num % 1000 == 0:
+            transaction.commit()
+            logger.info("{}/{} ojects initialized for audit logging"
+                        .format(num, total))
+        # End progress notification
+        if num + 1 == total:
+            end = time.time()
+            duration = float(end-start)
+            logger.info("{} ojects initialized for audit logging in {:.2f}s"
+                        .format(total, duration))
+
+        if api.get_portal_type(brain) in SKIP_TYPES_FOR_AUDIT_LOG:
+            continue
+
+        obj = api.get_object(brain)
+
+        if not supports_snapshots(obj):
+            continue
+
+        if has_snapshots(obj):
+            continue
+
+        # Take one snapshot per review history item
+        rh = api.get_review_history(obj, rev=False)
+        for item in rh:
+            actor = item.get("actor")
+            user = get_user(actor)
+            if user:
+                # remember the roles of the actor
+                item["roles"] = get_roles(user)
+            # The review history contains the variable "time" which we will set
+            # as the "modification" time
+            timestamp = item.pop("time", DateTime())
+            item["time"] = timestamp.ISO()
+            item["modified"] = timestamp.ISO()
+            item["remote_address"] = None
+            take_snapshot(obj, **item)
+
+
+def remove_log_action(portal):
+    """Removes the old Log action from types
+    """
+    logger.info("Removing Log Tab ...")
+    portal_types = api.get_tool("portal_types")
+    for name in portal_types.listContentTypes():
+        ti = portal_types[name]
+        actions = map(lambda action: action.id, ti._actions)
+        for index, action in enumerate(actions):
+            if action == "log":
+                logger.info("Removing Log Action for {}".format(name))
+                ti.deleteActions([index])
+                break
+    logger.info("Removing Log Tab [DONE]")
 
 
 def mark_transitions_performed(portal):
@@ -79,7 +174,7 @@ def mark_analysis_requests_transitions(portal):
         "published",
         "invalid",
         "rejected",
-        "cancelled",]
+        "cancelled", ]
     query = dict(review_state=statuses)
     brains = api.search(query, CATALOG_ANALYSIS_REQUEST_LISTING)
     total = len(brains)
@@ -90,8 +185,8 @@ def mark_analysis_requests_transitions(portal):
 
         ar = api.get_object(brain)
         if brain.review_state in ["rejected", "cancelled"]:
-            # There is no choice for "rejected" and "cancelled". We need to look
-            # to the review_history
+            # There is no choice for "rejected" and "cancelled". We need to
+            # look to the review_history
             prev_statuses = get_review_history_statuses(ar)
             if "received" in prev_statuses:
                 alsoProvides(ar, IReceived)

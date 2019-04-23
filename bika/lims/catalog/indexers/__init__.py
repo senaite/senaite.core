@@ -18,9 +18,9 @@
 # Copyright 2018-2019 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from Products.Archetypes.interfaces import IBaseObject
 from bika.lims import api
 from plone.indexer import indexer
+from Products.Archetypes.interfaces import IBaseObject
 
 
 @indexer(IBaseObject)
