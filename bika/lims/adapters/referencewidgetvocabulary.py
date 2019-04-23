@@ -20,7 +20,6 @@
 
 import json
 
-from Products.AdvancedQuery import MatchRegexp
 from bika.lims import api
 from bika.lims import logger
 from bika.lims.interfaces import IReferenceWidgetVocabulary
