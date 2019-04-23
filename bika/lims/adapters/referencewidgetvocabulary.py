@@ -261,7 +261,8 @@ class DefaultReferenceWidgetVocabulary(object):
         # If no matches, then just base_query alone ("show all if no match")
         if not brains and self.force_all:
             query = self.base_query.copy()
-            logger.info("No objects!. Get them'all: {}".format(repr(query)))
+            sorting = self.resolve_sorting(query)
+            query.update(sorting)
             brains = catalog(query)
 
         logger.info("Returned objects: {}".format(len(brains)))
