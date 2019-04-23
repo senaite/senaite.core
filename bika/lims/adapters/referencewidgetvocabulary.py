@@ -36,7 +36,6 @@ class DefaultReferenceWidgetVocabulary(object):
         self.context = context
         self.request = request
 
-    # TODO REMOVE (Only 1 search field allowed)!
     @property
     def search_fields(self):
         """Returns the object field names to search against
@@ -49,6 +48,8 @@ class DefaultReferenceWidgetVocabulary(object):
 
     @property
     def search_field(self):
+        """Returns the field name to search for
+        """
         return self.search_fields[0]
 
     @property
@@ -166,10 +167,10 @@ class DefaultReferenceWidgetVocabulary(object):
                 sorting["sort_order"] = "ascending"
 
             # Sort limit
-            sort_limit = api.to_int(query.get("limit", 0), default=0)
+            sort_limit = api.to_int(query.get("limit", 30), default=30)
             sort_limit = sort_limit or api.to_int(
-                self.request.get("sort_limit", 0),
-                default=0)
+                self.request.get("sort_limit", 30),
+                default=30)
             if sort_limit:
                 sorting["sort_limit"] = sort_limit
 
