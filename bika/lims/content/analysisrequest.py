@@ -324,7 +324,7 @@ schema = BikaSchema.copy() + Schema((
             base_query={"is_active": True,
                         "sort_limit": 50,
                         "sort_on": "sortable_title",
-                        "sort_order": "ascending"},
+                        "sort_order": "descending"},
             colModel=[
                 {'columnName': 'getId', 'width': '20',
                  'label': _('Batch ID'), 'align': 'left'},
@@ -333,6 +333,7 @@ schema = BikaSchema.copy() + Schema((
                 {'columnName': 'getClientTitle', 'width': '30',
                  'label': _('Client'), 'align': 'left'},
             ],
+            minLength=3,
             force_all = False,
             ui_item="getId",
             showOn=True,
