@@ -42,7 +42,7 @@ class DefaultReferenceWidgetVocabulary(object):
         search_fields = self.request.get("search_fields", "[]")
         search_fields = json.loads(_u(search_fields))
         if not search_fields:
-            return ("Title",)
+            return "Title",
         return search_fields
 
     @property
@@ -148,8 +148,7 @@ class DefaultReferenceWidgetVocabulary(object):
         return query
 
     def resolve_sorting(self, query):
-        """Resolves the sorting criteria for the given query based on the
-        configuration parameters from the request
+        """Resolves the sorting criteria for the given query
         """
         sorting = {}
 
@@ -163,7 +162,7 @@ class DefaultReferenceWidgetVocabulary(object):
             # Sort order
             sort_order = query.get("sord", None)
             sort_order = sort_order or query.get("sort_order", None)
-            if (sort_order in ["desc", "reverse", "rev", "descending"]):
+            if sort_order in ["desc", "reverse", "rev", "descending"]:
                 sorting["sort_order"] = "descending"
             else:
                 sorting["sort_order"] = "ascending"
