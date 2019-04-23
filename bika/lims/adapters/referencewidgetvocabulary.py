@@ -193,22 +193,6 @@ class DefaultReferenceWidgetVocabulary(object):
             return self.get_index("sortable_title", catalog)
         return index
 
-    def advanced_search(self, query, search_term, search_field, catalog):
-        """Returns an advanced query object if suitable for the query passed in
-        """
-        # Do the search
-        advanced_query = catalog.makeAdvancedQuery(query)
-        term = "{}*".format(search_term)
-        advanced_query &= MatchRegexp(search_field, term)
-        brains = catalog.evalAdvancedQuery(advanced_query)
-
-        # We need to manually apply the limit here
-        sort_limit = int(query.get("sort_limit", 0))
-        if sort_limit > 0 and len(brains) > sort_limit:
-            brains = brains[:sort_limit]
-
-        return brains
-
     def search(self, query, search_term, search_field, catalog):
         """Performs a search against the catalog and returns the brains
         """
@@ -225,15 +209,15 @@ class DefaultReferenceWidgetVocabulary(object):
         if meta == "TextIndexNG3":
             query[index.id] = "{}*".format(search_term)
 
+        elif meta == "ZCTextIndex":
+            logger.warn("*** Field '{}' ({}). Better use TextIndexNG3"
+                        .format(meta, search_field))
+            query[index.id] = "{}*".format(search_term)
+
         elif meta in ["FieldIndex", "KeywordIndex"]:
             logger.warn("*** Field '{}' ({}). Better use TextIndexNG3"
                         .format(meta, search_field))
             query[index.id] = search_term
-
-        elif meta == "ZCTextIndex":
-            logger.warn("*** Field '{}' ({}). Advanced query. TextIndexNG3 ?"
-                        .format(meta, search_field))
-            return self.advanced_search(query, search_term, search_field, catalog)
 
         else:
             logger.warn("*** Index '{}' ({}) not supported"
