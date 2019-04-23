@@ -82,8 +82,6 @@ setup(
         'tinycss2<1.0.0',
         # Add this line *after* senaite.impress 1.2.0 was realeased!
         'senaite.impress>=1.2.0',
-        # Products.AdvancedQuery 4.0 fails for Plone < 5
-        'Products.AdvancedQuery<4',
     ],
     extras_require={
         'test': [
