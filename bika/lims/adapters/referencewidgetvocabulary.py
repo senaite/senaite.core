@@ -39,17 +39,21 @@ class DefaultReferenceWidgetVocabulary(object):
     def search_fields(self):
         """Returns the object field names to search against
         """
-        search_fields = self.request.get("search_fields", "[]")
-        search_fields = json.loads(_u(search_fields))
+        search_fields = self.request.get("search_fields", None)
         if not search_fields:
-            return "Title",
+            return []
+
+        search_fields = json.loads(_u(search_fields))
         return search_fields
 
     @property
     def search_field(self):
         """Returns the field name to search for
         """
-        return self.search_fields[0]
+        search_fields = self.search_fields
+        if not search_fields:
+            return "Title"
+        return search_fields[0]
 
     @property
     def search_term(self):

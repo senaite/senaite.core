@@ -203,28 +203,27 @@ class ajaxReferenceWidgetSearch(BrowserView):
     def num_page(self):
         """Returns the number of page to render
         """
-        num_page = self.request.get("page", 1)
-        if api.is_floatable(num_page) and int(num_page) > 0:
-            return int(num_page)
-        return 1
+        return api.to_int(self.request.get("page", None), default=1)
 
     @property
     def num_rows_page(self):
         """Returns the number of rows per page to render
         """
-        num_rows_page = self.request.get("rows", 10)
-        if api.is_floatable(num_rows_page) and int(num_rows_page) > 0:
-            return int(num_rows_page)
-        return 10
+        return api.to_int(self.request.get("rows", None), default=10)
 
     def get_field_names(self):
         """Return the field names to get values for
         """
-        col_model = _u(self.request.get("colModel", "[]"))
-        col_model = json.loads(col_model)
-        names = map(lambda col: col.get("columnName", "").strip(), col_model)
+        col_model = self.request.get("colModel", None)
+        if not col_model:
+            return ["UID",]
 
-        # UID is used by reference widget to know the object the user
+        names = []
+        col_model = json.loads(_u(col_model))
+        if isinstance(col_model, (list, tuple)):
+            names = map(lambda c: c.get("columnName", "").strip(), col_model)
+
+        # UID is used by reference widget to know the object that the user
         # selected from the popup list
         if "UID" not in names:
             names.append("UID")
