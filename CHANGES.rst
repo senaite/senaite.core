@@ -25,6 +25,7 @@ Changelog
 - #1316 Barcodes view does not render all labels once Samples are registered
 - #1339 Fix result import for calculation with no formula
 - #1340 Added new result import file format options xls and xlsx 
+- #1341 Moved Agilent instruments from core to senaite.instruments
 
 
 **Security**

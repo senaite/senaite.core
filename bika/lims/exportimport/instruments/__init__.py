@@ -22,7 +22,6 @@ import sys
 import inspect
 
 # from generic import xml
-from agilent.masshunter import quantitative, masshunter
 from abbott.m2000rt import m2000rt
 from foss.fiastar import fiastar
 from foss.winescan import auto
@@ -84,8 +83,6 @@ class IInstrumentAutoImportInterface(IInstrumentInterface):
 # TODO Remove this once classic instrument interface migrated
 __all__ = ['abaxis.vetscan.vs2',
            'abbott.m2000rt.m2000rt',
-           'agilent.masshunter.masshunter',
-           'agilent.masshunter.quantitative',
            'alere.pima.beads',
            'alere.pima.cd4',
            'beckmancoulter.access.model2',
@@ -133,8 +130,6 @@ __all__ = ['abaxis.vetscan.vs2',
 PARSERS = [
            ['abaxis.vetscan.vs2', 'AbaxisVetScanCSVVS2Parser'],
            ['abbott.m2000rt.m2000rt', 'Abbottm2000rtTSVParser'],
-           ['agilent.masshunter.masshunter', 'AgilentMasshunterParser'],
-           ['agilent.masshunter.quantitative', 'MasshunterQuantCSVParser'],
            ['alere.pima.beads', 'AlerePimaSLKParser'],
            ['alere.pima.cd4', 'AlerePimacd4SLKParser'],
            ['beckmancoulter.access.model2', 'BeckmancoulterAccess2CSVParser'],
