@@ -46,7 +46,7 @@ def sortable_title(instance):
 def sortable_sortkey_title(instance):
     """Returns a sortable title as a mxin of sortkey + lowercase sortable_title
     """
-    title = plone_sortable_title(instance)
+    title = sortable_title(instance)
     if safe_callable(title):
         title = title()
 
