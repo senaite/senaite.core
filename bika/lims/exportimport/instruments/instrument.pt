@@ -4,6 +4,8 @@
 <label for='instrument_results_file_format'>Format</label>&nbsp;
 <select name="instrument_results_file_format" id="instrument_results_file_format">
     <option value='csv'>CSV</option>
+    <option value='xls'>XLS</option>
+    <option value='xlsx'>XLSX</option>
 </select>
 <p></p>
 <h3>Advanced options</h3>
