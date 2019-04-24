@@ -551,6 +551,9 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
         # Calculate
         formula = calc.getMinifiedFormula()
+        if not formula:
+            return False
+
         formula = formula.replace('[', '%(').replace(']', ')f')
         try:
             formula = eval("'%s'%%mapping" % formula,
