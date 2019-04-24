@@ -18,6 +18,7 @@ Changelog
 
 **Fixed**
 
+- #1339 Fix result import for calculation with no formula
 - #1336 Fix result capture date inconsistency
 - #1334 Number of analyses are not updated after modifying analyses in a Sample
 - #1319 Make api.get_review_history to always return a list
