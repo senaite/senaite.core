@@ -146,6 +146,7 @@ function referencewidget_lookups(elements) {
     options.url = options.url + "&search_fields=" + $.toJSON($.parseJSON($(element).attr("combogrid_options")).search_fields);
     options.url = options.url + "&discard_empty=" + $.toJSON($.parseJSON($(element).attr("combogrid_options")).discard_empty);
     options.url = options.url + "&force_all=" + $.toJSON($.parseJSON($(element).attr("combogrid_options")).force_all);
+    options.url = options.url + '&minLength=' + $.toJSON($.parseJSON($(element).attr('combogrid_options')).minLength);
     $(element).combogrid(options);
     $(element).addClass("has_combogrid_widget");
     $(element).attr("search_query", "{}");
