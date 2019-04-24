@@ -193,6 +193,37 @@ def get_object_data(obj):
 def get_request_data(request=None):
     """Get request header/form data
 
+    A typical request behind NGINX looks like this:
+
+    {
+        'CONNECTION_TYPE': 'close',
+        'CONTENT_LENGTH': '52',
+        'CONTENT_TYPE': 'application/x-www-form-urlencoded; charset=UTF-8',
+        'GATEWAY_INTERFACE': 'CGI/1.1',
+        'HTTP_ACCEPT': 'application/json, text/javascript, */*; q=0.01',
+        'HTTP_ACCEPT_ENCODING': 'gzip, deflate, br',
+        'HTTP_ACCEPT_LANGUAGE': 'de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7',
+        'HTTP_COOKIE': '_ga=GA1.2.1058345096.1522506452; toggle_cols=%7B%22AnalysisRequestsFolderanalysisrequests%22%3A%5B%22Priority%22%2C%22Progress%22%2C%22state_title%22%2C%22getId%22%2C%22getDateSampled%22%2C%22Client%22%2C%22Creator%22%2C%22getDateVerified%22%2C%22getSampleTypeTitle%22%2C%22getAnalysesNum%22%5D%2C%22ClientFolderlist_clientsfolder%22%3A%5B%22title%22%2C%22Phone%22%2C%22EmailAddress%22%2C%22getClientID%22%2C%22MemberDiscountApplies%22%5D%7D; __ac="NjE2NDZkNjk2ZTo3YTQxNTI0MzY1NDg3YTZiNGE2Mjc4Nzc1NjQ0NGI3ODY5NTY2MjcwNmQ0ODc0%250ANTI3NTRjNDM0NTY3NmI3OTczNjc3MDRiNDM3MTc2NGE3MzU1Mzc2NTUxNjk2YTZkNTE0YjQzNmU1%250AMDc1NzE3NTQzNTA0MzY3NmU3MTc4NGU0ZQ%253D%253D"; dashboard_filter_cookie=%7B%22worksheets%22%3A%20%22all%22%2C%20%22analyses%22%3A%20%22all%22%2C%20%22analysisrequests%22%3A%20%22all%22%7D; _ZopeId="82456636A884oOuVY-4"',
+        'HTTP_HOST': 'senaite.ridingbytes.com',
+        'HTTP_ORIGIN': 'https://senaite.ridingbytes.com',
+        'HTTP_REFERER': 'https://senaite.ridingbytes.com/clients/client-1/H2O-0054',
+        'HTTP_USER_AGENT': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36',
+        'HTTP_X_FORWARDED_FOR': '93.238.47.95',
+        'HTTP_X_REAL_IP': '93.238.47.95',
+        'HTTP_X_REQUESTED_WITH': 'XMLHttpRequest',
+        'PATH_INFO': '/VirtualHostBase/https/senaite.ridingbytes.com/senaite/VirtualHostRoot//@@API/update',
+        'PATH_TRANSLATED': '/VirtualHostBase/https/senaite.ridingbytes.com/senaite/VirtualHostRoot/@@API/update',
+        'QUERY_STRING': '',
+        'REMOTE_ADDR': '127.0.0.1',
+        'REQUEST_METHOD': 'POST',
+        'SCRIPT_NAME': '',
+        'SERVER_NAME': 'localhost',
+        'SERVER_PORT': '8081',
+        'SERVER_PROTOCOL': 'HTTP/1.0',
+        'SERVER_SOFTWARE': 'Zope/(2.13.28, python 2.7.12, linux2) ZServer/1.1',
+        'channel.creation_time': 1556086048
+    }
+
     :param request: Request object
     :returns: Dictionary of extracted request header/form data
     """
@@ -205,9 +236,14 @@ def get_request_data(request=None):
     if not request:
         return {}
 
+    # Try to obtain the real IP address of the client
+    forwarded_for = request.get_header("X_FORWARDED_FOR")
+    real_ip = request.get_header("X_REAL_IP")
+    remote_address = request.get_header("REMOTE_ADDR")
+
     return {
         "comments": request.form.get("comments", ""),
-        "remote_address": request.get_header("REMOTE_ADDR"),
+        "remote_address": forwarded_for or real_ip or remote_address,
         "user_agent": request.get_header("HTTP_USER_AGENT"),
         "referer": request.get_header("HTTP_REFERER"),
     }
