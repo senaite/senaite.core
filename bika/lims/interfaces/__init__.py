@@ -38,6 +38,11 @@ class IAuditable(Interface):
     """
 
 
+class IDoNotSupportSnapshots(Interface):
+    """Marker inteface for non-auditable contents
+    """
+
+
 class IAuditLogCatalog(Interface):
     """Audit Log Catalog
     """
