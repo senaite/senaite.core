@@ -305,7 +305,7 @@ def take_snapshot(obj, store=True, **kw):
 
     # return immediately
     if not store:
-        return snapshot
+        return data
 
     # get the snapshot storage
     storage = get_storage(obj)
