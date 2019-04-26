@@ -94,8 +94,8 @@ def ObjectInitializedEventHandler(obj, event):
     take_snapshot(obj, action="create")
 
 
-def ObjectWillBeRemovedEventHandler(obj, event):
-    """Object will be removed in a moment
+def ObjectRemovedEventHandler(obj, event):
+    """Object removed
     """
 
     # only snapshot supported objects
