@@ -18,6 +18,10 @@
 # Copyright 2018-2019 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import re
+import base64
+
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.browser import BrowserView
@@ -28,6 +32,8 @@ from Products.Archetypes.event import ObjectEditedEvent
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope import event
 
+IMG_DATA_RX = re.compile(r'<img alt="" src="(data:image/.*;base64,)(.*?)" />')
+
 
 class ARResultsInterpretationView(BrowserView):
     """ Renders the view for ResultsInterpration per Department
@@ -37,11 +43,12 @@ class ARResultsInterpretationView(BrowserView):
 
     def __init__(self, context, request, **kwargs):
         super(ARResultsInterpretationView, self).__init__(context, request)
+        self.request = request
         self.context = context
 
     def __call__(self):
         if self.request.form.get("submitted", False):
-            self.handle_form_submit()
+            return self.handle_form_submit()
         return self.template()
 
     def handle_form_submit(self):
@@ -50,13 +57,75 @@ class ARResultsInterpretationView(BrowserView):
         protect.CheckAuthenticator(self.request)
         logger.info("Handle ResultsInterpration Submit")
         # Save the results interpretation
-        res = self.request.form.get("ResultsInterpretationDepts", [])
+        res = self.get_resultinterpretations()
         self.context.setResultsInterpretationDepts(res)
         self.add_status_message(_("Changes Saved"), level="info")
         # reindex the object after save to update all catalog metadata
         self.context.reindexObject()
         # notify object edited event
         event.notify(ObjectEditedEvent(self.context))
+        return self.request.response.redirect(api.get_url(self.context))
+
+    def get_resultinterpretations(self):
+        """Return the result interpretations for each department
+        """
+        out = []
+        items = self.request.form.get("ResultsInterpretationDepts", [])
+        for item in items:
+            # Handle inline images in the HTML
+            richtext = self.convert_inline_images(item.get("richtext", ""))
+            # N.B. we get here a ZPublisher record. Converting to dict ensures
+            #      we can set values as well.
+            data = dict(item)
+            data["richtext"] = richtext
+            out.append(data)
+        return out
+
+    def convert_inline_images(self, html):
+        """Converts inline images in the HTML to attachments
+
+        Inline images can be added by FireFox and look like this in HTML:
+        <img alt="" src="data:image/png;base64,<BASE64_ENCODED_IMAGE>"/>
+
+        Also see: https://github.com/senaite/senaite.core/issues/1333
+        """
+        images = re.findall(IMG_DATA_RX, html)
+        if images:
+            count = len(images)
+            # found inline images, convert to Attachments
+            logger.info("Converting {} inline images to attachments for {}"
+                        .format(count, api.get_path(self.context)))
+            for group in images:
+                data_type = group[0]
+                data = group[1]
+                filedata = base64.decodestring(data)
+                filename = _("Results Interpretation")
+                attachment = self.add_attachment(filedata, filename)
+                # remove the image data base64 prefix
+                html = html.replace(data_type, "", 1)
+                # remove the base64 image data with the attachment URL
+                html = html.replace(data, "{}/AttachmentFile".format(
+                    attachment.absolute_url()))
+            self.add_status_message(
+                _("Converted {} inline image(s) to attachment files".
+                  format(count)), level="info")
+        return html
+
+    def add_attachment(self, filedata, filename=""):
+        """Add a new attachment
+        """
+        # Add a new Attachment
+        client = self.context.getClient()
+        attachment = api.create(client, "Attachment")
+        # Ignore in report
+        attachment.setReportOption("i")
+        attachment.setAttachmentFile(filedata)
+        fileobj = attachment.getAttachmentFile()
+        fileobj.filename = filename
+        self.context.addAttachment(attachment)
+        attachment.processForm()
+        self.context.reindexObject()
+        return attachment
 
     def add_status_message(self, message, level="info"):
         """Set a portal status message
