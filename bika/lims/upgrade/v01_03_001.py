@@ -100,9 +100,15 @@ def convert_inline_images_to_attachments(portal):
     """Convert base64 inline images to attachments
     """
     catalog = api.get_tool("uid_catalog")
-    samples = catalog({"portal_type": "AnalysisRequest"})
-    for sample in samples:
-        obj = api.get_object(sample)
+    brains = catalog({"portal_type": "AnalysisRequest"})
+    total = len(brains)
+    logger.info("Checking result interpretations of {} samples "
+                "for inline base64 images...".format(total))
+    for num, brain in enumerate(brains):
+        if num and num % 1000 == 0:
+            logger.info("{}/{} samples processed"
+                        .format(num, total))
+        obj = api.get_object(brain)
         # get/set the resultsinterpretations
         ri = obj.getResultsInterpretationDepts()
         obj.setResultsInterpretationDepts(ri)

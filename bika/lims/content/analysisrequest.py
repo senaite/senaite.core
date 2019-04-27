@@ -2450,6 +2450,8 @@ class AnalysisRequest(BaseFolder):
             inline_images = re.findall(IMG_DATA_RX, html)
             # convert to inline images -> attachments
             for data_type, data in inline_images:
+                logger.info("Converting inline image to Attachment for {}"
+                            .format(api.get_path(self)))
                 filedata = base64.decodestring(data)
                 filename = _("Results Interpretation")
                 attachment = self.createAttachment(filedata, filename)
