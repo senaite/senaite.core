@@ -18,6 +18,8 @@
 # Copyright 2018-2019 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import base64
+import re
 import sys
 from decimal import Decimal
 
@@ -114,6 +116,9 @@ from Products.CMFPlone.utils import safe_unicode
 from zope.interface import alsoProvides
 from zope.interface import implements
 from zope.interface import noLongerProvides
+
+IMG_DATA_RX = re.compile(r'<img alt="" src="(data:image/.*;base64,)(.*?)" />')
+
 
 # SCHEMA DEFINITION
 schema = BikaSchema.copy() + Schema((
@@ -2428,5 +2433,50 @@ class AnalysisRequest(BaseFolder):
         if attachment:
             original.extend(attachment)
             self.setAttachment(original)
+
+    def setResultsInterpretationDepts(self, value):
+        """Set the result interpretations for each department
+        """
+        if not isinstance(value, list):
+            raise TypeError("Expected list, got {}".format(type(value)))
+        records = []
+        for record in value:
+            # N.B. we might here a ZPublisher record. Converting to dict
+            #      ensures we can set values as well.
+            record = dict(record)
+            # Handle inline images in the HTML
+            html = record.get("richtext", "")
+            # Check for inline images
+            inline_images = re.findall(IMG_DATA_RX, html)
+            # convert to inline images -> attachments
+            for data_type, data in inline_images:
+                filedata = base64.decodestring(data)
+                filename = _("Results Interpretation")
+                attachment = self.createAttachment(filedata, filename)
+                # Ignore in report
+                attachment.setReportOption("i")
+                # remove the image data base64 prefix
+                html = html.replace(data_type, "", 1)
+                # remove the base64 image data with the attachment URL
+                html = html.replace(data, "{}/AttachmentFile".format(
+                    attachment.absolute_url()))
+
+            record["richtext"] = html
+            records.append(record)
+        # set the field
+        self.getField("ResultsInterpretationDepts").set(self, records)
+
+    def createAttachment(self, filedata, filename=""):
+        """Add a new attachment
+        """
+        # Add a new Attachment
+        attachment = api.create(self.getClient(), "Attachment")
+        attachment.setAttachmentFile(filedata)
+        fileobj = attachment.getAttachmentFile()
+        fileobj.filename = filename
+        attachment.processForm()
+        self.addAttachment(attachment)
+        return attachment
+
 
 registerType(AnalysisRequest, PROJECTNAME)
