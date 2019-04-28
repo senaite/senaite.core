@@ -302,7 +302,34 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
         start = self.getStartProcessDate()
         if not start:
             return None
-        return dt2DT(DT2dt(start) + timedelta(minutes=api.to_minutes(**tat)))
+
+        # delta time when the first analysis is considered as late
+        delta = timedelta(minutes=api.to_minutes(**tat))
+
+        # calculated due date
+        end = dt2DT(DT2dt(start) + delta)
+
+        # delta is within one day, return immediately
+        if delta.days == 0:
+            return end
+
+        # calculate the due date, but consider for the days only working days
+        due = end - delta.days
+
+        # get the laboratory workdays
+        setup = api.get_setup()
+        workdays = setup.getWorkdays()
+
+        days = 0
+        while days < delta.days:
+            # add one day to the new due date
+            due += 1
+            # skip if the weekday is a non working day
+            if due.asdatetime().weekday() not in workdays:
+                continue
+            days += 1
+
+        return due
 
     @security.public
     def getSampleType(self):
