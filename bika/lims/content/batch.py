@@ -19,7 +19,22 @@
 # Some rights reserved, see README and LICENSE.
 
 from AccessControl import ClassSecurityInfo
-from Products.ATExtensions.ateapi import RecordsField
+from bika.lims import api
+from bika.lims import bikaMessageFactory as _
+from bika.lims import deprecated
+from bika.lims.browser.fields.remarksfield import RemarksField
+from bika.lims.browser.widgets import DateTimeWidget
+from bika.lims.browser.widgets import RecordsWidget as bikaRecordsWidget
+from bika.lims.browser.widgets import ReferenceWidget
+from bika.lims.browser.widgets import RemarksWidget
+from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
+from bika.lims.config import PROJECTNAME
+from bika.lims.content.bikaschema import BikaFolderSchema
+from bika.lims.interfaces import IBatch
+from bika.lims.interfaces import ICancellable
+from bika.lims.interfaces import IClient
+from plone.app.folder.folder import ATFolder
+from plone.indexer import indexer
 from Products.Archetypes.public import DateTimeField
 from Products.Archetypes.public import DisplayList
 from Products.Archetypes.public import LinesField
@@ -30,23 +45,9 @@ from Products.Archetypes.public import StringField
 from Products.Archetypes.public import StringWidget
 from Products.Archetypes.public import registerType
 from Products.Archetypes.references import HoldingReference
+from Products.ATExtensions.ateapi import RecordsField
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
-from bika.lims import api
-from bika.lims import bikaMessageFactory as _
-from bika.lims import deprecated
-from bika.lims.browser.fields.remarksfield import RemarksField
-from bika.lims.browser.widgets import DateTimeWidget, ReferenceWidget
-from bika.lims.browser.widgets import RecordsWidget as bikaRecordsWidget
-from bika.lims.browser.widgets import RemarksWidget
-from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
-from bika.lims.config import PROJECTNAME
-from bika.lims.content.bikaschema import BikaFolderSchema
-from bika.lims.interfaces import IBatch, IBatchSearchableText, IClient, \
-    ICancellable
-from plone.app.folder.folder import ATFolder
-from plone.indexer import indexer
-from zope.component import getAdapters
 from zope.interface import implements
 
 
@@ -377,60 +378,6 @@ class Batch(ATFolder):
         uids = [uid for uid in self.Schema().getField('BatchLabels').get(self)]
         labels = [label.getObject().title for label in uc(UID=uids)]
         return labels
-
-    def SearchableText(self):
-        """Override searchable text logic based on the requirements.
-
-        This method constructs a text blob which contains all full-text
-        searchable text for this content item.
-        https://docs.plone.org/develop/plone/searching_and_indexing/indexing.html#full-text-searching
-
-        In some cases we may want to override plain_text_fields variable.
-        To do this, an adapter must be added (providing
-        bika.lims.interfaces.IBatchSearchableText) for that content type.
-        """
-
-        # Speed up string concatenation ops by using a buffer
-        entries = []
-
-        # plain text fields we index from ourselves,
-        # a list of accessor methods of the class
-        plain_text_fields = ("BatchID", "ClientBatchID")
-
-        # Checking if an adapter exists. If yes, we will
-        # get plain_text_fields from adapters.
-        for name, adapter in getAdapters((self,), IBatchSearchableText):
-            entries += adapter.get_plain_text_fields()
-
-        def read(accessor):
-            """Call a class accessor method to give a value for certain
-            Archetypes field.
-            """
-            try:
-                value = accessor()
-            except:
-                value = ""
-
-            if value is None:
-                value = ""
-
-            return value
-
-        # Concatenate plain text fields as they are
-        for f in plain_text_fields:
-            accessor = getattr(self, f)
-            value = read(accessor)
-            entries.append(value)
-
-        # Plone accessor methods assume utf-8
-        def convertToUTF8(text):
-            if type(text) == unicode:
-                return text.encode("utf-8")
-            return text
-
-        entries = [convertToUTF8(entry) for entry in entries]
-        # Concatenate all strings to one text blob
-        return " ".join(entries)
 
 
 registerType(Batch, PROJECTNAME)
