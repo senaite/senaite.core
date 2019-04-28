@@ -117,7 +117,7 @@ from zope.interface import alsoProvides
 from zope.interface import implements
 from zope.interface import noLongerProvides
 
-IMG_DATA_RX = re.compile(r'<img.*?src="(data:image/.*;base64,)(.*?)" />')
+IMG_DATA_RX = re.compile(r'<img.*?src="(data:image/.*;base64,)(.*?)".*?/>')
 
 
 # SCHEMA DEFINITION
