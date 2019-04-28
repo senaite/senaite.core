@@ -106,12 +106,16 @@ def convert_inline_images_to_attachments(portal):
                 "for inline base64 images...".format(total))
     for num, brain in enumerate(brains):
         if num and num % 1000 == 0:
+            transaction.commit()
             logger.info("{}/{} samples processed"
                         .format(num, total))
         obj = api.get_object(brain)
         # get/set the resultsinterpretations
         ri = obj.getResultsInterpretationDepts()
         obj.setResultsInterpretationDepts(ri)
+
+    # Commit all changes
+    transaction.commit()
 
 
 def init_auditlog(portal):
