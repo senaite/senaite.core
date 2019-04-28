@@ -117,7 +117,7 @@ from zope.interface import alsoProvides
 from zope.interface import implements
 from zope.interface import noLongerProvides
 
-IMG_DATA_RX = re.compile(r'<img alt="" src="(data:image/.*;base64,)(.*?)" />')
+IMG_DATA_RX = re.compile(r'<img.*?src="(data:image/.*;base64,)(.*?)" />')
 
 
 # SCHEMA DEFINITION
@@ -2464,7 +2464,7 @@ class AnalysisRequest(BaseFolder):
                 # Ignore in report
                 attachment.setReportOption("i")
                 # remove the image data base64 prefix
-                html = html.replace(data_type, "", 1)
+                html = html.replace(data_type, "")
                 # remove the base64 image data with the attachment URL
                 html = html.replace(data, "{}/AttachmentFile".format(
                     attachment.absolute_url()))
