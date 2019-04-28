@@ -323,18 +323,18 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
 
         # reset the due date to the received date, and add only for configured
         # workdays another day
-        due = end - delta.days
+        due_date = end - delta.days
 
         days = 0
         while days < delta.days:
             # add one day to the new due date
-            due += 1
+            due_date += 1
             # skip if the weekday is a non working day
-            if due.asdatetime().weekday() not in workdays:
+            if str(due_date.asdatetime().weekday()) not in workdays:
                 continue
             days += 1
 
-        return due
+        return due_date
 
     @security.public
     def getSampleType(self):
