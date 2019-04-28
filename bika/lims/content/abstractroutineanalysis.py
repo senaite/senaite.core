@@ -313,12 +313,17 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
         if delta.days == 0:
             return end
 
-        # calculate the due date, but consider for the days only working days
-        due = end - delta.days
-
         # get the laboratory workdays
         setup = api.get_setup()
         workdays = setup.getWorkdays()
+
+        # every day is a workday, no need for calculation
+        if workdays == tuple(map(str, range(7))):
+            return end
+
+        # reset the due date to the received date, and add only for configured
+        # workdays another day
+        due = end - delta.days
 
         days = 0
         while days < delta.days:
