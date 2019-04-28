@@ -550,7 +550,7 @@ schema = BikaFolderSchema.copy() + Schema((
         "Workdays",
         schemata="Sampling",
         vocabulary=WEEKDAYS,
-        default=tuple(map(str, range(5))),
+        default=tuple(map(str, range(7))),
         required=1,
         widget=InAndOutWidget(
             visible=True,
