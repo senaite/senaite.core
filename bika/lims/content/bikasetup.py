@@ -30,6 +30,7 @@ from Products.Archetypes.atapi import IntegerField
 from Products.Archetypes.atapi import IntegerWidget
 from Products.Archetypes.atapi import LinesField
 from Products.Archetypes.atapi import MultiSelectionWidget
+from Products.Archetypes.atapi import InAndOutWidget
 from Products.Archetypes.atapi import ReferenceField
 from Products.Archetypes.atapi import Schema
 from Products.Archetypes.atapi import SelectionWidget
@@ -48,6 +49,7 @@ from bika.lims.browser.widgets import RejectionSetupWidget
 from bika.lims.config import ARIMPORT_OPTIONS
 from bika.lims.config import ATTACHMENT_OPTIONS
 from bika.lims.config import CURRENCIES
+from bika.lims.config import WEEKDAYS
 from bika.lims.config import DECIMAL_MARKS
 from bika.lims.config import MULTI_VERIFICATION_TYPE
 from bika.lims.config import PROJECTNAME
@@ -544,6 +546,20 @@ schema = BikaFolderSchema.copy() + Schema((
             description=_("")
         ),
     ),
+    LinesField(
+        "Workdays",
+        schemata="Sampling",
+        vocabulary=WEEKDAYS,
+        default=tuple(map(str, range(7))),
+        required=1,
+        widget=InAndOutWidget(
+            visible=True,
+            label=_("Laboratory Workdays"),
+            description=_("Only laboratory workdays are considered for the "
+                          "analysis turnaround time calculation. "),
+            format="checkbox",
+        )
+    ),
     DurationField(
         'DefaultTurnaroundTime',
         schemata="Sampling",
@@ -554,7 +570,9 @@ schema = BikaFolderSchema.copy() + Schema((
             description=_(
                 "This is the default maximum time allowed for performing "
                 "analyses.  It is only used for analyses where the analysis "
-                "service does not specify a turnaround time."),
+                "service does not specify a turnaround time. "
+                "Only laboratory workdays are considered."
+            ),
         )
     ),
     DurationField(
