@@ -2435,10 +2435,16 @@ class AnalysisRequest(BaseFolder):
             self.setAttachment(original)
 
     def setResultsInterpretationDepts(self, value):
-        """Set the result interpretations for each department
+        """Custom setter which converts inline images to attachments
+
+        https://github.com/senaite/senaite.core/pull/1344
+
+        :param value: list of dictionary records
         """
         if not isinstance(value, list):
             raise TypeError("Expected list, got {}".format(type(value)))
+
+        # Convert inline images -> attachment files
         records = []
         for record in value:
             # N.B. we might here a ZPublisher record. Converting to dict
@@ -2450,10 +2456,10 @@ class AnalysisRequest(BaseFolder):
             inline_images = re.findall(IMG_DATA_RX, html)
             # convert to inline images -> attachments
             for data_type, data in inline_images:
-                logger.info("Converting inline image to Attachment for {}"
-                            .format(api.get_path(self)))
                 filedata = base64.decodestring(data)
-                filename = _("Results Interpretation")
+                # extract the file extension from the data type
+                extension = data_type.lstrip("data:image/").rstrip(";base64,")
+                filename = "attachment.{}".format(extension or "png")
                 attachment = self.createAttachment(filedata, filename)
                 # Ignore in report
                 attachment.setReportOption("i")
@@ -2462,20 +2468,29 @@ class AnalysisRequest(BaseFolder):
                 # remove the base64 image data with the attachment URL
                 html = html.replace(data, "{}/AttachmentFile".format(
                     attachment.absolute_url()))
-
+                size = attachment.getAttachmentFile().get_size()
+                logger.info("Converted {:.2f} Kb inline image for {}"
+                            .format(size/1024, api.get_url(self)))
             record["richtext"] = html
             records.append(record)
+
         # set the field
         self.getField("ResultsInterpretationDepts").set(self, records)
 
-    def createAttachment(self, filedata, filename=""):
-        """Add a new attachment
+    def createAttachment(self, filedata, filename="", **kw):
+        """Add a new attachment to the sample
+
+        :param filedata: Raw filedata of the attachment (not base64)
+        :param filename: Filename + extension, e.g. `image.png`
+        :param kw: Additional keywords set to the attachment
+        :returns: New created and added attachment
         """
         # Add a new Attachment
         attachment = api.create(self.getClient(), "Attachment")
         attachment.setAttachmentFile(filedata)
         fileobj = attachment.getAttachmentFile()
         fileobj.filename = filename
+        attachment.edit(**kw)
         attachment.processForm()
         self.addAttachment(attachment)
         return attachment
