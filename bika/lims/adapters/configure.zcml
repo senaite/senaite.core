@@ -151,14 +151,6 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
-    <monkey:patch
-      description="Allow Identifiers to be included in SearchableText"
-      class="Products.Archetypes.BaseObject.BaseObject"
-      original="SearchableText"
-      replacement=".identifiers.SearchableText"
-      preserveOriginal="True"
-     />
-
     <!-- Stickers -->
     <!-- IGetStickerTemplates adapters -->
     <adapter

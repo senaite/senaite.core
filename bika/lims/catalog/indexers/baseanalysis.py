@@ -18,17 +18,15 @@
 # Copyright 2018-2019 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from Products.CMFPlone.CatalogTool import sortable_title as _sortable_title
+from Products.CMFPlone.utils import safe_callable
+from bika.lims.catalog.indexers import sortable_sortkey_title
 from bika.lims.interfaces import IBaseAnalysis
 from plone.indexer import indexer
 
 
 @indexer(IBaseAnalysis)
 def sortable_title(instance):
-    sort_key = instance.getSortKey()
-    if sort_key is None:
-        sort_key = 999999
-    title = _sortable_title(instance)
-    if callable(title):
+    title = sortable_sortkey_title(instance)
+    if safe_callable(title):
         title = title()
-    return "{:010.3f}{}".format(sort_key, title)
+    return title

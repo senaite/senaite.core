@@ -18,24 +18,22 @@
 # Copyright 2018-2019 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import json
+
+import plone
 from AccessControl import ClassSecurityInfo
-from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
-from bika.lims.browser import BrowserView
-from bika.lims.interfaces import IReferenceWidgetVocabulary
-from bika.lims.permissions import *
-from bika.lims.utils import to_unicode as _u
-from bika.lims.utils import to_utf8 as _c
-from bika.lims import logger
-from Acquisition import aq_base
-from types import DictType
-from operator import itemgetter
 from Products.Archetypes.Registry import registerWidget
 from Products.Archetypes.Widget import StringWidget
-from Products.CMFCore.utils import getToolByName
+from bika.lims import api
+from bika.lims import logger
+from bika.lims import bikaMessageFactory as _
+from bika.lims.browser import BrowserView
+from bika.lims.interfaces import IReferenceWidgetVocabulary
+from bika.lims.utils import to_unicode as _u
+from senaite.core.supermodel.model import SuperModel
 from zope.component import getAdapters
-import json
-import plone
+from plone import protect
+
 
 class ReferenceWidget(StringWidget):
     _properties = StringWidget._properties.copy()
@@ -72,7 +70,7 @@ class ReferenceWidget(StringWidget):
         'resetButton': False,
         'sord': 'asc',
         'sidx': 'Title',
-        'force_all': True,
+        'force_all': False,
         'portal_types': {},
         'add_button': {
             'visible': False,
@@ -198,73 +196,105 @@ class ReferenceWidget(StringWidget):
 registerWidget(ReferenceWidget, title='Reference Widget')
 
 class ajaxReferenceWidgetSearch(BrowserView):
-
     """ Source for jquery combo dropdown box
     """
 
-    def __call__(self):
-        plone.protect.CheckAuthenticator(self.request)
-        page = self.request['page']
-        nr_rows = self.request['rows']
-        sord = self.request['sord']
-        sidx = self.request['sidx']
-        colModel = json.loads(_u(self.request.get('colModel', '[]')))
-        discard_empty = json.loads(_c(self.request.get('discard_empty', "[]")))
-        rows = []
+    @property
+    def num_page(self):
+        """Returns the number of page to render
+        """
+        return api.to_int(self.request.get("page", None), default=1)
 
+    @property
+    def num_rows_page(self):
+        """Returns the number of rows per page to render
+        """
+        return api.to_int(self.request.get("rows", None), default=10)
+
+    def get_field_names(self):
+        """Return the field names to get values for
+        """
+        col_model = self.request.get("colModel", None)
+        if not col_model:
+            return ["UID",]
+
+        names = []
+        col_model = json.loads(_u(col_model))
+        if isinstance(col_model, (list, tuple)):
+            names = map(lambda c: c.get("columnName", "").strip(), col_model)
+
+        # UID is used by reference widget to know the object that the user
+        # selected from the popup list
+        if "UID" not in names:
+            names.append("UID")
+
+        return filter(None, names)
+
+    def get_data_record(self, brain, field_names):
+        """Returns a dict with the column values for the given brain
+        """
+        record = {}
+        model = None
+
+        for field_name in field_names:
+            # First try to get the value directly from the brain
+            value = getattr(brain, field_name, None)
+
+            # No metadata for this column name
+            if value is None:
+                logger.warn("Not a metadata field: {}".format(field_name))
+                model = model or SuperModel(brain)
+                value = model.get(field_name, None)
+                if callable(value):
+                    value = value()
+
+            # '&nbsp;' instead of '' because empty div fields don't render
+            # correctly in combo results table
+            record[field_name] = value or "&nbsp;"
+
+        return record
+
+    def search(self):
+        """Returns the list of brains that match with the request criteria
+        """
         brains = []
-        for name, adapter in getAdapters((self.context, self.request), IReferenceWidgetVocabulary):
+        # TODO Legacy
+        for name, adapter in getAdapters((self.context, self.request),
+                                         IReferenceWidgetVocabulary):
             brains.extend(adapter())
+        return brains
 
-        for p in brains:
-            row = {'UID': getattr(p, 'UID'),
-                   'Title': getattr(p, 'Title')}
-            other_fields = [x for x in colModel
-                            if x['columnName'] not in row.keys()]
-            instance = schema = None
-            discard = False
-            # This will be faster if the columnNames are catalog indexes
-            for field in other_fields:
-                fieldname = field['columnName']
-                # Prioritize method retrieval over field retrieval from schema
-                obj = p.getObject()
-                value = getattr(obj, fieldname, None)
-                if not value or hasattr(value, 'im_self'):
-                    value = getattr(p, fieldname, None)
-                if not value:
-                    if instance is None:
-                        instance = p.getObject()
-                        schema = instance.Schema()
-                    if fieldname in schema:
-                        value = schema[fieldname].get(instance)
-                    elif hasattr(instance, fieldname):
-                        value = getattr(instance, fieldname)
-                        if callable(value):
-                            value = value()
+    def to_data_rows(self, brains):
+        """Returns a list of dictionaries representing the values of each brain
+        """
+        fields = self.get_field_names()
+        return map(lambda brain: self.get_data_record(brain, fields), brains)
 
-                if fieldname in discard_empty and not value:
-                    discard = True
-                    break
+    def to_json_payload(self, data_rows):
+        """Returns the json payload
+        """
+        num_rows = len(data_rows)
+        num_page = self.num_page
+        num_rows_page = self.num_rows_page
 
-                # '&nbsp;' instead of '' because empty div fields don't render
-                # correctly in combo results table
-                row[fieldname] = value and value or '&nbsp;'
+        pages = num_rows / num_rows_page
+        pages += divmod(num_rows, num_rows_page)[1] and 1 or 0
+        start = (num_page - 1) * num_rows_page
+        end = num_page * num_rows_page
+        payload = {"page": num_page,
+                   "total": pages,
+                   "records": num_rows,
+                   "rows": data_rows[start:end]}
+        return json.dumps(payload)
 
-            if discard is False:
-                rows.append(row)
+    def __call__(self):
+        protect.CheckAuthenticator(self.request)
 
-        rows = sorted(rows, cmp=lambda x, y: cmp(
-            str(x).lower(), str(y).lower()),
-            key=itemgetter(sidx and sidx or 'Title'))
-        if sord == 'desc':
-            rows.reverse()
-        pages = len(rows) / int(nr_rows)
-        pages += divmod(len(rows), int(nr_rows))[1] and 1 or 0
-        start = (int(page) - 1) * int(nr_rows)
-        end = int(page) * int(nr_rows)
-        ret = {'page': page,
-               'total': pages,
-               'records': len(rows),
-               'rows': rows[start:end]}
+        # Do the search
+        brains = self.search()
 
-        return json.dumps(ret)
+        # Generate the data rows to display
+        data_rows = self.to_data_rows(brains)
+
+        # Return the payload
+        return self.to_json_payload(data_rows)

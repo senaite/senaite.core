@@ -467,6 +467,7 @@
       url += `&colModel=${$.toJSON(options.colModel)}`;
       url += `&search_fields=${$.toJSON(options.search_fields)}`;
       url += `&discard_empty=${$.toJSON(options.discard_empty)}`;
+      url += `&minLength=${$.toJSON(options.minLength)}`;
       // get the current query (either "base_query" or "search_query" attribute)
       catalog_query = $.parseJSON(field.attr(type));
       // update this query with the passed in query

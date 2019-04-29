@@ -6,6 +6,7 @@ Changelog
 
 **Added**
 
+- #1347 Consider laboratory workdays only for the late analyses calculation
 - #1324 Audit Log
 
 **Changed**
@@ -14,6 +15,7 @@ Changelog
 
 **Removed**
 
+- #1346 Remove Searchable Text Overrides
 - #1328 Remove transition filtering in Worksheet listings
 
 **Fixed**

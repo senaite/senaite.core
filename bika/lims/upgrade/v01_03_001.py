@@ -41,6 +41,7 @@ from bika.lims.upgrade.utils import UpgradeUtils
 from bika.lims.workflow import get_review_history_statuses
 from DateTime import DateTime
 from zope.interface import alsoProvides
+from Products.ZCatalog.ProgressHandler import ZLogHandler
 
 version = "1.3.1"  # Remember version number in metadata.xml and setup.py
 profile = "profile-{0}:default".format(product)
@@ -82,6 +83,10 @@ def upgrade(tool):
     # Mark objects based on the transitions performed to them
     # https://github.com/senaite/senaite.core/pull/1330
     mark_transitions_performed(portal)
+
+    # Reindex sortable_title to make sorting case-insenstive
+    # https://github.com/senaite/senaite.core/pull/1337
+    reindex_sortable_title(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
@@ -229,3 +234,18 @@ def commit_transaction(portal):
     end = time.time()
     logger.info("Commit transaction ... Took {:.2f}s [DONE]"
                 .format(end - start))
+
+def reindex_sortable_title(portal):
+    """Reindex sortable_title from some catalogs
+    """
+    catalogs = [
+        "bika_catalog",
+        "bika_setup_catalog",
+        "portal_catalog",
+    ]
+    for catalog_name in catalogs:
+        logger.info("Reindexing sortable_title for {} ...".format(catalog_name))
+        handler = ZLogHandler(steps=100)
+        catalog = api.get_tool(catalog_name)
+        catalog.reindexIndex("sortable_title", None, pghandler=handler)
+        commit_transaction(portal)

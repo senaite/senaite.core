@@ -561,15 +561,6 @@ class IIdServer(Interface):
         """
 
 
-class IBatchSearchableText(Interface):
-    """Marker Interface for BatchSearchableText
-    """
-
-    def get_plain_text_fields(self):
-        """Returns field names as a list of strings
-        """
-
-
 class IReferenceWidgetVocabulary(Interface):
     """Return values for reference widgets in AR contexts
     """
