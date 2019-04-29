@@ -118,16 +118,23 @@ class ImportView(BrowserView):
 class ajaxGetImportTemplate(BrowserView):
 
     def __call__(self):
+        import pdb; pdb.set_trace()
         plone.protect.CheckAuthenticator(self.request)
         exim = self.request.get('exim').replace(".", "/")
         # If a specific template for this instrument doesn't exist yet,
         # use the default template for instrument results file import located
         # at bika/lims/exportimport/instruments/instrument.pt
-        instrpath = os.path.join("exportimport", "instruments")
-        templates_dir = resource_filename("bika.lims", instrpath)
-        fname = "%s/%s_import.pt" % (templates_dir, exim)
+        if exim.startswith('senaite/instruments'):
+            #TODO find a better way to see check if the instrument is in core
+            instrpath = '/'.join(exim.split('/')[2:-2])
+            templates_dir = resource_filename("senaite.instruments", instrpath)
+            fname = "{}/{}_import.pt".format(templates_dir, exim.split('/')[-1])
+        else:
+            instrpath = os.path.join("exportimport", "instruments")
+            templates_dir = resource_filename("bika.lims", instrpath)
+            fname = "%s/%s_import.pt" % (templates_dir, exim)
         if os.path.isfile(fname):
-            return ViewPageTemplateFile("instruments/%s_import.pt" % exim)(self)
+            return ViewPageTemplateFile(fname)(self)
         else:
             return ViewPageTemplateFile("instruments/instrument.pt")(self)
 
