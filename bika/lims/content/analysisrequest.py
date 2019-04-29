@@ -22,7 +22,7 @@ import base64
 import re
 import sys
 from decimal import Decimal
-from urllib.parse import urljoin
+from urlparse import urljoin
 
 from AccessControl import ClassSecurityInfo
 from bika.lims import api
