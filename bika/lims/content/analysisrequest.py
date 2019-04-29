@@ -22,6 +22,7 @@ import base64
 import re
 import sys
 from decimal import Decimal
+from urllib.parse import urljoin
 
 from AccessControl import ClassSecurityInfo
 from bika.lims import api
@@ -117,7 +118,8 @@ from zope.interface import alsoProvides
 from zope.interface import implements
 from zope.interface import noLongerProvides
 
-IMG_DATA_RX = re.compile(r'<img.*?src="(data:image/.*;base64,)(.*?)".*?/>')
+IMG_SRC_RX = re.compile(r'<img.*?src="(.*?)"')
+IMG_DATA_SRC_RX = re.compile(r'<img.*?src="(data:image/.*?;base64,)(.*?)"')
 
 
 # SCHEMA DEFINITION
@@ -2416,6 +2418,24 @@ class AnalysisRequest(BaseFolder):
             return ""
         return reasons[0].get("other", "")
 
+    def createAttachment(self, filedata, filename="", **kw):
+        """Add a new attachment to the sample
+
+        :param filedata: Raw filedata of the attachment (not base64)
+        :param filename: Filename + extension, e.g. `image.png`
+        :param kw: Additional keywords set to the attachment
+        :returns: New created and added attachment
+        """
+        # Add a new Attachment
+        attachment = api.create(self.getClient(), "Attachment")
+        attachment.setAttachmentFile(filedata)
+        fileobj = attachment.getAttachmentFile()
+        fileobj.filename = filename
+        attachment.edit(**kw)
+        attachment.processForm()
+        self.addAttachment(attachment)
+        return attachment
+
     def addAttachment(self, attachment):
         """Adds an attachment or a list of attachments to the Analysis Request
         """
@@ -2452,48 +2472,64 @@ class AnalysisRequest(BaseFolder):
             record = dict(record)
             # Handle inline images in the HTML
             html = record.get("richtext", "")
-            # Check for inline images
-            inline_images = re.findall(IMG_DATA_RX, html)
-            # convert to inline images -> attachments
-            for data_type, data in inline_images:
-                filedata = base64.decodestring(data)
-                # extract the file extension from the data type
-                extension = data_type.lstrip("data:image/").rstrip(";base64,")
-                filename = "attachment.{}".format(extension or "png")
-                attachment = self.createAttachment(filedata, filename)
-                # Ignore in report
-                attachment.setReportOption("i")
-                # remove the image data base64 prefix
-                html = html.replace(data_type, "")
-                # remove the base64 image data with the attachment URL
-                html = html.replace(data, "{}/AttachmentFile".format(
-                    attachment.absolute_url()))
-                size = attachment.getAttachmentFile().get_size()
-                logger.info("Converted {:.2f} Kb inline image for {}"
-                            .format(size/1024, api.get_url(self)))
-            record["richtext"] = html
+            # Process inline images to attachments
+            record["richtext"] = self.process_inline_images(html)
+            # append the processed record for storage
             records.append(record)
 
         # set the field
         self.getField("ResultsInterpretationDepts").set(self, records)
 
-    def createAttachment(self, filedata, filename="", **kw):
-        """Add a new attachment to the sample
+    def process_inline_images(self, html):
+        """Convert inline images in the HTML to attachments
 
-        :param filedata: Raw filedata of the attachment (not base64)
-        :param filename: Filename + extension, e.g. `image.png`
-        :param kw: Additional keywords set to the attachment
-        :returns: New created and added attachment
+        https://github.com/senaite/senaite.core/pull/1344
+
+        :param html: The richtext HTML
+        :returns: HTML with converted images
         """
-        # Add a new Attachment
-        attachment = api.create(self.getClient(), "Attachment")
-        attachment.setAttachmentFile(filedata)
-        fileobj = attachment.getAttachmentFile()
-        fileobj.filename = filename
-        attachment.edit(**kw)
-        attachment.processForm()
-        self.addAttachment(attachment)
-        return attachment
+        # Check for inline images
+        inline_images = re.findall(IMG_DATA_SRC_RX, html)
+
+        # convert to inline images -> attachments
+        for data_type, data in inline_images:
+            # decode the base64 data to filedata
+            filedata = base64.decodestring(data)
+            # extract the file extension from the data type
+            extension = data_type.lstrip("data:image/").rstrip(";base64,")
+            # generate filename + extension
+            filename = "attachment.{}".format(extension or "png")
+            # create a new attachment
+            attachment = self.createAttachment(filedata, filename)
+            # ignore the attachment in report
+            attachment.setReportOption("i")
+            # remove the image data base64 prefix
+            html = html.replace(data_type, "")
+            # remove the base64 image data with the attachment URL
+            html = html.replace(data, "{}/AttachmentFile".format(
+                attachment.absolute_url()))
+            size = attachment.getAttachmentFile().get_size()
+            logger.info("Converted {:.2f} Kb inline image for {}"
+                        .format(size/1024, api.get_url(self)))
+
+        # convert relative URLs to absolute URLs
+        # N.B. This is actually a TinyMCE issue, but hardcoded in Plone:
+        #      https://www.tiny.cloud/docs/configure/url-handling/#relative_urls
+        image_sources = re.findall(IMG_SRC_RX, html)
+
+        # we need a trailing slash so that urljoin does not remove the last segment
+        base_url = "{}/".format(api.get_url(self))
+
+        for src in image_sources:
+            if re.match("(http|https|data)", src):
+                continue
+            obj = self.restrictedTraverse(src, None)
+            if obj is None:
+                continue
+            # ensure we have an absolute URL
+            html = html.replace(src, urljoin(base_url, src))
+
+        return html
 
 
 registerType(AnalysisRequest, PROJECTNAME)
