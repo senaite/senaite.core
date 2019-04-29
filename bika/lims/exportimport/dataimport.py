@@ -18,8 +18,10 @@
 # Copyright 2018-2019 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import json
+import os.path
+import plone
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from bika.lims import bikaMessageFactory as _
 from bika.lims.browser import BrowserView
 from bika.lims.exportimport import instruments
 from bika.lims.exportimport.instruments import get_instrument_import_interfaces
@@ -29,11 +31,9 @@ from plone.app.layout.globals.interfaces import IViewView
 from Products.Archetypes.public import DisplayList
 from Products.CMFCore.utils import getToolByName
 from zope.interface import implements
-from pkg_resources import *
+from pkg_resources import resource_filename
+from pkg_resources import resource_listdir
 from zope.component import getAdapters
-import json
-
-import plone
 
 
 class SetupDataSetList:
@@ -46,7 +46,7 @@ class SetupDataSetList:
     def __call__(self, projectname="bika.lims"):
         datasets = []
         for f in resource_listdir(projectname, 'setupdata'):
-            fn = f+".xlsx"
+            fn = f + ".xlsx"
             try:
                 if fn in resource_listdir(projectname, 'setupdata/%s' % f):
                     datasets.append({"projectname": projectname, "dataset": f})
@@ -107,11 +107,13 @@ class ImportView(BrowserView):
 
     def getInstruments(self):
         bsc = getToolByName(self, 'bika_setup_catalog')
-        items = [('', '...Choose an Instrument...')] + [(o.UID, o.Title) for o in
-                               bsc(portal_type = 'Instrument',
-                                   is_active = True)]
+        brains = bsc(portal_type='Instrument', is_active=True)
+        items = [('', '...Choose an Instrument...')]
+        for item in brains:
+            items.append((item.UID, item.Title))
         items.sort(lambda x, y: cmp(x[1].lower(), y[1].lower()))
         return DisplayList(list(items))
+
 
 class ajaxGetImportTemplate(BrowserView):
 
@@ -121,7 +123,6 @@ class ajaxGetImportTemplate(BrowserView):
         # If a specific template for this instrument doesn't exist yet,
         # use the default template for instrument results file import located
         # at bika/lims/exportimport/instruments/instrument.pt
-        import os.path
         instrpath = os.path.join("exportimport", "instruments")
         templates_dir = resource_filename("bika.lims", instrpath)
         fname = "%s/%s_import.pt" % (templates_dir, exim)
@@ -136,9 +137,10 @@ class ajaxGetImportTemplate(BrowserView):
             text to be displayed.
         '''
         bsc = getToolByName(self, 'bika_setup_catalog')
-        items = [('', '')] + [(o.getObject().Keyword, o.Title) for o in
-                                bsc(portal_type = 'AnalysisService',
-                                    is_active = True)]
+        brains = bsc(portal_type='AnalysisService')
+        items = []
+        for item in brains:
+            items.append((item.UID, item.Title))
         items.sort(lambda x, y: cmp(x[1].lower(), y[1].lower()))
         return DisplayList(list(items))
 
@@ -157,11 +159,11 @@ class ajaxGetImportInterfaces(BrowserView):
         except Forbidden:
             return json.dumps(interfaces)
 
-        from bika.lims.exportimport import instruments
         bsc = getToolByName(self, 'bika_setup_catalog')
-        instrument=bsc(portal_type='Instrument',
-                       UID=self.request.get('instrument_uid', ''),
-                       is_active=True,)
+        instrument = bsc(
+            portal_type='Instrument',
+            UID=self.request.get('instrument_uid', ''),
+            is_active=True,)
         if instrument and len(instrument) == 1:
             instrument = instrument[0].getObject()
             for i in instrument.getImportDataInterface():
