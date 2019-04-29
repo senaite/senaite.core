@@ -139,16 +139,20 @@ schema = BikaSchema.copy() + Schema((
                 'add': 'edit',
                 'header_table': 'prominent',
             },
-            base_query={'is_active': True},
+            catalog_name="portal_catalog",
+            base_query={"is_active": True,
+                        "sort_limit": 50,
+                        "sort_on": "sortable_title",
+                        "sort_order": "ascending"},
             showOn=True,
             popup_width='400px',
             colModel=[
-                {'columnName': 'UID', 'hidden': True},
                 {'columnName': 'Fullname', 'width': '50',
                  'label': _('Name')},
                 {'columnName': 'EmailAddress', 'width': '50',
                  'label': _('Email Address')},
             ],
+            ui_item='Fullname',
         ),
     ),
 
@@ -171,16 +175,19 @@ schema = BikaSchema.copy() + Schema((
                 'add': 'edit',
                 'header_table': 'prominent',
             },
-            base_query={'is_active': True},
+            catalog_name="portal_catalog",
+            base_query={"is_active": True,
+                        "sort_on": "sortable_title",
+                        "sort_order": "ascending"},
             showOn=True,
             popup_width='400px',
             colModel=[
-                {'columnName': 'UID', 'hidden': True},
                 {'columnName': 'Fullname', 'width': '50',
                  'label': _('Name')},
                 {'columnName': 'EmailAddress', 'width': '50',
                  'label': _('Email Address')},
             ],
+            ui_item='Fullname',
         ),
     ),
 
@@ -220,7 +227,11 @@ schema = BikaSchema.copy() + Schema((
                 'add': 'edit',
                 'header_table': 'prominent',
             },
-            base_query={'review_state': 'active'},
+            catalog_name="portal_catalog",
+            base_query={"is_active": True,
+                        "sort_limit": 30,
+                        "sort_on": "sortable_title",
+                        "sort_order": "ascending"},
             showOn=True,
             add_button={
                     'visible': True,
@@ -272,6 +283,12 @@ schema = BikaSchema.copy() + Schema((
                 'header_table': 'prominent',
             },
             catalog_name=CATALOG_ANALYSIS_REQUEST_LISTING,
+            search_fields=('listing_searchable_text',),
+            base_query={'is_active': True,
+                        'is_received': True,
+                        'sort_limit': 30,
+                        'sort_on': 'getId',
+                        'sort_order': 'descending'},
             colModel=[
                 {'columnName': 'getId', 'width': '20',
                  'label': _('Sample ID'), 'align': 'left'},
@@ -283,9 +300,7 @@ schema = BikaSchema.copy() + Schema((
                  'label': _('Client'), 'align': 'left'},
                 {'columnName': 'UID', 'hidden': True},
             ],
-            base_query={'is_active': True, 'is_received': True},
-            sidx='getId',
-            sord='desc',
+            ui_item='getId',
             showOn=True,
         )
     ),
@@ -305,8 +320,22 @@ schema = BikaSchema.copy() + Schema((
             visible={
                 'add': 'edit',
             },
-            catalog_name='bika_catalog',
-            base_query={'review_state': 'open'},
+            catalog_name="bika_catalog",
+            base_query={"is_active": True,
+                        "sort_limit": 50,
+                        "sort_on": "sortable_title",
+                        "sort_order": "descending"},
+            colModel=[
+                {'columnName': 'getId', 'width': '20',
+                 'label': _('Batch ID'), 'align': 'left'},
+                {'columnName': 'getClientBatchID', 'width': '20',
+                 'label': _('CBID'), 'align': 'left'},
+                {'columnName': 'getClientTitle', 'width': '30',
+                 'label': _('Client'), 'align': 'left'},
+            ],
+            minLength=3,
+            force_all = False,
+            ui_item="getId",
             showOn=True,
         ),
     ),
@@ -384,7 +413,9 @@ schema = BikaSchema.copy() + Schema((
                 'secondary': 'disabled',
             },
             catalog_name='bika_setup_catalog',
-            base_query={'is_active': True},
+            base_query={"is_active": True,
+                        "sort_on": "sortable_title",
+                        "sort_order": "ascending"},
             showOn=True,
         ),
     ),
@@ -405,7 +436,9 @@ schema = BikaSchema.copy() + Schema((
             render_own_label=True,
             visible=False,
             catalog_name='bika_setup_catalog',
-            base_query={'is_active': True},
+            base_query={"is_active": True,
+                        "sort_on": "sortable_title",
+                        "sort_order": "ascending"},
             showOn=False,
         ),
     ),
@@ -429,7 +462,9 @@ schema = BikaSchema.copy() + Schema((
                 'add': 'edit',
             },
             catalog_name='bika_setup_catalog',
-            base_query={'is_active': True},
+            base_query={"is_active": True,
+                        "sort_on": "sortable_title",
+                        "sort_order": "ascending"},
             showOn=True,
         ),
     ),
@@ -528,7 +563,9 @@ schema = BikaSchema.copy() + Schema((
                 'secondary': 'disabled',
             },
             catalog_name='bika_setup_catalog',
-            base_query={'is_active': True},
+            base_query={"is_active": True,
+                        "sort_on": "sortable_title",
+                        "sort_order": "ascending"},
             showOn=True,
         ),
     ),
@@ -547,7 +584,9 @@ schema = BikaSchema.copy() + Schema((
                 'add': 'edit',
             },
             catalog_name='bika_setup_catalog',
-            base_query={'is_active': True},
+            base_query={"is_active": True,
+                        "sort_on": "sortable_title",
+                        "sort_order": "ascending"},
             showOn=True,
         ),
     ),
@@ -566,7 +605,9 @@ schema = BikaSchema.copy() + Schema((
                 'add': 'edit',
             },
             catalog_name='bika_setup_catalog',
-            base_query={'is_active': True},
+            base_query={"is_active": True,
+                        "sort_on": "sortable_title",
+                        "sort_order": "ascending"},
             showOn=True,
         ),
     ),
@@ -647,6 +688,9 @@ schema = BikaSchema.copy() + Schema((
                 'add': 'edit',
             },
             catalog_name='bika_setup_catalog',
+            base_query={"is_active": True,
+                        "sort_on": "sortable_title",
+                        "sort_order": "ascending"},
             colModel=[
                 {'columnName': 'contextual_title',
                  'width': '30',
@@ -692,7 +736,9 @@ schema = BikaSchema.copy() + Schema((
                 'secondary': 'disabled',
             },
             catalog_name='bika_setup_catalog',
-            base_query={'is_active': True},
+            base_query={"is_active": True,
+                        "sort_on": "sortable_title",
+                        "sort_order": "ascending"},
             showOn=True,
         ),
     ),
@@ -714,7 +760,9 @@ schema = BikaSchema.copy() + Schema((
                 'secondary': 'disabled',
             },
             catalog_name='bika_setup_catalog',
-            base_query={'is_active': True},
+            base_query={"is_active": True,
+                        "sort_on": "sortable_title",
+                        "sort_order": "ascending"},
             showOn=True,
         ),
     ),
@@ -735,7 +783,9 @@ schema = BikaSchema.copy() + Schema((
                 'secondary': 'disabled',
             },
             catalog_name='bika_setup_catalog',
-            base_query={'is_active': True},
+            base_query={"is_active": True,
+                        "sort_on": "sortable_title",
+                        "sort_order": "ascending"},
             showOn=True,
         ),
     ),
@@ -807,7 +857,9 @@ schema = BikaSchema.copy() + Schema((
                 'secondary': 'disabled',
             },
             catalog_name='bika_setup_catalog',
-            base_query={'is_active': True},
+            base_query={"is_active": True,
+                        "sort_on": "sortable_title",
+                        "sort_order": "ascending"},
             showOn=True,
         ),
     ),
@@ -828,7 +880,9 @@ schema = BikaSchema.copy() + Schema((
                 'secondary': 'disabled',
             },
             catalog_name='bika_setup_catalog',
-            base_query={'is_active': True},
+            base_query={"is_active": True,
+                        "sort_on": "sortable_title",
+                        "sort_order": "ascending"},
             showOn=True,
         ),
     ),
@@ -881,7 +935,9 @@ schema = BikaSchema.copy() + Schema((
             render_own_label=True,
             visible=False,
             catalog_name='bika_setup_catalog',
-            base_query={'is_active': True},
+            base_query={"is_active": True,
+                        "sort_on": "sortable_title",
+                        "sort_order": "ascending"},
             showOn=True,
         ),
     ),
@@ -2126,73 +2182,6 @@ class AnalysisRequest(BaseFolder):
             state = w._getWorkflowStateOf(self).id
             states[w.state_var] = state
         return states
-
-    def SearchableText(self):
-        """
-        Override searchable text logic based on the requirements.
-
-        This method constructs a text blob which contains all full-text
-        searchable text for this content item.
-        https://docs.plone.org/develop/plone/searching_and_indexing/indexing.html#full-text-searching
-        """
-
-        # Speed up string concatenation ops by using a buffer
-        entries = []
-
-        # plain text fields we index from ourself,
-        # a list of accessor methods of the class
-        plain_text_fields = ("getId", )
-
-        def read(acc):
-            """
-            Call a class accessor method to give a value for certain Archetypes
-            field.
-            """
-            try:
-                val = acc()
-            except Exception as e:
-                message = "Error getting the accessor parameter in " \
-                          "SearchableText from the Analysis Request Object " \
-                          "{}: {}".format(self.getId(), e.message)
-                logger.error(message)
-                val = ""
-
-            if val is None:
-                val = ""
-
-            return val
-
-        # Concatenate plain text fields as they are
-        for f in plain_text_fields:
-            accessor = getattr(self, f)
-            value = read(accessor)
-            entries.append(value)
-
-        # Adding HTML Fields to SearchableText can be uncommented if necessary
-        # transforms = getToolByName(self, 'portal_transforms')
-        #
-        # # Run HTML valued fields through text/plain conversion
-        # for f in html_fields:
-        #     accessor = getattr(self, f)
-        #     value = read(accessor)
-        #
-        #     if value != "":
-        #         stream = transforms.convertTo('text/plain', value,
-        #                                       mimetype='text/html')
-        #         value = stream.getData()
-        #
-        #     entries.append(value)
-
-        # Plone accessor methods assume utf-8
-        def convertToUTF8(text):
-            if type(text) == unicode:
-                return text.encode("utf-8")
-            return text
-
-        entries = [convertToUTF8(entry) for entry in entries]
-
-        # Concatenate all strings to one text blob
-        return " ".join(entries)
 
     def getPriorityText(self):
         """

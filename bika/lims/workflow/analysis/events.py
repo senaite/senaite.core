@@ -20,11 +20,11 @@
 
 from bika.lims import api
 from bika.lims import logger
-from bika.lims.interfaces import IDuplicateAnalysis, IAnalysisRequest, \
-    IBaseAnalysis
+from bika.lims.interfaces import IDuplicateAnalysis, IVerified, ISubmitted
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.utils.analysis import create_analysis
 from bika.lims.workflow import doActionFor, push_reindex_to_actions_pool
+from zope.interface import alsoProvides
 
 
 def after_assign(analysis):
@@ -91,6 +91,9 @@ def after_submit(analysis):
     This function is called automatically by
     bika.lims.workfow.AfterTransitionEventHandler
     """
+    # Mark this analysis as ISubmitted
+    alsoProvides(analysis, ISubmitted)
+
     # Promote to analyses this analysis depends on
     promote_to_dependencies(analysis, "submit")
 
@@ -185,6 +188,9 @@ def after_verify(analysis):
     This function is called automatically by
     bika.lims.workfow.AfterTransitionEventHandler
     """
+    # Mark this analysis as IVerified
+    alsoProvides(analysis, IVerified)
+
     # Promote to analyses this analysis depends on
     promote_to_dependencies(analysis, "verify")
 

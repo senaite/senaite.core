@@ -28,6 +28,21 @@ class IBikaLIMS(Interface):
     """
 
 
+class IAuditLog(Interface):
+    """Marker interface for Audit Log
+    """
+
+
+class IAuditable(Interface):
+    """Marker inteface for auditable contents
+    """
+
+
+class IAuditLogCatalog(Interface):
+    """Audit Log Catalog
+    """
+
+
 class IGenerateID(Interface):
     """Marker Interface to generate an ID
     """
@@ -546,15 +561,6 @@ class IIdServer(Interface):
         """
 
 
-class IBatchSearchableText(Interface):
-    """Marker Interface for BatchSearchableText
-    """
-
-    def get_plain_text_fields(self):
-        """Returns field names as a list of strings
-        """
-
-
 class IReferenceWidgetVocabulary(Interface):
     """Return values for reference widgets in AR contexts
     """
@@ -907,4 +913,19 @@ class IWorkflowActionAdapter(Interface):
 class IWorkflowActionUIDsAdapter(IWorkflowActionAdapter):
     """Marker for adapters in charge of processing workflow action requests
     from views, but meant for redirection only
+    """
+
+
+class IVerified(Interface):
+    """Marker interface for verified objects
+    """
+
+
+class ISubmitted(Interface):
+    """Marker interface for submitted objects
+    """
+
+
+class IReceived(Interface):
+    """Marker interface for received objects
     """

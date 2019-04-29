@@ -55,7 +55,6 @@ setup(
         'Products.ATExtensions>=1.1a3',
         'Products.CMFEditions',
         'Products.DataGridField',
-        'Products.AdvancedQuery',
         'Products.TinyMCE',
         'Products.TextIndexNG3',
         'collective.monkeypatcher',

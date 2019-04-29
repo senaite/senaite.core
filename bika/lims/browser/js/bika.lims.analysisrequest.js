@@ -114,7 +114,7 @@
    */
 
   window.AnalysisRequestViewView = function() {
-    var build_typical_save_request, filter_CCContacts, filter_by_client, getClientUID, parse_CCClist, resultsinterpretation_move_below, save_elements, set_autosave_input, that;
+    var filter_CCContacts, filter_by_client, getClientUID, parse_CCClist, resultsinterpretation_move_below, that;
     that = this;
 
     /**
@@ -188,137 +188,6 @@
       $(element).attr('combogrid_options', $.toJSON(options));
       referencewidget_lookups($(element));
     };
-    set_autosave_input = function() {
-
-      /**
-       * Set an event for each input field in the AR header. After write something in the input field and
-       * focus out it, the event automatically saves the change.
-       */
-      $('table.header_table input').not('[attr="referencewidget"]').not('[type="hidden"]').not('.rejectionwidget-field').each(function(i) {
-        $(this).change(function() {
-          var pointer;
-          pointer = this;
-          build_typical_save_request(pointer);
-        });
-      });
-      $('table.header_table select').not('[type="hidden"]').not('.rejectionwidget-field').each(function(i) {
-        $(this).change(function() {
-          var pointer;
-          pointer = this;
-          build_typical_save_request(pointer);
-        });
-      });
-      $('table.header_table input.referencewidget').not('[type="hidden"]').not('[id="CCContact"]').each(function(i) {
-        $(this).bind('selected', function() {
-          var fieldname, fieldvalue, pointer, requestdata;
-          requestdata = {};
-          pointer = this;
-          fieldvalue = void 0;
-          fieldname = void 0;
-          setTimeout((function() {
-            fieldname = $(pointer).closest('div[id^="archetypes-fieldname-"]').attr('data-fieldname');
-            fieldvalue = $(pointer).attr('uid');
-            requestdata[fieldname] = 'uid:' + fieldvalue;
-            save_elements(requestdata);
-          }), 500);
-        });
-      });
-      $('table.header_table input#CCContact.referencewidget').not('[type="hidden"]').each(function(i) {
-        $(this).bind('selected', function() {
-          var fieldname, fieldvalue, pointer, requestdata;
-          pointer = this;
-          fieldvalue = void 0;
-          fieldname = void 0;
-          requestdata = {};
-          setTimeout((function() {
-            fieldname = $(pointer).closest('div[id^="archetypes-fieldname-"]').attr('data-fieldname');
-            fieldvalue = parse_CCClist();
-            requestdata[fieldname] = fieldvalue;
-            save_elements(requestdata);
-          }), 500);
-        });
-      });
-      $('img[fieldname="CCContact"]').each(function() {
-        var fieldname, fieldvalue, requestdata;
-        fieldvalue = void 0;
-        requestdata = {};
-        fieldname = void 0;
-        $(this).click(function() {
-          fieldname = $(this).attr('fieldname');
-          setTimeout(function() {
-            fieldvalue = parse_CCClist();
-            requestdata[fieldname] = fieldvalue;
-            save_elements(requestdata);
-          });
-        });
-      });
-    };
-    build_typical_save_request = function(pointer) {
-
-      /**
-       * Build an array with the data to be saved for the typical data fields.
-       * @pointer is the object which has been modified and we want to save its new data.
-       */
-      var fieldname, fieldvalue, requestdata;
-      fieldvalue = void 0;
-      fieldname = void 0;
-      requestdata = {};
-      if ($(pointer).attr('type') === 'checkbox') {
-        fieldvalue = $(pointer).prop('checked');
-        fieldname = $(pointer).closest('div[id^="archetypes-fieldname-"]').attr('data-fieldname');
-      } else {
-        fieldvalue = $(pointer).val();
-        fieldname = $(pointer).closest('div[id^="archetypes-fieldname-"]').attr('data-fieldname');
-      }
-      requestdata[fieldname] = fieldvalue;
-      save_elements(requestdata);
-    };
-    save_elements = function(requestdata) {
-
-      /**
-       * Given a dict with a fieldname and a fieldvalue, save this data via ajax petition.
-       * @requestdata should has the format  {fieldname=fieldvalue}
-       */
-      var anch, ar, element, name, obj_path, url;
-      url = window.location.href.replace('/base_view', '');
-      obj_path = url.replace(window.portal_url, '');
-      element = void 0;
-      name = $.map(requestdata, function(element, index) {
-        element;
-        return index;
-      });
-      name = $.trim($('[data-fieldname="' + name + '"]').closest('td').prev().text());
-      ar = $.trim($('.documentFirstHeading').text());
-      anch = '<a href=\'' + url + '\'>' + ar + '</a>';
-      requestdata['obj_path'] = obj_path;
-      $.ajax({
-        type: 'POST',
-        url: window.portal_url + '/@@API/update',
-        data: requestdata
-      }).done(function(data) {
-        var msg;
-        var msg;
-        if (data !== null && data['success'] === true) {
-          bika.lims.SiteView.notificationPanel(anch + ': ' + name + ' updated successfully', 'succeed');
-        } else if (data === null) {
-          bika.lims.SiteView.notificationPanel('Field ' + name + ' for ' + anch + ' could not be updated.' + ' Wrong value?', 'error');
-          msg = '[bika.lims.analysisrequest.js] No data returned ' + 'while updating ' + name + ' for ' + ar;
-          console.warn(msg);
-          window.bika.lims.warning(msg);
-        } else {
-          bika.lims.SiteView.notificationPanel('Field ' + name + ' for ' + anch + ' could not be updated.' + ' Wrong value?', 'error');
-          msg = '[bika.lims.analysisrequest.js] No success ' + 'while updating ' + name + ' for ' + ar;
-          console.warn(msg);
-          window.bika.lims.warning(msg);
-        }
-      }).fail(function(xhr, textStatus, errorThrown) {
-        var msg;
-        bika.lims.SiteView.notificationPanel('Error while updating ' + name + ' for ' + anch, 'error');
-        msg = '[bika.lims.analysisrequest.js] Error in AJAX call' + 'while updating ' + name + ' for ' + ar + '. Error: ' + xhr.responseText;
-        console.warn(msg);
-        window.bika.lims.error(msg);
-      });
-    };
     parse_CCClist = function() {
 
       /**
@@ -340,7 +209,6 @@
       var cid;
       resultsinterpretation_move_below();
       filter_CCContacts();
-      set_autosave_input();
       if (document.location.href.search('/clients/') >= 0 && $('#archetypes-fieldname-SamplePoint #SamplePoint').length > 0) {
         cid = document.location.href.split('clients')[1].split('/')[1];
         $.ajax({
@@ -369,6 +237,7 @@
               options.url = options.url + '&colModel=' + $.toJSON($.parseJSON($(spelement).attr('combogrid_options')).colModel);
               options.url = options.url + '&search_fields=' + $.toJSON($.parseJSON($(spelement).attr('combogrid_options')).search_fields);
               options.url = options.url + '&discard_empty=' + $.toJSON($.parseJSON($(spelement).attr('combogrid_options')).discard_empty);
+              options.url = options.url + '&minLength=' + $.toJSON($.parseJSON($(spelement).attr('combogrid_options')).minLength);
               options.force_all = 'false';
               $(spelement).combogrid(options);
               $(spelement).addClass('has_combogrid_widget');

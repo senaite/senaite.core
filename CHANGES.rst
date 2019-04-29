@@ -6,15 +6,22 @@ Changelog
 
 **Added**
 
+- #1347 Consider laboratory workdays only for the late analyses calculation
+- #1324 Audit Log
 
 **Changed**
 
+- #1330 Make guards to not rely on review history
 
 **Removed**
 
+- #1346 Remove Searchable Text Overrides
+- #1328 Remove transition filtering in Worksheet listings
 
 **Fixed**
 
+- #1336 Fix result capture date inconsistency
+- #1334 Number of analyses are not updated after modifying analyses in a Sample
 - #1319 Make api.get_review_history to always return a list
 - #1317 Fix Analysis Service URL in Info Popup
 - #1316 Barcodes view does not render all labels once Samples are registered

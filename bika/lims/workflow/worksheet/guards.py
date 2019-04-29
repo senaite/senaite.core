@@ -19,37 +19,8 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
+from bika.lims.interfaces import ISubmitted, IVerified
 from bika.lims.workflow import isTransitionAllowed
-from bika.lims.workflow import wasTransitionPerformed
-
-
-def _children_are_ready(obj, transition_id, dettached_states=None):
-    """Returns true if the children of the object passed in (worksheet) have
-    been all transitioned in accordance with the 'transition_id' passed in. If
-    detached_states is provided, children with those states are dismissed, so
-    they will not be taken into account in the evaluation. Nevertheless, at
-    least one child with for which the transition_id performed is required for
-    this function to return true (if all children are in detached states, it
-    always return False).
-    """
-    detached_count = 0
-    analyses = obj.getAnalyses()
-    for analysis in analyses:
-        if dettached_states:
-            if api.get_review_status(analysis) in dettached_states:
-                detached_count += 1
-                continue
-        if not api.is_active(analysis):
-            return False
-        if not wasTransitionPerformed(analysis, transition_id):
-            return False
-
-    if detached_count == len(analyses):
-        # If all analyses are in a detached state, it means that the
-        # condition of at least having one child for which the
-        # transition is performed is not satisfied so return False
-        return False
-    return True
 
 
 def guard_submit(obj):
@@ -62,8 +33,28 @@ def guard_submit(obj):
     guard to return True. Otherwise, always returns False.
     Note this guard depends entirely on the current status of the children.
     """
-    detached = ['rejected', 'retracted']
-    return _children_are_ready(obj, 'submit', dettached_states=detached)
+    analyses = obj.getAnalyses()
+    if not analyses:
+        # An empty worksheet cannot be submitted
+        return False
+
+    can_submit = False
+    for analysis in obj.getAnalyses():
+        # Dismiss analyses that are not active
+        if not api.is_active(analysis):
+            continue
+        # Dismiss analyses that have been rejected or retracted
+        if api.get_workflow_status_of(analysis) in ["rejected", "retracted"]:
+            continue
+        # Worksheet cannot be submitted if there is one analysis not submitted
+        can_submit = ISubmitted.providedBy(analysis)
+        if not can_submit:
+            # No need to look further
+            return False
+
+    # This prevents the submission of the worksheet if all its analyses are in
+    # a detached status (rejected, retracted or cancelled)
+    return can_submit
 
 
 def guard_retract(worksheet):
@@ -93,8 +84,29 @@ def guard_verify(obj):
     Note this guard depends entirely on the current status of the children
     :returns: true or false
     """
-    dettached = ['rejected', 'retracted']
-    return _children_are_ready(obj, 'verify', dettached_states=dettached)
+
+    analyses = obj.getAnalyses()
+    if not analyses:
+        # An empty worksheet cannot be verified
+        return False
+
+    can_verify = False
+    for analysis in obj.getAnalyses():
+        # Dismiss analyses that are not active
+        if not api.is_active(analysis):
+            continue
+        # Dismiss analyses that have been rejected or retracted
+        if api.get_workflow_status_of(analysis) in ["rejected", "retracted"]:
+            continue
+        # Worksheet cannot be verified if there is one analysis not verified
+        can_verify = IVerified.providedBy(analysis)
+        if not can_verify:
+            # No need to look further
+            return False
+
+    # This prevents the verification of the worksheet if all its analyses are in
+    # a detached status (rejected, retracted or cancelled)
+    return can_verify
 
 
 def guard_rollback_to_open(worksheet):

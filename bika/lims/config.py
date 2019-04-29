@@ -103,6 +103,16 @@ QCANALYSIS_TYPES = DisplayList((
     ('d', _('Duplicate QC analyses'))
 ))
 
+WEEKDAYS = DisplayList((
+    ('0', _('Monday')),
+    ('1', _('Tuesday')),
+    ('2', _('Wednesday')),
+    ('3', _('Thursday')),
+    ('4', _('Friday')),
+    ('5', _('Saturday')),
+    ('6', _('Sunday')),
+))
+
 currencies = locales.getLocale('en').numbers.currencies.values()
 currencies.sort(lambda x, y: cmp(x.displayName, y.displayName))
 

@@ -175,150 +175,6 @@ window.AnalysisRequestViewView = ->
     referencewidget_lookups $(element)
     return
 
-  set_autosave_input = ->
-
-    ###*
-    # Set an event for each input field in the AR header. After write something in the input field and
-    # focus out it, the event automatically saves the change.
-    ###
-
-    $('table.header_table input').not('[attr="referencewidget"]').not('[type="hidden"]').not('.rejectionwidget-field').each (i) ->
-      # Save input fields
-      $(this).change ->
-        pointer = this
-        build_typical_save_request pointer
-        return
-      return
-    $('table.header_table select').not('[type="hidden"]').not('.rejectionwidget-field').each (i) ->
-      # Save select fields
-      $(this).change ->
-        pointer = this
-        build_typical_save_request pointer
-        return
-      return
-    $('table.header_table input.referencewidget').not('[type="hidden"]').not('[id="CCContact"]').each (i) ->
-      # Save referencewidget inputs.
-      $(this).bind 'selected', ->
-        requestdata = {}
-        pointer = this
-        fieldvalue = undefined
-        fieldname = undefined
-        setTimeout (->
-          fieldname = $(pointer).closest('div[id^="archetypes-fieldname-"]').attr('data-fieldname')
-          fieldvalue = $(pointer).attr('uid')
-          # To search by uid, we should follow this array template:
-          # { SamplePoint = "uid:TheValueOfuid1|uid:TheValueOfuid2..." }
-          # This is the way how jsonapi/__init__.py/resolve_request_lookup() works.
-          requestdata[fieldname] = 'uid:' + fieldvalue
-          save_elements requestdata
-          return
-        ), 500
-        return
-      return
-    $('table.header_table input#CCContact.referencewidget').not('[type="hidden"]').each (i) ->
-      # CCContact works different.
-      $(this).bind 'selected', ->
-        pointer = this
-        fieldvalue = undefined
-        fieldname = undefined
-        requestdata = {}
-        setTimeout (->
-          # To search by uid, we should follow this array template:
-          # { SamplePoint = "uid:TheValueOfuid1|uid:TheValueOfuid2..." }
-          # This is the way how jsonapi/__init__.py/resolve_request_lookup() works.
-          fieldname = $(pointer).closest('div[id^="archetypes-fieldname-"]').attr('data-fieldname')
-          fieldvalue = parse_CCClist()
-          requestdata[fieldname] = fieldvalue
-          save_elements requestdata
-          return
-        ), 500
-        return
-      return
-    $('img[fieldname="CCContact"]').each ->
-      # If a delete cross is clicked on CCContact-listing, we should update the saved list.
-      fieldvalue = undefined
-      requestdata = {}
-      fieldname = undefined
-      $(this).click ->
-        fieldname = $(this).attr('fieldname')
-        setTimeout ->
-          fieldvalue = parse_CCClist()
-          requestdata[fieldname] = fieldvalue
-          save_elements requestdata
-          return
-        return
-      return
-    return
-
-  build_typical_save_request = (pointer) ->
-
-    ###*
-    # Build an array with the data to be saved for the typical data fields.
-    # @pointer is the object which has been modified and we want to save its new data.
-    ###
-
-    fieldvalue = undefined
-    fieldname = undefined
-    requestdata = {}
-    # Checkbox
-    if $(pointer).attr('type') == 'checkbox'
-      # Checkboxes name is located in its parent div, but its value is located inside the input.
-      fieldvalue = $(pointer).prop('checked')
-      fieldname = $(pointer).closest('div[id^="archetypes-fieldname-"]').attr('data-fieldname')
-    else
-      fieldvalue = $(pointer).val()
-      fieldname = $(pointer).closest('div[id^="archetypes-fieldname-"]').attr('data-fieldname')
-    requestdata[fieldname] = fieldvalue
-    save_elements requestdata
-    return
-
-  save_elements = (requestdata) ->
-
-    ###*
-    # Given a dict with a fieldname and a fieldvalue, save this data via ajax petition.
-    # @requestdata should has the format  {fieldname=fieldvalue}
-    ###
-
-    url = window.location.href.replace('/base_view', '')
-    obj_path = url.replace(window.portal_url, '')
-    # Staff for the notification
-    element = undefined
-    name = $.map(requestdata, (element, index) ->
-      element
-      index
-    )
-    name = $.trim($('[data-fieldname="' + name + '"]').closest('td').prev().text())
-    ar = $.trim($('.documentFirstHeading').text())
-    anch = '<a href=\'' + url + '\'>' + ar + '</a>'
-    # Needed fot the ajax petition
-    requestdata['obj_path'] = obj_path
-    $.ajax(
-      type: 'POST'
-      url: window.portal_url + '/@@API/update'
-      data: requestdata).done((data) ->
-      `var msg`
-      #success alert
-      if data != null and data['success'] == true
-        bika.lims.SiteView.notificationPanel anch + ': ' + name + ' updated successfully', 'succeed'
-      else if data == null
-        bika.lims.SiteView.notificationPanel 'Field ' + name + ' for ' + anch + ' could not be updated.' + ' Wrong value?', 'error'
-        msg = '[bika.lims.analysisrequest.js] No data returned ' + 'while updating ' + name + ' for ' + ar
-        console.warn msg
-        window.bika.lims.warning msg
-      else
-        bika.lims.SiteView.notificationPanel 'Field ' + name + ' for ' + anch + ' could not be updated.' + ' Wrong value?', 'error'
-        msg = '[bika.lims.analysisrequest.js] No success ' + 'while updating ' + name + ' for ' + ar
-        console.warn msg
-        window.bika.lims.warning msg
-      return
-    ).fail (xhr, textStatus, errorThrown) ->
-      #error
-      bika.lims.SiteView.notificationPanel 'Error while updating ' + name + ' for ' + anch, 'error'
-      msg = '[bika.lims.analysisrequest.js] Error in AJAX call' + 'while updating ' + name + ' for ' + ar + '. Error: ' + xhr.responseText
-      console.warn msg
-      window.bika.lims.error msg
-      return
-    return
 
   parse_CCClist = ->
 
@@ -339,7 +195,7 @@ window.AnalysisRequestViewView = ->
   that.load = ->
     resultsinterpretation_move_below()
     filter_CCContacts()
-    set_autosave_input()
+
     if document.location.href.search('/clients/') >= 0 and $('#archetypes-fieldname-SamplePoint #SamplePoint').length > 0
       cid = document.location.href.split('clients')[1].split('/')[1]
       $.ajax
@@ -376,6 +232,7 @@ window.AnalysisRequestViewView = ->
             options.url = options.url + '&colModel=' + $.toJSON($.parseJSON($(spelement).attr('combogrid_options')).colModel)
             options.url = options.url + '&search_fields=' + $.toJSON($.parseJSON($(spelement).attr('combogrid_options')).search_fields)
             options.url = options.url + '&discard_empty=' + $.toJSON($.parseJSON($(spelement).attr('combogrid_options')).discard_empty)
+            options.url = options.url + '&minLength=' + $.toJSON($.parseJSON($(spelement).attr('combogrid_options')).minLength)
             options.force_all = 'false'
             $(spelement).combogrid options
             $(spelement).addClass 'has_combogrid_widget'
@@ -717,52 +574,6 @@ window.AnalysisRequestAnalysesView = ->
     return
 
   that.load = ->
-    # $('[name^=\'min\\.\'], [name^=\'max\\.\'], [name^=\'error\\.\']').live 'change', ->
-    #   validate_spec_field_entry this
-    #   return
-    # #//////////////////////////////////////
-    # # disable checkboxes for eg verified analyses.
-    # $.each $('[name=\'uids:list\']'), (x, cb) ->
-    #   service_uid = $(cb).val()
-    #   row_data = $.parseJSON($('#' + service_uid + '_row_data').val())
-    #   if row_data.disabled == true
-    #     # disabled fields must be shadowed by hidden fields,
-    #     # or they don't appear in the submitted form.
-    #     $(cb).prop 'disabled', true
-    #     cbname = $(cb).attr('name')
-    #     cbid = $(cb).attr('id')
-    #     $(cb).removeAttr('name').removeAttr 'id'
-    #     $(cb).after '<input type=\'hidden\' name=\'' + cbname + '\' value=\'' + service_uid + '\' id=\'' + cbid + '\'/>'
-    #     el = $('[name=\'Price.' + service_uid + ':records\']')
-    #     elname = $(el).attr('name')
-    #     elval = $(el).val()
-    #     $(el).after '<input type=\'hidden\' name=\'' + elname + '\' value=\'' + elval + '\'/>'
-    #     $(el).prop 'disabled', true
-    #     el = $('[name=\'Partition.' + service_uid + ':records\']')
-    #     elname = $(el).attr('name')
-    #     elval = $(el).val()
-    #     $(el).after '<input type=\'hidden\' name=\'' + elname + '\' value=\'' + elval + '\'/>'
-    #     $(el).prop 'disabled', true
-    #     specfields = [
-    #       'min'
-    #       'max'
-    #       'error'
-    #     ]
-    #     for i of specfields
-    #       element = $('[name=\'' + specfields[i] + '.' + service_uid + ':records\']')
-    #       new_element = '' + '<input type=\'hidden\' field=\'' + specfields[i] + '\' value=\'' + element.val() + '\' ' + 'name=\'' + specfields[i] + '.' + service_uid + ':records\' uid=\'' + service_uid + '\'>'
-    #       $(element).replaceWith new_element
-    #   return
-    #//////////////////////////////////////
-    # checkboxes in services list
-    # $('[name=\'uids:list\']').live 'click', ->
-    #   calcdependencies [ this ], true
-    #   service_uid = $(this).val()
-    #   if $(this).prop('checked')
-    #     check_service service_uid
-    #   else
-    #     uncheck_service service_uid
-    #   return
     return
 
   return

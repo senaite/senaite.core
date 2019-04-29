@@ -167,6 +167,9 @@
     *** BINDINGS TO "senaite_one_state_workflow" ***
     -->
     <!-- Setup folders -->
+    <type type_id="AuditLog">
+      <bound-workflow workflow_id="senaite_one_state_workflow"/>
+    </type>
     <type type_id="AnalysisCategories">
       <bound-workflow workflow_id="senaite_one_state_workflow"/>
     </type>
