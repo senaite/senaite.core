@@ -118,7 +118,6 @@ class ImportView(BrowserView):
 class ajaxGetImportTemplate(BrowserView):
 
     def __call__(self):
-        import pdb; pdb.set_trace()
         plone.protect.CheckAuthenticator(self.request)
         exim = self.request.get('exim').replace(".", "/")
         # If a specific template for this instrument doesn't exist yet,
