@@ -74,6 +74,10 @@ def upgrade(tool):
     setup.runImportStepFromProfile(profile, "toolset")
     setup.runImportStepFromProfile(profile, "content")
 
+    # Convert inline images
+    # https://github.com/senaite/senaite.core/issues/1333
+    convert_inline_images_to_attachments(portal)
+
     # https://github.com/senaite/senaite.core/pull/1324
     # initialize auditlogging
     setup_auditlog_catalog(portal)
@@ -90,6 +94,28 @@ def upgrade(tool):
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
+
+
+def convert_inline_images_to_attachments(portal):
+    """Convert base64 inline images to attachments
+    """
+    catalog = api.get_tool("uid_catalog")
+    brains = catalog({"portal_type": "AnalysisRequest"})
+    total = len(brains)
+    logger.info("Checking result interpretations of {} samples "
+                "for inline base64 images...".format(total))
+    for num, brain in enumerate(brains):
+        if num and num % 1000 == 0:
+            transaction.commit()
+            logger.info("{}/{} samples processed"
+                        .format(num, total))
+        obj = api.get_object(brain)
+        # get/set the resultsinterpretations
+        ri = obj.getResultsInterpretationDepts()
+        obj.setResultsInterpretationDepts(ri)
+
+    # Commit all changes
+    transaction.commit()
 
 
 def init_auditlog(portal):
