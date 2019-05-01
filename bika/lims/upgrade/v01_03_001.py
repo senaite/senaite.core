@@ -50,6 +50,7 @@ SKIP_TYPES_FOR_AUDIT_LOG = [
     "Sample",
     "SamplePartition",
     "ARReport",
+    "Reference",
 ]
 
 
