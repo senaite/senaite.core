@@ -50,6 +50,7 @@ SKIP_TYPES_FOR_AUDIT_LOG = [
     "Sample",
     "SamplePartition",
     "ARReport",
+    "Reference",
 ]
 
 
@@ -260,6 +261,7 @@ def commit_transaction(portal):
     end = time.time()
     logger.info("Commit transaction ... Took {:.2f}s [DONE]"
                 .format(end - start))
+
 
 def reindex_sortable_title(portal):
     """Reindex sortable_title from some catalogs
