@@ -11,6 +11,7 @@ Changelog
 
 **Changed**
 
+- #1352 Make timeit to not display args by default
 - #1330 Make guards to not rely on review history
 
 **Removed**
