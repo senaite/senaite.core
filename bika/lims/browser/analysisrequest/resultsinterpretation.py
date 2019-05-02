@@ -18,6 +18,7 @@
 # Copyright 2018-2019 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.browser import BrowserView
@@ -37,11 +38,12 @@ class ARResultsInterpretationView(BrowserView):
 
     def __init__(self, context, request, **kwargs):
         super(ARResultsInterpretationView, self).__init__(context, request)
+        self.request = request
         self.context = context
 
     def __call__(self):
         if self.request.form.get("submitted", False):
-            self.handle_form_submit()
+            return self.handle_form_submit()
         return self.template()
 
     def handle_form_submit(self):
@@ -57,6 +59,7 @@ class ARResultsInterpretationView(BrowserView):
         self.context.reindexObject()
         # notify object edited event
         event.notify(ObjectEditedEvent(self.context))
+        return self.request.response.redirect(api.get_url(self.context))
 
     def add_status_message(self, message, level="info"):
         """Set a portal status message

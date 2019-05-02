@@ -26,6 +26,7 @@ from bika.lims import logger
 from bika.lims.api.security import get_roles
 from bika.lims.api.security import get_user_id
 from bika.lims.interfaces import IAuditable
+from bika.lims.interfaces import IDoNotSupportSnapshots
 from DateTime import DateTime
 from persistent.list import PersistentList
 from plone.memoize.ram import cache
@@ -54,6 +55,8 @@ def supports_snapshots(obj):
     :param obj: Content object
     :returns: True/False
     """
+    if IDoNotSupportSnapshots.providedBy(obj):
+        return False
     return IAnnotatable.providedBy(obj)
 
 

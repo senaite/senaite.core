@@ -4,7 +4,9 @@ from bika.lims import api
 from bika.lims.api.snapshot import has_snapshots
 from bika.lims.api.snapshot import supports_snapshots
 from bika.lims.api.snapshot import take_snapshot
+from bika.lims.interfaces import IDoNotSupportSnapshots
 from DateTime import DateTime
+from zope.interface import alsoProvides
 
 
 def reindex_object(obj):
@@ -19,6 +21,13 @@ def reindex_object(obj):
     TL;DR: `Products.Archetypes.interfaces.IObjectEditedEvent` is fired after
     `reindexObject()` is called. If you manipulate your content object in a
     handler for this event, you need to manually reindex new values.
+    """
+    auditlog_catalog = api.get_tool("auditlog_catalog")
+    auditlog_catalog.reindexObject(obj)
+
+
+def unindex_object(obj):
+    """Unindex the object in the `auditlog_catalog` catalog
     """
     auditlog_catalog = api.get_tool("auditlog_catalog")
     auditlog_catalog.reindexObject(obj)
@@ -83,3 +92,18 @@ def ObjectInitializedEventHandler(obj, event):
 
     # take a new snapshot
     take_snapshot(obj, action="create")
+
+
+def ObjectRemovedEventHandler(obj, event):
+    """Object removed
+    """
+
+    # only snapshot supported objects
+    if not supports_snapshots(obj):
+        return
+
+    # unindex the object
+    unindex_object(obj)
+
+    # freeze the object
+    alsoProvides(obj, IDoNotSupportSnapshots)

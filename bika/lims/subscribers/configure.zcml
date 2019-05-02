@@ -25,6 +25,13 @@
       handler=".auditlog.ObjectTransitionedEventHandler"
       />
 
+  <!-- Audit Log: Object removed Event -->
+  <subscriber
+      for="*
+           zope.lifecycleevent.interfaces.IObjectRemovedEvent"
+      handler=".auditlog.ObjectRemovedEventHandler"
+      />
+
   <!-- Newly created analyses -->
   <subscriber
       for="*
