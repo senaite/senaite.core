@@ -28,6 +28,8 @@ Changelog
 - #1319 Make api.get_review_history to always return a list
 - #1317 Fix Analysis Service URL in Info Popup
 - #1316 Barcodes view does not render all labels once Samples are registered
+- #1356 Fixed selection on Analysis Spec on AR
+- #1353 Fixed saving of PublicationSpecification on AR
 
 
 **Security**
