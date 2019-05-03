@@ -357,8 +357,11 @@ def get_id(brain_or_object):
     :returns: Plone ID
     :rtype: string
     """
-    if is_brain(brain_or_object) and base_hasattr(brain_or_object, "getId"):
-        return brain_or_object.getId
+    if is_brain(brain_or_object):
+        if base_hasattr(brain_or_object, "getId"):
+            return brain_or_object.getId
+        if base_hasattr(brain_or_object, "id"):
+            return brain_or_object.id
     return get_object(brain_or_object).getId()
 
 
