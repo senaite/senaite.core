@@ -48,7 +48,7 @@
          action_id="labcontacts"
          category="object"
          condition_expr=""
-         icon_expr="string:${portal_url}/images/lab_contact.png"
+         icon_expr="string:${portal_url}/images/labcontact.png"
          url_expr="string:${object_url}/labcontacts"
          i18n:attributes="title"
          i18n:domain="plone"
