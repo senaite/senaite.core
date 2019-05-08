@@ -17,6 +17,7 @@ Changelog
 
 **Removed**
 
+- #1359 Remove stale Sample/Partition objects from ZODB
 - #1346 Remove Searchable Text Overrides
 - #1328 Remove transition filtering in Worksheet listings
 
