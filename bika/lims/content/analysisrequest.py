@@ -249,25 +249,6 @@ schema = BikaSchema.copy() + Schema((
                 }
         ),
     ),
-    # TODO Remove in >v1.3.0 - This is kept for upgrade and backwards-compat.
-    UIDReferenceField(
-        'Sample',
-        allowed_types=('Sample',),
-        mode="rw",
-        read_permission=View,
-        write_permission=ModifyPortalContent,
-        widget=ReferenceWidget(
-            label=_("Sample"),
-            description=_("Select a sample to create a secondary Sample"),
-            size=20,
-            render_own_label=True,
-            visible=False,
-            catalog_name='bika_catalog',
-            base_query={'is_active': True,
-                        'review_state': ['sample_due', 'sample_received', ]},
-            showOn=True,
-        ),
-    ),
 
     # Field for the creation of Secondary Analysis Requests.
     # This field is meant to be displayed in AR Add form only. A viewlet exists
