@@ -75,8 +75,9 @@ def upgrade(tool):
     setup.runImportStepFromProfile(profile, "toolset")
     setup.runImportStepFromProfile(profile, "content")
 
-    # Remove Sample Objects
-    remove_samples(portal)
+    # Remove alls Samples and Partition
+    # https://github.com/senaite/senaite.core/pull/1359
+    remove_samples_and_partitions(portal)
 
     # Convert inline images
     # https://github.com/senaite/senaite.core/issues/1333
@@ -100,6 +101,25 @@ def upgrade(tool):
     return True
 
 
+def remove_samples_and_partitions(portal):
+    """Wipe out samples and their contained partitions
+    """
+    uc = api.get_tool("uid_catalog")
+    brains = uc({"portal_type": "Sample"})
+    total = len(brains)
+    logger.info("Removing {} Samples".format(total))
+    for num, brain in enumerate(brains):
+        obj = api.get_object(brain)
+        parent = obj.aq_parent
+        # bypass security checks
+        parent._delObject(obj.getId())
+        if num and num % 1000 == 0:
+            logger.info("Removed {}/{} Samples".format(num, total))
+            transaction.commit()
+    logger.info("Removed all {} Samples".format(total))
+    transaction.commit()
+
+
 def convert_inline_images_to_attachments(portal):
     """Convert base64 inline images to attachments
     """
@@ -119,25 +139,6 @@ def convert_inline_images_to_attachments(portal):
         obj.setResultsInterpretationDepts(ri)
 
     # Commit all changes
-    transaction.commit()
-
-
-def remove_samples(portal):
-    """Wipe out samples and their contained partitions
-    """
-    uc = api.get_tool("uid_catalog")
-    brains = uc({"portal_type": "Sample"})
-    total = len(brains)
-    logger.info("Removing {} Samples".format(total))
-    for num, brain in enumerate(brains):
-        obj = api.get_object(brain)
-        parent = obj.aq_parent
-        # bypass security checks
-        parent._delObject(obj.getId())
-        if num and num % 1000 == 0:
-            logger.info("Removed {}/{} Samples".format(num, total))
-            transaction.commit()
-    logger.info("Removed all {} Samples".format(total))
     transaction.commit()
 
 
