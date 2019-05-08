@@ -710,6 +710,7 @@ schema = BikaSchema.copy() + Schema((
                 # UID is required in colModel
                 {'columnName': 'UID', 'hidden': True},
             ],
+            ui_item="contextual_title",
             showOn=True,
         ),
     ),
@@ -1444,11 +1445,6 @@ class AnalysisRequest(BaseFolder):
 
     def getProfilesTitle(self):
         return [profile.Title() for profile in self.getProfiles()]
-
-    def setPublicationSpecification(self, value):
-        """Never contains a value; this field is here for the UI." \
-        """
-        return value
 
     def getAnalysisService(self):
         proxies = self.getAnalyses(full_objects=False)
