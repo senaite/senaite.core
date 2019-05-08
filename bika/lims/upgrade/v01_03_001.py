@@ -103,20 +103,26 @@ def upgrade(tool):
 
 def remove_samples_and_partitions(portal):
     """Wipe out samples and their contained partitions
+
+    N.B.: We do not use a catalog search here due to inconsistencies in the
+          deletion process and leftover objects.
     """
-    uc = api.get_tool("uid_catalog")
-    brains = uc({"portal_type": "Sample"})
-    total = len(brains)
-    logger.info("Removing {} Samples".format(total))
-    for num, brain in enumerate(brains):
-        obj = api.get_object(brain)
-        parent = obj.aq_parent
-        # bypass security checks
-        parent._delObject(obj.getId())
-        if num and num % 1000 == 0:
-            logger.info("Removed {}/{} Samples".format(num, total))
-            transaction.commit()
-    logger.info("Removed all {} Samples".format(total))
+
+    num = 0
+    clients = portal.clients.objectValues()
+
+    for client in clients:
+        cid = client.getId()
+        logger.info("Deleting all samples of client {}...".format(cid))
+        sids = client.objectIds(spec="Sample")
+        for sid in sids:
+            num += 1
+            # bypass security checks
+            client._delObject(sid)
+            logger.info("#{}: Deleted sample '{}' of client '{}'"
+                        .format(num, sid, cid))
+
+    logger.info("Removed a total of {} samples, committing...".format(num))
     transaction.commit()
 
 
