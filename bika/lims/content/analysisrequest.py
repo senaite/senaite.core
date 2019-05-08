@@ -2037,19 +2037,6 @@ class AnalysisRequest(BaseFolder):
 
         return sets[0] if sets else {'uid': uid}
 
-    # TODO Sample Cleanup - Remove this function
-    def getPartitions(self):
-        """This functions returns the partitions from the analysis request's
-        analyses.
-
-        :returns: a list with the full partition objects
-        """
-        partitions = []
-        for analysis in self.getAnalyses(full_objects=True):
-            if analysis.getSamplePartition() not in partitions:
-                partitions.append(analysis.getSamplePartition())
-        return partitions
-
     # TODO Sample Cleanup - Remove (Use getContainer instead)
     def getContainers(self):
         """This functions returns the containers from the analysis request's
