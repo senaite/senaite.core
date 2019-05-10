@@ -6,6 +6,7 @@ Changelog
 
 **Added**
 
+- #1362 Faster worksheet listing
 - #1347 Consider laboratory workdays only for the late analyses calculation
 - #1324 Audit Log
 
