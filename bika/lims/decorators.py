@@ -112,7 +112,7 @@ def profileit(path=None):
     return inner
 
 
-def timeit(threshold=0):
+def timeit(threshold=0, show_args=False):
     """Decorator to log the execution time of a function
     """
 
@@ -124,8 +124,12 @@ def timeit(threshold=0):
             end = time.time()
             duration = float(end-start)
             if duration > threshold:
-                logger.info("Execution of '{}{}' took {:2f}s".format(
-                    func.__name__, args, duration))
+                if show_args:
+                    logger.info("Execution of '{}{}' took {:2f}s".format(
+                        func.__name__, args, duration))
+                else:
+                    logger.info("Execution of '{}' took {:2f}s".format(
+                        func.__name__, duration))
             return return_value
         return wrapper
     return inner

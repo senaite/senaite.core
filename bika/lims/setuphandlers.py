@@ -408,7 +408,7 @@ def reindex_content_structure(portal):
 
 
 def setup_groups(portal):
-    """Setup roles and groups for BECHEM
+    """Setup roles and groups
     """
     logger.info("*** Setup Roles and Groups ***")
 

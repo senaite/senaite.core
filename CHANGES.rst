@@ -11,6 +11,8 @@ Changelog
 
 **Changed**
 
+- #1355 Make api.getId to also consider id metadata column (not only getId)
+- #1352 Make timeit to not display args by default
 - #1330 Make guards to not rely on review history
 
 **Removed**
@@ -20,12 +22,15 @@ Changelog
 
 **Fixed**
 
+- #1344 Handle inline images in Results Interpretation
 - #1336 Fix result capture date inconsistency
 - #1334 Number of analyses are not updated after modifying analyses in a Sample
 - #1319 Make api.get_review_history to always return a list
 - #1317 Fix Analysis Service URL in Info Popup
 - #1316 Barcodes view does not render all labels once Samples are registered
 - #1341 Moved Agilent instruments from core to senaite.instruments
+- #1356 Fixed selection on Analysis Spec on AR
+- #1353 Fixed saving of PublicationSpecification on AR
 
 
 **Security**
