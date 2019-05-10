@@ -442,6 +442,12 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
         if not calc:
             return []
 
+        # If the calculation this analysis is bound does not have analysis
+        # keywords (only interims), no need to go further
+        service_uids = calc.getRawDependentServices()
+        if not service_uids:
+            return []
+
         dependencies = []
         for sibling in self.getSiblings(retracted=retracted):
             # We get all analyses that depend on me, also if retracted (maybe
