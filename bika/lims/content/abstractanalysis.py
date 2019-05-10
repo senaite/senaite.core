@@ -192,7 +192,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         done = self.getNumberOfVerifications()
         if done >= required:
             return 0
-        return required-done
+        return required - done
 
     # TODO Workflow - analysis . Remove?
     @security.public
