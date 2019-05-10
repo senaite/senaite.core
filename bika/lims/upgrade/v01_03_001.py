@@ -75,6 +75,7 @@ def upgrade(tool):
     setup.runImportStepFromProfile(profile, "typeinfo")
     setup.runImportStepFromProfile(profile, "toolset")
     setup.runImportStepFromProfile(profile, "content")
+    setup.runImportStepFromProfile(profile, "controlpanel")
 
     # Convert inline images
     # https://github.com/senaite/senaite.core/issues/1333
