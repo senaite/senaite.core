@@ -6,7 +6,6 @@ Changelog
 
 **Added**
 
-- #1362 Faster worksheet listing
 - #1347 Consider laboratory workdays only for the late analyses calculation
 - #1324 Audit Log
 
@@ -18,6 +17,7 @@ Changelog
 
 **Removed**
 
+- #1362 Remove unnecessary code from worksheet listing (bad performance)
 - #1346 Remove Searchable Text Overrides
 - #1328 Remove transition filtering in Worksheet listings
 
