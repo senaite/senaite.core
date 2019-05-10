@@ -20,13 +20,11 @@ Changelog
 
 **Fixed**
 
-- #1339 Fix result import for calculation with no formula
 - #1336 Fix result capture date inconsistency
 - #1334 Number of analyses are not updated after modifying analyses in a Sample
 - #1319 Make api.get_review_history to always return a list
 - #1317 Fix Analysis Service URL in Info Popup
 - #1316 Barcodes view does not render all labels once Samples are registered
-- #1340 Added new result import file format options xls and xlsx 
 - #1341 Moved Agilent instruments from core to senaite.instruments
 
 
