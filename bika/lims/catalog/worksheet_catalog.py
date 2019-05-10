@@ -44,8 +44,6 @@ _columns_list = [
     'getWorksheetTemplateTitle',
     'getWorksheetTemplateURL',
     'getAnalysesUIDs',
-    # TODO-catalog: getLayout returns a dictionary, too big?
-    'getLayout',
     # Only used to list
     'getNumberOfQCAnalyses',
     'getNumberOfRegularAnalyses',
