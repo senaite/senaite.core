@@ -6,7 +6,7 @@
         purge="True">
  <property name="title" i18n:translate="">Lab Contacts</property>
  <property name="description"></property>
- <property name="content_icon">++resource++bika.lims.images/lab_contact.png</property>
+ <property name="content_icon">++resource++bika.lims.images/labcontact.png</property>
  <property name="content_meta_type">LabContacts</property>
  <property name="product">bika.lims</property>
  <property name="factory">addLabContacts</property>
