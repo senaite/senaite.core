@@ -22,6 +22,7 @@ Changelog
 
 **Fixed**
 
+- #1361 Fix leap sample ID sequence after secondary sample
 - #1344 Handle inline images in Results Interpretation
 - #1336 Fix result capture date inconsistency
 - #1334 Number of analyses are not updated after modifying analyses in a Sample
