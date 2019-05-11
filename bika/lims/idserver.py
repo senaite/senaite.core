@@ -150,6 +150,7 @@ def get_partition_count(context, default=0):
 
     return len(parent.getDescendants())
 
+
 def get_secondary_count(context, default=0):
     """Returns the number of secondary ARs of this AR
     """
@@ -529,10 +530,6 @@ def generateUniqueId(context, **kw):
 def renameAfterCreation(obj):
     """Rename the content after it was created/added
     """
-    # Check if the _bika_id was already set
-    bika_id = getattr(obj, "_bika_id", None)
-    if bika_id is not None:
-        return bika_id
     # Can't rename without a subtransaction commit when using portal_factory
     transaction.savepoint(optimistic=True)
     # The id returned should be normalized already
