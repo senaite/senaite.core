@@ -176,7 +176,7 @@ class WorkflowActionGenericAdapter(RequestContextAware):
         ActionHandlerPool.get_instance().resume()
 
         end = time.time()
-        logger.info(">>> ACTION '{}' for {} objects took {:.2f}s".format(
+        logger.info("Action '{}' for {} objects took {:.2f}s".format(
             action, len(transitioned), end-start))
         return transitioned
 
