@@ -296,32 +296,17 @@ class FolderView(BikaListingView):
         :index: current index of the item
         """
 
-        layout = obj.getLayout
         title = api.get_title(obj)
         url = api.get_url(obj)
 
         item["CreationDate"] = self.ulocalized_time(obj.created)
-        if len(obj.getAnalysesUIDs) == 0:
-            item["table_row_class"] = "state-empty-worksheet"
 
         title_link = "{}/{}".format(url, "add_analyses")
-        if len(layout) > 0:
+        if len(obj.getAnalysesUIDs) > 0:
             title_link = "{}/{}".format(url, "manage_results")
 
         item["Title"] = title
         item["replace"]["Title"] = get_link(title_link, value=title)
-
-        pos_parent = {}
-        for slot in layout:
-            # compensate for bad data caused by a stupid bug.
-            if type(slot["position"]) in (list, tuple):
-                slot["position"] = slot["position"][0]
-            if slot["position"] == "new":
-                continue
-            if slot["position"] in pos_parent:
-                continue
-            pos_parent[slot["position"]] =\
-                self.rc.lookupObject(slot.get("container_uid"))
 
         # Total QC Analyses
         item["NumQCAnalyses"] = str(obj.getNumberOfQCAnalyses)

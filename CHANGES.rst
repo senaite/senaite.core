@@ -17,6 +17,7 @@ Changelog
 
 **Removed**
 
+- #1362 Remove unnecessary code from worksheet listing (bad performance)
 - #1346 Remove Searchable Text Overrides
 - #1328 Remove transition filtering in Worksheet listings
 
