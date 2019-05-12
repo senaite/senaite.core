@@ -445,7 +445,7 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
         # If the calculation this analysis is bound does not have analysis
         # keywords (only interims), no need to go further
         service_uids = calc.getRawDependentServices()
-        if not service_uids:
+        if len(service_uids) == 0:
             return []
 
         dependencies = []
