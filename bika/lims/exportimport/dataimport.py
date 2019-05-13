@@ -120,7 +120,7 @@ class ajaxGetImportTemplate(BrowserView):
     def __call__(self):
         plone.protect.CheckAuthenticator(self.request)
         exim = self.request.get('exim')
-        core_instrument = is_exim_in_core(exim)
+        core_instrument = self.is_exim_in_core(exim)
         exim = exim.replace(".", "/")
         # If a specific template for this instrument doesn't exist yet,
         # use the default template for instrument results file import located
@@ -152,7 +152,7 @@ class ajaxGetImportTemplate(BrowserView):
         items.sort(lambda x, y: cmp(x[1].lower(), y[1].lower()))
         return DisplayList(list(items))
 
-    def is_exim_in_core(exim):
+    def is_exim_in_core(self, exim):
         portal_tool = plone.api.portal.get_tool('portal_setup')
         profiles = portal_tool.listProfileInfo()
         for profile in profiles:
