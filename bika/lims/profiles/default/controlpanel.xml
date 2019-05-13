@@ -32,7 +32,7 @@
 
  <configlet title="Lab Contacts" action_id="bika_labcontacts"
     appId="bika.lims" category="bika" condition_expr=""
-    icon_expr="string:++resource++bika.lims.images/lab_contact.png"
+    icon_expr="string:++resource++bika.lims.images/labcontact.png"
     url_expr="string:$portal_url/bika_setup/bika_labcontacts"
     visible="True"
     i18n:attributes="title">

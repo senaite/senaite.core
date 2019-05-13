@@ -18,22 +18,18 @@
 # Copyright 2018-2019 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from Products.Five import BrowserView
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from bika.lims.alphanumber import Alphanumber
-
-from zope.interface import Interface
-from zope.interface import implements
-from zope.component import getUtility
-
-from plone import protect
+import re
 
 from bika.lims import api
-from bika.lims import logger
-from bika.lims.idserver import get_config
-from bika.lims.idserver import get_current_year
 from bika.lims import bikaMessageFactory as _
+from bika.lims.idserver import get_config
 from bika.lims.numbergenerator import INumberGenerator
+from plone import protect
+from Products.Five import BrowserView
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from zope.component import getUtility
+from zope.interface import Interface
+from zope.interface import implements
 
 
 class IIDserverView(Interface):
@@ -90,22 +86,12 @@ class IDServerView(BrowserView):
 
         return self.template()
 
-    def get_next_id_for(self, key):
+    def get_id_template_for(self, key):
         """Get a preview of the next number
         """
         portal_type = key.split("-")[0]
         config = get_config(None, portal_type=portal_type)
-        id_template = config.get("form", "")
-        number = self.storage.get(key) + 1
-        spec = {
-            "seq": number,
-            "alpha": Alphanumber(number),
-            "year": get_current_year(),
-            "parent_analysisrequest": "ParentAR",
-            "parent_ar_id": "ParentARId",
-            "sampleType": key.replace(portal_type, "").strip("-"),
-        }
-        return id_template.format(**spec)
+        return config.get("form", "")
 
     @property
     def storage(self):

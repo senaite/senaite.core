@@ -19,6 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 import collections
+import time
 
 from Products.Archetypes.config import UID_CATALOG
 from bika.lims import api
@@ -163,6 +164,8 @@ class WorkflowActionGenericAdapter(RequestContextAware):
         """Performs the workflow transition passed in and returns the list of
         objects that have been successfully transitioned
         """
+
+        start = time.time()
         transitioned = []
         ActionHandlerPool.get_instance().queue_pool()
         for obj in objects:
@@ -171,6 +174,10 @@ class WorkflowActionGenericAdapter(RequestContextAware):
             if success:
                 transitioned.append(obj)
         ActionHandlerPool.get_instance().resume()
+
+        end = time.time()
+        logger.info("Action '{}' for {} objects took {:.2f}s".format(
+            action, len(transitioned), end-start))
         return transitioned
 
     def is_context_only(self, objects):

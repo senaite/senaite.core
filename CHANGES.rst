@@ -17,17 +17,22 @@ Changelog
 
 **Removed**
 
+- #1362 Remove unnecessary code from worksheet listing (bad performance)
 - #1346 Remove Searchable Text Overrides
 - #1328 Remove transition filtering in Worksheet listings
 
 **Fixed**
 
+- #1361 Fix leap sample ID sequence after secondary sample
 - #1344 Handle inline images in Results Interpretation
 - #1336 Fix result capture date inconsistency
 - #1334 Number of analyses are not updated after modifying analyses in a Sample
 - #1319 Make api.get_review_history to always return a list
 - #1317 Fix Analysis Service URL in Info Popup
 - #1316 Barcodes view does not render all labels once Samples are registered
+- #1341 Moved Agilent instruments from core to senaite.instruments
+- #1356 Fixed selection on Analysis Spec on AR
+- #1353 Fixed saving of PublicationSpecification on AR
 
 
 **Security**

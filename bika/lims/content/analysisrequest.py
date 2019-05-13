@@ -710,6 +710,7 @@ schema = BikaSchema.copy() + Schema((
                 # UID is required in colModel
                 {'columnName': 'UID', 'hidden': True},
             ],
+            ui_item="contextual_title",
             showOn=True,
         ),
     ),
@@ -1410,6 +1411,13 @@ class AnalysisRequest(BaseFolder):
     _at_rename_after_creation = True
 
     def _renameAfterCreation(self, check_auto_id=False):
+        """Rename hook called by processForm
+        """
+        # https://github.com/senaite/senaite.core/issues/1327
+        primary = self.getPrimaryAnalysisRequest()
+        if primary:
+            logger.info("Secondary sample detected: Skipping ID generation")
+            return False
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
 
@@ -1444,11 +1452,6 @@ class AnalysisRequest(BaseFolder):
 
     def getProfilesTitle(self):
         return [profile.Title() for profile in self.getProfiles()]
-
-    def setPublicationSpecification(self, value):
-        """Never contains a value; this field is here for the UI." \
-        """
-        return value
 
     def getAnalysisService(self):
         proxies = self.getAnalyses(full_objects=False)

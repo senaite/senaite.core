@@ -31,6 +31,7 @@ from bika.lims.api.snapshot import take_snapshot
 from bika.lims.catalog.analysis_catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.catalog.analysisrequest_catalog import \
     CATALOG_ANALYSIS_REQUEST_LISTING
+from bika.lims.catalog.worksheet_catalog import CATALOG_WORKSHEET_LISTING
 from bika.lims.config import PROJECTNAME as product
 from bika.lims.interfaces import IReceived
 from bika.lims.interfaces import ISubmitted
@@ -74,6 +75,7 @@ def upgrade(tool):
     setup.runImportStepFromProfile(profile, "typeinfo")
     setup.runImportStepFromProfile(profile, "toolset")
     setup.runImportStepFromProfile(profile, "content")
+    setup.runImportStepFromProfile(profile, "controlpanel")
 
     # Convert inline images
     # https://github.com/senaite/senaite.core/issues/1333
@@ -92,6 +94,10 @@ def upgrade(tool):
     # Reindex sortable_title to make sorting case-insenstive
     # https://github.com/senaite/senaite.core/pull/1337
     reindex_sortable_title(portal)
+
+    # Remove unnecessary indexes/metadata from worksheet catalog
+    # https://github.com/senaite/senaite.core/pull/1362
+    cleanup_worksheet_catalog(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
@@ -277,3 +283,48 @@ def reindex_sortable_title(portal):
         catalog = api.get_tool(catalog_name)
         catalog.reindexIndex("sortable_title", None, pghandler=handler)
         commit_transaction(portal)
+
+def cleanup_worksheet_catalog(portal):
+    """Removes stale indexes and metadata from worksheet_catalog.
+    """
+    cat_id = CATALOG_WORKSHEET_LISTING
+    logger.info("Cleaning up indexes and metadata from {} ...".format(cat_id))
+    indexes_to_remove = [
+    ]
+    metadata_to_remove = [
+        "getLayout",
+    ]
+    for index in indexes_to_remove:
+        del_index(portal, cat_id, index)
+
+    for metadata in metadata_to_remove:
+        del_metadata(portal, cat_id, metadata)
+    commit_transaction(portal)
+
+
+def del_index(portal, catalog_id, index_name):
+    logger.info("Removing '{}' index from '{}' ..."
+                .format(index_name, catalog_id))
+    catalog = api.get_tool(catalog_id)
+    if index_name not in catalog.indexes():
+        logger.info("Index '{}' not in catalog '{}' [SKIP]"
+                    .format(index_name, catalog_id))
+        return
+    catalog.delIndex(index_name)
+    logger.info("Removing old index '{}' ...".format(index_name))
+
+
+def del_metadata(portal, catalog_id, column, refresh_catalog=False):
+    logger.info("Removing '{}' metadata from '{}' ..."
+                .format(column, catalog_id))
+    catalog = api.get_tool(catalog_id)
+    if column not in catalog.schema():
+        logger.info("Metadata '{}' not in catalog '{}' [SKIP]"
+                    .format(column, catalog_id))
+        return
+    catalog.delColumn(column)
+
+    if refresh_catalog:
+        logger.info("Refreshing catalog '{}' ...".format(catalog_id))
+        handler = ZLogHandler(steps=100)
+        catalog.refreshCatalog(pghandler=handler)
