@@ -97,7 +97,7 @@ def guard_verify(analysis_request):
         analysis_status = api.get_workflow_status_of(analysis)
         if analysis_status in ANALYSIS_DETACHED_STATES:
             continue
-        if analysis_status != 'verified':
+        if analysis_status not in ['verified', 'published']:
             return False
         analyses_ready = True
     return analyses_ready
