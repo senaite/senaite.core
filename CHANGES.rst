@@ -23,6 +23,7 @@ Changelog
 
 **Fixed**
 
+- #1367 Clients can see interim values of analyses not yet verified
 - #1361 Fix leap sample ID sequence after secondary sample
 - #1344 Handle inline images in Results Interpretation
 - #1336 Fix result capture date inconsistency
