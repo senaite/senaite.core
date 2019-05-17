@@ -40,3 +40,7 @@ msgstr "${I}:${M} ${p}"
 # bika.lims.bikalisting.js
 msgid "Display Columns"
 msgstr ""
+
+# senaite.core.listing: ButtonBar
+msgid "Clear selection"
+msgstr ""
