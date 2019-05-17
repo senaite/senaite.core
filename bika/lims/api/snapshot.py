@@ -415,7 +415,7 @@ def _process_value(value):
         value = sorted(map(_process_value, value))
         value = "; ".join(value)
     # handle unicodes
-    elif isinstance(value, unicode):
+    if isinstance(value, unicode):
         value = api.safe_unicode(value).encode("utf8")
     return str(value)
 
