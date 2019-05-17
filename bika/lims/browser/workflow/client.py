@@ -38,9 +38,13 @@ class WorkflowActionPublishSamplesAdapter(RequestContextAware):
         if published:
             message = _("Published {}".format(
                 ", ".join(map(api.get_id, published))))
+
+        # add the status message for the response
         self.add_status_message(message, "info")
 
-        return self.redirect(redirect_url=self.back_url)
+        # redirect back
+        referer = self.request.get_header("referer")
+        return self.redirect(redirect_url=referer)
 
     def get_sample_uids_in_report(self, report):
         """Return a list of contained sample UIDs
