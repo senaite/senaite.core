@@ -770,15 +770,22 @@ class AnalysesView(BikaListingView):
         :param item: analysis' dictionary counterpart that represents a row
         """
 
+        if not self.has_permission(ViewResults, analysis_brain):
+            # Hide interims and calculation if user cannot view results
+            return
+
         is_editable = self.is_analysis_edition_allowed(analysis_brain)
+
         # Set interim fields. Note we add the key 'formatted_value' to the list
         # of interims the analysis has already assigned.
         interim_fields = analysis_brain.getInterimFields or list()
+
         for interim_field in interim_fields:
             interim_keyword = interim_field.get('keyword', '')
             if not interim_keyword:
                 continue
-            interim_value = interim_field.get('value', '')
+
+            interim_value = interim_field.get("value", "")
             interim_formatted = formatDecimalMark(interim_value, self.dmk)
             interim_field['formatted_value'] = interim_formatted
             item[interim_keyword] = interim_field
