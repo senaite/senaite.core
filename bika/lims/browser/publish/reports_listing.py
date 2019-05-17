@@ -68,6 +68,13 @@ class ReportsListingView(BikaListingView):
             "url": "email"
         }
 
+        publish_samples_transition = {
+            "id": "publish_samples",
+            "title": _("Publish"),
+            # see senaite.core.browser.workflow
+            "url": "workflow_action?action=publish_samples",
+        }
+
         self.columns = collections.OrderedDict((
             ("AnalysisRequest", {
                 "title": _("Sample"),
@@ -96,7 +103,10 @@ class ReportsListingView(BikaListingView):
                 "title": "All",
                 "contentFilter": {},
                 "columns": self.columns.keys(),
-                "custom_transitions": [send_email_transition]
+                "custom_transitions": [
+                    send_email_transition,
+                    publish_samples_transition,
+                ]
             },
         ]
 
