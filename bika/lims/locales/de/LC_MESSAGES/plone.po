@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2019-05-17 08:47+0000\n"
+"POT-Creation-Date: 2019-05-17 08:53+0000\n"
 "PO-Revision-Date: 2018-06-01 18:46+0000\n"
 "Last-Translator: Stefan Gruber <s.gruber@liscon.de>, 2019\n"
 "Language-Team: German (https://www.transifex.com/senaite/teams/87045/de/)\n"
@@ -912,7 +912,7 @@ msgid "label_schema_Sample Templates"
 msgstr "label_schema_Sample Templates"
 
 msgid "label_schema_Sampling"
-msgstr "Beprobung"
+msgstr ""
 
 # Setup Schemata
 msgid "label_schema_Security"
