@@ -34,8 +34,10 @@ class WorkflowActionPublishSamplesAdapter(RequestContextAware):
                 published.append(sample)
 
         # generate a status message of the published sample IDs
-        message = _("Published {}"
-                    .format(", ".join(map(api.get_id, published))))
+        message = _("No items published")
+        if published:
+            message = _("Published {}".format(
+                ", ".join(map(api.get_id, published))))
         self.add_status_message(message, "info")
 
         return self.redirect(redirect_url=self.back_url)

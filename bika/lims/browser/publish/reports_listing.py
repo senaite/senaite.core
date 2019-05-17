@@ -65,14 +65,16 @@ class ReportsListingView(BikaListingView):
         send_email_transition = {
             "id": "send_email",
             "title": _("Email"),
-            "url": "email"
+            "url": "email",
+            "css_class": "btn-primary",
         }
 
         publish_samples_transition = {
-            "id": "publish",
+            "id": "publish_samples_samples",
             "title": _("Publish"),
             # see senaite.core.browser.workflow
             "url": "workflow_action?action=publish_samples",
+            "css_class": "btn-success",
         }
 
         self.columns = collections.OrderedDict((
