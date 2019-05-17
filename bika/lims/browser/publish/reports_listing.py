@@ -70,7 +70,7 @@ class ReportsListingView(BikaListingView):
         }
 
         publish_samples_transition = {
-            "id": "publish_samples_samples",
+            "id": "publish_samples",
             "title": _("Publish"),
             # see senaite.core.browser.workflow
             "url": "workflow_action?action=publish_samples",
