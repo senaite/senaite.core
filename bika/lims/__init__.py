@@ -32,9 +32,11 @@ from Products.CMFCore.permissions import AddPortalContent
 
 PROJECTNAME = "bika.lims"
 
-# import this to create messages in the bika domain.
-bikaMessageFactory = MessageFactory("senaite.core")
-_ = MessageFactory("senaite.core")
+# senaite message factory
+senaiteMessageFactory = MessageFactory("senaite.core")
+# BBB
+bikaMessageFactory = senaiteMessageFactory
+_ = senaiteMessageFactory
 
 # import this to log messages
 logger = logging.getLogger("senaite.core")
