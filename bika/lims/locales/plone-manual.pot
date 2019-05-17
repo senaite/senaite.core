@@ -206,80 +206,102 @@ msgid "Verified"
 msgstr ""
 ###
 
-msgid "label_schema_Accounting"
-msgstr "Accounting"
-
 msgid "label_schema_Address"
-msgstr "Address"
+msgstr ""
 
 msgid "label_schema_Sample Templates"
-msgstr "AR Templates"
+msgstr ""
 
 msgid "label_schema_Bank details"
-msgstr "Bank details"
+msgstr ""
 
 msgid "label_schema_Calculation"
-msgstr "Calculation"
+msgstr ""
 
 msgid "label_schema_Dates"
-msgstr "Dates"
+msgstr ""
 
 msgid "label_schema_Description"
-msgstr "Description"
+msgstr ""
 
 msgid "label_schema_Email Telephone Fax"
-msgstr "Email Telephone Fax"
+msgstr ""
 
 msgid "label_schema_ID Server"
-msgstr "ID Server"
+msgstr ""
 
 msgid "label_schema_Labels"
-msgstr "Labels"
+msgstr ""
 
 msgid "label_schema_Layout"
-msgstr "Layout"
+msgstr ""
 
 msgid "label_schema_Location"
-msgstr "Location"
+msgstr ""
 
 msgid "label_schema_Method"
-msgstr "Method"
+msgstr ""
 
 msgid "label_schema_Container and Preservation"
-msgstr "Container and Preservation"
+msgstr ""
 
 msgid "label_schema_Preferences"
-msgstr "Preferences"
+msgstr ""
 
 msgid "label_schema_Publication preference"
-msgstr "Publication preference"
+msgstr ""
 
 msgid "label_schema_Reference Values"
-msgstr "Reference Values"
+msgstr ""
 
 msgid "label_schema_Result Options"
-msgstr "Result Options"
-
-msgid "label_schema_Results Reports"
-msgstr "Results Reports"
-
-msgid "label_schema_Security"
-msgstr "Security"
+msgstr ""
 
 msgid "label_schema_Uncertainties"
-msgstr "Uncertainties"
+msgstr ""
 
 msgid "label_schema_Sample Partitions"
-msgstr "Sample Partitions"
-
-msgid "label_schema_Analyses"
-msgstr "Analyses"
+msgstr ""
 
 msgid "label_schema_SR Templates"
-msgstr "SR Templates"
+msgstr ""
+
+msgid "label_schema_Analysis Templates"
+msgstr ""
+
+msgid "label_schema_Reflex Rule Folder"
+msgstr ""
 
 msgid "Sample Imports"
-msgstr "AR Imports"
+msgstr ""
 
 msgid "Sampling Round Templates"
+msgstr ""
+
+# Setup Schemata
+msgid "label_schema_Security"
+msgstr ""
+
+msgid "label_schema_Accounting"
+msgstr ""
+
+msgid "label_schema_Results Reports"
+msgstr ""
+
+msgid "label_schema_Analyses"
+msgstr ""
+
+msgid "label_schema_Appearance"
+msgstr ""
+
+msgid "label_schema_Sampling"
+msgstr ""
+
+msgid "label_schema_Notifications"
+msgstr ""
+
+msgid "label_schema_Sticker"
+msgstr ""
+
+msgid "label_schema_ID Server"
 msgstr ""

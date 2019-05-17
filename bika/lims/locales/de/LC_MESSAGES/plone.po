@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2019-03-30 20:24+0000\n"
+"POT-Creation-Date: 2019-05-17 08:53+0000\n"
 "PO-Revision-Date: 2018-06-01 18:46+0000\n"
 "Last-Translator: Stefan Gruber <s.gruber@liscon.de>, 2019\n"
 "Language-Team: German (https://www.transifex.com/senaite/teams/87045/de/)\n"
@@ -141,6 +141,10 @@ msgstr "Anhang ausstehend"
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Attachments"
 msgstr "Anhänge"
+
+#: bika/lims/profiles/default/actions.xml
+msgid "Audit Log"
+msgstr ""
 
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "Auto-Import Logs"
@@ -391,12 +395,6 @@ msgstr "Laborinformation"
 msgid "Large Sticker"
 msgstr "Großer Aufkleber"
 
-#: bika/lims/profiles/default/types/AnalysisProfile.xml
-#: bika/lims/profiles/default/types/AnalysisRequest.xml
-#: bika/lims/profiles/default/types/AnalysisService.xml
-msgid "Log"
-msgstr "Protokoll"
-
 #: bika/lims/profiles/default/types/Contact.xml
 #: bika/lims/profiles/default/types/LabContact.xml
 msgid "Login details"
@@ -612,7 +610,6 @@ msgstr "Probebedingung"
 msgid "Sample Conditions"
 msgstr "Probebedingungen"
 
-#. Default: "AR Imports"
 msgid "Sample Imports"
 msgstr "Proben Importe"
 
@@ -836,98 +833,93 @@ msgstr "Arbeitsblattvorlagen"
 msgid "Worksheets"
 msgstr "Arbeitsblätter"
 
-#. Default: "Accounting"
 msgid "label_schema_Accounting"
 msgstr "Abrechnung"
 
-#. Default: "Address"
 msgid "label_schema_Address"
 msgstr "Adresse"
 
-#. Default: "Analyses"
 msgid "label_schema_Analyses"
 msgstr "Analysen"
 
-#. Default: "Bank details"
+msgid "label_schema_Analysis Templates"
+msgstr ""
+
+msgid "label_schema_Appearance"
+msgstr ""
+
 msgid "label_schema_Bank details"
 msgstr "Bankverbindung"
 
-#. Default: "Calculation"
 msgid "label_schema_Calculation"
 msgstr "Berechnung"
 
-#. Default: "Container and Preservation"
 msgid "label_schema_Container and Preservation"
 msgstr "Behälter und Konservierung"
 
-#. Default: "Dates"
 msgid "label_schema_Dates"
 msgstr "Daten"
 
-#. Default: "Description"
 msgid "label_schema_Description"
 msgstr "Beschreibung"
 
-#. Default: "Email Telephone Fax"
 msgid "label_schema_Email Telephone Fax"
 msgstr "E-Mail Telefon Fax"
 
-#. Default: "ID Server"
 msgid "label_schema_ID Server"
 msgstr "ID Server"
 
-#. Default: "Labels"
 msgid "label_schema_Labels"
 msgstr "Etiketten"
 
-#. Default: "Layout"
 msgid "label_schema_Layout"
 msgstr "Layout"
 
-#. Default: "Location"
 msgid "label_schema_Location"
 msgstr "Standort"
 
-#. Default: "Method"
 msgid "label_schema_Method"
 msgstr "Methode"
 
-#. Default: "Preferences"
+msgid "label_schema_Notifications"
+msgstr ""
+
 msgid "label_schema_Preferences"
 msgstr "Voreinstellungen"
 
-#. Default: "Publication preference"
 msgid "label_schema_Publication preference"
 msgstr "bevorzugte Veröffentlichung"
 
-#. Default: "Reference Values"
 msgid "label_schema_Reference Values"
 msgstr "Referenzwerte"
 
-#. Default: "Result Options"
+msgid "label_schema_Reflex Rule Folder"
+msgstr ""
+
 msgid "label_schema_Result Options"
 msgstr "Ergebnis-Optionen"
 
-#. Default: "Results Reports"
 msgid "label_schema_Results Reports"
 msgstr "Ergebnisberichte"
 
-#. Default: "SR Templates"
 msgid "label_schema_SR Templates"
 msgstr "SR Vorlagen"
 
-#. Default: "Sample Partitions"
 msgid "label_schema_Sample Partitions"
 msgstr "Teilproben"
 
-#. Default: "AR Templates"
 msgid "label_schema_Sample Templates"
 msgstr "label_schema_Sample Templates"
 
-#. Default: "Security"
+msgid "label_schema_Sampling"
+msgstr ""
+
+# Setup Schemata
 msgid "label_schema_Security"
 msgstr "Sicherheit"
 
-#. Default: "Uncertainties"
+msgid "label_schema_Sticker"
+msgstr ""
+
 msgid "label_schema_Uncertainties"
 msgstr "Unsicherheiten"
