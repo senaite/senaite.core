@@ -249,25 +249,6 @@ schema = BikaSchema.copy() + Schema((
                 }
         ),
     ),
-    # TODO Remove in >v1.3.0 - This is kept for upgrade and backwards-compat.
-    UIDReferenceField(
-        'Sample',
-        allowed_types=('Sample',),
-        mode="rw",
-        read_permission=View,
-        write_permission=ModifyPortalContent,
-        widget=ReferenceWidget(
-            label=_("Sample"),
-            description=_("Select a sample to create a secondary Sample"),
-            size=20,
-            render_own_label=True,
-            visible=False,
-            catalog_name='bika_catalog',
-            base_query={'is_active': True,
-                        'review_state': ['sample_due', 'sample_received', ]},
-            showOn=True,
-        ),
-    ),
 
     # Field for the creation of Secondary Analysis Requests.
     # This field is meant to be displayed in AR Add form only. A viewlet exists
@@ -2043,19 +2024,6 @@ class AnalysisRequest(BaseFolder):
             sets = adv if 'hidden' in adv[0] else []
 
         return sets[0] if sets else {'uid': uid}
-
-    # TODO Sample Cleanup - Remove this function
-    def getPartitions(self):
-        """This functions returns the partitions from the analysis request's
-        analyses.
-
-        :returns: a list with the full partition objects
-        """
-        partitions = []
-        for analysis in self.getAnalyses(full_objects=True):
-            if analysis.getSamplePartition() not in partitions:
-                partitions.append(analysis.getSamplePartition())
-        return partitions
 
     # TODO Sample Cleanup - Remove (Use getContainer instead)
     def getContainers(self):

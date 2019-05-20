@@ -45,14 +45,6 @@ from Products.CMFCore.permissions import View
 from zope.interface import implements
 
 
-# TODO Remove in >v1.3.0 - This is kept for backwards-compatibility
-# The physical sample partition linked to the Analysis.
-SamplePartition = UIDReferenceField(
-    'SamplePartition',
-    required=0,
-    allowed_types=('SamplePartition',)
-)
-
 # True if the analysis is created by a reflex rule
 IsReflexAnalysis = BooleanField(
     'IsReflexAnalysis',
@@ -127,7 +119,6 @@ schema = schema.copy() + Schema((
     ReflexRuleAction,
     ReflexRuleActionsTriggered,
     ReflexRuleLocalID,
-    SamplePartition,
     Uncertainty,
     HiddenManually,
 ))

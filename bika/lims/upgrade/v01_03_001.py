@@ -77,6 +77,10 @@ def upgrade(tool):
     setup.runImportStepFromProfile(profile, "content")
     setup.runImportStepFromProfile(profile, "controlpanel")
 
+    # Remove alls Samples and Partition
+    # https://github.com/senaite/senaite.core/pull/1359
+    remove_samples_and_partitions(portal)
+
     # Convert inline images
     # https://github.com/senaite/senaite.core/issues/1333
     convert_inline_images_to_attachments(portal)
@@ -101,6 +105,31 @@ def upgrade(tool):
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
+
+
+def remove_samples_and_partitions(portal):
+    """Wipe out samples and their contained partitions
+
+    N.B.: We do not use a catalog search here due to inconsistencies in the
+          deletion process and leftover objects.
+    """
+
+    num = 0
+    clients = portal.clients.objectValues()
+
+    for client in clients:
+        cid = client.getId()
+        logger.info("Deleting all samples of client {}...".format(cid))
+        sids = client.objectIds(spec="Sample")
+        for sid in sids:
+            num += 1
+            # bypass security checks
+            client._delObject(sid)
+            logger.info("#{}: Deleted sample '{}' of client '{}'"
+                        .format(num, sid, cid))
+
+    logger.info("Removed a total of {} samples, committing...".format(num))
+    transaction.commit()
 
 
 def convert_inline_images_to_attachments(portal):
