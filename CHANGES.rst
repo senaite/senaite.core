@@ -37,6 +37,7 @@ Changelog
 - #1341 Moved Agilent instruments from core to senaite.instruments
 - #1356 Fixed selection on Analysis Spec on AR
 - #1353 Fixed saving of PublicationSpecification on AR
+- #1376 Fixed ft120.py to properly import winescan ft120 CSV files
 
 
 **Security**
