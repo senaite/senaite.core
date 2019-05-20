@@ -4,10 +4,9 @@ import itertools
 
 from bika.lims import _
 from bika.lims import api
-from bika.lims import logger
 from bika.lims.browser.workflow import RequestContextAware
 from bika.lims.interfaces import IWorkflowActionUIDsAdapter
-from Products.CMFCore.WorkflowCore import WorkflowException
+from bika.lims.workflow import wf
 from zope.component.interfaces import implements
 
 
@@ -55,20 +54,7 @@ class WorkflowActionPublishSamplesAdapter(RequestContextAware):
     def publish_sample(self, sample):
         """Set status to prepublished/published/republished
         """
-        wf = api.get_tool("portal_workflow")
         status = wf.getInfoFor(sample, "review_state")
-        transitions = {"verified": "publish",
-                       "published": "republish"}
+        transitions = {"verified": "publish", "published": "republish"}
         transition = transitions.get(status, "prepublish")
-        logger.info("AR Transition: {} -> {}".format(status, transition))
-        try:
-            wf.doActionFor(sample, transition)
-            return True
-        except WorkflowException as e:
-            logger.debug(e)
-            return False
-
-    def add_status_message(self, message, level="info"):
-        """Set a portal status message
-        """
-        return self.context.plone_utils.addPortalMessage(message, level)
+        succeed, message = wf.doActionFor(sample, transition)
