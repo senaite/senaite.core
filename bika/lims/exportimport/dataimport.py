@@ -148,7 +148,7 @@ class ajaxGetImportTemplate(BrowserView):
         brains = bsc(portal_type='AnalysisService')
         items = []
         for item in brains:
-            items.append((item.UID, item.Title))
+            items.append((item.getKeyword, item.Title))
         items.sort(lambda x, y: cmp(x[1].lower(), y[1].lower()))
         return DisplayList(list(items))
 
