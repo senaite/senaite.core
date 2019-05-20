@@ -363,6 +363,9 @@ def compare_last_two_snapshots(obj, raw=False):
 def diff_values(value_a, value_b, raw=False):
     """Returns a human-readable diff between two values
 
+    TODO: Provide an adapter per content type for this task to enable a more
+          specific diff between the values
+
     :param value_a: First value to compare
     :param value_b: Second value to compare
     :param raw: True to compare the raw values, e.g. UIDs
@@ -389,20 +392,30 @@ def _process_value(value):
     """
     if not value:
         value = _("Not set")
-    # XXX: bad data, e.g. in AS Method field
-    elif value == "None":
-        value = _("Not set")
-    # 0 is detected as the portal UID
-    elif value == "0":
-        pass
-    elif api.is_uid(value):
-        value = _get_title_or_id_from_uid(value)
+    # handle strings
+    elif isinstance(value, basestring):
+        # XXX: bad data, e.g. in AS Method field
+        if value == "None":
+            value = _("Not set")
+        # 0 is detected as the portal UID
+        elif value == "0":
+            value = "0"
+        # handle physical paths
+        elif value.startswith("/"):
+            # remove the portal path to reduce noise in virtual hostings
+            portal_path = api.get_path(api.get_portal())
+            value = value.replace(portal_path, "", 1)
+        elif api.is_uid(value):
+            value = _get_title_or_id_from_uid(value)
+    # handle dictionaries
     elif isinstance(value, (dict)):
         value = json.dumps(sorted(value.items()), indent=1)
+    # handle lists and tuples
     elif isinstance(value, (list, tuple)):
         value = sorted(map(_process_value, value))
         value = "; ".join(value)
-    elif isinstance(value, unicode):
+    # handle unicodes
+    if isinstance(value, unicode):
         value = api.safe_unicode(value).encode("utf8")
     return str(value)
 
