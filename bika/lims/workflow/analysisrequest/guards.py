@@ -19,6 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
+from bika.lims.interfaces import IVerified
 from bika.lims.workflow import isTransitionAllowed
 
 # States to be omitted in regular transitions
@@ -94,11 +95,12 @@ def guard_verify(analysis_request):
     analyses_ready = False
     for analysis in analysis_request.getAnalyses():
         analysis = api.get_object(analysis)
+        # All analyses must be in verified (or further) status
+        if not IVerified.providedBy(analysis):
+            return False
         analysis_status = api.get_workflow_status_of(analysis)
         if analysis_status in ANALYSIS_DETACHED_STATES:
             continue
-        if analysis_status not in ['verified', 'published']:
-            return False
         analyses_ready = True
     return analyses_ready
 
