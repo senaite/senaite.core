@@ -141,7 +141,7 @@ class WinescanFT120CSVParser(WinescanCSVParser):
                 # 2/11/2005 13:33 PM
                 from datetime import datetime
                 dtobj = datetime.strptime(dtstr, '%d/%m/%Y %H:%M %p')
-                dateTime = dtobj.strftime("%Y%m%d %H:%M:%S")
+                dateTime = dtobj.strftime("%Y%m%d %H:%M")
             except:
                 pass
             del values['Date']
