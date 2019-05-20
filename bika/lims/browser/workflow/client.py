@@ -6,7 +6,7 @@ from bika.lims import _
 from bika.lims import api
 from bika.lims.browser.workflow import RequestContextAware
 from bika.lims.interfaces import IWorkflowActionUIDsAdapter
-from bika.lims.workflow import wf
+from bika.lims.workflow import doActionFor
 from zope.component.interfaces import implements
 
 
@@ -54,7 +54,7 @@ class WorkflowActionPublishSamplesAdapter(RequestContextAware):
     def publish_sample(self, sample):
         """Set status to prepublished/published/republished
         """
-        status = wf.getInfoFor(sample, "review_state")
+        status = api.get_workflow_status_of(sample)
         transitions = {"verified": "publish", "published": "republish"}
         transition = transitions.get(status, "prepublish")
-        succeed, message = wf.doActionFor(sample, transition)
+        succeed, message = doActionFor(sample, transition)
