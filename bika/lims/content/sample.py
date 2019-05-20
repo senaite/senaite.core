@@ -50,6 +50,7 @@ from bika.lims.browser.widgets import SelectionWidget as BikaSelectionWidget
 
 import sys
 from bika.lims.utils import to_unicode
+from bika.lims.interfaces import IDoNotSupportSnapshots
 
 schema = BikaSchema.copy() + Schema((
     # TODO This field is only for v1.3.0 migration purposes
@@ -363,7 +364,7 @@ schema['title'].required = False
 
 
 class Sample(BaseFolder, HistoryAwareMixin):
-    implements(ISample)
+    implements(ISample, IDoNotSupportSnapshots)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema

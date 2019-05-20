@@ -6,6 +6,7 @@ Changelog
 
 **Added**
 
+- #1369 Add getter to access the title of the sample condition directly
 - #1347 Consider laboratory workdays only for the late analyses calculation
 - #1324 Audit Log
 
@@ -18,12 +19,14 @@ Changelog
 
 **Removed**
 
+- #1359 Remove stale Sample/Partition objects from ZODB
 - #1362 Remove unnecessary code from worksheet listing (bad performance)
 - #1346 Remove Searchable Text Overrides
 - #1328 Remove transition filtering in Worksheet listings
 
 **Fixed**
 
+- #1368 Fix WF state propagation on partition verification
 - #1367 Clients can see interim values of analyses not yet verified
 - #1361 Fix leap sample ID sequence after secondary sample
 - #1344 Handle inline images in Results Interpretation
