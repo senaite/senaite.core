@@ -211,21 +211,6 @@ class ARAnalysesField(ObjectField):
             if worksheet:
                 worksheet.removeAnalysis(analysis)
 
-            # Unset the partition reference
-            # TODO Remove in >v1.3.0 - This is kept for backwards-compatibility
-            part = analysis.getSamplePartition()
-            if part:
-                # From this partition, remove the reference to the current
-                # analysis that is going to be removed to prevent inconsistent
-                # states (Sample Partitions referencing to Analyses that do not
-                # exist anymore
-                an_uid = api.get_uid(analysis)
-                part_ans = part.getAnalyses() or []
-                part_ans = filter(
-                    lambda an: api.get_uid(an) != an_uid, part_ans)
-                part.setAnalyses(part_ans)
-            # Unset the Analysis-to-Partition reference
-            analysis.setSamplePartition(None)
             delete_ids.append(analysis.getId())
 
         if delete_ids:

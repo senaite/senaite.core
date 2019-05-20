@@ -35,6 +35,7 @@ from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import ISamplePartition
 from zope.interface import implements
+from bika.lims.interfaces import IDoNotSupportSnapshots
 
 schema = BikaSchema.copy() + Schema((
     ReferenceField('Container',
@@ -71,7 +72,7 @@ schema['title'].required = False
 
 
 class SamplePartition(BaseContent, HistoryAwareMixin):
-    implements(ISamplePartition)
+    implements(ISamplePartition, IDoNotSupportSnapshots)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema

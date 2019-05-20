@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2019-03-30 20:24+0000\n"
+"POT-Creation-Date: 2019-05-17 08:53+0000\n"
 "PO-Revision-Date: 2018-06-01 18:46+0000\n"
 "Last-Translator: Ramon Bartl <rb@ridingbytes.com>, 2018\n"
 "Language-Team: Turkish (Turkey) (https://www.transifex.com/senaite/teams/87045/tr_TR/)\n"
@@ -140,6 +140,10 @@ msgstr ""
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Attachments"
 msgstr "Eklentiler"
+
+#: bika/lims/profiles/default/actions.xml
+msgid "Audit Log"
+msgstr ""
 
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "Auto-Import Logs"
@@ -390,12 +394,6 @@ msgstr "Laboratuvar Bilgisi"
 msgid "Large Sticker"
 msgstr "Geniş Etiket"
 
-#: bika/lims/profiles/default/types/AnalysisProfile.xml
-#: bika/lims/profiles/default/types/AnalysisRequest.xml
-#: bika/lims/profiles/default/types/AnalysisService.xml
-msgid "Log"
-msgstr "Kayıt"
-
 #: bika/lims/profiles/default/types/Contact.xml
 #: bika/lims/profiles/default/types/LabContact.xml
 msgid "Login details"
@@ -611,7 +609,6 @@ msgstr "Numunenin Durumu"
 msgid "Sample Conditions"
 msgstr "Numunenin Durumu"
 
-#. Default: "AR Imports"
 msgid "Sample Imports"
 msgstr ""
 
@@ -835,98 +832,93 @@ msgstr "Çalışma Şablonları"
 msgid "Worksheets"
 msgstr "Çalışmalar"
 
-#. Default: "Accounting"
 msgid "label_schema_Accounting"
 msgstr "Muhasebe"
 
-#. Default: "Address"
 msgid "label_schema_Address"
 msgstr "Adres"
 
-#. Default: "Analyses"
 msgid "label_schema_Analyses"
 msgstr "Analizler"
 
-#. Default: "Bank details"
+msgid "label_schema_Analysis Templates"
+msgstr ""
+
+msgid "label_schema_Appearance"
+msgstr ""
+
 msgid "label_schema_Bank details"
 msgstr "Banka bilgileri"
 
-#. Default: "Calculation"
 msgid "label_schema_Calculation"
 msgstr "Hesaplama"
 
-#. Default: "Container and Preservation"
 msgid "label_schema_Container and Preservation"
 msgstr "Numune Kabı ve Muhafaza"
 
-#. Default: "Dates"
 msgid "label_schema_Dates"
 msgstr "Tarihler"
 
-#. Default: "Description"
 msgid "label_schema_Description"
 msgstr "Tanımlama"
 
-#. Default: "Email Telephone Fax"
 msgid "label_schema_Email Telephone Fax"
 msgstr "Eposta Telefon Faks"
 
-#. Default: "ID Server"
 msgid "label_schema_ID Server"
 msgstr "ID Sunucusu"
 
-#. Default: "Labels"
 msgid "label_schema_Labels"
 msgstr "Etiketler"
 
-#. Default: "Layout"
 msgid "label_schema_Layout"
 msgstr "Şablon"
 
-#. Default: "Location"
 msgid "label_schema_Location"
 msgstr "Konum"
 
-#. Default: "Method"
 msgid "label_schema_Method"
 msgstr "Metot"
 
-#. Default: "Preferences"
+msgid "label_schema_Notifications"
+msgstr ""
+
 msgid "label_schema_Preferences"
 msgstr "Tercihler"
 
-#. Default: "Publication preference"
 msgid "label_schema_Publication preference"
 msgstr "Yayınlama tercihleri"
 
-#. Default: "Reference Values"
 msgid "label_schema_Reference Values"
 msgstr "Referans Değerler"
 
-#. Default: "Result Options"
+msgid "label_schema_Reflex Rule Folder"
+msgstr ""
+
 msgid "label_schema_Result Options"
 msgstr "Sonuç Seçenekleri"
 
-#. Default: "Results Reports"
 msgid "label_schema_Results Reports"
 msgstr "Sonuç Raporları"
 
-#. Default: "SR Templates"
 msgid "label_schema_SR Templates"
 msgstr "SR Templates"
 
-#. Default: "Sample Partitions"
 msgid "label_schema_Sample Partitions"
 msgstr "Numune parçaları"
 
-#. Default: "AR Templates"
 msgid "label_schema_Sample Templates"
 msgstr ""
 
-#. Default: "Security"
+msgid "label_schema_Sampling"
+msgstr ""
+
+# Setup Schemata
 msgid "label_schema_Security"
 msgstr "Güvenlik"
 
-#. Default: "Uncertainties"
+msgid "label_schema_Sticker"
+msgstr ""
+
 msgid "label_schema_Uncertainties"
 msgstr "Belirsizlikler"

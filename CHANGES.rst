@@ -17,6 +17,7 @@ Changelog
 
 **Removed**
 
+- #1359 Remove stale Sample/Partition objects from ZODB
 - #1362 Remove unnecessary code from worksheet listing (bad performance)
 - #1346 Remove Searchable Text Overrides
 - #1328 Remove transition filtering in Worksheet listings
@@ -24,6 +25,7 @@ Changelog
 **Fixed**
 
 - #1368 Fix WF state propagation on partition verification
+- #1367 Clients can see interim values of analyses not yet verified
 - #1361 Fix leap sample ID sequence after secondary sample
 - #1344 Handle inline images in Results Interpretation
 - #1336 Fix result capture date inconsistency

@@ -222,7 +222,7 @@ schema = BikaFolderSchema.copy() + Schema((
         schemata="Accounting",
         required=1,
         vocabulary=CURRENCIES,
-        default='ZAR',
+        default='EUR',
         widget=SelectionWidget(
             label=_("Currency"),
             description=_("Select the currency the site will use to display prices."),
@@ -256,7 +256,7 @@ schema = BikaFolderSchema.copy() + Schema((
     FixedPointField(
         'VAT',
         schemata="Accounting",
-        default='14.00',
+        default='19.00',
         widget=DecimalWidget(
             label=_("VAT %"),
             description=_(
