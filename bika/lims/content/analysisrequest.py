@@ -1928,6 +1928,15 @@ class AnalysisRequest(BaseFolder):
         return ''
 
     @security.public
+    def getSampleConditionTitle(self):
+        """Helper method to access the title of the sample condition
+        """
+        obj = self.getSampleCondition()
+        if not obj:
+            return ""
+        return api.get_title(obj)
+
+    @security.public
     def getHazardous(self):
         """
         It works as a metacolumn.
