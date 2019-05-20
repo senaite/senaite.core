@@ -94,11 +94,11 @@ def guard_verify(analysis_request):
     """
     analyses_ready = False
     for analysis in analysis_request.getAnalyses():
+        analysis = api.get_object(analysis)
         analysis_status = api.get_workflow_status_of(analysis)
         if analysis_status in ANALYSIS_DETACHED_STATES:
             continue
         # All analyses must be in verified (or further) status
-        analysis = api.get_object(analysis)
         if not IVerified.providedBy(analysis):
             return False
         analyses_ready = True
