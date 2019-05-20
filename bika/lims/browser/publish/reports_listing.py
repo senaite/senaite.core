@@ -20,13 +20,13 @@
 
 import collections
 
-from bika.lims import bikaMessageFactory as _BMF
-from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims.utils import to_utf8
-from bika.lims.utils import get_link
-from Products.CMFPlone.utils import safe_unicode
 from bika.lims import api
-from bika.lims import _
+from bika.lims import bikaMessageFactory as _BMF
+from bika.lims import senaiteMessageFactory as _
+from bika.lims.browser.bika_listing import BikaListingView
+from bika.lims.utils import get_link
+from bika.lims.utils import to_utf8
+from Products.CMFPlone.utils import safe_unicode
 from ZODB.POSException import POSKeyError
 
 
@@ -62,10 +62,29 @@ class ReportsListingView(BikaListingView):
         self.show_workflow_action_buttons = True
         self.pagesize = 30
 
+        help_email_text = _(
+            "Open email form to send the selected reports to the recipients. "
+            "This will also publish the contained samples of the reports "
+            "after the email was successfully sent.")
+
         send_email_transition = {
             "id": "send_email",
             "title": _("Email"),
-            "url": "email"
+            "url": "email",
+            "css_class": "btn-primary",
+            "help": help_email_text,
+        }
+
+        help_publish_text = _(
+            "Manually publish all contained samples of the selected reports.")
+
+        publish_samples_transition = {
+            "id": "publish_samples",
+            "title": _("Publish"),
+            # see senaite.core.browser.workflow
+            "url": "workflow_action?action=publish_samples",
+            "css_class": "btn-success",
+            "help": help_publish_text,
         }
 
         self.columns = collections.OrderedDict((
@@ -96,7 +115,10 @@ class ReportsListingView(BikaListingView):
                 "title": "All",
                 "contentFilter": {},
                 "columns": self.columns.keys(),
-                "custom_transitions": [send_email_transition]
+                "custom_transitions": [
+                    send_email_transition,
+                    publish_samples_transition,
+                ]
             },
         ]
 
