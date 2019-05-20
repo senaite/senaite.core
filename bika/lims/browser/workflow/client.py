@@ -58,3 +58,4 @@ class WorkflowActionPublishSamplesAdapter(RequestContextAware):
         transitions = {"verified": "publish", "published": "republish"}
         transition = transitions.get(status, "prepublish")
         succeed, message = doActionFor(sample, transition)
+        return succeed
