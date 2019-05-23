@@ -201,6 +201,9 @@ class EmailView(BrowserView):
                     field = report.getField("ContainedAnalysisRequests")
                     contained_ars = field.get(report) or []
                     for obj in contained_ars:
+                        # skip the primary AR
+                        if obj == ar:
+                            continue
                         self.publish(obj)
 
                     # add new recipients to the AR Report
