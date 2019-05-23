@@ -26,6 +26,7 @@ Changelog
 
 **Fixed**
 
+- #1382 Fix double publication of the same sample when using multi-reports
 - #1368 Fix WF state propagation on partition verification
 - #1367 Clients can see interim values of analyses not yet verified
 - #1361 Fix leap sample ID sequence after secondary sample
