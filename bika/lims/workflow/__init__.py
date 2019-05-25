@@ -462,12 +462,12 @@ class ActionHandlerPool(object):
     def get_instance():
         """Returns the current instance of ActionHandlerPool
         """
-        if ActionHandlerPool.__instance == None:
+        if ActionHandlerPool.__instance is None:
             ActionHandlerPool()
         return ActionHandlerPool.__instance
 
     def __init__(self):
-        if ActionHandlerPool.__instance != None:
+        if ActionHandlerPool.__instance is not None:
             raise Exception("Use ActionHandlerPool.get_instance()")
         self.objects = collections.OrderedDict()
         self.num_calls = 0
