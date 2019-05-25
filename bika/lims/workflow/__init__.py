@@ -501,9 +501,14 @@ class ActionHandlerPool(object):
     def resume(self):
         """Resumes the pool and reindex all objects processed
         """
-        self.num_calls -= 1
+        # do not decrease the counter below 0
+        if self.num_calls > 0:
+            self.num_calls -= 1
+
+        # postpone for pending calls
         if self.num_calls > 0:
             return
+
         logger.info("Resume actions for {} objects".format(len(self)))
 
         # Fetch the objects from the pool
