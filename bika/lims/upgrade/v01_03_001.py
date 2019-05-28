@@ -20,6 +20,7 @@
 
 import time
 
+import traceback
 import transaction
 from bika.lims import api
 from bika.lims import logger
@@ -113,7 +114,7 @@ def remove_samples_and_partitions(portal):
     N.B.: We do not use a catalog search here due to inconsistencies in the
           deletion process and leftover objects.
     """
-
+    logger.info("Removing samples and partitions ...")
     num = 0
     clients = portal.clients.objectValues()
 
@@ -124,12 +125,18 @@ def remove_samples_and_partitions(portal):
         for sid in sids:
             num += 1
             # bypass security checks
-            client._delObject(sid)
-            logger.info("#{}: Deleted sample '{}' of client '{}'"
-                        .format(num, sid, cid))
+            try:
+                client._delObject(sid)
+                logger.info("#{}: Deleted sample '{}' of client '{}'"
+                            .format(num, sid, cid))
+            except:
+                logger.error("Cannot delete sample '{}': {}"
+                             .format(sid, traceback.format_exc()))
+            if num % 1000 == 0:
+                commit_transaction(portal)
 
     logger.info("Removed a total of {} samples, committing...".format(num))
-    transaction.commit()
+    commit_transaction(portal)
 
 
 def convert_inline_images_to_attachments(portal):
