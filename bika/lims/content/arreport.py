@@ -31,11 +31,11 @@ from plone.app.blob.field import BlobField
 from Products.Archetypes import atapi
 from Products.Archetypes.public import BaseFolder
 from Products.Archetypes.public import Schema
+from Products.Archetypes.public import TextField
 from Products.Archetypes.references import HoldingReference
 from Products.ATExtensions.ateapi import RecordField
 from Products.ATExtensions.ateapi import RecordsField
 from zope.interface import implements
-
 
 schema = BikaSchema.copy() + Schema((
     UIDReferenceField(
@@ -80,8 +80,12 @@ schema = BikaSchema.copy() + Schema((
         "Metadata",
         multiValued=True,
     ),
+    TextField(
+        "Html"
+    ),
     BlobField(
         "Pdf",
+        default_content_type="application/pdf",
     ),
     RecordsField(
         "Recipients",
