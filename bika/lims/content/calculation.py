@@ -111,6 +111,7 @@ schema = BikaSchema.copy() + Schema((
 
     TextField(
         'Formula',
+        required=True,
         validators=('formulavalidator',),
         default_content_type='text/plain',
         allowable_content_types=('text/plain',),
