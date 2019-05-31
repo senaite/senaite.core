@@ -86,6 +86,10 @@ def create_analysisrequest(client, request, values, analyses=None,
                                      analyses_serv=analyses)
     ar.setAnalyses(service_uids, prices=prices, specs=specifications)
 
+    # Handle rejection reasons
+    rejection_reasons = resolve_rejection_reasons(values)
+    ar.setRejectionReasons(rejection_reasons)
+
     # Handle secondary Analysis Request
     primary = ar.getPrimaryAnalysisRequest()
     if primary:
@@ -117,6 +121,10 @@ def create_analysisrequest(client, request, values, analyses=None,
             # Reindex the AR
             ar.reindexObject()
 
+            # If rejection reasons have been set, reject automatically
+            if rejection_reasons:
+                doActionFor(ar, "reject")
+
             # In "received" state already
             return ar
 
@@ -124,6 +132,11 @@ def create_analysisrequest(client, request, values, analyses=None,
     success, message = doActionFor(ar, "no_sampling_workflow")
     if not success:
         doActionFor(ar, "to_be_sampled")
+
+    # If rejection reasons have been set, reject the sample automatically
+    if rejection_reasons:
+        doActionFor(ar, "reject")
+
     return ar
 
 
@@ -475,3 +488,33 @@ def fields_to_dict(obj, skip_fields=None):
             continue
         data[field_name] = field.get(obj)
     return data
+
+
+def resolve_rejection_reasons(values):
+    """Resolves the rejection reasons from the submitted values to the format
+    supported by Sample's Rejection Reason field
+    """
+    rejection_reasons = values.get("RejectionReasons")
+    if not rejection_reasons:
+        return []
+
+    # Predefined reasons selected?
+    selected = rejection_reasons[0] or {}
+    if selected.get("checkbox") == "on":
+        selected = selected.get("multiselection") or []
+    else:
+        selected = []
+
+    # Other reasons set?
+    other = values.get("RejectionReasons.textfield")
+    if other:
+        other = other[0] or {}
+        other = other.get("other", "")
+    else:
+        other = ""
+
+    # If neither selected nor other reasons are set, return empty
+    if any([selected, other]):
+        return [{"selected": selected, "other": other}]
+
+    return []
