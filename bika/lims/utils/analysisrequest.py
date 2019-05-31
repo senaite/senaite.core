@@ -515,6 +515,6 @@ def resolve_rejection_reasons(values):
 
     # If neither selected nor other reasons are set, return empty
     if any([selected, other]):
-        return {"selected": selected, "other": other}
+        return [{"selected": selected, "other": other}]
 
     return []
