@@ -38,6 +38,7 @@ from bika.lims.interfaces import IReceived
 from bika.lims.interfaces import ISubmitted
 from bika.lims.interfaces import IVerified
 from bika.lims.setuphandlers import setup_auditlog_catalog
+from bika.lims.subscribers.setup import update_worksheet_manage_permissions
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
 from bika.lims.workflow import get_review_history_statuses
@@ -103,6 +104,10 @@ def upgrade(tool):
     # Remove unnecessary indexes/metadata from worksheet catalog
     # https://github.com/senaite/senaite.core/pull/1362
     cleanup_worksheet_catalog(portal)
+
+    # Apply permissions for Manage Worksheets
+    # https://github.com/senaite/senaite.core/issues/1387
+    update_worksheet_manage_permissions(api.get_setup())
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
@@ -319,6 +324,7 @@ def reindex_sortable_title(portal):
         catalog = api.get_tool(catalog_name)
         catalog.reindexIndex("sortable_title", None, pghandler=handler)
         commit_transaction(portal)
+
 
 def cleanup_worksheet_catalog(portal):
     """Removes stale indexes and metadata from worksheet_catalog.
