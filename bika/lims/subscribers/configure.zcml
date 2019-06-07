@@ -66,4 +66,10 @@
       handler="bika.lims.subscribers.pricelist.ObjectModifiedEventHandler"
       />
 
+  <!-- Setup: Object modified event -->
+  <subscriber
+    for="bika.lims.interfaces.IBikaSetup
+         zope.lifecycleevent.interfaces.IObjectModifiedEvent"
+    handler="bika.lims.subscribers.setup.ObjectModifiedEventHandler" />
+
 </configure>
