@@ -1,18 +1,32 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of SENAITE.CORE
+# This file is part of SENAITE.CORE.
 #
-# Copyright 2018 by it's authors.
-# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2019 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
 import collections
 import sys
 
 from AccessControl.SecurityInfo import ModuleSecurityInfo
+from Products.Archetypes.config import UID_CATALOG
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
 from bika.lims import PMF
-from bika.lims import enum, api
+from bika.lims import api
 from bika.lims import logger
 from bika.lims.browser import ulocalized_time
 from bika.lims.interfaces import IJSONReadExtender
@@ -127,17 +141,6 @@ def doActionFor(instance, action_id, idxs=None):
     return succeed, message
 
 
-# TODO Workflow - remove doAction(s)For?
-def doActionsFor(instance, actions):
-    """Performs a set of transitions to the instance passed in
-    """
-    pool = ActionHandlerPool.get_instance()
-    pool.queue_pool()
-    for action in actions:
-        doActionFor(instance, action)
-    pool.resume()
-
-
 def call_workflow_event(instance, event, after=True):
     """Calls the instance's workflow event
     """
@@ -222,31 +225,11 @@ def get_workflow_actions(obj):
     return actions
 
 
-def isBasicTransitionAllowed(context, permission=None):
-    """Most transition guards need to check the same conditions:
-
-    - Is the object active (cancelled or inactive objects can't transition)
-    - Has the user a certain permission, required for transition.  This should
-    normally be set in the guard_permission in workflow definition.
-
-    """
-    workflow = getToolByName(context, "portal_workflow")
-    mtool = getToolByName(context, "portal_membership")
-    if not isActive(context) \
-        or (permission and mtool.checkPermission(permission, context)):
-        return False
-    return True
-
-
 def isTransitionAllowed(instance, transition_id):
     """Checks if the object can perform the transition passed in.
     :returns: True if transition can be performed
     :rtype: bool
     """
-    if transition_id not in ['reinstate', 'activate']:
-        if not api.is_active(instance):
-            return False
-
     wf_tool = getToolByName(instance, "portal_workflow")
     for wf_id in wf_tool.getChainFor(instance):
         wf = wf_tool.getWorkflowById(wf_id)
@@ -269,25 +252,11 @@ def getAllowedTransitions(instance):
     return [trans['id'] for trans in transitions]
 
 
-def wasTransitionPerformed(instance, transition_id):
-    """Checks if the transition has already been performed to the object
-    Instance's workflow history is checked.
-    """
-    transitions = getReviewHistoryActionsList(instance)
-    return transition_id in transitions
-
-
-def isActive(instance):
-    """Returns True if the object is neither in a cancelled nor inactive state
-    """
-    return api.is_active(instance)
-
-
-def getReviewHistoryActionsList(instance, reverse=False):
-    """Returns a list with the actions performed to the instance
+def get_review_history_statuses(instance, reverse=False):
+    """Returns a list with the statuses of the instance from the review_history
     """
     review_history = getReviewHistory(instance, reverse=reverse)
-    return map(lambda event: event["action"], review_history)
+    return map(lambda event: event["review_state"], review_history)
 
 
 def get_prev_status_from_history(instance, status=None):
@@ -308,23 +277,15 @@ def getReviewHistory(instance, reverse=True):
     """Returns the review history for the instance
     :returns: the list of historic events as dicts
     """
-    review_history = []
-    workflow = getToolByName(instance, 'portal_workflow')
-    try:
-        review_history = list(workflow.getInfoFor(instance, 'review_history'))
-    except WorkflowException:
-        logger.error("Unable to retrieve review history from {}:{}"
-                     .format(instance.portal_type, instance.getId()))
-    if reverse:
-        # invert the list, so we always see the most recent matching event
-        review_history.reverse()
-    return review_history
+    return api.get_review_history(instance, rev=reverse)
+
 
 def getCurrentState(obj, stateflowid='review_state'):
     """ The current state of the object for the state flow id specified
         Return empty if there's no workflow state for the object and flow id
     """
     return api.get_workflow_status_of(obj, stateflowid)
+
 
 def in_state(obj, states, stateflowid='review_state'):
     """ Returns if the object passed matches with the states passed in
@@ -333,6 +294,7 @@ def in_state(obj, states, stateflowid='review_state'):
         return False
     obj_state = getCurrentState(obj, stateflowid=stateflowid)
     return obj_state in states
+
 
 def getTransitionActor(obj, action_id):
     """Returns the actor that performed a given transition. If transition has
@@ -474,29 +436,6 @@ def _load_wf_module(module_relative_name):
     return sys.modules.get(modulekey, None)
 
 
-# Enumeration of the available status flows
-StateFlow = enum(review='review_state',
-                 inactive='inactive_state',
-                 cancellation='cancellation_state')
-
-# Enumeration of the different available states from the inactive flow
-InactiveState = enum(active='active')
-
-# Enumeration of the different states can have a batch
-BatchState = enum(open='open',
-                  closed='closed',
-                  cancelled='cancelled')
-
-BatchTransitions = enum(open='open',
-                        close='close')
-
-CancellationState = enum(active='active',
-                         cancelled='cancelled')
-
-CancellationTransitions = enum(cancel='cancel',
-                               reinstate='reinstate')
-
-
 class JSONReadExtender(object):
 
     """- Adds the list of possible transitions to each object, if 'transitions'
@@ -512,31 +451,6 @@ class JSONReadExtender(object):
         include_fields = get_include_fields(request)
         if not include_fields or "transitions" in include_fields:
             data['transitions'] = get_workflow_actions(self.context)
-
-
-# TODO Workflow - ActionsPool - Better use ActionHandlerPool
-class ActionsPool(object):
-    """Handles transitions of multiple objects at once
-    """
-    def __init__(self):
-        self.actions_pool = collections.OrderedDict()
-
-    def add(self, instance, action_id):
-        uid = api.get_uid(instance)
-        self.actions_pool[uid] = {"instance": instance,
-                                  "action_id": action_id}
-
-    def resume(self):
-        action_handler = ActionHandlerPool.get_instance()
-        action_handler.queue_pool()
-        outcome = collections.OrderedDict()
-        for uid, values in self.actions_pool.items():
-            instance = values["instance"]
-            action_id = values["action_id"]
-            outcome[uid] = doActionFor(instance, action_id)
-        self.actions_pool = collections.OrderedDict()
-        action_handler.resume()
-        return outcome
 
 
 class ActionHandlerPool(object):
@@ -575,7 +489,7 @@ class ActionHandlerPool(object):
         uid = api.get_uid(instance)
         info = self.objects.get(uid, {})
         idx = [] if idxs is _marker else idxs
-        info[action] = {'instance': instance, 'success': success, 'idxs': idx}
+        info[action] = {'success': success, 'idxs': idx}
         self.objects[uid] = info
 
     def succeed(self, instance, action):
@@ -591,16 +505,24 @@ class ActionHandlerPool(object):
         if self.num_calls > 0:
             return
         logger.info("Resume actions for {} objects".format(len(self)))
+
+        # Fetch the objects from the pool
         processed = list()
-        for uid, info in self.objects.items():
+        for brain in api.search(dict(UID=self.objects.keys()), UID_CATALOG):
+            uid = api.get_uid(brain)
             if uid in processed:
+                # This object has been processed already, do nothing
                 continue
-            instance = info[info.keys()[0]]["instance"]
+
+            # Reindex the object
+            obj = api.get_object(brain)
             idxs = self.get_indexes(uid)
             idxs_str = idxs and ', '.join(idxs) or "-- All indexes --"
-            logger.info("Reindexing {}: {}".format(instance.getId(), idxs_str))
-            instance.reindexObject(idxs=self.get_indexes(uid))
+            logger.info("Reindexing {}: {}".format(obj.getId(), idxs_str))
+            obj.reindexObject(idxs=idxs)
             processed.append(uid)
+
+        # Cleanup the pool
         logger.info("Objects processed: {}".format(len(processed)))
         self.objects = collections.OrderedDict()
 
@@ -622,8 +544,8 @@ class ActionHandlerPool(object):
                 # Reindex all indexes!
                 return []
             idxs.extend(obj_idxs)
-        # Always reindex review_state
-        idxs.append("review_state")
+        # Always reindex review_state and is_active
+        idxs.extend(["review_state", "is_active"])
         return list(set(idxs))
 
 

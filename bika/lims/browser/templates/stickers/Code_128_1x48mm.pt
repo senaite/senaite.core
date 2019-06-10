@@ -1,51 +1,37 @@
-<!--
-    Default template used to render one barcode small sticker
+<tal:sticker define="portal_state context/@@plone_portal_state;
+                     portal_url portal_state/portal_url;
+                     item python:view.current_item;
+                     sample_id item/getId;
+                     sample_type item/getSampleTypeTitle;
+                     date_sampled python:view.ulocalized_time(item.getDateSampled());
+                     hazardous item/getHazardous">
 
-    To retrieve the item, use view.current_item, that will return an array with
-    the following structure:
+  <!-- Barcode -->
+  <div class="barcode"
+       tal:attributes="data-id sample_id;"
+       data-code="code128"
+       data-barHeight="12"
+       data-addQuietZone="true"
+       data-showHRI="false">
+  </div>
 
-    [analysis_request_object, sample_object, sample_partition_object]
-
-    Although sample_object (position 1 in the array) will never be None,
-    analysis_request_object can be None when
-    a) The user requested to render stickers for samples (instead of ARs) or
-    b) The user requested to render stickers for sample partitions or
-    c) The user requested to render stickers for reference samples.
-
-    If c), both analysis_request_object and sample_partition_object will be None
--->
-<tal:sticker define="
-    portal_state      context/@@plone_portal_state;
-    portal_url        portal_state/portal_url;
-    item              view/current_item;
-    ar                python:item[0];
-    ar_id             python:ar.getId();
-    sample_type       python:ar.getSampleType().Title();
-    date_sampled      python:ar.getDateSampled() and ar.getDateSampled().Date() or '';
-    hazardous         python:ar.getHazardous();">
-
-    <!-- Barcode -->
-    <div class="barcode"
-        tal:attributes="data-id ar_id;"
-        data-code="code128"
-        data-barHeight="12"
-        data-addQuietZone="true"
-        data-showHRI="false">
-    </div>
-
-    <!-- Some additional info about the sample -->
-    <div class="analysisrequest-info">
-        <table cellpadding="0" cellspacing="0" border="0">
-            <tr>
-                <td rowspan="2" tal:condition="hazardous | nothing">
-                    <img tal:attributes="src string:${portal_url}/++resource++bika.lims.images/hazardous.png"/>
-                </td>
-                <td colspan="2" class="client-sample-id" tal:content="python:ar_id"></td>
-            </tr>
-            <tr>
-                <td tal:content="python:sample_type"></td>
-                <td tal:content="python:date_sampled"></td>
-            </tr>
-        </table>
-    </div>
+  <!-- Some additional info about the sample -->
+  <div class="sample-info">
+    <table cellpadding="0" cellspacing="0" border="0">
+      <tr>
+        <td rowspan="2" tal:condition="hazardous | nothing">
+          <img tal:attributes="src string:${portal_url}/++resource++bika.lims.images/hazardous.png"/>
+        </td>
+        <td colspan="2">
+          <strong tal:content="sample_id">Sample ID</strong>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <div tal:content="date_sampled">Date Sampled</div>
+          <div tal:content="sample_type">Sample Type</div>
+        </td>
+      </tr>
+    </table>
+  </div>
 </tal:sticker>

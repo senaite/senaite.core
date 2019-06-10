@@ -1,9 +1,22 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of SENAITE.CORE
+# This file is part of SENAITE.CORE.
 #
-# Copyright 2018 by it's authors.
-# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2019 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
 """Sample represents a physical sample submitted for testing
 """
@@ -22,15 +35,12 @@ from bika.lims.browser.widgets import RemarksWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import ISample
-from bika.lims.permissions import SampleSample
-from bika.lims.permissions import ScheduleSampling
 from Products.Archetypes import atapi
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.ATContentTypes.utils import DT2dt, dt2DT
 from Products.CMFCore import permissions
-from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from zope.interface import implements
 
@@ -40,6 +50,7 @@ from bika.lims.browser.widgets import SelectionWidget as BikaSelectionWidget
 
 import sys
 from bika.lims.utils import to_unicode
+from bika.lims.interfaces import IDoNotSupportSnapshots
 
 schema = BikaSchema.copy() + Schema((
     # TODO This field is only for v1.3.0 migration purposes
@@ -97,7 +108,7 @@ schema = BikaSchema.copy() + Schema((
             render_own_label=True,
             visible=False,
             catalog_name='bika_setup_catalog',
-            base_query={'inactive_state': 'active'},
+            base_query={'is_active': True},
             showOn=True,
         ),
     ),
@@ -120,7 +131,7 @@ schema = BikaSchema.copy() + Schema((
             render_own_label=True,
             visible=False,
             catalog_name='bika_setup_catalog',
-            base_query={'inactive_state': 'active'},
+            base_query={'is_active': True},
             showOn=True,
         ),
     ),
@@ -144,7 +155,7 @@ schema = BikaSchema.copy() + Schema((
             render_own_label=True,
             visible=False,
             catalog_name='bika_setup_catalog',
-            base_query={'inactive_state': 'active'},
+            base_query={'is_active': True},
             showOn=True,
         ),
     ),
@@ -154,7 +165,6 @@ schema = BikaSchema.copy() + Schema((
     DateTimeField('DateSampled',
         mode="rw",
         read_permission=permissions.View,
-        write_permission=SampleSample,
         widget = DateTimeWidget(
             label=_("Date Sampled"),
             show_time=True,
@@ -166,7 +176,6 @@ schema = BikaSchema.copy() + Schema((
     StringField('Sampler',
         mode="rw",
         read_permission=permissions.View,
-        write_permission=SampleSample,
         vocabulary='getSamplers',
         widget=BikaSelectionWidget(
             format='select',
@@ -178,7 +187,6 @@ schema = BikaSchema.copy() + Schema((
     StringField('ScheduledSamplingSampler',
         mode="rw",
         read_permission=permissions.View,
-        write_permission=ScheduleSampling,
         vocabulary='getSamplers',
         widget=BikaSelectionWidget(
             description=_("Define the sampler supposed to do the sample in "
@@ -214,7 +222,7 @@ schema = BikaSchema.copy() + Schema((
             render_own_label=True,
             visible=False,
             catalog_name='bika_setup_catalog',
-            base_query={'inactive_state': 'active'},
+            base_query={'is_active': True},
             showOn=True,
         ),
     ),
@@ -231,7 +239,7 @@ schema = BikaSchema.copy() + Schema((
             render_own_label=True,
             visible=False,
             catalog_name='bika_setup_catalog',
-            base_query={'inactive_state': 'active'},
+            base_query={'is_active': True},
             showOn=True,
         ),
     ),
@@ -356,7 +364,7 @@ schema['title'].required = False
 
 
 class Sample(BaseFolder, HistoryAwareMixin):
-    implements(ISample)
+    implements(ISample, IDoNotSupportSnapshots)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema

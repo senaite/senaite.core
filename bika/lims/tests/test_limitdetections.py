@@ -1,9 +1,22 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of SENAITE.CORE
+# This file is part of SENAITE.CORE.
 #
-# Copyright 2018 by it's authors.
-# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2019 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
 from bika.lims.tests.base import DataTestCase
 from bika.lims.utils.analysisrequest import create_analysisrequest
@@ -307,7 +320,7 @@ class TestLimitDetections(DataTestCase):
              'isudl'             : True},
         ]
 
-        for case in cases:
+        for num, case in enumerate(cases):
             s = self.services[0]
             s.setDetectionLimitSelector(case['displaydl'])
             s.setAllowManualDetectionLimit(case['manual'])
@@ -332,17 +345,17 @@ class TestLimitDetections(DataTestCase):
 
             an = ar.getAnalyses()[0].getObject()
             an.setResult(case['input'])
-            self.assertEqual(an.isBelowLowerDetectionLimit(), case['isbelowldl'])
-            self.assertEqual(an.isAboveUpperDetectionLimit(), case['isaboveudl'])
-            self.assertEqual(an.isLowerDetectionLimit(), case['isldl'])
-            self.assertEqual(an.isUpperDetectionLimit(), case['isudl'])
-            self.assertEqual(float(an.getResult()), case['expresult'])
-            self.assertEqual(an.getFormattedResult(html=False), case['expformattedresult'])
+            self.assertEqual(an.isBelowLowerDetectionLimit(), case['isbelowldl'], case)
+            self.assertEqual(an.isAboveUpperDetectionLimit(), case['isaboveudl'], case)
+            self.assertEqual(an.isLowerDetectionLimit(), case['isldl'], case)
+            self.assertEqual(an.isUpperDetectionLimit(), case['isudl'], case)
+            self.assertEqual(float(an.getResult()), case['expresult'], case)
+            self.assertEqual(an.getFormattedResult(html=False), case['expformattedresult'], case)
             expres = case['expformattedresult']
             expres = expres.replace('< ', '&lt; ') if an.isBelowLowerDetectionLimit() else expres
             expres = expres.replace('> ', '&gt; ') if an.isAboveUpperDetectionLimit() else expres
-            self.assertEqual(an.getFormattedResult(html=True), expres)
-            self.assertEqual(an.getFormattedResult(), expres)
+            self.assertEqual(an.getFormattedResult(html=True), expres, case)
+            self.assertEqual(an.getFormattedResult(), expres, case)
 
     def test_ar_manageresults_limitdetections(self):
         # Input results

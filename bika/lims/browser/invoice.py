@@ -1,95 +1,62 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of SENAITE.CORE
+# This file is part of SENAITE.CORE.
 #
-# Copyright 2018 by it's authors.
-# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2019 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
+from bika.lims import api
 from bika.lims.browser import BrowserView
 from bika.lims.interfaces import IInvoiceView
-from Products.CMFCore.utils import getToolByName
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from zope.i18n.locales import locales
 from zope.interface import implements
 
 
 class InvoiceView(BrowserView):
+    """Base view for invoices
 
+    This view returns the invoice PDF
+    """
     implements(IInvoiceView)
-
-    template = ViewPageTemplateFile("templates/invoice.pt")
-    content = ViewPageTemplateFile("templates/invoice_content.pt")
 
     def __init__(self, context, request):
         super(InvoiceView, self).__init__(context, request)
-        request.set('disable_border', 1)
+        self.context = context
+        self.request = request
 
     def __call__(self):
-        context = self.context
-        workflow = getToolByName(context, 'portal_workflow')
-        # Gather relted objects
-        batch = context.aq_parent
-        client = context.getClient()
-        analysis_request = context.getAnalysisRequest() if context.getAnalysisRequest() else None
-        # Gather general data
-        self.invoiceId = context.getId()
-        self.invoiceDate = self.ulocalized_time(context.getInvoiceDate())
-        self.subtotal = '%0.2f' % context.getSubtotal()
-        self.VATAmount = '%0.2f' % context.getVATAmount()
-        self.total = '%0.2f' % context.getTotal()
-        # Create the batch range
-        start = self.ulocalized_time(batch.getBatchStartDate())
-        end = self.ulocalized_time(batch.getBatchEndDate())
-        self.batchRange = "%s to %s" % (start, end)
-        # Gather client data
-        self.clientName = client.Title()
-        self.clientURL = client.absolute_url()
-        self.clientPhone = client.getPhone()
-        self.clientFax = client.getFax()
-        self.clientEmail = client.getEmailAddress()
-        self.clientAccountNumber = client.getAccountNumber()
-        # currency info
-        locale = locales.getLocale('en')
-        self.currency = self.context.bika_setup.getCurrency()
-        self.symbol = locale.numbers.currencies[self.currency].symbol
-        # Get an available client address in a preferred order
-        self.clientAddress = None
-        # A list with the items and its invoice values to render in template
-        self.items = []
-        addresses = (
-            client.getBillingAddress(),
-            client.getPostalAddress(),
-            client.getPhysicalAddress(),
-        )
-        for address in addresses:
-            if address.get('address'):
-                self.clientAddress = address
-                break
-        # Gather the line items
-        items = context.invoice_lineitems
-        for item in items:
-            invoice_data = {
-                'invoiceDate': self.ulocalized_time(item.get('ItemDate', '')),
-                'description': item.get('ItemDescription', ''),
-                'orderNo': item.get('OrderNumber', ''),
-                'subtotal': '%0.2f' % item.get('Subtotal', ''),
-                'VATAmount': '%0.2f' % item.get('VATAmount', ''),
-                'total': '%0.2f' % item.get('Total', ''),
-            }
-            if item.get('AnalysisRequest', ''):
-                    invoice_data['orderNoURL'] = item['AnalysisRequest'].absolute_url()
-            elif item.get('SupplyOrder', ''):
-                    invoice_data['orderNoURL'] = item['SupplyOrder'].absolute_url()
-            else:
-                invoice_data['orderNoURL'] = ''
-            self.items.append(invoice_data)
-        # Render the template
-        return self.template()
+        filename = "invoice.pdf"
+        pdf = self.context.getInvoicePDF()
+        if pdf:
+            data = pdf.data
+        else:
+            ar = self.context.getAnalysisRequest()
+            so = self.context.getSupplyOrder()
+            context = ar or so
+            view = api.get_view("invoice_create", context=context)
+            data = view.create_pdf()
+            self.context.setInvoicePDF(data)
+        return self.download(data, filename)
 
-
-class InvoicePrintView(InvoiceView):
-
-    template = ViewPageTemplateFile("templates/invoice_print.pt")
-
-    def __call__(self):
-        return InvoiceView.__call__(self)
+    def download(self, data, filename, content_type="application/pdf"):
+        """Download the PDF
+        """
+        self.request.response.setHeader(
+            "Content-Disposition", "inline; filename=%s" % filename)
+        self.request.response.setHeader("Content-Type", content_type)
+        self.request.response.setHeader("Content-Length", len(data))
+        self.request.response.setHeader("Cache-Control", "no-store")
+        self.request.response.setHeader("Pragma", "no-cache")
+        self.request.response.write(data)

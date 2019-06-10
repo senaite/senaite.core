@@ -9,7 +9,7 @@
     icon_expr="string:++resource++bika.lims.images/bikasetup.png"
     url_expr="string:$portal_url/bika_setup/edit"
     visible="True">
-  <permission>BIKA: Manage Bika</permission>
+  <permission>senaite.core: Manage Bika</permission>
  </configlet>
 
  <configlet title="Laboratory Information" action_id="bika_labinfo"
@@ -18,7 +18,7 @@
     url_expr="string:$portal_url/bika_setup/laboratory/base_edit"
     visible="True"
     i18n:attributes="title">
-  <permission>BIKA: Manage Bika</permission>
+  <permission>senaite.core: Manage Bika</permission>
  </configlet>
 
  <configlet title="Lab Departments" action_id="bika_departments"
@@ -27,16 +27,16 @@
     url_expr="string:$portal_url/bika_setup/bika_departments"
     visible="True"
     i18n:attributes="title">
-  <permission>BIKA: Manage Bika</permission>
+  <permission>senaite.core: Manage Bika</permission>
  </configlet>
 
  <configlet title="Lab Contacts" action_id="bika_labcontacts"
     appId="bika.lims" category="bika" condition_expr=""
-    icon_expr="string:++resource++bika.lims.images/lab_contact.png"
+    icon_expr="string:++resource++bika.lims.images/labcontact.png"
     url_expr="string:$portal_url/bika_setup/bika_labcontacts"
     visible="True"
     i18n:attributes="title">
-  <permission>BIKA: Manage Bika</permission>
+  <permission>senaite.core: Manage Bika</permission>
  </configlet>
 
  <configlet title="Analysis Categories" action_id="bika_analysiscategories"
@@ -45,7 +45,7 @@
     url_expr="string:$portal_url/bika_setup/bika_analysiscategories"
     visible="True"
     i18n:attributes="title">
-  <permission>BIKA: Manage Bika</permission>
+  <permission>senaite.core: Manage Bika</permission>
  </configlet>
 
  <configlet title="Analysis Services" action_id="bika_analysisservices"
@@ -54,7 +54,7 @@
     url_expr="string:$portal_url/bika_setup/bika_analysisservices"
     visible="True"
     i18n:attributes="title">
-  <permission>BIKA: Manage Bika</permission>
+  <permission>senaite.core: Manage Bika</permission>
  </configlet>
 
  <configlet title="Identifier Types" action_id="bika_identifiertypes"
@@ -63,7 +63,7 @@
             url_expr="string:$portal_url/bika_setup/bika_identifiertypes"
             visible="True"
             i18n:attributes="title">
-     <permission>BIKA: Manage Bika</permission>
+     <permission>senaite.core: Manage Bika</permission>
  </configlet>
 
  <configlet title="Analysis Specifications" action_id="bika_analysisspecs"
@@ -72,7 +72,7 @@
     url_expr="string:$portal_url/bika_setup/bika_analysisspecs"
     visible="True"
     i18n:attributes="title">
-  <permission>BIKA: Manage Bika</permission>
+  <permission>senaite.core: Manage Bika</permission>
  </configlet>
 
   <configlet title="Sample Conditions" action_id="bika_sampleconditions"
@@ -81,7 +81,7 @@
     url_expr="string:$portal_url/bika_setup/bika_sampleconditions"
     visible="True"
     i18n:attributes="title">
-  <permission>BIKA: Manage Bika</permission>
+  <permission>senaite.core: Manage Bika</permission>
  </configlet>
 
  <configlet title="Sample Matrices" action_id="bika_samplematrices"
@@ -90,7 +90,7 @@
     url_expr="string:$portal_url/bika_setup/bika_samplematrices"
     visible="True"
     i18n:attributes="title">
-  <permission>BIKA: Manage Bika</permission>
+  <permission>senaite.core: Manage Bika</permission>
  </configlet>
 
  <configlet title="Sample Types" action_id="bika_sampletypes"
@@ -99,7 +99,7 @@
     url_expr="string:$portal_url/bika_setup/bika_sampletypes"
     visible="True"
     i18n:attributes="title">
-  <permission>BIKA: Manage Bika</permission>
+  <permission>senaite.core: Manage Bika</permission>
  </configlet>
 
  <configlet title="Sample Points" action_id="bika_samplepoints"
@@ -108,7 +108,7 @@
     url_expr="string:$portal_url/bika_setup/bika_samplepoints"
     visible="True"
     i18n:attributes="title">
-  <permission>BIKA: Manage Bika</permission>
+  <permission>senaite.core: Manage Bika</permission>
  </configlet>
 
  <configlet title="Sampling Deviations" action_id="bika_samplingdeviations"
@@ -117,7 +117,7 @@
     url_expr="string:$portal_url/bika_setup/bika_samplingdeviations"
     visible="True"
     i18n:attributes="title">
-  <permission>BIKA: Manage Bika</permission>
+  <permission>senaite.core: Manage Bika</permission>
  </configlet>
 
  <configlet title="Instruments" action_id="bika_instruments"
@@ -126,7 +126,7 @@
     url_expr="string:$portal_url/bika_setup/bika_instruments"
     visible="True"
     i18n:attributes="title">
-  <permission>BIKA: Manage Bika</permission>
+  <permission>senaite.core: Manage Bika</permission>
  </configlet>
 
  <configlet title="Instrument Types" action_id="bika_instrumenttypes"
@@ -135,7 +135,7 @@
     url_expr="string:$portal_url/bika_setup/bika_instrumenttypes"
     visible="True"
     i18n:attributes="title">
-  <permission>BIKA: Manage Bika</permission>
+  <permission>senaite.core: Manage Bika</permission>
  </configlet>
 
  <configlet title="Instrument Locations" action_id="bika_instrumentlocations"
@@ -144,7 +144,7 @@
     url_expr="string:$portal_url/bika_setup/bika_instrumentlocations"
     visible="True"
     i18n:attributes="title">
-  <permission>BIKA: Manage Bika</permission>
+  <permission>senaite.core: Manage Bika</permission>
  </configlet>
 
  <configlet title="Methods" action_id="methods"
@@ -153,7 +153,7 @@
     url_expr="string:$portal_url/methods"
     visible="True"
     i18n:attributes="title">
-  <permission>BIKA: Manage Bika</permission>
+  <permission>senaite.core: Manage Bika</permission>
  </configlet>
 
  <configlet title="Preservations" action_id="bika_preservations"
@@ -162,7 +162,7 @@
     url_expr="string:$portal_url/bika_setup/bika_preservations"
     visible="True"
     i18n:attributes="title">
-  <permission>BIKA: Manage Bika</permission>
+  <permission>senaite.core: Manage Bika</permission>
  </configlet>
 
  <configlet title="Attachment Types" action_id="bika_attachmenttypes"
@@ -171,7 +171,7 @@
     url_expr="string:$portal_url/bika_setup/bika_attachmenttypes"
     visible="True"
     i18n:attributes="title">
-  <permission>BIKA: Manage Bika</permission>
+  <permission>senaite.core: Manage Bika</permission>
  </configlet>
 
  <configlet title="Calculations" action_id="bika_calculations"
@@ -180,7 +180,7 @@
     url_expr="string:$portal_url/bika_setup/bika_calculations"
     visible="True"
     i18n:attributes="title">
-  <permission>BIKA: Manage Bika</permission>
+  <permission>senaite.core: Manage Bika</permission>
  </configlet>
 
  <configlet title="Containers" action_id="bika_containers"
@@ -189,7 +189,7 @@
     url_expr="string:$portal_url/bika_setup/bika_containers"
     visible="True"
     i18n:attributes="title">
-  <permission>BIKA: Manage Bika</permission>
+  <permission>senaite.core: Manage Bika</permission>
  </configlet>
 
  <configlet title="Container Types" action_id="bika_containertypes"
@@ -198,7 +198,7 @@
     url_expr="string:$portal_url/bika_setup/bika_containertypes"
     visible="True"
     i18n:attributes="title">
-  <permission>BIKA: Manage Bika</permission>
+  <permission>senaite.core: Manage Bika</permission>
  </configlet>
 
  <configlet title="Analysis Profiles" action_id="bika_analysisprofiles"
@@ -207,7 +207,7 @@
     url_expr="string:$portal_url/bika_setup/bika_analysisprofiles"
     visible="True"
     i18n:attributes="title">
-  <permission>BIKA: Manage Bika</permission>
+  <permission>senaite.core: Manage Bika</permission>
  </configlet>
 
  <configlet title="AR Templates" action_id="bika_artemplates"
@@ -216,7 +216,7 @@
     url_expr="string:$portal_url/bika_setup/bika_artemplates"
     visible="True"
     i18n:attributes="title">
-  <permission>BIKA: Manage Bika</permission>
+  <permission>senaite.core: Manage Bika</permission>
  </configlet>
 
  <configlet title="Lab Products" action_id="bika_labproducts"
@@ -225,7 +225,7 @@
     url_expr="string:$portal_url/bika_setup/bika_labproducts"
     visible="True"
     i18n:attributes="title">
-  <permission>BIKA: Manage Bika</permission>
+  <permission>senaite.core: Manage Bika</permission>
  </configlet>
 
  <configlet title="Manufacturers"
@@ -235,7 +235,7 @@
     url_expr="string:$portal_url/bika_setup/bika_manufacturers"
     visible="True"
     i18n:attributes="title">
-  <permission>BIKA: Manage Bika</permission>
+  <permission>senaite.core: Manage Bika</permission>
  </configlet>
 
  <configlet title="Suppliers"
@@ -245,7 +245,7 @@
     url_expr="string:$portal_url/bika_setup/bika_suppliers"
     visible="True"
     i18n:attributes="title">
-  <permission>BIKA: Manage Bika</permission>
+  <permission>senaite.core: Manage Bika</permission>
  </configlet>
 
  <configlet title="Reference Definitions" action_id="bika_referencedefinitions"
@@ -254,7 +254,7 @@
     url_expr="string:$portal_url/bika_setup/bika_referencedefinitions"
     visible="True"
     i18n:attributes="title">
-  <permission>BIKA: Manage Bika</permission>
+  <permission>senaite.core: Manage Bika</permission>
  </configlet>
 
   <configlet title="Batch Labels" action_id="bika_batchlabels"
@@ -263,7 +263,7 @@
     url_expr="string:$portal_url/bika_setup/bika_batchlabels"
     visible="True"
     i18n:attributes="title">
-  <permission>BIKA: Manage Bika</permission>
+  <permission>senaite.core: Manage Bika</permission>
  </configlet>
 
  <configlet title="Worksheet Templates" action_id="bika_worksheettemplates"
@@ -272,7 +272,7 @@
     url_expr="string:$portal_url/bika_setup/bika_worksheettemplates"
     visible="True"
     i18n:attributes="title">
-  <permission>BIKA: Manage Bika</permission>
+  <permission>senaite.core: Manage Bika</permission>
  </configlet>
 
  <configlet title="Storage Locations" action_id="bika_storagelocations"
@@ -281,7 +281,7 @@
     url_expr="string:$portal_url/bika_setup/bika_storagelocations"
     visible="True"
     i18n:attributes="title">
-  <permission>BIKA: Manage Bika</permission>
+  <permission>senaite.core: Manage Bika</permission>
  </configlet>
 
  <configlet title="Sampling Round Templates" action_id="bika_srtemplates"
@@ -290,7 +290,7 @@
     url_expr="string:$portal_url/bika_setup/bika_srtemplates"
     visible="True"
     i18n:attributes="title">
-  <permission>BIKA: Manage Bika</permission>
+  <permission>senaite.core: Manage Bika</permission>
  </configlet>
 
  <configlet title="Sub-groups" action_id="bika_subgroups"
@@ -299,7 +299,7 @@
     url_expr="string:$portal_url/bika_setup/bika_subgroups"
     visible="True"
     i18n:attributes="title">
-  <permission>BIKA: Manage Bika</permission>
+  <permission>senaite.core: Manage Bika</permission>
  </configlet>
 
  <configlet title="Sampling Rounds" action_id="bika_samplingrounds"
@@ -308,7 +308,7 @@
     url_expr="string:$portal_url/bika_setup/bika_samplingrounds"
     visible="True"
     i18n:attributes="title">
-  <permission>BIKA: Manage Bika</permission>
+  <permission>senaite.core: Manage Bika</permission>
  </configlet>
 
  <configlet title="Reflex Rules" action_id="bika_reflexrulefolder"
@@ -317,7 +317,7 @@
     url_expr="string:$portal_url/bika_setup/bika_reflexrulefolder"
     visible="True"
     i18n:attributes="title">
-  <permission>BIKA: Manage Bika</permission>
+  <permission>senaite.core: Manage Bika</permission>
  </configlet>
 
 </object>

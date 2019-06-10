@@ -1,25 +1,30 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of SENAITE.CORE
+# This file is part of SENAITE.CORE.
 #
-# Copyright 2018 by it's authors.
-# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2019 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
 import sys
 
 from AccessControl import ClassSecurityInfo
-from bika.lims import _
-from bika.lims import api
-from bika.lims.config import ARIMPORT_OPTIONS
-from bika.lims.config import DECIMAL_MARKS
-from bika.lims.config import EMAIL_SUBJECT_OPTIONS
-from bika.lims.config import PROJECTNAME
-from bika.lims.content.organisation import Organisation
-from bika.lims.interfaces import IClient
+from AccessControl import Unauthorized
+from Products.ATContentTypes.content import schemata
 from Products.Archetypes.public import BooleanField
 from Products.Archetypes.public import BooleanWidget
-from Products.Archetypes.public import LinesField
-from Products.Archetypes.public import MultiSelectionWidget
 from Products.Archetypes.public import ReferenceField
 from Products.Archetypes.public import ReferenceWidget
 from Products.Archetypes.public import Schema
@@ -28,9 +33,18 @@ from Products.Archetypes.public import StringField
 from Products.Archetypes.public import StringWidget
 from Products.Archetypes.public import registerType
 from Products.Archetypes.utils import DisplayList
-from Products.ATContentTypes.content import schemata
+from Products.CMFCore import permissions
+from Products.CMFCore.PortalFolder import PortalFolderBase as PortalFolder
+from Products.CMFCore.utils import _checkPermission
+from bika.lims import _
+from bika.lims import api
+from bika.lims.config import ARIMPORT_OPTIONS
+from bika.lims.config import DECIMAL_MARKS
+from bika.lims.config import PROJECTNAME
+from bika.lims.content.attachment import Attachment
+from bika.lims.content.organisation import Organisation
+from bika.lims.interfaces import IClient, IDeactivable
 from zope.interface import implements
-
 
 schema = Organisation.schema.copy() + Schema((
     StringField(
@@ -71,17 +85,6 @@ schema = Organisation.schema.copy() + Schema((
                 "edit": "visible",
                 "view": "visible",
             },
-        ),
-    ),
-
-    LinesField(
-        "EmailSubject",
-        schemata="Preferences",
-        default=["ar", ],
-        vocabulary=EMAIL_SUBJECT_OPTIONS,
-        widget=MultiSelectionWidget(
-            description=_("Items to be included in email subject lines"),
-            label=_("Email subject line"),
         ),
     ),
 
@@ -152,7 +155,7 @@ schema.moveField("ClientID", after="Name")
 
 
 class Client(Organisation):
-    implements(IClient)
+    implements(IClient, IDeactivable)
 
     security = ClassSecurityInfo()
     displayContentsTab = False
@@ -203,7 +206,7 @@ class Client(Organisation):
         bsc = api.get_tool("bika_setup_catalog")
         cats = []
         for st in bsc(portal_type="AnalysisCategory",
-                      inactive_state="active",
+                      is_active=True,
                       sort_on="sortable_title"):
             cats.append((st.UID, st.Title))
         return DisplayList(cats)
@@ -248,6 +251,36 @@ class Client(Organisation):
         physical_address = self.getPhysicalAddress().get("district", default)
         postal_address = self.getPostalAddress().get("district", default)
         return physical_address or postal_address
+
+    # TODO Security Make Attachments live inside ARs (instead of Client)
+    # Since the Attachments live inside Client, we are forced here to overcome
+    # the DeleteObjects permission when objects to delete are from Attachment
+    # type. And we want to keep the DeleteObjects permission at Client level
+    # because is the main container for Samples!
+    # For some statuses of the AnalysisRequest type (e.g. received), the
+    # permission "DeleteObjects" is granted, allowing the user to remove e.g.
+    # analyses. Attachments are closely bound to Analysis and Samples, so they
+    # should live inside Analysis Request.
+    # Then, we will be able to remove this function from here
+    def manage_delObjects(self, ids=None, REQUEST=None):
+        """Overrides parent function. If the ids passed in are from Attachment
+        types, the function ignores the DeleteObjects permission. For the rest
+        of types, it works as usual (checks the permission)
+        """
+        if ids is None:
+            ids = []
+        if isinstance(ids, basestring):
+            ids = [ids]
+
+        for id in ids:
+            item = self._getOb(id)
+            if isinstance(item, Attachment):
+                # Ignore DeleteObjects permission check
+                continue
+            if not _checkPermission(permissions.DeleteObjects, item):
+                raise Unauthorized, (
+                    "Do not have permissions to remove this object")
+        return PortalFolder.manage_delObjects(self, ids, REQUEST=REQUEST)
 
 
 schemata.finalizeATCTSchema(schema, folderish=True, moveDiscussion=False)

@@ -1,0 +1,30 @@
+<div class="diff"
+     i18n:domain="senaite.core"
+     tal:define="diff options/diff;">
+
+  <!-- No changes -->
+  <div tal:condition="not:nocall:diff"
+       class="nodiff">
+  </div>
+
+  <!-- Diff -->
+  <table tal:condition="nocall:diff"
+         class="table table-condensed table-borderless diff-table">
+    <tr tal:repeat="field python:diff.keys()">
+      <td>
+        <strong class="field" i18n:translate="" tal:content="python:view.get_widget_label_for(field, default=field)"/>:
+      </td>
+      <td>
+        <div tal:repeat="d python:diff[field]"
+             class="diffline">
+          <code class="value">
+            <span tal:content="python:d[1]"/>
+          </code>
+          <span style="padding: 0 1em;"> &rarr; </span>
+          <code class="value bg-success text-success" tal:content="python:d[0]"/>
+        </div>
+      </td>
+    </tr>
+  </table>
+
+</div>

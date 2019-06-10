@@ -1,9 +1,22 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of SENAITE.CORE
+# This file is part of SENAITE.CORE.
 #
-# Copyright 2018 by it's authors.
-# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2019 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
 import cgi
 import math
@@ -11,36 +24,36 @@ from decimal import Decimal
 
 from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
-from Products.Archetypes.Field import BooleanField, DateTimeField, \
-    FixedPointField, IntegerField, StringField
+from Products.Archetypes.Field import DateTimeField
+from Products.Archetypes.Field import FixedPointField
+from Products.Archetypes.Field import IntegerField
+from Products.Archetypes.Field import StringField
 from Products.Archetypes.Schema import Schema
 from Products.Archetypes.references import HoldingReference
+from Products.CMFCore.permissions import View
 from Products.CMFCore.utils import getToolByName
 from bika.lims import api
-from bika.lims import bikaMessageFactory as _, deprecated
+from bika.lims import bikaMessageFactory as _
+from bika.lims import deprecated
 from bika.lims import logger
+from bika.lims import workflow as wf
 from bika.lims.browser.fields import HistoryAwareReferenceField
-from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.fields import InterimFieldsField
+from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.fields.uidreferencefield import get_backreferences
-from bika.lims.browser.widgets import DateTimeWidget, RecordsWidget
+from bika.lims.browser.widgets import RecordsWidget
+from bika.lims.config import LDL
+from bika.lims.config import UDL
 from bika.lims.content.abstractbaseanalysis import AbstractBaseAnalysis
 from bika.lims.content.abstractbaseanalysis import schema
 from bika.lims.interfaces import IDuplicateAnalysis
-from bika.lims.permissions import *
-from bika.lims.permissions import Verify as VerifyPermission
-from bika.lims.utils import formatDecimalMark
+from bika.lims.permissions import FieldEditAnalysisResult
 from bika.lims.utils import drop_trailing_zeros_decimal
+from bika.lims.utils import formatDecimalMark
 from bika.lims.utils.analysis import format_numeric_result
 from bika.lims.utils.analysis import get_significant_digits
-from bika.lims import workflow as wf
 from bika.lims.workflow import getTransitionActor
 from bika.lims.workflow import getTransitionDate
-from bika.lims.workflow import wasTransitionPerformed
-from bika.lims.workflow.analysis import events
-from bika.lims.workflow.analysis import guards
-from plone.api.user import has_permission
-from zope.interface import implements
 
 # A link directly to the AnalysisService object used to create the analysis
 AnalysisService = UIDReferenceField(
@@ -59,7 +72,9 @@ Attachment = UIDReferenceField(
 # String value, but the result itself is required to be numeric.  If
 # a non-numeric result is needed, ResultOptions can be used.
 Result = StringField(
-    'Result'
+    'Result',
+    read_permission=View,
+    write_permission=FieldEditAnalysisResult,
 )
 
 # When the result is changed, this value is updated to the current time.
@@ -79,7 +94,9 @@ RetestOf = UIDReferenceField(
 # the operand (< or >) is stored here.  For routine analyses this is taken
 # from the Result, if the result entered explicitly startswith "<" or ">"
 DetectionLimitOperand = StringField(
-    'DetectionLimitOperand'
+    'DetectionLimitOperand',
+    read_permission=View,
+    write_permission=FieldEditAnalysisResult,
 )
 
 # The ID of the logged in user who submitted the result for this Analysis.
@@ -91,6 +108,8 @@ Analyst = StringField(
 # specified in the analysis service when the result is submitted.
 Uncertainty = FixedPointField(
     'Uncertainty',
+    read_permission=View,
+    write_permission="Field: Edit Result",
     precision=10,
 )
 
@@ -118,6 +137,8 @@ Calculation = HistoryAwareReferenceField(
 # before the calculation is performed.
 InterimFields = InterimFieldsField(
     'InterimFields',
+    read_permission=View,
+    write_permission=FieldEditAnalysisResult,
     schemata='Method',
     widget=RecordsWidget(
         label=_("Calculation Interim Fields"),
@@ -171,7 +192,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         done = self.getNumberOfVerifications()
         if done >= required:
             return 0
-        return required-done
+        return required - done
 
     # TODO Workflow - analysis . Remove?
     @security.public
@@ -262,17 +283,47 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
     @security.public
     def setDetectionLimitOperand(self, value):
-        """Sets the detection limit operand for this analysis, so the result
-        will be interpreted as a detection limit. The value will only be set
-        if the Service has 'DetectionLimitSelector' field set to True,
-        otherwise, the detection limit operand will be set to None. See
-        LIMS-1775 for further information about the relation amongst
-        'DetectionLimitSelector' and 'AllowManualDetectionLimit'.
-        https://jira.bikalabs.com/browse/LIMS-1775
+        """Set detection limit operand for this analysis
+        Allowed detection limit operands are `<` and `>`.
         """
-        md = self.getDetectionLimitSelector()
-        val = value if (md and value and value in '<>') else None
-        self.getField('DetectionLimitOperand').set(self, val)
+        manual_dl = self.getAllowManualDetectionLimit()
+        selector = self.getDetectionLimitSelector()
+        if not manual_dl and not selector:
+            # Don't allow the user to set the limit operand if manual assignment
+            # is not allowed and selector is not visible
+            return
+
+        # Changing the detection limit operand has a side effect on the result
+        result = self.getResult()
+        if value in [LDL, UDL]:
+            # flush uncertainty
+            self.setUncertainty("")
+
+            # If no previous result or user is not allowed to manually set the
+            # the detection limit, override the result with default LDL/UDL
+            has_result = api.is_floatable(result)
+            if not has_result or not manual_dl:
+                # set the result according to the system default UDL/LDL values
+                if value == LDL:
+                    result = self.getLowerDetectionLimit()
+                else:
+                    result = self.getUpperDetectionLimit()
+
+        else:
+            value = ""
+            # Restore the DetectionLimitSelector, cause maybe its visibility
+            # was changed because allow manual detection limit was enabled and
+            # the user set a result with "<" or ">"
+            if manual_dl:
+                service = self.getAnalysisService()
+                selector = service.getDetectionLimitSelector()
+                self.setDetectionLimitSelector(selector)
+
+        # Set the result
+        self.getField("Result").set(self, result)
+
+        # Set the detection limit to the field
+        self.getField("DetectionLimitOperand").set(self, value)
 
     # Method getLowerDetectionLimit overrides method of class BaseAnalysis
     @security.public
@@ -323,15 +374,12 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             return True
 
         result = self.getResult()
-        if result and str(result).strip().startswith('<'):
+        if result and str(result).strip().startswith(LDL):
             return True
-        elif result:
-            ldl = self.getLowerDetectionLimit()
-            try:
-                result = float(result)
-                return result < ldl
-            except (TypeError, ValueError):
-                pass
+
+        if api.is_floatable(result):
+            return api.to_float(result) < self.getLowerDetectionLimit()
+
         return False
 
     @security.public
@@ -343,15 +391,12 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             return True
 
         result = self.getResult()
-        if result and str(result).strip().startswith('>'):
+        if result and str(result).strip().startswith(UDL):
             return True
-        elif result:
-            udl = self.getUpperDetectionLimit()
-            try:
-                result = float(result)
-                return result > udl
-            except (TypeError, ValueError):
-                pass
+
+        if api.is_floatable(result):
+            return api.to_float(result) > self.getUpperDetectionLimit()
+
         return False
 
     @security.public
@@ -368,14 +413,14 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         """Returns True if the result for this analysis represents a Lower
         Detection Limit. Otherwise, returns False
         """
-        return self.getDetectionLimitOperand() == '<'
+        return self.getDetectionLimitOperand() == LDL
 
     @security.public
     def isUpperDetectionLimit(self):
         """Returns True if the result for this analysis represents an Upper
         Detection Limit. Otherwise, returns False
         """
-        return self.getDetectionLimitOperand() == '>'
+        return self.getDetectionLimitOperand() == UDL
 
     @security.public
     def getDependents(self):
@@ -401,47 +446,43 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         """
         # Always update ResultCapture date when this field is modified
         self.setResultCaptureDate(DateTime())
-        # Ensure result integrity regards to None, empty and 0 values
-        val = str('' if not value and value != 0 else value).strip()
-        # Only allow DL if manually enabled in AS
-        if val and val[0] in '<>':
-            self.setDetectionLimitOperand(None)
-            oper = val[0]
-            val = val.replace(oper, '', 1)
 
+        # Ensure result integrity regards to None, empty and 0 values
+        val = str("" if not value and value != 0 else value).strip()
+
+        # UDL/LDL directly entered in the results field
+        if val and val[0] in [LDL, UDL]:
+            # Result prefixed with LDL/UDL
+            oper = val[0]
+            # Strip off LDL/UDL from the result
+            val = val.replace(oper, "", 1)
             # Check if the value is indeterminate / non-floatable
             try:
-                str(float(val))
+                val = float(val)
             except (ValueError, TypeError):
                 val = value
 
-            if self.getDetectionLimitSelector():
-                if self.getAllowManualDetectionLimit():
-                    # DL allowed, try to remove the operator and set the
-                    # result as a detection limit
-                    self.setDetectionLimitOperand(oper)
-                else:
-                    # Trying to set a result with an '<,>' operator,
-                    # but manual DL not allowed, so override the
-                    # value with the service's default LDL or UDL
-                    # according to the operator, but only if the value
-                    # is not an indeterminate.
-                    if oper == '<':
+            # We dismiss the operand and the selector visibility unless the user
+            # is allowed to manually set the detection limit or the DL selector
+            # is visible.
+            allow_manual = self.getAllowManualDetectionLimit()
+            selector = self.getDetectionLimitSelector()
+            if allow_manual or selector:
+                # Ensure visibility of the detection limit selector
+                self.setDetectionLimitSelector(True)
+
+                # Set the detection limit operand
+                self.setDetectionLimitOperand(oper)
+
+                if not allow_manual:
+                    # Override value by default DL
+                    if oper == LDL:
                         val = self.getLowerDetectionLimit()
                     else:
                         val = self.getUpperDetectionLimit()
-                    self.setDetectionLimitOperand(oper)
-        elif val is '':
-            # Reset DL
-            self.setDetectionLimitOperand(None)
 
-        self.getField('Result').set(self, val)
-
-        # Uncertainty calculation on DL
-        # https://jira.bikalabs.com/browse/LIMS-1808
-        if self.isAboveUpperDetectionLimit() or \
-                self.isBelowLowerDetectionLimit():
-            self.getField('Uncertainty').set(self, None)
+        # Set the result field
+        self.getField("Result").set(self, val)
 
     @security.public
     def getResultsRange(self):
@@ -524,10 +565,10 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         except ZeroDivisionError:
             self.setResult('0/0')
             return True
-        except KeyError as e:
+        except KeyError:
             self.setResult("NA")
             return True
-        except ImportError as e:
+        except ImportError:
             self.setResult("NA")
             return True
 
@@ -941,23 +982,32 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
     @security.public
     def getAnalyst(self):
+        """Returns the stored Analyst or the user who submitted the result
+        """
+        analyst = self.getField("Analyst").get(self)
+        if not analyst:
+            analyst = self.getSubmittedBy()
+        return analyst or ""
+
+    @security.public
+    def getAssignedAnalyst(self):
         """Returns the Analyst assigned to the worksheet this
         analysis is assigned to
         """
         worksheet = self.getWorksheet()
-        if worksheet:
-            return worksheet.getAnalyst() or ""
-        return ""
+        if not worksheet:
+            return ""
+        return worksheet.getAnalyst() or ""
 
     @security.public
     def getAnalystName(self):
         """Returns the name of the currently assigned analyst
         """
         analyst = self.getAnalyst()
-        if analyst:
-            user = api.get_user(analyst.strip())
-            return user and user.getProperty("fullname") or ""
-        return ""
+        if not analyst:
+            return ""
+        user = api.get_user(analyst.strip())
+        return user and user.getProperty("fullname") or analyst
 
     @security.public
     def getObjectWorkflowStates(self):

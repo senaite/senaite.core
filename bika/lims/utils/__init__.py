@@ -1,9 +1,22 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of SENAITE.CORE
+# This file is part of SENAITE.CORE.
 #
-# Copyright 2018 by it's authors.
-# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2019 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
 import mimetypes
 import os
@@ -141,12 +154,6 @@ def getUsers(context, roles, allow_empty=True):
     return DisplayList(pairs)
 
 
-def isActive(obj):
-    """ Check if obj is inactive or cancelled.
-    """
-    return api.is_active(obj)
-
-
 def formatDateQuery(context, date_id):
     """ Obtain and reformat the from and to dates
         into a date query construct
@@ -277,79 +284,39 @@ def sortable_title(portal, title):
             break
     return sortabletitle
 
-
+# TODO Remove this function
 def logged_in_client(context, member=None):
-    if not member:
-        membership_tool = getToolByName(context, 'portal_membership')
-        member = membership_tool.getAuthenticatedMember()
+    return api.get_current_client()
 
-    client = None
-    groups_tool = context.portal_groups
-    member_groups = [groups_tool.getGroupById(group.id).getGroupName()
-                     for group in groups_tool.getGroupsByUserId(member.id)]
-
-    if 'Clients' in member_groups:
-        for obj in context.clients.objectValues("Client"):
-            if member.id in obj.users_with_local_role('Owner'):
-                client = obj
-    return client
-
-# TODO: This function dismiss other state_variables than review_state (e.g. inactive_state)
-def changeWorkflowState(content, wf_id, state_id, acquire_permissions=False,
-                        portal_workflow=None, **kw):
+def changeWorkflowState(content, wf_id, state_id, **kw):
     """Change the workflow state of an object
     @param content: Content obj which state will be changed
     @param state_id: name of the state to put on content
-    @param acquire_permissions: True->All permissions unchecked and on riles and
-                                acquired
-                                False->Applies new state security map
-    @param portal_workflow: Provide workflow tool (optimisation) if known
     @param kw: change the values of same name of the state mapping
-    @return: None
+    @return: True if succeed. Otherwise, False
     """
-
-    if portal_workflow is None:
-        portal_workflow = getToolByName(content, 'portal_workflow')
-
-    # Might raise IndexError if no workflow is associated to this type
-    found_wf = 0
-    for wf_def in portal_workflow.getWorkflowsFor(content):
-        if wf_id == wf_def.getId():
-            found_wf = 1
-            break
-    if not found_wf:
+    portal_workflow = api.get_tool("portal_workflow")
+    workflow = portal_workflow.getWorkflowById(wf_id)
+    if not workflow:
         logger.error("%s: Cannot find workflow id %s" % (content, wf_id))
+        return False
 
     wf_state = {
-        'action': None,
-        'actor': None,
+        'action': kw.get("action", None),
+        'actor': kw.get("actor", api.get_current_user().id),
         'comments': "Setting state to %s" % state_id,
         'review_state': state_id,
-        'time': DateTime(),
+        'time': DateTime()
     }
 
-    # Updating wf_state from keyword args
-    for k in kw.keys():
-        # Remove unknown items
-        if k not in wf_state:
-            del kw[k]
-    if 'review_state' in kw:
-        del kw['review_state']
-    wf_state.update(kw)
-
+    # Change status and update permissions
     portal_workflow.setStatusOf(wf_id, content, wf_state)
+    workflow.updateRoleMappingsFor(content)
 
-    if acquire_permissions:
-        # Acquire all permissions
-        for permission in content.possible_permissions():
-            content.manage_permission(permission, acquire=1)
-    else:
-        # Setting new state permissions
-        wf_def.updateRoleMappingsFor(content)
-
-    # Map changes to the catalogs
-    content.reindexObject(idxs=['allowedRolesAndUsers', 'review_state'])
-    return
+    # Map changes to catalog
+    indexes = ["allowedRolesAndUsers", "review_state", "is_active"]
+    content.reindexObject(idxs=indexes)
+    return True
 
 
 def tmpID():
@@ -530,21 +497,6 @@ def getHiddenAttributesForClass(classname):
             'Probem accessing optionally hidden attributes in registry')
 
     return []
-
-
-def isAttributeHidden(classname, fieldname):
-    try:
-        registry = queryUtility(IRegistry)
-        hiddenattributes = registry.get('bika.lims.hiddenattributes', ())
-        if hiddenattributes is not None:
-            for alist in hiddenattributes:
-                if alist[0] == classname:
-                    return fieldname in alist[1:]
-    except:
-        logger.warning(
-            'Probem accessing optionally hidden attributes in registry')
-
-    return False
 
 
 def dicts_to_dict(dictionaries, key_subfieldname):

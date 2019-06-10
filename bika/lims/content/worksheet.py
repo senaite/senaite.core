@@ -1,9 +1,22 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of SENAITE.CORE
+# This file is part of SENAITE.CORE.
 #
-# Copyright 2018 by it's authors.
-# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2019 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
 import re
 import sys
@@ -157,7 +170,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
            - if position is None, next available pos is used.
         """
         # Cannot add an analysis if not open, unless a retest
-        if api.get_review_status(self) != "open":
+        if api.get_review_status(self) not in ["open", "to_be_verified"]:
             retracted = analysis.getRetestOf()
             if retracted not in self.getAnalyses():
                 return
@@ -174,6 +187,8 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             self.updateLayout()
 
         # Cannot add an analysis if the assign transition is not possible
+        # We need to bypass the guard's check for current context!
+        api.get_request().set("ws_uid", api.get_uid(self))
         if not isTransitionAllowed(analysis, "assign"):
             return
 
@@ -218,6 +233,8 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         """ Unassigns the analysis passed in from the worksheet.
         Delegates to 'unassign' transition for the analysis passed in
         """
+        # We need to bypass the guard's check for current context!
+        api.get_request().set("ws_uid", api.get_uid(self))
         if analysis.getWorksheet() == self:
             doActionFor(analysis, "unassign")
 
@@ -261,7 +278,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         bsc = getToolByName(self, 'bika_setup_catalog')
         items = [(i.UID, i.Title)
                  for i in bsc(portal_type='Method',
-                              inactive_state='active')]
+                              is_active=True)]
         items.sort(lambda x, y: cmp(x[1], y[1]))
         items.insert(0, ('', _("Not specified")))
         return DisplayList(list(items))
@@ -271,7 +288,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         This function returns the registered instruments in the system as a
         vocabulary. The instruments are filtered by the selected method.
         """
-        cfilter = {'portal_type': 'Instrument', 'inactive_state': 'active'}
+        cfilter = {'portal_type': 'Instrument', 'is_active': True}
         if self.getMethod():
             cfilter['getMethodUIDs'] = {"query": self.getMethod().UID(),
                                         "operator": "or"}
@@ -811,7 +828,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             "getServiceUID": wst_service_uids,
             "review_state": "unassigned",
             "isSampleReceived": True,
-            "cancellation_state": "active",
+            "is_active": True,
             "sort_on": "getPrioritySortkey"
         }
         # Filter analyses their Analysis Requests have been received
@@ -1015,7 +1032,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
 
             samples = bc(portal_type='ReferenceSample',
                          review_state='current',
-                         inactive_state='active',
+                         is_active=True,
                          getReferenceDefinitionUID=ref_definition_uid)
 
             # We only want the reference samples that fit better with the type

@@ -1,41 +1,35 @@
 # -*- coding: utf-8 -*-
+#
+# This file is part of SENAITE.CORE.
+#
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2019 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
 from collections import OrderedDict
 from collections import defaultdict
 
+from Products.Five.browser import BrowserView
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.decorators import returns_super_model
-from bika.lims.workflow import doActionFor
-from bika.lims import api
-from bika.lims.interfaces import IProxyField
-from bika.lims.utils.analysisrequest import create_analysisrequest as crar
-from Products.Five.browser import BrowserView
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from bika.lims.utils.analysisrequest import create_partition
 
 DEFAULT_NUMBER_OF_PARTITIONS = 0
-
-PARTITION_SKIP_FIELDS = [
-    "Analyses",
-    "Attachment",
-    "Client",
-    "Container",
-    "InternalUse",
-    "Preservation",
-    "Profile",
-    "Profiles",
-    "RejectionReasons",
-    "Remarks",
-    "ResultsInterpretation",
-    "ResultsInterpretationDepts",
-    "Sample",
-    "SampleType",
-    "Template",
-    "creation_date",
-    "id",
-    "modification_date",
-    "ParentAnalysisRequest",
-]
 
 
 class PartitionMagicView(BrowserView):
@@ -85,25 +79,34 @@ class PartitionMagicView(BrowserView):
                 sampletype_uid = partition.get("sampletype_uid")
                 container_uid = partition.get("container_uid")
                 preservation_uid = partition.get("preservation_uid")
-                analyses_uids = partition.get("analyses")
                 internal_use = partition.get("internal_use")
-                if not analyses_uids or not primary_uid:
-                    # Cannot create a partition w/o analyses!
+                if not primary_uid:
                     continue
 
-                partition = self.create_partition(
-                    primary_uid=primary_uid,
-                    sampletype_uid=sampletype_uid,
-                    container_uid=container_uid,
-                    preservation_uid=preservation_uid,
+                # The creation of partitions w/o analyses is allowed. Maybe the
+                # user wants to add the analyses later manually or wants to keep
+                # this partition stored in a freezer for some time
+                # Note we set "remove_primary_analyses" to False cause we want
+                # user to be able to add same analyses to different partitions.
+                analyses_uids = partition.get("analyses", [])
+                partition = create_partition(
+                    request=self.request,
+                    analysis_request=primary_uid,
+                    sample_type=sampletype_uid,
+                    container=container_uid,
+                    preservation=preservation_uid,
+                    analyses=analyses_uids,
+                    remove_primary_analyses=False,
                     internal_use=internal_use,
-                    analyses_uids=analyses_uids)
+                )
                 partitions.append(partition)
+
+                # Remove analyses from primary once all partitions are created
+                primary = api.get_object(primary_uid)
+                self.push_primary_analyses_for_removal(primary, analyses_uids)
+
                 logger.info("Successfully created partition: {}".format(
                     api.get_path(partition)))
-
-                # Force the reception of the partition
-                doActionFor(partition, "receive")
 
             if not partitions:
                 # If no partitions were created, show a warning message
@@ -123,63 +126,12 @@ class PartitionMagicView(BrowserView):
 
         return self.template()
 
-    def create_partition(self, primary_uid, sampletype_uid, container_uid,
-                         preservation_uid, internal_use, analyses_uids):
-        """Create a new partition (AR)
-        """
-        logger.info("*** CREATE PARTITION ***")
-
-        ar = self.get_object_by_uid(primary_uid)
-        record = {
-            "InternalUse": internal_use,
-            "ParentAnalysisRequest": primary_uid,
-            "SampleType": sampletype_uid,
-            "Container": container_uid,
-            "Preservation": preservation_uid,
-        }
-
-        for fieldname, field in api.get_fields(ar).items():
-            # if self.is_proxy_field(field):
-            #     logger.info("Skipping proxy field {}".format(fieldname))
-            #     continue
-            if self.is_computed_field(field):
-                logger.info("Skipping computed field {}".format(fieldname))
-                continue
-            if fieldname in PARTITION_SKIP_FIELDS:
-                logger.info("Skipping field {}".format(fieldname))
-                continue
-            fieldvalue = field.get(ar)
-            record[fieldname] = fieldvalue
-            logger.info("Update record '{}': {}".format(
-                fieldname, repr(fieldvalue)))
-
-        client = ar.getClient()
-        analyses = map(self.get_object_by_uid, analyses_uids)
-        services = map(lambda an: an.getAnalysisService(), analyses)
-
-        partition = crar(
-            client,
-            self.request,
-            record,
-            analyses=services,
-            specifications=self.get_specifications_for(ar)
-        )
-
-        # Remove selected analyses from the parent Analysis Request
-        self.push_primary_analyses_for_removal(ar, analyses)
-
-        # Reindex Parent Analysis Request
-        # TODO Workflow - AnalysisRequest - Partitions creation
-        ar.reindexObject(idxs=["isRootAncestor"])
-
-        return partition
-
     def push_primary_analyses_for_removal(self, analysis_request, analyses):
         """Stores the analyses to be removed after partitions creation
         """
         to_remove = self.analyses_to_remove.get(analysis_request, [])
         to_remove.extend(analyses)
-        self.analyses_to_remove[analysis_request] = to_remove
+        self.analyses_to_remove[analysis_request] = list(set(to_remove))
 
     def remove_primary_analyses(self):
         """Remove analyses relocated to partitions
@@ -188,24 +140,6 @@ class PartitionMagicView(BrowserView):
             analyses_ids = list(set(map(api.get_id, analyses)))
             ar.manage_delObjects(analyses_ids)
         self.analyses_to_remove = dict()
-
-    def get_specifications_for(self, ar):
-        """Returns a mapping of service uid -> specification
-        """
-        spec = ar.getSpecification()
-        if not spec:
-            return []
-        return spec.getResultsRange()
-
-    def is_proxy_field(self, field):
-        """Checks if the field is a proxy field
-        """
-        return IProxyField.providedBy(field)
-
-    def is_computed_field(self, field):
-        """Checks if the field is a coumputed field
-        """
-        return field.type == "computed"
 
     def get_ar_data(self):
         """Returns a list of AR data
@@ -217,7 +151,6 @@ class PartitionMagicView(BrowserView):
                 "sampletype": self.get_base_info(obj.getSampleType()),
                 "number_of_partitions": self.get_number_of_partitions_for(obj),
                 "template": self.get_template_data_for(obj),
-                "internal_use": obj.getInternalUse(),
             })
             yield info
 
@@ -262,7 +195,7 @@ class PartitionMagicView(BrowserView):
             "portal_type": "SampleType",
             "sort_on": "sortable_title",
             "sort_order": "ascending",
-            "inactive_state": "active",
+            "is_active": True,
         }
         results = api.search(query, "bika_setup_catalog")
         return map(api.get_object, results)
@@ -273,7 +206,7 @@ class PartitionMagicView(BrowserView):
         query = dict(portal_type="Container",
                      sort_on="sortable_title",
                      sort_order="ascending",
-                     inactive_state="active")
+                     is_active=True)
         results = api.search(query, "bika_setup_catalog")
         return map(api.get_object, results)
 
@@ -283,7 +216,7 @@ class PartitionMagicView(BrowserView):
         query = dict(portal_type="Preservation",
                      sort_on="sortable_title",
                      sort_order="ascending",
-                     inactive_state="active")
+                     is_active=True)
         results = api.search(query, "bika_setup_catalog")
         return map(api.get_object, results)
 

@@ -1,9 +1,22 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of SENAITE.CORE
+# This file is part of SENAITE.CORE.
 #
-# Copyright 2018 by it's authors.
-# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2019 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
 import collections
 import json
@@ -117,11 +130,7 @@ class FolderView(BikaListingView):
                     ],
                     "sort_on": "CreationDate",
                     "sort_order": "reverse"},
-                "transitions": [
-                    {"id": "retract"},
-                    {"id": "verify"},
-                    {"id": "reject"}
-                ],
+                "transitions": [],
                 "custom_transitions": [],
                 "columns": self.columns.keys(),
             }, {
@@ -141,11 +150,7 @@ class FolderView(BikaListingView):
                     "review_state": "to_be_verified",
                     "sort_on": "CreationDate",
                     "sort_order": "reverse"},
-                "transitions": [
-                    {"id": "retract"},
-                    {"id": "verify"},
-                    {"id": "reject"}
-                ],
+                "transitions": [],
                 "custom_transitions": [],
                 "columns": self.columns.keys()
             }, {
@@ -171,11 +176,7 @@ class FolderView(BikaListingView):
                     ],
                     "sort_on":"CreationDate",
                     "sort_order": "reverse"},
-                "transitions":[
-                    {"id": "retract"},
-                    {"id": "verify"},
-                    {"id": "reject"}
-                ],
+                "transitions":[],
                 "custom_transitions": [],
                 "columns": self.columns.keys(),
             }, {
@@ -192,11 +193,7 @@ class FolderView(BikaListingView):
                     ],
                     "sort_on":"CreationDate",
                     "sort_order": "reverse"},
-                "transitions":[
-                    {"id": "retract"},
-                    {"id": "verify"},
-                    {"id": "reject"}
-                ],
+                "transitions":[],
                 "custom_transitions": [],
                 "columns": self.columns.keys(),
             }
@@ -299,32 +296,17 @@ class FolderView(BikaListingView):
         :index: current index of the item
         """
 
-        layout = obj.getLayout
         title = api.get_title(obj)
         url = api.get_url(obj)
 
         item["CreationDate"] = self.ulocalized_time(obj.created)
-        if len(obj.getAnalysesUIDs) == 0:
-            item["table_row_class"] = "state-empty-worksheet"
 
         title_link = "{}/{}".format(url, "add_analyses")
-        if len(layout) > 0:
+        if len(obj.getAnalysesUIDs) > 0:
             title_link = "{}/{}".format(url, "manage_results")
 
         item["Title"] = title
         item["replace"]["Title"] = get_link(title_link, value=title)
-
-        pos_parent = {}
-        for slot in layout:
-            # compensate for bad data caused by a stupid bug.
-            if type(slot["position"]) in (list, tuple):
-                slot["position"] = slot["position"][0]
-            if slot["position"] == "new":
-                continue
-            if slot["position"] in pos_parent:
-                continue
-            pos_parent[slot["position"]] =\
-                self.rc.lookupObject(slot.get("container_uid"))
 
         # Total QC Analyses
         item["NumQCAnalyses"] = str(obj.getNumberOfQCAnalyses)
@@ -395,7 +377,7 @@ class FolderView(BikaListingView):
         """
         query = {
             "portal_type": "WorksheetTemplate",
-            "inactive_state": "active",
+            "is_active": True,
         }
         return api.search(query, "bika_setup_catalog")
 
@@ -406,6 +388,6 @@ class FolderView(BikaListingView):
         """
         query = {
             "portal_type": "Instrument",
-            "inactive_state": "active"
+            "is_active": True
         }
         return api.search(query, "bika_setup_catalog")

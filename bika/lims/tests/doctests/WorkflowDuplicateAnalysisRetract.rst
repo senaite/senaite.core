@@ -304,22 +304,25 @@ If I retract `Fe`, `Au` analysis is retracted automatically too:
     >>> api.get_workflow_status_of(au_analysis)
     'retracted'
 
-And two new analyses will be generated in accordance:
+As well as `Cu` analysis (a dependency of `Fe`):
+
+    >>> api.get_workflow_status_of(cu_analysis)
+    'retracted'
+
+Hence, three new analyses are generated in accordance:
 
     >>> analyses = ar.getAnalyses(full_objects=True)
     >>> len(analyses)
-    5
+    6
     >>> au_analyses = filter(lambda an: an.getKeyword()=="Au", analyses)
     >>> sorted(map(api.get_workflow_status_of, au_analyses))
     ['retracted', 'unassigned']
     >>> fe_analyses = filter(lambda an: an.getKeyword()=="Fe", analyses)
     >>> sorted(map(api.get_workflow_status_of, fe_analyses))
     ['retracted', 'unassigned']
-
-While `Cu` analysis remains in `to_be_verified` state:
-
-    >>> api.get_workflow_status_of(cu_analysis)
-    'to_be_verified'
+    >>> fe_analyses = filter(lambda an: an.getKeyword()=="Cu", analyses)
+    >>> sorted(map(api.get_workflow_status_of, fe_analyses))
+    ['retracted', 'unassigned']
 
 And the current state of the Analysis Request is `sample_received` now:
 

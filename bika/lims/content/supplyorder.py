@@ -1,9 +1,22 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of SENAITE.CORE
+# This file is part of SENAITE.CORE.
 #
-# Copyright 2018 by it's authors.
-# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2019 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
 import sys
 
@@ -17,7 +30,7 @@ from bika.lims.browser.widgets import RemarksWidget
 from bika.lims.browser.widgets import ReferenceWidget as BikaReferenceWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.interfaces import ISupplyOrder
+from bika.lims.interfaces import ISupplyOrder, ICancellable
 from bika.lims.utils import t
 from DateTime import DateTime
 from persistent.mapping import PersistentMapping
@@ -112,7 +125,7 @@ class SupplyOrderLineItem(PersistentMapping):
 
 class SupplyOrder(BaseFolder):
 
-    implements(ISupplyOrder, IConstrainTypes)
+    implements(ISupplyOrder, IConstrainTypes, ICancellable)
 
     security = ClassSecurityInfo()
     displayContentsTab = False

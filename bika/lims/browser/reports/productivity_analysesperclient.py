@@ -1,9 +1,22 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of SENAITE.CORE
+# This file is part of SENAITE.CORE.
 #
-# Copyright 2018 by it's authors.
-# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2019 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
 import StringIO
 import csv
@@ -55,9 +68,6 @@ class Report(BrowserView):
 
         # Filter analyses by review_state
         self.add_filter_by_review_state(query, parms)
-
-        # Filter analyses by cancellation state
-        self.add_filter_by_cancellation_state(query, parms)
 
         # Fetch and fill data
         data = OrderedDict()
@@ -133,14 +143,6 @@ class Report(BrowserView):
                                     wf_id="bika_analysis_workflow",
                                     index="review_state",
                                     title=_("Status"))
-
-    def add_filter_by_cancellation_state(self, query, out_params):
-        """Applies the filter by cancellation_state to the search query
-        """
-        self.add_filter_by_wf_state(query=query, out_params=out_params,
-                                    wf_id="bika_cancellation_workflow",
-                                    index="cancellation_state",
-                                    title=_("Active"))
 
     def add_filter_by_wf_state(self, query, out_params, wf_id, index,
                                title):

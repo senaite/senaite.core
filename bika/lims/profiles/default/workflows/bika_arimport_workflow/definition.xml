@@ -9,7 +9,7 @@
              i18n:domain="senaite.core">
 
   <permission>Modify portal content</permission>
-  <permission>BIKA: Manage ARImport</permission>
+  <permission>senaite.core: Manage ARImport</permission>
 
   <state state_id="imported" title="Imported"  i18n:attributes="title">
     <exit-transition transition_id="" />
@@ -18,7 +18,7 @@
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>
-    <permission-map name="BIKA: Manage ARImport" acquired="False">
+    <permission-map name="senaite.core: Manage ARImport" acquired="False">
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
@@ -32,7 +32,7 @@
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>
-    <permission-map name="BIKA: Manage ARImport" acquired="False">
+    <permission-map name="senaite.core: Manage ARImport" acquired="False">
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
@@ -46,7 +46,7 @@
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>
-    <permission-map name="BIKA: Manage ARImport" acquired="False">
+    <permission-map name="senaite.core: Manage ARImport" acquired="False">
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
@@ -56,14 +56,14 @@
   <transition transition_id="import" title="Import" new_state="imported" trigger="USER" before_script="" after_script="" i18n:attributes="title">
     <action url="" category="workflow" icon="">Import</action>
     <guard>
-      <guard-permission>BIKA: Manage ARImport</guard-permission>
+      <guard-permission>senaite.core: Manage ARImport</guard-permission>
     </guard>
   </transition>
 
   <transition transition_id="validate" title="Validate" new_state="valid" trigger="USER" before_script="" after_script="" i18n:attributes="title">
     <action url="" category="workflow" icon="">Validate</action>
     <guard>
-      <guard-permission>BIKA: Manage ARImport</guard-permission>
+      <guard-permission>senaite.core: Manage ARImport</guard-permission>
       <guard-expression>python:here.guard_validate_transition()</guard-expression>
     </guard>
   </transition>
@@ -101,8 +101,6 @@
       <expression>state_change/getHistory</expression>
     </default>
     <guard>
-      <guard-permission>Request review</guard-permission>
-      <guard-permission>Review portal content</guard-permission>
     </guard>
   </variable>
 

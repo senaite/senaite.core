@@ -6,19 +6,40 @@ Update from 1.2.9 to 1.3.0
 
 **IMPORTANT: Plan the upgrade with enough time**
 
-Version 1.3.0 is not a hotfixes release, so this update comes with a lot of
-changes that require additional care when planning the update. If you have your
-own add-on, please review the changes to see beforehand if some parts of your
-add-on need to be modified.
+Version 1.3.0 is not a hotfix release, it rather comes with a lot of changes
+that require additional care when planning the update. If you have your own
+add-on, please review the changes to check beforehand if some parts of your
+add-on require modifications.
 
-Amongst these changes, the refactoring of Workflows logic will have a huge
-impact on how long this update will require for its completion.
+This update will take long (up to 5h for instances with large amounts of data).
+Therefore, is recommended to plan and allocate enough resources for the process
+to complete beforehand. For big databases, RAM is a critical factor to be
+considered before upgrading. Worth to mention that the following tips are
+strongly recommended before proceeding with the upgrade:
 
-To reduce the time for the upgrade to complete, we suggest the following tips:
+- Do a zeopack
+- Do a backup of both your code and database
+- Try to have as much analyses in verified/published statuses as possible
+- Stop unnecessary applications and services that may consume RAM
+- Start with a clean log file
 
-  - Do a backup of both your code and the database before proceed.
+Most of the base code has been refactored keeping in mind the following
+objectives:
 
-  - Try to have as much analyses in verified state as possible.
+- Less complexity: less code, better code
+- High test coverage: lower chance of undetected bugs
+- Boost performance: better experience, with no delays
+- Improve security: rely on Zope's security policies
+- Code responsibility: focus on core functionalities and let other add-ons to
+  deal with the rest (`senaite.lims`, `senaite.core.listing`, etc.)
+
+Besides of this refactoring, this version also comes with a myriad of new
+functionalities and enhancements: full-fledged sample partitions, reinvented
+listings and results entry, new adapters for extensibility, etc.
+
+Version 1.3 is the result of hard, but exciting work at same time. Four months
+of walking through valleys of tears and fighting hydras. Four exciting months to
+be proud of.
 
 
 Update from 1.2.8 to 1.2.9
@@ -28,17 +49,17 @@ Update from 1.2.8 to 1.2.9
 This update might take long depending on the number of Analyses, Analysis
 Requests and Samples registered in the system:
 
-  - Role mappings updated for Analaysis Requests and Samples (rejection)
-    https://github.com/senaite/senaite.core/pull/1041
+- Role mappings updated for Analaysis Requests and Samples (rejection)
+  https://github.com/senaite/senaite.core/pull/1041
 
-  - Recatalog of invalidated/retest Analysis Requests (invalidation)
-    https://github.com/senaite/senaite.core/pull/1027
+- Recatalog of invalidated/retest Analysis Requests (invalidation)
+  https://github.com/senaite/senaite.core/pull/1027
 
-  - Reindex and recatalog of getDueDate for Analysis Requests
-    https://github.com/senaite/senaite.core/pull/1051
+- Reindex and recatalog of getDueDate for Analysis Requests
+  https://github.com/senaite/senaite.core/pull/1051
 
-  - Reindex of getDueDate for Analyses
-    https://github.com/senaite/senaite.core/pull/1032
+- Reindex of getDueDate for Analyses:
+  https://github.com/senaite/senaite.core/pull/1032
 
 - Workflow: `retract_ar` transition has been renamed to `invalidate`
   https://github.com/senaite/senaite.core/pull/1027

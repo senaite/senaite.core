@@ -1,28 +1,39 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of SENAITE.CORE
+# This file is part of SENAITE.CORE.
 #
-# Copyright 2018 by it's authors.
-# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2019 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
-import re
-from operator import itemgetter
 import json
+from operator import itemgetter
 
+import plone
 from archetypes.schemaextender.interfaces import IOrderableSchemaExtender
 from archetypes.schemaextender.interfaces import ISchemaModifier
-from plone.indexer import indexer
-from bika.lims.utils import to_utf8
-from bika.lims import bikaMessageFactory as _, safe_unicode
+from bika.lims import bikaMessageFactory as _
+from bika.lims import safe_unicode
 from bika.lims.browser import BrowserView
 from bika.lims.browser.widgets import RecordsWidget
 from bika.lims.fields import ExtRecordsField
 from bika.lims.interfaces import IHaveIdentifiers
+from plone.indexer import indexer
 from zope.component import adapts
-import plone
 from zope.interface import implements
 
-from ZODB.POSException import ConflictError
 
 @indexer(IHaveIdentifiers)
 def IdentifiersIndexer(instance):
@@ -32,6 +43,7 @@ def IdentifiersIndexer(instance):
     """
     identifiers = instance.Schema()['Identifiers'].get(instance)
     return [safe_unicode(i['Identifier']) for i in identifiers]
+
 
 Identifiers = ExtRecordsField(
     'Identifiers',
@@ -70,60 +82,6 @@ Identifiers = ExtRecordsField(
         }
     )
 )
-
-def SearchableText(self):
-    """This overrides the default method from Archetypes.BaseObject,
-    and allows Identifiers field to be included in SearchableText despite
-    the field being an incompatible type.
-    """
-    data = []
-    for field in self.Schema().fields():
-        if not field.searchable:
-            continue
-        #### The following is the addition made to the default AT method:
-        fieldname = field.getName()
-        if IHaveIdentifiers.providedBy(self) and fieldname == 'Identifiers':
-            identifiers = self.Schema()['Identifiers'].get(self)
-            idents = [to_utf8(i['Identifier']) for i in identifiers]
-            if idents:
-                data.extend(idents)
-            continue
-        ### The code from this point on is lifted directly from BaseObject
-        method = field.getIndexAccessor(self)
-        try:
-            datum = method(mimetype="text/plain")
-        except TypeError:
-            # Retry in case typeerror was raised because accessor doesn't
-            # handle the mimetype argument
-            try:
-                datum = method()
-            except (ConflictError, KeyboardInterrupt):
-                raise
-            except:
-                continue
-        if datum:
-            vocab = field.Vocabulary(self)
-            if isinstance(datum, (list, tuple)):
-                #  Unmangle vocabulary: we index key AND value
-                vocab_values = map(
-                    lambda value, vocab=vocab: vocab.getValue(value, ''),
-                    datum)
-                datum = list(datum)
-                datum.extend(vocab_values)
-                datum = ' '.join(datum)
-            elif isinstance(datum, basestring):
-                if isinstance(datum, unicode):
-                    datum = to_utf8(datum)
-                value = vocab.getValue(datum, '')
-                if isinstance(value, unicode):
-                    value = to_utf8(value)
-                datum = "%s %s" % (datum, value,)
-
-            if isinstance(datum, unicode):
-                datum = to_utf8(datum)
-            data.append(str(datum))
-    data = ' '.join(data)
-    return data
 
 
 class IHaveIdentifiersSchemaExtender(object):
@@ -180,7 +138,7 @@ class ajaxGetIdentifierTypes(BrowserView):
 
         # lookup objects from ZODB
         brains = self.bika_setup_catalog(portal_type='IdentifierType',
-                                         inactive_state='active')
+                                         is_active=True)
         if brains and searchTerm:
             brains = [p for p in brains if p.Title.lower(
             ).find(searchTerm) > -1]
@@ -201,4 +159,3 @@ class ajaxGetIdentifierTypes(BrowserView):
                'rows': rows[(int(page) - 1) * int(nr_rows): int(page) * int(
                    nr_rows)]}
         return json.dumps(ret)
-

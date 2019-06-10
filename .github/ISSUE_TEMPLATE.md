@@ -1,7 +1,31 @@
-## Steps to reproduce
+## Description
 
-## Current behavior
+<<DESCRIPTION OF THE PROBLEM>>
 
-## Expected behavior
+## Reproduction guide
 
-## Screenshot (optional)
+<<REPRODUCTION STEPS>>
+
+## Observed behaviour
+
+<<DESCRIPTION OF THE OBSERVED BEHAVIOUR>>
+
+## Expected behaviour
+
+<<DESCRIPTION OF THE EXPECTED BEHAVIOUR>>
+
+## Versions
+
+- OS: Linux
+
+- senaite.core: `master`
+- senaite.impress: `master`
+- senaite.core.listing: `master`
+- senaite.core.supermodel: `master`
+
+## Traceback
+```
+<<BACKTRACE IF RELEVANT>>
+```
+
+## Screenshot

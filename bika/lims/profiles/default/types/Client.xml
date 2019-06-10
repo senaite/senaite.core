@@ -4,191 +4,204 @@
         xmlns:i18n="http://xml.zope.org/namespaces/i18n"
         i18n:domain="plone"
         purge="True">
- <property name="title" i18n:translate="">Client</property>
- <property name="description"></property>
- <property name="content_icon">++resource++bika.lims.images/client.png</property>
- <property name="content_meta_type">Client</property>
- <property name="product">bika.lims</property>
- <property name="factory">addClient</property>
- <property name="add_view_expr">string:${object/absolute_url}/base_edit</property>
- <property name="link_target"></property>
- <property name="global_allow">False</property>
- <property name="filter_content_types">True</property>
- <property name="allowed_content_types">
-  <element value="ARImport"/>
-  <element value="ARTemplate"/>
-  <element value="AnalysisProfile"/>
-  <element value="AnalysisRequest"/>
-  <element value="AnalysisSpec"/>
-  <element value="Attachment"/>
-  <element value="Batch"/>
-  <element value="Contact"/>
-  <element value="Sample"/>
-  <element value="SamplePoint"/>
-  <element value="SRTemplate"/>
-  <element value="SupplyOrder"/>
-  <element value="Folder"/>
-  <element value="SamplingRound"/>
- </property>
- <property name="allow_discussion">False</property>
- <property name="immediate_view">base_edit</property>
- <property name="default_view_fallback">False</property>
 
- <alias from="(Default)" to="base_view"/>
- <alias from="analysisrequests" to="base_view"/>
- <alias from="edit" to="base_edit"/>
- <alias from="view" to="base_view"/>
+  <property name="title" i18n:translate="">Client</property>
+  <property name="description"></property>
+  <property name="content_icon">++resource++bika.lims.images/client.png</property>
+  <property name="content_meta_type">Client</property>
+  <property name="product">bika.lims</property>
+  <property name="factory">addClient</property>
+  <property name="add_view_expr">string:${object/absolute_url}/base_edit</property>
+  <property name="link_target"></property>
+  <property name="global_allow">False</property>
+  <property name="filter_content_types">True</property>
+  <property name="allowed_content_types">
+    <element value="ARImport"/>
+    <element value="ARTemplate"/>
+    <element value="AnalysisProfile"/>
+    <element value="AnalysisRequest"/>
+    <element value="AnalysisSpec"/>
+    <element value="Attachment"/>
+    <element value="Batch"/>
+    <element value="Contact"/>
+    <element value="Sample"/>
+    <element value="SamplePoint"/>
+    <element value="SRTemplate"/>
+    <element value="SupplyOrder"/>
+    <element value="Folder"/>
+    <element value="SamplingRound"/>
+    <element value="Invoice"/>
+  </property>
+  <property name="allow_discussion">False</property>
+  <property name="immediate_view">base_edit</property>
+  <property name="default_view_fallback">False</property>
 
- <action title="Batches"
-         action_id="batches"
-         category="object"
-         condition_expr=""
-         icon_expr="string:${portal_url}/images/batch.png"
-         link_target=""
-         url_expr="string:${object_url}/batches"
-         i18n:attributes="title"
-         visible="True">
-  <permission value="View"/>
- </action>
+  <alias from="(Default)" to="base_view"/>
+  <alias from="analysisrequests" to="base_view"/>
+  <alias from="edit" to="base_edit"/>
+  <alias from="view" to="base_view"/>
 
- <action title="Samples"
-         action_id="view"
-         category="object"
-         condition_expr=""
-         icon_expr="string:${portal_url}/images/sample.png"
-         link_target=""
-         url_expr="string:${object_url}/analysisrequests"
-         i18n:attributes="title"
-         visible="True">
-  <permission value="View"/>
- </action>
+  <action title="Edit"
+          action_id="edit"
+          category="object"
+          url_expr="string:${object_url}/base_edit"
+          i18n:attributes="title"
+          i18n:domain="plone"
+          visible="True">
+    <permission value="Modify portal content"/>
+  </action>
 
- <action title="Imports"
-         action_id="imports"
-         category="object"
-         condition_expr=""
-         icon_expr="string:${portal_url}/images/arimport.png"
-         link_target=""
-         url_expr="string:${object_url}/arimports"
-         i18n:attributes="title"
-         visible="True">
-  <permission value="View"/>
- </action>
-
- <action title="SamplePoints"
-         action_id="samplepoints"
-         category="object"
-         condition_expr=""
-         icon_expr="string:${portal_url}/images/samplepoint.png"
-         link_target=""
-         url_expr="string:${object_url}/samplepoints"
-         i18n:attributes="title"
-         visible="True">
-  <permission value="View"/>
- </action>
-
- <action title="Analysis Profiles"
-         action_id="profiles"
-         category="object"
-         condition_expr=""
-         icon_expr="string:${portal_url}/images/analysisprofile.png"
-         link_target=""
-         url_expr="string:${object_url}/analysisprofiles"
-         i18n:attributes="title"
-         visible="True">
-  <permission value="View"/>
- </action>
-
- <action title="Sample Templates"
-         action_id="templates"
-         category="object"
-         condition_expr=""
-         icon_expr="string:${portal_url}/images/artemplate.png"
-         link_target=""
-         url_expr="string:${object_url}/artemplates"
-         i18n:attributes="title"
-         visible="True">
-  <permission value="View"/>
- </action>
-
- <action title="Analysis Specifications"
-         action_id="specs"
-         category="object"
-         condition_expr=""
-         icon_expr="string:${portal_url}/images/analysisspec.png"
-         link_target=""
-         url_expr="string:${object_url}/analysisspecs"
-         i18n:attributes="title"
-         visible="True">
-  <permission value="View"/>
- </action>
-
- <action title="Sampling Rounds"
-         action_id="sampling_rounds_view"
-         category="object"
-         condition_expr=""
-         icon_expr="string:${portal_url}/images/samplepoints.png"
-         link_target=""
-         url_expr="string:${object_url}/sampling_rounds_view"
-         i18n:attributes="title"
-         visible="True">
-  <permission value="View"/>
- </action>
-
- <action title="Sampling Round Templates"
-         action_id="srtemplates"
-         category="object"
-         condition_expr=""
-         icon_expr="string:${portal_url}/images/srtemplate.png"
-         link_target=""
-         url_expr="string:${object_url}/srtemplates"
-         i18n:attributes="title"
-         visible="True">
-  <permission value="View"/>
- </action>
-
- <action title="Attachments"
-         action_id="attachments"
-         category="object"
-         condition_expr=""
-         icon_expr="string:${portal_url}/images/attachment.png"
-         link_target=""
-         url_expr="string:${object_url}/attachments"
-         i18n:attributes="title"
-         visible="False">
-  <permission value="View"/>
- </action>
-
- <action title="Orders"
-         action_id="orders"
-         category="object"
-         condition_expr=""
-         icon_expr="string:${portal_url}/images/supplyorder.png"
-         link_target=""
-         url_expr="string:${object_url}/orders"
-         i18n:attributes="title"
-         visible="True">
+  <action title="Contacts"
+          action_id="contacts"
+          category="object"
+          icon_expr="string:${portal_url}/images/client_contact.png"
+          url_expr="string:${object_url}/contacts"
+          i18n:attributes="title"
+          visible="True">
     <permission value="View"/>
- </action>
+  </action>
 
- <action title="Edit"
-         action_id="edit"
-         category="object"
-         url_expr="string:${object_url}/base_edit"
-         i18n:attributes="title"
-         i18n:domain="plone"
-         visible="True">
-   <permission value="Modify portal content"/>
- </action>
-
- <action title="Contacts"
-         action_id="contacts"
-         category="object"
-         icon_expr="string:${portal_url}/images/client_contact.png"
-         url_expr="string:${object_url}/contacts"
-         i18n:attributes="title"
-         visible="True">
+  <action title="Samples"
+          action_id="view"
+          category="object"
+          condition_expr=""
+          icon_expr="string:${portal_url}/images/sample.png"
+          link_target=""
+          url_expr="string:${object_url}/analysisrequests"
+          i18n:attributes="title"
+          visible="True">
     <permission value="View"/>
- </action>
+  </action>
+
+  <action title="Batches"
+          action_id="batches"
+          category="object"
+          condition_expr=""
+          icon_expr="string:${portal_url}/images/batch.png"
+          link_target=""
+          url_expr="string:${object_url}/batches"
+          i18n:attributes="title"
+          visible="True">
+    <permission value="View"/>
+  </action>
+
+  <action title="Imports"
+          action_id="imports"
+          category="object"
+          condition_expr=""
+          icon_expr="string:${portal_url}/images/arimport.png"
+          link_target=""
+          url_expr="string:${object_url}/arimports"
+          i18n:attributes="title"
+          visible="False">
+    <permission value="View"/>
+  </action>
+
+  <action title="Sample Points"
+          action_id="samplepoints"
+          category="object"
+          condition_expr=""
+          icon_expr="string:${portal_url}/images/samplepoint.png"
+          link_target=""
+          url_expr="string:${object_url}/samplepoints"
+          i18n:attributes="title"
+          visible="True">
+    <permission value="View"/>
+  </action>
+
+  <action title="Analysis Profiles"
+          action_id="profiles"
+          category="object"
+          condition_expr=""
+          icon_expr="string:${portal_url}/images/analysisprofile.png"
+          link_target=""
+          url_expr="string:${object_url}/analysisprofiles"
+          i18n:attributes="title"
+          visible="True">
+    <permission value="View"/>
+  </action>
+
+  <action title="Sample Templates"
+          action_id="templates"
+          category="object"
+          condition_expr=""
+          icon_expr="string:${portal_url}/images/artemplate.png"
+          link_target=""
+          url_expr="string:${object_url}/artemplates"
+          i18n:attributes="title"
+          visible="True">
+    <permission value="View"/>
+  </action>
+
+  <action title="Analysis Specifications"
+          action_id="specs"
+          category="object"
+          condition_expr=""
+          icon_expr="string:${portal_url}/images/analysisspec.png"
+          link_target=""
+          url_expr="string:${object_url}/analysisspecs"
+          i18n:attributes="title"
+          visible="True">
+    <permission value="View"/>
+  </action>
+
+  <action title="Sampling Rounds"
+          action_id="sampling_rounds_view"
+          category="object"
+          condition_expr=""
+          icon_expr="string:${portal_url}/images/samplepoints.png"
+          link_target=""
+          url_expr="string:${object_url}/sampling_rounds_view"
+          i18n:attributes="title"
+          visible="False">
+    <permission value="View"/>
+  </action>
+
+  <action title="Sampling Round Templates"
+          action_id="srtemplates"
+          category="object"
+          condition_expr=""
+          icon_expr="string:${portal_url}/images/srtemplate.png"
+          link_target=""
+          url_expr="string:${object_url}/srtemplates"
+          i18n:attributes="title"
+          visible="False">
+    <permission value="View"/>
+  </action>
+
+  <action title="Attachments"
+          action_id="attachments"
+          category="object"
+          condition_expr=""
+          icon_expr="string:${portal_url}/images/attachment.png"
+          link_target=""
+          url_expr="string:${object_url}/attachments"
+          i18n:attributes="title"
+          visible="False">
+    <permission value="View"/>
+  </action>
+
+  <action title="Orders"
+          action_id="orders"
+          category="object"
+          condition_expr=""
+          icon_expr="string:${portal_url}/images/supplyorder.png"
+          link_target=""
+          url_expr="string:${object_url}/orders"
+          i18n:attributes="title"
+          visible="True">
+    <permission value="View"/>
+  </action>
+
+  <action title="Analysis Reports"
+          action_id="reports_listing"
+          category="object"
+          icon_expr=""
+          url_expr="string:${object_url}/reports_listing"
+          visible="True"
+          i18n:domain="senaite.core"
+          i18n:attributes="title">
+    <permission value="senaite.core: Manage Analysis Requests"/>
+  </action>
 
 </object>

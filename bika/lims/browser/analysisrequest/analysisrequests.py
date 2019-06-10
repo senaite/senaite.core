@@ -1,9 +1,22 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of SENAITE.CORE
+# This file is part of SENAITE.CORE.
 #
-# Copyright 2018 by it's authors.
-# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2019 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
 import collections
 
@@ -12,15 +25,13 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.config import PRIORITIES
-from bika.lims.permissions import AddAnalysisRequest
+from bika.lims.permissions import AddAnalysisRequest, TransitionSampleSample
 from bika.lims.permissions import ManageAnalysisRequests
-from bika.lims.permissions import SampleSample
-from bika.lims.permissions import Verify as VerifyPermission
-from bika.lims.utils import get_image, get_progress_bar_html
+from bika.lims.utils import get_image
+from bika.lims.utils import get_progress_bar_html
 from bika.lims.utils import getUsers
 from bika.lims.utils import t
 from DateTime import DateTime
-from plone.api import user
 from Products.CMFCore.permissions import ModifyPortalContent
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
@@ -76,7 +87,7 @@ class AnalysisRequestsView(BikaListingView):
                 "sortable": False,
                 "toggle": True}),
             ("getId", {
-                "title": _("Request ID"),
+                "title": _("Sample ID"),
                 "attr": "getId",
                 "replace_url": "getURL",
                 "index": "getId"}),
@@ -130,6 +141,12 @@ class AnalysisRequestsView(BikaListingView):
                 "title": _("Client"),
                 "index": "getClientTitle",
                 "attr": "getClientTitle",
+                "replace_url": "getClientURL",
+                "toggle": True}),
+            ("ClientID", {
+                "title": _("Client ID"),
+                "index": "getClientID",
+                "attr": "getClientID",
                 "replace_url": "getClientURL",
                 "toggle": True}),
             ("Province", {
@@ -235,18 +252,6 @@ class AnalysisRequestsView(BikaListingView):
                     "sort_on": "created",
                     "sort_order": "descending",
                 },
-                "transitions": [
-                    {"id": "sample"},
-                    {"id": "preserve"},
-                    {"id": "receive"},
-                    {"id": "create_partitions"},
-                    {"id": "retract"},
-                    {"id": "verify"},
-                    {"id": "prepublish"},
-                    {"id": "publish"},
-                    {"id": "republish"},
-                    {"id": "cancel"},
-                ],
                 "custom_transitions": [print_stickers],
                 "columns": self.columns.keys(),
             }, {
@@ -256,11 +261,6 @@ class AnalysisRequestsView(BikaListingView):
                     "review_state": ("to_be_sampled",),
                     "sort_on": "created",
                     "sort_order": "descending"},
-                "transitions": [
-                    {"id": "sample"},
-                    {"id": "submit"},
-                    {"id": "cancel"},
-                ],
                 "custom_transitions": [print_stickers],
                 "columns": self.columns.keys()
             }, {
@@ -271,10 +271,6 @@ class AnalysisRequestsView(BikaListingView):
                     "sort_on": "created",
                     "sort_order": "descending",
                 },
-                "transitions": [
-                    {"id": "preserve"},
-                    {"id": "cancel"},
-                ],
                 "custom_transitions": [print_stickers],
                 "columns": self.columns.keys(),
             }, {
@@ -285,10 +281,6 @@ class AnalysisRequestsView(BikaListingView):
                     "sort_on": "created",
                     "sort_order": "descending",
                 },
-                "transitions": [
-                    {"id": "sample"},
-                    {"id": "cancel"},
-                ],
                 "custom_transitions": [print_stickers],
                 "columns": self.columns.keys(),
             }, {
@@ -301,13 +293,6 @@ class AnalysisRequestsView(BikaListingView):
                         "sample_due"),
                     "sort_on": "created",
                     "sort_order": "descending"},
-                "transitions": [
-                    {"id": "sample"},
-                    {"id": "preserve"},
-                    {"id": "receive"},
-                    {"id": "cancel"},
-                    {"id": "reinstate"},
-                ],
                 "custom_transitions": [print_stickers],
                 "columns": self.columns.keys(),
             }, {
@@ -318,12 +303,6 @@ class AnalysisRequestsView(BikaListingView):
                     "sort_on": "created",
                     "sort_order": "descending",
                 },
-                "transitions": [
-                    {"id": "create_partitions"},
-                    {"id": "prepublish"},
-                    {"id": "cancel"},
-                    {"id": "reinstate"},
-                ],
                 "custom_transitions": [print_stickers],
                 "columns": self.columns.keys(),
             }, {
@@ -334,13 +313,6 @@ class AnalysisRequestsView(BikaListingView):
                     "sort_on": "created",
                     "sort_order": "descending",
                 },
-                "transitions": [
-                    {"id": "retract"},
-                    {"id": "verify"},
-                    {"id": "prepublish"},
-                    {"id": "cancel"},
-                    {"id": "reinstate"},
-                ],
                 "custom_transitions": [print_stickers],
                 "columns": self.columns.keys(),
             }, {
@@ -351,10 +323,6 @@ class AnalysisRequestsView(BikaListingView):
                     "sort_on": "created",
                     "sort_order": "descending",
                 },
-                "transitions": [
-                    {"id": "publish"},
-                    {"id": "cancel"},
-                ],
                 "custom_transitions": [print_stickers],
                 "columns": self.columns.keys(),
             }, {
@@ -365,9 +333,6 @@ class AnalysisRequestsView(BikaListingView):
                     "sort_on": "created",
                     "sort_order": "descending",
                 },
-                "transitions": [
-                    {"id": "republish"},
-                ],
                 "custom_transitions": [],
                 "columns": self.columns.keys(),
             }, {
@@ -378,9 +343,6 @@ class AnalysisRequestsView(BikaListingView):
                     "sort_on": "created",
                     "sort_order": "descending",
                 },
-                "transitions": [
-                    {"id": "reinstate"},
-                ],
                 "custom_transitions": [],
                 "columns": self.columns.keys(),
             }, {
@@ -391,7 +353,6 @@ class AnalysisRequestsView(BikaListingView):
                     "sort_on": "created",
                     "sort_order": "descending",
                 },
-                "transitions": [],
                 "custom_transitions": [print_stickers],
                 "columns": self.columns.keys(),
             }, {
@@ -401,7 +362,6 @@ class AnalysisRequestsView(BikaListingView):
                     "sort_on": "created",
                     "sort_order": "descending",
                 },
-                "transitions": [],
                 "custom_transitions": [print_stickers],
                 "columns": self.columns.keys(),
             }, {
@@ -412,7 +372,6 @@ class AnalysisRequestsView(BikaListingView):
                     "sort_on": "created",
                     "sort_order": "descending",
                 },
-                "transitions": [],
                 "custom_transitions": [
                     {
                         "id": "print_stickers",
@@ -431,12 +390,6 @@ class AnalysisRequestsView(BikaListingView):
                     "sort_on": "created",
                     "sort_order": "descending",
                 },
-                "transitions": [
-                    {"id": "receive"},
-                    {"id": "retract"},
-                    {"id": "prepublish"},
-                    {"id": "cancel"},
-                ],
                 "custom_transitions": [print_stickers],
                 "columns": self.columns.keys(),
             }, {
@@ -452,13 +405,6 @@ class AnalysisRequestsView(BikaListingView):
                     "sort_on": "created",
                     "sort_order": "descending",
                 },
-                "transitions": [
-                    {"id": "receive"},
-                    {"id": "create_partitions"},
-                    {"id": "retract"},
-                    {"id": "prepublish"},
-                    {"id": "cancel"},
-                ],
                 "custom_transitions": [print_stickers],
                 "columns": self.columns.keys(),
             }, {
@@ -552,13 +498,13 @@ class AnalysisRequestsView(BikaListingView):
             review_states = []
             for review_state in self.review_states:
                 review_state.get("custom_transitions", []).extend(
-                    [{"id": "print",
+                    [{"id": "print_sample",
                       "title": _("Print"),
-                      "url": "workflow_action?action=print"}, ])
+                      "url": "workflow_action?action=print_sample"}, ])
                 review_states.append(review_state)
             self.review_states = review_states
 
-        # Only "BIKA: ManageAnalysisRequests" may see the copy to new button.
+        # Only "senaite.core: ManageAnalysisRequests" may see the copy to new button.
         # elsewhere it is hacked in where required.
         if self.copy_to_new_allowed:
             review_states = []
@@ -738,7 +684,9 @@ class AnalysisRequestsView(BikaListingView):
                 full_object = obj.getObject()
                 checkPermission =\
                     self.context.portal_membership.checkPermission
-                if checkPermission(SampleSample, full_object):
+
+                # TODO Do we really need this check?
+                if checkPermission(TransitionSampleSample, full_object):
                     item["required"] = ["getSampler", "getDateSampled"]
                     item["allow_edit"] = ["getSampler", "getDateSampled"]
                     # TODO-performance: hit performance while getting the

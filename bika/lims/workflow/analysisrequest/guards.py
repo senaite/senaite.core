@@ -1,11 +1,25 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of SENAITE.CORE
+# This file is part of SENAITE.CORE.
 #
-# Copyright 2018 by it's authors.
-# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2019 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
+from bika.lims.interfaces import IVerified
 from bika.lims.workflow import isTransitionAllowed
 
 # States to be omitted in regular transitions
@@ -67,7 +81,7 @@ def guard_submit(analysis_request):
         analysis_status = api.get_workflow_status_of(analysis)
         if analysis_status in ANALYSIS_DETACHED_STATES:
             continue
-        if analysis_status in ['assigned', 'unassigned']:
+        if analysis_status in ['assigned', 'unassigned', 'registered']:
             return False
         analyses_ready = True
     return analyses_ready
@@ -84,7 +98,8 @@ def guard_verify(analysis_request):
         analysis_status = api.get_workflow_status_of(analysis)
         if analysis_status in ANALYSIS_DETACHED_STATES:
             continue
-        if analysis_status != 'verified':
+        # All analyses must be in verified (or further) status
+        if not IVerified.providedBy(analysis):
             return False
         analyses_ready = True
     return analyses_ready
@@ -134,8 +149,9 @@ def guard_cancel(analysis_request):
     # Look through analyses. We've checked the partitions already, so there is
     # no need to look through analyses from partitions again, but through the
     # analyses directly bound to the current Analysis Request.
+    cancellable_states = ["unassigned", "registered"]
     for analysis in analysis_request.objectValues("Analysis"):
-        if api.get_workflow_status_of(analysis) != "unassigned":
+        if api.get_workflow_status_of(analysis) not in cancellable_states:
             return False
 
     return True
@@ -164,3 +180,10 @@ def guard_sample(analysis_request):
 
     current_user = api.get_current_user()
     return "Sampler" in current_user.getRolesInContext(analysis_request)
+
+
+def guard_reject(analysis_request):
+    """Returns whether 'reject' transition can be performed or not. Returns
+    True only if setup's isRejectionWorkflowEnabled is True
+    """
+    return analysis_request.bika_setup.isRejectionWorkflowEnabled()

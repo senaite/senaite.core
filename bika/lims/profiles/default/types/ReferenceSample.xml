@@ -4,96 +4,99 @@
         xmlns:i18n="http://xml.zope.org/namespaces/i18n"
         i18n:domain="plone"
         purge="True">
- <property name="title" i18n:translate="">Reference Sample</property>
- <property name="description"></property>
- <property name="content_icon">++resource++bika.lims.images/referencesample.png</property>
- <property name="content_meta_type">ReferenceSample</property>
- <property name="product">bika.lims</property>
- <property name="factory">addReferenceSample</property>
- <property name="add_view_expr"></property>
- <property name="link_target"></property>
- <property name="global_allow">False</property>
- <property name="filter_content_types">True</property>
- <property name="allowed_content_types">
-  <element value="ReferenceAnalysis"/>
- </property>
- <property name="allow_discussion">False</property>
- <property name="default_view_fallback">False</property>
 
- <alias from="(Default)" to="base_view"/>
- <alias from="view" to="base_view"/>
- <alias from="edit" to="base_edit"/>
+  <property name="title" i18n:translate="">Reference Sample</property>
+  <property name="description"></property>
+  <property name="content_icon">++resource++bika.lims.images/referencesample.png</property>
+  <property name="content_meta_type">ReferenceSample</property>
+  <property name="product">bika.lims</property>
+  <property name="factory">addReferenceSample</property>
+  <property name="add_view_expr"></property>
+  <property name="link_target"></property>
+  <property name="global_allow">False</property>
+  <property name="filter_content_types">True</property>
+  <property name="allowed_content_types">
+    <element value="ReferenceAnalysis"/>
+  </property>
+  <property name="allow_discussion">False</property>
+  <property name="default_view_fallback">False</property>
+
+  <alias from="(Default)" to="base_view"/>
+  <alias from="view" to="base_view"/>
+  <alias from="edit" to="base_edit"/>
 
   <action title="View"
-        action_id="view"
-        category="object"
-        condition_expr=""
-        icon_expr=""
-        link_target=""
-        url_expr="string:${object_url}/base_view"
-        i18n:attributes="title"
-        i18n:domain="plone"
-        visible="True">
+          action_id="view"
+          category="object"
+          condition_expr=""
+          icon_expr=""
+          link_target=""
+          url_expr="string:${object_url}/base_view"
+          i18n:attributes="title"
+          i18n:domain="plone"
+          visible="True">
     <permission value="View"/>
-</action>
+  </action>
 
-<action title="Edit"
-        action_id="edit"
-        category="object"
-        condition_expr=""
-        icon_expr=""
-        link_target=""
-        url_expr="string:${object_url}/base_edit"
-        i18n:attributes="title"
-        i18n:domain="plone"
-        visible="True">
+  <action title="Edit"
+          action_id="edit"
+          category="object"
+          condition_expr=""
+          icon_expr=""
+          link_target=""
+          url_expr="string:${object_url}/base_edit"
+          i18n:attributes="title"
+          i18n:domain="plone"
+          visible="True">
     <permission value="Modify portal content"/>
-</action>
+  </action>
 
-<action title="Analyses"
-        action_id="analyses"
-        category="object"
-        condition_expr=""
-        icon_expr=""
-        link_target=""
-        url_expr="string:${object_url}/analyses"
-        i18n:attributes="title"
-        visible="True">
+  <action title="Analyses"
+          action_id="analyses"
+          category="object"
+          condition_expr=""
+          icon_expr=""
+          link_target=""
+          url_expr="string:${object_url}/analyses"
+          i18n:attributes="title"
+          visible="True">
     <permission value="View"/>
-</action>
+  </action>
 
-<action title="Reference Values"
-        action_id="results"
-        category="object"
-        condition_expr=""
-        icon_expr=""
-        link_target=""
-        url_expr="string:${object_url}/results"
-        i18n:attributes="title"
-        visible="True">
+  <action title="Reference Values"
+          action_id="results"
+          category="object"
+          condition_expr=""
+          icon_expr=""
+          link_target=""
+          url_expr="string:${object_url}/results"
+          i18n:attributes="title"
+          visible="True">
     <permission value="View"/>
-</action>
+  </action>
 
-<action title="Log"
-        action_id="log"
-        category="object"
-        condition_expr=""
-        url_expr="string:${object_url}/log"
-        i18n:attributes="title"
-        visible="True">
-     <permission value="BIKA: View Log Tab"/>
-</action>
-
-<action title="Sticker"
-        action_id="sticker"
-        category="document_actions"
-        condition_expr=""
-        icon_expr="string:${object_url}/++resource++bika.lims.images/sticker_large.png"
-        link_target=""
-        url_expr="string:${object_url}/sticker?size=large"
-        i18n:attributes="title"
-        visible="True">
+  <action title="Sticker"
+          action_id="sticker"
+          category="document_actions"
+          condition_expr=""
+          icon_expr="string:${object_url}/++resource++bika.lims.images/sticker_large.png"
+          link_target=""
+          url_expr="string:${object_url}/sticker?autoprint=1&amp;filter_by_type=referencesample"
+          i18n:attributes="title"
+          visible="True">
     <permission value="View"/>
-</action>
+  </action>
+
+  <action title="Stickers preview"
+          action_id="sticker_preview"
+          category="document_actions"
+          condition_expr=""
+          icon_expr="string:${object_url}/++resource++bika.lims.images/sticker_preview.png"
+          link_target="Stickers preview"
+          url_expr="string:${object_url}/sticker?filter_by_type=referencesample"
+          i18n:attributes="title"
+          visible="True">
+    <permission value="View"/>
+  </action>
 
 </object>

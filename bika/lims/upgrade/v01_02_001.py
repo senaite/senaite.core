@@ -1,19 +1,30 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of SENAITE.CORE
+# This file is part of SENAITE.CORE.
 #
-# Copyright 2018 by it's authors.
-# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2019 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
+from DateTime import DateTime
 from Products.CMFCore.Expression import Expression
 from bika.lims import api
 from bika.lims import logger
 from bika.lims.config import PROJECTNAME as product
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
-from bika.lims.workflow import changeWorkflowState
-from bika.lims.workflow import isActive
-from DateTime import DateTime
 
 version = '1.2.1'  # Remember version number in metadata.xml and setup.py
 profile = 'profile-{0}:default'.format(product)
@@ -62,7 +73,7 @@ def fix_service_status_inconsistences():
     brains = catalog(portal_type='AnalysisService')
     for brain in brains:
         obj = api.get_object(brain)
-        if not isActive(obj):
+        if not api.is_active(obj):
             continue
 
         # If this service is active, then all the services this service
@@ -74,7 +85,7 @@ def fix_service_status_inconsistences():
         dependencies = calculation.getDependentServices()
         for dependency in dependencies:
             dependency = api.get_object(dependency)
-            if not isActive(dependency):
+            if not api.is_active(dependency):
                 _change_inactive_state(dependency, 'active')
 
 
@@ -83,7 +94,7 @@ def fix_service_profile_template_inconsistences():
     brains = catalog(portal_type='AnalysisService')
     for brain in brains:
         obj = api.get_object(brain)
-        if isActive(obj):
+        if api.is_active(obj):
             continue
 
         # If this service is inactive, be sure is not used neither in Profiles

@@ -1,9 +1,22 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of SENAITE.CORE
+# This file is part of SENAITE.CORE.
 #
-# Copyright 2018 by it's authors.
-# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2019 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
 from datetime import date
 
@@ -53,7 +66,8 @@ from bika.lims import logger
 from bika.lims.utils import t
 from bika.lims.utils import to_utf8
 from bika.lims.config import PROJECTNAME
-from bika.lims.interfaces import IInstrument
+from bika.lims.exportimport import instruments
+from bika.lims.interfaces import IInstrument, IDeactivable
 from bika.lims.config import QCANALYSIS_TYPES
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.content.bikaschema import BikaFolderSchema
@@ -116,6 +130,7 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         )
     ),
 
+    # TODO Remove Instrument.Method field (functionality provided by 'Methods')
     UIDReferenceField(
         'Method',
         vocabulary='_getAvailableMethods',
@@ -350,37 +365,6 @@ schema.moveField('InstrumentTypeName', before='ManufacturerName')
 schema['description'].widget.visible = True
 schema['description'].schemata = 'default'
 
-
-def getDataInterfaces(context, export_only=False):
-    """ Return the current list of data interfaces
-    """
-    from bika.lims.exportimport import instruments
-    exims = []
-    for exim_id in instruments.__all__:
-        exim = instruments.getExim(exim_id)
-        if export_only and not hasattr(exim, 'Export'):
-            pass
-        else:
-            exims.append((exim_id, exim.title))
-    exims.sort(lambda x, y: cmp(x[1].lower(), y[1].lower()))
-    exims.insert(0, ('', t(_('None'))))
-    return DisplayList(exims)
-
-def getImportDataInterfaces(context, import_only=False):
-    """ Return the current list of import data interfaces
-    """
-    from bika.lims.exportimport import instruments
-    exims = []
-    for exim_id in instruments.__all__:
-        exim = instruments.getExim(exim_id)
-        if import_only and not hasattr(exim, 'Import'):
-            pass
-        else:
-            exims.append((exim_id, exim.title))
-    exims.sort(lambda x, y: cmp(x[1].lower(), y[1].lower()))
-    exims.insert(0, ('', t(_('None'))))
-    return DisplayList(exims)
-
 def getMaintenanceTypes(context):
     types = [('preventive', 'Preventive'),
              ('repair', 'Repair'),
@@ -397,7 +381,7 @@ def getCalibrationAgents(context):
 class Instrument(ATFolder):
     """A physical gadget of the lab
     """
-    implements(IInstrument)
+    implements(IInstrument, IDeactivable)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
@@ -411,11 +395,22 @@ class Instrument(ATFolder):
     def Title(self):
         return to_utf8(safe_unicode(self.title))
 
+    def getDataInterfacesList(self, type_interface="import"):
+        interfaces = list()
+        if type_interface == "export":
+            interfaces = instruments.get_instrument_export_interfaces()
+        elif type_interface == "import":
+            interfaces = instruments.get_instrument_import_interfaces()
+        interfaces = map(lambda imp: (imp[0], imp[1].title), interfaces)
+        interfaces.sort(lambda x, y: cmp(x[1].lower(), y[1].lower()))
+        interfaces.insert(0, ('', t(_('None'))))
+        return DisplayList(interfaces)
+
     def getExportDataInterfacesList(self):
-        return getDataInterfaces(self, export_only=True)
+        return self.getDataInterfacesList("export")
 
     def getImportDataInterfacesList(self):
-        return getImportDataInterfaces(self, import_only=True)
+        return self.getDataInterfacesList("import")
 
     def getScheduleTaskTypesList(self):
         return getMaintenanceTypes(self)
@@ -430,7 +425,7 @@ class Instrument(ATFolder):
         bsc = getToolByName(self, 'bika_setup_catalog')
         items = [(c.UID, c.Title)
                  for c in bsc(portal_type='Manufacturer',
-                              inactive_state='active')]
+                              is_active=True)]
         items.sort(lambda x, y: cmp(x[1], y[1]))
         return DisplayList(items)
 
@@ -444,7 +439,7 @@ class Instrument(ATFolder):
         bsc = getToolByName(self, 'bika_setup_catalog')
         items = [(c.UID, c.getName)
                  for c in bsc(portal_type='Supplier',
-                              inactive_state='active')]
+                              is_active=True)]
         items.sort(lambda x, y: cmp(x[1], y[1]))
         return DisplayList(items)
 
@@ -456,7 +451,7 @@ class Instrument(ATFolder):
         bsc = getToolByName(self, 'bika_setup_catalog')
         items = [(c.UID, c.Title)
                  for c in bsc(portal_type='Method',
-                              inactive_state='active')]
+                              is_active=True)]
         items.sort(lambda x, y: cmp(x[1], y[1]))
         items.insert(0, ('', t(_('None'))))
         return DisplayList(items)
@@ -465,7 +460,7 @@ class Instrument(ATFolder):
         bsc = getToolByName(self, 'bika_setup_catalog')
         items = [(c.UID, c.Title)
                  for c in bsc(portal_type='InstrumentType',
-                              inactive_state='active')]
+                              is_active=True)]
         items.sort(lambda x, y: cmp(x[1], y[1]))
         return DisplayList(items)
 
@@ -473,7 +468,7 @@ class Instrument(ATFolder):
         bsc = getToolByName(self, 'bika_setup_catalog')
         items = [(c.UID, c.Title)
                  for c in bsc(portal_type='InstrumentLocation',
-                              inactive_state='active')]
+                              is_active=True)]
         items.sort(lambda x, y: cmp(x[1], y[1]))
         items.insert(0, ('', t(_('None'))))
         return DisplayList(items)

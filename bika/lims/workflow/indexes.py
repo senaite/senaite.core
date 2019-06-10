@@ -1,16 +1,23 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of SENAITE.CORE
+# This file is part of SENAITE.CORE.
 #
-# Copyright 2018 by it's authors.
-# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2019 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
-# Mapping of indexes to be reindexed for each portal type after a given
-# transition is performed.
-# - If None is set for a given portal type and transition, doActionFor will
-#   only reindex "review_state"
-# - If a given transition is not present or contains an empty list, doActionFor
-#   will reindex all indexes.
 ACTIONS_TO_INDEXES = {
     "Analysis": {
         "assign": [
@@ -18,10 +25,10 @@ ACTIONS_TO_INDEXES = {
             "getWorksheetUID",
         ],
         "cancel": [
-            "cancellation_state",
+            "is_active",
         ],
         "reinstate": [
-            "cancellation_state",
+            "is_active",
         ],
         "reject": [
             "getWorksheetUID",
@@ -101,6 +108,7 @@ ACTIONS_TO_INDEXES = {
         "receive": {
             "getDueDate",
             "getDateReceived",
+            "is_received",
         },
         "rollback_to_receive": [
             "assigned_state",
@@ -114,10 +122,10 @@ ACTIONS_TO_INDEXES = {
             "getDateVerified",
         ],
         "cancel": [
-            "cancellation_state",
+            "is_active",
         ],
         "reinstate": [
-            "cancellation_state",
+            "is_active",
         ],
     }
 }

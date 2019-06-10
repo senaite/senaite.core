@@ -1,28 +1,32 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of SENAITE.CORE
+# This file is part of SENAITE.CORE.
 #
-# Copyright 2018 by it's authors.
-# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2019 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
 from AccessControl import ClassSecurityInfo
-from Products.Archetypes.public import *
 from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
-from Products.CMFCore.permissions import View, ModifyPortalContent
-from Products.CMFCore.utils import getToolByName
+from Products.Archetypes.public import *
 from Products.CMFPlone.utils import safe_unicode
-from bika.lims.browser import BrowserView
-from bika.lims.content.bikaschema import BikaSchema
+from bika.lims import bikaMessageFactory as _
 from bika.lims.config import PROJECTNAME
-from bika.lims.browser.fields import CoordinateField
-from bika.lims.browser.widgets import CoordinateWidget
-from bika.lims.browser.fields import DurationField
-from bika.lims.browser.widgets import DurationWidget
-from bika.lims import PMF, bikaMessageFactory as _
+from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.interfaces import IDeactivable
 from zope.interface import implements
-import json
-import plone
-import sys
 
 schema = BikaSchema.copy() + Schema((
     StringField('SiteTitle',
@@ -90,6 +94,7 @@ schema['title'].widget.label=_('Address')
 schema['description'].widget.visible = True
 
 class StorageLocation(BaseContent, HistoryAwareMixin):
+    implements(IDeactivable)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
@@ -104,19 +109,3 @@ class StorageLocation(BaseContent, HistoryAwareMixin):
 
 
 registerType(StorageLocation, PROJECTNAME)
-
-#def StorageLocations(self, instance=None, allow_blank=True, lab_only=True):
-#    instance = instance or self
-#    bsc = getToolByName(instance, 'bika_setup_catalog')
-#    items = []
-#    contentFilter = {
-#        'portal_type'  : 'StorageLocation',
-#        'inactive_state'  :'active',
-#        'sort_on' : 'sortable_title'}
-#    if lab_only:
-#        lab_path = instance.bika_setup.bika_storagelocations.getPhysicalPath()
-#        contentFilter['path'] = {"query": "/".join(lab_path), "level" : 0 }
-#    for sp in bsc(contentFilter):
-#        items.append((sp.UID, sp.Title))
-#    items = allow_blank and [['','']] + list(items) or list(items)
-#    return DisplayList(items)

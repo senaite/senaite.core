@@ -1,9 +1,22 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of SENAITE.CORE
+# This file is part of SENAITE.CORE.
 #
-# Copyright 2018 by it's authors.
-# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2019 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
 from zope.interface import Interface
 
@@ -12,6 +25,26 @@ class IBikaLIMS(Interface):
     """Marker interface that defines a Zope 3 browser layer.
        If you need to register a viewlet only for the
        "bika" theme, this interface must be its layer
+    """
+
+
+class IAuditLog(Interface):
+    """Marker interface for Audit Log
+    """
+
+
+class IAuditable(Interface):
+    """Marker inteface for auditable contents
+    """
+
+
+class IDoNotSupportSnapshots(Interface):
+    """Marker inteface for non-auditable contents
+    """
+
+
+class IAuditLogCatalog(Interface):
+    """Audit Log Catalog
     """
 
 
@@ -52,6 +85,21 @@ class IBatchLabels(Interface):
 
 class IAnalysisRequest(Interface):
     """Analysis Request
+    """
+
+
+class IAnalysisRequestPartition(Interface):
+    """Marker interface for Analysis Requests that are also Partitions
+    """
+
+
+class IAnalysisRequestRetest(Interface):
+    """Marker interface for Analysis Requests that are Retests
+    """
+
+
+class IAnalysisRequestSecondary(Interface):
+    """Marker interface for Secondary Analysis Requests
     """
 
 
@@ -344,6 +392,11 @@ class IARTemplates(Interface):
     """
 
 
+class ILaboratory(Interface):
+    """Marker interface for Laboratory
+    """
+
+
 class ILabContacts(Interface):
     """Marker interface for Lab contacts
     """
@@ -510,15 +563,6 @@ class IIdServer(Interface):
 
     def generate_id(self, portal_type, batch_size=None):
         """Generate a new id for 'portal_type'
-        """
-
-
-class IBatchSearchableText(Interface):
-    """Marker Interface for BatchSearchableText
-    """
-
-    def get_plain_text_fields(self):
-        """Returns field names as a list of strings
         """
 
 
@@ -744,11 +788,6 @@ class IHeaderTableFieldRenderer(Interface):
         """
 
 
-class ICustomPubPref(Interface):
-    """Marker interface for CustomPubPref
-    """
-
-
 class IReflexRule(Interface):
     """Marker interface for a Reflex Rule
     """
@@ -861,6 +900,37 @@ class IARReport(Interface):
 
 
 class ICancellable(Interface):
-    """Marker for those objects that can be cancelled, but their content
-    type is not bound to cancellation_workflow
+    """Marker for those objects that can be cancelled (have state "cancelled")
+    """
+
+
+class IDeactivable(Interface):
+    """Marker for those objects that can be deactivated (have state "inactive")
+    """
+
+
+class IWorkflowActionAdapter(Interface):
+    """Marker for adapters in charge of processing workflow action requests
+    from views
+    """
+
+
+class IWorkflowActionUIDsAdapter(IWorkflowActionAdapter):
+    """Marker for adapters in charge of processing workflow action requests
+    from views, but meant for redirection only
+    """
+
+
+class IVerified(Interface):
+    """Marker interface for verified objects
+    """
+
+
+class ISubmitted(Interface):
+    """Marker interface for submitted objects
+    """
+
+
+class IReceived(Interface):
+    """Marker interface for received objects
     """

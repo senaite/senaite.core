@@ -1,85 +1,108 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of SENAITE.CORE
+# This file is part of SENAITE.CORE.
 #
-# Copyright 2018 by it's authors.
-# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2019 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
 from AccessControl import ClassSecurityInfo
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields.remarksfield import RemarksField
 from bika.lims.browser.widgets import RemarksWidget
-from bika.lims.utils import t
-from bika.lims.config import PROJECTNAME, ManageSuppliers
-from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.config import PROJECTNAME
 from bika.lims.content.organisation import Organisation
-from bika.lims.interfaces import ISupplier
-from Products.Archetypes.public import *
-from Products.CMFCore.permissions import View, ModifyPortalContent
-from Products.CMFPlone.utils import safe_unicode
+from bika.lims.interfaces import ISupplier, IDeactivable
 from zope.interface import implements
+from Products.Archetypes.public import registerType
+from Products.Archetypes.public import StringField
+from Products.Archetypes.public import ManagedSchema
+from Products.Archetypes.public import StringWidget
+
 
 schema = Organisation.schema.copy() + ManagedSchema((
+
     RemarksField(
-        'Remarks',
+        "Remarks",
         searchable=True,
         widget=RemarksWidget(
             label=_("Remarks"),
         ),
     ),
-    StringField('Website',
+
+    StringField(
+        "Website",
         searchable=1,
         required=0,
         widget=StringWidget(
-            visible={'view': 'visible', 'edit': 'visible'},
-            label=_('Website.'),
+            visible={"view": "visible", "edit": "visible"},
+            label=_("Website."),
         ),
     ),
-    StringField('NIB',
+
+    StringField(
+        "NIB",
         searchable=1,
-        schemata = 'Bank details',
+        schemata="Bank details",
         required=0,
         widget=StringWidget(
-            visible={'view': 'visible', 'edit': 'visible'},
-            label=_('NIB'),
+            visible={"view": "visible", "edit": "visible"},
+            label=_("NIB"),
         ),
-        validators=('NIBvalidator'),
+        validators=("NIBvalidator"),
     ),
-    StringField('IBN',
+
+    StringField(
+        "IBN",
         searchable=1,
-        schemata ='Bank details',
+        schemata="Bank details",
         required=0,
         widget=StringWidget(
-            visible={'view': 'visible', 'edit': 'visible'},
-            label=_('IBN'),
+            visible={"view": "visible", "edit": "visible"},
+            label=_("IBN"),
         ),
-        validators=('IBANvalidator'),
+        validators=("IBANvalidator"),
     ),
-    StringField('SWIFTcode',
+
+    StringField(
+        "SWIFTcode",
         searchable=1,
         required=0,
-        schemata ='Bank details',
+        schemata="Bank details",
         widget=StringWidget(
-            visible={'view': 'visible', 'edit': 'visible'},
-            label=_('SWIFT code.'),
+            visible={"view": "visible", "edit": "visible"},
+            label=_("SWIFT code."),
         ),
     ),
 ))
-schema['AccountNumber'].write_permission = ManageSuppliers
+
 
 class Supplier(Organisation):
-    implements(ISupplier)
-    security = ClassSecurityInfo()
-    displayContentsTab = False
-    schema = schema
-
-    def Title(self):
-        """ Return the Organisation's Name as its title """
-        return safe_unicode(self.getField('Name').get(self)).encode('utf-8')
+    """Supplier content
+    """
+    implements(ISupplier, IDeactivable)
 
     _at_rename_after_creation = True
+    displayContentsTab = False
+    isPrincipiaFolderish = 0
+    schema = schema
+    security = ClassSecurityInfo()
+
     def _renameAfterCreation(self, check_auto_id=False):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
+
 
 registerType(Supplier, PROJECTNAME)

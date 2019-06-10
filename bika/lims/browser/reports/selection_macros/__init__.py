@@ -1,9 +1,22 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of SENAITE.CORE
+# This file is part of SENAITE.CORE.
 #
-# Copyright 2018 by it's authors.
-# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2019 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
 from Products.CMFCore.utils import getToolByName
 from zope.i18n import translate
@@ -275,7 +288,7 @@ class SelectionMacrosView(BrowserView):
     @ram.cache(_cache_key_select_client)
     def select_client(self, style=None):
         self.style = style
-        self.clients = self.pc(portal_type='Client', inactive_state='active',
+        self.clients = self.pc(portal_type='Client',
                                sort_on='sortable_title')
         return self.select_client_pt()
 
@@ -295,7 +308,7 @@ class SelectionMacrosView(BrowserView):
     @ram.cache(_cache_key_select_contact)
     def select_contact(self, style=None):
         self.style = style
-        self.contacts = self.pc(portal_type='Contact', inactive_state='active',
+        self.contacts = self.pc(portal_type='Contact', is_active=True,
                                 sort_on='sortable_title')
         return self.select_contact_pt()
 
@@ -366,7 +379,7 @@ class SelectionMacrosView(BrowserView):
     def select_instrument(self, style=None):
         self.style = style
         self.instruments = self.bsc(portal_type='Instrument',
-                                    inactive_state='active',
+                                    is_active=True,
                                     sort_on='sortable_title')
         return self.select_instrument_pt()
 
@@ -383,7 +396,7 @@ class SelectionMacrosView(BrowserView):
     def select_profile(self, style=None):
         self.style = style
         self.analysisprofiles = self.bsc(portal_type='AnalysisProfile',
-                                         inactive_state='active',
+                                         is_active=True,
                                          sort_on='sortable_title')
         return self.select_profile_pt()
 
@@ -392,7 +405,7 @@ class SelectionMacrosView(BrowserView):
     @ram.cache(_cache_key_select_supplier)
     def select_supplier(self, style=None):
         self.style = style
-        self.suppliers = self.bsc(portal_type='Supplier', inactive_state='active',
+        self.suppliers = self.bsc(portal_type='Supplier', is_active=True,
                                   sort_on='sortable_title')
         return self.select_supplier_pt()
 
@@ -433,10 +446,6 @@ class SelectionMacrosView(BrowserView):
     def select_state_analysis(self, workflow_id, field_id, field_title, style=None):
         return self._select_state(workflow_id, field_title, field_title, style)
 
-    @ram.cache(_cache_key_select_state)
-    def select_state_cancellation(self, workflow_id, field_id, field_title, style=None):
-        return self._select_state(workflow_id, field_title, field_title, style)
-
     def parse_state(self, request, workflow_id, field_id, field_title):
         val = request.form.get(field_id, "")
         states = self.portal_workflow[workflow_id].states
@@ -456,7 +465,7 @@ class SelectionMacrosView(BrowserView):
         self.allow_blank = allow_blank
         self.multiselect = multiselect
         self.samplepoints = self.bsc(portal_type='SamplePoint',
-                                     inactive_state='active',
+                                     is_active=True,
                                      sort_on='sortable_title')
         return self.select_samplepoint_pt()
 
@@ -479,7 +488,7 @@ class SelectionMacrosView(BrowserView):
         self.allow_blank = allow_blank
         self.multiselect = multiselect
         self.sampletypes = self.bsc(portal_type='SampleType',
-                                    inactive_state='active',
+                                    is_active=True,
                                     sort_on='sortable_title')
         return self.select_sampletype_pt()
 

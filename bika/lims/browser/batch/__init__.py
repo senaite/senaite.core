@@ -1,9 +1,22 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of SENAITE.CORE
+# This file is part of SENAITE.CORE.
 #
-# Copyright 2018 by it's authors.
-# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2019 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
 from archetypes.schemaextender.interfaces import ISchemaModifier, \
     IOrderableSchemaExtender
@@ -56,7 +69,7 @@ class getAnalysisContainers(BrowserView):
         catalog = getToolByName(self, CATALOG_ANALYSIS_REQUEST_LISTING)
         for x in [a.getObject() for a in
                 catalog(
-                    cancellation_state='active',
+                    is_active=True,
                     sort_on="created",
                     sort_order="desc")]:
             if searchTerm in x.Title().lower():
@@ -66,7 +79,7 @@ class getAnalysisContainers(BrowserView):
         for x in [a.getObject() for a in
                   self.bika_catalog(
                     portal_type='Batch',
-                    cancellation_state='active',
+                    is_active=True,
                     sort_on="created",
                     sort_order="desc")]:
             if searchTerm in x.Title().lower() \

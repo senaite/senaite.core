@@ -1,24 +1,40 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of SENAITE.CORE
+# This file is part of SENAITE.CORE.
 #
-# Copyright 2018 by it's authors.
-# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2019 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
-from bika.lims import _
-from plone.supermodel import model
-from plone import api
-from plone.indexer import indexer
-from zope import schema
-from plone.dexterity.content import Item
-from zope.interface import implements
-from zope.schema.vocabulary import SimpleVocabulary
-from Products.CMFCore.utils import getToolByName
-from zope.schema.interfaces import IContextSourceBinder
 from datetime import date
+
+from Products.CMFCore.permissions import ModifyPortalContent, AddPortalContent
+from Products.CMFCore.utils import getToolByName
+from bika.lims import _
+from bika.lims.interfaces import IDeactivable
 from bika.lims.workflow import doActionFor
 from bika.lims.workflow import skip
-from Products.CMFCore.permissions import ModifyPortalContent, AddPortalContent
+from plone import api
+from plone.dexterity.content import Item
+from plone.indexer import indexer
+from plone.supermodel import model
+from zope import schema
+from zope.interface import implements
+from zope.schema.interfaces import IContextSourceBinder
+from zope.schema.vocabulary import SimpleVocabulary
+
 
 # I implemented it here because following this example
 # (http://docs.plone.org/external/plone.app.dexterity/docs/advanced/vocabularies.html#named-vocabularies)
@@ -31,7 +47,7 @@ class Departments(object):
     def __call__(self, context):
         catalog_name = 'portal_catalog'
         contentFilter = {'portal_type': 'Department',
-                         'inactive_state': 'active'}
+                         'is_active': True}
         catalog = getToolByName(context, catalog_name)
         brains = catalog(contentFilter)
         terms = []
@@ -49,7 +65,7 @@ class SamplingRoundTemplates(object):
     def __call__(self, context):
         catalog_name = 'portal_catalog'
         contentFilter = {'portal_type': 'SRTemplate',
-                         'inactive_state': 'active'}
+                         'is_active': True}
         catalog = getToolByName(context, catalog_name)
         brains = catalog(contentFilter)
         terms = []
@@ -74,7 +90,7 @@ class AnalysisRequestTemplates(object):
     def __call__(self, context):
         catalog_name = 'portal_catalog'
         contentFilter = {'portal_type': 'ARTemplate',
-                         'inactive_state': 'active'}
+                         'is_active': True}
         catalog = getToolByName(context, catalog_name)
         brains = catalog(contentFilter)
         terms = []
@@ -256,7 +272,7 @@ class SamplingRound(Item):
     Programmers: Cancelling is a secondary workflow, like that for cancelling and the Round's original status is
     maintained, e.g. an open Round can have a cancelled status as well as closed Rounds.
     """
-    implements(ISamplingRound)
+    implements(ISamplingRound, IDeactivable)
     # Add your class methods and properties here
 
     @property
@@ -283,7 +299,7 @@ class SamplingRound(Item):
         # I have to get the catalog in this way because I can't do it with 'self'...
         pc = getToolByName(api.portal.get(), 'portal_catalog')
         contentFilter = {'portal_type': 'AnalysisRequest',
-                         'cancellation_state': 'active',
+                         'is_active': True,
                          'SamplingRoundUID': self.UID()}
         return pc(contentFilter)
 
@@ -428,11 +444,11 @@ class SamplingRound(Item):
         """
         if skip(self, "cancel"):
             return
-        self.reindexObject(idxs=["cancellation_state", ])
+        self.reindexObject(idxs=["is_active", ])
         # deactivate all analysis requests in this sampling round.
         analysis_requests = self.getAnalysisRequests()
         for ar in analysis_requests:
             ar_obj = ar.getObject()
             workflow = getToolByName(self, 'portal_workflow')
-            if workflow.getInfoFor(ar_obj, 'cancellation_state') != 'cancelled':
+            if workflow.getInfoFor(ar_obj, 'review_state') != 'cancelled':
                 doActionFor(ar.getObject(), 'cancel')

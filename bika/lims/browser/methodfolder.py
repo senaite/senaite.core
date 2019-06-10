@@ -1,9 +1,22 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of SENAITE.CORE
+# This file is part of SENAITE.CORE.
 #
-# Copyright 2018 by it's authors.
-# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2019 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
 import collections
 
@@ -13,15 +26,11 @@ from bika.lims.permissions import AddMethod
 from bika.lims.utils import check_permission
 from bika.lims.utils import get_image
 from bika.lims.utils import get_link
-from plone.app.content.browser.interfaces import IFolderContentsView
-from plone.app.layout.globals.interfaces import IViewView
-from zope.interface import implements
 
 
 class MethodFolderContentsView(BikaListingView):
-    """Listing view for all Clients
+    """Listing view for all Methods
     """
-    implements(IFolderContentsView, IViewView)
 
     def __init__(self, context, request):
         super(MethodFolderContentsView, self).__init__(context, request)
@@ -36,11 +45,10 @@ class MethodFolderContentsView(BikaListingView):
 
         self.context_actions = {}
         self.title = self.context.translate(_("Methods"))
+        self.description = ""
         self.icon = "{}/{}".format(
             self.portal_url, "++resource++bika.lims.images/method_big.png")
-        self.description = ""
 
-        self.show_select_row = False
         self.show_select_column = True
         self.pagesize = 25
 
@@ -72,13 +80,13 @@ class MethodFolderContentsView(BikaListingView):
             {
                 "id": "default",
                 "title": _("Active"),
-                "contentFilter": {"inactive_state": "active"},
+                "contentFilter": {"is_active": True},
                 "transitions": [{"id": "deactivate"}, ],
                 "columns": self.columns.keys(),
             }, {
                 "id": "inactive",
-                "title": _("Dormant"),
-                "contentFilter": {"inactive_state": "inactive"},
+                "title": _("Inactive"),
+                "contentFilter": {'is_active': False},
                 "transitions": [{"id": "activate"}, ],
                 "columns": self.columns.keys(),
             }, {

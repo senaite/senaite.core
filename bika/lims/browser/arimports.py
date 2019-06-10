@@ -1,9 +1,22 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of SENAITE.CORE
+# This file is part of SENAITE.CORE.
 #
-# Copyright 2018 by it's authors.
-# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2019 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
 import csv
 from DateTime.DateTime import DateTime
@@ -38,7 +51,7 @@ class ARImportsView(BikaListingView):
         self.catalog = "portal_catalog"
         self.contentFilter = {
             'portal_type': 'ARImport',
-            'cancellation_state': 'active',
+            'is_active': True,
             'sort_on': 'sortable_title',
         }
         self.context_actions = {}
@@ -83,20 +96,6 @@ class ARImportsView(BikaListingView):
             {'id': 'imported',
              'title': _('Imported'),
              'contentFilter': {'review_state': 'imported'},
-             'columns': ['Title',
-                         'Creator',
-                         'Filename',
-                         'Client',
-                         'DateCreated',
-                         'DateValidated',
-                         'DateImported',
-                         'state_title']},
-            {'id': 'cancelled',
-             'title': _('Cancelled'),
-             'contentFilter': {
-                 'review_state': ['initial', 'invalid', 'valid', 'imported'],
-                 'cancellation_state': 'cancelled'
-             },
              'columns': ['Title',
                          'Creator',
                          'Filename',
@@ -157,19 +156,6 @@ class ClientARImportsView(ARImportsView):
             {'id': 'imported',
              'title': _('Imported'),
              'contentFilter': {'review_state': 'imported'},
-             'columns': ['Title',
-                         'Creator',
-                         'Filename',
-                         'DateCreated',
-                         'DateValidated',
-                         'DateImported',
-                         'state_title']},
-            {'id': 'cancelled',
-             'title': _('Cancelled'),
-             'contentFilter': {
-                 'review_state': ['initial', 'invalid', 'valid', 'imported'],
-                 'cancellation_state': 'cancelled'
-             },
              'columns': ['Title',
                          'Creator',
                          'Filename',

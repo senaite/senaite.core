@@ -1,9 +1,22 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of SENAITE.CORE
+# This file is part of SENAITE.CORE.
 #
-# Copyright 2018 by it's authors.
-# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2019 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
 import collections
 
@@ -11,9 +24,11 @@ from AccessControl import ClassSecurityInfo
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
+from bika.lims.api.security import check_permission
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import MAX_OPERATORS
 from bika.lims.config import MIN_OPERATORS
+from bika.lims.permissions import FieldEditSpecification
 from bika.lims.utils import get_image
 from bika.lims.utils import get_link
 from bika.lims.utils import to_choices
@@ -32,7 +47,7 @@ class AnalysisSpecificationView(BikaListingView):
         self.catalog = "bika_setup_catalog"
         self.contentFilter = {
             "portal_type": "AnalysisService",
-            "inactive_state": "active",
+            "is_active": True,
             "sort_on": "sortable_title",
             "sort_order": "ascending",
         }
@@ -125,13 +140,7 @@ class AnalysisSpecificationView(BikaListingView):
     def is_edit_allowed(self):
         """Check if edit is allowed
         """
-        current_user = api.get_current_user()
-        roles = current_user.getRoles()
-        if "LabManager" in roles:
-            return True
-        if "Manager" in roles:
-            return True
-        return False
+        return check_permission(FieldEditSpecification, self.context)
 
     @view.memoize
     def show_categories_enabled(self):

@@ -8,20 +8,17 @@
              manager_bypass="False"
              i18n:domain="senaite.core">
 
-  <permission>BIKA: Cancel and reinstate</permission>
-  <permission>BIKA: Edit Field Results</permission>
-  <permission>BIKA: Edit Results</permission>
-  <permission>BIKA: View Results</permission>
+  <permission>senaite.core: Edit Field Results</permission>
+  <permission>senaite.core: Edit Results</permission>
+  <permission>senaite.core: View Results</permission>
 
   <state state_id="rejected" title="Rejected" i18n:attributes="title">
     <exit-transition transition_id="" />
-    <permission-map name="BIKA: Cancel and reinstate" acquired="False">
+    <permission-map name="senaite.core: Edit Field Results" acquired="False">
     </permission-map>
-    <permission-map name="BIKA: Edit Field Results" acquired="False">
+    <permission-map name="senaite.core: Edit Results" acquired="False">
     </permission-map>
-    <permission-map name="BIKA: Edit Results" acquired="False">
-    </permission-map>
-    <permission-map name="BIKA: View Results" acquired="False">
+    <permission-map name="senaite.core: View Results" acquired="False">
       <permission-role>Analyst</permission-role>
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
@@ -65,8 +62,6 @@
       <expression>state_change/getHistory</expression>
     </default>
     <guard>
-      <guard-permission>Request review</guard-permission>
-      <guard-permission>Review portal content</guard-permission>
     </guard>
   </variable>
 

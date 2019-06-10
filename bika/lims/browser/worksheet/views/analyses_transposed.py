@@ -1,14 +1,29 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of SENAITE.CORE
+# This file is part of SENAITE.CORE.
 #
-# Copyright 2018 by it's authors.
-# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2019 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
 from collections import OrderedDict
 
+from bika.lims import _
 from bika.lims.browser.worksheet.views import AnalysesView
 from bika.lims.utils import get_link
+from bika.lims.utils import t
 from plone.memoize import view
 
 
@@ -52,7 +67,7 @@ class AnalysesTransposedView(AnalysesView):
         return item
 
     def folderitem(self, obj, item, index):
-        super(AnalysesTransposedView, self).folderitem(obj, item, index)
+        item = super(AnalysesTransposedView, self).folderitem(obj, item, index)
 
         pos = str(item["Pos"])
         service = item["Service"]
@@ -70,17 +85,17 @@ class AnalysesTransposedView(AnalysesView):
             value="<span class='glyphicon glyphicon-info-sign'></span>",
             css_class="service_info")
 
-        # remember the headers
+        # remember the column headers of the first row
         if "Pos" not in self.headers:
             self.headers["Pos"] = self.make_empty_item(
-                column_key="Positions", item_key="Pos")
+                column_key=t(_("Position")), item_key="Pos")
         if pos not in self.headers["Pos"]:
             header_item = self.make_empty_item()
             # Add the item with the Pos header
             header_item["replace"]["Pos"] = self.get_slot_header(item)
             self.headers["Pos"][pos] = header_item
 
-        # remember the services
+        # remember the services, e.g. Calcium, Magnesium, Total Hardness etc.
         if service not in self.services:
             self.services[service] = self.make_empty_item(
                 column_key=service, item_key="Result")

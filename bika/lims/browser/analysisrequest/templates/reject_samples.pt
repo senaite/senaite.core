@@ -1,0 +1,141 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="senaite.core">
+  <head>
+    <metal:block fill-slot="javascript_head_slot"
+                 tal:define="portal context/@@plone_portal_state/portal;">
+    </metal:block>
+    <metal:block fill-slot="style_slot"
+                 tal:define="portal context/@@plone_portal_state/portal;">
+    </metal:block>
+  </head>
+  <body>
+
+    <!-- Title -->
+    <metal:title fill-slot="content-title">
+      <h1 i18n:translate="">
+        Reject samples
+      </h1>
+    </metal:title>
+
+    <!-- Description -->
+    <metal:description fill-slot="content-description">
+      <p i18n:translate="">
+        <a tal:attributes="href view/back_url"
+           i18n:name="back_link"
+           i18n:translate="">
+          &larr; Back
+        </a>
+      </p>
+    </metal:description>
+
+    <!-- Content -->
+    <metal:core fill-slot="content-core">
+      <div id="reject-samples-view"
+           class="row"
+           tal:define="portal context/@@plone_portal_state/portal;">
+
+        <div class="col-sm-12">
+          <form class="form"
+                id="reject_samples_form"
+                name="reject_samples_form"
+                method="POST">
+
+            <!-- Hidden Fields -->
+            <input type="hidden" name="submitted" value="1"/>
+            <input tal:replace="structure context/@@authenticator/authenticator"/>
+
+            <tal:samples repeat="sample view/get_samples_data">
+
+              <!-- Remember the initial UIDs coming in -->
+              <input type="hidden" name="uids:list" tal:attributes="value sample/uid"/>
+
+              <table class="table table-bordered" style="margin-bottom:1.5em;">
+
+                <!-- Sample line header -->
+                <thead>
+                  <tr>
+                    <th class="info">
+                      <!-- Sample Title -->
+                      <div class="col-sm-12">
+                        <h2>
+                          <span class="text-primary" tal:content="sample/title"/>
+                          <span class="small" tal:content="sample/sample_type"/><br/>
+                          <span class="small" tal:content="sample/client_title"/>
+                        </h2>
+                      </div>
+                    </th>
+                  </tr>
+                </thead>
+
+                <!-- Sample line content -->
+                <tbody>
+                  <tr>
+                    <td tal:define="reasons python: view.get_rejection_reasons()">
+                      <input type="hidden" name="samples.uid:records" tal:attributes="value sample/uid"/>
+
+                      <!-- Pre-defined rejection reasons -->
+                      <div class="col-sm-12">
+                        <div class="form-group field">
+                          <label i18n:translate="">Rejection reasons</label>
+                          <div tal:condition="reasons" tal:repeat="reason reasons">
+                            <input type="checkbox"
+                                   tal:attributes="name string:samples.reasons:records:list;
+                                                   value reason">
+                            <span tal:content="reason"></span>
+                          </div>
+                          <div tal:condition="python: not reasons"
+                               i18n:translate="">There are no pre-defined conditions set</div>
+                        </div>
+                      </div>
+
+                      <!-- Other rejection reasons -->
+                      <div class="col-sm-12">
+                        <div class="form-group field">
+                          <label tal:condition="reasons" i18n:translate="">Other reasons</label>
+                          <label tal:condition="python: not reasons" i18n:translate="">Rejection reasons</label>
+                          <textarea cols="5"
+                            tal:attributes="name string:samples.other_reasons:records"></textarea>
+                        </div>
+                      </div>
+
+                      <!-- Send email notification -->
+                      <div class="col-sm-12">
+                        <div class="form-group field">
+                          <input type="checkbox" name="samples.notify:records"
+                            tal:attributes="checked python:view.is_notification_enabled">
+                          <label i18n:translate="">Email notification</label><br/>
+                          <span i18n:translate="">
+                            Send an email notification to client contact
+                          </span>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </tal:samples>
+
+            <!-- Form Controls -->
+            <div>
+              <!-- Cancel -->
+              <input class="btn btn-default btn-sm"
+                     type="submit"
+                     name="button_cancel"
+                     i18n:attributes="value"
+                     value="Cancel"/>
+              <!-- Continue -->
+              <input class="btn btn-success btn-sm"
+                     type="submit"
+                     name="button_continue"
+                     i18n:attributes="value"
+                     value="Reject"/>
+            </div>
+          </form>
+        </div>
+      </div>
+    </metal:core>
+  </body>
+</html>

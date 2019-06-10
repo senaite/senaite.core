@@ -1,11 +1,68 @@
 Changelog
 =========
 
-1.3.0 (unreleased)
+1.3.1 (unreleased)
 ------------------
 
 **Added**
 
+- #1384 Added missing Html Field to ARReport
+- #1369 Add getter to access the title of the sample condition directly
+- #1347 Consider laboratory workdays only for the late analyses calculation
+- #1324 Audit Log
+
+**Changed**
+
+- #1371 Allow sample publication without sending Email
+- #1355 Make api.getId to also consider id metadata column (not only getId)
+- #1352 Make timeit to not display args by default
+- #1330 Make guards to not rely on review history
+- #1339 Make Forumula a required field on Calculation
+
+**Removed**
+
+- #1359 Remove stale Sample/Partition objects from ZODB
+- #1362 Remove unnecessary code from worksheet listing (bad performance)
+- #1346 Remove Searchable Text Overrides
+- #1328 Remove transition filtering in Worksheet listings
+
+**Fixed**
+
+- #1389 Analysts and Labclerks cannot create worksheets
+- #1386 No auto-rejection of Sample when rejection reasons are set in Add form
+- #1382 Fix double publication of the same sample when using multi-reports
+- #1368 Fix WF state propagation on partition verification
+- #1367 Clients can see interim values of analyses not yet verified
+- #1361 Fix leap sample ID sequence after secondary sample
+- #1344 Handle inline images in Results Interpretation
+- #1336 Fix result capture date inconsistency
+- #1334 Number of analyses are not updated after modifying analyses in a Sample
+- #1319 Make api.get_review_history to always return a list
+- #1317 Fix Analysis Service URL in Info Popup
+- #1316 Barcodes view does not render all labels once Samples are registered
+- #1341 Moved Agilent instruments from core to senaite.instruments
+- #1356 Fixed selection on Analysis Spec on AR
+- #1353 Fixed saving of PublicationSpecification on AR
+- #1376 Fixed ft120.py to properly import winescan ft120 CSV files
+
+
+**Security**
+
+
+1.3.0 (2019-03-30)
+------------------
+
+**Added**
+
+- #1310 Support for radio copy in Sample Add view
+- #1309 Added Samples rejection view
+- #1291 "Remove" transition for empty Worksheets
+- #1259 Added Facscalibur instrument import interface
+- #1244 Added "Body for Sample Invalidation email" field in setup
+- #1231 Add Client ID Column in Batch Listing
+- #1230 Add Client ID Column in Sample Listing
+- #1222 Added User and Security API
+- #1217 Added filtering buttons in Analyses listings (Valid, Invalid, All)
 - #1193 Added viewlets for partition and primary ARs
 - #1180 Analysis Request field-specific permissions managed in `ar_workflow`
 - #1154 Default to "Active" Worksheets in listing
@@ -24,6 +81,16 @@ Changelog
 
 **Changed**
 
+- #873 Generalize the assignment of values into fields for Setup on import
+- #1257 Fix Traceback for MultiSelectionWidgets in View Mode for UIDReferenceFields
+- #1249 Render attachments in report in worksheets too
+- #1243 ID Server Suffix Support for Retested ARs
+- #1240 Support action-specific `workflow_action` requests with named adapters
+- #1215 Do not copy CaptureDate and Result in retest analyses when created
+- #1215 Do not modify the ID of analysis on retraction
+- #1207 Make use of adapters for instrument auto-import
+- #1206 Make use of adapters for instrument import/export interfaces
+- #1203 Remove explicit definition of transitions in AR listing
 - #1192 Integrate Container and Preservation in Partition Magic
 - #1180 Analysis Request default ID Format becomes {sampleType}-{seq:04d}
 - #1180 `visibility` attr behavior (AR fields) in favour of field-specific perms
@@ -64,6 +131,9 @@ Changelog
 
 **Removed**
 
+- #1308 Remove install screen
+- #1224 Replace publication engine with SENAITE IMPRESS
+- #1207 Remove results auto-import interval from Setup: no limitations to cron
 - #1180 Remove AdHoc field from Analysis Request
 - #1180 Remove support for "sampleId" and "sample" keywords in ID Formatting
 - #1180 Remove Sample views and accesses to Sample content types
@@ -86,6 +156,16 @@ Changelog
 
 **Fixed**
 
+- #1109 Linking LabContacts to LDAP-user not possible
+- #1283 Retracting a calculated Analysis leads to an inconsistent state
+- #1281 Adding Analyses to an existing Worksheet fails
+- #1269 Render analysis remarks conditionally
+- #1277 Traceback in Manage Analyses
+- #1245 Not all clients are shown in clients drop menu for Productivity Reports
+- #1239 Fix and Improve Stickers
+- #1214 Disallow entry of analysis results if the sample is not yet received
+- #1213 Fix instrument notification display in Manage Results View
+- #1212 Fix typo in SamplingFieldsVisibility
 - #1191 Some worksheets pre-1.3 with published analyses remain in open/to_be_verified state
 - #1190 Fixed evolution chart for reference analyses
 - #1183 Fix results calculation of dependent calculations
@@ -104,6 +184,9 @@ Changelog
 
 **Security**
 
+- #896 Users without privileges can create reports
+- #1258 Fix widget permissions for Specs/Profiles/Templates Widgets
+- #1237 Global Permission and Role Mappings refactoring
 - #1077 Transitions and states strongly bound to DC Workflow + guards security
 
 
@@ -137,12 +220,14 @@ Changelog
 
 **Removed**
 
+- #1232 Remove `uniquefieldvalidator` for Client Names
 - #1026 Removed auto-digest of results reports on verify transitions
 - #1005 Removed databasesanitize package
 - #992 Removed "Attach" report option for Attachments
 
 **Fixed**
 
+- #1216 Allow manual entry (if granted) of results if instrument is invalid
 - #1051 Analyses Requests w/o submitted results always appear as not late
 - #1047 Fix translate utility function
 - #1049 Secondary Analysis Request changes received date of Sample

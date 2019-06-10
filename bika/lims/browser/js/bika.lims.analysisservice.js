@@ -16,7 +16,6 @@
       this.on_default_container_change = bind(this.on_default_container_change, this);
       this.on_default_preservation_change = bind(this.on_default_preservation_change, this);
       this.on_separate_container_change = bind(this.on_separate_container_change, this);
-      this.on_display_detection_limit_selector_change = bind(this.on_display_detection_limit_selector_change, this);
       this.on_calculation_change = bind(this.on_calculation_change, this);
       this.on_use_default_calculation_change = bind(this.on_use_default_calculation_change, this);
       this.on_default_method_change = bind(this.on_default_method_change, this);
@@ -41,8 +40,6 @@
       this.load_instrument_methods = bind(this.load_instrument_methods, this);
       this.load_available_instruments = bind(this.load_available_instruments, this);
       this.show_alert = bind(this.show_alert, this);
-      this.toggle_display_detection_limit_selector = bind(this.toggle_display_detection_limit_selector, this);
-      this.display_detection_limit_selector = bind(this.display_detection_limit_selector, this);
       this.set_instrument_methods = bind(this.set_instrument_methods, this);
       this.set_method_calculation = bind(this.set_method_calculation, this);
       this.flush_interims = bind(this.flush_interims, this);
@@ -77,8 +74,8 @@
     AnalysisServiceEditView.prototype.load = function() {
       var d1, d2;
       console.debug("AnalysisServiceEditView::load");
-      jarn.i18n.loadCatalog("senaite.core");
-      this._ = window.jarn.i18n.MessageFactory("senaite.core");
+      jarn.i18n.loadCatalog("bika");
+      this._ = window.jarn.i18n.MessageFactory("bika");
       this.all_instruments = {};
       this.invalid_instruments = {};
       d1 = this.load_available_instruments().done(function(instruments) {
@@ -133,9 +130,6 @@
       $("body").on("change", "#archetypes-fieldname-UseDefaultCalculation #UseDefaultCalculation", this.on_use_default_calculation_change);
       $("body").on("change", "#archetypes-fieldname-Calculation #Calculation", this.on_calculation_change);
 
-      /* ANALYSIS TAB */
-      $("body").on("change", "#archetypes-fieldname-DetectionLimitSelector #DetectionLimitSelector", this.on_display_detection_limit_selector_change);
-
       /* CONTAINER AND PRESERVATION TAB */
       $("body").on("change", "#archetypes-fieldname-Separate #Separate", this.on_separate_container_change);
       $("body").on("change", "#archetypes-fieldname-Preservation #Preservation", this.on_default_preservation_change);
@@ -166,16 +160,9 @@
         this.set_instruments(null);
       }
       if (this.use_default_calculation_of_method()) {
-        console.debug("--> Use default calculation of method");
+        return console.debug("--> Use default calculation of method");
       } else {
-        console.debug("--> Use default calculation of instrument");
-      }
-      if (this.display_detection_limit_selector()) {
-        console.debug("--> Allow detection limit selector");
-        return this.toggle_display_detection_limit_selector(true);
-      } else {
-        console.debug("--> Disallow detection limit selector");
-        return this.toggle_display_detection_limit_selector(false);
+        return console.debug("--> Use default calculation of instrument");
       }
     };
 
@@ -724,41 +711,6 @@
       });
     };
 
-    AnalysisServiceEditView.prototype.display_detection_limit_selector = function() {
-
-      /**
-       * Get the value of the checkbox "Display a Detection Limit selector"
-       *
-       * @returns {boolean} True if detection limit selector should be displayed
-       */
-      var field;
-      field = $("#archetypes-fieldname-DetectionLimitSelector #DetectionLimitSelector");
-      return field.is(":checked");
-    };
-
-    AnalysisServiceEditView.prototype.toggle_display_detection_limit_selector = function(toggle, silent) {
-      var field, field2;
-      if (silent == null) {
-        silent = true;
-      }
-
-      /**
-       * Toggle the "Display detection limit selector" checkbox
-       *
-       * If it is checked, display the "Allow manual detection limit input" field below
-       * If it is unchecked, hide and uncheck the "Allow manual detection limit input" field below
-       */
-      field = $("#archetypes-fieldname-DetectionLimitSelector #DetectionLimitSelector");
-      field2 = $("#archetypes-fieldname-AllowManualDetectionLimit #AllowManualDetectionLimit");
-      if (toggle === true) {
-        field2.parent().show();
-      } else {
-        field2.parent().hide();
-        field2.prop("checked", false);
-      }
-      return this.toggle_checkbox(field, toggle, silent);
-    };
-
     AnalysisServiceEditView.prototype.show_alert = function(options) {
 
       /*
@@ -896,7 +848,7 @@
           catalog_name: "bika_setup_catalog",
           page_size: 0,
           UID: calculation_uid,
-          inactive_state: "active",
+          is_active: true,
           sort_on: "sortable_title"
         }
       };
@@ -1271,23 +1223,6 @@
        */
       console.debug("°°° AnalysisServiceEditView::on_calculation_change °°°");
       return this.select_calculation(this.get_calculation());
-    };
-
-    AnalysisServiceEditView.prototype.on_display_detection_limit_selector_change = function(event) {
-
-      /**
-       * Eventhandler when the "Display a Detection Limit selector" checkbox changed
-       *
-       * This checkbox is located on the "Analysis" Tab
-       */
-      console.debug("°°° AnalysisServiceEditView::on_display_detection_limit_selector_change °°°");
-      if (this.display_detection_limit_selector()) {
-        console.debug("Allow detection limit selector");
-        return this.toggle_display_detection_limit_selector(true);
-      } else {
-        console.debug("Disallow detection limit selector");
-        return this.toggle_display_detection_limit_selector(false);
-      }
     };
 
     AnalysisServiceEditView.prototype.on_separate_container_change = function(event) {

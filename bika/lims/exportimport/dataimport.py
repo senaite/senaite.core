@@ -1,27 +1,39 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of SENAITE.CORE
+# This file is part of SENAITE.CORE.
 #
-# Copyright 2018 by it's authors.
-# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2019 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
+import json
+import os.path
+import plone
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
 from bika.lims.browser import BrowserView
-from bika.lims.content.instrument import getDataInterfaces
 from bika.lims.exportimport import instruments
+from bika.lims.exportimport.instruments import get_instrument_import_interfaces
 from bika.lims.exportimport.load_setup_data import LoadSetupData
 from bika.lims.interfaces import ISetupDataSetList
 from plone.app.layout.globals.interfaces import IViewView
 from Products.Archetypes.public import DisplayList
 from Products.CMFCore.utils import getToolByName
 from zope.interface import implements
-from pkg_resources import *
+from pkg_resources import resource_filename
+from pkg_resources import resource_listdir
 from zope.component import getAdapters
-import json
-
-import plone
 
 
 class SetupDataSetList:
@@ -34,7 +46,7 @@ class SetupDataSetList:
     def __call__(self, projectname="bika.lims"):
         datasets = []
         for f in resource_listdir(projectname, 'setupdata'):
-            fn = f+".xlsx"
+            fn = f + ".xlsx"
             try:
                 if fn in resource_listdir(projectname, 'setupdata/%s' % f):
                     datasets.append({"projectname": projectname, "dataset": f})
@@ -44,23 +56,23 @@ class SetupDataSetList:
 
 
 class ImportView(BrowserView):
-
-    """
+    """Instrument/Setup Data Import
     """
     implements(IViewView)
+
     template = ViewPageTemplateFile("import.pt")
 
     def __init__(self, context, request):
         super(ImportView, self).__init__(context, request)
 
         self.icon = ""
-        self.title = self.context.translate(_("Import"))
-        self.description = self.context.translate(_("Select a data interface"))
+        self.title = ""
+        self.description = ""
 
-        request.set('disable_border', 1)
+        request.set("disable_border", 1)
 
     def getDataInterfaces(self):
-        return getDataInterfaces(self.context)
+        return get_instrument_import_interfaces()
 
     def getSetupDatas(self):
         datasets = []
@@ -95,26 +107,35 @@ class ImportView(BrowserView):
 
     def getInstruments(self):
         bsc = getToolByName(self, 'bika_setup_catalog')
-        items = [('', '...Choose an Instrument...')] + [(o.UID, o.Title) for o in
-                               bsc(portal_type = 'Instrument',
-                                   inactive_state = 'active')]
+        brains = bsc(portal_type='Instrument', is_active=True)
+        items = [('', '...Choose an Instrument...')]
+        for item in brains:
+            items.append((item.UID, item.Title))
         items.sort(lambda x, y: cmp(x[1].lower(), y[1].lower()))
         return DisplayList(list(items))
+
 
 class ajaxGetImportTemplate(BrowserView):
 
     def __call__(self):
         plone.protect.CheckAuthenticator(self.request)
-        exim = self.request.get('exim').replace(".", "/")
+        exim = self.request.get('exim')
+        core_instrument = self.is_exim_in_core(exim)
+        exim = exim.replace(".", "/")
         # If a specific template for this instrument doesn't exist yet,
         # use the default template for instrument results file import located
         # at bika/lims/exportimport/instruments/instrument.pt
-        import os.path
-        instrpath = os.path.join("exportimport", "instruments")
-        templates_dir = resource_filename("bika.lims", instrpath)
-        fname = "%s/%s_import.pt" % (templates_dir, exim)
+        # if exim.startswith('senaite/instruments'):
+        if core_instrument:
+            instrpath = os.path.join("exportimport", "instruments")
+            templates_dir = resource_filename("bika.lims", instrpath)
+            fname = "%s/%s_import.pt" % (templates_dir, exim)
+        else:
+            instrpath = '/'.join(exim.split('/')[2:-2])
+            templates_dir = resource_filename("senaite.instruments", instrpath)
+            fname = "{}/{}_import.pt".format(templates_dir, exim.split('/')[-1])
         if os.path.isfile(fname):
-            return ViewPageTemplateFile("instruments/%s_import.pt" % exim)(self)
+            return ViewPageTemplateFile(fname)(self)
         else:
             return ViewPageTemplateFile("instruments/instrument.pt")(self)
 
@@ -124,11 +145,20 @@ class ajaxGetImportTemplate(BrowserView):
             text to be displayed.
         '''
         bsc = getToolByName(self, 'bika_setup_catalog')
-        items = [('', '')] + [(o.getObject().Keyword, o.Title) for o in
-                                bsc(portal_type = 'AnalysisService',
-                                   inactive_state = 'active')]
+        brains = bsc(portal_type='AnalysisService')
+        items = []
+        for item in brains:
+            items.append((item.getKeyword, item.Title))
         items.sort(lambda x, y: cmp(x[1].lower(), y[1].lower()))
         return DisplayList(list(items))
+
+    def is_exim_in_core(self, exim):
+        portal_tool = plone.api.portal.get_tool('portal_setup')
+        profiles = portal_tool.listProfileInfo()
+        for profile in profiles:
+            if exim.startswith(profile['product']):
+                return False
+        return True
 
 
 class ajaxGetImportInterfaces(BrowserView):
@@ -145,11 +175,11 @@ class ajaxGetImportInterfaces(BrowserView):
         except Forbidden:
             return json.dumps(interfaces)
 
-        from bika.lims.exportimport import instruments
         bsc = getToolByName(self, 'bika_setup_catalog')
-        instrument=bsc(portal_type='Instrument',
-                       UID=self.request.get('instrument_uid', ''),
-                       inactive_state='active',)
+        instrument = bsc(
+            portal_type='Instrument',
+            UID=self.request.get('instrument_uid', ''),
+            is_active=True,)
         if instrument and len(instrument) == 1:
             instrument = instrument[0].getObject()
             for i in instrument.getImportDataInterface():

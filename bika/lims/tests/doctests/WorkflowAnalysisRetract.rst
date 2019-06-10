@@ -130,13 +130,19 @@ The new analysis is a copy of retracted one:
     >>> retest.getKeyword() == analysis.getKeyword()
     True
 
-And keeps the same results as the retracted one:
+But it does not keep the result:
 
-    >>> retest.getResult() == analysis.getResult()
+    >>> not retest.getResult()
+    True
+
+And Result capture date is None:
+
+    >>> not retest.getResultCaptureDate()
     True
 
 If I submit the result for the new analysis:
 
+    >>> retest.setResult(analysis.getResult())
     >>> try_transition(retest, "submit", "to_be_verified")
     True
 
@@ -224,8 +230,9 @@ Retraction of results for analyses with dependents
 
 When retracting an analysis other analyses depends on (dependents), then the
 retraction of a dependency causes the auto-retraction of its dependents.
+Dependencies are retracted too.
 
-Prepare a calculation that depends on `Cu`and assign it to `Fe` analysis:
+Prepare a calculation that depends on `Cu` and assign it to `Fe` analysis:
 
     >>> calc_fe = api.create(bikasetup.bika_calculations, 'Calculation', title='Calc for Fe')
     >>> calc_fe.setFormula("[Cu]*10")
@@ -275,22 +282,25 @@ If I retract `Fe`, `Au` analysis is retracted automatically too:
     >>> api.get_workflow_status_of(au_analysis)
     'retracted'
 
-And two new analyses will be generated in accordance:
+As well as `Cu` analysis (a dependency of `Fe`):
+
+    >>> api.get_workflow_status_of(cu_analysis)
+    'retracted'
+
+Hence, three new analyses are generated in accordance:
 
     >>> analyses = ar.getAnalyses(full_objects=True)
     >>> len(analyses)
-    5
+    6
     >>> au_analyses = filter(lambda an: an.getKeyword()=="Au", analyses)
     >>> sorted(map(api.get_workflow_status_of, au_analyses))
     ['retracted', 'unassigned']
     >>> fe_analyses = filter(lambda an: an.getKeyword()=="Fe", analyses)
     >>> sorted(map(api.get_workflow_status_of, fe_analyses))
     ['retracted', 'unassigned']
-
-While `Cu` analysis remains in `to_be_verified` state:
-
-    >>> api.get_workflow_status_of(cu_analysis)
-    'to_be_verified'
+    >>> cu_analyses = filter(lambda an: an.getKeyword()=="Cu", analyses)
+    >>> sorted(map(api.get_workflow_status_of, cu_analyses))
+    ['retracted', 'unassigned']
 
 And the current state of the Analysis Request is `sample_received` now:
 

@@ -1,26 +1,62 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of SENAITE.CORE
+# This file is part of SENAITE.CORE.
 #
-# Copyright 2018 by it's authors.
-# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2019 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
+from bika.lims.interfaces import IWorksheet, IVerified, ISubmitted
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims import workflow as wf
+
+
+def is_worksheet_context():
+    """Returns whether the current context from the request is a Worksheet
+    """
+    request = api.get_request()
+    parents = request.get("PARENTS", [])
+    portal_types_names = map(lambda p: getattr(p, "portal_type", None), parents)
+    if "Worksheet" in portal_types_names:
+        return True
+
+    # Check if the worksheet is declared in request explicitly
+    ws_uid = request.get("ws_uid", "")
+    obj = api.get_object_by_uid(ws_uid, None)
+    if IWorksheet.providedBy(obj):
+        return True
+
+    return False
+
+
+def guard_initialize(analysis):
+    """Return whether the transition "initialize" can be performed or not
+    """
+    request = analysis.getRequest()
+    if request.getDateReceived():
+        return True
+    return False
 
 
 def guard_assign(analysis):
     """Return whether the transition "assign" can be performed or not
     """
-    # TODO Workflow - Analysis. Assign guard to return True only in WS.Add?
-    #      We need "unassigned" analyses to appear in Worksheet Add analyses.
-    #      Hence, it returns True if the analysis has not been assigned to any
-    #      worksheet yet. The problem is this can end up (if the 'assign'
-    #      transition is displayed in listings other than WS Add Analyses)
-    #      with an analysis transitioned to 'assigned' state, but without
-    #      a worksheet assigned!. This transition should only be triggered by
-    #      content.worksheet.addAnalysis (see that func for more info)
+    # Only if the request was done from worksheet context.
+    if not is_worksheet_context():
+        return False
 
     # Cannot assign if the Sample has not been received
     if not analysis.isSampleReceived():
@@ -37,6 +73,10 @@ def guard_assign(analysis):
 def guard_unassign(analysis):
     """Return whether the transition "unassign" can be performed or not
     """
+    # Only if the request was done from worksheet context.
+    if not is_worksheet_context():
+        return False
+
     # Cannot unassign if the analysis is not assigned to any worksheet
     if not analysis.getWorksheet():
         return False
@@ -99,8 +139,10 @@ def guard_submit(analysis):
                 return False
 
     # Cannot submit unless all dependencies are submitted or can be submitted
-    dependencies = analysis.getDependencies()
-    return is_transition_allowed_or_performed(dependencies, "submit")
+    for dependency in analysis.getDependencies():
+        if not is_submitted_or_submittable(dependency):
+            return False
+    return True
 
 
 def guard_multi_verify(analysis):
@@ -130,9 +172,10 @@ def guard_multi_verify(analysis):
             return False
 
     # Cannot verify unless all dependencies are verified or can be verified
-    dependencies = analysis.getDependencies()
-    transitions = ["verify", "multi_verify"]
-    return is_transition_allowed_or_performed(dependencies, transitions)
+    for dependency in analysis.getDependencies():
+        if not is_verified_or_verifiable(dependency):
+            return False
+    return True
 
 
 def guard_verify(analysis):
@@ -150,8 +193,10 @@ def guard_verify(analysis):
 
     # Cannot verify unless dependencies have been verified or can be verified
     if analysis.getNumberOfRequiredVerifications() <= 1:
-        dependencies = analysis.getDependencies()
-        return is_transition_allowed_or_performed(dependencies, "verify")
+        for dependency in analysis.getDependencies():
+            if not is_verified_or_verifiable(dependency):
+                return False
+        return True
 
     # This analysis has multi-verification enabled
     # Cannot verify if the user verified and multi verification is not allowed
@@ -166,9 +211,10 @@ def guard_verify(analysis):
             return False
 
     # Cannot verify unless all dependencies are verified or can be verified
-    dependencies = analysis.getDependencies()
-    transitions = ["verify", "multi_verify"]
-    return is_transition_allowed_or_performed(dependencies, transitions)
+    for dependency in analysis.getDependencies():
+        if not is_verified_or_verifiable(dependency):
+            return False
+    return True
 
 
 def guard_retract(analysis):
@@ -178,8 +224,15 @@ def guard_retract(analysis):
     if not is_transition_allowed(analysis.getDependents(), "retract"):
         return False
 
+    dependencies = analysis.getDependencies()
+    if not dependencies:
+        return True
+
     # Cannot retract if all dependencies have been verified
-    return not was_transition_performed(analysis.getDependencies(), "verify")
+    if all(map(lambda an: IVerified.providedBy(an), dependencies)):
+        return False
+
+    return True
 
 
 def guard_reject(analysis):
@@ -263,33 +316,23 @@ def is_transition_allowed(analyses, transition_id):
     return True
 
 
-def was_transition_performed(analyses, transition_id):
-    """Returns whether all analyses were transitioned or not
+def is_submitted_or_submittable(analysis):
+    """Returns whether the analysis is submittable or has already been submitted
     """
-    if not analyses:
-        return False
-    if not isinstance(analyses, list):
-        return was_transition_performed([analyses], transition_id)
-    for analysis in analyses:
-        if not wf.wasTransitionPerformed(analysis, transition_id):
-            return False
-    return True
-
-
-def is_transition_allowed_or_performed(analyses, transition_ids):
-    """Return whether all analyses can be transitioned or all them were
-    transitioned.
-    """
-    if not analyses:
+    if ISubmitted.providedBy(analysis):
         return True
-    if not isinstance(analyses, list):
-        return is_transition_allowed_or_performed([analyses], transition_ids)
-    if not isinstance(transition_ids, list):
-        return is_transition_allowed_or_performed(analyses, [transition_ids])
+    if wf.isTransitionAllowed(analysis, "submit"):
+        return True
+    return False
 
-    for transition_id in transition_ids:
-        for analysis in analyses:
-            if not wf.isTransitionAllowed(analysis, transition_id):
-                if not wf.wasTransitionPerformed(analysis, transition_id):
-                    return False
-    return True
+
+def is_verified_or_verifiable(analysis):
+    """Returns whether the analysis is verifiable or has already been verified
+    """
+    if IVerified.providedBy(analysis):
+        return True
+    if wf.isTransitionAllowed(analysis, "verify"):
+        return True
+    if wf.isTransitionAllowed(analysis, "multi_verify"):
+        return True
+    return False

@@ -1,9 +1,22 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of SENAITE.CORE
+# This file is part of SENAITE.CORE.
 #
-# Copyright 2018 by it's authors.
-# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2019 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from plone.app.layout.viewlets import ViewletBase
@@ -22,7 +35,7 @@ class RetestAnalysisRequestViewlet(ViewletBase):
 
 
 class PrimaryAnalysisRequestViewlet(ViewletBase):
-    """ Current Analysis Request is a primary. Diplay links to partitions
+    """ Current Analysis Request is a primary. Display links to partitions
     """
     template = ViewPageTemplateFile("templates/primary_ar_viewlet.pt")
 
@@ -31,3 +44,15 @@ class PartitionAnalysisRequestViewlet(ViewletBase):
     """ Current Analysis Request is a partition. Display the link to primary
     """
     template = ViewPageTemplateFile("templates/partition_ar_viewlet.pt")
+
+
+class SecondaryAnalysisRequestViewlet(ViewletBase):
+    """ Current Analysis Request is a secondary. Display the link to primary
+    """
+    template = ViewPageTemplateFile("templates/secondary_ar_viewlet.pt")
+
+
+class RejectedAnalysisRequestViewlet(ViewletBase):
+    """Current ANalysis Request was rejected. Display the reasons
+    """
+    template = ViewPageTemplateFile("templates/rejected_ar_viewlet.pt")

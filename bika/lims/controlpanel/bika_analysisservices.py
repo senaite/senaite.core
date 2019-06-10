@@ -1,17 +1,39 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of SENAITE.CORE
+# This file is part of SENAITE.CORE.
 #
-# Copyright 2018 by it's authors.
-# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2019 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
 import collections
+from transaction import savepoint
 
+from Products.ATContentTypes.content.schemata import finalizeATCTSchema
+from Products.Archetypes import atapi
+from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import _createObjectByType
+from Products.CMFPlone.utils import safe_unicode
+from Products.Five.browser import BrowserView
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims.idserver import renameAfterCreation
 from bika.lims.interfaces import IAnalysisServices
+from bika.lims.permissions import AddAnalysisService
 from bika.lims.utils import get_image
 from bika.lims.utils import get_link
 from bika.lims.utils import tmpID
@@ -20,14 +42,6 @@ from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder
 from plone.app.folder.folder import ATFolderSchema
 from plone.app.layout.globals.interfaces import IViewView
-from Products.Archetypes import atapi
-from Products.ATContentTypes.content.schemata import finalizeATCTSchema
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import _createObjectByType
-from Products.CMFPlone.utils import safe_unicode
-from Products.Five.browser import BrowserView
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from transaction import savepoint
 from zope.i18n.locales import locales
 from zope.interface.declarations import implements
 
@@ -164,7 +178,7 @@ class AnalysisServicesView(BikaListingView):
         self.context_actions = {
             _("Add"): {
                 "url": "createObject?type_name=AnalysisService",
-                "permission": "Add portal content",
+                "permission": AddAnalysisService,
                 "icon": "++resource++bika.lims.images/add.png"}
         }
 
@@ -248,13 +262,13 @@ class AnalysisServicesView(BikaListingView):
             {
                 "id": "default",
                 "title": _("Active"),
-                "contentFilter": {"inactive_state": "active"},
+                "contentFilter": {"review_state": "active"},
                 "columns": self.columns.keys(),
                 "custom_transitions": [copy_transition]
             }, {
                 "id": "inactive",
-                "title": _("Dormant"),
-                "contentFilter": {"inactive_state": "inactive"},
+                "title": _("Inactive"),
+                "contentFilter": {"review_state": "inactive"},
                 "columns": self.columns.keys(),
                 "custom_transitions": [copy_transition]
             }, {

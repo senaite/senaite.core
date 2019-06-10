@@ -16,16 +16,6 @@
       </field>
     </record>
 
-    <record name="bika.lims.analysisrequest.default_arreport_template">
-        <field type="plone.registry.field.Choice">
-            <default>default.pt</default>
-            <description i18n:translate="">Select the template which will be used, by default, when publishing Samples.</description>
-            <required>True</required>
-            <title i18n:translate="">Default SampleReport Template</title>
-            <vocabulary key="vocabulary">bika.lims.vocabularies.ARReportTemplates</vocabulary>
-        </field>
-    </record>
-
     <!-- Dashboard panels visibility -->
     <record name="bika.lims.dashboard_panels_visibility">
         <field type="plone.registry.field.Dict">
@@ -46,18 +36,4 @@
         </value>
     </record>
 
-  <!-- Hidden Attributes-->
-  <record name="bika.lims.hiddenattributes">
-     <field type="plone.registry.field.Tuple">
-       <title>Site Hidden Attributes</title>
-       <description>One item per class</description>
-       <value_type type="plone.registry.field.List">
-         <title>Field list</title>
-         <description>First row is Class name followed by one Field name per row</description>
-         <value_type type="plone.registry.field.TextLine">
-           <title>Field Name</title>
-         </value_type>
-       </value_type>
-     </field>
-  </record>
 </registry>

@@ -118,12 +118,29 @@
       name="PreservationFieldsVisibility"
     />
 
+    <!-- DateSampled cannot be edited in Secondary Analysis Requests -->
+    <adapter
+      factory=".widgetvisibility.SecondaryDateSampledFieldVisibility"
+      provides="bika.lims.interfaces.IATWidgetVisibility"
+      for="bika.lims.interfaces.IAnalysisRequestSecondary"
+      name="SecondaryDateSampledFieldVisibility"
+    />
+
     <!-- Hide/Display the InternalUse field to Client contact users -->
     <adapter
       factory=".widgetvisibility.InternalUseFieldVisibility"
       provides="bika.lims.interfaces.IATWidgetVisibility"
       for="bika.lims.interfaces.IAnalysisRequest"
       name="InternalUseFieldVisibility"
+    />
+
+    <!-- Hide/Display PrimarySample field. Always hidden for non-secondary ARs,
+    otherwise readonly mode -->
+    <adapter
+      factory=".widgetvisibility.PrimaryAnalysisRequestFieldVisibility"
+      provides="bika.lims.interfaces.IATWidgetVisibility"
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="PrimaryAnalysisRequestFieldVisibility"
     />
     <!---
     END OF FIELDS/WIDGETS VISIBILITY
@@ -141,14 +158,6 @@
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
-
-    <monkey:patch
-      description="Allow Identifiers to be included in SearchableText"
-      class="Products.Archetypes.BaseObject.BaseObject"
-      original="SearchableText"
-      replacement=".identifiers.SearchableText"
-      preserveOriginal="True"
-     />
 
     <!-- Stickers -->
     <!-- IGetStickerTemplates adapters -->

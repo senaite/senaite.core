@@ -1,9 +1,22 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of SENAITE.CORE
+# This file is part of SENAITE.CORE.
 #
-# Copyright 2018 by it's authors.
-# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2019 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
 """ReferenceSample represents a reference sample used for quality control testing
 """
@@ -28,7 +41,8 @@ from bika.lims.browser.widgets import RemarksWidget
 from bika.lims.browser.widgets import ReferenceResultsWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.interfaces import IReferenceSample, IAnalysisService
+from bika.lims.interfaces import IReferenceSample, IAnalysisService, \
+    IDeactivable
 from bika.lims.utils import sortable_title, tmpID
 from bika.lims.utils import to_unicode as _u
 from bika.lims.utils import to_utf8
@@ -160,7 +174,7 @@ schema = BikaSchema.copy() + Schema((
 schema['title'].schemata = 'Description'
 
 class ReferenceSample(BaseFolder):
-    implements(IReferenceSample)
+    implements(IReferenceSample, IDeactivable)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
@@ -193,7 +207,7 @@ class ReferenceSample(BaseFolder):
         bsc = getToolByName(self, 'bika_setup_catalog')
         defs = [o.getObject() for o in
                 bsc(portal_type = 'ReferenceDefinition',
-                    inactive_state = 'active')]
+                    is_active = True)]
         items = [('','')] + [(o.UID(), make_title(o)) for o in defs]
         o = self.getReferenceDefinition()
         it = make_title(o)
@@ -206,7 +220,7 @@ class ReferenceSample(BaseFolder):
         bsc = getToolByName(self, 'bika_setup_catalog')
         items = [('','')] + [(o.UID, o.Title) for o in
                                bsc(portal_type='Manufacturer',
-                                   inactive_state = 'active')]
+                                   is_active = True)]
         o = self.getReferenceDefinition()
         if o and o.UID() not in [i[0] for i in items]:
             items.append((o.UID(), o.Title()))

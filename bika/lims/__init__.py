@@ -1,27 +1,42 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of SENAITE.CORE
+# This file is part of SENAITE.CORE.
 #
-# Copyright 2018 by it's authors.
-# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2019 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
 import logging
 import warnings
 
 import App
 from AccessControl import allow_module
-from bika.lims.permissions import ADD_CONTENT_PERMISSION
-from bika.lims.permissions import ADD_CONTENT_PERMISSIONS
+from bika.lims import permissions
 from Products.Archetypes.atapi import listTypes
 from Products.Archetypes.atapi import process_types
 from Products.CMFCore.utils import ContentInit
 from zope.i18nmessageid import MessageFactory
+from Products.CMFCore.permissions import AddPortalContent
 
 PROJECTNAME = "bika.lims"
 
-# import this to create messages in the bika domain.
-bikaMessageFactory = MessageFactory("senaite.core")
-_ = MessageFactory("senaite.core")
+# senaite message factory
+senaiteMessageFactory = MessageFactory("senaite.core")
+# BBB
+bikaMessageFactory = senaiteMessageFactory
+_ = senaiteMessageFactory
 
 # import this to log messages
 logger = logging.getLogger("senaite.core")
@@ -40,7 +55,6 @@ allow_module("plone.registry.interfaces")
 debug_mode = App.config.getConfiguration().debug_mode
 if debug_mode:
     allow_module("pdb")
-
 
 # Implicit module imports used by others
 # XXX Refactor these dependencies to explicit imports!
@@ -130,6 +144,7 @@ def initialize(context):
     from content.worksheetfolder import WorksheetFolder  # noqa
     from content.worksheettemplate import WorksheetTemplate  # noqa
 
+    from controlpanel.auditlog import AuditLog  # noqa
     from controlpanel.bika_analysiscategories import AnalysisCategories  # noqa
     from controlpanel.bika_analysisprofiles import AnalysisProfiles  # noqa
     from controlpanel.bika_analysisservices import AnalysisServices  # noqa
@@ -167,12 +182,12 @@ def initialize(context):
         PROJECTNAME)
 
     # Register each type with it's own Add permission
-    # use ADD_CONTENT_PERMISSION as default
+    # use "Add portal content" as default
     allTypes = zip(content_types, constructors)
     for atype, constructor in allTypes:
         kind = "%s: Add %s" % (PROJECTNAME, atype.portal_type)
-        perm = ADD_CONTENT_PERMISSIONS.get(atype.portal_type,
-                                           ADD_CONTENT_PERMISSION)
+        perm_name = "Add{}".format(atype.portal_type)
+        perm = getattr(permissions, perm_name, AddPortalContent)
         ContentInit(kind,
                     content_types=(atype,),
                     permission=perm,

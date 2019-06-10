@@ -34,7 +34,7 @@
             url_expr="string:${object_url}/manage_results"
             i18n:attributes="title"
             visible="False">
-     <permission value="BIKA: View Results"/>
+     <permission value="senaite.core: View Results"/>
     </action>
 
     <action title="Manage Results"
@@ -46,7 +46,7 @@
             url_expr="string:${object_url}/manage_results"
             i18n:attributes="title"
             visible="True">
-     <permission value="BIKA: View Results"/>
+     <permission value="senaite.core: View Results"/>
     </action>
 
  <action title="Add Analyses"
@@ -58,7 +58,7 @@
          url_expr="string:${object_url}/add_analyses"
          i18n:attributes="title"
          visible="True">
-  <permission value="BIKA: Edit Worksheet"/>
+  <permission value="senaite.core: Edit Worksheet"/>
  </action>
 
  <action title="Add Blank Reference"
@@ -70,7 +70,7 @@
          url_expr="string:${object_url}/add_blank"
          i18n:attributes="title"
          visible="True">
-  <permission value="BIKA: Edit Worksheet"/>
+  <permission value="senaite.core: Edit Worksheet"/>
  </action>
 
  <action title="Add Control Reference"
@@ -82,7 +82,7 @@
          url_expr="string:${object_url}/add_control"
          i18n:attributes="title"
          visible="True">
-  <permission value="BIKA: Edit Worksheet"/>
+  <permission value="senaite.core: Edit Worksheet"/>
  </action>
 
  <action title="Add Duplicate"
@@ -94,7 +94,7 @@
          url_expr="string:${object_url}/add_duplicate"
          i18n:attributes="title"
          visible="True">
-  <permission value="BIKA: Edit Worksheet"/>
+  <permission value="senaite.core: Edit Worksheet"/>
  </action>
 
  <action title="Export"
@@ -106,19 +106,7 @@
          url_expr="string:${object_url}/export"
          i18n:attributes="title"
          visible="True">
-  <permission value="BIKA: Edit Worksheet"/>
- </action>
-
- <action title="Log"
-         action_id="log"
-         category="object"
-         condition_expr=""
-         icon_expr=""
-         link_target=""
-         url_expr="string:${object_url}/log"
-         i18n:attributes="title"
-         visible="True">
-     <permission value="BIKA: View Log Tab"/>
+  <permission value="senaite.core: Edit Worksheet"/>
  </action>
 
 <action title="Sticker"

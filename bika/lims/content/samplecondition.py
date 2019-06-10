@@ -1,9 +1,22 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of SENAITE.CORE
+# This file is part of SENAITE.CORE.
 #
-# Copyright 2018 by it's authors.
-# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2019 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Products.Archetypes.public import BaseFolder
@@ -13,6 +26,8 @@ from Products.Archetypes.public import registerType
 from Products.CMFCore.utils import getToolByName
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.interfaces import IDeactivable
+from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
 
@@ -23,6 +38,7 @@ schema['description'].widget.visible = True
 
 
 class SampleCondition(BaseFolder):
+    implements(IDeactivable)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
@@ -41,7 +57,7 @@ def SampleConditions(self, instance=None, allow_blank=False):
     bsc = getToolByName(instance, 'bika_setup_catalog')
     items = []
     for sm in bsc(portal_type='SampleCondition',
-                  inactive_state='active',
+                  is_active=True,
                   sort_on='sortable_title'):
         items.append((sm.UID, sm.Title))
     items = allow_blank and [['', '']] + list(items) or list(items)

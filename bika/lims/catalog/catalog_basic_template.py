@@ -1,9 +1,22 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of SENAITE.CORE
+# This file is part of SENAITE.CORE.
 #
-# Copyright 2018 by it's authors.
-# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2019 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
 BASE_CATALOG_INDEXES = {
     # Returns the catalog id
@@ -26,11 +39,7 @@ BASE_CATALOG_INDEXES = {
     # Necessary to avoid reindexing whole catalog when we need to
     # reindex only one object. ExtendedPathIndex also could be used.
     'path': 'PathIndex',
-    # This index allows to use the Plone's searchbox. Define a mthod with this
-    # name in the contect type to rears for. The method will construct a text
-    # blob which contains all full-text searchable text for this content item.
-    # https://docs.plone.org/develop/plone/searching_and_indexing/indexing.html#full-text-searching
-    'SearchableText': 'ZCTextIndex',
+    'is_active': 'BooleanIndex',
 }
 BASE_CATALOG_COLUMNS = [
     'UID',

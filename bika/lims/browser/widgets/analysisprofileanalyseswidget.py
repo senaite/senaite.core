@@ -1,9 +1,22 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of SENAITE.CORE
+# This file is part of SENAITE.CORE.
 #
-# Copyright 2018 by it's authors.
-# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2019 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
 import collections
 import itertools
@@ -11,7 +24,9 @@ import itertools
 from AccessControl import ClassSecurityInfo
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
+from bika.lims.api.security import check_permission
 from bika.lims.browser.bika_listing import BikaListingView
+from bika.lims.permissions import FieldEditProfiles
 from bika.lims.utils import get_image
 from bika.lims.utils import get_link
 from plone.memoize import view
@@ -32,7 +47,7 @@ class AnalysisProfileAnalysesView(BikaListingView):
             "portal_type": "AnalysisService",
             "sort_on": "sortable_title",
             "sort_order": "ascending",
-            "inactive_state": "active",
+            "is_active": True,
         }
         self.context_actions = {}
 
@@ -83,7 +98,7 @@ class AnalysisProfileAnalysesView(BikaListingView):
             {
                 "id": "default",
                 "title": _("All"),
-                "contentFilter": {"inactive_state": "active"},
+                "contentFilter": {"is_active": True},
                 "transitions": [{"id": "disallow-all-possible-transitions"}],
                 "columns": columns,
             },
@@ -161,13 +176,7 @@ class AnalysisProfileAnalysesView(BikaListingView):
     def is_edit_allowed(self):
         """Check if edit is allowed
         """
-        current_user = api.get_current_user()
-        roles = current_user.getRoles()
-        if "LabManager" in roles:
-            return True
-        if "Manager" in roles:
-            return True
-        return False
+        return check_permission(FieldEditProfiles, self.context)
 
     @view.memoize
     def get_editable_columns(self):

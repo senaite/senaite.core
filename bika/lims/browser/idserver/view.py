@@ -1,25 +1,35 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of SENAITE.CORE
+# This file is part of SENAITE.CORE.
 #
-# Copyright 2018 by it's authors.
-# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2019 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
-from Products.Five import BrowserView
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-
-from zope.interface import Interface
-from zope.interface import implements
-from zope.component import getUtility
-
-from plone import protect
+import re
 
 from bika.lims import api
-from bika.lims import logger
-from bika.lims.idserver import get_config
-from bika.lims.idserver import get_current_year
 from bika.lims import bikaMessageFactory as _
+from bika.lims.idserver import get_config
 from bika.lims.numbergenerator import INumberGenerator
+from plone import protect
+from Products.Five import BrowserView
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from zope.component import getUtility
+from zope.interface import Interface
+from zope.interface import implements
 
 
 class IIDserverView(Interface):
@@ -76,19 +86,12 @@ class IDServerView(BrowserView):
 
         return self.template()
 
-    def get_next_id_for(self, key):
+    def get_id_template_for(self, key):
         """Get a preview of the next number
         """
         portal_type = key.split("-")[0]
         config = get_config(None, portal_type=portal_type)
-        id_template = config.get("form", "")
-        number = self.storage.get(key) + 1
-        spec = {
-            "seq": number,
-            "year": get_current_year(),
-            "sampleType": key.replace(portal_type, "").strip("-"),
-        }
-        return id_template.format(**spec)
+        return config.get("form", "")
 
     @property
     def storage(self):

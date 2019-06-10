@@ -109,10 +109,6 @@ class window.AnalysisServiceEditView
     # The "Calculation" selector changed
     $("body").on "change", "#archetypes-fieldname-Calculation #Calculation", @on_calculation_change
 
-    ### ANALYSIS TAB ###
-
-    # The "Display a Detection Limit selector" checkbox changed
-    $("body").on "change", "#archetypes-fieldname-DetectionLimitSelector #DetectionLimitSelector", @on_display_detection_limit_selector_change
 
     ### CONTAINER AND PRESERVATION TAB ###
 
@@ -168,14 +164,6 @@ class window.AnalysisServiceEditView
       console.debug "--> Use default calculation of method"
     else
       console.debug "--> Use default calculation of instrument"
-
-    # Set "Display a Detection Limit selector" checkbox
-    if @display_detection_limit_selector()
-      console.debug "--> Allow detection limit selector"
-      @toggle_display_detection_limit_selector on
-    else
-      console.debug "--> Disallow detection limit selector"
-      @toggle_display_detection_limit_selector off
 
 
   ### FIELD GETTERS/SETTERS/SELECTORS ###
@@ -675,36 +663,6 @@ class window.AnalysisServiceEditView
         @set_method_calculation @get_default_method()
 
 
-  display_detection_limit_selector: =>
-    ###*
-     * Get the value of the checkbox "Display a Detection Limit selector"
-     *
-     * @returns {boolean} True if detection limit selector should be displayed
-    ###
-    field = $("#archetypes-fieldname-DetectionLimitSelector #DetectionLimitSelector")
-    return field.is ":checked"
-
-
-  toggle_display_detection_limit_selector: (toggle, silent=yes) =>
-    ###*
-     * Toggle the "Display detection limit selector" checkbox
-     *
-     * If it is checked, display the "Allow manual detection limit input" field below
-     * If it is unchecked, hide and uncheck the "Allow manual detection limit input" field below
-    ###
-    field = $("#archetypes-fieldname-DetectionLimitSelector #DetectionLimitSelector")
-
-    # control the visiblity of the dependent field
-    field2 = $("#archetypes-fieldname-AllowManualDetectionLimit #AllowManualDetectionLimit")
-    if toggle is on
-      field2.parent().show()
-    else
-      field2.parent().hide()
-      field2.prop "checked", no
-
-    @toggle_checkbox field, toggle, silent
-
-
   show_alert: (options) =>
     ###
      * Display a notification box above the content
@@ -845,7 +803,7 @@ class window.AnalysisServiceEditView
         catalog_name: "bika_setup_catalog"
         page_size: 0
         UID: calculation_uid
-        inactive_state: "active"
+        active_state: true
         sort_on: "sortable_title"
 
     @ajax_submit options
@@ -1190,22 +1148,6 @@ class window.AnalysisServiceEditView
     ###
     console.debug "°°° AnalysisServiceEditView::on_calculation_change °°°"
     @select_calculation @get_calculation()
-
-
-  on_display_detection_limit_selector_change: (event) =>
-    ###*
-     * Eventhandler when the "Display a Detection Limit selector" checkbox changed
-     *
-     * This checkbox is located on the "Analysis" Tab
-    ###
-    console.debug "°°° AnalysisServiceEditView::on_display_detection_limit_selector_change °°°"
-
-    if @display_detection_limit_selector()
-      console.debug "Allow detection limit selector"
-      @toggle_display_detection_limit_selector yes
-    else
-      console.debug "Disallow detection limit selector"
-      @toggle_display_detection_limit_selector no
 
 
   on_separate_container_change: (event) =>

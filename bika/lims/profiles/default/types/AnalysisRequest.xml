@@ -47,7 +47,7 @@
          i18n:attributes="title"
          i18n:domain="plone"
          visible="True">
-     <permission value="BIKA: Add Analysis"/>
+     <permission value="senaite.core: Add Analysis"/>
  </action>
 
  <action title="Manage Results"
@@ -59,7 +59,7 @@
          url_expr="string:${object_url}/manage_results"
          i18n:attributes="title"
          visible="True">
-     <permission value="BIKA: Edit Results"/>
+     <permission value="senaite.core: Edit Results"/>
  </action>
 
  <action title="Published results"
@@ -71,7 +71,7 @@
          url_expr="string:${object_url}/published_results"
          i18n:attributes="title"
          visible="True">
-     <permission value="BIKA: View Results"/>
+     <permission value="senaite.core: View Results"/>
  </action>
 
  <action title="Invoice"
@@ -81,40 +81,31 @@
          url_expr="string:${object_url}/invoice"
          i18n:attributes="title"
          visible="True">
-     <permission value="BIKA: Manage Invoices"/>
+     <permission value="senaite.core: Manage Invoices"/>
  </action>
 
- <action title="Log"
-         action_id="log"
-         category="object"
-         condition_expr=""
-         url_expr="string:${object_url}/log"
-         i18n:attributes="title"
-         visible="True">
-     <permission value="BIKA: View Log Tab"/>
- </action>
-
- <action title="Create Invoice"
+ <action title="Create Invoice PDF"
          action_id="Create Invoice"
          category="document_actions"
-         condition_expr="python: context.REQUEST.get('verified','') and context.portal_workflow.getInfoFor(context,'review_state') in ['verified', 'published'] and not context.getInvoice()"
+         condition_expr="python:context.REQUEST.get('verified', '')"
+         icon_expr="string:${object_url}/++resource++bika.lims.images/invoice_big.png"
          link_target=""
          url_expr="string:${object_url}/invoice_create"
          i18n:attributes="title"
          visible="True">
-     <permission value="BIKA: Manage Invoices"/>
+     <permission value="senaite.core: Manage Invoices"/>
  </action>
 
- <action title="Print"
+ <action title="Print Invoice"
          action_id="invoice_print"
          category="document_actions"
-         condition_expr="context/REQUEST/verified|nothing"
-         icon_expr="string:${object_url}/print_icon.png"
+         condition_expr="python:context.REQUEST.get('verified', '')"
+         icon_expr="string:${object_url}/++resource++bika.lims.images/print_32.png"
          link_target=""
          url_expr="string:${object_url}/invoice_print"
          i18n:attributes="title"
          visible="True">
-     <permission value="BIKA: Manage Invoices"/>
+     <permission value="senaite.core: Manage Invoices"/>
  </action>
 
  <action title="Large Sticker"

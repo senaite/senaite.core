@@ -1,9 +1,22 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of SENAITE.CORE
+# This file is part of SENAITE.CORE.
 #
-# Copyright 2018 by it's authors.
-# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2019 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
 from bika.lims import logger
@@ -122,7 +135,7 @@ class AttachmentsView(BrowserView):
         service_uid = self.request.get('Service', None)
         AttachmentType = form.get('AttachmentType', '')
         AttachmentKeys = form.get('AttachmentKeys', '')
-        ReportOption = form.get('ReportOption', 'i')
+        ReportOption = form.get('ReportOption', 'r')
 
         # nothing to do if the attachment file is missing
         if attachment_file is None:
@@ -419,7 +432,7 @@ class AttachmentsView(BrowserView):
         """
         bika_setup_catalog = api.get_tool("bika_setup_catalog")
         attachment_types = bika_setup_catalog(portal_type='AttachmentType',
-                                              inactive_state='active',
+                                              is_active=True,
                                               sort_on="sortable_title",
                                               sort_order="ascending")
         return attachment_types

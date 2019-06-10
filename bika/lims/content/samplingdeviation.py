@@ -1,21 +1,28 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of SENAITE.CORE
+# This file is part of SENAITE.CORE.
 #
-# Copyright 2018 by it's authors.
-# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2019 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
 from AccessControl import ClassSecurityInfo
-from Products.CMFCore.permissions import ModifyPortalContent, View
 from Products.Archetypes.public import *
-from Products.Archetypes.references import HoldingReference
-from Products.ATExtensions.ateapi import RecordsField as RecordsField
-from bika.lims.browser.widgets import RecordsWidget
-from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.config import PROJECTNAME
-import sys
-from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
+from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.interfaces import IDeactivable
 from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
@@ -26,6 +33,7 @@ schema['description'].schemata = 'default'
 schema['description'].widget.visible = True
 
 class SamplingDeviation(BaseFolder):
+    implements(IDeactivable)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema

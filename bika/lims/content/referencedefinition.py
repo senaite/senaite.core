@@ -1,9 +1,22 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of SENAITE.CORE
+# This file is part of SENAITE.CORE.
 #
-# Copyright 2018 by it's authors.
-# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2019 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
 """ Reference Definitions represent standard specifications for
     reference samples used in quality control
@@ -19,6 +32,7 @@ from bika.lims.config import PROJECTNAME
 import sys
 import time
 from bika.lims import PMF, bikaMessageFactory as _
+from bika.lims.interfaces import IDeactivable
 from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
@@ -65,6 +79,7 @@ schema['description'].schemata = 'Description'
 schema['description'].widget.visible = True
 
 class ReferenceDefinition(BaseContent):
+    implements(IDeactivable)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema

@@ -11,7 +11,6 @@ Test Setup
 
 Needed Imports:
 
-    >>> import transaction
     >>> from DateTime import DateTime
     >>> from plone import api as ploneapi
 
@@ -208,7 +207,7 @@ the invalidated:
 
     >>> retest = ar.getRetest()
     >>> retest
-    <AnalysisRequest at /plone/clients/client-1/water-0002>
+    <AnalysisRequest at /plone/clients/client-1/water-0001-R01>
 
     >>> retest.getInvalidated()
     <AnalysisRequest at /plone/clients/client-1/water-0001>
@@ -231,6 +230,7 @@ retest will be created.
 First, submit all analyses from the retest:
 
     >>> for analysis in retest.getAnalyses(full_objects=True):
+    ...     analysis.setResult(12)
     ...     transitioned = do_action_for(analysis, 'submit')
     >>> transitioned[0]
     True
@@ -270,10 +270,10 @@ as the invalidated (retest):
 
     >>> retest2 = retest.getRetest()
     >>> retest2
-    <AnalysisRequest at /plone/clients/client-1/water-0003>
+    <AnalysisRequest at /plone/clients/client-1/water-0001-R02>
 
     >>> retest2.getInvalidated()
-    <AnalysisRequest at /plone/clients/client-1/water-0002>
+    <AnalysisRequest at /plone/clients/client-1/water-0001-R01>
 
     >>> retest2.getInvalidated().getInvalidated()
     <AnalysisRequest at /plone/clients/client-1/water-0001>

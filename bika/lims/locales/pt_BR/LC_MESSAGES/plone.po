@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2018-10-08 13:50+0000\n"
+"POT-Creation-Date: 2019-05-17 08:53+0000\n"
 "PO-Revision-Date: 2018-06-01 18:46+0000\n"
 "Last-Translator: Ramon Bartl <rb@ridingbytes.com>, 2018\n"
 "Language-Team: Portuguese (Brazil) (https://www.transifex.com/senaite/teams/87045/pt_BR/)\n"
@@ -20,6 +20,20 @@ msgstr ""
 "Preferred-Encodings: utf-8 latin1\n"
 "Domain: plone\n"
 "Language: pt_BR\n"
+
+#: bika/lims/profiles/default/types/ARTemplate.xml
+msgid "AR Template"
+msgstr "AR Template"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/ARTemplates.xml
+#: bika/lims/profiles/default/types/SRTemplate.xml
+msgid "AR Templates"
+msgstr "Modelos de RA"
+
+#: bika/lims/profiles/default/types/ARReport.xml
+msgid "ARReport"
+msgstr "Relatório de RA"
 
 # Manual Workflow State and Transition MsgIds
 # Despite the fact, that these are defined in the "bika" domain, they are not
@@ -53,7 +67,6 @@ msgid "Administration"
 msgstr "Administração"
 
 #: bika/lims/profiles/default/types/ReferenceSample.xml
-#: bika/lims/profiles/default/types/Sample.xml
 msgid "Analyses"
 msgstr "Análises"
 
@@ -128,6 +141,10 @@ msgstr "Anexo feito"
 msgid "Attachments"
 msgstr "Anexos"
 
+#: bika/lims/profiles/default/actions.xml
+msgid "Audit Log"
+msgstr ""
+
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "Auto-Import Logs"
 msgstr ""
@@ -154,10 +171,6 @@ msgstr "Etiquetas do lote"
 msgid "Batches"
 msgstr "Em lotes"
 
-#: bika/lims/profiles/default/types/BikaSetup.xml
-msgid "Bika Setup"
-msgstr "Configuração do Bika"
-
 #: bika/lims/profiles/default/types/Calculation.xml
 msgid "Calculation"
 msgstr "Cálculo"
@@ -182,7 +195,6 @@ msgstr "Cancelar"
 msgid "Client"
 msgstr "Cliente"
 
-#: bika/lims/profiles/default/actions.xml
 #: bika/lims/profiles/default/types/ClientFolder.xml
 msgid "Clients"
 msgstr "Clientes"
@@ -222,8 +234,8 @@ msgid "Containers"
 msgstr "Recipientes"
 
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
-msgid "Create Invoice"
-msgstr "Criar recibo"
+msgid "Create Invoice PDF"
+msgstr ""
 
 msgid "Current"
 msgstr "Atual"
@@ -267,10 +279,6 @@ msgstr "Análise repetida"
 #: bika/lims/profiles/default/types/AnalysisCategory.xml
 msgid "Edit"
 msgstr "Editar"
-
-#: bika/lims/profiles/default/types/Pricelist.xml
-msgid "Email pricelist"
-msgstr "Endereço de e-mail"
 
 msgid "Expire"
 msgstr "Expirar"
@@ -383,16 +391,8 @@ msgid "Laboratory Information"
 msgstr "Informação do Laboratório"
 
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
-#: bika/lims/profiles/default/types/Sample.xml
-#: bika/lims/profiles/default/types/SamplePartition.xml
 msgid "Large Sticker"
 msgstr "Lista de preço"
-
-#: bika/lims/profiles/default/types/AnalysisProfile.xml
-#: bika/lims/profiles/default/types/AnalysisRequest.xml
-#: bika/lims/profiles/default/types/AnalysisService.xml
-msgid "Log"
-msgstr "Registo"
 
 #: bika/lims/profiles/default/types/Contact.xml
 #: bika/lims/profiles/default/types/LabContact.xml
@@ -479,11 +479,14 @@ msgstr "Listas de  preços"
 msgid "Prices"
 msgstr "Preço"
 
-#: bika/lims/profiles/default/types/AnalysisRequest.xml
 #: bika/lims/profiles/default/types/Invoice.xml
 #: bika/lims/profiles/default/types/SupplyOrder.xml
 msgid "Print"
 msgstr "Imprimir"
+
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
+msgid "Print Invoice"
+msgstr ""
 
 #: bika/lims/profiles/default/types/Pricelist.xml
 msgid "Print pricelist"
@@ -506,10 +509,6 @@ msgstr "Resultados publicados"
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "QC Results"
 msgstr "Resultados CQ"
-
-#: bika/lims/profiles/default/types/ReportFolder.xml
-msgid "Quality Control"
-msgstr "Controle de qualidade"
 
 msgid "Receive"
 msgstr "Receber"
@@ -590,16 +589,13 @@ msgstr "Relatórios"
 msgid "Republish"
 msgstr "Republicar"
 
-#: bika/lims/profiles/default/types/AnalysisRequest.xml
-msgid "Results not requested"
-msgstr "Resultado não requerido"
-
 msgid "Retract"
 msgstr "Retrair"
 
 msgid "Retracted"
 msgstr "Retratado"
 
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
 #: bika/lims/profiles/default/types/Sample.xml
 msgid "Sample"
 msgstr "Amostra"
@@ -613,9 +609,8 @@ msgstr "Condição da amostra"
 msgid "Sample Conditions"
 msgstr "Condições da amostra"
 
-#. Default: "AR Imports"
 msgid "Sample Imports"
-msgstr "Importações de RA"
+msgstr ""
 
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/SampleMatrices.xml
@@ -630,28 +625,19 @@ msgstr "Matriz de Amostras"
 msgid "Sample Partition"
 msgstr "Partições de Amostra"
 
-#: bika/lims/profiles/default/types/Sample.xml
-msgid "Sample Partitions"
-msgstr "Partições de Amostra"
-
 #: bika/lims/profiles/default/types/SamplePoint.xml
 msgid "Sample Point"
 msgstr "Local de Amostragem"
 
 #: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/Client.xml
 #: bika/lims/profiles/default/types/SamplePoints.xml
 msgid "Sample Points"
 msgstr "Locais de Amostragem"
 
-#: bika/lims/profiles/default/types/ARTemplate.xml
-msgid "Sample Template"
-msgstr "AR Template"
-
-#: bika/lims/profiles/default/controlpanel.xml
-#: bika/lims/profiles/default/types/ARTemplates.xml
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Sample Templates"
-msgstr "Modelos de RA"
+msgstr ""
 
 #: bika/lims/profiles/default/types/SampleType.xml
 msgid "Sample Type"
@@ -671,20 +657,12 @@ msgstr "Amostra recebida"
 msgid "Sample registered"
 msgstr "Amostra registrada"
 
-#: bika/lims/profiles/default/types/Client.xml
-msgid "SamplePoints"
-msgstr "Pontos de amostragem"
-
-#: bika/lims/profiles/default/types/ARReport.xml
-msgid "SampleReport"
-msgstr "Relatório de RA"
-
 msgid "Sampled"
 msgstr "Amostrado"
 
 #: bika/lims/profiles/default/actions.xml
+#: bika/lims/profiles/default/types/AnalysisRequestsFolder.xml
 #: bika/lims/profiles/default/types/Batch.xml
-#: bika/lims/profiles/default/types/Client.xml
 msgid "Samples"
 msgstr "Amostras"
 
@@ -729,13 +707,15 @@ msgstr "Amostragem programada"
 msgid "Scheduled sampling"
 msgstr "Amostragem programada"
 
+#: bika/lims/profiles/default/types/BikaSetup.xml
+msgid "Setup"
+msgstr ""
+
 #: bika/lims/profiles/default/actions.xml
 msgid "Sharing"
 msgstr "Compartilhamento"
 
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
-#: bika/lims/profiles/default/types/Sample.xml
-#: bika/lims/profiles/default/types/SamplePartition.xml
 msgid "Small Sticker"
 msgstr "Etiqueta pequena"
 
@@ -751,7 +731,7 @@ msgstr "Etiqueta"
 
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 #: bika/lims/profiles/default/types/Batch.xml
-#: bika/lims/profiles/default/types/Sample.xml
+#: bika/lims/profiles/default/types/ReferenceSample.xml
 msgid "Stickers preview"
 msgstr "Pré-visualização das etiquetas"
 
@@ -852,98 +832,93 @@ msgstr "Tema da Ficha de Trabalho"
 msgid "Worksheets"
 msgstr "Fichas de trabalho"
 
-#. Default: "Accounting"
 msgid "label_schema_Accounting"
 msgstr "Contabilidade"
 
-#. Default: "Address"
 msgid "label_schema_Address"
 msgstr "Endereço"
 
-#. Default: "Analyses"
 msgid "label_schema_Analyses"
 msgstr "Análise"
 
-#. Default: "Bank details"
+msgid "label_schema_Analysis Templates"
+msgstr ""
+
+msgid "label_schema_Appearance"
+msgstr ""
+
 msgid "label_schema_Bank details"
 msgstr "Informações bancárias"
 
-#. Default: "Calculation"
 msgid "label_schema_Calculation"
 msgstr "Cálculos"
 
-#. Default: "Container and Preservation"
 msgid "label_schema_Container and Preservation"
 msgstr "Recipiente e preservação"
 
-#. Default: "Dates"
 msgid "label_schema_Dates"
 msgstr "Datas"
 
-#. Default: "Description"
 msgid "label_schema_Description"
 msgstr "Descrição"
 
-#. Default: "Email Telephone Fax"
 msgid "label_schema_Email Telephone Fax"
 msgstr "Email Telefone Fax"
 
-#. Default: "ID Server"
 msgid "label_schema_ID Server"
 msgstr "ID do Servidor"
 
-#. Default: "Labels"
 msgid "label_schema_Labels"
 msgstr "Etiquetas"
 
-#. Default: "Layout"
 msgid "label_schema_Layout"
 msgstr "Layout"
 
-#. Default: "Location"
 msgid "label_schema_Location"
 msgstr "Localização"
 
-#. Default: "Method"
 msgid "label_schema_Method"
 msgstr "Método"
 
-#. Default: "Preferences"
+msgid "label_schema_Notifications"
+msgstr ""
+
 msgid "label_schema_Preferences"
 msgstr "Preferências"
 
-#. Default: "Publication preference"
 msgid "label_schema_Publication preference"
 msgstr "Preferências de publicação"
 
-#. Default: "Reference Values"
 msgid "label_schema_Reference Values"
 msgstr "Reference Values"
 
-#. Default: "Result Options"
+msgid "label_schema_Reflex Rule Folder"
+msgstr ""
+
 msgid "label_schema_Result Options"
 msgstr "Opções de resultado"
 
-#. Default: "Results Reports"
 msgid "label_schema_Results Reports"
 msgstr "Relatório de resultados"
 
-#. Default: "SR Templates"
 msgid "label_schema_SR Templates"
 msgstr "Modelos de SR"
 
-#. Default: "Sample Partitions"
 msgid "label_schema_Sample Partitions"
 msgstr "Partições de amostra"
 
-#. Default: "AR Templates"
 msgid "label_schema_Sample Templates"
-msgstr "Modelos de RA"
+msgstr ""
 
-#. Default: "Security"
+msgid "label_schema_Sampling"
+msgstr ""
+
+# Setup Schemata
 msgid "label_schema_Security"
 msgstr "Segurança"
 
-#. Default: "Uncertainties"
+msgid "label_schema_Sticker"
+msgstr ""
+
 msgid "label_schema_Uncertainties"
 msgstr "Incertezas"

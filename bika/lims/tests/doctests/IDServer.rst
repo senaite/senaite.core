@@ -1,15 +1,14 @@
 ID Server
 =========
 
-The ID Server in Bika LIMS provides IDs for content items base of the given
+The ID Server in SENAITE LIMS provides IDs for content items base of the given
 format specification. The format string is constructed in the same way as a
 python format() method based predefined variables per content type. The only
 variable available to all type is 'seq'. Currently, seq can be constructed
 either using number generator or a counter of existing items. For generated IDs,
 one can specifypoint at which the format string will be split to create the
-generator key. For counter IDs, one must specify context and the type of
-counter which is either the number of backreferences or the number of contained
-objects.
+generator key. For counter IDs, one must specify context and the type of counter
+which is either the number of backreferences or the number of contained objects.
 
 Configuration Settings:
 * format:
@@ -39,9 +38,14 @@ Needed Imports:
     >>> import transaction
     >>> from DateTime import DateTime
     >>> from plone import api as ploneapi
+    >>> from zope.component import getUtility
 
+    >>> from bika.lims import alphanumber as alpha
     >>> from bika.lims import api
+    >>> from bika.lims import idserver
+    >>> from bika.lims.interfaces import INumberGenerator
     >>> from bika.lims.utils.analysisrequest import create_analysisrequest
+    >>> from bika.lims.workflow import doActionFor as do_action_for
 
 Functional Helpers:
 
@@ -60,17 +64,17 @@ Variables:
     >>> sample_date = DateTime(2017, 1, 31)
     >>> portal = self.portal
     >>> request = self.request
-    >>> bika_setup = portal.bika_setup
-    >>> bika_sampletypes = bika_setup.bika_sampletypes
-    >>> bika_samplepoints = bika_setup.bika_samplepoints
-    >>> bika_analysiscategories = bika_setup.bika_analysiscategories
-    >>> bika_analysisservices = bika_setup.bika_analysisservices
-    >>> bika_labcontacts = bika_setup.bika_labcontacts
-    >>> bika_storagelocations = bika_setup.bika_storagelocations
-    >>> bika_samplingdeviations = bika_setup.bika_samplingdeviations
-    >>> bika_sampleconditions = bika_setup.bika_sampleconditions
+    >>> setup = portal.bika_setup
+    >>> bika_sampletypes = setup.bika_sampletypes
+    >>> bika_samplepoints = setup.bika_samplepoints
+    >>> bika_analysiscategories = setup.bika_analysiscategories
+    >>> bika_analysisservices = setup.bika_analysisservices
+    >>> bika_labcontacts = setup.bika_labcontacts
+    >>> bika_storagelocations = setup.bika_storagelocations
+    >>> bika_samplingdeviations = setup.bika_samplingdeviations
+    >>> bika_sampleconditions = setup.bika_sampleconditions
     >>> portal_url = portal.absolute_url()
-    >>> bika_setup_url = portal_url + "/bika_setup"
+    >>> setup_url = portal_url + "/bika_setup"
     >>> browser = self.getBrowser()
     >>> current_user = ploneapi.user.get_current()
 
@@ -126,6 +130,13 @@ An `AnalysisService` defines a analysis service offered by the laboratory:
     >>> analysisservice
     <...analysisservice-1>
 
+
+ID generation
+-------------
+
+IDs can contain *alphanumeric* or *numeric* numbers, depending on the provided
+ID Server configuration.
+
 Set up `ID Server` configuration:
 
     >>> values = [
@@ -142,7 +153,7 @@ Set up `ID Server` configuration:
     ...             'value': ''},
     ...          ]
 
-    >>> bika_setup.setIDFormatting(values)
+    >>> setup.setIDFormatting(values)
 
 An `AnalysisRequest` can be created:
 
@@ -174,14 +185,15 @@ Create a second `AnalysisRequest`:
     >>> ar.getId() == "water-{}-AA002".format(year)
     True
 
-Create a forth `Batch`::
+Create a `Batch`:
 
     >>> batches = self.portal.batches
     >>> batch = api.create(batches, "Batch", ClientID="RB")
     >>> batch.getId() == "BA-{}-0001".format(year)
     True
 
-Change ID formats and create new `AnalysisRequest`::
+Change ID formats and create new `AnalysisRequest`:
+
     >>> values = [
     ...            {'form': '{clientId}-{dateSampled:%Y%m%d}-{sampleType}-{seq:04d}',
     ...             'portal_type': 'AnalysisRequest',
@@ -196,7 +208,7 @@ Change ID formats and create new `AnalysisRequest`::
     ...             'value': ''},
     ...          ]
 
-    >>> bika_setup.setIDFormatting(values)
+    >>> setup.setIDFormatting(values)
 
     >>> values = {'Client': client.UID(),
     ...           'Contact': contact.UID(),
@@ -210,7 +222,8 @@ Change ID formats and create new `AnalysisRequest`::
     >>> ar.getId()
     'RB-20170131-water-0001'
 
-Re-seed and create a new `Batch`::
+Re-seed and create a new `Batch`:
+
     >>> ploneapi.user.grant_roles(user=current_user,roles = ['Manager'])
     >>> transaction.commit()
     >>> browser.open(portal_url + '/ng_seed?prefix=batch-BA&seed=10')
@@ -222,7 +235,8 @@ Re-seed and create a new `Batch`::
     >>> ar.getId()
     'RB-20170131-water-0002'
 
-Change ID formats and use alphanumeric ids::
+Change ID formats and use alphanumeric ids:
+
     >>> sampletype2 = api.create(bika_sampletypes, "SampleType", Prefix="WB")
     >>> sampletype2
     <...sampletype-2>
@@ -235,7 +249,7 @@ Change ID formats and use alphanumeric ids::
     ...             'split_length': 1},
     ...          ]
 
-    >>> bika_setup.setIDFormatting(values)
+    >>> setup.setIDFormatting(values)
     >>> values = {'SampleType': sampletype2.UID(),}
     >>> service_uids = [analysisservice.UID()]
     >>> ar = create_analysisrequest(client, request, values, service_uids)
@@ -246,17 +260,14 @@ Change ID formats and use alphanumeric ids::
     >>> ar.getId()
     'WB-AAA2'
 
-Now generate 8 more ARs to force the alpha segment to change
+Now generate 8 more ARs to force the alpha segment to change:
+
     >>> for num in range(8):
     ...     ar = create_analysisrequest(client, request, values, service_uids)
     >>> ar.getId()
     'WB-AAB1'
 
 And try now without separators:
-
-    >>> sampletype3 = api.create(bika_sampletypes, "SampleType", Prefix="WB")
-    >>> sampletype3
-    <...sampletype-3>
 
     >>> values = [
     ...            {'form': '{sampleType}{alpha:3a1d}',
@@ -266,21 +277,298 @@ And try now without separators:
     ...             'split_length': 1},
     ...          ]
 
-    >>> bika_setup.setIDFormatting(values)
-    >>> values = {'SampleType': sampletype3.UID(),}
+    >>> setup.setIDFormatting(values)
+    >>> values = {'SampleType': sampletype2.UID(),}
     >>> service_uids = [analysisservice.UID()]
     >>> ar = create_analysisrequest(client, request, values, service_uids)
+
+The system continues after the previous ID, even if no separator is used:
+
     >>> ar.getId()
-    'WBAAA1'
+    'WBAAB2'
 
     >>> ar = create_analysisrequest(client, request, values, service_uids)
     >>> ar.getId()
-    'WBAAA2'
+    'WBAAB3'
 
 Now generate 8 more ARs to force the alpha segment to change
     >>> for num in range(8):
     ...     ar = create_analysisrequest(client, request, values, service_uids)
     >>> ar.getId()
-    'WBAAB1'
+    'WBAAC2'
 
 TODO: Test the case when numbers are exhausted in a sequence!
+
+
+IDs with Suffix
+---------------
+
+In SENAITE < 1.3.0 it was differentiated between an *Analysis Request* and a
+*Sample*. The *Analysis Request* acted as a "holder" of a *Sample* and the ID
+used to be the same as the holding *Sample* but with the suffix `-R01`.
+
+This suffix was incremented, e.g. `-R01` to `-R02`, when a retest was requested,
+while keeping the ID of the previous part constant.
+
+With SENAITE 1.3.0 there is no differentiation anymore between Analysis Request
+and Sample. However, some labs might still want to follow the old ID scheme with
+the suffix and incrementation of retests to keep their analysis reports in a
+sane state.
+
+Therefore, the ID Server also supports Suffixes and the logic to generated the
+next suffix number for retests:
+
+
+    >>> values = [
+    ...            {'form': '{sampleType}-{year}-{seq:04d}-R01',
+    ...             'portal_type': 'AnalysisRequest',
+    ...             'prefix': 'analysisrequest',
+    ...             'sequence_type': 'generated',
+    ...             'split_length': 2},
+    ...            {'form': '{parent_base_id}-R{test_count:02d}',
+    ...             'portal_type': 'AnalysisRequestRetest',
+    ...             'prefix': 'analysisrequestretest',
+    ...             'sequence_type': '',
+    ...             'split_length': 1},
+    ...          ]
+
+    >>> setup.setIDFormatting(values)
+
+Allow self-verification of results:
+
+    >>> setup.setSelfVerificationEnabled(True)
+
+Create a new `AnalysisRequest`:
+
+    >>> values = {'Client': client.UID(),
+    ...           'Contact': contact.UID(),
+    ...           'SamplingDate': sample_date,
+    ...           'DateSampled': sample_date,
+    ...           'SampleType': sampletype.UID(),
+    ...          }
+
+    >>> service_uids = [analysisservice.UID()]
+    >>> ar = create_analysisrequest(client, request, values, service_uids)
+    >>> ar.getId() == "water-{}-0001-R01".format(year)
+    True
+
+Receive the Sample:
+
+    >>> do_action_for(ar, "receive")[0]
+    True
+
+Submit and verify results:
+
+    >>> an = ar.getAnalyses(full_objects=True)[0]
+    >>> an.setResult(5)
+
+    >>> do_action_for(an, "submit")[0]
+    True
+
+    >>> do_action_for(an, "verify")[0]
+    True
+
+The AR should benow in the state `verified`:
+
+     >>> api.get_workflow_status_of(ar)
+     'verified'
+
+We can invalidate it now:
+
+    >>> do_action_for(ar, "invalidate")[0]
+    True
+
+
+Now a retest was created with the same ID as the invalidated AR, but an
+incremented suffix:
+
+    >>> retest = ar.getRetest()
+    >>> retest.getId() == "water-{}-0001-R02".format(year)
+    True
+
+Submit and verify results of the retest:
+
+    >>> an = retest.getAnalyses(full_objects=True)[0]
+    >>> an.setResult(5)
+
+    >>> do_action_for(an, "submit")[0]
+    True
+
+    >>> do_action_for(an, "verify")[0]
+    True
+
+The Retest should benow in the state `verified`:
+
+     >>> api.get_workflow_status_of(retest)
+     'verified'
+
+We can invalidate it now:
+
+    >>> do_action_for(retest, "invalidate")[0]
+    True
+
+Now a retest of the retest was created with the same ID as the invalidated AR,
+but an incremented suffix:
+
+    >>> retest = retest.getRetest()
+    >>> retest.getId() == "water-{}-0001-R03".format(year)
+    True
+
+
+ID Slicing
+----------
+
+The ID slicing machinery that comes with ID Server takes into consideration both
+wildcards (e.g "{SampleType}") and separators (by default "-"):
+
+    >>> id_format = "AR-{sampleType}-{parentId}{alpha:3a2d}"
+
+If default separator "-" is used, the segments generated are:
+`["AR", "{sampleType}", "{parentId}", "{alpha:3a2d}"]`
+
+    >>> idserver.slice(id_format, separator="-", start=0, end=3)
+    'AR-{sampleType}-{parentId}'
+
+    >>> idserver.slice(id_format, separator="-", start=1, end=2)
+    '{sampleType}-{parentId}'
+
+If no separator is used, note the segments generated are like follows:
+`["AR-", "{sampleType}", "-", "{parentId}", "{alpha:3a2d}"]`
+
+    >>> idserver.slice(id_format, separator="", start=0, end=3)
+    'AR-{sampleType}-'
+
+    >>> idserver.slice(id_format, separator="", start=1, end=2)
+    '{sampleType}-'
+
+And if we use a separator other than "-", we have the same result as before:
+
+    >>> idserver.slice(id_format, separator=".", start=0, end=3)
+    'AR-{sampleType}-'
+
+    >>> idserver.slice(id_format, separator=".", start=1, end=2)
+    '{sampleType}-'
+
+Unless we define an ID format in accordance:
+
+    >>> id_format = "AR.{sampleType}.{parentId}{alpha:3a2d}"
+
+So we get the same results as the beginning:
+
+    >>> idserver.slice(id_format, separator=".", start=0, end=3)
+    'AR.{sampleType}.{parentId}'
+
+    >>> idserver.slice(id_format, separator=".", start=1, end=2)
+    '{sampleType}.{parentId}'
+
+If we define an ID format without separator, the result will always be the same
+regardless of setting a separator as a parm or not:
+
+    >>> id_format = "AR{sampleType}{parentId}{alpha:3a2d}"
+    >>> idserver.slice(id_format, separator="-", start=0, end=3)
+    'AR{sampleType}{parentId}'
+
+    >>> idserver.slice(id_format, separator="", start=0, end=3)
+    'AR{sampleType}{parentId}'
+
+    >>> idserver.slice(id_format, separator="-", start=1, end=2)
+    '{sampleType}{parentId}'
+
+Try now with a simpler and quite common ID:
+
+    >>> id_format = "WS-{seq:04d}"
+    >>> idserver.slice(id_format, separator="-", start=0, end=1)
+    'WS'
+
+    >>> id_format = "WS{seq:04d}"
+    >>> idserver.slice(id_format, separator="-", start=0, end=1)
+    'WS'
+
+    >>> idserver.slice(id_format, separator="", start=0, end=1)
+    'WS'
+
+Number generator storage behavior for IDs with/without separators
+-----------------------------------------------------------------
+
+Number generator machinery keeps track of the last IDs generated to:
+
+1. Make the creation of new IDs faster. The system does not need to find out the
+   last ID number generated for a given portal type by walking through all
+   objects each time an object is created.
+
+2. Allow to manually reseed the numbering through ng interface. Sometimes, the
+   lab wants an ID to start from a specific number, set manually.
+
+These last-generated IDs are stored in annotation storage.
+
+Set up `ID Server` configuration with an hyphen separated format and create an
+Analysis Request:
+
+    >>> id_formatting = [
+    ...            {'form': 'NG-{sampleType}-{alpha:2a3d}',
+    ...             'portal_type': 'AnalysisRequest',
+    ...             'prefix': 'analysisrequest',
+    ...             'sequence_type': 'generated',
+    ...             'split_length': 2},
+    ...          ]
+
+    >>> setup.setIDFormatting(id_formatting)
+    >>> values = {'Client': client.UID(),
+    ...           'Contact': contact.UID(),
+    ...           'SamplingDate': sample_date,
+    ...           'DateSampled': sample_date,
+    ...           'SampleType': sampletype.UID(),
+    ...          }
+    >>> service_uids = [analysisservice.UID()]
+    >>> ar = create_analysisrequest(client, request, values, service_uids)
+    >>> ar.getId()
+    'NG-water-AA001'
+
+Check the ID was correctly seeded in storage:
+
+    >>> number_generator = getUtility(INumberGenerator)
+    >>> last_number = number_generator.get("analysisrequest-NG-water")
+    >>> alpha.to_decimal('AA001') == last_number
+    True
+
+Create a new Analysis Request with same format and check again:
+
+    >>> ar = create_analysisrequest(client, request, values, service_uids)
+    >>> ar.getId()
+    'NG-water-AA002'
+    >>> number_generator = getUtility(INumberGenerator)
+    >>> last_number = number_generator.get("analysisrequest-NG-water")
+    >>> alpha.to_decimal('AA002') == last_number
+    True
+
+Do the same, but with an ID formatting without separators:
+
+    >>> id_formatting = [
+    ...            {'form': 'NG{sampleType}{alpha:2a3d}',
+    ...             'portal_type': 'AnalysisRequest',
+    ...             'prefix': 'analysisrequest',
+    ...             'sequence_type': 'generated',
+    ...             'split_length': 2},
+    ...          ]
+
+    >>> setup.setIDFormatting(id_formatting)
+    >>> ar = create_analysisrequest(client, request, values, service_uids)
+    >>> ar.getId()
+    'NGwaterAA001'
+
+Check if the ID was correctly seeded in storage:
+
+    >>> number_generator = getUtility(INumberGenerator)
+    >>> last_number = number_generator.get("analysisrequest-NGwater")
+    >>> alpha.to_decimal('AA001') == last_number
+    True
+
+Create a new Analysis Request with same format and check again:
+
+    >>> ar = create_analysisrequest(client, request, values, service_uids)
+    >>> ar.getId()
+    'NGwaterAA002'
+    >>> number_generator = getUtility(INumberGenerator)
+    >>> last_number = number_generator.get("analysisrequest-NGwater")
+    >>> alpha.to_decimal('AA002') == last_number
+    True

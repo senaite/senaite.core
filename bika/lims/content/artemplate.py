@@ -1,9 +1,22 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of SENAITE.CORE
+# This file is part of SENAITE.CORE.
 #
-# Copyright 2018 by it's authors.
-# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2019 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
 import sys
 
@@ -17,7 +30,7 @@ from bika.lims.browser.widgets import ReferenceWidget
 from bika.lims.browser.widgets import RemarksWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.interfaces import IARTemplate
+from bika.lims.interfaces import IARTemplate, IDeactivable
 from Products.Archetypes.public import BaseContent
 from Products.Archetypes.public import BooleanField
 from Products.Archetypes.public import BooleanWidget
@@ -50,7 +63,7 @@ schema = BikaSchema.copy() + Schema((
                 "secondary": "invisible",
             },
             catalog_name="bika_setup_catalog",
-            base_query={"inactive_state": "active"},
+            base_query={"is_active": True},
             showOn=True,
         ),
     ),
@@ -78,7 +91,7 @@ schema = BikaSchema.copy() + Schema((
                 "secondary": "invisible"
             },
             catalog_name="bika_setup_catalog",
-            base_query={"inactive_state": "active"},
+            base_query={"is_active": True},
             showOn=True,
         ),
     ),
@@ -246,7 +259,7 @@ schema = BikaSchema.copy() + Schema((
                 "secondary": "invisible"
             },
             catalog_name="bika_setup_catalog",
-            base_query={"inactive_state": "active"},
+            base_query={"is_active": True},
             showOn=True,
         ),
     ),
@@ -291,7 +304,7 @@ class ARTemplate(BaseContent):
     schema = schema
     displayContentsTab = False
     _at_rename_after_creation = True
-    implements(IARTemplate)
+    implements(IARTemplate, IDeactivable)
 
     def _renameAfterCreation(self, check_auto_id=False):
         from bika.lims.idserver import renameAfterCreation
@@ -305,7 +318,7 @@ class ARTemplate(BaseContent):
         items = []
         for p in bsc(
                 portal_type="AnalysisProfile",
-                inactive_state="active",
+                is_active=True,
                 sort_on="sortable_title"):
             p = p.getObject()
             title = p.Title()

@@ -1,9 +1,22 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of SENAITE.CORE
+# This file is part of SENAITE.CORE.
 #
-# Copyright 2018 by it's authors.
-# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2019 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
 import re
 
@@ -148,8 +161,8 @@ Total price excl Tax,,,,,,,,,,,,,,
         if ars_states != ['sample_due'] * 4:
             self.fail('Samples states should all be sample_due, '
                       'but are not!')
-        if states != ['unassigned'] * 12:
-            self.fail('Analysis states should all be unassigned, but are not!')
+        if states != ['registered'] * 12:
+            self.fail('Analysis states should all be registered, but are not!')
 
     def test_LIMS_2080_correctly_interpret_false_and_blank_values(self):
         client = self.portal.clients.objectValues()[0]

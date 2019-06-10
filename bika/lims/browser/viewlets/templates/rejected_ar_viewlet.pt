@@ -1,0 +1,27 @@
+<div tal:omit-tag=""
+     tal:define="rejected python:view.context.getRejectionReasons()"
+     tal:condition="python:rejected"
+     i18n:domain="senaite.core">
+
+  <div class="visualClear"></div>
+
+  <div id="portal-alert" tal:define="sample python:view.context">
+    <div class="portlet-alert-item alert alert-warning alert-dismissible">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      <strong class="bigger" i18n:translate="">Rejected sample</strong>
+      <p class="title">
+        <span i18n:translate="">This Sample has been rejected due to the following reasons: </span>
+      </p>
+      <ul tal:define="reasons python:sample.getSelectedRejectionReasons()" tal:condition="reasons">
+        <li tal:repeat="reason reasons" tal:content="reason"></li>
+      </ul>
+      <p tal:define="other_reasons python:sample.getOtherRejectionReasons()"
+         tal:condition="other_reasons">
+        <span i18n:translate="">Other reasons: </span>
+        <span tal:content="other_reasons"></span>
+      </p>
+    </div>
+  </div>
+</div>

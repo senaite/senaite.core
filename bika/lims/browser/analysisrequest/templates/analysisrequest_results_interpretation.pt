@@ -33,7 +33,7 @@
       <div class="department-area"
            tal:define="uid dept/UID"
            tal:attributes="id python:fieldName+'-'+uid;">
-        <div tal:content="structure python:view.get_text(dept, 'raw')">
+        <div tal:content="structure python:view.get_text(dept, 'raw')"></div>
       </div>
     </tal:department>
 

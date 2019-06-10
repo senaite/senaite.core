@@ -140,7 +140,7 @@ So the state of cu is now `unassigned`:
 
 The Analyst is no longer assigned to the analysis:
 
-    >>> cu.getAnalyst()
+    >>> cu.getAssignedAnalyst()
     ''
 
 From `assigned` state I can do submit:
@@ -180,17 +180,7 @@ to `to_be_verified`, cause all the analyses assigned are in this state:
     >>> api.get_workflow_status_of(worksheet)
     'to_be_verified'
 
-And now, I cannot add analyses anymore:
-
-    >>> worksheet.addAnalysis(fe)
-    >>> filter(lambda an: an.getKeyword() == "Fe", worksheet.getAnalyses())
-    []
-    >>> fe.getWorksheet() is None
-    True
-    >>> api.get_workflow_status_of(fe)
-    'unassigned'
-
-Neither remove:
+In `to_be_verified` status, I cannot remove analyses:
 
     >>> worksheet.removeAnalysis(au)
     >>> map(lambda an: an.getKeyword(), worksheet.getAnalyses())
@@ -198,6 +188,23 @@ Neither remove:
     >>> au.getWorksheetUID() == api.get_uid(worksheet)
     True
     >>> api.get_workflow_status_of(au)
+    'to_be_verified'
+
+But I can still add more analyses:
+
+    >>> worksheet.addAnalysis(fe)
+    >>> filter(lambda an: an.getKeyword() == "Fe", worksheet.getAnalyses())
+    [<Analysis at /plone/clients/client-1/W-0001/Fe>]
+
+Causing the Worksheet to roll back to `open` status:
+
+    >>> api.get_workflow_status_of(worksheet)
+    'open'
+
+If I remove `Fe` analysis again, worksheet is promoted to `to_be_verified`:
+
+    >>> worksheet.removeAnalysis(fe)
+    >>> api.get_workflow_status_of(worksheet)
     'to_be_verified'
 
 Let's create another worksheet and add the remaining analyses:
@@ -246,8 +253,18 @@ Create an Analysis Request:
 
     >>> ar = new_ar([Cu])
 
-The status of the analysis is `unassigned`:
+The status of the analysis is `registered`:
 
+    >>> analyses = ar.getAnalyses(full_objects=True)
+    >>> map(api.get_workflow_status_of, analyses)
+    ['registered']
+
+But `assign` is not allowed unless we receive the Analysis Request so the
+analysis is automatically transitioned to `unassigned` state:
+
+    >>> isTransitionAllowed(analysis, "assign")
+    False
+    >>> transitioned = do_action_for(ar, "receive")
     >>> analyses = ar.getAnalyses(full_objects=True)
     >>> map(api.get_workflow_status_of, analyses)
     ['unassigned']
@@ -255,14 +272,8 @@ The status of the analysis is `unassigned`:
 Exactly these roles can assign:
 
     >>> analysis = analyses[0]
-    >>> get_roles_for_permission("BIKA: Assign analyses", analysis)
+    >>> get_roles_for_permission("senaite.core: Transition: Assign Analysis", analysis)
     ['Analyst', 'LabClerk', 'LabManager', 'Manager']
-
-But `assign` is not allowed unless we receive the Analysis Request:
-
-    >>> isTransitionAllowed(analysis, "assign")
-    False
-    >>> transitioned = do_action_for(ar, "receive")
 
 Current user can assign because has the `LabManager` role:
 

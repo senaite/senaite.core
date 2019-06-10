@@ -1,9 +1,22 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of SENAITE.CORE
+# This file is part of SENAITE.CORE.
 #
-# Copyright 2018 by it's authors.
-# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2019 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
 import collections
 import datetime
@@ -366,7 +379,7 @@ class DashboardView(BrowserView):
         out = []
         catalog = getToolByName(self.context, CATALOG_ANALYSIS_REQUEST_LISTING)
         query = {'portal_type': "AnalysisRequest",
-                 'cancellation_state': ['active']}
+                 'is_active': True}
 
         # Check if dashboard_cookie contains any values to query
         # elements by
@@ -382,7 +395,6 @@ class DashboardView(BrowserView):
             desc = _("To be sampled")
             purl = 'samples?samples_review_state=to_be_sampled'
             query['review_state'] = ['to_be_sampled', ]
-            query['cancellation_state'] = ['active', ]
             out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
             # Samples awaiting to be preserved
@@ -390,7 +402,6 @@ class DashboardView(BrowserView):
             desc = _("To be preserved")
             purl = 'samples?samples_review_state=to_be_preserved'
             query['review_state'] = ['to_be_preserved', ]
-            query['cancellation_state'] = ['active', ]
             out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
             # Samples scheduled for Sampling
@@ -398,7 +409,6 @@ class DashboardView(BrowserView):
             desc = _("Sampling scheduled")
             purl = 'samples?samples_review_state=scheduled_sampling'
             query['review_state'] = ['scheduled_sampling', ]
-            query['cancellation_state'] = ['active', ]
             out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
         # Samples awaiting for reception
@@ -406,7 +416,6 @@ class DashboardView(BrowserView):
         desc = _("Reception pending")
         purl = 'analysisrequests?analysisrequests_review_state=sample_due'
         query['review_state'] = ['sample_due', ]
-        query['cancellation_state'] = ['active', ]
         out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
         # Samples under way
@@ -415,7 +424,6 @@ class DashboardView(BrowserView):
         purl = 'analysisrequests?analysisrequests_review_state=sample_received'
         query['review_state'] = ['attachment_due',
                                  'sample_received', ]
-        query['cancellation_state'] = ['active', ]
         out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
         # Samples to be verified
@@ -423,7 +431,6 @@ class DashboardView(BrowserView):
         desc = _("To be verified")
         purl = 'analysisrequests?analysisrequests_review_state=to_be_verified'
         query['review_state'] = ['to_be_verified', ]
-        query['cancellation_state'] = ['active', ]
         out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
         # Samples verified (to be published)
@@ -431,7 +438,6 @@ class DashboardView(BrowserView):
         desc = _("Verified")
         purl = 'analysisrequests?analysisrequests_review_state=verified'
         query['review_state'] = ['verified', ]
-        query['cancellation_state'] = ['active', ]
         out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
         # Samples published
@@ -439,7 +445,6 @@ class DashboardView(BrowserView):
         desc = _("Published")
         purl = 'analysisrequests?analysisrequests_review_state=published'
         query['review_state'] = ['published', ]
-        query['cancellation_state'] = ['active', ]
         out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
         # Samples to be printed
@@ -449,7 +454,6 @@ class DashboardView(BrowserView):
             purl = 'analysisrequests?analysisrequests_getPrinted=0'
             query['getPrinted'] = '0'
             query['review_state'] = ['published', ]
-            query['cancellation_state'] = ['active', ]
             out.append(
                 self._getStatistics(name, desc, purl, catalog, query, total))
 
@@ -525,8 +529,7 @@ class DashboardView(BrowserView):
         """
         out = []
         bc = getToolByName(self.context, CATALOG_ANALYSIS_LISTING)
-        query = {'portal_type': "Analysis",
-                 'cancellation_state': 'active'}
+        query = {'portal_type': "Analysis", 'is_active': True}
 
         # Check if dashboard_cookie contains any values to query elements by
         query = self._update_criteria_with_filters(query, 'analyses')

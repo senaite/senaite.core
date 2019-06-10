@@ -1,20 +1,27 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of SENAITE.CORE
+# This file is part of SENAITE.CORE.
 #
-# Copyright 2018 by it's authors.
-# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2019 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
 import sys
 
 from AccessControl import ClassSecurityInfo
-from bika.lims import api
-from bika.lims import bikaMessageFactory as _
-from bika.lims.browser.widgets import ServicesWidget
-from bika.lims.browser.widgets import WorksheetTemplateLayoutWidget
-from bika.lims.config import ANALYSIS_TYPES
-from bika.lims.config import PROJECTNAME
-from bika.lims.content.bikaschema import BikaSchema
+from Products.ATExtensions.field.records import RecordsField
 from Products.Archetypes.public import BaseContent
 from Products.Archetypes.public import BooleanField
 from Products.Archetypes.public import BooleanWidget
@@ -27,8 +34,15 @@ from Products.Archetypes.public import StringField
 from Products.Archetypes.public import StringWidget
 from Products.Archetypes.public import registerType
 from Products.Archetypes.references import HoldingReference
-from Products.ATExtensions.field.records import RecordsField
-
+from bika.lims import api
+from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.widgets import ServicesWidget
+from bika.lims.browser.widgets import WorksheetTemplateLayoutWidget
+from bika.lims.config import ANALYSIS_TYPES
+from bika.lims.config import PROJECTNAME
+from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.interfaces import IDeactivable
+from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
     RecordsField(
@@ -145,6 +159,7 @@ schema["description"].widget.visible = True
 class WorksheetTemplate(BaseContent):
     """Worksheet Templates
     """
+    implements(IDeactivable)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
@@ -172,7 +187,7 @@ class WorksheetTemplate(BaseContent):
     def getInstruments(self):
         """Get the allowed instruments
         """
-        query = {"portal_type": "Instrument", "inactive_state": "active"}
+        query = {"portal_type": "Instrument", "is_active": True}
 
         if self.getRestrictToMethod():
             query.update({
@@ -210,7 +225,7 @@ class WorksheetTemplate(BaseContent):
         """
         methods = api.search({
             "portal_type": "Method",
-            "inactive_state": "active"
+            "is_active": True
         }, "bika_setup_catalog")
 
         items = map(lambda m: (api.get_uid(m), api.get_title(m)), methods)

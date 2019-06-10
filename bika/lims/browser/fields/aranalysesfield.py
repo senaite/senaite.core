@@ -1,17 +1,30 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of SENAITE.CORE
+# This file is part of SENAITE.CORE.
 #
-# Copyright 2018 by it's authors.
-# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2019 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
 import itertools
 
 from AccessControl import ClassSecurityInfo
 from AccessControl import Unauthorized
-from AccessControl import getSecurityManager
 from bika.lims import api
 from bika.lims import logger
+from bika.lims.api.security import check_permission
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.interfaces import IAnalysis
 from bika.lims.interfaces import IAnalysisService
@@ -72,7 +85,7 @@ class ARAnalysesField(ObjectField):
 
     security.declarePrivate('set')
 
-    def set(self, instance, items, prices=None, specs=None, **kwargs):
+    def set(self, instance, items, prices=None, specs=None, hidden=None, **kw):
         """Set/Assign Analyses to this AR
 
         :param items: List of Analysis objects/brains, AnalysisService
@@ -82,17 +95,22 @@ class ARAnalysesField(ObjectField):
         :type prices: dict
         :param specs: List of AnalysisService UID -> Result Range mappings
         :type specs: list
+        :param hidden: List of AnalysisService UID -> Hidden mappings
+        :type hidden: list
         :returns: list of new assigned Analyses
         """
-
         # This setter returns a list of new set Analyses
         new_analyses = []
 
         # Current assigned analyses
         analyses = instance.objectValues("Analysis")
 
-        # Analyses which are in a non-open state must be retained
+        # Analyses which are in a non-open state must be retained, except those
+        # that are in a registered state (the sample has not been received)
         non_open_analyses = filter(lambda an: not an.isOpen(), analyses)
+        non_open_analyses = filter(
+            lambda an: api.get_workflow_status_of(an) != "registered",
+            non_open_analyses)
 
         # Prevent removing all analyses
         #
@@ -114,8 +132,7 @@ class ARAnalysesField(ObjectField):
                                .format(AddAnalysis))
 
         # Bail out if the user has not the right permission
-        sm = getSecurityManager()
-        if not sm.checkPermission(AddAnalysis, instance):
+        if not check_permission(AddAnalysis, instance):
             raise Unauthorized("You do not have the '{}' permission"
                                .format(AddAnalysis))
 
@@ -134,9 +151,19 @@ class ARAnalysesField(ObjectField):
         # Modify existing AR specs with new form values of selected analyses.
         self._update_specs(instance, specs)
 
+        # Create a mapping of Service UID -> Hidden status
+        if hidden is None:
+            hidden = []
+        hidden = dict(map(lambda d: (d.get("uid"), d.get("hidden")), hidden))
+
+        # Ensure we have a prices dictionary
+        if prices is None:
+            prices = dict()
+
         # CREATE/MODIFY ANALYSES
 
         for service in services:
+            service_uid = api.get_uid(service)
             keyword = service.getKeyword()
 
             # Create the Analysis if it doesn't exist
@@ -146,8 +173,11 @@ class ARAnalysesField(ObjectField):
                 analysis = create_analysis(instance, service)
                 new_analyses.append(analysis)
 
+            # set the hidden status
+            analysis.setHidden(hidden.get(service_uid, False))
+
             # Set the price of the Analysis
-            self._update_price(analysis, service, prices)
+            analysis.setPrice(prices.get(service_uid, service.getPrice()))
 
         # DELETE ANALYSES
 
@@ -181,21 +211,6 @@ class ARAnalysesField(ObjectField):
             if worksheet:
                 worksheet.removeAnalysis(analysis)
 
-            # Unset the partition reference
-            # TODO Remove in >v1.3.0 - This is kept for backwards-compatibility
-            part = analysis.getSamplePartition()
-            if part:
-                # From this partition, remove the reference to the current
-                # analysis that is going to be removed to prevent inconsistent
-                # states (Sample Partitions referencing to Analyses that do not
-                # exist anymore
-                an_uid = api.get_uid(analysis)
-                part_ans = part.getAnalyses() or []
-                part_ans = filter(
-                    lambda an: api.get_uid(an) != an_uid, part_ans)
-                part.setAnalyses(part_ans)
-            # Unset the Analysis-to-Partition reference
-            analysis.setSamplePartition(None)
             delete_ids.append(analysis.getId())
 
         if delete_ids:
@@ -253,17 +268,6 @@ class ARAnalysesField(ObjectField):
         logger.error("ARAnalysesField doesn't accept objects from {} type. "
                      "The object will be dismissed.".format(portal_type))
         return None
-
-    def _update_price(self, analysis, service, prices):
-        """Update the Price of the Analysis
-
-        :param analysis: Analysis Object
-        :param service: Analysis Service Object
-        :param prices: Price mapping
-        """
-        prices = prices or {}
-        price = prices.get(service.UID(), service.getPrice())
-        analysis.setPrice(price)
 
     def _update_specs(self, instance, specs):
         """Update AR specifications

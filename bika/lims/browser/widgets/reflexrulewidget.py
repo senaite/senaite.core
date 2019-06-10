@@ -1,9 +1,22 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of SENAITE.CORE
+# This file is part of SENAITE.CORE.
 #
-# Copyright 2018 by it's authors.
-# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2019 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
 import json
 
@@ -366,7 +379,7 @@ class ReflexRuleWidget(RecordsWidget):
         pc = getToolByName(self, 'portal_catalog')
         methods = [obj.getObject() for obj in pc(
                     portal_type='Method',
-                    inactive_state='active')]
+                    is_active=True)]
         bsc = getToolByName(self, 'bika_setup_catalog')
         for method in methods:
             # Get the analysis services related to each method
@@ -386,7 +399,7 @@ class ReflexRuleWidget(RecordsWidget):
                 service_methods_uid = analysiservice.getAvailableMethodUIDs()
                 query_dict = {
                     'portal_type': 'WorksheetTemplate',
-                    'inactive_state': 'active',
+                    'is_active': True,
                     'sort_on': 'sortable_title',
                     'getMethodUID': {
                         "query": service_methods_uid + [''],

@@ -1,0 +1,144 @@
+<?xml version="1.0"?>
+<dc-workflow xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+             workflow_id="senaite_cancellable_type_workflow"
+             title="Senaite cancellable type Workflow"
+             description=""
+             state_variable="review_state"
+             initial_state="active"
+             manager_bypass="False"
+             i18n:domain="senaite.core">
+
+  <!--
+  Basic workflow for senaite content types that implement ICancellable.
+  Deletion of objects is not allowed, regardless of the role. Nevertheless, the
+  workflow provides the transitions "cancel" and "reinstate".
+
+  IMPORTANT(1)
+  Some types can live either inside setup or inside client (e.g. Profiles,
+  Templates, Sample Points, Sample Types, etc.). Since all the permissions set
+  here (except "Delete objects") are acquired=True, they will acquire the roles
+  from their parent. Hence, if the container of an object is a Client object,
+  the permissions set at Client level will apply.
+
+  IMPORTANT(2)
+  Some types may require changes to this workflow. E.g.:
+
+    - By default, LabClerk cannot cancel/reinstate an object unless he/she is
+      the Owner. This restriction maybe should not apply for objects like
+      InvoiceBatch.
+
+  So, instead of hacking here (changing permissions wide or explicitly define
+  them in setuphandlers, etc.), please create a new workflow using this one as
+  a template and bind the type that does not fit 100% well to the new workflow
+  instead!
+
+  Follow this advice if you want the constellations to be happy. Thanks.
+  -->
+
+  <!-- PERMISSIONS -->
+  <!-- Plone generic permissions -->
+  <permission>Access contents information</permission>
+  <permission>Delete objects</permission>
+  <permission>List folder contents</permission>
+  <permission>Modify portal content</permission>
+  <permission>View</permission>
+
+  <!-- Senaite permissions for transitions (govern guards) -->
+  <permission>senaite.core: Transition: Reinstate</permission>
+  <permission>senaite.core: Transition: Cancel</permission>
+
+  <!-- State: active -->
+  <state state_id="active" title="Active" i18n:attributes="title">
+    <exit-transition transition_id="cancel" />
+
+    <!-- Transition permissions -->
+    <permission-map name="senaite.core: Transition: Cancel" acquired="True" />
+
+    <!-- Plone's permissions -->
+    <permission-map name="Access contents information" acquired="True" />
+    <permission-map name="Delete objects" acquired="True" />
+    <permission-map name="List folder contents" acquired="True" />
+    <permission-map name="Modify portal content" acquired="True" />
+    <permission-map name="View" acquired="True" />
+  </state>
+
+  <!-- State: cancelled -->
+  <state state_id="cancelled" title="Cancelled" i18n:attributes="title">
+    <exit-transition transition_id="reinstate" />
+
+    <!-- Transition permissions -->
+    <permission-map name="senaite.core: Transition: Reinstate" acquired="True" />
+
+    <!-- Plone's permissions -->
+    <permission-map name="Access contents information" acquired="True" />
+    <permission-map name="Delete objects" acquired="True" />
+    <permission-map name="List folder contents" acquired="True" />
+    <permission-map name="Modify portal content" acquired="True" />
+    <permission-map name="View" acquired="True" />
+  </state>
+
+  <!-- Transition: reinstate -->
+  <transition transition_id="reinstate" title="Reinstate" new_state="active" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Reinstate</action>
+    <guard>
+      <guard-permission>senaite.core: Transition: Reinstate</guard-permission>
+      <guard-expression>python:here.guard_handler("reinstate")</guard-expression>
+    </guard>
+  </transition>
+  <!-- Transition: cancel -->
+  <transition transition_id="cancel" title="Cancel" new_state="cancelled" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Cancel</action>
+    <guard>
+      <guard-permission>senaite.core: Transition: Cancel</guard-permission>
+      <guard-expression>python:here.guard_handler("cancel")</guard-expression>
+    </guard>
+  </transition>
+
+
+
+  <variable variable_id="action" for_catalog="False" for_status="True" update_always="True">
+    <description>Previous transition</description>
+    <default>
+      <expression>transition/getId|nothing</expression>
+    </default>
+    <guard>
+    </guard>
+  </variable>
+
+  <variable variable_id="actor" for_catalog="False" for_status="True" update_always="True">
+    <description>The ID of the user who performed the last transition</description>
+    <default>
+      <expression>user/getId</expression>
+    </default>
+    <guard>
+    </guard>
+  </variable>
+
+  <variable variable_id="comments" for_catalog="False" for_status="True" update_always="True">
+    <description>Comment about the last transition</description>
+    <default>
+      <expression>python:state_change.kwargs.get('comment', '')</expression>
+    </default>
+    <guard>
+    </guard>
+  </variable>
+
+  <variable variable_id="review_history" for_catalog="False" for_status="False" update_always="False">
+    <description>Provides access to workflow history</description>
+    <default>
+      <expression>state_change/getHistory</expression>
+    </default>
+    <guard>
+    </guard>
+  </variable>
+
+  <variable variable_id="time" for_catalog="False" for_status="True" update_always="True">
+    <description>When the previous transition was performed</description>
+    <default>
+      <expression>state_change/getDateTime</expression>
+    </default>
+    <guard>
+    </guard>
+  </variable>
+
+</dc-workflow>

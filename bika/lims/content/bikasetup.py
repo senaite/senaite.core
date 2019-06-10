@@ -1,12 +1,45 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of SENAITE.CORE
+# This file is part of SENAITE.CORE.
 #
-# Copyright 2018 by it's authors.
-# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
-
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2019 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
 from AccessControl import ClassSecurityInfo
+from Products.ATExtensions.ateapi import RecordsField
+from Products.Archetypes.Field import TextField
+from Products.Archetypes.Widget import RichWidget
+from Products.Archetypes.atapi import BooleanField
+from Products.Archetypes.atapi import BooleanWidget
+from Products.Archetypes.atapi import DecimalWidget
+from Products.Archetypes.atapi import FixedPointField
+from Products.Archetypes.atapi import IntegerField
+from Products.Archetypes.atapi import IntegerWidget
+from Products.Archetypes.atapi import LinesField
+from Products.Archetypes.atapi import MultiSelectionWidget
+from Products.Archetypes.atapi import InAndOutWidget
+from Products.Archetypes.atapi import ReferenceField
+from Products.Archetypes.atapi import Schema
+from Products.Archetypes.atapi import SelectionWidget
+from Products.Archetypes.atapi import StringField
+from Products.Archetypes.atapi import TextAreaWidget
+from Products.Archetypes.atapi import registerType
+from Products.Archetypes.utils import DisplayList
+from Products.Archetypes.utils import IntDisplayList
+from Products.CMFCore.utils import getToolByName
 from archetypes.referencebrowserwidget import ReferenceBrowserWidget
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import DurationField
@@ -16,6 +49,7 @@ from bika.lims.browser.widgets import RejectionSetupWidget
 from bika.lims.config import ARIMPORT_OPTIONS
 from bika.lims.config import ATTACHMENT_OPTIONS
 from bika.lims.config import CURRENCIES
+from bika.lims.config import WEEKDAYS
 from bika.lims.config import DECIMAL_MARKS
 from bika.lims.config import MULTI_VERIFICATION_TYPE
 from bika.lims.config import PROJECTNAME
@@ -28,26 +62,6 @@ from bika.lims.locales import COUNTRIES
 from bika.lims.numbergenerator import INumberGenerator
 from bika.lims.vocabularies import getStickerTemplates as _getStickerTemplates
 from plone.app.folder import folder
-from Products.Archetypes.atapi import BooleanField
-from Products.Archetypes.atapi import BooleanWidget
-from Products.Archetypes.atapi import DecimalWidget
-from Products.Archetypes.atapi import FixedPointField
-from Products.Archetypes.atapi import IntegerField
-from Products.Archetypes.atapi import IntegerWidget
-from Products.Archetypes.atapi import LinesField
-from Products.Archetypes.atapi import MultiSelectionWidget
-from Products.Archetypes.atapi import ReferenceField
-from Products.Archetypes.atapi import Schema
-from Products.Archetypes.atapi import SelectionWidget
-from Products.Archetypes.atapi import StringField
-from Products.Archetypes.atapi import StringWidget
-from Products.Archetypes.atapi import TextAreaWidget
-from Products.Archetypes.atapi import TextField
-from Products.Archetypes.atapi import registerType
-from Products.Archetypes.utils import DisplayList
-from Products.Archetypes.utils import IntDisplayList
-from Products.ATExtensions.ateapi import RecordsField
-from Products.CMFCore.utils import getToolByName
 from zope.component import getUtility
 from zope.interface import implements
 
@@ -160,14 +174,6 @@ schema = BikaFolderSchema.copy() + Schema((
         )
     ),
     BooleanField(
-        'AllowClerksToEditClients',
-        schemata="Security",
-        default=False,
-        widget=BooleanWidget(
-            label=_("Allow Lab Clerks to create and edit clients"),
-        )
-    ),
-    BooleanField(
         'RestrictWorksheetUsersAccess',
         schemata="Security",
         default=True,
@@ -216,7 +222,7 @@ schema = BikaFolderSchema.copy() + Schema((
         schemata="Accounting",
         required=1,
         vocabulary=CURRENCIES,
-        default='ZAR',
+        default='EUR',
         widget=SelectionWidget(
             label=_("Currency"),
             description=_("Select the currency the site will use to display prices."),
@@ -250,7 +256,7 @@ schema = BikaFolderSchema.copy() + Schema((
     FixedPointField(
         'VAT',
         schemata="Accounting",
-        default='14.00',
+        default='19.00',
         widget=DecimalWidget(
             label=_("VAT %"),
             description=_(
@@ -292,44 +298,6 @@ schema = BikaFolderSchema.copy() + Schema((
                 "Set an acceptable minimum number of results before QC statistics "
                 "will be calculated and plotted"),
         )
-    ),
-    BooleanField(
-        'IncludePreviousFromBatch',
-        schemata="Results Reports",
-        default=False,
-        widget=BooleanWidget(
-            label=_("Include Previous Results From Batch"),
-            description=_(
-                "If there are previous results for a service in the "
-                "same batch of Samples, they will be displayed "
-                "in the report.")
-        )
-    ),
-    IntegerField(
-        'BatchEmail',
-        schemata="Results Reports",
-        required=1,
-        default=5,
-        widget=IntegerWidget(
-            label=_("Maximum columns per results email"),
-            description=_(
-                "Set the maximum number of samples per results email. "
-                "Too many columns per email are difficult to read for some clients "
-                "who prefer fewer results per email"),
-        )
-    ),
-    TextField(
-        'ResultFooter',
-        schemata="Results Reports",
-        default_content_type='text/plain',
-        allowed_content_types=('text/plain', ),
-        default_output_type="text/plain",
-        default="",
-        widget=TextAreaWidget(
-            label=_("Result Footer"),
-            description=_("This text will be appended to results reports."),
-            append_only=False,
-        ),
     ),
     BooleanField(
         'CategoriseAnalysisServices',
@@ -483,18 +451,6 @@ schema = BikaFolderSchema.copy() + Schema((
             format='select',
         )
     ),
-    IntegerField(
-        'AutoImportInterval',
-        schemata="Sampling and COC",
-        default="0",
-        widget=IntegerWidget(
-            label=_("Interval of Auto-Importing Files in minutes"),
-            description=_("System will upload result files of different \
-                          instruments/interfaces periodically in the interval \
-                          of this value (Minutes). Any value below 10, will \
-                          disable Auto-Importing.")
-        )
-    ),
     StringField(
         'WorksheetLayout',
         schemata="Appearance",
@@ -541,7 +497,7 @@ schema = BikaFolderSchema.copy() + Schema((
     ),
     BooleanField(
         'PrintingWorkflowEnabled',
-        schemata="Sampling and COC",
+        schemata="Sampling",
         default=False,
         widget=BooleanWidget(
             label=_("Enable the Results Report Printing workflow"),
@@ -553,7 +509,7 @@ schema = BikaFolderSchema.copy() + Schema((
     ),
     BooleanField(
         'SamplingWorkflowEnabled',
-        schemata="Sampling and COC",
+        schemata="Sampling",
         default=False,
         widget=BooleanWidget(
             label=_("Enable Sampling"),
@@ -562,7 +518,7 @@ schema = BikaFolderSchema.copy() + Schema((
     ),
     BooleanField(
         'ScheduleSamplingEnabled',
-        schemata="Sampling and COC",
+        schemata="Sampling",
         default=False,
         widget=BooleanWidget(
             label=_("Enable Sampling Scheduling"),
@@ -574,7 +530,7 @@ schema = BikaFolderSchema.copy() + Schema((
     ),
     BooleanField(
         'ShowPartitions',
-        schemata="Sampling and COC",
+        schemata="Sampling",
         default=True,
         widget=BooleanWidget(
             label=_("Display individual sample partitions "),
@@ -583,16 +539,30 @@ schema = BikaFolderSchema.copy() + Schema((
     ),
     BooleanField(
         'SamplePreservationEnabled',
-        schemata="Sampling and COC",
+        schemata="Sampling",
         default=False,
         widget=BooleanWidget(
             label=_("Enable Sample Preservation"),
             description=_("")
         ),
     ),
+    LinesField(
+        "Workdays",
+        schemata="Sampling",
+        vocabulary=WEEKDAYS,
+        default=tuple(map(str, range(7))),
+        required=1,
+        widget=InAndOutWidget(
+            visible=True,
+            label=_("Laboratory Workdays"),
+            description=_("Only laboratory workdays are considered for the "
+                          "analysis turnaround time calculation. "),
+            format="checkbox",
+        )
+    ),
     DurationField(
         'DefaultTurnaroundTime',
-        schemata="Sampling and COC",
+        schemata="Sampling",
         required=1,
         default={"days": 5, "hours": 0, "minutes": 0},
         widget=DurationWidget(
@@ -600,12 +570,14 @@ schema = BikaFolderSchema.copy() + Schema((
             description=_(
                 "This is the default maximum time allowed for performing "
                 "analyses.  It is only used for analyses where the analysis "
-                "service does not specify a turnaround time."),
+                "service does not specify a turnaround time. "
+                "Only laboratory workdays are considered."
+            ),
         )
     ),
     DurationField(
         'DefaultSampleLifetime',
-        schemata="Sampling and COC",
+        schemata="Sampling",
         required=1,
         default={"days": 30, "hours": 0, "minutes": 0},
         widget=DurationWidget(
@@ -616,52 +588,57 @@ schema = BikaFolderSchema.copy() + Schema((
                 "in the sample types setup"),
         )
     ),
-    RecordsField(
-        'RejectionReasons',
-        schemata="Sampling and COC",
-        widget=RejectionSetupWidget(
-            label=_("Enable sampling rejection"),
-            description=_("Select this to activate the rejection workflow "
-                          "for Samples and Samples. A 'Reject' "
-                          "option will be displayed in the actions menu for "
-                          "these objects.")
-        ),
-    ),
     BooleanField(
-        'NotifyOnRejection',
+        'NotifyOnSampleRejection',
         schemata="Notifications",
         default=False,
         widget=BooleanWidget(
-            label=_("Sample rejection email notification"),
+            label=_("Email notification on Sample rejection"),
             description=_("Select this to activate automatic notifications "
-                          "via email to the Client when a Sample or Analysis "
-                          "Request is rejected.")
+                          "via email to the Client when a Sample is rejected.")
         ),
     ),
     BooleanField(
-        'NotifyOnARRetract',
+        'NotifyOnSampleInvalidation',
         schemata="Notifications",
         default=True,
         widget=BooleanWidget(
             label=_("Email notification on Sample invalidation"),
             description=_("Select this to activate automatic notifications "
-                          "via email to the Client and Lab Managers when an Analysis "
-                          "Request is invalidated.")
+                          "via email to the Client and Lab Managers when a "
+                          "Sample is invalidated.")
         ),
     ),
     TextField(
-        'COCAttestationStatement',
-        schemata="Sampling and COC",
-        widget=TextAreaWidget(
-            label=_("COC Attestation Statement"),
-        )
-    ),
-    StringField(
-        'COCFooter',
-        schemata="Sampling and COC",
-        widget=StringWidget(
-            label=_("COC Footer"),
-        )
+        "EmailBodySampleInvalidation",
+        default_content_type='text/html',
+        default_output_type='text/x-html-safe',
+        schemata="Notifications",
+        label=_("Email body for Sample Invalidation notifications"),
+        default=
+            "Some non-conformities have been detected in the results report "
+            "published for Sample $sample_link. "
+            "<br/><br/> "
+            "A new Sample $retest_link has been created automatically, and the "
+            "previous request has been invalidated. "
+            "<br/><br/> "
+            "The root cause is under investigation and corrective "
+            "action has been initiated. "
+            "<br/><br/> "
+            "$lab_address",
+        widget=RichWidget(
+            label=_("Email body for Sample Invalidation notifications"),
+            description=_("Set the text for the body of the email to be sent, "
+                          ", if option 'Email notification on Sample "
+                          "'invalidation' enabled,  to the Sample's client "
+                          "contact. You can use reserved keywords: $sample_id, "
+                          "$sample_link, $retest_id, $retest_link, "
+                          "$lab_address"),
+            default_mime_type='text/x-rst',
+            output_mime_type='text/x-html',
+            allow_file_upload=False,
+            rows=10,
+        ),
     ),
     StringField(
         'AutoPrintStickers',
@@ -769,6 +746,24 @@ schema = BikaFolderSchema.copy() + Schema((
                 'prefix': 'analysisrequest',
                 'sequence_type': 'generated',
                 'split_length': 1
+            }, {
+                'form': '{parent_ar_id}-P{partition_count:02d}',
+                'portal_type': 'AnalysisRequestPartition',
+                'prefix': 'analysisrequestpartition',
+                'sequence_type': '',
+                'split-length': 1
+            }, {
+                'form': '{parent_base_id}-R{retest_count:02d}',
+                'portal_type': 'AnalysisRequestRetest',
+                'prefix': 'analysisrequestretest',
+                'sequence_type': '',
+                'split-length': 1
+            }, {
+                'form': '{parent_ar_id}-S{secondary_count:02d}',
+                'portal_type': 'AnalysisRequestSecondary',
+                'prefix': 'analysisrequestsecondary',
+                'sequence_type': '',
+                'split-length': 1
             },
         ],
         widget=RecordsWidget(
@@ -839,20 +834,8 @@ schema = BikaFolderSchema.copy() + Schema((
         widget=RejectionSetupWidget(
             label=_("Enable the rejection workflow"),
             description=_("Select this to activate the rejection workflow "
-                          "for Samples and Samples. A 'Reject' "
-                          "option will be displayed in the actions menu for "
-                          "these objects.")
-        ),
-    ),
-    BooleanField(
-        'NotifyOnRejection',
-        schemata="Analyses",
-        default=False,
-        widget=BooleanWidget(
-            label=_("Email notification on rejection"),
-            description=_("Select this to activate automatic notifications "
-                          "via email to the Client when a Sample or Analysis "
-                          "Request is rejected.")
+                          "for Samples. A 'Reject' option will be displayed in "
+                          "the actions menu.")
         ),
     ),
     IntegerField(
@@ -865,20 +848,6 @@ schema = BikaFolderSchema.copy() + Schema((
             description=_("Default value of the 'Sample count' when users click 'ADD' button to create new Samples"),
         )
     ),
-    TextField(
-        'COCAttestationStatement',
-        schemata="Analyses",
-        widget=TextAreaWidget(
-            label=_("COC Attestation Statement"),
-        )
-    ),
-    StringField(
-        'COCFooter',
-        schemata="Analyses",
-        widget=StringWidget(
-            label=_("COC Footer"),
-        )
-    ),
 ))
 
 schema['title'].validators = ()
@@ -888,7 +857,7 @@ schema['title']._validationLayer()
 
 
 class BikaSetup(folder.ATFolder):
-    """
+    """LIMS Setup
     """
     implements(IBikaSetup, IHaveNoBreadCrumbs)
 
@@ -932,7 +901,7 @@ class BikaSetup(folder.ATFolder):
         """
         bsc = getToolByName(self, 'bika_setup_catalog')
         brains = bsc(portal_type='AnalysisService',
-                     inactive_state='active')
+                     is_active=True)
         items = [(b.UID, b.Title) for b in brains]
         items.insert(0, ("", ""))
         items.sort(lambda x, y: cmp(x[1], y[1]))
@@ -965,6 +934,16 @@ class BikaSetup(folder.ATFolder):
         else:
             return False
 
+    def getRejectionReasonsItems(self):
+        """Return the list of predefined rejection reasons
+        """
+        reasons = self.getRejectionReasons()
+        if not reasons:
+            return []
+        reasons = reasons[0]
+        keys = filter(lambda key: key != "checkbox", reasons.keys())
+        return map(lambda key: reasons[key], sorted(keys)) or []
+
     def _getNumberOfRequiredVerificationsVocabulary(self):
         """
         Returns a DisplayList with the available options for the
@@ -983,5 +962,6 @@ class BikaSetup(folder.ATFolder):
         for i in range(len(keys)):
             results.append('%s: %s' % (keys[i], values[i]))
         return "\n".join(results)
+
 
 registerType(BikaSetup, PROJECTNAME)

@@ -1,9 +1,22 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of SENAITE.CORE
+# This file is part of SENAITE.CORE.
 #
-# Copyright 2018 by it's authors.
-# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2019 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
 import json
 from collections import OrderedDict
@@ -35,7 +48,7 @@ from zope.interface import implements
 from zope.publisher.interfaces import IPublishTraverse
 
 AR_CONFIGURATION_STORAGE = "bika.lims.browser.analysisrequest.manage.add"
-SKIP_FIELD_ON_COPY = ["Sample", "Remarks"]
+SKIP_FIELD_ON_COPY = ["Sample", "PrimaryAnalysisRequest", "Remarks"]
 
 
 def returns_json(func):
@@ -481,7 +494,7 @@ class AnalysisRequestAddView(BrowserView):
         bsc = api.get_tool("bika_setup_catalog")
         query = {
             "portal_type": "AnalysisCategory",
-            "inactive_state": "active",
+            "is_active": True,
             "sort_on": "sortable_title",
         }
         categories = bsc(query)
@@ -512,7 +525,7 @@ class AnalysisRequestAddView(BrowserView):
         query = {
             "portal_type": "AnalysisService",
             "getPointOfCapture": poc,
-            "inactive_state": "active",
+            "is_active": True,
             "sort_on": "sortable_title",
         }
         services = bsc(query)
@@ -1088,8 +1101,14 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         container_type_uid = container_type and container_type.UID() or ""
         container_type_title = container_type and container_type.Title() or ""
 
+        # Sampling deviation
+        deviation = obj.getSamplingDeviation()
+        deviation_uid = deviation and deviation.UID() or ""
+        deviation_title = deviation and deviation.Title() or ""
+
         info.update({
-            "sample_id": obj.getSampleID(),
+            "sample_id": obj.getId(),
+            "batch_uid": obj.getBatchUID() or None,
             "date_sampled": self.to_iso_date(obj.getDateSampled()),
             "sampling_date": self.to_iso_date(obj.getSamplingDate()),
             "sample_type_uid": sample_type_uid,
@@ -1104,8 +1123,14 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             "sample_point_title": sample_point_title,
             "environmental_conditions": obj.getEnvironmentalConditions(),
             "composite": obj.getComposite(),
+            "client_uid": obj.getClientUID(),
+            "client_title": obj.getClientTitle(),
+            "contact": self.get_contact_info(obj.getContact()),
+            "client_order_number": obj.getClientOrderNumber(),
             "client_sample_id": obj.getClientSampleID(),
             "client_reference": obj.getClientReference(),
+            "sampling_deviation_uid": deviation_uid,
+            "sampling_deviation_title": deviation_title,
             "sampling_workflow_enabled": obj.getSamplingWorkflowEnabled(),
             "remarks": obj.getRemarks(),
         })
@@ -1247,7 +1272,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             _specifications = self.get_objs_from_record(
                 record, "Specification_uid")
             _templates = self.get_objs_from_record(record, "Template_uid")
-            _samples = self.get_objs_from_record(record, "Sample_uid")
+            _samples = self.get_objs_from_record(record, "PrimaryAnalysisRequest_uid")
             _profiles = self.get_objs_from_record(record, "Profiles_uid")
             _services = self.get_objs_from_record(record, "Analyses")
             _sampletypes = self.get_objs_from_record(record, "SampleType_uid")
@@ -1345,7 +1370,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                     else:
                         service_to_profiles[service_uid] = [uid]
 
-            # SAMPLES
+            # PRIMARY ANALYSIS REQUESTS
             for uid, obj in _samples.iteritems():
                 # get the sample metadata
                 metadata = self.get_sample_info(obj)
@@ -1612,17 +1637,13 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             # We keep the title to check if AR is newly created
             # and UID to print stickers
             ARs[ar.Title()] = ar.UID()
-
-            _attachments = []
             for attachment in attachments.get(n, []):
                 if not attachment.filename:
                     continue
                 att = _createObjectByType("Attachment", client, tmpID())
                 att.setAttachmentFile(attachment)
                 att.processForm()
-                _attachments.append(att)
-            if _attachments:
-                ar.setAttachment(_attachments)
+                ar.addAttachment(att)
         actions.resume()
 
         level = "info"
@@ -1638,17 +1659,14 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
 
         # Display a portal message
         self.context.plone_utils.addPortalMessage(message, level)
-        # Automatic label printing won't print "register" labels for sec. ARs
+
+        # Automatic label printing
         bika_setup = api.get_bika_setup()
         auto_print = bika_setup.getAutoPrintStickers()
-
-        # https://github.com/bikalabs/bika.lims/pull/2153
-        new_ars = [uid for key, uid in ARs.items() if key[-1] == '1']
-
-        if 'register' in auto_print and new_ars:
+        if 'register' in auto_print and ARs:
             return {
                 'success': message,
-                'stickers': new_ars,
+                'stickers': ARs.values(),
                 'stickertemplate': bika_setup.getAutoStickerTemplate()
             }
         else:

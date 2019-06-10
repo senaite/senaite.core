@@ -1,15 +1,29 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of SENAITE.CORE
+# This file is part of SENAITE.CORE.
 #
-# Copyright 2018 by it's authors.
-# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2019 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
 import json
 
 import plone
 import plone.protect
 from bika.lims import api
+from bika.lims.api.security import check_permission
 from bika.lims.browser import BrowserView
 from bika.lims.config import POINTS_OF_CAPTURE
 from bika.lims.content.analysisservice import getContainers
@@ -17,14 +31,15 @@ from bika.lims.interfaces import IAnalysisService
 from bika.lims.interfaces import IJSONReadExtender
 from bika.lims.jsonapi import get_include_fields
 from bika.lims.jsonapi import load_field_values
+from bika.lims.permissions import ViewLogTab
 from bika.lims.utils import get_image
 from magnitude import mg
 from plone.memoize import view
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.component import adapts
-from zope.interface import implements
 from zope.i18n.locales import locales
+from zope.interface import implements
 
 
 class AnalysisServiceInfoView(BrowserView):
@@ -66,20 +81,37 @@ class AnalysisServiceInfoView(BrowserView):
         service_uid = self.request.form.get("service_uid")
         return api.get_object_by_uid(service_uid, None)
 
+    @view.memoize
+    def get_service_url(self):
+        service = self.get_service()
+        return api.get_url(service)
+
+    @view.memoize
+    def is_accredited(self):
+        service = self.get_service()
+        return service.getAccredited()
+
+    def get_analysis_or_service(self):
+        analysis = self.get_analysis()
+        if analysis:
+            return analysis
+        return self.get_service()
+
     def get_methods(self):
         if not self.get_service():
             return None
         return self.get_service().getMethods()
 
+    @view.memoize
     def get_analysis(self):
         analysis_uid = self.request.form.get("analysis_uid")
         return api.get_object_by_uid(analysis_uid, None)
 
     @view.memoize
     def get_calculation(self):
-        if not self.get_service():
+        if not self.get_analysis_or_service():
             return None
-        return self.get_service().getCalculation()
+        return self.get_analysis_or_service().getCalculation()
 
     def get_dependent_services(self):
         if not self.get_calculation():
@@ -91,13 +123,18 @@ class AnalysisServiceInfoView(BrowserView):
             return []
         return self.get_calculation().getCalculationDependencies()
 
+    def can_view_logs_of(self, obj):
+        """Checks if the current user is allowed to see the logs
+        """
+        return check_permission(ViewLogTab, obj)
+
     def analysis_log_view(self):
         """Get the log view of the requested analysis
         """
-        analysis = self.get_analysis()
-        if analysis is None:
+        service = self.get_analysis_or_service()
+        if not self.can_view_logs_of(service):
             return None
-        view = api.get_view("log", context=analysis, request=self.request)
+        view = api.get_view("auditlog", context=service, request=self.request)
         view.update()
         view.before_render()
         return view

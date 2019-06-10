@@ -1,22 +1,36 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of SENAITE.CORE
+# This file is part of SENAITE.CORE.
 #
-# Copyright 2018 by it's authors.
-# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2019 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
 from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
-from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
 from Products.Archetypes.public import *
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
 from bika.lims.browser.widgets import DateTimeWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.interfaces import ICancellable
+from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
 
@@ -134,6 +148,7 @@ class InstrumentMaintenanceTaskStatuses:
     INQUEUE = "In queue"
 
 class InstrumentMaintenanceTask(BaseFolder):
+    implements(ICancellable)
     security = ClassSecurityInfo()
     schema = schema
     displayContentsTab = False
@@ -158,7 +173,7 @@ class InstrumentMaintenanceTask(BaseFolder):
         workflow = getToolByName(self, 'portal_workflow')
         if self.getClosed():
             return InstrumentMaintenanceTaskStatuses.CLOSED
-        elif workflow.getInfoFor(self, 'cancellation_state', '') == 'cancelled':
+        elif not api.is_active(self):
             return InstrumentMaintenanceTaskStatuses.CANCELLED
         else:
             now = DateTime()

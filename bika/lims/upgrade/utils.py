@@ -1,31 +1,46 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of SENAITE.CORE
+# This file is part of SENAITE.CORE.
 #
-# Copyright 2018 by it's authors.
-# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2019 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
-from Products.CMFCore.utils import getToolByName
-from Products.ZCatalog.ProgressHandler import ZLogHandler
+import logging
+import time
+
+import transaction
+from Acquisition import aq_base
+from bika.lims import api
 from bika.lims import logger
 from bika.lims.catalog.catalog_utilities import addZCTextIndex
-from Products.contentmigration.walker import CustomQueryWalker
-from Products.contentmigration.migrator import BaseInlineMigrator
-from Products.contentmigration.common import HAS_LINGUA_PLONE
-from Products.Archetypes.interfaces import ISchema
-from plone.app.blob.interfaces import IBlobField
 from plone.app.blob.field import BlobWrapper
-from Acquisition import aq_base
+from plone.app.blob.interfaces import IBlobField
+from Products.Archetypes.interfaces import ISchema
+from Products.CMFCore.utils import getToolByName
+from Products.contentmigration.common import HAS_LINGUA_PLONE
+from Products.contentmigration.migrator import BaseInlineMigrator
+from Products.contentmigration.walker import CustomQueryWalker
+from Products.ZCatalog.ProgressHandler import ZLogHandler
 from transaction import savepoint
+
 # Interesting page for logging indexing process and others:
 # https://github.com/plone/Products.ZCatalog/tree/master/src/Products/ZCatalog
 # and
 # https://github.com/plone/Products.CMFPlone/blob/master/Products/CMFPlone
 # /CatalogTool.py
-import traceback
-import sys
-import transaction
-import logging
 
 LOG = logging.getLogger('contentmigration')
 
@@ -96,7 +111,7 @@ class BikaCustomQueryWalker(CustomQueryWalker):
 
             try:
                 state = obj._p_changed
-            except:
+            except Exception:
                 state = 0
             if obj is not None:
                 yield obj
@@ -107,7 +122,7 @@ class BikaCustomQueryWalker(CustomQueryWalker):
             if obj_num_total == counter:
                 logger.info(
                     'Progress: {} objects have been migrated out of {}'
-                        .format(counter, obj_num_total))
+                    .format(counter, obj_num_total))
 
 
 # helper to build custom blob migrators for the given type. It is based on
@@ -353,3 +368,71 @@ class UpgradeUtils(object):
         cats = self.refreshcatalog + self.reindexcatalog.keys()
         for catid in cats:
             self.cleanAndRebuildCatalog(catid)
+
+    def recursiveUpdateRoleMappings(self, ob, wfs=None, commit_window=1000):
+        """Code taken from Products.CMFPlone.WorkflowTool
+
+        This version adds some commits and loggins
+        """
+        wf_tool = api.get_tool("portal_workflow")
+
+        if wfs is None:
+            wfs = {}
+            for id in wf_tool.objectIds():
+                wf = wf_tool.getWorkflowById(id)
+                if hasattr(aq_base(wf), 'updateRoleMappingsFor'):
+                    wfs[id] = wf
+
+        # Returns a count of updated objects.
+        count = 0
+        wf_ids = wf_tool.getChainFor(ob)
+        if wf_ids:
+            changed = 0
+            for wf_id in wf_ids:
+                wf = wfs.get(wf_id, None)
+                if wf is not None:
+                    did = wf.updateRoleMappingsFor(ob)
+                    if did:
+                        changed = 1
+            if changed:
+                count = count + 1
+                if hasattr(aq_base(ob), 'reindexObject'):
+                    # Reindex security-related indexes
+                    try:
+                        ob.reindexObject(idxs=['allowedRolesAndUsers'])
+                    except TypeError:
+                        # Catch attempts to reindex portal_catalog.
+                        pass
+        if hasattr(aq_base(ob), 'objectItems'):
+            obs = ob.objectItems()
+            if obs:
+                committed = 0
+                logged = 0
+                for k, v in obs:
+                    if count - logged >= 100:
+                        logger.info(
+                            "Updating role mappings for {}: {}".format(
+                                repr(ob), count))
+                        logged += count
+
+                    changed = getattr(v, '_p_changed', 0)
+                    processed = self.recursiveUpdateRoleMappings(v, wfs,
+                                                                 commit_window)
+                    count += processed
+                    if changed is None:
+                        # Re-ghostify.
+                        v._p_deactivate()
+
+                    if count - committed >= commit_window:
+                        commit_transaction()
+                        committed += count
+        return count
+
+
+def commit_transaction():
+    start = time.time()
+    logger.info("Commit transaction ...")
+    transaction.commit()
+    end = time.time()
+    logger.info("Commit transaction ... Took {:.2f}s [DONE]"
+                .format(end - start))

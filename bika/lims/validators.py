@@ -1,26 +1,39 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of SENAITE.CORE
+# This file is part of SENAITE.CORE.
 #
-# Copyright 2018 by it's authors.
-# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2019 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
 import re
 import string
 import types
 from time import strptime as _strptime
 
+from bika.lims import api
+from bika.lims import bikaMessageFactory as _
+from bika.lims import logger
+from bika.lims.api import APIError
+from bika.lims.utils import to_utf8
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
-from Products.ZCTextIndex.ParseTree import ParseError
 from Products.validation import validation
 from Products.validation.interfaces.IValidator import IValidator
+from Products.ZCTextIndex.ParseTree import ParseError
 from zope.interface import implements
-
-from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import to_utf8
-from bika.lims import api
-from bika.lims import logger
 
 
 class IdentifierTypeAttributesValidator:
@@ -110,7 +123,7 @@ class UniqueFieldValidator:
             catalogs = api.get_catalogs_for(context)
             catalog = catalogs[0]
             return map(api.get_object, catalog(query))
-        except (IndexError, UnicodeDecodeError, ParseError, api.BikaLIMSError) as e:
+        except (IndexError, UnicodeDecodeError, ParseError, APIError) as e:
             # fall back to the object values of the parent
             logger.warn("UniqueFieldValidator: Catalog query {} failed "
                         "for catalog {} ({}) -> returning object values of {}"
@@ -449,7 +462,7 @@ class FormulaValidator:
 
         for keyword in keywords:
             # Check if the service keyword exists and is active.
-            dep_service = bsc(getKeyword=keyword, inactive_state="active")
+            dep_service = bsc(getKeyword=keyword, is_active=True)
             if not dep_service and keyword not in interim_keywords:
                 msg = _(
                     "Validation failed: Keyword '${keyword}' is invalid",
@@ -1320,7 +1333,7 @@ class ReflexRuleValidator:
             as_brain = pc(
                 UID=as_uid,
                 portal_type='AnalysisService',
-                inactive_state='active')
+                is_active=True)
             if as_brain[0] and as_brain[0].UID in method_ans_uids:
                 pass
             else:

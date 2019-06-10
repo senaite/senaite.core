@@ -1,9 +1,22 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of SENAITE.CORE
+# This file is part of SENAITE.CORE.
 #
-# Copyright 2018 by it's authors.
-# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2019 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
 import collections
 
@@ -16,7 +29,6 @@ from bika.lims.utils import get_image
 from bika.lims.utils import get_link
 from bika.lims.utils import logged_in_client
 from bika.lims.utils import t
-from bika.lims.workflow import wasTransitionPerformed
 from plone.memoize import view
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.i18n.locales import locales
@@ -35,7 +47,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
             "portal_type": "AnalysisService",
             "sort_on": "sortable_title",
             "sort_order": "ascending",
-            "inactive_state": "active"
+            "is_active": True
         }
         self.context_actions = {}
         self.icon = "{}/{}".format(
@@ -94,12 +106,12 @@ class AnalysisRequestAnalysesView(BikaListingView):
             {
                 "id": "default",
                 "title": _("All"),
-                "contentFilter": {"inactive_state": "active"},
+                "contentFilter": {"is_active": True},
                 "columns": columns,
                 "transitions": [{"id": "disallow-all-possible-transitions"}],
                 "custom_transitions": [
                     {
-                        "id": "save_analyses_button",
+                        "id": "save_analyses",
                         "title": _("Save")
                     }
                 ],
@@ -146,11 +158,6 @@ class AnalysisRequestAnalysesView(BikaListingView):
         currency = setup.getCurrency()
         return locale.numbers.currencies[currency].symbol
 
-    def is_submitted(self, obj):
-        """Check if the "submit" transition was performed
-        """
-        return wasTransitionPerformed(obj, "submit")
-
     @view.memoize
     def get_logged_in_client(self):
         """Return the logged in client
@@ -196,15 +203,20 @@ class AnalysisRequestAnalysesView(BikaListingView):
         if category not in self.categories:
             self.categories.append(category)
 
+        price = obj.getPrice()
         keyword = obj.getKeyword()
+
         if uid in self.analyses:
             analysis = self.analyses[uid]
             # Might differ from the service keyword
             keyword = analysis.getKeyword()
             # Mark the row as disabled if the analysis is not in an open state
-            item["disabled"] = not analysis.isOpen()
+            item["disabled"] = not any([analysis.isOpen(),
+                                        analysis.isRegistered()])
             # get the hidden status of the analysis
             hidden = analysis.getHidden()
+            # get the price of the analysis
+            price = analysis.getPrice()
 
         # get the specification of this object
         rr = self.get_results_range()
@@ -212,7 +224,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
 
         item["Title"] = obj.Title()
         item["Unit"] = obj.getUnit()
-        item["Price"] = obj.getPrice()
+        item["Price"] = price
         item["before"]["Price"] = self.get_currency_symbol()
         item["allow_edit"] = self.get_editable_columns(obj)
         item["selected"] = uid in self.selected

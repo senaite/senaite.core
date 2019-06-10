@@ -34,8 +34,6 @@ Functional Helpers:
 Variables:
 
     >>> portal = self.portal
-    >>> browser = self.getBrowser()
-    >>> portal_url = portal.absolute_url()
     >>> request = self.request
     >>> bika_setup = portal.bika_setup
     >>> bikasetup = portal.bika_setup
@@ -70,14 +68,12 @@ We need to create some basic objects for the test:
     >>> total_terpenes
     <AnalysisService at /plone/bika_setup/bika_analysisservices/analysisservice-1>
     >>> service_uids = [total_terpenes.UID()]
-    >>> transaction.commit()
 
 Create a Reference Definition for blank:
 
     >>> blankdef = api.create(bikasetup.bika_referencedefinitions, "ReferenceDefinition", title="Blank definition", Blank=True)
     >>> blank_refs = [{'uid': total_terpenes.UID(), 'result': '0', 'min': '0', 'max': '0'},]
     >>> blankdef.setReferenceResults(blank_refs)
-    >>> transaction.commit()
 
 And for control:
 
@@ -94,7 +90,6 @@ And for control:
     ...                      Blank=False, ExpiryDate=date_future,
     ...                      ReferenceResults=control_refs)
 
-    >>> transaction.commit()
 
 Create an Analysis Request:
 
@@ -110,7 +105,6 @@ Create an Analysis Request:
     >>> ar = create_analysisrequest(client, request, values, service_uids)
     >>> ar
     <AnalysisRequest at /plone/clients/client-1/W-0001>
-    >>> transaction.commit()
     >>> success = doActionFor(ar, 'receive')
 
 Create a new Worksheet and add the analyses:
@@ -118,15 +112,12 @@ Create a new Worksheet and add the analyses:
     >>> worksheet = api.create(portal.worksheets, "Worksheet", Analyst='test_user_1_')
     >>> worksheet
     <Worksheet at /plone/worksheets/WS-001>
-    >>> transaction.commit()
-    >>> worksheets_url = worksheet.absolute_url() + '/manage_results'
 
     >>> analyses = map(api.get_object, ar.getAnalyses())
     >>> analysis = analyses[0]
     >>> analysis
     <Analysis at /plone/clients/client-1/W-0001/TotalTerpenes>
     >>> worksheet.addAnalysis(analysis)
-    >>> transaction.commit()
     >>> analysis.getWorksheet().UID() == worksheet.UID()
     True
 

@@ -350,6 +350,51 @@ Reset self-verification:
     >>> bikasetup.setSelfVerificationEnabled(False)
 
 
+Rejection of retests
+--------------------
+
+Create an Analysis Request, receive and submit all results:
+
+    >>> ar = new_ar([Cu, Fe, Au])
+    >>> success = do_action_for(ar, "receive")
+    >>> analyses = ar.getAnalyses(full_objects=True)
+    >>> for analysis in analyses:
+    ...     analysis.setResult(12)
+    ...     success = do_action_for(analysis, "submit")
+    >>> api.get_workflow_status_of(ar)
+    'to_be_verified'
+
+Retract one of the analyses:
+
+    >>> analysis = analyses[0]
+    >>> success = do_action_for(analysis, "retract")
+    >>> api.get_workflow_status_of(analysis)
+    'retracted'
+
+    >>> api.get_workflow_status_of(ar)
+    'sample_received'
+
+Reject the retest:
+
+    >>> retest = analysis.getRetest()
+    >>> success = do_action_for(retest, "reject")
+    >>> api.get_workflow_status_of(retest)
+    'rejected'
+
+    >>> api.get_workflow_status_of(ar)
+    'to_be_verified'
+
+Verify remaining analyses:
+
+    >>> bikasetup.setSelfVerificationEnabled(True)
+    >>> success = do_action_for(analyses[1], "verify")
+    >>> success = do_action_for(analyses[2], "verify")
+    >>> bikasetup.setSelfVerificationEnabled(False)
+
+    >>> api.get_workflow_status_of(ar)
+    'verified'
+
+
 Check permissions for Reject transition
 ---------------------------------------
 
@@ -486,6 +531,7 @@ In `verified` state, the analysis cannot be rejected:
 
     >>> bikasetup.setSelfVerificationEnabled(True)
     >>> analysis = analysis.getRetest()
+    >>> analysis.setResult(12)
     >>> success = do_action_for(analysis, "submit")
     >>> success = do_action_for(analysis, "verify")
     >>> api.get_workflow_status_of(analysis)
@@ -540,7 +586,7 @@ In rejected state, exactly these roles can view results:
     >>> success = do_action_for(analysis, "reject")
     >>> api.get_workflow_status_of(analysis)
     'rejected'
-    >>> get_roles_for_permission("BIKA: View Results", analysis)
+    >>> get_roles_for_permission("senaite.core: View Results", analysis)
     ['LabManager', 'Manager', 'RegulatoryInspector']
 
 And no transition can be done from this state:

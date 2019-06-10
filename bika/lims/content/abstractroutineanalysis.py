@@ -1,16 +1,26 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of SENAITE.CORE
+# This file is part of SENAITE.CORE.
 #
-# Copyright 2018 by it's authors.
-# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2019 by it's authors.
+# Some rights reserved, see README and LICENSE.
+
+from datetime import timedelta
 
 from AccessControl import ClassSecurityInfo
-from datetime import timedelta
-from Products.Archetypes.Field import BooleanField, FixedPointField, \
-    StringField
-from Products.Archetypes.Schema import Schema
-from Products.ATContentTypes.utils import DT2dt, dt2DT
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import UIDReferenceField
@@ -20,22 +30,20 @@ from bika.lims.content.abstractanalysis import AbstractAnalysis
 from bika.lims.content.abstractanalysis import schema
 from bika.lims.content.analysisspec import ResultsRangeDict
 from bika.lims.content.reflexrule import doReflexRuleAction
-from bika.lims.interfaces import IAnalysis, IRoutineAnalysis, ICancellable
+from bika.lims.interfaces import IAnalysis
+from bika.lims.interfaces import ICancellable
+from bika.lims.interfaces import IRoutineAnalysis
 from bika.lims.interfaces.analysis import IRequestAnalysis
-from bika.lims.workflow import doActionFor
 from bika.lims.workflow import getTransitionDate
-from bika.lims.workflow import skip
-from bika.lims.workflow import wasTransitionPerformed
+from Products.Archetypes.Field import BooleanField
+from Products.Archetypes.Field import FixedPointField
+from Products.Archetypes.Field import StringField
+from Products.Archetypes.Schema import Schema
+from Products.ATContentTypes.utils import DT2dt
+from Products.ATContentTypes.utils import dt2DT
+from Products.CMFCore.permissions import View
 from zope.interface import implements
 
-
-# TODO Remove in >v1.3.0 - This is kept for backwards-compatibility
-# The physical sample partition linked to the Analysis.
-SamplePartition = UIDReferenceField(
-    'SamplePartition',
-    required=0,
-    allowed_types=('SamplePartition',)
-)
 
 # True if the analysis is created by a reflex rule
 IsReflexAnalysis = BooleanField(
@@ -85,6 +93,8 @@ ReflexRuleActionsTriggered = StringField(
 # is submitted.
 Uncertainty = FixedPointField(
     'Uncertainty',
+    read_permission=View,
+    write_permission="Field: Edit Result",
     precision=10,
     widget=DecimalWidget(
         label=_("Uncertainty")
@@ -109,7 +119,6 @@ schema = schema.copy() + Schema((
     ReflexRuleAction,
     ReflexRuleActionsTriggered,
     ReflexRuleLocalID,
-    SamplePartition,
     Uncertainty,
     HiddenManually,
 ))
@@ -284,7 +293,39 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
         start = self.getStartProcessDate()
         if not start:
             return None
-        return dt2DT(DT2dt(start) + timedelta(minutes=api.to_minutes(**tat)))
+
+        # delta time when the first analysis is considered as late
+        delta = timedelta(minutes=api.to_minutes(**tat))
+
+        # calculated due date
+        end = dt2DT(DT2dt(start) + delta)
+
+        # delta is within one day, return immediately
+        if delta.days == 0:
+            return end
+
+        # get the laboratory workdays
+        setup = api.get_setup()
+        workdays = setup.getWorkdays()
+
+        # every day is a workday, no need for calculation
+        if workdays == tuple(map(str, range(7))):
+            return end
+
+        # reset the due date to the received date, and add only for configured
+        # workdays another day
+        due_date = end - delta.days
+
+        days = 0
+        while days < delta.days:
+            # add one day to the new due date
+            due_date += 1
+            # skip if the weekday is a non working day
+            if str(due_date.asdatetime().weekday()) not in workdays:
+                continue
+            days += 1
+
+        return due_date
 
     @security.public
     def getSampleType(self):
@@ -363,16 +404,21 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
         :return: Analyses the current analysis depends on
         :rtype: list of IAnalysis
         """
-        dependents = []
-        for sibling in self.getSiblings(retracted=retracted):
-            calculation = sibling.getCalculation()
+        def is_dependent(analysis):
+            calculation = analysis.getCalculation()
             if not calculation:
-                continue
-            depservices = calculation.getDependentServices()
-            dep_keywords = [dep.getKeyword() for dep in depservices]
-            if self.getKeyword() in dep_keywords:
-                dependents.append(sibling)
-        return dependents
+                return False
+
+            services = calculation.getRawDependentServices()
+            if not services:
+                return False
+
+            query = dict(UID=services, getKeyword=self.getKeyword())
+            services = api.search(query, "bika_setup_catalog")
+            return len(services) > 0
+
+        siblings = self.getSiblings(retracted=retracted)
+        return filter(lambda sib: is_dependent(sib), siblings)
 
     @security.public
     def getDependencies(self, retracted=False):
@@ -387,12 +433,17 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
         if not calc:
             return []
 
+        # If the calculation this analysis is bound does not have analysis
+        # keywords (only interims), no need to go further
+        service_uids = calc.getRawDependentServices()
+        if len(service_uids) == 0:
+            return []
+
         dependencies = []
         for sibling in self.getSiblings(retracted=retracted):
             # We get all analyses that depend on me, also if retracted (maybe
             # I am one of those that are retracted!)
-            deps = sibling.getDependents(retracted=True)
-            deps = [dep.UID() for dep in deps]
+            deps = map(api.get_uid, sibling.getDependents(retracted=True))
             if self.UID() in deps:
                 dependencies.append(sibling)
         return dependencies

@@ -1,9 +1,22 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of SENAITE.CORE
+# This file is part of SENAITE.CORE.
 #
-# Copyright 2018 by it's authors.
-# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2019 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
 from bika.lims import bikaMessageFactory as _
 from Products.Archetypes.public import DisplayList
@@ -21,6 +34,12 @@ GLOBALS = globals()
 
 VERSIONABLE_TYPES = ('Calculation',
                      )
+
+# Upper detection limit operand
+UDL = ">"
+
+# Lower detection limit operand
+LDL = "<"
 
 POINTS_OF_CAPTURE = DisplayList((
     ('field', _('Field Analyses')),
@@ -66,13 +85,6 @@ ARIMPORT_OPTIONS = DisplayList((
     ('p', _('Profiles')),
     # ('s', _('Special')),
 ))
-EMAIL_SUBJECT_OPTIONS = DisplayList((
-    ('ar', _('Sample ID')),
-    ('co', _('Order ID')),
-    ('cr', _('Client Reference')),
-    ('cs', _('Client SID')),
-))
-
 GENDERS = DisplayList((
     ('male', _('Male')),
     ('female', _('Female')),
@@ -89,6 +101,16 @@ QCANALYSIS_TYPES = DisplayList((
     ('b', _('Blank QC analyses')),
     ('c', _('Control QC analyses')),
     ('d', _('Duplicate QC analyses'))
+))
+
+WEEKDAYS = DisplayList((
+    ('0', _('Monday')),
+    ('1', _('Tuesday')),
+    ('2', _('Wednesday')),
+    ('3', _('Thursday')),
+    ('4', _('Friday')),
+    ('5', _('Saturday')),
+    ('6', _('Sunday')),
 ))
 
 currencies = locales.getLocale('en').numbers.currencies.values()

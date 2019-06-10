@@ -1,16 +1,33 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of SENAITE.CORE
+# This file is part of SENAITE.CORE.
 #
-# Copyright 2018 by it's authors.
-# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2019 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.browser import BrowserView
+from bika.lims.permissions import FieldEditResultsInterpretation
 from plone import protect
 from plone.app.textfield import RichTextValue
+from Products.Archetypes.event import ObjectEditedEvent
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from zope import event
 
 
 class ARResultsInterpretationView(BrowserView):
@@ -21,11 +38,12 @@ class ARResultsInterpretationView(BrowserView):
 
     def __init__(self, context, request, **kwargs):
         super(ARResultsInterpretationView, self).__init__(context, request)
+        self.request = request
         self.context = context
 
     def __call__(self):
         if self.request.form.get("submitted", False):
-            self.handle_form_submit()
+            return self.handle_form_submit()
         return self.template()
 
     def handle_form_submit(self):
@@ -37,6 +55,11 @@ class ARResultsInterpretationView(BrowserView):
         res = self.request.form.get("ResultsInterpretationDepts", [])
         self.context.setResultsInterpretationDepts(res)
         self.add_status_message(_("Changes Saved"), level="info")
+        # reindex the object after save to update all catalog metadata
+        self.context.reindexObject()
+        # notify object edited event
+        event.notify(ObjectEditedEvent(self.context))
+        return self.request.response.redirect(api.get_url(self.context))
 
     def add_status_message(self, message, level="info"):
         """Set a portal status message
@@ -47,7 +70,7 @@ class ARResultsInterpretationView(BrowserView):
         """Check if edit is allowed
         """
         checkPermission = self.context.portal_membership.checkPermission
-        return checkPermission("Modify portal content", self.context)
+        return checkPermission(FieldEditResultsInterpretation, self.context)
 
     def get_text(self, department, mode="raw"):
         """Returns the text saved for the selected department

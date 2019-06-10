@@ -8,7 +8,7 @@
              manager_bypass="False"
              i18n:domain="senaite.core">
 
-  <permission>BIKA: Manage ARImport</permission>
+  <permission>senaite.core: Manage ARImport</permission>
   <permission>List folder contents</permission>
   <permission>Add portal content</permission>
   <permission>Delete objects</permission>
@@ -19,8 +19,8 @@
   <state state_id="active" title="Active" i18n:attributes="title">
     <exit-transition transition_id="" />
 
-    <!-- BIKA: Manage ARImport -->
-    <permission-map name="BIKA: Manage ARImport" acquired="False">
+    <!-- senaite.core: Manage ARImport -->
+    <permission-map name="senaite.core: Manage ARImport" acquired="False">
       <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
@@ -85,8 +85,6 @@
       <expression>state_change/getHistory</expression>
     </default>
     <guard>
-      <guard-permission>Request review</guard-permission>
-      <guard-permission>Review portal content</guard-permission>
     </guard>
   </variable>
 

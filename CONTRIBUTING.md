@@ -1,15 +1,15 @@
 # Contributing to senaite.core
 
-Third-party contributions are essential for keeping `senaite.core` continuously 
-improving. We simply cannot access the huge number of platforms and myriad 
-configurations for running `senaite.core`. We want to keep it as easy as 
-possible to contribute changes that get things working in your environment. 
-There are a few guidelines that we need contributors to follow so that we can 
+Third-party contributions are essential for keeping `senaite.core` continuously
+improving. We simply cannot access the huge number of platforms and myriad
+configurations for running `senaite.core`. We want to keep it as easy as
+possible to contribute changes that get things working in your environment.
+There are a few guidelines that we need contributors to follow so that we can
 have a chance of keeping on top of things.
 
-The following is a set of guidelines for contributing to senaite.core, which is 
-hosted in the [SENAITE Organization](https://github.com/senaite) on GitHub. 
-These are just guidelines, not rules. Use your best judgment, and feel free to 
+The following is a set of guidelines for contributing to senaite.core, which is
+hosted in the [SENAITE Organization](https://github.com/senaite) on GitHub.
+These are just guidelines, not rules. Use your best judgment, and feel free to
 propose changes to this document in a [pull request](#how-to-submit-a-pull-request).
 
 ## Code of Conduct
@@ -63,21 +63,21 @@ contribute to the source code.
    https://github.com/senaite/senaite.core/fork). This will copy the whole
    `senaite.core` repository to your personal account.
 
-   3. Then, go to your favourite working folder in your computer and clone your 
+   3. Then, go to your favourite working folder in your computer and clone your
    forked repository by typing (replacing ```YOUR_USERNAME``` by
    the actual username of your GitHub account):
 
           $ git clone https://github.com/YOUR_USERNAME/senaite.core
 
-   4. Your forked repository https://github.com/YOUR_USERNAME/senaite.core will 
-   receive the default name of `origin`. You can also add the original 
+   4. Your forked repository https://github.com/YOUR_USERNAME/senaite.core will
+   receive the default name of `origin`. You can also add the original
    `senaite.core` repository, which is usually called `upstream`:
 
           $ cd senaite.core
           $ git remote add upstream https://github.com/senaite/senaite.core.git
 
-To verify the new upstream repository you have specified for your fork, type 
-`git remote -v`. You should see the URL for your fork as `origin`, and the URL 
+To verify the new upstream repository you have specified for your fork, type
+`git remote -v`. You should see the URL for your fork as `origin`, and the URL
 for the original repository as `upstream`:
 
 ```
@@ -99,7 +99,7 @@ $ git pull upstream master
 ```
 
 Now you can do changes, add files, do commits (please take a look at
-[how to write good commit messages](https://chris.beams.io/posts/git-commit/)!) 
+[how to write good commit messages](https://chris.beams.io/posts/git-commit/)!)
 and push them to your repository:
 
 ```
@@ -107,7 +107,7 @@ $ git push origin my_feature
 ```
 
 If there have been new pushes to the `master` branch of the `upstream`
-repository since the last time you pulled from it, you might want to put your 
+repository since the last time you pulled from it, you might want to put your
 commits on top of them (this is mandatory for pull requests):
 
 ```
@@ -129,7 +129,7 @@ pros and cons between doing a `gir rebase` or `git merge`. Good documentation on
 this regard can be found in the [Atlassian's Merging vs. Rebasing tutorial](
 https://www.atlassian.com/git/tutorials/merging-vs-rebasing).
 
-Note this `git rebase` or `git merge` is required for keeping your branch 
+Note this `git rebase` or `git merge` is required for keeping your branch
 aligned with the latest code from the repos. The incorporation of your work into
 `master` through a Pull Request will always be done using `git merge`.
 
@@ -141,7 +141,7 @@ GitHub repository, switch to your `my_feature` branch, and click the
 _**Pull Request**_ button, which will do all the work for you. Ensure the
 comparison is done with the `master` branch unless you forked from another one.
 
-Once a pull request is sent, the Developer Team will review the set of changes, 
+Once a pull request is sent, the Developer Team will review the set of changes,
 discuss potential modifications, and even push follow-up commits if necessary.
 
 Some things that will increase the chance that your pull request is accepted:
@@ -149,7 +149,7 @@ Some things that will increase the chance that your pull request is accepted:
  * Write tests.
  * Follow [Plone's Python styleguide](https://docs.plone.org/develop/styleguide/python.html).
  * Write a descriptive and detailed summary. Please consider that reviewing pull
-   requests is hard, so include as much information as possible to make your 
+   requests is hard, so include as much information as possible to make your
    pull request's intent clear.
  * Do not address multiple bugfixes or features in the same Pull Request.
  * Include whitespace and formatting changes in discrete commits.
@@ -161,17 +161,17 @@ For more details about Git usage, please check out Chapters 1 and 2 from
 
 ## Contributing with new ideas
 
-All suggestions and proposals are welcome. We strongly believe that the 
-feedback of the community is an important asset to make a better project. With 
-the aim to get the most of these contributions, but without interfering with 
-the undergoing work regarding to issues and Pull Requests, we've created a 
+All suggestions and proposals are welcome. We strongly believe that the
+feedback of the community is an important asset to make a better project. With
+the aim to get the most of these contributions, but without interfering with
+the undergoing work regarding to issues and Pull Requests, we've created a
 [Community discussion board](
-https://community.senaite.org). This is the right place if 
+https://community.senaite.org). This is the right place if
 you are willing to discuss about new ideas, further steps or improvements.
 
-If you want to keep in touch with the community members and up-to-date 
+If you want to keep in touch with the community members and up-to-date
 with the latest discussions, please join to the [Gitter community channel](
 https://gitter.im/senaite/Lobby).
 
-If you want to stay informed about senaite at easy pace, don't forget 
+If you want to stay informed about senaite at easy pace, don't forget
 to subscribe to our [users list](https://sourceforge.net/projects/senaite/lists/senaite-users)

@@ -61,7 +61,7 @@ Variables:
 
 We need to create some basic objects for the test:
 
-    >>> setRoles(portal, TEST_USER_ID, ['LabManager',])
+    >>> setRoles(portal, TEST_USER_ID, ['LabManager', 'Sampler'])
     >>> client = api.create(portal.clients, "Client", Name="Happy Hills", ClientID="HH", MemberDiscountApplies=True)
     >>> contact = api.create(client, "Contact", Firstname="Rita", Lastname="Mohale")
     >>> sampletype = api.create(bikasetup.bika_sampletypes, "SampleType", title="Water", Prefix="W")
@@ -95,7 +95,7 @@ Cannot submit if the Analysis Request has not been yet received:
     >>> transitioned[0]
     False
     >>> api.get_workflow_status_of(analysis)
-    'unassigned'
+    'registered'
 
 But if I receive the Analysis Request:
 
@@ -747,12 +747,15 @@ Set a result:
 
 Exactly these roles can submit:
 
-    >>> get_roles_for_permission("BIKA: Edit Results", analysis)
+    >>> get_roles_for_permission("senaite.core: Edit Results", analysis)
     ['Analyst', 'LabManager', 'Manager']
+
+    >>> get_roles_for_permission("senaite.core: Edit Field Results", analysis)
+    ['LabManager', 'Manager', 'Sampler']
 
 And these roles can view results:
 
-    >>> get_roles_for_permission("BIKA: View Results", analysis)
+    >>> get_roles_for_permission("senaite.core: View Results", analysis)
     ['Analyst', 'LabClerk', 'LabManager', 'Manager', 'RegulatoryInspector']
 
 Current user can submit because has the `LabManager` role:
@@ -762,7 +765,7 @@ Current user can submit because has the `LabManager` role:
 
 But cannot for other roles:
 
-    >>> setRoles(portal, TEST_USER_ID, ['Authenticated', 'LabClerk', 'RegulatoryInspector', 'Sampler'])
+    >>> setRoles(portal, TEST_USER_ID, ['Authenticated', 'LabClerk', 'RegulatoryInspector'])
     >>> isTransitionAllowed(analysis, "submit")
     False
 

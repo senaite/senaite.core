@@ -1,19 +1,33 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of SENAITE.CORE
+# This file is part of SENAITE.CORE.
 #
-# Copyright 2018 by it's authors.
-# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2019 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
 from AccessControl.SecurityInfo import ClassSecurityInfo
+from Products.ATContentTypes.content import schemata
+from Products.Archetypes import atapi
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import ISubGroups
+from bika.lims.permissions import AddSubGroup
 from plone.app.folder.folder import ATFolder
 from plone.app.folder.folder import ATFolderSchema
-from Products.Archetypes import atapi
-from Products.ATContentTypes.content import schemata
 from zope.interface.declarations import implements
 
 
@@ -27,6 +41,7 @@ class SubGroupsView(BikaListingView):
         self.context_actions = {
             _('Add'): {
                 'url': 'createObject?type_name=SubGroup',
+                'permission': AddSubGroup,
                 'icon': '++resource++bika.lims.images/add.png'
             }
         }
@@ -51,12 +66,12 @@ class SubGroupsView(BikaListingView):
         self.review_states = [
             {'id': 'default',
              'title': _('Active'),
-             'contentFilter': {'inactive_state': 'active'},
+             'contentFilter': {'is_active': True},
              'transitions': [{'id': 'deactivate'}, ],
              'columns': ['Title', 'Description', 'SortKey']},
             {'id': 'inactive',
              'title': _('Inactive'),
-             'contentFilter': {'inactive_state': 'inactive'},
+             'contentFilter': {'is_active': False},
              'transitions': [{'id': 'activate'}, ],
              'columns': ['Title', 'Description', 'SortKey']},
             {'id': 'all',

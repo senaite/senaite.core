@@ -1,21 +1,30 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of SENAITE.CORE
+# This file is part of SENAITE.CORE.
 #
-# Copyright 2018 by it's authors.
-# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2019 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
 from AccessControl import ClassSecurityInfo
-
 from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.ATExtensions.ateapi import RecordsField
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
-from magnitude import mg
-from zope.interface import implements
-
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.browser.fields import DurationField
@@ -24,8 +33,10 @@ from bika.lims.browser.widgets import SampleTypeStickersWidget
 from bika.lims.browser.widgets.referencewidget import ReferenceWidget as brw
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.interfaces import ISampleType
+from bika.lims.interfaces import ISampleType, IDeactivable
 from bika.lims.vocabularies import getStickerTemplates
+from magnitude import mg
+from zope.interface import implements
 
 SMALL_DEFAULT_STICKER = 'small_default'
 LARGE_DEFAULT_STICKER = 'large_default'
@@ -172,7 +183,7 @@ schema['description'].widget.visible = True
 
 class SampleType(BaseContent, HistoryAwareMixin):
 
-    implements(ISampleType)
+    implements(ISampleType, IDeactivable)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
@@ -362,7 +373,7 @@ def SampleTypes(self, instance=None, allow_blank=False):
     bsc = getToolByName(instance, 'bika_setup_catalog')
     items = []
     for st in bsc(portal_type='SampleType',
-                  inactive_state='active',
+                  is_active=True,
                   sort_on = 'sortable_title'):
         items.append((st.UID, st.Title))
     items = allow_blank and [['','']] + list(items) or list(items)

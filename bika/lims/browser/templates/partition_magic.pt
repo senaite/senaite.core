@@ -238,19 +238,19 @@
                      type="submit"
                      name="button_preview"
                      i18n:attributes="value"
-                     value="Preview ↺"/>
+                     value="Preview"/>
               <!-- Create Partitions -->
               <input class="btn btn-success btn-sm"
                      type="submit"
                      name="button_create"
                      i18n:attributes="value"
-                     value="Create Partitions ⇶"/>
+                     value="Create Partitions"/>
               <!-- Cancel -->
               <input class="btn btn-default btn-sm"
                      type="submit"
                      name="button_cancel"
                      i18n:attributes="value"
-                     value="Cancel ⎋"/>
+                     value="Cancel"/>
             </div>
 
           </form>

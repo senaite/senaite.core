@@ -1,0 +1,229 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    i18n_domain="senaite.core">
+
+  <!-- Handler for "workflow_action"-like requests
+  This adapter is in charge to process workflow action requests from views
+  and/or delegate actions to third-party adapters or subscribers -->
+  <browser:page
+    for="*"
+    name="workflow_action"
+    class="bika.lims.browser.workflow.WorkflowActionHandler"
+    permission="zope.Public"
+    layer="bika.lims.interfaces.IBikaLIMS" />
+
+  <!-- Analysis Requests: "copy_to_new"
+  Note this applies wide, cause at the moment, this action only exists
+  for Analysis Requests and we always want this adapter to be in charge,
+  regardless of the context (Analysis Requests listing, Client folder, etc.) -->
+  <adapter
+    name="workflow_action_copy_to_new"
+    for="*
+         zope.publisher.interfaces.browser.IBrowserRequest"
+    factory=".analysisrequest.WorkflowActionCopyToNewAdapter"
+    provides="bika.lims.interfaces.IWorkflowActionAdapter"
+    permission="zope.Public" />
+
+  <!-- Analysis Request: "print_stickers"
+  Note this applies wide, cause at the moment, this action only exists
+  for Analysis Requests and we always want this adapter to be in charge,
+  regardless of the context (Analysis Requests listing, Client folder, etc.) -->
+  <adapter
+    name="workflow_action_print_stickers"
+    for="*
+         zope.publisher.interfaces.browser.IBrowserRequest"
+    factory=".analysisrequest.WorkflowActionPrintStickersAdapter"
+    provides="bika.lims.interfaces.IWorkflowActionAdapter"
+    permission="zope.Public" />
+
+  <!-- Analysis Request: "sample"
+  Note this applies wide, cause at the moment, this action only exists
+  for Analysis Requests and we always want this adapter to be in charge,
+  regardless of the context (Analysis Requests listing, Client folder, etc.) -->
+  <adapter
+    name="workflow_action_sample"
+    for="*
+         zope.publisher.interfaces.browser.IBrowserRequest"
+    factory=".analysisrequest.WorkflowActionSampleAdapter"
+    provides="bika.lims.interfaces.IWorkflowActionAdapter"
+    permission="zope.Public" />
+
+  <!-- Analysis Request: "schedule_sampling"
+  Note this applies wide, cause at the moment, this action only exists
+  for Analysis Requests and we always want this adapter to be in charge,
+  regardless of the context (Analysis Requests listing, Client folder, etc.) -->
+  <adapter
+    name="workflow_action_schedule_sampling"
+    for="*
+         zope.publisher.interfaces.browser.IBrowserRequest"
+    factory=".analysisrequest.WorkflowActionScheduleSamplingAdapter"
+    provides="bika.lims.interfaces.IWorkflowActionAdapter"
+    permission="zope.Public" />
+
+  <!-- Analysis Request: "preserve"
+  Note this applies wide, cause at the moment, this action only exists
+  for Analysis Requests and we always want this adapter to be in charge,
+  regardless of the context (Analysis Requests listing, Client folder, etc.) -->
+  <adapter
+    name="workflow_action_preserve"
+    for="*
+         zope.publisher.interfaces.browser.IBrowserRequest"
+    factory=".analysisrequest.WorkflowActionPreserveAdapter"
+    provides="bika.lims.interfaces.IWorkflowActionAdapter"
+    permission="zope.Public" />
+
+  <!-- Analysis Request: "receive"
+  Note this applies wide, cause at the moment, transition "receive" only exists
+  for Analysis Requests and we always want this adapter to be in charge,
+  regardless of the context (Analysis Requests listing, Client folder, etc.) -->
+  <adapter
+    name="workflow_action_receive"
+    for="*
+         zope.publisher.interfaces.browser.IBrowserRequest"
+    factory=".analysisrequest.WorkflowActionReceiveAdapter"
+    provides="bika.lims.interfaces.IWorkflowActionAdapter"
+    permission="zope.Public" />
+
+  <!-- Analysis Request: "create_partitions"
+  Note this applies wide, cause at the moment, this action only exists
+  for Analysis Requests and we always want this adapter to be in charge,
+  regardless of the context (Analysis Requests listing, Client folder, etc.) -->
+  <adapter
+    name="workflow_action_create_partitions"
+    for="*
+         zope.publisher.interfaces.browser.IBrowserRequest"
+    factory=".analysisrequest.WorkflowActionCreatePartitionsAdapter"
+    provides="bika.lims.interfaces.IWorkflowActionAdapter"
+    permission="zope.Public" />
+
+  <!-- Analysis Request: "prepublish"
+  Note this applies wide, cause at the moment, this action only exists
+  for Analysis Requests and we always want this adapter to be in charge,
+  regardless of the context (Analysis Requests listing, Client folder, etc.) -->
+  <adapter
+    name="workflow_action_prepublish"
+    for="*
+         zope.publisher.interfaces.browser.IBrowserRequest"
+    factory=".analysisrequest.WorkflowActionPublishAdapter"
+    provides="bika.lims.interfaces.IWorkflowActionAdapter"
+    permission="zope.Public" />
+
+  <!-- Analysis Request: "publish"
+  Note this applies wide, cause at the moment, this action only exists
+  for Analysis Requests and we always want this adapter to be in charge,
+  regardless of the context (Analysis Requests listing, Client folder, etc.) -->
+  <adapter
+    name="workflow_action_publish"
+    for="*
+         zope.publisher.interfaces.browser.IBrowserRequest"
+    factory=".analysisrequest.WorkflowActionPublishAdapter"
+    provides="bika.lims.interfaces.IWorkflowActionAdapter"
+    permission="zope.Public" />
+
+  <!-- Analysis Request: "republish"
+  Note this applies wide, cause at the moment, this action only exists
+  for Analysis Requests and we always want this adapter to be in charge,
+  regardless of the context (Analysis Requests listing, Client folder, etc.) -->
+  <adapter
+    name="workflow_action_republish"
+    for="*
+         zope.publisher.interfaces.browser.IBrowserRequest"
+    factory=".analysisrequest.WorkflowActionPublishAdapter"
+    provides="bika.lims.interfaces.IWorkflowActionAdapter"
+    permission="zope.Public" />
+
+  <!-- Analysis Request: "invalidate"
+  Note this applies wide, cause at the moment, this action only exists
+  for Analysis Requests and we always want this adapter to be in charge,
+  regardless of the context (Analysis Requests listing, Client folder, etc.) -->
+  <adapter
+    name="workflow_action_invalidate"
+    for="*
+         zope.publisher.interfaces.browser.IBrowserRequest"
+    factory=".analysisrequest.WorkflowActionInvalidateAdapter"
+    provides="bika.lims.interfaces.IWorkflowActionAdapter"
+    permission="zope.Public" />
+
+  <!-- Analysis Request: "print_sample"
+  Note this applies wide, cause at the moment, this action only exists
+  for Analysis Requests and we always want this adapter to be in charge,
+  regardless of the context (Analysis Requests listing, Client folder, etc.) -->
+  <adapter
+    name="workflow_action_print_sample"
+    for="*
+         zope.publisher.interfaces.browser.IBrowserRequest"
+    factory=".analysisrequest.WorkflowActionPrintSampleAdapter"
+    provides="bika.lims.interfaces.IWorkflowActionAdapter"
+    permission="zope.Public" />
+
+  <!-- Analysis Request: "reject"
+  Note this applies wide, cause at the moment, this action only exists
+  for Analysis Requests and we always want this adapter to be in charge,
+  regardless of the context (Analysis Requests listing, Client folder, etc.) -->
+  <adapter
+    name="workflow_action_reject"
+    for="*
+         zope.publisher.interfaces.browser.IBrowserRequest"
+    factory=".analysisrequest.WorkflowActionRejectAdapter"
+    provides="bika.lims.interfaces.IWorkflowActionAdapter"
+    permission="zope.Public" />
+
+  <!-- Analysis Request: "save_analyses" -->
+  <adapter
+    name="workflow_action_save_analyses"
+    for="bika.lims.interfaces.IAnalysisRequest
+         zope.publisher.interfaces.browser.IBrowserRequest"
+    factory=".analysisrequest.WorkflowActionSaveAnalysesAdapter"
+    provides="bika.lims.interfaces.IWorkflowActionAdapter"
+    permission="zope.Public" />
+
+  <!-- Worksheet: "assign" analyses -->
+  <adapter
+    name="workflow_action_assign"
+    for="bika.lims.interfaces.IWorksheet
+         zope.publisher.interfaces.browser.IBrowserRequest"
+    factory=".worksheet.WorkflowActionAssignAdapter"
+    provides="bika.lims.interfaces.IWorkflowActionAdapter"
+    permission="zope.Public" />
+
+  <!-- Worksheet: "reassign" analyst -->
+  <adapter
+    name="workflow_action_reassign"
+    for="bika.lims.interfaces.IWorksheetFolder
+         zope.publisher.interfaces.browser.IBrowserRequest"
+    factory=".worksheet.WorkflowActionReassignAdapter"
+    provides="bika.lims.interfaces.IWorkflowActionAdapter"
+    permission="zope.Public" />
+
+  <!-- Analysis: "submit" from inside AnalysisRequest context -->
+  <adapter
+    name="workflow_action_submit"
+    for="bika.lims.interfaces.IAnalysisRequest
+         zope.publisher.interfaces.browser.IBrowserRequest"
+    factory=".analysis.WorkflowActionSubmitAdapter"
+    provides="bika.lims.interfaces.IWorkflowActionAdapter"
+    permission="zope.Public" />
+
+  <!-- Analysis: "submit" from inside Worksheet context -->
+  <adapter
+    name="workflow_action_submit"
+    for="bika.lims.interfaces.IWorksheet
+         zope.publisher.interfaces.browser.IBrowserRequest"
+    factory=".analysis.WorkflowActionSubmitAdapter"
+    provides="bika.lims.interfaces.IWorkflowActionAdapter"
+    permission="zope.Public" />
+
+  <!-- Client: "publish_samples" action in the report listing
+
+  Publishes all contained samples of ARReports
+  -->
+  <adapter
+    name="workflow_action_publish_samples"
+    for="bika.lims.interfaces.IClient
+         zope.publisher.interfaces.browser.IBrowserRequest"
+    factory=".client.WorkflowActionPublishSamplesAdapter"
+    provides="bika.lims.interfaces.IWorkflowActionAdapter"
+    permission="senaite.core.permissions.TransitionPublishResults" />
+
+</configure>

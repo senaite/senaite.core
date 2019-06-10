@@ -1,9 +1,22 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of SENAITE.CORE
+# This file is part of SENAITE.CORE.
 #
-# Copyright 2018 by it's authors.
-# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2019 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
 from AccessControl import ClassSecurityInfo
 import csv
@@ -119,7 +132,7 @@ Contact = ReferenceField(
         label=_('Primary Contact'),
         size=20,
         visible=True,
-        base_query={'inactive_state': 'active'},
+        base_query={'is_active': True},
         showOn=True,
         popup_width='300px',
         colModel=[{'columnName': 'UID', 'hidden': True},
@@ -136,7 +149,7 @@ Batch = ReferenceField(
         label=_('Batch'),
         visible=True,
         catalog_name='bika_catalog',
-        base_query={'review_state': 'open', 'cancellation_state': 'active'},
+        base_query={'review_state': 'open'},
         showOn=True,
     ),
 )

@@ -1,53 +1,65 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of SENAITE.CORE
+# This file is part of SENAITE.CORE.
 #
-# Copyright 2018 by it's authors.
-# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2019 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
-import Missing
 import re
-
-from Acquisition import aq_base
-from AccessControl.PermissionRole import rolesForPermissionOn
-
 from datetime import datetime
 from datetime import timedelta
+
+import Missing
+from AccessControl.PermissionRole import rolesForPermissionOn
+from Acquisition import aq_base
+from bika.lims import logger
+from bika.lims.interfaces import IClient
+from bika.lims.interfaces import IContact
+from bika.lims.interfaces import ILabContact
 from DateTime import DateTime
-
-from Products.CMFPlone.utils import base_hasattr, safe_unicode
-from Products.CMFCore.interfaces import ISiteRoot
-from Products.CMFCore.interfaces import IFolderish
-from Products.Archetypes.BaseObject import BaseObject
-from Products.ZCatalog.interfaces import ICatalogBrain
-from Products.CMFPlone.utils import _createObjectByType
-from Products.CMFCore.WorkflowCore import WorkflowException
-from Products.CMFCore.utils import getToolByName
-from bika.lims.interfaces import IClient, IContact, ILabContact
-
-from zope import globalrequest
-from zope.event import notify
-from zope.interface import implements
-from zope.component import getUtility
-from zope.component import getMultiAdapter
-from zope.component.interfaces import IFactory
-from zope.component.interfaces import ObjectEvent
-from zope.component.interfaces import IObjectEvent
-from zope.lifecycleevent import modified
-from zope.lifecycleevent import ObjectCreatedEvent
-from zope.security.interfaces import Unauthorized
-
+from DateTime.interfaces import DateTimeError
 from plone import api as ploneapi
-from plone.memoize.volatile import DontCache
 from plone.api.exc import InvalidParameterError
-from plone.dexterity.interfaces import IDexterityContent
 from plone.app.layout.viewlets.content import ContentHistoryView
+from plone.dexterity.interfaces import IDexterityContent
 from plone.i18n.normalizer.interfaces import IFileNameNormalizer
 from plone.i18n.normalizer.interfaces import IIDNormalizer
+from plone.memoize.volatile import DontCache
+from Products.Archetypes.atapi import DisplayList
+from Products.Archetypes.BaseObject import BaseObject
+from Products.CMFCore.interfaces import IFolderish
+from Products.CMFCore.interfaces import ISiteRoot
+from Products.CMFCore.utils import getToolByName
+from Products.CMFCore.WorkflowCore import WorkflowException
+from Products.CMFPlone.RegistrationTool import get_member_by_login_name
+from Products.CMFPlone.utils import _createObjectByType
+from Products.CMFPlone.utils import base_hasattr
+from Products.CMFPlone.utils import safe_unicode
+from Products.PlonePAS.tools.memberdata import MemberData
+from Products.ZCatalog.interfaces import ICatalogBrain
+from zope import globalrequest
+from zope.component import getMultiAdapter
+from zope.component import getUtility
+from zope.component.interfaces import IFactory
+from zope.event import notify
+from zope.lifecycleevent import ObjectCreatedEvent
+from zope.lifecycleevent import modified
+from zope.security.interfaces import Unauthorized
 
-from bika.lims import logger
-
-"""Bika LIMS Framework API
+"""SENAITE LIMS Framework API
 
 Please see bika.lims/docs/API.rst for documentation.
 
@@ -75,45 +87,8 @@ _marker = object()
 UID_RX = re.compile("[a-z0-9]{32}$")
 
 
-class BikaLIMSError(Exception):
+class APIError(Exception):
     """Base exception class for bika.lims errors."""
-
-
-class IBikaTransitionEvent(IObjectEvent):
-    """Bika WF transition event interface"""
-
-
-class IBikaBeforeTransitionEvent(IBikaTransitionEvent):
-    """Fired before the transition is invoked"""
-
-
-class IBikaAfterTransitionEvent(IBikaTransitionEvent):
-    """Fired after the transition done"""
-
-
-class IBikaTransitionFailedEvent(IBikaTransitionEvent):
-    """Fired if the transition failed"""
-
-
-class BikaTransitionEvent(ObjectEvent):
-    """Bika WF transition event"""
-    def __init__(self, obj, transition, exception=None):
-        ObjectEvent.__init__(self, obj)
-        self.obj = obj
-        self.transition = transition
-        self.exception = exception
-
-
-class BikaBeforeTransitionEvent(BikaTransitionEvent):
-    implements(IBikaBeforeTransitionEvent)
-
-
-class BikaAfterTransitionEvent(BikaTransitionEvent):
-    implements(IBikaAfterTransitionEvent)
-
-
-class BikaTransitionFailedEvent(BikaTransitionEvent):
-    implements(IBikaTransitionFailedEvent)
 
 
 def get_portal():
@@ -171,10 +146,11 @@ def create(container, portal_type, *args, **kwargs):
         if hasattr(obj, '_setPortalTypeName'):
             obj._setPortalTypeName(fti.getId())
         notify(ObjectCreatedEvent(obj))
-        # notifies ObjectWillBeAddedEvent, ObjectAddedEvent and ContainerModifiedEvent
+        # notifies ObjectWillBeAddedEvent, ObjectAddedEvent and
+        # ContainerModifiedEvent
         container._setObject(tmp_id, obj)
-        # we get the object here with the current object id, as it might be renamed
-        # already by an event handler
+        # we get the object here with the current object id, as it might be
+        # renamed already by an event handler
         obj = container._getOb(obj.getId())
 
     # handle AT Content
@@ -204,7 +180,7 @@ def get_tool(name, context=None, default=_marker):
         try:
             context = get_object(context)
             return getToolByName(context, name)
-        except (BikaLIMSError, AttributeError) as e:
+        except (APIError, AttributeError) as e:
             # https://github.com/senaite/bika.lims/issues/396
             logger.warn("get_tool::getToolByName({}, '{}') failed: {} "
                         "-> falling back to plone.api.portal.get_tool('{}')"
@@ -221,11 +197,11 @@ def get_tool(name, context=None, default=_marker):
 
 
 def fail(msg=None):
-    """Bika LIMS Error
+    """API LIMS Error
     """
     if msg is None:
         msg = "Reason not given."
-    raise BikaLIMSError("{}".format(msg))
+    raise APIError("{}".format(msg))
 
 
 def is_object(brain_or_object):
@@ -246,7 +222,7 @@ def is_object(brain_or_object):
     return False
 
 
-def get_object(brain_object_uid):
+def get_object(brain_object_uid, default=_marker):
     """Get the full content object
 
     :param brain_object_uid: A catalog brain or content object or uid
@@ -257,7 +233,9 @@ def get_object(brain_object_uid):
     if is_uid(brain_object_uid):
         return get_object_by_uid(brain_object_uid)
     if not is_object(brain_object_uid):
-        fail("{} is not supported.".format(repr(brain_object_uid)))
+        if default is _marker:
+            fail("{} is not supported.".format(repr(brain_object_uid)))
+        return default
     if is_brain(brain_object_uid):
         return brain_object_uid.getObject()
     return brain_object_uid
@@ -379,8 +357,11 @@ def get_id(brain_or_object):
     :returns: Plone ID
     :rtype: string
     """
-    if is_brain(brain_or_object) and base_hasattr(brain_or_object, "getId"):
-        return brain_or_object.getId
+    if is_brain(brain_or_object):
+        if base_hasattr(brain_or_object, "getId"):
+            return brain_or_object.getId
+        if base_hasattr(brain_or_object, "id"):
+            return brain_or_object.id
     return get_object(brain_or_object).getId()
 
 
@@ -414,11 +395,13 @@ def get_description(brain_or_object):
 def get_uid(brain_or_object):
     """Get the Plone UID for this object
 
-    :param brain_or_object: A single catalog brain or content object
+    :param brain_or_object: A single catalog brain or content object or an UID
     :type brain_or_object: ATContentType/DexterityContentType/CatalogBrain
     :returns: Plone UID
     :rtype: string
     """
+    if is_uid(brain_or_object):
+        return brain_or_object
     if is_portal(brain_or_object):
         return '0'
     if is_brain(brain_or_object) and base_hasattr(brain_or_object, "UID"):
@@ -450,7 +433,7 @@ def get_icon(brain_or_object, html_tag=True):
     :rtype: string
     """
     # Manual approach, because `plone.app.layout.getIcon` does not reliable
-    # work for Bika Contents coming from other catalogs than the
+    # work for Contents coming from other catalogs than the
     # `portal_catalog`
     portal_types = get_tool("portal_types")
     fti = portal_types.getTypeInfo(brain_or_object.portal_type)
@@ -484,23 +467,34 @@ def get_object_by_uid(uid, default=_marker):
     if uid == '0':
         return get_portal()
 
-    # we try to find the object with both catalogs
-    pc = get_portal_catalog()
-    uc = get_tool("uid_catalog")
+    brain = get_brain_by_uid(uid)
 
-    # try to find the object with the reference catalog first
-    brains = uc(UID=uid)
-    if brains:
-        return brains[0].getObject()
-
-    # try to find the object with the portal catalog
-    res = pc(UID=uid)
-    if not res:
+    if brain is None:
         if default is not _marker:
             return default
         fail("No object found for UID {}".format(uid))
 
-    return get_object(res[0])
+    return get_object(brain)
+
+
+def get_brain_by_uid(uid, default=None):
+    """Query a brain by a given UID
+
+    :param uid: The UID of the object to find
+    :type uid: string
+    :returns: ZCatalog brain or None
+    """
+    if not is_uid(uid):
+        return default
+
+    # we try to find the object with the UID catalog
+    uc = get_tool("uid_catalog")
+
+    # try to find the object with the reference catalog first
+    brains = uc(UID=uid)
+    if len(brains) != 1:
+        return default
+    return brains[0]
 
 
 def get_object_by_path(path, default=_marker):
@@ -654,7 +648,7 @@ def search(query, catalog=_marker):
 
     # We only support **single** catalog queries
     if len(catalogs) > 1:
-        fail("Multi Catalog Queries are not supported, please specify a catalog.")
+        fail("Multi Catalog Queries are not supported!")
 
     return catalogs[0](query)
 
@@ -711,9 +705,22 @@ def get_review_history(brain_or_object, rev=True):
         logger.error("Cannot retrieve review_history on {}: {}".format(
             obj, message))
     if not isinstance(review_history, (list, tuple)):
-        logger.error("get_review_history: expected list, recieved {}".format(
+        logger.error("get_review_history: expected list, received {}".format(
             review_history))
         review_history = []
+
+    if isinstance(review_history, tuple):
+        # Products.CMFDefault.DefaultWorkflow.getInfoFor always returns a
+        # tuple when "review_history" is passed in:
+        # https://github.com/zopefoundation/Products.CMFDefault/blob/master/Products/CMFDefault/DefaultWorkflow.py#L244
+        #
+        # On the other hand, Products.DCWorkflow.getInfoFor relies on
+        # Expression.StateChangeInfo, that always returns a list, except when no
+        # review_history is found:
+        # https://github.com/zopefoundation/Products.DCWorkflow/blob/master/Products/DCWorkflow/DCWorkflow.py#L310
+        # https://github.com/zopefoundation/Products.DCWorkflow/blob/master/Products/DCWorkflow/Expression.py#L94
+        review_history = list(review_history)
+
     if rev is True:
         review_history.reverse()
     return review_history
@@ -817,54 +824,6 @@ def get_review_status(brain_or_object):
     return get_workflow_status_of(brain_or_object, state_var="review_state")
 
 
-def get_cancellation_status(brain_or_object, default="active"):
-    """Get the `cancellation_state` of an object
-
-    :param brain_or_object: A single catalog brain or content object
-    :type brain_or_object: ATContentType/DexterityContentType/CatalogBrain
-    :returns: Value of the review_status variable
-    :rtype: String
-    """
-
-    if is_brain(brain_or_object):
-        state = getattr(brain_or_object, "cancellation_state", None)
-        if state is not None:
-            return state
-
-    workflows = get_workflows_for(brain_or_object)
-    if "bika_cancellation_workflow" in workflows:
-        return get_workflow_status_of(brain_or_object, "cancellation_state")
-
-    state = get_workflow_status_of(brain_or_object)
-    if state not in ("active", "inactive"):
-        return default
-    return state
-
-
-def get_inactive_status(brain_or_object, default="active"):
-    """Get the `cancellation_state` of an objct
-
-    :param brain_or_object: A single catalog brain or content object
-    :type brain_or_object: ATContentType/DexterityContentType/CatalogBrain
-    :returns: Value of the review_status variable
-    :rtype: String
-    """
-
-    if is_brain(brain_or_object):
-        state = getattr(brain_or_object, "inactive_state", None)
-        if state is not None:
-            return state
-
-    workflows = get_workflows_for(brain_or_object)
-    if "bika_inactive_workflow" in workflows:
-        return get_workflow_status_of(brain_or_object, "inactive_state")
-
-    state = get_workflow_status_of(brain_or_object)
-    if state not in ("active", "inactive"):
-        return default
-    return state
-
-
 def is_active(brain_or_object):
     """Check if the workflow state of the object is 'inactive' or 'cancelled'.
 
@@ -873,11 +832,7 @@ def is_active(brain_or_object):
     :returns: False if the object is in the state 'inactive' or 'cancelled'
     :rtype: bool
     """
-    if get_review_status(brain_or_object) == "cancelled":
-        return False
-    if get_inactive_status(brain_or_object) == "inactive":
-        return False
-    if get_cancellation_status(brain_or_object) == "cancelled":
+    if get_review_status(brain_or_object) in ["cancelled", "inactive"]:
         return False
     return True
 
@@ -938,17 +893,11 @@ def do_transition_for(brain_or_object, transition):
     if not isinstance(transition, basestring):
         fail("Transition type needs to be string, got '%s'" % type(transition))
     obj = get_object(brain_or_object)
-    # notify the BeforeTransitionEvent
-    notify(BikaBeforeTransitionEvent(obj, transition))
     try:
         ploneapi.content.transition(obj, transition)
     except ploneapi.exc.InvalidParameterError as e:
-        # notify the TransitionFailedEvent
-        notify(BikaTransitionFailedEvent(obj, transition, exception=e))
         fail("Failed to perform transition '{}' on {}: {}".format(
              transition, obj, str(e)))
-    # notify the AfterTransitionEvent
-    notify(BikaAfterTransitionEvent(obj, transition))
     return obj
 
 
@@ -1041,11 +990,12 @@ def get_user(user_or_username):
     :param user_or_username: Plone user or user id
     :returns: Plone MemberData
     """
-    if not user_or_username:
-        return None
-    if hasattr(user_or_username, "getUserId"):
-        return ploneapi.user.get(user_or_username.getUserId())
-    return ploneapi.user.get(userid=user_or_username)
+    user = None
+    if isinstance(user_or_username, MemberData):
+        user = user_or_username
+    if isinstance(user_or_username, basestring):
+        user = get_member_by_login_name(get_portal(), user_or_username, False)
+    return user
 
 
 def get_user_properties(user_or_username):
@@ -1193,7 +1143,8 @@ def normalize_id(string):
     :rtype: str
     """
     if not isinstance(string, basestring):
-        fail("Type of argument must be string, found '{}'".format(type(string)))
+        fail("Type of argument must be string, found '{}'"
+             .format(type(string)))
     # get the id nomalizer utility
     normalizer = getUtility(IIDNormalizer).normalize
     return normalizer(string)
@@ -1208,7 +1159,8 @@ def normalize_filename(string):
     :rtype: str
     """
     if not isinstance(string, basestring):
-        fail("Type of argument must be string, found '{}'".format(type(string)))
+        fail("Type of argument must be string, found '{}'"
+             .format(type(string)))
     # get the file nomalizer utility
     normalizer = getUtility(IFileNameNormalizer).normalize
     return normalizer(string)
@@ -1274,7 +1226,7 @@ def to_date(value, default=None):
             # https://docs.plone.org/develop/plone/misc/datetime.html#datetime-problems-and-pitfalls
             return DateTime(value, datefmt='international')
         return DateTime(value)
-    except:
+    except (TypeError, ValueError, DateTimeError):
         return to_date(default)
 
 
@@ -1283,7 +1235,7 @@ def to_minutes(days=0, hours=0, minutes=0, seconds=0, milliseconds=0,
     """Returns the computed total number of minutes
     """
     total = float(days)*24*60 + float(hours)*60 + float(minutes) + \
-            float(seconds)/60 + float(milliseconds)/1000/60
+        float(seconds)/60 + float(milliseconds)/1000/60
     return int(round(total)) if round_to_int else total
 
 
@@ -1390,3 +1342,37 @@ def get_registry_record(name, default=None):
     :returns: value of the registry record
     """
     return ploneapi.portal.get_registry_record(name, default=default)
+
+
+def to_display_list(pairs, sort_by="key", allow_empty=True):
+    """Create a Plone DisplayList from list items
+
+    :param pairs: list of key, value pairs
+    :param sort_by: Sort the items either by key or value
+    :param allow_empty: Allow to select an empty value
+    :returns: Plone DisplayList
+    """
+    dl = DisplayList()
+
+    if isinstance(pairs, basestring):
+        pairs = [pairs, pairs]
+    for pair in pairs:
+        # pairs is a list of lists -> add each pair
+        if isinstance(pair, (tuple, list)):
+            dl.add(*pair)
+        # pairs is just a single pair -> add it and stop
+        if isinstance(pair, basestring):
+            dl.add(*pairs)
+            break
+
+    # add the empty option
+    if allow_empty:
+        dl.add("", "")
+
+    # sort by key/value
+    if sort_by == "key":
+        dl = dl.sortedByKey()
+    elif sort_by == "value":
+        dl = dl.sortedByValue()
+
+    return dl

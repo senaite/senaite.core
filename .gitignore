@@ -33,3 +33,4 @@ var
 tags
 buildout-cache
 atlassian-*.xml
+src

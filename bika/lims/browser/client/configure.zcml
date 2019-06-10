@@ -18,15 +18,6 @@
       provides="bika.lims.interfaces.IReferenceWidgetVocabulary"
     />
 
-    <!-- Workflow action button clicked -->
-    <browser:page
-      for="bika.lims.interfaces.IClient"
-      name="workflow_action"
-      class="bika.lims.browser.client.ClientWorkflowAction"
-      permission="zope.Public"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
     <browser:page
       for="bika.lims.interfaces.IClient"
       name="batches"

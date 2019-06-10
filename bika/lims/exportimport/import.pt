@@ -53,7 +53,7 @@
         </fieldset>
 
         <fieldset id="fieldset-setupdata"
-            tal:condition="python:checkPermission('BIKA: Manage Bika', context)">
+            tal:condition="python:checkPermission('senaite.core: Manage Bika', context)">
             <legend id="fieldsetlegend-setupdata" i18n:translate="">Load Setup Data</legend>
             <p></p>
             <span i18n:translate="">Submit a valid Open XML (.XLSX) file containing Bika setup records to continue.</span>
@@ -76,7 +76,7 @@
                         id="existing">
                         <tal:options tal:repeat="option view/getSetupDatas">
                             <option tal:attributes="value python:'%(projectname)s:%(dataset)s'%(option)">
-                                <span tal:content="python:'%(projectname)s: %(dataset)s'%(option)"/>
+                                <span tal:content="python:'%(dataset)s'%(option)"/>
                             </option>
                         </tal:options>
                     </select>

@@ -594,7 +594,6 @@
       this.on_wideiterims_interims_change = bind(this.on_wideiterims_interims_change, this);
       this.on_wideiterims_analyses_change = bind(this.on_wideiterims_analyses_change, this);
       this.on_remarks_balloon_clicked = bind(this.on_remarks_balloon_clicked, this);
-      this.on_detection_limit_change = bind(this.on_detection_limit_change, this);
       this.on_analysis_instrument_change = bind(this.on_analysis_instrument_change, this);
       this.on_analysis_instrument_focus = bind(this.on_analysis_instrument_focus, this);
       this.on_method_change = bind(this.on_method_change, this);
@@ -650,7 +649,6 @@
       $("body").on("change", "table.bika-listing-table select.listing_select_entry[field='Method']", this.on_method_change);
       $("body").on("focus", "table.bika-listing-table select.listing_select_entry[field='Instrument']", this.on_analysis_instrument_focus);
       $("body").on("change", "table.bika-listing-table select.listing_select_entry[field='Instrument']", this.on_analysis_instrument_change);
-      $("body").on("change", "select[name^='DetectionLimit.']", this.on_detection_limit_change);
       $("body").on("click", "a.add-remark", this.on_remarks_balloon_clicked);
       $("body").on("change", "#wideinterims_analyses", this.on_wideiterims_analyses_change);
       $("body").on("change", "#wideinterims_interims", this.on_wideiterims_interims_change);
@@ -1034,45 +1032,6 @@
       return $("table.bika-listing-table select.listing_select_entry[field='Instrument'] option[value='']").prop("disabled", false);
     };
 
-    WorksheetManageResultsView.prototype.on_detection_limit_change = function(event) {
-
-      /*
-       * Eventhandler when the detection limit changed
-       */
-      var $el, defdls, resfld, uncfld;
-      console.debug("°°° WorksheetManageResultsView::on_detection_limit_change °°°");
-      $el = $(event.currentTarget);
-      defdls = $el.closest("td").find("input[id^='DefaultDLS.']").first().val();
-      resfld = $el.closest("tr").find("input[name^='Result.']")[0];
-      uncfld = $el.closest("tr").find("input[name^='Uncertainty.']");
-      defdls = $.parseJSON(defdls);
-      $(resfld).prop("readonly", !defdls.manual);
-      if ($el.val() === "<") {
-        $(resfld).val(defdls['min']);
-        if (uncfld.length > 0) {
-          $(uncfld).val("");
-          $(uncfld).prop("readonly", true);
-          $(uncfld).closest("td").children().hide();
-        }
-      } else if ($el.val() === ">") {
-        $(resfld).val(defdls["max"]);
-        if (uncfld.length > 0) {
-          $(uncfld).val("");
-          $(uncfld).prop("readonly", true);
-          $(uncfld).closest("td").children().hide();
-        }
-      } else {
-        $(resfld).val("");
-        $(resfld).prop("readonly", false);
-        if (uncfld.length > 0) {
-          $(uncfld).val("");
-          $(uncfld).prop("readonly", false);
-          $(uncfld).closest("td").children().show();
-        }
-      }
-      return $(resfld).change();
-    };
-
     WorksheetManageResultsView.prototype.on_remarks_balloon_clicked = function(event) {
 
       /*
@@ -1132,7 +1091,7 @@
       el = event.currentTarget;
       $(el).prepOverlay({
         subtype: "ajax",
-        filter: "h1,#archetypes-fieldname-Remarks span.remarks_history",
+        filter: "h1,span.remarks_history",
         config: {
           closeOnClick: true,
           closeOnEsc: true,

@@ -1,56 +1,48 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of SENAITE.CORE
+# This file is part of SENAITE.CORE.
 #
-# Copyright 2018 by it's authors.
-# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2019 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
-"""The contact person at an organisation.
-"""
 import types
 
+from AccessControl import ClassSecurityInfo
 from Acquisition import aq_base
 from Acquisition import aq_inner
 from Acquisition import aq_parent
-
-from AccessControl import ClassSecurityInfo
-
-from Products.Archetypes import atapi
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import safe_unicode
-from Products.Archetypes.utils import DisplayList
-
-from plone import api
-from zope.interface import implements
-
-from bika.lims.utils import isActive
-from bika.lims.interfaces import IContact, IClient
-from bika.lims.content.person import Person
-from bika.lims.config import PROJECTNAME
-from bika.lims.config import ManageClients
-from bika.lims import logger
 from bika.lims import bikaMessageFactory as _
+from bika.lims import logger
+from bika.lims.api import is_active
+from bika.lims.config import PROJECTNAME
+from bika.lims.content.person import Person
+from bika.lims.interfaces import IClient
+from bika.lims.interfaces import IContact
+from bika.lims.interfaces import IDeactivable
+from plone import api
+from Products.Archetypes import atapi
+from Products.Archetypes.utils import DisplayList
+from Products.CMFCore.permissions import ModifyPortalContent
+from Products.CMFPlone.utils import safe_unicode
+from zope.interface import implements
 
 ACTIVE_STATES = ["active"]
 
 
 schema = Person.schema.copy() + atapi.Schema((
-    atapi.LinesField('PublicationPreference',
-                     vocabulary_factory='bika.lims.vocabularies.CustomPubPrefVocabularyFactory',
-                     schemata='Publication preference',
-                     widget=atapi.MultiSelectionWidget(
-                         label=_("Publication preference"),
-                     )),
-    atapi.BooleanField('AttachmentsPermitted',
-                       default=False,
-                       schemata='Publication preference',
-                       widget=atapi.BooleanWidget(
-                           label=_("Results attachments permitted"),
-                           description=_(
-                               "File attachments to results, e.g. microscope "
-                               "photos, will be included in emails to recipients "
-                               "if this option is enabled")
-                       )),
     atapi.ReferenceField('CCContact',
                          schemata='Publication preference',
                          vocabulary='getContacts',
@@ -69,13 +61,12 @@ schema['Department'].schemata = 'default'
 # Don't make title required - it will be computed from the Person's Fullname
 schema['title'].required = 0
 schema['title'].widget.visible = False
-schema.moveField('CCContact', before='AttachmentsPermitted')
 
 
 class Contact(Person):
     """A Contact of a Client which can be linked to a System User
     """
-    implements(IContact)
+    implements(IContact, IDeactivable)
 
     schema = schema
     displayContentsTab = False
@@ -113,15 +104,9 @@ class Contact(Person):
     def isActive(self):
         """Checks if the Contact is active
         """
-        wftool = getToolByName(self, "portal_workflow")
-        status = wftool.getStatusOf("bika_inactive_workflow", self)
-        if status and status.get("inactive_state") in ACTIVE_STATES:
-            logger.debug("Contact '{}' is active".format(self.Title()))
-            return True
-        logger.debug("Contact '{}' is deactivated".format(self.Title()))
-        return False
+        return is_active(self)
 
-    security.declareProtected(ManageClients, 'getUser')
+    @security.protected(ModifyPortalContent)
     def getUser(self):
         """Returns the linked Plone User or None
         """
@@ -131,7 +116,7 @@ class Contact(Person):
         user = api.user.get(userid=username)
         return user
 
-    security.declareProtected(ManageClients, 'setUser')
+    @security.protected(ModifyPortalContent)
     def setUser(self, user_or_username):
         """Link the user to the Contact
 
@@ -157,7 +142,7 @@ class Contact(Person):
         # Link the User
         return self._linkUser(user)
 
-    security.declareProtected(ManageClients, 'unlinkUser')
+    @security.protected(ModifyPortalContent)
     def unlinkUser(self, delete=False):
         """Unlink the user to the Contact
 
@@ -182,7 +167,7 @@ class Contact(Person):
             return True
         return False
 
-    security.declareProtected(ManageClients, 'hasUser')
+    @security.protected(ModifyPortalContent)
     def hasUser(self):
         """Check if Contact has a linked a System User
         """
@@ -195,7 +180,7 @@ class Contact(Person):
         pairs = []
         objects = []
         for contact in self.aq_parent.objectValues('Contact'):
-            if isActive(contact) and contact.UID() != self.UID():
+            if is_active(contact) and contact.UID() != self.UID():
                 pairs.append((contact.UID(), contact.Title()))
                 if not dl:
                     objects.append(contact)
@@ -212,7 +197,7 @@ class Contact(Person):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
 
-    security.declarePrivate('_linkUser')
+    @security.private
     def _linkUser(self, user):
         """Set the UID of the current Contact in the User properties and update
         all relevant own properties.
@@ -224,13 +209,14 @@ class Contact(Person):
 
         # User is linked to another contact (fix in UI)
         if contact and contact.UID() != self.UID():
-            raise ValueError("User '{}' is already linked to Contact '{}'".format(
-                username, contact.Title()))
+            raise ValueError("User '{}' is already linked to Contact '{}'"
+                             .format(username, contact.Title()))
 
         # User is linked to multiple other contacts (fix in Data)
         if isinstance(contact, list):
-            raise ValueError("User '{}' is linked to multiple Contacts: '{}'".format(
-                username, ",".join(map(lambda x: x.Title(), contact))))
+            raise ValueError("User '{}' is linked to multiple Contacts: '{}'"
+                             .format(username, ",".join(
+                                 map(lambda x: x.Title(), contact))))
 
         # XXX: Does it make sense to "remember" the UID as a User property?
         tool = user.getTool()
@@ -252,18 +238,20 @@ class Contact(Person):
         # Update the Email address from the user
         self.setEmailAddress(user.getProperty("email"))
 
+        # somehow the `getUsername` index gets out of sync
+        self.reindexObject()
+
+        # N.B. Local owner role and client group applies only to client
+        #      contacts, but not lab contacts.
         if IClient.providedBy(self.aq_parent):
             # Grant local Owner role
             self._addLocalOwnerRole(username)
             # Add user to "Clients" group
             self._addUserToGroup(username, group="Clients")
 
-        # somehow the `getUsername` index gets out of sync
-        self.reindexObject()
-
         return True
 
-    security.declarePrivate('_unlinkUser')
+    @security.private
     def _unlinkUser(self):
         """Remove the UID of the current Contact in the User properties and
         update all relevant own properties.
@@ -279,7 +267,8 @@ class Contact(Person):
 
         # Unset the UID from the User Property
         user.setMemberProperties({KEY: ""})
-        logger.info("Unlinked Contact UID from User {}".format(user.getProperty(KEY, "")))
+        logger.info("Unlinked Contact UID from User {}"
+                    .format(user.getProperty(KEY, "")))
 
         # Unset the Username
         self.setUsername(None)
@@ -287,18 +276,20 @@ class Contact(Person):
         # Unset the Email
         self.setEmailAddress(None)
 
-        # Revoke local Owner role
-        self._delLocalOwnerRole(username)
-
-        # Remove user from "Clients" group
-        self._delUserFromGroup(username, group="Clients")
-
         # somehow the `getUsername` index gets out of sync
         self.reindexObject()
 
+        # N.B. Local owner role and client group applies only to client
+        #      contacts, but not lab contacts.
+        if IClient.providedBy(self.aq_parent):
+            # Revoke local Owner role
+            self._delLocalOwnerRole(username)
+            # Remove user from "Clients" group
+            self._delUserFromGroup(username, group="Clients")
+
         return True
 
-    security.declarePrivate('_addUserToGroup')
+    @security.private
     def _addUserToGroup(self, username, group="Clients"):
         """Add user to the goup
         """
@@ -306,7 +297,7 @@ class Contact(Person):
         group = portal_groups.getGroupById('Clients')
         group.addMember(username)
 
-    security.declarePrivate('_delUserFromGroup')
+    @security.private
     def _delUserFromGroup(self, username, group="Clients"):
         """Remove user from the group
         """
@@ -314,24 +305,35 @@ class Contact(Person):
         group = portal_groups.getGroupById(group)
         group.removeMember(username)
 
-    security.declarePrivate('_addLocalOwnerRole')
+    @security.private
     def _addLocalOwnerRole(self, username):
         """Add local owner role from parent object
         """
         parent = self.getParent()
-        if parent.portal_type == 'Client':
-            parent.manage_setLocalRoles(username, ['Owner', ])
-            if hasattr(parent, 'reindexObjectSecurity'):
-                parent.reindexObjectSecurity()
+        if parent.portal_type == "Client":
+            parent.manage_setLocalRoles(username, ["Owner", ])
+            # reindex object security
+            self._recursive_reindex_object_security(parent)
 
-    security.declarePrivate('_delLocalOwnerRole')
+    @security.private
     def _delLocalOwnerRole(self, username):
         """Remove local owner role from parent object
         """
         parent = self.getParent()
-        if parent.portal_type == 'Client':
-            parent.manage_delLocalRoles([ username ])
-            if hasattr(parent, 'reindexObjectSecurity'):
-                parent.reindexObjectSecurity()
+        if parent.portal_type == "Client":
+            parent.manage_delLocalRoles([username])
+            # reindex object security
+            self._recursive_reindex_object_security(parent)
+
+    def _recursive_reindex_object_security(self, obj):
+        """Reindex object security after user linking
+        """
+        if hasattr(aq_base(obj), "objectValues"):
+            for obj in obj.objectValues():
+                self._recursive_reindex_object_security(obj)
+
+        logger.debug("Reindexing object security for {}".format(repr(obj)))
+        obj.reindexObjectSecurity()
+
 
 atapi.registerType(Contact, PROJECTNAME)

@@ -1,19 +1,30 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of SENAITE.CORE
+# This file is part of SENAITE.CORE.
 #
-# Copyright 2018 by it's authors.
-# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
-
-import transaction
-from Products.CMFCore.utils import getToolByName
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2019 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
-from bika.lims.interfaces import IDuplicateAnalysis
+from bika.lims import logger
+from bika.lims.interfaces import IDuplicateAnalysis, IVerified, ISubmitted
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.utils.analysis import create_analysis
 from bika.lims.workflow import doActionFor, push_reindex_to_actions_pool
-from bika.lims.workflow import skip
+from zope.interface import alsoProvides
 
 
 def after_assign(analysis):
@@ -80,6 +91,9 @@ def after_submit(analysis):
     This function is called automatically by
     bika.lims.workfow.AfterTransitionEventHandler
     """
+    # Mark this analysis as ISubmitted
+    alsoProvides(analysis, ISubmitted)
+
     # Promote to analyses this analysis depends on
     promote_to_dependencies(analysis, "submit")
 
@@ -107,34 +121,37 @@ def after_retract(analysis):
     unless the the retracted analysis was assigned to a worksheet. In such case,
     the copy is transitioned to 'assigned' state too
     """
+
+    # Retract our dependents (analyses that depend on this analysis)
+    cascade_to_dependents(analysis, "retract")
+
+    # Retract our dependencies (analyses this analysis depends on)
+    promote_to_dependencies(analysis, "retract")
+
     # Rename the analysis to make way for it's successor.
     # Support multiple retractions by renaming to *-0, *-1, etc
     parent = analysis.aq_parent
     keyword = analysis.getKeyword()
-    analyses = filter(lambda an: an.getKeyword() == keyword,
-                      parent.objectValues("Analysis"))
 
-    # Rename the retracted analysis
-    # https://docs.plone.org/develop/plone/content/rename.html
-    # _verifyObjectPaste permission check must be cancelled
-    parent._verifyObjectPaste = str
-    retracted_id = '{}-{}'.format(keyword, len(analyses))
-    # Make sure all persistent objects have _p_jar attribute
-    transaction.savepoint(optimistic=True)
-    parent.manage_renameObject(analysis.getId(), retracted_id)
-    delattr(parent, '_verifyObjectPaste')
+    # Get only those that are analyses and with same keyword as the original
+    analyses = parent.getAnalyses(full_objects=True)
+    analyses = filter(lambda an: an.getKeyword() == keyword, analyses)
+    # TODO This needs to get managed by Id server in a nearly future!
+    new_id = '{}-{}'.format(keyword, len(analyses))
 
     # Create a copy of the retracted analysis
-    analysis_uid = api.get_uid(analysis)
-    new_analysis = create_analysis(parent, analysis, RetestOf=analysis_uid)
+    an_uid = api.get_uid(analysis)
+    new_analysis = create_analysis(parent, analysis, id=new_id, RetestOf=an_uid)
+    new_analysis.setResult("")
+    new_analysis.setResultCaptureDate(None)
+    new_analysis.reindexObject()
+    logger.info("Retest for {} ({}) created: {}".format(
+        keyword, api.get_id(analysis), api.get_id(new_analysis)))
 
     # Assign the new analysis to this same worksheet, if any.
     worksheet = analysis.getWorksheet()
     if worksheet:
         worksheet.addAnalysis(new_analysis)
-
-    # Retract our dependents (analyses that depend on this analysis)
-    cascade_to_dependents(analysis, "retract")
 
     # Try to rollback the Analysis Request
     if IRequestAnalysis.providedBy(analysis):
@@ -151,8 +168,14 @@ def after_reject(analysis):
     # Reject our dependents (analyses that depend on this analysis)
     cascade_to_dependents(analysis, "reject")
 
-    # Try to rollback the Analysis Request (all analyses rejected)
     if IRequestAnalysis.providedBy(analysis):
+        # Try verify (for when remaining analyses are in 'verified')
+        doActionFor(analysis.getRequest(), "verify")
+
+        # Try submit (remaining analyses are in 'to_be_verified')
+        doActionFor(analysis.getRequest(), "submit")
+
+        # Try rollback (no remaining analyses or some not submitted)
         doActionFor(analysis.getRequest(), "rollback_to_receive")
         reindex_request(analysis)
 
@@ -165,6 +188,9 @@ def after_verify(analysis):
     This function is called automatically by
     bika.lims.workfow.AfterTransitionEventHandler
     """
+    # Mark this analysis as IVerified
+    alsoProvides(analysis, IVerified)
+
     # Promote to analyses this analysis depends on
     promote_to_dependencies(analysis, "verify")
 

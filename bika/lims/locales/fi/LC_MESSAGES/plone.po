@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2018-10-08 13:50+0000\n"
+"POT-Creation-Date: 2019-05-17 08:53+0000\n"
 "PO-Revision-Date: 2018-06-01 18:46+0000\n"
 "Last-Translator: Ramon Bartl <rb@ridingbytes.com>, 2018\n"
 "Language-Team: Finnish (https://www.transifex.com/senaite/teams/87045/fi/)\n"
@@ -20,6 +20,20 @@ msgstr ""
 "Preferred-Encodings: utf-8 latin1\n"
 "Domain: plone\n"
 "Language: fi\n"
+
+#: bika/lims/profiles/default/types/ARTemplate.xml
+msgid "AR Template"
+msgstr ""
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/ARTemplates.xml
+#: bika/lims/profiles/default/types/SRTemplate.xml
+msgid "AR Templates"
+msgstr ""
+
+#: bika/lims/profiles/default/types/ARReport.xml
+msgid "ARReport"
+msgstr ""
 
 # Manual Workflow State and Transition MsgIds
 # Despite the fact, that these are defined in the "bika" domain, they are not
@@ -53,7 +67,6 @@ msgid "Administration"
 msgstr ""
 
 #: bika/lims/profiles/default/types/ReferenceSample.xml
-#: bika/lims/profiles/default/types/Sample.xml
 msgid "Analyses"
 msgstr ""
 
@@ -128,6 +141,10 @@ msgstr ""
 msgid "Attachments"
 msgstr ""
 
+#: bika/lims/profiles/default/actions.xml
+msgid "Audit Log"
+msgstr ""
+
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "Auto-Import Logs"
 msgstr ""
@@ -154,10 +171,6 @@ msgstr ""
 msgid "Batches"
 msgstr ""
 
-#: bika/lims/profiles/default/types/BikaSetup.xml
-msgid "Bika Setup"
-msgstr ""
-
 #: bika/lims/profiles/default/types/Calculation.xml
 msgid "Calculation"
 msgstr ""
@@ -182,7 +195,6 @@ msgstr ""
 msgid "Client"
 msgstr ""
 
-#: bika/lims/profiles/default/actions.xml
 #: bika/lims/profiles/default/types/ClientFolder.xml
 msgid "Clients"
 msgstr ""
@@ -222,7 +234,7 @@ msgid "Containers"
 msgstr ""
 
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
-msgid "Create Invoice"
+msgid "Create Invoice PDF"
 msgstr ""
 
 msgid "Current"
@@ -266,10 +278,6 @@ msgstr ""
 #: bika/lims/profiles/default/types/ARTemplate.xml
 #: bika/lims/profiles/default/types/AnalysisCategory.xml
 msgid "Edit"
-msgstr ""
-
-#: bika/lims/profiles/default/types/Pricelist.xml
-msgid "Email pricelist"
 msgstr ""
 
 msgid "Expire"
@@ -383,15 +391,7 @@ msgid "Laboratory Information"
 msgstr ""
 
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
-#: bika/lims/profiles/default/types/Sample.xml
-#: bika/lims/profiles/default/types/SamplePartition.xml
 msgid "Large Sticker"
-msgstr ""
-
-#: bika/lims/profiles/default/types/AnalysisProfile.xml
-#: bika/lims/profiles/default/types/AnalysisRequest.xml
-#: bika/lims/profiles/default/types/AnalysisService.xml
-msgid "Log"
 msgstr ""
 
 #: bika/lims/profiles/default/types/Contact.xml
@@ -479,10 +479,13 @@ msgstr ""
 msgid "Prices"
 msgstr ""
 
-#: bika/lims/profiles/default/types/AnalysisRequest.xml
 #: bika/lims/profiles/default/types/Invoice.xml
 #: bika/lims/profiles/default/types/SupplyOrder.xml
 msgid "Print"
+msgstr ""
+
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
+msgid "Print Invoice"
 msgstr ""
 
 #: bika/lims/profiles/default/types/Pricelist.xml
@@ -505,10 +508,6 @@ msgstr ""
 
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "QC Results"
-msgstr ""
-
-#: bika/lims/profiles/default/types/ReportFolder.xml
-msgid "Quality Control"
 msgstr ""
 
 msgid "Receive"
@@ -590,16 +589,13 @@ msgstr ""
 msgid "Republish"
 msgstr ""
 
-#: bika/lims/profiles/default/types/AnalysisRequest.xml
-msgid "Results not requested"
-msgstr ""
-
 msgid "Retract"
 msgstr ""
 
 msgid "Retracted"
 msgstr ""
 
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
 #: bika/lims/profiles/default/types/Sample.xml
 msgid "Sample"
 msgstr ""
@@ -613,9 +609,8 @@ msgstr ""
 msgid "Sample Conditions"
 msgstr ""
 
-#. Default: "AR Imports"
 msgid "Sample Imports"
-msgstr "AR Imports"
+msgstr ""
 
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/SampleMatrices.xml
@@ -630,25 +625,16 @@ msgstr ""
 msgid "Sample Partition"
 msgstr ""
 
-#: bika/lims/profiles/default/types/Sample.xml
-msgid "Sample Partitions"
-msgstr ""
-
 #: bika/lims/profiles/default/types/SamplePoint.xml
 msgid "Sample Point"
 msgstr ""
 
 #: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/Client.xml
 #: bika/lims/profiles/default/types/SamplePoints.xml
 msgid "Sample Points"
 msgstr ""
 
-#: bika/lims/profiles/default/types/ARTemplate.xml
-msgid "Sample Template"
-msgstr ""
-
-#: bika/lims/profiles/default/controlpanel.xml
-#: bika/lims/profiles/default/types/ARTemplates.xml
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Sample Templates"
 msgstr ""
@@ -671,20 +657,12 @@ msgstr ""
 msgid "Sample registered"
 msgstr ""
 
-#: bika/lims/profiles/default/types/Client.xml
-msgid "SamplePoints"
-msgstr ""
-
-#: bika/lims/profiles/default/types/ARReport.xml
-msgid "SampleReport"
-msgstr ""
-
 msgid "Sampled"
 msgstr ""
 
 #: bika/lims/profiles/default/actions.xml
+#: bika/lims/profiles/default/types/AnalysisRequestsFolder.xml
 #: bika/lims/profiles/default/types/Batch.xml
-#: bika/lims/profiles/default/types/Client.xml
 msgid "Samples"
 msgstr ""
 
@@ -729,13 +707,15 @@ msgstr ""
 msgid "Scheduled sampling"
 msgstr ""
 
+#: bika/lims/profiles/default/types/BikaSetup.xml
+msgid "Setup"
+msgstr ""
+
 #: bika/lims/profiles/default/actions.xml
 msgid "Sharing"
 msgstr ""
 
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
-#: bika/lims/profiles/default/types/Sample.xml
-#: bika/lims/profiles/default/types/SamplePartition.xml
 msgid "Small Sticker"
 msgstr ""
 
@@ -751,7 +731,7 @@ msgstr ""
 
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 #: bika/lims/profiles/default/types/Batch.xml
-#: bika/lims/profiles/default/types/Sample.xml
+#: bika/lims/profiles/default/types/ReferenceSample.xml
 msgid "Stickers preview"
 msgstr ""
 
@@ -852,98 +832,93 @@ msgstr ""
 msgid "Worksheets"
 msgstr ""
 
-#. Default: "Accounting"
 msgid "label_schema_Accounting"
 msgstr "Accounting"
 
-#. Default: "Address"
 msgid "label_schema_Address"
 msgstr "Address"
 
-#. Default: "Analyses"
 msgid "label_schema_Analyses"
 msgstr "Analyses"
 
-#. Default: "Bank details"
+msgid "label_schema_Analysis Templates"
+msgstr ""
+
+msgid "label_schema_Appearance"
+msgstr ""
+
 msgid "label_schema_Bank details"
 msgstr "Bank details"
 
-#. Default: "Calculation"
 msgid "label_schema_Calculation"
 msgstr "Calculation"
 
-#. Default: "Container and Preservation"
 msgid "label_schema_Container and Preservation"
 msgstr "Container and Preservation"
 
-#. Default: "Dates"
 msgid "label_schema_Dates"
 msgstr "Dates"
 
-#. Default: "Description"
 msgid "label_schema_Description"
 msgstr "Description"
 
-#. Default: "Email Telephone Fax"
 msgid "label_schema_Email Telephone Fax"
 msgstr "Email Telephone Fax"
 
-#. Default: "ID Server"
 msgid "label_schema_ID Server"
 msgstr "ID Server"
 
-#. Default: "Labels"
 msgid "label_schema_Labels"
 msgstr "Labels"
 
-#. Default: "Layout"
 msgid "label_schema_Layout"
 msgstr "Layout"
 
-#. Default: "Location"
 msgid "label_schema_Location"
 msgstr "Location"
 
-#. Default: "Method"
 msgid "label_schema_Method"
 msgstr "Method"
 
-#. Default: "Preferences"
+msgid "label_schema_Notifications"
+msgstr ""
+
 msgid "label_schema_Preferences"
 msgstr "Preferences"
 
-#. Default: "Publication preference"
 msgid "label_schema_Publication preference"
 msgstr "Publication preference"
 
-#. Default: "Reference Values"
 msgid "label_schema_Reference Values"
 msgstr "Reference Values"
 
-#. Default: "Result Options"
+msgid "label_schema_Reflex Rule Folder"
+msgstr ""
+
 msgid "label_schema_Result Options"
 msgstr "Result Options"
 
-#. Default: "Results Reports"
 msgid "label_schema_Results Reports"
 msgstr "Results Reports"
 
-#. Default: "SR Templates"
 msgid "label_schema_SR Templates"
 msgstr "SR Templates"
 
-#. Default: "Sample Partitions"
 msgid "label_schema_Sample Partitions"
 msgstr "Sample Partitions"
 
-#. Default: "AR Templates"
 msgid "label_schema_Sample Templates"
-msgstr "AR Templates"
+msgstr ""
 
-#. Default: "Security"
+msgid "label_schema_Sampling"
+msgstr ""
+
+# Setup Schemata
 msgid "label_schema_Security"
 msgstr "Security"
 
-#. Default: "Uncertainties"
+msgid "label_schema_Sticker"
+msgstr ""
+
 msgid "label_schema_Uncertainties"
 msgstr "Uncertainties"

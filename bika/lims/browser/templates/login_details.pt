@@ -106,14 +106,6 @@
             <!-- Form Controls -->
             <div class="formControls" tal:condition="active">
               <input class="context"
-                     style="color:red;"
-                     type="submit"
-                     tabindex=""
-                     name="delete_button"
-                     value="Unlink and delete User"
-                     i18n:attributes="value"
-                     tal:attributes="tabindex tabindex/next;" />
-              <input class="context"
                      type="submit"
                      tabindex=""
                      name="unlink_button"
@@ -152,7 +144,6 @@
         <legend i18n:translate="">Link an existing User</legend>
         <p tal:condition="view/is_contact"
            i18n:translate="">
-            Only existing users in "Client" group are displayed.
         </p>
         <form id="user_search_form"
               method="post">

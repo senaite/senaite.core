@@ -1,9 +1,22 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of SENAITE.CORE
+# This file is part of SENAITE.CORE.
 #
-# Copyright 2018 by it's authors.
-# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2019 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
 import math
 
@@ -143,7 +156,7 @@ schema = BikaSchema.copy() + Schema((
             label=_("Prepared by"),
             description=_("The person at the supplier who prepared the certificate"),
             size=30,
-            base_query={'inactive_state': 'active'},
+            base_query={'is_active': True},
             showOn=True,
             colModel=[
                 {'columnName': 'UID', 'hidden': True},
@@ -163,7 +176,7 @@ schema = BikaSchema.copy() + Schema((
             label=_("Approved by"),
             description=_("The person at the supplier who approved the certificate"),
             size=30,
-            base_query={'inactive_state': 'active'},
+            base_query={'is_active': True},
             showOn=True,
             colModel=[
                 {'columnName': 'UID', 'hidden': True},
@@ -230,7 +243,7 @@ class InstrumentCertification(BaseFolder):
         # fallback - all Lab Contacts
         pairs = []
         for contact in bsc(portal_type='LabContact',
-                           inactive_state='active',
+                           is_active=True,
                            sort_on='sortable_title'):
             pairs.append((contact.UID, contact.Title))
         return DisplayList(pairs)

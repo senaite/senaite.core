@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2018-10-08 13:50+0000\n"
+"POT-Creation-Date: 2019-05-17 08:53+0000\n"
 "PO-Revision-Date: 2018-06-01 18:46+0000\n"
 "Last-Translator: Ramon Bartl <rb@ridingbytes.com>, 2018\n"
 "Language-Team: Hungarian (https://www.transifex.com/senaite/teams/87045/hu/)\n"
@@ -20,6 +20,20 @@ msgstr ""
 "Preferred-Encodings: utf-8 latin1\n"
 "Domain: plone\n"
 "Language: hu\n"
+
+#: bika/lims/profiles/default/types/ARTemplate.xml
+msgid "AR Template"
+msgstr "AR sablon"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/ARTemplates.xml
+#: bika/lims/profiles/default/types/SRTemplate.xml
+msgid "AR Templates"
+msgstr "AR sablonok"
+
+#: bika/lims/profiles/default/types/ARReport.xml
+msgid "ARReport"
+msgstr "AR jelentés"
 
 # Manual Workflow State and Transition MsgIds
 # Despite the fact, that these are defined in the "bika" domain, they are not
@@ -53,7 +67,6 @@ msgid "Administration"
 msgstr "Adminisztráció"
 
 #: bika/lims/profiles/default/types/ReferenceSample.xml
-#: bika/lims/profiles/default/types/Sample.xml
 msgid "Analyses"
 msgstr "Vizsgálatok"
 
@@ -128,6 +141,10 @@ msgstr "Csatolás esedékes"
 msgid "Attachments"
 msgstr "Csatolmányok"
 
+#: bika/lims/profiles/default/actions.xml
+msgid "Audit Log"
+msgstr ""
+
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "Auto-Import Logs"
 msgstr ""
@@ -154,10 +171,6 @@ msgstr "Köteg címkék"
 msgid "Batches"
 msgstr "Kötegek"
 
-#: bika/lims/profiles/default/types/BikaSetup.xml
-msgid "Bika Setup"
-msgstr "Bika beállítás"
-
 #: bika/lims/profiles/default/types/Calculation.xml
 msgid "Calculation"
 msgstr "Számítás"
@@ -182,7 +195,6 @@ msgstr "Visszavon"
 msgid "Client"
 msgstr "Ügyfél"
 
-#: bika/lims/profiles/default/actions.xml
 #: bika/lims/profiles/default/types/ClientFolder.xml
 msgid "Clients"
 msgstr "Ügyfelek"
@@ -222,8 +234,8 @@ msgid "Containers"
 msgstr "Tárolók"
 
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
-msgid "Create Invoice"
-msgstr "Számla készítés"
+msgid "Create Invoice PDF"
+msgstr ""
 
 msgid "Current"
 msgstr "Jelenlegi"
@@ -267,10 +279,6 @@ msgstr "Másolat vizsgálat"
 #: bika/lims/profiles/default/types/AnalysisCategory.xml
 msgid "Edit"
 msgstr "Szerkeszt"
-
-#: bika/lims/profiles/default/types/Pricelist.xml
-msgid "Email pricelist"
-msgstr "Árlista küldése Email-ben"
 
 msgid "Expire"
 msgstr "Lejár"
@@ -383,16 +391,8 @@ msgid "Laboratory Information"
 msgstr "Laboratórium információ"
 
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
-#: bika/lims/profiles/default/types/Sample.xml
-#: bika/lims/profiles/default/types/SamplePartition.xml
 msgid "Large Sticker"
 msgstr "Nagy címke"
-
-#: bika/lims/profiles/default/types/AnalysisProfile.xml
-#: bika/lims/profiles/default/types/AnalysisRequest.xml
-#: bika/lims/profiles/default/types/AnalysisService.xml
-msgid "Log"
-msgstr "Napló"
 
 #: bika/lims/profiles/default/types/Contact.xml
 #: bika/lims/profiles/default/types/LabContact.xml
@@ -479,11 +479,14 @@ msgstr "Árlisták"
 msgid "Prices"
 msgstr "Árak"
 
-#: bika/lims/profiles/default/types/AnalysisRequest.xml
 #: bika/lims/profiles/default/types/Invoice.xml
 #: bika/lims/profiles/default/types/SupplyOrder.xml
 msgid "Print"
 msgstr "Nyomtatás"
+
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
+msgid "Print Invoice"
+msgstr ""
 
 #: bika/lims/profiles/default/types/Pricelist.xml
 msgid "Print pricelist"
@@ -506,10 +509,6 @@ msgstr "Közzétett eredmények"
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "QC Results"
 msgstr "QC eredmények"
-
-#: bika/lims/profiles/default/types/ReportFolder.xml
-msgid "Quality Control"
-msgstr "Minőség ellenőrzés"
 
 msgid "Receive"
 msgstr "Átvesz"
@@ -590,16 +589,13 @@ msgstr "Jelentések"
 msgid "Republish"
 msgstr "Újra közzététel"
 
-#: bika/lims/profiles/default/types/AnalysisRequest.xml
-msgid "Results not requested"
-msgstr "Eredmény nem szükséges"
-
 msgid "Retract"
 msgstr "Visszavon"
 
 msgid "Retracted"
 msgstr "Visszavont"
 
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
 #: bika/lims/profiles/default/types/Sample.xml
 msgid "Sample"
 msgstr "Minta"
@@ -613,9 +609,8 @@ msgstr "Minta feltétel"
 msgid "Sample Conditions"
 msgstr "Minta feltételek"
 
-#. Default: "AR Imports"
 msgid "Sample Imports"
-msgstr "AR importok"
+msgstr ""
 
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/SampleMatrices.xml
@@ -630,28 +625,19 @@ msgstr "Minta mátrix"
 msgid "Sample Partition"
 msgstr "Minta felosztás"
 
-#: bika/lims/profiles/default/types/Sample.xml
-msgid "Sample Partitions"
-msgstr "Minta felosztások"
-
 #: bika/lims/profiles/default/types/SamplePoint.xml
 msgid "Sample Point"
 msgstr "Minta pont"
 
 #: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/Client.xml
 #: bika/lims/profiles/default/types/SamplePoints.xml
 msgid "Sample Points"
 msgstr "Minta pontok"
 
-#: bika/lims/profiles/default/types/ARTemplate.xml
-msgid "Sample Template"
-msgstr "AR sablon"
-
-#: bika/lims/profiles/default/controlpanel.xml
-#: bika/lims/profiles/default/types/ARTemplates.xml
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Sample Templates"
-msgstr "AR sablonok"
+msgstr ""
 
 #: bika/lims/profiles/default/types/SampleType.xml
 msgid "Sample Type"
@@ -671,20 +657,12 @@ msgstr "Minta átvéve"
 msgid "Sample registered"
 msgstr "Minta bejegyzett"
 
-#: bika/lims/profiles/default/types/Client.xml
-msgid "SamplePoints"
-msgstr "Minta pontok"
-
-#: bika/lims/profiles/default/types/ARReport.xml
-msgid "SampleReport"
-msgstr "AR jelentés"
-
 msgid "Sampled"
 msgstr "Mintázott"
 
 #: bika/lims/profiles/default/actions.xml
+#: bika/lims/profiles/default/types/AnalysisRequestsFolder.xml
 #: bika/lims/profiles/default/types/Batch.xml
-#: bika/lims/profiles/default/types/Client.xml
 msgid "Samples"
 msgstr "Minták"
 
@@ -729,13 +707,15 @@ msgstr "Mintavételezés ütemezése"
 msgid "Scheduled sampling"
 msgstr "Ütemezett mintázás"
 
+#: bika/lims/profiles/default/types/BikaSetup.xml
+msgid "Setup"
+msgstr ""
+
 #: bika/lims/profiles/default/actions.xml
 msgid "Sharing"
 msgstr "Megosztás"
 
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
-#: bika/lims/profiles/default/types/Sample.xml
-#: bika/lims/profiles/default/types/SamplePartition.xml
 msgid "Small Sticker"
 msgstr "Kis címke"
 
@@ -751,7 +731,7 @@ msgstr "Címke"
 
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 #: bika/lims/profiles/default/types/Batch.xml
-#: bika/lims/profiles/default/types/Sample.xml
+#: bika/lims/profiles/default/types/ReferenceSample.xml
 msgid "Stickers preview"
 msgstr "Címke előnézet"
 
@@ -852,98 +832,93 @@ msgstr "Munkalap sablonok"
 msgid "Worksheets"
 msgstr "Munkalapok"
 
-#. Default: "Accounting"
 msgid "label_schema_Accounting"
 msgstr "Számlázás"
 
-#. Default: "Address"
 msgid "label_schema_Address"
 msgstr "Cím"
 
-#. Default: "Analyses"
 msgid "label_schema_Analyses"
 msgstr "Vizsgálatok"
 
-#. Default: "Bank details"
+msgid "label_schema_Analysis Templates"
+msgstr ""
+
+msgid "label_schema_Appearance"
+msgstr ""
+
 msgid "label_schema_Bank details"
 msgstr "Bank adatok"
 
-#. Default: "Calculation"
 msgid "label_schema_Calculation"
 msgstr "Számítás"
 
-#. Default: "Container and Preservation"
 msgid "label_schema_Container and Preservation"
 msgstr "Tároló és megőrzés"
 
-#. Default: "Dates"
 msgid "label_schema_Dates"
 msgstr "Dátumok"
 
-#. Default: "Description"
 msgid "label_schema_Description"
 msgstr "Leírás"
 
-#. Default: "Email Telephone Fax"
 msgid "label_schema_Email Telephone Fax"
 msgstr "Email, telefon, fax"
 
-#. Default: "ID Server"
 msgid "label_schema_ID Server"
 msgstr "ID szerver"
 
-#. Default: "Labels"
 msgid "label_schema_Labels"
 msgstr "Címkék"
 
-#. Default: "Layout"
 msgid "label_schema_Layout"
 msgstr "Elrendezés"
 
-#. Default: "Location"
 msgid "label_schema_Location"
 msgstr "Hely"
 
-#. Default: "Method"
 msgid "label_schema_Method"
 msgstr "Módszer"
 
-#. Default: "Preferences"
+msgid "label_schema_Notifications"
+msgstr ""
+
 msgid "label_schema_Preferences"
 msgstr "Beállítások"
 
-#. Default: "Publication preference"
 msgid "label_schema_Publication preference"
 msgstr "Közzététel beállítás"
 
-#. Default: "Reference Values"
 msgid "label_schema_Reference Values"
 msgstr "Referencia érték"
 
-#. Default: "Result Options"
+msgid "label_schema_Reflex Rule Folder"
+msgstr ""
+
 msgid "label_schema_Result Options"
 msgstr "Eredmény beállítások"
 
-#. Default: "Results Reports"
 msgid "label_schema_Results Reports"
 msgstr "Erdemény riportok"
 
-#. Default: "SR Templates"
 msgid "label_schema_SR Templates"
 msgstr "SR sablonok"
 
-#. Default: "Sample Partitions"
 msgid "label_schema_Sample Partitions"
 msgstr "Minta szét/felosztások"
 
-#. Default: "AR Templates"
 msgid "label_schema_Sample Templates"
-msgstr "AR sablonok"
+msgstr ""
 
-#. Default: "Security"
+msgid "label_schema_Sampling"
+msgstr ""
+
+# Setup Schemata
 msgid "label_schema_Security"
 msgstr "Biztonság"
 
-#. Default: "Uncertainties"
+msgid "label_schema_Sticker"
+msgstr ""
+
 msgid "label_schema_Uncertainties"
 msgstr "Bizonytalanság"

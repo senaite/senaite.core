@@ -65,16 +65,6 @@ method, as this is also called after the content has been edited::
     >>> get_version(analysisservice)
     1
 
-The `log` view should reflect this version::
-
-    >>> log_view = analysisservice.restrictedTraverse("@@log")
-    >>> folderitems = log_view.folderitems()
-
-The latest version should be 1::
-
-    >>> folderitems[0]["Version"]
-    1
-
 
 Calculations
 ------------
@@ -105,15 +95,6 @@ method, as this is also called after the content has been edited::
     >>> get_version(calculation)
     1
 
-The `log` view should reflect this version::
-
-    >>> log_view = calculation.restrictedTraverse("@@log")
-    >>> folderitems = log_view.folderitems()
-
-The latest version should be 1::
-
-    >>> folderitems[0]["Version"]
-    1
 
 Non Versionable Types
 ---------------------

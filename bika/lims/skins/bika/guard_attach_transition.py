@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-#
-# This file is part of SENAITE.CORE
-#
-# Copyright 2018 by it's authors.
-# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
-
 ## Script (Python) "guard_attach_transition"
 ##bind container=container
 ##bind context=context
@@ -25,9 +18,6 @@ if context.portal_type == "AnalysisRequest":
         if review_state in ('unassigned', 'assigned', 'attachment_due'):
             return False
     return True
-
-if workflow.getInfoFor(context, 'cancellation_state', 'active') == "cancelled":
-    return False
 
 if context.portal_type == "Worksheet":
     # Allow transition to 'to_be_verified'

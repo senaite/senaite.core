@@ -1,20 +1,31 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of SENAITE.CORE
+# This file is part of SENAITE.CORE.
 #
-# Copyright 2018 by it's authors.
-# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2019 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
 import json
 
-from zope.interface import implements
-
-from Products.AdvancedQuery import Or, MatchRegexp, Generic
-from Products.CMFCore.utils import getToolByName
-
-from bika.lims.utils import to_utf8 as _c
-from bika.lims.utils import to_unicode as _u
+from bika.lims import api
+from bika.lims import logger
 from bika.lims.interfaces import IReferenceWidgetVocabulary
+from bika.lims.utils import to_unicode as _u
+from bika.lims.utils import to_utf8 as _c
+from zope.interface import implements
 
 
 class DefaultReferenceWidgetVocabulary(object):
@@ -24,112 +35,67 @@ class DefaultReferenceWidgetVocabulary(object):
         self.context = context
         self.request = request
 
-    def __call__(self, result=None, specification=None, **kwargs):
-        searchTerm = _c(self.request.get('searchTerm', '')).lower()
-        force_all = self.request.get('force_all', 'false')
-        searchFields = 'search_fields' in self.request \
-            and json.loads(_u(self.request.get('search_fields', '[]'))) \
-            or ('Title',)
-        # lookup objects from ZODB
-        catalog_name = _c(self.request.get('catalog_name', 'portal_catalog'))
-        catalog = getToolByName(self.context, catalog_name)
+    @property
+    def search_fields(self):
+        """Returns the object field names to search against
+        """
+        search_fields = self.request.get("search_fields", None)
+        if not search_fields:
+            return []
 
-        # json.loads does unicode conversion, which will fail in the catalog
-        # search for some cases. So we need to convert the strings to utf8
-        # see: https://github.com/senaite/bika.lims/issues/443
-        base_query = json.loads(self.request['base_query'])
-        search_query = json.loads(self.request.get('search_query', "{}"))
-        base_query = self.to_utf8(base_query)
-        search_query = self.to_utf8(search_query)
+        search_fields = json.loads(_u(search_fields))
+        return search_fields
 
-        # first with all queries
-        contentFilter = dict((k, v) for k, v in base_query.items())
-        contentFilter.update(search_query)
+    @property
+    def search_field(self):
+        """Returns the field name to search for
+        """
+        search_fields = self.search_fields
+        if not search_fields:
+            return "Title"
+        return search_fields[0]
 
-        # Sorted by? (by default, Title)
-        sort_on = self.request.get('sidx', 'Title')
-        if sort_on == 'Title':
-            sort_on = 'sortable_title'
-        if sort_on:
-            # Check if is an index and if is sortable. Otherwise, assume the
-            # sorting must be done manually
-            index = catalog.Indexes.get(sort_on, None)
-            if index and index.meta_type in ['FieldIndex', 'DateIndex']:
-                contentFilter['sort_on'] = sort_on
-                # Sort order?
-                sort_order = self.request.get('sord', 'asc')
-                if (sort_order in ['desc', 'reverse', 'rev', 'descending']):
-                    contentFilter['sort_order'] = 'descending'
-                else:
-                    contentFilter['sort_order'] = 'ascending'
+    @property
+    def search_term(self):
+        """Returns the search term
+        """
+        search_term = _c(self.request.get("searchTerm", ""))
+        return search_term.lower().strip()
 
-        # Can do a search for indexes?
-        criterias = []
-        fields_wo_index = []
-        if searchTerm:
-            for field_name in searchFields:
-                index = catalog.Indexes.get(field_name, None)
-                if not index:
-                    fields_wo_index.append(field_name)
-                    continue
-                if index.meta_type in ('ZCTextIndex'):
-                    if searchTerm.isspace():
-                        # earchTerm != ' ' added because of
-                        # https://github.com/plone/Products.CMFPlone/issues
-                        # /1537
-                        searchTerm = ''
-                        continue
-                    else:
-                        temp_st = searchTerm + '*'
-                        criterias.append(MatchRegexp(field_name, temp_st))
-                elif index.meta_type in ('FieldIndex'):
-                    criterias.append(MatchRegexp(field_name, searchTerm))
-                elif index.meta_type == 'DateIndex':
-                    msg = "Unhandled DateIndex search on '%s'" % field_name
-                    from bika.lims import logger
-                    logger.warn(msg)
-                else:
-                    criterias.append(Generic(field_name, searchTerm))
+    @property
+    def minimum_length(self):
+        """Minimum required length of the search term
+        """
+        min_length = self.request.get("minLength", 0)
+        return api.to_int(min_length, 0)
 
-        if criterias:
-            # Advanced search
-            advanced_query = catalog.makeAdvancedQuery(contentFilter)
-            aq_or = Or()
-            for criteria in criterias:
-                aq_or.addSubquery(criteria)
-            advanced_query &= aq_or
-            brains = catalog.evalAdvancedQuery(advanced_query)
-        else:
-            brains = catalog(contentFilter)
+    @property
+    def force_all(self):
+        """Returns whether all records must be displayed if no match is found
+        """
+        force_all = self.request.get("force_all", "").lower()
+        return force_all in ["1", "true"] or False
 
-        if brains and searchTerm and fields_wo_index:
-            _brains = []
-            for brain in brains:
-                for field_name in fields_wo_index:
-                    value = getattr(brain, field_name, None)
-                    if not value:
-                        instance = brain.getObject()
-                        schema = instance.Schema()
-                        if field_name in schema:
-                            value = schema[field_name].get(instance)
-                    if callable(value):
-                        value = value()
-                    if value and value.lower().find(searchTerm) > -1:
-                        _brains.append(brain)
-                        break
-            brains = _brains
+    @property
+    def catalog_name(self):
+        """Returns the catalog name to be used for the search
+        """
+        catalog_name = self.request.get("catalog_name", None)
+        return catalog_name or "portal_catalog"
 
-        # Then just base_query alone ("show all if no match")
-        if not brains and force_all.lower() == 'true':
-            if search_query:
-                brains = catalog(base_query)
-                if brains and searchTerm:
-                    _brains = [p for p in brains
-                               if p.Title.lower().find(searchTerm) > -1]
-                    if _brains:
-                        brains = _brains
+    @property
+    def base_query(self):
+        """Returns the base query to use. This is, the query with the basic
+        filtering criteria to be used as the baseline. Search criterias defined
+        in base_query are restricive (AND statments, not included in OR-like)
+        """
+        return self.get_query_from_request("base_query")
 
-        return brains
+    @property
+    def search_query(self):
+        """Returns the search query.
+        """
+        return self.get_query_from_request("search_query")
 
     def to_utf8(self, data):
         """
@@ -151,6 +117,142 @@ class DefaultReferenceWidgetVocabulary(object):
                 self.to_utf8(key): self.to_utf8(value)
                 for key, value in data.iteritems()
             }
-            # if it's anything else, return it in its original form
 
+        # if it's anything else, return it in its original form
         return data
+
+    def get_query_from_request(self, name):
+        """Returns the query inferred from the request
+        """
+        query = self.request.get(name, "{}")
+        # json.loads does unicode conversion, which will fail in the catalog
+        # search for some cases. So we need to convert the strings to utf8
+        # https://github.com/senaite/senaite.core/issues/443
+        query = json.loads(query)
+        return self.to_utf8(query)
+
+    def get_raw_query(self):
+        """Returns the raw query to use for current search, based on the
+        base query + update query
+        """
+        query = self.base_query.copy()
+        search_query = self.search_query.copy()
+        query.update(search_query)
+
+        # Add sorting criteria
+        sorting = self.resolve_sorting(query)
+        query.update(sorting)
+
+        # Check if sort_on is an index and if is sortable. Otherwise, assume
+        # the sorting must be done manually
+        catalog = api.get_tool(self.catalog_name)
+        sort_on = query.get("sort_on", None)
+        if sort_on and not self.is_sortable_index(sort_on, catalog):
+            del(query["sort_on"])
+        return query
+
+    def resolve_sorting(self, query):
+        """Resolves the sorting criteria for the given query
+        """
+        sorting = {}
+
+        # Sort on
+        sort_on = query.get("sidx", None)
+        sort_on = sort_on or query.get("sort_on", None)
+        sort_on = sort_on == "Title" and "sortable_title" or sort_on
+        if sort_on:
+            sorting["sort_on"] = sort_on
+
+            # Sort order
+            sort_order = query.get("sord", None)
+            sort_order = sort_order or query.get("sort_order", None)
+            if sort_order in ["desc", "reverse", "rev", "descending"]:
+                sorting["sort_order"] = "descending"
+            else:
+                sorting["sort_order"] = "ascending"
+
+            # Sort limit
+            sort_limit = api.to_int(query.get("limit", 30), default=30)
+            if sort_limit:
+                sorting["sort_limit"] = sort_limit
+
+        return sorting
+
+    def is_sortable_index(self, index_name, catalog):
+        """Returns whether the index is sortable
+        """
+        index = self.get_index(index_name, catalog)
+        if not index:
+            return False
+        return index.meta_type in ["FieldIndex", "DateIndex"]
+
+    def get_index(self, field_name, catalog):
+        """Returns the index of the catalog for the given field_name, if any
+        """
+        index = catalog.Indexes.get(field_name, None)
+        if not index and field_name == "Title":
+            # Legacy
+            return self.get_index("sortable_title", catalog)
+        return index
+
+    def search(self, query, search_term, search_field, catalog):
+        """Performs a search against the catalog and returns the brains
+        """
+        logger.info("Reference Widget Catalog: {}".format(catalog.id))
+        if not search_term:
+            return catalog(query)
+
+        index = self.get_index(search_field, catalog)
+        if not index:
+            logger.warn("*** Index not found: '{}'".format(search_field))
+            return []
+
+        meta = index.meta_type
+        if meta == "TextIndexNG3":
+            query[index.id] = "{}*".format(search_term)
+
+        elif meta == "ZCTextIndex":
+            logger.warn("*** Field '{}' ({}). Better use TextIndexNG3"
+                        .format(meta, search_field))
+            query[index.id] = "{}*".format(search_term)
+
+        elif meta in ["FieldIndex", "KeywordIndex"]:
+            logger.warn("*** Field '{}' ({}). Better use TextIndexNG3"
+                        .format(meta, search_field))
+            query[index.id] = search_term
+
+        else:
+            logger.warn("*** Index '{}' ({}) not supported"
+                        .format(search_field, meta))
+            return []
+
+        logger.info("Reference Widget Query: {}".format(repr(query)))
+        return catalog(query)
+
+    def __call__(self):
+        # If search term, check if its length is above the minLength
+        search_term = self.search_term
+        if search_term and len(search_term) < self.minimum_length:
+            return []
+
+        # Get the raw query to use
+        # Raw query is built from base query baseline, including additional
+        # parameters defined in the request and the search query as well
+        query = self.get_raw_query()
+        if not query:
+            return []
+
+        # Do the search
+        logger.info("Reference Widget Raw Query: {}".format(repr(query)))
+        catalog = api.get_tool(self.catalog_name)
+        brains = self.search(query, search_term, self.search_field, catalog)
+
+        # If no matches, then just base_query alone ("show all if no match")
+        if not brains and self.force_all:
+            query = self.base_query.copy()
+            sorting = self.resolve_sorting(query)
+            query.update(sorting)
+            brains = catalog(query)
+
+        logger.info("Returned objects: {}".format(len(brains)))
+        return brains

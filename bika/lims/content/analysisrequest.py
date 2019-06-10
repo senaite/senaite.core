@@ -1,47 +1,94 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of SENAITE.CORE
+# This file is part of SENAITE.CORE.
 #
-# Copyright 2018 by it's authors.
-# Some rights reserved. See LICENSE.rst, CONTRIBUTORS.rst.
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2019 by it's authors.
+# Some rights reserved, see README and LICENSE.
 
+import base64
+import re
 import sys
 from decimal import Decimal
+from urlparse import urljoin
 
 from AccessControl import ClassSecurityInfo
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import deprecated
 from bika.lims import logger
-# Bika Fields
 from bika.lims.browser.fields import ARAnalysesField
 from bika.lims.browser.fields import DateTimeField
 from bika.lims.browser.fields import DurationField
 from bika.lims.browser.fields import UIDReferenceField
-# Bika Widgets
 from bika.lims.browser.fields.remarksfield import RemarksField
 from bika.lims.browser.widgets import DateTimeWidget
-from bika.lims.browser.widgets import RemarksWidget
 from bika.lims.browser.widgets import DecimalWidget
 from bika.lims.browser.widgets import PrioritySelectionWidget
 from bika.lims.browser.widgets import ReferenceWidget
 from bika.lims.browser.widgets import RejectionWidget
+from bika.lims.browser.widgets import RemarksWidget
 from bika.lims.browser.widgets import SelectionWidget as BikaSelectionWidget
 from bika.lims.browser.widgets.durationwidget import DurationWidget
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
+from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.config import PRIORITIES
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.analysisspec import ResultsRangeDict
 from bika.lims.content.bikaschema import BikaSchema
-# Bika Interfaces
-from bika.lims.interfaces import IAnalysisRequest, ICancellable
-# Bika Permissions
+from bika.lims.interfaces import IAnalysisRequest
+from bika.lims.interfaces import IAnalysisRequestPartition
+from bika.lims.interfaces import ICancellable
+from bika.lims.permissions import FieldEditBatch
+from bika.lims.permissions import FieldEditClient
+from bika.lims.permissions import FieldEditClientOrderNumber
+from bika.lims.permissions import FieldEditClientReference
+from bika.lims.permissions import FieldEditClientSampleID
+from bika.lims.permissions import FieldEditComposite
+from bika.lims.permissions import FieldEditContact
+from bika.lims.permissions import FieldEditContainer
+from bika.lims.permissions import FieldEditDatePreserved
+from bika.lims.permissions import FieldEditDateReceived
+from bika.lims.permissions import FieldEditDateSampled
+from bika.lims.permissions import FieldEditEnvironmentalConditions
+from bika.lims.permissions import FieldEditInvoiceExclude
+from bika.lims.permissions import FieldEditMemberDiscount
+from bika.lims.permissions import FieldEditPreservation
+from bika.lims.permissions import FieldEditPreserver
+from bika.lims.permissions import FieldEditPriority
+from bika.lims.permissions import FieldEditProfiles
+from bika.lims.permissions import FieldEditPublicationSpecifications
+from bika.lims.permissions import FieldEditRejectionReasons
+from bika.lims.permissions import FieldEditRemarks
+from bika.lims.permissions import FieldEditResultsInterpretation
+from bika.lims.permissions import FieldEditSampleCondition
+from bika.lims.permissions import FieldEditSamplePoint
+from bika.lims.permissions import FieldEditSampler
+from bika.lims.permissions import FieldEditSampleType
+from bika.lims.permissions import FieldEditSamplingDate
+from bika.lims.permissions import FieldEditSamplingDeviation
+from bika.lims.permissions import FieldEditSamplingRound
+from bika.lims.permissions import FieldEditScheduledSampler
+from bika.lims.permissions import FieldEditSpecification
+from bika.lims.permissions import FieldEditStorageLocation
+from bika.lims.permissions import FieldEditTemplate
 from bika.lims.permissions import ManageInvoices
-# Bika Utils
 from bika.lims.utils import getUsers
+from bika.lims.utils import tmpID
 from bika.lims.utils import user_email
 from bika.lims.utils import user_fullname
-# Bika Workflow
 from bika.lims.workflow import getTransitionDate
 from bika.lims.workflow import getTransitionUsers
 from DateTime import DateTime
@@ -58,18 +105,21 @@ from Products.Archetypes.atapi import StringField
 from Products.Archetypes.atapi import StringWidget
 from Products.Archetypes.atapi import TextField
 from Products.Archetypes.atapi import registerType
-from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import Schema
 from Products.Archetypes.references import HoldingReference
 from Products.Archetypes.Widget import RichWidget
-# AT Fields and AT Widgets
 from Products.ATExtensions.field import RecordsField
 from Products.CMFCore.permissions import ModifyPortalContent
 from Products.CMFCore.permissions import View
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
 from Products.CMFPlone.utils import safe_unicode
+from zope.interface import alsoProvides
 from zope.interface import implements
+from zope.interface import noLongerProvides
+
+IMG_SRC_RX = re.compile(r'<img.*?src="(.*?)"')
+IMG_DATA_SRC_RX = re.compile(r'<img.*?src="(data:image/.*?;base64,)(.*?)"')
 
 
 # SCHEMA DEFINITION
@@ -82,7 +132,7 @@ schema = BikaSchema.copy() + Schema((
         allowed_types=('Contact',),
         mode="rw",
         read_permission=View,
-        write_permission="Field: Edit Contact",
+        write_permission=FieldEditContact,
         widget=ReferenceWidget(
             label=_("Contact"),
             render_own_label=True,
@@ -96,16 +146,20 @@ schema = BikaSchema.copy() + Schema((
                 'add': 'edit',
                 'header_table': 'prominent',
             },
-            base_query={'inactive_state': 'active'},
+            catalog_name="portal_catalog",
+            base_query={"is_active": True,
+                        "sort_limit": 50,
+                        "sort_on": "sortable_title",
+                        "sort_order": "ascending"},
             showOn=True,
             popup_width='400px',
             colModel=[
-                {'columnName': 'UID', 'hidden': True},
                 {'columnName': 'Fullname', 'width': '50',
                  'label': _('Name')},
                 {'columnName': 'EmailAddress', 'width': '50',
                  'label': _('Email Address')},
             ],
+            ui_item='Fullname',
         ),
     ),
 
@@ -118,7 +172,7 @@ schema = BikaSchema.copy() + Schema((
         relationship='AnalysisRequestCCContact',
         mode="rw",
         read_permission=View,
-        write_permission="Field: Edit Contact",
+        write_permission=FieldEditContact,
         widget=ReferenceWidget(
             label=_("CC Contacts"),
             description=_("The contacts used in CC for email notifications"),
@@ -128,16 +182,19 @@ schema = BikaSchema.copy() + Schema((
                 'add': 'edit',
                 'header_table': 'prominent',
             },
-            base_query={'inactive_state': 'active'},
+            catalog_name="portal_catalog",
+            base_query={"is_active": True,
+                        "sort_on": "sortable_title",
+                        "sort_order": "ascending"},
             showOn=True,
             popup_width='400px',
             colModel=[
-                {'columnName': 'UID', 'hidden': True},
                 {'columnName': 'Fullname', 'width': '50',
                  'label': _('Name')},
                 {'columnName': 'EmailAddress', 'width': '50',
                  'label': _('Email Address')},
             ],
+            ui_item='Fullname',
         ),
     ),
 
@@ -145,7 +202,7 @@ schema = BikaSchema.copy() + Schema((
         'CCEmails',
         mode="rw",
         read_permission=View,
-        write_permission="Field: Edit Contact",
+        write_permission=FieldEditContact,
         acquire=True,
         acquire_fieldname="CCEmails",
         widget=StringWidget(
@@ -167,7 +224,7 @@ schema = BikaSchema.copy() + Schema((
         relationship='AnalysisRequestClient',
         mode="rw",
         read_permission=View,
-        write_permission="Field: Edit Client",
+        write_permission=FieldEditClient,
         widget=ReferenceWidget(
             label=_("Client"),
             description=_("The assigned client of this request"),
@@ -177,7 +234,11 @@ schema = BikaSchema.copy() + Schema((
                 'add': 'edit',
                 'header_table': 'prominent',
             },
-            base_query={'review_state': 'active'},
+            catalog_name="portal_catalog",
+            base_query={"is_active": True,
+                        "sort_limit": 30,
+                        "sort_on": "sortable_title",
+                        "sort_order": "ascending"},
             showOn=True,
             add_button={
                     'visible': True,
@@ -188,24 +249,48 @@ schema = BikaSchema.copy() + Schema((
                 }
         ),
     ),
-    # TODO Remove in >v1.3.0 - This is kept for upgrade and backwards-compat.
-    UIDReferenceField(
-        'Sample',
-        allowed_types=('Sample',),
+
+    # Field for the creation of Secondary Analysis Requests.
+    # This field is meant to be displayed in AR Add form only. A viewlet exists
+    # to inform the user this Analysis Request is secondary
+    ReferenceField(
+        "PrimaryAnalysisRequest",
+        allowed_types=("AnalysisRequest",),
+        referenceClass=HoldingReference,
+        relationship='AnalysisRequestPrimaryAnalysisRequest',
         mode="rw",
         read_permission=View,
-        write_permission=ModifyPortalContent,
+        write_permission=FieldEditClient,
         widget=ReferenceWidget(
-            label=_("Sample"),
+            label=_("Primary Sample"),
             description=_("Select a sample to create a secondary Sample"),
             size=20,
             render_own_label=True,
-            visible=False,
-            catalog_name='bika_catalog',
-            base_query={'cancellation_state': 'active',
-                        'review_state': ['sample_due', 'sample_received', ]},
+            visible={
+                'add': 'edit',
+                'header_table': 'prominent',
+            },
+            catalog_name=CATALOG_ANALYSIS_REQUEST_LISTING,
+            search_fields=('listing_searchable_text',),
+            base_query={'is_active': True,
+                        'is_received': True,
+                        'sort_limit': 30,
+                        'sort_on': 'getId',
+                        'sort_order': 'descending'},
+            colModel=[
+                {'columnName': 'getId', 'width': '20',
+                 'label': _('Sample ID'), 'align': 'left'},
+                {'columnName': 'getClientSampleID', 'width': '20',
+                 'label': _('Client SID'), 'align': 'left'},
+                {'columnName': 'getSampleTypeTitle', 'width': '30',
+                 'label': _('Sample Type'), 'align': 'left'},
+                {'columnName': 'getClientTitle', 'width': '30',
+                 'label': _('Client'), 'align': 'left'},
+                {'columnName': 'UID', 'hidden': True},
+            ],
+            ui_item='getId',
             showOn=True,
-        ),
+        )
     ),
 
     ReferenceField(
@@ -214,7 +299,7 @@ schema = BikaSchema.copy() + Schema((
         relationship='AnalysisRequestBatch',
         mode="rw",
         read_permission=View,
-        write_permission="Field: Edit Batch",
+        write_permission=FieldEditBatch,
         widget=ReferenceWidget(
             label=_("Batch"),
             size=20,
@@ -223,9 +308,22 @@ schema = BikaSchema.copy() + Schema((
             visible={
                 'add': 'edit',
             },
-            catalog_name='bika_catalog',
-            base_query={'review_state': 'open',
-                        'cancellation_state': 'active'},
+            catalog_name="bika_catalog",
+            base_query={"is_active": True,
+                        "sort_limit": 50,
+                        "sort_on": "sortable_title",
+                        "sort_order": "descending"},
+            colModel=[
+                {'columnName': 'getId', 'width': '20',
+                 'label': _('Batch ID'), 'align': 'left'},
+                {'columnName': 'getClientBatchID', 'width': '20',
+                 'label': _('CBID'), 'align': 'left'},
+                {'columnName': 'getClientTitle', 'width': '30',
+                 'label': _('Client'), 'align': 'left'},
+            ],
+            minLength=3,
+            force_all = False,
+            ui_item="getId",
             showOn=True,
         ),
     ),
@@ -236,7 +334,7 @@ schema = BikaSchema.copy() + Schema((
         relationship='AnalysisRequestSamplingRound',
         mode="rw",
         read_permission=View,
-        write_permission="Field: Edit Sampling Round",
+        write_permission=FieldEditSamplingRound,
         widget=ReferenceWidget(
             label=_("Sampling Round"),
             description=_("The assigned sampling round of this request"),
@@ -259,7 +357,7 @@ schema = BikaSchema.copy() + Schema((
         relationship='AnalysisRequestSubGroup',
         mode="rw",
         read_permission=View,
-        write_permission="Field: Edit Batch",
+        write_permission=FieldEditBatch,
         widget=ReferenceWidget(
             label=_("Batch Sub-group"),
             description=_("The assigned batch sub group of this request"),
@@ -277,7 +375,7 @@ schema = BikaSchema.copy() + Schema((
                 {'columnName': 'SortKey', 'hidden': True},
                 {'columnName': 'UID', 'hidden': True},
             ],
-            base_query={'inactive_state': 'active'},
+            base_query={'is_active': True},
             sidx='SortKey',
             sord='asc',
             showOn=True,
@@ -291,7 +389,7 @@ schema = BikaSchema.copy() + Schema((
         relationship='AnalysisRequestARTemplate',
         mode="rw",
         read_permission=View,
-        write_permission="Field: Edit Template",
+        write_permission=FieldEditTemplate,
         widget=ReferenceWidget(
             label=_("Sample Template"),
             description=_("The predefined values of the Sample template are set "
@@ -303,7 +401,9 @@ schema = BikaSchema.copy() + Schema((
                 'secondary': 'disabled',
             },
             catalog_name='bika_setup_catalog',
-            base_query={'inactive_state': 'active'},
+            base_query={"is_active": True,
+                        "sort_on": "sortable_title",
+                        "sort_order": "ascending"},
             showOn=True,
         ),
     ),
@@ -324,7 +424,9 @@ schema = BikaSchema.copy() + Schema((
             render_own_label=True,
             visible=False,
             catalog_name='bika_setup_catalog',
-            base_query={'inactive_state': 'active'},
+            base_query={"is_active": True,
+                        "sort_on": "sortable_title",
+                        "sort_order": "ascending"},
             showOn=False,
         ),
     ),
@@ -338,7 +440,7 @@ schema = BikaSchema.copy() + Schema((
         relationship='AnalysisRequestAnalysisProfiles',
         mode="rw",
         read_permission=View,
-        write_permission="Field: Edit Profiles",
+        write_permission=FieldEditProfiles,
         widget=ReferenceWidget(
             label=_("Analysis Profiles"),
             description=_("Analysis profiles apply a certain set of analyses"),
@@ -348,7 +450,9 @@ schema = BikaSchema.copy() + Schema((
                 'add': 'edit',
             },
             catalog_name='bika_setup_catalog',
-            base_query={'inactive_state': 'active'},
+            base_query={"is_active": True,
+                        "sort_on": "sortable_title",
+                        "sort_order": "ascending"},
             showOn=True,
         ),
     ),
@@ -361,7 +465,7 @@ schema = BikaSchema.copy() + Schema((
         'DateSampled',
         mode="rw",
         read_permission=View,
-        write_permission="Field: Edit Date Sampled",
+        write_permission=FieldEditDateSampled,
         widget=DateTimeWidget(
             label=_("Date Sampled"),
             description=_("The date when the sample was taken"),
@@ -380,7 +484,7 @@ schema = BikaSchema.copy() + Schema((
         'Sampler',
         mode="rw",
         read_permission=View,
-        write_permission="Field: Edit Sampler",
+        write_permission=FieldEditSampler,
         vocabulary='getSamplers',
         widget=BikaSelectionWidget(
             format='select',
@@ -399,7 +503,7 @@ schema = BikaSchema.copy() + Schema((
         'ScheduledSamplingSampler',
         mode="rw",
         read_permission=View,
-        write_permission="Field: Edit Scheduled Sampler",
+        write_permission=FieldEditScheduledSampler,
         vocabulary='getSamplers',
         widget=BikaSelectionWidget(
             description=_("Define the sampler supposed to do the sample in "
@@ -417,7 +521,7 @@ schema = BikaSchema.copy() + Schema((
         'SamplingDate',
         mode="rw",
         read_permission=View,
-        write_permission="Field: Edit Sampling Date",
+        write_permission=FieldEditSamplingDate,
         widget=DateTimeWidget(
             label=_("Expected Sampling Date"),
             description=_("The date when the sample will be taken"),
@@ -438,7 +542,7 @@ schema = BikaSchema.copy() + Schema((
         allowed_types='SampleType',
         mode="rw",
         read_permission=View,
-        write_permission="Field: Edit Sample Type",
+        write_permission=FieldEditSampleType,
         widget=ReferenceWidget(
             label=_("Sample Type"),
             render_own_label=True,
@@ -447,7 +551,9 @@ schema = BikaSchema.copy() + Schema((
                 'secondary': 'disabled',
             },
             catalog_name='bika_setup_catalog',
-            base_query={'inactive_state': 'active'},
+            base_query={"is_active": True,
+                        "sort_on": "sortable_title",
+                        "sort_order": "ascending"},
             showOn=True,
         ),
     ),
@@ -458,7 +564,7 @@ schema = BikaSchema.copy() + Schema((
         allowed_types='Container',
         mode="rw",
         read_permission=View,
-        write_permission="Field: Edit Container",
+        write_permission=FieldEditContainer,
         widget=ReferenceWidget(
             label=_("Container"),
             render_own_label=True,
@@ -466,7 +572,9 @@ schema = BikaSchema.copy() + Schema((
                 'add': 'edit',
             },
             catalog_name='bika_setup_catalog',
-            base_query={'inactive_state': 'active'},
+            base_query={"is_active": True,
+                        "sort_on": "sortable_title",
+                        "sort_order": "ascending"},
             showOn=True,
         ),
     ),
@@ -477,7 +585,7 @@ schema = BikaSchema.copy() + Schema((
         allowed_types='Preservation',
         mode="rw",
         read_permission=View,
-        write_permission="Field: Edit Preservation",
+        write_permission=FieldEditPreservation,
         widget=ReferenceWidget(
             label=_("Preservation"),
             render_own_label=True,
@@ -485,7 +593,9 @@ schema = BikaSchema.copy() + Schema((
                 'add': 'edit',
             },
             catalog_name='bika_setup_catalog',
-            base_query={'inactive_state': 'active'},
+            base_query={"is_active": True,
+                        "sort_on": "sortable_title",
+                        "sort_order": "ascending"},
             showOn=True,
         ),
     ),
@@ -493,7 +603,7 @@ schema = BikaSchema.copy() + Schema((
     DateTimeField('DatePreserved',
         mode="rw",
         read_permission=View,
-        write_permission="Field: Edit Date Preserved",
+        write_permission=FieldEditDatePreserved,
         widget=DateTimeWidget(
             label=_("Date Preserved"),
             description=_("The date when the sample was preserved"),
@@ -510,7 +620,7 @@ schema = BikaSchema.copy() + Schema((
         required=0,
         mode="rw",
         read_permission=View,
-        write_permission="Field: Edit Preserver",
+        write_permission=FieldEditPreserver,
         vocabulary='getPreservers',
         widget=BikaSelectionWidget(
             format='select',
@@ -537,7 +647,7 @@ schema = BikaSchema.copy() + Schema((
         'RejectionReasons',
         mode="rw",
         read_permission=View,
-        write_permission="Field: Edit Rejection Reasons",
+        write_permission=FieldEditRejectionReasons,
         widget=RejectionWidget(
             label=_("Sample Rejection"),
             description=_("Set the Sample Rejection workflow and the reasons"),
@@ -556,7 +666,7 @@ schema = BikaSchema.copy() + Schema((
         relationship='AnalysisRequestAnalysisSpec',
         mode="rw",
         read_permission=View,
-        write_permission="Field: Edit Specification",
+        write_permission=FieldEditSpecification,
         widget=ReferenceWidget(
             label=_("Analysis Specification"),
             description=_("Choose default Sample specification values"),
@@ -566,6 +676,9 @@ schema = BikaSchema.copy() + Schema((
                 'add': 'edit',
             },
             catalog_name='bika_setup_catalog',
+            base_query={"is_active": True,
+                        "sort_on": "sortable_title",
+                        "sort_order": "ascending"},
             colModel=[
                 {'columnName': 'contextual_title',
                  'width': '30',
@@ -578,6 +691,7 @@ schema = BikaSchema.copy() + Schema((
                 # UID is required in colModel
                 {'columnName': 'UID', 'hidden': True},
             ],
+            ui_item="contextual_title",
             showOn=True,
         ),
     ),
@@ -599,7 +713,7 @@ schema = BikaSchema.copy() + Schema((
         relationship='AnalysisRequestPublicationSpec',
         mode="rw",
         read_permission=View,
-        write_permission="Field: Edit Publication Specification",
+        write_permission=FieldEditPublicationSpecifications,
         widget=ReferenceWidget(
             label=_("Publication Specification"),
             description=_(
@@ -611,7 +725,9 @@ schema = BikaSchema.copy() + Schema((
                 'secondary': 'disabled',
             },
             catalog_name='bika_setup_catalog',
-            base_query={'inactive_state': 'active'},
+            base_query={"is_active": True,
+                        "sort_on": "sortable_title",
+                        "sort_order": "ascending"},
             showOn=True,
         ),
     ),
@@ -622,7 +738,7 @@ schema = BikaSchema.copy() + Schema((
         allowed_types='SamplePoint',
         mode="rw",
         read_permission=View,
-        write_permission="Field: Edit Sample Point",
+        write_permission=FieldEditSamplePoint,
         widget=ReferenceWidget(
             label=_("Sample Point"),
             description=_("Location where sample was taken"),
@@ -633,7 +749,9 @@ schema = BikaSchema.copy() + Schema((
                 'secondary': 'disabled',
             },
             catalog_name='bika_setup_catalog',
-            base_query={'inactive_state': 'active'},
+            base_query={"is_active": True,
+                        "sort_on": "sortable_title",
+                        "sort_order": "ascending"},
             showOn=True,
         ),
     ),
@@ -643,7 +761,7 @@ schema = BikaSchema.copy() + Schema((
         allowed_types='StorageLocation',
         mode="rw",
         read_permission=View,
-        write_permission="Field: Edit Storage Location",
+        write_permission=FieldEditStorageLocation,
         widget=ReferenceWidget(
             label=_("Storage Location"),
             description=_("Location where sample is kept"),
@@ -654,7 +772,9 @@ schema = BikaSchema.copy() + Schema((
                 'secondary': 'disabled',
             },
             catalog_name='bika_setup_catalog',
-            base_query={'inactive_state': 'active'},
+            base_query={"is_active": True,
+                        "sort_on": "sortable_title",
+                        "sort_order": "ascending"},
             showOn=True,
         ),
     ),
@@ -663,7 +783,7 @@ schema = BikaSchema.copy() + Schema((
         'ClientOrderNumber',
         mode="rw",
         read_permission=View,
-        write_permission="Field: Edit Client Order Number",
+        write_permission=FieldEditClientOrderNumber,
         widget=StringWidget(
             label=_("Client Order Number"),
             description=_("The client side order number for this request"),
@@ -680,7 +800,7 @@ schema = BikaSchema.copy() + Schema((
         'ClientReference',
         mode="rw",
         read_permission=View,
-        write_permission="Field: Edit Client Reference",
+        write_permission=FieldEditClientReference,
         widget=StringWidget(
             label=_("Client Reference"),
             description=_("The client side reference for this request"),
@@ -696,7 +816,7 @@ schema = BikaSchema.copy() + Schema((
         'ClientSampleID',
         mode="rw",
         read_permission=View,
-        write_permission="Field: Edit Client Sample ID",
+        write_permission=FieldEditClientSampleID,
         widget=StringWidget(
             label=_("Client Sample ID"),
             description=_("The client side identifier of the sample"),
@@ -714,7 +834,7 @@ schema = BikaSchema.copy() + Schema((
         allowed_types='SamplingDeviation',
         mode="rw",
         read_permission=View,
-        write_permission="Field: Edit Sampling Deviation",
+        write_permission=FieldEditSamplingDeviation,
         widget=ReferenceWidget(
             label=_("Sampling Deviation"),
             description=_("Deviation between the sample and how it "
@@ -726,7 +846,9 @@ schema = BikaSchema.copy() + Schema((
                 'secondary': 'disabled',
             },
             catalog_name='bika_setup_catalog',
-            base_query={'inactive_state': 'active'},
+            base_query={"is_active": True,
+                        "sort_on": "sortable_title",
+                        "sort_order": "ascending"},
             showOn=True,
         ),
     ),
@@ -736,7 +858,7 @@ schema = BikaSchema.copy() + Schema((
         allowed_types='SampleCondition',
         mode="rw",
         read_permission=View,
-        write_permission="Field: Edit Sample Condition",
+        write_permission=FieldEditSampleCondition,
         widget=ReferenceWidget(
             label=_("Sample condition"),
             description=_("The condition of the sample"),
@@ -747,7 +869,9 @@ schema = BikaSchema.copy() + Schema((
                 'secondary': 'disabled',
             },
             catalog_name='bika_setup_catalog',
-            base_query={'inactive_state': 'active'},
+            base_query={"is_active": True,
+                        "sort_on": "sortable_title",
+                        "sort_order": "ascending"},
             showOn=True,
         ),
     ),
@@ -758,7 +882,7 @@ schema = BikaSchema.copy() + Schema((
         vocabulary=PRIORITIES,
         mode='rw',
         read_permission=View,
-        write_permission="Field: Edit Priority",
+        write_permission=FieldEditPriority,
         widget=PrioritySelectionWidget(
             label=_('Priority'),
             format='select',
@@ -771,7 +895,7 @@ schema = BikaSchema.copy() + Schema((
         'EnvironmentalConditions',
         mode="rw",
         read_permission=View,
-        write_permission="Field: Edit Environmental Conditions",
+        write_permission=FieldEditEnvironmentalConditions,
         widget=StringWidget(
             label=_("Environmental conditions"),
             description=_("The environmental condition during sampling"),
@@ -800,7 +924,9 @@ schema = BikaSchema.copy() + Schema((
             render_own_label=True,
             visible=False,
             catalog_name='bika_setup_catalog',
-            base_query={'inactive_state': 'active'},
+            base_query={"is_active": True,
+                        "sort_on": "sortable_title",
+                        "sort_order": "ascending"},
             showOn=True,
         ),
     ),
@@ -810,7 +936,7 @@ schema = BikaSchema.copy() + Schema((
         default=False,
         mode="rw",
         read_permission=View,
-        write_permission="Field: Edit Composite",
+        write_permission=FieldEditComposite,
         widget=BooleanWidget(
             label=_("Composite"),
             render_own_label=True,
@@ -826,7 +952,7 @@ schema = BikaSchema.copy() + Schema((
         default=False,
         mode="rw",
         read_permission=View,
-        write_permission="Field: Edit Invoice Exclude",
+        write_permission=FieldEditInvoiceExclude,
         widget=BooleanWidget(
             label=_("Invoice Exclude"),
             description=_("Should the analyses be excluded from the invoice?"),
@@ -902,7 +1028,7 @@ schema = BikaSchema.copy() + Schema((
         widget=ComputedWidget(
             visible={
                 'edit': 'invisible',
-                'view': 'invisible',
+                'view': 'visible',
             },
         )
     ),
@@ -911,7 +1037,7 @@ schema = BikaSchema.copy() + Schema((
         'DateReceived',
         mode="rw",
         read_permission=View,
-        write_permission="Field: Edit Date Received",
+        write_permission=FieldEditDateReceived,
         widget=DateTimeWidget(
             label=_("Date Sample Received"),
             show_time=True,
@@ -938,6 +1064,8 @@ schema = BikaSchema.copy() + Schema((
     RemarksField(
         'Remarks',
         searchable=True,
+        read_permission=View,
+        write_permission=FieldEditRemarks,
         widget=RemarksWidget(
             label=_("Remarks"),
             description=_("Remarks and comments for this request"),
@@ -954,7 +1082,7 @@ schema = BikaSchema.copy() + Schema((
         default_method='getDefaultMemberDiscount',
         mode="rw",
         read_permission=View,
-        write_permission="Field: Edit Member Discount",
+        write_permission=FieldEditMemberDiscount,
         widget=DecimalWidget(
             label=_("Member discount %"),
             description=_("Enter percentage value eg. 33.0"),
@@ -1199,7 +1327,7 @@ schema = BikaSchema.copy() + Schema((
         # getResultsInterpretation returns a str with html tags
         # to conserve the txt format in the report.
         read_permission=View,
-        write_permission="Field: Edit Results Interpretation",
+        write_permission=FieldEditResultsInterpretation,
         widget=RichWidget(
             description=_("Comments or results interpretation"),
             label=_("Results Interpretation"),
@@ -1214,7 +1342,7 @@ schema = BikaSchema.copy() + Schema((
     RecordsField(
         'ResultsInterpretationDepts',
         read_permission=View,
-        write_permission="Field: Edit Results Interpretation",
+        write_permission=FieldEditResultsInterpretation,
         subfields=('uid', 'richtext'),
         subfield_labels={
             'uid': _('Department'),
@@ -1267,6 +1395,7 @@ schema['title'].widget.visible = False
 schema.moveField('Client', before='Contact')
 schema.moveField('ResultsInterpretation', pos='bottom')
 schema.moveField('ResultsInterpretationDepts', pos='bottom')
+schema.moveField("PrimaryAnalysisRequest", before="Client")
 
 
 class AnalysisRequest(BaseFolder):
@@ -1278,6 +1407,13 @@ class AnalysisRequest(BaseFolder):
     _at_rename_after_creation = True
 
     def _renameAfterCreation(self, check_auto_id=False):
+        """Rename hook called by processForm
+        """
+        # https://github.com/senaite/senaite.core/issues/1327
+        primary = self.getPrimaryAnalysisRequest()
+        if primary:
+            logger.info("Secondary sample detected: Skipping ID generation")
+            return False
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
 
@@ -1312,11 +1448,6 @@ class AnalysisRequest(BaseFolder):
 
     def getProfilesTitle(self):
         return [profile.Title() for profile in self.getProfiles()]
-
-    def setPublicationSpecification(self, value):
-        """Never contains a value; this field is here for the UI." \
-        """
-        return value
 
     def getAnalysisService(self):
         proxies = self.getAnalyses(full_objects=False)
@@ -1490,111 +1621,52 @@ class AnalysisRequest(BaseFolder):
                     return "2"
         return "0"
 
-    def printLastReport(self):
-        """Setting Printed Time of the last report, so its Printed value will be 1
-        """
-        workflow = getToolByName(self, 'portal_workflow')
-        review_state = workflow.getInfoFor(self, 'review_state', '')
-        if review_state not in ['published']:
-            return
-        last_report = sorted(self.objectValues('ARReport'),
-                             key=lambda report: report.getDatePublished())[-1]
-        if last_report and not last_report.getDatePrinted():
-            last_report.setDatePrinted(DateTime())
-            self.reindexObject(idxs=['getPrinted'])
-
-    security.declareProtected(View, 'getBillableItems')
-
+    @security.protected(View)
     def getBillableItems(self):
         """Returns the items to be billed
         """
-        def get_keywords_set(profiles):
-            keys = list()
-            for profile in profiles:
-                keys += map(lambda s: s.getKeyword(), profile.getService())
-            return set(keys)
-
-        # Profiles with a fixed price, regardless of their analyses
+        # Assigned profiles
         profiles = self.getProfiles()
-        billable_items = filter(lambda pr: pr.getUseAnalysisProfilePrice(),
-                                 profiles)
-        # Profiles w/o a fixed price. The price is the sum of the individual
-        # price for each analysis
-        non_billable = filter(lambda p: p not in billable_items, profiles)
-        billable_keys = get_keywords_set(non_billable) - \
-                        get_keywords_set(billable_items)
-
+        # Billable profiles which have a fixed price set
+        billable_profiles = filter(
+            lambda pr: pr.getUseAnalysisProfilePrice(), profiles)
+        # All services contained in the billable profiles
+        billable_profile_services = reduce(lambda a, b: a+b, map(
+            lambda profile: profile.getService(), billable_profiles), [])
+        # Keywords of the contained services
+        billable_service_keys = map(
+            lambda s: s.getKeyword(), set(billable_profile_services))
+        # The billable items contain billable profiles and single selected analyses
+        billable_items = billable_profiles
         # Get the analyses to be billed
-        exclude_rs = ['retracted', 'rejected']
-        for analysis in self.getAnalyses(cancellation_state="active"):
+        exclude_rs = ["retracted", "rejected"]
+        for analysis in self.getAnalyses(is_active=True):
             if analysis.review_state in exclude_rs:
                 continue
-            if analysis.getKeyword not in billable_keys:
+            if analysis.getKeyword in billable_service_keys:
                 continue
             billable_items.append(api.get_object(analysis))
-
-        # Return the analyses that need to be billed individually, together with
-        # the profiles with a fixed price
         return billable_items
 
-    # TODO Cleanup - Remove this function, only used in invoice and too complex
-    def getServicesAndProfiles(self):
-        """This function gets all analysis services and all profiles and removes
-        the services belonging to a profile.
-
-        :returns: a tuple of three lists, where the first list contains the
-        analyses and the second list the profiles.
-        The third contains the analyses objects used by the profiles.
-        """
-        # profile_analyses contains the profile's analyses (analysis !=
-        # service") objects to obtain
-        # the correct price later
-        exclude_rs = ['retracted', 'rejected']
-        analyses = filter(lambda an: an.review_state not in exclude_rs,
-                          self.getAnalyses(cancellation_state='active'))
-        analyses = map(api.get_object, analyses)
-        profiles = self.getProfiles()
-
-        # Get the service keys from all profiles
-        profiles_keys = list()
-        for profile in profiles:
-            profile_keys = map(lambda s: s.getKeyword(), profile.getService())
-            profiles_keys.extend(profile_keys)
-
-        # Extract the analyses which service is present in at least one profile
-        # and those not present (orphan)
-        profile_analyses = list()
-        orphan_analyses = list()
-        for an in analyses:
-            if an.getKeyword() in profiles_keys:
-                profile_analyses.append(an)
-            else:
-                orphan_analyses.append(an)
-        return analyses, profiles, profile_analyses
-
-    security.declareProtected(View, 'getSubtotal')
-
+    @security.protected(View)
     def getSubtotal(self):
         """Compute Subtotal (without member discount and without vat)
         """
         return sum([Decimal(obj.getPrice()) for obj in self.getBillableItems()])
 
-    security.declareProtected(View, 'getSubtotalVATAmount')
-
+    @security.protected(View)
     def getSubtotalVATAmount(self):
         """Compute VAT amount without member discount
         """
         return sum([Decimal(o.getVATAmount()) for o in self.getBillableItems()])
 
-    security.declareProtected(View, 'getSubtotalTotalPrice')
-
+    @security.protected(View)
     def getSubtotalTotalPrice(self):
         """Compute the price with VAT but no member discount
         """
         return self.getSubtotal() + self.getSubtotalVATAmount()
 
-    security.declareProtected(View, 'getDiscountAmount')
-
+    @security.protected(View)
     def getDiscountAmount(self):
         """It computes and returns the analysis service's discount amount
         without VAT
@@ -1606,6 +1678,7 @@ class AnalysisRequest(BaseFolder):
         else:
             return 0
 
+    @security.protected(View)
     def getVATAmount(self):
         """It computes the VAT amount from (subtotal-discount.)*VAT/100, but
         each analysis has its own VAT!
@@ -1620,8 +1693,7 @@ class AnalysisRequest(BaseFolder):
         else:
             return VATAmount
 
-    security.declareProtected(View, 'getTotalPrice')
-
+    @security.protected(View)
     def getTotalPrice(self):
         """It gets the discounted price from analyses and profiles to obtain the
         total value with the VAT and the discount applied
@@ -1634,53 +1706,25 @@ class AnalysisRequest(BaseFolder):
 
     getTotal = getTotalPrice
 
-    security.declareProtected(ManageInvoices, 'issueInvoice')
-
-    # noinspection PyUnusedLocal
-    def issueInvoice(self, REQUEST=None, RESPONSE=None):
+    @security.protected(ManageInvoices)
+    def createInvoice(self, pdf):
         """Issue invoice
         """
-        # check for an adhoc invoice batch for this month
-        # noinspection PyCallingNonCallable
-        now = DateTime()
-        batch_month = now.strftime('%b %Y')
-        batch_title = '%s - %s' % (batch_month, 'ad hoc')
-        invoice_batch = None
-        for b_proxy in self.portal_catalog(portal_type='InvoiceBatch',
-                                           Title=batch_title):
-            invoice_batch = b_proxy.getObject()
-        if not invoice_batch:
-            # noinspection PyCallingNonCallable
-            first_day = DateTime(now.year(), now.month(), 1)
-            start_of_month = first_day.earliestTime()
-            last_day = first_day + 31
-            # noinspection PyUnresolvedReferences
-            while last_day.month() != now.month():
-                last_day -= 1
-            # noinspection PyUnresolvedReferences
-            end_of_month = last_day.latestTime()
+        client = self.getClient()
+        invoice = self.getInvoice()
+        if not invoice:
+            invoice = _createObjectByType("Invoice", client, tmpID())
+        invoice.edit(
+            AnalysisRequest=self,
+            Client=client,
+            InvoiceDate=DateTime(),
+            InvoicePDF=pdf
+        )
+        invoice.processForm()
+        self.setInvoice(invoice)
+        return invoice
 
-            invoices = self.invoices
-            batch_id = invoices.generateUniqueId('InvoiceBatch')
-            invoice_batch = _createObjectByType("InvoiceBatch", invoices,
-                                                batch_id)
-            invoice_batch.edit(
-                title=batch_title,
-                BatchStartDate=start_of_month,
-                BatchEndDate=end_of_month,
-            )
-            invoice_batch.processForm()
-
-        client_uid = self.getClientUID()
-        # Get the created invoice
-        invoice = invoice_batch.createInvoice(client_uid, [self, ])
-        invoice.setAnalysisRequest(self)
-        # Set the created invoice in the schema
-        self.Schema()['Invoice'].set(self, invoice)
-
-    security.declarePublic('printInvoice')
-
-    # noinspection PyUnusedLocal
+    @security.public
     def printInvoice(self, REQUEST=None, RESPONSE=None):
         """Print invoice
         """
@@ -1688,78 +1732,8 @@ class AnalysisRequest(BaseFolder):
         invoice_url = invoice.absolute_url()
         RESPONSE.redirect('{}/invoice_print'.format(invoice_url))
 
-    @deprecated("addARAttachment will be removed in senaite.core 1.3.0")
-    def addARAttachment(self, REQUEST=None, RESPONSE=None):
-        """Add the file as an attachment
-        """
-        workflow = getToolByName(self, 'portal_workflow')
-
-        this_file = self.REQUEST.form['AttachmentFile_file']
-        if 'Analysis' in self.REQUEST.form:
-            analysis_uid = self.REQUEST.form['Analysis']
-        else:
-            analysis_uid = None
-
-        attachmentid = self.generateUniqueId('Attachment')
-        attachment = _createObjectByType("Attachment", self.aq_parent,
-                                         attachmentid)
-        attachment.edit(
-            AttachmentFile=this_file,
-            AttachmentType=self.REQUEST.form.get('AttachmentType', ''),
-            AttachmentKeys=self.REQUEST.form['AttachmentKeys'])
-        attachment.processForm()
-        attachment.reindexObject()
-
-        if analysis_uid:
-            tool = getToolByName(self, REFERENCE_CATALOG)
-            analysis = tool.lookupObject(analysis_uid)
-            others = analysis.getAttachment()
-            attachments = []
-            for other in others:
-                attachments.append(other.UID())
-            attachments.append(attachment.UID())
-            analysis.setAttachment(attachments)
-        else:
-            others = self.getAttachment()
-            attachments = []
-            for other in others:
-                attachments.append(other.UID())
-            attachments.append(attachment.UID())
-
-            self.setAttachment(attachments)
-
-        if REQUEST['HTTP_REFERER'].endswith('manage_results'):
-            RESPONSE.redirect('{}/manage_results'.format(self.absolute_url()))
-        else:
-            RESPONSE.redirect(self.absolute_url())
-
-    @deprecated("delARAttachment will be removed in senaite.core 1.3.0")
-    def delARAttachment(self, REQUEST=None, RESPONSE=None):
-        """Delete the attachment
-        """
-        tool = getToolByName(self, REFERENCE_CATALOG)
-        if 'Attachment' in self.REQUEST.form:
-            attachment_uid = self.REQUEST.form['Attachment']
-            attachment = tool.lookupObject(attachment_uid)
-            parent_r = attachment.getRequest()
-            parent_a = attachment.getAnalysis()
-
-            parent = parent_a if parent_a else parent_r
-            others = parent.getAttachment()
-            attachments = []
-            for other in others:
-                if not other.UID() == attachment_uid:
-                    attachments.append(other.UID())
-            parent.setAttachment(attachments)
-            client = attachment.aq_parent
-            ids = [attachment.getId(), ]
-            BaseFolder.manage_delObjects(client, ids, REQUEST)
-
-        RESPONSE.redirect(self.REQUEST.get_header('referer'))
-
-    security.declarePublic('getVerifier')
-
     @deprecated("Use getVerifiers instead")
+    @security.public
     def getVerifier(self):
         """Returns the user that verified the whole Analysis Request. Since the
         verification is done automatically as soon as all the analyses it
@@ -1958,8 +1932,7 @@ class AnalysisRequest(BaseFolder):
         """
         return getTransitionDate(self, 'publish', return_as_datetime=True)
 
-    security.declarePublic('getSamplingDeviationTitle')
-
+    @security.public
     def getSamplingDeviationTitle(self):
         """
         It works as a metacolumn.
@@ -1969,8 +1942,16 @@ class AnalysisRequest(BaseFolder):
             return sd.Title()
         return ''
 
-    security.declarePublic('getHazardous')
+    @security.public
+    def getSampleConditionTitle(self):
+        """Helper method to access the title of the sample condition
+        """
+        obj = self.getSampleCondition()
+        if not obj:
+            return ""
+        return api.get_title(obj)
 
+    @security.public
     def getHazardous(self):
         """
         It works as a metacolumn.
@@ -1980,8 +1961,7 @@ class AnalysisRequest(BaseFolder):
             return sample_type.getHazardous()
         return False
 
-    security.declarePublic('getContactURL')
-
+    @security.public
     def getContactURL(self):
         """
         It works as a metacolumn.
@@ -1991,8 +1971,7 @@ class AnalysisRequest(BaseFolder):
             return contact.absolute_url_path()
         return ''
 
-    security.declarePublic('getSamplingWorkflowEnabled')
-
+    @security.public
     def getSamplingWorkflowEnabled(self):
         """Returns True if the sample of this Analysis Request has to be
         collected by the laboratory personnel
@@ -2069,19 +2048,6 @@ class AnalysisRequest(BaseFolder):
             sets = adv if 'hidden' in adv[0] else []
 
         return sets[0] if sets else {'uid': uid}
-
-    # TODO Sample Cleanup - Remove this function
-    def getPartitions(self):
-        """This functions returns the partitions from the analysis request's
-        analyses.
-
-        :returns: a list with the full partition objects
-        """
-        partitions = []
-        for analysis in self.getAnalyses(full_objects=True):
-            if analysis.getSamplePartition() not in partitions:
-                partitions.append(analysis.getSamplePartition())
-        return partitions
 
     # TODO Sample Cleanup - Remove (Use getContainer instead)
     def getContainers(self):
@@ -2219,73 +2185,6 @@ class AnalysisRequest(BaseFolder):
             states[w.state_var] = state
         return states
 
-    def SearchableText(self):
-        """
-        Override searchable text logic based on the requirements.
-
-        This method constructs a text blob which contains all full-text
-        searchable text for this content item.
-        https://docs.plone.org/develop/plone/searching_and_indexing/indexing.html#full-text-searching
-        """
-
-        # Speed up string concatenation ops by using a buffer
-        entries = []
-
-        # plain text fields we index from ourself,
-        # a list of accessor methods of the class
-        plain_text_fields = ("getId", )
-
-        def read(acc):
-            """
-            Call a class accessor method to give a value for certain Archetypes
-            field.
-            """
-            try:
-                val = acc()
-            except Exception as e:
-                message = "Error getting the accessor parameter in " \
-                          "SearchableText from the Analysis Request Object " \
-                          "{}: {}".format(self.getId(), e.message)
-                logger.error(message)
-                val = ""
-
-            if val is None:
-                val = ""
-
-            return val
-
-        # Concatenate plain text fields as they are
-        for f in plain_text_fields:
-            accessor = getattr(self, f)
-            value = read(accessor)
-            entries.append(value)
-
-        # Adding HTML Fields to SearchableText can be uncommented if necessary
-        # transforms = getToolByName(self, 'portal_transforms')
-        #
-        # # Run HTML valued fields through text/plain conversion
-        # for f in html_fields:
-        #     accessor = getattr(self, f)
-        #     value = read(accessor)
-        #
-        #     if value != "":
-        #         stream = transforms.convertTo('text/plain', value,
-        #                                       mimetype='text/html')
-        #         value = stream.getData()
-        #
-        #     entries.append(value)
-
-        # Plone accessor methods assume utf-8
-        def convertToUTF8(text):
-            if type(text) == unicode:
-                return text.encode("utf-8")
-            return text
-
-        entries = [convertToUTF8(entry) for entry in entries]
-
-        # Concatenate all strings to one text blob
-        return " ".join(entries)
-
     def getPriorityText(self):
         """
         This function looks up the priority text from priorities vocab
@@ -2388,5 +2287,177 @@ class AnalysisRequest(BaseFolder):
             if not api.get_object(analysis).isOpen():
                 return False
         return True
+
+    def setParentAnalysisRequest(self, value):
+        """Sets a parent analysis request, making the current a partition
+        """
+        self.Schema().getField("ParentAnalysisRequest").set(self, value)
+        if not value:
+            noLongerProvides(self, IAnalysisRequestPartition)
+        else:
+            alsoProvides(self, IAnalysisRequestPartition)
+
+    def getSecondaryAnalysisRequests(self):
+        """Returns the secondary analysis requests from this analysis request
+        """
+        relationship = "AnalysisRequestPrimaryAnalysisRequest"
+        return self.getBackReferences(relationship=relationship)
+
+    def setDateReceived(self, value):
+        """Sets the date received to this analysis request and to secondary
+        analysis requests
+        """
+        self.Schema().getField('DateReceived').set(self, value)
+        for secondary in self.getSecondaryAnalysisRequests():
+            secondary.setDateReceived(value)
+            secondary.reindexObject(idxs=["getDateReceived", "is_received"])
+
+    def setDateSampled(self, value):
+        """Sets the date sampled to this analysis request and to secondary
+        analysis requests
+        """
+        self.Schema().getField('DateSampled').set(self, value)
+        for secondary in self.getSecondaryAnalysisRequests():
+            secondary.setDateSampled(value)
+            secondary.reindexObject(idxs="getDateSampled")
+
+    def setSamplingDate(self, value):
+        """Sets the sampling date to this analysis request and to secondary
+        analysis requests
+        """
+        self.Schema().getField('SamplingDate').set(self, value)
+        for secondary in self.getSecondaryAnalysisRequests():
+            secondary.setSamplingDate(value)
+            secondary.reindexObject(idxs="getSamplingDate")
+
+    def getSelectedRejectionReasons(self):
+        """Returns a list with the selected rejection reasons, if any
+        """
+        reasons = self.getRejectionReasons()
+        if not reasons:
+            return []
+        return reasons[0].get("selected", [])
+
+    def getOtherRejectionReasons(self):
+        """Returns other rejection reasons custom text, if any
+        """
+        reasons = self.getRejectionReasons()
+        if not reasons:
+            return ""
+        return reasons[0].get("other", "")
+
+    def createAttachment(self, filedata, filename="", **kw):
+        """Add a new attachment to the sample
+
+        :param filedata: Raw filedata of the attachment (not base64)
+        :param filename: Filename + extension, e.g. `image.png`
+        :param kw: Additional keywords set to the attachment
+        :returns: New created and added attachment
+        """
+        # Add a new Attachment
+        attachment = api.create(self.getClient(), "Attachment")
+        attachment.setAttachmentFile(filedata)
+        fileobj = attachment.getAttachmentFile()
+        fileobj.filename = filename
+        attachment.edit(**kw)
+        attachment.processForm()
+        self.addAttachment(attachment)
+        return attachment
+
+    def addAttachment(self, attachment):
+        """Adds an attachment or a list of attachments to the Analysis Request
+        """
+        if not isinstance(attachment, (list, tuple)):
+            attachment = [attachment]
+
+        original = self.getAttachment() or []
+
+        # Function addAttachment can accept brain, objects or uids
+        original = map(api.get_uid, original)
+        attachment = map(api.get_uid, attachment)
+
+        # Boil out attachments already assigned to this Analysis Request
+        attachment = filter(lambda at: at not in original, attachment)
+        if attachment:
+            original.extend(attachment)
+            self.setAttachment(original)
+
+    def setResultsInterpretationDepts(self, value):
+        """Custom setter which converts inline images to attachments
+
+        https://github.com/senaite/senaite.core/pull/1344
+
+        :param value: list of dictionary records
+        """
+        if not isinstance(value, list):
+            raise TypeError("Expected list, got {}".format(type(value)))
+
+        # Convert inline images -> attachment files
+        records = []
+        for record in value:
+            # N.B. we might here a ZPublisher record. Converting to dict
+            #      ensures we can set values as well.
+            record = dict(record)
+            # Handle inline images in the HTML
+            html = record.get("richtext", "")
+            # Process inline images to attachments
+            record["richtext"] = self.process_inline_images(html)
+            # append the processed record for storage
+            records.append(record)
+
+        # set the field
+        self.getField("ResultsInterpretationDepts").set(self, records)
+
+    def process_inline_images(self, html):
+        """Convert inline images in the HTML to attachments
+
+        https://github.com/senaite/senaite.core/pull/1344
+
+        :param html: The richtext HTML
+        :returns: HTML with converted images
+        """
+        # Check for inline images
+        inline_images = re.findall(IMG_DATA_SRC_RX, html)
+
+        # convert to inline images -> attachments
+        for data_type, data in inline_images:
+            # decode the base64 data to filedata
+            filedata = base64.decodestring(data)
+            # extract the file extension from the data type
+            extension = data_type.lstrip("data:image/").rstrip(";base64,")
+            # generate filename + extension
+            filename = "attachment.{}".format(extension or "png")
+            # create a new attachment
+            attachment = self.createAttachment(filedata, filename)
+            # ignore the attachment in report
+            attachment.setReportOption("i")
+            # remove the image data base64 prefix
+            html = html.replace(data_type, "")
+            # remove the base64 image data with the attachment URL
+            html = html.replace(data, "{}/AttachmentFile".format(
+                attachment.absolute_url()))
+            size = attachment.getAttachmentFile().get_size()
+            logger.info("Converted {:.2f} Kb inline image for {}"
+                        .format(size/1024, api.get_url(self)))
+
+        # convert relative URLs to absolute URLs
+        # N.B. This is actually a TinyMCE issue, but hardcoded in Plone:
+        #      https://www.tiny.cloud/docs/configure/url-handling/#relative_urls
+        image_sources = re.findall(IMG_SRC_RX, html)
+
+        # we need a trailing slash so that urljoin does not remove the last segment
+        base_url = "{}/".format(api.get_url(self))
+
+        for src in image_sources:
+            if re.match("(http|https|data)", src):
+                continue
+            obj = self.restrictedTraverse(src, None)
+            if obj is None:
+                continue
+            # ensure we have an absolute URL
+            html = html.replace(src, urljoin(base_url, src))
+
+        return html
+
 
 registerType(AnalysisRequest, PROJECTNAME)
