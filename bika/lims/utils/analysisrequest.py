@@ -383,7 +383,7 @@ def create_retest(ar):
 
 def create_partition(analysis_request, request, analyses, sample_type=None,
                      container=None, preservation=None, skip_fields=None,
-                     remove_primary_analyses=True):
+                     remove_primary_analyses=True, internal_use=True):
     """
     Creates a partition for the analysis_request (primary) passed in
     :param analysis_request: uid/brain/object of IAnalysisRequest type
@@ -424,7 +424,7 @@ def create_partition(analysis_request, request, analyses, sample_type=None,
 
     # Update with values that are partition-specific
     record.update({
-        "InternalUse": True,
+        "InternalUse": internal_use,
         "ParentAnalysisRequest": api.get_uid(ar),
     })
     if sample_type is not None:
