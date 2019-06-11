@@ -1380,8 +1380,7 @@ schema = BikaSchema.copy() + Schema((
         widget=BooleanWidget(
             label=_("Internal use"),
             description=_("This sample is only for internal use. Won't be "
-                          "displayed to client and results report will be "
-                          "sent internally only"),
+                          "displayed to client"),
             format="radio",
             render_own_label=True,
             visible={'add': 'edit',}
