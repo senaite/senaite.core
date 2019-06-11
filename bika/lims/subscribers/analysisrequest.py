@@ -23,6 +23,7 @@ from bika.lims.api import security
 from bika.lims.interfaces import IInternalUse
 from zope.interface import alsoProvides
 from zope.interface import noLongerProvides
+from zope.lifecycleevent import modified
 
 
 def ObjectModifiedEventHandler(instance, event):
@@ -31,8 +32,24 @@ def ObjectModifiedEventHandler(instance, event):
     # If Internal Use value has been modified, apply suitable permissions
     internal_use = instance.getInternalUse()
     if internal_use != IInternalUse.providedBy(instance):
+
         # Update permissions for current sample
         update_internal_use_permissions(instance)
+
+        # Mark/Unmark all analyses with IInternalUse to control their
+        # visibility in results reports
+        for analysis in instance.objectValues("Analysis"):
+            if internal_use:
+                alsoProvides(analysis, IInternalUse)
+            else:
+                noLongerProvides(analysis, IInternalUse)
+
+        # If internal use is True, cascade same setting to partitions
+        if internal_use:
+            for partition in instance.getDescendants():
+                partition.setInternalUse(internal_use)
+                # Notify the partition has been modified
+                modified(partition)
 
 
 def AfterTransitionEventHandler(instance, event):
