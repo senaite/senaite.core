@@ -20,13 +20,18 @@
 
 from Products.CMFCore import permissions as cmf_permissions
 from bika.lims.api import security
+from bika.lims.interfaces import IInternalUse
+from zope.interface import alsoProvides
+from zope.interface import noLongerProvides
 
 
 def ObjectModifiedEventHandler(instance, event):
     """Actions to be taken when AnalysisRequest object is modified
     """
     # If Internal Use value has been modified, apply suitable permissions
-    if instance.getInternalUse() != instance.get_InternalUse():
+    internal_use = instance.getInternalUse()
+    if internal_use != IInternalUse.providedBy(instance):
+        # Update permissions for current sample
         update_internal_use_permissions(instance)
 
 
@@ -52,10 +57,10 @@ def update_internal_use_permissions(analysis_request):
         # access this Sample!
         security.revoke_permission_for(analysis_request, view, "Client")
         security.revoke_permission_for(analysis_request, lfc, "Client")
+        alsoProvides(analysis_request, IInternalUse)
     else:
         security.grant_permission_for(analysis_request, view, "Client")
         security.grant_permission_for(analysis_request, lfc, "Client")
+        noLongerProvides(analysis_request, IInternalUse)
 
-    # Keep _InternalUse in sync with the new value
-    analysis_request.set_InternalUse(internal_use)
     analysis_request.reindexObject()

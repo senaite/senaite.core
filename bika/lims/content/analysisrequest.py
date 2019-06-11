@@ -1387,17 +1387,6 @@ schema = BikaSchema.copy() + Schema((
             visible={'add': 'edit',}
         ),
     ),
-
-    # Hidden field to remember last setting of the value for InternalUse. This
-    # field is used in objectModifyEvent to check if the value of InternalUse
-    # field has changed.
-    BooleanField(
-        "_InternalUse",
-        default=False,
-        widget=BooleanWidget(
-            visible=False,
-        )
-    ),
 )
 )
 
