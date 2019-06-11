@@ -1,0 +1,55 @@
+# -*- coding: utf-8 -*-
+#
+# This file is part of SENAITE.CORE.
+#
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2019 by it's authors.
+# Some rights reserved, see README and LICENSE.
+
+from Products.CMFCore import permissions as cmf_permissions
+from bika.lims.api import security
+
+
+def ObjectModifiedEventHandler(instance, event):
+    """Actions to be taken when AnalysisRequest object is modified
+    """
+    # If Internal Use value has been modified, apply suitable permissions
+    handle_internal_use_permissions(instance)
+
+
+def handle_internal_use_permissions(analysis_request):
+    """Updates the permissions for the AnalysisRequest object passed in
+    accordance with the value set for field InternalUse
+    """
+    internal_use = analysis_request.getInternalUse()
+
+    # Apply new permissions if the value for InternalUse changed
+    if internal_use != analysis_request.get_InternalUse():
+
+        # View and List Folder Content permissions
+        view = cmf_permissions.View
+        lfc = cmf_permissions.ListFolderContents
+        if internal_use:
+            # Note Owner (even if is a client contact) will always be able to
+            # access this Sample!
+            security.revoke_permission_for(analysis_request, view, "Client")
+            security.revoke_permission_for(analysis_request, lfc, "Client")
+        else:
+            security.grant_permission_for(analysis_request, view, "Client")
+            security.grant_permission_for(analysis_request, lfc, "Client")
+
+        # Keep _InternalUse in sync with the new value
+        analysis_request.set_InternalUse(internal_use)
+        analysis_request.reindexObject()

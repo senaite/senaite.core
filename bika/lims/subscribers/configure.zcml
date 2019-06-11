@@ -72,4 +72,11 @@
          zope.lifecycleevent.interfaces.IObjectModifiedEvent"
     handler="bika.lims.subscribers.setup.ObjectModifiedEventHandler" />
 
+  <!-- AnalysisRequest modified -->
+  <subscriber
+    for="bika.lims.interfaces.IAnalysisRequest
+         zope.lifecycleevent.interfaces.IObjectModifiedEvent"
+    handler="bika.lims.subscribers.analysisrequest.ObjectModifiedEventHandler"
+  />
+
 </configure>
