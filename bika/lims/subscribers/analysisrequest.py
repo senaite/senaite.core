@@ -26,30 +26,36 @@ def ObjectModifiedEventHandler(instance, event):
     """Actions to be taken when AnalysisRequest object is modified
     """
     # If Internal Use value has been modified, apply suitable permissions
-    handle_internal_use_permissions(instance)
+    if instance.getInternalUse() != instance.get_InternalUse():
+        update_internal_use_permissions(instance)
 
 
-def handle_internal_use_permissions(analysis_request):
+def AfterTransitionEventHandler(instance, event):
+    """Actions to be taken when AnalsysiRequest object has been transitioned.
+    This function does not superseds workflow.analysisrequest.events, rather it
+    only updates the permissions in accordance with InternalUse value
+    """
+    update_internal_use_permissions(instance)
+
+
+def update_internal_use_permissions(analysis_request):
     """Updates the permissions for the AnalysisRequest object passed in
     accordance with the value set for field InternalUse
     """
     internal_use = analysis_request.getInternalUse()
 
-    # Apply new permissions if the value for InternalUse changed
-    if internal_use != analysis_request.get_InternalUse():
+    # View and List Folder Content permissions
+    view = cmf_permissions.View
+    lfc = cmf_permissions.ListFolderContents
+    if internal_use:
+        # Note Owner (even if is a client contact) will always be able to
+        # access this Sample!
+        security.revoke_permission_for(analysis_request, view, "Client")
+        security.revoke_permission_for(analysis_request, lfc, "Client")
+    else:
+        security.grant_permission_for(analysis_request, view, "Client")
+        security.grant_permission_for(analysis_request, lfc, "Client")
 
-        # View and List Folder Content permissions
-        view = cmf_permissions.View
-        lfc = cmf_permissions.ListFolderContents
-        if internal_use:
-            # Note Owner (even if is a client contact) will always be able to
-            # access this Sample!
-            security.revoke_permission_for(analysis_request, view, "Client")
-            security.revoke_permission_for(analysis_request, lfc, "Client")
-        else:
-            security.grant_permission_for(analysis_request, view, "Client")
-            security.grant_permission_for(analysis_request, lfc, "Client")
-
-        # Keep _InternalUse in sync with the new value
-        analysis_request.set_InternalUse(internal_use)
-        analysis_request.reindexObject()
+    # Keep _InternalUse in sync with the new value
+    analysis_request.set_InternalUse(internal_use)
+    analysis_request.reindexObject()

@@ -72,11 +72,21 @@
          zope.lifecycleevent.interfaces.IObjectModifiedEvent"
     handler="bika.lims.subscribers.setup.ObjectModifiedEventHandler" />
 
-  <!-- AnalysisRequest modified -->
+  <!-- AnalysisRequest modified
+  Apply permissions to object in accordance with the value for InternalUse -->
   <subscriber
     for="bika.lims.interfaces.IAnalysisRequest
          zope.lifecycleevent.interfaces.IObjectModifiedEvent"
     handler="bika.lims.subscribers.analysisrequest.ObjectModifiedEventHandler"
   />
 
+  <!-- AnalysisRequest After Transition
+  This subscriber does not override the generic subscriber in charge of handling
+  transitions, but is used to update the permissions of the AnalysisRequest in
+  accordance with the value for setting InternalUse -->
+  <subscriber
+    for="bika.lims.interfaces.IAnalysisRequest
+         Products.DCWorkflow.interfaces.IAfterTransitionEvent"
+    handler="bika.lims.subscribers.analysisrequest.AfterTransitionEventHandler"
+  />
 </configure>
