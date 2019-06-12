@@ -18,7 +18,9 @@
 # Copyright 2018-2019 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from Products.CMFCore import permissions as cmf_permissions
+from Products.CMFCore.permissions import AccessContentsInformation
+from Products.CMFCore.permissions import ListFolderContents
+from Products.CMFCore.permissions import View
 from bika.lims.api import security
 from bika.lims.interfaces import IInternalUse
 from zope.interface import alsoProvides
@@ -64,20 +66,42 @@ def update_internal_use_permissions(analysis_request):
     """Updates the permissions for the AnalysisRequest object passed in
     accordance with the value set for field InternalUse
     """
-    internal_use = analysis_request.getInternalUse()
+    if analysis_request.getInternalUse():
+        # Revoke basic permissions from Owner (the client contact)
+        revoke_permission(View, "Owner", analysis_request)
+        revoke_permission(ListFolderContents, "Owner", analysis_request)
+        revoke_permission(AccessContentsInformation, "Owner", analysis_request)
 
-    # View and List Folder Content permissions
-    view = cmf_permissions.View
-    lfc = cmf_permissions.ListFolderContents
-    if internal_use:
-        # Note Owner (even if is a client contact) will always be able to
-        # access this Sample!
-        security.revoke_permission_for(analysis_request, view, "Client")
-        security.revoke_permission_for(analysis_request, lfc, "Client")
+        # Mark the Sample for Internal use only
         alsoProvides(analysis_request, IInternalUse)
+
     else:
-        security.grant_permission_for(analysis_request, view, "Client")
-        security.grant_permission_for(analysis_request, lfc, "Client")
+        # Restore basic permissions (acquired=1)
+        analysis_request.manage_permission(View, [], acquire=1)
+        analysis_request.manage_permission(ListFolderContents, [], acquire=1)
+        analysis_request.manage_permission(AccessContentsInformation, [],
+                                           acquire=1)
+
+        # Unmark the Sample
         noLongerProvides(analysis_request, IInternalUse)
 
-    analysis_request.reindexObject()
+    analysis_request.reindexObjectSecurity()
+
+
+def gather_roles_for_permission(permission, obj):
+    """Extract all the effective roles for a given permission and object,
+    acquired roles included
+    """
+    roles = security.get_roles_for_permission(permission, obj)
+    if obj.acquiredRolesAreUsedBy(permission):
+        roles.extend(gather_roles_for_permission(permission, obj.aq_parent))
+    return list(set(roles))
+
+
+def revoke_permission(permission, role, obj):
+    """Revokes a permission for a given role and object
+    """
+    roles = gather_roles_for_permission(permission, obj)
+    if role in roles:
+        roles.remove(role)
+    obj.manage_permission(permission, roles)
