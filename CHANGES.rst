@@ -13,6 +13,7 @@ Changelog
 
 **Changed**
 
+- #1392 Hide partitions to clients when "Show Partitions" is not selected
 - #1371 Allow sample publication without sending Email
 - #1355 Make api.getId to also consider id metadata column (not only getId)
 - #1352 Make timeit to not display args by default
