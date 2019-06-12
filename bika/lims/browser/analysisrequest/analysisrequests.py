@@ -645,7 +645,7 @@ class AnalysisRequestsView(BikaListingView):
             after_icons += get_image("hazardous.png",
                                      title=t(_("Hazardous")))
 
-        if "Client" not in obj.allowedRolesAndUsers:
+        if obj.getInternalUse:
             after_icons += get_image("locked.png", title=t(_("Internal use")))
 
         if after_icons:

@@ -86,6 +86,7 @@ def update_internal_use_permissions(analysis_request):
         noLongerProvides(analysis_request, IInternalUse)
 
     analysis_request.reindexObjectSecurity()
+    analysis_request.reindexObject(idxs="getInternalUse")
 
 
 def gather_roles_for_permission(permission, obj):
