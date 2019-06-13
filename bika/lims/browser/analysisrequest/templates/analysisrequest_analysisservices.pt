@@ -125,8 +125,7 @@
 					<em class="discreet"
                         tal:attributes="
                             class python:'partnr_'+serviceUID;
-                            column column;
-                            style python:'' if context.bika_setup.getShowPartitions() else 'display:none';"/>
+                            column column;"/>
 				</td>
 			</tal:i>
 		</tal:i>

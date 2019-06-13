@@ -1,5 +1,5 @@
 <div tal:omit-tag=""
-     tal:define="descendants python:view.context.getDescendants()"
+     tal:define="descendants python:view.get_partitions()"
      tal:condition="python:descendants"
      i18n:domain="senaite.core">
 
