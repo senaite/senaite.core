@@ -114,6 +114,7 @@
   <permission id="senaite.core.permissions.FieldEditDateReceived" title="senaite.core: Field: Edit Date Received"/>
   <permission id="senaite.core.permissions.FieldEditDateSampled" title="senaite.core: Field: Edit Date Sampled"/>
   <permission id="senaite.core.permissions.FieldEditEnvironmentalConditions" title="senaite.core: Field: Edit Environmental Conditions"/>
+  <permission id="senaite.core.permissions.FieldEditInternalUse" title="senaite.core: Field: Edit Internal Use"/>
   <permission id="senaite.core.permissions.FieldEditInvoiceExclude" title="senaite.core: Field: Edit Invoice Exclude"/>
   <permission id="senaite.core.permissions.FieldEditMemberDiscount" title="senaite.core: Field: Edit Member Discount"/>
   <permission id="senaite.core.permissions.FieldEditPreservation" title="senaite.core: Field: Edit Preservation"/>

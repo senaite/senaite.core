@@ -115,6 +115,7 @@ _columns_list = [
     'getHazardous',
     'getSamplingWorkflowEnabled',
     'assigned_state',
+    'getInternalUse',
 ]
 # Adding basic indexes
 _base_indexes_copy = BASE_CATALOG_INDEXES.copy()

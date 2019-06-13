@@ -18,6 +18,7 @@
 # Copyright 2018-2019 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from bika.lims import api
 from bika.lims.interfaces import IATWidgetVisibility
 from bika.lims.interfaces import IAnalysisRequestSecondary
 from bika.lims.interfaces import IBatch
@@ -255,3 +256,16 @@ class PrimaryAnalysisRequestFieldVisibility(SenaiteATWidgetVisibility):
             return "invisible"
 
         return default
+
+
+class InternalUseFieldVisibility(SenaiteATWidgetVisibility):
+    """InternalUse field must only be visible to lab personnel
+    """
+    def __init__(self, context):
+        super(InternalUseFieldVisibility, self).__init__(
+            context=context, sort=3, field_names=["InternalUse"])
+
+    def isVisible(self, field, mode="view", default="visible"):
+        """Returns whether the field is visible in a given mode
+        """
+        return api.get_current_client() and "invisible" or default

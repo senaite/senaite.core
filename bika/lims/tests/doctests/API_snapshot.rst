@@ -32,14 +32,14 @@ Functional Helpers:
     ...     ip, port = startZServer()
     ...     return "http://{}:{}/{}".format(ip, port, portal.id)
 
-		>>> def new_sample(services):
-		...     values = {
-		...         "Client": client.UID(),
-		...         "Contact": contact.UID(),
-		...         "DateSampled": date_now,
-		...         "SampleType": sampletype.UID()}
-		...     service_uids = map(api.get_uid, services)
-		...     return create_analysisrequest(client, request, values, service_uids)
+    >>> def new_sample(services):
+    ...     values = {
+    ...         "Client": client.UID(),
+    ...         "Contact": contact.UID(),
+    ...         "DateSampled": date_now,
+    ...         "SampleType": sampletype.UID()}
+    ...     service_uids = map(api.get_uid, services)
+    ...     return create_analysisrequest(client, request, values, service_uids)
 
     >>> def get_analysis(sample, id):
     ...     ans = sample.getAnalyses(getId=id, full_objects=True)
@@ -271,21 +271,26 @@ Comparing Snapshots
 The changes of two snapshots can be compared with `compare_snapshots`:
 
    >>> snap0 = get_snapshot_by_version(sample, 0)
-   >>> snap1 = get_snapshot_by_version(sample, 1)
+
+Add 2 more analyses (Mg and Ca):
+
+   >>> sample.edit(Analyses=[Cu, Fe, Au, Mg, Ca])
+   >>> new_snapshot = take_snapshot(sample)
+   >>> snap1 = get_snapshot_by_version(sample, 3)
 
 Passing the `raw=True` keyword returns the raw field changes, e.g. in this case,
-the field `Analyses` is a `UIDReferenceField` which contained initially no
-values and then 3 UID references:
+the field `Analyses` is a `UIDReferenceField` which contained initially 3 values
+and after adding 2 analyses, 2 UID more references:
 
    >>> diff_raw = compare_snapshots(snap0, snap1, raw=True)
    >>> diff_raw
-   {u'Analyses': [([], [u'...', u'...', u'...'])]}
+   {u'Analyses': [([u'...', u'...', u'...'], [u'...', u'...', u'...', u'...', u'...'])]}
 
 It is also possible to process the values to get a more human readable diff:
 
    >>> diff = compare_snapshots(snap0, snap1, raw=False)
    >>> diff
-   {u'Analyses': [('Not set', 'Aurum; Copper; Iron')]}
+   {u'Analyses': [('Aurum; Copper; Iron', 'Aurum; Calcium; Copper; Iron; Magnesium')]}
 
 
 To directly compare the last two snapshots taken, we can call

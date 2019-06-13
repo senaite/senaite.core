@@ -6,6 +6,7 @@ Changelog
 
 **Added**
 
+- #1391 Samples for internal use (lab personnel) only
 - #1384 Added missing Html Field to ARReport
 - #1369 Add getter to access the title of the sample condition directly
 - #1347 Consider laboratory workdays only for the late analyses calculation

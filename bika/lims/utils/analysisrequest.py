@@ -49,6 +49,7 @@ from bika.lims.workflow.analysisrequest import AR_WORKFLOW_ID
 from bika.lims.workflow.analysisrequest import do_action_to_analyses
 from email.Utils import formataddr
 from zope.interface import alsoProvides
+from zope.lifecycleevent import modified
 
 
 def create_analysisrequest(client, request, values, analyses=None,
@@ -79,12 +80,13 @@ def create_analysisrequest(client, request, values, analyses=None,
 
     # Create the Analysis Request
     ar = _createObjectByType('AnalysisRequest', client, tmpID())
-    ar.processForm(REQUEST=request, values=values)
 
     # Resolve the services uids and set the analyses for this Analysis Request
     service_uids = get_services_uids(context=client, values=values,
                                      analyses_serv=analyses)
     ar.setAnalyses(service_uids, prices=prices, specs=specifications)
+    values.update({"Analyses": service_uids})
+    ar.processForm(REQUEST=request, values=values)
 
     # Handle rejection reasons
     rejection_reasons = resolve_rejection_reasons(values)
@@ -117,6 +119,9 @@ def create_analysisrequest(client, request, values, analyses=None,
 
             # Initialize analyses
             do_action_to_analyses(ar, "initialize")
+
+            # Notify the ar has ben modified
+            modified(ar)
 
             # Reindex the AR
             ar.reindexObject()
@@ -383,7 +388,7 @@ def create_retest(ar):
 
 def create_partition(analysis_request, request, analyses, sample_type=None,
                      container=None, preservation=None, skip_fields=None,
-                     remove_primary_analyses=True):
+                     remove_primary_analyses=True, internal_use=True):
     """
     Creates a partition for the analysis_request (primary) passed in
     :param analysis_request: uid/brain/object of IAnalysisRequest type
@@ -424,7 +429,7 @@ def create_partition(analysis_request, request, analyses, sample_type=None,
 
     # Update with values that are partition-specific
     record.update({
-        "InternalUse": True,
+        "InternalUse": internal_use,
         "ParentAnalysisRequest": api.get_uid(ar),
     })
     if sample_type is not None:

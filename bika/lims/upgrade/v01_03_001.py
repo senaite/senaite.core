@@ -73,6 +73,7 @@ def upgrade(tool):
 
     # -------- ADD YOUR STUFF BELOW --------
     setup.runImportStepFromProfile(profile, "actions")
+    setup.runImportStepFromProfile(profile, "rolemap")
     setup.runImportStepFromProfile(profile, "workflow")
     setup.runImportStepFromProfile(profile, "typeinfo")
     setup.runImportStepFromProfile(profile, "toolset")
@@ -108,6 +109,11 @@ def upgrade(tool):
     # Apply permissions for Manage Worksheets
     # https://github.com/senaite/senaite.core/issues/1387
     update_worksheet_manage_permissions(api.get_setup())
+
+    # Add getInternalUse metadata
+    # https://github.com/senaite/senaite.core/pull/1391
+    catalog = api.get_tool(CATALOG_ANALYSIS_REQUEST_LISTING)
+    catalog.addColumn("getInternalUse")
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True

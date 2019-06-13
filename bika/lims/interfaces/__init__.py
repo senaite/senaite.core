@@ -934,3 +934,7 @@ class ISubmitted(Interface):
 class IReceived(Interface):
     """Marker interface for received objects
     """
+
+class IInternalUse(Interface):
+    """Marker interface for objects only lab personnel must have access
+    """

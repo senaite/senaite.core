@@ -63,6 +63,7 @@ from bika.lims.permissions import FieldEditDatePreserved
 from bika.lims.permissions import FieldEditDateReceived
 from bika.lims.permissions import FieldEditDateSampled
 from bika.lims.permissions import FieldEditEnvironmentalConditions
+from bika.lims.permissions import FieldEditInternalUse
 from bika.lims.permissions import FieldEditInvoiceExclude
 from bika.lims.permissions import FieldEditMemberDiscount
 from bika.lims.permissions import FieldEditPreservation
@@ -1367,6 +1368,23 @@ schema = BikaSchema.copy() + Schema((
             label=_("Printed"),
             description=_("Indicates if the last SampleReport is printed,"),
             visible=False,
+        ),
+    ),
+    BooleanField(
+        "InternalUse",
+        mode="rw",
+        required=0,
+        default=False,
+        read_permission=View,
+        write_permission=FieldEditInternalUse,
+        widget=BooleanWidget(
+            label=_("Internal use"),
+            description=_("Mark the sample for internal use only. This means "
+                          "it is only accessible to lab personnel and not to "
+                          "clients."),
+            format="radio",
+            render_own_label=True,
+            visible={'add': 'edit',}
         ),
     ),
 )

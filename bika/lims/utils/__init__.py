@@ -22,19 +22,21 @@ import mimetypes
 import os
 import re
 import tempfile
-import types
 import urllib2
-from email import Encoders
-from time import time
-
 from AccessControl import ModuleSecurityInfo
 from AccessControl import allow_module
 from AccessControl import getSecurityManager
+from email import Encoders
+from time import time
+
+import types
 from DateTime import DateTime
 from Products.Archetypes.interfaces.field import IComputedField
 from Products.Archetypes.public import DisplayList
+from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
+from Products.DCWorkflow.events import AfterTransitionEvent
 from bika.lims import api
 from bika.lims import logger
 from bika.lims.browser import BrowserView
@@ -45,6 +47,7 @@ from plone.subrequest import subrequest
 from weasyprint import CSS, HTML
 from weasyprint import default_url_fetcher
 from zope.component import queryUtility
+from zope.event import notify
 from zope.i18n import translate
 from zope.i18n.locales import locales
 
@@ -309,9 +312,20 @@ def changeWorkflowState(content, wf_id, state_id, **kw):
         'time': DateTime()
     }
 
+    # Get old and new state info
+    old_state = workflow._getWorkflowStateOf(content)
+    new_state = workflow.states.get(state_id, None)
+    if new_state is None:
+        raise WorkflowException("Destination state undefined: {}"
+                                .format(state_id))
+
     # Change status and update permissions
     portal_workflow.setStatusOf(wf_id, content, wf_state)
     workflow.updateRoleMappingsFor(content)
+
+    # Notify the object has been transitioned
+    notify(AfterTransitionEvent(content, workflow, old_state, new_state, None,
+                                wf_state, None))
 
     # Map changes to catalog
     indexes = ["allowedRolesAndUsers", "review_state", "is_active"]
