@@ -46,6 +46,9 @@ def ObjectModifiedEventHandler(instance, event):
             else:
                 noLongerProvides(analysis, IInternalUse)
 
+            # Reindex analysis security in catalogs
+            analysis.reindexObjectSecurity()
+
         # If internal use is True, cascade same setting to partitions
         if internal_use:
             for partition in instance.getDescendants():
