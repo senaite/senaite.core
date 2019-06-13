@@ -19,7 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
-from bika.lims.interfaces import IVerified
+from bika.lims.interfaces import IVerified, IInternalUse
 from bika.lims.workflow import isTransitionAllowed
 
 # States to be omitted in regular transitions
@@ -71,14 +71,25 @@ def guard_submit(analysis_request):
     Returns True if there is at least one analysis in a non-detached state and
     all analyses in a non-detached analyses have been submitted.
     """
+    # Discard detached analyses
+    analyses = analysis_request.getAnalyses(full_objects=True)
+    analyses = filter(lambda an: api.get_workflow_status_of(an) not in
+                                 ANALYSIS_DETACHED_STATES, analyses)
+
+    # If not all analyses are for internal use, rely on "regular" analyses
+    internals = map(IInternalUse.providedBy, analyses)
+    omit_internals = not all(internals)
+
     analyses_ready = False
-    for analysis in analysis_request.getAnalyses():
-        analysis = api.get_object(analysis)
-        analysis_status = api.get_workflow_status_of(analysis)
-        if analysis_status in ANALYSIS_DETACHED_STATES:
+    for analysis in analyses:
+        # Omit analyses for internal use
+        if omit_internals and IInternalUse.providedBy(analysis):
             continue
+
+        analysis_status = api.get_workflow_status_of(analysis)
         if analysis_status in ['assigned', 'unassigned', 'registered']:
             return False
+
         analyses_ready = True
     return analyses_ready
 
@@ -86,17 +97,27 @@ def guard_submit(analysis_request):
 def guard_verify(analysis_request):
     """Returns whether the transition "verify" can be performed or not.
     Returns True if at there is at least one analysis in a non-dettached state
-    and all analyses in a non-dettached state are in "verified" state.
+    and all analyses in a non-detached state are in "verified" state.
     """
+    # Discard detached analyses
+    analyses = analysis_request.getAnalyses(full_objects=True)
+    analyses = filter(lambda an: api.get_workflow_status_of(an) not in
+                                 ANALYSIS_DETACHED_STATES, analyses)
+
+    # If not all analyses are for internal use, rely on "regular" analyses
+    internals = map(IInternalUse.providedBy, analyses)
+    omit_internals = not all(internals)
+
     analyses_ready = False
-    for analysis in analysis_request.getAnalyses():
-        analysis = api.get_object(analysis)
-        analysis_status = api.get_workflow_status_of(analysis)
-        if analysis_status in ANALYSIS_DETACHED_STATES:
+    for analysis in analyses:
+        # Omit analyses for internal use
+        if omit_internals and IInternalUse.providedBy(analysis):
             continue
+
         # All analyses must be in verified (or further) status
         if not IVerified.providedBy(analysis):
             return False
+
         analyses_ready = True
     return analyses_ready
 
@@ -106,12 +127,27 @@ def guard_prepublish(analysis_request):
     True if the analysis request has at least one analysis in 'verified' or in
     'to_be_verified' status. Otherwise, return False
     """
+    if IInternalUse.providedBy(analysis_request):
+        return False
+
     valid_states = ['verified', 'to_be_verified']
     for analysis in analysis_request.getAnalyses():
         analysis = api.get_object(analysis)
         if api.get_workflow_status_of(analysis) in valid_states:
             return True
     return False
+
+
+def guard_publish(analysis_request):
+    """Returns whether the transition "publish" can be performed or not.
+    Returns True if the analysis request is not labeled for internal use or if
+    at least one of the contained analyses is not for internal use
+    """
+    if IInternalUse.providedBy(analysis_request):
+        return False
+    # Note we return True without checking anything else because this
+    # transition is only available when sample is in verified status
+    return True
 
 
 def guard_rollback_to_receive(analysis_request):
