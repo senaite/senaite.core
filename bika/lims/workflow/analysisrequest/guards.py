@@ -51,10 +51,6 @@ def guard_create_partitions(analysis_request):
     """Returns true if partitions can be created using the analysis request
     passed in as the source.
     """
-    if not analysis_request.bika_setup.getShowPartitions():
-        # If partitions are disabled in Setup, return False
-        return False
-
     if analysis_request.isPartition():
         # Do not allow the creation of partitions from partitions
         return False
