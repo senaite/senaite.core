@@ -85,6 +85,7 @@ def create_analysisrequest(client, request, values, analyses=None,
     service_uids = get_services_uids(context=client, values=values,
                                      analyses_serv=analyses)
     ar.setAnalyses(service_uids, prices=prices, specs=specifications)
+    values.update({"Analyses": service_uids})
     ar.processForm(REQUEST=request, values=values)
 
     # Handle rejection reasons
