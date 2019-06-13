@@ -1379,8 +1379,9 @@ schema = BikaSchema.copy() + Schema((
         write_permission=FieldEditInternalUse,
         widget=BooleanWidget(
             label=_("Internal use"),
-            description=_("This sample is only for internal use. Won't be "
-                          "displayed to client"),
+            description=_("Mark the sample for internal use only. This means "
+                          "it is only accessible to lab personnel and not to "
+                          "clients."),
             format="radio",
             render_own_label=True,
             visible={'add': 'edit',}
