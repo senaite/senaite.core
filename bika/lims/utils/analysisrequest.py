@@ -49,6 +49,7 @@ from bika.lims.workflow.analysisrequest import AR_WORKFLOW_ID
 from bika.lims.workflow.analysisrequest import do_action_to_analyses
 from email.Utils import formataddr
 from zope.interface import alsoProvides
+from zope.lifecycleevent import modified
 
 
 def create_analysisrequest(client, request, values, analyses=None,
@@ -118,6 +119,9 @@ def create_analysisrequest(client, request, values, analyses=None,
             # Initialize analyses
             do_action_to_analyses(ar, "initialize")
 
+            # Notify the ar has ben modified
+            modified(ar)
+
             # Reindex the AR
             ar.reindexObject()
 
@@ -127,6 +131,9 @@ def create_analysisrequest(client, request, values, analyses=None,
 
             # In "received" state already
             return ar
+
+    # Notify the ar has ben modified
+    modified(ar)
 
     # Try first with no sampling transition, cause it is the most common config
     success, message = doActionFor(ar, "no_sampling_workflow")
