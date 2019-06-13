@@ -80,12 +80,12 @@ def create_analysisrequest(client, request, values, analyses=None,
 
     # Create the Analysis Request
     ar = _createObjectByType('AnalysisRequest', client, tmpID())
-    ar.processForm(REQUEST=request, values=values)
 
     # Resolve the services uids and set the analyses for this Analysis Request
     service_uids = get_services_uids(context=client, values=values,
                                      analyses_serv=analyses)
     ar.setAnalyses(service_uids, prices=prices, specs=specifications)
+    ar.processForm(REQUEST=request, values=values)
 
     # Handle rejection reasons
     rejection_reasons = resolve_rejection_reasons(values)
@@ -131,9 +131,6 @@ def create_analysisrequest(client, request, values, analyses=None,
 
             # In "received" state already
             return ar
-
-    # Notify the ar has ben modified
-    modified(ar)
 
     # Try first with no sampling transition, cause it is the most common config
     success, message = doActionFor(ar, "no_sampling_workflow")
