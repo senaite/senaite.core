@@ -22,18 +22,19 @@ import collections
 import sys
 
 from AccessControl.SecurityInfo import ModuleSecurityInfo
-from Products.Archetypes.config import UID_CATALOG
-from Products.CMFCore.WorkflowCore import WorkflowException
-from Products.CMFCore.utils import getToolByName
 from bika.lims import PMF
 from bika.lims import api
 from bika.lims import logger
 from bika.lims.browser import ulocalized_time
+from bika.lims.decorators import synchronized
 from bika.lims.interfaces import IJSONReadExtender
 from bika.lims.jsonapi import get_include_fields
-from bika.lims.utils import changeWorkflowState
+from bika.lims.utils import changeWorkflowState  # noqa
 from bika.lims.utils import t
 from bika.lims.workflow.indexes import ACTIONS_TO_INDEXES
+from Products.Archetypes.config import UID_CATALOG
+from Products.CMFCore.utils import getToolByName
+from Products.CMFCore.WorkflowCore import WorkflowException
 from zope.interface import implements
 
 security = ModuleSecurityInfo('bika.lims.workflow')
@@ -41,14 +42,15 @@ security.declarePublic('guard_handler')
 
 _marker = object()
 
+
 def skip(instance, action, peek=False, unskip=False):
     """Returns True if the transition is to be SKIPPED
 
         peek - True just checks the value, does not set.
         unskip - remove skip key (for manual overrides).
 
-    called with only (instance, action_id), this will set the request variable preventing the
-    cascade's from re-transitioning the object and return None.
+    called with only (instance, action_id), this will set the request variable
+    preventing the cascade's from re-transitioning the object and return None.
     """
 
     uid = callable(instance.UID) and instance.UID() or instance.UID
@@ -93,13 +95,15 @@ def doActionFor(instance, action_id, idxs=None):
                 .format(instance, action_id)
             )
 
-        return doActionFor(instance=instance[0], action_id=action_id, idxs=idxs)
+        return doActionFor(
+            instance=instance[0], action_id=action_id, idxs=idxs)
 
     # Since a given transition can cascade or promote to other objects, we want
     # to reindex all objects for which the transition succeed at once, at the
     # end of process. Otherwise, same object will be reindexed multiple times
-    # unnecessarily. Also, ActionsHandlerPool ensures the same transition is not
-    # applied twice to the same object due to cascade/promote recursions.
+    # unnecessarily.
+    # Also, ActionsHandlerPool ensures the same transition is not applied twice
+    # to the same object due to cascade/promote recursions.
     pool = ActionHandlerPool.get_instance()
     if pool.succeed(instance, action_id):
         return False, "Transition {} for {} already done"\
@@ -123,7 +127,7 @@ def doActionFor(instance, action_id, idxs=None):
         curr_state = getCurrentState(instance)
         clazz_name = instance.__class__.__name__
         logger.warning(
-            "Transition '{0}' not allowed: {1} '{2}' ({3})"\
+            "Transition '{0}' not allowed: {1} '{2}' ({3})"
             .format(action_id, clazz_name, instance.getId(), curr_state))
         logger.error(message)
 
@@ -190,7 +194,7 @@ def AfterTransitionEventHandler(instance, event):
         return
 
     # Try with old AfterTransitionHandler dance...
-    # TODO CODE TO BE REMOVED AFTER PORTING workflow_script_*/*_transition_event
+    # TODO REMOVE AFTER PORTING workflow_script_*/*_transition_event
     if not event.transition:
         return
     # Set the request variable preventing cascade's from re-transitioning.
@@ -391,7 +395,6 @@ def guard_handler(instance, transition_id):
     if not guard:
         return True
 
-    #logger.info('{0}.guards.{1}'.format(clazz_name.lower(), key))
     return guard(instance)
 
 
