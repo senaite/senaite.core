@@ -20,6 +20,7 @@
 
 import collections
 import sys
+import threading
 
 from AccessControl.SecurityInfo import ModuleSecurityInfo
 from bika.lims import PMF
@@ -460,13 +461,17 @@ class ActionHandlerPool(object):
     """Singleton to handle concurrent transitions
     """
     __instance = None
+    __lock = threading.Lock()
 
     @staticmethod
     def get_instance():
         """Returns the current instance of ActionHandlerPool
         """
         if ActionHandlerPool.__instance is None:
-            ActionHandlerPool()
+            # Thread-safe
+            with ActionHandlerPool.__lock:
+                if ActionHandlerPool.__instance is None:
+                    ActionHandlerPool()
         return ActionHandlerPool.__instance
 
     def __init__(self):
