@@ -37,6 +37,7 @@ from Products.Archetypes.config import UID_CATALOG
 from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.WorkflowCore import WorkflowException
 from zope.interface import implements
+from ZPublisher.HTTPRequest import HTTPRequest
 
 security = ModuleSecurityInfo('bika.lims.workflow')
 security.declarePublic('guard_handler')
@@ -477,8 +478,6 @@ class ActionHandlerPool(object):
     def __init__(self):
         if ActionHandlerPool.__instance is not None:
             raise Exception("Use ActionHandlerPool.get_instance()")
-        self.objects = collections.OrderedDict()
-        self.num_calls = 0
         ActionHandlerPool.__instance = self
 
     def __len__(self):
@@ -486,16 +485,55 @@ class ActionHandlerPool(object):
         """
         return len(self.objects)
 
+    def is_valid_request(self):
+        request = api.get_request()
+        if not request:
+            return False
+        return isinstance(request, HTTPRequest)
+
+    def flush(self):
+        self.request_ahp["objects"] = collections.OrderedDict()
+        self.request_ahp["num_calls"] = 0
+
+    @property
+    def request_ahp(self):
+        data = {
+            "objects": collections.OrderedDict(),
+            "num_calls": 0
+        }
+
+        request = api.get_request()
+        if not isinstance(request, HTTPRequest):
+            # Maybe this is called by a non-request script
+            return data
+
+        if "__action_handler_pool" not in request:
+            request["__action_handler_pool"] = data
+        return request["__action_handler_pool"]
+
+    @property
+    def objects(self):
+        return self.request_ahp["objects"]
+
+    @property
+    def num_calls(self):
+        return self.request_ahp["num_calls"]
+
     @synchronized(max_connections=1)
     def queue_pool(self):
         """Notifies that a new batch of jobs is about to begin
         """
-        self.num_calls += 1
+        self.request_ahp["num_calls"] += 1
 
     @synchronized(max_connections=1)
     def push(self, instance, action, success, idxs=_marker):
         """Adds an instance into the pool, to be reindexed on resume
         """
+        if not self.is_valid_request():
+            # This is called by a non-request script
+            instance.reindexObject()
+            return
+
         uid = api.get_uid(instance)
         info = self.objects.get(uid, {})
         idx = [] if idxs is _marker else idxs
@@ -514,7 +552,7 @@ class ActionHandlerPool(object):
         """
         # do not decrease the counter below 0
         if self.num_calls > 0:
-            self.num_calls -= 1
+            self.request_ahp["num_calls"] -= 1
 
         # postpone for pending calls
         if self.num_calls > 0:
@@ -545,7 +583,7 @@ class ActionHandlerPool(object):
 
         # Cleanup the pool
         logger.info("Objects processed: {}".format(len(processed)))
-        self.objects = collections.OrderedDict()
+        self.flush()
 
     def get_indexes(self, uid):
         """Returns the names of the indexes to be reindexed for the object with
