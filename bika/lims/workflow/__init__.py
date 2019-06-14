@@ -481,11 +481,13 @@ class ActionHandlerPool(object):
         """
         return len(self.objects)
 
+    @synchronized(max_connections=1)
     def queue_pool(self):
         """Notifies that a new batch of jobs is about to begin
         """
         self.num_calls += 1
 
+    @synchronized(max_connections=1)
     def push(self, instance, action, success, idxs=_marker):
         """Adds an instance into the pool, to be reindexed on resume
         """
@@ -501,6 +503,7 @@ class ActionHandlerPool(object):
         uid = api.get_uid(instance)
         return self.objects.get(uid, {}).get(action, {}).get('success', False)
 
+    @synchronized(max_connections=1)
     def resume(self):
         """Resumes the pool and reindex all objects processed
         """
@@ -512,7 +515,12 @@ class ActionHandlerPool(object):
         if self.num_calls > 0:
             return
 
-        logger.info("Resume actions for {} objects".format(len(self)))
+        # return immediately if there are no objects in the queue
+        count = len(self)
+        if count == 0:
+            return
+
+        logger.info("Resume actions for {} objects".format(count))
 
         # Fetch the objects from the pool
         processed = list()
