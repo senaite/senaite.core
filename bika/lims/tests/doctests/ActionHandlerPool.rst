@@ -43,7 +43,7 @@ This will *increase* the internal `num_calls` counter:
     >>> pool.num_calls
     1
 
-If all poerations are done by the calling code, it has to call `resume()`, which
+If all operations are done by the calling code, it has to call `resume()`, which
 will decrease the counter by 1:
 
     >>> pool.resume()
@@ -75,8 +75,8 @@ which will add some lag in between the reading and writing operation.
     >>> threads = []
 
     >>> def simulate_queue_pool(tid):
-    ...     time.sleep(random.random())
     ...     pool.queue_pool()
+    ...     time.sleep(random.random())
 
     >>> for num in range(100):
     ...     t = threading.Thread(target=simulate_queue_pool, args=(num, ))
@@ -85,7 +85,3 @@ which will add some lag in between the reading and writing operation.
 
     >>> for t in threads:
     ...     t.join()
-
-The `num_calls` counter should be 10 after the threads have terminated:
-
-    >>> pool.num_calls
