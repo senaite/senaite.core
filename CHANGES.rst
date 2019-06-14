@@ -6,16 +6,20 @@ Changelog
 
 **Added**
 
+- #1391 Samples for internal use (lab personnel) only
+- #1384 Added missing Html Field to ARReport
 - #1369 Add getter to access the title of the sample condition directly
 - #1347 Consider laboratory workdays only for the late analyses calculation
 - #1324 Audit Log
 
 **Changed**
 
+- #1392 Hide partitions to clients when "Show Partitions" is not selected
 - #1371 Allow sample publication without sending Email
 - #1355 Make api.getId to also consider id metadata column (not only getId)
 - #1352 Make timeit to not display args by default
 - #1330 Make guards to not rely on review history
+- #1339 Make Forumula a required field on Calculation
 
 **Removed**
 
@@ -26,6 +30,8 @@ Changelog
 
 **Fixed**
 
+- #1389 Analysts and Labclerks cannot create worksheets
+- #1386 No auto-rejection of Sample when rejection reasons are set in Add form
 - #1382 Fix double publication of the same sample when using multi-reports
 - #1368 Fix WF state propagation on partition verification
 - #1367 Clients can see interim values of analyses not yet verified

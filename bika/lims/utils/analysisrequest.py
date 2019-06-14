@@ -49,6 +49,7 @@ from bika.lims.workflow.analysisrequest import AR_WORKFLOW_ID
 from bika.lims.workflow.analysisrequest import do_action_to_analyses
 from email.Utils import formataddr
 from zope.interface import alsoProvides
+from zope.lifecycleevent import modified
 
 
 def create_analysisrequest(client, request, values, analyses=None,
@@ -79,12 +80,17 @@ def create_analysisrequest(client, request, values, analyses=None,
 
     # Create the Analysis Request
     ar = _createObjectByType('AnalysisRequest', client, tmpID())
-    ar.processForm(REQUEST=request, values=values)
 
     # Resolve the services uids and set the analyses for this Analysis Request
     service_uids = get_services_uids(context=client, values=values,
                                      analyses_serv=analyses)
     ar.setAnalyses(service_uids, prices=prices, specs=specifications)
+    values.update({"Analyses": service_uids})
+    ar.processForm(REQUEST=request, values=values)
+
+    # Handle rejection reasons
+    rejection_reasons = resolve_rejection_reasons(values)
+    ar.setRejectionReasons(rejection_reasons)
 
     # Handle secondary Analysis Request
     primary = ar.getPrimaryAnalysisRequest()
@@ -114,8 +120,15 @@ def create_analysisrequest(client, request, values, analyses=None,
             # Initialize analyses
             do_action_to_analyses(ar, "initialize")
 
+            # Notify the ar has ben modified
+            modified(ar)
+
             # Reindex the AR
             ar.reindexObject()
+
+            # If rejection reasons have been set, reject automatically
+            if rejection_reasons:
+                doActionFor(ar, "reject")
 
             # In "received" state already
             return ar
@@ -124,6 +137,11 @@ def create_analysisrequest(client, request, values, analyses=None,
     success, message = doActionFor(ar, "no_sampling_workflow")
     if not success:
         doActionFor(ar, "to_be_sampled")
+
+    # If rejection reasons have been set, reject the sample automatically
+    if rejection_reasons:
+        doActionFor(ar, "reject")
+
     return ar
 
 
@@ -370,7 +388,7 @@ def create_retest(ar):
 
 def create_partition(analysis_request, request, analyses, sample_type=None,
                      container=None, preservation=None, skip_fields=None,
-                     remove_primary_analyses=True):
+                     remove_primary_analyses=True, internal_use=True):
     """
     Creates a partition for the analysis_request (primary) passed in
     :param analysis_request: uid/brain/object of IAnalysisRequest type
@@ -411,7 +429,7 @@ def create_partition(analysis_request, request, analyses, sample_type=None,
 
     # Update with values that are partition-specific
     record.update({
-        "InternalUse": True,
+        "InternalUse": internal_use,
         "ParentAnalysisRequest": api.get_uid(ar),
     })
     if sample_type is not None:
@@ -475,3 +493,33 @@ def fields_to_dict(obj, skip_fields=None):
             continue
         data[field_name] = field.get(obj)
     return data
+
+
+def resolve_rejection_reasons(values):
+    """Resolves the rejection reasons from the submitted values to the format
+    supported by Sample's Rejection Reason field
+    """
+    rejection_reasons = values.get("RejectionReasons")
+    if not rejection_reasons:
+        return []
+
+    # Predefined reasons selected?
+    selected = rejection_reasons[0] or {}
+    if selected.get("checkbox") == "on":
+        selected = selected.get("multiselection") or []
+    else:
+        selected = []
+
+    # Other reasons set?
+    other = values.get("RejectionReasons.textfield")
+    if other:
+        other = other[0] or {}
+        other = other.get("other", "")
+    else:
+        other = ""
+
+    # If neither selected nor other reasons are set, return empty
+    if any([selected, other]):
+        return [{"selected": selected, "other": other}]
+
+    return []

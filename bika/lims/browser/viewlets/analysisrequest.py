@@ -20,6 +20,7 @@
 
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from plone.app.layout.viewlets import ViewletBase
+from bika.lims import api
 
 
 class InvalidAnalysisRequestViewlet(ViewletBase):
@@ -38,6 +39,15 @@ class PrimaryAnalysisRequestViewlet(ViewletBase):
     """ Current Analysis Request is a primary. Display links to partitions
     """
     template = ViewPageTemplateFile("templates/primary_ar_viewlet.pt")
+
+    def get_partitions(self):
+        """Returns whether this viewlet is visible or not
+        """
+        # If current user is a client contact, rely on Setup's ShowPartitions
+        if api.get_current_client():
+            if not api.get_setup().getShowPartitions():
+                return []
+        return self.context.getDescendants()
 
 
 class PartitionAnalysisRequestViewlet(ViewletBase):

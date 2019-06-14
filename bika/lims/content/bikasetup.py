@@ -530,11 +530,15 @@ schema = BikaFolderSchema.copy() + Schema((
     ),
     BooleanField(
         'ShowPartitions',
-        schemata="Sampling",
-        default=True,
+        schemata="Appearance",
+        default=False,
         widget=BooleanWidget(
-            label=_("Display individual sample partitions "),
-            description=_("Turn this on if you want to work with sample partitions")
+            label=_("Display sample partitions to clients"),
+            description=_(
+                "Select to show sample partitions to client contacts. "
+                "If deactivated, partitions won't be included in listings "
+                "and no info message with links to the primary sample will "
+                "be displayed to client contacts.")
         ),
     ),
     BooleanField(

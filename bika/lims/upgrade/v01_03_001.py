@@ -20,6 +20,7 @@
 
 import time
 
+import traceback
 import transaction
 from bika.lims import api
 from bika.lims import logger
@@ -37,6 +38,7 @@ from bika.lims.interfaces import IReceived
 from bika.lims.interfaces import ISubmitted
 from bika.lims.interfaces import IVerified
 from bika.lims.setuphandlers import setup_auditlog_catalog
+from bika.lims.subscribers.setup import update_worksheet_manage_permissions
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
 from bika.lims.workflow import get_review_history_statuses
@@ -71,6 +73,7 @@ def upgrade(tool):
 
     # -------- ADD YOUR STUFF BELOW --------
     setup.runImportStepFromProfile(profile, "actions")
+    setup.runImportStepFromProfile(profile, "rolemap")
     setup.runImportStepFromProfile(profile, "workflow")
     setup.runImportStepFromProfile(profile, "typeinfo")
     setup.runImportStepFromProfile(profile, "toolset")
@@ -103,6 +106,15 @@ def upgrade(tool):
     # https://github.com/senaite/senaite.core/pull/1362
     cleanup_worksheet_catalog(portal)
 
+    # Apply permissions for Manage Worksheets
+    # https://github.com/senaite/senaite.core/issues/1387
+    update_worksheet_manage_permissions(api.get_setup())
+
+    # Add getInternalUse metadata
+    # https://github.com/senaite/senaite.core/pull/1391
+    catalog = api.get_tool(CATALOG_ANALYSIS_REQUEST_LISTING)
+    catalog.addColumn("getInternalUse")
+
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
 
@@ -113,7 +125,7 @@ def remove_samples_and_partitions(portal):
     N.B.: We do not use a catalog search here due to inconsistencies in the
           deletion process and leftover objects.
     """
-
+    logger.info("Removing samples and partitions ...")
     num = 0
     clients = portal.clients.objectValues()
 
@@ -124,12 +136,18 @@ def remove_samples_and_partitions(portal):
         for sid in sids:
             num += 1
             # bypass security checks
-            client._delObject(sid)
-            logger.info("#{}: Deleted sample '{}' of client '{}'"
-                        .format(num, sid, cid))
+            try:
+                client._delObject(sid)
+                logger.info("#{}: Deleted sample '{}' of client '{}'"
+                            .format(num, sid, cid))
+            except:
+                logger.error("Cannot delete sample '{}': {}"
+                             .format(sid, traceback.format_exc()))
+            if num % 1000 == 0:
+                commit_transaction(portal)
 
     logger.info("Removed a total of {} samples, committing...".format(num))
-    transaction.commit()
+    commit_transaction(portal)
 
 
 def convert_inline_images_to_attachments(portal):
@@ -312,6 +330,7 @@ def reindex_sortable_title(portal):
         catalog = api.get_tool(catalog_name)
         catalog.reindexIndex("sortable_title", None, pghandler=handler)
         commit_transaction(portal)
+
 
 def cleanup_worksheet_catalog(portal):
     """Removes stale indexes and metadata from worksheet_catalog.

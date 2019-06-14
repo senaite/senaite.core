@@ -644,6 +644,10 @@ class AnalysisRequestsView(BikaListingView):
         if obj.getHazardous:
             after_icons += get_image("hazardous.png",
                                      title=t(_("Hazardous")))
+
+        if obj.getInternalUse:
+            after_icons += get_image("locked.png", title=t(_("Internal use")))
+
         if after_icons:
             item['after']['getId'] = after_icons
 
@@ -720,8 +724,11 @@ class AnalysisRequestsView(BikaListingView):
         # Advanced partitioning
         # append the UID of the primary AR as parent
         item["parent"] = obj.getRawParentAnalysisRequest or ""
+
         # append partition UIDs of this AR as children
-        item["children"] = obj.getDescendantsUIDs or []
+        item["children"] = []
+        if self.show_partitions:
+            item["children"] = obj.getDescendantsUIDs or []
 
         return item
 
@@ -761,3 +768,10 @@ class AnalysisRequestsView(BikaListingView):
 
     def getDefaultAddCount(self):
         return self.context.bika_setup.getDefaultNumberOfARsToAdd()
+
+    @property
+    def show_partitions(self):
+        if api.get_current_client():
+            # If current user is a client contact, delegate to ShowPartitions
+            return api.get_setup().getShowPartitions()
+        return True

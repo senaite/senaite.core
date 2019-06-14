@@ -79,6 +79,7 @@ class PartitionMagicView(BrowserView):
                 sampletype_uid = partition.get("sampletype_uid")
                 container_uid = partition.get("container_uid")
                 preservation_uid = partition.get("preservation_uid")
+                internal_use = partition.get("internal_use")
                 if not primary_uid:
                     continue
 
@@ -96,6 +97,7 @@ class PartitionMagicView(BrowserView):
                     preservation=preservation_uid,
                     analyses=analyses_uids,
                     remove_primary_analyses=False,
+                    internal_use=internal_use,
                 )
                 partitions.append(partition)
 
@@ -266,6 +268,7 @@ class PartitionMagicView(BrowserView):
             sampletypes_by_partition = defaultdict(list)
             containers_by_partition = defaultdict(list)
             preservations_by_partition = defaultdict(list)
+            internal_use_by_partition = defaultdict(list)
             for part in template.getPartitions():
                 part_id = part.get("part_id")
                 sampletype_uid = part.get('sampletype_uid', ar_sampletype_uid)
@@ -274,6 +277,9 @@ class PartitionMagicView(BrowserView):
                 containers_by_partition[part_id] = container_uid
                 preserv_uid = part.get("preservation_uid", ar_preservation_uid)
                 preservations_by_partition[part_id] = preserv_uid
+                internal_use = part.get("internal_use", ar.getInternalUse())
+                internal_use_by_partition[part_id] = internal_use
+
 
             partitions = map(lambda p: p.get("part_id"),
                              template.getPartitions())
@@ -283,6 +289,7 @@ class PartitionMagicView(BrowserView):
                 "sample_types": sampletypes_by_partition,
                 "containers": containers_by_partition,
                 "preservations": preservations_by_partition,
+                "internal_uses": internal_use_by_partition,
             })
         else:
             info = {
@@ -291,6 +298,7 @@ class PartitionMagicView(BrowserView):
                 "sample_types": {},
                 "containers": {},
                 "preservations": {},
+                "internal_uses": {},
             }
         return info
 

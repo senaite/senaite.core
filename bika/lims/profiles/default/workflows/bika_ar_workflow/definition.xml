@@ -56,6 +56,7 @@
   <permission>senaite.core: Field: Edit Date Received</permission>
   <permission>senaite.core: Field: Edit Date Sampled</permission>
   <permission>senaite.core: Field: Edit Environmental Conditions</permission>
+  <permission>senaite.core: Field: Edit Internal Use</permission>
   <permission>senaite.core: Field: Edit Invoice Exclude</permission>
   <permission>senaite.core: Field: Edit Member Discount</permission>
   <permission>senaite.core: Field: Edit Preservation</permission>
@@ -142,6 +143,7 @@
     <permission-map name="senaite.core: Field: Edit Date Received" acquired="False"/>
     <permission-map name="senaite.core: Field: Edit Date Sampled" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Environmental Conditions" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Internal Use" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Invoice Exclude" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Member Discount" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Preservation" acquired="True"/>
@@ -231,6 +233,7 @@
     <permission-map name="senaite.core: Field: Edit Date Received" acquired="False"/>
     <permission-map name="senaite.core: Field: Edit Date Sampled" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Environmental Conditions" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Internal Use" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Invoice Exclude" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Member Discount" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Preservation" acquired="True"/>
@@ -328,6 +331,7 @@
     <permission-map name="senaite.core: Field: Edit Date Received" acquired="False"/>
     <permission-map name="senaite.core: Field: Edit Date Sampled" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Environmental Conditions" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Internal Use" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Invoice Exclude" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Member Discount" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Preservation" acquired="True"/>
@@ -414,6 +418,7 @@
     <permission-map name="senaite.core: Field: Edit Date Received" acquired="False"/>
     <permission-map name="senaite.core: Field: Edit Date Sampled" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Environmental Conditions" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Internal Use" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Invoice Exclude" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Member Discount" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Preservation" acquired="True"/>
@@ -498,6 +503,7 @@
     <permission-map name="senaite.core: Field: Edit Date Received" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Date Sampled" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Environmental Conditions" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Internal Use" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Invoice Exclude" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Member Discount" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Preservation" acquired="True"/>
@@ -580,6 +586,7 @@
     <permission-map name="senaite.core: Field: Edit Date Received" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Date Sampled" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Environmental Conditions" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Internal Use" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Invoice Exclude" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Member Discount" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Preservation" acquired="True"/>
@@ -667,6 +674,7 @@
     <permission-map name="senaite.core: Field: Edit Date Received" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Date Sampled" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Environmental Conditions" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Internal Use" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Invoice Exclude" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Member Discount" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Preservation" acquired="True"/>
@@ -750,6 +758,7 @@
     <permission-map name="senaite.core: Field: Edit Date Received" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Date Sampled" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Environmental Conditions" acquired="True"/>
+    <permission-map name="senaite.core: Field: Edit Internal Use" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Invoice Exclude" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Member Discount" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Preservation" acquired="True"/>
@@ -833,6 +842,7 @@
     <permission-map name="senaite.core: Field: Edit Date Received" acquired="False"/>
     <permission-map name="senaite.core: Field: Edit Date Sampled" acquired="False"/>
     <permission-map name="senaite.core: Field: Edit Environmental Conditions" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Internal Use" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Invoice Exclude" acquired="False"/>
     <permission-map name="senaite.core: Field: Edit Member Discount" acquired="False"/>
     <permission-map name="senaite.core: Field: Edit Preservation" acquired="False"/>
@@ -910,6 +920,7 @@
     <permission-map name="senaite.core: Field: Edit Date Received" acquired="False"/>
     <permission-map name="senaite.core: Field: Edit Date Sampled" acquired="False"/>
     <permission-map name="senaite.core: Field: Edit Environmental Conditions" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Internal Use" acquired="False"/>
     <permission-map name="senaite.core: Field: Edit Invoice Exclude" acquired="False"/>
     <permission-map name="senaite.core: Field: Edit Member Discount" acquired="False"/>
     <permission-map name="senaite.core: Field: Edit Preservation" acquired="False"/>
@@ -984,6 +995,7 @@
     <permission-map name="senaite.core: Field: Edit Date Received" acquired="False"/>
     <permission-map name="senaite.core: Field: Edit Date Sampled" acquired="False"/>
     <permission-map name="senaite.core: Field: Edit Environmental Conditions" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Internal Use" acquired="False"/>
     <permission-map name="senaite.core: Field: Edit Invoice Exclude" acquired="False"/>
     <permission-map name="senaite.core: Field: Edit Member Discount" acquired="False"/>
     <permission-map name="senaite.core: Field: Edit Preservation" acquired="False"/>
@@ -1057,6 +1069,7 @@
     <permission-map name="senaite.core: Field: Edit Date Received" acquired="False"/>
     <permission-map name="senaite.core: Field: Edit Date Sampled" acquired="False"/>
     <permission-map name="senaite.core: Field: Edit Environmental Conditions" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Internal Use" acquired="False"/>
     <permission-map name="senaite.core: Field: Edit Invoice Exclude" acquired="False"/>
     <permission-map name="senaite.core: Field: Edit Member Discount" acquired="False"/>
     <permission-map name="senaite.core: Field: Edit Preservation" acquired="False"/>
@@ -1135,6 +1148,7 @@
     <permission-map name="senaite.core: Field: Edit Date Received" acquired="False"/>
     <permission-map name="senaite.core: Field: Edit Date Sampled" acquired="False"/>
     <permission-map name="senaite.core: Field: Edit Environmental Conditions" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Internal Use" acquired="False"/>
     <permission-map name="senaite.core: Field: Edit Invoice Exclude" acquired="False"/>
     <permission-map name="senaite.core: Field: Edit Member Discount" acquired="False"/>
     <permission-map name="senaite.core: Field: Edit Preservation" acquired="False"/>

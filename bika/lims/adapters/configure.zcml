@@ -126,6 +126,14 @@
       name="SecondaryDateSampledFieldVisibility"
     />
 
+    <!-- Hide/Display the InternalUse field to Client contact users -->
+    <adapter
+      factory=".widgetvisibility.InternalUseFieldVisibility"
+      provides="bika.lims.interfaces.IATWidgetVisibility"
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="InternalUseFieldVisibility"
+    />
+
     <!-- Hide/Display PrimarySample field. Always hidden for non-secondary ARs,
     otherwise readonly mode -->
     <adapter
