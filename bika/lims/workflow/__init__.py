@@ -495,8 +495,8 @@ class ActionHandlerPool(object):
         return isinstance(request, HTTPRequest)
 
     def flush(self):
-        self.request_ahp["objects"] = collections.OrderedDict()
-        self.request_ahp["num_calls"] = 0
+        self.objects = collections.OrderedDict()
+        self.num_calls = 0
 
     @property
     def request_ahp(self):
@@ -518,15 +518,23 @@ class ActionHandlerPool(object):
     def objects(self):
         return self.request_ahp["objects"]
 
+    @objects.setter
+    def objects(self, value):
+        self.request_ahp["objects"] = value
+
     @property
     def num_calls(self):
         return self.request_ahp["num_calls"]
+
+    @num_calls.setter
+    def num_calls(self, value):
+        self.request_ahp["num_calls"] = value
 
     @synchronized(max_connections=1)
     def queue_pool(self):
         """Notifies that a new batch of jobs is about to begin
         """
-        self.request_ahp["num_calls"] += 1
+        self.num_calls += 1
 
     @synchronized(max_connections=1)
     def push(self, instance, action, success, idxs=_marker):
