@@ -490,15 +490,22 @@ class ActionHandlerPool(object):
         """
         return len(self.objects)
 
-    def is_valid_request(self):
-        request = api.get_request()
-        if not request:
-            return False
-        return isinstance(request, HTTPRequest)
+    def __repr__(self):
+        """Better repr
+        """
+        return "<ActionHandlerPool for UIDs:[{}]>".format(
+            ",".join(map(api.get_uid, self.objects)))
 
     def flush(self):
         self.objects = collections.OrderedDict()
         self.num_calls = 0
+
+    @property
+    def request(self):
+        request = api.get_request()
+        if not isinstance(request, HTTPRequest):
+            return None
+        return request
 
     @property
     def request_ahp(self):
@@ -507,8 +514,8 @@ class ActionHandlerPool(object):
             "num_calls": 0
         }
 
-        request = api.get_request()
-        if not isinstance(request, HTTPRequest):
+        request = self.request
+        if request is None:
             # Maybe this is called by a non-request script
             return data
 
@@ -542,7 +549,7 @@ class ActionHandlerPool(object):
     def push(self, instance, action, success, idxs=_marker):
         """Adds an instance into the pool, to be reindexed on resume
         """
-        if not self.is_valid_request():
+        if self.request is None:
             # This is called by a non-request script
             instance.reindexObject()
             return
@@ -557,7 +564,7 @@ class ActionHandlerPool(object):
         """Returns if the task for the instance took place successfully
         """
         uid = api.get_uid(instance)
-        return self.objects.get(uid, {}).get(action, {}).get('success', False)
+        return self.objects.get(uid, {}).get(action, {}).get("success", False)
 
     @synchronized(max_connections=1)
     def resume(self):

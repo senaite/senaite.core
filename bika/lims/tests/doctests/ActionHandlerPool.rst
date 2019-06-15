@@ -25,7 +25,7 @@ Getting an instance of the action handler pool:
     >>> pool = ActionHandlerPool.get_instance()
 
     >>> pool
-    <bika.lims.workflow.ActionHandlerPool object at ...>
+    <ActionHandlerPool for UIDs:[]>
 
 When a piece of code is utilizing the utility function `doActionFor`,
 the pool is utilized to increase the performance by
