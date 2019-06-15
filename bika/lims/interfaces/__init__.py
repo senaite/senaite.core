@@ -28,6 +28,11 @@ class IBikaLIMS(Interface):
     """
 
 
+class IActionHandlerPool(Interface):
+    """Marker interface for the ActionHandlerPool utility
+    """
+
+
 class IAuditLog(Interface):
     """Marker interface for Audit Log
     """

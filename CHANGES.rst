@@ -30,6 +30,7 @@ Changelog
 
 **Fixed**
 
+- #1395 Make Action Handler Pool Thread-Safe
 - #1389 Analysts and Labclerks cannot create worksheets
 - #1386 No auto-rejection of Sample when rejection reasons are set in Add form
 - #1382 Fix double publication of the same sample when using multi-reports

@@ -21,6 +21,7 @@
 import cProfile
 import json
 import os
+import threading
 import time
 from functools import wraps
 
@@ -131,5 +132,28 @@ def timeit(threshold=0, show_args=False):
                     logger.info("Execution of '{}' took {:2f}s".format(
                         func.__name__, duration))
             return return_value
+        return wrapper
+    return inner
+
+
+def synchronized(max_connections=2, verbose=0):
+    """Synchronize function call via semaphore
+    """
+    semaphore = threading.BoundedSemaphore(max_connections, verbose=verbose)
+
+    def inner(func):
+        logger.debug("Semaphore for {} -> {}".format(func, semaphore))
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            try:
+                logger.info("==> {}::Acquire Semaphore ...".format(
+                    func.__name__))
+                semaphore.acquire()
+                return func(*args, **kwargs)
+            finally:
+                logger.info("<== {}::Release Semaphore ...".format(
+                    func.__name__))
+                semaphore.release()
+
         return wrapper
     return inner

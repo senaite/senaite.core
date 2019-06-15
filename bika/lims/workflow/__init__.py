@@ -20,26 +20,31 @@
 
 import collections
 import sys
+import threading
 
 from AccessControl.SecurityInfo import ModuleSecurityInfo
-from Products.Archetypes.config import UID_CATALOG
-from Products.CMFCore.WorkflowCore import WorkflowException
-from Products.CMFCore.utils import getToolByName
 from bika.lims import PMF
 from bika.lims import api
 from bika.lims import logger
 from bika.lims.browser import ulocalized_time
+from bika.lims.decorators import synchronized
+from bika.lims.interfaces import IActionHandlerPool
 from bika.lims.interfaces import IJSONReadExtender
 from bika.lims.jsonapi import get_include_fields
-from bika.lims.utils import changeWorkflowState
+from bika.lims.utils import changeWorkflowState  # noqa
 from bika.lims.utils import t
 from bika.lims.workflow.indexes import ACTIONS_TO_INDEXES
+from Products.Archetypes.config import UID_CATALOG
+from Products.CMFCore.utils import getToolByName
+from Products.CMFCore.WorkflowCore import WorkflowException
 from zope.interface import implements
+from ZPublisher.HTTPRequest import HTTPRequest
 
 security = ModuleSecurityInfo('bika.lims.workflow')
 security.declarePublic('guard_handler')
 
 _marker = object()
+
 
 def skip(instance, action, peek=False, unskip=False):
     """Returns True if the transition is to be SKIPPED
@@ -47,8 +52,8 @@ def skip(instance, action, peek=False, unskip=False):
         peek - True just checks the value, does not set.
         unskip - remove skip key (for manual overrides).
 
-    called with only (instance, action_id), this will set the request variable preventing the
-    cascade's from re-transitioning the object and return None.
+    called with only (instance, action_id), this will set the request variable
+    preventing the cascade's from re-transitioning the object and return None.
     """
 
     uid = callable(instance.UID) and instance.UID() or instance.UID
@@ -93,13 +98,15 @@ def doActionFor(instance, action_id, idxs=None):
                 .format(instance, action_id)
             )
 
-        return doActionFor(instance=instance[0], action_id=action_id, idxs=idxs)
+        return doActionFor(
+            instance=instance[0], action_id=action_id, idxs=idxs)
 
     # Since a given transition can cascade or promote to other objects, we want
     # to reindex all objects for which the transition succeed at once, at the
     # end of process. Otherwise, same object will be reindexed multiple times
-    # unnecessarily. Also, ActionsHandlerPool ensures the same transition is not
-    # applied twice to the same object due to cascade/promote recursions.
+    # unnecessarily.
+    # Also, ActionsHandlerPool ensures the same transition is not applied twice
+    # to the same object due to cascade/promote recursions.
     pool = ActionHandlerPool.get_instance()
     if pool.succeed(instance, action_id):
         return False, "Transition {} for {} already done"\
@@ -123,7 +130,7 @@ def doActionFor(instance, action_id, idxs=None):
         curr_state = getCurrentState(instance)
         clazz_name = instance.__class__.__name__
         logger.warning(
-            "Transition '{0}' not allowed: {1} '{2}' ({3})"\
+            "Transition '{0}' not allowed: {1} '{2}' ({3})"
             .format(action_id, clazz_name, instance.getId(), curr_state))
         logger.error(message)
 
@@ -190,7 +197,7 @@ def AfterTransitionEventHandler(instance, event):
         return
 
     # Try with old AfterTransitionHandler dance...
-    # TODO CODE TO BE REMOVED AFTER PORTING workflow_script_*/*_transition_event
+    # TODO REMOVE AFTER PORTING workflow_script_*/*_transition_event
     if not event.transition:
         return
     # Set the request variable preventing cascade's from re-transitioning.
@@ -391,7 +398,6 @@ def guard_handler(instance, transition_id):
     if not guard:
         return True
 
-    #logger.info('{0}.guards.{1}'.format(clazz_name.lower(), key))
     return guard(instance)
 
 
@@ -456,21 +462,27 @@ class JSONReadExtender(object):
 class ActionHandlerPool(object):
     """Singleton to handle concurrent transitions
     """
+    implements(IActionHandlerPool)
+
     __instance = None
+    __lock = threading.Lock()
 
     @staticmethod
     def get_instance():
         """Returns the current instance of ActionHandlerPool
+
+        TODO: Refactor to global utility
         """
-        if ActionHandlerPool.__instance == None:
-            ActionHandlerPool()
+        if ActionHandlerPool.__instance is None:
+            # Thread-safe
+            with ActionHandlerPool.__lock:
+                if ActionHandlerPool.__instance is None:
+                    ActionHandlerPool()
         return ActionHandlerPool.__instance
 
     def __init__(self):
-        if ActionHandlerPool.__instance != None:
+        if ActionHandlerPool.__instance is not None:
             raise Exception("Use ActionHandlerPool.get_instance()")
-        self.objects = collections.OrderedDict()
-        self.num_calls = 0
         ActionHandlerPool.__instance = self
 
     def __len__(self):
@@ -478,33 +490,100 @@ class ActionHandlerPool(object):
         """
         return len(self.objects)
 
+    def __repr__(self):
+        """Better repr
+        """
+        return "<ActionHandlerPool for UIDs:[{}]>".format(
+            ",".join(map(api.get_uid, self.objects)))
+
+    def flush(self):
+        self.objects = collections.OrderedDict()
+        self.num_calls = 0
+
+    @property
+    def request(self):
+        request = api.get_request()
+        if not isinstance(request, HTTPRequest):
+            return None
+        return request
+
+    @property
+    def request_ahp(self):
+        data = {
+            "objects": collections.OrderedDict(),
+            "num_calls": 0
+        }
+
+        request = self.request
+        if request is None:
+            # Maybe this is called by a non-request script
+            return data
+
+        if "__action_handler_pool" not in request:
+            request["__action_handler_pool"] = data
+        return request["__action_handler_pool"]
+
+    @property
+    def objects(self):
+        return self.request_ahp["objects"]
+
+    @objects.setter
+    def objects(self, value):
+        self.request_ahp["objects"] = value
+
+    @property
+    def num_calls(self):
+        return self.request_ahp["num_calls"]
+
+    @num_calls.setter
+    def num_calls(self, value):
+        self.request_ahp["num_calls"] = value
+
+    @synchronized(max_connections=1)
     def queue_pool(self):
         """Notifies that a new batch of jobs is about to begin
         """
         self.num_calls += 1
 
+    @synchronized(max_connections=1)
     def push(self, instance, action, success, idxs=_marker):
         """Adds an instance into the pool, to be reindexed on resume
         """
+        if self.request is None:
+            # This is called by a non-request script
+            instance.reindexObject()
+            return
+
         uid = api.get_uid(instance)
         info = self.objects.get(uid, {})
         idx = [] if idxs is _marker else idxs
-        info[action] = {'success': success, 'idxs': idx}
+        info[action] = {"success": success, "idxs": idx}
         self.objects[uid] = info
 
     def succeed(self, instance, action):
         """Returns if the task for the instance took place successfully
         """
         uid = api.get_uid(instance)
-        return self.objects.get(uid, {}).get(action, {}).get('success', False)
+        return self.objects.get(uid, {}).get(action, {}).get("success", False)
 
+    @synchronized(max_connections=1)
     def resume(self):
         """Resumes the pool and reindex all objects processed
         """
-        self.num_calls -= 1
+        # do not decrease the counter below 0
+        if self.num_calls > 0:
+            self.num_calls -= 1
+
+        # postpone for pending calls
         if self.num_calls > 0:
             return
-        logger.info("Resume actions for {} objects".format(len(self)))
+
+        # return immediately if there are no objects in the queue
+        count = len(self)
+        if count == 0:
+            return
+
+        logger.info("Resume actions for {} objects".format(count))
 
         # Fetch the objects from the pool
         processed = list()
@@ -517,14 +596,14 @@ class ActionHandlerPool(object):
             # Reindex the object
             obj = api.get_object(brain)
             idxs = self.get_indexes(uid)
-            idxs_str = idxs and ', '.join(idxs) or "-- All indexes --"
+            idxs_str = idxs and ", ".join(idxs) or "-- All indexes --"
             logger.info("Reindexing {}: {}".format(obj.getId(), idxs_str))
             obj.reindexObject(idxs=idxs)
             processed.append(uid)
 
         # Cleanup the pool
         logger.info("Objects processed: {}".format(len(processed)))
-        self.objects = collections.OrderedDict()
+        self.flush()
 
     def get_indexes(self, uid):
         """Returns the names of the indexes to be reindexed for the object with
