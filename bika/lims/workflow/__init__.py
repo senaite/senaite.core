@@ -565,7 +565,7 @@ class ActionHandlerPool(object):
         """
         # do not decrease the counter below 0
         if self.num_calls > 0:
-            self.request_ahp["num_calls"] -= 1
+            self.num_calls -= 1
 
         # postpone for pending calls
         if self.num_calls > 0:
