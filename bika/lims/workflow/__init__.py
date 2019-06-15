@@ -28,6 +28,7 @@ from bika.lims import api
 from bika.lims import logger
 from bika.lims.browser import ulocalized_time
 from bika.lims.decorators import synchronized
+from bika.lims.interfaces import IActionHandlerPool
 from bika.lims.interfaces import IJSONReadExtender
 from bika.lims.jsonapi import get_include_fields
 from bika.lims.utils import changeWorkflowState  # noqa
@@ -461,6 +462,8 @@ class JSONReadExtender(object):
 class ActionHandlerPool(object):
     """Singleton to handle concurrent transitions
     """
+    implements(IActionHandlerPool)
+
     __instance = None
     __lock = threading.Lock()
 
