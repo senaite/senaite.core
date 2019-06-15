@@ -470,6 +470,8 @@ class ActionHandlerPool(object):
     @staticmethod
     def get_instance():
         """Returns the current instance of ActionHandlerPool
+
+        TODO: Refactor to global utility
         """
         if ActionHandlerPool.__instance is None:
             # Thread-safe
