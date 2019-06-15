@@ -548,7 +548,7 @@ class ActionHandlerPool(object):
         uid = api.get_uid(instance)
         info = self.objects.get(uid, {})
         idx = [] if idxs is _marker else idxs
-        info[action] = {'success': success, 'idxs': idx}
+        info[action] = {"success": success, "idxs": idx}
         self.objects[uid] = info
 
     def succeed(self, instance, action):
@@ -587,7 +587,7 @@ class ActionHandlerPool(object):
             # Reindex the object
             obj = api.get_object(brain)
             idxs = self.get_indexes(uid)
-            idxs_str = idxs and ', '.join(idxs) or "-- All indexes --"
+            idxs_str = idxs and ", ".join(idxs) or "-- All indexes --"
             logger.info("Reindexing {}: {}".format(obj.getId(), idxs_str))
             obj.reindexObject(idxs=idxs)
             processed.append(uid)
