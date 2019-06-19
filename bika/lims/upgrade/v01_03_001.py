@@ -117,6 +117,7 @@ def upgrade(tool):
 
     # Reindex getWorksheetUID from analysis catalog to ensure all analyses are
     # visible in Worksheet view
+    # https://github.com/senaite/senaite.core/pull/1397
     reindex_getWorksheetUID(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
