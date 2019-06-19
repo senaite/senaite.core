@@ -115,6 +115,10 @@ def upgrade(tool):
     catalog = api.get_tool(CATALOG_ANALYSIS_REQUEST_LISTING)
     catalog.addColumn("getInternalUse")
 
+    # Reindex getWorksheetUID from analysis catalog to ensure all analyses are
+    # visible in Worksheet view
+    reindex_getWorksheetUID(portal)
+
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
 
@@ -376,3 +380,14 @@ def del_metadata(portal, catalog_id, column, refresh_catalog=False):
         logger.info("Refreshing catalog '{}' ...".format(catalog_id))
         handler = ZLogHandler(steps=100)
         catalog.refreshCatalog(pghandler=handler)
+
+
+def reindex_getWorksheetUID(portal):
+    """Reindex getWorksheetUID index from analysis_catalog
+    """
+    catalog_name = CATALOG_ANALYSIS_LISTING
+    logger.info("Reindexing getWorksheetUID for {} ...".format(catalog_name))
+    handler = ZLogHandler(steps=100)
+    catalog = api.get_tool(catalog_name)
+    catalog.reindexIndex("getWorksheetUID", None, pghandler=handler)
+    commit_transaction(portal)
