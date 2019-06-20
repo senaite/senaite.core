@@ -217,6 +217,9 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         # Try to rollback the worksheet to prevent inconsistencies
         doActionFor(self, "rollback_to_open")
 
+        # Reindex Analysis
+        push_reindex_to_actions_pool(analysis, idxs=["getWorksheetUID"])
+
         # Reindex Worksheet
         idxs = ["getAnalysesUIDs"]
         push_reindex_to_actions_pool(self, idxs=idxs)
