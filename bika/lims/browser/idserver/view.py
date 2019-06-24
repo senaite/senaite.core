@@ -65,9 +65,12 @@ class IDServerView(BrowserView):
         if form.get("seed", False):
             seeds = form.get("seeds", {})
             for key, value in seeds.items():
-                value = self.to_int(value)
+                value = api.to_int(value, None)
                 message = ""
-                if value == 0:
+                if value is None:
+                    message = _("Could not convert '{}' to an integer"
+                                .format(value))
+                elif value == 0:
                     del self.storage[key]
                     message = _("Removed key {} from storage".format(key))
                 else:
@@ -96,14 +99,6 @@ class IDServerView(BrowserView):
         number_generator = getUtility(INumberGenerator)
         return number_generator.storage
 
-    def to_int(self, number, default=0):
-        """Returns an integer
-        """
-        try:
-            return int(number)
-        except (KeyError, ValueError):
-            return self.to_int(default, 0)
-
     def add_status_message(self, message, level="info"):
         """Set a portal status message
         """
@@ -113,7 +108,7 @@ class IDServerView(BrowserView):
         """Set a number of the number generator
         """
         number_generator = getUtility(INumberGenerator)
-        return number_generator.set_number(key, self.to_int(value))
+        return number_generator.set_number(key, api.to_int(value))
 
     def seed(self):
         """ Reset the number from which the next generated sequence start.
