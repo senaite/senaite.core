@@ -18,8 +18,6 @@
 # Copyright 2018-2019 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-import re
-
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.idserver import get_config
