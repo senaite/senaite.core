@@ -44,9 +44,6 @@
                      class="form-control"
                      tal:attributes="name string:seeds.${key}:record;
                                      value value"/>
-              <input type="hidden"
-                     tal:attributes="name string:seeds.${key}:record;
-                                     value key"/>
             </div>
 
             <div class="help-block">
