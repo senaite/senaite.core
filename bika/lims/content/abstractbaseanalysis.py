@@ -728,7 +728,8 @@ schema = BikaSchema.copy() + Schema((
     Hidden,
     SelfVerification,
     NumberOfRequiredVerifications,
-    Remarks
+    Remarks,
+    StringResult,
 ))
 
 schema['id'].widget.visible = False
