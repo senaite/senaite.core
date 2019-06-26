@@ -112,8 +112,7 @@ def upgrade(tool):
 
     # Add getInternalUse metadata
     # https://github.com/senaite/senaite.core/pull/1391
-    catalog = api.get_tool(CATALOG_ANALYSIS_REQUEST_LISTING)
-    catalog.addColumn("getInternalUse")
+    add_metadata(portal, CATALOG_ANALYSIS_REQUEST_LISTING, "getInternalUse")
 
     # Reindex getWorksheetUID from analysis catalog to ensure all analyses are
     # visible in Worksheet view
@@ -366,6 +365,20 @@ def del_index(portal, catalog_id, index_name):
     catalog.delIndex(index_name)
     logger.info("Removing old index '{}' ...".format(index_name))
 
+
+def add_metadata(portal, catalog_id, column, refresh_catalog=False):
+    logger.info("Adding '{}' metadata to '{}' ...".format(column, catalog_id))
+    catalog = api.get_tool(catalog_id)
+    if column in catalog.schema():
+        logger.info("Metadata '{}' already in catalog '{}' [SKIP]"
+                    .format(column, catalog_id))
+        return
+    catalog.addColumn(column)
+
+    if refresh_catalog:
+        logger.info("Refreshing catalog '{}' ...".format(catalog_id))
+        handler = ZLogHandler(steps=100)
+        catalog.refreshCatalog(pghandler=handler)
 
 def del_metadata(portal, catalog_id, column, refresh_catalog=False):
     logger.info("Removing '{}' metadata from '{}' ..."
