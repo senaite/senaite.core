@@ -736,6 +736,7 @@ class AnalysesView(BikaListingView):
         item["Result"] = result
         item["CaptureDate"] = capture_date_str
         item["result_captured"] = capture_date_str
+        item["string_result"] = False
 
         # Edit mode enabled of this Analysis
         if self.is_analysis_edition_allowed(analysis_brain):
@@ -754,6 +755,10 @@ class AnalysesView(BikaListingView):
                 # By default set empty as the default selected choice
                 choices.insert(0, dict(ResultValue="", ResultText=""))
                 item["choices"]["Result"] = choices
+            else:
+                # If not choices, set whether the result must be floatable
+                obj = self.get_object(analysis_brain)
+                item["string_result"] = obj.getStringResult()
 
         if not result:
             return

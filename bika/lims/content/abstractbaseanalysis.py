@@ -593,6 +593,19 @@ ResultOptions = RecordsField(
     )
 )
 
+# Allow/disallow the capture of text as the result of the analysis
+StringResult = BooleanField(
+    "StringResult",
+    schemata="Analysis",
+    default=False,
+    widget=BooleanWidget(
+        label=_("String result"),
+        description=_(
+            "Enable this option to allow the capture of text as result"
+        )
+    )
+)
+
 # If the service is meant for providing an interim result to another analysis,
 # or if the result is only used for internal processes, then it can be hidden
 # from the client in the final report (and in manage_results view)
@@ -715,7 +728,8 @@ schema = BikaSchema.copy() + Schema((
     Hidden,
     SelfVerification,
     NumberOfRequiredVerifications,
-    Remarks
+    Remarks,
+    StringResult,
 ))
 
 schema['id'].widget.visible = False
