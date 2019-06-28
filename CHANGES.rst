@@ -31,6 +31,7 @@ Changelog
 
 **Fixed**
 
+- #1404 Avoid conflict errors during email publication
 - #1403 Also consider the detached states as cancellable
 - #1397 Fix Worksheet does not show the contained analyses
 - #1395 Make Action Handler Pool Thread-Safe

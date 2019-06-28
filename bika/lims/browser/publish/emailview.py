@@ -31,15 +31,16 @@ from email.Utils import formataddr
 from smtplib import SMTPException
 from string import Template
 
+import transaction
+from bika.lims import _
+from bika.lims import api
 from bika.lims import logger
+from bika.lims.decorators import returns_json
 from bika.lims.utils import to_utf8
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from bika.lims import api
-from bika.lims import _
-from bika.lims.decorators import returns_json
 from ZODB.POSException import POSKeyError
 from zope.interface import implements
 from zope.publisher.interfaces import IPublishTraverse
@@ -185,6 +186,10 @@ class EmailView(BrowserView):
                 success = self.send_email(
                     recipients, subject, body, attachments=attachments)
 
+                # make a savepoint to avoid multiple email send
+                # http://www.zodb.org/en/latest/reference/transaction.html
+                transaction.savepoint(optimistic=True)
+
             if success:
                 # selected name, email pairs which received the email
                 pairs = map(self.parse_email, recipients)
@@ -269,6 +274,9 @@ class EmailView(BrowserView):
     def publish(self, ar):
         """Set status to prepublished/published/republished
         """
+        # Manually update the view on the database to avoid conflict errors
+        ar.getClient()._p_jar.sync()
+
         wf = api.get_tool("portal_workflow")
         status = wf.getInfoFor(ar, "review_state")
         transitions = {"verified": "publish",
@@ -277,6 +285,8 @@ class EmailView(BrowserView):
         logger.info("AR Transition: {} -> {}".format(status, transition))
         try:
             wf.doActionFor(ar, transition)
+            # Commit the changes
+            transaction.commit()
             return True
         except WorkflowException as e:
             logger.debug(e)
