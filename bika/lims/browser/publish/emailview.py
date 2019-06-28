@@ -32,15 +32,15 @@ from smtplib import SMTPException
 from string import Template
 
 import transaction
+from bika.lims import _
+from bika.lims import api
 from bika.lims import logger
+from bika.lims.decorators import returns_json
 from bika.lims.utils import to_utf8
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from bika.lims import api
-from bika.lims import _
-from bika.lims.decorators import returns_json
 from ZODB.POSException import POSKeyError
 from zope.interface import implements
 from zope.publisher.interfaces import IPublishTraverse
