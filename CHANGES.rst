@@ -31,6 +31,7 @@ Changelog
 
 **Fixed**
 
+- #1403 Also consider the detached states as cancellable
 - #1397 Fix Worksheet does not show the contained analyses
 - #1395 Make Action Handler Pool Thread-Safe
 - #1389 Analysts and Labclerks cannot create worksheets
