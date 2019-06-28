@@ -186,6 +186,9 @@ class EmailView(BrowserView):
                 success = self.send_email(
                     recipients, subject, body, attachments=attachments)
 
+                # make a savepoint to avoid multiple email send
+                transaction.savepoint(optimistic=True)
+
             if success:
                 # selected name, email pairs which received the email
                 pairs = map(self.parse_email, recipients)
