@@ -182,6 +182,10 @@ def guard_cancel(analysis_request):
     # no need to look through analyses from partitions again, but through the
     # analyses directly bound to the current Analysis Request.
     cancellable_states = ["unassigned", "registered"]
+
+    # also consider the detached states as cancellable
+    cancellable_states += ANALYSIS_DETACHED_STATES
+
     for analysis in analysis_request.objectValues("Analysis"):
         if api.get_workflow_status_of(analysis) not in cancellable_states:
             return False
