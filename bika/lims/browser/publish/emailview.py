@@ -187,6 +187,7 @@ class EmailView(BrowserView):
                     recipients, subject, body, attachments=attachments)
 
                 # make a savepoint to avoid multiple email send
+                # http://www.zodb.org/en/latest/reference/transaction.html
                 transaction.savepoint(optimistic=True)
 
             if success:
