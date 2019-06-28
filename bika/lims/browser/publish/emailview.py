@@ -31,6 +31,7 @@ from email.Utils import formataddr
 from smtplib import SMTPException
 from string import Template
 
+import transaction
 from bika.lims import logger
 from bika.lims.utils import to_utf8
 from Products.CMFCore.WorkflowCore import WorkflowException
@@ -269,6 +270,9 @@ class EmailView(BrowserView):
     def publish(self, ar):
         """Set status to prepublished/published/republished
         """
+        # Manually update the view on the database to avoid conflict errors
+        ar.getClient()._p_jar.sync()
+
         wf = api.get_tool("portal_workflow")
         status = wf.getInfoFor(ar, "review_state")
         transitions = {"verified": "publish",
@@ -277,6 +281,8 @@ class EmailView(BrowserView):
         logger.info("AR Transition: {} -> {}".format(status, transition))
         try:
             wf.doActionFor(ar, transition)
+            # Commit the changes
+            transaction.commit()
             return True
         except WorkflowException as e:
             logger.debug(e)
