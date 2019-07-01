@@ -24,6 +24,7 @@ from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.content.analysisspec import ResultsRangeDict
+from bika.lims.interfaces import ISubmitted
 from bika.lims.utils import dicts_to_dict
 from bika.lims.utils import get_image
 from bika.lims.utils import get_link
@@ -210,9 +211,8 @@ class AnalysisRequestAnalysesView(BikaListingView):
             analysis = self.analyses[uid]
             # Might differ from the service keyword
             keyword = analysis.getKeyword()
-            # Mark the row as disabled if the analysis is not in an open state
-            item["disabled"] = not any([analysis.isOpen(),
-                                        analysis.isRegistered()])
+            # Mark the row as disabled if the analysis has been submitted
+            item["disabled"] = ISubmitted.providedBy(analysis)
             # get the hidden status of the analysis
             hidden = analysis.getHidden()
             # get the price of the analysis

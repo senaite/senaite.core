@@ -26,7 +26,7 @@ from bika.lims import api
 from bika.lims import logger
 from bika.lims.api.security import check_permission
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
-from bika.lims.interfaces import IAnalysis
+from bika.lims.interfaces import IAnalysis, ISubmitted
 from bika.lims.interfaces import IAnalysisService
 from bika.lims.interfaces import IARAnalysesField
 from bika.lims.permissions import AddAnalysis
@@ -105,18 +105,14 @@ class ARAnalysesField(ObjectField):
         # Current assigned analyses
         analyses = instance.objectValues("Analysis")
 
-        # Analyses which are in a non-open state must be retained, except those
-        # that are in a registered state (the sample has not been received)
-        non_open_analyses = filter(lambda an: not an.isOpen(), analyses)
-        non_open_analyses = filter(
-            lambda an: api.get_workflow_status_of(an) != "registered",
-            non_open_analyses)
+        # Submitted analyses must be retained
+        submitted = filter(lambda an: ISubmitted.providedBy(an), analyses)
 
         # Prevent removing all analyses
         #
-        # N.B.: Non-open analyses are rendered disabled in the HTML form.
+        # N.B.: Submitted analyses are rendered disabled in the HTML form.
         #       Therefore, their UIDs are not included in the submitted UIDs.
-        if not items and not non_open_analyses:
+        if not items and not submitted:
             logger.warn("Not allowed to remove all Analyses from AR.")
             return new_analyses
 
@@ -198,7 +194,7 @@ class ARAnalysesField(ObjectField):
                 continue
 
             # Skip non-open Analyses
-            if analysis in non_open_analyses:
+            if analysis in submitted:
                 continue
 
             # Remember assigned attachments
