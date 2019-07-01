@@ -51,6 +51,7 @@ from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.interfaces import IAnalysisRequestPartition
 from bika.lims.interfaces import ICancellable
+from bika.lims.interfaces import ISubmitted
 from bika.lims.permissions import FieldEditBatch
 from bika.lims.permissions import FieldEditClient
 from bika.lims.permissions import FieldEditClientOrderNumber
@@ -2287,7 +2288,7 @@ class AnalysisRequest(BaseFolder):
         submitted yet (are in a open status)
         """
         for analysis in self.getAnalyses():
-            if not api.get_object(analysis).isOpen():
+            if not ISubmitted.providedBy(api.get_object(analysis)):
                 return False
         return True
 
