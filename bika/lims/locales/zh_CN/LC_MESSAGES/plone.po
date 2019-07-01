@@ -145,7 +145,7 @@ msgstr "附件"
 
 #: bika/lims/profiles/default/actions.xml
 msgid "Audit Log"
-msgstr ""
+msgstr "审核日志"
 
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "Auto-Import Logs"
@@ -844,10 +844,10 @@ msgid "label_schema_Analyses"
 msgstr "分析"
 
 msgid "label_schema_Analysis Templates"
-msgstr ""
+msgstr "分析模板"
 
 msgid "label_schema_Appearance"
-msgstr ""
+msgstr "外观"
 
 msgid "label_schema_Bank details"
 msgstr "银行详情"
@@ -883,7 +883,7 @@ msgid "label_schema_Method"
 msgstr "方法/原理"
 
 msgid "label_schema_Notifications"
-msgstr ""
+msgstr "通知"
 
 msgid "label_schema_Preferences"
 msgstr "个人喜好"
@@ -895,7 +895,7 @@ msgid "label_schema_Reference Values"
 msgstr "参考值"
 
 msgid "label_schema_Reflex Rule Folder"
-msgstr ""
+msgstr "反射规则文件夹"
 
 msgid "label_schema_Result Options"
 msgstr "结果选项"
@@ -913,14 +913,14 @@ msgid "label_schema_Sample Templates"
 msgstr "采样模板"
 
 msgid "label_schema_Sampling"
-msgstr ""
+msgstr "采样"
 
 # Setup Schemata
 msgid "label_schema_Security"
 msgstr "安全"
 
 msgid "label_schema_Sticker"
-msgstr ""
+msgstr "贴纸"
 
 msgid "label_schema_Uncertainties"
 msgstr "不确定性"

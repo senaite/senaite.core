@@ -663,7 +663,7 @@ msgstr "多个附件"
 #: bika/lims/profiles/default/actions.xml
 #: bika/lims/profiles/default/types/AuditLog.xml
 msgid "Audit Log"
-msgstr ""
+msgstr "审核日志"
 
 #: bika/lims/browser/analysisrequest/templates/analysisrequest_retract_pdf.pt:145
 msgid "Authorized by"
@@ -815,7 +815,7 @@ msgstr "通过 选中/取消选中 该复选框，用户能够给部门分配“
 
 #: bika/lims/content/analysisrequest.py:339
 msgid "CBID"
-msgstr ""
+msgstr "CB ID"
 
 #: bika/lims/content/analysisrequest.py:177
 msgid "CC Contacts"
@@ -956,7 +956,7 @@ msgstr "证书编码"
 #: bika/lims/browser/auditlog.py:77
 #: bika/lims/controlpanel/auditlog.py:100
 msgid "Changes"
-msgstr ""
+msgstr "变更"
 
 #: bika/lims/browser/analysisrequest/resultsinterpretation.py:57
 msgid "Changes Saved"
@@ -1010,7 +1010,7 @@ msgstr "典型的"
 
 # senaite.core.listing: ButtonBar
 msgid "Clear selection"
-msgstr ""
+msgstr "清除选择"
 
 #: bika/lims/content/referencedefinition.py:46
 msgid "Click on Analysis Categories (against shaded backgroundto see Analysis Services in each category. Enter minimum and maximum values to indicate a valid results range. Any result outside this range will raise an alert. The % Error field allows for an % uncertainty to be considered when evaluating results against minimum and maximum values. A result out of range but still in range if the % error is taken into consideration, will raise a less severe alert."
@@ -1393,7 +1393,7 @@ msgstr "载入日期"
 #: bika/lims/browser/auditlog.py:63
 #: bika/lims/controlpanel/auditlog.py:73
 msgid "Date Modified"
-msgstr ""
+msgstr "修改日期"
 
 #: bika/lims/browser/referencesample.py:426
 #: bika/lims/browser/templates/referencesample_sticker.pt:71
@@ -2124,7 +2124,7 @@ msgstr "公式"
 
 #: bika/lims/config.py:111
 msgid "Friday"
-msgstr ""
+msgstr "星期五"
 
 #: bika/lims/browser/dashboard/templates/dashboard.pt:551
 #: bika/lims/browser/publish/templates/email.pt:50
@@ -2149,7 +2149,7 @@ msgstr "全名"
 #: bika/lims/browser/auditlog.py:67
 #: bika/lims/controlpanel/auditlog.py:81
 msgid "Fullname"
-msgstr ""
+msgstr "全民"
 
 #: bika/lims/content/calculation.py:87
 msgid "Function"
@@ -2245,7 +2245,7 @@ msgstr "Id服务器不可用"
 
 #: bika/lims/browser/idserver/templates/numbergenerator.pt:53
 msgid "ID Template"
-msgstr ""
+msgstr "ID 模板"
 
 #: bika/lims/adapters/identifiers.py:56
 msgid "Identifier"
@@ -2733,7 +2733,7 @@ msgstr "实验室认证"
 
 #: bika/lims/content/bikasetup.py:557
 msgid "Laboratory Workdays"
-msgstr ""
+msgstr "实验室工作日"
 
 #: bika/lims/content/bikasetup.py:486
 msgid "Landing Page"
@@ -3135,7 +3135,7 @@ msgstr "模块/组件"
 
 #: bika/lims/config.py:107
 msgid "Monday"
-msgstr ""
+msgstr "星期一"
 
 #: bika/lims/browser/dashboard/templates/dashboard.pt:560
 msgid "Monthly"
@@ -3472,7 +3472,7 @@ msgstr "只有实验室经理可以建立和管理工作表"
 
 #: bika/lims/content/bikasetup.py:558
 msgid "Only laboratory workdays are considered for the analysis turnaround time calculation. "
-msgstr ""
+msgstr "对于分析周转时间计算，仅考虑实验室工作日。"
 
 #: bika/lims/browser/worksheet/templates/results.pt:194
 msgid "Only to empty or zero fields"
@@ -4144,7 +4144,7 @@ msgstr "维护过程需要考虑的备注"
 #: bika/lims/browser/auditlog.py:71
 #: bika/lims/controlpanel/auditlog.py:89
 msgid "Remote IP"
-msgstr ""
+msgstr "远程IP"
 
 #: bika/lims/profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml
 #: bika/lims/profiles/default/workflows/bika_referenceanalysis_workflow/definition.xml
@@ -4274,7 +4274,7 @@ msgstr "重新设置"
 
 #: bika/lims/browser/idserver/templates/numbergenerator.pt:69
 msgid "Reset Numbers"
-msgstr ""
+msgstr "重置号码"
 
 #: bika/lims/browser/publish/templates/email.pt:89
 msgid "Responsibles"
@@ -4381,7 +4381,7 @@ msgstr "评论者"
 #: bika/lims/browser/auditlog.py:69
 #: bika/lims/controlpanel/auditlog.py:85
 msgid "Roles"
-msgstr ""
+msgstr "角色"
 
 #: bika/lims/profiles/default/workflows/bika_ar_workflow/definition.xml
 #: bika/lims/profiles/default/workflows/bika_worksheet_workflow/definition.xml
@@ -4713,7 +4713,7 @@ msgstr "抽样计划"
 
 #: bika/lims/config.py:112
 msgid "Saturday"
-msgstr ""
+msgstr "星期六"
 
 #: bika/lims/browser/analysisrequest/manage_analyses.py:115
 #: bika/lims/browser/analysisrequest/templates/ar_add2.pt:601
@@ -5148,7 +5148,7 @@ msgstr "子项总计"
 
 #: bika/lims/config.py:113
 msgid "Sunday"
-msgstr ""
+msgstr "星期天"
 
 #: bika/lims/content/laboratory.py:78
 msgid "Supervisor"
@@ -5632,7 +5632,7 @@ msgstr "这是二次样本归属于"
 
 #: bika/lims/content/bikasetup.py:570
 msgid "This is the default maximum time allowed for performing analyses.  It is only used for analyses where the analysis service does not specify a turnaround time. Only laboratory workdays are considered."
-msgstr ""
+msgstr "这是执行分析所允许的默认最长时间。它仅用于分析服务未指定周转时间的分析。只考虑实验室工作日。"
 
 #: bika/lims/content/abstractbaseanalysis.py:318
 msgid "This is the instrument that is assigned to  tests from this type of analysis in manage results view. The method associated to this instrument will be assigned as the default method too.Note the instrument's method will prevail over any of the methods choosen if the 'Instrument assignment is not required' option is enabled."
@@ -5660,7 +5660,7 @@ msgstr "此工作表已被拒绝。替换工作表为${ws_id}"
 
 #: bika/lims/config.py:110
 msgid "Thursday"
-msgstr ""
+msgstr "星期四"
 
 #: bika/lims/browser/resultsimport/autoimportlogs.py:47
 msgid "Time"
@@ -5775,7 +5775,7 @@ msgstr "置换"
 
 #: bika/lims/config.py:108
 msgid "Tuesday"
-msgstr ""
+msgstr "星期二"
 
 #: bika/lims/content/bikasetup.py:537
 msgid "Turn this on if you want to work with sample partitions"
@@ -6203,7 +6203,7 @@ msgstr "网站"
 
 #: bika/lims/config.py:109
 msgid "Wednesday"
-msgstr ""
+msgstr "星期三"
 
 #: bika/lims/browser/dashboard/templates/dashboard.pt:559
 msgid "Weekly"
@@ -6242,7 +6242,7 @@ msgstr "工作流"
 #: bika/lims/browser/auditlog.py:75
 #: bika/lims/controlpanel/auditlog.py:96
 msgid "Workflow State"
-msgstr ""
+msgstr "工作流状态"
 
 #: bika/lims/browser/analyses/qc.py:43
 #: bika/lims/browser/referencesample.py:155
@@ -6327,7 +6327,7 @@ msgstr "每天"
 #. ${b} ${d}, ${Y} ${I}:${M} ${p}
 #: ./TranslationServiceTool.py
 msgid "date_format_long"
-msgstr "长日期格式"
+msgstr "长日期"
 
 #. Default: "${Y}-${m}-${d}"
 #. The variables used here are the same as used in the strftime formating.
@@ -6338,14 +6338,14 @@ msgstr "长日期格式"
 #. ${b} ${d}, ${Y}
 #: ./TranslationServiceTool.py
 msgid "date_format_short"
-msgstr "短日期格式"
+msgstr "短日期"
 
 #. Date format used with the datepicker jqueryui plugin.
 #. Please only use 'dd', 'mm', 'yy', '-', '/', '.' in this string.
 #. Default: "mm/dd/yy"
 #, fuzzy
 msgid "date_format_short_datepicker"
-msgstr "短格式日期选择器"
+msgstr "短日期选择器"
 
 #: bika/lims/controlpanel/bika_analysisservices.py:326
 msgid "days"
@@ -6370,12 +6370,12 @@ msgstr "在"
 #. Default: "Add to the following groups:"
 #: bika/lims/browser/templates/login_details.pt:266
 msgid "label_add_to_groups"
-msgstr "标签_添加到组"
+msgstr "增加标签到组"
 
 #. Default: "Specification"
 #: bika/lims/browser/reports/selection_macros/select_analysisspecification.pt:3
 msgid "label_specification"
-msgstr "标签_规格"
+msgstr "规范"
 
 #: bika/lims/controlpanel/bika_analysisservices.py:326
 msgid "minutes"
@@ -6418,14 +6418,14 @@ msgstr "回合中定义的采样点总数。"
 #. ${I}:${M} ${p}
 #: ./TranslationServiceTool.py
 msgid "time_format"
-msgstr "时间_格式"
+msgstr "时间格式"
 
 #. Default: "Required"
 #: bika/lims/browser/analysisrequest/templates/ar_add2.pt:310
 #: bika/lims/browser/analysisrequest/templates/ar_add_manage.pt:89
 #: bika/lims/browser/templates/header_table.pt:37
 msgid "title_required"
-msgstr "标题是必填字段"
+msgstr "必填"
 
 #: bika/lims/browser/dashboard/templates/dashboard.pt:553
 #: bika/lims/browser/reports/selection_macros/select_daterange.pt:28

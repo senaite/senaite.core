@@ -14,7 +14,7 @@ contributions descending.
 - Anneline Sweetname, anneline@bikalabs.com
 - Juan Gallostra, juangallostra@users.noreply.github.com
 - Godfrey Leibbrandt, godfrey@bikalabs.com
-- Mike Metcalfe, mike@metcalfe.co.za
+- Mike Metcalfe, mike@webtide.co.za
 - Jurie-Jan Botha, juriejanbotha@gmail.com
 - Lunga Baliwe, lunga001@gmail.com
 - Inus Scheepers, inus@bikalabs.com
@@ -33,6 +33,7 @@ contributions descending.
 - krishan Chopra, krishanchopra61@yahoo.in
 - jpsinghgoud, jaipal.singh@research.iiit.ac.in
 - Stefan Gruber, s.gruber@liscon.de
+- Siyamalan, 20146320+siyamalan@users.noreply.github.com
 - Aleksandr Melnikov, aleksandr.melnikov@limelyte.com
 - Henrique Chehad, hchehad@gmail.com
 - goelakash, goelakash93@gmail.com
@@ -50,6 +51,7 @@ Translators
 - Jordi Puiggené, jpuiggene@naralabs.com, Catalan (ca)
 - Campbell McKellar-Basset, campbell@bikalabs.com, Catalan (ca)
 - Tomáš Ocelka, tomas.ocelka@ehss.eu, Czech (cs)
+- Jiří Podhorecký, j.podhorecky@volny.cz, Czech (cs)
 - majak, majak@mailme.dk, Danish (Denmark) (da_DK)
 - Harry  Falk, harrymfalk@gmail.com, German (de)
 - kare, katharina.hubig@web.de, German (de)
@@ -57,7 +59,9 @@ Translators
 - Stefan Gruber, st.gruber@t-online.de, German (de)
 - Mabuse, mabuse@byom.de, German (de)
 - mkandler, kandler.m@bartelt.at, German (de)
+- Marc Jedrzejas, marc.jedr@gmail.com, German (de)
 - Ramon Bartl, rb@ridingbytes.com, German (de)
+- Stefan Gruber, s.gruber@liscon.de, German (de)
 - cistrans, limstranslate@gmail.com, Greek (el)
 - limsgr, inactive+limsgr@transifex.com, Greek (el)
 - Mike Metcalfe, mike@webtide.co.za, English (United States) (en_US)
@@ -124,6 +128,7 @@ Translators
 - Pavel Shuper, shuper@bionixlab.com, Russian (ru)
 - Михаил Стручалин, m.struchalin@gmail.com, Russian (ru)
 - nchrom, nchrom@gmail.com, Russian (ru)
+- alex r, aa989190f363e46d@googlemail.com, Russian (ru)
 - Burak ÇAM, burakcam@akdeniz.edu.tr, Turkish (Turkey) (tr_TR)
 - tekbaspinar, tekbaspinar@gmail.com, Turkish (Turkey) (tr_TR)
 - Yildiz Oezkan, perry@wysiwyg.ch, Turkish (Turkey) (tr_TR)
@@ -139,6 +144,7 @@ Translators
 - Cheng Jin, 17067405@qq.com, Chinese (China) (zh_CN)
 - Inus Scheepers, inus@animatica.co.za, Chinese (China) (zh_CN)
 - prosper wang, prosperwang@163.com, Chinese (China) (zh_CN)
+- 道, liangyuandong.1990@aliyun.com, Chinese (China) (zh_CN)
 - Rui Tang, bio.nanoparticle@gmail.com, Chinese (Taiwan) (zh_TW)
 - Matthew Tsui, mtsui@app2one.com, Chinese (Taiwan) (zh_TW)
 - Liz Sung, lesliesong@gmail.com, Chinese (Taiwan) (zh_TW)
