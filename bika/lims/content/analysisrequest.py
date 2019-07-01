@@ -2288,7 +2288,7 @@ class AnalysisRequest(BaseFolder):
         submitted yet (are in a open status)
         """
         for analysis in self.getAnalyses():
-            if not ISubmitted.providedBy(api.get_object(analysis)):
+            if ISubmitted.providedBy(api.get_object(analysis)):
                 return False
         return True
 
