@@ -1,6 +1,31 @@
 Release notes
 =============
 
+Update from 1.3.0 to 1.3.1
+--------------------------
+
+**IMPORTANT: Plan the upgrade with enough time**
+
+This update might take long depending on the number of objects registered in
+the system:
+
+- Stale Sample and Partition objects have been removed from ZODB
+  https://github.com/senaite/senaite.core/pull/1351
+
+- Full Audit log has been added to Senaite
+  https://github.com/senaite/senaite.core/pull/1324
+
+If you have your own add-on, please review the changes to check beforehand
+if some parts of your add-on require modifications. Worth to mention that the
+following tips are strongly recommended before proceeding with the upgrade:
+
+- Do a zeopack
+- Do a backup of both your code and database
+- Try to have as much analyses in verified/published statuses as possible
+- Stop unnecessary applications and services that may consume RAM
+- Start with a clean log file
+
+
 Update from 1.2.9 to 1.3.0
 --------------------------
 
