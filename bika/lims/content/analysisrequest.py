@@ -2283,8 +2283,8 @@ class AnalysisRequest(BaseFolder):
         return self.getSamplingWorkflowEnabled()
 
     def isOpen(self):
-        """Returns whether all analyses from this Analysis Request are open
-        (their status is either "assigned" or "unassigned")
+        """Returns whether all analyses from this Analysis Request haven't been
+        submitted yet (are in a open status)
         """
         for analysis in self.getAnalyses():
             if not api.get_object(analysis).isOpen():

@@ -29,7 +29,7 @@ from bika.lims.browser.widgets.referencewidget import ReferenceWidget
 from bika.lims.config import ATTACHMENT_OPTIONS
 from bika.lims.config import SERVICE_POINT_OF_CAPTURE
 from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.interfaces import IBaseAnalysis
+from bika.lims.interfaces import IBaseAnalysis, ISubmitted
 from bika.lims.permissions import FieldEditAnalysisHidden
 from bika.lims.permissions import FieldEditAnalysisRemarks
 from bika.lims.permissions import FieldEditAnalysisResult
@@ -1045,7 +1045,7 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
 
         return: True if the WF state is either "assigned" or "unassigned"
         """
-        return api.get_workflow_status_of(self) in ["assigned", "unassigned"]
+        return not ISubmitted.providedBy(self)
 
     @security.public
     def isRegistered(self):

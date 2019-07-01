@@ -105,12 +105,8 @@ class ARAnalysesField(ObjectField):
         # Current assigned analyses
         analyses = instance.objectValues("Analysis")
 
-        # Analyses which are in a non-open state must be retained, except those
-        # that are in a registered state (the sample has not been received)
+        # Submitted analyses (non-open) must be retained
         non_open_analyses = filter(lambda an: not an.isOpen(), analyses)
-        non_open_analyses = filter(
-            lambda an: api.get_workflow_status_of(an) != "registered",
-            non_open_analyses)
 
         # Prevent removing all analyses
         #

@@ -210,9 +210,8 @@ class AnalysisRequestAnalysesView(BikaListingView):
             analysis = self.analyses[uid]
             # Might differ from the service keyword
             keyword = analysis.getKeyword()
-            # Mark the row as disabled if the analysis is not in an open state
-            item["disabled"] = not any([analysis.isOpen(),
-                                        analysis.isRegistered()])
+            # Mark the row as disabled if the analysis has been submitted
+            item["disabled"] = not analysis.isOpen()
             # get the hidden status of the analysis
             hidden = analysis.getHidden()
             # get the price of the analysis
