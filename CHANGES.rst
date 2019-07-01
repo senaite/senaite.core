@@ -1,6 +1,25 @@
 Changelog
 =========
 
+1.3.2 (unreleased)
+------------------
+
+**Added**
+
+
+**Changed**
+
+
+**Removed**
+
+
+**Fixed**
+
+
+**Security**
+
+
+
 1.3.1 (2019-07-01)
 ------------------
 
@@ -51,9 +70,6 @@ Changelog
 - #1356 Fixed selection on Analysis Spec on AR
 - #1353 Fixed saving of PublicationSpecification on AR
 - #1376 Fixed ft120.py to properly import winescan ft120 CSV files
-
-
-**Security**
 
 
 1.3.0 (2019-03-30)
