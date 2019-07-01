@@ -1046,11 +1046,3 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
         return: True if the WF state is either "assigned" or "unassigned"
         """
         return not ISubmitted.providedBy(self)
-
-    @security.public
-    def isRegistered(self):
-        """Checks if the Analysis is in "registered" state
-
-        return: True if the WF state is "registered"
-        """
-        return api.get_workflow_status_of(self) in ["registered"]
