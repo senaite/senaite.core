@@ -1,7 +1,10 @@
 API for sending emails
 ======================
 
-The mailman API provides a simple interface to send emails in SENAITE
+The mail API provides a simple interface to send emails in SENAITE.
+
+NOTE: The API is called `mail` to avoid import conflicts with the Python `email`
+      standard library.
 
 Running this test from the buildout directory::
 
