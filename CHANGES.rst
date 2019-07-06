@@ -6,6 +6,8 @@ Changelog
 
 **Added**
 
+- #1410 Email API
+
 
 **Changed**
 
