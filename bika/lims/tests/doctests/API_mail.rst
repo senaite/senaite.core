@@ -215,5 +215,3 @@ This function composes a new MIME message:
     5/sfV5M/kISv300AAAAASUVORK5CYII=
     ...
     <BLANKLINE>
-
-    >>> import pdb; pdb.set_trace()
