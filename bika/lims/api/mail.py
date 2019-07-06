@@ -60,7 +60,7 @@ def to_email_subject(subject):
 
 
 def to_email_body_text(body, **kw):
-    """Convert the given body template to a text/* type MIME document
+    """Convert the given body template to a text/plain type MIME document
 
     :param body: The email body text or template
     :type body: basestring
@@ -81,7 +81,7 @@ def to_email_attachment(file_or_path, filename="", **kw):
     :type file_or_path: str, FileIO, MIMEBase
     :param filename: Filename to use
     :type filedata: str
-    :returns: MIMEBase
+    :returns: MIME Attachment
     """
     filedata = ""
     maintype = "application"
@@ -101,7 +101,7 @@ def to_email_attachment(file_or_path, filename="", **kw):
             # read the filedata from the filepath
             filedata = f.read()
 
-    # file MIME-type
+    # Set MIME type from keyword arguments or guess it from the filename
     mime_type = kw.pop("mime_type", None) or mimetypes.guess_type(filename)[0]
     if mime_type is not None:
         maintype, subtype = mime_type.split("/")
@@ -133,9 +133,9 @@ def is_valid_email_address(address):
 
 
 def parse_email_address(address):
-    """Parse a given email address
+    """Parse a given name/email pair
 
-    :param address: The address string to parse
+    :param address: The name/email string to parse
     :type address: basestring
     :returns: RFC 2822 email address
     """
@@ -197,7 +197,7 @@ def send_email(email, immediate=True):
     :returns: True if the email delivery was successful
     """
     if not isinstance(email, (basestring, Message)):
-        raise TypeError("Email must be an instance of MIMEBase or a string")
+        raise TypeError("Email must be a Message or basestring")
 
     try:
         mailhost = api.get_tool("MailHost")
