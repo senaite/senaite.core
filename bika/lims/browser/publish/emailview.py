@@ -20,7 +20,6 @@
 
 import inspect
 import mimetypes
-import socket
 from collections import OrderedDict
 from email import encoders
 from email.header import Header
@@ -28,13 +27,13 @@ from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.Utils import formataddr
-from smtplib import SMTPException
 from string import Template
 
 import transaction
 from bika.lims import _
 from bika.lims import api
 from bika.lims import logger
+from bika.lims.api import mail as mailapi
 from bika.lims.decorators import returns_json
 from bika.lims.utils import to_utf8
 from plone.memoize import view
@@ -382,27 +381,12 @@ class EmailView(BrowserView):
             # N.B. we use just the email here to prevent this Postfix Error:
             # Recipient address rejected: User unknown in local recipient table
             mime_msg["To"] = pair[1]
-            msg_string = mime_msg.as_string()
-            sent = self.send(msg_string)
+            sent = mailapi.send_email(mime_msg)
             if not sent:
                 logger.error("Could not send email to {}".format(pair))
             success.append(sent)
 
         if not all(success):
-            return False
-        return True
-
-    def send(self, msg_string, immediate=True):
-        """Send the email via the MailHost tool
-        """
-        try:
-            mailhost = api.get_tool("MailHost")
-            mailhost.send(msg_string, immediate=immediate)
-        except SMTPException as e:
-            logger.error(e)
-            return False
-        except socket.error as e:
-            logger.error(e)
             return False
         return True
 
