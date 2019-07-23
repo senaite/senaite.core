@@ -65,6 +65,8 @@ class EmailView(BrowserView):
         request.set("disable_border", True)
         # list of requested subpaths
         self.traverse_subpath = []
+        # toggle to allow email sending
+        self.allow_send = True
 
     def __call__(self):
         # handle subpath request
@@ -256,10 +258,6 @@ class EmailView(BrowserView):
         reports = self.get_reports()
         attachments = self.get_attachments()
         return self.get_total_size(reports, attachments)
-
-    @property
-    def allow_send(self):
-        return True
 
     @property
     def email_subject(self):
