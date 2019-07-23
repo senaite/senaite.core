@@ -132,7 +132,9 @@ class EmailView(BrowserView):
         cancel = form.get("cancel", False)
 
         if submitted and send:
-            logger.info("*** SENDING EMAIL ***")
+            logger.info("*** PUBLISH & SEND REPORTS ***")
+            # Publish all samples
+            self.publish_samples()
 
             # Parse used defined values from the request form
             recipients = form.get("recipients", [])
@@ -197,20 +199,6 @@ class EmailView(BrowserView):
 
                 # set recipients to the reports
                 for report in reports:
-                    ar = report.getAnalysisRequest()
-                    # publish the AR
-                    self.publish(ar)
-
-                    # Publish all linked ARs of this report
-                    # N.B. `ContainedAnalysisRequests` is an extended field
-                    field = report.getField("ContainedAnalysisRequests")
-                    contained_ars = field.get(report) or []
-                    for obj in contained_ars:
-                        # skip the primary AR
-                        if obj == ar:
-                            continue
-                        self.publish(obj)
-
                     # add new recipients to the AR Report
                     new_recipients = filter(
                         lambda r: r.get("Fullname") in send_to_names,
@@ -259,6 +247,37 @@ class EmailView(BrowserView):
 
         return self.template()
 
+    def publish_samples(self):
+        """Publish all samples of the reports
+        """
+        reports = self.get_reports()
+        for report in reports:
+            samples = report.getContainedAnalysisRequests()
+            for sample in samples:
+                self.publish(sample)
+
+    def publish(self, sample):
+        """Set status to prepublished/published/republished
+        """
+        wf = api.get_tool("portal_workflow")
+        status = wf.getInfoFor(sample, "review_state")
+        transitions = {"verified": "publish",
+                       "published": "republish"}
+        transition = transitions.get(status, "prepublish")
+        logger.info("Transitioning sample {}: {} -> {}".format(
+            api.get_id(sample), status, transition))
+        try:
+            # Manually update the view on the database to avoid conflict errors
+            sample.getClient()._p_jar.sync()
+            # Perform WF transition
+            wf.doActionFor(sample, transition)
+            # Commit the changes
+            transaction.commit()
+            return True
+        except WorkflowException as e:
+            logger.error(e)
+            return False
+
     def set_report_recipients(self, report, recipients):
         """Set recipients to the reports w/o overwriting the old ones
 
@@ -270,27 +289,6 @@ class EmailView(BrowserView):
             if recipient not in to_set:
                 to_set.append(recipient)
         report.setRecipients(to_set)
-
-    def publish(self, ar):
-        """Set status to prepublished/published/republished
-        """
-        # Manually update the view on the database to avoid conflict errors
-        ar.getClient()._p_jar.sync()
-
-        wf = api.get_tool("portal_workflow")
-        status = wf.getInfoFor(ar, "review_state")
-        transitions = {"verified": "publish",
-                       "published": "republish"}
-        transition = transitions.get(status, "prepublish")
-        logger.info("AR Transition: {} -> {}".format(status, transition))
-        try:
-            wf.doActionFor(ar, transition)
-            # Commit the changes
-            transaction.commit()
-            return True
-        except WorkflowException as e:
-            logger.debug(e)
-            return False
 
     def parse_email(self, email):
         """parse an email to an unicode name, email tuple
