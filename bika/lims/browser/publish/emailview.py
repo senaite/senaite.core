@@ -58,22 +58,12 @@ class EmailView(BrowserView):
 
     def __init__(self, context, request):
         super(EmailView, self).__init__(context, request)
-        # disable Plone's editable border
-        request.set("disable_border", True)
         # remember context/request
         self.context = context
         self.request = request
-        self.url = self.context.absolute_url()
-        # the URL to redirect on cancel or after send
-        self.exit_url = "{}/{}".format(self.url, "reports_listing")
-        # we need to transform the title to unicode, so that we can use it for
-        self.client_name = safe_unicode(self.context.Title())
-        self.email_body = self.context.translate(_(self.email_template(self)))
-        # string interpolation later
-        # N.B. We need to translate the raw string before interpolation
-        subject = self.context.translate(_("Analysis Results for {}"))
-        self.email_subject = subject.format(self.client_name)
-        self.allow_send = True
+        # disable Plone's editable border
+        request.set("disable_border", True)
+        # list of requested subpaths
         self.traverse_subpath = []
 
     def __call__(self):
@@ -86,6 +76,7 @@ class EmailView(BrowserView):
     def publishTraverse(self, request, name):
         """Called before __call__ for each path name
         """
+        # append to internal subpath list
         self.traverse_subpath.append(name)
         return self
 
@@ -219,12 +210,6 @@ class EmailView(BrowserView):
             self.add_status_message(message, "info")
             return request.response.redirect(self.exit_url)
 
-        # get the selected ARReport objects
-        reports = self.get_reports()
-        attachments = self.get_attachments()
-
-        # calculate the total size of all PDFs
-        self.total_size = self.get_total_size(reports, attachments)
         if self.total_size > self.max_email_size:
             # don't allow to send oversized emails
             self.allow_send = False
@@ -232,8 +217,6 @@ class EmailView(BrowserView):
                         .format(self.max_email_size / 1024,
                                 self.total_size / 1024))
             self.add_status_message(message, "error")
-
-        # prepare the data for the template
 
         # inform the user about invalid recipients
         if not all(map(lambda r: r.get("valid"), self.recipients_data)):
@@ -258,6 +241,34 @@ class EmailView(BrowserView):
     def responsibles_data(self):
         reports = self.get_reports()
         return self.get_responsibles_data(reports)
+
+    @property
+    def client_name(self):
+        return safe_unicode(self.context.Title())
+
+    @property
+    def exit_url(self):
+        return "{}/{}".format(
+            api.get_url(self.context), "reports_listing")
+
+    @property
+    def total_size(self):
+        reports = self.get_reports()
+        attachments = self.get_attachments()
+        return self.get_total_size(reports, attachments)
+
+    @property
+    def allow_send(self):
+        return True
+
+    @property
+    def email_subject(self):
+        subject = self.context.translate(_("Analysis Results for {}"))
+        return subject.format(self.client_name)
+
+    @property
+    def email_body(self):
+        return self.context.translate(_(self.email_template(self)))
 
     def publish_samples(self):
         """Publish all samples of the reports
@@ -415,7 +426,7 @@ class EmailView(BrowserView):
         }
 
     def get_attachment_data(self, attachment):
-        """Attachments data
+        """Attachments data to be used in the template
         """
         f = attachment.getAttachmentFile()
         attachment_type = attachment.getAttachmentType()
@@ -578,6 +589,7 @@ class EmailView(BrowserView):
         unique_uids = OrderedDict().fromkeys(uids).keys()
         return map(self.get_object_by_uid, unique_uids)
 
+    @view.memoize
     def get_attachments(self):
         """Return the objects from the UIDs given in the request
         """
