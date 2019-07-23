@@ -37,6 +37,7 @@ from bika.lims import api
 from bika.lims import logger
 from bika.lims.decorators import returns_json
 from bika.lims.utils import to_utf8
+from plone.memoize import view
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser import BrowserView
@@ -234,18 +235,30 @@ class EmailView(BrowserView):
             self.add_status_message(message, "error")
 
         # prepare the data for the template
-        self.reports = map(self.get_report_data, reports)
-        self.recipients = self.get_recipients_data(reports)
-        self.responsibles = self.get_responsibles_data(reports)
 
         # inform the user about invalid recipients
-        if not all(map(lambda r: r.get("valid"), self.recipients)):
+        if not all(map(lambda r: r.get("valid"), self.recipients_data)):
             message = _(
                 "Not all contacts are equal for the selected Reports. "
                 "Please manually select recipients for this email.")
             self.add_status_message(message, "warning")
 
         return self.template()
+
+    @property
+    def reports_data(self):
+        reports = self.get_reports()
+        return map(self.get_report_data, reports)
+
+    @property
+    def recipients_data(self):
+        reports = self.get_reports()
+        return self.get_recipients_data(reports)
+
+    @property
+    def responsibles_data(self):
+        reports = self.get_reports()
+        return self.get_responsibles_data(reports)
 
     def publish_samples(self):
         """Publish all samples of the reports
@@ -568,6 +581,7 @@ class EmailView(BrowserView):
             return 0.0
         return max_size * 1024
 
+    @view.memoize
     def get_reports(self):
         """Return the objects from the UIDs given in the request
         """

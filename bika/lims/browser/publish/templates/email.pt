@@ -61,7 +61,7 @@
           </div>
           <div class="form-group">
             <label i18n:translate="" for="recipients">Recipients</label>
-            <tal:emails repeat="recipient view/recipients">
+            <tal:emails repeat="recipient view/recipients_data">
               <span tal:define="name recipient/name;
                                 email recipient/email;
                                 valid recipient/valid;
@@ -87,7 +87,7 @@
 
           <div class="form-group">
             <label i18n:translate="" for="responsibles">Responsibles</label>
-            <tal:responsibles repeat="recipient view/responsibles">
+            <tal:responsibles repeat="recipient view/responsibles_data">
               <span tal:define="name recipient/name;
                                 email recipient/email;
                                 valid recipient/valid;
@@ -130,7 +130,7 @@
           </div>
 
           <div class="form-group"
-               tal:define="attachments python:map(lambda r:r.get('attachments'), view.reports)">
+               tal:define="attachments python:map(lambda r:r.get('attachments'), view.reports_data)">
             <label i18n:translate="" for="attachments">Attachments</label>
             <button id="add-attachments"
                     tal:condition="python:any(attachments)"
@@ -138,14 +138,14 @@
             <div class="total_size discreet" i18n:translate="">
               <span id="attachment-files"
                     i18n:name="amount"
-                    tal:content="python:len(view.reports)"/>
+                    tal:content="python:len(view.reports_data)"/>
               attachments with a total size of
               <span id="email-size" i18n:name="total_size" tal:content="python:'%.2f Kb' % view.total_size"/>
             </div>
 
             <div id="report-attachments-container"
                  class="attachments well row">
-              <tal:reports repeat="report view/reports">
+              <tal:reports repeat="report view/reports_data">
                 <input type="hidden" name="uids:list" tal:attributes="value report/uid"/>
                 <div class="attachment col-xs-12 col-sm-4 col-md-3 col-lg-2">
                   <a href="#"
@@ -165,7 +165,7 @@
                  class="attachments well row"
                  tal:condition="python:any(attachments)">
               <!-- Additional Attachments -->
-              <tal:reports repeat="report view/reports">
+              <tal:reports repeat="report view/reports_data">
                 <tal:attachments repeat="attachment report/attachments">
                   <div class="attachment col-xs-12 col-sm-4 col-md-3 col-lg-2">
                     <input type="checkbox" name="attachment_uids:list" tal:attributes="value attachment/uid"/>
