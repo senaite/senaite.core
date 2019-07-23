@@ -260,6 +260,16 @@ class EmailView(BrowserView):
         return self.get_total_size(reports, attachments)
 
     @property
+    def max_email_size(self):
+        """Return the max. allowed email size in KB
+        """
+        # TODO: Refactor to customizable setup option
+        max_size = EMAIL_MAX_SIZE
+        if max_size < 0:
+            return 0.0
+        return max_size * 1024
+
+    @property
     def email_subject(self):
         subject = self.context.translate(_("Analysis Results for {}"))
         return subject.format(self.client_name)
@@ -563,16 +573,6 @@ class EmailView(BrowserView):
         # initial size of 0
         return reduce(lambda x, y: x + y,
                       map(self.get_filesize, iterate(files)), 0)
-
-    @property
-    def max_email_size(self):
-        """Return the max. allowed email size in KB
-        """
-        # TODO: Refactor to customizable setup option
-        max_size = EMAIL_MAX_SIZE
-        if max_size < 0:
-            return 0.0
-        return max_size * 1024
 
     @view.memoize
     def get_reports(self):
