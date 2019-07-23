@@ -36,6 +36,7 @@ from bika.lims import logger
 from bika.lims.api import mail as mailapi
 from bika.lims.decorators import returns_json
 from bika.lims.utils import to_utf8
+from plone import protect
 from plone.memoize import view
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFPlone.utils import safe_unicode
@@ -72,6 +73,8 @@ class EmailView(BrowserView):
         # handle subpath request
         if len(self.traverse_subpath) > 0:
             return self.handle_ajax_request()
+        # check authenticator
+        protect.CheckAuthenticator(self.request)
         # handle standard request
         return self.handle_http_request()
 
