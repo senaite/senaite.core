@@ -47,7 +47,7 @@
         <!-- Email wrapper -->
         <div class="email_wrapper">
           <div class="form-group">
-            <label i18n:translate="" for="to">From</label>
+            <label i18n:translate="" for="from_address">From</label>
             <span class="recipient valid"
                   tal:define="from_address view/email_from_address;
                               from_name view/email_from_name">
@@ -60,7 +60,7 @@
             </span>
           </div>
           <div class="form-group">
-            <label i18n:translate="" for="to">To</label>
+            <label i18n:translate="" for="recipients">Recipients</label>
             <tal:emails repeat="recipient view/recipients">
               <span tal:define="name recipient/name;
                                 email recipient/email;
