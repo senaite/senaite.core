@@ -48,6 +48,18 @@ def to_email_address(address, name=""):
     return formataddr(pair)
 
 
+def parse_email_address(address):
+    """Parse a given name/email pair
+
+    :param address: The name/email string to parse
+    :type address: basestring
+    :returns: Tuple of (name, email)
+    """
+    if not isinstance(address, basestring):
+        raise ValueError("Expected a string, got {}".format(type(address)))
+    return parseaddr(address)
+
+
 def to_email_subject(subject):
     """Convert the given subject to an email subject
 
@@ -92,9 +104,6 @@ def to_email_attachment(file_or_path, filename="", **kw):
     if isinstance(file_or_path, MIMEBase):
         # return immediately
         return file_or_path
-    # Handle string filedata
-    elif isinstance(file_or_path, basestring):
-        filedata = file_or_path
     # Handle file/StringIO
     elif isinstance(file_or_path, (file, StringIO)):
         filedata = file_or_path.read()
@@ -104,6 +113,9 @@ def to_email_attachment(file_or_path, filename="", **kw):
         with open(file_or_path, "r") as f:
             # read the filedata from the filepath
             filedata = f.read()
+    # Handle string filedata
+    elif isinstance(file_or_path, basestring):
+        filedata = file_or_path
 
     # Set MIME type from keyword arguments or guess it from the filename
     mime_type = kw.pop("mime_type", None) or mimetypes.guess_type(filename)[0]
@@ -134,18 +146,6 @@ def is_valid_email_address(address):
     if not _DOMAIN_RE.match(address):
         return False
     return True
-
-
-def parse_email_address(address):
-    """Parse a given name/email pair
-
-    :param address: The name/email string to parse
-    :type address: basestring
-    :returns: Tuple of (name, email)
-    """
-    if not isinstance(address, basestring):
-        raise ValueError("Expected a string, got {}".format(type(address)))
-    return parseaddr(address)
 
 
 def compose_email(from_addr, to_addr, subj, body, attachments=[], **kw):

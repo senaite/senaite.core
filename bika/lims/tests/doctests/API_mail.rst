@@ -155,22 +155,16 @@ This function checks if the given email address is valid:
 Parse Email Address
 -------------------
 
-This function tries to parse a recipient string to a valid email address:
-
-    >>> parse_email_address("Ramon Bartl, rb@ridingbytes.com")
-    u'Ramon Bartl <rb@ridingbytes.com>'
-
-    >>> parse_email_address("rb@ridingbytes.com, Ramon Bartl")
-    u'Ramon Bartl <rb@ridingbytes.com>'
-
-    >>> parse_email_address("Bartl,Ramón, rb@ridingbytes.com")
-    u'"Bartl,Ram\xf3n" <rb@ridingbytes.com>'
-
-    >>> parse_email_address("rb@ridingbytes.com")
-    u'rb@ridingbytes.com'
+This function parses an email address string into a (name, email) tuple:
 
     >>> parse_email_address("Ramon Bartl <rb@ridingbytes.com>")
-    u'Ramon Bartl <rb@ridingbytes.com>'
+    ('Ramon Bartl', 'rb@ridingbytes.com')
+
+    >>> parse_email_address("<rb@ridingbytes.com>")
+    ('', 'rb@ridingbytes.com')
+
+    >>> parse_email_address("rb@ridingbytes.com")
+    ('', 'rb@ridingbytes.com')
 
 
 Compose Email
