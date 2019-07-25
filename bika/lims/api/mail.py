@@ -11,6 +11,7 @@ from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.Utils import formataddr
+from email.Utils import parseaddr
 from smtplib import SMTPException
 from string import Template
 from StringIO import StringIO
@@ -91,6 +92,9 @@ def to_email_attachment(file_or_path, filename="", **kw):
     if isinstance(file_or_path, MIMEBase):
         # return immediately
         return file_or_path
+    # Handle string filedata
+    elif isinstance(file_or_path, basestring):
+        filedata = file_or_path
     # Handle file/StringIO
     elif isinstance(file_or_path, (file, StringIO)):
         filedata = file_or_path.read()
@@ -137,23 +141,11 @@ def parse_email_address(address):
 
     :param address: The name/email string to parse
     :type address: basestring
-    :returns: RFC 2822 email address
+    :returns: Tuple of (name, email)
     """
     if not isinstance(address, basestring):
         raise ValueError("Expected a string, got {}".format(type(address)))
-
-    # parse <name>, <email> recipient
-    splitted = map(lambda s: s.strip(),
-                   safe_unicode(address).rsplit(",", 1))
-
-    pair = []
-    for s in splitted:
-        if is_valid_email_address(s):
-            pair.insert(0, s)
-        else:
-            pair.append(s)
-
-    return to_email_address(*pair)
+    return parseaddr(address)
 
 
 def compose_email(from_addr, to_addr, subj, body, attachments=[], **kw):

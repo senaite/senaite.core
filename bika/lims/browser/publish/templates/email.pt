@@ -41,22 +41,18 @@
             name="send_email_form"
             method="POST">
 
-        <input type="hidden" name="submitted" value="1"/>
+        <!-- form authenticator -->
         <input tal:replace="structure context/@@authenticator/authenticator"/>
 
         <!-- Email wrapper -->
         <div class="email_wrapper">
           <div class="form-group">
-            <label i18n:translate="" for="from_address">From</label>
+            <label i18n:translate="" for="email_sender_address">From</label>
             <span class="recipient valid"
-                  tal:define="from_address view/email_from_address;
-                              from_name view/email_from_name">
-              <input type="checkbox"
-                     checked="checked"
-                     disabled="disabled"
-                     value="from_address" />
-              <span tal:attributes="title from_address"
-                    tal:content="from_name"/>
+                  tal:define="email_sender_address view/email_sender_address;
+                              email_sender_name view/email_sender_name">
+              <span tal:attributes="title email_sender_address"
+                    tal:content="email_sender_name"/>
             </span>
           </div>
           <div class="form-group">
@@ -64,12 +60,13 @@
             <tal:emails repeat="recipient view/recipients_data">
               <span tal:define="name recipient/name;
                                 email recipient/email;
+                                address recipient/address;
                                 valid recipient/valid;
                                 valid_cls python:valid and 'valid' or 'invalid';"
                     tal:attributes="class string:recipient ${valid_cls}">
                 <input type="checkbox"
                        tal:condition="email"
-                       tal:attributes="value string:${name},${email};
+                       tal:attributes="value string:${address};
                                        checked python:valid and 'checked';"
                        name="recipients:list"/>
 
@@ -90,13 +87,14 @@
             <tal:responsibles repeat="recipient view/responsibles_data">
               <span tal:define="name recipient/name;
                                 email recipient/email;
+                                address recipient/address;
                                 valid recipient/valid;
                                 valid_cls python:valid and 'valid' or 'invalid';"
                     tal:attributes="class string:recipient ${valid_cls}">
 
                 <input type="hidden"
                        tal:condition="email"
-                       tal:attributes="value string:${name},${email};"
+                       tal:attributes="value string:${address};"
                        name="responsibles:list"/>
 
                 <span tal:condition="not: email"

@@ -30,6 +30,7 @@ from bika.lims.interfaces import IARReport
 from plone.app.blob.field import BlobField
 from Products.Archetypes import atapi
 from Products.Archetypes.public import BaseFolder
+from Products.Archetypes.public import LinesField
 from Products.Archetypes.public import Schema
 from Products.Archetypes.public import TextField
 from Products.Archetypes.references import HoldingReference
@@ -78,7 +79,17 @@ schema = BikaSchema.copy() + Schema((
     ),
     RecordField(
         "Metadata",
-        multiValued=True,
+        type="metadata",
+        subfields=(
+            "paperformat",
+            "timestamp",
+            "orientation",
+            "template",
+            "contained_requests",
+        ),
+    ),
+    LinesField(
+        "SendLog",
     ),
     TextField(
         "Html"
