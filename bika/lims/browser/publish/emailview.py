@@ -62,7 +62,7 @@ class EmailView(BrowserView):
         self.allow_send = True
 
     def __call__(self):
-        # handle subpath request
+        # dispatch subpath request to `ajax_` methods
         if len(self.traverse_subpath) > 0:
             return self.handle_ajax_request()
 
@@ -103,14 +103,6 @@ class EmailView(BrowserView):
         self.traverse_subpath.append(name)
         return self
 
-    def fail(self, message, status=500, **kw):
-        """Set a JSON error object and a status to the response
-        """
-        self.request.response.setStatus(status)
-        result = {"success": False, "errors": message, "status": status}
-        result.update(kw)
-        return result
-
     @returns_json
     def handle_ajax_request(self):
         """Handle requests ajax routes
@@ -140,7 +132,7 @@ class EmailView(BrowserView):
     def form_action_send(self):
         """Send form handler
         """
-        # send email
+        # send email to the selected recipients and responsibles
         success = self.send_email(self.email_recipients_and_responsibles,
                                   self.email_subject,
                                   self.email_body,
@@ -155,13 +147,13 @@ class EmailView(BrowserView):
         else:
             message = _("Failed to send Email(s)")
             self.add_status_message(message, "error")
+
         self.request.response.redirect(self.exit_url)
 
     def form_action_cancel(self):
         """Cancel form handler
         """
-        message = _("Email cancelled")
-        self.add_status_message(message, "info")
+        self.add_status_message(_("Email cancelled"), "info")
         self.request.response.redirect(self.exit_url)
 
     def validate_email_form(self):
@@ -331,6 +323,7 @@ class EmailView(BrowserView):
             filename = af.filename
             attachments.append(
                 mailapi.to_email_attachment(filedata, filename))
+
         return attachments
 
     @property
@@ -342,16 +335,22 @@ class EmailView(BrowserView):
 
     @property
     def recipients_data(self):
+        """Returns a list of recipients data dictionaries
+        """
         reports = self.reports
         return self.get_recipients_data(reports)
 
     @property
     def responsibles_data(self):
+        """Returns a list of responsibles data dictionaries
+        """
         reports = self.reports
         return self.get_responsibles_data(reports)
 
     @property
     def client_name(self):
+        """Returns the client name
+        """
         return safe_unicode(self.context.Title())
 
     @property
@@ -373,6 +372,7 @@ class EmailView(BrowserView):
     def max_email_size(self):
         """Return the max. allowed email size in KB
         """
+        # check first if a registry record exists
         max_email_size = api.get_registry_record(
             "senaite.core.max_email_size")
         if max_email_size is None:
@@ -693,3 +693,11 @@ class EmailView(BrowserView):
             "limit": self.max_email_size,
             "limit_exceeded": total_size > self.max_email_size,
         }
+
+    def fail(self, message, status=500, **kw):
+        """Set a JSON error object and a status to the response
+        """
+        self.request.response.setStatus(status)
+        result = {"success": False, "errors": message, "status": status}
+        result.update(kw)
+        return result
