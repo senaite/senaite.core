@@ -25,6 +25,7 @@ from bika.lims import bikaMessageFactory as _BMF
 from bika.lims import senaiteMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.utils import get_link
+from bika.lims.utils import t
 from bika.lims.utils import to_utf8
 from Products.CMFPlone.utils import safe_unicode
 from ZODB.POSException import POSKeyError
@@ -170,7 +171,7 @@ class ReportsListingView(BikaListingView):
         item["Date"] = fmt_date
         item["PublishedBy"] = self.user_fullname(obj.Creator())
 
-        contained_ars = obj.getField("ContainedAnalysisRequests").get(obj)
+        contained_ars = obj.getContainedAnalysisRequests()
         ar_icon_url = "{}/{}".format(
             self.portal_url,
             "++resource++bika.lims.images/analysisrequest.png"
@@ -189,17 +190,26 @@ class ReportsListingView(BikaListingView):
         item["replace"]["ContainedAnalysisRequests"] = " ".join(ars)
 
         # Metadata
-        metadata = obj.getField("Metadata").get(obj) or {}
+        metadata = obj.getMetadata() or {}
         template = metadata.get("template", "")
         paperformat = metadata.get("paperformat", "")
         orientation = metadata.get("orientation", "")
+        sendlog = obj.getSendLog()
         item["Metadata"] = ""
         if all([template, paperformat, orientation]):
-            item["replace"]["Metadata"] = " ".join([
-                "<abbr title='{}'>ℹ</abbr>".format(template),
-                "<abbr title='{}'>⇲</abbr>".format(paperformat),
-                "<abbr title='{}'>↺</abbr>".format(orientation),
+            metadata = " ".join([
+                "<abbr title='{}: {}'>🗐</abbr>".format(
+                    t(_("Template")), template),
+                "<abbr title='{}: {}'>🡥</abbr>".format(
+                    t(_("Paperformat")), paperformat),
+                "<abbr title='{}: {}'>🗘</abbr>".format(
+                    t(_("Orientation")), orientation),
             ])
+            if sendlog:
+                metadata += " <abbr title='{}:\n{}'>🛈</abbr>".format(
+                    t(_("Email Log")), "\n".join(sendlog))
+            item["replace"]["Metadata"] = metadata
+
 
         # N.B. There is a bug in the current publication machinery, so that
         # only the primary contact get stored in the Attachment as recipient.
