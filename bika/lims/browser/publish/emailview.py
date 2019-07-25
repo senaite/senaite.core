@@ -41,7 +41,7 @@ from ZODB.POSException import POSKeyError
 from zope.interface import implements
 from zope.publisher.interfaces import IPublishTraverse
 
-EMAIL_MAX_SIZE = 15
+DEFAULT_MAX_EMAIL_SIZE = 15
 
 
 class EmailView(BrowserView):
@@ -373,10 +373,12 @@ class EmailView(BrowserView):
     def max_email_size(self):
         """Return the max. allowed email size in KB
         """
-        # TODO: Refactor to customizable setup option
-        max_size = EMAIL_MAX_SIZE
+        max_email_size = api.get_registry_record(
+            "senaite.core.max_email_size")
+        if max_email_size is None:
+            max_size = DEFAULT_MAX_EMAIL_SIZE
         if max_size < 0:
-            return 0.0
+            max_email_size = 0
         return max_size * 1024
 
     def log_email_recipients(self):
