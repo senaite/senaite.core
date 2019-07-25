@@ -19,10 +19,10 @@
 # Some rights reserved, see README and LICENSE.
 
 import inspect
+import itertools
 from collections import OrderedDict
 from string import Template
 
-from DateTime import DateTime
 import transaction
 from bika.lims import _
 from bika.lims import api
@@ -30,6 +30,7 @@ from bika.lims import logger
 from bika.lims.api import mail as mailapi
 from bika.lims.decorators import returns_json
 from bika.lims.utils import to_utf8
+from DateTime import DateTime
 from plone import protect
 from plone.memoize import view
 from Products.CMFCore.WorkflowCore import WorkflowException
@@ -468,15 +469,20 @@ class EmailView(BrowserView):
     def get_report_data(self, report):
         """Report data to be used in the template
         """
-        ar = report.getAnalysisRequest()
-        attachments = map(self.get_attachment_data, ar.getAttachment())
+        sample = report.getAnalysisRequest()
+        analyses = sample.getAnalyses(full_objects=True)
+        # merge together sample + analyses attachments
+        attachments = itertools.chain(
+            sample.getAttachment(),
+            *map(lambda an: an.getAttachment(), analyses))
+        attachments_data = map(self.get_attachment_data, attachments)
         pdf = self.get_pdf(report)
         filesize = "{} Kb".format(self.get_filesize(pdf))
-        filename = "{}.pdf".format(ar.getId())
+        filename = "{}.pdf".format(sample.getId())
 
         return {
-            "ar": ar,
-            "attachments": attachments,
+            "sample": sample,
+            "attachments": attachments_data,
             "pdf": pdf,
             "obj": report,
             "uid": api.get_uid(report),

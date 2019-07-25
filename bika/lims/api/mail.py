@@ -83,39 +83,45 @@ def to_email_body_text(body, **kw):
     return MIMEText(body_template, _subtype="plain", _charset="utf8")
 
 
-def to_email_attachment(file_or_path, filename="", **kw):
+def to_email_attachment(filedata, filename="", **kw):
     """Create a new MIME Attachment
 
     The Content-Type: header is build from the maintype and subtype of the
     guessed filename mimetype. Additional parameters for this header are
     taken from the keyword arguments.
 
-    :param file_or_path: OS-level file or absolute path
-    :type file_or_path: str, FileIO, MIMEBase
+    :param filedata: File, file path, filedata
+    :type filedata: FileIO, MIMEBase, basestring
     :param filename: Filename to use
-    :type filedata: str
+    :type filename: str
     :returns: MIME Attachment
     """
-    filedata = ""
+    data = ""
     maintype = "application"
     subtype = "octet-stream"
 
+    def is_file(s):
+        try:
+            return os.path.exists(s)
+        except TypeError:
+            return False
+
     # Handle attachment
-    if isinstance(file_or_path, MIMEBase):
+    if isinstance(filedata, MIMEBase):
         # return immediately
-        return file_or_path
+        return filedata
     # Handle file/StringIO
-    elif isinstance(file_or_path, (file, StringIO)):
-        filedata = file_or_path.read()
-    # Handle file path
-    elif os.path.isfile(file_or_path):
-        filename = filename or os.path.basename(file_or_path)
-        with open(file_or_path, "r") as f:
+    elif isinstance(filedata, (file, StringIO)):
+        data = filedata.read()
+    # Handle file paths
+    if is_file(filedata):
+        filename = filename or os.path.basename(filedata)
+        with open(filedata, "r") as f:
             # read the filedata from the filepath
-            filedata = f.read()
-    # Handle string filedata
-    elif isinstance(file_or_path, basestring):
-        filedata = file_or_path
+            data = f.read()
+    # Handle raw filedata
+    elif isinstance(filedata, basestring):
+        data = filedata
 
     # Set MIME type from keyword arguments or guess it from the filename
     mime_type = kw.pop("mime_type", None) or mimetypes.guess_type(filename)[0]
@@ -123,7 +129,7 @@ def to_email_attachment(file_or_path, filename="", **kw):
         maintype, subtype = mime_type.split("/")
 
     attachment = MIMEBase(maintype, subtype, **kw)
-    attachment.set_payload(filedata)
+    attachment.set_payload(data)
     encoders.encode_base64(attachment)
     attachment.add_header("Content-Disposition",
                           "attachment; filename=%s" % filename)

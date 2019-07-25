@@ -181,7 +181,7 @@
                       <div class="attachment-info small">
                         <span tal:content="attachment/attachment_keys"/>
                         <span i18n:translate="">in</span>
-                        <span tal:content="report/ar/getId"/>
+                        <span tal:content="report/sample/getId"/>
                         <div class="fileinfo">
                           <span class="filetype" tal:content="attachment/mimetype"/>
                           <span class="filesize" tal:content="string:${attachment/filesize}kB"/>
