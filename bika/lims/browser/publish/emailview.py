@@ -270,13 +270,13 @@ class EmailView(BrowserView):
     def email_recipients(self):
         """Email addresses of the selected recipients
         """
-        return self.request.form.get("recipients", [])
+        return map(safe_unicode, self.request.form.get("recipients", []))
 
     @property
     def email_responsibles(self):
         """Email addresses of the responsible persons
         """
-        return self.request.form.get("responsibles", [])
+        return map(safe_unicode, self.request.form.get("responsibles", []))
 
     @property
     def email_subject(self):
@@ -386,7 +386,7 @@ class EmailView(BrowserView):
         """
         timestamp = DateTime().ISO()
         recipients = self.email_recipients_and_responsibles
-        logline = "{} {}".format(timestamp, ",".join(recipients))
+        logline = u"{} {}".format(timestamp, ",".join(recipients))
         # set the logline to all sent reports
         for report in self.reports:
             log = list(report.getSendLog())
