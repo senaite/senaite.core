@@ -28,6 +28,7 @@ from bika.lims import _
 from bika.lims import api
 from bika.lims import logger
 from bika.lims.api import mail as mailapi
+from bika.lims.api.snapshot import take_snapshot
 from bika.lims.decorators import returns_json
 from bika.lims.utils import to_utf8
 from DateTime import DateTime
@@ -382,7 +383,7 @@ class EmailView(BrowserView):
         return max_size * 1024
 
     def log_email_recipients(self):
-        """Write a logline of the email recipients to the report
+        """Log email recipients to the report and take a snapshot
         """
         timestamp = DateTime().ISO()
         recipients = self.email_recipients_and_responsibles
@@ -392,8 +393,10 @@ class EmailView(BrowserView):
             log = list(report.getSendLog())
             log.append(logline)
             report.setSendLog(log)
-            # trigger processForm to take a new auditlog snapshot
-            report.processForm()
+            # reindex object to make changes visible in the snapshot
+            report.reindexObject()
+            # manually take a new snapshot
+            take_snapshot(report)
 
     def publish_samples(self):
         """Publish all samples of the reports
