@@ -33,7 +33,6 @@ class FrontPageView(BrowserView):
     template = ViewPageTemplateFile("templates/senaite-frontpage.pt")
 
     def __call__(self):
-        self.set_versions()
         self.icon = self.portal_url + "/++resource++bika.lims.images/chevron_big.png"
         bika_setup = getToolByName(self.context, "bika_setup")
         login_url = '{}/{}'.format(self.portal_url, 'login')
@@ -102,15 +101,3 @@ class FrontPageView(BrowserView):
             return []
         current_user = ploneapi.user.get_current()
         return ploneapi.user.get_roles(user=current_user)
-
-    def set_versions(self):
-        """Configure a list of product versions from portal.quickinstaller
-        """
-        self.versions = {}
-        self.upgrades = {}
-        qi = getToolByName(self.context, "portal_quickinstaller")
-        for key in qi.keys():
-            self.versions[key] = qi.getProductVersion(key)
-            info = qi.upgradeInfo(key)
-            if info and 'installedVersion' in info:
-                self.upgrades[key] = info['installedVersion']

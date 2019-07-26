@@ -13,12 +13,6 @@
 
     <h1 class="documentFirstHeading" i18n:translate="">
       <img tal:attributes="src view/icon"/> Welcome to SENAITE
-      <tal:version condition="python:'senaite.core' not in view.upgrades">
-        <span tal:replace="python:view.versions.get('senaite.core')" i18n:name="version"/>
-      </tal:version>
-      <tal:upgrade condition="python:'senaite.core' in view.upgrades">
-        <span tal:replace="python:view.upgrades.get('senaite.core'"/>
-      </tal:upgrade>
     </h1>
 
   </metal:content-title>
