@@ -140,8 +140,8 @@ class EmailView(BrowserView):
                                   attachments=self.email_attachments)
 
         if success:
-            # write email log to keep track of the outgoing emails
-            self.log_email_recipients()
+            # write email log and text to keep track of the email submission
+            self.log_email_metadata()
             message = _(u"Message sent to {}".format(
                 ", ".join(self.email_recipients_and_responsibles)))
             self.add_status_message(message, "info")
@@ -382,7 +382,7 @@ class EmailView(BrowserView):
             max_email_size = 0
         return max_size * 1024
 
-    def log_email_recipients(self):
+    def log_email_metadata(self):
         """Log email recipients to the report and take a snapshot
         """
         timestamp = DateTime().ISO()
@@ -390,9 +390,12 @@ class EmailView(BrowserView):
         logline = u"{} {}".format(timestamp, ",".join(recipients))
         # set the logline to all sent reports
         for report in self.reports:
+            # write date and recipients to log
             log = list(report.getSendLog())
             log.append(logline)
             report.setSendLog(log)
+            # keep a copy of the email text in the report
+            report.setEmailText(self.email_body)
             # reindex object to make changes visible in the snapshot
             report.reindexObject()
             # manually take a new snapshot

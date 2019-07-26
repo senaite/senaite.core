@@ -92,6 +92,9 @@ schema = BikaSchema.copy() + Schema((
         "SendLog",
     ),
     TextField(
+        "EmailText"
+    ),
+    TextField(
         "Html"
     ),
     BlobField(
