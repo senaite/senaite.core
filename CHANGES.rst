@@ -17,9 +17,10 @@ Changelog
 
 **Fixed**
 
+- #1414 Occasional "OSError: [Errno 24] Too many open files" in frontpage
+
 
 **Security**
-
 
 
 1.3.1 (2019-07-01)
