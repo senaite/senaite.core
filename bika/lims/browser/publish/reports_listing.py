@@ -196,6 +196,7 @@ class ReportsListingView(BikaListingView):
         orientation = metadata.get("orientation", "")
         sendlog = obj.getSendLog()
         item["Metadata"] = ""
+        item["replace"]["Metadata"] = ""
         if all([template, paperformat, orientation]):
             metadata = " ".join([
                 "<abbr title='{}: {}'>🗐</abbr>".format(
@@ -205,11 +206,12 @@ class ReportsListingView(BikaListingView):
                 "<abbr title='{}: {}'>🗘</abbr>".format(
                     t(_("Orientation")), orientation),
             ])
-            if sendlog:
-                metadata += " <abbr title='{}:\n{}'>🛈</abbr>".format(
-                    t(_("Email Log")), "\n".join(sendlog))
             item["replace"]["Metadata"] = metadata
 
+        if sendlog:
+            logline = " <abbr title='{}:\n{}'>🛈</abbr>".format(
+                t(_("Email Log")), "\n".join(sendlog))
+            item["replace"]["Metadata"] += logline
 
         # N.B. There is a bug in the current publication machinery, so that
         # only the primary contact get stored in the Attachment as recipient.
