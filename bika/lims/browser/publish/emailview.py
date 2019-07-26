@@ -403,8 +403,14 @@ class EmailView(BrowserView):
         """
         reports = self.reports
         for report in reports:
-            samples = report.getContainedAnalysisRequests()
-            for sample in samples:
+            # Publish the primary sample
+            primary_sample = report.getAnalysisRequest()
+            self.publish(primary_sample)
+            contained_samples = report.getContainedAnalysisRequests()
+            for sample in contained_samples:
+                # skip the primary sample
+                if sample == primary_sample:
+                    continue
                 self.publish(sample)
 
     def publish(self, sample):
