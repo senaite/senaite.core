@@ -1,0 +1,123 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="senaite.core">
+  <body>
+
+    <metal:content-title fill-slot="content-title">
+    </metal:content-title>
+
+    <metal:content-description fill-slot="content-description">
+    </metal:content-description>
+
+    <metal:content-core fill-slot="content-core">
+
+      <!-- Report Info -->
+      <div class="row" >
+        <div class="col-sm-12">
+          <h3>
+            <img tal:replace="structure python:view.get_icon_for('arreport')"/>
+            <span i18n:translate="">Analysis Report</span>
+          </h3>
+          <div id="report">
+            <table class="table table-condensed small">
+              <colgroup>
+                <col style="width:20%">
+              </colgroup>
+              <tal:metadata define="metadata view/get_metadata">
+                <!-- Template -->
+                <tr>
+                  <td>
+                    <span i18n:translate="">Template</span>
+                  </td>
+                  <td>
+                    <span tal:content="metadata/template|default">-</span>
+                  </td>
+                </tr>
+                <!-- Paperformat -->
+                <tr>
+                  <td>
+                    <span i18n:translate="">Paperformat</span>
+                  </td>
+                  <td>
+                    <span tal:content="metadata/paperformat|default">-</span>
+                  </td>
+                </tr>
+                <!-- Orientation -->
+                <tr>
+                  <td>
+                    <span i18n:translate="">Orientation</span>
+                  </td>
+                  <td>
+                    <span tal:content="metadata/orientation|default">-</span>
+                  </td>
+                </tr>
+              </tal:metadata>
+              <tr tal:define="sample view/get_primary_sample">
+                <td>
+                  <span i18n:translate="">Primary Sample</span>
+                </td>
+                <td>
+                  <a href="#"
+                     target="_blank"
+                     tal:attributes="href sample/absolute_url">
+                    <span tal:content="sample/Title"></span>
+                  </a>
+                </td>
+              </tr>
+              <tr tal:define="samples view/get_contained_samples">
+                <td>
+                  <span i18n:translate="">Contained Samples</span>
+                </td>
+                <td>
+                  <div tal:repeat="sample samples">
+                    <a href="#"
+                      target="_blank"
+                      tal:attributes="href sample/absolute_url">
+                      <span tal:content="sample/Title"></span>
+                    </a>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Send Log -->
+      <div class="row"
+           tal:define="sendlog view/get_sendlog"
+           tal:condition="nocall:sendlog">
+        <div class="col-sm-12">
+          <h3>
+            <img tal:replace="structure python:view.get_icon_for('email')"/>
+            <span i18n:translate="">Email Log</span>
+          </h3>
+          <table class="table table-condensed">
+            <tr class="text-primary" tal:repeat="log sendlog">
+              <td tal:content="log"></td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+      <!-- Auditlog Table -->
+      <div class="row"
+           tal:define="logview view/report_log_view"
+           tal:condition="nocall:logview">
+        <div class="col-sm-12">
+          <h3>
+            <img tal:replace="structure python:view.get_icon_for('calendar')"/>
+            <span i18n:translate="">Log</span>
+          </h3>
+          <div id="folderlisting-main-table"
+			         tal:content="structure logview/contents_table"/>
+        </div>
+      </div>
+
+    </metal:content-core>
+
+  </body>
+</html>

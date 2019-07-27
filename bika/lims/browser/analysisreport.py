@@ -1,0 +1,109 @@
+# -*- coding: utf-8 -*-
+#
+# This file is part of SENAITE.CORE.
+#
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2019 by it's authors.
+# Some rights reserved, see README and LICENSE.
+
+from bika.lims import api
+from bika.lims.api.security import check_permission
+from bika.lims.browser import BrowserView
+from bika.lims.permissions import ViewLogTab
+from bika.lims.utils import get_image
+from DateTime import DateTime
+from plone.memoize import view
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from zope.component import ComponentLookupError
+
+
+class AnalysisReportInfoView(BrowserView):
+    """Show details of the Analysis Report
+    """
+    template = ViewPageTemplateFile("templates/analysisreport_info.pt")
+
+    def __init__(self, context, request):
+        super(AnalysisReportInfoView, self).__init__(context, request)
+
+    def __call__(self):
+        # disable the editable border
+        self.request.set("disable_border", 1)
+        return self.template()
+
+    @view.memoize
+    def get_report(self):
+        report_uid = self.request.form.get("report_uid")
+        return api.get_object_by_uid(report_uid, None)
+
+    @view.memoize
+    def get_primary_sample(self):
+        report = self.get_report()
+        return report.getAnalysisRequest()
+
+    @view.memoize
+    def get_metadata(self):
+        report = self.get_report()
+        return report.getMetadata()
+
+    @view.memoize
+    def get_sendlog(self):
+        report = self.get_report()
+        sendlog = report.getSendLog()
+        log = []
+        for line in reversed(sendlog):
+            ts, recipients = line.split(" ", 1)
+            timestamp = DateTime(ts)
+            log.append("{}: {}".format(
+                self.ulocalized_time(timestamp, long_format=1), recipients))
+        return log
+
+    @view.memoize
+    def get_contained_samples(self):
+        metadata = self.get_metadata()
+        samples = metadata.get("contained_requests", [])
+        sample_uids = filter(api.is_uid, samples)
+        return map(api.get_object_by_uid, sample_uids)
+
+    def get_icon_for(self, typename):
+        image = "{}_big.png".format(typename)
+        return get_image(
+            image, width="20px", style="vertical-align: baseline;")
+
+    def get_auditlog_view_for(self, obj):
+        """Get the auditlog view for the given object
+        """
+        try:
+            return api.get_view("auditlog", context=obj, request=self.request)
+        except ComponentLookupError:
+            return None
+
+    def can_view_logs_of(self, obj):
+        """Checks if the current user is allowed to see the logs
+        """
+        return check_permission(ViewLogTab, obj)
+
+    def report_log_view(self):
+        """Get the log view of the requested report
+        """
+        report = self.get_report()
+        if not self.can_view_logs_of(report):
+            return None
+        view = self.get_auditlog_view_for(report)
+        if view is None:
+            return None
+        view.pagesize = 1
+        view.update()
+        view.before_render()
+        return view

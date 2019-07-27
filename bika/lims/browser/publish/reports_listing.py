@@ -25,7 +25,6 @@ from bika.lims import bikaMessageFactory as _BMF
 from bika.lims import senaiteMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.utils import get_link
-from bika.lims.utils import t
 from bika.lims.utils import to_utf8
 from Products.CMFPlone.utils import safe_unicode
 from ZODB.POSException import POSKeyError
@@ -89,13 +88,12 @@ class ReportsListingView(BikaListingView):
         }
 
         self.columns = collections.OrderedDict((
+            ("Info", {
+                "title": "",
+                "toggle": True},),
             ("AnalysisRequest", {
-                "title": _("Sample"),
+                "title": _("Primary Sample"),
                 "index": "sortable_title"},),
-            ("ContainedAnalysisRequests", {
-                "title": _("Samples in PDF")},),
-            ("Metadata", {
-                "title": _("Metadata")},),
             ("State", {
                 "title": _("Review State")},),
             ("PDF", {
@@ -150,8 +148,16 @@ class ReportsListingView(BikaListingView):
         """
 
         ar = obj.getAnalysisRequest()
+        uid = api.get_uid(obj)
         review_state = api.get_workflow_status_of(ar)
         status_title = review_state.capitalize().replace("_", " ")
+
+        # Report Info Popup
+        # see: bika.lims.site.coffee for the attached event handler
+        item["Info"] = get_link(
+            "analysisreport_info?report_uid={}".format(uid),
+            value="<span class='glyphicon glyphicon-info-sign'></span>",
+            css_class="service_info")
 
         item["replace"]["AnalysisRequest"] = get_link(
             ar.absolute_url(), value=ar.Title()
@@ -170,48 +176,6 @@ class ReportsListingView(BikaListingView):
         fmt_date = self.localize_date(obj.created())
         item["Date"] = fmt_date
         item["PublishedBy"] = self.user_fullname(obj.Creator())
-
-        contained_ars = obj.getContainedAnalysisRequests()
-        ar_icon_url = "{}/{}".format(
-            self.portal_url,
-            "++resource++bika.lims.images/analysisrequest.png"
-        )
-        ars = []
-        item["ContainedAnalysisRequests"] = ""
-        for num, ar in enumerate(contained_ars):
-            ars.append(
-                "<a href='{url}' target='_blank' title='{ar_id}'>"
-                "<img src='{ar_icon_url}' title='{ar_id}'/>"
-                "</a>".format(
-                    url=ar.absolute_url(),
-                    ar_id=ar.getId(),
-                    ar_icon_url=ar_icon_url)
-            )
-        item["replace"]["ContainedAnalysisRequests"] = " ".join(ars)
-
-        # Metadata
-        metadata = obj.getMetadata() or {}
-        template = metadata.get("template", "")
-        paperformat = metadata.get("paperformat", "")
-        orientation = metadata.get("orientation", "")
-        sendlog = obj.getSendLog()
-        item["Metadata"] = ""
-        item["replace"]["Metadata"] = ""
-        if all([template, paperformat, orientation]):
-            metadata = " ".join([
-                "<abbr title='{}: {}'>🗐</abbr>".format(
-                    t(_("Template")), template),
-                "<abbr title='{}: {}'>🡥</abbr>".format(
-                    t(_("Paperformat")), paperformat),
-                "<abbr title='{}: {}'>🗘</abbr>".format(
-                    t(_("Orientation")), orientation),
-            ])
-            item["replace"]["Metadata"] = metadata
-
-        if sendlog:
-            logline = " <abbr title='{}:\n{}'>🛈</abbr>".format(
-                t(_("Email Log")), "\n".join(sendlog))
-            item["replace"]["Metadata"] += logline
 
         # N.B. There is a bug in the current publication machinery, so that
         # only the primary contact get stored in the Attachment as recipient.
