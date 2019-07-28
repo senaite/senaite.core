@@ -191,7 +191,7 @@
                               tal:attributes="href string:${attachment/obj/absolute_url}/AttachmentFile">
                               <div class="attachment-file">
                                 <img tal:attributes="alt attachment/filename;
-                                                    title string:${attachment/filename} ${attachment/mimetype}(${attachment/filesize} kB)"
+                                                     title string:${attachment/filename} ${attachment/mimetype}(${attachment/filesize} KB)"
                                     src="++resource++senaite.core.browser.publish/img/attachment.png" width="32" />
                               </div>
                               <span class="filename" tal:content="attachment/filename"/>
