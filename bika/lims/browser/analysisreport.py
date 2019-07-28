@@ -59,14 +59,7 @@ class AnalysisReportInfoView(BrowserView):
     @view.memoize
     def get_sendlog(self):
         report = self.get_report()
-        sendlog = report.getSendLog()
-        log = []
-        for line in reversed(sendlog):
-            ts, recipients = line.split(" ", 1)
-            timestamp = DateTime(ts)
-            log.append("{}: {}".format(
-                self.ulocalized_time(timestamp, long_format=1), recipients))
-        return log
+        return report.getSendLog()
 
     @view.memoize
     def get_contained_samples(self):

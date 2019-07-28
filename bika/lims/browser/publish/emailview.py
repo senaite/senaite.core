@@ -385,8 +385,9 @@ class EmailView(BrowserView):
     def make_sendlog_record(self, **kw):
         """Create a new sendlog record
         """
-        actor = api.get_current_user()
-        userprops = api.get_user_properties(actor)
+        user = api.get_current_user()
+        actor = user.getId()
+        userprops = api.get_user_properties(user)
         actor_fullname = userprops.get("fullname", actor)
         email_send_date = DateTime()
         email_recipients = self.email_recipients

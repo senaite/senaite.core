@@ -95,11 +95,13 @@
             <img tal:replace="structure python:view.get_icon_for('email')"/>
             <span i18n:translate="">Email Log</span>
           </h3>
+
           <table class="table table-condensed">
             <tr class="text-primary" tal:repeat="log sendlog">
               <td tal:content="log"></td>
             </tr>
           </table>
+
         </div>
       </div>
 
