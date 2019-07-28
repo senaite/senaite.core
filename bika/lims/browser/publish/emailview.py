@@ -140,8 +140,8 @@ class EmailView(BrowserView):
                                   attachments=self.email_attachments)
 
         if success:
-            # write email log and text to keep track of the email submission
-            self.log_email_metadata()
+            # write email sendlog log to keep track of the email submission
+            self.write_sendlog()
             message = _(u"Message sent to {}".format(
                 ", ".join(self.email_recipients_and_responsibles)))
             self.add_status_message(message, "info")
@@ -382,20 +382,47 @@ class EmailView(BrowserView):
             max_email_size = 0
         return max_size * 1024
 
-    def log_email_metadata(self):
-        """Log email recipients to the report and take a snapshot
+    def make_sendlog_record(self, **kw):
+        """Create a new sendlog record
         """
-        timestamp = DateTime().ISO()
-        recipients = self.email_recipients_and_responsibles
-        logline = u"{} {}".format(timestamp, ",".join(recipients))
-        # set the logline to all sent reports
+        actor = api.get_current_user()
+        userprops = api.get_user_properties(actor)
+        actor_fullname = userprops.get("fullname", actor)
+        email_send_date = DateTime()
+        email_recipients = self.email_recipients
+        email_responsibles = self.email_responsibles
+        email_subject = self.email_subject
+        email_body = self.render_email_template(self.email_body)
+        email_attachments = map(api.get_uid, self.attachments)
+
+        record = {
+            "actor": actor,
+            "actor_fullname": actor_fullname,
+            "email_send_date": email_send_date,
+            "email_recipients": email_recipients,
+            "email_responsibles": email_responsibles,
+            "email_subject": email_subject,
+            "email_body": email_body,
+            "email_attachments": email_attachments,
+
+        }
+        # keywords take precedence
+        record.update(kw)
+        return record
+
+    def write_sendlog(self):
+        """Write email sendlog
+        """
+        timestamp = DateTime()
+
         for report in self.reports:
-            # write date and recipients to log
-            log = list(report.getSendLog())
-            log.append(logline)
-            report.setSendLog(log)
-            # keep a copy of the email text in the report
-            report.setEmailText(self.email_body)
+            # get the current sendlog records
+            records = report.getSendLog()
+            # create a new record with the current data
+            new_record = self.make_sendlog_record(email_send_date=timestamp)
+            # set the new record to the existing records
+            records.append(new_record)
+            report.setSendLog(records)
             # reindex object to make changes visible in the snapshot
             report.reindexObject()
             # manually take a new snapshot
@@ -439,6 +466,26 @@ class EmailView(BrowserView):
             logger.error(e)
             return False
 
+    def render_email_template(self, template):
+        """Return the rendered email template
+
+        This method interpolates the $recipients variable with the selected
+        recipients from the email form.
+
+        :params template: Email body text
+        :returns: Rendered email template
+        """
+
+        recipients = self.email_recipients_and_responsibles
+        template_context = {
+            "recipients": "\n".join(recipients)
+        }
+
+        email_template = Template(safe_unicode(template)).safe_substitute(
+            **template_context)
+
+        return email_template
+
     def send_email(self, recipients, subject, body, attachments=None):
         """Prepare and send email to the recipients
 
@@ -448,12 +495,7 @@ class EmailView(BrowserView):
         :param attachments: list of email attachments
         :returns: True if all emails were sent, else False
         """
-        template_context = {
-            "recipients": "\n".join(recipients)
-        }
-
-        body_template = Template(safe_unicode(body)).safe_substitute(
-            **template_context)
+        email_body = self.render_email_template(body)
 
         success = []
         # Send one email per recipient
@@ -465,7 +507,7 @@ class EmailView(BrowserView):
             mime_msg = mailapi.compose_email(self.email_sender_address,
                                              to_address,
                                              subject,
-                                             body_template,
+                                             email_body,
                                              attachments=attachments)
             sent = mailapi.send_email(mime_msg)
             if not sent:

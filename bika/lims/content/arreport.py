@@ -30,7 +30,6 @@ from bika.lims.interfaces import IARReport
 from plone.app.blob.field import BlobField
 from Products.Archetypes import atapi
 from Products.Archetypes.public import BaseFolder
-from Products.Archetypes.public import LinesField
 from Products.Archetypes.public import Schema
 from Products.Archetypes.public import TextField
 from Products.Archetypes.references import HoldingReference
@@ -88,11 +87,19 @@ schema = BikaSchema.copy() + Schema((
             "contained_requests",
         ),
     ),
-    LinesField(
+    RecordsField(
         "SendLog",
-    ),
-    TextField(
-        "EmailText"
+        type="sendlog",
+        subfields=(
+            "actor",
+            "actor_fullname",
+            "email_send_date",
+            "email_recipients",
+            "email_responsibles",
+            "email_subject",
+            "email_body",
+            "email_attachments",
+        ),
     ),
     TextField(
         "Html"
