@@ -128,7 +128,7 @@
                   <!-- Actor -->
                   <tr>
                     <td>
-                      <span i18n:translate="">Actor</span>
+                      <span i18n:translate="">Sender</span>
                     </td>
                     <td>
                       <span tal:content="record/actor_fullname|default">
