@@ -19,13 +19,11 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
-from bika.lims.api.security import check_permission
 from bika.lims.browser import BrowserView
-from bika.lims.permissions import ViewLogTab
 from bika.lims.utils import get_image
-from DateTime import DateTime
 from plone.memoize import view
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from ZODB.POSException import POSKeyError
 
 
 class AnalysisReportInfoView(BrowserView):
@@ -59,7 +57,8 @@ class AnalysisReportInfoView(BrowserView):
     @view.memoize
     def get_sendlog(self):
         report = self.get_report()
-        return report.getSendLog()
+        records = report.getSendLog()
+        return list(reversed(records))
 
     @view.memoize
     def get_contained_samples(self):
@@ -69,11 +68,44 @@ class AnalysisReportInfoView(BrowserView):
         return map(api.get_object_by_uid, sample_uids)
 
     def get_icon_for(self, typename):
+        """Returns the big image icon by its (type-)name
+        """
         image = "{}_big.png".format(typename)
         return get_image(
             image, width="20px", style="vertical-align: baseline;")
 
-    def can_view_logs_of(self, obj):
-        """Checks if the current user is allowed to see the logs
+    def get_filesize(self, f):
+        """Return the filesize of the PDF as a float
         """
-        return check_permission(ViewLogTab, obj)
+        try:
+            filesize = float(f.get_size())
+            return float("%.2f" % (filesize / 1024))
+        except (POSKeyError, TypeError, AttributeError):
+            return 0.0
+
+    @view.memoize
+    def get_attachment_data_by_uid(self, uid):
+        """Retrieve attachment data by UID
+        """
+        attachment = api.get_object_by_uid(uid, default=None)
+        if attachment is None:
+            return {}
+        f = attachment.getAttachmentFile()
+        attachment_type = attachment.getAttachmentType()
+        attachment_keys = attachment.getAttachmentKeys()
+        filename = f.filename
+        filesize = self.get_filesize(f)
+        mimetype = f.getContentType()
+        report_option = attachment.getReportOption()
+
+        return {
+            "obj": attachment,
+            "attachment_type": attachment_type,
+            "attachment_keys": attachment_keys,
+            "file": f,
+            "uid": uid,
+            "filesize": filesize,
+            "filename": filename,
+            "mimetype": mimetype,
+            "report_option": report_option,
+        }

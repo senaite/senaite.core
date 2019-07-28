@@ -88,19 +88,131 @@
 
       <!-- Send Log -->
       <div class="row"
-           tal:define="sendlog view/get_sendlog"
-           tal:condition="nocall:sendlog">
+           tal:define="records view/get_sendlog"
+           tal:condition="nocall:records">
         <div class="col-sm-12">
           <h3>
             <img tal:replace="structure python:view.get_icon_for('email')"/>
             <span i18n:translate="">Email Log</span>
           </h3>
 
-          <table class="table table-condensed">
-            <tr class="text-primary" tal:repeat="log sendlog">
-              <td tal:content="log"></td>
-            </tr>
-          </table>
+          <!-- Log Records -->
+          <ul class="nav nav-tabs" role="tablist">
+            <tal:record tal:repeat="record records">
+              <li role="presentation"
+                  tal:define="num repeat/record/number;
+                              send_date record/email_send_date"
+                  tal:attributes="class python:num==1 and 'active' or ''">
+                <a href="#"
+                   role="tab"
+                   data-toggle="tab"
+                   tal:content="python:view.ulocalized_time(send_date, 1)"
+                   tal:attributes="href string:#tab-${num};">
+                </a>
+              </li>
+            </tal:record>
+          </ul>
+
+          <!-- Tab panes -->
+          <div class="tab-content" style="margin-top:-1px;">
+            <tal:record tal:repeat="record records">
+              <div tal:define="num repeat/record/number"
+                   tal:attributes="id string:tab-${num};
+                               class python:num==1 and 'tab-pane active' or 'tab-pane'"
+                   role="tabpanel">
+
+                <table class="table table-condensed small">
+                  <colgroup>
+                    <col style="width:20%">
+                  </colgroup>
+                  <!-- Actor -->
+                  <tr>
+                    <td>
+                      <span i18n:translate="">Actor</span>
+                    </td>
+                    <td>
+                      <span tal:content="record/actor_fullname|default">
+                        <code tal:content="record/actor"/>
+                      </span>
+                    </td>
+                  </tr>
+                  <!-- Recipients -->
+                  <tr>
+                    <td>
+                      <span i18n:translate="">Recipients</span>
+                    </td>
+                    <td>
+                      <tal:recipients repeat="recipient record/email_recipients">
+                        <span class="label label-primary" tal:content="recipient"/>
+                      </tal:recipients>
+                    </td>
+                  </tr>
+                  <!-- Responsibles -->
+                  <tr tal:condition="record/email_responsibles">
+                    <td>
+                      <span i18n:translate="">Responsibles</span>
+                    </td>
+                    <td>
+                      <tal:responsibles repeat="responsible record/email_responsibles">
+                        <span class="label label-primary" tal:content="responsible"/>
+                      </tal:responsibles>
+                    </td>
+                  </tr>
+                  <!-- Subject -->
+                  <tr>
+                    <td>
+                      <span i18n:translate="">Subject</span>
+                    </td>
+                    <td>
+                      <span tal:content="record/email_subject|default">-</span>
+                    </td>
+                  </tr>
+                  <!-- Body Text -->
+                  <tr>
+                    <td>
+                      <span i18n:translate="">Text</span>
+                    </td>
+                    <td>
+                      <pre class="small" tal:content="record/email_body|default">-</pre>
+                    </td>
+                  </tr>
+                  <!-- Attachments -->
+                  <tr tal:condition="record/email_attachments">
+                    <td>
+                      <span i18n:translate="">Attachments</span>
+                    </td>
+                    <td>
+                      <tal:attachment_uids repeat="uid record/email_attachments">
+                        <tal:attachment define="attachment python:view.get_attachment_data_by_uid(uid)">
+                          <div class="attachment col-xs-12 col-sm-4 col-md-3 col-lg-2">
+                            <a href="#"
+                              class="attachment-link"
+                              target="_blank"
+                              tal:attributes="href string:${attachment/obj/absolute_url}/AttachmentFile">
+                              <div class="attachment-file">
+                                <img tal:attributes="alt attachment/filename;
+                                                    title string:${attachment/filename} ${attachment/mimetype}(${attachment/filesize} kB)"
+                                    src="++resource++senaite.core.browser.publish/img/attachment.png" width="32" />
+                              </div>
+                              <span class="filename" tal:content="attachment/filename"/>
+
+                              <div class="attachment-info small">
+                                <span tal:content="attachment/attachment_keys"/>
+                                <div class="fileinfo">
+                                  <span class="filetype" tal:content="attachment/mimetype"/>
+                                  <span class="filesize" tal:content="string:${attachment/filesize} KB"/>
+                                </div>
+                              </div>
+                            </a>
+                          </div>
+                        </tal:attachment>
+                      </tal:attachment_uids>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+            </tal:record>
+          </div>
 
         </div>
       </div>
