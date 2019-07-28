@@ -103,20 +103,6 @@
         </div>
       </div>
 
-      <!-- Auditlog Table -->
-      <div class="row"
-           tal:define="logview view/report_log_view"
-           tal:condition="nocall:logview">
-        <div class="col-sm-12">
-          <h3>
-            <img tal:replace="structure python:view.get_icon_for('calendar')"/>
-            <span i18n:translate="">Log</span>
-          </h3>
-          <div id="folderlisting-main-table"
-			         tal:content="structure logview/contents_table"/>
-        </div>
-      </div>
-
     </metal:content-core>
 
   </body>

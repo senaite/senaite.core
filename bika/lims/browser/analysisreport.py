@@ -26,7 +26,6 @@ from bika.lims.utils import get_image
 from DateTime import DateTime
 from plone.memoize import view
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from zope.component import ComponentLookupError
 
 
 class AnalysisReportInfoView(BrowserView):
@@ -81,29 +80,7 @@ class AnalysisReportInfoView(BrowserView):
         return get_image(
             image, width="20px", style="vertical-align: baseline;")
 
-    def get_auditlog_view_for(self, obj):
-        """Get the auditlog view for the given object
-        """
-        try:
-            return api.get_view("auditlog", context=obj, request=self.request)
-        except ComponentLookupError:
-            return None
-
     def can_view_logs_of(self, obj):
         """Checks if the current user is allowed to see the logs
         """
         return check_permission(ViewLogTab, obj)
-
-    def report_log_view(self):
-        """Get the log view of the requested report
-        """
-        report = self.get_report()
-        if not self.can_view_logs_of(report):
-            return None
-        view = self.get_auditlog_view_for(report)
-        if view is None:
-            return None
-        view.pagesize = 1
-        view.update()
-        view.before_render()
-        return view
