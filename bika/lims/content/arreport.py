@@ -132,8 +132,8 @@ schema = BikaSchema.copy() + Schema((
     ),
 ))
 
-schema['id'].required = False
-schema['title'].required = False
+schema["id"].required = False
+schema["title"].required = False
 
 
 class ARReport(BaseFolder):
