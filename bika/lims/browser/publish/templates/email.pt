@@ -41,9 +41,6 @@
             name="send_email_form"
             method="POST">
 
-        <!-- form authenticator -->
-        <input tal:replace="structure context/@@authenticator/authenticator"/>
-
         <!-- Email wrapper -->
         <div class="email_wrapper">
           <div class="form-group">
