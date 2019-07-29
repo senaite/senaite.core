@@ -28,6 +28,8 @@ from bika.lims import _
 from bika.lims import api
 from bika.lims import logger
 from bika.lims.api import mail as mailapi
+from bika.lims.api.security import get_user
+from bika.lims.api.security import get_user_id
 from bika.lims.api.snapshot import take_snapshot
 from bika.lims.decorators import returns_json
 from bika.lims.utils import to_utf8
@@ -381,8 +383,8 @@ class EmailView(BrowserView):
     def make_sendlog_record(self, **kw):
         """Create a new sendlog record
         """
-        user = api.get_current_user()
-        actor = user.getId()
+        user = get_user()
+        actor = get_user_id()
         userprops = api.get_user_properties(user)
         actor_fullname = userprops.get("fullname", actor)
         email_send_date = DateTime()
