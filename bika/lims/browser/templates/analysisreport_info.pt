@@ -184,7 +184,18 @@
                     <td>
                       <tal:attachment_uids repeat="uid record/email_attachments">
                         <tal:attachment define="attachment python:view.get_attachment_data_by_uid(uid)">
-                          <div class="attachment col-xs-12 col-sm-4 col-md-3 col-lg-2">
+                          <div tal:condition="not:nocall:attachment"
+                                class="attachment col-xs-12 col-sm-4 col-md-3 col-lg-2">
+                            <div class="attachment-file">
+                              <img src="++resource++senaite.core.browser.publish/img/deleted_attachment.png" width="32" />
+                            </div>
+                            <span class="filename" i18n:translate="">
+                              File Deleted
+                            </span>
+                          </div>
+
+                          <div tal:condition="nocall:attachment"
+                                class="attachment col-xs-12 col-sm-4 col-md-3 col-lg-2">
                             <a href="#"
                               class="attachment-link"
                               target="_blank"

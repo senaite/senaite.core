@@ -88,6 +88,7 @@ class AnalysisReportInfoView(BrowserView):
         """Retrieve attachment data by UID
         """
         attachment = api.get_object_by_uid(uid, default=None)
+        # Attachment file not found/deleted
         if attachment is None:
             return {}
         f = attachment.getAttachmentFile()
