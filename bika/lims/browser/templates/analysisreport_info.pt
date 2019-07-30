@@ -187,7 +187,8 @@
                           <div tal:condition="not:nocall:attachment"
                                 class="attachment col-xs-12 col-sm-4 col-md-3 col-lg-2">
                             <div class="attachment-file">
-                              <img src="++resource++senaite.core.browser.publish/img/deleted_attachment.png" width="32" />
+                              <img tal:attributes="title string:UID:${uid}"
+                                   src="++resource++senaite.core.browser.publish/img/deleted_attachment.png" width="32" />
                             </div>
                             <span class="filename" i18n:translate="">
                               File Deleted
