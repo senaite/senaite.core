@@ -1,0 +1,17 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    i18n_domain="senaite.core">
+
+  <!-- Analysis Report Info View
+       (used in report listings for Popup Overlays) -->
+  <browser:page
+      for="*"
+      name="analysisreport_info"
+      class="bika.lims.browser.analysisreport.AnalysisReportInfoView"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
+
+</configure>

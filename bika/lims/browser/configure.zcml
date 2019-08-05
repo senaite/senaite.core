@@ -9,6 +9,7 @@
 
   <include file="analysis.zcml"/>
   <include file="analysisprofile.zcml"/>
+  <include file="analysisreport.zcml"/>
   <include file="analysisservice.zcml"/>
   <include file="analysisspec.zcml"/>
   <include file="arimports.zcml"/>

@@ -19,24 +19,22 @@
 # Some rights reserved, see README and LICENSE.
 
 import inspect
-import mimetypes
-import socket
+import itertools
 from collections import OrderedDict
-from email import encoders
-from email.header import Header
-from email.mime.base import MIMEBase
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-from email.Utils import formataddr
-from smtplib import SMTPException
 from string import Template
 
 import transaction
 from bika.lims import _
 from bika.lims import api
 from bika.lims import logger
+from bika.lims.api import mail as mailapi
+from bika.lims.api.security import get_user
+from bika.lims.api.security import get_user_id
+from bika.lims.api.snapshot import take_snapshot
 from bika.lims.decorators import returns_json
 from bika.lims.utils import to_utf8
+from DateTime import DateTime
+from plone.memoize import view
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser import BrowserView
@@ -45,7 +43,7 @@ from ZODB.POSException import POSKeyError
 from zope.interface import implements
 from zope.publisher.interfaces import IPublishTraverse
 
-EMAIL_MAX_SIZE = 15
+DEFAULT_MAX_EMAIL_SIZE = 15
 
 
 class EmailView(BrowserView):
@@ -60,42 +58,49 @@ class EmailView(BrowserView):
         super(EmailView, self).__init__(context, request)
         # disable Plone's editable border
         request.set("disable_border", True)
-        # remember context/request
-        self.context = context
-        self.request = request
-        self.url = self.context.absolute_url()
-        # the URL to redirect on cancel or after send
-        self.exit_url = "{}/{}".format(self.url, "reports_listing")
-        # we need to transform the title to unicode, so that we can use it for
-        self.client_name = safe_unicode(self.context.Title())
-        self.email_body = self.context.translate(_(self.email_template(self)))
-        # string interpolation later
-        # N.B. We need to translate the raw string before interpolation
-        subject = self.context.translate(_("Analysis Results for {}"))
-        self.email_subject = subject.format(self.client_name)
-        self.allow_send = True
+        # list of requested subpaths
         self.traverse_subpath = []
+        # toggle to allow email sending
+        self.allow_send = True
 
     def __call__(self):
-        # handle subpath request
+        # dispatch subpath request to `ajax_` methods
         if len(self.traverse_subpath) > 0:
             return self.handle_ajax_request()
+
         # handle standard request
-        return self.handle_http_request()
+        form = self.request.form
+        send = form.get("send", False) and True or False
+        cancel = form.get("cancel", False) and True or False
+
+        if send and self.validate_email_form():
+            logger.info("*** PUBLISH SAMPLES & SEND REPORTS ***")
+            # 1. Publish all samples
+            self.publish_samples()
+            # 2. Notify all recipients
+            self.form_action_send()
+
+        elif cancel:
+            logger.info("*** CANCEL EMAIL PUBLICATION ***")
+            self.form_action_cancel()
+
+        else:
+            logger.info("*** RENDER EMAIL FORM ***")
+            # validate email size
+            self.validate_email_size()
+            # validate email recipients
+            self.validate_email_recipients()
+
+        return self.template()
 
     def publishTraverse(self, request, name):
         """Called before __call__ for each path name
+
+        Appends the path to the additional requested path after the view name
+        to the internal `traverse_subpath` list
         """
         self.traverse_subpath.append(name)
         return self
-
-    def fail(self, message, status=500, **kw):
-        """Set a JSON error object and a status to the response
-        """
-        self.request.response.setStatus(status)
-        result = {"success": False, "errors": message, "status": status}
-        result.update(kw)
-        return result
 
     @returns_json
     def handle_ajax_request(self):
@@ -123,120 +128,63 @@ class EmailView(BrowserView):
                              .format(func_arg, "/".join(required_args)), 400)
         return func(*args)
 
-    def handle_http_request(self):
-        request = self.request
-        form = request.form
+    def form_action_send(self):
+        """Send form handler
+        """
+        # send email to the selected recipients and responsibles
+        success = self.send_email(self.email_recipients_and_responsibles,
+                                  self.email_subject,
+                                  self.email_body,
+                                  attachments=self.email_attachments)
 
-        submitted = form.get("submitted", False)
-        send = form.get("send", False)
-        cancel = form.get("cancel", False)
-
-        if submitted and send:
-            logger.info("*** SENDING EMAIL ***")
-
-            # Parse used defined values from the request form
-            recipients = form.get("recipients", [])
-            responsibles = form.get("responsibles", [])
-            subject = form.get("subject")
-            body = form.get("body")
-            reports = self.get_reports()
-
-            # Merge recipiens and responsibles
-            recipients = set(recipients + responsibles)
-
-            # sanity checks
-            if not recipients:
-                message = _("No email recipients selected")
-                self.add_status_message(message, "error")
-            if not subject:
-                message = _("Please add an email subject")
-                self.add_status_message(message, "error")
-            if not body:
-                message = _("Please add an email text")
-                self.add_status_message(message, "error")
-            if not reports:
-                message = _("No attachments")
-                self.add_status_message(message, "error")
-
-            success = False
-            if all([recipients, subject, body, reports]):
-                attachments = []
-
-                # report pdfs
-                for report in reports:
-                    pdf = self.get_pdf(report)
-                    if pdf is None:
-                        logger.error("Skipping empty PDF for report {}"
-                                     .format(report.getId()))
-                        continue
-                    ar = report.getAnalysisRequest()
-                    filename = "{}.pdf".format(ar.getId())
-                    filedata = pdf.data
-                    attachments.append(
-                        self.to_email_attachment(filename, filedata))
-
-                # additional attachments
-                for attachment in self.get_attachments():
-                    af = attachment.getAttachmentFile()
-                    filedata = af.data
-                    filename = af.filename
-                    attachments.append(
-                        self.to_email_attachment(filename, filedata))
-
-                success = self.send_email(
-                    recipients, subject, body, attachments=attachments)
-
-                # make a savepoint to avoid multiple email send
-                # http://www.zodb.org/en/latest/reference/transaction.html
-                transaction.savepoint(optimistic=True)
-
-            if success:
-                # selected name, email pairs which received the email
-                pairs = map(self.parse_email, recipients)
-                send_to_names = map(lambda p: p[0], pairs)
-
-                # set recipients to the reports
-                for report in reports:
-                    ar = report.getAnalysisRequest()
-                    # publish the AR
-                    self.publish(ar)
-
-                    # Publish all linked ARs of this report
-                    # N.B. `ContainedAnalysisRequests` is an extended field
-                    field = report.getField("ContainedAnalysisRequests")
-                    contained_ars = field.get(report) or []
-                    for obj in contained_ars:
-                        # skip the primary AR
-                        if obj == ar:
-                            continue
-                        self.publish(obj)
-
-                    # add new recipients to the AR Report
-                    new_recipients = filter(
-                        lambda r: r.get("Fullname") in send_to_names,
-                        self.get_recipients(ar))
-                    self.set_report_recipients(report, new_recipients)
-
-                message = _(u"Message sent to {}"
-                            .format(", ".join(send_to_names)))
-                self.add_status_message(message, "info")
-                return request.response.redirect(self.exit_url)
-            else:
-                message = _("Failed to send Email(s)")
-                self.add_status_message(message, "error")
-
-        if submitted and cancel:
-            logger.info("*** EMAIL CANCELLED ***")
-            message = _("Email cancelled")
+        if success:
+            # write email sendlog log to keep track of the email submission
+            self.write_sendlog()
+            message = _(u"Message sent to {}".format(
+                ", ".join(self.email_recipients_and_responsibles)))
             self.add_status_message(message, "info")
-            return request.response.redirect(self.exit_url)
+        else:
+            message = _("Failed to send Email(s)")
+            self.add_status_message(message, "error")
 
-        # get the selected ARReport objects
-        reports = self.get_reports()
-        attachments = self.get_attachments()
+        self.request.response.redirect(self.exit_url)
 
-        # calculate the total size of all PDFs
-        self.total_size = self.get_total_size(reports, attachments)
+    def form_action_cancel(self):
+        """Cancel form handler
+        """
+        self.add_status_message(_("Email cancelled"), "info")
+        self.request.response.redirect(self.exit_url)
+
+    def validate_email_form(self):
+        """Validate if the email form is complete for send
+
+        :returns: True if the validator passed, otherwise False
+        """
+        if not self.email_recipients_and_responsibles:
+            message = _("No email recipients selected")
+            self.add_status_message(message, "error")
+        if not self.email_subject:
+            message = _("Please add an email subject")
+            self.add_status_message(message, "error")
+        if not self.email_body:
+            message = _("Please add an email text")
+            self.add_status_message(message, "error")
+        if not self.reports:
+            message = _("No reports found")
+            self.add_status_message(message, "error")
+
+        if not all([self.email_recipients_and_responsibles,
+                    self.email_subject,
+                    self.email_body,
+                    self.reports]):
+            return False
+        return True
+
+    def validate_email_size(self):
+        """Validate if the email size exceeded the max. allowed size
+
+        :returns: True if the validator passed, otherwise False
+        """
         if self.total_size > self.max_email_size:
             # don't allow to send oversized emails
             self.allow_send = False
@@ -244,85 +192,298 @@ class EmailView(BrowserView):
                         .format(self.max_email_size / 1024,
                                 self.total_size / 1024))
             self.add_status_message(message, "error")
+            return False
+        return True
 
-        # prepare the data for the template
-        self.reports = map(self.get_report_data, reports)
-        self.recipients = self.get_recipients_data(reports)
-        self.responsibles = self.get_responsibles_data(reports)
+    def validate_email_recipients(self):
+        """Validate if the recipients are all valid
 
+        :returns: True if the validator passed, otherwise False
+        """
         # inform the user about invalid recipients
-        if not all(map(lambda r: r.get("valid"), self.recipients)):
+        if not all(map(lambda r: r.get("valid"), self.recipients_data)):
             message = _(
                 "Not all contacts are equal for the selected Reports. "
                 "Please manually select recipients for this email.")
             self.add_status_message(message, "warning")
+            return False
+        return True
 
-        return self.template()
-
-    def set_report_recipients(self, report, recipients):
-        """Set recipients to the reports w/o overwriting the old ones
-
-        :param reports: list of ARReports
-        :param recipients: list of name,email strings
+    @property
+    def portal(self):
+        """Get the portal object
         """
-        to_set = report.getRecipients()
-        for recipient in recipients:
-            if recipient not in to_set:
-                to_set.append(recipient)
-        report.setRecipients(to_set)
+        return api.get_portal()
 
-    def publish(self, ar):
+    @property
+    def laboratory(self):
+        """Laboratory object from the LIMS setup
+        """
+        return api.get_setup().laboratory
+
+    @property
+    @view.memoize
+    def reports(self):
+        """Return the objects from the UIDs given in the request
+        """
+        # Create a mapping of source ARs for copy
+        uids = self.request.form.get("uids", [])
+        # handle 'uids' GET parameter coming from a redirect
+        if isinstance(uids, basestring):
+            uids = uids.split(",")
+        uids = filter(api.is_uid, uids)
+        unique_uids = OrderedDict().fromkeys(uids).keys()
+        return map(self.get_object_by_uid, unique_uids)
+
+    @property
+    @view.memoize
+    def attachments(self):
+        """Return the objects from the UIDs given in the request
+        """
+        uids = self.request.form.get("attachment_uids", [])
+        return map(self.get_object_by_uid, uids)
+
+    @property
+    def email_sender_address(self):
+        """Sender email is either the lab email or portal email "from" address
+        """
+        lab_email = self.laboratory.getEmailAddress()
+        portal_email = self.portal.email_from_address
+        return lab_email or portal_email
+
+    @property
+    def email_sender_name(self):
+        """Sender name is either the lab name or the portal email "from" name
+        """
+        lab_from_name = self.laboratory.getName()
+        portal_from_name = self.portal.email_from_name
+        return lab_from_name or portal_from_name
+
+    @property
+    def email_recipients_and_responsibles(self):
+        """Returns a unified list of recipients and responsibles
+        """
+        return list(set(self.email_recipients + self.email_responsibles))
+
+    @property
+    def email_recipients(self):
+        """Email addresses of the selected recipients
+        """
+        return map(safe_unicode, self.request.form.get("recipients", []))
+
+    @property
+    def email_responsibles(self):
+        """Email addresses of the responsible persons
+        """
+        return map(safe_unicode, self.request.form.get("responsibles", []))
+
+    @property
+    def email_subject(self):
+        """Email subject line to be used in the template
+        """
+        # request parameter has precedence
+        subject = self.request.get("subject", None)
+        if subject is not None:
+            return subject
+        subject = self.context.translate(_("Analysis Results for {}"))
+        return subject.format(self.client_name)
+
+    @property
+    def email_body(self):
+        """Email body text to be used in the template
+        """
+        # request parameter has precedence
+        body = self.request.get("body", None)
+        if body is not None:
+            return body
+        return self.context.translate(_(self.email_template(self)))
+
+    @property
+    def email_attachments(self):
+        attachments = []
+
+        # Convert report PDFs -> email attachments
+        for report in self.reports:
+            pdf = self.get_pdf(report)
+            if pdf is None:
+                logger.error("Skipping empty PDF for report {}"
+                             .format(report.getId()))
+                continue
+            sample = report.getAnalysisRequest()
+            filename = "{}.pdf".format(api.get_id(sample))
+            filedata = pdf.data
+            attachments.append(
+                mailapi.to_email_attachment(filedata, filename))
+
+        # Convert additional attachments
+        for attachment in self.attachments:
+            af = attachment.getAttachmentFile()
+            filedata = af.data
+            filename = af.filename
+            attachments.append(
+                mailapi.to_email_attachment(filedata, filename))
+
+        return attachments
+
+    @property
+    def reports_data(self):
+        """Returns a list of report data dictionaries
+        """
+        reports = self.reports
+        return map(self.get_report_data, reports)
+
+    @property
+    def recipients_data(self):
+        """Returns a list of recipients data dictionaries
+        """
+        reports = self.reports
+        return self.get_recipients_data(reports)
+
+    @property
+    def responsibles_data(self):
+        """Returns a list of responsibles data dictionaries
+        """
+        reports = self.reports
+        return self.get_responsibles_data(reports)
+
+    @property
+    def client_name(self):
+        """Returns the client name
+        """
+        return safe_unicode(self.context.Title())
+
+    @property
+    def exit_url(self):
+        """Exit URL for redirect
+        """
+        return "{}/{}".format(
+            api.get_url(self.context), "reports_listing")
+
+    @property
+    def total_size(self):
+        """Total size of all report PDFs + additional attachments
+        """
+        reports = self.reports
+        attachments = self.attachments
+        return self.get_total_size(reports, attachments)
+
+    @property
+    def max_email_size(self):
+        """Return the max. allowed email size in KB
+        """
+        # check first if a registry record exists
+        max_email_size = api.get_registry_record(
+            "senaite.core.max_email_size")
+        if max_email_size is None:
+            max_size = DEFAULT_MAX_EMAIL_SIZE
+        if max_size < 0:
+            max_email_size = 0
+        return max_size * 1024
+
+    def make_sendlog_record(self, **kw):
+        """Create a new sendlog record
+        """
+        user = get_user()
+        actor = get_user_id()
+        userprops = api.get_user_properties(user)
+        actor_fullname = userprops.get("fullname", actor)
+        email_send_date = DateTime()
+        email_recipients = self.email_recipients
+        email_responsibles = self.email_responsibles
+        email_subject = self.email_subject
+        email_body = self.render_email_template(self.email_body)
+        email_attachments = map(api.get_uid, self.attachments)
+
+        record = {
+            "actor": actor,
+            "actor_fullname": actor_fullname,
+            "email_send_date": email_send_date,
+            "email_recipients": email_recipients,
+            "email_responsibles": email_responsibles,
+            "email_subject": email_subject,
+            "email_body": email_body,
+            "email_attachments": email_attachments,
+
+        }
+        # keywords take precedence
+        record.update(kw)
+        return record
+
+    def write_sendlog(self):
+        """Write email sendlog
+        """
+        timestamp = DateTime()
+
+        for report in self.reports:
+            # get the current sendlog records
+            records = report.getSendLog()
+            # create a new record with the current data
+            new_record = self.make_sendlog_record(email_send_date=timestamp)
+            # set the new record to the existing records
+            records.append(new_record)
+            report.setSendLog(records)
+            # reindex object to make changes visible in the snapshot
+            report.reindexObject()
+            # manually take a new snapshot
+            take_snapshot(report)
+
+    def publish_samples(self):
+        """Publish all samples of the reports
+        """
+        reports = self.reports
+        for report in reports:
+            # publish the primary sample
+            primary_sample = report.getAnalysisRequest()
+            self.publish(primary_sample)
+            # publish the contained samples
+            contained_samples = report.getContainedAnalysisRequests()
+            for sample in contained_samples:
+                # skip the primary sample
+                if sample == primary_sample:
+                    continue
+                self.publish(sample)
+
+    def publish(self, sample):
         """Set status to prepublished/published/republished
         """
-        # Manually update the view on the database to avoid conflict errors
-        ar.getClient()._p_jar.sync()
-
         wf = api.get_tool("portal_workflow")
-        status = wf.getInfoFor(ar, "review_state")
+        status = wf.getInfoFor(sample, "review_state")
         transitions = {"verified": "publish",
                        "published": "republish"}
         transition = transitions.get(status, "prepublish")
-        logger.info("AR Transition: {} -> {}".format(status, transition))
+        logger.info("Transitioning sample {}: {} -> {}".format(
+            api.get_id(sample), status, transition))
         try:
-            wf.doActionFor(ar, transition)
+            # Manually update the view on the database to avoid conflict errors
+            sample.getClient()._p_jar.sync()
+            # Perform WF transition
+            wf.doActionFor(sample, transition)
             # Commit the changes
             transaction.commit()
             return True
         except WorkflowException as e:
-            logger.debug(e)
+            logger.error(e)
             return False
 
-    def parse_email(self, email):
-        """parse an email to an unicode name, email tuple
+    def render_email_template(self, template):
+        """Return the rendered email template
+
+        This method interpolates the $recipients variable with the selected
+        recipients from the email form.
+
+        :params template: Email body text
+        :returns: Rendered email template
         """
-        splitted = safe_unicode(email).rsplit(",", 1)
-        if len(splitted) == 1:
-            return (False, splitted[0])
-        elif len(splitted) == 2:
-            return (splitted[0], splitted[1])
-        else:
-            raise ValueError("Could not parse email '{}'".format(email))
 
-    def to_email_attachment(self, filename, filedata, **kw):
-        """Create a new MIME Attachment
+        recipients = self.email_recipients_and_responsibles
+        template_context = {
+            "recipients": "\n".join(recipients)
+        }
 
-        The Content-Type: header is build from the maintype and subtype of the
-        guessed filename mimetype. Additional parameters for this header are
-        taken from the keyword arguments.
-        """
-        maintype = "application"
-        subtype = "octet-stream"
+        email_template = Template(safe_unicode(template)).safe_substitute(
+            **template_context)
 
-        mime_type = mimetypes.guess_type(filename)[0]
-        if mime_type is not None:
-            maintype, subtype = mime_type.split("/")
-
-        attachment = MIMEBase(maintype, subtype, **kw)
-        attachment.set_payload(filedata)
-        encoders.encode_base64(attachment)
-        attachment.add_header("Content-Disposition",
-                              "attachment; filename=%s" % filename)
-        return attachment
+        return email_template
 
     def send_email(self, recipients, subject, body, attachments=None):
         """Prepare and send email to the recipients
@@ -331,67 +492,28 @@ class EmailView(BrowserView):
         :param subject: the email subject
         :param body: the email body
         :param attachments: list of email attachments
-        :returns: True if all emails were sent, else false
+        :returns: True if all emails were sent, else False
         """
-
-        recipient_pairs = map(self.parse_email, recipients)
-        template_context = {
-            "recipients": "\n".join(
-                map(lambda p: formataddr(p), recipient_pairs))
-        }
-
-        body_template = Template(safe_unicode(body)).safe_substitute(
-            **template_context)
-
-        _preamble = "This is a multi-part message in MIME format.\n"
-        _from = formataddr((self.email_from_name, self.email_from_address))
-        _subject = Header(s=safe_unicode(subject), charset="utf8")
-        _body = MIMEText(body_template, _subtype="plain", _charset="utf8")
-
-        # Create the enclosing message
-        mime_msg = MIMEMultipart()
-        mime_msg.preamble = _preamble
-        mime_msg["Subject"] = _subject
-        mime_msg["From"] = _from
-        mime_msg.attach(_body)
-
-        # Attach attachments
-        for attachment in attachments:
-            mime_msg.attach(attachment)
+        email_body = self.render_email_template(body)
 
         success = []
         # Send one email per recipient
-        for pair in recipient_pairs:
-            # N.B.: Headers are added additive, so we need to remove any
-            #       existing "To" headers
-            # No KeyError is raised if the key does not exist.
-            # https://docs.python.org/2/library/email.message.html#email.message.Message.__delitem__
-            del mime_msg["To"]
-
+        for recipient in recipients:
             # N.B. we use just the email here to prevent this Postfix Error:
             # Recipient address rejected: User unknown in local recipient table
-            mime_msg["To"] = pair[1]
-            msg_string = mime_msg.as_string()
-            sent = self.send(msg_string)
+            pair = mailapi.parse_email_address(recipient)
+            to_address = pair[1]
+            mime_msg = mailapi.compose_email(self.email_sender_address,
+                                             to_address,
+                                             subject,
+                                             email_body,
+                                             attachments=attachments)
+            sent = mailapi.send_email(mime_msg)
             if not sent:
                 logger.error("Could not send email to {}".format(pair))
             success.append(sent)
 
         if not all(success):
-            return False
-        return True
-
-    def send(self, msg_string, immediate=True):
-        """Send the email via the MailHost tool
-        """
-        try:
-            mailhost = api.get_tool("MailHost")
-            mailhost.send(msg_string, immediate=immediate)
-        except SMTPException as e:
-            logger.error(e)
-            return False
-        except socket.error as e:
-            logger.error(e)
             return False
         return True
 
@@ -403,15 +525,20 @@ class EmailView(BrowserView):
     def get_report_data(self, report):
         """Report data to be used in the template
         """
-        ar = report.getAnalysisRequest()
-        attachments = map(self.get_attachment_data, ar.getAttachment())
+        sample = report.getAnalysisRequest()
+        analyses = sample.getAnalyses(full_objects=True)
+        # merge together sample + analyses attachments
+        attachments = itertools.chain(
+            sample.getAttachment(),
+            *map(lambda an: an.getAttachment(), analyses))
+        attachments_data = map(self.get_attachment_data, attachments)
         pdf = self.get_pdf(report)
         filesize = "{} Kb".format(self.get_filesize(pdf))
-        filename = "{}.pdf".format(ar.getId())
+        filename = "{}.pdf".format(sample.getId())
 
         return {
-            "ar": ar,
-            "attachments": attachments,
+            "sample": sample,
+            "attachments": attachments_data,
             "pdf": pdf,
             "obj": report,
             "uid": api.get_uid(report),
@@ -420,7 +547,7 @@ class EmailView(BrowserView):
         }
 
     def get_attachment_data(self, attachment):
-        """Attachments data
+        """Attachments data to be used in the template
         """
         f = attachment.getAttachmentFile()
         attachment_type = attachment.getAttachmentType()
@@ -452,16 +579,17 @@ class EmailView(BrowserView):
         recipient_names = []
 
         for num, report in enumerate(reports):
-            # get the linked AR of this ARReport
-            ar = report.getAnalysisRequest()
+            sample = report.getAnalysisRequest()
             # recipient names of this report
             report_recipient_names = []
-            for recipient in self.get_recipients(ar):
+            for recipient in self.get_recipients(sample):
                 name = recipient.get("Fullname")
                 email = recipient.get("EmailAddress")
+                address = mailapi.to_email_address(email, name=name)
                 record = {
                     "name": name,
                     "email": email,
+                    "address": address,
                     "valid": True,
                 }
                 if record not in recipients:
@@ -498,9 +626,11 @@ class EmailView(BrowserView):
                 responsible = responsibles["dict"][manager_id]
                 name = responsible.get("name")
                 email = responsible.get("email")
+                address = mailapi.to_email_address(email, name=name)
                 record = {
                     "name": name,
                     "email": email,
+                    "address": address,
                     "valid": True,
                 }
                 if record not in recipients:
@@ -517,30 +647,6 @@ class EmailView(BrowserView):
                 recipient["valid"] = False
 
         return recipients
-
-    @property
-    def portal(self):
-        return api.get_portal()
-
-    @property
-    def laboratory(self):
-        return api.get_setup().laboratory
-
-    @property
-    def email_from_address(self):
-        """Portal email
-        """
-        lab_email = self.laboratory.getEmailAddress()
-        portal_email = self.portal.email_from_address
-        return lab_email or portal_email
-
-    @property
-    def email_from_name(self):
-        """Portal email name
-        """
-        lab_from_name = self.laboratory.getName()
-        portal_from_name = self.portal.email_from_name
-        return lab_from_name or portal_from_name
 
     def get_total_size(self, *files):
         """Calculate the total size of the given files
@@ -559,35 +665,6 @@ class EmailView(BrowserView):
         # initial size of 0
         return reduce(lambda x, y: x + y,
                       map(self.get_filesize, iterate(files)), 0)
-
-    @property
-    def max_email_size(self):
-        """Return the max. allowed email size in KB
-        """
-        # TODO: Refactor to customizable setup option
-        max_size = EMAIL_MAX_SIZE
-        if max_size < 0:
-            return 0.0
-        return max_size * 1024
-
-    def get_reports(self):
-        """Return the objects from the UIDs given in the request
-        """
-        # Create a mapping of source ARs for copy
-        uids = self.request.form.get("uids", [])
-        # handle 'uids' GET parameter coming from a redirect
-        if isinstance(uids, basestring):
-            uids = uids.split(",")
-        uids = filter(api.is_uid, uids)
-        unique_uids = OrderedDict().fromkeys(uids).keys()
-        return map(self.get_object_by_uid, unique_uids)
-
-    def get_attachments(self):
-        """Return the objects from the UIDs given in the request
-        """
-        # Create a mapping of source ARs for copy
-        uids = self.request.form.get("attachment_uids", [])
-        return map(self.get_object_by_uid, uids)
 
     def get_object_by_uid(self, uid):
         """Get the object by UID
@@ -660,8 +737,8 @@ class EmailView(BrowserView):
     def ajax_recalculate_size(self):
         """Recalculate the total size of the selected attachments
         """
-        reports = self.get_reports()
-        attachments = self.get_attachments()
+        reports = self.reports
+        attachments = self.attachments
         total_size = self.get_total_size(reports, attachments)
 
         return {
@@ -670,3 +747,11 @@ class EmailView(BrowserView):
             "limit": self.max_email_size,
             "limit_exceeded": total_size > self.max_email_size,
         }
+
+    def fail(self, message, status=500, **kw):
+        """Set a JSON error object and a status to the response
+        """
+        self.request.response.setStatus(status)
+        result = {"success": False, "errors": message, "status": status}
+        result.update(kw)
+        return result

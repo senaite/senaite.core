@@ -11,6 +11,7 @@ from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.Utils import formataddr
+from email.Utils import parseaddr
 from smtplib import SMTPException
 from string import Template
 from StringIO import StringIO
@@ -47,6 +48,18 @@ def to_email_address(address, name=""):
     return formataddr(pair)
 
 
+def parse_email_address(address):
+    """Parse a given name/email pair
+
+    :param address: The name/email string to parse
+    :type address: basestring
+    :returns: Tuple of (name, email)
+    """
+    if not isinstance(address, basestring):
+        raise ValueError("Expected a string, got {}".format(type(address)))
+    return parseaddr(address)
+
+
 def to_email_subject(subject):
     """Convert the given subject to an email subject
 
@@ -70,36 +83,45 @@ def to_email_body_text(body, **kw):
     return MIMEText(body_template, _subtype="plain", _charset="utf8")
 
 
-def to_email_attachment(file_or_path, filename="", **kw):
+def to_email_attachment(filedata, filename="", **kw):
     """Create a new MIME Attachment
 
     The Content-Type: header is build from the maintype and subtype of the
     guessed filename mimetype. Additional parameters for this header are
     taken from the keyword arguments.
 
-    :param file_or_path: OS-level file or absolute path
-    :type file_or_path: str, FileIO, MIMEBase
+    :param filedata: File, file path, filedata
+    :type filedata: FileIO, MIMEBase, basestring
     :param filename: Filename to use
-    :type filedata: str
+    :type filename: str
     :returns: MIME Attachment
     """
-    filedata = ""
+    data = ""
     maintype = "application"
     subtype = "octet-stream"
 
+    def is_file(s):
+        try:
+            return os.path.exists(s)
+        except TypeError:
+            return False
+
     # Handle attachment
-    if isinstance(file_or_path, MIMEBase):
+    if isinstance(filedata, MIMEBase):
         # return immediately
-        return file_or_path
+        return filedata
     # Handle file/StringIO
-    elif isinstance(file_or_path, (file, StringIO)):
-        filedata = file_or_path.read()
-    # Handle file path
-    elif os.path.isfile(file_or_path):
-        filename = filename or os.path.basename(file_or_path)
-        with open(file_or_path, "r") as f:
+    elif isinstance(filedata, (file, StringIO)):
+        data = filedata.read()
+    # Handle file paths
+    if is_file(filedata):
+        filename = filename or os.path.basename(filedata)
+        with open(filedata, "r") as f:
             # read the filedata from the filepath
-            filedata = f.read()
+            data = f.read()
+    # Handle raw filedata
+    elif isinstance(filedata, basestring):
+        data = filedata
 
     # Set MIME type from keyword arguments or guess it from the filename
     mime_type = kw.pop("mime_type", None) or mimetypes.guess_type(filename)[0]
@@ -107,7 +129,7 @@ def to_email_attachment(file_or_path, filename="", **kw):
         maintype, subtype = mime_type.split("/")
 
     attachment = MIMEBase(maintype, subtype, **kw)
-    attachment.set_payload(filedata)
+    attachment.set_payload(data)
     encoders.encode_base64(attachment)
     attachment.add_header("Content-Disposition",
                           "attachment; filename=%s" % filename)
@@ -130,30 +152,6 @@ def is_valid_email_address(address):
     if not _DOMAIN_RE.match(address):
         return False
     return True
-
-
-def parse_email_address(address):
-    """Parse a given name/email pair
-
-    :param address: The name/email string to parse
-    :type address: basestring
-    :returns: RFC 2822 email address
-    """
-    if not isinstance(address, basestring):
-        raise ValueError("Expected a string, got {}".format(type(address)))
-
-    # parse <name>, <email> recipient
-    splitted = map(lambda s: s.strip(),
-                   safe_unicode(address).rsplit(",", 1))
-
-    pair = []
-    for s in splitted:
-        if is_valid_email_address(s):
-            pair.insert(0, s)
-        else:
-            pair.append(s)
-
-    return to_email_address(*pair)
 
 
 def compose_email(from_addr, to_addr, subj, body, attachments=[], **kw):

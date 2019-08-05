@@ -78,7 +78,28 @@ schema = BikaSchema.copy() + Schema((
     ),
     RecordField(
         "Metadata",
-        multiValued=True,
+        type="metadata",
+        subfields=(
+            "paperformat",
+            "timestamp",
+            "orientation",
+            "template",
+            "contained_requests",
+        ),
+    ),
+    RecordsField(
+        "SendLog",
+        type="sendlog",
+        subfields=(
+            "actor",
+            "actor_fullname",
+            "email_send_date",
+            "email_recipients",
+            "email_responsibles",
+            "email_subject",
+            "email_body",
+            "email_attachments",
+        ),
     ),
     TextField(
         "Html"
@@ -111,8 +132,8 @@ schema = BikaSchema.copy() + Schema((
     ),
 ))
 
-schema['id'].required = False
-schema['title'].required = False
+schema["id"].required = False
+schema["title"].required = False
 
 
 class ARReport(BaseFolder):

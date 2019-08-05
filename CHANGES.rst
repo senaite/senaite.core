@@ -11,6 +11,8 @@ Changelog
 
 **Changed**
 
+- #1413 Improved Email Publication
+
 
 **Removed**
 

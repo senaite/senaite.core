@@ -41,35 +41,29 @@
             name="send_email_form"
             method="POST">
 
-        <input type="hidden" name="submitted" value="1"/>
-        <input tal:replace="structure context/@@authenticator/authenticator"/>
-
         <!-- Email wrapper -->
         <div class="email_wrapper">
           <div class="form-group">
-            <label i18n:translate="" for="to">From</label>
+            <label i18n:translate="" for="email_sender_address">From</label>
             <span class="recipient valid"
-                  tal:define="from_address view/email_from_address;
-                              from_name view/email_from_name">
-              <input type="checkbox"
-                     checked="checked"
-                     disabled="disabled"
-                     value="from_address" />
-              <span tal:attributes="title from_address"
-                    tal:content="from_name"/>
+                  tal:define="email_sender_address view/email_sender_address;
+                              email_sender_name view/email_sender_name">
+              <span tal:attributes="title email_sender_address"
+                    tal:content="email_sender_name"/>
             </span>
           </div>
           <div class="form-group">
-            <label i18n:translate="" for="to">To</label>
-            <tal:emails repeat="recipient view/recipients">
+            <label i18n:translate="" for="recipients">Recipients</label>
+            <tal:emails repeat="recipient view/recipients_data">
               <span tal:define="name recipient/name;
                                 email recipient/email;
+                                address recipient/address;
                                 valid recipient/valid;
                                 valid_cls python:valid and 'valid' or 'invalid';"
                     tal:attributes="class string:recipient ${valid_cls}">
                 <input type="checkbox"
                        tal:condition="email"
-                       tal:attributes="value string:${name},${email};
+                       tal:attributes="value string:${address};
                                        checked python:valid and 'checked';"
                        name="recipients:list"/>
 
@@ -87,16 +81,17 @@
 
           <div class="form-group">
             <label i18n:translate="" for="responsibles">Responsibles</label>
-            <tal:responsibles repeat="recipient view/responsibles">
+            <tal:responsibles repeat="recipient view/responsibles_data">
               <span tal:define="name recipient/name;
                                 email recipient/email;
+                                address recipient/address;
                                 valid recipient/valid;
                                 valid_cls python:valid and 'valid' or 'invalid';"
                     tal:attributes="class string:recipient ${valid_cls}">
 
                 <input type="hidden"
                        tal:condition="email"
-                       tal:attributes="value string:${name},${email};"
+                       tal:attributes="value string:${address};"
                        name="responsibles:list"/>
 
                 <span tal:condition="not: email"
@@ -130,7 +125,7 @@
           </div>
 
           <div class="form-group"
-               tal:define="attachments python:map(lambda r:r.get('attachments'), view.reports)">
+               tal:define="attachments python:map(lambda r:r.get('attachments'), view.reports_data)">
             <label i18n:translate="" for="attachments">Attachments</label>
             <button id="add-attachments"
                     tal:condition="python:any(attachments)"
@@ -138,14 +133,14 @@
             <div class="total_size discreet" i18n:translate="">
               <span id="attachment-files"
                     i18n:name="amount"
-                    tal:content="python:len(view.reports)"/>
+                    tal:content="python:len(view.reports_data)"/>
               attachments with a total size of
               <span id="email-size" i18n:name="total_size" tal:content="python:'%.2f Kb' % view.total_size"/>
             </div>
 
             <div id="report-attachments-container"
                  class="attachments well row">
-              <tal:reports repeat="report view/reports">
+              <tal:reports repeat="report view/reports_data">
                 <input type="hidden" name="uids:list" tal:attributes="value report/uid"/>
                 <div class="attachment col-xs-12 col-sm-4 col-md-3 col-lg-2">
                   <a href="#"
@@ -165,7 +160,7 @@
                  class="attachments well row"
                  tal:condition="python:any(attachments)">
               <!-- Additional Attachments -->
-              <tal:reports repeat="report view/reports">
+              <tal:reports repeat="report view/reports_data">
                 <tal:attachments repeat="attachment report/attachments">
                   <div class="attachment col-xs-12 col-sm-4 col-md-3 col-lg-2">
                     <input type="checkbox" name="attachment_uids:list" tal:attributes="value attachment/uid"/>
@@ -183,7 +178,7 @@
                       <div class="attachment-info small">
                         <span tal:content="attachment/attachment_keys"/>
                         <span i18n:translate="">in</span>
-                        <span tal:content="report/ar/getId"/>
+                        <span tal:content="report/sample/getId"/>
                         <div class="fileinfo">
                           <span class="filetype" tal:content="attachment/mimetype"/>
                           <span class="filesize" tal:content="string:${attachment/filesize}kB"/>
