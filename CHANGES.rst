@@ -11,6 +11,7 @@ Changelog
 
 **Changed**
 
+- #1417 Cache allowed transitions for analyses on the request
 - #1413 Improved Email Publication
 
 
