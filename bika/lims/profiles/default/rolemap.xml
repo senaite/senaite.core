@@ -444,6 +444,11 @@
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
+    <permission name="senaite.core: Transition: Detach Sample Partition" acquire="False">
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="LabClerk"/>
+    </permission>
     <permission name="senaite.core: Transition: Reinstate Analysis Request" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>

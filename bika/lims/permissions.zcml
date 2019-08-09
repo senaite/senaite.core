@@ -78,6 +78,7 @@
 
   # Transition Permissions (Analysis Request)
   <permission id="senaite.core.permissions.TransitionCancelAnalysisRequest" title="senaite.core: Transition: Cancel Analysis Request"/>
+  <permission id="senaite.core.permissions.TransitionDetachSamplePartition" title="senaite.core: Transition: Detach Sample Partition" />
   <permission id="senaite.core.permissions.TransitionReinstateAnalysisRequest" title="senaite.core: Transition: Reinstate Analysis Request"/>
   <permission id="senaite.core.permissions.TransitionInvalidate" title="senaite.core: Transition: Invalidate"/>
   <permission id="senaite.core.permissions.TransitionPreserveSample" title="senaite.core: Transition: Preserve Sample"/>

@@ -223,3 +223,11 @@ def guard_reject(analysis_request):
     True only if setup's isRejectionWorkflowEnabled is True
     """
     return analysis_request.bika_setup.isRejectionWorkflowEnabled()
+
+
+def guard_detach(analysis_request):
+    """Returns whether 'detach' transition can be performed or not. Returns True
+    only if the sample passed in is a partition
+    """
+    # Detach transition can only be done to partitions
+    return analysis_request.isPartition()
