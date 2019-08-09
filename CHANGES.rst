@@ -20,6 +20,7 @@ Changelog
 
 **Fixed**
 
+- #1418 Subscriber adapters not supported in clients listing
 - #1419 Mixed permissions for transitions in client workflow
 - #1414 Occasional "OSError: [Errno 24] Too many open files" in frontpage
 
