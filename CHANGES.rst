@@ -11,6 +11,7 @@ Changelog
 
 **Changed**
 
+- #1417 Cache allowed transitions for analyses on the request
 - #1413 Improved Email Publication
 
 
@@ -20,6 +21,7 @@ Changelog
 **Fixed**
 
 - #1418 Subscriber adapters not supported in clients listing
+- #1419 Mixed permissions for transitions in client workflow
 - #1414 Occasional "OSError: [Errno 24] Too many open files" in frontpage
 
 

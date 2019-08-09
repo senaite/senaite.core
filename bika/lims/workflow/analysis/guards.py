@@ -19,9 +19,13 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
-from bika.lims.interfaces import IWorksheet, IVerified, ISubmitted
-from bika.lims.interfaces.analysis import IRequestAnalysis
+from bika.lims import logger
 from bika.lims import workflow as wf
+from bika.lims.interfaces import ISubmitted
+from bika.lims.interfaces import IVerified
+from bika.lims.interfaces import IWorksheet
+from bika.lims.interfaces.analysis import IRequestAnalysis
+from plone.memoize.request import cache
 
 
 def is_worksheet_context():
@@ -311,9 +315,41 @@ def is_transition_allowed(analyses, transition_id):
     if not isinstance(analyses, list):
         return is_transition_allowed([analyses], transition_id)
     for analysis in analyses:
-        if not wf.isTransitionAllowed(analysis, transition_id):
+        if not cached_is_transition_allowed(analysis, transition_id):
             return False
     return True
+
+
+def _transition_cache_key(fun, obj, action):
+    """Cache key generator for the request cache
+
+    This function generates cache keys like this:
+    >>> from bika.lims import api
+    >>> from zope.annotation.interfaces import IAnnotations
+    >>> request = api.get_request()
+    >>> IAnnotations(request)
+    # noqa: E501
+    {'bika.lims.workflow.analysis.guards.check_analysis_allows_transition:3ff02762c70f4a56b1b30c1b74d32bf6-retract': True,
+     'bika.lims.workflow.analysis.guards.check_analysis_allows_transition:0390c16ddec14a04b87ff8408e2aa229-retract': True,
+     ...
+    }
+    """
+    return "%s-%s" % (api.get_uid(obj), action)
+
+
+@cache(get_key=_transition_cache_key, get_request="analysis.REQUEST")
+def cached_is_transition_allowed(analysis, transition_id):
+    """Check if the transition is allowed for the given analysis and cache the
+    value on the request.
+
+    Note: The request is obtained by the given expression from the `locals()`,
+          which includes the given arguments.
+    """
+    logger.debug("cached_is_transition_allowed: analyis=%r transition=%s"
+                 % (analysis, transition_id))
+    if wf.isTransitionAllowed(analysis, transition_id):
+        return True
+    return False
 
 
 def is_submitted_or_submittable(analysis):
