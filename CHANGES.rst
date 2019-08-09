@@ -6,6 +6,7 @@ Changelog
 
 **Added**
 
+- #1420 Allow to detach a partition from its primary sample
 - #1410 Email API
 
 
