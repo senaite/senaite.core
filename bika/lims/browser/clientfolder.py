@@ -133,7 +133,7 @@ class ClientFolderContentsView(BikaListingView):
         """Before template render hook
         """
         # Call `before_render` from the base class
-        BikaListingView.before_render(self)
+        super(ClientFolderContentsView, self).before_render()
 
         # Render the Add button if the user has the AddClient permission
         if check_permission(AddClient, self.context):
@@ -171,11 +171,6 @@ class ClientFolderContentsView(BikaListingView):
         :return: the dict representation of the item
         :rtype: dict
         """
-        # Call the folderitem method from the base class
-        item = BikaListingView.folderitem(self, obj, item, index)
-        if not item:
-            return None
-
         # render a link to the defined start page
         link_url = "{}/{}".format(item["url"], self.landing_page)
         item["replace"]["title"] = get_link(link_url, item["title"])
@@ -189,6 +184,7 @@ class ClientFolderContentsView(BikaListingView):
         phone = obj.getPhone()
         if phone:
             item["replace"]["Phone"] = get_link("tel:{}".format(phone), phone)
+
         return item
 
 
