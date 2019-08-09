@@ -66,3 +66,10 @@ class RejectedAnalysisRequestViewlet(ViewletBase):
     """Current ANalysis Request was rejected. Display the reasons
     """
     template = ViewPageTemplateFile("templates/rejected_ar_viewlet.pt")
+
+
+class DetachedPartitionViewlet(ViewletBase):
+    """Prints a viewlet that displays the Primary Sample the sample was
+    detached from
+    """
+    template = ViewPageTemplateFile("templates/detached_partition_viewlet.pt")
