@@ -43,5 +43,9 @@ def upgrade(tool):
 
     # -------- ADD YOUR STUFF BELOW --------
 
+    # Mixed permissions for transitions in client workflow
+    # https://github.com/senaite/senaite.core/pull/1419
+    setup.runImportStepFromProfile(profile, "workflow")
+
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
