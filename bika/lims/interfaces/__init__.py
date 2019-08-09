@@ -940,6 +940,12 @@ class IReceived(Interface):
     """Marker interface for received objects
     """
 
+
 class IInternalUse(Interface):
     """Marker interface for objects only lab personnel must have access
+    """
+
+
+class IDetachedPartition(Interface):
+    """Marker interface for samples that have been detached from its primary
     """

@@ -1294,6 +1294,20 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
+    # The Primary Sample the current sample was detached from
+    ReferenceField(
+        "DetachedFrom",
+        allowed_types=("AnalysisRequest",),
+        relationship="AnalysisRequestDetachedFrom",
+        referenceClass=HoldingReference,
+        mode="rw",
+        read_permission=View,
+        write_permission=ModifyPortalContent,
+        widget=ReferenceWidget(
+            visible=False,
+        )
+    ),
+
     # The Analysis Request the current Analysis Request comes from because of
     # an invalidation of the former
     ReferenceField(

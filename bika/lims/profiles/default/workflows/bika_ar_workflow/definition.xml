@@ -20,6 +20,7 @@
   <!-- *** MANAGED PERMISSIONS  *** -->
   <!-- Transitions (governs guards) -->
   <permission>senaite.core: Transition: Cancel Analysis Request</permission>
+  <permission>senaite.core: Transition: Detach Sample Partition</permission>
   <permission>senaite.core: Transition: Reinstate Analysis Request</permission>
   <permission>senaite.core: Transition: Invalidate</permission>
   <permission>senaite.core: Transition: Preserve Sample</permission>
@@ -108,6 +109,7 @@
     <!-- MANAGED PERMISSIONS -->
     <!-- Permissions for Transitions (must match with exit transitions) -->
     <permission-map name="senaite.core: Transition: Cancel Analysis Request" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Detach Sample Partition" acquired="False"/>
     <permission-map name="senaite.core: Transition: Reinstate Analysis Request" acquired="False"/>
     <permission-map name="senaite.core: Transition: Invalidate" acquired="False"/>
     <permission-map name="senaite.core: Transition: Preserve Sample" acquired="False"/>
@@ -194,6 +196,7 @@
     <!-- MANAGED PERMISSIONS -->
     <!-- Permissions for Transitions (must match with exit transitions) -->
     <permission-map name="senaite.core: Transition: Cancel Analysis Request" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Detach Sample Partition" acquired="False"/>
     <permission-map name="senaite.core: Transition: Reinstate Analysis Request" acquired="False"/>
     <permission-map name="senaite.core: Transition: Invalidate" acquired="False"/>
     <permission-map name="senaite.core: Transition: Preserve Sample" acquired="False"/>
@@ -292,6 +295,7 @@
     <!-- MANAGED PERMISSIONS -->
     <!-- Permissions for Transitions (must match with exit transitions) -->
     <permission-map name="senaite.core: Transition: Cancel Analysis Request" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Detach Sample Partition" acquired="False"/>
     <permission-map name="senaite.core: Transition: Reinstate Analysis Request" acquired="False"/>
     <permission-map name="senaite.core: Transition: Invalidate" acquired="False"/>
     <permission-map name="senaite.core: Transition: Preserve Sample" acquired="False"/>
@@ -367,6 +371,7 @@
 
     <!-- TRANSITIONS -->
     <exit-transition transition_id="cancel"/>
+    <exit-transition transition_id="detach" />
     <exit-transition transition_id="receive"/>
     <exit-transition transition_id="submit"/>
     <exit-transition transition_id="reject" />
@@ -385,6 +390,7 @@
     <!-- MANAGED PERMISSIONS -->
     <!-- Permissions for Transitions (must match with exit transitions) -->
     <permission-map name="senaite.core: Transition: Cancel Analysis Request" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Detach Sample Partition" acquired="True"/>
     <permission-map name="senaite.core: Transition: Reinstate Analysis Request" acquired="False"/>
     <permission-map name="senaite.core: Transition: Invalidate" acquired="False"/>
     <permission-map name="senaite.core: Transition: Preserve Sample" acquired="False"/>
@@ -454,6 +460,7 @@
 
     <!-- TRANSITIONS -->
     <exit-transition transition_id="cancel"/>
+    <exit-transition transition_id="detach"/>
     <exit-transition transition_id="prepublish"/>
     <exit-transition transition_id="submit"/>
     <exit-transition transition_id="reject" />
@@ -471,6 +478,7 @@
     <!-- MANAGED PERMISSIONS -->
     <!-- Permissions for Transitions (must match with exit transitions) -->
     <permission-map name="senaite.core: Transition: Cancel Analysis Request" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Detach Sample Partition" acquired="True"/>
     <permission-map name="senaite.core: Transition: Reinstate Analysis Request" acquired="False"/>
     <permission-map name="senaite.core: Transition: Invalidate" acquired="False"/>
     <permission-map name="senaite.core: Transition: Preserve Sample" acquired="False"/>
@@ -626,6 +634,7 @@
     <exit-transition transition_id="retract" />
     <exit-transition transition_id="reject" />
     <exit-transition transition_id="rollback_to_receive" />
+    <exit-transition transition_id="detach" />
     <!-- /TRANSITIONS -->
 
     <permission-map name="Delete objects" acquired="False">
@@ -638,6 +647,7 @@
     <!-- MANAGED PERMISSIONS -->
     <!-- Permissions for Transitions (must match with exit transitions) -->
     <permission-map name="senaite.core: Transition: Cancel Analysis Request" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Detach Sample Partition" acquired="True"/>
     <permission-map name="senaite.core: Transition: Reinstate Analysis Request" acquired="False"/>
     <permission-map name="senaite.core: Transition: Invalidate" acquired="False"/>
     <permission-map name="senaite.core: Transition: Preserve Sample" acquired="False"/>
@@ -714,6 +724,7 @@
     <exit-transition transition_id="cancel"/>
     <exit-transition transition_id="preserve"/>
     <exit-transition transition_id="reject" />
+    <exit-transition transition_id="detach" />
     <!-- /TRANSITIONS -->
 
     <permission-map name="Delete objects" acquired="False">
@@ -726,6 +737,7 @@
     <!-- MANAGED PERMISSIONS -->
     <!-- Permissions for Transitions (must match with exit transitions) -->
     <permission-map name="senaite.core: Transition: Cancel Analysis Request" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Detach Sample Partition" acquired="True"/>
     <permission-map name="senaite.core: Transition: Reinstate Analysis Request" acquired="False"/>
     <permission-map name="senaite.core: Transition: Invalidate" acquired="False"/>
     <permission-map name="senaite.core: Transition: Preserve Sample" acquired="True"/>
@@ -796,6 +808,7 @@
     <exit-transition transition_id="publish" />
     <exit-transition transition_id="invalidate" />
     <exit-transition transition_id="rollback_to_receive" />
+    <exit-transition transition_id="detach" />
     <!-- /TRANSITIONS -->
 
     <permission-map name="Delete objects" acquired="False">
@@ -808,6 +821,7 @@
     <!-- MANAGED PERMISSIONS (partially readonly) -->
     <!-- Permissions for Transitions (must match with exit transitions) -->
     <permission-map name="senaite.core: Transition: Cancel Analysis Request" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Detach Sample Partition" acquired="True"/>
     <permission-map name="senaite.core: Transition: Reinstate Analysis Request" acquired="False"/>
     <permission-map name="senaite.core: Transition: Invalidate" acquired="True"/>
     <permission-map name="senaite.core: Transition: Preserve Sample" acquired="False"/>
@@ -887,6 +901,7 @@
     <!-- MANAGED PERMISSIONS (partially readonly) -->
     <!-- Permissions for Transitions (must match with exit transitions) -->
     <permission-map name="senaite.core: Transition: Cancel Analysis Request" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Detach Sample Partition" acquired="False"/>
     <permission-map name="senaite.core: Transition: Reinstate Analysis Request" acquired="False"/>
     <permission-map name="senaite.core: Transition: Invalidate" acquired="True"/>
     <permission-map name="senaite.core: Transition: Preserve Sample" acquired="False"/>
@@ -962,6 +977,7 @@
     <!-- MANAGED PERMISSIONS (partially readonly) -->
     <!-- Permissions for Transitions (must match with exit transitions) -->
     <permission-map name="senaite.core: Transition: Cancel Analysis Request" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Detach Sample Partition" acquired="False"/>
     <permission-map name="senaite.core: Transition: Reinstate Analysis Request" acquired="False"/>
     <permission-map name="senaite.core: Transition: Invalidate" acquired="False"/>
     <permission-map name="senaite.core: Transition: Preserve Sample" acquired="False"/>
@@ -1036,6 +1052,7 @@
     <!-- MANAGED PERMISSIONS (partially readonly) -->
     <!-- Permissions for Transitions (must match with exit transitions) -->
     <permission-map name="senaite.core: Transition: Cancel Analysis Request" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Detach Sample Partition" acquired="False"/>
     <permission-map name="senaite.core: Transition: Reinstate Analysis Request" acquired="False"/>
     <permission-map name="senaite.core: Transition: Invalidate" acquired="False"/>
     <permission-map name="senaite.core: Transition: Preserve Sample" acquired="False"/>
@@ -1115,6 +1132,7 @@
     <!-- MANAGED PERMISSIONS (partially readonly) -->
     <!-- Permissions for Transitions (must match with exit transitions) -->
     <permission-map name="senaite.core: Transition: Cancel Analysis Request" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Detach Sample Partition" acquired="False"/>
     <permission-map name="senaite.core: Transition: Reinstate Analysis Request" acquired="True"/>
     <permission-map name="senaite.core: Transition: Invalidate" acquired="False"/>
     <permission-map name="senaite.core: Transition: Preserve Sample" acquired="False"/>
@@ -1428,6 +1446,23 @@
     </guard>
   </transition>
 
+  <!-- Transition: Detach
+       This transition only applies to Sample partitions (governed by the guard)
+       and allows the user to detach a given partition from its primary sample.
+       Thus, a detached partition behaves like a Primary Sample and the original
+       primary sample no longer follows the status of the detached partition.
+
+       Note this transition does not have a new state defined, so this
+       transition does not change the current state of the object.
+  -->
+  <transition transition_id="detach" title="Detach" new_state="" trigger="USER"
+              before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Detach</action>
+    <guard>
+      <guard-expression>python:here.guard_handler("detach")</guard-expression>
+      <guard-permission>senaite.core: Transition: Detach Sample Partition</guard-permission>
+    </guard>
+  </transition>
 
   <!-- *** VARIABLES *** -->
 
