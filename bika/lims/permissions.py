@@ -106,6 +106,7 @@ TransitionUnassignAnalysis = "senaite.core: Transition: Unassign Analysis"
 
 # Transition permissions (Analysis Request)
 TransitionCancelAnalysisRequest = "senaite.core: Transition: Cancel Analysis Request"
+TransitionDetachSamplePartition = "senaite.core: Transition: Detach Sample Partition"
 TransitionReinstateAnalysisRequest = "senaite.core: Transition: Reinstate Analysis Request"
 TransitionInvalidate = "senaite.core: Transition Invalidate"
 TransitionPreserveSample = "senaite.core: Transition: Preserve Sample"

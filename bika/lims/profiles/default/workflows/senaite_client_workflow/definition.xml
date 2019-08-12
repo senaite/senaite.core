@@ -144,7 +144,7 @@
   <transition transition_id="activate" title="Activate" new_state="active" trigger="USER" before_script="" after_script="" i18n:attributes="title">
     <action url="" category="workflow" icon="">Activate</action>
     <guard>
-      <guard-permission>senaite.core: Transition: Deactivate</guard-permission>
+      <guard-permission>senaite.core: Transition: Activate</guard-permission>
       <guard-expression>python:here.guard_handler("activate")</guard-expression>
     </guard>
   </transition>
@@ -152,7 +152,7 @@
   <transition transition_id="deactivate" title="Deactivate" new_state="inactive" trigger="USER" before_script="" after_script="" i18n:attributes="title">
     <action url="" category="workflow" icon="">Deactivate</action>
     <guard>
-      <guard-permission>senaite.core: Transition: Activate</guard-permission>
+      <guard-permission>senaite.core: Transition: Deactivate</guard-permission>
       <guard-expression>python:here.guard_handler("deactivate")</guard-expression>
     </guard>
   </transition>

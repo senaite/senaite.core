@@ -160,6 +160,17 @@
     layer="bika.lims.interfaces.IBikaLIMS"
   />
 
+  <!-- Dettached partition viewlet -->
+  <browser:viewlet
+    for="bika.lims.interfaces.IAnalysisRequest"
+    name="bika.lims.detached_partition_viewlet"
+    class=".analysisrequest.DetachedPartitionViewlet"
+    manager="plone.app.layout.viewlets.interfaces.IAboveContent"
+    template="templates/detached_partition_viewlet.pt"
+    permission="zope2.View"
+    layer="bika.lims.interfaces.IBikaLIMS"
+  />
+
   <!-- Secondary Analysis Request viewlet -->
   <browser:viewlet
     for="bika.lims.interfaces.IAnalysisRequestSecondary"

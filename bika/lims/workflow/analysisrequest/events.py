@@ -20,7 +20,8 @@
 
 from DateTime import DateTime
 from bika.lims import api
-from bika.lims.interfaces import IReceived, IVerified
+from bika.lims.interfaces import IDetachedPartition
+from bika.lims.interfaces import IReceived, IVerified, IAnalysisRequestPartition
 from bika.lims.utils import changeWorkflowState
 from bika.lims.utils.analysisrequest import create_retest
 from bika.lims.workflow import get_prev_status_from_history
@@ -153,3 +154,24 @@ def after_rollback_to_receive(analysis_request):
     """
     if IVerified.providedBy(analysis_request):
         noLongerProvides(analysis_request, IVerified)
+
+
+def after_detach(analysis_request):
+    """Function triggered after "detach" transition is performed
+    """
+    # Unbind the sample from its parent (the primary)
+    parent = analysis_request.getParentAnalysisRequest()
+    analysis_request.setParentAnalysisRequest(None)
+
+    # Assign the primary from which the sample has been detached
+    analysis_request.setDetachedFrom(parent)
+
+    # This sample is no longer a partition
+    noLongerProvides(analysis_request, IAnalysisRequestPartition)
+
+    # And we mark the sample with IDetachedPartition
+    alsoProvides(analysis_request, IDetachedPartition)
+
+    # Reindex both the parent and the detached one
+    analysis_request.reindexObject()
+    parent.reindexObject()

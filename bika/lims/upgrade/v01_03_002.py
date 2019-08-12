@@ -18,7 +18,10 @@
 # Copyright 2018-2019 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from bika.lims import api
 from bika.lims import logger
+from bika.lims.catalog.analysisrequest_catalog import \
+    CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.config import PROJECTNAME as product
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
@@ -43,5 +46,45 @@ def upgrade(tool):
 
     # -------- ADD YOUR STUFF BELOW --------
 
+    # Allow to detach a partition from its primary sample (#1420)
+    setup.runImportStepFromProfile(profile, "rolemap")
+
+    # Mixed permissions for transitions in client workflow (#1419)
+    # Allow to detach a partition from its primary sample (#1420)
+    setup.runImportStepFromProfile(profile, "workflow")
+
+    # Allow to detach a partition from its primary sample (#1420)
+    update_partitions_role_mappings(portal)
+
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
+
+def update_partitions_role_mappings(portal):
+    """Updates the rolemappings for existing partitions that are in a suitable
+     state, so they can be detached from the primary sample they belong to
+    """
+    logger.info("Updating role mappings of partitions ...")
+    wf_tool = api.get_tool("portal_workflow")
+    workflow = wf_tool.getWorkflowById("bika_ar_workflow")
+
+    # States that allow detach transition as defined in workflow definition in
+    # order to query and update role mappings of objects that matter
+    allowed_states = [
+        "to_be_preserved", "sample_due", "sample_received", "to_be_verified",
+        "verified"
+    ]
+    query = dict(portal_type="AnalysisRequest",
+                 isRootAncestor=False,
+                 review_state=allowed_states)
+
+    brains = api.search(query, CATALOG_ANALYSIS_REQUEST_LISTING)
+    total = len(brains)
+    for num, brain in enumerate(brains):
+        if num and num % 100 == 0:
+            logger.info("Updating role mappings of partitions: {}/{}"
+                        .format(num, total))
+        partition = api.get_object(brain)
+        workflow.updateRoleMappingsFor(partition)
+        partition.reindexObjectSecurity()
+
+    logger.info("Updating role mappings of partitions [DONE]")

@@ -132,6 +132,9 @@ class ClientFolderContentsView(BikaListingView):
     def before_render(self):
         """Before template render hook
         """
+        # Call `before_render` from the base class
+        super(ClientFolderContentsView, self).before_render()
+
         # Render the Add button if the user has the AddClient permission
         if check_permission(AddClient, self.context):
             self.context_actions[_("Add")] = {
@@ -181,6 +184,7 @@ class ClientFolderContentsView(BikaListingView):
         phone = obj.getPhone()
         if phone:
             item["replace"]["Phone"] = get_link("tel:{}".format(phone), phone)
+
         return item
 
 
