@@ -19,6 +19,7 @@ Changelog
 
 **Fixed**
 
+- #1421 Fix Search Query for Batches Listing
 - #1414 Occasional "OSError: [Errno 24] Too many open files" in frontpage
 
 
