@@ -6,6 +6,7 @@ Changelog
 
 **Added**
 
+- #1422 Notify user with failing addresses when emailing of results reports
 - #1420 Allow to detach a partition from its primary sample
 - #1410 Email API
 
