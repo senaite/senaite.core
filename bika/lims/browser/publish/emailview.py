@@ -510,7 +510,8 @@ class EmailView(BrowserView):
                                              attachments=attachments)
             sent = mailapi.send_email(mime_msg)
             if not sent:
-                msg = "Could not send email to {}".format(pair)
+                msg = _("Could not send email to {0} ({1})").format(pair[0],
+                                                                    pair[1])
                 self.add_status_message(msg, "warning")
                 logger.error(msg)
             success.append(sent)
