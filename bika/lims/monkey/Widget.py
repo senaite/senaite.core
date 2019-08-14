@@ -77,8 +77,6 @@ def isVisible(self, instance, mode='view', default="visible", field=None):
         logger.info("IATWidgetVisibility rule {} for {}.{} ({}): {} -> {}"
             .format(adapter_name, instance.id, field.getName(), mode, state,
                     adapter_state))
-        if adapter_state == state:
-            continue
         return adapter_state
 
     return state
