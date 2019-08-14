@@ -219,7 +219,7 @@ class SecondaryDateSampledFieldVisibility(SenaiteATWidgetVisibility):
     """
     def __init__(self, context):
         super(SecondaryDateSampledFieldVisibility, self).__init__(
-            context=context, sort=3, field_names=["DateSampled"])
+            context=context, sort=20, field_names=["DateSampled"])
 
     def isVisible(self, field, mode="view", default="visible"):
         """Returns whether the field is visible in a given mode
@@ -230,7 +230,10 @@ class SecondaryDateSampledFieldVisibility(SenaiteATWidgetVisibility):
         # If this is a Secondary Analysis Request, this field is not editable
         if IAnalysisRequestSecondary.providedBy(self.context):
             return "invisible"
-        return default
+
+        # Delegate to SamplingFieldsVisibility adapter
+        return SamplingFieldsVisibility(self.context).isVisible(
+            field, mode=mode, default=default)
 
 
 class PrimaryAnalysisRequestFieldVisibility(SenaiteATWidgetVisibility):
