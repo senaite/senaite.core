@@ -172,7 +172,7 @@ class RegistryHiddenFieldsVisibility(SenaiteATWidgetVisibility):
     def __init__(self, context):
         field_names = getHiddenAttributesForClass(context.portal_type)
         super(RegistryHiddenFieldsVisibility, self).__init__(
-            context=context, sort=-1, field_names=[field_names,])
+            context=context, sort=float("inf"), field_names=[field_names, ])
 
     def isVisible(self, field, mode="view", default="visible"):
         return "invisible"
