@@ -22,6 +22,7 @@ Changelog
 
 **Fixed**
 
+- #1423 Use the value set for ui_item property when displaying ReferenceWidget
 - #1425 Fix adapter priority for widget visibility
 - #1421 Fix Search Query for Batches Listing
 - #1418 Subscriber adapters not supported in clients listing
