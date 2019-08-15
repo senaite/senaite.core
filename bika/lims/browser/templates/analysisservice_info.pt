@@ -51,7 +51,7 @@
                   <span i18n:translate="">Description</span>
                 </td>
                 <td>
-                  <span tal:content="service/Description"></span>
+                  <span tal:content="structure service/Description"></span>
                 </td>
               </tr>
               <tr>
@@ -134,7 +134,7 @@
                      tal:content="method/Title"/>
                 </td>
                 <td>
-                  <span tal:content="method/Description"></span>
+                  <span tal:content="structure method/Description"></span>
                 </td>
               </tr>
             </table>
