@@ -21,9 +21,11 @@
                                   id string:parent-fieldname-$fieldName-$uid">
           <span metal:define-slot="inside"
                 tal:define="value accessor;
-                            value python: (value and hasattr(value, 'Title')) and value.Title() or '';"
-                tal:attributes="value python: value.strip();"
-                tal:content="value">reference</span>
+                            text_default python: (value and hasattr(value, 'Title')) and value.Title() or '';
+                            text_attr widget/ui_item|nothing;
+                            text python:text_attr and getattr(value, text_attr, text_default) or text_default;"
+                tal:attributes="value text;"
+                tal:content="text">reference</span>
         </span>
       </tal:singlevalued>
 
@@ -65,20 +67,18 @@
                 </tal:repeat>
           </div>
 
+          <tal:input_field define="val python:context.Schema()[fieldName].getAccessor(context)();
+                                   text_default val/Title|nothing;
+                                   text_attr widget/ui_item|nothing;
+                                   text python:text_attr and getattr(val, text_attr, text_default) or text_default;">
           <input
                  type="text"
-                 name=""
-                 id=""
-                 uid=""
                  class="blurrable firstToFocus referencewidget"
-                 value=""
-                 size="30"
-                 tal:define="val python:context.Schema()[fieldName].getAccessor(context)();"
                  tal:condition="python:context.Schema()[fieldName].required"
                  tal:attributes="name fieldName;
                                  required python:True;
                                  id fieldName;
-                                 value val/Title|nothing;
+                                 value text;
                                  uid val/UID|nothing;
                                  size widget/size;
                                  placeholder widget/placeholder|nothing;
@@ -96,17 +96,11 @@
                  />
           <input
                  type="text"
-                 name=""
-                 id=""
-                 uid=""
                  class="blurrable firstToFocus referencewidget"
-                 value=""
-                 size="30"
-                 tal:define="val python:context.Schema()[fieldName].getAccessor(context)();"
                  tal:condition="python:not context.Schema()[fieldName].required"
                  tal:attributes="name fieldName;
                                  id fieldName;
-                                 value val/Title|nothing;
+                                 value text;
                                  uid val/UID|nothing;
                                  size widget/size;
                                  placeholder widget/placeholder|nothing;
@@ -163,6 +157,7 @@
                  tal:attributes="name string:${fieldName}_uid;
                                  id string:${fieldName}_uid;
                                  value python:widget.initial_uid_field_value(val);"/>
+          </tal:input_field>
         </metal:fill>
       </metal:use>
     </metal:define>
