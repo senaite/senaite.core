@@ -164,7 +164,7 @@
                       <span i18n:translate="">Subject</span>
                     </td>
                     <td>
-                      <span tal:content="record/email_subject|default">-</span>
+                      <span tal:content="structure record/email_subject|default">-</span>
                     </td>
                   </tr>
                   <!-- Body Text -->
@@ -173,7 +173,7 @@
                       <span i18n:translate="">Text</span>
                     </td>
                     <td>
-                      <pre class="small" tal:content="record/email_body|default">-</pre>
+                      <pre class="small" tal:content="structure record/email_body|default">-</pre>
                     </td>
                   </tr>
                   <!-- Attachments -->
