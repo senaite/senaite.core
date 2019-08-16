@@ -31,8 +31,7 @@ from Products.Archetypes.event import ObjectEditedEvent
 from Products.CMFCore.permissions import ModifyPortalContent
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope import event
-from zope.component import getAdapter
-from zope.component.interfaces import ComponentLookupError
+from zope.component import queryAdapter
 
 
 class HeaderTableView(BrowserView):
@@ -96,17 +95,13 @@ class HeaderTableView(BrowserView):
         fieldname = field.getName()
         field = self.context.Schema()[fieldname]
         ret = {"fieldName": fieldname, "mode": "view"}
-        try:
-            adapter = getAdapter(self.context,
-                                 interface=IHeaderTableFieldRenderer,
-                                 name=fieldname)
-
-        except ComponentLookupError:
-            adapter = None
-        if adapter:
-            ret = {'fieldName': fieldname,
-                   'mode': 'structure',
-                   'html': adapter(field)}
+        adapter = queryAdapter(self.context,
+                               interface=IHeaderTableFieldRenderer,
+                               name=fieldname)
+        if adapter is not None:
+            ret = {"fieldName": fieldname,
+                   "mode": "structure",
+                   "html": adapter(field)}
         else:
             if field.getWidgetName() == "BooleanWidget":
                 value = field.get(self.context)
