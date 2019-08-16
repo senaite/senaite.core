@@ -21,11 +21,11 @@
 from AccessControl.Permissions import view
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
+from bika.lims.api.security import check_permission
 from bika.lims.browser import BrowserView
 from bika.lims.interfaces import IHeaderTableFieldRenderer
 from bika.lims.utils import t
 from plone.memoize import view as viewcache
-from bika.lims.api import security
 from Products.Archetypes.event import ObjectEditedEvent
 from Products.CMFCore.permissions import ModifyPortalContent
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
@@ -70,7 +70,7 @@ class HeaderTableView(BrowserView):
     def is_edit_allowed(self):
         """Check permission 'ModifyPortalContent' on the context
         """
-        return security.check_permission(ModifyPortalContent, self.context)
+        return check_permission(ModifyPortalContent, self.context)
 
     def three_column_list(self, input_list):
         list_len = len(input_list)
@@ -129,7 +129,7 @@ class HeaderTableView(BrowserView):
                 if not isinstance(targets, (list, tuple)):
                     targets = [targets, ]
 
-                if all([security.check_permission(view, t) for t in targets]):
+                if all([check_permission(view, ta) for ta in targets]):
                     elements = [
                         "<div id='{id}' class='field reference'>"
                         "  <a class='link' uid='{uid}' href='{url}'>"
