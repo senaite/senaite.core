@@ -94,7 +94,6 @@ class HeaderTableView(BrowserView):
     # TODO Revisit this
     def render_field_view(self, field):
         fieldname = field.getName()
-        field = self.context.Schema()[fieldname]
         ret = {"fieldName": fieldname, "mode": "view"}
         adapter = queryAdapter(self.context,
                                interface=IHeaderTableFieldRenderer,
