@@ -18,7 +18,6 @@
 # Copyright 2018-2019 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from AccessControl import getSecurityManager
 from AccessControl.Permissions import view
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
@@ -127,8 +126,7 @@ class HeaderTableView(BrowserView):
             if targets:
                 if not type(targets) == list:
                     targets = [targets, ]
-                sm = getSecurityManager()
-                if all([sm.checkPermission(view, ta) for ta in targets]):
+                if all([security.check_permission(view, ta) for ta in targets]):
                     elements = [
                         "<div id='{id}' class='field reference'>"
                         "  <a class='link' uid='{uid}' href='{url}'>"
