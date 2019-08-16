@@ -72,6 +72,7 @@ class HeaderTableView(BrowserView):
         """Check permission 'ModifyPortalContent' on the context
         """
         return security.check_permission(ModifyPortalContent, self.context)
+
     def three_column_list(self, input_list):
         list_len = len(input_list)
 
