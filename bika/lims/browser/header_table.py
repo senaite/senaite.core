@@ -95,6 +95,8 @@ class HeaderTableView(BrowserView):
         fieldname = field.getName()
         fieldtype = field.getType()
         ret = {"fieldName": fieldname, "mode": "view"}
+
+        # lookup custom render adapter
         adapter = queryAdapter(self.context,
                                interface=IHeaderTableFieldRenderer,
                                name=fieldname)
