@@ -39,7 +39,6 @@ class HeaderTableView(BrowserView):
     template = ViewPageTemplateFile("templates/header_table.pt")
 
     def __call__(self):
-        self.errors = {}
         if "header_table_submitted" in self.request:
             schema = self.context.Schema()
             fields = schema.fields()
