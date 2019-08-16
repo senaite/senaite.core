@@ -94,6 +94,7 @@ class HeaderTableView(BrowserView):
     # TODO Revisit this
     def render_field_view(self, field):
         fieldname = field.getName()
+        fieldtype = field.getType()
         ret = {"fieldName": fieldname, "mode": "view"}
         adapter = queryAdapter(self.context,
                                interface=IHeaderTableFieldRenderer,
@@ -113,7 +114,7 @@ class HeaderTableView(BrowserView):
                 "html": t(_("Yes")) if value else t(_("No"))
             }
 
-        elif field.getType().find("Reference") > -1:
+        elif fieldtype.find("Reference") > -1:
             # Prioritize method retrieval over schema"s field
             targets = None
             if hasattr(self.context, "get%s" % fieldname):
@@ -158,7 +159,7 @@ class HeaderTableView(BrowserView):
                     "html": "",
                 }
 
-        elif field.getType().lower().find("datetime") > -1:
+        elif fieldtype.lower().find("datetime") > -1:
             value = field.get(self.context)
             ret = {
                 "fieldName": fieldname,
