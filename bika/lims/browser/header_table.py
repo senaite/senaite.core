@@ -126,9 +126,10 @@ class HeaderTableView(BrowserView):
                 targets = field.get(self.context)
 
             if targets:
-                if not type(targets) == list:
+                if not isinstance(targets, (list, tuple)):
                     targets = [targets, ]
-                if all([security.check_permission(view, ta) for ta in targets]):
+
+                if all([security.check_permission(view, t) for t in targets]):
                     elements = [
                         "<div id='{id}' class='field reference'>"
                         "  <a class='link' uid='{uid}' href='{url}'>"
