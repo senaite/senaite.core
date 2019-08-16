@@ -25,6 +25,8 @@ from bika.lims import logger
 from bika.lims.browser import BrowserView
 from bika.lims.interfaces import IHeaderTableFieldRenderer
 from bika.lims.utils import t
+from plone.memoize import view as viewcache
+from bika.lims.api import security
 from Products.Archetypes.event import ObjectEditedEvent
 from Products.CMFCore.permissions import ModifyPortalContent
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
@@ -66,6 +68,11 @@ class HeaderTableView(BrowserView):
             self.context.plone_utils.addPortalMessage(message, "info")
         return self.template()
 
+    @viewcache.memoize
+    def is_edit_allowed(self):
+        """Check permission 'ModifyPortalContent' on the context
+        """
+        return security.check_permission(ModifyPortalContent, self.context)
     def three_column_list(self, input_list):
         list_len = len(input_list)
 
@@ -179,8 +186,7 @@ class HeaderTableView(BrowserView):
         # modes) only if the current user has enough privileges.
         if field.checkPermission("edit", self.context):
             mode = "edit"
-            sm = getSecurityManager()
-            if not sm.checkPermission(ModifyPortalContent, self.context):
+            if not self.is_edit_allowed():
                 logger.warn("Permission '{}' granted for the edition of '{}', "
                             "but 'Modify portal content' not granted"
                             .format(field.write_permission, field.getName()))
