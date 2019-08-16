@@ -99,69 +99,74 @@ class HeaderTableView(BrowserView):
         adapter = queryAdapter(self.context,
                                interface=IHeaderTableFieldRenderer,
                                name=fieldname)
+
+        # return immediately if we have an adapter
         if adapter is not None:
-            ret = {"fieldName": fieldname,
-                   "mode": "structure",
-                   "html": adapter(field)}
-        else:
-            if field.getWidgetName() == "BooleanWidget":
-                value = field.get(self.context)
-                ret = {
-                    "fieldName": fieldname,
+            return {"fieldName": fieldname,
                     "mode": "structure",
-                    "html": t(_("Yes")) if value else t(_("No"))
-                }
-            elif field.getType().find("Reference") > -1:
-                # Prioritize method retrieval over schema"s field
-                targets = None
-                if hasattr(self.context, "get%s" % fieldname):
-                    fieldaccessor = getattr(self.context, "get%s" % fieldname)
-                    if callable(fieldaccessor):
-                        targets = fieldaccessor()
-                if not targets:
-                    targets = field.get(self.context)
+                    "html": adapter(field)}
 
-                if targets:
-                    if not type(targets) == list:
-                        targets = [targets, ]
-                    sm = getSecurityManager()
-                    if all([sm.checkPermission(view, ta) for ta in targets]):
-                        elements = [
-                            "<div id='{id}' class='field reference'>"
-                            "  <a class='link' uid='{uid}' href='{url}'>"
-                            "    {title}"
-                            "  </a>"
-                            "</div>"
-                            .format(id=target.getId(),
-                                    uid=target.UID(),
-                                    url=target.absolute_url(),
-                                    title=target.Title())
-                            for target in targets]
+        if field.getWidgetName() == "BooleanWidget":
+            value = field.get(self.context)
+            ret = {
+                "fieldName": fieldname,
+                "mode": "structure",
+                "html": t(_("Yes")) if value else t(_("No"))
+            }
 
-                        ret = {
-                            "fieldName": fieldname,
-                            "mode": "structure",
-                            "html": "".join(elements),
-                        }
-                    else:
-                        ret = {
-                            "fieldName": fieldname,
-                            "mode": "structure",
-                            "html": ", ".join([ta.Title() for ta in targets]),
-                        }
+        elif field.getType().find("Reference") > -1:
+            # Prioritize method retrieval over schema"s field
+            targets = None
+            if hasattr(self.context, "get%s" % fieldname):
+                fieldaccessor = getattr(self.context, "get%s" % fieldname)
+                if callable(fieldaccessor):
+                    targets = fieldaccessor()
+            if not targets:
+                targets = field.get(self.context)
+
+            if targets:
+                if not type(targets) == list:
+                    targets = [targets, ]
+                sm = getSecurityManager()
+                if all([sm.checkPermission(view, ta) for ta in targets]):
+                    elements = [
+                        "<div id='{id}' class='field reference'>"
+                        "  <a class='link' uid='{uid}' href='{url}'>"
+                        "    {title}"
+                        "  </a>"
+                        "</div>"
+                        .format(id=target.getId(),
+                                uid=target.UID(),
+                                url=target.absolute_url(),
+                                title=target.Title())
+                        for target in targets]
+
+                    ret = {
+                        "fieldName": fieldname,
+                        "mode": "structure",
+                        "html": "".join(elements),
+                    }
                 else:
                     ret = {
                         "fieldName": fieldname,
                         "mode": "structure",
-                        "html": "",
+                        "html": ", ".join([ta.Title() for ta in targets]),
                     }
-            elif field.getType().lower().find("datetime") > -1:
-                value = field.get(self.context)
+            else:
                 ret = {
                     "fieldName": fieldname,
                     "mode": "structure",
-                    "html": self.ulocalized_time(value, long_format=True)
+                    "html": "",
                 }
+
+        elif field.getType().lower().find("datetime") > -1:
+            value = field.get(self.context)
+            ret = {
+                "fieldName": fieldname,
+                "mode": "structure",
+                "html": self.ulocalized_time(value, long_format=True)
+            }
+
         return ret
 
     def get_field_visibility_mode(self, field):
