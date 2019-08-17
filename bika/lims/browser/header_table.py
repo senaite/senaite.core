@@ -19,6 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 from AccessControl.Permissions import view
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.api.security import check_permission
@@ -26,6 +27,8 @@ from bika.lims.browser import BrowserView
 from bika.lims.interfaces import IHeaderTableFieldRenderer
 from bika.lims.utils import t
 from plone.memoize import view as viewcache
+from plone.memoize.volatile import ATTR
+from plone.memoize.volatile import CONTAINER_FACTORY
 from plone.memoize.volatile import cache
 from Products.Archetypes.event import ObjectEditedEvent
 from Products.CMFCore.permissions import ModifyPortalContent
@@ -34,7 +37,16 @@ from zope import event
 from zope.component import queryAdapter
 
 
+def store_on_portal(method, obj, *args, **kwargs):
+    """Volatile cache storage on the portal object
+    """
+    portal = api.get_portal()
+    return portal.__dict__.setdefault(ATTR, CONTAINER_FACTORY())
+
+
 def field_type_cache_key(method, self, field):
+    """Cache key to distinguish the type evaluation of a field
+    """
     return field.getName()
 
 
@@ -76,19 +88,19 @@ class HeaderTableView(BrowserView):
         """
         return check_permission(ModifyPortalContent, self.context)
 
-    @cache(field_type_cache_key)
+    @cache(field_type_cache_key, get_cache=store_on_portal)
     def is_reference_field(self, field):
         """Check if the field is a reference field
         """
         return field.getType().find("Reference") > -1
 
-    @cache(field_type_cache_key)
+    @cache(field_type_cache_key, get_cache=store_on_portal)
     def is_boolean_field(self, field):
         """Check if the field is a boolean
         """
         return field.getWidgetName() == "BooleanWidget"
 
-    @cache(field_type_cache_key)
+    @cache(field_type_cache_key, get_cache=store_on_portal)
     def is_date_field(self, field):
         """Check if the field is a date field
         """
