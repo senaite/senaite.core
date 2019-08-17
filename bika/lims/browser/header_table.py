@@ -104,7 +104,6 @@ class HeaderTableView(BrowserView):
                 final.append(column)
         return final
 
-    # TODO Revisit this
     def render_field_view(self, field):
         fieldname = field.getName()
         ret = {"fieldName": fieldname, "mode": "view"}
