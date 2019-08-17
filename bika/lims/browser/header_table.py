@@ -26,11 +26,16 @@ from bika.lims.browser import BrowserView
 from bika.lims.interfaces import IHeaderTableFieldRenderer
 from bika.lims.utils import t
 from plone.memoize import view as viewcache
+from plone.memoize.volatile import cache
 from Products.Archetypes.event import ObjectEditedEvent
 from Products.CMFCore.permissions import ModifyPortalContent
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope import event
 from zope.component import queryAdapter
+
+
+def field_type_cache_key(method, self, field):
+    return field.getName()
 
 
 class HeaderTableView(BrowserView):
@@ -71,16 +76,19 @@ class HeaderTableView(BrowserView):
         """
         return check_permission(ModifyPortalContent, self.context)
 
+    @cache(field_type_cache_key)
     def is_reference_field(self, field):
         """Check if the field is a reference field
         """
         return field.getType().find("Reference") > -1
 
+    @cache(field_type_cache_key)
     def is_boolean_field(self, field):
         """Check if the field is a boolean
         """
         return field.getWidgetName() == "BooleanWidget"
 
+    @cache(field_type_cache_key)
     def is_date_field(self, field):
         """Check if the field is a date field
         """
