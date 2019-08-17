@@ -125,7 +125,7 @@ class HeaderTableView(BrowserView):
                 targets = field.get(self.context)
 
             if targets:
-                if not isinstance(targets, (list, tuple)):
+                if not isinstance(targets, list):
                     targets = [targets, ]
 
                 if all([check_permission(view, ta) for ta in targets]):
