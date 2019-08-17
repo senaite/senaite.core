@@ -71,6 +71,21 @@ class HeaderTableView(BrowserView):
         """
         return check_permission(ModifyPortalContent, self.context)
 
+    def is_reference_field(self, field):
+        """Check if the field is a reference field
+        """
+        return field.getType().find("Reference") > -1
+
+    def is_boolean_field(self, field):
+        """Check if the field is a boolean
+        """
+        return field.getWidgetName() == "BooleanWidget"
+
+    def is_date_field(self, field):
+        """Check if the field is a date field
+        """
+        return field.getType().lower().find("datetime") > -1
+
     def three_column_list(self, input_list):
         list_len = len(input_list)
 
@@ -92,7 +107,6 @@ class HeaderTableView(BrowserView):
     # TODO Revisit this
     def render_field_view(self, field):
         fieldname = field.getName()
-        fieldtype = field.getType()
         ret = {"fieldName": fieldname, "mode": "view"}
 
         # lookup custom render adapter
@@ -106,7 +120,7 @@ class HeaderTableView(BrowserView):
                     "mode": "structure",
                     "html": adapter(field)}
 
-        if field.getWidgetName() == "BooleanWidget":
+        if self.is_boolean_field(field):
             value = field.get(self.context)
             ret = {
                 "fieldName": fieldname,
@@ -114,13 +128,15 @@ class HeaderTableView(BrowserView):
                 "html": t(_("Yes")) if value else t(_("No"))
             }
 
-        elif fieldtype.find("Reference") > -1:
+        elif self.is_reference_field(field):
             # Prioritize method retrieval over schema"s field
             targets = None
+
             if hasattr(self.context, "get%s" % fieldname):
                 fieldaccessor = getattr(self.context, "get%s" % fieldname)
                 if callable(fieldaccessor):
                     targets = fieldaccessor()
+
             if not targets:
                 targets = field.get(self.context)
 
@@ -159,7 +175,7 @@ class HeaderTableView(BrowserView):
                     "html": "",
                 }
 
-        elif fieldtype.lower().find("datetime") > -1:
+        elif self.is_date_field(field):
             value = field.get(self.context)
             ret = {
                 "fieldName": fieldname,
