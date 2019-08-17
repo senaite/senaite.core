@@ -83,7 +83,8 @@
           </tal:repeat>
         </tr>
       </table>
-      <input class="context btn btn-sm btn-primary"
+      <input tal:condition="view/is_edit_allowed"
+             class="context btn btn-sm btn-primary"
              type="submit"
              name="form.button.save"
              value="Save"
