@@ -132,12 +132,10 @@ class HeaderTableView(BrowserView):
             # Prioritize method retrieval over schema"s field
             targets = None
 
-            if hasattr(self.context, "get%s" % fieldname):
-                fieldaccessor = getattr(self.context, "get%s" % fieldname)
-                if callable(fieldaccessor):
-                    targets = fieldaccessor()
-
-            if not targets:
+            accessor = getattr(self.context, "get%s" % fieldname, None)
+            if accessor and callable(accessor):
+                targets = accessor()
+            else:
                 targets = field.get(self.context)
 
             if targets:
