@@ -109,7 +109,12 @@ class JSONReadExtender(object):
         if not self.include_fields or "Analyses" in self.include_fields:
             data['Analyses'] = self.ar_analysis_values()
 
+
 class mailto_link_from_contacts:
+    """Custom header table field adapter
+
+    see: bika.lims.browser.header_table
+    """
 
     def __init__(self, context):
         self.context = context
@@ -128,6 +133,11 @@ class mailto_link_from_contacts:
 
 
 def mailto_link_from_ccemails(ccemails):
+    """Custom header table field adapter
+
+    see: bika.lims.browser.header_table
+    """
+
     def __init__(self, context):
         self.context = context
 
