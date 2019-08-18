@@ -67,7 +67,7 @@
       for="bika.lims.interfaces.IAnalysisRequest"
       factory="bika.lims.browser.analysisrequest.mailto_link_from_contacts"
       provides="bika.lims.interfaces.IHeaderTableFieldRenderer"
-      name="CContact"
+      name="CCContact"
       />
   <adapter
       for="bika.lims.interfaces.IAnalysisRequest"
