@@ -203,6 +203,10 @@ class HeaderTableView(BrowserView):
                                interface=IHeaderTableFieldRenderer,
                                name=fieldname)
 
+        # Note: Adapter for client field:
+        #       bika.lims.browser.analysisrequest.mailto_link_from_contacts
+        #       -> TODO Remove?
+
         # return immediately if we have an adapter
         if adapter is not None:
             return {"fieldName": fieldname,
