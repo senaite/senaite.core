@@ -106,6 +106,77 @@ class HeaderTableView(BrowserView):
         """
         return field.getType().lower().find("datetime") > -1
 
+    def get_boolean_field_data(self, field):
+        """Get boolean field view data for the template
+        """
+        value = field.get(self.context)
+        fieldname = field.getName()
+
+        return {
+            "fieldName": fieldname,
+            "mode": "structure",
+            "html": t(_("Yes")) if value else t(_("No"))
+        }
+
+    def get_reference_field_data(self, field):
+        """Get reference field view data for the template
+        """
+        targets = None
+        fieldname = field.getName()
+
+        accessor = getattr(self.context, "get%s" % fieldname, None)
+        if accessor and callable(accessor):
+            targets = accessor()
+        else:
+            targets = field.get(self.context)
+
+        if targets:
+            if not isinstance(targets, list):
+                targets = [targets, ]
+
+            if all([check_permission(view, target) for target in targets]):
+                elements = [
+                    "<div id='{id}' class='field reference'>"
+                    "  <a class='link' uid='{uid}' href='{url}'>"
+                    "    {title}"
+                    "  </a>"
+                    "</div>"
+                    .format(id=target.getId(),
+                            uid=target.UID(),
+                            url=target.absolute_url(),
+                            title=target.Title())
+                    for target in targets]
+
+                return {
+                    "fieldName": fieldname,
+                    "mode": "structure",
+                    "html": "".join(elements),
+                }
+            else:
+                return {
+                    "fieldName": fieldname,
+                    "mode": "structure",
+                    "html": ", ".join([ta.Title() for ta in targets]),
+                }
+
+        return {
+            "fieldName": fieldname,
+            "mode": "structure",
+            "html": ""
+        }
+
+    def get_date_field_data(self, field):
+        """Render date field view data for the template
+        """
+        value = field.get(self.context)
+        fieldname = field.getName()
+
+        return {
+            "fieldName": fieldname,
+            "mode": "structure",
+            "html": self.ulocalized_time(value, long_format=True)
+        }
+
     def three_column_list(self, input_list):
         list_len = len(input_list)
 
@@ -126,7 +197,6 @@ class HeaderTableView(BrowserView):
 
     def render_field_view(self, field):
         fieldname = field.getName()
-        ret = {"fieldName": fieldname, "mode": "view"}
 
         # lookup custom render adapter
         adapter = queryAdapter(self.context,
@@ -139,68 +209,17 @@ class HeaderTableView(BrowserView):
                     "mode": "structure",
                     "html": adapter(field)}
 
+        # field data for *view* mode for the template
+        data = {"fieldName": fieldname, "mode": "view"}
+
         if self.is_boolean_field(field):
-            value = field.get(self.context)
-            ret = {
-                "fieldName": fieldname,
-                "mode": "structure",
-                "html": t(_("Yes")) if value else t(_("No"))
-            }
-
+            data = self.get_boolean_field_data(field)
         elif self.is_reference_field(field):
-            # Prioritize method retrieval over schema"s field
-            targets = None
-
-            accessor = getattr(self.context, "get%s" % fieldname, None)
-            if accessor and callable(accessor):
-                targets = accessor()
-            else:
-                targets = field.get(self.context)
-
-            if targets:
-                if not isinstance(targets, list):
-                    targets = [targets, ]
-
-                if all([check_permission(view, ta) for ta in targets]):
-                    elements = [
-                        "<div id='{id}' class='field reference'>"
-                        "  <a class='link' uid='{uid}' href='{url}'>"
-                        "    {title}"
-                        "  </a>"
-                        "</div>"
-                        .format(id=target.getId(),
-                                uid=target.UID(),
-                                url=target.absolute_url(),
-                                title=target.Title())
-                        for target in targets]
-
-                    ret = {
-                        "fieldName": fieldname,
-                        "mode": "structure",
-                        "html": "".join(elements),
-                    }
-                else:
-                    ret = {
-                        "fieldName": fieldname,
-                        "mode": "structure",
-                        "html": ", ".join([ta.Title() for ta in targets]),
-                    }
-            else:
-                ret = {
-                    "fieldName": fieldname,
-                    "mode": "structure",
-                    "html": "",
-                }
-
+            data = self.get_reference_field_data(field)
         elif self.is_date_field(field):
-            value = field.get(self.context)
-            ret = {
-                "fieldName": fieldname,
-                "mode": "structure",
-                "html": self.ulocalized_time(value, long_format=True)
-            }
+            data = self.get_date_field_data(field)
 
-        return ret
+        return data
 
     def get_field_visibility_mode(self, field):
         """Returns "view" or "edit" modes, together with the place within where
