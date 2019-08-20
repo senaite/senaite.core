@@ -439,7 +439,7 @@ class EmailView(BrowserView):
 
         # publish all samples + their partitions
         for sample in samples:
-            self. publish(sample)
+            self.publish(sample)
 
     def publish(self, sample):
         """Set status to prepublished/published/republished
