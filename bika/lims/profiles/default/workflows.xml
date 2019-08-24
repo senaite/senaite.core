@@ -203,9 +203,6 @@
     <type type_id="Departments">
       <bound-workflow workflow_id="senaite_one_state_workflow"/>
     </type>
-    <type type_id="IdentifierTypes">
-      <bound-workflow workflow_id="senaite_one_state_workflow"/>
-    </type>
     <type type_id="InstrumentLocations">
       <bound-workflow workflow_id="senaite_one_state_workflow"/>
     </type>
