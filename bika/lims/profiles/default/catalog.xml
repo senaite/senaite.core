@@ -14,6 +14,5 @@
  <index name="SamplingRoundUID" meta_type="FieldIndex"> <indexed_attr value="SamplingRoundUID"/> </index>
  <column value="SamplingRoundUID"/>
  <column value="review_state"/>
- <index name="Identifiers" meta_type="KeywordIndex"/>
  <column value="getClientID"/>
 </object>
