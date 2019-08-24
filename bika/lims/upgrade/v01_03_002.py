@@ -56,8 +56,12 @@ def upgrade(tool):
     # Allow to detach a partition from its primary sample (#1420)
     update_partitions_role_mappings(portal)
 
+    # Remove Identifiers
+    remove_identifiers(portal)
+
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
+
 
 def update_partitions_role_mappings(portal):
     """Updates the rolemappings for existing partitions that are in a suitable
@@ -88,3 +92,33 @@ def update_partitions_role_mappings(portal):
         partition.reindexObjectSecurity()
 
     logger.info("Updating role mappings of partitions [DONE]")
+
+
+def remove_identifiers(portal):
+    """Remove Identifiers from the portal
+    """
+    # 1. Remove the identifiers and identifier types
+    logger.info("Removing identifiers ...")
+
+    setup = portal.bika_setup
+    try:
+        # we use _delOb because manage_delObjects raises an unauthorized here
+        it = setup["bika_identifiertypes"]
+        for i in it.objectValues():
+            i.unindexObject()
+        it.unindexObject()
+        setup._delOb("bika_identifiertypes")
+    except KeyError:
+        pass
+
+    # 2. Remove controlpanel configlet
+    cp = portal.portal_controlpanel
+    cp.unregisterConfiglet("bika_identifiertypes")
+
+    # 3. Remove catalog indexes
+    for cat in ["bika_catalog", "bika_setup_catalog"]:
+        tool = portal[cat]
+        if "Identifiers" in tool.indexes():
+            tool.manage_delIndex("Identifiers")
+
+    logger.info("Removing identifiers [DONE]")
