@@ -116,7 +116,7 @@ def remove_identifiers(portal):
     cp.unregisterConfiglet("bika_identifiertypes")
 
     # 3. Remove catalog indexes
-    for cat in ["bika_catalog", "bika_setup_catalog"]:
+    for cat in ["portal_catalog", "bika_catalog", "bika_setup_catalog"]:
         tool = portal[cat]
         if "Identifiers" in tool.indexes():
             tool.manage_delIndex("Identifiers")
