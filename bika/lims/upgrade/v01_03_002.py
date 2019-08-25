@@ -121,4 +121,10 @@ def remove_identifiers(portal):
         if "Identifiers" in tool.indexes():
             tool.manage_delIndex("Identifiers")
 
+    # 4. Remove type registration
+    pt = portal.portal_types
+    for t in ["IdentifierType", "IdentifierTypes"]:
+        if t in pt.objectIds():
+            pt.manage_delObjects(t)
+
     logger.info("Removing identifiers [DONE]")
