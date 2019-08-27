@@ -14,6 +14,7 @@ Changelog
 **Changed**
 
 - #1428 Publish verified partitions
+- #1427 Improved performance of Sample header table rendering
 - #1417 Cache allowed transitions for analyses on the request
 - #1413 Improved Email Publication
 

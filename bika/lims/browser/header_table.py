@@ -18,19 +18,36 @@
 # Copyright 2018-2019 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from AccessControl import getSecurityManager
 from AccessControl.Permissions import view
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
+from bika.lims.api.security import check_permission
 from bika.lims.browser import BrowserView
 from bika.lims.interfaces import IHeaderTableFieldRenderer
 from bika.lims.utils import t
+from plone.memoize import view as viewcache
+from plone.memoize.volatile import ATTR
+from plone.memoize.volatile import CONTAINER_FACTORY
+from plone.memoize.volatile import cache
 from Products.Archetypes.event import ObjectEditedEvent
 from Products.CMFCore.permissions import ModifyPortalContent
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope import event
-from zope.component import getAdapter
-from zope.component.interfaces import ComponentLookupError
+from zope.component import queryAdapter
+
+
+def store_on_portal(method, obj, *args, **kwargs):
+    """Volatile cache storage on the portal object
+    """
+    portal = api.get_portal()
+    return portal.__dict__.setdefault(ATTR, CONTAINER_FACTORY())
+
+
+def field_type_cache_key(method, self, field):
+    """Cache key to distinguish the type evaluation of a field
+    """
+    return field.getName()
 
 
 class HeaderTableView(BrowserView):
@@ -39,7 +56,6 @@ class HeaderTableView(BrowserView):
     template = ViewPageTemplateFile("templates/header_table.pt")
 
     def __call__(self):
-        self.errors = {}
         if "header_table_submitted" in self.request:
             schema = self.context.Schema()
             fields = schema.fields()
@@ -66,6 +82,101 @@ class HeaderTableView(BrowserView):
             self.context.plone_utils.addPortalMessage(message, "info")
         return self.template()
 
+    @viewcache.memoize
+    def is_edit_allowed(self):
+        """Check permission 'ModifyPortalContent' on the context
+        """
+        return check_permission(ModifyPortalContent, self.context)
+
+    @cache(field_type_cache_key, get_cache=store_on_portal)
+    def is_reference_field(self, field):
+        """Check if the field is a reference field
+        """
+        return field.getType().find("Reference") > -1
+
+    @cache(field_type_cache_key, get_cache=store_on_portal)
+    def is_boolean_field(self, field):
+        """Check if the field is a boolean
+        """
+        return field.getWidgetName() == "BooleanWidget"
+
+    @cache(field_type_cache_key, get_cache=store_on_portal)
+    def is_date_field(self, field):
+        """Check if the field is a date field
+        """
+        return field.getType().lower().find("datetime") > -1
+
+    def get_boolean_field_data(self, field):
+        """Get boolean field view data for the template
+        """
+        value = field.get(self.context)
+        fieldname = field.getName()
+
+        return {
+            "fieldName": fieldname,
+            "mode": "structure",
+            "html": t(_("Yes")) if value else t(_("No"))
+        }
+
+    def get_reference_field_data(self, field):
+        """Get reference field view data for the template
+        """
+        targets = None
+        fieldname = field.getName()
+
+        accessor = getattr(self.context, "get%s" % fieldname, None)
+        if accessor and callable(accessor):
+            targets = accessor()
+        else:
+            targets = field.get(self.context)
+
+        if targets:
+            if not isinstance(targets, list):
+                targets = [targets, ]
+
+            if all([check_permission(view, target) for target in targets]):
+                elements = [
+                    "<div id='{id}' class='field reference'>"
+                    "  <a class='link' uid='{uid}' href='{url}'>"
+                    "    {title}"
+                    "  </a>"
+                    "</div>"
+                    .format(id=target.getId(),
+                            uid=target.UID(),
+                            url=target.absolute_url(),
+                            title=target.Title())
+                    for target in targets]
+
+                return {
+                    "fieldName": fieldname,
+                    "mode": "structure",
+                    "html": "".join(elements),
+                }
+            else:
+                return {
+                    "fieldName": fieldname,
+                    "mode": "structure",
+                    "html": ", ".join([ta.Title() for ta in targets]),
+                }
+
+        return {
+            "fieldName": fieldname,
+            "mode": "structure",
+            "html": ""
+        }
+
+    def get_date_field_data(self, field):
+        """Render date field view data for the template
+        """
+        value = field.get(self.context)
+        fieldname = field.getName()
+
+        return {
+            "fieldName": fieldname,
+            "mode": "structure",
+            "html": self.ulocalized_time(value, long_format=True)
+        }
+
     def three_column_list(self, input_list):
         list_len = len(input_list)
 
@@ -84,82 +195,37 @@ class HeaderTableView(BrowserView):
                 final.append(column)
         return final
 
-    # TODO Revisit this
     def render_field_view(self, field):
         fieldname = field.getName()
-        field = self.context.Schema()[fieldname]
-        ret = {"fieldName": fieldname, "mode": "view"}
-        try:
-            adapter = getAdapter(self.context,
-                                 interface=IHeaderTableFieldRenderer,
-                                 name=fieldname)
 
-        except ComponentLookupError:
-            adapter = None
-        if adapter:
-            ret = {'fieldName': fieldname,
-                   'mode': 'structure',
-                   'html': adapter(field)}
-        else:
-            if field.getWidgetName() == "BooleanWidget":
-                value = field.get(self.context)
-                ret = {
-                    "fieldName": fieldname,
+        # lookup custom render adapter
+        adapter = queryAdapter(self.context,
+                               interface=IHeaderTableFieldRenderer,
+                               name=fieldname)
+
+        # Note: Adapters for contact fields:
+        #       bika.lims.browser.analysisrequest.mailto_link_from_contacts
+        #       bika.lims.browser.analysisrequest.mailto_link_from_ccemails
+        #
+        # -> TODO Remove?
+
+        # return immediately if we have an adapter
+        if adapter is not None:
+            return {"fieldName": fieldname,
                     "mode": "structure",
-                    "html": t(_("Yes")) if value else t(_("No"))
-                }
-            elif field.getType().find("Reference") > -1:
-                # Prioritize method retrieval over schema"s field
-                targets = None
-                if hasattr(self.context, "get%s" % fieldname):
-                    fieldaccessor = getattr(self.context, "get%s" % fieldname)
-                    if callable(fieldaccessor):
-                        targets = fieldaccessor()
-                if not targets:
-                    targets = field.get(self.context)
+                    "html": adapter(field)}
 
-                if targets:
-                    if not type(targets) == list:
-                        targets = [targets, ]
-                    sm = getSecurityManager()
-                    if all([sm.checkPermission(view, ta) for ta in targets]):
-                        elements = [
-                            "<div id='{id}' class='field reference'>"
-                            "  <a class='link' uid='{uid}' href='{url}'>"
-                            "    {title}"
-                            "  </a>"
-                            "</div>"
-                            .format(id=target.getId(),
-                                    uid=target.UID(),
-                                    url=target.absolute_url(),
-                                    title=target.Title())
-                            for target in targets]
+        # field data for *view* mode for the template
+        data = {"fieldName": fieldname, "mode": "view"}
 
-                        ret = {
-                            "fieldName": fieldname,
-                            "mode": "structure",
-                            "html": "".join(elements),
-                        }
-                    else:
-                        ret = {
-                            "fieldName": fieldname,
-                            "mode": "structure",
-                            "html": ", ".join([ta.Title() for ta in targets]),
-                        }
-                else:
-                    ret = {
-                        "fieldName": fieldname,
-                        "mode": "structure",
-                        "html": "",
-                    }
-            elif field.getType().lower().find("datetime") > -1:
-                value = field.get(self.context)
-                ret = {
-                    "fieldName": fieldname,
-                    "mode": "structure",
-                    "html": self.ulocalized_time(value, long_format=True)
-                }
-        return ret
+        if self.is_boolean_field(field):
+            data = self.get_boolean_field_data(field)
+        elif self.is_reference_field(field):
+            data = self.get_reference_field_data(field)
+        elif self.is_date_field(field):
+            data = self.get_date_field_data(field)
+
+        return data
 
     def get_field_visibility_mode(self, field):
         """Returns "view" or "edit" modes, together with the place within where
@@ -179,8 +245,7 @@ class HeaderTableView(BrowserView):
         # modes) only if the current user has enough privileges.
         if field.checkPermission("edit", self.context):
             mode = "edit"
-            sm = getSecurityManager()
-            if not sm.checkPermission(ModifyPortalContent, self.context):
+            if not self.is_edit_allowed():
                 logger.warn("Permission '{}' granted for the edition of '{}', "
                             "but 'Modify portal content' not granted"
                             .format(field.write_permission, field.getName()))
