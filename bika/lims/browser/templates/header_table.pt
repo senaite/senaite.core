@@ -12,12 +12,9 @@
   </head>
 
   <body
-    tal:define="portal context/@@plone_portal_state/portal;
-                checkPermission python:context.portal_membership.checkPermission;
-                dummy python:view.get_fields_grouped_by_location();
+    tal:define="dummy python:view.get_fields_grouped_by_location();
                 prominent python:dummy[0];
-                sublists python:dummy[1];
-                errors view/errors"
+                sublists python:dummy[1]"
     tal:condition="sublists">
     <form method="post" name="header_form">
       <input type="hidden" name="header_table_submitted" value="1" />
@@ -86,13 +83,13 @@
           </tal:repeat>
         </tr>
       </table>
-      <input class="context btn btn-sm btn-primary"
+      <input tal:condition="view/is_edit_allowed"
+             class="context btn btn-sm btn-primary"
              type="submit"
              name="form.button.save"
              value="Save"
              i18n:domain="plone"
-             i18n:attributes="value label_save;"
-             />
+             i18n:attributes="value label_save;"/>
     </form>
   </body>
 </html>
