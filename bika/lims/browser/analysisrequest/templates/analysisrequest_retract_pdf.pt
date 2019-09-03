@@ -76,10 +76,7 @@
                 <td class="label" i18n:translate="">Client</td>
                 <td tal:content="python: client.Title()"></td>
             </tr>
-            <tr>
-                <td class="label" i18n:translate="">Client ID</td>
-                <td tal:content="python: client.getClientID()"></td>
-            </tr>
+
             <tr>
                 <td class="label" i18n:translate="">Physical address</td>
                 <td tal:define="
@@ -91,8 +88,30 @@
                     </tal:addresslines>
                 </td>
             </tr>
+
+            <tr>
+                <td class="label" i18n:translate="">Client ID</td>
+                <td tal:content="python: client.getClientID()"></td>
+            </tr>
         </table>
     </div>
+
+    <tal:patient define="patient python:ar.Schema().getField('Patient');
+                     patient python:patient.get(ar) if patient else None;">
+    <div class="patient" tal:condition="patient">
+        <table cellpadding="0" cellspacing="0" border="0">
+            <tr>
+                <td class="label" i18n:translate="">Name of Patient</td>
+                <td tal:content="python: patient.getFullname()"></td>
+                <td class="label" i18n:translate="">Age</td>
+                <td tal:content="python: patient.getAgeSplittedStr()"></td>
+                <td class="label" i18n:translate="">Sex</td>
+                <td tal:content="python: patient.getGender()"></td>
+            </tr>
+        </table>
+    </div>
+    </tal:patient>
+
 
     <div class="sample">
         <table cellpadding="0" cellspacing="0" border="0">

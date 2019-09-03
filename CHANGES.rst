@@ -6,6 +6,13 @@ Changelog
 
 **Added**
 
+- #92 re-arranged client information
+- #99 Fetch patient demographics
+- #104 Render patient demographics in HTML
+
+
+**Added**
+
 - #1422 Notify user with failing addresses when emailing of results reports
 - #1420 Allow to detach a partition from its primary sample
 - #1410 Email API
