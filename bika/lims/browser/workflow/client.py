@@ -54,9 +54,6 @@ class WorkflowActionPublishSamplesAdapter(RequestContextAware):
     def publish_sample(self, sample):
         """Set status to prepublished/published/republished
         """
-        # publish partitions
-        for partition in sample.getDescendants():
-            self.publish_sample(partition)
         status = api.get_workflow_status_of(sample)
         transitions = {"verified": "publish", "published": "republish"}
         transition = transitions.get(status, "prepublish")

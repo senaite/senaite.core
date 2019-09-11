@@ -444,10 +444,6 @@ class EmailView(BrowserView):
     def publish(self, sample):
         """Set status to prepublished/published/republished
         """
-        # publish partitions
-        for partition in sample.getDescendants():
-            self.publish(partition)
-
         wf = api.get_tool("portal_workflow")
         status = wf.getInfoFor(sample, "review_state")
         transitions = {"verified": "publish",
