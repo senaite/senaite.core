@@ -18,15 +18,19 @@
 # Copyright 2018-2019 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from DateTime import DateTime
 from bika.lims import api
+from bika.lims.interfaces import IAnalysisRequestPartition
 from bika.lims.interfaces import IDetachedPartition
-from bika.lims.interfaces import IReceived, IVerified, IAnalysisRequestPartition
+from bika.lims.interfaces import IReceived
+from bika.lims.interfaces import IVerified
 from bika.lims.utils import changeWorkflowState
 from bika.lims.utils.analysisrequest import create_retest
 from bika.lims.workflow import get_prev_status_from_history
-from bika.lims.workflow.analysisrequest import AR_WORKFLOW_ID, \
-    do_action_to_descendants, do_action_to_analyses, do_action_to_ancestors
+from bika.lims.workflow.analysisrequest import AR_WORKFLOW_ID
+from bika.lims.workflow.analysisrequest import do_action_to_analyses
+from bika.lims.workflow.analysisrequest import do_action_to_ancestors
+from bika.lims.workflow.analysisrequest import do_action_to_descendants
+from DateTime import DateTime
 from zope.interface import alsoProvides
 from zope.interface import noLongerProvides
 
