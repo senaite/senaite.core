@@ -97,6 +97,16 @@ def after_verify(analysis_request):
     do_action_to_descendants(analysis_request, "verify")
 
 
+def after_prepublish(analysis_request):
+    """Method triggered after a 'prepublish' transition for the Analysis
+    Request passed in is performed. Performs the 'publish' transition to the
+    descendant partitions.
+
+    Also see: https://github.com/senaite/senaite.core/pull/1428
+    """
+    do_action_to_descendants(analysis_request, "publish")
+
+
 def after_publish(analysis_request):
     """Method triggered after an 'publish' transition for the Analysis Request
     passed in is performed. Performs the 'publish' transition Publishes the
