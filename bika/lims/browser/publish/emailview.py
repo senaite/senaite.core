@@ -430,18 +430,16 @@ class EmailView(BrowserView):
     def publish_samples(self):
         """Publish all samples of the reports
         """
-        reports = self.reports
-        for report in reports:
-            # publish the primary sample
-            primary_sample = report.getAnalysisRequest()
-            self.publish(primary_sample)
-            # publish the contained samples
-            contained_samples = report.getContainedAnalysisRequests()
-            for sample in contained_samples:
-                # skip the primary sample
-                if sample == primary_sample:
-                    continue
-                self.publish(sample)
+        samples = set()
+
+        # collect primary + contained samples of the reports
+        for report in self.reports:
+            samples.add(report.getAnalysisRequest())
+            samples.update(report.getContainedAnalysisRequests())
+
+        # publish all samples + their partitions
+        for sample in samples:
+            self.publish(sample)
 
     def publish(self, sample):
         """Set status to prepublished/published/republished
@@ -460,10 +458,8 @@ class EmailView(BrowserView):
             wf.doActionFor(sample, transition)
             # Commit the changes
             transaction.commit()
-            return True
         except WorkflowException as e:
             logger.error(e)
-            return False
 
     def render_email_template(self, template):
         """Return the rendered email template
