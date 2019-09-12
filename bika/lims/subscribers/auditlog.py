@@ -30,7 +30,7 @@ def unindex_object(obj):
     """Unindex the object in the `auditlog_catalog` catalog
     """
     auditlog_catalog = api.get_tool("auditlog_catalog")
-    auditlog_catalog.reindexObject(obj)
+    auditlog_catalog.unindexObject(obj)
 
 
 def ObjectTransitionedEventHandler(obj, event):
@@ -102,8 +102,9 @@ def ObjectRemovedEventHandler(obj, event):
     if not supports_snapshots(obj):
         return
 
-    # unindex the object
-    unindex_object(obj)
+    # NOTE: It seems like the object is already unindexed and no further manual
+    #       actions are needed here.
+    # unindex_object(obj)
 
     # freeze the object
     alsoProvides(obj, IDoNotSupportSnapshots)
