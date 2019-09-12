@@ -30,7 +30,7 @@ def unindex_object(obj):
     """Unindex the object in the `auditlog_catalog` catalog
     """
     auditlog_catalog = api.get_tool("auditlog_catalog")
-    auditlog_catalog.reindexObject(obj)
+    auditlog_catalog.unindexObject(obj)
 
 
 def ObjectTransitionedEventHandler(obj, event):
