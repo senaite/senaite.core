@@ -25,6 +25,7 @@ Changelog
 
 **Fixed**
 
+- #1439 Fix global Auditlog when Analyses/Attachments were removed
 - #1426 Render HTML Texts in Info Popups correctly
 - #1423 Use the value set for ui_item property when displaying ReferenceWidget
 - #1425 Fix adapter priority for widget visibility
