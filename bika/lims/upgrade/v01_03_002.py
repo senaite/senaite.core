@@ -73,12 +73,12 @@ def unindex_orphaned_brains_in_auditlog_catalog(portal):
     orphaned = []
     types_to_check = ["Analysis", "Attachment"]
     ac = api.get_tool("auditlog_catalog")
-    analyses = ac({"portal_type": types_to_check})
-    total = len(analyses)
+    brains = ac({"portal_type": types_to_check})
+    total = len(brains)
 
     logger.info("Checking %s brains in auditlog_catalog" % total)
 
-    for num, brain in enumerate(analyses):
+    for num, brain in enumerate(brains):
         if num % 100 == 0:
             logger.info("Checked %s/%s brains in auditlog_catalog"
                         % (num, total))
