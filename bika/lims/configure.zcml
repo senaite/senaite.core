@@ -12,6 +12,13 @@
   <i18n:registerTranslations directory="locales" />
 
 
+  <!-- Plone behavior for Dexterity based contents -->
+  <plone:behavior
+      title="Auto-Generate ID Beahvior for Dexterity Contents"
+      description="Generates an ID with the IDServer"
+      provides="bika.lims.interfaces.IAutoGenerateID"
+      />
+
 <includeDependencies package="." />
 //  <include package="jarn.jsi18n" />
 //  <include package="plone.app.z3cform" />
