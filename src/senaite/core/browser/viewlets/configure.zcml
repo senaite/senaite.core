@@ -1,0 +1,195 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+           xmlns:browser="http://namespaces.zope.org/browser"
+           i18n_domain="senaite.core">
+
+  <!-- AR Attachments Viewlet -->
+  <browser:viewlet
+      for="senaite.core.interfaces.IAnalysisRequest"
+      name="senaite.core.viewlets.attachments"
+      class="senaite.core.browser.viewlets.attachments.AttachmentsViewlet"
+      manager="plone.app.layout.viewlets.interfaces.IBelowContentTitle"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.IBikaLIMS"
+      />
+
+  <!-- Worksheet Attachments Viewlet -->
+  <browser:viewlet
+      for="senaite.core.interfaces.IWorksheet"
+      name="senaite.core.viewlets.worksheet_attachments"
+      class="senaite.core.browser.viewlets.attachments.WorksheetAttachmentsViewlet"
+      manager="plone.app.layout.viewlets.interfaces.IBelowContentTitle"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.IBikaLIMS"
+      />
+
+  <!-- Hide BreadCrumbs for root views -->
+  <browser:viewlet
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+      name="plone.path_bar"
+      manager="plone.app.layout.viewlets.interfaces.IAboveContent"
+      template="templates/blank.pt"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.IBikaLIMS"
+      />
+
+  <!-- Hide BreadCrumbs for other stuff -->
+  <browser:viewlet
+      for="senaite.core.interfaces.IHaveNoBreadCrumbs"
+      name="plone.path_bar"
+      manager="plone.app.layout.viewlets.interfaces.IAboveContent"
+      template="templates/blank.pt"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.IBikaLIMS"
+      />
+
+  <!-- Translated breadcrumbs -->
+  <browser:viewlet
+      for="*"
+      name="plone.path_bar"
+      manager="plone.app.layout.viewlets.interfaces.IAboveContent"
+      template="templates/path_bar.pt"
+      class="senaite.core.browser.viewlets.path_bar.PathBarViewlet"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.IBikaLIMS"
+      />
+
+  <!-- Hide ByLine for everything -->
+  <browser:viewlet
+      for="*"
+      name="plone.belowcontenttitle.documentbyline"
+      manager="plone.app.layout.viewlets.interfaces.IBelowContentTitle"
+      template="templates/blank.pt"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.IBikaLIMS"
+      />
+
+  <!-- Make document actions beautiful -->
+  <browser:viewlet
+      name="plone.abovecontenttitle.documentactions"
+      manager="plone.app.layout.viewlets.interfaces.IBelowContentBody"
+      template="templates/blank.pt"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.IBikaLIMS"
+      />
+
+  <browser:viewlet
+      name="plone.abovecontenttitle.documentactions"
+      manager="plone.app.layout.viewlets.interfaces.IAboveContentTitle"
+      class="senaite.core.browser.viewlets.document_actions.DocumentActionsViewlet"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.IBikaLIMS"
+      />
+
+  <browser:viewlet
+      name="plone.footer"
+      manager="plone.app.layout.viewlets.interfaces.IPortalFooter"
+      class="plone.app.layout.viewlets.common.FooterViewlet"
+      template="templates/footer.pt"
+      for="*"
+      layer="senaite.core.interfaces.IBikaLIMS"
+      permission="zope2.View"
+      />
+  <browser:viewlet
+      name="plone.colophon"
+      manager="plone.app.layout.viewlets.interfaces.IPortalFooter"
+      template="templates/colophon.pt"
+      for="*"
+      layer="senaite.core.interfaces.IBikaLIMS"
+      permission="zope2.View"
+      />
+
+  <browser:viewlet
+      name="senaite.core.authenticator"
+      manager="plone.app.layout.viewlets.interfaces.IPortalFooter"
+      class="senaite.core.browser.viewlets.authenticator.AuthenticatorViewlet"
+      permission="zope2.View"
+      />
+
+    <!-- Show Instrument QC failures viewlet -->
+    <browser:viewlet
+        for="*"
+        name="senaite.core.instrument_qc_failures_viewlet"
+        class="senaite.core.browser.viewlets.InstrumentQCFailuresViewlet"
+        manager="plone.app.layout.viewlets.interfaces.IAboveContent"
+        template="templates/instrument_qc_failures_viewlet.pt"
+        permission="zope2.View"
+        layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+  <!-- Invalid Analysis Request viewlet -->
+  <browser:viewlet
+    for="senaite.core.interfaces.IAnalysisRequest"
+    name="senaite.core.invalid_ar_viewlet"
+    class=".analysisrequest.InvalidAnalysisRequestViewlet"
+    manager="plone.app.layout.viewlets.interfaces.IAboveContent"
+    template="templates/invalid_ar_viewlet.pt"
+    permission="zope2.View"
+    layer="senaite.core.interfaces.IBikaLIMS"
+  />
+
+  <!-- Retest Analysis Request viewlet -->
+  <browser:viewlet
+    for="senaite.core.interfaces.IAnalysisRequest"
+    name="senaite.core.retest_ar_viewlet"
+    class=".analysisrequest.RetestAnalysisRequestViewlet"
+    manager="plone.app.layout.viewlets.interfaces.IAboveContent"
+    template="templates/retest_ar_viewlet.pt"
+    permission="zope2.View"
+    layer="senaite.core.interfaces.IBikaLIMS"
+  />
+
+  <!-- Primary Analysis Request viewlet -->
+  <browser:viewlet
+    for="senaite.core.interfaces.IAnalysisRequest"
+    name="senaite.core.primary_ar_viewlet"
+    class=".analysisrequest.PrimaryAnalysisRequestViewlet"
+    manager="plone.app.layout.viewlets.interfaces.IAboveContent"
+    template="templates/primary_ar_viewlet.pt"
+    permission="zope2.View"
+    layer="senaite.core.interfaces.IBikaLIMS"
+  />
+
+  <!-- Partition Analysis Request viewlet -->
+  <browser:viewlet
+    for="senaite.core.interfaces.IAnalysisRequest"
+    name="senaite.core.partition_ar_viewlet"
+    class=".analysisrequest.PartitionAnalysisRequestViewlet"
+    manager="plone.app.layout.viewlets.interfaces.IAboveContent"
+    template="templates/partition_ar_viewlet.pt"
+    permission="zope2.View"
+    layer="senaite.core.interfaces.IBikaLIMS"
+  />
+
+  <!-- Dettached partition viewlet -->
+  <browser:viewlet
+    for="senaite.core.interfaces.IAnalysisRequest"
+    name="senaite.core.detached_partition_viewlet"
+    class=".analysisrequest.DetachedPartitionViewlet"
+    manager="plone.app.layout.viewlets.interfaces.IAboveContent"
+    template="templates/detached_partition_viewlet.pt"
+    permission="zope2.View"
+    layer="senaite.core.interfaces.IBikaLIMS"
+  />
+
+  <!-- Secondary Analysis Request viewlet -->
+  <browser:viewlet
+    for="senaite.core.interfaces.IAnalysisRequestSecondary"
+    name="senaite.core.secondary_ar_viewlet"
+    class=".analysisrequest.SecondaryAnalysisRequestViewlet"
+    manager="plone.app.layout.viewlets.interfaces.IAboveContent"
+    template="templates/secondary_ar_viewlet.pt"
+    permission="zope2.View"
+    layer="senaite.core.interfaces.IBikaLIMS"
+  />
+
+  <!-- Rejected Analysis Request viewlet -->
+  <browser:viewlet
+    for="senaite.core.interfaces.IAnalysisRequest"
+    name="senaite.core.rejected_ar_viewlet"
+    class=".analysisrequest.RejectedAnalysisRequestViewlet"
+    manager="plone.app.layout.viewlets.interfaces.IAboveContent"
+    template="templates/rejected_ar_viewlet.pt"
+    permission="zope2.View"
+    layer="senaite.core.interfaces.IBikaLIMS"
+  />
+</configure>

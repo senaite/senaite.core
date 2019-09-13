@@ -1,0 +1,24 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    i18n_domain="senaite.core">
+
+    <browser:page
+      for="senaite.core.interfaces.IContact"
+      name="login_details"
+      class="senaite.core.browser.contact.ContactLoginDetailsView"
+      permission="cmf.ModifyPortalContent"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="senaite.core.interfaces.ILabContact"
+      name="login_details"
+      class="senaite.core.browser.contact.ContactLoginDetailsView"
+      permission="senaite.core.permissions.ManageLoginDetails"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+
+</configure>

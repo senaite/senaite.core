@@ -1,0 +1,235 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="senaite.core">
+  <body>
+
+    <metal:content-title fill-slot="content-title">
+    </metal:content-title>
+
+    <metal:content-description fill-slot="content-description">
+    </metal:content-description>
+
+    <metal:content-core fill-slot="content-core">
+
+      <!-- Report Info -->
+      <div class="row" >
+        <div class="col-sm-12">
+          <h3>
+            <img tal:replace="structure python:view.get_icon_for('arreport')"/>
+            <span i18n:translate="">Analysis Report</span>
+          </h3>
+          <div id="report">
+            <table class="table table-condensed small">
+              <colgroup>
+                <col style="width:20%">
+              </colgroup>
+              <tal:metadata define="metadata view/get_metadata">
+                <!-- Template -->
+                <tr>
+                  <td>
+                    <span i18n:translate="">Template</span>
+                  </td>
+                  <td>
+                    <span tal:content="metadata/template|default">-</span>
+                  </td>
+                </tr>
+                <!-- Paperformat -->
+                <tr>
+                  <td>
+                    <span i18n:translate="">Paperformat</span>
+                  </td>
+                  <td>
+                    <span tal:content="metadata/paperformat|default">-</span>
+                  </td>
+                </tr>
+                <!-- Orientation -->
+                <tr>
+                  <td>
+                    <span i18n:translate="">Orientation</span>
+                  </td>
+                  <td>
+                    <span tal:content="metadata/orientation|default">-</span>
+                  </td>
+                </tr>
+              </tal:metadata>
+              <tr tal:define="sample view/get_primary_sample">
+                <td>
+                  <span i18n:translate="">Primary Sample</span>
+                </td>
+                <td>
+                  <a href="#"
+                     target="_blank"
+                     tal:attributes="href sample/absolute_url">
+                    <span tal:content="sample/Title"></span>
+                  </a>
+                </td>
+              </tr>
+              <tr tal:define="samples view/get_contained_samples">
+                <td>
+                  <span i18n:translate="">Contained Samples</span>
+                </td>
+                <td>
+                  <div tal:repeat="sample samples">
+                    <a href="#"
+                      target="_blank"
+                      tal:attributes="href sample/absolute_url">
+                      <span tal:content="sample/Title"></span>
+                    </a>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Send Log -->
+      <div class="row"
+           tal:define="records view/get_sendlog"
+           tal:condition="nocall:records">
+        <div class="col-sm-12">
+          <h3>
+            <img tal:replace="structure python:view.get_icon_for('email')"/>
+            <span i18n:translate="">Email Log</span>
+          </h3>
+
+          <!-- Log Records -->
+          <ul class="nav nav-tabs" role="tablist">
+            <tal:record tal:repeat="record records">
+              <li role="presentation"
+                  tal:define="num repeat/record/number;
+                              send_date record/email_send_date"
+                  tal:attributes="class python:num==1 and 'active' or ''">
+                <a href="#"
+                   role="tab"
+                   data-toggle="tab"
+                   tal:content="python:view.ulocalized_time(send_date, 1)"
+                   tal:attributes="href string:#tab-${num};">
+                </a>
+              </li>
+            </tal:record>
+          </ul>
+
+          <!-- Tab panes -->
+          <div class="tab-content" style="margin-top:-1px;">
+            <tal:record tal:repeat="record records">
+              <div tal:define="num repeat/record/number"
+                   tal:attributes="id string:tab-${num};
+                               class python:num==1 and 'tab-pane active' or 'tab-pane'"
+                   role="tabpanel">
+
+                <table class="table table-condensed small">
+                  <colgroup>
+                    <col style="width:20%">
+                  </colgroup>
+                  <!-- Actor -->
+                  <tr>
+                    <td>
+                      <span i18n:translate="">Sender</span>
+                    </td>
+                    <td>
+                      <span tal:content="record/actor_fullname|default">
+                        <code tal:content="record/actor"/>
+                      </span>
+                    </td>
+                  </tr>
+                  <!-- Recipients -->
+                  <tr>
+                    <td>
+                      <span i18n:translate="">Recipients</span>
+                    </td>
+                    <td>
+                      <tal:recipients repeat="recipient record/email_recipients">
+                        <span class="label label-primary" tal:content="recipient"/>
+                      </tal:recipients>
+                    </td>
+                  </tr>
+                  <!-- Responsibles -->
+                  <tr tal:condition="record/email_responsibles">
+                    <td>
+                      <span i18n:translate="">Responsibles</span>
+                    </td>
+                    <td>
+                      <tal:responsibles repeat="responsible record/email_responsibles">
+                        <span class="label label-primary" tal:content="responsible"/>
+                      </tal:responsibles>
+                    </td>
+                  </tr>
+                  <!-- Subject -->
+                  <tr>
+                    <td>
+                      <span i18n:translate="">Subject</span>
+                    </td>
+                    <td>
+                      <span tal:content="structure record/email_subject|default">-</span>
+                    </td>
+                  </tr>
+                  <!-- Body Text -->
+                  <tr>
+                    <td>
+                      <span i18n:translate="">Text</span>
+                    </td>
+                    <td>
+                      <pre class="small" tal:content="structure record/email_body|default">-</pre>
+                    </td>
+                  </tr>
+                  <!-- Attachments -->
+                  <tr tal:condition="record/email_attachments">
+                    <td>
+                      <span i18n:translate="">Attachments</span>
+                    </td>
+                    <td>
+                      <tal:attachment_uids repeat="uid record/email_attachments">
+                        <tal:attachment define="attachment python:view.get_attachment_data_by_uid(uid)">
+                          <div tal:condition="not:nocall:attachment"
+                                class="attachment col-xs-12 col-sm-4 col-md-3 col-lg-2">
+                            <div class="attachment-file">
+                              <img tal:attributes="title string:UID:${uid}"
+                                   src="++resource++senaite.core.browser.publish/img/deleted_attachment.png" width="32" />
+                            </div>
+                            <span class="filename" i18n:translate="">
+                              File Deleted
+                            </span>
+                          </div>
+
+                          <div tal:condition="nocall:attachment"
+                                class="attachment col-xs-12 col-sm-4 col-md-3 col-lg-2">
+                            <a href="#"
+                              class="attachment-link"
+                              target="_blank"
+                              tal:attributes="href string:${attachment/obj/absolute_url}/AttachmentFile">
+                              <div class="attachment-file">
+                                <img tal:attributes="alt attachment/filename;
+                                                     title string:${attachment/filename} ${attachment/mimetype}(${attachment/filesize} KB)"
+                                    src="++resource++senaite.core.browser.publish/img/attachment.png" width="32" />
+                              </div>
+                              <span class="filename" tal:content="attachment/filename"/>
+
+                              <div class="attachment-info small">
+                                <span tal:content="attachment/attachment_keys"/>
+                                <div class="fileinfo">
+                                  <span class="filetype" tal:content="attachment/mimetype"/>
+                                  <span class="filesize" tal:content="string:${attachment/filesize} KB"/>
+                                </div>
+                              </div>
+                            </a>
+                          </div>
+                        </tal:attachment>
+                      </tal:attachment_uids>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+            </tal:record>
+          </div>
+
+        </div>
+      </div>
+
+    </metal:content-core>
+
+  </body>
+</html>

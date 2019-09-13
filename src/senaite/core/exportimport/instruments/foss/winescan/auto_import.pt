@@ -1,0 +1,35 @@
+    <p></p>
+
+    <label for='wsa_file'>File</label>&nbsp;
+    <input type="file" name="wsa_file" id="wsa_file"/>
+    &nbsp;&nbsp;
+    <label for='wsa_format'>Format</label>&nbsp;
+    <select name="wsa_format" id="wsa_format">
+        <option value='csv'>CSV</option>
+    </select>
+    <p></p>
+    <h3>Advanced options</h3>
+    <table cellpadding="0" cellspacing="0">
+        <tr>
+            <td><label for="wsa_artoapply">Samples state</label>&nbsp;</td>
+            <td>
+                <select name="wsa_artoapply" id="wsa_artoapply">
+                    <option value="received">Received</option>
+                    <option value="received_tobeverified">Received and to be verified</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td><label for="wsa_override">Results override</label></td>
+            <td>
+                <select name="wsa_override" id="wsa_override">
+                    <option value="nooverride">Don't override results</option>
+                    <option value="override">Override non-empty results</option>
+                    <option value="overrideempty">Override non-empty results (also with empty)</option>
+                </select>
+            </td>
+        </tr>
+    </table>
+    <p></p>
+    <input name="firstsubmit" type="submit" value="Submit" i18n:attributes="value"/>
+    <p></p>

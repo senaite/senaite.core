@@ -1,0 +1,924 @@
+# --- PLEASE EDIT THE LINES BELOW CORRECTLY ---
+# SOME DESCRIPTIVE TITLE.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Translators:
+# Ramon Bartl <rb@ridingbytes.com>, 2018
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2019-05-17 08:53+0000\n"
+"PO-Revision-Date: 2018-06-01 18:46+0000\n"
+"Last-Translator: Ramon Bartl <rb@ridingbytes.com>, 2018\n"
+"Language-Team: French (https://www.transifex.com/senaite/teams/87045/fr/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"Language-Code: en\n"
+"Language-Name: English\n"
+"Preferred-Encodings: utf-8 latin1\n"
+"Domain: plone\n"
+"Language: fr\n"
+
+#: bika/lims/profiles/default/types/ARTemplate.xml
+msgid "AR Template"
+msgstr "Modèle de DA"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/ARTemplates.xml
+#: bika/lims/profiles/default/types/SRTemplate.xml
+msgid "AR Templates"
+msgstr "Modèles de DAs"
+
+#: bika/lims/profiles/default/types/ARReport.xml
+msgid "ARReport"
+msgstr "Rapport de DA"
+
+# Manual Workflow State and Transition MsgIds
+# Despite the fact, that these are defined in the "bika" domain, they are not
+# translated
+# in the action menu of Plone.
+# Please don't remove
+msgid "Activate"
+msgstr ""
+
+msgid "Active"
+msgstr ""
+
+#: bika/lims/profiles/default/types/Worksheet.xml
+msgid "Add Analyses"
+msgstr "Ajout d'analyse"
+
+#: bika/lims/profiles/default/types/Worksheet.xml
+msgid "Add Blank Reference"
+msgstr "Ajout d'une référence vide"
+
+#: bika/lims/profiles/default/types/Worksheet.xml
+msgid "Add Control Reference"
+msgstr "Ajout de la référence controle"
+
+#: bika/lims/profiles/default/types/Worksheet.xml
+msgid "Add Duplicate"
+msgstr "Ajouter une copie"
+
+#: bika/lims/profiles/default/types/ReportFolder.xml
+msgid "Administration"
+msgstr "Administration"
+
+#: bika/lims/profiles/default/types/ReferenceSample.xml
+msgid "Analyses"
+msgstr "Analyses"
+
+#: bika/lims/profiles/default/types/Analysis.xml
+msgid "Analysis"
+msgstr "Analyse"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/AnalysisCategories.xml
+msgid "Analysis Categories"
+msgstr "Classification par département"
+
+#: bika/lims/profiles/default/types/AnalysisCategory.xml
+msgid "Analysis Category"
+msgstr "Catégorie d'analyse"
+
+#: bika/lims/profiles/default/types/AnalysisProfile.xml
+msgid "Analysis Profile"
+msgstr "Profil d'analyse"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/AnalysisProfiles.xml
+#: bika/lims/profiles/default/types/Client.xml
+msgid "Analysis Profiles"
+msgstr "Profils d'analyses"
+
+#: bika/lims/profiles/default/types/AnalysisService.xml
+msgid "Analysis Service"
+msgstr "Service d'analyse"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/AnalysisServices.xml
+msgid "Analysis Services"
+msgstr "Services d'analyse"
+
+#: bika/lims/profiles/default/types/AnalysisSpec.xml
+msgid "Analysis Specification"
+msgstr "Spécification d'analyse"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/AnalysisSpecs.xml
+#: bika/lims/profiles/default/types/Client.xml
+msgid "Analysis Specifications"
+msgstr "Spécifications d'analyse"
+
+msgid "Assign"
+msgstr ""
+
+msgid "Assigned"
+msgstr ""
+
+msgid "Attach"
+msgstr ""
+
+#: bika/lims/profiles/default/types/Attachment.xml
+msgid "Attachment"
+msgstr "Lien"
+
+#: bika/lims/profiles/default/types/AttachmentType.xml
+msgid "Attachment Type"
+msgstr "Type de lien"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/AttachmentTypes.xml
+msgid "Attachment Types"
+msgstr "Types de liens"
+
+msgid "Attachment due"
+msgstr ""
+
+#: bika/lims/profiles/default/types/Client.xml
+msgid "Attachments"
+msgstr "Liens"
+
+#: bika/lims/profiles/default/actions.xml
+msgid "Audit Log"
+msgstr ""
+
+#: bika/lims/profiles/default/types/Instrument.xml
+msgid "Auto-Import Logs"
+msgstr ""
+
+#: bika/lims/profiles/default/types/Batch.xml
+msgid "Batch"
+msgstr "Lot"
+
+#: bika/lims/profiles/default/types/Batch.xml
+msgid "Batch Book"
+msgstr "Recueil de lots"
+
+#: bika/lims/profiles/default/types/BatchLabel.xml
+msgid "Batch Label"
+msgstr "Label du lot"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/BatchLabels.xml
+msgid "Batch Labels"
+msgstr "Labels des lots"
+
+#: bika/lims/profiles/default/types/BatchFolder.xml
+#: bika/lims/profiles/default/types/Client.xml
+msgid "Batches"
+msgstr "Lots"
+
+#: bika/lims/profiles/default/types/Calculation.xml
+msgid "Calculation"
+msgstr "calcul"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/Calculations.xml
+msgid "Calculations"
+msgstr "calculs"
+
+#: bika/lims/profiles/default/types/Instrument.xml
+msgid "Calibration Certificates"
+msgstr ""
+
+#: bika/lims/profiles/default/types/Instrument.xml
+msgid "Calibrations"
+msgstr "Calibrations"
+
+msgid "Cancel"
+msgstr ""
+
+#: bika/lims/profiles/default/types/Client.xml
+msgid "Client"
+msgstr "Client"
+
+#: bika/lims/profiles/default/types/ClientFolder.xml
+msgid "Clients"
+msgstr "Clients"
+
+msgid "Close"
+msgstr ""
+
+msgid "Complete"
+msgstr ""
+
+#: bika/lims/profiles/default/types/Contact.xml
+#: bika/lims/profiles/default/types/SupplierContact.xml
+msgid "Contact"
+msgstr ""
+
+#: bika/lims/profiles/default/types/Client.xml
+#: bika/lims/profiles/default/types/Supplier.xml
+msgid "Contacts"
+msgstr "Contacts"
+
+#: bika/lims/profiles/default/types/Container.xml
+msgid "Container"
+msgstr "conteneur"
+
+#: bika/lims/profiles/default/types/ContainerType.xml
+msgid "Container Type"
+msgstr "Type de conteneur"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/ContainerTypes.xml
+msgid "Container Types"
+msgstr "Types de conteneurs"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/Containers.xml
+msgid "Containers"
+msgstr "Conteneurs"
+
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
+msgid "Create Invoice PDF"
+msgstr ""
+
+msgid "Current"
+msgstr ""
+
+msgid "Deactivate"
+msgstr ""
+
+#: bika/lims/profiles/default/types/Department.xml
+msgid "Department"
+msgstr "Département"
+
+#: bika/lims/profiles/default/types/Departments.xml
+msgid "Departments"
+msgstr "Départements"
+
+msgid "Dispatch"
+msgstr ""
+
+msgid "Dispatched"
+msgstr ""
+
+msgid "Dispose"
+msgstr ""
+
+msgid "Disposed"
+msgstr ""
+
+#: bika/lims/profiles/default/types/Instrument.xml
+msgid "Documents"
+msgstr ""
+
+msgid "Dormant"
+msgstr ""
+
+#: bika/lims/profiles/default/types/DuplicateAnalysis.xml
+msgid "Duplicate Analysis"
+msgstr "Dupliquer une analyse"
+
+#: bika/lims/profiles/default/types/ARImport.xml
+#: bika/lims/profiles/default/types/ARTemplate.xml
+#: bika/lims/profiles/default/types/AnalysisCategory.xml
+msgid "Edit"
+msgstr ""
+
+msgid "Expire"
+msgstr ""
+
+msgid "Expired"
+msgstr ""
+
+#: bika/lims/profiles/default/types/Worksheet.xml
+msgid "Export"
+msgstr "Exportation"
+
+#: bika/lims/profiles/default/types/InvoiceBatch.xml
+msgid "Export Batch To CSV"
+msgstr ""
+
+#: bika/lims/profiles/default/actions.xml
+msgid "Extracts"
+msgstr "Extractions"
+
+#: bika/lims/profiles/default/types/ReportFolder.xml
+msgid "History"
+msgstr ""
+
+#: bika/lims/profiles/default/actions.xml
+msgid "Home"
+msgstr ""
+
+#: bika/lims/profiles/default/types/IdentifierType.xml
+msgid "Identifier Type"
+msgstr ""
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/IdentifierTypes.xml
+msgid "Identifier Types"
+msgstr ""
+
+#: bika/lims/profiles/default/actions.xml
+msgid "Import"
+msgstr ""
+
+msgid "Imported"
+msgstr ""
+
+#: bika/lims/profiles/default/types/Client.xml
+msgid "Imports"
+msgstr "Importations"
+
+msgid "Inactive"
+msgstr ""
+
+#: bika/lims/profiles/default/types/Instrument.xml
+msgid "Instrument"
+msgstr "Instrument"
+
+#: bika/lims/profiles/default/controlpanel.xml
+msgid "Instrument Locations"
+msgstr ""
+
+#: bika/lims/profiles/default/types/InstrumentType.xml
+msgid "Instrument Type"
+msgstr "Type d'instrument"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/InstrumentTypes.xml
+msgid "Instrument Types"
+msgstr "Types d'intruments"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/InstrumentType.xml
+#: bika/lims/profiles/default/types/Instruments.xml
+msgid "Instruments"
+msgstr "Instruments"
+
+msgid "Invalid"
+msgstr ""
+
+msgid "Invalidate"
+msgstr ""
+
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
+#: bika/lims/profiles/default/types/Invoice.xml
+msgid "Invoice"
+msgstr "Facture"
+
+#: bika/lims/profiles/default/types/LabContact.xml
+msgid "Lab Contact"
+msgstr "Contact du laboratoire"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/Department.xml
+#: bika/lims/profiles/default/types/LabContacts.xml
+msgid "Lab Contacts"
+msgstr "Contacts du labo"
+
+#: bika/lims/profiles/default/controlpanel.xml
+msgid "Lab Departments"
+msgstr "Département du labo"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/LabProducts.xml
+msgid "Lab Products"
+msgstr "Produits du labo"
+
+#: bika/lims/profiles/default/types/Laboratory.xml
+msgid "Laboratory"
+msgstr "Laboratoire"
+
+#: bika/lims/profiles/default/controlpanel.xml
+msgid "Laboratory Information"
+msgstr "Information du laboratoire"
+
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
+msgid "Large Sticker"
+msgstr "Grande étiquette"
+
+#: bika/lims/profiles/default/types/Contact.xml
+#: bika/lims/profiles/default/types/LabContact.xml
+msgid "Login details"
+msgstr "Détails de connexion"
+
+#: bika/lims/profiles/default/types/Instrument.xml
+msgid "Maintenance"
+msgstr ""
+
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
+msgid "Manage Analyses"
+msgstr "Gérer les analyses"
+
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
+#: bika/lims/profiles/default/types/Worksheet.xml
+msgid "Manage Results"
+msgstr "Gestion des résultats"
+
+#: bika/lims/profiles/default/types/Manufacturer.xml
+msgid "Manufacturer"
+msgstr "Fabricant"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/Manufacturers.xml
+msgid "Manufacturers"
+msgstr "Fabricants"
+
+#: bika/lims/profiles/default/types/Method.xml
+msgid "Method"
+msgstr "Méthode"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/Methods.xml
+msgid "Methods"
+msgstr "Méthodes"
+
+msgid "No preservation required"
+msgstr ""
+
+msgid "No sampling workflow"
+msgstr ""
+
+msgid "Not requested"
+msgstr ""
+
+msgid "Open"
+msgstr ""
+
+#: bika/lims/profiles/default/types/Client.xml
+msgid "Orders"
+msgstr "Commandes"
+
+msgid "Pending"
+msgstr ""
+
+msgid "Prepublish"
+msgstr ""
+
+#: bika/lims/profiles/default/types/Preservation.xml
+msgid "Preservation"
+msgstr "Conservation"
+
+msgid "Preservation required"
+msgstr ""
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/Preservations.xml
+msgid "Preservations"
+msgstr "Conservations"
+
+msgid "Preserve"
+msgstr ""
+
+#: bika/lims/profiles/default/types/Pricelist.xml
+msgid "Pricelist"
+msgstr "liste de prix"
+
+#: bika/lims/profiles/default/types/PricelistFolder.xml
+msgid "Pricelists"
+msgstr "listes de prix"
+
+#: bika/lims/profiles/default/actions.xml
+msgid "Prices"
+msgstr "Prix"
+
+#: bika/lims/profiles/default/types/Invoice.xml
+#: bika/lims/profiles/default/types/SupplyOrder.xml
+msgid "Print"
+msgstr "Imprimer"
+
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
+msgid "Print Invoice"
+msgstr ""
+
+#: bika/lims/profiles/default/types/Pricelist.xml
+msgid "Print pricelist"
+msgstr "impression liste de prix"
+
+#: bika/lims/profiles/default/types/ReportFolder.xml
+msgid "Productivity"
+msgstr "Productivité"
+
+msgid "Publish"
+msgstr ""
+
+msgid "Published"
+msgstr ""
+
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
+msgid "Published results"
+msgstr "Résultats publiés"
+
+#: bika/lims/profiles/default/types/Instrument.xml
+msgid "QC Results"
+msgstr ""
+
+msgid "Receive"
+msgstr ""
+
+msgid "Receive sample"
+msgstr ""
+
+msgid "Received"
+msgstr ""
+
+#: bika/lims/profiles/default/types/ReferenceAnalysis.xml
+msgid "Reference Analysis"
+msgstr "Analyse de référence"
+
+#: bika/lims/profiles/default/types/ReferenceDefinition.xml
+msgid "Reference Definition"
+msgstr "Définition référence"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/ReferenceDefinitions.xml
+msgid "Reference Definitions"
+msgstr "Définitions référence"
+
+#: bika/lims/profiles/default/types/ReferenceSample.xml
+msgid "Reference Sample"
+msgstr "Échantillon de référence"
+
+#: bika/lims/profiles/default/actions.xml
+#: bika/lims/profiles/default/types/ReferenceSamplesFolder.xml
+#: bika/lims/profiles/default/types/Supplier.xml
+msgid "Reference Samples"
+msgstr "Références échantillons"
+
+#: bika/lims/profiles/default/types/ReferenceSample.xml
+msgid "Reference Values"
+msgstr "Valeurs de référence"
+
+#: bika/lims/profiles/default/controlpanel.xml
+msgid "Reflex Rules"
+msgstr ""
+
+#: bika/lims/profiles/default/types/ReflexRuleFolder.xml
+msgid "Reflex Rules Folder"
+msgstr ""
+
+#: bika/lims/profiles/default/types/ReflexRule.xml
+msgid "ReflexRule"
+msgstr ""
+
+msgid "Registered"
+msgstr ""
+
+msgid "Reinstate"
+msgstr ""
+
+msgid "Reject"
+msgstr ""
+
+#: bika/lims/profiles/default/types/RejectAnalysis.xml
+msgid "Reject Analysis"
+msgstr "Rejeter l'analyse"
+
+msgid "Rejected"
+msgstr ""
+
+msgid "Remove"
+msgstr ""
+
+#: bika/lims/profiles/default/actions.xml
+#: bika/lims/profiles/default/types/Report.xml
+msgid "Report"
+msgstr "Rapport"
+
+#: bika/lims/profiles/default/types/ReportFolder.xml
+msgid "Reports"
+msgstr "Rapports"
+
+msgid "Republish"
+msgstr ""
+
+msgid "Retract"
+msgstr ""
+
+msgid "Retracted"
+msgstr ""
+
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
+#: bika/lims/profiles/default/types/Sample.xml
+msgid "Sample"
+msgstr "Echantillon"
+
+#: bika/lims/profiles/default/types/SampleCondition.xml
+msgid "Sample Condition"
+msgstr "Condition d'échantillonnage"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/SampleConditions.xml
+msgid "Sample Conditions"
+msgstr "Conditions d'échantillonnage"
+
+msgid "Sample Imports"
+msgstr ""
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/SampleMatrices.xml
+msgid "Sample Matrices"
+msgstr "Matrices d'échantillons"
+
+#: bika/lims/profiles/default/types/SampleMatrix.xml
+msgid "Sample Matrix"
+msgstr "Matrice d'échantillon"
+
+#: bika/lims/profiles/default/types/SamplePartition.xml
+msgid "Sample Partition"
+msgstr "Répartition d'échantillonnage"
+
+#: bika/lims/profiles/default/types/SamplePoint.xml
+msgid "Sample Point"
+msgstr "Point d'échantillonnage"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/Client.xml
+#: bika/lims/profiles/default/types/SamplePoints.xml
+msgid "Sample Points"
+msgstr "Points d'échantillonnage"
+
+#: bika/lims/profiles/default/types/Client.xml
+msgid "Sample Templates"
+msgstr ""
+
+#: bika/lims/profiles/default/types/SampleType.xml
+msgid "Sample Type"
+msgstr "Type d'échantillon"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/SampleTypes.xml
+msgid "Sample Types"
+msgstr "Types d'échantillon"
+
+msgid "Sample due"
+msgstr ""
+
+msgid "Sample received"
+msgstr ""
+
+msgid "Sample registered"
+msgstr ""
+
+msgid "Sampled"
+msgstr ""
+
+#: bika/lims/profiles/default/actions.xml
+#: bika/lims/profiles/default/types/AnalysisRequestsFolder.xml
+#: bika/lims/profiles/default/types/Batch.xml
+msgid "Samples"
+msgstr "Échantillons"
+
+#: bika/lims/profiles/default/types/SamplesFolder.xml
+msgid "SamplesFolder"
+msgstr "Dossier d'échantillonnage"
+
+#: bika/lims/profiles/default/types/SamplingDeviation.xml
+msgid "Sampling Deviation"
+msgstr "Écart d'échantillonnage"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/SamplingDeviations.xml
+msgid "Sampling Deviations"
+msgstr "Écarts d'échantillonnage"
+
+#: bika/lims/profiles/default/types/SRTemplate.xml
+msgid "Sampling Round Template"
+msgstr ""
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/Client.xml
+#: bika/lims/profiles/default/types/SRTemplates.xml
+msgid "Sampling Round Templates"
+msgstr "Modèles de cycles d’échantillonnage "
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/Client.xml
+msgid "Sampling Rounds"
+msgstr ""
+
+msgid "Sampling workflow"
+msgstr ""
+
+#: bika/lims/profiles/default/types/Instrument.xml
+msgid "Schedule"
+msgstr "Planification"
+
+msgid "Schedule sampling"
+msgstr ""
+
+msgid "Scheduled sampling"
+msgstr ""
+
+#: bika/lims/profiles/default/types/BikaSetup.xml
+msgid "Setup"
+msgstr ""
+
+#: bika/lims/profiles/default/actions.xml
+msgid "Sharing"
+msgstr ""
+
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
+msgid "Small Sticker"
+msgstr "Petite étiquette"
+
+#: bika/lims/profiles/default/types/InvoiceFolder.xml
+msgid "Statements"
+msgstr ""
+
+#: bika/lims/profiles/default/types/Batch.xml
+#: bika/lims/profiles/default/types/ReferenceSample.xml
+#: bika/lims/profiles/default/types/Worksheet.xml
+msgid "Sticker"
+msgstr "Etiquette"
+
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
+#: bika/lims/profiles/default/types/Batch.xml
+#: bika/lims/profiles/default/types/ReferenceSample.xml
+msgid "Stickers preview"
+msgstr ""
+
+#: bika/lims/profiles/default/types/StorageLocation.xml
+msgid "Storage Location"
+msgstr "Lieu de stockage "
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/StorageLocations.xml
+msgid "Storage Locations"
+msgstr "Lieux de stockage "
+
+#: bika/lims/profiles/default/types/SubGroup.xml
+msgid "Sub-group"
+msgstr "Sous-groupe"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/SubGroups.xml
+msgid "Sub-groups"
+msgstr "Sous-groupes"
+
+msgid "Submit"
+msgstr ""
+
+msgid "Submit for verification"
+msgstr ""
+
+#: bika/lims/profiles/default/types/Supplier.xml
+msgid "Supplier"
+msgstr "Fournisseur"
+
+#: bika/lims/profiles/default/actions.xml
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/Suppliers.xml
+msgid "Suppliers"
+msgstr "fournisseurs"
+
+#: bika/lims/profiles/default/types/SupplyOrder.xml
+msgid "Supply Order"
+msgstr "Commande de réapprovisionnement"
+
+#: bika/lims/profiles/default/types/SupplyOrderFolder.xml
+msgid "Supply Orders"
+msgstr "Commandes de réapprovisionnement"
+
+msgid "To be preserved"
+msgstr ""
+
+msgid "To be sampled"
+msgstr ""
+
+msgid "To be verified"
+msgstr ""
+
+msgid "Unpublished"
+msgstr ""
+
+msgid "Unsassign"
+msgstr ""
+
+msgid "Valid"
+msgstr ""
+
+msgid "Validate"
+msgstr ""
+
+#: bika/lims/profiles/default/types/Instrument.xml
+msgid "Validations"
+msgstr "Validations"
+
+msgid "Verified"
+msgstr ""
+
+msgid "Verify"
+msgstr ""
+
+#: bika/lims/profiles/default/types/ARImport.xml
+#: bika/lims/profiles/default/types/ARReport.xml
+#: bika/lims/profiles/default/types/ARTemplate.xml
+msgid "View"
+msgstr ""
+
+#: bika/lims/profiles/default/types/Worksheet.xml
+msgid "Worksheet"
+msgstr "feuille de calcul"
+
+#: bika/lims/profiles/default/types/WorksheetTemplate.xml
+msgid "Worksheet Template"
+msgstr "modèle de feuille de calcul"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/WorksheetTemplates.xml
+msgid "Worksheet Templates"
+msgstr "modèles de feuilles de travail"
+
+#: bika/lims/profiles/default/actions.xml
+#: bika/lims/profiles/default/types/WorksheetFolder.xml
+msgid "Worksheets"
+msgstr "feuilles de travail"
+
+msgid "label_schema_Accounting"
+msgstr "Comptabilité"
+
+msgid "label_schema_Address"
+msgstr "Adresse"
+
+msgid "label_schema_Analyses"
+msgstr "Analyses"
+
+msgid "label_schema_Analysis Templates"
+msgstr ""
+
+msgid "label_schema_Appearance"
+msgstr ""
+
+msgid "label_schema_Bank details"
+msgstr "Détails bancaires"
+
+msgid "label_schema_Calculation"
+msgstr "Calcul"
+
+msgid "label_schema_Container and Preservation"
+msgstr "Conteneur et conservation"
+
+msgid "label_schema_Dates"
+msgstr "Dates"
+
+msgid "label_schema_Description"
+msgstr "Description"
+
+msgid "label_schema_Email Telephone Fax"
+msgstr "Email Telephone Fax"
+
+msgid "label_schema_ID Server"
+msgstr "ID du Serveur"
+
+msgid "label_schema_Labels"
+msgstr "Etiquettes"
+
+msgid "label_schema_Layout"
+msgstr "Disposition"
+
+msgid "label_schema_Location"
+msgstr "Emplacement"
+
+msgid "label_schema_Method"
+msgstr "Méthode"
+
+msgid "label_schema_Notifications"
+msgstr ""
+
+msgid "label_schema_Preferences"
+msgstr "Preferences"
+
+msgid "label_schema_Publication preference"
+msgstr "Préférence de publication "
+
+msgid "label_schema_Reference Values"
+msgstr "Valeurs de référence"
+
+msgid "label_schema_Reflex Rule Folder"
+msgstr ""
+
+msgid "label_schema_Result Options"
+msgstr "Options de résultat"
+
+msgid "label_schema_Results Reports"
+msgstr "Comptes rendus"
+
+msgid "label_schema_SR Templates"
+msgstr "Modèles de cycle d'échantillonnage"
+
+msgid "label_schema_Sample Partitions"
+msgstr "Répartition de l'échantillon"
+
+msgid "label_schema_Sample Templates"
+msgstr ""
+
+msgid "label_schema_Sampling"
+msgstr ""
+
+# Setup Schemata
+msgid "label_schema_Security"
+msgstr "Sécurité"
+
+msgid "label_schema_Sticker"
+msgstr ""
+
+msgid "label_schema_Uncertainties"
+msgstr "Incertitudes"

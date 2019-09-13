@@ -1,0 +1,22 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    i18n_domain="senaite.core">
+
+    <browser:page
+        for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+        name="bika-dashboard"
+        class="senaite.core.browser.dashboard.DashboardView"
+        permission="zope.Public"
+        layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="*"
+      name="dashboard_view_permissions_update"
+      class="senaite.core.browser.dashboard.dashboard.DashboardViewPermissionUpdate"
+      permission="zope.Public"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+</configure>

@@ -1,0 +1,53 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      i18n:domain="plone">
+  <head><title></title></head>
+  <body>
+
+    <!-- Integer Widgets -->
+    <metal:view_macro define-macro="view"
+            tal:define="kssClassesView context/@@kss_field_decorator_view;
+                        getKssClasses nocall:kssClassesView/getKssClassesInlineEditable;">
+        <div metal:define-macro="integer-field-view"
+             tal:define="kss_class python:getKssClasses(fieldName,
+                         templateId='widgets/integer', macro='integer-field-view');
+                         uid context/UID|nothing;
+                         unit widget/unit"
+             tal:attributes="class kss_class;
+                             id string:parent-fieldname-$fieldName-$uid">
+            <span metal:define-slot="inside"
+                  tal:replace="python:'%s %s' % (accessor(), unit) if unit else accessor()">string</span>
+        </div>
+    </metal:view_macro>
+
+    <metal:define metal:define-macro="edit">
+      <metal:use metal:use-macro="field_macro | context/widgets/field/macros/edit">
+        <span metal:fill-slot="widget_body">
+          <input
+               class="blurrable firstToFocus"
+               type="text"
+               name=""
+               value=""
+               size="30"
+               tal:attributes="name fieldName;
+               id fieldName;
+               value value;
+               size widget/size;
+               placeholder widget/placeholder|nothing;
+               maxlength widget/maxlength|nothing;"
+               /><em class='discreet' tal:content='widget/unit'/>
+        </span>
+      </metal:use>
+    </metal:define>
+
+    <div metal:define-macro="search">
+      <div metal:use-macro="context/widgets/integer/macros/edit">
+      </div>
+    </div>
+
+  </body>
+
+</html>
+

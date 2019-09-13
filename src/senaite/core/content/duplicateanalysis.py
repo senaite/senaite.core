@@ -1,0 +1,171 @@
+# -*- coding: utf-8 -*-
+#
+# This file is part of SENAITE.CORE.
+#
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2019 by it's authors.
+# Some rights reserved, see README and LICENSE.
+
+from AccessControl import ClassSecurityInfo
+from Products.Archetypes.public import Schema, registerType
+from Products.Archetypes.public import StringField
+from senaite.core import api
+from senaite.core.browser.fields import UIDReferenceField
+from senaite.core.config import PROJECTNAME
+from senaite.core.content.abstractroutineanalysis import AbstractRoutineAnalysis
+from senaite.core.content.abstractroutineanalysis import schema
+from senaite.core.content.analysisspec import ResultsRangeDict
+from senaite.core.interfaces import IDuplicateAnalysis
+from senaite.core.interfaces.analysis import IRequestAnalysis
+from senaite.core.workflow import in_state
+from senaite.core.workflow.analysis import STATE_RETRACTED, STATE_REJECTED
+from zope.interface import implements
+
+# A reference back to the original analysis from which this one was duplicated.
+Analysis = UIDReferenceField(
+    'Analysis',
+    required=1,
+    allowed_types=('Analysis', 'ReferenceAnalysis'),
+)
+
+# TODO Analysis - Duplicates shouldn't have this attribute, only ReferenceAns
+ReferenceAnalysesGroupID = StringField(
+    'ReferenceAnalysesGroupID',
+)
+
+schema = schema.copy() + Schema((
+    Analysis,
+    ReferenceAnalysesGroupID,
+))
+
+
+class DuplicateAnalysis(AbstractRoutineAnalysis):
+    implements(IDuplicateAnalysis)
+    security = ClassSecurityInfo()
+    displayContentsTab = False
+    schema = schema
+
+    @security.public
+    def getRequest(self):
+        """Returns the Analysis Request of the original analysis.
+        """
+        analysis = self.getAnalysis()
+        if analysis:
+            return analysis.getRequest()
+
+    @security.public
+    def getAnalysisPortalType(self):
+        """This returns the portal_type of the original analysis.
+        """
+        analysis = self.getAnalysis()
+        if analysis:
+            return analysis.portal_type
+
+    @security.public
+    def getWorksheet(self):
+        return self.aq_parent
+
+    @security.public
+    def getSiblings(self, retracted=False):
+        """
+        Return the list of duplicate analyses that share the same Request and
+        are included in the same Worksheet as the current analysis. The current
+        duplicate is excluded from the list.
+        :param retracted: If false, retracted/rejected siblings are dismissed
+        :type retracted: bool
+        :return: list of siblings for this analysis
+        :rtype: list of IAnalysis
+        """
+        worksheet = self.getWorksheet()
+        requestuid = self.getRequestUID()
+        if not requestuid or not worksheet:
+            return []
+
+        siblings = []
+        retracted_states = [STATE_RETRACTED, STATE_REJECTED]
+        analyses = worksheet.getAnalyses()
+        for analysis in analyses:
+            if analysis.UID() == self.UID():
+                # Exclude me from the list
+                continue
+
+            if not IRequestAnalysis.providedBy(analysis):
+                # Exclude analyses that do not have an analysis request
+                # associated
+                continue
+
+            if analysis.getRequestUID() != requestuid:
+                # Exclude those analyses that does not belong to the same
+                # analysis request I belong to
+                continue
+
+            if retracted is False and in_state(analysis, retracted_states):
+                # Exclude retracted analyses
+                continue
+
+            siblings.append(analysis)
+
+        return siblings
+
+    @security.public
+    def setAnalysis(self, analysis):
+        # Copy all the values from the schema
+        if not analysis:
+            return
+        discard = ['id', ]
+        keys = analysis.Schema().keys()
+        for key in keys:
+            if key in discard:
+                continue
+            if key not in self.Schema().keys():
+                continue
+            val = analysis.getField(key).get(analysis)
+            self.getField(key).set(self, val)
+        self.getField('Analysis').set(self, analysis)
+
+    @security.public
+    def getResultsRange(self):
+        """Returns the valid result range for this analysis duplicate, based on
+        both on the result and duplicate variation set in the original analysis
+
+        A Duplicate will be out of range if its result does not match with the
+        result for the parent analysis plus the duplicate variation in % as the
+        margin error.
+        :return: A dictionary with the keys min and max
+        :rtype: dict
+        """
+        specs = ResultsRangeDict()
+        analysis = self.getAnalysis()
+        if not analysis:
+            return specs
+
+        result = analysis.getResult()
+        if not api.is_floatable(result):
+            return specs
+
+        specs.min = specs.max = result
+        result = api.to_float(result)
+        dup_variation = analysis.getDuplicateVariation()
+        dup_variation = api.to_float(dup_variation)
+        if not dup_variation:
+            return specs
+
+        margin = abs(result) * (dup_variation / 100.0)
+        specs.min = str(result - margin)
+        specs.max = str(result + margin)
+        return specs
+
+
+registerType(DuplicateAnalysis, PROJECTNAME)

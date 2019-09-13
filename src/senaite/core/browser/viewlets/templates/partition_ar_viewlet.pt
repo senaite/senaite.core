@@ -1,0 +1,20 @@
+<div tal:omit-tag=""
+     tal:condition="python:view.context.isPartition()"
+     i18n:domain="senaite.core">
+
+  <div class="visualClear"></div>
+
+  <div id="portal-alert">
+    <div class="portlet-alert-item alert alert-info alert-dismissible">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      <strong i18n:translate="">Info</strong>
+      <p class="title" tal:define="parent python:view.context.getParentAnalysisRequest()">
+        <span i18n:translate="">This is a Partition from Sample </span>
+        <a tal:attributes="href python:parent.absolute_url()"
+           tal:content="python:parent.getId()"></a>
+      </p>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,105 @@
+div.div-table-first-row {
+    line-height: 1.5em;
+    margin-left: 1%;
+	padding: .25em;
+}
+div.div-table-first-row span {
+    padding-left: 1em;
+}
+div.div-table-left {
+    float: left;
+    width: 50%;
+    margin-left: 1%;
+    line-height: 1.5em;
+	padding: .25em;
+}
+div.div-table-left span {
+    padding-left: 1em;
+}
+div.div-table-right {
+    margin-left: 51%;
+    line-height: 1.5em;
+	padding: .25em;
+}
+div.div-table-right span {
+    padding-left: 1em;
+}
+
+table.invoice-items {
+	width: 100%;
+	margin-top: 25px;
+	border-collapse: collapse;
+}
+
+table.invoice-items thead tr {
+	border-top: 2px solid #ddd;
+	border-bottom: 2px solid #ddd;
+}
+
+table.invoice-items tr.header-bottom-total{
+    border-top: none;
+}
+
+table.invoice-items tr.header-invoice-summary{
+    border-bottom: none;
+}
+
+table.invoice-items th {
+	padding: .25em;
+	text-align: center;
+}
+
+table.invoice-items tr {
+	line-height: 1.5em;
+	border-bottom: 1px solid #ddd;
+}
+
+table.invoice-items tr.category,
+table.invoice-items tr.profile td.profile{
+    font-weight: bold;
+    border-bottom-width: 2px;
+}
+
+table.invoice-items tr.totals {
+	font-weight: bold;
+	border-bottom: 2px solid #ddd;
+	border-top: 2px solid #ddd;
+}
+
+table.invoice-items td:nth-child(1),
+table.invoice-items th:nth-child(1) {
+	text-align: left;
+}
+
+table.invoice-items tr.panalysis {
+    text-align: left;
+    text-indent:8%;
+}
+
+table.invoice-items td {
+	padding: .25em;
+	text-align: right;
+}
+
+table.invoice-items th.text, table.invoice-items td.text {
+	text-align: left;
+}
+
+table.invoice-items th.currency, table.invoice-items td.currency {
+	text-align: right;
+	width: 10%;
+}
+
+table.invoice-items th.center, table.invoice-items td.center {
+	text-align: center
+}
+
+table.invoice-items td.number {
+	width: 100px;
+	text-align: center;
+}
+
+table.invoice-items td.number input {
+	width: 60%;
+	text-align: right;
+}

@@ -1,0 +1,77 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="senaite.core">
+  <head>
+    <metal:block fill-slot="javascript_head_slot"
+                 tal:define="portal context/@@plone_portal_state/portal;">
+    </metal:block>
+  </head>
+  <body>
+
+    <metal:title fill-slot="content-title">
+      <h1 i18n:translate="">
+        Manage Numbergenerator
+      </h1>
+    </metal:title>
+    <metal:description fill-slot="content-description">
+      <p i18n:translate=""></p>
+    </metal:description>
+
+    <div metal:fill-slot="content-core"
+         tal:define="portal context/@@plone_portal_state/portal;">
+
+      <form id="manage_form"
+            name="manage_form"
+            method="POST">
+
+        <input type="hidden" name="submitted" value="1"/>
+        <span tal:replace="structure context/@@authenticator/authenticator"/>
+
+        <tal:numbers repeat="key view/storage">
+          <div class="field form-group field"
+               tal:define="value python:view.storage[key]">
+
+            <label for="number">
+              <span i18n:translate="">Key</span>:
+              <span class="text-primary" tal:content="key"/>
+            </label>
+
+            <div class="input-group col-sm-6">
+              <span class="input-group-addon">seq:</span>
+              <input type="number"
+                     class="form-control"
+                     tal:attributes="name string:seeds.${key}:record;
+                                     value value"/>
+            </div>
+
+            <div class="help-block">
+              <span i18n:translate="">ID Template</span>:
+              <code tal:content="python:view.get_id_template_for(key)"/>
+            </div>
+
+
+          </div>
+        </tal:numbers>
+
+
+        <input class="btn btn-primary btn-sm allowMultiSubmit"
+               type="submit"
+               name="seed"
+               i18n:attributes="value"
+               value="Seed"/>
+
+        <!-- enable via the dev-tools if you know what you are doing... -->
+        <input class="btn btn-danger btn-sm allowMultiSubmit"
+               type="submit"
+               disabled="disabled"
+               name="flush"
+               i18n:attributes="value"
+               value="Reset Numbers"/>
+      </form>
+
+    </div>
+
+  </body>
+</html>

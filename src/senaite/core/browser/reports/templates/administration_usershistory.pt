@@ -1,0 +1,98 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+        i18n:domain="senaite.core"
+        tal:define="portal_url nocall:context/portal_url;
+        portal portal_url/getPortalObject;">
+
+<head>
+    <link rel="stylesheet" type="text/css" media="all" href=""
+            tal:attributes="href string:$portal_url/reports.css" />
+</head>
+
+<body tal:define="
+        report_data view/report_data;
+        parameters python:report_data.has_key('parameters') and report_data['parameters'] or [];
+        datalines python:report_data.has_key('datalines') and report_data['datalines'] or {};
+        footlines python:report_data.has_key('footlines') and report_data['footlines'] or {};">
+
+<!--
+
+Report customization notes
+==========================================================================
+Available attributes:
+
+   parameters[]
+
+   datalines [
+           {EntityNameOrId,
+            EntityAbsoluteUrl,
+            EntityCreationdate,
+            EntityModificationDate,
+            EntityType,
+            Action,
+            ActionDate,
+            ActionDateStr,
+            ActionActor,
+            ActionActorFullName,
+            ActionComments
+       }
+   }
+
+   Where:
+   - EntityNameOrId: The entity identifier
+   - EntityAbsoluteUrl: The url of the entity
+   - EntityCreationdate: The date in which the entity was created
+   - EntityModificationDate: The last modification date of the entity
+   - EntityType: Type of the entity (method, instrument, etc.)
+   - Action: Action performed (Edited, Created, Deactivated, etc.)
+   - ActionDate: Date in which the action was performed
+   - ActionDateStr: ActionDate in localized format
+   - ActionActor: User who performed the action
+   - ActionActorFullName: Full name of ActionActor
+   - ActionComments: Comments regards to the action
+
+-->
+
+<h1 i18n:translate="">Users history</h1>
+<!-- <h3 i18n:translate="">Actions performed by users (or specific user) between a period of time</h3> -->
+
+<!-- Summary -->
+<table class="bika-report-parms" summary="Parameters">
+    <tr tal:repeat="line parameters">
+        <td tal:content="python:line['title']"></td>
+        <td tal:content="python:line['value']"></td>
+    </tr>
+</table>
+
+<!-- Results -->
+<table class="bika-report-table" summary="Results">
+    <thead>
+    <tr>
+        <th i18n:translate="">Date</th>
+        <th i18n:translate="">User</th>
+        <th i18n:translate="">Workflow</th>
+        <th i18n:translate="">Action</th>
+        <th i18n:translate="">Type</th>
+        <th i18n:translate="">Entity</th>
+        <th i18n:translate="">Comments</th>
+    </tr>
+    </thead>
+    <tbody>
+    <metal:block tal:repeat="line python:datalines">
+        <tr>
+            <td tal:content="python:line['ActionDateStr']"></td>
+            <td tal:content="python:line['ActionActorFullName'] if line['ActionActorFullName'] else line['ActionActor']"></td>
+            <td tal:content="python:line['Workflow']"></td>
+            <td tal:content="python:line['Action']"></td>
+            <td tal:content="python:line['EntityType']"></td>
+            <td>
+                <a tal:attributes="href python:line['EntityAbsoluteUrl']"
+                        tal:content="python:line['EntityNameOrId']"></a>
+            </td>
+            <td tal:content="python:line['ActionComments']"></td>
+        </tr>
+    </metal:block>
+    </tbody>
+</table>
+</body>
+</html>

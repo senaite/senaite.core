@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<site>
+ <property name="description"></property>
+    <property name="default_page" type="string">senaite-frontpage</property>
+ <property name="selectable_views" type="lines">
+  <element value="folder_listing"/>
+  <element value="news_listing"/>
+ </property>
+ <property name="email_from_address"
+    type="string">postmaster@senaite</property>
+ <property name="email_from_name"
+    type="string">SENAITE Administrator</property>
+ <property name="validate_email" type="boolean">True</property>
+ <property name="enable_permalink" type="boolean">False</property>
+</site>

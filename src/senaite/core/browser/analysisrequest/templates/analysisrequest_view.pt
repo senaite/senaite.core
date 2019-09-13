@@ -1,0 +1,141 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="senaite.core">
+  <head>
+    <title></title>
+    <metal:block fill-slot="javascript_head_slot"
+                 tal:define="portal context/@@plone_portal_state/portal;">
+      <!-- TODO move to senaite.lims bootstrap css -->
+      <style type="text/css">
+       #remarks-widget {
+         padding-top: 2em;
+       }
+       #archetypes-fieldname-Remarks {
+         padding: 0!important;
+       }
+       #remarks-widget fieldset legend {
+         display: none;
+       }
+       #remarks-widget input.saveRemarks {
+         margin-top: 1em;
+       }
+      </style>
+    </metal:block>
+  </head>
+
+  <body>
+
+    <metal:content-title fill-slot="content-title">
+      <h1>
+        <!-- AR Icon -->
+        <img tal:condition="view/icon | nothing"
+             src="" tal:attributes="src view/icon"/>
+        <!-- Title -->
+        <span class="documentFirstHeading" tal:content="context/id"></span>
+        <!-- Barcode -->
+        <span class="barcode" tal:attributes="value context/id"></span>
+        <!-- Hazardous Icon -->
+        <img tal:condition="python:view.is_hazardous()"
+             title="Hazardous"
+             i18n:attributes="value"
+             tal:attributes="src string:${view/portal_url}/++resource++senaite.core.images/hazardous_big.png"/>
+        <!-- Exclude Invoice Icon -->
+        <img tal:condition="python:view.exclude_invoice()"
+             title="Exclude from invoice"
+             i18n:attributes="value"
+             tal:attributes="src string:${view/portal_url}/++resource++senaite.core.images/invoice_exclude_big.png"/>
+        <!-- Retest Icon -->
+        <img tal:condition="python:view.is_retest()"
+             title="Results have been withdrawn"
+             i18n:attributes="value"
+             tal:attributes="src string:${view/portal_url}/++resource++senaite.core.images/delete_big.png"/>
+      </h1>
+    </metal:content-title>
+
+    <metal:content-description fill-slot="content-description">
+    </metal:content-description>
+
+    <metal:content-core fill-slot="content-core">
+
+      <!-- Header Table -->
+      <div class="row">
+        <div class="col-sm-12">
+          <span tal:replace="structure view/header_table"/>
+        </div>
+      </div>
+      <!-- /Header Table -->
+
+      <!-- Remarks Widget
+           https://github.com/senaite/senaite.core/pull/920 -->
+      <div class="row">
+        <div id="remarks-widget"
+             class="col-sm-12"
+             tal:define="checkPermission nocall: context/portal_membership/checkPermission;
+                 mode python:'edit' if checkPermission('senaite.core: Field: Edit Remarks', context) else 'view';
+                 field python:context.Schema()['Remarks'];
+                 errors python:{};">
+          <h3>
+            <img i18n:attributes="title" title="Remarks" src="++resource++senaite.core.images/remarks.png"/>
+            <span i18n:translate="">Remarks</span>
+          </h3>
+          <div class="well">
+            <metal:widget use-macro="python:context.widget('Remarks', mode=mode)"/>
+          </div>
+        </div>
+      </div>
+      <!-- /Remarks Widget -->
+
+      <tal:field_analyses condition="python:view.has_field_analyses()">
+        <div class="row">
+          <div class="col-sm-12">
+            <h3>
+              <img i18n:attributes="title" title="Field Analyses" src="++resource++senaite.core.images/analysisservice.png"/>
+              <span i18n:translate="">Field Analyses</span>
+            </h3>
+            <span tal:replace="structure python:view.render_analyses_table(table='field')"/>
+          </div>
+        </div>
+      </tal:field_analyses>
+
+      <tal:lab_analyses condition="python:view.has_lab_analyses()">
+        <div class="row">
+          <div class="col-sm-12">
+            <h3>
+              <img i18n:attributes="title" title="Lab Analyses" src="++resource++senaite.core.images/analysisservice.png"/>
+              <span i18n:translate="">Lab Analyses</span>
+            </h3>
+            <span tal:replace="structure python:view.render_analyses_table(table='lab')"/>
+          </div>
+        </div>
+      </tal:lab_analyses>
+
+      <tal:qc_analyses condition="python:view.has_qc_analyses()">
+        <div class="row">
+          <div class="col-sm-12">
+            <h3>
+              <img i18n:attributes="title" title="QC Analyses" src="++resource++senaite.core.images/analysisservice.png"/>
+              <span i18n:translate="">QC Analyses</span>
+            </h3>
+            <span tal:replace="structure python:view.render_analyses_table(table='qc')"/>
+          </div>
+        </div>
+      </tal:qc_analyses>
+
+      <!-- Results interpretation -->
+      <div class="row">
+        <div class="col-sm-12">
+          <h3>
+            <img tal:attributes="src string:${view/portal_url}/++resource++senaite.core.images/referencesample.png"/>
+            <span i18n:translate="">Results interpretation</span>
+          </h3>
+          <tal:parts replace="structure view/riview"/>
+        </div>
+      </div>
+      <!-- /Results interpretation -->
+
+    </metal:content-core>
+  </body>
+</html>

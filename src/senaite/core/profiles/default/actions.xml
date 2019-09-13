@@ -1,0 +1,174 @@
+<?xml version="1.0"?>
+<object xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+	name="portal_actions"
+	meta_type="Plone Actions Tool"
+	purge="True">
+
+	<action-provider name="portal_actions"/>
+
+	<!-- hide the "sharing" tab on a list of types.
+             This is here to avoid hiding the sharing tab globally -->
+
+	<object name="object" meta_type="CMF Action Category" purge="True">
+		<property name="title"/>
+		<object name="local_roles" meta_type="CMF Action" i18n:domain="plone">
+			<property name="title" i18n:translate="">Sharing</property>
+			<property name="description" i18n:translate=""/>
+			<property name="url_expr">string:${object_url}/@@sharing</property>
+			<property name="link_target"/>
+			<property name="icon_expr"/>
+			<property name="available_expr">python:here.portal_type not in ['Client', 'ClientFolder']</property>
+			<property name="permissions"/>
+			<property name="visible">False</property>
+		</object>
+    <!-- Audit Log -->
+    <object name="auditlog" meta_type="CMF Action" i18n:domain="senaite.core">
+      <property name="title" i18n:translate="">Audit Log</property>
+      <property name="description" i18n:translate=""></property>
+      <property name="url_expr">string:${object_url}/@@auditlog</property>
+      <property name="link_target"></property>
+      <property name="icon_expr"></property>
+      <property name="available_expr">object/@@has-auditlog|nothing</property>
+      <property name="permissions">
+        <element value="senaite.core: View Log Tab"/>
+      </property>
+      <property name="visible">True</property>
+    </object>
+	</object>
+
+	<object name="portal_tabs" meta_type="CMF Action Category" purge="True">
+		<property name="title"/>
+		<object name="index_html" meta_type="CMF Action" i18n:domain="plone">
+			<property name="title" i18n:translate="">Home</property>
+			<property name="description" i18n:translate=""/>
+			<property name="url_expr">string:${globals_view/navigationRootUrl}</property>
+			<property name="link_target"/>
+			<property name="icon_expr"/>
+			<property name="available_expr"/>
+			<property name="permissions">
+				<element value="View"/>
+			</property>
+			<property name="visible">False</property>
+		</object>
+		<object name="front-page" meta_type="CMF Action" i18n:domain="plone">
+			<property name="title" i18n:translate="">Home</property>
+			<property name="description" i18n:translate=""/>
+			<property name="url_expr">string:${globals_view/navigationRootUrl}</property>
+			<property name="link_target"/>
+			<property name="icon_expr"/>
+			<property name="available_expr"/>
+			<property name="permissions">
+				<element value="View"/>
+			</property>
+			<property name="visible">False</property>
+		</object>
+		<object name="analysisrequests" meta_type="CMF Action" i18n:domain="plone">
+			<property name="title" i18n:translate="">Samples</property>
+			<property name="description" i18n:translate=""/>
+			<property name="url_expr">string:$portal_url/analysisrequests</property>
+			<property name="link_target"/>
+			<property name="icon_expr"/>
+			<property name="available_expr"/>
+			<property name="permissions">
+				<element value="senaite.core: Manage Analysis Requests"/>
+			</property>
+			<property name="visible">False</property>
+		</object>
+		<object name="worksheets" meta_type="CMF Action" i18n:domain="plone">
+			<property name="title" i18n:translate="">Worksheets</property>
+			<property name="description" i18n:translate=""/>
+			<property name="url_expr">string:$portal_url/worksheets</property>
+			<property name="link_target"/>
+			<property name="icon_expr"/>
+			<property name="available_expr"/>
+			<property name="permissions">
+				<element value="senaite.core: Manage Worksheets"/>
+			</property>
+			<property name="visible">False</property>
+		</object>
+		<object name="suppliers" meta_type="CMF Action" i18n:domain="plone">
+			<property name="title" i18n:translate="">Suppliers</property>
+			<property name="description" i18n:translate=""/>
+			<property name="url_expr">string:$portal_url/suppliers</property>
+			<property name="link_target"/>
+			<property name="icon_expr"/>
+			<property name="available_expr"/>
+			<property name="permissions">
+				<element value="senaite.core: Manage Reference Suppliers"/>
+			</property>
+			<property name="visible">False</property>
+		</object>
+		<object name="referencesamples" meta_type="CMF Action" i18n:domain="plone">
+			<property name="title" i18n:translate="">Reference Samples</property>
+			<property name="description" i18n:translate=""/>
+			<property name="url_expr">string:$portal_url/referencesamples</property>
+			<property name="link_target"/>
+			<property name="icon_expr"/>
+			<property name="available_expr"/>
+			<property name="permissions">
+				<element value="senaite.core: Manage Reference"/>
+			</property>
+			<property name="visible">False</property>
+		</object>
+		<object name="extracts" meta_type="CMF Action" i18n:domain="plone">
+			<property name="title" i18n:translate="">Extracts</property>
+			<property name="description" i18n:translate=""/>
+			<property name="url_expr">string:$portal_url/extracts</property>
+			<property name="link_target"/>
+			<property name="icon_expr"/>
+			<property name="available_expr"/>
+			<property name="permissions">
+				<element value="List portal members"/>
+			</property>
+			<property name="visible">False</property>
+		</object>
+		<object name="reset_services" meta_type="CMF Action" i18n:domain="plone">
+			<property name="title" i18n:translate="">Prices</property>
+			<property name="description" i18n:translate=""/>
+			<property name="url_expr">string:$portal_url/setanalyses</property>
+			<property name="link_target"/>
+			<property name="icon_expr"/>
+			<property name="available_expr"/>
+			<property name="permissions">
+				<element value="List portal members"/>
+			</property>
+			<property name="visible">False</property>
+		</object>
+		<object name="reports" meta_type="CMF Action" i18n:domain="plone">
+			<property name="title" i18n:translate="">Report</property>
+			<property name="description" i18n:translate=""/>
+			<property name="url_expr">string:$portal_url/reports</property>
+			<property name="link_target"/>
+			<property name="icon_expr"/>
+			<property name="available_expr"/>
+			<property name="permissions">
+				<element value="List portal members"/>
+			</property>
+			<property name="visible">True</property>
+		</object>
+		<object name="import" meta_type="CMF Action" i18n:domain="plone">
+			<property name="title" i18n:translate="">Import</property>
+			<property name="description" i18n:translate=""/>
+			<property name="url_expr">string:$portal_url/import</property>
+			<property name="link_target"/>
+			<property name="icon_expr"/>
+			<property name="available_expr"/>
+			<property name="permissions">
+				<element value="senaite.core: Import Instrument Results"/>
+			</property>
+			<property name="visible">True</property>
+		</object>
+		<object name="auditlog" meta_type="CMF Action" i18n:domain="plone">
+			<property name="title" i18n:translate="">Audit Log</property>
+			<property name="description" i18n:translate=""/>
+			<property name="url_expr">string:$portal_url/bika_setup/auditlog</property>
+			<property name="link_target"/>
+			<property name="icon_expr"/>
+			<property name="available_expr"/>
+			<property name="permissions">
+				<element value="senaite.core: View Log Tab"/>
+			</property>
+			<property name="visible">True</property>
+		</object>
+	</object>
+</object>

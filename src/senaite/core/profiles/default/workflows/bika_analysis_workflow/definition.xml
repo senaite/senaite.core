@@ -1,0 +1,737 @@
+<?xml version="1.0"?>
+<dc-workflow xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+             workflow_id="bika_analysis_workflow"
+             title="Bika Analysis Workflow"
+             description=""
+             state_variable="review_state"
+             initial_state="registered"
+             manager_bypass="False"
+             i18n:domain="senaite.core">
+
+  <permission>senaite.core: Transition: Assign Analysis</permission>
+  <permission>senaite.core: Transition: Unassign Analysis</permission>
+  <permission>senaite.core: Transition: Retract</permission>
+  <permission>senaite.core: Transition: Verify</permission>
+  <permission>senaite.core: View Results</permission>
+  <permission>Reject</permission>
+  <permission>Modify portal content</permission>
+
+  <!-- TODO: We need different Analysis objects for Field- and Lab- Analyses,
+             then we can rely solely on the Workflow Field permission.
+
+  At the moment we need to grant the Sampler the edit field permission for field
+  analyses, but this should not be allowed for lab analyses.
+
+  Hence, the view needs to check *first* if the object is a field or lab
+  analysis and *afterwards* if the "senaite.core: Field: Edit Analysis Result" permission is granted.
+  -->
+  <permission>senaite.core: Edit Field Results</permission>
+  <permission>senaite.core: Edit Results</permission>
+
+  <!-- Field-specific permissions
+       Are meant to be used for "read_permission" and "write_permission" in fields.
+       If not defined there, "read_permission" defaults to "View" and
+       "write_permission" defaults to "Modify portal content" -->
+  <permission>senaite.core: Field: Edit Analysis Result</permission>
+  <permission>senaite.core: Field: Edit Analysis Remarks</permission>
+  <permission>senaite.core: Field: Edit Analysis Hidden</permission>
+
+
+  <!-- *** STATES *** -->
+
+
+  <!-- State: registered (inital state)
+  The sample did not yet arrive at the Lab, so tha Analyses are registered.
+  No transitions are allowed in that state.
+  -->
+  <state state_id="registered" title="Registered" i18n:attributes="title">
+
+    <!-- TRANSITIONS -->
+    <exit-transition transition_id="cancel" />
+    <exit-transition transition_id="initialize" />
+    <exit-transition transition_id="submit"/>
+    <!-- /TRANSITIONS -->
+
+    <!-- Only allow modification of fields explicitly granted
+    N.B. Permissions are *only* checked in process_form and *not* if we set the
+         field directly via the generated mutator -->
+    <permission-map name="Modify portal content" acquired="False">
+    </permission-map>
+
+    <!-- Field results should stay editable, even if the analysis is in registered state -->
+    <permission-map name="senaite.core: Edit Field Results" acquired="False">
+      <permission-role>Manager</permission-role>
+      <permission-role>Sampler</permission-role>
+    </permission-map>
+
+    <!-- Lab results are not editable, because the sample did not yet arrive in the lab -->
+    <permission-map name="senaite.core: Edit Results" acquired="False">
+    </permission-map>
+
+    <!-- FIELD PERMISSIONS (initialized) -->
+    <permission-map name="senaite.core: Field: Edit Analysis Result" acquired="False">
+      <permission-role>Manager</permission-role>
+      <permission-role>Sampler</permission-role>
+    </permission-map>
+    <permission-map name="senaite.core: Field: Edit Analysis Remarks" acquired="False">
+      <permission-role>Manager</permission-role>
+      <permission-role>Sampler</permission-role>
+    </permission-map>
+    <permission-map name="senaite.core: Field: Edit Analysis Hidden" acquired="False">
+    </permission-map>
+    <!-- /FIELD PERMISSIONS -->
+
+  </state>
+
+  <!-- State: unassigned
+  Analysis is not assigned to a Worksheet.
+  Same exit-transitions and Permissions as "assigned" state, cause by default,
+  the system allows users to submit results directly from the Analysis Request
+  manage results view, without the need of assigning them to a Worksheet -->
+  <state state_id="unassigned" title="Unassigned" i18n:attributes="title">
+
+    <!-- TRANSITIONS -->
+    <exit-transition transition_id="assign" />
+    <exit-transition transition_id="submit"/>
+    <exit-transition transition_id="reject" />
+    <exit-transition transition_id="cancel" />
+    <!-- /TRANSITIONS -->
+
+    <!-- Only allow modification of fields explicitly granted
+    N.B. Permissions are *only* checked in process_form and *not* if we set the
+         field directly via the generated mutator -->
+    <permission-map name="Modify portal content" acquired="False">
+    </permission-map>
+
+    <permission-map name="senaite.core: Edit Field Results" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Sampler</permission-role>
+    </permission-map>
+
+    <permission-map name="senaite.core: Edit Results" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+
+    <permission-map name="senaite.core: View Results" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>RegulatoryInspector</permission-role>
+    </permission-map>
+
+    <permission-map name="senaite.core: Transition: Assign Analysis" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <!-- Although Analysts and Labclerks shouldn't be able to assign analyses
+      to Worksheets by default, these roles are here because of the option
+      "RestrictWorksheetManagement" in Setup. The guard is in charge to manage
+      this -->
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+    </permission-map>
+
+    <permission-map name="Reject" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+
+    <!-- FIELD PERMISSIONS (unsassigned) -->
+    <permission-map name="senaite.core: Field: Edit Analysis Result" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="senaite.core: Field: Edit Analysis Remarks" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="senaite.core: Field: Edit Analysis Hidden" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>Publisher</permission-role>
+    </permission-map>
+    <!-- /FIELD PERMISSIONS -->
+
+  </state>
+
+  <!-- State: assigned
+  Analysis is assigned to a Worksheet. -->
+  <state state_id="assigned" title="Assigned" i18n:attributes="title">
+
+    <!-- TRANSITIONS -->
+    <exit-transition transition_id="unassign" />
+    <exit-transition transition_id="submit"/>
+    <exit-transition transition_id="reject" />
+    <!-- /TRANSITIONS -->
+
+    <!-- Only allow modification of fields explicitly granted
+         N.B. Permissions are *only* checked in process_form and *not* if we set the
+         field directly via the generated mutator -->
+    <permission-map name="Modify portal content" acquired="False">
+    </permission-map>
+
+    <permission-map name="senaite.core: Edit Field Results" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Sampler</permission-role>
+    </permission-map>
+
+    <permission-map name="senaite.core: Edit Results" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+
+    <permission-map name="senaite.core: View Results" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>RegulatoryInspector</permission-role>
+    </permission-map>
+
+    <permission-map name="senaite.core: Transition: Unassign Analysis" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <!-- Although Analysts and Labclerks shouldn't be able to assign analyses
+      to Worksheets by default, these roles are here because of the option
+      "RestrictWorksheetManagement" in Setup. The guard is in charge to manage
+      this -->
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+    </permission-map>
+
+    <permission-map name="Reject" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+
+    <!-- FIELD PERMISSIONS (assigned) -->
+    <permission-map name="senaite.core: Field: Edit Analysis Result" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="senaite.core: Field: Edit Analysis Remarks" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="senaite.core: Field: Edit Analysis Hidden" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>Publisher</permission-role>
+    </permission-map>
+    <!-- /FIELD PERMISSIONS -->
+
+  </state>
+
+  <!-- State: cancelled
+  This analysis has been cancelled due to the cancellation of the Analysis
+  Request the analysis belongs to. Cancellation can be understood as a request,
+  and therefore its analyses, the client did not want to do or did it wrong.
+  Hence, with cancellation, no notifications to involved personnel take place
+  and the analyses are not considered in most places, including reports, etc.
+  Analyses can only be cancelled before results being submitted -->
+  <state state_id="cancelled" title="Cancelled" i18n:attributes="title">
+
+    <!-- TRANSITIONS -->
+    <exit-transition transition_id="reinstate" />
+    <!-- /TRANSITIONS -->
+
+    <!-- Only allow modification of fields explicitly granted
+         N.B. Permissions are *only* checked in process_form and *not* if we set the
+         field directly via the generated mutator -->
+    <permission-map name="Modify portal content" acquired="False">
+    </permission-map>
+
+    <permission-map name="senaite.core: View Results" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>RegulatoryInspector</permission-role>
+    </permission-map>
+
+    <permission-map name="Review portal content" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>RegulatoryInspector</permission-role>
+    </permission-map>
+
+    <!-- Analysis cannot be rejected once cancelled -->
+    <permission-map name="Reject" acquired="False">
+    </permission-map>
+
+    <!-- FIELD PERMISSIONS (cancelled) -->
+    <permission-map name="senaite.core: Field: Edit Analysis Result" acquired="False">
+    </permission-map>
+    <permission-map name="senaite.core: Field: Edit Analysis Remarks" acquired="False">
+    </permission-map>
+    <permission-map name="senaite.core: Field: Edit Analysis Hidden" acquired="False">
+    </permission-map>
+    <!-- /FIELD PERMISSIONS -->
+
+  </state>
+
+  <!-- State: to_be_verified
+  Results have been submitted and awaiting for review -->
+  <state state_id="to_be_verified" title="To be verified" i18n:attributes="title">
+
+    <!-- TRANSITIONS -->
+    <exit-transition transition_id="multi_verify" />
+    <exit-transition transition_id="verify" />
+    <exit-transition transition_id="retract" />
+    <exit-transition transition_id="reject" />
+    <!-- /TRANSITIONS -->
+
+    <!-- Only allow modification of fields explicitly granted
+         N.B. Permissions are *only* checked in process_form and *not* if we set the
+         field directly via the generated mutator -->
+    <permission-map name="Modify portal content" acquired="False">
+    </permission-map>
+
+    <permission-map name="senaite.core: Edit Field Results" acquired="False">
+    </permission-map>
+
+    <permission-map name="senaite.core: Edit Results" acquired="False">
+    </permission-map>
+
+    <permission-map name="senaite.core: View Results" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>RegulatoryInspector</permission-role>
+      <permission-role>Verifier</permission-role>
+    </permission-map>
+
+    <permission-map name="senaite.core: Transition: Retract" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+
+    <permission-map name="senaite.core: Transition: Verify" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Verifier</permission-role>
+    </permission-map>
+
+    <permission-map name="Reject" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+
+    <!-- FIELD PERMISSIONS (to_be_verified) -->
+    <permission-map name="senaite.core: Field: Edit Analysis Result" acquired="False">
+    </permission-map>
+    <permission-map name="senaite.core: Field: Edit Analysis Remarks" acquired="False">
+    </permission-map>
+    <permission-map name="senaite.core: Field: Edit Analysis Hidden" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>Publisher</permission-role>
+    </permission-map>
+    <!-- /FIELD PERMISSIONS -->
+
+  </state>
+
+  <!-- State: retracted
+  The analysis has been retracted and a retest has been created -->
+  <state state_id="retracted" title="Retracted" i18n:attributes="title">
+
+    <!-- TRANSITIONS -->
+    <exit-transition transition_id="" />
+    <!-- /TRANSITIONS -->
+
+    <!-- Only allow modification of fields explicitly granted
+         N.B. Permissions are *only* checked in process_form and *not* if we set the
+         field directly via the generated mutator -->
+    <permission-map name="Modify portal content" acquired="False">
+    </permission-map>
+
+    <permission-map name="senaite.core: Edit Field Results" acquired="False">
+    </permission-map>
+
+    <permission-map name="senaite.core: Edit Results" acquired="False">
+    </permission-map>
+
+    <permission-map name="senaite.core: View Results" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>RegulatoryInspector</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>Verifier</permission-role>
+    </permission-map>
+
+    <!-- Analysis cannot be rejected once retracted -->
+    <permission-map name="Reject" acquired="False">
+    </permission-map>
+
+    <!-- FIELD PERMISSIONS (retracted) -->
+    <permission-map name="senaite.core: Field: Edit Analysis Result" acquired="False">
+    </permission-map>
+    <permission-map name="senaite.core: Field: Edit Analysis Remarks" acquired="False">
+    </permission-map>
+    <permission-map name="senaite.core: Field: Edit Analysis Hidden" acquired="False">
+    </permission-map>
+    <!-- /FIELD PERMISSIONS -->
+
+  </state>
+
+  <!-- State: rejected
+  The analysis has been rejected and cannot be used anymore -->
+  <state state_id="rejected" title="Rejected" i18n:attributes="title">
+
+    <!-- TRANSITIONS -->
+    <exit-transition transition_id="" />
+    <!-- /TRANSITIONS -->
+
+    <!-- Only allow modification of fields explicitly granted
+         N.B. Permissions are *only* checked in process_form and *not* if we set the
+         field directly via the generated mutator -->
+    <permission-map name="Modify portal content" acquired="False">
+    </permission-map>
+
+    <permission-map name="senaite.core: Edit Field Results" acquired="False">
+    </permission-map>
+
+    <permission-map name="senaite.core: Edit Results" acquired="False">
+    </permission-map>
+
+    <permission-map name="senaite.core: View Results" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>RegulatoryInspector</permission-role>
+    </permission-map>
+
+    <permission-map name="Review portal content" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+
+    <permission-map name="senaite.core: Transition: Retract" acquired="False">
+    </permission-map>
+
+    <!-- Analysis cannot be rejected again -->
+    <permission-map name="Reject" acquired="False">
+    </permission-map>
+
+    <!-- FIELD PERMISSIONS (rejected) -->
+    <permission-map name="senaite.core: Field: Edit Analysis Result" acquired="False">
+    </permission-map>
+    <permission-map name="senaite.core: Field: Edit Analysis Remarks" acquired="False">
+    </permission-map>
+    <permission-map name="senaite.core: Field: Edit Analysis Hidden" acquired="False">
+    </permission-map>
+    <!-- /FIELD PERMISSIONS -->
+
+  </state>
+
+  <!-- State: verified
+       The analysis has been verified and cannot be edited anymore -->
+  <state state_id="verified" title="Verified" i18n:attributes="title">
+
+    <!-- TRANSITIONS -->
+    <exit-transition transition_id="publish" />
+    <!-- /TRANSITIONS -->
+
+    <!-- Only allow modification of fields explicitly granted
+         N.B. Permissions are *only* checked in process_form and *not* if we set the
+         field directly via the generated mutator -->
+    <permission-map name="Modify portal content" acquired="False">
+    </permission-map>
+
+    <permission-map name="senaite.core: Edit Field Results" acquired="False">
+    </permission-map>
+
+    <permission-map name="senaite.core: Edit Results" acquired="False">
+    </permission-map>
+
+    <permission-map name="senaite.core: View Results" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+      <permission-role>RegulatoryInspector</permission-role>
+    </permission-map>
+
+    <!-- Analysis cannot be rejected once verified -->
+    <permission-map name="Reject" acquired="False">
+    </permission-map>
+
+    <!-- FIELD PERMISSIONS (verified) -->
+    <permission-map name="senaite.core: Field: Edit Analysis Result" acquired="False">
+    </permission-map>
+    <permission-map name="senaite.core: Field: Edit Analysis Remarks" acquired="False">
+    </permission-map>
+    <permission-map name="senaite.core: Field: Edit Analysis Hidden" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>Publisher</permission-role>
+    </permission-map>
+    <!-- /FIELD PERMISSIONS -->
+  </state>
+
+  <!-- State: published
+  The analysis has been published. Analyses cannot be published individually,
+  rather analyses transitions to this state automatically when the whole
+  Analysis Request they belong to is published -->
+  <state state_id="published" title="Published" i18n:attributes="title">
+
+    <!-- TRANSITIONS -->
+    <exit-transition transition_id="" />
+    <!-- /TRANSITIONS -->
+
+    <!-- Only allow modification of fields explicitly granted
+         N.B. Permissions are *only* checked in process_form and *not* if we set the
+         field directly via the generated mutator -->
+    <permission-map name="Modify portal content" acquired="False">
+    </permission-map>
+
+    <permission-map name="senaite.core: Edit Field Results" acquired="False">
+    </permission-map>
+
+    <permission-map name="senaite.core: Edit Results" acquired="False">
+    </permission-map>
+
+    <permission-map name="senaite.core: View Results" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+      <permission-role>RegulatoryInspector</permission-role>
+    </permission-map>
+
+    <!-- Analyses cannot be rejected once published -->
+    <permission-map name="Reject" acquired="False">
+    </permission-map>
+
+    <!-- FIELD PERMISSIONS (published) -->
+    <permission-map name="senaite.core: Field: Edit Analysis Result" acquired="False">
+    </permission-map>
+    <permission-map name="senaite.core: Field: Edit Analysis Remarks" acquired="False">
+    </permission-map>
+    <permission-map name="senaite.core: Field: Edit Analysis Hidden" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>Publisher</permission-role>
+    </permission-map>
+    <!-- /FIELD PERMISSIONS -->
+  </state>
+
+
+  <!-- *** TRANSITIONS *** -->
+
+
+  <!-- Transition: initialize (Make the Analysis available for testing in the
+  lab, because the sample is received) -->
+  <transition transition_id="initialize" title="Initialize" new_state="unassigned"
+              trigger="USER" before_script="" after_script=""
+              i18n:attributes="title">
+    <action url="" category="workflow" icon="">Initialize</action>
+    <guard>
+      <!-- There is no guard-permission here (all roles can initialize) because
+          this transition takes place automatically as soon as the Analysis Request
+          is received. Hence, this transition is governed by the permission
+           "senaite.core: Transition: Receive Sample" assigned to Analysis Request -->
+      <guard-expression>python:here.guard_handler("initialize")</guard-expression>
+    </guard>
+  </transition>
+
+
+  <!-- Transition: assign (to a worksheet) -->
+  <transition transition_id="assign" title="Assign" new_state="assigned"
+              trigger="USER" before_script="" after_script=""
+              i18n:attributes="title">
+    <action url="" category="workflow" icon="">Assign to worksheet</action>
+    <guard>
+      <guard-permission>senaite.core: Transition: Assign Analysis</guard-permission>
+      <guard-expression>python:here.guard_handler("assign")</guard-expression>
+    </guard>
+  </transition>
+
+  <!-- Transition: unassign (from a worksheet) -->
+  <transition transition_id="unassign" title="Unassign" new_state="unassigned"
+              trigger="USER" before_script="" after_script=""
+              i18n:attributes="title">
+    <action url="" category="workflow" icon="">Unassign from worksheet</action>
+    <guard>
+      <guard-permission>senaite.core: Transition: Unassign Analysis</guard-permission>
+      <guard-expression>python:here.guard_handler("unassign")</guard-expression>
+    </guard>
+  </transition>
+
+  <!-- Transition: cancel
+  The cancellation cannot be done manually (see the guard), it takes place
+  automatically when the Analysis Request is cancelled -->
+  <transition transition_id="cancel" title="Cancel" new_state="cancelled"
+              trigger="USER" before_script="" after_script=""
+              i18n:attributes="title">
+    <action url="" category="workflow" icon="">Cancel</action>
+    <guard>
+      <!-- There is no guard-permission here (all roles can cancel) because this
+      transition takes place automatically as soon as the Analysis Request  is
+      cancelled. Hence, this transition is governed by the permission
+      "Cancel and reinstate" assigned to Analysis Request -->
+      <guard-expression>python:here.guard_handler("cancel")</guard-expression>
+    </guard>
+  </transition>
+
+  <!-- Transition: reinstate
+  Reinstate cannot be done manually (see the guard), it takes place
+  automatically when the Analysis Request is reinstated. -->
+  <transition transition_id="reinstate" title="Reinstate" new_state="unassigned"
+              trigger="USER" before_script="" after_script=""
+              i18n:attributes="title">
+    <action url="" category="workflow" icon="">Reinstate</action>
+    <guard>
+      <!-- There is no guard-permission here (all roles can reinstate) because
+      this transition takes place automatically as soon as the Analysis Request
+      is reinstated. Hence, this transition is governed by the permission
+      "Cancel and reinstate" assigned to Analysis Request -->
+      <guard-expression>python:here.guard_handler("reinstate")</guard-expression>
+    </guard>
+  </transition>
+
+  <!-- Transition: submit -->
+  <transition transition_id="submit" title="Submit" new_state="to_be_verified"
+              trigger="USER" before_script="" after_script=""
+              i18n:attributes="title">
+    <action url="" category="workflow" icon="">Submit for verification</action>
+    <guard>
+      <guard-permission>senaite.core: Edit Results</guard-permission>
+      <guard-permission>senaite.core: Edit Field Results</guard-permission>
+      <guard-expression>python:here.guard_handler("submit")</guard-expression>
+    </guard>
+  </transition>
+
+  <!-- Transition: retract
+  The analysis transitions to "retracted" state and a new copy of the analysis
+  is created. The copy initial state is "unassigned", unless the the retracted
+  analysis was assigned to a worksheet. In such case, the copy is transitioned
+  to 'assigned' state too. -->
+  <transition transition_id="retract" title="Retract" new_state="retracted"
+              trigger="USER" before_script="" after_script=""
+              i18n:attributes="title">
+    <action url="" category="workflow" icon="">Retract</action>
+    <guard>
+      <guard-permission>senaite.core: Transition: Retract</guard-permission>
+      <guard-expression>python:here.guard_handler("retract")</guard-expression>
+    </guard>
+  </transition>
+
+  <!-- Transition: reject
+  The analysis transitions to "rejected" state, but does not create a new copy
+  of the analysis (this is the main difference with "retract"). -->
+  <transition transition_id="reject" title="Reject" new_state="rejected"
+              trigger="USER" before_script="" after_script=""
+              i18n:attributes="title">
+    <action url="" category="workflow" icon="">Reject</action>
+    <guard>
+      <guard-permission>Reject</guard-permission>
+      <guard-expression>python:here.guard_handler("reject")</guard-expression>
+    </guard>
+  </transition>
+
+  <!-- Transition: multi_verify (for when multi-verification is enabled) -->
+  <transition transition_id="multi_verify" title="Verify" new_state="to_be_verified"
+              trigger="USER" before_script="" after_script=""
+              i18n:attributes="title">
+    <action url="" category="workflow" icon="">Verify</action>
+    <guard>
+      <guard-permission>senaite.core: Transition: Verify</guard-permission>
+      <guard-expression>python:here.guard_handler("multi_verify")</guard-expression>
+    </guard>
+  </transition>
+
+  <!-- Transition: verify -->
+  <transition transition_id="verify" title="Verify" new_state="verified"
+              trigger="USER" before_script="" after_script=""
+              i18n:attributes="title">
+    <action url="" category="workflow" icon="">Verify</action>
+    <guard>
+      <guard-permission>senaite.core: Transition: Verify</guard-permission>
+      <guard-expression>python:here.guard_handler("verify")</guard-expression>
+    </guard>
+  </transition>
+
+  <!-- Transition: publish
+  The publication cannot be done manually (see the guard), it takes place
+  automatically when the Analysis Request is published -->
+  <transition transition_id="publish" title="Publish" new_state="published"
+              trigger="USER" before_script="" after_script=""
+              i18n:attributes="title">
+    <action url="" category="workflow" icon="">Publish</action>
+    <guard>
+      <!-- There is no guard-permission here because this transition takes
+      place automatically as soon as the Analysis Request  is published. Hence,
+      this transition is governed by the permission "Publish" assigned to the
+      Analysis Request the analysis belongs to -->
+      <guard-expression>python:here.guard_handler("publish")</guard-expression>
+    </guard>
+  </transition>
+
+
+  <!-- *** VARIABLES *** -->
+
+
+  <variable variable_id="action" for_catalog="False" for_status="True" update_always="True">
+    <description>Previous transition</description>
+    <default>
+      <expression>transition/getId|nothing</expression>
+    </default>
+    <guard>
+    </guard>
+  </variable>
+
+  <variable variable_id="actor" for_catalog="False" for_status="True" update_always="True">
+    <description>The ID of the user who performed the last transition</description>
+    <default>
+      <expression>user/getId</expression>
+    </default>
+    <guard>
+    </guard>
+  </variable>
+
+  <variable variable_id="comments" for_catalog="False" for_status="True" update_always="True">
+    <description>Comment about the last transition</description>
+    <default>
+      <expression>python:state_change.kwargs.get('comment', '')</expression>
+    </default>
+    <guard>
+    </guard>
+  </variable>
+
+  <variable variable_id="review_history" for_catalog="False" for_status="False" update_always="False">
+    <description>Provides access to workflow history</description>
+    <default>
+      <expression>state_change/getHistory</expression>
+    </default>
+    <guard>
+    </guard>
+  </variable>
+
+  <variable variable_id="time" for_catalog="False" for_status="True" update_always="True">
+    <description>When the previous transition was performed</description>
+    <default>
+      <expression>state_change/getDateTime</expression>
+    </default>
+    <guard>
+    </guard>
+  </variable>
+
+</dc-workflow>

@@ -1,0 +1,26 @@
+<div class="field" tal:attributes="style view/style|nothing" i18n:domain="senaite.core">
+
+    <label i18n:translate="">Sample point</label>
+    <br/>
+
+    <select name="SamplePointUID:ignore_empty"
+            id="SamplePointUID"
+            tal:attributes="style string:font-family:${here/base_properties/fontFamily};;font-size:100%;">
+
+        <option tal:condition="python:view.allow_blank" value=""/>
+
+        <tal:samplepoints tal:repeat="samplepoint view/samplepoints">
+
+            <option value=""
+                    tal:define="samplepoint_uid python:samplepoint.UID"
+                    tal:attributes="
+                            value samplepoint_uid;
+                            selected python:request.get('SamplePointUID', '') == samplepoint_uid and 'selected' or ''"
+                    tal:content="samplepoint/Title">
+            </option>
+
+        </tal:samplepoints>
+
+    </select>
+
+</div>

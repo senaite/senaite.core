@@ -1,0 +1,25 @@
+<div class="field" i18n:domain="senaite.core" tal:attributes="style view/style|nothing">
+
+    <label i18n:translate="">Output format</label>
+    <br/>
+
+    <select name="output_format:ignore_empty"
+            style=""
+            id="output_format"
+            tal:attributes="style string:font-family:${here/base_properties/fontFamily};;font-size:100%;">
+
+        <option
+                tal:attributes="
+                        selected python:request.get('output_format', '') == 'PDF' and 'selected' or ''"
+                tal:content="string:PDF">
+        </option>
+
+        <option
+                tal:attributes="
+                        selected python:request.get('output_format', '') == 'CSV' and 'selected' or ''"
+                tal:content="string:CSV">
+        </option>
+
+    </select>
+
+</div>

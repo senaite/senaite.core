@@ -1,0 +1,41 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    i18n_domain="senaite.core">
+
+  <browser:page
+      for="senaite.core.interfaces.IAnalysisRequest"
+      name="attachments_view"
+      class="senaite.core.browser.attachment.AttachmentsView"
+      permission="zope.Public"
+      layer="senaite.core.interfaces.IBikaLIMS"
+      />
+
+  <browser:page
+      for="senaite.core.interfaces.IWorksheet"
+      name="attachments_view"
+      class="senaite.core.browser.attachment.AttachmentsView"
+      permission="zope.Public"
+      layer="senaite.core.interfaces.IBikaLIMS"
+      />
+
+  <!-- Ajax exposed Attachments Methods -->
+
+  <browser:page
+      for="senaite.core.interfaces.IAnalysisRequest"
+      name="ajax_attachments_view"
+      class="senaite.core.browser.attachment.ajaxAttachmentsView"
+      permission="zope.Public"
+      layer="senaite.core.interfaces.IBikaLIMS"
+      />
+
+  <browser:page
+      for="senaite.core.interfaces.IWorksheet"
+      name="ajax_attachments_view"
+      class="senaite.core.browser.attachment.ajaxAttachmentsView"
+      permission="zope.Public"
+      layer="senaite.core.interfaces.IBikaLIMS"
+      />
+
+</configure>

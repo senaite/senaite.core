@@ -1,0 +1,25 @@
+<div tal:omit-tag=""
+     tal:define="descendants python:view.get_partitions()"
+     tal:condition="python:descendants"
+     i18n:domain="senaite.core">
+
+  <div class="visualClear"></div>
+
+  <div id="portal-alert">
+    <div class="portlet-alert-item alert alert-info alert-dismissible">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      <strong i18n:translate="">Info</strong>
+      <p class="title">
+        <span i18n:translate="">The following partitions have been created from this Sample: </span>
+        <tal:parts repeat="part descendants">
+          <a tal:attributes="href python:part.absolute_url()"
+             tal:content="python:part.getId()"></a>
+          <span tal:condition="not:repeat/part/end"
+                tal:replace="string:, "></span>
+        </tal:parts>
+      </p>
+    </div>
+  </div>
+</div>

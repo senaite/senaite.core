@@ -1,0 +1,147 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      i18n:domain="senaite.core">
+  <head><title></title></head>
+  <body>
+
+    <!-- Coordinate Widgets -->
+   <metal:view_macro define-macro="view"
+            tal:define="kssClassesView context/@@kss_field_decorator_view;
+                        getKssClasses nocall:kssClassesView/getKssClassesInlineEditable;">
+   <span metal:define-macro="coordinate-field-view"
+            tal:define="kss_class python:getKssClasses(fieldName,
+                              templateId='coordinatewidget', macro='coordinate-field-view');"
+            tal:attributes="class kss_class;
+                            id string:parent-fieldname-$fieldName">
+     <div  metal:define-slot="inside"
+             tal:define="values_dict python:field.getAccessor(here)();
+                      innerJoin field/innerJoin;
+		      outerJoin field/outerJoin">
+
+       <table>
+		   <tr>
+	         <tal:keys tal:repeat="key field/getSubfields">
+			   <tal:cond  tal:condition="python:field.testSubfieldCondition(key,here,portal,template)">
+                <tal:value
+				  tal:define="value python:values_dict.get(key)"
+                     tal:condition="value">
+                      <td valign="top">
+                        <span class="label"
+                            tal:replace="python:field.getSubfieldLabel(key)+':'">Label</span></td>
+                       <td>
+                        <span tal:replace="structure python:here.getDisplayView(value,'<br />')">value</span>
+                       </td>
+               </tal:value>
+			   </tal:cond>
+             </tal:keys>
+           </tr>
+       </table>
+     </div>
+   </span>
+ </metal:view_macro>
+
+    <metal:define define-macro="edit">
+      <metal:use use-macro="here/widgets/field/macros/edit">
+       <table metal:fill-slot="widget_body"
+        tal:define="values python:field.getEditAccessor(here)();
+                    session_values python:here.session_restore_value(fieldName, values);
+                    cached_values python:request.get(fieldName,session_values);
+                    values python:cached_values or values">
+        <tr>
+        <tal:keys tal:repeat="key python:field.getSubfields()">
+		<tal:cond condition="python:field.testSubfieldCondition(key,here,portal,template)">
+	<td class="field">
+        <span i18n:translate=""
+               tal:content="python:field.getSubfieldLabel(key)"
+               tal:attributes="for string:${fieldName}_${key}">
+        </span>
+	<span class="fieldRequired"
+              tal:condition="python:field.isRequired(key)"
+              title="Required"> #
+	</span>
+	</td>
+	<td tal:define="type python: field.getSubfieldType(key)">
+	<tal:string condition="python: type == 'string' and not field.isSelection(key)">
+	<input type="text"
+	       name=""
+	       value=""
+	       size="30"
+	       tabindex="#"
+	       tal:attributes="name string:${fieldName}.${key}:record:ignore_empty;
+	       value python:values.get(key);
+	       size python:field.getSubfieldSize(key);
+	       maxlength python:field.getSubfieldMaxlength(key);
+	       tabindex tabindex/next|nothing;"
+	       />
+	</tal:string>
+	<tal:selection condition="python: field.isSelection(key)">
+	<tal:block tal:define="value python:values.get(key);
+                               vocab python:field.getVocabularyFor(key, here)">
+	   <select tal:attributes="name string:${fieldName}.${key}:record:ignore_empty;
+                    id fieldName;
+		    tabindex tabindex/next|nothing;">
+	      <option tal:repeat="item vocab"
+		      tal:attributes="value item;
+		      selected python:test(here.checkSelected(item, value), 'selected', None);"
+		      tal:content="python: vocab.getValue(item)"
+		      i18n:translate=""
+		      />
+	    </select>
+	  </tal:block>
+	</tal:selection>
+	<tal:text condition="python:type == 'lines'">
+	<textarea name=""
+		  cols="30"
+		  rows="4"
+		  tabindex="#"
+		  tal:attributes="name string:${fieldName}.${key}:record:lines:ignore_empty;
+        	                  tabindex tabindex/next|nothing;"
+		  tal:content="python:'\n'.join(values.get(key,[]))" >
+	</textarea>
+	</tal:text>
+	<tal:date condition="python:type == 'datetime'">
+	<div tal:define="id string:${fieldName}_${key};
+               value python:values.get(key);
+	       show_hm    widget/show_hm;
+	       inputname  string:${fieldName}.${key}:record;
+	       formname   string:edit_form;
+	       inputvalue python: test(value, value, '');
+	       tabindex tabindex/next|nothing;"
+	       tal:omit-tag="">
+	    <div metal:use-macro="here/calendar_macros/macros/calendarDatePickerBox|here/calendar_slot/macros/calendarDatePickerBox">
+	      a calendar, hopefully
+	    </div>
+	</div>
+	</tal:date>
+	<tal:number condition="python: type in ['float', 'int', 'long']">
+	<input type="text"
+	       name=""
+	       value=""
+	       size="10"
+	       tabindex="#"
+	       tal:attributes="name string:${fieldName}.${key}:${type}:record;
+	       value python:values.get(key);
+	       size python:field.getSubfieldSize(key);
+	       maxlength python:field.getSubfieldMaxlength(key);
+	       tabindex tabindex/next|nothing;"
+	       />
+	</tal:number>
+	</td>
+		</tal:cond>
+        </tal:keys>
+	</tr>
+       </table>
+      </metal:use>
+    </metal:define>
+
+    <div metal:define-macro="search">
+      <div metal:use-macro="here/widgets/string/macros/edit">
+      </div>
+    </div>
+
+  </body>
+
+</html>
+

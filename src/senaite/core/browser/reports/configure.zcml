@@ -1,0 +1,65 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    i18n_domain="senaite.core">
+
+    <!-- main site/reports view -->
+
+    <browser:page
+      for="senaite.core.interfaces.IReportFolder"
+      name="productivity"
+      class="senaite.core.browser.reports.ProductivityView"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="senaite.core.interfaces.IReportFolder"
+      name="administration"
+      class="senaite.core.browser.reports.AdministrationView"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+    <browser:page
+      for="senaite.core.interfaces.IReportFolder"
+      name="history"
+      class="senaite.core.browser.reports.ReportHistoryView"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+    <browser:page
+      for="senaite.core.interfaces.IReportFolder"
+      name="createreport"
+      class="senaite.core.browser.reports.SubmitForm"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+    <!-- seletion macros for query forms -->
+
+    <browser:page
+      for="*"
+      name="selection_macros"
+      class="senaite.core.browser.reports.selection_macros.SelectionMacrosView"
+      permission="zope.Public"
+    />
+
+    <!-- AJAX views for StandardAnalysis query form -->
+
+    <browser:page
+      for="*"
+      name="referenceanalysisqc_samples"
+      class="senaite.core.browser.reports.ReferenceAnalysisQC_Samples"
+      permission="zope.Public"
+    />
+
+    <browser:page
+      for="*"
+      name="referenceanalysisqc_services"
+      class="senaite.core.browser.reports.ReferenceAnalysisQC_Services"
+      permission="zope.Public"
+    />
+
+
+</configure>

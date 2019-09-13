@@ -1,0 +1,151 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:tal="http://xml.zope.org/namespaces/tal"
+    xmlns:metal="http://xml.zope.org/namespaces/metal"
+    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    metal:use-macro="context/main_template/macros/master"
+    i18n:domain="senaite.core">
+
+<body>
+
+<metal:title fill-slot="content-title"
+        tal:define="portal context/@@plone_portal_state/portal;">
+    <h1>
+        <img tal:condition="view/icon | nothing"
+            src="" tal:attributes="src view/icon"/>
+        <span tal:content="context/title_or_id"/>
+        <img tal:condition="context/getHazardous"
+                title="Hazardous"
+                i18n:attributes="title"
+                tal:attributes="src string:${portal/absolute_url}/++resource++senaite.core.images/hazardous_big.png"/>
+
+        <img tal:condition="context/getBlank"
+                title="Blank"
+                i18n:attributes="title"
+                tal:attributes="src string:${portal/absolute_url}/++resource++senaite.core.images/blank_big.png"/>
+    </h1>
+</metal:title>
+
+<metal:content fill-slot="content-core" tal:define="
+    review_state python:context.portal_workflow.getInfoFor(context, 'review_state', '');
+    portal context/@@plone_portal_state/portal;">
+
+    <table
+        summary="Sample view"
+        class="bika-listing analysisrequest listing nosort"
+        cellpadding="0" cellspacing="0">
+    <tbody>
+
+        <tr>
+            <th i18n:translate="">ID</th>
+            <td class="left" tal:content="context/id"/>
+        </tr>
+        <tr>
+            <th i18n:translate="">Title</th>
+            <td class="left" tal:content="context/Title"/>
+        </tr>
+
+        <tr>
+            <th i18n:translate="">Manufacturer</th>
+            <td class="left" tal:content="python:context.getManufacturer() and context.getManufacturer().Title() or ''"/>
+        </tr>
+
+        <tr>
+            <th i18n:translate="">Catalogue Number</th>
+            <td class="left" tal:content="context/getCatalogueNumber"/>
+        </tr>
+
+        <tr>
+            <th i18n:translate="">Lot Number</th>
+            <td class="left" tal:content="context/getLotNumber"/>
+        </tr>
+
+        <tr>
+            <th i18n:translate="">Reference Definition</th>
+            <td class="left" tal:content="python:context.getReferenceDefinition() and context.getReferenceDefinition().Title() or ''"/>
+        </tr>
+
+        <tr>
+            <th i18n:translate="">Date Sampled</th>
+            <td class="left">
+                <span
+                    tal:define="date_sampled context/getDateSampled"
+                    tal:condition="date_sampled"
+                    tal:content="python:view.ulocalized_time(
+						date_sampled,
+						long_format=None,
+						time_only=False)"/>
+            </td>
+        </tr>
+
+        <tr>
+            <th i18n:translate="">Date Received</th>
+            <td class="left">
+                <span
+                    tal:define="date_received context/getDateReceived"
+                    tal:condition="date_received"
+                    tal:content="python:view.ulocalized_time(
+						date_received,
+						long_format=None,
+						time_only=False)"/>
+            </td>
+        </tr>
+
+        <tr>
+            <th i18n:translate="">Date Opened</th>
+            <td class="left">
+                <span
+                    tal:define="date_opened context/getDateOpened"
+                    tal:condition="date_opened"
+                    tal:content="python:view.ulocalized_time(
+						date_opened,
+						long_format=None,
+						time_only=False)"/>
+            </td>
+        </tr>
+
+        <tr>
+            <th i18n:translate="">Expiry Date</th>
+            <td class="left">
+                <span
+                    tal:define="expiry_date context/getExpiryDate"
+                    tal:condition="expiry_date"
+                    tal:content="python:view.ulocalized_time(
+						expiry_date,
+						long_format=None,
+						time_only=False)"/>
+            </td>
+        </tr>
+
+    </tbody>
+    </table>
+
+    <form action="workflow_action">
+        <input
+            tal:condition="python:review_state != 'inactive'"
+            class="context workflow_action_button action_button"
+            type="submit"
+            value="deactivate"
+            i18n:attributes="value"
+            name="workflow_action"/>
+        <input
+            tal:condition="python:review_state == 'inactive'"
+            class="context workflow_action_button action_button"
+            type="submit"
+            value="activate"
+            i18n:attributes="value"
+            name="workflow_action"/>
+    </form>
+
+	<br/>
+
+  <tal:remarks tal:condition="python:hasattr(context.aq_inner, 'schema') and 'Remarks' in context.schema"
+               tal:define="checkPermission nocall: context/portal_membership/checkPermission;
+                           mode python:'edit' if checkPermission('Modify portal content', context) else 'view';
+                           field python:context.Schema()['Remarks'];
+                           errors python:{};">
+    <metal:widget use-macro="python:context.widget('Remarks', mode=mode)"/>
+  </tal:remarks>
+
+</metal:content>
+</body>
+</html>

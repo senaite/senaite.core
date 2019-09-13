@@ -1,0 +1,41 @@
+<tal:sticker define="item python:view.current_item;
+                     sample_id item/getId;
+                     sample_type item/getSampleTypeTitle|nothing;
+                     date_sampled python:view.ulocalized_time(item.getDateSampled());
+                     client_sample_id item/getClientSampleID|nothing;
+                     hazardous item/getHazardous|nothing;">
+
+
+  <!-- Sample ID -->
+  <div class="sample-id">
+    <img tal:condition="hazardous | nothing"
+         tal:attributes="src string:${portal_url}/++resource++senaite.core.images/hazardous.png"/>
+  </div>
+
+  <!-- Barcode -->
+  <div class="barcode"
+       tal:attributes="data-id sample_id;"
+       data-code="code39"
+       data-barHeight="14"
+       data-addQuietZone="true"
+       data-showHRI="false">
+  </div>
+
+  <!-- Some additional info about the sample -->
+  <div class="sample-info">
+    <table cellpadding="0" cellspacing="0" border="0">
+      <tr>
+        <td class="client-sample-id">
+          <span i18n:translate="">CSID</span>
+          <span tal:content="python:client_sample_id or default">&mdash;</span>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <span class="sample-type" tal:content="python: sample_type"></span>
+          <span class="sampling-date" tal:content="python: date_sampled"></span>
+        </td>
+      </tr>
+    </table>
+  </div>
+</tal:sticker>

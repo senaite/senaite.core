@@ -1,0 +1,130 @@
+<?xml version="1.0"?>
+<dc-workflow xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+             workflow_id="senaite_referencesamples_workflow"
+             title="Senaite reference samples folder one state Workflow"
+             description=""
+             state_variable="review_state"
+             initial_state="active"
+             manager_bypass="False"
+             i18n:domain="senaite.core">
+
+  <!--
+  One-state (active) workflow for reference samples base folder, that does not
+  allow access to users other than lab personnel.
+
+  Clients do not need to have access to reference samples information, neither
+  when using reference widgets in Add forms nor in edit views.
+
+  A copy of one-state workflow, but:
+  - "Access content information" granted to lab personnel only
+  - "List folder contents" granted to lab personnel only
+  - "Modify portal content" granted to lab personnel only
+  - "View" granted to lab personnel only
+  -->
+
+  <permission>Access contents information</permission>
+  <permission>Delete objects</permission>
+  <permission>List folder contents</permission>
+  <permission>Modify portal content</permission>
+  <permission>View</permission>
+
+  <!-- State: active -->
+  <state state_id="active" title="Active" i18n:attributes="title">
+    <exit-transition transition_id="" />
+    <permission-map name="Access contents information" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Preserver</permission-role>
+      <permission-role>Publisher</permission-role>
+      <permission-role>RegulatoryInspector</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
+      <permission-role>Verifier</permission-role>
+    </permission-map>
+    <permission-map name="Delete objects" acquired="True" />
+    <permission-map name="List folder contents" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Preserver</permission-role>
+      <permission-role>Publisher</permission-role>
+      <permission-role>RegulatoryInspector</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
+      <permission-role>Verifier</permission-role>
+    </permission-map>
+    <permission-map name="Modify portal content" acquired="True">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Preserver</permission-role>
+      <permission-role>Publisher</permission-role>
+      <permission-role>RegulatoryInspector</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
+      <permission-role>Verifier</permission-role>
+    </permission-map>
+    <permission-map name="View" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Preserver</permission-role>
+      <permission-role>Publisher</permission-role>
+      <permission-role>RegulatoryInspector</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
+      <permission-role>Verifier</permission-role>
+    </permission-map>
+  </state>
+
+  <variable variable_id="action" for_catalog="False" for_status="True" update_always="True">
+    <description>Previous transition</description>
+    <default>
+      <expression>transition/getId|nothing</expression>
+    </default>
+    <guard>
+    </guard>
+  </variable>
+
+  <variable variable_id="actor" for_catalog="False" for_status="True" update_always="True">
+    <description>The ID of the user who performed the last transition</description>
+    <default>
+      <expression>user/getId</expression>
+    </default>
+    <guard>
+    </guard>
+  </variable>
+
+  <variable variable_id="comments" for_catalog="False" for_status="True" update_always="True">
+    <description>Comment about the last transition</description>
+    <default>
+      <expression>python:state_change.kwargs.get('comment', '')</expression>
+    </default>
+    <guard>
+    </guard>
+  </variable>
+
+  <variable variable_id="review_history" for_catalog="False" for_status="False" update_always="False">
+    <description>Provides access to workflow history</description>
+    <default>
+      <expression>state_change/getHistory</expression>
+    </default>
+    <guard>
+    </guard>
+  </variable>
+
+  <variable variable_id="time" for_catalog="False" for_status="True" update_always="True">
+    <description>When the previous transition was performed</description>
+    <default>
+      <expression>state_change/getDateTime</expression>
+    </default>
+    <guard>
+    </guard>
+  </variable>
+
+</dc-workflow>

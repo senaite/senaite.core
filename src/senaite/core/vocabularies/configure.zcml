@@ -1,0 +1,63 @@
+<configure xmlns="http://namespaces.zope.org/zope">
+
+  <utility
+    component="senaite.core.vocabularies.BikaCatalogTypesVocabularyFactory"
+    name="senaite.core.vocabularies.BikaCatalogTypes"
+    />
+
+  <utility
+    component="senaite.core.vocabularies.ClientVocabularyFactory"
+    name="senaite.core.vocabularies.Clients"
+    />
+
+  <utility
+    component="senaite.core.vocabularies.ClientContactVocabularyFactory"
+    name="senaite.core.vocabularies.ClientContacts"
+    />
+
+  <utility
+    component="senaite.core.vocabularies.AnalysisCategoryVocabularyFactory"
+    name="senaite.core.vocabularies.AnalysisCategories"
+    />
+
+  <utility
+    component="senaite.core.vocabularies.AnalysisProfileVocabularyFactory"
+    name="senaite.core.vocabularies.AnalysisProfiles"
+    />
+
+  <utility
+    component="senaite.core.vocabularies.AnalysisServiceVocabularyFactory"
+    name="senaite.core.vocabularies.AnalysisServices"
+    />
+
+  <utility
+    component="senaite.core.vocabularies.UserVocabularyFactory"
+    name="senaite.core.vocabularies.Users"
+    />
+
+  <utility
+    component="senaite.core.vocabularies.AnalystVocabularyFactory"
+    name="senaite.core.vocabularies.Analysts"
+    />
+
+  <utility
+    component="senaite.core.vocabularies.SamplePointVocabularyFactory"
+    name="senaite.core.vocabularies.SamplePoints"
+    />
+
+  <utility
+    component="senaite.core.vocabularies.StorageLocationVocabularyFactory"
+    name="senaite.core.vocabularies.StorageLocations"
+    />
+
+  <utility
+    component="senaite.core.vocabularies.SampleTypeVocabularyFactory"
+    name="senaite.core.vocabularies.SampleTypes"
+    />
+
+  <utility
+    component="senaite.core.vocabularies.AnalysisRequestWorkflowStateVocabularyFactory"
+    name="senaite.core.vocabularies.AnalysisRequestWorkflowStates"
+    />
+
+</configure>

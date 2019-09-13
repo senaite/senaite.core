@@ -1,0 +1,39 @@
+/*
+Sticker Dimensions: 14mm x 39mm
+Sticker margins: 8mm, 1mm
+*/
+.sticker {
+    margin: 0 auto;
+    padding: 8mm 1mm;
+    width: 12mm;    /* Total width  = 1 + 1 + 12 = 14mm */
+    height: 23mm;   /* Total height = 8 + 8 + 23 = 37mm */
+    font-family: Helvetica, Arial;
+    font-size: 6pt;
+    text-align: center;
+    overflow: hidden;
+}
+
+
+.sticker .error {
+    color: red;
+    font-size: 8pt;
+    z-index: 1000;
+}
+
+.sticker .barcode {
+    margin: 0 auto;
+    padding: 1mm 0 !important;
+    text-align: center;
+}
+
+@media print {
+    @page {
+        size:  14mm 39mm !important;
+        margin: 0mm !important;
+    }
+    html, body {
+        height: 39mm !important;
+        width: 14mm !important;
+        margin: 0mm !important;
+    }
+}

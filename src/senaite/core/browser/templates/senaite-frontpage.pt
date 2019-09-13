@@ -1,0 +1,78 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="senaite.core">
+
+  <metal:content-title fill-slot="content-title">
+    <a href=""
+       style="float:right;"
+       tal:condition="python: not view.is_anonymous_user() and view.is_dashboard_enabled()"
+       i18n:translate=""
+       tal:attributes="href string:${portal_url}?redirect_to=dashboard">
+      Switch to dashboard
+    </a>
+
+    <h1 class="documentFirstHeading" i18n:translate="">
+      <img tal:attributes="src view/icon"/> Welcome to SENAITE
+    </h1>
+
+  </metal:content-title>
+
+  <metal:content-description fill-slot="content-description">
+    <div class="documentDescription" i18n:translate="">
+    </div>
+  </metal:content-description>
+
+  <metal:content-core fill-slot="content-core">
+
+    <div class="container">
+      <h2>
+        SENAITE, the evolution of Bika LIMS
+      </h2>
+      <p>SENAITE is an Open Source Laboratory Information Management System (LIMS)
+        for enterprise environments, especially focused to behave with high speed,
+        excellent performance and good stability.
+      </p>
+    </div>
+
+    <div class="container">
+      <div col-md-12>
+        <h2>
+          What does SENAITE mean?
+        </h2>
+        <p>
+          <a href="http://senaite.com" rel="nofollow">SENAITE</a> is a beautiful trigonal, oil-green to greenish
+          black <a href="https://www.mindat.org/min-3617.html" rel="nofollow">crystal</a>, with almost the hardness
+          of a diamond. Although the crystal is described with a complex formula, it still
+          has clear and straight shapes. Therefore, it reflects nicely the complexity of
+          the LIMS, while providing a modern, intuitive and friendly <a href="https://en.wikipedia.org/wiki/User_interface_design" rel="nofollow">UI</a>/
+          <a href="https://en.wikipedia.org/wiki/User_experience" rel="nofollow">UX</a>.
+        </p>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="col-md-12">
+        <div class="features-list row">
+          <div class="col-md-6 cell width-1:2 position-0">
+            <h1>Features</h1>
+            <ul>
+              <li>Clean User Interface</li>
+              <li>Rich UI components</li>
+              <li>Integrated JSON API</li>
+            </ul>
+          </div>
+          <div class="col-md-6 cell width-1:2 position-1:2">
+            <h1>Specifications</h1>
+            <ul>
+              <li>Evolved Bika LIMS Core</li>
+              <li>Built on Plone CMS</li>
+              <li>Fully Open Source</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </metal:content-core>
+
+</html>

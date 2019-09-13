@@ -1,0 +1,274 @@
+<?xml version="1.0"?>
+<dc-workflow xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+             workflow_id="senaite_batch_workflow"
+             title="Senaite Batch Workflow"
+             description=""
+             state_variable="review_state"
+             initial_state="open"
+             manager_bypass="False"
+             i18n:domain="senaite.core">
+
+  <!--
+  Workflow for Batch objects.
+  Almost all the permission maps here are the same as in rolemap.xml, but
+  without Client role.
+  -->
+
+  <!-- PERMISSIONS -->
+  <!-- Plone generic permissions -->
+  <permission>Access contents information</permission>
+  <permission>Delete objects</permission>
+  <permission>List folder contents</permission>
+  <permission>Modify portal content</permission>
+  <permission>View</permission>
+
+  <!-- Senaite permissions for transitions (govern guards) -->
+  <permission>senaite.core: Transition: Cancel</permission>
+  <permission>senaite.core: Transition: Close</permission>
+  <permission>senaite.core: Transition: Reinstate</permission>
+  <permission>senaite.core: Transition: Reopen</permission>
+
+  <!-- State: open -->
+  <state state_id="open" title="Open" i18n:attributes="title">
+    <exit-transition transition_id="cancel" />
+    <exit-transition transition_id="close" />
+
+    <!-- Transition permissions -->
+    <permission-map name="senaite.core: Transition: Cancel" acquired="True" />
+    <permission-map name="senaite.core: Transition: Close" acquired="True" />
+
+    <!-- Plone's permissions -->
+    <permission-map name="Access contents information" acquired="False">
+      <!-- Same as in rolemap.xml, but without Client -->
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+      <permission-role>Preserver</permission-role>
+      <permission-role>Publisher</permission-role>
+      <permission-role>RegulatoryInspector</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
+      <permission-role>Verifier</permission-role>
+    </permission-map>
+    <permission-map name="Delete objects" acquired="False" />
+    <permission-map name="List folder contents" acquired="False">
+      <!-- Same as in rolemap.xml, but without Client -->
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+      <permission-role>Preserver</permission-role>
+      <permission-role>Publisher</permission-role>
+      <permission-role>RegulatoryInspector</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
+      <permission-role>Verifier</permission-role>
+    </permission-map>
+    <permission-map name="Modify portal content" acquired="True"/>
+    <permission-map name="View" acquired="False">
+      <!-- Same as in rolemap.xml, but without Client -->
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+      <permission-role>Preserver</permission-role>
+      <permission-role>Publisher</permission-role>
+      <permission-role>RegulatoryInspector</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
+      <permission-role>Verifier</permission-role>
+    </permission-map>
+  </state>
+
+  <!-- State: closed -->
+  <state state_id="closed" title="Closed" i18n:attributes="title">
+    <exit-transition transition_id="open" />
+
+    <!-- Transition permissions -->
+    <permission-map name="senaite.core: Transition: Reopen" acquired="True" />
+
+    <!-- Plone's permissions -->
+    <permission-map name="Access contents information" acquired="False">
+      <!-- Same as in rolemap.xml, but without Client -->
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+      <permission-role>Preserver</permission-role>
+      <permission-role>Publisher</permission-role>
+      <permission-role>RegulatoryInspector</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
+      <permission-role>Verifier</permission-role>
+    </permission-map>
+    <permission-map name="Delete objects" acquired="False" />
+    <permission-map name="List folder contents" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+      <permission-role>Preserver</permission-role>
+      <permission-role>Publisher</permission-role>
+      <permission-role>RegulatoryInspector</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
+      <permission-role>Verifier</permission-role>
+    </permission-map>
+    <permission-map name="Modify portal content" acquired="False" />
+    <permission-map name="View" acquired="False">
+      <!-- Same as in rolemap.xml, but without Client -->
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+      <permission-role>Preserver</permission-role>
+      <permission-role>Publisher</permission-role>
+      <permission-role>RegulatoryInspector</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
+      <permission-role>Verifier</permission-role>
+    </permission-map>
+  </state>
+
+  <!-- State: cancelled -->
+  <state state_id="cancelled" title="Cancelled" i18n:attributes="title">
+    <exit-transition transition_id="reinstate" />
+
+    <!-- Transition permissions -->
+    <permission-map name="senaite.core: Transition: Reinstate" acquired="True" />
+
+    <!-- Plone's permissions -->
+    <permission-map name="Access contents information" acquired="False">
+      <!-- Same as in rolemap.xml, but without Client -->
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+      <permission-role>Preserver</permission-role>
+      <permission-role>Publisher</permission-role>
+      <permission-role>RegulatoryInspector</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
+      <permission-role>Verifier</permission-role>
+    </permission-map>
+    <permission-map name="Delete objects" acquired="False" />
+    <permission-map name="List folder contents" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+      <permission-role>Preserver</permission-role>
+      <permission-role>Publisher</permission-role>
+      <permission-role>RegulatoryInspector</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
+      <permission-role>Verifier</permission-role>
+    </permission-map>
+    <permission-map name="Modify portal content" acquired="False" />
+    <permission-map name="View" acquired="False">
+      <!-- Same as in rolemap.xml, but without Client -->
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+      <permission-role>Preserver</permission-role>
+      <permission-role>Publisher</permission-role>
+      <permission-role>RegulatoryInspector</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
+      <permission-role>Verifier</permission-role>
+    </permission-map>
+  </state>
+
+  <!-- Transition: reinstate -->
+  <transition transition_id="reinstate" title="Reinstate" new_state="open" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Reinstate</action>
+    <guard>
+      <guard-permission>senaite.core: Transition: Reinstate</guard-permission>
+      <guard-expression>python:here.guard_handler("reinstate")</guard-expression>
+    </guard>
+  </transition>
+
+  <!-- Transition: cancel -->
+  <transition transition_id="cancel" title="Cancel" new_state="cancelled" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Cancel</action>
+    <guard>
+      <guard-permission>senaite.core: Transition: Cancel</guard-permission>
+      <guard-expression>python:here.guard_handler("cancel")</guard-expression>
+    </guard>
+  </transition>
+
+  <!-- Transition: close -->
+  <transition transition_id="close" title="Close" new_state="closed" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Close</action>
+    <guard>
+      <guard-permission>senaite.core: Transition: Close</guard-permission>
+      <guard-expression>python:here.guard_handler("close")</guard-expression>
+    </guard>
+  </transition>
+
+  <!-- Transition: open -->
+  <transition transition_id="open" title="Open" new_state="open" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Open</action>
+    <guard>
+      <guard-permission>senaite.core: Transition: Reopen</guard-permission>
+      <guard-expression>python:here.guard_handler("open")</guard-expression>
+    </guard>
+  </transition>
+
+  <variable variable_id="action" for_catalog="False" for_status="True" update_always="True">
+    <description>Previous transition</description>
+    <default>
+      <expression>transition/getId|nothing</expression>
+    </default>
+    <guard>
+    </guard>
+  </variable>
+
+  <variable variable_id="actor" for_catalog="False" for_status="True" update_always="True">
+    <description>The ID of the user who performed the last transition</description>
+    <default>
+      <expression>user/getId</expression>
+    </default>
+    <guard>
+    </guard>
+  </variable>
+
+  <variable variable_id="comments" for_catalog="False" for_status="True" update_always="True">
+    <description>Comment about the last transition</description>
+    <default>
+      <expression>python:state_change.kwargs.get('comment', '')</expression>
+    </default>
+    <guard>
+    </guard>
+  </variable>
+
+  <variable variable_id="review_history" for_catalog="False" for_status="False" update_always="False">
+    <description>Provides access to workflow history</description>
+    <default>
+      <expression>state_change/getHistory</expression>
+    </default>
+    <guard>
+    </guard>
+  </variable>
+
+  <variable variable_id="time" for_catalog="False" for_status="True" update_always="True">
+    <description>When the previous transition was performed</description>
+    <default>
+      <expression>state_change/getDateTime</expression>
+    </default>
+    <guard>
+    </guard>
+  </variable>
+
+</dc-workflow>

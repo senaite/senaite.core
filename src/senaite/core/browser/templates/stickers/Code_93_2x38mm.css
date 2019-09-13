@@ -1,0 +1,83 @@
+/*
+Two stickers horizontaly aligned
+Sticker Dimensions: (40mm x 21mm) x 2
+Sticker margins: (1mm, 1mm) x 2
+*/
+.sticker {
+    margin: 0 auto;
+    padding: 0mm;    /* The horizontal padding is done by sticker-*-separator */
+    width: 86mm;    /* Total width  = 1 + 40 + 1 + 2 + 1 + 40 + 1 = 86mm */
+    height: 19mm;   /* Total height = 1 + 1 + 19 = 21mm */
+    max-width: 86mm;
+    max-height: 19mm;
+    font-family: Helvetica, Arial;
+    font-size: 7pt;
+    text-align: center;
+    overflow: hidden;
+    background-color: #dcdcdc;
+}
+
+.sticker .error {
+    color: red;
+    font-size: 8pt;
+    z-index: 1000;
+}
+
+.sticker .barcode {
+    margin: 0 auto;
+    padding: 1mm 0 !important;
+    text-align: center;
+}
+
+/* Each sticker row contains 2 stickers */
+.sticker table.stickers-row {
+    width: 100%;
+    border-collapse: separate;
+    background-color: #dcdcdc;
+}
+
+/** Each sticker is rendered inside a sticker-cell */
+.sticker table.stickers-row td.sticker-cell {
+    background-color: #fff;
+    width: 38mm;
+    height: 17mm;
+    max-width: 38mm;
+    max-height: 19mm;
+    padding: 0mm;
+}
+
+.sticker table.stickers-row td.sticker-horizontal-separator {
+    width: 0.5mm;
+    min-width: 0.5mm;
+    max-width: 0.5mm;
+    background-color: #dcdcdc;
+}
+
+.sticker .sample-info table,
+.sticker .sampling-date-info table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.sticker .sample-info table td,
+.sticker .sampling-date-info table td {
+    border: none;
+    padding-left: 2mm;
+}
+
+@media print {
+    @page {
+        size: 86mm 21mm !important;
+        margin: 0mm !important;
+    }
+    html, body {
+        width: 86mm !important;
+        height: 21mm !important;
+        margin: 0mm !important;
+    }
+    .sticker,
+    .sticker table.stickers-row,
+    .sticker table.stickers-row td.sticker-horizontal-separator{
+        background-color: #fff;
+    }
+}

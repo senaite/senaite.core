@@ -1,0 +1,88 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    i18n_domain="senaite.core">
+
+    <browser:page
+      for="senaite.core.interfaces.IInstrument"
+      name="referenceanalyses"
+      class="senaite.core.browser.instrument.InstrumentReferenceAnalysesViewView"
+      permission="zope.Public"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+    <!-- Instrument Reference Analyses Table -->
+    <browser:page
+      for="senaite.core.interfaces.IInstrument"
+      name="table_instrument_referenceanalyses"
+      class="senaite.core.browser.instrument.InstrumentReferenceAnalysesView"
+      permission="zope.Public"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="senaite.core.interfaces.IInstrument"
+      name="certifications"
+      class="senaite.core.browser.instrument.InstrumentCertificationsView"
+      permission="zope.Public"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="senaite.core.interfaces.IInstrument"
+      name="instrumentautoimportlogs"
+      class="senaite.core.browser.instrument.InstrumentAutoImportLogsView"
+      permission="zope.Public"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="senaite.core.interfaces.IInstrument"
+      name="schedule"
+      class="senaite.core.browser.instrument.InstrumentScheduleView"
+      permission="zope.Public"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="senaite.core.interfaces.IInstrument"
+      name="maintenance"
+      class="senaite.core.browser.instrument.InstrumentMaintenanceView"
+      permission="zope.Public"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="senaite.core.interfaces.IInstrument"
+      name="validations"
+      class="senaite.core.browser.instrument.InstrumentValidationsView"
+      permission="zope.Public"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="senaite.core.interfaces.IInstrument"
+      name="calibrations"
+      class="senaite.core.browser.instrument.InstrumentCalibrationsView"
+      permission="zope.Public"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="senaite.core.interfaces.IInstrument"
+      name="multifile"
+      class="senaite.core.browser.instrument.InstrumentMultifileView"
+      permission="zope.Public"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="*"
+      name="get_instrument_methods"
+      class="senaite.core.browser.instrument.ajaxGetInstrumentMethods"
+      permission="zope.Public"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+</configure>

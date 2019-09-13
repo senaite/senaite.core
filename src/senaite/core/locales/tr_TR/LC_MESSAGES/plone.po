@@ -1,0 +1,924 @@
+# --- PLEASE EDIT THE LINES BELOW CORRECTLY ---
+# SOME DESCRIPTIVE TITLE.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Translators:
+# Ramon Bartl <rb@ridingbytes.com>, 2018
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2019-05-17 08:53+0000\n"
+"PO-Revision-Date: 2018-06-01 18:46+0000\n"
+"Last-Translator: Ramon Bartl <rb@ridingbytes.com>, 2018\n"
+"Language-Team: Turkish (Turkey) (https://www.transifex.com/senaite/teams/87045/tr_TR/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"Language-Code: en\n"
+"Language-Name: English\n"
+"Preferred-Encodings: utf-8 latin1\n"
+"Domain: plone\n"
+"Language: tr_TR\n"
+
+#: bika/lims/profiles/default/types/ARTemplate.xml
+msgid "AR Template"
+msgstr "AR Şablonlar"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/ARTemplates.xml
+#: bika/lims/profiles/default/types/SRTemplate.xml
+msgid "AR Templates"
+msgstr "Analiz Talepleri -AR- Şablonları"
+
+#: bika/lims/profiles/default/types/ARReport.xml
+msgid "ARReport"
+msgstr "Analiz Talebi Raporları"
+
+# Manual Workflow State and Transition MsgIds
+# Despite the fact, that these are defined in the "bika" domain, they are not
+# translated
+# in the action menu of Plone.
+# Please don't remove
+msgid "Activate"
+msgstr ""
+
+msgid "Active"
+msgstr ""
+
+#: bika/lims/profiles/default/types/Worksheet.xml
+msgid "Add Analyses"
+msgstr "Analiz Ekle"
+
+#: bika/lims/profiles/default/types/Worksheet.xml
+msgid "Add Blank Reference"
+msgstr "Kör Referans Ekle"
+
+#: bika/lims/profiles/default/types/Worksheet.xml
+msgid "Add Control Reference"
+msgstr "Kontrol Referans Ekle"
+
+#: bika/lims/profiles/default/types/Worksheet.xml
+msgid "Add Duplicate"
+msgstr "Tekerrür Ekle"
+
+#: bika/lims/profiles/default/types/ReportFolder.xml
+msgid "Administration"
+msgstr "Yönetim"
+
+#: bika/lims/profiles/default/types/ReferenceSample.xml
+msgid "Analyses"
+msgstr "Analizler"
+
+#: bika/lims/profiles/default/types/Analysis.xml
+msgid "Analysis"
+msgstr "Analiz"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/AnalysisCategories.xml
+msgid "Analysis Categories"
+msgstr "Analiz Kategorileri"
+
+#: bika/lims/profiles/default/types/AnalysisCategory.xml
+msgid "Analysis Category"
+msgstr "Analiz Kategorisi"
+
+#: bika/lims/profiles/default/types/AnalysisProfile.xml
+msgid "Analysis Profile"
+msgstr "Analiz Profili"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/AnalysisProfiles.xml
+#: bika/lims/profiles/default/types/Client.xml
+msgid "Analysis Profiles"
+msgstr "Analiz Profilleri"
+
+#: bika/lims/profiles/default/types/AnalysisService.xml
+msgid "Analysis Service"
+msgstr "Analiz Hizmeti"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/AnalysisServices.xml
+msgid "Analysis Services"
+msgstr "Analiz Hizmetleri"
+
+#: bika/lims/profiles/default/types/AnalysisSpec.xml
+msgid "Analysis Specification"
+msgstr "Analiz Özellikleri"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/AnalysisSpecs.xml
+#: bika/lims/profiles/default/types/Client.xml
+msgid "Analysis Specifications"
+msgstr "Analiz Özellikleri"
+
+msgid "Assign"
+msgstr ""
+
+msgid "Assigned"
+msgstr ""
+
+msgid "Attach"
+msgstr ""
+
+#: bika/lims/profiles/default/types/Attachment.xml
+msgid "Attachment"
+msgstr "Eklenti"
+
+#: bika/lims/profiles/default/types/AttachmentType.xml
+msgid "Attachment Type"
+msgstr "Eklenti Türü"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/AttachmentTypes.xml
+msgid "Attachment Types"
+msgstr "Eklenti Türleri"
+
+msgid "Attachment due"
+msgstr ""
+
+#: bika/lims/profiles/default/types/Client.xml
+msgid "Attachments"
+msgstr "Eklentiler"
+
+#: bika/lims/profiles/default/actions.xml
+msgid "Audit Log"
+msgstr ""
+
+#: bika/lims/profiles/default/types/Instrument.xml
+msgid "Auto-Import Logs"
+msgstr ""
+
+#: bika/lims/profiles/default/types/Batch.xml
+msgid "Batch"
+msgstr "Toplu İş"
+
+#: bika/lims/profiles/default/types/Batch.xml
+msgid "Batch Book"
+msgstr "Toplu İş Kitabı"
+
+#: bika/lims/profiles/default/types/BatchLabel.xml
+msgid "Batch Label"
+msgstr "Toplu İş Etiketi"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/BatchLabels.xml
+msgid "Batch Labels"
+msgstr "Toplu İş Etiketleri"
+
+#: bika/lims/profiles/default/types/BatchFolder.xml
+#: bika/lims/profiles/default/types/Client.xml
+msgid "Batches"
+msgstr "Toplu İşler"
+
+#: bika/lims/profiles/default/types/Calculation.xml
+msgid "Calculation"
+msgstr "Hesaplama"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/Calculations.xml
+msgid "Calculations"
+msgstr "Hesaplamalar"
+
+#: bika/lims/profiles/default/types/Instrument.xml
+msgid "Calibration Certificates"
+msgstr ""
+
+#: bika/lims/profiles/default/types/Instrument.xml
+msgid "Calibrations"
+msgstr "Kalibrasyonlar"
+
+msgid "Cancel"
+msgstr ""
+
+#: bika/lims/profiles/default/types/Client.xml
+msgid "Client"
+msgstr "Müşteri"
+
+#: bika/lims/profiles/default/types/ClientFolder.xml
+msgid "Clients"
+msgstr "Müşteriler"
+
+msgid "Close"
+msgstr ""
+
+msgid "Complete"
+msgstr ""
+
+#: bika/lims/profiles/default/types/Contact.xml
+#: bika/lims/profiles/default/types/SupplierContact.xml
+msgid "Contact"
+msgstr ""
+
+#: bika/lims/profiles/default/types/Client.xml
+#: bika/lims/profiles/default/types/Supplier.xml
+msgid "Contacts"
+msgstr "Yetkililer"
+
+#: bika/lims/profiles/default/types/Container.xml
+msgid "Container"
+msgstr "Numune Kabı"
+
+#: bika/lims/profiles/default/types/ContainerType.xml
+msgid "Container Type"
+msgstr "Numune Kabı Türü"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/ContainerTypes.xml
+msgid "Container Types"
+msgstr "Numune Kabı Türleri"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/Containers.xml
+msgid "Containers"
+msgstr "Numune Kapları"
+
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
+msgid "Create Invoice PDF"
+msgstr ""
+
+msgid "Current"
+msgstr ""
+
+msgid "Deactivate"
+msgstr ""
+
+#: bika/lims/profiles/default/types/Department.xml
+msgid "Department"
+msgstr "Bölüm"
+
+#: bika/lims/profiles/default/types/Departments.xml
+msgid "Departments"
+msgstr "Bölümler"
+
+msgid "Dispatch"
+msgstr ""
+
+msgid "Dispatched"
+msgstr ""
+
+msgid "Dispose"
+msgstr ""
+
+msgid "Disposed"
+msgstr ""
+
+#: bika/lims/profiles/default/types/Instrument.xml
+msgid "Documents"
+msgstr ""
+
+msgid "Dormant"
+msgstr ""
+
+#: bika/lims/profiles/default/types/DuplicateAnalysis.xml
+msgid "Duplicate Analysis"
+msgstr "Tekerrür Analizi"
+
+#: bika/lims/profiles/default/types/ARImport.xml
+#: bika/lims/profiles/default/types/ARTemplate.xml
+#: bika/lims/profiles/default/types/AnalysisCategory.xml
+msgid "Edit"
+msgstr ""
+
+msgid "Expire"
+msgstr ""
+
+msgid "Expired"
+msgstr ""
+
+#: bika/lims/profiles/default/types/Worksheet.xml
+msgid "Export"
+msgstr "Dışa aktar"
+
+#: bika/lims/profiles/default/types/InvoiceBatch.xml
+msgid "Export Batch To CSV"
+msgstr ""
+
+#: bika/lims/profiles/default/actions.xml
+msgid "Extracts"
+msgstr "Ekstraktlar"
+
+#: bika/lims/profiles/default/types/ReportFolder.xml
+msgid "History"
+msgstr ""
+
+#: bika/lims/profiles/default/actions.xml
+msgid "Home"
+msgstr ""
+
+#: bika/lims/profiles/default/types/IdentifierType.xml
+msgid "Identifier Type"
+msgstr ""
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/IdentifierTypes.xml
+msgid "Identifier Types"
+msgstr ""
+
+#: bika/lims/profiles/default/actions.xml
+msgid "Import"
+msgstr ""
+
+msgid "Imported"
+msgstr ""
+
+#: bika/lims/profiles/default/types/Client.xml
+msgid "Imports"
+msgstr "İçe Aktarılanlar"
+
+msgid "Inactive"
+msgstr ""
+
+#: bika/lims/profiles/default/types/Instrument.xml
+msgid "Instrument"
+msgstr "Cihaz"
+
+#: bika/lims/profiles/default/controlpanel.xml
+msgid "Instrument Locations"
+msgstr ""
+
+#: bika/lims/profiles/default/types/InstrumentType.xml
+msgid "Instrument Type"
+msgstr "Cihaz türü"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/InstrumentTypes.xml
+msgid "Instrument Types"
+msgstr "Cihaz Türleri"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/InstrumentType.xml
+#: bika/lims/profiles/default/types/Instruments.xml
+msgid "Instruments"
+msgstr "Cihazlar"
+
+msgid "Invalid"
+msgstr ""
+
+msgid "Invalidate"
+msgstr ""
+
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
+#: bika/lims/profiles/default/types/Invoice.xml
+msgid "Invoice"
+msgstr "Fatura"
+
+#: bika/lims/profiles/default/types/LabContact.xml
+msgid "Lab Contact"
+msgstr "Lab Yetkilisi"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/Department.xml
+#: bika/lims/profiles/default/types/LabContacts.xml
+msgid "Lab Contacts"
+msgstr "Lab Yetkilileri"
+
+#: bika/lims/profiles/default/controlpanel.xml
+msgid "Lab Departments"
+msgstr "Lab Bölümleri"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/LabProducts.xml
+msgid "Lab Products"
+msgstr "Lab Ürünleri"
+
+#: bika/lims/profiles/default/types/Laboratory.xml
+msgid "Laboratory"
+msgstr "Laboratuvar"
+
+#: bika/lims/profiles/default/controlpanel.xml
+msgid "Laboratory Information"
+msgstr "Laboratuvar Bilgisi"
+
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
+msgid "Large Sticker"
+msgstr "Geniş Etiket"
+
+#: bika/lims/profiles/default/types/Contact.xml
+#: bika/lims/profiles/default/types/LabContact.xml
+msgid "Login details"
+msgstr "Oturum açma detayları"
+
+#: bika/lims/profiles/default/types/Instrument.xml
+msgid "Maintenance"
+msgstr ""
+
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
+msgid "Manage Analyses"
+msgstr "Analizleri Yönet"
+
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
+#: bika/lims/profiles/default/types/Worksheet.xml
+msgid "Manage Results"
+msgstr "Sonuçları Yönet"
+
+#: bika/lims/profiles/default/types/Manufacturer.xml
+msgid "Manufacturer"
+msgstr "Üretici"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/Manufacturers.xml
+msgid "Manufacturers"
+msgstr "Üreticiler"
+
+#: bika/lims/profiles/default/types/Method.xml
+msgid "Method"
+msgstr "Metot"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/Methods.xml
+msgid "Methods"
+msgstr "Metotlar"
+
+msgid "No preservation required"
+msgstr ""
+
+msgid "No sampling workflow"
+msgstr ""
+
+msgid "Not requested"
+msgstr ""
+
+msgid "Open"
+msgstr ""
+
+#: bika/lims/profiles/default/types/Client.xml
+msgid "Orders"
+msgstr "Siparişler"
+
+msgid "Pending"
+msgstr ""
+
+msgid "Prepublish"
+msgstr ""
+
+#: bika/lims/profiles/default/types/Preservation.xml
+msgid "Preservation"
+msgstr "Muhafaza"
+
+msgid "Preservation required"
+msgstr ""
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/Preservations.xml
+msgid "Preservations"
+msgstr "Muhafaza"
+
+msgid "Preserve"
+msgstr ""
+
+#: bika/lims/profiles/default/types/Pricelist.xml
+msgid "Pricelist"
+msgstr "Fiyat listesi"
+
+#: bika/lims/profiles/default/types/PricelistFolder.xml
+msgid "Pricelists"
+msgstr "Fiyat Listeleri"
+
+#: bika/lims/profiles/default/actions.xml
+msgid "Prices"
+msgstr "Fiyatlar"
+
+#: bika/lims/profiles/default/types/Invoice.xml
+#: bika/lims/profiles/default/types/SupplyOrder.xml
+msgid "Print"
+msgstr "Yazdır"
+
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
+msgid "Print Invoice"
+msgstr ""
+
+#: bika/lims/profiles/default/types/Pricelist.xml
+msgid "Print pricelist"
+msgstr "Fiyat Listesini yazdır"
+
+#: bika/lims/profiles/default/types/ReportFolder.xml
+msgid "Productivity"
+msgstr "Üretkenlik"
+
+msgid "Publish"
+msgstr ""
+
+msgid "Published"
+msgstr ""
+
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
+msgid "Published results"
+msgstr "Yayınlanan Sonuçlar"
+
+#: bika/lims/profiles/default/types/Instrument.xml
+msgid "QC Results"
+msgstr ""
+
+msgid "Receive"
+msgstr ""
+
+msgid "Receive sample"
+msgstr ""
+
+msgid "Received"
+msgstr ""
+
+#: bika/lims/profiles/default/types/ReferenceAnalysis.xml
+msgid "Reference Analysis"
+msgstr "Referans Analiz"
+
+#: bika/lims/profiles/default/types/ReferenceDefinition.xml
+msgid "Reference Definition"
+msgstr "Referans Tanımı"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/ReferenceDefinitions.xml
+msgid "Reference Definitions"
+msgstr "Referans Tanımları"
+
+#: bika/lims/profiles/default/types/ReferenceSample.xml
+msgid "Reference Sample"
+msgstr "Referans Numune"
+
+#: bika/lims/profiles/default/actions.xml
+#: bika/lims/profiles/default/types/ReferenceSamplesFolder.xml
+#: bika/lims/profiles/default/types/Supplier.xml
+msgid "Reference Samples"
+msgstr "Referans Numuneler"
+
+#: bika/lims/profiles/default/types/ReferenceSample.xml
+msgid "Reference Values"
+msgstr "Referans Değerleri"
+
+#: bika/lims/profiles/default/controlpanel.xml
+msgid "Reflex Rules"
+msgstr ""
+
+#: bika/lims/profiles/default/types/ReflexRuleFolder.xml
+msgid "Reflex Rules Folder"
+msgstr ""
+
+#: bika/lims/profiles/default/types/ReflexRule.xml
+msgid "ReflexRule"
+msgstr ""
+
+msgid "Registered"
+msgstr ""
+
+msgid "Reinstate"
+msgstr ""
+
+msgid "Reject"
+msgstr ""
+
+#: bika/lims/profiles/default/types/RejectAnalysis.xml
+msgid "Reject Analysis"
+msgstr ""
+
+msgid "Rejected"
+msgstr ""
+
+msgid "Remove"
+msgstr ""
+
+#: bika/lims/profiles/default/actions.xml
+#: bika/lims/profiles/default/types/Report.xml
+msgid "Report"
+msgstr "Rapor"
+
+#: bika/lims/profiles/default/types/ReportFolder.xml
+msgid "Reports"
+msgstr "Raporlar"
+
+msgid "Republish"
+msgstr ""
+
+msgid "Retract"
+msgstr ""
+
+msgid "Retracted"
+msgstr ""
+
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
+#: bika/lims/profiles/default/types/Sample.xml
+msgid "Sample"
+msgstr "Numune"
+
+#: bika/lims/profiles/default/types/SampleCondition.xml
+msgid "Sample Condition"
+msgstr "Numunenin Durumu"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/SampleConditions.xml
+msgid "Sample Conditions"
+msgstr "Numunenin Durumu"
+
+msgid "Sample Imports"
+msgstr ""
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/SampleMatrices.xml
+msgid "Sample Matrices"
+msgstr "Numune Matrisleri"
+
+#: bika/lims/profiles/default/types/SampleMatrix.xml
+msgid "Sample Matrix"
+msgstr "Numune Matrisi"
+
+#: bika/lims/profiles/default/types/SamplePartition.xml
+msgid "Sample Partition"
+msgstr "Numune Bölümü"
+
+#: bika/lims/profiles/default/types/SamplePoint.xml
+msgid "Sample Point"
+msgstr "Örnekleme Noktası"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/Client.xml
+#: bika/lims/profiles/default/types/SamplePoints.xml
+msgid "Sample Points"
+msgstr "Örnekleme Noktaları"
+
+#: bika/lims/profiles/default/types/Client.xml
+msgid "Sample Templates"
+msgstr ""
+
+#: bika/lims/profiles/default/types/SampleType.xml
+msgid "Sample Type"
+msgstr "Numune Türü"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/SampleTypes.xml
+msgid "Sample Types"
+msgstr "Numune Türleri"
+
+msgid "Sample due"
+msgstr ""
+
+msgid "Sample received"
+msgstr ""
+
+msgid "Sample registered"
+msgstr ""
+
+msgid "Sampled"
+msgstr ""
+
+#: bika/lims/profiles/default/actions.xml
+#: bika/lims/profiles/default/types/AnalysisRequestsFolder.xml
+#: bika/lims/profiles/default/types/Batch.xml
+msgid "Samples"
+msgstr "Numuneler"
+
+#: bika/lims/profiles/default/types/SamplesFolder.xml
+msgid "SamplesFolder"
+msgstr "NumuneKlasörü"
+
+#: bika/lims/profiles/default/types/SamplingDeviation.xml
+msgid "Sampling Deviation"
+msgstr "Örnekleme Sapması"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/SamplingDeviations.xml
+msgid "Sampling Deviations"
+msgstr "Örnekleme Sapmaları"
+
+#: bika/lims/profiles/default/types/SRTemplate.xml
+msgid "Sampling Round Template"
+msgstr ""
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/Client.xml
+#: bika/lims/profiles/default/types/SRTemplates.xml
+msgid "Sampling Round Templates"
+msgstr ""
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/Client.xml
+msgid "Sampling Rounds"
+msgstr ""
+
+msgid "Sampling workflow"
+msgstr ""
+
+#: bika/lims/profiles/default/types/Instrument.xml
+msgid "Schedule"
+msgstr "Planlama"
+
+msgid "Schedule sampling"
+msgstr ""
+
+msgid "Scheduled sampling"
+msgstr ""
+
+#: bika/lims/profiles/default/types/BikaSetup.xml
+msgid "Setup"
+msgstr ""
+
+#: bika/lims/profiles/default/actions.xml
+msgid "Sharing"
+msgstr ""
+
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
+msgid "Small Sticker"
+msgstr "Küçük Etiket"
+
+#: bika/lims/profiles/default/types/InvoiceFolder.xml
+msgid "Statements"
+msgstr ""
+
+#: bika/lims/profiles/default/types/Batch.xml
+#: bika/lims/profiles/default/types/ReferenceSample.xml
+#: bika/lims/profiles/default/types/Worksheet.xml
+msgid "Sticker"
+msgstr "Etiket"
+
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
+#: bika/lims/profiles/default/types/Batch.xml
+#: bika/lims/profiles/default/types/ReferenceSample.xml
+msgid "Stickers preview"
+msgstr ""
+
+#: bika/lims/profiles/default/types/StorageLocation.xml
+msgid "Storage Location"
+msgstr "Soğutucunun Yeri"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/StorageLocations.xml
+msgid "Storage Locations"
+msgstr "Soğutucu Yerleri"
+
+#: bika/lims/profiles/default/types/SubGroup.xml
+msgid "Sub-group"
+msgstr "Alt-grup"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/SubGroups.xml
+msgid "Sub-groups"
+msgstr "Alt-gruplar"
+
+msgid "Submit"
+msgstr ""
+
+msgid "Submit for verification"
+msgstr ""
+
+#: bika/lims/profiles/default/types/Supplier.xml
+msgid "Supplier"
+msgstr "Tedarikçi"
+
+#: bika/lims/profiles/default/actions.xml
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/Suppliers.xml
+msgid "Suppliers"
+msgstr "Tedarikçiler"
+
+#: bika/lims/profiles/default/types/SupplyOrder.xml
+msgid "Supply Order"
+msgstr "Tedarikçiye Sipariş"
+
+#: bika/lims/profiles/default/types/SupplyOrderFolder.xml
+msgid "Supply Orders"
+msgstr "Malzeme Siparişleri"
+
+msgid "To be preserved"
+msgstr ""
+
+msgid "To be sampled"
+msgstr ""
+
+msgid "To be verified"
+msgstr ""
+
+msgid "Unpublished"
+msgstr ""
+
+msgid "Unsassign"
+msgstr ""
+
+msgid "Valid"
+msgstr ""
+
+msgid "Validate"
+msgstr ""
+
+#: bika/lims/profiles/default/types/Instrument.xml
+msgid "Validations"
+msgstr "Validasyonlar"
+
+msgid "Verified"
+msgstr ""
+
+msgid "Verify"
+msgstr ""
+
+#: bika/lims/profiles/default/types/ARImport.xml
+#: bika/lims/profiles/default/types/ARReport.xml
+#: bika/lims/profiles/default/types/ARTemplate.xml
+msgid "View"
+msgstr ""
+
+#: bika/lims/profiles/default/types/Worksheet.xml
+msgid "Worksheet"
+msgstr "Çalışma"
+
+#: bika/lims/profiles/default/types/WorksheetTemplate.xml
+msgid "Worksheet Template"
+msgstr "Çalışma Şablonu"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/WorksheetTemplates.xml
+msgid "Worksheet Templates"
+msgstr "Çalışma Şablonları"
+
+#: bika/lims/profiles/default/actions.xml
+#: bika/lims/profiles/default/types/WorksheetFolder.xml
+msgid "Worksheets"
+msgstr "Çalışmalar"
+
+msgid "label_schema_Accounting"
+msgstr "Muhasebe"
+
+msgid "label_schema_Address"
+msgstr "Adres"
+
+msgid "label_schema_Analyses"
+msgstr "Analizler"
+
+msgid "label_schema_Analysis Templates"
+msgstr ""
+
+msgid "label_schema_Appearance"
+msgstr ""
+
+msgid "label_schema_Bank details"
+msgstr "Banka bilgileri"
+
+msgid "label_schema_Calculation"
+msgstr "Hesaplama"
+
+msgid "label_schema_Container and Preservation"
+msgstr "Numune Kabı ve Muhafaza"
+
+msgid "label_schema_Dates"
+msgstr "Tarihler"
+
+msgid "label_schema_Description"
+msgstr "Tanımlama"
+
+msgid "label_schema_Email Telephone Fax"
+msgstr "Eposta Telefon Faks"
+
+msgid "label_schema_ID Server"
+msgstr "ID Sunucusu"
+
+msgid "label_schema_Labels"
+msgstr "Etiketler"
+
+msgid "label_schema_Layout"
+msgstr "Şablon"
+
+msgid "label_schema_Location"
+msgstr "Konum"
+
+msgid "label_schema_Method"
+msgstr "Metot"
+
+msgid "label_schema_Notifications"
+msgstr ""
+
+msgid "label_schema_Preferences"
+msgstr "Tercihler"
+
+msgid "label_schema_Publication preference"
+msgstr "Yayınlama tercihleri"
+
+msgid "label_schema_Reference Values"
+msgstr "Referans Değerler"
+
+msgid "label_schema_Reflex Rule Folder"
+msgstr ""
+
+msgid "label_schema_Result Options"
+msgstr "Sonuç Seçenekleri"
+
+msgid "label_schema_Results Reports"
+msgstr "Sonuç Raporları"
+
+msgid "label_schema_SR Templates"
+msgstr "SR Templates"
+
+msgid "label_schema_Sample Partitions"
+msgstr "Numune parçaları"
+
+msgid "label_schema_Sample Templates"
+msgstr ""
+
+msgid "label_schema_Sampling"
+msgstr ""
+
+# Setup Schemata
+msgid "label_schema_Security"
+msgstr "Güvenlik"
+
+msgid "label_schema_Sticker"
+msgstr ""
+
+msgid "label_schema_Uncertainties"
+msgstr "Belirsizlikler"

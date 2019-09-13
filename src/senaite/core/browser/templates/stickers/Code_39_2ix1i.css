@@ -1,0 +1,49 @@
+/*
+Sticker Dimensions: 2 inch x 1 inch = 50.8mm x 25.4mm
+Sticker margins: 2mm
+*/
+.sticker {
+    margin: 0 auto;
+    padding: 2mm;
+    width: 46.8mm;
+    height: 21.4mm;
+    font-family: Helvetica, Arial;
+    font-size: 7pt;
+    text-align: center;
+    overflow: hidden;
+}
+
+.sticker .error {
+    color: red;
+    font-size: 8pt;
+    z-index: 1000;
+}
+
+.sticker .barcode {
+    margin: 0 auto;
+    padding: 1mm 0 !important;
+    text-align: center;
+}
+
+.sticker .sample-info table {
+    width: 100%;
+}
+.barcode {
+    margin:0 auto;
+}
+
+.client-sample-id {
+    text-align: center;
+}
+
+@media print {
+    @page {
+        size:  50.8mm 25.4mm !important;
+        margin: 0mm !important;
+    }
+    html, body {
+        width: 50.8mm !important;
+        height: 25.4mm !important;
+        margin: 0mm !important;
+    }
+}

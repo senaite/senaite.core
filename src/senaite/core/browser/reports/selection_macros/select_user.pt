@@ -1,0 +1,23 @@
+<div class="field" tal:attributes="style view/style|nothing" i18n:domain="senaite.core"
+        tal:define="users view/users">
+
+    <label i18n:translate="">User</label>
+    <br/>
+
+    <select name="User"
+            id="User"
+            tal:attributes="style string:font-family:${here/base_properties/fontFamily};;font-size:100%;">
+
+        <tal:analysts tal:repeat="user users">
+            <option
+                    value=""
+                    tal:attributes="
+                            value python:user;
+                            selected python:request.get('User', '') == user and 'selected' or ''"
+                    tal:content="python:users.getValue(user)">
+            </option>
+        </tal:analysts>
+
+    </select>
+
+</div>

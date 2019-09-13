@@ -1,0 +1,144 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:tal="http://xml.zope.org/namespaces/tal"
+             xmlns:metal="http://xml.zope.org/namespaces/metal"
+             xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+             i18n:domain="senaite.core">
+  <head><title></title></head>
+  <body>
+
+    <metal:view_macro define-macro="view">
+    </metal:view_macro>
+
+    <metal:edit_macro define-macro="edit">
+      <metal:use use-macro="field_macro | context/widgets/field/macros/edit">
+        <metal:body_macro fill-slot="widget_body"
+                          tal:define="fieldname python: field.getName();
+                                      field python: context.Schema()[fieldname];
+                                      accessor python: field.getAccessor(context);
+                                      current_field_value accessor;
+                                      sort_on python:(('title', 'nocase', 'asc'),);
+                                      ReferenceDefinitions python:sequence.sort([p.getObject() for p in context.bika_setup_catalog(portal_type='ReferenceDefinition', is_active=True)], sort_on);
+                                      BlankDefinitions python: [r for r in ReferenceDefinitions if r['Blank']];
+                                      ControlDefinitions python: [r for r in ReferenceDefinitions if not r['Blank']];
+                                      types context/getAnalysisTypes;
+                                      num_positions request/NoOfPositions | python:0;
+                                      num_positions python:int(num_positions);
+                                      display_rows python:widget.get_template_rows(num_positions, current_field_value);
+                                      analyses python:[s.UID() for s in context.getService()];
+                                      hasblanks python:len(BlankDefinitions) > 0;
+                                      hascontrols python:len(ControlDefinitions) > 0;">
+
+          <div class="alert alert-warning"
+               tal:condition="python:not hasblanks or not hascontrols">
+            <div tal:condition="python: not hasblanks and hascontrols" i18n:translate="">
+              No Reference Definitions for Blanks available. <br/>
+              To add a Blank in this Worksheet Template, create a Reference Definition
+              for a Blank sample first.
+            </div>
+            <div tal:condition="python: not hascontrols and hasblanks" i18n:translate="">
+              No Reference Definitions for Controls available. <br/>
+              To add a Control in this Worksheet Template, create a Reference Definition
+              for a Control sample first.
+            </div>
+            <div tal:condition="python: not hascontrols and not hasblanks" i18n:translate="">
+              No ReferenceDefinitions for Controls nor Blanks available. <br/>
+              To add a Control or Blank in this Worksheet Template, create a Reference
+              Definition first.
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label i18n:translate="">Number of Positions</label>
+            <input name="NoOfPositions"
+                   size="3"
+                   value=""
+                   class="input-sm"
+                   tal:attributes="value request/NoOfPositions | python:len(display_rows)"/>
+            <input type="submit" name="form.button.more"
+                   class="btn btn-default"
+                   i18n:attributes="value"
+                   value="Reset" />
+          </div>
+
+          <table class="table">
+            <tr>
+              <th i18n:translate="">Position</th>
+              <th i18n:translate="">Analysis Type</th>
+              <th i18n:translate="">Reference Definition</th>
+              <th i18n:translate="">Duplicate of</th>
+            </tr>
+
+            <tr tal:repeat="row display_rows">
+              <td>
+                <span tal:content="row/pos"/>
+                <input  type="hidden"
+                        tal:attributes="value row/pos"
+                        name="Layout.pos:records:ignore_empty"/>
+              </td>
+
+              <td>
+                <select name="Layout.type:records:ignore_empty"
+                        class="analysis_type input-sm"
+                        tal:attributes="pos row/pos;">
+                  <tal:item tal:define="vocab types"
+                            tal:repeat="item vocab">
+                    <tal:selected_type tal:condition="python:item == row['type']"
+                                       tal:define="global selected_type row/type"/>
+                      <option selected="selected"
+                              tal:define="this_selected python:item == row['type']"
+                              tal:attributes="
+                              value item;
+                              selected this_selected"
+                              tal:content="python:context.translate(item, default=vocab.getValue(item))"
+                              tal:condition="python:(item=='b' and hasblanks) or (item=='c' and hascontrols) or (item!='b' and item!='c')"></option>
+                  </tal:item>
+                </select>
+              </td>
+              <td>
+                <!-- dropdown for Blank references -->
+                <select name="Layout.blank_ref:records:ignore_empty"
+                        tal:attributes="style python: 'display:inline' if (selected_type == 'b' and hasblanks) else 'display:none';
+                                        class string:blank_ref_dropdown;
+                                        pos string:${row/pos};">
+                  <tal:item tal:repeat="ref BlankDefinitions">
+                    <option tal:attributes="value ref/UID;
+                                            selected python:'blank_ref' in row and row['blank_ref'] == ref.UID() and 'selected' or ''"
+                            tal:content="ref/Title"></option>
+		              </tal:item>
+		            </select>
+	              <!-- dropdown for Control references -->
+		            <select name="Layout.control_ref:records:ignore_empty"
+                        tal:attributes="style python: 'display:inline' if (selected_type == 'c' and hascontrols) else 'display:none';
+                                        class string:control_ref_dropdown;
+                                        pos string:${row/pos};">
+		              <tal:item tal:repeat="ref ControlDefinitions">
+			              <option tal:attributes="value ref/UID;
+                                            selected python:'control_ref' in row and row['control_ref'] == ref.UID() and 'selected' or ''"
+                            tal:content="ref/Title"></option>
+		              </tal:item>
+		            </select>
+	            </td>
+	            <!-- Dropdown for Duplicate Analysis -->
+	            <td>
+		            <div id="" tal:define="num_rows repeat/row/length">
+			            <select name="Layout.dup:records:ignore_empty"
+                          tal:attributes="style python: selected_type == 'd' and 'display:inline;;' or 'display:none;;';
+                                          class string:duplicate_analysis_dropdown;
+                                          pos string:${row/pos};">
+			              <tal:item tal:repeat="i python:[x+1 for x in range(num_rows) if display_rows[x]['type'] == 'a']">
+				              <option tal:condition="python:i != repeat['row'].number()"
+                              tal:define="this_selected python:str(row.get('dup', '')) == str(i) and 'selected' or ''"
+                              tal:attributes="value i; selected this_selected"
+                              tal:content="i"></option>
+			              </tal:item>
+			            </select>
+		            </div>
+	            </td>
+            </tr>
+          </table>
+
+	      </metal:body_macro>
+      </metal:use>
+    </metal:edit_macro>
+  </body>
+</html>

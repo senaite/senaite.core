@@ -1,0 +1,215 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="senaite.core">
+  <head>
+    <metal:block fill-slot="javascript_head_slot"
+                 tal:define="portal context/@@plone_portal_state/portal;">
+      <script type="text/javascript"
+              src="email.js"
+              tal:attributes="src string:${portal/absolute_url}/++resource++senaite.core.browser.publish/js/email.js"></script>
+    </metal:block>
+
+    <metal:block fill-slot="style_slot"
+                 tal:define="portal context/@@plone_portal_state/portal;">
+      <link rel="stylesheet" type="text/css" media="all" href="#"
+            tal:attributes="href string:${portal/absolute_url}/++resource++senaite.core.browser.publish/css/email.css"/>
+    </metal:block>
+  </head>
+  <body>
+
+    <metal:title fill-slot="content-title">
+      <h1 i18n:translate="">
+        Send Analysis Reports via Email
+      </h1>
+    </metal:title>
+    <metal:description fill-slot="content-description">
+      <p i18n:translate="">
+        &larr; Back to the
+        <a tal:attributes="href view/exit_url"
+           i18n:name="back_link"
+           i18n:translate="">overview</a>
+      </p>
+    </metal:description>
+
+    <div id="emailview"
+         metal:fill-slot="content-core"
+         tal:define="portal context/@@plone_portal_state/portal;">
+
+      <form id="send_email_form"
+            name="send_email_form"
+            method="POST">
+
+        <!-- Email wrapper -->
+        <div class="email_wrapper">
+          <div class="form-group">
+            <label i18n:translate="" for="email_sender_address">From</label>
+            <span class="recipient valid"
+                  tal:define="email_sender_address view/email_sender_address;
+                              email_sender_name view/email_sender_name">
+              <span tal:attributes="title email_sender_address"
+                    tal:content="email_sender_name"/>
+            </span>
+          </div>
+          <div class="form-group">
+            <label i18n:translate="" for="recipients">Recipients</label>
+            <tal:emails repeat="recipient view/recipients_data">
+              <span tal:define="name recipient/name;
+                                email recipient/email;
+                                address recipient/address;
+                                valid recipient/valid;
+                                valid_cls python:valid and 'valid' or 'invalid';"
+                    tal:attributes="class string:recipient ${valid_cls}">
+                <input type="checkbox"
+                       tal:condition="email"
+                       tal:attributes="value string:${address};
+                                       checked python:valid and 'checked';"
+                       name="recipients:list"/>
+
+                <span tal:condition="not: email"
+                      class="text-danger discreet"
+                      title="No Email Address"
+                      i18n:attributes="title">⚠</span>
+
+                <span
+                  tal:attributes="title email;"
+                  tal:content="name|email" />
+              </span>
+            </tal:emails>
+          </div>
+
+          <div class="form-group">
+            <label i18n:translate="" for="responsibles">Responsibles</label>
+            <tal:responsibles repeat="recipient view/responsibles_data">
+              <span tal:define="name recipient/name;
+                                email recipient/email;
+                                address recipient/address;
+                                valid recipient/valid;
+                                valid_cls python:valid and 'valid' or 'invalid';"
+                    tal:attributes="class string:recipient ${valid_cls}">
+
+                <input type="hidden"
+                       tal:condition="email"
+                       tal:attributes="value string:${address};"
+                       name="responsibles:list"/>
+
+                <span tal:condition="not: email"
+                      class="text-danger discreet"
+                      title="No Email Address"
+                      i18n:attributes="title">⚠</span>
+
+                <span
+                  tal:attributes="title email;"
+                  tal:content="name|email" />
+              </span>
+            </tal:responsibles>
+          </div>
+
+          <div class="form-group">
+            <label i18n:translate="" for="subject">Subject</label>
+            <input type="text" name="subject" value="" class="form-control"
+                   tal:attributes="value view/email_subject" />
+          </div>
+
+          <div class="form-group">
+            <label i18n:translate="" for="body">Text</label>
+            <textarea name="body" class="form-control" rows="12"
+                      tal:content="view/email_body">
+            </textarea>
+            <p i18n:translate="" class="help-block discreet">
+              The variable <code i18n:name="recipients">$recipients</code> will
+              be automatically replaced with the names and emails of the final
+              selected recipients.
+            </p>
+          </div>
+
+          <div class="form-group"
+               tal:define="attachments python:map(lambda r:r.get('attachments'), view.reports_data)">
+            <label i18n:translate="" for="attachments">Attachments</label>
+            <button id="add-attachments"
+                    tal:condition="python:any(attachments)"
+                    class="btn btn-xs btn-secondary">+</button>
+            <div class="total_size discreet" i18n:translate="">
+              <span id="attachment-files"
+                    i18n:name="amount"
+                    tal:content="python:len(view.reports_data)"/>
+              attachments with a total size of
+              <span id="email-size" i18n:name="total_size" tal:content="python:'%.2f Kb' % view.total_size"/>
+            </div>
+
+            <div id="report-attachments-container"
+                 class="attachments well row">
+              <tal:reports repeat="report view/reports_data">
+                <input type="hidden" name="uids:list" tal:attributes="value report/uid"/>
+                <div class="attachment col-xs-12 col-sm-4 col-md-3 col-lg-2">
+                  <a href="#"
+                     class="report-link"
+                     target="_blank"
+                     tal:attributes="href string:${report/obj/absolute_url}/Pdf">
+                    <img tal:attributes="alt report/filename;
+                                         title string:${report/filename}(${report/filesize})"
+                         src="++resource++senaite.core.browser.publish/img/pdf.png" width="32" />
+                    <span tal:content="report/filename"/>
+                  </a>
+                </div>
+              </tal:reports>
+            </div>
+
+            <div id="additional-attachments-container"
+                 class="attachments well row"
+                 tal:condition="python:any(attachments)">
+              <!-- Additional Attachments -->
+              <tal:reports repeat="report view/reports_data">
+                <tal:attachments repeat="attachment report/attachments">
+                  <div class="attachment col-xs-12 col-sm-4 col-md-3 col-lg-2">
+                    <input type="checkbox" name="attachment_uids:list" tal:attributes="value attachment/uid"/>
+                    <a href="#"
+                       class="attachment-link"
+                       target="_blank"
+                       tal:attributes="href string:${attachment/obj/absolute_url}/AttachmentFile">
+                      <div class="attachment-file">
+                        <img tal:attributes="alt attachment/filename;
+                                            title string:${attachment/filename} ${attachment/mimetype}(${attachment/filesize} kB)"
+                            src="++resource++senaite.core.browser.publish/img/attachment.png" width="32" />
+                      </div>
+                      <span class="filename" tal:content="attachment/filename"/>
+
+                      <div class="attachment-info small">
+                        <span tal:content="attachment/attachment_keys"/>
+                        <span i18n:translate="">in</span>
+                        <span tal:content="report/sample/getId"/>
+                        <div class="fileinfo">
+                          <span class="filetype" tal:content="attachment/mimetype"/>
+                          <span class="filesize" tal:content="string:${attachment/filesize}kB"/>
+                        </div>
+                      </div>
+                    </a>
+                  </div>
+                </tal:attachments>
+              </tal:reports>
+            </div>
+
+          </div>
+
+        </div>
+        <!-- /Email wrapper -->
+
+        <!-- Email Form Controls -->
+        <input class="btn btn-success btn-sm"
+               type="submit"
+               name="send"
+               i18n:attributes="value"
+               tal:attributes="disabled python:not view.allow_send and 'disabled'"
+               value="Send"/>
+        <input class="btn btn-secondary btn-sm"
+               type="submit"
+               name="cancel"
+               i18n:attributes="value"
+               value="Cancel"/>
+        <!-- /Email Form Controls -->
+
+      </form>
+    </div>
+  </body>
+</html>

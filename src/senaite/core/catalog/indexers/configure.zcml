@@ -1,0 +1,33 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    i18n_domain="senaite.core">
+
+  <adapter name="assigned_state" factory=".analysisrequest.assigned_state"/>
+  <adapter name="listing_searchable_text" factory=".analysisrequest.listing_searchable_text"/>
+
+  <!-- Default case-insenstive sortable_title -->
+  <adapter name="sortable_title" factory=".sortable_title"/>
+
+  <!-- Case-insenstive + sortkey sortable_title for Categories and Analyses -->
+  <adapter name="sortable_title" factory=".baseanalysis.sortable_title"/>
+  <adapter name="sortable_title" factory=".analysiscategory.sortable_title"/>
+
+  <!-- Partitioning. Analyses masking in searches -->
+  <adapter name="getAncestorsUIDs" factory=".requestanalysis.getAncestorsUIDs"/>
+
+  <!-- Whether the Analysis Request has been received -->
+  <adapter name="is_received" factory=".analysisrequest.is_received"/>
+
+  <!-- Whether the object is neither cancelled nor invalid -->
+  <adapter name="is_active" factory=".is_active"/>
+
+  <!-- Auditlog Catalog Index Adapters -->
+  <adapter name="action" factory=".auditlog.action"/>
+  <adapter name="actor" factory=".auditlog.actor"/>
+  <adapter name="fullname" factory=".auditlog.fullname"/>
+  <adapter name="listing_searchable_text" factory=".auditlog.listing_searchable_text"/>
+  <adapter name="modifiers" factory=".auditlog.modifiers"/>
+  <adapter name="snapshot_created" factory=".auditlog.snapshot_created"/>
+  <adapter name="snapshot_version" factory=".auditlog.snapshot_version"/>
+
+</configure>

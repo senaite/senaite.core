@@ -1,0 +1,59 @@
+<html>
+
+  <body>
+
+    <table style="font-size:95%">
+      <tbody>
+        <tr tal:condition="context/description|nothing">
+          <td colspan="2" tal:content="context/description"/>
+        </tr>
+        <tr>
+          <th> <span i18n:translate="">Start Date</span>: <span tal:content="python:view.ulocalized_time(context.getEffectiveDate())"/></th>
+        </tr>
+        <tr>
+          <th> <span i18n:translate="">End Date</span>: <span tal:content="python:view.ulocalized_time(context.getExpirationDate())"/></th>
+        </tr>
+      </tbody>
+    </table>
+
+    <table class="invoice-items" summary="Pricelist" style="font-size:90%">
+      <thead>
+        <tr>
+          <th i18n:translate="">Title</th>
+          <th class="currency" i18n:translate="">Amount</th>
+          <th class="currency" i18n:translate="">VAT</th>
+          <th class="currency" i18n:translate="" style="whitespace:nowrap;">Amount incl. VAT</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tal:items repeat="item python:context.pricelist_lineitems">
+          <tal:item>
+            <tr>
+              <td tal:content="item/title"></td>
+              <td>
+                <span tal:content="python:view.getPreferredCurrencyAbreviation()">R</span>
+                <span tal:content="item/Subtotal">0.00</span>
+              </td>
+              <td>
+                <span tal:content="python:view.getPreferredCurrencyAbreviation()">R</span>
+                <span tal:content="item/VATAmount">0.00</span>
+              </td>
+              <td>
+                <span tal:content="python:view.getPreferredCurrencyAbreviation()">R</span>
+                <span tal:content="item/Total">0.00</span>
+              </td>
+            </tr>
+          </tal:item>
+        </tal:items>
+      </tbody>
+    </table>
+
+    <tal:hasremarks tal:condition="python:hasattr(context.aq_inner, 'schema') and 'Remarks' in context.schema">
+      <tal:remarks define="
+                           field python:context.Schema()['Remarks'];">
+        <p style="margin-top:2em;" tal:content="structure python:field.get(context)"/>
+      </tal:remarks>
+    </tal:hasremarks>
+
+  </body>
+</html>

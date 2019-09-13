@@ -1,0 +1,170 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    xmlns:monkey="http://namespaces.plone.org/monkey"
+    i18n_domain="senaite.core">
+
+    <adapter
+      factory=".acquirefielddefaults.AcquireFieldDefaults"
+      provides="senaite.core.interfaces.IAcquireFieldDefaults"
+      for="senaite.core.interfaces.IAnalysisRequest"
+      name="DefaultAquireFieldDefaults"
+    />
+
+    <adapter
+      for="zope.interface.Interface
+           zope.publisher.interfaces.browser.IBrowserRequest"
+      factory="senaite.core.adapters.referencewidgetvocabulary.DefaultReferenceWidgetVocabulary"
+      provides="senaite.core.interfaces.IReferenceWidgetVocabulary"
+    />
+
+
+    <!--
+    FIELDS/WIDGETS VISIBILITY
+    ·························
+    These adapters allow to set more fine-grained criteria to modify fields
+    visibility after their visibility for a given mode is granted by workflow
+    permissions. E.g., in some cases we want a field to be displayed only if a
+    given setting from setup is enabled, or make editable a field when other
+    field has value, etc. These are use cases that cannot be modeled by using
+    the workflow field-specific permissions only, rather specific adapters.
+
+    Important:
+    If you only want a field to be visible/invisible depending on the context
+    status, add the permission in the proper workflow instead of adding
+    an adapter.
+
+    -->
+    <!-- Hide all those fields from Analysis Request that have been declared as
+    hidden in bika.lims.hiddenattributes registry key -->
+    <adapter
+      factory=".widgetvisibility.RegistryHiddenFieldsVisibility"
+      provides="senaite.core.interfaces.IATWidgetVisibility"
+      for="senaite.core.interfaces.IAnalysisRequest"
+      name="RegistryHiddenFieldsVisibility"
+    />
+
+    <!-- Display/Hide accountancy-related fields (e.g. price, discount, etc.)
+    based on system settings (setup's "Show Prices" option) -->
+    <adapter
+      factory=".widgetvisibility.AccountancyFieldsVisibility"
+      provides="senaite.core.interfaces.IATWidgetVisibility"
+      for="senaite.core.interfaces.IClient"
+      name="AccountancyFieldsVisibility"
+    />
+
+    <!-- Display/Hide accountancy-related fields (e.g. price, discount, etc.)
+    based on system settings (setup's "Show Prices" option) -->
+    <adapter
+      factory=".widgetvisibility.AccountancyFieldsVisibility"
+      provides="senaite.core.interfaces.IATWidgetVisibility"
+      for="senaite.core.interfaces.IAnalysisRequest"
+      name="AccountancyFieldsVisibility"
+    />
+
+    <!-- Display/Hide Batch field in AR Add form when creation takes place
+    inside a Batch context. -->
+    <adapter
+      factory=".widgetvisibility.BatchFieldVisibility"
+      provides="senaite.core.interfaces.IATWidgetVisibility"
+      for="senaite.core.interfaces.IAnalysisRequest"
+      name="BatchFieldVisibility"
+    />
+
+    <!-- Hides the client field in AR Add form when the creation takes place
+    inside a Client context. Makes the field readonly in mode=edit -->
+    <adapter
+      factory=".widgetvisibility.ClientFieldVisibility"
+      provides="senaite.core.interfaces.IATWidgetVisibility"
+      for="senaite.core.interfaces.IAnalysisRequest"
+      name="ClientFieldVisibility"
+    />
+
+    <!-- Display Analysis Request's Date Received field in edit mode only if the
+    Analysis Request is in an "open" state (all analyses it contains are either
+    in "unassigned" or "assigned" status). Otherwise, display as read-only -->
+    <adapter
+        factory=".widgetvisibility.DateReceivedFieldVisibility"
+        provides="senaite.core.interfaces.IATWidgetVisibility"
+        for="senaite.core.interfaces.IAnalysisRequest"
+        name="DateReceivedFieldVisibility"
+    />
+
+    <!-- Hide/Display the fields related with Sampling Workflow (e.g. Sampler,
+    Date Sampled, Sampling Date, etc.) -->
+    <adapter
+      factory=".widgetvisibility.SamplingFieldsVisibility"
+      provides="senaite.core.interfaces.IATWidgetVisibility"
+      for="senaite.core.interfaces.IAnalysisRequest"
+      name="SamplingFieldsVisibility"
+    />
+
+    <!-- Hide/Display the fields related with Scheduled Sampling Workflow (e.g.
+    Scheduled Sampler, etc.) -->
+    <adapter
+      factory=".widgetvisibility.ScheduledSamplingFieldsVisibility"
+      provides="senaite.core.interfaces.IATWidgetVisibility"
+      for="senaite.core.interfaces.IAnalysisRequest"
+      name="ScheduledSamplingFieldsVisibility"
+    />
+
+    <!-- Hide/Display the fields related with Preservation Workflow (e.g.
+    Preservation, DatePreserved, etc.) -->
+    <adapter
+      factory=".widgetvisibility.PreservationFieldsVisibility"
+      provides="senaite.core.interfaces.IATWidgetVisibility"
+      for="senaite.core.interfaces.IAnalysisRequest"
+      name="PreservationFieldsVisibility"
+    />
+
+    <!-- DateSampled cannot be edited in Secondary Analysis Requests -->
+    <adapter
+      factory=".widgetvisibility.SecondaryDateSampledFieldVisibility"
+      provides="senaite.core.interfaces.IATWidgetVisibility"
+      for="senaite.core.interfaces.IAnalysisRequestSecondary"
+      name="SecondaryDateSampledFieldVisibility"
+    />
+
+    <!-- Hide/Display the InternalUse field to Client contact users -->
+    <adapter
+      factory=".widgetvisibility.InternalUseFieldVisibility"
+      provides="senaite.core.interfaces.IATWidgetVisibility"
+      for="senaite.core.interfaces.IAnalysisRequest"
+      name="InternalUseFieldVisibility"
+    />
+
+    <!-- Hide/Display PrimarySample field. Always hidden for non-secondary ARs,
+    otherwise readonly mode -->
+    <adapter
+      factory=".widgetvisibility.PrimaryAnalysisRequestFieldVisibility"
+      provides="senaite.core.interfaces.IATWidgetVisibility"
+      for="senaite.core.interfaces.IAnalysisRequest"
+      name="PrimaryAnalysisRequestFieldVisibility"
+    />
+    <!---
+    END OF FIELDS/WIDGETS VISIBILITY
+    -->
+
+    <adapter name='bika.lims.IHaveIdentifiersExtender' factory=".identifiers.IHaveIdentifiersSchemaExtender"/>
+    <adapter name='bika.lims.IHaveIdentifiersModifier' factory=".identifiers.IHaveIdentifiersSchemaModifier"/>
+
+    <adapter factory=".identifiers.IdentifiersIndexer" name="Identifiers"/>
+
+    <browser:page
+      for="*"
+      name="getidentifiertypes"
+      class="senaite.core.adapters.identifiers.ajaxGetIdentifierTypes"
+      permission="zope.Public"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+    <!-- Stickers -->
+    <!-- IGetStickerTemplates adapters -->
+    <adapter
+      factory="senaite.core.adapters.stickers.GetSampleStickers"
+      for="senaite.core.interfaces.IAnalysisRequest"
+      provides="senaite.core.interfaces.IGetStickerTemplates"
+    />
+
+</configure>

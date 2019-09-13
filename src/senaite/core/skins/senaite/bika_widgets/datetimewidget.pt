@@ -1,0 +1,53 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html
+    xmlns:tal="http://xml.zope.org/namespaces/tal"
+    xmlns:metal="http://xml.zope.org/namespaces/metal"
+    i18n:domain="plone">
+
+<body>
+
+<metal:view_macro define-macro="view"
+        tal:define="kssClassesView context/@@kss_field_decorator_view;
+                    getKssClasses nocall:kssClassesView/getKssClassesInlineEditable;">
+    <span metal:define-macro="string-field-view"
+        tal:define="kss_class python:getKssClasses(fieldName,
+                          templateId='widgets/string', macro='string-field-view');
+                          uid context/UID|nothing"
+        tal:attributes="class kss_class;
+                        id string:parent-fieldname-$fieldName-$uid">
+        <span metal:define-slot="inside"
+              tal:define="value accessor;
+                          value python: widget.ulocalized_time(value, context=context, request=request) if value else ''"
+              tal:replace="value">Date</span>
+    </span>
+</metal:view_macro>
+
+<metal:search_macro define-macro="search">
+  <div metal:use-macro="here/widgets/string/macros/edit"/>
+</metal:search_macro>
+
+<metal:edit_macro define-macro="edit">
+  <metal:use use-macro="field_macro | context/widgets/field/macros/edit">
+    <input metal:fill-slot="widget_body"
+           type="text"
+           name=""
+           class="blurrable firstToFocus"
+           id=""
+           value=""
+           size="30"
+           tal:attributes="name fieldName;
+                           id fieldName;
+                           value python: widget.ulocalized_gmt0_time(value, context=context, request=request) if value else '';
+                           size widget/size|nothing;
+                           datepicker python:1 if not widget.show_time else 0;
+                           datetimepicker python:1 if widget.show_time else 0;
+                           maxlength widget/maxlength|nothing;
+                           datepicker_nofuture python:1 if hasattr(widget, 'datepicker_nofuture') and widget.datepicker_nofuture else 0;
+                           datepicker_nopast  python:1 if hasattr(widget, 'datepicker_nopast') and widget.datepicker_nopast else 0;"/>
+  </metal:use>
+</metal:edit_macro>
+
+</body>
+
+</html>

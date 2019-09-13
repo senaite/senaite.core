@@ -1,0 +1,20 @@
+<div class="field" tal:attributes="style view/style|nothing" i18n:domain="senaite.core"
+        tal:define="groups python:['Day', 'Week', 'Month', 'Year']">
+
+    <label i18n:translate="">Group by</label>
+    <br/>
+
+    <select name="GroupingPeriod:ignore_empty"
+            id="GroupingPeriod"
+            tal:attributes="style string:font-family:${here/base_properties/fontFamily};;font-size:100%;">
+        <option tal:condition="python:view.allow_blank" value=""/>
+        <tal:groups tal:repeat="groupingperiod groups">
+            <option tal:attributes="
+                    value python:groupingperiod;
+                    selected python:request.get('groupingperiod', '') == groupingperiod and 'selected' or ''"
+                    tal:content="groupingperiod">
+            </option>
+        </tal:groups>
+    </select>
+
+</div>

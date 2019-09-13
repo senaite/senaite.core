@@ -1,0 +1,207 @@
+<?xml version="1.0"?>
+<dc-workflow xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+             workflow_id="senaite_client_workflow"
+             title="Senaite client Workflow"
+             description=""
+             state_variable="review_state"
+             initial_state="active"
+             manager_bypass="False"
+             i18n:domain="senaite.core">
+
+  <!--
+  Workflow for client objects. This workflow deals with the fact that client
+  contacts can only access to their corresponding Client objects. This workflow
+  modifies the permission maps in accordance, taking into consideration that the
+  Client contacts have the role Owner for the Client they belong to.
+
+  Almost all the permission maps here are the same as in rolemap.xml, but
+  without Client role: allowing Owner but not Client has the following effect:
+  contacts only have permissions granted for the client they belong to.
+
+  Note this workflow acquires permissions settings from `senaite_clients_workflow`
+  -->
+
+  <!-- PERMISSIONS -->
+  <!-- Plone generic permissions -->
+  <permission>Access contents information</permission>
+  <permission>Delete objects</permission>
+  <permission>List folder contents</permission>
+  <permission>Modify portal content</permission>
+  <permission>View</permission>
+
+  <!-- Senaite permissions for transitions (govern guards) -->
+  <permission>senaite.core: Transition: Activate</permission>
+  <permission>senaite.core: Transition: Deactivate</permission>
+
+  <!-- State: active -->
+  <state state_id="active" title="Active" i18n:attributes="title">
+    <exit-transition transition_id="deactivate" />
+
+    <!-- Transition permissions -->
+    <permission-map name="senaite.core: Transition: Deactivate" acquired="True" />
+
+    <!-- Plone's permissions -->
+    <permission-map name="Access contents information" acquired="False">
+      <!-- Same as in rolemap.xml, but without Client -->
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+      <permission-role>Preserver</permission-role>
+      <permission-role>Publisher</permission-role>
+      <permission-role>RegulatoryInspector</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
+      <permission-role>Verifier</permission-role>
+    </permission-map>
+    <permission-map name="Delete objects" acquired="True" />
+    <permission-map name="List folder contents" acquired="False">
+      <!-- Same as in rolemap.xml, but without Client -->
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+      <permission-role>Preserver</permission-role>
+      <permission-role>Publisher</permission-role>
+      <permission-role>RegulatoryInspector</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
+      <permission-role>Verifier</permission-role>
+    </permission-map>
+    <permission-map name="Modify portal content" acquired="True"/>
+    <permission-map name="View" acquired="False">
+      <!-- Same as in rolemap.xml, but without Client -->
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+      <permission-role>Preserver</permission-role>
+      <permission-role>Publisher</permission-role>
+      <permission-role>RegulatoryInspector</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
+      <permission-role>Verifier</permission-role>
+    </permission-map>
+  </state>
+
+  <!-- State: inactive
+  We don't grant access to Owners (Client contacts)!
+  Maybe a client contact can login to the system, but will not be able to see
+  anything, cause the Client he/she belongs to is inactive.
+  -->
+  <state state_id="inactive" title="Inactive" i18n:attributes="title">
+    <exit-transition transition_id="activate" />
+
+    <!-- Transition permissions -->
+    <permission-map name="senaite.core: Transition: Activate" acquired="True" />
+
+    <!-- Plone's permissions -->
+    <permission-map name="Access contents information" acquired="False">
+      <!-- Same as in rolemap.xml, but without Client and without Owner -->
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Preserver</permission-role>
+      <permission-role>Publisher</permission-role>
+      <permission-role>RegulatoryInspector</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
+      <permission-role>Verifier</permission-role>
+    </permission-map>
+    <permission-map name="Delete objects" acquired="False" />
+    <permission-map name="List folder contents" acquired="False">
+      <!-- Same as in rolemap.xml, but without Client and without Owner -->
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Preserver</permission-role>
+      <permission-role>Publisher</permission-role>
+      <permission-role>RegulatoryInspector</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
+      <permission-role>Verifier</permission-role>
+    </permission-map>
+    <permission-map name="Modify portal content" acquired="False">
+      <!-- Same as in rolemap.xml, but without Client and without Owner -->
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="View" acquired="False">
+      <!-- Same as in rolemap.xml, but without Client and without Owner -->
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+  </state>
+
+  <!-- Transition: activate -->
+  <transition transition_id="activate" title="Activate" new_state="active" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Activate</action>
+    <guard>
+      <guard-permission>senaite.core: Transition: Activate</guard-permission>
+      <guard-expression>python:here.guard_handler("activate")</guard-expression>
+    </guard>
+  </transition>
+  <!-- Transition: deactivate -->
+  <transition transition_id="deactivate" title="Deactivate" new_state="inactive" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Deactivate</action>
+    <guard>
+      <guard-permission>senaite.core: Transition: Deactivate</guard-permission>
+      <guard-expression>python:here.guard_handler("deactivate")</guard-expression>
+    </guard>
+  </transition>
+
+
+
+  <variable variable_id="action" for_catalog="False" for_status="True" update_always="True">
+    <description>Previous transition</description>
+    <default>
+      <expression>transition/getId|nothing</expression>
+    </default>
+    <guard>
+    </guard>
+  </variable>
+
+  <variable variable_id="actor" for_catalog="False" for_status="True" update_always="True">
+    <description>The ID of the user who performed the last transition</description>
+    <default>
+      <expression>user/getId</expression>
+    </default>
+    <guard>
+    </guard>
+  </variable>
+
+  <variable variable_id="comments" for_catalog="False" for_status="True" update_always="True">
+    <description>Comment about the last transition</description>
+    <default>
+      <expression>python:state_change.kwargs.get('comment', '')</expression>
+    </default>
+    <guard>
+    </guard>
+  </variable>
+
+  <variable variable_id="review_history" for_catalog="False" for_status="False" update_always="False">
+    <description>Provides access to workflow history</description>
+    <default>
+      <expression>state_change/getHistory</expression>
+    </default>
+    <guard>
+    </guard>
+  </variable>
+
+  <variable variable_id="time" for_catalog="False" for_status="True" update_always="True">
+    <description>When the previous transition was performed</description>
+    <default>
+      <expression>state_change/getDateTime</expression>
+    </default>
+    <guard>
+    </guard>
+  </variable>
+
+</dc-workflow>

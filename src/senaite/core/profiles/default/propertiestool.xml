@@ -1,0 +1,114 @@
+<?xml version="1.0"?>
+
+<object name="portal_properties" meta_type="Plone Properties Tool">
+
+<object name="site_properties" meta_type="Plone Property Sheet">
+  <property name="disable_folder_sections" type="boolean">True</property>
+  <property name="disable_nonfolderish_sections" type="boolean">True</property>
+  <property name="localLongTimeFormat" type="string">%Y-%m-%d %I:%M %p</property>
+  <property name="localTimeFormat" type="string">%Y-%m-%d</property>
+  <property name="localTimeOnlyFormat" type="string">%I:%M %p</property>
+</object>
+
+ <object name="navtree_properties" meta_type="Plone Property Sheet">
+  <property name="title">NavigationTree properties</property>
+  <property name="sortAttribute"
+     type="string">getObjPositionInParent</property>
+  <property name="sortOrder" type="string">asc</property>
+  <property name="sitemapDepth" type="int">3</property>
+  <property name="name" type="string"></property>
+  <property name="root" type="string">/</property>
+  <property name="currentFolderOnlyInNavtree" type="boolean">False</property>
+  <property name="includeTop" type="boolean">False</property>
+  <property name="topLevel" type="int">0</property>
+  <property name="bottomLevel" type="int">0</property>
+  <property name="showAllParents" type="boolean">True</property>
+  <property name="idsNotToList" type="lines"/>
+  <property name="parentMetaTypesNotToQuery" type="lines">
+    <element value="TempFolder"/>
+  </property>
+  <property name="metaTypesNotToList" type="lines">
+    <element value="Contact"/>
+    <element value="SupplierContact"/>
+    <element value="ATFile"/>
+    <element value="Address"/>
+    <element value="Analysis"/>
+    <element value="AnalysisCategory"/>
+    <element value="AnalysisRequest"/>
+    <element value="AnalysisService"/>
+    <element value="AnalysisSpec"/>
+    <element value="ARImport"/>
+    <element value="AnalysisProfile"/>
+    <element value="ARReport"/>
+    <element value="ARTemplate"/>
+    <element value="Attachment"/>
+    <element value="AttachmentType"/>
+    <element value="Batch"/>
+    <element value="BikaSetup"/>
+    <element value="Calculation"/>
+    <element value="Client"/>
+    <element value="Container"/>
+    <element value="ContainerType"/>
+    <element value="Department"/>
+    <element value="DuplicateAnalysis"/>
+    <element value="Instrument"/>
+    <element value="InstrumentCalibration"/>
+    <element value="InstrumentCertification"/>
+    <element value="InstrumentMaintenanceTask"/>
+    <element value="InstrumentScheduledTask"/>
+    <element value="InstrumentType"/>
+    <element value="InstrumentLocation"/>
+    <element value="InstrumentValidation"/>
+    <element value="Invoice"/>
+    <element value="InvoiceBatch"/>
+    <element value="LabContact"/>
+    <element value="LabProduct"/>
+    <element value="LogEntry"/>
+    <element value="Manufacturer"/>
+    <element value="Method"/>
+    <element value="SRTemplate"/>
+    <element value="Supplier"/>
+    <element value="SupplyOrder"/>
+    <element value="Preservation"/>
+    <element value="ReferenceAnalysis"/>
+    <element value="ReferenceDefinition"/>
+    <element value="ReferenceSample"/>
+    <element value="RejectAnalysis"/>
+    <element value="Report"/>
+    <element value="ReportFolder"/>
+    <element value="Sample"/>
+    <element value="SamplePartition"/>
+    <element value="SamplePoint"/>
+    <element value="StorageLocation"/>
+    <element value="SampleType"/>
+    <element value="BatchLabel"/>
+    <element value="Worksheet"/>
+    <element value="WorksheetTemplate"/>
+    <element value="ATBooleanCriterion"/>
+    <element value="ATDateCriteria"/>
+    <element value="ATDateRangeCriterion"/>
+    <element value="ATListCriterion"/>
+    <element value="ATPortalTypeCriterion"/>
+    <element value="ATReferenceCriterion"/>
+    <element value="ATSelectionCriterion"/>
+    <element value="ATSimpleIntCriterion"/>
+    <element value="ATSimpleStringCriterion"/>
+    <element value="ATSortCriterion"/>
+    <element value="ChangeSet"/>
+    <element value="Discussion Item"/>
+    <element value="Plone Site"/>
+    <element value="TempFolder"/>
+    <element value="Image"/>
+    <element value="ATCurrentAuthorCriterion"/>
+    <element value="ATPathCriterion"/>
+    <element value="ATRelativePathCriterion"/>
+    <element value="SamplingRound"/>
+    <element value="ReflexRule"/>
+    <element value="BikaCache"/>
+    <element value="AutoImportLog"/>
+  </property>
+  <property name="enable_wf_state_filtering" type="boolean">False</property>
+  <property name="wf_states_to_show" type="lines"/>
+</object>
+
+</object>

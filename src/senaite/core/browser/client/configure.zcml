@@ -1,0 +1,117 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    i18n_domain="senaite.core">
+
+    <adapter
+      factory="senaite.core.browser.client.ClientContactVocabularyFactory"
+      provides="senaite.core.interfaces.IDisplayListVocabulary"
+      for="senaite.core.interfaces.IClient"
+      name="getContacts"
+    />
+
+    <adapter
+      for="senaite.core.interfaces.IClient
+           zope.publisher.interfaces.browser.IBrowserRequest"
+      factory="senaite.core.browser.client.ReferenceWidgetVocabulary"
+      provides="senaite.core.interfaces.IReferenceWidgetVocabulary"
+    />
+
+    <browser:page
+      for="senaite.core.interfaces.IClient"
+      name="batches"
+      class="senaite.core.browser.client.ClientBatchesView"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="senaite.core.interfaces.IClient"
+      name="base_view"
+      class="senaite.core.browser.client.ClientAnalysisRequestsView"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="senaite.core.interfaces.IClient"
+      name="analysisprofiles"
+      class="senaite.core.browser.client.ClientAnalysisProfilesView"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="senaite.core.interfaces.IClient"
+      name="artemplates"
+      class="senaite.core.browser.client.ClientARTemplatesView"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="senaite.core.interfaces.IClient"
+      name="srtemplates"
+      class="senaite.core.browser.client.ClientSamplingRoundTemplatesView"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="senaite.core.interfaces.IClient"
+      name="samplepoints"
+      class="senaite.core.browser.client.ClientSamplePointsView"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="senaite.core.interfaces.IClient"
+      name="analysisspecs"
+      class="senaite.core.browser.client.ClientAnalysisSpecsView"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="senaite.core.interfaces.IClient"
+      name="attachments"
+      class="senaite.core.browser.client.ClientAttachmentsView"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="senaite.core.interfaces.IClient"
+      name="orders"
+      class="senaite.core.browser.client.ClientOrdersView"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="senaite.core.interfaces.IClient"
+      name="contacts"
+      class="senaite.core.browser.client.ClientContactsView"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="senaite.core.interfaces.IClient"
+      name="getClientInfo"
+      class="senaite.core.browser.client.ajaxGetClientInfo"
+      permission="zope.Public"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="senaite.core.interfaces.IClient"
+      name="sampling_rounds_view"
+      class="senaite.core.browser.client.ClientSamplingRoundsView"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+</configure>

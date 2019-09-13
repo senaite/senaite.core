@@ -1,0 +1,504 @@
+<?xml version="1.0"?>
+<object name="portal_workflow" meta_type="Plone Workflow Tool">
+  <property
+      name="title">Contains workflow definitions for your portal</property>
+  <object name="bika_analysis_workflow" meta_type="Workflow"/>
+  <object name="bika_ar_workflow" meta_type="Workflow"/>
+  <object name="bika_arimport_workflow" meta_type="Workflow"/>
+  <object name="bika_duplicateanalysis_workflow" meta_type="Workflow"/>
+  <object name="bika_referenceanalysis_workflow" meta_type="Workflow"/>
+  <object name="bika_referencesample_workflow" meta_type="Workflow"/>
+  <object name="bika_reject_analysis_workflow" meta_type="Workflow"/>
+  <object name="bika_sample_workflow" meta_type="Workflow"/>
+  <object name="bika_samplinground_workflow" meta_type="Workflow"/>
+  <object name="bika_worksheet_workflow" meta_type="Workflow"/>
+  <object name="folder_workflow" meta_type="Workflow"/>
+  <object name="intranet_folder_workflow" meta_type="Workflow"/>
+  <object name="intranet_workflow" meta_type="Workflow"/>
+  <object name="one_state_workflow" meta_type="Workflow"/>
+  <object name="plone_workflow" meta_type="Workflow"/>
+  <object name="simple_publication_workflow" meta_type="Workflow"/>
+
+  <!-- *** GENERIC WORKFLOWS *** -->
+  <!--- Workflow: senaite_deactivable_type_workflow
+  Basic workflow for senaite content types. Does not allow the deletion of
+  objects, but provides the transitions "activate" and "deactivate"
+  Types bound to this workflow should implement IDeactivable
+  -->
+  <object name="senaite_deactivable_type_workflow" meta_type="Workflow"/>
+
+  <!--- Workflow: senaite_cancellable_type_workflow
+  Basic workflow for senaite content types. Does not allow the deletion of
+  objects, but provides the transitions "cancel" and "reinstate"
+  Types bound to this workflow should implement ICancellable
+  -->
+  <object name="senaite_cancellable_type_workflow" meta_type="Workflow"/>
+
+  <!-- Workflow: senaite_one_state_workflow
+  One-state (active) workflow, for folders mostly.
+  -->
+  <object name="senaite_one_state_workflow" meta_type="Workflow"/>
+
+
+  <!-- *** CUSTOM WORKFLOWS *** -->
+
+  <!-- Workflow: senaite_setup_workflow
+  A "one-state workflow" for setup and similar folders (e.g. methods)
+  A copy of senaite_one_state_workflow, but:
+   - "Access contents folder" granted to "Authenticated"
+   - "Delete objects" not granted to anyone
+   - "List folder contents" granted to "Authenticated"
+   - "Modify portal content" granted to "LabManager" and "Manager" only
+   - "View" granted to "Authenticated"
+  -->
+  <object name="senaite_setup_workflow" meta_type="Workflow"/>
+
+  <!-- Workflow: senaite_clients_workflow
+  A "one-state workflow" for clients folder (ClientFolder type).
+  A copy of senaite_one_state_workflow, but:
+   - "Access contents folder" granted to "Authenticated"
+   - "Delete objects" not granted to anyone
+   - "List folder contents" granted to "Authenticated"
+   - "View" granted to "Authenticated"
+  -->
+  <object name="senaite_clients_workflow" meta_type="Workflow"/>
+
+  <!-- Workflow: senaite_laboratory_workflow
+  A "one-state workflow" for setup/laboratory folder
+  A copy of one_state_workflow, but:
+   - Grants "Modify portal content" permission to LabClerk
+  -->
+  <object name="senaite_laboratory_workflow" meta_type="Workflow" />
+
+  <!-- Workflow: senaite_labcontact_workflow
+  A "deactivable type" workflow for LabContact type.
+  A copy of "deactivable_type_workflow", but:
+   - "Modify portal content" granted to LabClerk, LabManager and Manager only
+   - "View" granted to LabClerk, LabManager and Manager only
+  -->
+  <object name="senaite_labcontact_workflow" meta_type="Workflow" />
+
+  <!-- Workflow: senaite_client_workflow
+  A "deactivable type" workflow for Client type.
+  This workflow deals with the fact that client contacts can only access to
+  their corresponding Client objects. This workflow modifies the permission maps
+  in accordance taking into consideration that the Client contacts have the role
+  Owner for the Client they belong to.
+  A copy of "deactivable_type_workflow", but:
+   - "Access contents folder" not granted to Client role
+   - "List folder contents" not granted to Client role
+   - "View" not granted to Client role
+  -->
+  <object name="senaite_client_workflow" meta_type="Workflow"/>
+
+  <!-- Workflow: senaite_labcontact_workflow
+  A "deactivable type" workflow for Contact (from client) type. A workflow meant
+  to protect access to sensible data of Client contacts by preventing
+  users other than LabClerk, LabManager, Manager and Owner to access to
+  personal information.
+  A copy of "deactivable_type_workflow", but:
+   - "View" granted to "LabClerk", "LabManager", "Manager" and "Owner" roles.
+  -->
+  <object name="senaite_clientcontact_workflow" meta_type="Workflow" />
+
+  <!-- workflow: senaite_instruments_workflow
+  One-state workflow for instruments base folder, that does not allow access to
+  users other than lab personnel.
+  A copy of one-state workflow, but:
+  - "Access content information" granted to lab personnel only
+  - "List folder contents" granted to lab personnel only
+  - "View" granted to lab personnel only
+  -->
+  <object name="senaite_instruments_workflow" meta_type="Workflow" />
+
+  <!-- workflow: senaite_referencesamples_workflow
+  One-state workflow for reference samples base folder, that does not allow
+  access to users other than lab personnel.
+  A copy of one-state workflow, but:
+  - "Access content information" granted to lab personnel only
+  - "List folder contents" granted to lab personnel only
+  - "Modify portal content" granted to lab personnel only
+  - "View" granted to lab personnel only
+  -->
+  <object name="senaite_referencesamples_workflow" meta_type="Workflow" />
+
+  <!-- workflow: senaite_reports_workflow
+  One-state workflow for productivity and administrative reports base folder,
+  that does not allow access to users other than lab personnel.
+  A copy of one-state workflow, but:
+  - "Access content information" granted to lab personnel only
+  - "List folder contents" granted to lab personnel only
+  - "Modify portal content" granted to lab personnel only
+  - "View" granted to lab personnel only
+  -->
+  <object name="senaite_reports_workflow" meta_type="Workflow" />
+
+  <!-- Workflow: senaite_supplyorder_workflow
+  Workflow for Supply Orders. States "dispatched", "pending", "cancelled" -->
+  <object name="senaite_supplyorder_workflow" meta_type="Workflow"/>
+
+  <!-- workflow: senaite_worksheets_workflow
+  One-state workflow for worksheets base folder, that does not allow access to
+  users other than lab personnel.
+  A copy of one-state workflow, but:
+  - "Access content information" granted to lab personnel only
+  - "List folder contents" granted to lab personnel only
+  - "Modify portal content" granted to LabManager and Manager only
+  - "View" granted to lab personnel only
+  -->
+  <object name="senaite_worksheets_workflow" meta_type="Workflow" />
+
+  <!-- workflow: senaite_batch_workflow
+  Custom workflow for batches. Batches can be cancelled and closed.
+  Only lab personnel allowed.
+  -->
+  <object name="senaite_batch_workflow" meta_type="Workflow" />
+
+  <!--
+  *** BINDINGS ***
+  -->
+  <bindings>
+    <!-- Bind senaite_one_state by default if type not known -->
+    <default>
+      <bound-workflow workflow_id="senaite_one_state_workflow"/>
+    </default>
+
+    <!--
+    *** BINDINGS TO "senaite_one_state_workflow" ***
+    -->
+    <!-- Setup folders -->
+    <type type_id="AuditLog">
+      <bound-workflow workflow_id="senaite_one_state_workflow"/>
+    </type>
+    <type type_id="AnalysisCategories">
+      <bound-workflow workflow_id="senaite_one_state_workflow"/>
+    </type>
+    <type type_id="AnalysisProfiles">
+      <bound-workflow workflow_id="senaite_one_state_workflow"/>
+    </type>
+    <type type_id="AnalysisServices">
+      <bound-workflow workflow_id="senaite_one_state_workflow"/>
+    </type>
+    <type type_id="AnalysisSpecs">
+      <bound-workflow workflow_id="senaite_one_state_workflow"/>
+    </type>
+    <type type_id="ARTemplates">
+      <bound-workflow workflow_id="senaite_one_state_workflow"/>
+    </type>
+    <type type_id="AttachmentTypes">
+      <bound-workflow workflow_id="senaite_one_state_workflow"/>
+    </type>
+    <type type_id="BatchLabels">
+      <bound-workflow workflow_id="senaite_one_state_workflow"/>
+    </type>
+    <type type_id="Calculations">
+      <bound-workflow workflow_id="senaite_one_state_workflow"/>
+    </type>
+    <type type_id="Containers">
+      <bound-workflow workflow_id="senaite_one_state_workflow"/>
+    </type>
+    <type type_id="ContainerTypes">
+      <bound-workflow workflow_id="senaite_one_state_workflow"/>
+    </type>
+    <type type_id="Departments">
+      <bound-workflow workflow_id="senaite_one_state_workflow"/>
+    </type>
+    <type type_id="IdentifierTypes">
+      <bound-workflow workflow_id="senaite_one_state_workflow"/>
+    </type>
+    <type type_id="InstrumentLocations">
+      <bound-workflow workflow_id="senaite_one_state_workflow"/>
+    </type>
+    <type type_id="InstrumentTypes">
+      <bound-workflow workflow_id="senaite_one_state_workflow"/>
+    </type>
+    <type type_id="LabContacts">
+      <bound-workflow workflow_id="senaite_one_state_workflow"/>
+    </type>
+    <type type_id="LabProducts">
+      <bound-workflow workflow_id="senaite_one_state_workflow"/>
+    </type>
+    <type type_id="Manufacturers">
+      <bound-workflow workflow_id="senaite_one_state_workflow"/>
+    </type>
+    <type type_id="Preservations">
+      <bound-workflow workflow_id="senaite_one_state_workflow"/>
+    </type>
+    <type type_id="ReferenceDefinitions">
+      <bound-workflow workflow_id="senaite_one_state_workflow"/>
+    </type>
+    <type type_id="ReflexRuleFolder">
+      <bound-workflow workflow_id="senaite_one_state_workflow"/>
+    </type>
+    <type type_id="SampleConditions">
+      <bound-workflow workflow_id="senaite_one_state_workflow"/>
+    </type>
+    <type type_id="SampleMatrices">
+      <bound-workflow workflow_id="senaite_one_state_workflow"/>
+    </type>
+    <type type_id="SamplePoints">
+      <bound-workflow workflow_id="senaite_one_state_workflow"/>
+    </type>
+    <type type_id="SampleTypes">
+      <bound-workflow workflow_id="senaite_one_state_workflow"/>
+    </type>
+    <type type_id="StorageLocations">
+      <bound-workflow workflow_id="senaite_one_state_workflow"/>
+    </type>
+    <type type_id="SamplingDeviations">
+      <bound-workflow workflow_id="senaite_one_state_workflow"/>
+    </type>
+    <type type_id="SamplingRounds">
+      <bound-workflow workflow_id="senaite_one_state_workflow"/>
+    </type>
+    <type type_id="SRTemplates">
+      <bound-workflow workflow_id="senaite_one_state_workflow"/>
+    </type>
+    <type type_id="SubGroups">
+      <bound-workflow workflow_id="senaite_one_state_workflow"/>
+    </type>
+    <type type_id="Suppliers">
+      <bound-workflow workflow_id="senaite_one_state_workflow"/>
+    </type>
+    <type type_id="WorksheetTemplates">
+      <bound-workflow workflow_id="senaite_one_state_workflow"/>
+    </type>
+
+    <!-- Other folders and types -->
+    <type type_id="AnalysisRequestsFolder">
+      <bound-workflow workflow_id="senaite_one_state_workflow"/>
+    </type>
+    <type type_id="ARReport">
+      <bound-workflow workflow_id="senaite_one_state_workflow"/>
+    </type>
+    <type type_id="Attachment">
+      <bound-workflow workflow_id="senaite_one_state_workflow"/>
+    </type>
+    <type type_id="BatchFolder">
+      <bound-workflow workflow_id="senaite_one_state_workflow"/>
+    </type>
+    <type type_id="InstrumentCalibration">
+      <bound-workflow workflow_id="senaite_one_state_workflow"/>
+    </type>
+    <type type_id="InstrumentCertification">
+      <bound-workflow workflow_id="senaite_one_state_workflow"/>
+    </type>
+    <type type_id="InstrumentValidation">
+      <bound-workflow workflow_id="senaite_one_state_workflow"/>
+    </type>
+    <type type_id="Invoice">
+      <bound-workflow workflow_id="senaite_one_state_workflow"/>
+    </type>
+    <type type_id="PricelistFolder">
+      <bound-workflow workflow_id="senaite_one_state_workflow"/>
+    </type>
+    <type type_id="SamplesFolder">
+      <bound-workflow workflow_id="senaite_one_state_workflow"/>
+    </type>
+    <type type_id="SupplyOrderFolder">
+      <bound-workflow workflow_id="senaite_one_state_workflow"/>
+    </type>
+
+    <!--
+    *** BINDINGS TO "senaite_deactivable_type_workflow" ***
+    -->
+    <!-- Setup items -->
+    <type type_id="AnalysisCategory">
+      <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
+    </type>
+    <type type_id="AnalysisProfile">
+      <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
+    </type>
+    <type type_id="AnalysisService">
+      <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
+    </type>
+    <type type_id="AnalysisSpec">
+      <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
+    </type>
+    <type type_id="ARTemplate">
+      <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
+    </type>
+    <type type_id="AttachmentType">
+      <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
+    </type>
+    <type type_id="BatchLabel">
+      <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
+    </type>
+    <type type_id="Calculation">
+      <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
+    </type>
+    <type type_id="Container">
+      <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
+    </type>
+    <type type_id="ContainerType">
+      <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
+    </type>
+    <type type_id="Department">
+      <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
+    </type>
+    <type type_id="IdentifierType">
+      <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
+    </type>
+    <type type_id="Instrument">
+      <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
+    </type>
+    <type type_id="InstrumentLocation">
+      <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
+    </type>
+    <type type_id="InstrumentType">
+      <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
+    </type>
+    <type type_id="LabProduct">
+      <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
+    </type>
+    <type type_id="Manufacturer">
+      <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
+    </type>
+    <type type_id="Preservation">
+      <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
+    </type>
+    <type type_id="ReferenceDefinition">
+      <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
+    </type>
+    <type type_id="ReflexRule">
+      <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
+    </type>
+    <type type_id="SampleCondition">
+      <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
+    </type>
+    <type type_id="SampleMatrix">
+      <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
+    </type>
+    <type type_id="SamplePoint">
+      <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
+    </type>
+    <type type_id="SampleType">
+      <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
+    </type>
+    <type type_id="SamplingDeviation">
+      <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
+    </type>
+    <type type_id="SamplingRound">
+      <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
+    </type>
+    <type type_id="SRTemplate">
+      <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
+    </type>
+    <type type_id="StorageLocation">
+      <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
+    </type>
+    <type type_id="SubGroup">
+      <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
+    </type>
+    <type type_id="Supplier">
+      <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
+    </type>
+    <type type_id="SupplierContact">
+      <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
+    </type>
+    <type type_id="WorksheetTemplate">
+      <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
+    </type>
+
+    <!-- Other content types -->
+    <type type_id="Method">
+      <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
+    </type>
+    <type type_id="Pricelist">
+      <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
+    </type>
+
+
+    <!--
+    *** BINDINGS TO "senaite_cancellable_type_workflow" ***
+    -->
+    <type type_id="InstrumentMaintenanceTask">
+      <bound-workflow workflow_id="senaite_cancellable_type_workflow"/>
+    </type>
+    <type type_id="InstrumentScheduledTask">
+      <bound-workflow workflow_id="senaite_cancellable_type_workflow"/>
+    </type>
+
+
+    <!--
+    *** BINDINGS TO CUSTOM WORKFLOWS ***
+    -->
+    <type type_id="AnalysisRequest">
+      <bound-workflow workflow_id="bika_ar_workflow"/>
+    </type>
+    <type type_id="ARImports">
+      <bound-workflow workflow_id="bika_arimports_workflow"/>
+    </type>
+    <type type_id="ARImport">
+      <bound-workflow workflow_id="bika_arimport_workflow"/>
+    </type>
+    <type type_id="Batch">
+      <bound-workflow workflow_id="senaite_batch_workflow"/>
+    </type>
+    <type type_id="BikaSetup">
+      <bound-workflow workflow_id="senaite_setup_workflow"/>
+    </type>
+    <type type_id="Client">
+      <bound-workflow workflow_id="senaite_client_workflow"/>
+    </type>
+    <type type_id="ClientFolder">
+      <bound-workflow workflow_id="senaite_clients_workflow"/>
+    </type>
+    <type type_id="Contact">
+      <bound-workflow workflow_id="senaite_clientcontact_workflow"/>
+    </type>
+    <type type_id="Instruments">
+      <bound-workflow workflow_id="senaite_instruments_workflow"/>
+    </type>
+    <type type_id="LabContact">
+      <bound-workflow workflow_id="senaite_labcontact_workflow"/>
+    </type>
+    <type type_id="Laboratory">
+      <bound-workflow workflow_id="senaite_laboratory_workflow"/>
+    </type>
+    <type type_id="Methods">
+      <bound-workflow workflow_id="senaite_setup_workflow"/>
+    </type>
+    <type type_id="ReferenceSample">
+      <bound-workflow workflow_id="bika_referencesample_workflow"/>
+    </type>
+    <type type_id="ReferenceSamplesFolder">
+      <bound-workflow workflow_id="senaite_referencesamples_workflow"/>
+    </type>
+    <type type_id="ReportFolder">
+      <bound-workflow workflow_id="senaite_reports_workflow"/>
+    </type>
+    <type type_id="SupplyOrder">
+      <bound-workflow workflow_id="senaite_supplyorder_workflow"/>
+    </type>
+    <type type_id="Worksheet">
+      <bound-workflow workflow_id="bika_worksheet_workflow"/>
+    </type>
+    <type type_id="WorksheetFolder">
+      <bound-workflow workflow_id="senaite_worksheets_workflow"/>
+    </type>
+
+    <!-- Analysis-like types -->
+    <type type_id="Analysis">
+      <bound-workflow workflow_id="bika_analysis_workflow"/>
+    </type>
+    <type type_id="DuplicateAnalysis">
+      <bound-workflow workflow_id="bika_duplicateanalysis_workflow"/>
+    </type>
+    <type type_id="ReferenceAnalysis">
+      <bound-workflow workflow_id="bika_referenceanalysis_workflow"/>
+    </type>
+    <type type_id="RejectAnalysis">
+      <bound-workflow workflow_id="bika_reject_analysis_workflow"/>
+    </type>
+
+    <!-- TODO: Remove Sample-like types custom workflows -->
+    <type type_id="Sample">
+      <bound-workflow workflow_id="bika_sample_workflow"/>
+    </type>
+    <type type_id="SamplePartition">
+      <bound-workflow workflow_id="bika_sample_workflow"/>
+    </type>
+
+  </bindings>
+</object>

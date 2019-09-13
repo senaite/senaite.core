@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<metadata>
+  <version>1.3.2</version>
+  <dependencies>
+    <dependency>profile-jarn.jsi18n:default</dependency>
+    <dependency>profile-Products.ATExtensions:default</dependency>
+    <dependency>profile-Products.CMFEditions:CMFEditions</dependency>
+    <dependency>profile-plone.app.iterate:plone.app.iterate</dependency>
+    <dependency>profile-Products.TinyMCE:TinyMCE</dependency>
+    <dependency>profile-collective.js.jqueryui:default</dependency>
+    <dependency>profile-Products.DataGridField:default</dependency>
+    <dependency>profile-senaite.core.listing:default</dependency>
+  </dependencies>
+</metadata>

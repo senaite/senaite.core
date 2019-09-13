@@ -1,0 +1,28 @@
+<tal:email_template
+  tal:define="client_name python:view.client_name;
+              laboratory python:context.bika_setup.laboratory"
+  i18n:domain="senaite.core">
+<tal:p i18n:translate="">
+Thank you for your analysis request.
+</tal:p>
+
+<tal:p i18n:translate="">
+Please find attached the analysis result(s) for
+<tal:client i18n:name="client_name" content="client_name"/>
+</tal:p>
+
+<tal:p i18n:translate="">
+This report was sent to the following contacts:
+</tal:p>
+
+$recipients
+
+<tal:p i18n:translate="">
+With best regards
+</tal:p>
+<tal:laboratory tal:replace="python:laboratory.getName() or 'SENAITE LIMS'"/>
+
+<tal:p i18n:translate="">
+*** This is an automatically generated email, please do not reply to this message. ***
+</tal:p>
+</tal:email_template>

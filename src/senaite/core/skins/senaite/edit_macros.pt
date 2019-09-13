@@ -1,0 +1,264 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      i18n:domain="plone">
+  <head><title></title></head>
+  <body>
+
+    <div metal:define-macro="header">
+      <metal:block define-slot="title">
+        <h1
+            tal:condition="python:context.checkCreationFlag()">
+      <img tal:attributes="src python:'%s/%s'%(context.portal_url(), context.icon().replace('.png', '_big.png'))"
+              tal:condition="python: hasattr(context, 'icon') and context.icon()"/>
+          <span i18n:translate="heading_add_item">
+			Add
+			<span i18n:name="itemtype"
+                tal:define="fti python:context.portal_types.getTypeInfo(here)"
+				tal:omit-tag="python:True">
+			  <span i18n:translate=""
+                  tal:content="fti/Title"
+                  tal:omit-tag="python:True">Item type</span>
+			</span>
+		  </span>
+        </h1>
+        <h1
+            tal:condition="python: not context.checkCreationFlag()">
+      <img tal:attributes="src python:'%s/%s'%(context.portal_url(), context.icon().replace('.png', '_big.png'))"/>
+          <span i18n:translate="heading_edit_item">
+			Edit
+			<span i18n:name="itemtype"
+                tal:define="fti python:context.portal_types.getTypeInfo(here)"
+				tal:omit-tag="python:True">
+			  <span
+				  tal:content="context/title_or_id"
+				  tal:omit-tag="python:True">Item title</span>
+          <span
+             tal:omit-tag="python:True"
+             tal:condition="python:hasattr(context, 'version_id')"
+             tal:content="python:'(v%s)'%context.version_id">
+          </span>
+			</span>
+		  </span>
+		</h1>
+
+<dl class="portalMessage info"
+    tal:condition="context/@@plone/isDefaultPageInFolder|nothing">
+    <dt i18n:translate="">
+        Info
+    </dt>
+    <dd i18n:translate="label_edit_default_view_container">
+        You are editing the default view of a container. If you wanted to edit the container itself,
+       <a href=""
+          i18n:name="go_here"
+          i18n:translate="label_edit_default_view_container_go_here"
+          tal:attributes="href string:${context/aq_inner/aq_parent/absolute_url}/edit">go here</a>.
+    </dd>
+</dl>
+
+       </metal:block>
+
+      <div id="archetypes-schemata-links"
+           tal:condition="python: fieldsets and not allow_tabbing">
+        <tal:block repeat="set fieldsets">
+          <tal:current condition="python:set == fieldset and fieldsets != ['default']">
+            <strong>[<span tal:content="set" i18n:translate="" />]</strong>
+          </tal:current>
+          <tal:others condition="python:set != fieldset">
+            <a href="#" tal:attributes="href string:${context/absolute_url}/${template/getId}?fieldset=${set}">
+            [<span tal:content="set" i18n:translate="" />]</a>
+          </tal:others>
+        </tal:block>
+      </div>
+      <metal:block define-slot="extra_info" />
+
+    </div>
+
+    <div metal:define-macro="typedescription">
+        <tal:description tal:define="fti python:context.portal_types.getTypeInfo(here);
+                                     desc fti/Description;"
+                         tal:condition="desc">
+        </tal:description>
+    </div>
+
+    <div metal:define-macro="body"
+         tal:condition="not:isLocked"
+         tal:define="portal_type portal_type|string:unknowntype;
+                     eup python:'' if '55001' in request['URL'] else 'enableUnloadProtection';">
+      <form name="edit_form"
+            method="post"
+            enctype="multipart/form-data"
+            class="enableAutoFocus atBaseEditForm"
+            action=""
+            id=""
+            tal:attributes="action python:context.absolute_url()+'/'+template.id;
+                            id string:${portal_type}-base-edit;
+                            class python:test(path('allow_tabbing|nothing'), '%s enableAutoFocus enableFormTabbing enableUnlockProtection'%eup, '%s enableAutoFocus enableUnlockProtection'%eup);">
+          <metal:block define-slot="extra_top" />
+
+          <metal:block define-slot="widgets">
+            <tal:tabbed tal:condition="allow_tabbing | nothing">
+              <tal:fieldsets define="sole_fieldset python:len(fieldsets)==1"
+                repeat="fieldset fieldsets">
+                <fieldset tal:define="fieldsetid python:view.normalizeString(fieldset)"
+                          tal:attributes="id string:fieldset-${fieldsetid}"
+                          tal:omit-tag="sole_fieldset">
+                  <legend id=""
+                          tal:content="python: view.getTranslatedSchemaLabel(fieldset)"
+                          tal:attributes="id string:fieldsetlegend-${fieldsetid}"
+                          tal:condition="not:sole_fieldset"
+                          i18n:translate=""></legend>
+                  <tal:fields repeat="field python:schematas[fieldset].editableFields(here, visible_only=True)">
+                    <metal:fieldMacro use-macro="python:context.widget(field.getName(), mode='edit')" />
+                  </tal:fields>
+                </fieldset>
+              </tal:fieldsets>
+            </tal:tabbed>
+            <tal:nottabbed tal:condition="not: allow_tabbing | nothing">
+                <tal:fields repeat="field python:schematas[fieldset].editableFields(here, visible_only=True)">
+                  <metal:fieldMacro use-macro="python:context.widget(field.getName(), mode='edit')" />
+                </tal:fields>
+            </tal:nottabbed>
+          </metal:block>
+
+          <div tal:replace="structure provider:archetypes.edit.afterfieldsets" />
+
+          <metal:block define-slot="extra_bottom" />
+
+          <div class="formControls">
+	    <tal:fieldsets repeat="fieldset fieldsets">
+              <input type="hidden"
+                     name="fieldsets:list"
+                     value="default"
+                     tal:attributes="value fieldset"
+                   />
+	    </tal:fieldsets>
+
+	    <input type="hidden"
+		   name="fieldset"
+		   tal:attributes="value fieldset"
+		   tal:condition="python: fieldsets and not allow_tabbing"
+		   />
+
+
+            <input type="hidden"
+                   name="form.submitted"
+                   value="1"
+                   />
+            <input type="hidden"
+                   name="add_reference.field:record"
+                   value=""
+                   />
+            <input type="hidden"
+                   name="add_reference.type:record"
+                   value=""
+                   />
+            <input type="hidden"
+                   name="add_reference.destination:record"
+                   value=""
+                   />
+
+            <tal:env define="env request/controller_state/kwargs">
+              <tal:loop repeat="varname python:('reference_source_url', 'reference_source_field', 'reference_source_fieldset')">
+                <tal:reference define="items python:env.get(varname, request.get(varname))"
+                               condition="items">
+                  <input tal:repeat="item items"
+                         type="hidden"
+                         name="form_env.reference_source_url:list:record"
+                         value="value"
+                         tal:attributes="value item;
+                                         name string:form_env.${varname}:list:record"
+                         />
+                </tal:reference>
+              </tal:loop>
+            </tal:env>
+
+            <tal:comment replace="nothing">
+              Turn 'persistent_' variables from controller_state persistent
+            </tal:comment>
+            <tal:env repeat="env request/controller_state/kwargs/items">
+              <input type="hidden"
+                     name="key"
+                     value="value"
+                     tal:define="key python:env[0];
+                                 value python:env[1]"
+                     tal:condition="python:key.startswith('persistent_')"
+                     tal:attributes="name string:form_env.${key}:record;
+                                     value value"
+                     />
+            </tal:env>
+
+            <tal:comment replace="nothing">
+              Turn 'persistent_' variables from forms (GET/POST) persistent
+            </tal:comment>
+            <tal:key repeat="key request/form">
+              <tal:persistent condition="python:key.startswith('persistent_')" >
+              <input type="hidden"
+                     name="key"
+                     value="value"
+                     tal:define="value request/?key"
+                     tal:attributes="name string:form_env.${key}:record;
+                                     value value"
+                     />
+              </tal:persistent>
+            </tal:key>
+
+            <tal:comment replace="nothing">
+              Store referrer to remember where to go back
+            </tal:comment>
+            <input type="hidden"
+                   name="last_referer"
+                   tal:define="last_referer python:request.form.get('last_referer', request.get('HTTP_REFERER'))"
+                   tal:attributes="value python:(last_referer and '%s/%s' % (context.absolute_url(), template.id) not in last_referer) and last_referer or (context.getParentNode() and context.getParentNode().absolute_url())"
+                   />
+
+            <metal:block define-slot="buttons"
+                   tal:define="fieldset_index python:fieldset in fieldsets and fieldsets.index(fieldset);
+                               n_fieldsets python:len(fieldsets)">
+
+                <input tal:condition="python:fieldset_index &gt; 0"
+                       class="context"
+                       type="submit"
+                       name="form.button.previous"
+                       value="Previous"
+                       i18n:attributes="value label_previous;"
+                       tal:attributes="disabled python:test(isLocked, 'disabled', None);"
+                       />
+                <input tal:condition="python:not allow_tabbing and (fieldset_index &lt; n_fieldsets - 1)"
+                       class="context"
+                       type="submit"
+                       name="form.button.next"
+                       value="Next"
+                       i18n:attributes="value label_next;"
+                       tal:attributes="disabled python:test(isLocked, 'disabled', None);"
+                       />
+                <input class="context"
+                       type="submit"
+                       name="form.button.save"
+                       value="Save"
+                       i18n:attributes="value label_save;"
+                       tal:attributes="disabled python:test(isLocked, 'disabled', None);"
+                       />
+                <input class="standalone"
+                       type="submit"
+                       name="form.button.cancel"
+                       value="Cancel"
+                       i18n:attributes="value label_cancel;"
+                       />
+            </metal:block>
+
+            <metal:block define-slot="extra_buttons" />
+
+          </div>
+
+      </form>
+
+    </div>
+
+    <metal:footer_macro define-macro="footer">
+    </metal:footer_macro>
+
+  </body>
+
+</html>

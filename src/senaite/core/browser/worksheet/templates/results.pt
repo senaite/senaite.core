@@ -1,0 +1,243 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="senaite.core">
+
+  <head>
+    <title></title>
+    <metal:block fill-slot="javascript_head_slot"
+                 tal:define="portal context/@@plone_portal_state/portal;">
+    </metal:block>
+    <metal:block fill-slot="style_slot"
+                 tal:define="portal context/@@plone_portal_state/portal;">
+      <!-- TODO move to senaite.lims bootstrap css -->
+      <style type="text/css">
+       #archetypes-fieldname-Remarks {
+         padding: 0!important;
+       }
+       #remarks-widget fieldset legend {
+         display: none;
+       }
+       #remarks-widget input.saveRemarks {
+         margin-top: 1em;
+       }
+      </style>
+    </metal:block>
+  </head>
+
+  <body>
+
+    <metal:content-title fill-slot="content-title">
+      <h1>
+        <img tal:condition="view/icon | nothing"
+             src="" tal:attributes="src view/icon"/>
+        <span class="documentFirstHeading" tal:content="context/title_or_id"/>
+      </h1>
+    </metal:content-title>
+
+    <metal:content-description fill-slot="content-description">
+    </metal:content-description>
+
+    <metal:content-core fill-slot="content-core">
+
+      <div class="row">
+        <div class="col-sm-12">
+          <table class="table table-condensed table-borderless manage_results_header">
+            <tr>
+              <!-- Analyst -->
+              <td>
+                <div class="form-group">
+                  <label class="required">
+                    <span class="required" i18n:translate="">Analyst</span>
+                  </label>
+                  <span tal:condition="view/is_assignment_allowed">
+                    <select class="analyst input-sm"
+                            tal:define="alist view/get_analysts">
+                      <tal:options repeat="option alist">
+                        <option tal:attributes="value python:option;
+                                                selected python: context.getAnalyst() == option and 'selected' or '';"
+                                tal:content="python:alist.getValue(option)"/>
+                      </tal:options>
+                    </select>
+                  </span>
+                  <span tal:condition="not: view/is_assignment_allowed"
+                        tal:content="python:view.get_analysts().getValue(context.getAnalyst())">
+                    Selected Analyst
+                  </span>
+                </div>
+              </td>
+              <!-- Instrument -->
+              <td tal:define="instrument python:context.getInstrument()">
+                <div class="form-group">
+                  <label class="required">
+                    <span i18n:translate="">Instrument</span>
+                  </label>
+                  <span tal:condition="view/is_assignment_allowed">
+                    <select class="instrument input-sm"
+                            tal:define="instrlist view/getInstruments">
+                      <tal:options repeat="option instrlist">
+                        <option tal:attributes="value python:option;
+                                                selected python: instrument and instrument.UID() == option and 'selected' or '';"
+                                tal:content="python:instrlist.getValue(option)"/>
+                      </tal:options>
+                    </select>
+                  </span>
+                  <span tal:condition="not: view/is_assignment_allowed">
+                    <span tal:condition="python:instrument"
+                          tal:content="python:view.getInstruments().getValue(instrument.UID())"></span>
+                    <span tal:condition="python:not instrument"
+                          i18n:translate="">Not defined</span>
+                  </span>
+                </div>
+              </td>
+              <!-- Layout -->
+              <td>
+                <form id="resultslayout_form"
+                      name="resultslayout_form"
+                      enctype="multipart/form-data"
+                      method="post">
+                  <label for="resultslayout">
+                    <span i18n:translate="">Layout</span>
+                  </label>
+                  <select id="resultslayout" name="resultslayout">
+                    <tal:layoutoption repeat="option python:view.layout_displaylist.items()">
+                      <option selected tal:condition="python: option[0] == context.getResultsLayout()"
+                              tal:attributes="value python:option[0]"
+                              tal:content="python:option[1]">
+                      </option>
+                      <option tal:condition="python: option[0] != context.getResultsLayout()"
+                              tal:attributes="value python:option[0]"
+                              tal:content="python:option[1]"></option>
+                    </tal:layoutoption>
+                  </select>
+                  <input class="btn btn-sm btn-default" type="submit" id="resultslayout_button" value="Apply"/>
+                </form>
+              </td>
+              <!-- Print -->
+              <td class="text-center">
+                <a tal:attributes="href python:context.absolute_url()+'/print';"
+                  i18n:translate=""
+                  class="btn btn-default btn-sm print_button">
+                  Print
+                </a>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+      <!-- Wide Interim -->
+      <div class="row">
+        <div class="col-sm-12">
+          <tal:wideinterims define="wideinterims view/get_wide_interims;"
+                            condition="python: wideinterims">
+            <table tal:define="wideanselected python:wideinterims.keys()[0];
+                               wideinterimselected python:wideinterims[wideanselected]['interims'].keys()[0]"
+                  class="wideinterims_bar table table-condensed">
+              <tr>
+                <!-- Autofill -->
+                <td>
+                  <div class="form-group">
+                    <label>
+                      <span i18n:translate="">Autofill</span>
+                    </label>
+                    <select id="wideinterims_analyses" class="input-sm">
+                      <tal:options repeat="option python:wideinterims.keys()">
+                        <option tal:attributes="value python:option;
+                                                selected python:option==wideanselected;"
+                                tal:content="python:wideinterims[option]['analysis']" />
+                      </tal:options>
+                    </select>
+                    <tal:hiddeninterims repeat="an python:wideinterims.keys()">
+                      <tal:hiddeninterim repeat="inter python:wideinterims[an]['interims'].values()">
+                        <input type="hidden"
+                              tal:attributes="id python:'wideinterim_%s_%s' % (an, inter['keyword']);
+                                              name python:inter['title'];
+                                              value python:inter['value'];
+                                              keyword python:inter['keyword'];"/>
+                      </tal:hiddeninterim>
+                    </tal:hiddeninterims>
+                  </div>
+                </td>
+                <!-- Field -->
+                <td>
+                  <div class="form-group"
+                      tal:define="interims python:wideinterims[wideanselected]['interims'].keys()">
+                    <label class="required">
+                      <span i18n:translate="">Field</span>
+                    </label>
+                    <select id="wideinterims_interims" class="input-sm">
+                      <tal:options repeat="interim interims">
+                        <option tal:attributes="value python:interim;
+                                                selected python:interim==wideinterimselected;"
+                                tal:content="python:wideinterims[wideanselected]['interims'][interim]['title']" />
+                      </tal:options>
+                    </select>
+                  </div>
+                </td>
+                <!-- Field -->
+                <td>
+                  <div class="form-group">
+                    <label>
+                      <span i18n:translate="">Value</span>
+                    </label>
+                    <input id="wideinterims_value"
+                          class="input-sm"
+                          type="text"
+                          size="6"
+                          tal:attributes="value python:wideinterims[wideanselected]['interims'][wideinterimselected]['value']" />
+                    <input type='checkbox'
+                          id='wideinterims_empty'
+                          checked>
+                    <span i18n:translate="">Only to empty or zero fields</span>
+                    <button id="wideinterims_apply"
+                            class="btn btn-default btn-sm"
+                            i18n:translate="">Apply</button>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </tal:wideinterims>
+        </div>
+      </div>
+
+      <!-- Analyses Listing Table -->
+      <tal:ws_analyses>
+        <div class="row">
+          <div class="col-sm-12">
+            <span tal:replace="structure view/Analyses/contents_table"/>
+          </div>
+        </div>
+      </tal:ws_analyses>
+
+      <!-- Remarks Widget
+           https://github.com/senaite/senaite.core/pull/920 -->
+      <div class="row">
+        <div id="remarks-widget"
+             class="col-sm-12"
+             tal:define="checkPermission nocall: context/portal_membership/checkPermission;
+                 mode python:'edit' if checkPermission('senaite.core: Field: Edit Remarks', context) else 'view';
+                 field python:context.Schema()['Remarks'];
+                 errors python:{};">
+          <h3>
+            <img i18n:attributes="title" title="Remarks" src="++resource++senaite.core.images/remarks.png"/>
+            <span i18n:translate="">Remarks</span>
+          </h3>
+          <div class="well">
+            <metal:widget use-macro="python:context.widget('Remarks', mode=mode)"/>
+          </div>
+        </div>
+      </div>
+      <!-- /Remarks Widget -->
+
+      <!-- XXX: Where is this used? -->
+      <input type="hidden"
+             id="instrument_multiple_use"
+             tal:attributes="value python:context.getWorksheetTemplate().getEnableMultipleUseOfInstrument() if context.getWorksheetTemplate() else 'True';"/>
+
+    </metal:content-core>
+
+  </body>
+</html>

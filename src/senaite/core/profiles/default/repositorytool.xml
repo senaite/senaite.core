@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<repositorytool>
+    <policymap>
+        <type name="AnalysisService">
+            <policy name="at_edit_autoversion"/>
+            <policy name="version_on_revert"/>
+        </type>
+        <type name="Calculation">
+            <policy name="at_edit_autoversion"/>
+            <policy name="version_on_revert"/>
+        </type>
+    </policymap>
+</repositorytool>

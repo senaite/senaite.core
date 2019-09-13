@@ -1,0 +1,29 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+             xmlns:tal="http://xml.zope.org/namespaces/tal"
+             xmlns:metal="http://xml.zope.org/namespaces/metal"
+             xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+             metal:use-macro="here/main_template/macros/master"
+             i18n:domain="senaite.core">
+  <body>
+
+    <metal:content-title fill-slot="content-title">
+      <h1>
+        <img tal:condition="view/icon | nothing"
+             src="" tal:attributes="src view/icon"/>
+        <span class="documentFirstHeading" tal:content="view/title"/>
+      </h1>
+    </metal:content-title>
+
+    <metal:content-description fill-slot="content-description">
+      <div class="documentDescription text-muted"
+           tal:content="view/description"
+           tal:condition="view/description"/>
+    </metal:content-description>
+
+    <metal:content-core fill-slot="content-core">
+      <div id="folderlisting-main-table"
+			     tal:content="structure view/contents_table"/>
+	  </metal:content-core>
+
+	</body>
+</html>

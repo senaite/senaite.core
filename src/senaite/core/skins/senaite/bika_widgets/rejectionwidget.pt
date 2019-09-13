@@ -1,0 +1,82 @@
+<html xmlns:tal="http://xml.zope.org/namespaces/tal"
+     xmlns:metal="http://xml.zope.org/namespaces/metal" i18n:domain="senaite.core">
+    <metal:view_macro define-macro="view"
+        tal:define="widget_data python:request.form.get(fieldName, accessor());
+                    dict python:widget_data[0] if len(widget_data) > 0 else {};
+                    ">
+        <span tal:condition="python: not(widget.isRejectionEnabled(dict))"
+            i18n:translate="">
+            No
+        </span>
+        <span tal:condition="python: widget.isRejectionEnabled(dict)"
+            tal:content="python:widget.getRejectionReasons(dict)">
+            Yes, unknown
+        </span>
+    </metal:view_macro>
+
+    <metal:define define-macro="edit"
+        tal:define="widget_data python:request.form.get(fieldName, accessor());
+                    options python:widget_data[0] if len(widget_data) > 0 else {};
+                    ">
+        <!-- Label and description -->
+        <label tal:condition="python: widget.render_own_label"
+            tal:attributes="for fieldName">
+            <span i18n:translate="" tal:replace="python:widget.Label(here)">
+            </span>
+            <span tal:attributes="id python: fieldName + '_help'"
+                 class="formHelp"
+                 tal:content="python:widget.Description(here)"></span>
+        </label>
+        <div id="archetypes-fieldname-RejectionWidget"
+            class="field RejectionWidget ">
+            <!-- Checkbox -->
+            <input type="checkbox"
+                tal:attributes="
+                    name string:${fieldName}.checkbox:records;
+                    id string:${fieldName}.checkbox;"
+                class="rejectionwidget-checkbox rejectionwidget-field"/>
+            <!-- Options set multiselect list + others checkbox and inputs -->
+            <div class="options-set" id="options-set">
+                <div class="options-set-multiselect">
+                    <!-- multi-select selection -->
+                    <select tal:define="list python:widget.rejectionOptionsList();"
+                        multiple="multiple"
+                        tal:attributes="
+                            name string:${fieldName}.multiselection:records:list;
+                            id string:${fieldName}.multiselection;"
+                            class="rejectionwidget-multiselect rejectionwidget-field">
+                        <option
+                            tal:repeat="item list"
+                            tal:attributes="
+                                value python:item;"
+                            tal:content="python: item"
+                            i18n:translate=""/>
+                    </select>
+                </div>
+                <div class="options-set-other">
+                    <!-- Other Checkbox -->
+                    <label i18n:translate="">
+                        <input type="checkbox"
+                            tal:attributes="
+                                name string:${fieldName}.checkbox.other:records;
+                                id string:${fieldName}.checkbox.other;"
+                            class="rejectionwidget-checkbox-other rejectionwidget-field"/>
+                        Other
+                    </label>
+                    <div class="other-text">
+                        <input type="text"
+                            tal:attributes="
+                                name string:${fieldName}.textfield.other:records;
+                                id string:${fieldName}.textfield.other;"
+                            size="20"
+                            tabindex="#"
+                            class="rejectionwidget-input-other rejectionwidget-field"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </metal:define>
+    <div metal:define-macro="search">
+    	<div metal:use-macro="here/widgets/string/macros/search"></div>
+    </div>
+</html>

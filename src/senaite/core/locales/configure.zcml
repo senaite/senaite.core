@@ -1,0 +1,31 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    i18n_domain="senaite.core">
+
+    <browser:page
+      for="*"
+      name="getCountries"
+      class="senaite.core.locales.ajaxGetCountries"
+      permission="zope.Public"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="*"
+      name="getGeoStates"
+      class="senaite.core.locales.ajaxGetStates"
+      permission="zope.Public"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="*"
+      name="getGeoDistricts"
+      class="senaite.core.locales.ajaxGetDistricts"
+      permission="zope.Public"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+</configure>

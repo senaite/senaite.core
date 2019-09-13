@@ -1,0 +1,10 @@
+<tr tal:define="
+	field options/field;
+	widget python:field.widget;
+	errors python:{};
+">
+	<th tal:content="widget/label"></th>
+	<td>
+		<metal:field use-macro="python:context.widget(field.__name__, mode='edit')" />
+	</td>
+</tr>

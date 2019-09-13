@@ -1,0 +1,58 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="senaite.core">
+
+  <body>
+    <metal:content-title fill-slot="content-title">
+      <h1>
+        <img tal:condition="view/icon | nothing"
+             src="" tal:attributes="src view/icon"/>
+        <span class="documentFirstHeading"
+              tal:content="context/title"></span>
+      </h1>
+    </metal:content-title>
+
+    <metal:content-description fill-slot="content-description">
+    </metal:content-description>
+
+    <metal:content-core fill-slot="content-core">
+
+      <div class="row">
+        <!-- Chart container -->
+        <div class="col-sm-12 chart-container">
+          <div class="chart-options">
+            <input type="hidden" id="selqcsample" name="selqcsample">
+            <label for="selanalyses" i18n:translate="">Analysis</label>
+            <select id="selanalyses" name="selanalyses">
+            </select>
+            <label for="interpolation" i18n:translate="">Interpolation</label>
+            <select id="interpolation" name="interpolation">
+              <option value="basis" i18n:translate="" selected>Basis</option>
+              <option value="cardinal" i18n:translate="">Cardinal</option>
+              <option value="linear" i18n:translate="">Linear</option>
+            </select>
+            <a href="#"
+               id="printgraph"
+               class="print-16 btn btn-xs btn-default"
+               i18n:translate="">Print</a>
+          </div>
+          <div id="chart"></div>
+        </div>
+      </div>
+
+      <!-- Reference Analyses table -->
+      <div class="row">
+        <div class="col-sm-12">
+          <tal:referenceanalyses define="table view/get_analyses_table_view">
+            <span tal:replace="structure python:table.ajax_contents_table()"/>
+            <input type="hidden" id="graphdata" tal:attributes="value python:table.chart.get_json()"/>
+          </tal:referenceanalyses>
+        </div>
+      </div>
+
+    </metal:content-core>
+  </body>
+</html>

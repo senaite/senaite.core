@@ -1,0 +1,71 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="senaite.core">
+  <body>
+
+    <metal:content-title fill-slot="content-title">
+      <h1>
+        <img tal:condition="view/icon|nothing" tal:attributes="src view/icon"/>
+        <span class="documentFirstHeading" tal:content="view/title|nothing"/>
+      </h1>
+    </metal:content-title>
+
+    <metal:content-description fill-slot="content-description">
+      <div class="text-muted"
+           tal:content="view/description|nothing"/>
+    </metal:content-description>
+
+    <metal:content-core fill-slot="content-core">
+      <div class="row">
+        <div class="col-sm-12">
+          <!-- WS Template Select Form -->
+          <form id="applytemplate_form"
+                class="form form-inline"
+                method="POST">
+            <input type="hidden" name="submitted" value="1"/>
+            <input tal:replace="structure context/@@authenticator/authenticator"/>
+            <div class="form-group">
+              <label for="getWorksheetTemplate" i18n:translate="">Select template</label>
+              <select id="ProfileSelector"
+                      name="getWorksheetTemplate"
+                      class="form-control input-sm"
+                      tal:define="ws_templates_list view/getWorksheetTemplates">
+                <option value=""></option>
+                <tal:profile repeat="profile ws_templates_list">
+                  <option tal:attributes="value python:profile;
+                                          selected python: view.request.get('WorksheetTemplate', '') == profile[0] and 'selected' or ''"
+                          tal:content="python:ws_templates_list.getValue(profile)"/>
+                </tal:profile>
+              </select>
+              <input type="submit"
+                    class="btn btn-default btn-sm"
+                    value="Apply template"
+                    i18n:attributes="value"/>
+            </div>
+            <span class="help-block" tal:condition="view/is_manage_allowed">
+              <a href=""
+                 tal:attributes="href view/worksheet_template_setup_url"
+                 i18n:translate="">
+                Go to worksheet template setup
+              </a>
+            </span>
+          </form>
+          <!-- /WS Template Select Form -->
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-12">
+          <!-- Listing Table -->
+          <div tal:replace="structure view/contents_table"/>
+          <!-- /Listing Table -->
+        </div>
+      </div>
+
+    </metal:content-core>
+
+  </body>
+</html>

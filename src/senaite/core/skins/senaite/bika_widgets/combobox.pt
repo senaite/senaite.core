@@ -1,0 +1,111 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      i18n:domain="senaite.core">
+  <head>
+    <title></title>
+  </head>
+  <body>
+
+    <!-- View Macro -->
+    <metal:view_macro define-macro="view">
+      <span tal:define="vocab python:field.Vocabulary(context);
+                        value python:accessor();
+                        display python:context.displayValue(vocab, value, widget)"
+            i18n:translate=""
+            tal:replace="structure display" />
+    </metal:view_macro>
+
+    <!-- Edit Macro -->
+    <metal:define define-macro="edit">
+      <metal:use use-macro="field_macro | here/widgets/field/macros/edit">
+        <metal:widgetBody fill-slot="widget_body"
+                          tal:define="value          accessor;
+                                      vocabulary     python:field.Vocabulary(here);
+                                      width          widget/width;
+                                      width_absolute widget/width_absolute;
+                                      size           widget/size;
+                                      field_config   widget/field_config;">
+          <metal:widget define-macro="combo_box"
+                        tal:define="value          value          | python:[];
+                                    width          width          | string:10em;
+                                    size           size           | string:1;
+                                    width_absolute width_absolute | python:False;
+                                    field_config   field_config   | python:{};
+
+                                    selected       python:request.get(fieldName, value);
+                                    entered        python:request.get('%s_other' % fieldName, value);
+                                    widthSpec      python:test(width_absolute, 'width', 'min-width')">
+
+            <script type="text/javascript">
+              jQuery(document).ready(function($) {
+                // fetch the input field for the alternative value and the current field value
+                var id = '<tal:id replace="string:${fieldName}" />';
+                var input_id = id + "_other";
+                var input = $("#" + input_id);
+                var input_value = '<tal:input_value replace="entered" />';
+                // fetch the field attributes coming from the widget
+                var field_config = <tal:field_config replace="field_config" />;
+
+                // Create a new input field with the given attributes from the widget.
+                // This is needed, because we can not change the type of an existing input field.
+                if (field_config) {
+                  // create a new HTML input field with the given config.
+                  new_input = $("<input>").attr(field_config);
+                  // append dynamic attributes as well.
+                  new_input.attr({"value": input_value,
+                                  "name": input_id,
+                                  "id": input_id})
+                  // replace the existing field with the created.
+                  input.replaceWith(new_input);
+                }
+
+                // selecting a value will empty the custom field
+                var selection = $("#" + id);
+                selection.change(function() {
+                  $("#" + input_id).val("");
+                });
+              });
+            </script>
+
+            <div class="bika_combobox_widget">
+              <select id="items"
+                      tal:attributes="id          fieldName;
+                                      name        fieldName;
+                                      style       string:${widthSpec}:${width};
+                                      tabindex    tabindex/next|nothing;
+                                      size        size;">
+
+                <tal:block repeat="item vocabulary/keys">
+                  <option value="#"
+                          i18n:translate=""
+                          tal:content="python:vocabulary.getValue(item)"
+                          tal:attributes="value item;
+                                          selected python:item == selected and 'selected' or None;">
+                    Item
+                  </option>
+                </tal:block>
+              </select>
+
+              <!-- Other Field -->
+              <span i18n:translate="">Other Value:</span>
+              <input type="text"
+                     tal:attributes="id string:${fieldName}_other;
+                                     name string:${fieldName}_other;
+                                     value entered;" />
+            </div>
+
+          </metal:widget>
+        </metal:widgetBody>
+      </metal:use>
+    </metal:define>
+
+    <div metal:define-macro="search">
+      <div metal:use-macro="here/combobox/macros/edit">
+      </div>
+    </div>
+
+  </body>
+
+</html>

@@ -1,0 +1,24 @@
+<div class="field" i18n:domain="senaite.core" tal:attributes="style view/style|nothing">
+
+    <label i18n:translate="label_specification">Specification</label>
+    <br/>
+
+    <tal:specs>
+        <select class="noborder" name="spec">
+            <option value=""></option>
+            <tal:x repeat="spec view/specs">
+                <option tal:condition="python:not (request.get('spec', None) and request.get('spec', None) == spec['uid'])"
+                        tal:attributes="value spec/uid;"
+                        tal:content="spec/title"></option>
+                <option tal:condition="python:not (request.get('spec', None) and request.get('spec', None) == spec['uid'])"
+                        tal:attributes="value spec/uid;"
+                        tal:content="spec/title"></option>
+                <option tal:condition="python:request.get('spec', None) and request.get('spec', None) == spec['uid']"
+                        tal:attributes="value spec/uid;
+                        selected string:selected;"
+                        tal:content="spec/title"></option>
+            </tal:x>
+        </select>
+    </tal:specs>
+
+</div>

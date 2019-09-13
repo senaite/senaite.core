@@ -1,0 +1,49 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:monkey="http://namespaces.plone.org/monkey"
+    i18n_domain="senaite.core">
+
+  <monkey:patch
+      description="Better jsonapi error handler."
+      module="plone.jsonapi.core.browser.decorators"
+      original="handle_errors"
+      replacement="senaite.core.jsonapi.handle_errors"
+      />
+
+  <utility
+    name="senaite.core.jsonapi.create"
+    provides="plone.jsonapi.core.interfaces.IRouteProvider"
+    factory=".create.Create" />
+
+  <utility
+    name="senaite.core.jsonapi.read"
+    provides="plone.jsonapi.core.interfaces.IRouteProvider"
+    factory=".read.Read" />
+
+  <utility
+    name="senaite.core.jsonapi.update"
+    provides="plone.jsonapi.core.interfaces.IRouteProvider"
+    factory=".update.Update" />
+
+  <utility
+    name="senaite.core.jsonapi.remove"
+    provides="plone.jsonapi.core.interfaces.IRouteProvider"
+    factory=".remove.Remove" />
+
+  <utility
+    name="senaite.core.jsonapi.getusers"
+    provides="plone.jsonapi.core.interfaces.IRouteProvider"
+    factory=".getusers.getUsers" />
+
+  <utility
+    name="senaite.core.jsonapi.doactionfor"
+    provides="plone.jsonapi.core.interfaces.IRouteProvider"
+    factory=".doactionfor.doActionFor" />
+
+  <utility
+    name="senaite.core.jsonapi.allowedtransitionsfor"
+    provides="plone.jsonapi.core.interfaces.IRouteProvider"
+    factory=".allowedtransitionsfor.allowedTransitionsFor" />
+
+</configure>

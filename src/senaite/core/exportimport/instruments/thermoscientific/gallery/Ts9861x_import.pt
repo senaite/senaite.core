@@ -1,0 +1,35 @@
+    <p></p>
+
+    <label for='thermoscientific_gallery_9861x_file'>File</label>&nbsp;
+    <input type="file" name="thermoscientific_gallery_9861x_file" id="thermoscientific_gallery_9861x_file"/>
+    &nbsp;&nbsp;
+    <label for='thermoscientific_gallery_9861x_format'>Format</label>&nbsp;
+    <select name="thermoscientific_gallery_9861x_format" id="thermoscientific_gallery_9861x_format">
+        <option value='tsv_40'>TSV/XLS v4.0</option>
+    </select>
+    <p></p>
+    <h3>Advanced options</h3>
+    <table cellpadding="0" cellspacing="0">
+        <tr>
+            <td><label for="thermoscientific_gallery_9861x_artoapply">Samples state</label>&nbsp;</td>
+            <td>
+                <select name="thermoscientific_gallery_9861x_artoapply" id="thermoscientific_gallery_9861x_artoapply">
+                    <option value="received">Received</option>
+                    <option value="received_tobeverified">Received and to be verified</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td><label for="thermoscientific_gallery_9861x_override">Results override</label></td>
+            <td>
+                <select name="thermoscientific_gallery_9861x_override" id="thermoscientific_gallery_9861x_override">
+                    <option value="nooverride">Don't override results</option>
+                    <option value="override">Override non-empty results</option>
+                    <option value="overrideempty">Override non-empty results (also with empty)</option>
+                </select>
+            </td>
+        </tr>
+    </table>
+    <p></p>
+    <input name="firstsubmit" type="submit" value="Submit" i18n:attributes="value"/>
+    <p></p>

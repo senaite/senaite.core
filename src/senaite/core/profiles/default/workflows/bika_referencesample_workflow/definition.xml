@@ -1,0 +1,171 @@
+<?xml version="1.0"?>
+<dc-workflow xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+             workflow_id="bika_referencesample_workflow"
+             title="Bika Reference Sample Workflow"
+             description=""
+             state_variable="review_state"
+             initial_state="current"
+             manager_bypass="False"
+             i18n:domain="senaite.core">
+
+  <permission>Add portal content</permission>
+  <permission>senaite.core: Manage Reference</permission>
+  <permission>Delete objects</permission>
+  <permission>Modify portal content</permission>
+
+  <state state_id="current" title="Current" i18n:attributes="title">
+    <exit-transition transition_id="expire" />
+    <exit-transition transition_id="deactivate" />
+    <permission-map name="Add portal content" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="senaite.core: Manage Reference" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="Modify portal content" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+  </state>
+
+  <state state_id="disposed" title="Disposed" i18n:attributes="title">
+    <exit-transition transition_id="" />
+    <permission-map name="Add portal content" acquired="False">
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="senaite.core: Manage Reference" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="Delete objects" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="Modify portal content" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+  </state>
+
+  <state state_id="expired" title="Expired" i18n:attributes="title">
+    <exit-transition transition_id="dispose" />
+    <permission-map name="Add portal content" acquired="False">
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="senaite.core: Manage Reference" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="Modify portal content" acquired="False">
+      <permission-role>Manager</permission-role>
+    </permission-map>
+  </state>
+
+  <!-- State: inactive -->
+  <state state_id="inactive" title="Inactive" i18n:attributes="title">
+    <exit-transition transition_id="activate" />
+
+    <!-- Transition permissions -->
+    <permission-map name="senaite.core: Transition: Activate" acquired="True" />
+
+    <!-- Plone's permissions -->
+    <permission-map name="Access contents information" acquired="True" />
+    <permission-map name="Delete objects" acquired="False" />
+    <permission-map name="List folder contents" acquired="True" />
+    <permission-map name="Modify portal content" acquired="True" />
+    <permission-map name="View" acquired="True" />
+  </state>
+
+  <transition transition_id="dispose" title="Dispose" new_state="disposed" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Dispose</action>
+    <guard>
+      <guard-permission>senaite.core: Manage Reference</guard-permission>
+    </guard>
+  </transition>
+
+  <transition transition_id="expire" title="Expire" new_state="expired" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Expire</action>
+    <guard>
+      <guard-permission>senaite.core: Manage Reference</guard-permission>
+    </guard>
+  </transition>
+
+  <!-- Transition: activate -->
+  <transition transition_id="activate" title="Activate" new_state="current" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Activate</action>
+    <guard>
+      <guard-permission>senaite.core: Transition: Deactivate</guard-permission>
+      <guard-expression>python:here.guard_handler("activate")</guard-expression>
+    </guard>
+  </transition>
+  <!-- Transition: deactivate -->
+  <transition transition_id="deactivate" title="Deactivate" new_state="inactive" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Deactivate</action>
+    <guard>
+      <guard-permission>senaite.core: Transition: Activate</guard-permission>
+      <guard-expression>python:here.guard_handler("deactivate")</guard-expression>
+    </guard>
+  </transition>
+
+  <variable variable_id="action" for_catalog="False" for_status="True" update_always="True">
+    <description>Previous transition</description>
+    <default>
+      <expression>transition/getId|nothing</expression>
+    </default>
+    <guard>
+    </guard>
+  </variable>
+
+  <variable variable_id="actor" for_catalog="False" for_status="True" update_always="True">
+    <description>The ID of the user who performed the last transition</description>
+    <default>
+      <expression>user/getId</expression>
+    </default>
+    <guard>
+    </guard>
+  </variable>
+
+  <variable variable_id="comments" for_catalog="False" for_status="True" update_always="True">
+    <description>Comment about the last transition</description>
+    <default>
+      <expression>python:state_change.kwargs.get('comment', '')</expression>
+    </default>
+    <guard>
+    </guard>
+  </variable>
+
+  <variable variable_id="review_history" for_catalog="False" for_status="False" update_always="False">
+    <description>Provides access to workflow history</description>
+    <default>
+      <expression>state_change/getHistory</expression>
+    </default>
+    <guard>
+    </guard>
+  </variable>
+
+  <variable variable_id="time" for_catalog="False" for_status="True" update_always="True">
+    <description>When the previous transition was performed</description>
+    <default>
+      <expression>state_change/getDateTime</expression>
+    </default>
+    <guard>
+    </guard>
+  </variable>
+
+</dc-workflow>

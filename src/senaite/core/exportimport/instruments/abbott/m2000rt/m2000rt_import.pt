@@ -1,0 +1,43 @@
+ <p></p>
+
+    <!-- Input file selector -->
+    <label for='filename'>File</label>&nbsp;
+    <input type="file" name="filename" id="filename"/>
+    &nbsp;&nbsp;
+
+    <!-- Format file selector -->
+    <label for='format'>Format</label>&nbsp;
+    <select name="format" id="format">
+        <option value='tsv'>TSV</option>
+    </select>
+    <p></p>
+
+    <h3 style='margin-bottom:10px;margin-top:10px;'>Advanced options</h3>
+    <table cellpadding="0" cellspacing="0">
+        <tr>
+
+            <!-- Allowed states of the analysis requests to look for -->
+            <td style='vertical-align:top;padding-right:30px;'><label for="artoapply">Samples state</label>&nbsp;</td>
+            <td>
+                <select name="artoapply" id="artoapply">
+                    <option value="received">Received</option>
+                    <option value="received_tobeverified">Received and to be verified</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+
+            <!-- Results overriding -->
+            <td><label for="override">Results override</label></td>
+            <td>
+                <select name="override" id="override">
+                    <option value="nooverride">Don't override results</option>
+                    <option value="override">Override non-empty results</option>
+                    <option value="overrideempty">Override non-empty results (also with empty)</option>
+                </select>
+            </td>
+        </tr>
+    </table>
+    <p></p>
+    <input name="firstsubmit" type="submit" value="Submit" i18n:attributes="value"/>
+    <p></p>

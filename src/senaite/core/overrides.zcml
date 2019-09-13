@@ -1,0 +1,5 @@
+<configure xmlns="http://namespaces.zope.org/zope">
+
+    <include package=".browser" file="overrides.zcml" />
+
+</configure>

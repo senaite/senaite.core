@@ -1,0 +1,185 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    i18n_domain="senaite.core">
+
+  <!-- AR Add 2 -->
+  <browser:page
+      for="*"
+      name="ar_add_manage"
+      class="senaite.core.browser.analysisrequest.AnalysisRequestManageView"
+      permission="senaite.core.permissions.ManageBika"
+      layer="senaite.core.interfaces.IBikaLIMS"
+      />
+
+  <browser:page
+      for="senaite.core.interfaces.IClient"
+      name="ar_add"
+      class="senaite.core.browser.analysisrequest.AnalysisRequestAddView"
+      permission="senaite.core.permissions.AddAnalysisRequest"
+      layer="senaite.core.interfaces.IBikaLIMS"
+      />
+
+  <browser:page
+      for="senaite.core.interfaces.IAnalysisRequestsFolder"
+      name="ar_add"
+      class="senaite.core.browser.analysisrequest.AnalysisRequestAddView"
+      permission="senaite.core.permissions.AddAnalysisRequest"
+      layer="senaite.core.interfaces.IBikaLIMS"
+      />
+
+  <browser:page
+      for="senaite.core.interfaces.IBatch"
+      name="ar_add"
+      class="senaite.core.browser.analysisrequest.AnalysisRequestAddView"
+      permission="senaite.core.permissions.AddAnalysisRequest"
+      layer="senaite.core.interfaces.IBikaLIMS"
+      />
+
+  <browser:page
+      for="*"
+      name="ajax_ar_add"
+      class="senaite.core.browser.analysisrequest.ajaxAnalysisRequestAddView"
+      permission="zope.Public"
+      layer="senaite.core.interfaces.IBikaLIMS"
+      />
+  <!-- /AR Add 2 -->
+
+  <adapter
+      factory="senaite.core.browser.analysisrequest.ClientContactVocabularyFactory"
+      provides="senaite.core.interfaces.IDisplayListVocabulary"
+      for="senaite.core.interfaces.IAnalysisRequest"
+      name="getContacts"
+      />
+
+  <adapter
+      factory="senaite.core.browser.analysisrequest.JSONReadExtender"
+      provides="senaite.core.interfaces.IJSONReadExtender"
+      />
+
+  <!-- Custom field adapters for sample header view -->
+  <adapter
+      for="senaite.core.interfaces.IAnalysisRequest"
+      factory="senaite.core.browser.analysisrequest.mailto_link_from_contacts"
+      provides="senaite.core.interfaces.IHeaderTableFieldRenderer"
+      name="Contact"
+      />
+  <adapter
+      for="senaite.core.interfaces.IAnalysisRequest"
+      factory="senaite.core.browser.analysisrequest.mailto_link_from_contacts"
+      provides="senaite.core.interfaces.IHeaderTableFieldRenderer"
+      name="CCContact"
+      />
+  <adapter
+      for="senaite.core.interfaces.IAnalysisRequest"
+      factory="senaite.core.browser.analysisrequest.mailto_link_from_ccemails"
+      provides="senaite.core.interfaces.IHeaderTableFieldRenderer"
+      name="CCEmails"
+      />
+
+  <!-- main site/analysisrequests view -->
+  <browser:page
+      for="senaite.core.interfaces.IAnalysisRequestsFolder"
+      name="base_view"
+      class="senaite.core.browser.analysisrequest.analysisrequests.AnalysisRequestsView"
+      permission="cmf.ListFolderContents"
+      layer="senaite.core.interfaces.IBikaLIMS"
+      />
+
+  <!-- AR Main View -->
+  <browser:page
+      for="senaite.core.interfaces.IAnalysisRequest"
+      name="base_view"
+      class="senaite.core.browser.analysisrequest.AnalysisRequestViewView"
+      permission="senaite.core.permissions.ManageAnalysisRequests"
+      layer="senaite.core.interfaces.IBikaLIMS"
+      />
+
+  <!-- Table Lab Analyses -->
+  <browser:page
+      for="senaite.core.interfaces.IAnalysisRequest"
+      name="table_lab_analyses"
+      class=".tables.LabAnalysesTable"
+      permission="senaite.core.permissions.ManageAnalysisRequests"
+      layer="senaite.core.interfaces.IBikaLIMS"
+      />
+
+  <!-- Table Field Analyses -->
+  <browser:page
+      for="senaite.core.interfaces.IAnalysisRequest"
+      name="table_field_analyses"
+      class=".tables.FieldAnalysesTable"
+      permission="senaite.core.permissions.ManageAnalysisRequests"
+      layer="senaite.core.interfaces.IBikaLIMS"
+      />
+
+  <!-- Table QC Analyses -->
+  <browser:page
+      for="senaite.core.interfaces.IAnalysisRequest"
+      name="table_qc_analyses"
+      class=".tables.QCAnalysesTable"
+      permission="senaite.core.permissions.ManageAnalysisRequests"
+      layer="senaite.core.interfaces.IBikaLIMS"
+      />
+
+  <!-- Manage Analyses View -->
+  <browser:page
+      for="senaite.core.interfaces.IAnalysisRequest"
+      name="analyses"
+      class="senaite.core.browser.analysisrequest.AnalysisRequestAnalysesView"
+      permission="senaite.core.permissions.AddAnalysis"
+      layer="senaite.core.interfaces.IBikaLIMS"
+      />
+
+  <!-- Manage Results View -->
+  <browser:page
+      for="senaite.core.interfaces.IAnalysisRequest"
+      name="manage_results"
+      class="senaite.core.browser.analysisrequest.AnalysisRequestManageResultsView"
+      permission="senaite.core.permissions.EditResults"
+      layer="senaite.core.interfaces.IBikaLIMS"
+      />
+
+  <browser:page
+      for="senaite.core.interfaces.IAnalysisRequest"
+      name="published_results"
+      class="senaite.core.browser.analysisrequest.AnalysisRequestPublishedResults"
+      permission="senaite.core.permissions.ManageAnalysisRequests"
+      layer="senaite.core.interfaces.IBikaLIMS"
+      />
+
+  <browser:page
+      for="senaite.core.interfaces.IAnalysisRequest"
+      name="invoice"
+      class="senaite.core.browser.analysisrequest.InvoiceView"
+      permission="senaite.core.permissions.ManageInvoices"
+      layer="senaite.core.interfaces.IBikaLIMS"
+      />
+
+
+  <browser:page
+      for="senaite.core.interfaces.IAnalysisRequest"
+      name="invoice_print"
+      class="senaite.core.browser.analysisrequest.InvoicePrintView"
+      permission="senaite.core.permissions.ManageInvoices"
+      layer="senaite.core.interfaces.IBikaLIMS"
+      />
+
+  <browser:page
+      for="senaite.core.interfaces.IAnalysisRequest"
+      name="invoice_create"
+      class="senaite.core.browser.analysisrequest.InvoiceCreate"
+      permission="senaite.core.permissions.ManageInvoices"
+      layer="senaite.core.interfaces.IBikaLIMS"
+      />
+
+  <!-- Sample (AR) Rejection View -->
+  <browser:page
+      for="*"
+      name="reject_samples"
+      class=".reject_samples.RejectSamplesView"
+      permission="senaite.core.permissions.ManageAnalysisRequests"
+      layer="senaite.core.interfaces.IBikaLIMS"
+  />
+
+</configure>

@@ -1,0 +1,38 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    i18n_domain="senaite.core">
+
+  <!-- Analysis Service Info View
+       (used in WS and Analysis Listings in Popup Overlays) -->
+  <browser:page
+      for="*"
+      name="analysisservice_info"
+      class="senaite.core.browser.analysisservice.AnalysisServiceInfoView"
+      permission="zope.Public"
+      layer="senaite.core.interfaces.IBikaLIMS"
+      />
+
+  <browser:page
+      for="senaite.core.interfaces.IAnalysisService"
+      name="getUpdatedContainers"
+      class="senaite.core.browser.analysisservice.ajaxGetContainers"
+      permission="zope.Public"
+      layer="senaite.core.interfaces.IBikaLIMS"
+      />
+
+  <browser:page
+      for="*"
+      name="get_service_interim_fields"
+      class="senaite.core.browser.analysisservice.ajaxGetServiceInterimFields"
+      permission="zope.Public"
+      layer="senaite.core.interfaces.IBikaLIMS"
+      />
+
+  <adapter
+      factory="senaite.core.browser.analysisservice.JSONReadExtender"
+      provides="senaite.core.interfaces.IJSONReadExtender"
+      />
+
+</configure>

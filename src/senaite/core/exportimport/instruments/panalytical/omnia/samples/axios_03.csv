@@ -1,0 +1,29 @@
+10/03/2014 14:48:53
+PANalytical
+Quantification of sample AP14-013-R1,
+
+R.M.S.:,"0,002"
+Result status:,
+Sum before normalization:,"21,3 %"
+Normalised to:,"100,0 %"
+Sample type:,Solid
+Correction applied for medium:,No
+Correction applied for film:,No
+Results database:,omnian 2013
+Results database in:,c:\panalytical\superq\userdata
+
+,Element,Conc.
+,,(%)
+1,Al,"0,21"
+2,Ca,"94,89"
+3,Fe,"1,45"
+4,I,"0,26"
+5,K,"0,14"
+6,Mg,"2,19"
+7,Mn,"0,16"
+8,Ni,"0,18"
+9,S,"0,08"
+10,Si,"1,61"
+11,Sr,"0,21"
+12,Ti,"0,05"
+

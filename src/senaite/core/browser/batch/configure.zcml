@@ -1,0 +1,38 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    i18n_domain="senaite.core">
+
+    <browser:page
+      for="senaite.core.interfaces.IBatch"
+      name="analysisrequests"
+      class="senaite.core.browser.batch.analysisrequests.AnalysisRequestsView"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="senaite.core.interfaces.IBatch"
+      name="batchbook"
+      class="senaite.core.browser.batch.batchbook.BatchBookView"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="senaite.core.interfaces.IBatch"
+      name="getAnalysisContainers"
+      class="senaite.core.browser.batch.getAnalysisContainers"
+      permission="zope.Public"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+    <adapter
+      factory="senaite.core.browser.batch.ClientContactVocabularyFactory"
+      for="senaite.core.interfaces.IBatch"
+      provides="senaite.core.interfaces.IDisplayListVocabulary"
+      name="getContacts"
+    />
+
+</configure>

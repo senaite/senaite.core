@@ -1,0 +1,220 @@
+<div id="invoice"
+  i18n:domain="senaite.core"
+  tal:define="sample view/sample;
+              invoice sample/Invoice;">
+
+  <tal:css>
+    <style type="text/css">
+     #invoice { font-size: 9pt; }
+     #invoice table { border: none; }
+     #invoice table tr { background-color: transparent; }
+     #invoice table th { border-style: solid none; }
+     #invoice table td { border-style: solid none; border-width: 1px; border-color: #ddd; }
+     #invoice table tfoot td:first-child { border-style: none; }
+    </style>
+  </tal:css>
+
+  <h1 i18n:translate="">Invoice</h1>
+
+  <!-- Invoice Header -->
+  <div class="row">
+    <div class="col-sm-6">
+      <table class="table table-condensed invoice-info">
+        <colgroup>
+          <col style="width:30%"/>
+          <col style="width:70%"/>
+        </colgroup>
+        <!-- Invoice To -->
+        <tr>
+          <td>
+            <label i18n:translate="">Invoice To</label>
+          </td>
+          <td>
+            <span tal:content="sample/Contact/Title|nothing"></span>
+          </td>
+        </tr>
+        <!-- Invoice ID -->
+        <tr>
+          <td>
+            <label i18n:translate="">Invoice ID</label>
+          </td>
+          <td>
+            <span tal:content="invoice/getId|default">
+              <span tal:omit-tag="" i18n:translate="">Proforma (Not yet invoiced)</span>
+            </span>
+          </td>
+        </tr>
+        <!-- Client Reference -->
+        <tr>
+          <td>
+            <label i18n:translate="">Client Reference</label>
+          </td>
+          <td>
+            <span tal:content="sample/ClientReference|nothing"></span>
+          </td>
+        </tr>
+        <!-- Sample Type -->
+        <tr>
+          <td>
+            <label i18n:translate="">Sample Type</label>
+          </td>
+          <td>
+            <span tal:content="sample/SampleTypeTitle|nothing"></span>
+          </td>
+        </tr>
+        <!-- Request ID -->
+        <tr>
+          <td>
+            <label i18n:translate="">Sample ID</label>
+          </td>
+          <td>
+            <span tal:content="sample/getId|nothing"></span>
+          </td>
+        </tr>
+        <!-- Profiles -->
+        <tr>
+          <td>
+            <label i18n:translate="">Analysis Profiles</label>
+          </td>
+          <td>
+            <tal:profiles repeat="profile sample/Profiles">
+              <div class="profile">
+                <div tal:replace="profile/Title|nothing"/><span tal:condition="not:repeat/profile/end">,</span>
+              </div>
+            </tal:profiles>
+          </td>
+        </tr>
+        <!-- Date Received -->
+        <tr>
+          <td>
+            <label i18n:translate="">Date Received</label>
+          </td>
+          <td>
+            <span tal:content="python:view.to_localized_time(sample.DateReceived)"/>
+          </td>
+        </tr>
+        <!-- Client Order Number -->
+        <tr>
+          <td>
+            <label i18n:translate="">Client Order Number</label>
+          </td>
+          <td>
+            <span tal:content="sample/ClientOrderNumber|nothing"></span>
+          </td>
+        </tr>
+        <!-- Sample Point -->
+        <tr>
+          <td>
+            <label i18n:translate="">Sample Point</label>
+          </td>
+          <td>
+            <span tal:content="sample/SamplePointTitle|nothing"></span>
+          </td>
+        </tr>
+        <!-- Verified By -->
+        <tr>
+          <td>
+            <label i18n:translate="">Verified By</label>
+          </td>
+          <td>
+            <span tal:content="sample/getVerifier|nothing"></span>
+          </td>
+        </tr>
+        <!-- Date Published -->
+        <tr>
+          <td>
+            <label i18n:translate="">Date Published</label>
+          </td>
+          <td>
+            <span tal:content="python:view.to_localized_time(sample.DatePublished)"></span>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- Invoice Content -->
+  <div class="row">
+    <div class="col-sm-12">
+
+      <table class="table table-striped invoice-items">
+        <colgroup>
+          <col style="width:55%"/>
+          <col style="width:30%"/>
+          <col style="width:15%"/>
+        </colgroup>
+
+        <!-- Invoice Head -->
+        <thead>
+          <tr>
+            <th i18n:translate="">Position</th>
+            <th i18n:translate="">VAT</th>
+            <th i18n:translate="">Price</th>
+          </tr>
+        </thead>
+
+        <!-- Invoice Items -->
+        <tbody>
+          <!-- Billable Items -->
+          <tal:items repeat="item view/get_billable_items">
+            <tr>
+              <!-- Name -->
+              <td>
+                <span tal:content="item/title"/>
+              </td>
+              <!-- Profile VAT -->
+              <td>
+                <span tal:content="item/vat"/> %
+              </td>
+              <!-- Analysis Profile Price -->
+              <td>
+                <span tal:content="item/price"/>
+              </td>
+            </tr>
+          </tal:items>
+        </tbody>
+
+        <!-- Invoice Prices -->
+        <tfoot>
+          <tr>
+            <td></td>
+            <td>
+              <label i18n:translate="">Subtotal</label>
+            </td>
+            <td>
+              <span tal:content="python:view.format_price(sample.getSubtotal())"/>
+            </td>
+          </tr>
+          <tr tal:condition="sample/Client/MemberDiscountApplies">
+            <td></td>
+            <td>
+              <label i18n:translate="">Discount</label>
+              (<span tal:replace="sample/getDefaultMemberDiscount"/> %)
+            </td>
+            <td>
+              <span tal:content="python:view.format_price(sample.getDiscountAmount())"/>
+            </td>
+          </tr>
+          <tr>
+            <td></td>
+            <td>
+              <label i18n:translate="">Taxes</label>
+            </td>
+            <td>
+              <span tal:content="python:view.format_price(sample.getVATAmount())"/>
+            </td>
+          </tr>
+          <tr>
+            <td></td>
+            <td>
+              <label i18n:translate="">Total</label>
+            </td>
+            <td>
+              <span tal:content="python:view.format_price(sample.getTotalPrice())"/>
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,14 @@
+<tal:sticker define="item python:view.current_item;
+                     sample_id item/getId;
+                     client_sample_id item/getClientSampleID">
+
+  <!-- QR Code -->
+  <div class="qrcode"
+       data-size="36"
+       tal:attributes="data-code sample_id">
+  </div>
+
+  <div class="sample_id" tal:content="sample_id">Sample ID</div>
+  <div class="client_sample_id" tal:content="client_sample_id"></div>
+
+</tal:sticker>

@@ -1,0 +1,115 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<metal:block use-macro="context/global_defines/macros/defines" />
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      tal:attributes="lang default_language|default;
+                      xml:lang default_language|default;"
+      i18n:domain="senaite.core"
+      tal:define="portal_state context/@@plone_portal_state;
+                  portal_url portal_state/portal_url;
+                  plone_view context/@@plone;">
+
+<head>
+<div tal:replace="structure provider:plone.resourceregistries.scripts" />
+</head>
+
+<body style="margin: 0; padding: 0" onload="this.print()">
+
+<metal:block tal:repeat="reference view/items">
+<style type="text/css">
+table {
+    border-collapse:collapse;
+    margin: 1px 1px 1px 1px;
+    font-size: 5pt
+}
+th {
+    text-align: left;
+    text-transform: none;
+    border: 1pt solid black
+}
+td {
+    border: 1pt solid black
+}
+@media print {
+.noPrint {display:none !important;}
+}
+</style>
+
+<table cellpadding="0" cellspacing="0"
+    tal:define="manufacturer reference/getManufacturer">
+<thead>
+
+<tr>
+    <th i18n:translate="">Reference</th>
+    <td><strong tal:content="reference/Title"/></td>
+</tr>
+
+<tr>
+    <th i18n:translate="">Manufacturer</th>
+    <td><strong tal:content="python:manufacturer and manufacturer.Title() or ''"/>
+</tr>
+
+<tr>
+<th i18n:translate="">Lot Number</th>
+<td><strong tal:content="reference/getLotNumber"/>
+</tr>
+
+<tr>
+    <th i18n:translate="">Date Received</th>
+    <td class="left">
+        <span
+        tal:define="date_received reference/getDateReceived"
+        tal:condition="date_received"
+        tal:content="python:plone_view.toLocalizedTime(date_received, long_format=0)"/>
+    </td>
+</tr>
+
+<tr>
+    <th i18n:translate="">Date Opened</th>
+    <td class="left">
+        <span
+        tal:define="date_opened reference/getDateOpened"
+        tal:condition="date_opened"
+        tal:content="python:plone_view.toLocalizedTime(date_opened, long_format=0)"/>
+    </td>
+</tr>
+
+<tr>
+    <th i18n:translate="">Expiry Date</th>
+    <td class="left">
+    <span
+        tal:define="expiry_date reference/getExpiryDate"
+        tal:condition="expiry_date"
+        tal:content="python:plone_view.toLocalizedTime(expiry_date, long_format=0)"/>
+    </td>
+</tr>
+
+<tr>
+    <td class='barcode' colspan="2">
+        <div tal:attributes="id string:barcode_${context/id}">
+        </div>
+    </td>
+</tr>
+
+<script
+    type='text/javascript'
+    tal:content="python:'$(\'#barcode_%s\').barcode(\'%s\', \'code128\', {\'barHeight\':15, addQuietZone:true, showHRI: false })'%(context.id,context.id)">
+</script>
+
+</thead>
+
+</table>
+<p style="page-break-after: always"/>
+</metal:block>
+
+<p class="noPrint">
+    <a tal:attributes="href python:context.absolute_url()">Back to list</a>
+</p>
+
+
+</body>
+
+</html>

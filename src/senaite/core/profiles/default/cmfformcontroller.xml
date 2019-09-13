@@ -1,0 +1,12 @@
+<?xml version="1.0" ?>
+<cmfformcontroller>
+    
+  <!-- Redirect to AR folder from a Batch after Batch Edit view submission -->
+  <action
+      object_id="base_edit" 
+      status="success"
+      context_type="Batch"
+      action_type="redirect_to"
+      action_arg="python:object.absolute_url()"
+      />
+</cmfformcontroller>

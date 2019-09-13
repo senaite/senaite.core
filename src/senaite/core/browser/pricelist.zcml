@@ -1,0 +1,33 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:five="http://namespaces.zope.org/five"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+    i18n_domain="senaite.core">
+
+  <browser:page
+      for="senaite.core.interfaces.IPricelistFolder"
+      name="folder_view"
+      class="senaite.core.browser.pricelist.PricelistsView"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.IBikaLIMS"
+      />
+
+  <browser:page
+      for="senaite.core.interfaces.IPricelist"
+      name="base_view"
+      class="senaite.core.browser.pricelist.PricelistView"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.IBikaLIMS"
+      />
+
+  <browser:page
+      for="senaite.core.interfaces.IPricelist"
+      name="print"
+      class="senaite.core.browser.pricelist.PricelistPrintView"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.IBikaLIMS"
+      />
+
+</configure>

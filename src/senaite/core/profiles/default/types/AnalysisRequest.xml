@@ -1,0 +1,145 @@
+<?xml version="1.0"?>
+<object name="AnalysisRequest"
+        meta_type="Factory-based Type Information with dynamic views"
+        xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+        i18n:domain="plone"
+        purge="True">
+<property name="title" i18n:translate="">Sample</property>
+ <property name="description"></property>
+ <property name="content_icon">++resource++senaite.core.images/sample.png</property>
+ <property name="content_meta_type">AnalysisRequest</property>
+ <property name="product">senaite.core</property>
+ <property name="factory">addAnalysisRequest</property>
+ <property name="add_view_expr"></property>
+ <property name="link_target"></property>
+ <property name="global_allow">False</property>
+ <property name="filter_content_types">True</property>
+ <property name="allowed_content_types">
+  <element value="Analysis"/>
+  <element value="ARReport"/>
+ </property>
+ <property name="allow_discussion">False</property>
+ <property name="default_view_fallback">False</property>
+ <property name="default_view">base_view</property>
+
+ <alias from="(Default)" to="base_view"/>
+
+ <action title="View"
+         action_id="view"
+         category="object"
+         condition_expr=""
+         icon_expr=""
+         link_target=""
+         url_expr="string:${object_url}/base_view"
+         i18n:attributes="title"
+         i18n:domain="plone"
+         visible="True">
+     <permission value="View"/>
+ </action>
+
+ <action title="Manage Analyses"
+         action_id="analyses"
+         category="object"
+         condition_expr=""
+         icon_expr=""
+         link_target=""
+         url_expr="string:${object_url}/analyses"
+         i18n:attributes="title"
+         i18n:domain="plone"
+         visible="True">
+     <permission value="senaite.core: Add Analysis"/>
+ </action>
+
+ <action title="Manage Results"
+         action_id="manage_results"
+         category="object"
+         condition_expr=""
+         icon_expr=""
+         link_target=""
+         url_expr="string:${object_url}/manage_results"
+         i18n:attributes="title"
+         visible="True">
+     <permission value="senaite.core: Edit Results"/>
+ </action>
+
+ <action title="Published results"
+         action_id="published_results"
+         category="object"
+         condition_expr=""
+         icon_expr=""
+         link_target=""
+         url_expr="string:${object_url}/published_results"
+         i18n:attributes="title"
+         visible="True">
+     <permission value="senaite.core: View Results"/>
+ </action>
+
+ <action title="Invoice"
+         action_id="invoice"
+         category="object"
+         condition_expr="python:here.bika_setup.getShowPrices()"
+         url_expr="string:${object_url}/invoice"
+         i18n:attributes="title"
+         visible="True">
+     <permission value="senaite.core: Manage Invoices"/>
+ </action>
+
+ <action title="Create Invoice PDF"
+         action_id="Create Invoice"
+         category="document_actions"
+         condition_expr="python:context.REQUEST.get('verified', '')"
+         icon_expr="string:${object_url}/++resource++senaite.core.images/invoice_big.png"
+         link_target=""
+         url_expr="string:${object_url}/invoice_create"
+         i18n:attributes="title"
+         visible="True">
+     <permission value="senaite.core: Manage Invoices"/>
+ </action>
+
+ <action title="Print Invoice"
+         action_id="invoice_print"
+         category="document_actions"
+         condition_expr="python:context.REQUEST.get('verified', '')"
+         icon_expr="string:${object_url}/++resource++senaite.core.images/print_32.png"
+         link_target=""
+         url_expr="string:${object_url}/invoice_print"
+         i18n:attributes="title"
+         visible="True">
+     <permission value="senaite.core: Manage Invoices"/>
+ </action>
+
+ <action title="Large Sticker"
+         action_id="sticker_large"
+         category="document_actions"
+         condition_expr=""
+         icon_expr="string:${object_url}/++resource++senaite.core.images/sticker_large.png"
+         link_target=""
+         url_expr="string:${object_url}/sticker?autoprint=1&amp;size=large"
+         i18n:attributes="title"
+         visible="True">
+     <permission value="View"/>
+ </action>
+
+ <action title="Small Sticker"
+         action_id="sticker_small"
+         category="document_actions"
+         condition_expr=""
+         icon_expr="string:${object_url}/++resource++senaite.core.images/sticker_small.png"
+         link_target=""
+         url_expr="string:${object_url}/sticker?autoprint=1&amp;size=small"
+         i18n:attributes="title"
+         visible="True">
+     <permission value="View"/>
+ </action>
+ <action title="Stickers preview"
+         action_id="sticker_preview"
+         category="document_actions"
+         condition_expr=""
+         icon_expr="string:${object_url}/++resource++senaite.core.images/sticker_preview.png"
+         link_target="Stickers preview"
+         url_expr="string:${object_url}/sticker"
+         i18n:attributes="title"
+         visible="True">
+     <permission value="View"/>
+ </action>
+</object>

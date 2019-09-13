@@ -1,0 +1,32 @@
+30/01/2014 10:15:44
+PANalytical
+"Quantification of sample BAR-0001-R01 - 1g H3BO3 -  1:0,5 - NO PPC",
+
+R.M.S.:,"0,035"
+Result status:,
+Sum before normalization:,"119,5 %"
+Normalised to:,"100,0 %"
+Sample type:,Pressed powder
+Initial sample weight (g):,"2,000"
+Weight after pressing (g):,"3,000"
+Correction applied for medium:,No
+Correction applied for film:,No
+Used Compound list:,Oxides
+Results database:,omnian 2013
+Results database in:,c:\panalytical\superq\userdata
+
+Analyte,Calibration,Compound,Concentration,Unit,Calculation,Status
+,status,formula,,,method,
+Na,Calibrated,Na2O,"2,085",%,Calculate,BgC;
+Al,Calibrated,Al2O3,"12,501",%,Calculate,BgC;
+Si,Calibrated,SiO2,"76,076",%,Calculate,BgC;
+P,Calibrated,P2O5,"0,016",%,Calculate,BgC;
+S,Calibrated,SO3,"0,025",%,Calculate,BgC;
+K,Calibrated,K2O,"0,973",%,Calculate,BgC;
+Ca,Calibrated,CaO,"0,106",%,Calculate,BgC;
+Ti,Calibrated,TiO2,"0,060",%,Calculate,BgC;
+Cr,Calibrated,Cr2O3,"0,014",%,Calculate,BgC;
+Fe,Calibrated,Fe2O3,"0,331",%,Calculate,BgC;
+Ni,Calibrated,NiO,"0,010",%,Calculate,BgC;
+Rb,Calibrated,Rb2O,"0,012",%,Calculate,BgC;
+<H>,Not Found,H2O,"7,790",%,Fixed,

@@ -1,0 +1,81 @@
+<tal:sticker define="item python:view.current_item;
+                     sample_id item/getId;
+                     sampler item/getSampler|nothing;
+                     sample_point item/getSamplePointTitle|nothing;
+                     sample_type item/getSampleTypeTitle|nothing;
+                     date_sampled python:view.ulocalized_time(item.getDateSampled());
+                     sampling_date python:view.ulocalized_time(item.getSamplingDate());
+                     client_sample_id item/getClientSampleID|nothing;
+                     client_order_num item/getClientOrderNumber|nothing;
+                     composite item/getComposite|nothing;
+                     deviation item/getSamplingDeviationTitle|nothing;
+                     preservation item/getPreservationTitle|nothing;
+                     container item/getContainerTitle|nothing;
+                     analyses python:item.getAnalyses(full_objects=True);
+                     hazardous item/getHazardous|nothing;
+                     field_analyses python:[analysis for analysis in analyses if analysis.getPointOfCapture()=='field'];">
+
+
+  <table cellpadding="0" cellspacing="0" class="info-container">
+    <thead>
+      <tr>
+        <th i18n:translate="">Sample ID</th>
+        <td><strong tal:content="string:${sample_id}"/></td>
+        <th i18n:translate="">Hazardous</th>
+        <td tal:content="hazardous"/>
+      </tr>
+      <tr>
+        <th i18n:translate="">Date Sampled</th>
+        <td tal:content="date_sampled"/>
+        <th i18n:translate="">Sampler</th>
+        <td tal:content="sampler"/>
+      </tr>
+      <tr>
+        <th i18n:translate="">CSID</th>
+        <td tal:content="client_sample_id"/>
+        <th i18n:translate="">Order</th>
+        <td tal:content="client_order_num"/>
+      </tr>
+      <tr>
+        <th i18n:translate="">Deviation</th>
+        <td tal:content="deviation"/>
+        <th i18n:translate="">Composite</th>
+        <td class="left" tal:content="composite"/>
+      </tr>
+      <tr>
+        <th i18n:translate="">Container</th>
+        <td tal:content="container"/>
+        <th i18n:translate="">Preservation</th>
+        <td tal:content="preservation"/>
+      </tr>
+      <tr>
+        <th i18n:translate="">Sample Type</th>
+        <td colspan='3' tal:content="sample_type"/>
+      </tr>
+      <tr>
+        <th i18n:translate="">Sample Point</th>
+        <td colspan='3' tal:content="sample_point"/>
+      </tr>
+      <tr tal:condition="python:field_analyses">
+        <th colspan="4" i18n:translate="">Field Analyses</th>
+      </tr>
+      <tal:block repeat="analysis python:field_analyses">
+        <tr>
+          <td colspan="4" tal:content="python:analysis.Title()"/>
+        </tr>
+      </tal:block>
+      <tr>
+        <td colspan="4" class="barcode-container">
+          <!-- Barcode -->
+          <div class="barcode"
+               tal:attributes="data-id sample_id;"
+               data-barHeight="12"
+               data-code="code128"
+               data-addQuietZone="true"
+               data-showHRI="false">
+          </div>
+        </td>
+      </tr>
+    </thead>
+  </table>
+</tal:sticker>

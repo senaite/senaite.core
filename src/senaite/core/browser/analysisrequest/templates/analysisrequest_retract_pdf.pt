@@ -1,0 +1,148 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      i18n:domain="senaite.core">
+<head>
+    <style>
+        body {
+            font-family: Arial, Verdana, serif;
+            font-size:9pt;
+        }
+        h1 { font-size:12pt; }
+        h2 { font-size:11pt; }
+        h3 { font-size:10pt; }
+        .header {
+            text-align: center;
+            text-transform: uppercase;
+            padding:0 0 30pt;
+        }
+        .client, .sample, .reasons, .patient {
+            padding:0 0 15pt;
+        }
+        .client table,
+        .sample table,
+        .patient table,
+        .reasons table {
+            width:100%;
+            font-size:9pt;
+        }
+        .client table tr td,
+        .sample table tr td,
+        .patient table tr td,
+        .reasons table tr td {
+            vertical-align:top;
+            padding:5pt;
+        }
+        .label {
+            font-weight:bold;
+        }
+        div.reasons-list {
+            padding:0 0 0 15pt;
+            line-height:20pt;
+        }
+        .check {
+            border: 1px solid black;
+            margin: 0 4pt;
+            padding: 0 5pt;
+        }
+        .check.checked {
+            font-weight: bold;
+            padding: 0 2pt;
+        }
+    </style>
+</head>
+<body tal:define="
+    plone_view  context/@@plone;
+    portal_url  nocall:context/portal_url;
+    portal      portal_url/getPortalObject;
+    ar          python:view.context;
+    lab         python:ar.bika_setup.laboratory;
+    alllabreas  python:ar.bika_setup.getRejectionReasons()[0];
+    labreasons  python:[alllabreas[key] for key in alllabreas.keys() if key != 'checkbox'];
+    client      python:ar.getClient();
+    reasons     python: view.get_rejection_reasons('selected');
+    otherreas   python: view.get_rejection_reasons('other');">
+    <div class="header">
+        <h1 tal:content="lab/Title"></h1>
+        <div class="header-logo">
+            <img tal:attributes="src python:'%s/logo_print.png' % portal.absolute_url()"/>
+        </div>
+        <h2 i18n:translate="">Samples rejection reporting form</h2>
+    </div>
+
+    <div class="client">
+        <table cellpadding="0" cellspacing="0" border="0">
+            <tr>
+                <td class="label" i18n:translate="">Client</td>
+                <td tal:content="python: client.Title()"></td>
+            </tr>
+            <tr>
+                <td class="label" i18n:translate="">Client ID</td>
+                <td tal:content="python: client.getClientID()"></td>
+            </tr>
+            <tr>
+                <td class="label" i18n:translate="">Physical address</td>
+                <td tal:define="
+                    addrkeys python:['address', 'city', 'state', 'zip', 'country'];
+                    addrs python:client.getPhysicalAddress() or client.getPostalAddress() or client.getBillingAddress();
+                    addrlist python:[addrs.get(v) for v in addrkeys if addrs.get(v)];">
+                    <tal:addresslines repeat="line addrlist">
+                    <span tal:replace="line"></span><br/>
+                    </tal:addresslines>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="sample">
+        <table cellpadding="0" cellspacing="0" border="0">
+            <tr>
+                <td class="label" i18n:translate="">Sample type</td>
+                <td tal:content="python: ar.getSampleType().Title()"></td>
+                <td class="label" i18n:translate="">Date collected</td>
+                <td tal:content="python:plone_view.toLocalizedTime(ar.getDateSampled())"></td>
+                <td class="label" i18n:translate="">Date received</td>
+                <td tal:content="python:plone_view.toLocalizedTime(ar.getDateReceived())"></td>
+            </tr>
+            <tr>
+                <td class="label" i18n:translate="">Sample ID</td>
+                <td tal:condition="python: ar.getClientSampleID()"
+                    tal:content="python:'%s / %s' % (ar.getClientSampleID(), ar.getId())" colspan="5"></td>
+                <td tal:condition="python: not ar.getClientSampleID()"
+                    tal:content="python:ar.getId()" colspan="5"></td>
+            </tr>
+            <tr>
+                <td class="label" i18n:translate="">Analyses requested</td>
+                <td colspan="5" tal:define="analyses python:ar.getAnalyses();
+                                            analyses python:[an.getObject() for an in analyses];
+                                            analyses python:[('%s (%s)' % (an.Title(), an.getKeyword())) for an in analyses];">
+                    <span tal:replace="python: ', '.join(analyses)"></span>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="reasons">
+        <h3 i18n:translate="">Reasons for rejection</h3>
+        <div class="reasons-list">
+            <tal:reason repeat="reason labreasons">
+            <span
+                tal:attributes="class python: 'check checked' if reason in reasons else 'check'"
+                tal:content="python: 'X' if reason in reasons else '  '">&nbsp;</span>&nbsp;<span tal:replace="reason"></span><br/>
+            </tal:reason>
+            <span
+                tal:condition="python:otherreas"
+                tal:attributes="class python: 'check checked' if otherreas else 'check'"
+                tal:content="python: 'X' if otherreas else '  '">&nbsp;</span>&nbsp;<span tal:replace="python: otherreas and otherreas[0] or ''"></span><br/>
+        </div>
+    </div>
+
+    <div class="responsability" tal:define="rejecter python:ar.portal_membership.getAuthenticatedMember();
+                                            rejfulln python:rejecter.getProperty('fullname');
+                                            authoriz python:ar.getResponsible();
+                                            authorid python:[authoriz['dict'][au]['name'] for au in authoriz['ids']]">
+        <p><span class="label" i18n:translate="">Reviewed by</span>: <span tal:content="python: rejfulln if rejfulln else rejecter"></span></p>
+        <p><span class="label" i18n:translate="">Authorized by</span>: <span tal:content="python: ', '.join(authorid)"></span></p>
+    </div>
+</body>
+</html>

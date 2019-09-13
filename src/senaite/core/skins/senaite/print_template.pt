@@ -1,0 +1,22 @@
+<metal:page define-macro="master">
+
+	<tal:doctype tal:replace="structure string:&lt;!DOCTYPE html&gt;" />
+
+	<html xmlns="http://www.w3.org/1999/xhtml">
+
+		<head>
+	        <div tal:replace="structure provider:plone.htmlhead" />
+	        <link tal:replace="structure provider:plone.htmlhead.links" />
+		    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		</head>
+
+		<body>
+			<div id="content">
+			    <metal:block define-slot="content">
+			    </metal:block>
+			</div>
+		</body>
+
+	</html>
+
+</metal:page>

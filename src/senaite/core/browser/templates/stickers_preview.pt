@@ -1,0 +1,284 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<metal:block use-macro="context/global_defines/macros/defines" />
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      tal:attributes="lang default_language|default;
+                      xml:lang default_language|default;"
+      i18n:domain="senaite.core"
+      tal:define="portal_state context/@@plone_portal_state;
+                  portal_url portal_state/portal_url;
+                  plone_view context/@@plone;
+                  portal portal_state/portal;
+                  portal_type python:context.portal_type;
+                  anchor_self python:('Client','AnalysisRequest', 'AnalysisRequestsFolder', 'Batch');
+                  goback_url  python:context.absolute_url() if portal_type in anchor_self else context.aq_parent.absolute_url();">
+  <head>
+    <div tal:replace="structure provider:plone.resourceregistries.scripts" />
+    <!-- Generic style -->
+    <style type="text/css">
+     body {
+       background-color: #efefef;
+       margin: 0;
+       padding: 0;
+     }
+     #sticker-preview-header {
+       font-family:Helvetica, Arial;
+       font-size:0.9em;
+       background-color: #dcdcdc;
+       box-shadow: 1px 1px 1px #ccc;
+       margin: 0 0 40px;
+       padding: 10px;
+       text-align: center;
+     }
+     #sticker-preview-header .options-line {
+       padding:0 0 10px 0;
+     }
+     #sticker-preview-header select {
+       margin-left: 10px;
+       padding: 0 5px;
+     }
+     #sticker-preview-header #sticker-buttons input {
+       text-align:center;
+       width:30mm;
+       margin:0 2mm;
+       background-color: #aaa;
+       border-radius: 5px;
+       color: #fff;
+       font-family: Helvetica,Arial;
+       font-size: 9pt;
+       font-weight: bold;
+       padding: 4px 15px;
+       text-decoration: none;
+       text-shadow: 1px 1px 1px #999;
+       text-transform: uppercase;
+       border:none;
+       cursor:pointer;
+     }
+     #sticker-preview-header #sticker-buttons input:hover {
+       background-color: #bbb;
+       text-shadow: 1px 1px 1px #aaa;
+     }
+     #sticker-preview-header #sticker-copies input {
+       text-align:center;
+       width:15mm;
+       margin:0 0 10px 0;
+       background-color: #aaa;
+       border-radius: 5px;
+       color: #fff;
+       font-family: Helvetica,Arial;
+       font-size: 9pt;
+       font-weight: bold;
+       padding: 4px 2px;
+       text-decoration: none;
+       text-shadow: 1px 1px 1px #999;
+       text-transform: uppercase;
+       border:none;
+       cursor:pointer;
+     }
+     #sticker-rule {
+       color: rgb(51, 51, 51);
+       height: 10mm;
+       margin: 0 auto;
+       overflow: hidden;
+       display:none;
+     }
+     .sticker-rule-tick,
+     .sticker-rule-tick-odd {
+       display:table-cell;
+       width:10mm;
+       min-width:10mm;
+       max-width:10mm;
+       font-size:6pt;
+     }
+     .sticker-rule-tick {
+       border-top:2px solid #666;
+     }
+     .sticker-rule-tick-odd {
+       border-top:1px dotted #666;
+     }
+     .sticker {
+       margin:0 auto;
+       background-color:#fff;
+       border-bottom: 1px dotted #cdcdcd;
+       box-shadow: 1px 2px 5px #cdcdcd;
+     }
+     .barcode-hri {
+       clear:both;
+       width: 100%;
+       background-color: #FFFFFF;
+       color: #000000;
+       text-align: center;
+       font-size: 10px;
+     }
+
+     @media print {
+       html, body {
+         margin: 0 !important;
+         padding: 0 !important;
+         background-color:#fff !important;
+       }
+       #sticker-preview-header {display:none !important;}
+       #stickers-wrapper { margin:0;}
+       .sticker {
+         margin:0;
+         border:none;
+         box-shadow:none;
+         border-bottom:none;
+       }
+       .page-break, .page-break-after, .page-break-before {
+         display: block !important;
+         border:none !important;
+         padding:0 !important;
+         margin:0 !important;
+         background-color:transparent !important;
+       }
+       div.page-break,
+       div.page-break-after {
+         page-break-after: always;
+       }
+       div.page-break-before {
+         page-break-before: always;
+       }
+       #sticker-rule {
+         display:none !important;
+       }
+     }
+    </style>
+    <script type="text/javascript">
+     $(function(){
+       $('#print-button').click(function(e) {
+         e.preventDefault();
+         printPdf();
+         window.location = $('#cancel-button').attr('data-url');
+       });
+       $('#cancel-button').click(function(e) {
+         e.preventDefault();
+         window.location = $(this).attr('data-url');
+       });
+       $('select#template').change(function(e) {
+         reload($('select#template').val(), $('#copies_count').val());
+       });
+       $('#copies_count').change(function(e) {
+         reload($('select#template').val(), $('#copies_count').val());
+       });
+       var stickwidth = $('.sticker').first().width();
+       $('#sticker-rule').css({'width':stickwidth,'max-width':stickwidth});
+       $('#sticker-rule').fadeIn();
+
+       /**
+        * Re-loads the stickers preview by using the template specified
+        */
+       function reload(template, copies_count) {
+         var baseurl = $('body').attr('data-itemsurl');
+         var filter_by_type = $('body').attr('data-filter_by_type');
+         $('#stickers-wrapper').fadeTo('fast', 0.4);
+         $.ajax({
+           url: baseurl,
+           type: 'POST',
+           async: true,
+           data: {"template": template, "copies_count": copies_count, "filter_by_type": filter_by_type}
+         })
+          .always(function(data) {
+            var htmldata = data;
+            htmldata = $(htmldata).find('#stickers-wrapper').html();
+            $('#stickers-wrapper').html(htmldata);
+            $('#stickers-wrapper').fadeTo('fast', 1);
+            // reload barcoding
+            // Note: The BarcodeUtils are not propery loaded on template change for QR codes.
+            //       Therefore, we create a new instance here.
+            // bika.lims.BarcodeUtils.load();
+            bu = new BarcodeUtils();
+            bu.load()
+            var stickwidth = $('.sticker').first().width();
+            $('#sticker-rule').css({'width':stickwidth,'max-width':stickwidth});
+            $('#sticker-rule').fadeIn();
+          });
+       }
+
+       function printPdf() {
+         var url = window.location.href;
+         // Get the stickers style
+         var style = $('#stickers-style').clone().wrap('<div>').parent().html();
+         var stickershtml = '';
+         // Get all stickers
+         $('#stickers-wrapper .sticker').each(function(e) {
+           stickershtml += $(this).clone().wrap('<div>').parent().html();
+         });
+         // Generate the form (POST request to generate PDF)
+         var form = '<form action="'+url+'" name="topdf" method="post" style="display:none">' +
+                    '<textarea name="html"><div style="padding:0px;"></div>' +
+                    stickershtml + '</textarea>' +
+                    '<input type="hidden" name="pdf" value="1" />' +
+                    '<textarea name="style">' + style + '</textarea>' +
+                    '</form>';
+         var pdfwindow = window.open();
+         $(pdfwindow.document.body).html(form);
+         pdfwindow.document.forms.topdf.submit();
+       }
+
+       // If autoprint=1, render the pdf automatically
+       var autoprint = $.query.get('autoprint');
+       if (autoprint == '1') {
+         printPdf();
+         window.location = $('#cancel-button').attr('data-url');
+       }
+     });
+    </script>
+  </head>
+  <body tal:attributes="data-itemsurl python:view.getItemsURL(); data-filter_by_type python:view.filter_by_type or ''">
+    <div id='sticker-preview-wrapper'>
+      <div id="sticker-preview-header">
+        <div id='options-handler'>
+          <div class='options-line'>
+            <label for="template" i18n:translate="">Template</label>
+            <select id="template" name="template">
+              <tal:formats tal:repeat="tpl python:view.getAvailableTemplates()">
+                <option selected
+                        tal:attributes="value tpl/id"
+                        tal:content="tpl/title"
+                        tal:condition="tpl/selected"></option>
+                <option tal:attributes="value tpl/id"
+                        tal:content="tpl/title"
+                        tal:condition="not:tpl/selected"></option>
+              </tal:formats>
+            </select>
+          </div>
+          <div id='sticker-copies'>
+            <label for="copies_count" i18n:translate="">Number of copies</label>
+            <input name="copies_count" id="copies_count"
+                   type="number"
+                   min="1"
+                   tal:attributes="value view/get_copies_count"/>
+          </div>
+        </div>
+        <div id='sticker-buttons'>
+          <input type="button" id='cancel-button' value="Go back"
+                 tal:attributes="data-url goback_url;"/>
+          <input type="button" id='print-button' value="Print"/>
+        </div>
+      </div>
+
+      <div id="stickers-wrapper">
+        <style id='stickers-style' type="text/css" tal:content="structure python:view.getSelectedTemplateCSS()"></style>
+        <div id="sticker-rule">
+          <div style="font-size:6pt">mm</div>
+          <tal:tick repeat="mm python:[0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,210]">
+            <div tal:define="odd repeat/mm/odd;
+                             css python:'sticker-rule-tick-odd' if odd else 'sticker-rule-tick';"
+                 tal:attributes="class css"
+                 tal:content="mm"></div>
+          </tal:tick>
+        </div>
+        <tal:stickers repeat="item view/items">
+          <tal:sticker define="item_id python:item.getId()">
+            <div class='sticker'
+                 tal:content='structure python:view.renderItem(item)'></div>
+          </tal:sticker>
+        </tal:stickers>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,97 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+        metal:use-macro="here/main_template/macros/master"
+        i18n:domain="senaite.core">
+
+<head>
+    <metal:block fill-slot="javascript_head_slot"
+            tal:define="portal context/@@plone_portal_state/portal;">
+        <script type="text/javascript"
+                tal:attributes="src python:portal.absolute_url() + '/bika_widgets/datetimewidget.js'"></script>
+        <script type="text/javascript"
+                tal:attributes="src python:portal.absolute_url() + '/bika_widgets/referencewidget.js'"></script>
+    </metal:block>
+</head>
+
+<body>
+
+<metal:title fill-slot="content-title">
+</metal:title>
+
+<metal:core fill-slot="content-core">
+    <form id="supplyorder_edit" method="post"
+          action="" tal:define="errors python:{}">
+        <table class="invoice-header">
+            <tbody>
+            <tal:field
+                    content="structure python:view.field(field=view.orderDate)"/>
+            <tal:field
+                    content="structure python:view.field(field=view.contact)"/>
+            </tbody>
+        </table>
+        <table class="invoice-items items">
+            <thead>
+            <tr>
+                <th i18n:translate="">Product</th>
+                <th i18n:translate="">Description</th>
+                <th i18n:translate="">Volume</th>
+                <th i18n:translate="">Unit</th>
+                <th i18n:translate="">Price</th>
+                <th i18n:translate="">VAT</th>
+                <th i18n:translate="">Quantity</th>
+                <th class="currency" i18n:translate="">Total</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tal:products repeat="product view/products">
+                <tal:product>
+                    <tr>
+                        <td tal:content="product/title"></td>
+                        <td class="text" tal:content="product/description"></td>
+                        <td class="number" tal:content="product/volume"></td>
+                        <td class="center" tal:content="product/unit"></td>
+                        <td class="currency price" tal:content="product/price"></td>
+                        <td class="center item_vat" tal:content="product/vat"></td>
+                        <td class="number">
+                            <input type="text" class="quantity numeric"
+                                    tal:attributes="name string:product_${product/id};
+                                    value product/quantity;
+                                    data-product_title product/title" />
+                        </td>
+                        <td class="currency item_total" tal:content="product/total"></td>
+                    </tr>
+                </tal:product>
+            </tal:products>
+            <tr class="totals">
+                <td colspan="7" i18n:translate="">Subtotal</td>
+                <td class="currency">
+                    <span tal:content="python:view.getPreferredCurrencyAbreviation()">$</span>
+                    <span class="subtotal" tal:content="view/subtotal"></span>
+                </td>
+            </tr>
+            <tr class="totals">
+                <td colspan="7" i18n:translate="">VAT</td>
+                <td class="currency">
+                    <span tal:content="python:view.getPreferredCurrencyAbreviation()">$</span>
+                    <span class="vat" tal:content="view/vat"></span>
+                </td>
+            </tr>
+            <tr class="totals">
+                <td colspan="7" i18n:translate="">Total</td>
+                <td class="currency">
+                    <span tal:content="python:view.getPreferredCurrencyAbreviation()">$</span>
+                    <span class="total" tal:content="view/total"></span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="formControls">
+            <input class="context" type="submit" name="submit" value="Save"/>
+        </div>
+    </form>
+</metal:core>
+
+</body>
+
+</html>

@@ -1,0 +1,49 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    i18n_domain="senaite.core">
+
+    <!-- Main reference samples view -->
+    <browser:page
+      for="senaite.core.interfaces.IReferenceSamplesFolder"
+      name="folder_view"
+      class="senaite.core.browser.referencesample.ReferenceSamplesView"
+      permission="senaite.core.permissions.ManageReference"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+    <!-- Single Reference Sample View -->
+    <browser:page
+      for="senaite.core.interfaces.IReferenceSample"
+      name="base_view"
+      class="senaite.core.browser.referencesample.ViewView"
+      permission="senaite.core.permissions.ManageReference"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="senaite.core.interfaces.IReferenceSample"
+      name="analyses"
+      class="senaite.core.browser.referencesample.ReferenceAnalysesViewView"
+      permission="senaite.core.permissions.ManageReference"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="senaite.core.interfaces.IReferenceSample"
+      name="table_referenceanalyses"
+      class="senaite.core.browser.referencesample.ReferenceAnalysesView"
+      permission="senaite.core.permissions.ManageReference"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="senaite.core.interfaces.IReferenceSample"
+      name="results"
+      class="senaite.core.browser.referencesample.ReferenceResultsView"
+      permission="senaite.core.permissions.ManageReference"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+</configure>

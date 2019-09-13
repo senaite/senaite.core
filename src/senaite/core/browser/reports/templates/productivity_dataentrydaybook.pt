@@ -1,0 +1,146 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+        i18n:domain="senaite.core"
+        tal:define="portal_url nocall:context/portal_url;
+        portal portal_url/getPortalObject;">
+
+<head>
+    <link rel="stylesheet" type="text/css" media="all" href=""
+            tal:attributes="href string:$portal_url/reports.css" />
+</head>
+
+<body tal:define="
+        report_data view/report_data;
+        parameters python:report_data.has_key('parameters') and report_data['parameters'] or [];
+        datalines python:report_data.has_key('datalines') and report_data['datalines'] or {};
+        footlines python:report_data.has_key('footlines') and report_data['footlines'] or {};">
+
+<!--
+
+Report customization notes
+==========================================================================
+Available attributes:
+
+   parameters[]
+
+   datalines {
+       <analysisrequestid>: {
+           AnalysisRequestID,
+           DateCreated,
+           DateReceived,
+           DatePublished,
+           ReceptionLag,
+           PublicationLag,
+           TotalLag,
+           SampleID,
+           SampleType,
+           ClientID,
+           BatchID,
+           NumAnalyses,
+           Creator,
+           Remarks,
+           VerificationComment
+       }
+   }
+
+   Where:
+   - dict key <analysisrequestid> is the AR ID
+
+   footlines {
+       Total: {
+           Created,                 - total count of ARs created
+           Received,                - total count of ARs received
+           Published,               - total count of ARs published
+           ReceivedCreatedRatio,    - ratio of AR received amongst created
+           ReceivedCreatedRatioPercentage,
+           PublishedCreatedRatio,
+           PublishedCreatedRatioPercentage
+           PublishedReceivedRatio,
+           PublishedReceivedRatioPercentage
+           AvgReceptionLag,
+           AvgPublicationLag,
+           AvgTotalLag
+           NumAnalyses
+       }
+   }
+
+-->
+
+<h1 i18n:translate="">Data entry day book</h1>
+<!-- 		<h3 i18n:translate="">Number of Samples and totals submitted
+							  between a period of time</h3>
+ -->
+<!-- Summary -->
+<table class="bika-report-parms" summary="Parameters">
+    <tr tal:repeat="line parameters">
+        <td tal:content="python:line['title']"></td>
+        <td tal:content="python:line['value']"></td>
+    </tr>
+</table>
+
+<!-- Results -->
+<table class="bika-report-table" summary="Results">
+    <thead>
+    <tr>
+        <th i18n:translate="">ID</th>
+        <th i18n:translate="">Created</th>
+        <th i18n:translate="">Received</th>
+        <th i18n:translate="">Published</th>
+        <th i18n:translate="">Recept. Lag</th>
+        <th i18n:translate="">Public. Lag</th>
+        <th i18n:translate="">Total Lag</th>
+        <th i18n:translate="">Batch</th>
+        <th i18n:translate="">Sample</th>
+        <th i18n:translate="">Sample Type</th>
+        <th i18n:translate="">Analyses</th>
+        <th i18n:translate="">Client</th>
+        <th i18n:translate="">Creator</th>
+    </tr>
+    </thead>
+    <tbody>
+    <metal:block tal:repeat="ar python:datalines.keys()">
+        <tr>
+            <td tal:content="python:datalines[ar]['AnalysisRequestID']"></td>
+            <td tal:content="python:datalines[ar]['DateCreated']"></td>
+            <td tal:content="python:datalines[ar]['DateReceived']"></td>
+            <td tal:content="python:datalines[ar]['DatePublished']"></td>
+            <td tal:content="python:datalines[ar]['ReceptionLag']"></td>
+            <td tal:content="python:datalines[ar]['PublicationLag']"></td>
+            <td tal:content="python:datalines[ar]['TotalLag']"></td>
+            <td tal:content="python:datalines[ar]['BatchID']"></td>
+            <td tal:content="python:datalines[ar]['SampleID']"></td>
+            <td tal:content="python:datalines[ar]['SampleType']"></td>
+            <td tal:content="python:datalines[ar]['NumAnalyses']"></td>
+            <td tal:content="python:datalines[ar]['ClientID']"></td>
+            <td tal:content="python:datalines[ar]['Creator']"></td>
+        </tr>
+        <tr tal:condition="python:datalines[ar]['Remarks']!=''">
+            <td>&nbsp;</td>
+            <td tal:content="python:datalines[ar]['Remarks']" colspan="12"
+                                                              class="comment"></td>
+        </tr>
+    </metal:block>
+    </tbody>
+    <tfoot>
+    <tr>
+        <td class='total_label' i18n:translate="" align="right">Total</td>
+        <td tal:content="python:footlines['Total']['Created']"></td>
+        <td>
+            <span tal:content="python:footlines['Total']['Received']"></span>&nbsp;
+            (<span tal:content="python:footlines['Total']['ReceivedCreatedRatioPercentage']"></span>)
+        </td>
+        <td>
+            <span tal:content="python:footlines['Total']['Published']"></span>&nbsp;
+            (<span tal:content="python:footlines['Total']['PublishedCreatedRatioPercentage']"></span>)
+        </td>
+        <td tal:content="python:footlines['Total']['AvgReceptionLag']"></td>
+        <td tal:content="python:footlines['Total']['AvgPublicationLag']"></td>
+        <td tal:content="python:footlines['Total']['AvgTotalLag']"></td>
+        <td colspan="3">&nbsp;</td>
+        <td tal:content="python:footlines['Total']['NumAnalyses']"></td>
+        <td colspan="2">&nbsp;</td>
+    </tr>
+    </tfoot>
+</table>
+</body>
+</html>

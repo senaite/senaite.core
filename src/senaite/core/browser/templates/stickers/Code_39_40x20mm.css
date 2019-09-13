@@ -1,0 +1,63 @@
+/* 40x20mm sticker */
+.sticker {
+    font-family: Helvetica, Arial;
+    font-size: 7pt;
+    padding: 1mm;
+    /*
+    Total width:  38mm + 2x1mm (padding) = 40mm
+    Total height: 18mm + 2x1mm (padding) = 20mm
+    */
+    width: 38mm;
+    min-width: 38mm;
+    max-width: 38mm;
+    height: 20mm;
+    min-height: 20mm;
+    max-height: 20mm;
+    text-align: center;
+}
+
+.sticker .error {
+    color: red;
+    font-size: 8pt;
+    z-index: 1000;
+}
+
+.sticker .barcode {
+    margin: 0 auto;
+    padding: 1mm 0 !important;
+    text-align: center;
+}
+
+.sticker .hazardous img {
+    width: 10px;
+}
+
+.sticker .item-info table {
+    border-collapse: collapse;
+    margin: 1px 1px 1px 1px;
+    width: 100%;
+}
+
+.sticker .item-info table td {
+    text-align: center;
+}
+
+.barcode {
+    margin: 0 auto;
+}
+
+.align-right {
+    text-align:right;
+}
+
+@media print {
+    @page {
+        size:  40mm 20mm !important;
+        margin: 0mm !important;
+    }
+    html, body {
+        width: 40mm !important;
+        height: 20mm !important;
+        margin: 0mm !important;
+    }
+}

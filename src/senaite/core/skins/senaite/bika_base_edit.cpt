@@ -1,0 +1,91 @@
+<!-- Some tiny modification from the original base_edit.cpy:
+         bika_edit_macros takes precedence when setting body_macro.
+         XXX todo editable border is disabled.
+-->
+
+<tal:block metal:define-macro="master"
+           define="view context/@@at_base_edit_view;
+                   dummy python:view.isTemporaryObject() and request.set('disable_border', True);
+                   lifecycle context/@@at_lifecycle_view;
+                   lock_info context/@@plone_lock_info|nothing;
+                   dummy lifecycle/begin_edit;
+                   errors options/state/getErrors | nothing;
+                   schematas context/Schemata;
+                   allow_tabbing python: not view.isMultiPageSchema();
+                   fieldsets python: view.fieldsets();
+                   default_fieldset python:'default' in fieldsets and 'default' or fieldsets and fieldsets[0] or None;
+                   fieldset request/fieldset|options/fieldset|default_fieldset;
+                   fields python: view.fields(fieldsets);
+                   dummy python:context.at_isEditable(fields);
+                   portal_type python:context.getPortalTypeName().lower().replace(' ', '_');
+                   portal_url nocall:context/portal_url;
+                   portal portal_url/getPortalObject;
+                   type_name context/getPortalTypeName|context/archetype_name;
+                   base_macros context/edit_macros/macros;
+                   edit_template string:${portal_type}_edit;
+                   edit_macros python:path('context/%s/macros | nothing' % edit_template);
+                   header_macro edit_macros/header | header_macro | base_macros/header;
+                   typedescription_macro edit_macros/typedescription | typedescription_macro | base_macros/typedescription;
+                   body_macro context/bika_base_edit_macros/macros/body | edit_macros/body | body_macro | base_macros/body;
+                   footer_macro edit_macros/footer | footer_macro | base_macros/footer;
+                   isLocked isLocked | lock_info/is_locked_for_current_user | nothing;
+                   css python:context.getUniqueWidgetAttr(fields, 'helper_css');
+                   js python:context.getUniqueWidgetAttr(fields, 'helper_js');">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      metal:use-macro="context/main_template/macros/master"
+      i18n:domain="plone">
+
+  <metal:javascript_head fill-slot="javascript_head_slot">
+    <tal:block define="macro context/archetypes_custom_js/macros/javascript_head | nothing"
+               condition="macro">
+      <metal:block use-macro="macro" />
+    </tal:block>
+    <tal:js condition="js"
+            repeat="item js">
+      <script type="text/javascript"
+              charset="iso-8859-1"
+              tal:condition="python:exists('portal/%s' % item)"
+              tal:attributes="src string:$portal_url/$item">
+      </script>
+    </tal:js>
+    <tal:block define="macro edit_macros/javascript_head | nothing"
+                    condition="macro">
+      <metal:block use-macro="macro" />
+    </tal:block>
+  </metal:javascript_head>
+
+  <metal:css fill-slot="style_slot">
+    <tal:css condition="css"
+             repeat="item css">
+      <style type="text/css"
+             media="all"
+             tal:condition="python:exists('portal/%s' % item)"
+             tal:content="structure string:&lt;!-- @import url($portal_url/$item); --&gt;">
+      </style>
+    </tal:css>
+    <tal:block define="macro edit_macros/css | nothing"
+                    condition="macro">
+      <metal:block use-macro="macro" />
+    </tal:block>
+  </metal:css>
+
+  <body>
+
+    <metal:fill fill-slot="main">
+      <metal:main define-macro="main">
+        <metal:use_header use-macro="header_macro" />
+        <metal:use_typedescription use-macro="typedescription_macro" />
+        <metal:use_body use-macro="body_macro" />
+        <metal:use_footer use-macro="footer_macro" />
+      </metal:main>
+    </metal:fill>
+
+  </body>
+
+</html>
+
+</tal:block>

@@ -1,0 +1,305 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    i18n_domain="senaite.core">
+
+    <browser:page
+      for="senaite.core.interfaces.IAuditLog"
+      name="folder_view"
+      class=".auditlog.AuditLogView"
+      permission="senaite.core.permissions.ManageBika"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="senaite.core.interfaces.IContainers"
+      name="folder_view"
+      class=".bika_containers.ContainersView"
+      permission="senaite.core.permissions.ManageBika"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="senaite.core.interfaces.IContainerTypes"
+      name="folder_view"
+      class=".bika_containertypes.ContainerTypesView"
+      permission="senaite.core.permissions.ManageBika"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="senaite.core.interfaces.IPreservations"
+      name="folder_view"
+      class=".bika_preservations.PreservationsView"
+      permission="senaite.core.permissions.ManageBika"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="senaite.core.interfaces.IDepartments"
+      name="folder_view"
+      class=".bika_departments.DepartmentsView"
+      permission="senaite.core.permissions.ManageBika"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="senaite.core.interfaces.ILabContacts"
+      name="folder_view"
+      class=".bika_labcontacts.LabContactsView"
+      permission="senaite.core.permissions.ManageBika"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="senaite.core.interfaces.IAnalysisCategories"
+      name="folder_view"
+      class=".bika_analysiscategories.AnalysisCategoriesView"
+      permission="senaite.core.permissions.ManageBika"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="senaite.core.interfaces.IAnalysisProfiles"
+      name="folder_view"
+      class=".bika_analysisprofiles.AnalysisProfilesView"
+      permission="senaite.core.permissions.ManageBika"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="senaite.core.interfaces.IARTemplates"
+      name="folder_view"
+      class=".bika_artemplates.TemplatesView"
+      permission="senaite.core.permissions.ManageBika"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="senaite.core.interfaces.ISampleConditions"
+      name="folder_view"
+      class=".bika_sampleconditions.SampleConditionsView"
+      permission="senaite.core.permissions.ManageBika"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="senaite.core.interfaces.ISampleMatrices"
+      name="folder_view"
+      class=".bika_samplematrices.SampleMatricesView"
+      permission="senaite.core.permissions.ManageBika"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="senaite.core.interfaces.IStorageLocations"
+      name="folder_view"
+      class=".bika_storagelocations.StorageLocationsView"
+      permission="senaite.core.permissions.ManageBika"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="senaite.core.interfaces.ISamplePoints"
+      name="folder_view"
+      class=".bika_samplepoints.SamplePointsView"
+      permission="senaite.core.permissions.ManageBika"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="senaite.core.interfaces.ISampleTypes"
+      name="folder_view"
+      class=".bika_sampletypes.SampleTypesView"
+      permission="senaite.core.permissions.ManageBika"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="senaite.core.interfaces.ISamplingDeviations"
+      name="folder_view"
+      class=".bika_samplingdeviations.SamplingDeviationsView"
+      permission="senaite.core.permissions.ManageBika"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="senaite.core.interfaces.IAnalysisSpecs"
+      name="folder_view"
+      class=".bika_analysisspecs.AnalysisSpecsView"
+      permission="senaite.core.permissions.ManageBika"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="senaite.core.interfaces.IIdentifierTypes"
+      name="folder_view"
+      class=".bika_identifiertypes.IdentifierTypesView"
+      permission="senaite.core.permissions.ManageBika"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="senaite.core.interfaces.IInstruments"
+      name="folder_view"
+      class=".bika_instruments.InstrumentsView"
+      permission="senaite.core.permissions.ManageBika"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="senaite.core.interfaces.IInstrumentTypes"
+      name="folder_view"
+      class=".bika_instrumenttypes.InstrumentTypesView"
+      permission="senaite.core.permissions.ManageBika"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="senaite.core.interfaces.IInstrumentLocations"
+      name="folder_view"
+      class=".bika_instrumentlocations.InstrumentLocationsView"
+      permission="senaite.core.permissions.ManageBika"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="senaite.core.interfaces.ICalculations"
+      name="folder_view"
+      class=".bika_calculations.CalculationsView"
+      permission="senaite.core.permissions.ManageBika"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="senaite.core.interfaces.IAttachmentTypes"
+      name="folder_view"
+      class=".bika_attachmenttypes.AttachmentTypesView"
+      permission="senaite.core.permissions.ManageBika"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="senaite.core.interfaces.IAnalysisServices"
+      name="folder_view"
+      class=".bika_analysisservices.AnalysisServicesView"
+      permission="senaite.core.permissions.ManageBika"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="senaite.core.interfaces.IAnalysisServices"
+      name="copy"
+      class=".bika_analysisservices.AnalysisServiceCopy"
+      permission="senaite.core.permissions.ManageBika"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="senaite.core.interfaces.ILabProducts"
+      name="folder_view"
+      class=".bika_labproducts.LabProductsView"
+      permission="senaite.core.permissions.ManageBika"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="senaite.core.interfaces.IManufacturers"
+      name="folder_view"
+      class=".bika_manufacturers.ManufacturersView"
+      permission="senaite.core.permissions.ManageBika"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="senaite.core.interfaces.IReferenceDefinitions"
+      name="folder_view"
+      class=".bika_referencedefinitions.ReferenceDefinitionsView"
+      permission="senaite.core.permissions.ManageBika"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="senaite.core.interfaces.ISamplingRoundTemplates"
+      name="folder_view"
+      class=".bika_srtemplates.SamplingRoundTemplatesView"
+      permission="senaite.core.permissions.ManageBika"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="senaite.core.interfaces.ISubGroups"
+      name="folder_view"
+      class=".bika_subgroups.SubGroupsView"
+      permission="senaite.core.permissions.ManageBika"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="senaite.core.interfaces.ISuppliers"
+      name="folder_view"
+      class=".bika_suppliers.SuppliersView"
+      permission="senaite.core.permissions.ManageBika"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="senaite.core.interfaces.IWorksheetTemplates"
+      name="folder_view"
+      class=".bika_worksheettemplates.WorksheetTemplatesView"
+      permission="senaite.core.permissions.ManageBika"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="senaite.core.interfaces.IBatchLabels"
+      name="folder_view"
+      class=".bika_batchlabels.BatchLabelsView"
+      permission="senaite.core.permissions.ManageBika"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="senaite.core.interfaces.IReflexRuleFolder"
+      name="folder_view"
+      class=".bika_reflexrulefolder.ReflexRuleFolderView"
+      permission="senaite.core.permissions.ManageBika"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+    <!-- For autocomplete dropdown -->
+    <browser:page
+      for="*"
+      name="ajax_storagelocations"
+      class=".bika_storagelocations.ajax_StorageLocations"
+      permission="zope.Public"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="*"
+      name="ajax_samplepoints"
+      class=".bika_samplepoints.ajax_SamplePoints"
+      permission="zope.Public"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="senaite.core.controlpanel.bika_samplingrounds.ISamplingRounds"
+      name="folder_view"
+      class=".bika_samplingrounds.SamplingRoundsView"
+      permission="senaite.core.permissions.ManageBika"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+    <!-- For autocomplete dropdown -->
+    <browser:page
+      for="*"
+      name="ajax_sampletypes"
+      class=".bika_sampletypes.ajax_SampleTypes"
+      permission="zope.Public"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+</configure>

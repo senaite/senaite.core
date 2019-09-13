@@ -1,0 +1,108 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    i18n_domain="senaite.core">
+
+  <include package="plone.resource" file="meta.zcml"/>
+
+  <include file="senaite-frontpage.zcml"/>
+
+  <include file="analysis.zcml"/>
+  <include file="analysisprofile.zcml"/>
+  <include file="analysisreport.zcml"/>
+  <include file="analysisservice.zcml"/>
+  <include file="analysisspec.zcml"/>
+  <include file="arimports.zcml"/>
+  <include file="artemplate.zcml"/>
+  <include file="attachment.zcml"/>
+  <include file="auditlog.zcml"/>
+  <include file="batchfolder.zcml"/>
+  <include file="calcs.zcml"/>
+  <include file="clientfolder.zcml"/>
+  <include file="contact.zcml"/>
+  <include file="instrument.zcml"/>
+  <include file="instrumentlocation.zcml"/>
+  <include file="instrumenttype.zcml"/>
+  <include file="invoice.zcml"/>
+  <include file="manufacturer.zcml"/>
+  <include file="methodfolder.zcml"/>
+  <include file="pricelist.zcml"/>
+  <include file="referenceanalysis.zcml"/>
+  <include file="referencesample.zcml"/>
+  <include file="stickers.zcml"/>
+  <include file="supplier.zcml"/>
+  <include file="supplyorder.zcml"/>
+  <include file="supplyorderfolder.zcml"/>
+  <include file="worksheettemplate.zcml"/>
+
+  <include package=".analysisrequest"/>
+  <include package=".batch"/>
+  <include package=".client"/>
+  <include package=".dashboard"/>
+  <include package=".department"/>
+  <include package=".fields"/>
+  <include package=".idserver"/>
+  <include package=".publish"/>
+  <include package=".reports"/>
+  <include package=".resultsimport"/>
+  <include package=".samplinground"/>
+  <include package=".srtemplate"/>
+  <include package=".viewlets"/>
+  <include package=".widgets"/>
+  <include package=".workflow"/>
+  <include package=".worksheet"/>
+
+  <browser:page
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+      name="accreditation"
+      class="senaite.core.browser.accreditation.AccreditationView"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+  <browser:page
+      for="*"
+      name="at_validate_field"
+      class=".validation.InlineValidationView"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+  <!-- AR Partition Magic View -->
+  <browser:page
+      for="*"
+      name="partition_magic"
+      class=".partition_magic.PartitionMagicView"
+      permission="senaite.core.permissions.ManageAnalysisRequests"
+      layer="senaite.core.interfaces.IBikaLIMS"
+  />
+
+  <!-- Searches for sample types (TemplatePartitions) -->
+  <browser:page
+      for="*"
+      name="get_sampletypes"
+      class=".sampletype.get_sampletypes"
+      permission="zope.Public"
+      layer="senaite.core.interfaces.IBikaLIMS"
+  />
+
+  <!-- Zope 3 browser resources -->
+  <browser:resourceDirectory
+      name="senaite.core.images"
+      directory="images"
+      layer="senaite.core.interfaces.IBikaLIMS"
+      />
+
+  <browser:resourceDirectory
+      name="senaite.core.css"
+      directory="css"
+      layer="senaite.core.interfaces.IBikaLIMS"
+      />
+
+  <browser:resourceDirectory
+      name="senaite.core.js"
+      directory="js"
+      layer="senaite.core.interfaces.IBikaLIMS"
+      />
+
+</configure>

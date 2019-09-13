@@ -1,0 +1,144 @@
+<?xml version="1.0"?>
+<dc-workflow xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+             workflow_id="senaite_clientcontact_workflow"
+             title="Senaite Contact (from Client) type Workflow"
+             description=""
+             state_variable="review_state"
+             initial_state="active"
+             manager_bypass="False"
+             i18n:domain="senaite.core">
+
+  <!--
+  A "deactivable type" workflow for client/contact items
+  Almost a copy of "deactivable_type_workflow", but:
+   - Prevents users other than LabClerk, LabManager, Manager and Owner (all
+     client contacts have the role "Owner" for the client the current contact
+     belongs to) to access to personal information
+
+  Note this workflow acquires permissions settings from `senaite_client_workflow`
+  -->
+
+  <!-- PERMISSIONS -->
+  <!-- Plone generic permissions -->
+  <permission>Access contents information</permission>
+  <permission>Delete objects</permission>
+  <permission>List folder contents</permission>
+  <permission>Modify portal content</permission>
+  <permission>View</permission>
+
+  <!-- Senaite permissions for transitions (govern guards) -->
+  <permission>senaite.core: Transition: Activate</permission>
+  <permission>senaite.core: Transition: Deactivate</permission>
+
+  <!-- State: active -->
+  <state state_id="active" title="Active" i18n:attributes="title">
+    <exit-transition transition_id="deactivate" />
+
+    <!-- Transition permissions -->
+    <permission-map name="senaite.core: Transition: Deactivate" acquired="True" />
+
+    <!-- Plone's permissions -->
+    <permission-map name="Access contents information" acquired="True" />
+    <permission-map name="Delete objects" acquired="True" />
+    <!-- No contents to list inside -->
+    <permission-map name="List folder contents" acquired="False" />
+    <permission-map name="Modify portal content" acquired="True" />
+    <permission-map name="View" acquired="False">
+      <!-- We don't want users other than lab personnel and from same client
+      to access to personal information from this client contact -->
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+    </permission-map>
+  </state>
+
+  <!-- State: inactive -->
+  <state state_id="inactive" title="Inactive" i18n:attributes="title">
+    <exit-transition transition_id="activate" />
+
+    <!-- Transition permissions -->
+    <permission-map name="senaite.core: Transition: Activate" acquired="True" />
+
+    <!-- Plone's permissions -->
+    <!-- TODO Security: Access contents info only to LabClerk + LabMan? -->
+    <permission-map name="Access contents information" acquired="True" />
+    <permission-map name="Delete objects" acquired="True" />
+    <!-- No contents to list inside -->
+    <permission-map name="List folder contents" acquired="False" />
+    <permission-map name="Modify portal content" acquired="True" />
+    <permission-map name="View" acquired="False">
+      <!-- We don't want users other than lab personnel and from same client
+      to access to personal information from this client contact -->
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+    </permission-map>
+  </state>
+
+  <!-- Transition: activate -->
+  <transition transition_id="activate" title="Activate" new_state="active" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Activate</action>
+    <guard>
+      <guard-permission>senaite.core: Transition: Activate</guard-permission>
+      <guard-expression>python:here.guard_handler("activate")</guard-expression>
+    </guard>
+  </transition>
+  <!-- Transition: deactivate -->
+  <transition transition_id="deactivate" title="Deactivate" new_state="inactive" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Deactivate</action>
+    <guard>
+      <guard-permission>senaite.core: Transition: Deactivate</guard-permission>
+      <guard-expression>python:here.guard_handler("deactivate")</guard-expression>
+    </guard>
+  </transition>
+
+
+
+  <variable variable_id="action" for_catalog="False" for_status="True" update_always="True">
+    <description>Previous transition</description>
+    <default>
+      <expression>transition/getId|nothing</expression>
+    </default>
+    <guard>
+    </guard>
+  </variable>
+
+  <variable variable_id="actor" for_catalog="False" for_status="True" update_always="True">
+    <description>The ID of the user who performed the last transition</description>
+    <default>
+      <expression>user/getId</expression>
+    </default>
+    <guard>
+    </guard>
+  </variable>
+
+  <variable variable_id="comments" for_catalog="False" for_status="True" update_always="True">
+    <description>Comment about the last transition</description>
+    <default>
+      <expression>python:state_change.kwargs.get('comment', '')</expression>
+    </default>
+    <guard>
+    </guard>
+  </variable>
+
+  <variable variable_id="review_history" for_catalog="False" for_status="False" update_always="False">
+    <description>Provides access to workflow history</description>
+    <default>
+      <expression>state_change/getHistory</expression>
+    </default>
+    <guard>
+    </guard>
+  </variable>
+
+  <variable variable_id="time" for_catalog="False" for_status="True" update_always="True">
+    <description>When the previous transition was performed</description>
+    <default>
+      <expression>state_change/getDateTime</expression>
+    </default>
+    <guard>
+    </guard>
+  </variable>
+
+</dc-workflow>

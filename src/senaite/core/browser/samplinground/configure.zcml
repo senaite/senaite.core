@@ -1,0 +1,37 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    i18n_domain="senaite.core">
+
+    <browser:page
+      for="senaite.core.content.samplinground.ISamplingRound"
+      name="edit"
+      class=".edit.EditForm"
+      permission="cmf.ModifyPortalContent"
+    />
+
+    <browser:page
+      for="senaite.core.content.samplinground.ISamplingRound"
+      name="add"
+      class=".add.AddForm"
+      permission="cmf.AddPortalContent"
+    />
+
+    <browser:page
+      for="senaite.core.content.samplinground.ISamplingRound"
+      name="analysisrequests"
+      class="senaite.core.browser.samplinground.analysisrequests.AnalysisRequestsView"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="senaite.core.content.samplinground.ISamplingRound"
+      name="sr_form_print"
+      class=".printform.PrintForm"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.IBikaLIMS"
+    />
+
+</configure>

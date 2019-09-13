@@ -1,0 +1,16 @@
+<!-- This is populated with Javascript, when the Supplier is selected. -->
+
+<div class="field" tal:attributes="style view/style|nothing" i18n:domain="senaite.core">
+
+    <label i18n:translate="">Reference Sample</label>
+    <br/>
+
+    <select name="SampleUID:ignore_empty"
+            id="SampleUID"
+            tal:attributes="style string:font-family:${here/base_properties/fontFamily};;font-size:100%;">
+
+        <option value=""></option>
+
+    </select>
+
+</div>

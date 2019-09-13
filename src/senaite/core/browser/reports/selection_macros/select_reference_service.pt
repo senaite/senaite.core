@@ -1,0 +1,16 @@
+<!-- This is populated with Javascript, when the ReferenceSample is selected. -->
+
+<div class="field" tal:attributes="style view/style|nothing" i18n:domain="senaite.core">
+
+    <label i18n:translate="">Analysis Service</label>
+    <br/>
+
+    <select name="ReferenceServiceUID:ignore_empty"
+            id="ReferenceServiceUID"
+            tal:attributes="style string:font-family:${here/base_properties/fontFamily};;font-size:100%;">
+
+        <option value=""></option>
+
+    </select>
+
+</div>

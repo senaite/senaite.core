@@ -1,0 +1,141 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    i18n_domain="senaite.core">
+
+  <!-- Views -->
+  <browser:page
+      for="senaite.core.interfaces.IWorksheetFolder"
+      name="base_view"
+      class="senaite.core.browser.worksheet.views.FolderView"
+      permission="zope.Public"
+      layer="senaite.core.interfaces.IBikaLIMS"
+      />
+
+  <browser:page
+      for="senaite.core.interfaces.IWorksheetFolder"
+      name="worksheet_add"
+      class="senaite.core.browser.worksheet.views.AddWorksheetView"
+      permission="zope.Public"
+      layer="senaite.core.interfaces.IBikaLIMS"
+      />
+
+  <browser:page
+      for="senaite.core.interfaces.IWorksheet"
+      name="manage_results"
+      class="senaite.core.browser.worksheet.views.ManageResultsView"
+      permission="senaite.core.permissions.ViewResults"
+      layer="senaite.core.interfaces.IBikaLIMS"
+      />
+
+  <browser:page
+      for="senaite.core.interfaces.IWorksheet"
+      name="add_analyses"
+      class="senaite.core.browser.worksheet.views.AddAnalysesView"
+      permission="senaite.core.permissions.EditWorksheet"
+      layer="senaite.core.interfaces.IBikaLIMS"
+      />
+
+  <!-- Analyses Classic View -->
+  <browser:page
+      for="senaite.core.interfaces.IWorksheet"
+      name="analyses_classic_view"
+      class="senaite.core.browser.worksheet.views.AnalysesView"
+      permission="senaite.core.permissions.EditWorksheet"
+      layer="senaite.core.interfaces.IBikaLIMS"
+      />
+
+  <!-- Analyses Transposed View -->
+  <browser:page
+      for="senaite.core.interfaces.IWorksheet"
+      name="analyses_transposed_view"
+      class="senaite.core.browser.worksheet.views.AnalysesTransposedView"
+      permission="senaite.core.permissions.EditWorksheet"
+      layer="senaite.core.interfaces.IBikaLIMS"
+      />
+
+  <browser:page
+      for="senaite.core.interfaces.IWorksheet"
+      name="add_blank"
+      class="senaite.core.browser.worksheet.views.AddBlankView"
+      permission="senaite.core.permissions.EditWorksheet"
+      layer="senaite.core.interfaces.IBikaLIMS"
+      />
+
+  <browser:page
+      for="senaite.core.interfaces.IWorksheet"
+      name="add_control"
+      class="senaite.core.browser.worksheet.views.AddControlView"
+      permission="senaite.core.permissions.EditWorksheet"
+      layer="senaite.core.interfaces.IBikaLIMS"
+      />
+
+  <browser:page
+      for="senaite.core.interfaces.IWorksheet"
+      name="add_duplicate"
+      class="senaite.core.browser.worksheet.views.AddDuplicateView"
+      permission="senaite.core.permissions.EditWorksheet"
+      layer="senaite.core.interfaces.IBikaLIMS"
+      />
+
+  <browser:page
+      for="senaite.core.interfaces.IWorksheet"
+      name="export"
+      class="senaite.core.browser.worksheet.views.ExportView"
+      permission="senaite.core.permissions.EditWorksheet"
+      layer="senaite.core.interfaces.IBikaLIMS"
+      />
+
+  <browser:page
+      for="senaite.core.interfaces.IWorksheet"
+      name="getWorksheetReferences"
+      class="senaite.core.browser.worksheet.views.ReferenceSamplesView"
+      permission="zope.Public"
+      layer="senaite.core.interfaces.IBikaLIMS"
+      />
+
+  <browser:page
+      for="senaite.core.interfaces.IWorksheet"
+      name="print"
+      class="senaite.core.browser.worksheet.views.PrintView"
+      permission="senaite.core.permissions.EditWorksheet"
+      layer="senaite.core.interfaces.IBikaLIMS"
+      />
+
+
+  <!-- Ajax signatures -->
+
+  <browser:page
+      for="senaite.core.interfaces.IWorksheet"
+      name="getServices"
+      class="senaite.core.browser.worksheet.ajax.GetServices"
+      permission="zope.Public"
+      layer="senaite.core.interfaces.IBikaLIMS"
+      />
+
+  <browser:page
+      for="senaite.core.interfaces.IWorksheet"
+      name="attachAnalyses"
+      class="senaite.core.browser.worksheet.ajax.AttachAnalyses"
+      permission="zope.Public"
+      layer="senaite.core.interfaces.IBikaLIMS"
+      />
+
+  <browser:page
+      for="senaite.core.interfaces.IWorksheet"
+      name="set_analyst"
+      class="senaite.core.browser.worksheet.ajax.SetAnalyst"
+      permission="zope.Public"
+      layer="senaite.core.interfaces.IBikaLIMS"
+      />
+
+  <browser:page
+      for="senaite.core.interfaces.IWorksheet"
+      name="set_instrument"
+      class="senaite.core.browser.worksheet.ajax.SetInstrument"
+      permission="zope.Public"
+      layer="senaite.core.interfaces.IBikaLIMS"
+      />
+
+</configure>

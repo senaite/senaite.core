@@ -1,0 +1,20 @@
+/*.referencewidget{
+
+}
+*/
+.reference_multi_item {
+    text-align: left;
+}
+
+.reference_multi_item .deletebtn,
+.reference_multi_item .ar_deletebtn {
+    border: 0;
+    cursor: pointer;
+    height: 1em;
+    margin-right: 5px;
+}
+
+.reference_multi_item .deletebtn img,
+.reference_multi_item .deletebtn img {
+    height: 13px;
+}

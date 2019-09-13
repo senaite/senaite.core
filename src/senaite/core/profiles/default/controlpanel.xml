@@ -1,0 +1,323 @@
+<?xml version="1.0"?>
+
+<object name="portal_controlpanel" meta_type="Plone Control Panel Tool"
+ xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+ i18n:domain="plone">
+
+ <configlet title="Setup" action_id="bika_setup"
+    appId="senaite.core" category="bika" condition_expr=""
+    icon_expr="string:++resource++senaite.core.images/bikasetup.png"
+    url_expr="string:$portal_url/bika_setup/edit"
+    visible="True">
+  <permission>senaite.core: Manage Bika</permission>
+ </configlet>
+
+ <configlet title="Laboratory Information" action_id="bika_labinfo"
+    appId="senaite.core" category="bika" condition_expr=""
+    icon_expr="string:++resource++senaite.core.images/laboratory.png"
+    url_expr="string:$portal_url/bika_setup/laboratory/base_edit"
+    visible="True"
+    i18n:attributes="title">
+  <permission>senaite.core: Manage Bika</permission>
+ </configlet>
+
+ <configlet title="Lab Departments" action_id="bika_departments"
+    appId="senaite.core" category="bika" condition_expr=""
+    icon_expr="string:++resource++senaite.core.images/department.png"
+    url_expr="string:$portal_url/bika_setup/bika_departments"
+    visible="True"
+    i18n:attributes="title">
+  <permission>senaite.core: Manage Bika</permission>
+ </configlet>
+
+ <configlet title="Lab Contacts" action_id="bika_labcontacts"
+    appId="senaite.core" category="bika" condition_expr=""
+    icon_expr="string:++resource++senaite.core.images/labcontact.png"
+    url_expr="string:$portal_url/bika_setup/bika_labcontacts"
+    visible="True"
+    i18n:attributes="title">
+  <permission>senaite.core: Manage Bika</permission>
+ </configlet>
+
+ <configlet title="Analysis Categories" action_id="bika_analysiscategories"
+    appId="senaite.core" category="bika" condition_expr=""
+    icon_expr="string:++resource++senaite.core.images/category.png"
+    url_expr="string:$portal_url/bika_setup/bika_analysiscategories"
+    visible="True"
+    i18n:attributes="title">
+  <permission>senaite.core: Manage Bika</permission>
+ </configlet>
+
+ <configlet title="Analysis Services" action_id="bika_analysisservices"
+    appId="senaite.core" category="bika" condition_expr=""
+    icon_expr="string:++resource++senaite.core.images/analysisservice.png"
+    url_expr="string:$portal_url/bika_setup/bika_analysisservices"
+    visible="True"
+    i18n:attributes="title">
+  <permission>senaite.core: Manage Bika</permission>
+ </configlet>
+
+ <configlet title="Identifier Types" action_id="bika_identifiertypes"
+            appId="senaite.core" category="bika" condition_expr=""
+            icon_expr="string:++resource++senaite.core.images/identifiertype.png"
+            url_expr="string:$portal_url/bika_setup/bika_identifiertypes"
+            visible="True"
+            i18n:attributes="title">
+     <permission>senaite.core: Manage Bika</permission>
+ </configlet>
+
+ <configlet title="Analysis Specifications" action_id="bika_analysisspecs"
+    appId="senaite.core" category="bika" condition_expr=""
+    icon_expr="string:++resource++senaite.core.images/analysisspec.png"
+    url_expr="string:$portal_url/bika_setup/bika_analysisspecs"
+    visible="True"
+    i18n:attributes="title">
+  <permission>senaite.core: Manage Bika</permission>
+ </configlet>
+
+  <configlet title="Sample Conditions" action_id="bika_sampleconditions"
+    appId="senaite.core" category="bika" condition_expr=""
+    icon_expr="string:++resource++senaite.core.images/samplecondition.png"
+    url_expr="string:$portal_url/bika_setup/bika_sampleconditions"
+    visible="True"
+    i18n:attributes="title">
+  <permission>senaite.core: Manage Bika</permission>
+ </configlet>
+
+ <configlet title="Sample Matrices" action_id="bika_samplematrices"
+    appId="senaite.core" category="bika" condition_expr=""
+    icon_expr="string:++resource++senaite.core.images/samplematrix.png"
+    url_expr="string:$portal_url/bika_setup/bika_samplematrices"
+    visible="True"
+    i18n:attributes="title">
+  <permission>senaite.core: Manage Bika</permission>
+ </configlet>
+
+ <configlet title="Sample Types" action_id="bika_sampletypes"
+    appId="senaite.core" category="bika" condition_expr=""
+    icon_expr="string:++resource++senaite.core.images/sampletype.png"
+    url_expr="string:$portal_url/bika_setup/bika_sampletypes"
+    visible="True"
+    i18n:attributes="title">
+  <permission>senaite.core: Manage Bika</permission>
+ </configlet>
+
+ <configlet title="Sample Points" action_id="bika_samplepoints"
+    appId="senaite.core" category="bika" condition_expr=""
+    icon_expr="string:++resource++senaite.core.images/samplepoint.png"
+    url_expr="string:$portal_url/bika_setup/bika_samplepoints"
+    visible="True"
+    i18n:attributes="title">
+  <permission>senaite.core: Manage Bika</permission>
+ </configlet>
+
+ <configlet title="Sampling Deviations" action_id="bika_samplingdeviations"
+    appId="senaite.core" category="bika" condition_expr=""
+    icon_expr="string:++resource++senaite.core.images/samplingdeviation.png"
+    url_expr="string:$portal_url/bika_setup/bika_samplingdeviations"
+    visible="True"
+    i18n:attributes="title">
+  <permission>senaite.core: Manage Bika</permission>
+ </configlet>
+
+ <configlet title="Instruments" action_id="bika_instruments"
+    appId="senaite.core" category="bika" condition_expr=""
+    icon_expr="string:++resource++senaite.core.images/instrument.png"
+    url_expr="string:$portal_url/bika_setup/bika_instruments"
+    visible="True"
+    i18n:attributes="title">
+  <permission>senaite.core: Manage Bika</permission>
+ </configlet>
+
+ <configlet title="Instrument Types" action_id="bika_instrumenttypes"
+    appId="senaite.core" category="bika" condition_expr=""
+    icon_expr="string:++resource++senaite.core.images/instrumenttype.png"
+    url_expr="string:$portal_url/bika_setup/bika_instrumenttypes"
+    visible="True"
+    i18n:attributes="title">
+  <permission>senaite.core: Manage Bika</permission>
+ </configlet>
+
+ <configlet title="Instrument Locations" action_id="bika_instrumentlocations"
+    appId="senaite.core" category="bika" condition_expr=""
+    icon_expr="string:++resource++senaite.core.images/instrumenttype.png"
+    url_expr="string:$portal_url/bika_setup/bika_instrumentlocations"
+    visible="True"
+    i18n:attributes="title">
+  <permission>senaite.core: Manage Bika</permission>
+ </configlet>
+
+ <configlet title="Methods" action_id="methods"
+    appId="senaite.core" category="bika" condition_expr=""
+    icon_expr="string:++resource++senaite.core.images/method.png"
+    url_expr="string:$portal_url/methods"
+    visible="True"
+    i18n:attributes="title">
+  <permission>senaite.core: Manage Bika</permission>
+ </configlet>
+
+ <configlet title="Preservations" action_id="bika_preservations"
+    appId="senaite.core" category="bika" condition_expr=""
+    icon_expr="string:++resource++senaite.core.images/preservation.png"
+    url_expr="string:$portal_url/bika_setup/bika_preservations"
+    visible="True"
+    i18n:attributes="title">
+  <permission>senaite.core: Manage Bika</permission>
+ </configlet>
+
+ <configlet title="Attachment Types" action_id="bika_attachmenttypes"
+    appId="senaite.core" category="bika" condition_expr=""
+    icon_expr="string:++resource++senaite.core.images/attachment.png"
+    url_expr="string:$portal_url/bika_setup/bika_attachmenttypes"
+    visible="True"
+    i18n:attributes="title">
+  <permission>senaite.core: Manage Bika</permission>
+ </configlet>
+
+ <configlet title="Calculations" action_id="bika_calculations"
+    appId="senaite.core" category="bika" condition_expr=""
+    icon_expr="string:++resource++senaite.core.images/calculation.png"
+    url_expr="string:$portal_url/bika_setup/bika_calculations"
+    visible="True"
+    i18n:attributes="title">
+  <permission>senaite.core: Manage Bika</permission>
+ </configlet>
+
+ <configlet title="Containers" action_id="bika_containers"
+    appId="senaite.core" category="bika" condition_expr=""
+    icon_expr="string:++resource++senaite.core.images/container.png"
+    url_expr="string:$portal_url/bika_setup/bika_containers"
+    visible="True"
+    i18n:attributes="title">
+  <permission>senaite.core: Manage Bika</permission>
+ </configlet>
+
+ <configlet title="Container Types" action_id="bika_containertypes"
+    appId="senaite.core" category="bika" condition_expr=""
+    icon_expr="string:++resource++senaite.core.images/container.png"
+    url_expr="string:$portal_url/bika_setup/bika_containertypes"
+    visible="True"
+    i18n:attributes="title">
+  <permission>senaite.core: Manage Bika</permission>
+ </configlet>
+
+ <configlet title="Analysis Profiles" action_id="bika_analysisprofiles"
+    appId="senaite.core" category="bika" condition_expr=""
+    icon_expr="string:++resource++senaite.core.images/analysisprofile.png"
+    url_expr="string:$portal_url/bika_setup/bika_analysisprofiles"
+    visible="True"
+    i18n:attributes="title">
+  <permission>senaite.core: Manage Bika</permission>
+ </configlet>
+
+ <configlet title="AR Templates" action_id="bika_artemplates"
+    appId="senaite.core" category="bika" condition_expr=""
+    icon_expr="string:++resource++senaite.core.images/artemplate.png"
+    url_expr="string:$portal_url/bika_setup/bika_artemplates"
+    visible="True"
+    i18n:attributes="title">
+  <permission>senaite.core: Manage Bika</permission>
+ </configlet>
+
+ <configlet title="Lab Products" action_id="bika_labproducts"
+    appId="senaite.core" category="bika" condition_expr=""
+    icon_expr="string:++resource++senaite.core.images/product.png"
+    url_expr="string:$portal_url/bika_setup/bika_labproducts"
+    visible="True"
+    i18n:attributes="title">
+  <permission>senaite.core: Manage Bika</permission>
+ </configlet>
+
+ <configlet title="Manufacturers"
+    action_id="bika_manufacturers"
+    appId="senaite.core" category="bika" condition_expr=""
+    icon_expr="string:++resource++senaite.core.images/manufacturer.png"
+    url_expr="string:$portal_url/bika_setup/bika_manufacturers"
+    visible="True"
+    i18n:attributes="title">
+  <permission>senaite.core: Manage Bika</permission>
+ </configlet>
+
+ <configlet title="Suppliers"
+    action_id="bika_suppliers"
+    appId="senaite.core" category="bika" condition_expr=""
+    icon_expr="string:++resource++senaite.core.images/supplier.png"
+    url_expr="string:$portal_url/bika_setup/bika_suppliers"
+    visible="True"
+    i18n:attributes="title">
+  <permission>senaite.core: Manage Bika</permission>
+ </configlet>
+
+ <configlet title="Reference Definitions" action_id="bika_referencedefinitions"
+    appId="senaite.core" category="bika" condition_expr=""
+    icon_expr="string:++resource++senaite.core.images/referencedefinition.png"
+    url_expr="string:$portal_url/bika_setup/bika_referencedefinitions"
+    visible="True"
+    i18n:attributes="title">
+  <permission>senaite.core: Manage Bika</permission>
+ </configlet>
+
+  <configlet title="Batch Labels" action_id="bika_batchlabels"
+    appId="senaite.core" category="bika" condition_expr=""
+    icon_expr="string:++resource++senaite.core.images/batchlabel.png"
+    url_expr="string:$portal_url/bika_setup/bika_batchlabels"
+    visible="True"
+    i18n:attributes="title">
+  <permission>senaite.core: Manage Bika</permission>
+ </configlet>
+
+ <configlet title="Worksheet Templates" action_id="bika_worksheettemplates"
+    appId="senaite.core" category="bika" condition_expr=""
+    icon_expr="string:++resource++senaite.core.images/worksheettemplate.png"
+    url_expr="string:$portal_url/bika_setup/bika_worksheettemplates"
+    visible="True"
+    i18n:attributes="title">
+  <permission>senaite.core: Manage Bika</permission>
+ </configlet>
+
+ <configlet title="Storage Locations" action_id="bika_storagelocations"
+    appId="senaite.core" category="bika" condition_expr=""
+    icon_expr="string:++resource++senaite.core.images/storagelocation.png"
+    url_expr="string:$portal_url/bika_setup/bika_storagelocations"
+    visible="True"
+    i18n:attributes="title">
+  <permission>senaite.core: Manage Bika</permission>
+ </configlet>
+
+ <configlet title="Sampling Round Templates" action_id="bika_srtemplates"
+    appId="senaite.core" category="bika" condition_expr=""
+    icon_expr="string:++resource++senaite.core.images/srtemplate.png"
+    url_expr="string:$portal_url/bika_setup/bika_srtemplates"
+    visible="True"
+    i18n:attributes="title">
+  <permission>senaite.core: Manage Bika</permission>
+ </configlet>
+
+ <configlet title="Sub-groups" action_id="bika_subgroups"
+    appId="senaite.core" category="bika" condition_expr=""
+    icon_expr="string:++resource++senaite.core.images/batch.png"
+    url_expr="string:$portal_url/bika_setup/bika_subgroups"
+    visible="True"
+    i18n:attributes="title">
+  <permission>senaite.core: Manage Bika</permission>
+ </configlet>
+
+ <configlet title="Sampling Rounds" action_id="bika_samplingrounds"
+    appId="senaite.core" category="bika" condition_expr=""
+    icon_expr="string:++resource++senaite.core.images/batch.png"
+    url_expr="string:$portal_url/bika_setup/bika_samplingrounds"
+    visible="True"
+    i18n:attributes="title">
+  <permission>senaite.core: Manage Bika</permission>
+ </configlet>
+
+ <configlet title="Reflex Rules" action_id="bika_reflexrulefolder"
+    appId="senaite.core" category="bika" condition_expr=""
+    icon_expr="string:++resource++senaite.core.images/reflexrule.png"
+    url_expr="string:$portal_url/bika_setup/bika_reflexrulefolder"
+    visible="True"
+    i18n:attributes="title">
+  <permission>senaite.core: Manage Bika</permission>
+ </configlet>
+
+</object>

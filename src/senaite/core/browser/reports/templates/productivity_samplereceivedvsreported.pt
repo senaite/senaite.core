@@ -1,0 +1,61 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+        i18n:domain="senaite.core"
+        tal:define="portal_url nocall:context/portal_url;
+        portal portal_url/getPortalObject;">
+
+<head>
+    <link rel="stylesheet" type="text/css" media="all" href=""
+            tal:attributes="href string:$portal_url/reports.css" />
+</head>
+
+<body tal:define="
+        report_data view/report_data;
+        parameters python:report_data.has_key('parameters') and report_data['parameters'] or [];
+        datalines python:report_data.has_key('datalines') and report_data['datalines'] or {};
+        footlines python:report_data.has_key('footlines') and report_data['footlines'] or {};">
+
+<h3 i18n:translate="">Samples received vs. reported</h3>
+
+<!-- Summary -->
+<table class="bika-report-parms" summary="Parameters">
+    <tr tal:repeat="line parameters">
+        <td tal:content="python:line['title']"></td>
+        <td tal:content="python:line['value']"></td>
+    </tr>
+</table>
+
+<!-- Results -->
+<table class="bika-report-table" summary="Results">
+    <thead>
+    <tr>
+        <th i18n:translate="">Period</th>
+        <th i18n:translate="">Received</th>
+        <th i18n:translate="">Published</th>
+        <th i18n:translate="">Unpublished</th>
+        <th i18n:translate="">%</th>
+    </tr>
+    </thead>
+    <tbody>
+    <metal:block tal:repeat="key python:datalines.keys()">
+        <tr>
+            <td tal:content="key"></td>
+            <td tal:content="python:datalines[key]['ReceivedCount']"></td>
+            <td tal:content="python:datalines[key]['PublishedCount']"></td>
+            <td tal:content="python:datalines[key]['UnpublishedCount']"></td>
+            <td tal:content="python:datalines[key]['RatioPercentage']"></td>
+        </tr>
+    </metal:block>
+    </tbody>
+    <tfoot>
+    <tr>
+        <td class='total_label' i18n:translate="">Total</td>
+        <td tal:content="python:footlines['Total']['ReceivedCount']"></td>
+        <td tal:content="python:footlines['Total']['PublishedCount']"></td>
+        <td tal:content="python:footlines['Total']['UnpublishedCount']"></td>
+        <td tal:content="python:footlines['Total']['RatioPercentage']"></td>
+    </tr>
+    </tfoot>
+</table>
+</body>
+</html>

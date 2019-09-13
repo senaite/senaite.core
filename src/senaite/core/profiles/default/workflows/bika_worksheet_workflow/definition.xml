@@ -1,0 +1,309 @@
+<?xml version="1.0"?>
+<dc-workflow xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+             workflow_id="bika_worksheet_workflow"
+             title="Bika Worksheet Workflow"
+             description=""
+             state_variable="review_state"
+             initial_state="open"
+             manager_bypass="False"
+             i18n:domain="senaite.core">
+
+  <permission>senaite.core: Add Attachment</permission>
+  <permission>senaite.core: Transition: Assign Analysis</permission>
+  <permission>senaite.core: Edit Worksheet</permission>
+  <permission>senaite.core: Transition: Retract</permission>
+  <permission>senaite.core: Transition: Reject Worksheet</permission>
+  <permission>senaite.core: Transition: Remove Worksheet</permission>
+  <permission>senaite.core: Transition: Unassign Analysis</permission>
+  <permission>senaite.core: View Results</permission>
+  <permission>Modify portal content</permission>
+
+  <state state_id="attachment_due" title="Attachment due" i18n:attributes="title">
+    <exit-transition transition_id="attach" />
+    <exit-transition transition_id="reject" />
+    <permission-map name="senaite.core: Transition: Reject Worksheet" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Remove Worksheet" acquired="False"/>
+    <permission-map name="senaite.core: Add Attachment" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="senaite.core: Transition: Assign Analysis" acquired="True"/>
+    <permission-map name="senaite.core: Edit Worksheet" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="senaite.core: Transition: Retract" acquired="False">
+    </permission-map>
+    <permission-map name="senaite.core: Transition: Unassign Analysis" acquired="True"/>
+    <permission-map name="senaite.core: View Results" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="Modify portal content" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+  </state>
+
+  <state state_id="open" title="Open" i18n:attributes="title">
+    <exit-transition transition_id="submit" />
+    <exit-transition transition_id="remove" />
+    <permission-map name="senaite.core: Transition: Reject Worksheet" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Remove Worksheet" acquired="True"/>
+    <permission-map name="senaite.core: Add Attachment" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="senaite.core: Transition: Assign Analysis" acquired="True"/>
+    <permission-map name="senaite.core: Edit Worksheet" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="senaite.core: Transition: Retract" acquired="False">
+    </permission-map>
+    <permission-map name="senaite.core: Transition: Unassign Analysis" acquired="True"/>
+    <permission-map name="senaite.core: View Results" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="Modify portal content" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+  </state>
+
+  <state state_id="rejected" title="Rejected" i18n:attributes="title">
+    <exit-transition transition_id="" />
+    <permission-map name="senaite.core: Transition: Reject Worksheet" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Remove Worksheet" acquired="False"/>
+    <permission-map name="senaite.core: Add Attachment" acquired="False">
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="senaite.core: Transition: Assign Analysis" acquired="False"/>
+    <permission-map name="senaite.core: Edit Worksheet" acquired="False">
+    </permission-map>
+    <permission-map name="senaite.core: Transition: Retract" acquired="False">
+    </permission-map>
+    <permission-map name="senaite.core: Transition: Unassign Analysis" acquired="False"/>
+    <permission-map name="senaite.core: View Results" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="Modify portal content" acquired="False">
+      <permission-role>Manager</permission-role>
+    </permission-map>
+  </state>
+
+  <state state_id="to_be_verified" title="To be verified" i18n:attributes="title">
+    <exit-transition transition_id="verify" />
+    <exit-transition transition_id="retract" />
+    <exit-transition transition_id="reject" />
+    <exit-transition transition_id="rollback_to_open" />
+    <permission-map name="senaite.core: Transition: Reject Worksheet" acquired="True"/>
+    <permission-map name="senaite.core: Transition: Remove Worksheet" acquired="False"/>
+    <permission-map name="senaite.core: Add Attachment" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="senaite.core: Transition: Assign Analysis" acquired="True"/>
+    <permission-map name="senaite.core: Edit Worksheet" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="senaite.core: Transition: Retract" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="senaite.core: Transition: Unassign Analysis" acquired="True"/>
+    <permission-map name="senaite.core: View Results" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="Modify portal content" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+  </state>
+
+  <state state_id="verified" title="Verified" i18n:attributes="title">
+    <exit-transition transition_id="retract" />
+    <permission-map name="senaite.core: Transition: Reject Worksheet" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Remove Worksheet" acquired="False"/>
+    <permission-map name="senaite.core: Add Attachment" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="senaite.core: Transition: Assign Analysis" acquired="False"/>
+    <permission-map name="senaite.core: Edit Worksheet" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="senaite.core: Transition: Retract" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="senaite.core: Transition: Unassign Analysis" acquired="False"/>
+    <permission-map name="senaite.core: View Results" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="Modify portal content" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+  </state>
+
+  <transition transition_id="attach" title="Attach" new_state="to_be_verified" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Add attachment</action>
+    <guard>
+      <guard-expression>python:here.guard_attach_transition()</guard-expression>
+    </guard>
+  </transition>
+
+  <transition transition_id="reject" title="Reject" new_state="rejected" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Reject</action>
+    <guard>
+      <guard-permission>senaite.core: Transition: Reject Worksheet</guard-permission>
+      <guard-expression>python:here.guard_handler("reject")</guard-expression>
+    </guard>
+  </transition>
+
+  <!-- Transition: retract
+  Shortcut that retracts all analyses the Worksheet contains.
+  The analyses of the worksheet transition to "retracted" state and a new copy
+  of each one is created and assigned to the same worksheet. -->
+  <transition transition_id="retract" title="Retract"
+              new_state="open" trigger="USER" before_script=""
+              after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Retract</action>
+    <guard>
+      <guard-permission>senaite.core: Transition: Retract</guard-permission>
+      <guard-expression>python:here.guard_handler("retract")</guard-expression>
+    </guard>
+  </transition>
+
+  <!-- Transition: rollback_to_open
+  This transition is used for rolling back the Worksheet to open state when
+  transitions performed to its analyses might cause an inconsistent state.
+  E.g. if the WS is in "to_be_verified" state and a single analysis is
+  retracted, then the WS must be transitioned to "open".
+  This prevents the "bad" use of changeWorkflowState func in favor of a
+  consistent transition.
+  No need of guard-permission here, because:
+    1) This transition is governed by the permissions set in analysis workflow.
+    2) The guard always returns False unless there is an inconsistency
+  -->
+  <transition transition_id="rollback_to_open" title="Rollback"
+              new_state="open" trigger="USER" before_script=""
+              after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Rollback</action>
+    <guard>
+      <guard-expression>python:here.guard_handler("rollback_to_open")</guard-expression>
+    </guard>
+  </transition>
+
+  <!-- Transition: remove
+  This transition is used for removing empty Worksheets
+  -->
+  <transition transition_id="remove" title="Remove"
+              new_state="open" trigger="USER" before_script=""
+              after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Remove</action>
+    <guard>
+      <guard-permission>senaite.core: Transition: Remove Worksheet</guard-permission>
+      <guard-expression>python:here.guard_handler("remove")</guard-expression>
+    </guard>
+  </transition>
+
+  <transition transition_id="submit" title="Submit" new_state="attachment_due" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Submit for verification</action>
+    <guard>
+      <guard-expression>python:here.guard_handler("submit")</guard-expression>
+    </guard>
+  </transition>
+
+  <transition transition_id="verify" title="Verify" new_state="verified" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <action url="" category="workflow" icon="">Verify</action>
+    <guard>
+      <guard-expression>python:here.guard_handler("verify")</guard-expression>
+    </guard>
+  </transition>
+
+  <variable variable_id="action" for_catalog="False" for_status="True" update_always="True">
+    <description>Previous transition</description>
+    <default>
+      <expression>transition/getId|nothing</expression>
+    </default>
+    <guard>
+    </guard>
+  </variable>
+
+  <variable variable_id="actor" for_catalog="False" for_status="True" update_always="True">
+    <description>The ID of the user who performed the last transition</description>
+    <default>
+      <expression>user/getId</expression>
+    </default>
+    <guard>
+    </guard>
+  </variable>
+
+  <variable variable_id="comments" for_catalog="False" for_status="True" update_always="True">
+    <description>Comment about the last transition</description>
+    <default>
+      <expression>python:state_change.kwargs.get('comment', '')</expression>
+    </default>
+    <guard>
+    </guard>
+  </variable>
+
+  <variable variable_id="review_history" for_catalog="False" for_status="False" update_always="False">
+    <description>Provides access to workflow history</description>
+    <default>
+      <expression>state_change/getHistory</expression>
+    </default>
+    <guard>
+    </guard>
+  </variable>
+
+  <variable variable_id="time" for_catalog="False" for_status="True" update_always="True">
+    <description>When the previous transition was performed</description>
+    <default>
+      <expression>state_change/getDateTime</expression>
+    </default>
+    <guard>
+    </guard>
+  </variable>
+
+</dc-workflow>

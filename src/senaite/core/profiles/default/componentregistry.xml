@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<componentregistry>
+  <utilities>
+
+    <utility
+      component="senaite.core.controlpanel.bika_idserver.bika_idserver"
+      interface="senaite.core.interfaces.IIdServer"
+      provides="senaite.core.interfaces.IIdServer"/>
+
+  </utilities>
+</componentregistry>

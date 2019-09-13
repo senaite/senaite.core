@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<!-- This file holds the setup configuration of the viewlet managers
+     for the "bika" skin.
+     -->
+
+<object>
+
+    <order manager="plone.portalfooter" skinname="bika" based-on="Plone Default">
+        <viewlet name="senaite.core.authenticator" insert-before="plone.colophon"/>
+    </order>
+
+</object>

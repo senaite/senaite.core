@@ -1,0 +1,87 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      metal:use-macro="here/main_template/macros/master"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      i18n:domain="senaite.core">
+  <body>
+    <metal:content-title fill-slot="content-title">
+      <h1>
+        <img tal:condition="view/icon | nothing"
+             tal:attributes="src view/icon"/>
+        <span tal:replace="structure view/title"/>
+      </h1>
+
+      <div class="worksheet_add_controls" tal:condition="python:view.is_manage_allowed()">
+        <form class="form form-inline"
+              name="worksheet-add-form"
+              action="worksheet_add"
+              method="POST">
+
+          <!-- N.B. the class is picked up by bika.lims.worksheet.get_template_instrument -->
+          <input tal:condition="python:context.portal_type == 'WorksheetFolder'"
+                 type="hidden"
+                 class="templateinstruments"
+                 tal:attributes="value view/getTemplateInstruments"/>
+
+          <div class="form-group">
+            <select name="analyst"
+                    class="analyst form-control input-sm"
+                    tal:define="alist view/getAnalysts">
+              <option value="" i18n:translate="">Select analyst</option>
+              <tal:options repeat="option alist">
+                <option
+                  tal:condition="python:option"
+                  tal:attributes="value python:option"
+                  tal:content="python:alist.getValue(option)"/>
+              </tal:options>
+            </select>
+            <span class="fieldRequired" style=""></span>
+          </div>
+
+          <div class="form-group">
+            <select name="template"
+                    class="template form-control input-sm"
+                    tal:define="wstlist view/getWorksheetTemplates">
+              <option value="" i18n:translate="">Select template</option>
+              <tal:options repeat="option wstlist">
+                <option
+                  tal:attributes="value python:option"
+                  tal:content="python:wstlist.getValue(option)"/>
+              </tal:options>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <select name="instrument"
+                    class="instrument form-control input-sm"
+                    tal:define="instrlist view/getInstruments">
+              <option value="" i18n:translate="">Select instrument</option>
+              <tal:options repeat="option instrlist">
+                <option
+                  tal:attributes="value python:option"
+                  tal:content="python:instrlist.getValue(option)"/>
+              </tal:options>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <tal:add_actions repeat="add_item python:view.context_actions.keys()">
+              <input type="submit"
+                     class="btn btn-primary btn-sm"
+                     tal:attributes="name add_item;
+                           value add_item;
+                           href python:view.context_actions[add_item]['url'];"/>
+            </tal:add_actions>
+          </div>
+        </form>
+      </div>
+    </metal:content-title>
+
+    <metal:content-core fill-slot="content-core">
+      <div id="folderlisting-main-table"
+           tal:content="structure view/contents_table"/>
+    </metal:content-core>
+
+  </body>
+</html>

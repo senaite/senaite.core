@@ -1,0 +1,132 @@
+/* <dtml-with bika_reports>
+<dtml-call "REQUEST.set('portal_url', portal_url())">
+*/
+
+/* General Bika Report Table
+*/
+@page {
+    size: A4;
+    margin: 1cm;
+    @bottom-right {
+        content: "Page " counter(page) " of " counter(pages);
+        font-size:65%;
+    }
+}
+
+body {
+    font-family: &dtml-fontFamily;;
+    background-color: &dtml-backgroundColor;;
+    color: &dtml-fontColor;;
+    font-size:65%;
+}
+
+/* Header styles
+*/
+h1 {
+    font-size: 140%;
+    margin-bottom: 10px;
+}
+h2 {
+}
+h3 {
+}
+
+/* logos and addresses at the top of the first page
+*/
+.header_table {
+    width:100%;
+    font-size: 100%;
+}
+
+.category_heading {
+    font-size: 110%;
+    font-weight:bold;
+    border: &dtml-borderWidth; &dtml-borderStyle; &dtml-borderColor;;
+    background-color:#efefef;
+    margin-bottom:10px;
+}
+
+.number {
+    text-align: right
+}
+.total {
+    font-size: 120%;
+    font-weight:bold;
+    background-color:#efefef;
+    /*border: &dtml-borderWidth; &dtml-borderStyle; &dtml-borderColor;;*/
+}
+
+.bika-report-parms {
+    font-size: 100%;
+	border-collapse:collapse;
+    margin-bottom: 15px;
+}
+
+.bika-report-parms td,
+    font-size: 100%;
+    padding:1px 10px;
+}
+
+.bika-report-parms th {
+    font-size: 100%;
+    padding:1px 10px;
+    white-space:nowrap;
+}
+
+.bika-report-table {
+    width: 100%;
+    font-size: &dtml-fontBaseSize;;
+    margin-bottom: 15px !important;
+}
+table.bika-report-table {
+	border-collapse:collapse;
+	padding:0;
+}
+
+.bika-report-table-header {
+    padding-bottom:5px;
+    -pdf-keep-with-next: true
+}
+
+.bika-report-table a {
+    text-decoration: none;
+}
+
+.bika-report-table tr {
+    padding:1px 10px;
+}
+
+.bika-report-table th {
+    color: &dtml-tableHeaderTextColor;;
+    padding:0 4px;
+    font-size: 75% !important;
+    text-align:left;
+    vertical-align: middle !important;
+    border-bottom: 2px solid #bbb;
+}
+
+.bika-report-table td {
+    font-size: &dtml-fontBaseSize; !important;
+    font-size: 65% !important;
+    vertical-align: middle !important;
+    text-align:left;
+    padding:1px 4px;
+    border-bottom: 1px solid #ddd;
+}
+
+.bika-report-table .column,
+.bika-report-table .interim,
+.bika-report-table .Result,
+.bika-report-table .getId,
+.bika-report-table .Title,
+.bika-report-table .ID {
+    white-space:nowrap !important;
+}
+
+.total_label {
+	font-weight:bold;
+	text-align:right;
+}
+
+/* </dtml-with> */
+

@@ -1,0 +1,27 @@
+<div class="field" tal:attributes="style view/style|nothing"
+        tal:condition="not:here/member_is_client" i18n:domain="senaite.core">
+
+    <label i18n:translate="">Contact</label>
+    <br/>
+
+    <select name="ContactUID:ignore_empty"
+            style=""
+            id="ContactUID"
+            tal:attributes="style string:font-family:${here/base_properties/fontFamily};;font-size:100%;">
+
+        <option value=""/>
+
+        <tal:contacts
+                tal:repeat="contact view/contacts">
+
+            <option value=""
+                    tal:define="contact_uid python:contact.getObject().UID() if contact else ''"
+                    tal:attributes="value contact_uid;
+                            selected python:request.get('ContactUID', '') == contact_uid and 'selected' or ''"
+                    tal:content="contact/Title"></option>
+
+        </tal:contacts>
+
+    </select>
+
+</div>

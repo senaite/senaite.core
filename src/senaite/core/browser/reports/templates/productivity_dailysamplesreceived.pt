@@ -1,0 +1,79 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+        i18n:domain="senaite.core"
+        tal:define="portal_url nocall:context/portal_url;
+        portal portal_url/getPortalObject;">
+
+<head>
+    <link rel="stylesheet" type="text/css" media="all" href=""
+            tal:attributes="href string:$portal_url/reports.css" />
+</head>
+
+<body tal:define="
+        report_data view/report_data;
+        parameters python:report_data.has_key('parameters') and report_data['parameters'] or [];
+        datalines python:report_data.has_key('datalines') and report_data['datalines'] or [];
+        footlines python:report_data.has_key('footlines') and report_data['footlines'] or [];">
+
+<!--
+
+Report customization notes
+==========================================================================
+Available attributes:
+    parameters[]
+
+    datalines: dictionary with results. Attributes for each dataline:
+        - AnalysisKeyword: The keyword of the analysis attached to a sample
+        - AnalysisTitle: The name of the analysis attached to a sample
+        - SampleID: Identifier of the sample
+        - SampleType: Title of the sample type attached to sample
+        - SampleDateReceived: Date of sample reception in lab
+        - SampleSamplingDate
+
+    footlines[0]
+        - TotalCount: Number of result lines
+
+-->
+
+<h1 i18n:translate="">Daily samples received</h1>
+<!-- <h3 i18n:translate="">Samples received for a date range</h3> -->
+
+<!-- Summary -->
+<table class="bika-report-parms" summary="Parameters">
+    <tr tal:repeat="line parameters">
+        <td tal:content="python:line['title']"></td>
+        <td tal:content="python:line['value']"></td>
+    </tr>
+</table>
+
+<!-- Results -->
+<table class="bika-report-table" summary="Results">
+    <thead>
+    <tr>
+        <th i18n:translate="">Analysis</th>
+        <th i18n:translate="">Sample ID</th>
+        <th i18n:translate="">Sample Type</th>
+        <th i18n:translate="">Date received</th>
+    </tr>
+    </thead>
+    <tbody>
+    <metal:block tal:repeat="line datalines">
+        <tr>
+            <td tal:content="python:line['AnalysisTitle']"></td>
+            <td tal:content="python:line['SampleID']"></td>
+            <td tal:content="python:line['SampleType']"></td>
+            <td tal:content="python:line['DateReceived']"></td>
+        </tr>
+    </metal:block>
+    </tbody>
+    <tfoot>
+    <metal:block tal:repeat="line footlines">
+        <tr>
+            <td i18n:translate="" class='total_label'>Total:</td>
+            <td tal:content="python:line['TotalCount']" colspan="3"></td>
+        </tr>
+    </metal:block>
+    </tfoot>
+</table>
+</body>
+</html>

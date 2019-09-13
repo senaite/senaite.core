@@ -1,0 +1,146 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+        i18n:domain="senaite.core"
+        tal:define="portal_url nocall:context/portal_url;
+        portal portal_url/getPortalObject;">
+
+<head>
+    <link rel="stylesheet" type="text/css" media="all" href=""
+            tal:attributes="href string:$portal_url/reports.css" />
+</head>
+
+<body tal:define="
+        report_data view/report_data;
+        parameters python:report_data.has_key('parameters') and report_data['parameters'] or [];
+        datalines python:report_data.has_key('datalines') and report_data['datalines'] or {};
+        footlines python:report_data.has_key('footlines') and report_data['footlines'] or {};">
+
+<!--
+
+Report customization notes
+==========================================================================
+Available attributes:
+
+   parameters[]
+
+   datalines {
+       <group>: {
+            Group,
+            Requested,
+            Performed,
+            Published,
+            PerformedRequestedRatio,
+            PerformedRequestedRatioPercentage,
+            PublishedPerformedRatio,
+            PublishedPerformedRatioPercentage,,
+            Departments {
+                    <department>: {
+                        Department
+                        Requested,
+                        Performed,
+                        Published,
+                        PerformedRequestedRatio,
+                        PerformedRequestedRatioPercentage,
+                        PublishedPerformedRatio,
+                        PublishedPerformedRatioPercentage
+                    }
+            }
+       }
+   }
+
+   Where:
+   - dict key <group> is the period grouping name (year, monthyear, yearweek)
+   - dict key <department> is the department title
+
+   - Group: The period grouping name
+   - Department: The name of the department
+   - Requested: The number of requested analyses in a group
+   - Published: The number of published analyses in a group
+   - PerformedRequestedRatio: Ratio of performed analyses amongst requested
+   - PerformedRequestedRatioPercentage: PerformedRequestedRatio expressed as percentage
+   - PublishedPerformedRatio: Ratio of published analyses amongst performed in a group
+   - PublishedRatioPercentage: PublishedPerformedRatio expressed as a percentage
+
+   footlines {
+       Total: {
+           Requested,    	- total requested analyses count
+           Published,		- total published analyses count
+           PerformedRequestedRatio,
+           PerformedRequestedRatioPercentage,
+           PublishedPerformedRatio,
+           PublishedPerformedRatioPercentage
+       }
+   }
+
+-->
+
+<h1 i18n:translate="">Analyses summary per department</h1>
+<!-- 		<h3 i18n:translate="">Number of analysis requested and published per department
+							  and expressed as a percentage of all analyses performed</h3>
+ -->
+<!-- Summary -->
+<table class="bika-report-parms" summary="Parameters">
+    <tr tal:repeat="line parameters">
+        <td tal:content="python:line['title']"></td>
+        <td tal:content="python:line['value']"></td>
+    </tr>
+</table>
+
+<!-- Results -->
+<table class="bika-report-table" summary="Results">
+    <thead>
+    <tr>
+        <th i18n:translate="" tal:condition="python:len(datalines.keys()[0])>0">
+            Period
+        </th>
+        <th i18n:translate="">Department</th>
+        <th i18n:translate="">Requested</th>
+        <th i18n:translate="">Performed</th>
+        <th i18n:translate="">% Performed</th>
+        <th i18n:translate="">Published</th>
+        <th i18n:translate="">% Published</th>
+    </tr>
+    </thead>
+    <tbody>
+    <metal:block tal:repeat="key python:datalines.keys()">
+        <tr tal:condition="python:len(key)>0">
+            <td tal:content="key" colspan="7"></td>
+        </tr>
+        <metal:block tal:repeat="department python:datalines[key]['Departments'].keys()">
+            <tr>
+                <td tal:condition="python:len(key)>0">&nbsp;</td>
+                <td tal:content="python:datalines[key]['Departments'][department]['Department']"
+                        width="50%"></td>
+                <td tal:content="python:datalines[key]['Departments'][department]['Requested']"></td>
+                <td tal:content="python:datalines[key]['Departments'][department]['Performed']"></td>
+                <td tal:content="python:datalines[key]['Departments'][department]['PerformedRequestedRatioPercentage']"></td>
+                <td tal:content="python:datalines[key]['Departments'][department]['Published']"></td>
+                <td tal:content="python:datalines[key]['Departments'][department]['PublishedPerformedRatioPercentage']"></td>
+            </tr>
+        </metal:block>
+        <tr tal:condition="python:len(key)>0">
+            <td class='total_label' i18n:translate="" colspan="2" align="right">
+                Subtotal
+            </td>
+            <td tal:content="python:datalines[key]['Requested']"></td>
+            <td tal:content="python:datalines[key]['Performed']"></td>
+            <td tal:content="python:datalines[key]['PerformedRequestedRatioPercentage']"></td>
+            <td tal:content="python:datalines[key]['Published']"></td>
+            <td tal:content="python:datalines[key]['PublishedPerformedRatioPercentage']"></td>
+        </tr>
+    </metal:block>
+    </tbody>
+    <tfoot>
+    <tr>
+        <td tal:condition="python:len(datalines.keys()[0])>0">&nbsp;</td>
+        <td class='total_label' i18n:translate="" align="right">Total</td>
+        <td tal:content="python:footlines['Total']['Requested']"></td>
+        <td tal:content="python:footlines['Total']['Performed']"></td>
+        <td tal:content="python:footlines['Total']['PerformedRequestedRatioPercentage']"></td>
+        <td tal:content="python:footlines['Total']['Published']"></td>
+        <td tal:content="python:footlines['Total']['PublishedPerformedRatioPercentage']"></td>
+    </tr>
+    </tfoot>
+</table>
+</body>
+</html>

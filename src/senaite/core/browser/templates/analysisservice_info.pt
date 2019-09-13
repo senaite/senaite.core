@@ -1,0 +1,262 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="senaite.core">
+  <body>
+
+    <metal:content-title fill-slot="content-title">
+    </metal:content-title>
+
+    <metal:content-description fill-slot="content-description">
+    </metal:content-description>
+
+    <metal:content-core fill-slot="content-core">
+
+      <!-- Service Info -->
+      <div class="row"
+           tal:define="service view/get_analysis_or_service"
+           tal:condition="nocall:service">
+        <div class="col-sm-12">
+          <h3>
+            <img tal:replace="structure python:view.get_icon_for('analysisservice')"/>
+            <span i18n:translate="">Analysis Service</span>
+          </h3>
+          <div id="service">
+            <table class="table table-condensed small">
+              <colgroup>
+                <col style="width:20%">
+              </colgroup>
+              <tr>
+                <td>
+                  <span i18n:translate="">Name</span>
+                </td>
+                <td>
+                  <a href="#"
+                     target="_blank"
+                     tal:attributes="href python:view.get_service_url()">
+                    <span tal:content="string:★"
+                          style="font-family:Lucida Console, Courier, monospace;"
+                          title="Accredited"
+                          i18n:attributes="title"
+                          tal:condition="view/is_accredited">
+                    </span>
+                    <span tal:content="service/Title"></span>
+                  </a>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <span i18n:translate="">Description</span>
+                </td>
+                <td>
+                  <span tal:content="structure service/Description"></span>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <span i18n:translate="">Category</span>
+                </td>
+                <td tal:define="category service/getCategory">
+                  <a href="#"
+                     target="_blank"
+                     tal:attributes="href category/absolute_url">
+                    <span tal:content="category/Title"></span>
+                  </a>
+                </td>
+              </tr>
+              <tr tal:condition="view/show_prices">
+                <td>
+                  <span i18n:translate="">Price</span>
+                </td>
+                <td>
+                  <span tal:content="view/get_currency_symbol"></span>
+                  <span tal:content="service/getPrice"></span>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <span i18n:translate="">Keyword</span>
+                </td>
+                <td>
+                  <code tal:content="service/getKeyword"></code>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <span i18n:translate="">Unit</span>
+                </td>
+                <td>
+                  <span tal:content="service/Unit|nothing"></span>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <span i18n:translate="">Point of Capture</span>
+                </td>
+                <td>
+                  <tal:lab condition="python:service.getPointOfCapture() == 'lab'">
+                    <span i18n:translate="">Lab</span>
+                  </tal:lab>
+                  <tal:lab condition="python:service.getPointOfCapture() == 'field'">
+                    <span i18n:translate="">Field</span>
+                  </tal:lab>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Methods -->
+      <div class="row"
+           tal:define="methods view/get_methods"
+           tal:condition="nocall:methods">
+        <div class="col-sm-12">
+          <h3>
+            <img tal:replace="structure python:view.get_icon_for('method')"/>
+            <span i18n:translate="">Methods</span>
+          </h3>
+          <div id="methods">
+            <table class="table table-condensed small">
+              <colgroup>
+                <col style="width:20%">
+              </colgroup>
+              <tr>
+                <th i18n:translate="">Method</th>
+                <th i18n:translate="">Description</th>
+              </tr>
+              <tr tal:repeat="method methods">
+                <td>
+                  <a target="_blank"
+                     tal:attributes="href method/absolute_url"
+                     tal:content="method/Title"/>
+                </td>
+                <td>
+                  <span tal:content="structure method/Description"></span>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Calculation -->
+      <div class="row"
+           tal:define="calc view/get_calculation"
+           tal:condition="nocall:calc">
+        <div class="col-sm-12">
+          <h3>
+            <img tal:replace="structure python:view.get_icon_for('calculation')"/>
+            <span i18n:translate="">Calculation</span>
+          </h3>
+          <div id="calculation">
+            <table class="table table-condensed small">
+              <colgroup>
+                <col style="width:20%">
+              </colgroup>
+              <tr>
+                <td>
+                  <span i18n:translate="">Calculation</span>
+                </td>
+                <td>
+                  <a href=""
+                     target="_blank"
+                     tal:attributes="href calc/absolute_url">
+                    <span tal:content="calc/Title"></span>
+                  </a>
+                </td>
+              </tr>
+              <tr tal:define="version_id python:getattr(calc, 'version_id', None)"
+                  tal:condition="python: version_id is not None" >
+                <td>
+                  <span i18n:translate="">Version</span>
+                </td>
+                <td tal:define="modif_date python:calc.modified();
+                                modif_date python:plone_view.toLocalizedTime(modif_date, long_format=1)">
+                  <span tal:content="python: 'v{}, {}'.format(version_id, modif_date)"></span>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <span i18n:translate="">Formula</span>
+                </td>
+                <td>
+                  <code tal:content="calc/getFormula"></code>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dependendent Services -->
+      <div class="row"
+           tal:define="deps view/get_dependent_services"
+           tal:condition="deps">
+        <div class="col-sm-12">
+          <h3>
+            <img tal:replace="structure python:view.get_icon_for('dependencies')"/>
+            <span i18n:translate="">Dependent Analyses</span>
+          </h3>
+          <div id="dependencies">
+            <table class="table table-condensed small">
+              <colgroup>
+                <col style="width:20%">
+              </colgroup>
+              <tr>
+                <th i18n:translate="">Service</th>
+                <th i18n:translate="">Category</th>
+                <th i18n:translate="">Keyword</th>
+                <th i18n:translate="">Methods</th>
+              </tr>
+              <tr tal:repeat="dep deps">
+                <td>
+                  <a target="_blank"
+                     tal:attributes="href dep/absolute_url"
+                     tal:content="dep/Title"/>
+                </td>
+                <td tal:define="category dep/getCategory">
+                  <a href="#"
+                     target="_blank"
+                     tal:attributes="href category/absolute_url">
+                    <span tal:content="category/Title"/>
+                  </a>
+                </td>
+                <td>
+                  <code tal:content="dep/getKeyword"/>
+                </td>
+                <td tal:define="methods dep/getMethods">
+                  <span tal:repeat="method methods">
+                    <a href=""
+                       target="_blank"
+                       tal:attributes="href method/absolute_url">
+                      <span tal:content="method/Title"/><tal:sep condition="not:repeat/method/end">;</tal:sep>
+                    </a>
+                  </span>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Analyis Log Table -->
+      <div class="row"
+           tal:define="logview view/analysis_log_view"
+           tal:condition="nocall:logview">
+        <div class="col-sm-12">
+          <h3>
+            <img tal:replace="structure python:view.get_icon_for('calendar')"/>
+            <span i18n:translate="">Log</span>
+          </h3>
+          <div id="analyis-log"
+               tal:content="structure logview/contents_table">
+          </div>
+        </div>
+      </div>
+    </metal:content-core>
+
+  </body>
+</html>

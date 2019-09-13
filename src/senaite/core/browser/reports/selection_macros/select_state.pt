@@ -1,0 +1,26 @@
+<div class="field" tal:attributes="style view/style|nothing" i18n:domain="senaite.core">
+
+    <label tal:content="view/field_title">Status</label>
+    <br/>
+
+    <select
+            tal:attributes="
+            id view/field_id;
+            name string:${view/field_id}:ignore_empty">
+
+        <option value=""/>
+
+        <tal:states
+                tal:repeat="state view/states">
+
+            <option value=""
+                    tal:attributes="value state/id;
+                            selected python:request.get(view.field_id, '') == state['id'] and 'selected' or ''"
+                    tal:content="state/title">
+            </option>
+
+        </tal:states>
+
+    </select>
+
+</div>

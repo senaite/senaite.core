@@ -1,0 +1,72 @@
+<div id="supplyorder"
+     i18n:domain="senaite.core">
+
+  <table class="invoice-header">
+    <tbody>
+      <tr>
+        <th i18n:translate="">Order Date</th>
+        <td tal:content="view/orderDate"></td>
+      </tr>
+      <tr>
+        <th i18n:translate="">Contact</th>
+        <td tal:content="view/contact"></td>
+      </tr>
+    </tbody>
+  </table>
+  <table class="invoice-items items">
+    <thead>
+      <tr>
+        <th i18n:translate="">Product</th>
+        <th i18n:translate="">Description</th>
+        <th i18n:translate="">Volume</th>
+        <th i18n:translate="">Unit</th>
+        <th i18n:translate="">Price</th>
+        <th i18n:translate="">VAT</th>
+        <th i18n:translate="">Quantity</th>
+        <th class="currency" i18n:translate="">Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tal:items repeat="item view/items">
+        <tal:item>
+          <tr>
+            <td tal:content="item/title"></td>
+            <td class="text" tal:content="item/description"></td>
+            <td class="number" tal:content="item/volume"></td>
+            <td class="center" tal:content="item/unit"></td>
+            <td class="currency">
+              <span tal:content="item/price"></span>
+            </td>
+            <td class="center" tal:content="item/vat"></td>
+            <td class="number" tal:content="item/quantity"></td>
+            <td class="currency">
+              <span tal:content="item/totalprice"></span>
+            </td>
+          </tr>
+        </tal:item>
+      </tal:items>
+      <tr class="totals">
+        <td colspan="7" i18n:translate="">Subtotal</td>
+        <td class="currency">
+          <span tal:content="python:view.getPreferredCurrencyAbreviation()">$</span>
+          <span tal:content="view/subtotal"></span>
+        </td>
+      </tr>
+      <tr class="totals">
+        <td colspan="7" i18n:translate="">VAT</td>
+        <td class="currency">
+          <span tal:content="python:view.getPreferredCurrencyAbreviation()">$</span>
+          <span tal:content="view/vat"></span>
+        </td>
+      </tr>
+      <tr class="totals">
+        <td colspan="7" i18n:translate="">Total</td>
+        <td class="currency">
+          <span tal:content="python:view.getPreferredCurrencyAbreviation()">$</span>
+          <span tal:content="view/total"></span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+</div>
