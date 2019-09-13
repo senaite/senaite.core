@@ -11,14 +11,6 @@
 
   <i18n:registerTranslations directory="locales" />
 
-
-  <!-- Plone behavior for Dexterity based contents -->
-  <plone:behavior
-      title="Auto-Generate ID Beahvior for Dexterity Contents"
-      description="Generates an ID with the IDServer"
-      provides="bika.lims.interfaces.IAutoGenerateID"
-      />
-
 <includeDependencies package="." />
 //  <include package="jarn.jsi18n" />
 //  <include package="plone.app.z3cform" />
@@ -50,6 +42,13 @@
   <i18n:registerTranslations directory="locales" />
 
   <cmf:registerDirectory name="skins" directory="skins" recursive="True" />
+
+  <!-- Plone behavior for Dexterity based contents -->
+  <plone:behavior
+      title="Auto-Generate ID Beahvior for Dexterity Contents"
+      description="Generates an ID with the IDServer"
+      provides="bika.lims.interfaces.IAutoGenerateID"
+      />
 
   <!-- jquery redirects here when values are entered into 'document' context (barcodes) -->
   <browser:page
@@ -97,13 +96,4 @@
       provides="bika.lims.interfaces.INumberGenerator"
       factory=".numbergenerator.NumberGenerator"
   />
-
-
-   <!-- Bika Auto generate ID behavior for Dexterity types -->
-   <plone:behavior
-        title="Auto generate ID Behavior for Dexterity contents"
-        description="Generates an ID with the IDServer"
-        provides="bika.lims.interfaces.IGenerateID"
-        />
-
 </configure>
