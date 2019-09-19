@@ -22,6 +22,7 @@ Changelog
 
 **Fixed**
 
+- #1444 Fixed Worksheet autofill of wide Iterims
 - #1426 Render HTML Texts in Info Popups correctly
 - #1423 Use the value set for ui_item property when displaying ReferenceWidget
 - #1425 Fix adapter priority for widget visibility
