@@ -4,6 +4,13 @@
     xmlns:i18n="http://namespaces.zope.org/i18n"
     i18n_domain="senaite.core">
 
+  <!-- ID Server: Object Added -->
+  <subscriber
+      for="bika.lims.interfaces.IAutoGenerateID
+           zope.lifecycleevent.interfaces.IObjectAddedEvent"
+      handler=".objectadded.auto_generate_id"
+      />
+
   <!-- Audit Log: Object Created -->
   <subscriber
       for="*

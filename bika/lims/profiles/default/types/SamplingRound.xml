@@ -87,6 +87,7 @@
     <!-- enabled behaviors -->
     <!-- This allow references between archetypes and dexterity content types. -->
     <property name="behaviors">
+        <element value="bika.lims.interfaces.IAutoGenerateID"/>
         <element value="plone.app.referenceablebehavior.referenceable.IReferenceable" />
     </property>
 </object>
