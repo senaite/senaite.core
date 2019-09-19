@@ -817,7 +817,7 @@ class window.AnalysisServiceEditView
         catalog_name: "bika_setup_catalog"
         page_size: 0
         UID: calculation_uid
-        active_state: true
+        is_active: true
         sort_on: "sortable_title"
 
     @ajax_submit options
