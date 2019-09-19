@@ -1122,13 +1122,13 @@
       empty_only = $("#wideinterims_empty").is(":checked");
       value = $("#wideinterims_value").val();
       set_value = function(input, value) {
-        var cb, tr;
-        input.value = value;
-        tr = input.closest("tr");
-        cb = tr.querySelector("input[type='checkbox']");
-        if (!cb.checked) {
-          return cb.click();
-        }
+        var evt, nativeInputValueSetter;
+        nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value").set;
+        nativeInputValueSetter.call(input, value);
+        evt = new Event('input', {
+          bubbles: true
+        });
+        return input.dispatchEvent(evt);
       };
       return $("tr td input[column_key='" + interim + "']").each(function(index, input) {
         if (empty_only) {

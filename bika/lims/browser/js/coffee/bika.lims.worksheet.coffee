@@ -1045,14 +1045,14 @@ class window.WorksheetManageResultsView
     # N.B.: Workaround to notify the ReactJS listing component about the changed
     # values
     set_value = (input, value) ->
-      # Set the value in the input field
-      input.value = value
       # Manually select the checkbox of this row
       # https://github.com/senaite/senaite.core/issues/1202
-      tr = input.closest("tr")
-      cb = tr.querySelector("input[type='checkbox']")
-      if not cb.checked
-        cb.click()
+      # https://stackoverflow.com/questions/23892547/what-is-the-best-way-to-trigger-onchange-event-in-react-js
+      # TL;DR: React library overrides input value setter
+      nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value").set
+      nativeInputValueSetter.call(input, value)
+      evt = new Event('input', {bubbles: true})
+      input.dispatchEvent(evt)
 
     $("tr td input[column_key='#{interim}']").each (index, input) ->
       if empty_only
