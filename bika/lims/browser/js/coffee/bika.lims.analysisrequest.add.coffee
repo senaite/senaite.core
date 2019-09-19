@@ -700,28 +700,32 @@ class window.AnalysisRequestAdd
 
     # set the sample type
     field = $("#SampleType-#{arnum}")
-    uid = template.sample_type_uid
-    title = template.sample_type_title
-    @flush_reference_field field
-    @set_reference_field field, uid, title
+    if not field.val()
+      uid = template.sample_type_uid
+      title = template.sample_type_title
+      @flush_reference_field field
+      @set_reference_field field, uid, title
 
     # set the sample point
     field = $("#SamplePoint-#{arnum}")
-    uid = template.sample_point_uid
-    title = template.sample_point_title
-    @flush_reference_field field
-    @set_reference_field field, uid, title
+    if not field.val()
+      uid = template.sample_point_uid
+      title = template.sample_point_title
+      @flush_reference_field field
+      @set_reference_field field, uid, title
 
     # set the analysis profile
     field = $("#Profiles-#{arnum}")
-    uid = template.analysis_profile_uid
-    title = template.analysis_profile_title
-    @flush_reference_field field
-    @set_reference_field field, uid, title
+    if not field.val()
+      uid = template.analysis_profile_uid
+      title = template.analysis_profile_title
+      @flush_reference_field field
+      @set_reference_field field, uid, title
 
     # set the remarks
     field = $("#Remarks-#{arnum}")
-    field.text template.remarks
+    if not field.val()
+      field.text template.remarks
 
     # set the composite checkbox
     field = $("#Composite-#{arnum}")

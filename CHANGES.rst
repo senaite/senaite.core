@@ -6,6 +6,7 @@ Changelog
 
 **Added**
 
+- #1431 Added Submitter column in Sample's analyses listing
 - #1422 Notify user with failing addresses when emailing of results reports
 - #1420 Allow to detach a partition from its primary sample
 - #1410 Email API
@@ -13,6 +14,9 @@ Changelog
 
 **Changed**
 
+- #1428 Publish verified partitions
+- #1429 Add2: Do not set template values on already filled fields
+- #1427 Improved performance of Sample header table rendering
 - #1417 Cache allowed transitions for analyses on the request
 - #1413 Improved Email Publication
 
@@ -23,6 +27,7 @@ Changelog
 **Fixed**
 
 - #1443 Fix non-saving checkbox values for manual Interims in Analysis Services
+- #1439 Fix global Auditlog when Analyses/Attachments were removed
 - #1426 Render HTML Texts in Info Popups correctly
 - #1423 Use the value set for ui_item property when displaying ReferenceWidget
 - #1425 Fix adapter priority for widget visibility

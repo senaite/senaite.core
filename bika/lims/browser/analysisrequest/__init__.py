@@ -109,7 +109,12 @@ class JSONReadExtender(object):
         if not self.include_fields or "Analyses" in self.include_fields:
             data['Analyses'] = self.ar_analysis_values()
 
-class mailto_link_from_contacts:
+
+class mailto_link_from_contacts(object):
+    """Custom header table field adapter
+
+    see: bika.lims.browser.header_table
+    """
 
     def __init__(self, context):
         self.context = context
@@ -127,7 +132,12 @@ class mailto_link_from_contacts:
         return ",".join(ret)
 
 
-def mailto_link_from_ccemails(ccemails):
+class mailto_link_from_ccemails(object):
+    """Custom header table field adapter
+
+    see: bika.lims.browser.header_table
+    """
+
     def __init__(self, context):
         self.context = context
 
@@ -136,6 +146,7 @@ def mailto_link_from_ccemails(ccemails):
         addresses = ccemails.split(",")
         ret = []
         for address in addresses:
+            address = address.strip()
             mailto = "<a href='mailto:%s'>%s</a>" % (
                 address, address)
             ret.append(mailto)
