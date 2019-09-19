@@ -1040,11 +1040,24 @@ class window.WorksheetManageResultsView
     analysis = $("#wideinterims_analyses").val()
     interim = $("#wideinterims_interims").val()
     empty_only = $("#wideinterims_empty").is(":checked")
+    value = $("#wideinterims_value").val()
 
-    $("tr td input[column_key='#{interim}']").each (index, element) ->
+    # N.B.: Workaround to notify the ReactJS listing component about the changed
+    # values
+    set_value = (input, value) ->
+      # Set the value in the input field
+      input.value = value
+      # Manually select the checkbox of this row
+      # https://github.com/senaite/senaite.core/issues/1202
+      tr = input.closest("tr")
+      cb = tr.querySelector("input[type='checkbox']")
+      if not cb.checked
+        cb.click()
+
+    $("tr td input[column_key='#{interim}']").each (index, input) ->
       if empty_only
         if $(this).val() == "" or $(this).val().match(/\d+/) == "0"
-          $(this).val $("#wideinterims_value").val()
+          set_value input, value
       else
-        $(this).val $("#wideinterims_value").val()
-      $(this).trigger "change"
+        set_value input, value
+      return true
