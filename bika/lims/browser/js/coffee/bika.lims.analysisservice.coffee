@@ -537,7 +537,8 @@ class window.AnalysisServiceEditView
     interims = []
     $.each rows, (index, row) ->
       values = {}
-      $.each $(row).find("td input"), (index, input) ->
+      inputs = row.querySelectorAll "td input"
+      $.each inputs, (index, input) ->
         # Extract the key from the element name
         # InterimFields.keyword:records:ignore_empty
         key = @name.split(":")[0].split(".")[1]
@@ -545,9 +546,18 @@ class window.AnalysisServiceEditView
         if input.type is "checkbox"
           value = input.checked
         values[key] = value
+        # N.B. coffee-script always returns the last value if not explicitly returned
+        #      and false values act as a break in $.each loops!
+        return true
+
       # Only rows with Keyword set
       if values.keyword isnt ""
         interims.push values
+
+      # N.B. coffee-script always returns the last value if not explicitly returned
+      #      and false values act as a break in $.each loops!
+      return true
+
     return interims
 
 
@@ -592,12 +602,16 @@ class window.AnalysisServiceEditView
         key = @name.split(":")[0].split(".")[1]
         value = interim[key]
         if input.type is "checkbox"
-          # transform to bool value
-          if value then value = yes else value = no
           input.checked = value
+          # N.B. if we omit the value, the field won't be set on save
+          input.value = "on"
         else
           if not value then value = ""
           input.value = value
+
+        # N.B. coffee-script always returns the last value if not explicitly returned
+        #      and false values act as a break in $.each loops!
+        return true
 
 
   flush_interims: =>
@@ -803,7 +817,7 @@ class window.AnalysisServiceEditView
         catalog_name: "bika_setup_catalog"
         page_size: 0
         UID: calculation_uid
-        active_state: true
+        is_active: true
         sort_on: "sortable_title"
 
     @ajax_submit options

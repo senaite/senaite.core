@@ -28,6 +28,11 @@ class IBikaLIMS(Interface):
     """
 
 
+class IAutoGenerateID(Interface):
+    """Auto-generate ID with ID server
+    """
+
+
 class IActionHandlerPool(Interface):
     """Marker interface for the ActionHandlerPool utility
     """
