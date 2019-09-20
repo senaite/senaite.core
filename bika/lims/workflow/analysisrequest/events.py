@@ -48,14 +48,10 @@ def after_no_sampling_workflow(analysis_request):
     """
     setup = api.get_setup()
     if setup.getAutoreceiveSamples():
-        # Auto-receive samples is enabled. Receive the sample automatically,
-        # but only if the current user is a laboratory contact
-        user = api.get_current_user()
-        contact = api.get_user_contact(user, contact_types=["LabContact"])
-        if contact:
-            # Note that if current user does not have privileges to receive,
-            # the sample won't be transitioned, even if we call do_action_for
-            do_action_for(analysis_request, "receive")
+        # Auto-receive samples is enabled. Note transition to "received" state
+        # will only take place if the current user has enough privileges (this
+        # is handled by do_action_for already).
+        do_action_for(analysis_request, "receive")
 
 
 def after_reject(analysis_request):
