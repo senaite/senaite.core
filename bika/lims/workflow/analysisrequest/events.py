@@ -25,6 +25,7 @@ from bika.lims.interfaces import IReceived
 from bika.lims.interfaces import IVerified
 from bika.lims.utils import changeWorkflowState
 from bika.lims.utils.analysisrequest import create_retest
+from bika.lims.workflow import doActionFor as do_action_for
 from bika.lims.workflow import get_prev_status_from_history
 from bika.lims.workflow.analysisrequest import AR_WORKFLOW_ID
 from bika.lims.workflow.analysisrequest import do_action_to_analyses
@@ -43,6 +44,18 @@ def before_sample(analysis_request):
         analysis_request.setDateSampled(DateTime())
     if not analysis_request.getSampler():
         analysis_request.setSampler(api.get_current_user().id)
+
+
+def after_no_sampling_workflow(analysis_request):
+    """Function triggered after "no_sampling_workflow transition for the
+    Analysis Request passed in is performed
+    """
+    setup = api.get_setup()
+    if setup.getAutoreceiveSamples():
+        # Auto-receive samples is enabled. Note transition to "received" state
+        # will only take place if the current user has enough privileges (this
+        # is handled by do_action_for already).
+        do_action_for(analysis_request, "receive")
 
 
 def after_reject(analysis_request):

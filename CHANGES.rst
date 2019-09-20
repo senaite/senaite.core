@@ -6,6 +6,8 @@ Changelog
 
 **Added**
 
+- #1436 Setting in setup for auto-reception of samples upon creation
+- #1433 Added Submitter column in Sample's analyses listing
 - #1441 Added Auto ID Behavior for Dexterity Contents
 - #1431 Added Submitter column in Sample's analyses listing
 - #1422 Notify user with failing addresses when emailing of results reports
