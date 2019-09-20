@@ -27,6 +27,7 @@ Changelog
 
 **Fixed**
 
+- #1444 Fixed Worksheet autofill of wide Iterims
 - #1443 Fix non-saving checkbox values for manual Interims in Analysis Services
 - #1439 Fix global Auditlog when Analyses/Attachments were removed
 - #1426 Render HTML Texts in Info Popups correctly

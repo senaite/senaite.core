@@ -1113,22 +1113,32 @@
       /*
        * Eventhandler when the wide interim apply button was clicked
        */
-      var $el, analysis, empty_only, interim;
+      var $el, analysis, empty_only, interim, set_value, value;
       console.debug("°°° WorksheetManageResultsView::on_wideinterims_apply_click °°°");
       event.preventDefault();
       $el = $(event.currentTarget);
       analysis = $("#wideinterims_analyses").val();
       interim = $("#wideinterims_interims").val();
       empty_only = $("#wideinterims_empty").is(":checked");
-      return $("tr td input[column_key='" + interim + "']").each(function(index, element) {
+      value = $("#wideinterims_value").val();
+      set_value = function(input, value) {
+        var evt, nativeInputValueSetter;
+        nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value").set;
+        nativeInputValueSetter.call(input, value);
+        evt = new Event('input', {
+          bubbles: true
+        });
+        return input.dispatchEvent(evt);
+      };
+      return $("tr td input[column_key='" + interim + "']").each(function(index, input) {
         if (empty_only) {
           if ($(this).val() === "" || $(this).val().match(/\d+/) === "0") {
-            $(this).val($("#wideinterims_value").val());
+            set_value(input, value);
           }
         } else {
-          $(this).val($("#wideinterims_value").val());
+          set_value(input, value);
         }
-        return $(this).trigger("change");
+        return true;
       });
     };
 
