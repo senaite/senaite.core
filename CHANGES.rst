@@ -17,6 +17,7 @@ Changelog
 
 **Changed**
 
+- #1445 Allow formatted HTML in the other rejection reasons
 - #1428 Publish verified partitions
 - #1429 Add2: Do not set template values on already filled fields
 - #1427 Improved performance of Sample header table rendering
