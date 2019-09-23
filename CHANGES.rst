@@ -29,6 +29,7 @@ Changelog
 
 **Fixed**
 
+- #1446 Parameter `group` in `contact._addUserToGroup` was not considered
 - #1444 Fixed Worksheet autofill of wide Iterims
 - #1443 Fix non-saving checkbox values for manual Interims in Analysis Services
 - #1439 Fix global Auditlog when Analyses/Attachments were removed
