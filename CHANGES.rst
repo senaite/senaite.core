@@ -30,6 +30,7 @@ Changelog
 
 **Fixed**
 
+- #1447 New Client contact has access to last client's Sample only
 - #1446 Parameter `group` in `contact._addUserToGroup` was not considered
 - #1444 Fixed Worksheet autofill of wide Iterims
 - #1443 Fix non-saving checkbox values for manual Interims in Analysis Services
