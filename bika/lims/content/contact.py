@@ -294,7 +294,7 @@ class Contact(Person):
         """Add user to the goup
         """
         portal_groups = api.portal.get_tool("portal_groups")
-        group = portal_groups.getGroupById('Clients')
+        group = portal_groups.getGroupById(group)
         group.addMember(username)
 
     @security.private
