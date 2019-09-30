@@ -44,3 +44,11 @@ msgstr ""
 # senaite.core.listing: ButtonBar
 msgid "Clear selection"
 msgstr ""
+
+# senaite.core.listing: TableColumnConfig
+msgid "Configure Table Columns"
+msgstr ""
+
+# senaite.core.listing: TableColumnConfig
+msgid "Click to toggle the visibility or drag&drop to change the order"
+msgstr ""
