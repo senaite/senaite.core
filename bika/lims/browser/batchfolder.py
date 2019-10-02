@@ -123,11 +123,10 @@ class BatchFolderContentsView(BikaListingView):
         """Called before the listing renders
         """
         super(BatchFolderContentsView, self).update()
-
         if self.on_batch_folder() and self.can_add_batches():
             self.context_actions[_("Add")] = {
                 "url": "createObject?type_name=Batch",
-                "permission": "Add portal content",
+                "permission": "senaite.core: Add Batch",
                 "icon": "++resource++bika.lims.images/add.png"}
 
     def on_batch_folder(self):
