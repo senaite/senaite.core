@@ -123,21 +123,21 @@ class BatchFolderContentsView(BikaListingView):
         """Called before the listing renders
         """
         super(BatchFolderContentsView, self).update()
-        if self.on_batch_folder() and self.can_add_batches():
-            self.context_actions[_("Add")] = {
-                "url": "createObject?type_name=Batch",
-                "permission": "senaite.core: Add Batch",
-                "icon": "++resource++bika.lims.images/add.png"}
+        url = "createObject?type_name=Batch"
+        if not self.on_batch_folder():
+            batches = api.get_portal().batches
+            url = api.get_url(batches)
+            url = "{}/createObject?type_name=Batch".format(url)
+
+        self.context_actions[_("Add")] = {
+            "url": url,
+            "permission": "senaite.core: Add Batch",
+            "icon": "++resource++bika.lims.images/add.png"}
 
     def on_batch_folder(self):
         """Checks if the current context is a Batch folder
         """
         return self.context.portal_type == "BatchFolder"
-
-    def can_add_batches(self):
-        """Checks if the current user is allowed to add batches
-        """
-        return check_permission(AddBatch, self.context)
 
     def folderitem(self, obj, item, index):
         """Applies new properties to the item (Batch) that is currently being
