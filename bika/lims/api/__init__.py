@@ -1385,6 +1385,8 @@ def text_to_html(text, wrap="p", encoding="utf8"):
     :param wrap: Toggle to wrap the text in a
     :returns: HTML converted and encoded text
     """
+    if not text:
+        return ""
     # handle text internally as unicode
     text = safe_unicode(text)
     # replace newline characters with HTML entities

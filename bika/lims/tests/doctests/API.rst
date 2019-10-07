@@ -1632,3 +1632,9 @@ Or changed to another tag:
     >>> text = "One\r\nTwo"
     >>> api.text_to_html(text, wrap="div")
     '<div>One\r<br/>Two</div>'
+
+Empty strings are returned unchanged:
+
+    >>> text = ""
+    >>> api.text_to_html(text, wrap="div")
+    ''
