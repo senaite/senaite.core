@@ -28,7 +28,7 @@ Changelog
 
 **Removed**
 
-- #1430 Removed Identifiers
+- #1430 Removed Identifier Types
 
 
 **Fixed**
