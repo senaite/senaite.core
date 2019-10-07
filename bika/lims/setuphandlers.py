@@ -105,7 +105,6 @@ CATALOG_MAPPINGS = (
     ("Container", ["bika_setup_catalog"]),
     ("ContainerType", ["bika_setup_catalog"]),
     ("Department", ["bika_setup_catalog", "portal_catalog"]),
-    ("IdentifierType", ["bika_setup_catalog"]),
     ("Instrument", ["bika_setup_catalog", "portal_catalog"]),
     ("InstrumentLocation", ["bika_setup_catalog", "portal_catalog"]),
     ("InstrumentType", ["bika_setup_catalog", "portal_catalog"]),
@@ -134,7 +133,6 @@ INDEXES = (
     ("bika_catalog", "BatchDate", "", "DateIndex"),
     ("bika_catalog", "Creator", "", "FieldIndex"),
     ("bika_catalog", "Description", "", "ZCTextIndex"),
-    ("bika_catalog", "Identifiers", "", "KeywordIndex"),
     ("bika_catalog", "Title", "", "ZCTextIndex"),
     ("bika_catalog", "Type", "", "FieldIndex"),
     ("bika_catalog", "UID", "", "FieldIndex"),
@@ -165,7 +163,6 @@ INDEXES = (
 
     ("bika_setup_catalog", "Creator", "", "FieldIndex"),
     ("bika_setup_catalog", "Description", "", "ZCTextIndex"),
-    ("bika_setup_catalog", "Identifiers", "", "KeywordIndex"),
     ("bika_setup_catalog", "Title", "", "ZCTextIndex"),
     ("bika_setup_catalog", "Type", "", "FieldIndex"),
     ("bika_setup_catalog", "UID", "", "FieldIndex"),

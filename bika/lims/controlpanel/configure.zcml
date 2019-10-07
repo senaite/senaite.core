@@ -133,14 +133,6 @@
     />
 
     <browser:page
-      for="bika.lims.interfaces.IIdentifierTypes"
-      name="folder_view"
-      class=".bika_identifiertypes.IdentifierTypesView"
-      permission="senaite.core.permissions.ManageBika"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
       for="bika.lims.interfaces.IInstruments"
       name="folder_view"
       class=".bika_instruments.InstrumentsView"

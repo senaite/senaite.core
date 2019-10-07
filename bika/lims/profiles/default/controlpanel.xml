@@ -57,15 +57,6 @@
   <permission>senaite.core: Manage Bika</permission>
  </configlet>
 
- <configlet title="Identifier Types" action_id="bika_identifiertypes"
-            appId="bika.lims" category="bika" condition_expr=""
-            icon_expr="string:++resource++bika.lims.images/identifiertype.png"
-            url_expr="string:$portal_url/bika_setup/bika_identifiertypes"
-            visible="True"
-            i18n:attributes="title">
-     <permission>senaite.core: Manage Bika</permission>
- </configlet>
-
  <configlet title="Analysis Specifications" action_id="bika_analysisspecs"
     appId="bika.lims" category="bika" condition_expr=""
     icon_expr="string:++resource++bika.lims.images/analysisspec.png"
