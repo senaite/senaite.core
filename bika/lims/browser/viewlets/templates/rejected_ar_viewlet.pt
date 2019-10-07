@@ -20,7 +20,7 @@
       <p tal:define="other_reasons python:sample.getOtherRejectionReasons()"
          tal:condition="other_reasons">
         <span i18n:translate="">Other reasons: </span>
-        <span tal:content="other_reasons"></span>
+        <span tal:content="structure other_reasons"></span>
       </p>
     </div>
   </div>

@@ -159,6 +159,9 @@ class AnalysesView(BikaListingView):
                 "title": _("Captured"),
                 "index": "getResultCaptureDate",
                 "sortable": False}),
+            ("SubmittedBy", {
+                "title": _("Submitter"),
+                "sortable": False}),
             ("DueDate", {
                 "title": _("Due Date"),
                 "index": "getDueDate",
@@ -550,6 +553,8 @@ class AnalysesView(BikaListingView):
         self._folder_item_instrument(obj, item)
         # Fill analyst
         self._folder_item_analyst(obj, item)
+        # Fill submitted by
+        self._folder_item_submitted_by(obj, item)
         # Fill attachments
         self._folder_item_attachments(obj, item)
         # Fill uncertainty
@@ -886,6 +891,17 @@ class AnalysesView(BikaListingView):
         item['Analyst'] = obj.getAnalyst or api.get_current_user().id
         item['choices']['Analyst'] = self.get_analysts()
 
+    def _folder_item_submitted_by(self, obj, item):
+        submitted_by = obj.getSubmittedBy
+        if submitted_by:
+            user = self.get_user_by_id(submitted_by)
+            user_name = user and user.getProperty("fullname") or submitted_by
+            item['SubmittedBy'] = user_name
+
+    @viewcache.memoize
+    def get_user_by_id(self, user_id):
+        return api.get_user(user_id)
+
     def _folder_item_attachments(self, obj, item):
         item['Attachments'] = ''
         attachment_uids = obj.getAttachmentUIDs
@@ -1200,6 +1216,10 @@ class AnalysesView(BikaListingView):
 
         if self.is_analysis_edition_allowed(analysis_brain):
             item["allow_edit"].extend(["Remarks"])
+        else:
+            # render HTMLified text in readonly mode
+            item["Remarks"] = api.text_to_html(
+                analysis_brain.getRemarks, wrap=None)
 
     def _append_html_element(self, item, element, html, glue="&nbsp;",
                              after=True):

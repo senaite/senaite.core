@@ -984,7 +984,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
     def getAnalyst(self):
         """Returns the stored Analyst or the user who submitted the result
         """
-        analyst = self.getField("Analyst").get(self)
+        analyst = self.getField("Analyst").get(self) or self.getAssignedAnalyst()
         if not analyst:
             analyst = self.getSubmittedBy()
         return analyst or ""

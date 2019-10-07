@@ -577,20 +577,23 @@
       rows = field.find("tr.records_row_InterimFields");
       interims = [];
       $.each(rows, function(index, row) {
-        var values;
+        var inputs, values;
         values = {};
-        $.each($(row).find("td input"), function(index, input) {
+        inputs = row.querySelectorAll("td input");
+        $.each(inputs, function(index, input) {
           var key, value;
           key = this.name.split(":")[0].split(".")[1];
           value = input.value;
           if (input.type === "checkbox") {
             value = input.checked;
           }
-          return values[key] = value;
+          values[key] = value;
+          return true;
         });
         if (values.keyword !== "") {
-          return interims.push(values);
+          interims.push(values);
         }
+        return true;
       });
       return interims;
     };
@@ -634,18 +637,15 @@
           key = this.name.split(":")[0].split(".")[1];
           value = interim[key];
           if (input.type === "checkbox") {
-            if (value) {
-              value = true;
-            } else {
-              value = false;
-            }
-            return input.checked = value;
+            input.checked = value;
+            input.value = "on";
           } else {
             if (!value) {
               value = "";
             }
-            return input.value = value;
+            input.value = value;
           }
+          return true;
         });
       });
     };

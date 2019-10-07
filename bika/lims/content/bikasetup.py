@@ -529,6 +529,19 @@ schema = BikaFolderSchema.copy() + Schema((
         ),
     ),
     BooleanField(
+        "AutoreceiveSamples",
+        schemata="Sampling",
+        default=False,
+        widget=BooleanWidget(
+            label=_("Auto-receive samples"),
+            description=_(
+                "Select to receive the samples automatically when created by "
+                "lab personnel and sampling workflow is disabled. Samples "
+                "created by client contacts won't be received automatically"
+            ),
+        ),
+    ),
+    BooleanField(
         'ShowPartitions',
         schemata="Appearance",
         default=False,

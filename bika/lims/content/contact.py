@@ -294,7 +294,7 @@ class Contact(Person):
         """Add user to the goup
         """
         portal_groups = api.portal.get_tool("portal_groups")
-        group = portal_groups.getGroupById('Clients')
+        group = portal_groups.getGroupById(group)
         group.addMember(username)
 
     @security.private
@@ -329,8 +329,8 @@ class Contact(Person):
         """Reindex object security after user linking
         """
         if hasattr(aq_base(obj), "objectValues"):
-            for obj in obj.objectValues():
-                self._recursive_reindex_object_security(obj)
+            for child_obj in obj.objectValues():
+                self._recursive_reindex_object_security(child_obj)
 
         logger.debug("Reindexing object security for {}".format(repr(obj)))
         obj.reindexObjectSecurity()

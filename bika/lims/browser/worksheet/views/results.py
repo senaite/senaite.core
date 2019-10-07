@@ -164,10 +164,6 @@ class ManageResultsView(BrowserView):
             if analysis.getKeyword() in outdict.keys():
                 continue
 
-            calculation = analysis.getCalculation()
-            if not calculation:
-                continue
-
             andict = {
                 "analysis": analysis.Title(),
                 "keyword": analysis.getKeyword(),
@@ -177,12 +173,6 @@ class ManageResultsView(BrowserView):
             # Analysis Service interim defaults
             for field in analysis.getInterimFields():
                 if field.get("wide", False):
-                    andict["interims"][field["keyword"]] = field
-
-            # Interims from calculation
-            for field in calculation.getInterimFields():
-                if field["keyword"] not in andict["interims"].keys() \
-                   and field.get("wide", False):
                     andict["interims"][field["keyword"]] = field
 
             if andict["interims"]:

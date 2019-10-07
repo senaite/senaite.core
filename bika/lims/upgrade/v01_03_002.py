@@ -18,6 +18,7 @@
 # Copyright 2018-2019 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import transaction
 from bika.lims import api
 from bika.lims import logger
 from bika.lims.catalog.analysisrequest_catalog import \
@@ -59,8 +60,47 @@ def upgrade(tool):
     # Remove Identifiers
     remove_identifiers(portal)
 
+    # Unindex stale catalog brains from the auditlog_catalog
+    # https://github.com/senaite/senaite.core/issues/1438
+    unindex_orphaned_brains_in_auditlog_catalog(portal)
+
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
+
+
+def unindex_orphaned_brains_in_auditlog_catalog(portal):
+    """Fetch deletable types from the auditlog_catalog and check if the objects
+    still exist. If the checkd analysis brains are orphaned, e.g. moved to a
+    partition, the brain will be unindexed.
+    """
+    orphaned = []
+    types_to_check = ["Analysis", "Attachment"]
+    ac = api.get_tool("auditlog_catalog")
+    brains = ac({"portal_type": types_to_check})
+    total = len(brains)
+
+    logger.info("Checking %s brains in auditlog_catalog" % total)
+
+    for num, brain in enumerate(brains):
+        if num % 100 == 0:
+            logger.info("Checked %s/%s brains in auditlog_catalog"
+                        % (num, total))
+        try:
+            obj = brain.getObject()
+            obj._p_deactivate()
+        except AttributeError:
+            orphaned.append(brain)
+
+    if orphaned:
+        logger.info("Unindexing %s orphaned brains in auditlog_catalog..."
+                    % len(orphaned))
+
+    for num, brain in enumerate(orphaned):
+        logger.info("Unindexing %s/%s broken catalog brain"
+                    % (num + 1, len(orphaned)))
+        ac.uncatalog_object(brain.getPath())
+
+    transaction.commit()
 
 
 def update_partitions_role_mappings(portal):
