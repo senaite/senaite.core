@@ -1376,3 +1376,23 @@ def to_display_list(pairs, sort_by="key", allow_empty=True):
         dl = dl.sortedByValue()
 
     return dl
+
+
+def text_to_html(text, wrap="p", encoding="utf8"):
+    """Convert `\n` sequences in the text to HTML `\n`
+
+    :param text: Plain text to convert
+    :param wrap: Toggle to wrap the text in a
+    :returns: HTML converted and encoded text
+    """
+    if not text:
+        return ""
+    # handle text internally as unicode
+    text = safe_unicode(text)
+    # replace newline characters with HTML entities
+    html = text.replace("\n", "<br/>")
+    if wrap:
+        html = u"<{tag}>{html}</{tag}>".format(
+            tag=wrap, html=html)
+    # return encoded html
+    return html.encode(encoding)

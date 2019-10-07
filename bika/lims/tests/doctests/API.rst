@@ -1601,3 +1601,40 @@ It can be sorted either by key or by value:
 
     >>> api.to_display_list(pairs, sort_by="value")
     <DisplayList [('b', 10), ('a', 100), ('', '')] at ...>
+
+
+Converting a text to HTML
+-------------------------
+
+This function converts newline (`\n`) escape sequences in plain text to `<br/>`
+tags for HTML rendering.
+
+The function can handle plain texts:
+
+    >>> text = "First\r\nSecond\r\nThird"
+    >>> api.text_to_html(text)
+    '<p>First\r<br/>Second\r<br/>Third</p>'
+
+Unicodes texts work as well:
+
+    >>> text = u"Ä\r\nÖ\r\nÜ"
+    >>> api.text_to_html(text)
+    '<p>\xc3\x83\xc2\x84\r<br/>\xc3\x83\xc2\x96\r<br/>\xc3\x83\xc2\x9c</p>'
+
+The outer `<p>` wrap can be also omitted:
+
+    >>> text = "One\r\nTwo"
+    >>> api.text_to_html(text, wrap=None)
+    'One\r<br/>Two'
+
+Or changed to another tag:
+
+    >>> text = "One\r\nTwo"
+    >>> api.text_to_html(text, wrap="div")
+    '<div>One\r<br/>Two</div>'
+
+Empty strings are returned unchanged:
+
+    >>> text = ""
+    >>> api.text_to_html(text, wrap="div")
+    ''

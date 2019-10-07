@@ -17,6 +17,7 @@ Changelog
 
 **Changed**
 
+- #1451 Render Analysis Remarks in Listings as HTML
 - #1445 Allow formatted HTML in the other rejection reasons
 - #1428 Publish verified partitions
 - #1429 Add2: Do not set template values on already filled fields
