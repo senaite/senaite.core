@@ -1212,7 +1212,8 @@ class AnalysesView(BikaListingView):
         """
 
         if self.analysis_remarks_enabled():
-            item["Remarks"] = analysis_brain.getRemarks
+            remarks = analysis_brain.getRemarks
+            item["Remarks"] = api.text_to_html(remarks)
 
         if self.is_analysis_edition_allowed(analysis_brain):
             item["allow_edit"].extend(["Remarks"])
