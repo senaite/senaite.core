@@ -34,6 +34,7 @@ Changelog
 **Fixed**
 
 - #1453 Fix initial IDs not starting with 1
+- #1452 Fix missing error percentage calculation for reference samples
 - #1447 New Client contact has access to last client's Sample only
 - #1446 Parameter `group` in `contact._addUserToGroup` was not considered
 - #1444 Fixed Worksheet autofill of wide Iterims
