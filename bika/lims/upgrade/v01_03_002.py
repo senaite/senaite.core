@@ -61,6 +61,9 @@ def upgrade(tool):
     # https://github.com/senaite/senaite.core/issues/1438
     unindex_orphaned_brains_in_auditlog_catalog(portal)
 
+    # Move batches from BatchFolder to Clients
+    move_batch_to_client(portal)
+
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
 
@@ -129,3 +132,23 @@ def update_partitions_role_mappings(portal):
         partition.reindexObjectSecurity()
 
     logger.info("Updating role mappings of partitions [DONE]")
+
+
+def move_batch_to_client(portal):
+    """
+    Moving each Batch inside BatchFolder to its Client if it belongs to a client.
+    This makes permissions easier.
+    """
+    logger.info("Moving Batches under Clients...")
+    batchfolder = portal.batches
+    total = batchfolder.objectCount()
+    for num, (b_id, batch) in enumerate(batchfolder.items()):
+        if num and num % 100 == 0:
+            logger.info("Moving Batches under Clients: {}/{}"
+                        .format(num, total))
+        client = batch.getClient()
+        if client:
+            # move batch inside the client
+            cp = batchfolder.manage_cutObjects(b_id)
+            client.manage_pasteObjects(cp)
+    logger.info("Moving Batches under Clients [DONE]")
