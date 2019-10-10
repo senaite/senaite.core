@@ -348,6 +348,7 @@ class ReferenceResultsView(BikaListingView):
         item["result"] = ref_result.get("result")
         item["min"] = ref_result.get("min")
         item["max"] = ref_result.get("max")
+        item["error"] = ref_result.get("error")
 
         # Icons
         after_icons = ""

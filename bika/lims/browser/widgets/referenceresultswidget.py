@@ -47,8 +47,6 @@ class ReferenceResultsView(BikaListingView):
         }
         self.context_actions = {}
 
-
-        self.show_column_toggles = False
         self.show_select_column = True
         self.show_select_all_checkbox = True
         self.pagesize = 999999
@@ -162,6 +160,7 @@ class ReferenceResultsView(BikaListingView):
         item["result"] = rr.get("result", "")
         item["min"] = rr.get("min", "")
         item["max"] = rr.get("max", "")
+        item["error"] = rr.get("error", "")
 
         # Icons
         after_icons = ""
@@ -224,8 +223,15 @@ class ReferenceResultsWidget(TypesWidget):
 
             # If neither min nor max have been set, assume we only accept a
             # discrete result (like if % of error was 0).
+            s_err = self._get_spec_value(form, uid, "error")
             s_min = self._get_spec_value(form, uid, "min", result)
             s_max = self._get_spec_value(form, uid, "max", result)
+
+            # If an error percentage was given, calculate the min/max from the
+            # error percentage
+            if s_err:
+                s_min = float(result) * (1 - float(s_err)/100)
+                s_max = float(result) * (1 + float(s_err)/100)
 
             service = api.get_object_by_uid(uid)
             values[uid] = {
@@ -233,7 +239,8 @@ class ReferenceResultsWidget(TypesWidget):
                 "uid": uid,
                 "result": result,
                 "min": s_min,
-                "max": s_max
+                "max": s_max,
+                "error": s_err
             }
 
         return values.values(), {}

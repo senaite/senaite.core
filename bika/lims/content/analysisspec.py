@@ -221,6 +221,7 @@ class ResultsRangeDict(dict):
         super(ResultsRangeDict, self).__init__(*arg, **kw)
         self["min"] = self.min
         self["max"] = self.max
+        self["error"] = self.error
         self["warn_min"] = self.warn_min
         self["warn_max"] = self.warn_max
         self["min_operator"] = self.min_operator
@@ -233,6 +234,10 @@ class ResultsRangeDict(dict):
     @property
     def max(self):
         return self.get("max", '')
+
+    @property
+    def error(self):
+        return self.get("error", '')
 
     @property
     def warn_min(self):
