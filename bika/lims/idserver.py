@@ -346,7 +346,8 @@ def search_by_prefix(portal_type, prefix):
     """Returns brains which share the same portal_type and ID prefix
     """
     catalog = api.get_tool("uid_catalog")
-    brains = catalog({"portal_type": portal_type})
+    # Search all brains because the portal_type might also be an interface
+    brains = catalog({})
     # Filter brains with the same ID prefix
     return filter(lambda brain: api.get_id(brain).startswith(prefix), brains)
 
@@ -456,7 +457,11 @@ def get_generated_number(context, config, variables, **kw):
     if key not in number_generator:
         max_num = 0
         existing = get_ids_with_prefix(portal_type, prefix)
-        numbers = map(lambda id: get_seq_number_from_id(id, id_template, prefix), existing)
+        # filter out the current temporary ID
+        temp_id = api.get_id(context)
+        existing = filter(lambda id: id != temp_id, existing)
+        numbers = map(lambda id: get_seq_number_from_id(
+            id, id_template, prefix), existing)
         # figure out the highest number in the sequence
         if numbers:
             max_num = max(numbers)
