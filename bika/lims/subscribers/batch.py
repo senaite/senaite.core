@@ -24,6 +24,13 @@ from Products.CMFPlone.utils import safe_unicode
 def BatchCreatedEventHandler(batch, event):
     """Actions to be done when a batch is created:
     - Title as the Batch ID if title is not defined
+    - Move the Batch inside the Client if defined
     """
     if not batch.title:
         batch.setTitle(safe_unicode(batch.id).encode('utf-8'))
+    client = batch.getClient()
+    batchfolder = batch.getFolderWhenPortalFactory()
+    if client:
+        # move batch inside the client
+        cp = batchfolder.manage_cutObjects(batch.id)
+        client.manage_pasteObjects(cp)
