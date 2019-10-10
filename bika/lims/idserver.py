@@ -454,7 +454,7 @@ def get_generated_number(context, config, variables, **kw):
     key = make_storage_key(portal_type, prefix)
 
     # Handle flushed storage
-    if key not in number_generator:
+    if len(number_generator.keys()) == 0:
         max_num = 0
         existing = get_ids_with_prefix(portal_type, prefix)
         # filter out the current temporary ID
