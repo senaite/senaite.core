@@ -126,8 +126,7 @@ class BatchFolderContentsView(BikaListingView):
         url = "createObject?type_name=Batch"
         if not self.on_batch_folder():
             batches = api.get_portal().batches
-            url = api.get_url(batches)
-            url = "{}/createObject?type_name=Batch".format(url)
+            url = "{}/{}".format(api.get_url(batches), url)
 
         self.context_actions[_("Add")] = {
             "url": url,
