@@ -11,6 +11,13 @@
       handler=".objectadded.auto_generate_id"
       />
 
+  <!-- Newly created batch -->
+  <subscriber
+      for="bika.lims.interfaces.IBatch
+           Products.Archetypes.interfaces.IObjectInitializedEvent"
+      handler="bika.lims.subscribers.batch.BatchCreatedEventHandler"
+      />
+
   <!-- Audit Log: Object Created -->
   <subscriber
       for="*

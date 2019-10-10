@@ -259,14 +259,6 @@ class Batch(ATFolder):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
 
-    def Title(self):
-        """Return the Batch ID if title is not defined
-        """
-        if self.title:
-            return safe_unicode(self.title).encode('utf-8')
-        else:
-            return safe_unicode(self.id).encode('utf-8')
-
     @deprecated("This method will be removed in senaite.core 1.2.0")
     def _getCatalogTool(self):
         from bika.lims.catalog import getCatalog
