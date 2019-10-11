@@ -271,6 +271,8 @@ class BatchClientFieldVisibility(SenaiteATWidgetVisibility):
     def isVisible(self, field, mode="view", default="visible"):
         """Returns whether the field is visible in a given state
         """
+        if self.context.getClient():
+            return "invisible"
         if mode == "edit" and not self.context.isTemporary():
             return "invisible"
         return default

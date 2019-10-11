@@ -28,9 +28,11 @@ def BatchCreatedEventHandler(batch, event):
     """
     if not batch.title:
         batch.setTitle(safe_unicode(batch.id).encode('utf-8'))
+
     client = batch.getClient()
-    batchfolder = batch.getFolderWhenPortalFactory()
-    if client:
+    # Check if the Batch is being created inside the Client
+    if client and (client.UID() != batch.aq_parent.UID()):
+        batchfolder = batch.getFolderWhenPortalFactory()
         # move batch inside the client
         cp = batchfolder.manage_cutObjects(batch.id)
         client.manage_pasteObjects(cp)

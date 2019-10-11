@@ -270,11 +270,11 @@ class Batch(ATFolder):
            found, searches for linked ARs and retrieve the Client from the
            first one. If the Batch has no client, returns None.
         """
-        client = self.Schema().getField('Client').get(self)
-        if client:
-            return client
         client = self.aq_parent
         if IClient.providedBy(client):
+            return client
+        client = self.Schema().getField('Client').get(self)
+        if client:
             return client
 
     def getClientTitle(self):
