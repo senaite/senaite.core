@@ -18,6 +18,7 @@ Changelog
 
 **Changed**
 
+- #1451 Render Analysis Remarks in Listings as HTML
 - #1445 Allow formatted HTML in the other rejection reasons
 - #1428 Publish verified partitions
 - #1429 Add2: Do not set template values on already filled fields
@@ -28,9 +29,12 @@ Changelog
 
 **Removed**
 
+- #1430 Removed Identifier Types
+
 
 **Fixed**
 
+- #1452 Fix missing error percentage calculation for reference samples
 - #1447 New Client contact has access to last client's Sample only
 - #1446 Parameter `group` in `contact._addUserToGroup` was not considered
 - #1444 Fixed Worksheet autofill of wide Iterims

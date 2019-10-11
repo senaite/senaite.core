@@ -32,28 +32,6 @@ from Products.Archetypes.public import registerType
 from Products.CMFCore.utils import getToolByName
 from zope.interface import implements
 
-from ZODB.POSException import ConflictError
-
-# class IdentifierTypeAttributesField(RecordsField):
-#     """Keeps a list of possible attributes for an identifier of this type
-#     """
-#     _properties = RecordsField._properties.copy()
-#     _properties.update({
-#         'fixedSize': False,
-#         'minimalSize': 1,
-#         'maximalSize': 9999,
-#         'type': 'identifiertypeattributes',
-#         'subfields': ('title', 'description'),
-#         'required_subfields': ('title',),
-#         'subfield_labels': {'title': _('Attribute Title'),
-#                             'description': _('Description')},
-#         'subfield_sizes': {'title': 20,
-#                            'description': 35},
-#         'subfield_validators': {'title': 'identifiertypeattributesvalidator'},
-#     })
-#     security = ClassSecurityInfo()
-
-
 PortalTypes = LinesField(
     'PortalTypes',
     vocabulary='getPortalTypes',
@@ -62,17 +40,6 @@ PortalTypes = LinesField(
         description=_("Select the types that this ID is used to identify."),
     ),
 )
-
-# Attributes = IdentifierTypeAttributesField(
-#     'Attributes',
-#     widget=BikaRecordsWidget(
-#         label=_("Identifier attributes"),
-#         description=_("Each item identified with this IdentifierType can "
-#                       "contain additional information.  The allowed
-# attributes "
-#                       "can be specified here."),
-#     ),
-# )
 
 schema = BikaSchema.copy() + Schema((
     PortalTypes,
@@ -92,7 +59,6 @@ class IdentifierType(BaseContent):
 
     def _renameAfterCreation(self, check_auto_id=False):
         from bika.lims.idserver import renameAfterCreation
-
         renameAfterCreation(self)
 
     def getPortalTypes(self):
