@@ -142,6 +142,14 @@
       for="bika.lims.interfaces.IAnalysisRequest"
       name="PrimaryAnalysisRequestFieldVisibility"
     />
+
+    <!-- Readonly Client field in Batches once they are created -->
+    <adapter
+      factory=".widgetvisibility.BatchClientFieldVisibility"
+      provides="bika.lims.interfaces.IATWidgetVisibility"
+      for="bika.lims.interfaces.IBatch"
+      name="BatchClientFieldVisibility"
+    />
     <!---
     END OF FIELDS/WIDGETS VISIBILITY
     -->

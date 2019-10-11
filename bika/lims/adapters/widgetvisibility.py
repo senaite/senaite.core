@@ -261,6 +261,21 @@ class PrimaryAnalysisRequestFieldVisibility(SenaiteATWidgetVisibility):
         return default
 
 
+class BatchClientFieldVisibility(SenaiteATWidgetVisibility):
+    """Client field in a Batch in only editable while it is being created.
+    """
+    def __init__(self, context):
+        super(BatchClientFieldVisibility, self).__init__(
+            context=context, sort=3, field_names=["Client"])
+
+    def isVisible(self, field, mode="view", default="visible"):
+        """Returns whether the field is visible in a given state
+        """
+        if mode == "edit" and not self.context.isTemporary():
+            return "invisible"
+        return default
+
+
 class InternalUseFieldVisibility(SenaiteATWidgetVisibility):
     """InternalUse field must only be visible to lab personnel
     """
