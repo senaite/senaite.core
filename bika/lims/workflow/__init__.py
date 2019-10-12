@@ -28,7 +28,7 @@ from bika.lims import api
 from bika.lims import logger
 from bika.lims.browser import ulocalized_time
 from bika.lims.decorators import synchronized
-from bika.lims.interfaces import IActionHandlerPool
+from bika.lims.interfaces import IActionHandlerPool, IGuardAdapter
 from bika.lims.interfaces import IJSONReadExtender
 from bika.lims.jsonapi import get_include_fields
 from bika.lims.utils import changeWorkflowState  # noqa
@@ -37,6 +37,7 @@ from bika.lims.workflow.indexes import ACTIONS_TO_INDEXES
 from Products.Archetypes.config import UID_CATALOG
 from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.WorkflowCore import WorkflowException
+from zope.component import getAdapters
 from zope.interface import implements
 from ZPublisher.HTTPRequest import HTTPRequest
 
@@ -386,6 +387,16 @@ def guard_handler(instance, transition_id):
     """
     if not instance:
         return True
+
+    # Find out if there are adapters registered for this type
+    adapters = map(lambda ad: ad[1], getAdapters((instance,), IGuardAdapter))
+
+    # If adapters are found, core's guard will only be evaluated if, and only
+    # if, ALL "pre-guards" return True
+    for ad in adapters:
+        if hasattr(ad, "pre_guard") and not ad.pre_guard(transition_id):
+            return False
+
     clazz_name = instance.portal_type
     # Inspect if bika.lims.workflow.<clazzname>.<guards> module exists
     wf_module = _load_wf_module('{0}.guards'.format(clazz_name.lower()))
@@ -398,7 +409,16 @@ def guard_handler(instance, transition_id):
     if not guard:
         return True
 
-    return guard(instance)
+    if not guard(instance):
+        return False
+
+    # "post-guards" are only evaluated if core's guard returns True. For the
+    # guard to return True, all post_guards must return True too.
+    for ad in adapters:
+        if hasattr(ad, "post_guard") and not ad.post_guard(transition_id):
+            return False
+
+    return True
 
 
 def _load_wf_module(module_relative_name):

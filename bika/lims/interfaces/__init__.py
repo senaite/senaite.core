@@ -954,3 +954,8 @@ class IInternalUse(Interface):
 class IDetachedPartition(Interface):
     """Marker interface for samples that have been detached from its primary
     """
+
+
+class IGuardAdapter(Interface):
+    """Marker interface for guard adapters
+    """
