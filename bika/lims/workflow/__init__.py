@@ -406,10 +406,7 @@ def guard_handler(instance, transition_id):
     if not guard:
         return True
 
-    if not guard(instance):
-        return False
-
-    return True
+    return guard(instance)
 
 
 def _load_wf_module(module_relative_name):
