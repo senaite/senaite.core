@@ -959,3 +959,7 @@ class IDetachedPartition(Interface):
 class IGuardAdapter(Interface):
     """Marker interface for guard adapters
     """
+
+    def guard(self, transition):
+        """Return False if you want to block the transition
+        """
