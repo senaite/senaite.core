@@ -33,6 +33,7 @@ Changelog
 
 **Fixed**
 
+- #1454 Fix occasional error when labeling samples w/o report as printed
 - #1452 Fix missing error percentage calculation for reference samples
 - #1447 New Client contact has access to last client's Sample only
 - #1446 Parameter `group` in `contact._addUserToGroup` was not considered
