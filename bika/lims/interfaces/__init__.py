@@ -954,3 +954,12 @@ class IInternalUse(Interface):
 class IDetachedPartition(Interface):
     """Marker interface for samples that have been detached from its primary
     """
+
+
+class IGuardAdapter(Interface):
+    """Marker interface for guard adapters
+    """
+
+    def guard(self, transition):
+        """Return False if you want to block the transition
+        """
