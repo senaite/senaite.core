@@ -20,14 +20,6 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
-    <browser:page
-      for="bika.lims.interfaces.IBatch"
-      name="getAnalysisContainers"
-      class="bika.lims.browser.batch.getAnalysisContainers"
-      permission="zope.Public"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
     <adapter
       factory="bika.lims.browser.batch.ClientContactVocabularyFactory"
       for="bika.lims.interfaces.IBatch"

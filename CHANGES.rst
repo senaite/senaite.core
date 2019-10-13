@@ -29,6 +29,7 @@ Changelog
 
 **Removed**
 
+- #1449 Removed InheritedObjects (Inherited from) field from Batch
 - #1430 Removed Identifier Types
 
 
