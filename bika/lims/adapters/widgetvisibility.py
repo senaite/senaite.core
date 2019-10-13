@@ -262,7 +262,9 @@ class PrimaryAnalysisRequestFieldVisibility(SenaiteATWidgetVisibility):
 
 
 class BatchClientFieldVisibility(SenaiteATWidgetVisibility):
-    """Client field in a Batch in only editable while it is being created.
+    """Client field in a Batch in only editable while it is being created or
+    when the Batch has no client assigned yet and all samples belong to
+    same client
     """
     def __init__(self, context):
         super(BatchClientFieldVisibility, self).__init__(
@@ -272,9 +274,21 @@ class BatchClientFieldVisibility(SenaiteATWidgetVisibility):
         """Returns whether the field is visible in a given state
         """
         if self.context.getClient():
+            # This batch has a client assigned already and this cannot be
+            # changed to prevent inconsistencies (client contacts can access
+            # to batches that belong to their same client)
             return "invisible"
-        if mode == "edit" and not self.context.isTemporary():
-            return "invisible"
+
+        if mode == "edit":
+            # This batch does not have a client assigned, but allow the client
+            # field to be editable only if all samples it contains belong to
+            # the same client.
+            samples = self.context.getAnalysisRequestsBrains()
+            client_uids = map(lambda sample: sample.getClientUID, samples)
+            client_uids = list(set(client_uids))
+            if len(client_uids) > 1:
+                return "invisible"
+
         return default
 
 
