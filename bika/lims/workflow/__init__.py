@@ -388,13 +388,10 @@ def guard_handler(instance, transition_id):
     if not instance:
         return True
 
-    # Find out if there are adapters registered for this type
-    adapters = map(lambda ad: ad[1], getAdapters((instance,), IGuardAdapter))
-
     # If adapters are found, core's guard will only be evaluated if, and only
     # if, ALL "pre-guards" return True
-    for ad in adapters:
-        if hasattr(ad, "pre_guard") and not ad.pre_guard(transition_id):
+    for name, ad in getAdapters((instance,), IGuardAdapter):
+        if not ad.guard(transition_id):
             return False
 
     clazz_name = instance.portal_type
@@ -411,12 +408,6 @@ def guard_handler(instance, transition_id):
 
     if not guard(instance):
         return False
-
-    # "post-guards" are only evaluated if core's guard returns True. For the
-    # guard to return True, all post_guards must return True too.
-    for ad in adapters:
-        if hasattr(ad, "post_guard") and not ad.post_guard(transition_id):
-            return False
 
     return True
 
