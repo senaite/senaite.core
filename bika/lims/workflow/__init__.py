@@ -391,7 +391,7 @@ def guard_handler(instance, transition_id):
     # If adapters are found, core's guard will only be evaluated if, and only
     # if, ALL "pre-guards" return True
     for name, ad in getAdapters((instance,), IGuardAdapter):
-        if not ad.guard(transition_id):
+        if ad.guard(transition_id) is False:
             return False
 
     clazz_name = instance.portal_type
