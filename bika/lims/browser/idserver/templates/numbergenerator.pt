@@ -55,20 +55,12 @@
           </div>
         </tal:numbers>
 
-
         <input class="btn btn-primary btn-sm allowMultiSubmit"
                type="submit"
                name="seed"
                i18n:attributes="value"
                value="Seed"/>
 
-        <!-- enable via the dev-tools if you know what you are doing... -->
-        <input class="btn btn-danger btn-sm allowMultiSubmit"
-               type="submit"
-               disabled="disabled"
-               name="flush"
-               i18n:attributes="value"
-               value="Reset Numbers"/>
       </form>
 
     </div>
