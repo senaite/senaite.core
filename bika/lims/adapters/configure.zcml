@@ -143,7 +143,8 @@
       name="PrimaryAnalysisRequestFieldVisibility"
     />
 
-    <!-- Readonly Client field in Batches once they are created -->
+    <!-- Batch: Hide Client field if the batch is assigned to a Client or the
+    batch contains samples from different clients -->
     <adapter
       factory=".widgetvisibility.BatchClientFieldVisibility"
       provides="bika.lims.interfaces.IATWidgetVisibility"
