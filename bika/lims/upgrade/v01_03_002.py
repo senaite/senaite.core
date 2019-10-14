@@ -163,7 +163,7 @@ def move_batch_to_client(portal):
         if num and num % 100 == 0:
             logger.info("Moving Batches under Clients: {}/{}"
                         .format(num, total))
-        client = batch.getClient()
+        client = batch.getField("Client").get(batch)
         if client:
             # Check if all samples inside this Batch belong to same client
             samples = batch.getAnalysisRequestsBrains()
