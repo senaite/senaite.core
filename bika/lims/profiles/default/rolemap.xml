@@ -196,7 +196,6 @@
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="Owner"/>
-      <role name="Client"/>
     </permission>
     <permission name="senaite.core: Add BatchLabel" acquire="False">
       <role name="LabClerk"/>

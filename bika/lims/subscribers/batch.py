@@ -21,7 +21,7 @@
 from Products.CMFPlone.utils import safe_unicode
 
 
-def BatchCreatedEventHandler(batch, event):
+def ObjectModifiedEventHandler(batch, event):
     """Actions to be done when a batch is created:
     - Title as the Batch ID if title is not defined
     - Move the Batch inside the Client if defined
@@ -32,7 +32,6 @@ def BatchCreatedEventHandler(batch, event):
     client = batch.getClient()
     # Check if the Batch is being created inside the Client
     if client and (client.UID() != batch.aq_parent.UID()):
-        batchfolder = batch.getFolderWhenPortalFactory()
         # move batch inside the client
-        cp = batchfolder.manage_cutObjects(batch.id)
+        cp = batch.aq_parent.manage_cutObjects(batch.id)
         client.manage_pasteObjects(cp)

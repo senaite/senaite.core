@@ -52,7 +52,7 @@
       <permission-role>SamplingCoordinator</permission-role>
       <permission-role>Verifier</permission-role>
     </permission-map>
-    <permission-map name="Delete objects" acquired="False" />
+    <permission-map name="Delete objects" acquired="True" />
     <permission-map name="List folder contents" acquired="False">
       <!-- Same as in rolemap.xml, but without Client -->
       <permission-role>Analyst</permission-role>
