@@ -342,23 +342,6 @@ def get_current_year():
     return DateTime().strftime("%Y")[2:]
 
 
-def search_by_prefix(portal_type, prefix):
-    """Returns brains which share the same portal_type and ID prefix
-    """
-    catalog = api.get_tool("uid_catalog")
-    brains = catalog({"portal_type": portal_type})
-    # Filter brains with the same ID prefix
-    return filter(lambda brain: api.get_id(brain).startswith(prefix), brains)
-
-
-def get_ids_with_prefix(portal_type, prefix):
-    """Return a list of ids sharing the same portal type and prefix
-    """
-    brains = search_by_prefix(portal_type, prefix)
-    ids = map(api.get_id, brains)
-    return ids
-
-
 def make_storage_key(portal_type, prefix=None):
     """Make a storage (dict-) key for the number generator
     """
@@ -452,18 +435,6 @@ def get_generated_number(context, config, variables, **kw):
     # The key used for the storage
     key = make_storage_key(portal_type, prefix)
 
-    # Handle flushed storage
-    if key not in number_generator:
-        max_num = 0
-        existing = get_ids_with_prefix(portal_type, prefix)
-        numbers = map(lambda id: get_seq_number_from_id(id, id_template, prefix), existing)
-        # figure out the highest number in the sequence
-        if numbers:
-            max_num = max(numbers)
-        # set the number generator
-        logger.info("*** SEEDING Prefix '{}' to {}".format(prefix, max_num))
-        number_generator.set_number(key, max_num)
-
     if not kw.get("dry_run", False):
         # Generate a new number
         # NOTE Even when the number exceeds the given ID sequence format,
@@ -532,8 +503,10 @@ def renameAfterCreation(obj):
     """
     # Can't rename without a subtransaction commit when using portal_factory
     transaction.savepoint(optimistic=True)
+
     # The id returned should be normalized already
     new_id = None
+
     # Checking if an adapter exists for this content type. If yes, we will
     # get new_id from adapter.
     for name, adapter in getAdapters((obj, ), IIdServer):
@@ -544,17 +517,8 @@ def renameAfterCreation(obj):
     if not new_id:
         new_id = generateUniqueId(obj)
 
-    # TODO: This is a naive check just in current folder
-    # -> this should check globally for duplicate objects with same prefix
-    # N.B. a check like `search_by_prefix` each time would probably slow things
-    # down too much!
-    # -> A solution could be to store all IDs with a certain prefix in a storage
-    parent = api.get_parent(obj)
-    if new_id in parent.objectIds():
-        # XXX We could do the check in a `while` loop and generate a new one.
-        raise KeyError("The ID {} is already taken in the path {}".format(
-            new_id, api.get_path(parent)))
     # rename the object to the new id
+    parent = api.get_parent(obj)
     parent.manage_renameObject(obj.id, new_id)
 
     return new_id
