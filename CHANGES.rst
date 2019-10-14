@@ -6,6 +6,7 @@ Changelog
 
 **Added**
 
+- #1455 Added support for adapters in guard handler
 - #1436 Setting in setup for auto-reception of samples upon creation
 - #1433 Added Submitter column in Sample's analyses listing
 - #1441 Added Auto ID Behavior for Dexterity Contents
@@ -34,6 +35,7 @@ Changelog
 **Fixed**
 
 - #1453 Fix initial IDs not starting with 1
+- #1454 Fix occasional error when labeling samples w/o report as printed
 - #1452 Fix missing error percentage calculation for reference samples
 - #1447 New Client contact has access to last client's Sample only
 - #1446 Parameter `group` in `contact._addUserToGroup` was not considered
