@@ -29,7 +29,13 @@ def ObjectModifiedEventHandler(batch, event):
     if not batch.title:
         batch.setTitle(safe_unicode(batch.id).encode('utf-8'))
 
-    client = batch.getClient()
+    # If client is assigned, move the Batch the client's folder
+    # Note here we directly get the Client from the Schema, cause getClient
+    # getter is overriden in Batch content type to always look to aq_parent in
+    # order to prevent inconsistencies (the Client schema field is only used to
+    # allow the user to assign a Client to the Batch).
+    client = batch.getField("Client").get(batch)
+
     # Check if the Batch is being created inside the Client
     if client and (client.UID() != batch.aq_parent.UID()):
         # move batch inside the client
