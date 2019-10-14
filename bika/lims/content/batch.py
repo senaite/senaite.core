@@ -156,23 +156,18 @@ class Batch(ATFolder):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
 
-    @deprecated("This method will be removed in senaite.core 1.2.0")
-    def _getCatalogTool(self):
-        from bika.lims.catalog import getCatalog
-        return getCatalog(self)
-
     def getClient(self):
-        """Retrieves the Client for which the current Batch is attached to
-           Tries to retrieve the Client from the Schema property, but if not
-           found, searches for linked ARs and retrieve the Client from the
-           first one. If the Batch has no client, returns None.
+        """Retrieves the Client the current Batch is assigned to
         """
+        # The schema's field Client is only used to allow the user to assign
+        # the batch to a client in edit form. The entered value is used in
+        # ObjectModifiedEventHandler to move the batch to the Client's folder,
+        # so the value stored in the Schema's is not used anymore
+        # See https://github.com/senaite/senaite.core/pull/1450
         client = self.aq_parent
         if IClient.providedBy(client):
             return client
-        client = self.Schema().getField('Client').get(self)
-        if client:
-            return client
+        return None
 
     def getClientTitle(self):
         client = self.getClient()
