@@ -279,6 +279,8 @@ class WorkflowActionPrintSampleAdapter(WorkflowActionGenericAdapter):
             return False
         reports = sample.objectValues("ARReport")
         reports = sorted(reports, key=lambda report: report.getDatePublished())
+        if not reports:
+            return False
         last_report = reports[-1]
         if not last_report.getDatePrinted():
             last_report.setDatePrinted(DateTime())
