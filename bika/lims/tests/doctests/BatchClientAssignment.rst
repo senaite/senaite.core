@@ -45,9 +45,6 @@ Assign a client to the Batch and the latter is automatically moved inside
 Client's folder:
 
     >>> batch.setClient(client)
-    >>> batch.getClient()
-    <Client at /plone/clients/client-1>
-
     >>> modified(batch)
     >>> len(batches.objectValues("Batch"))
     0
