@@ -19,6 +19,15 @@
       provides="bika.lims.interfaces.IReferenceWidgetVocabulary"
     />
 
+    <!-- Display the Batches that belong to same client or not assigned to any
+    client in Analysis Request view -->
+    <adapter
+      for="bika.lims.interfaces.IAnalysisRequest
+           zope.publisher.interfaces.browser.IBrowserRequest"
+      factory="bika.lims.adapters.referencewidgetvocabulary.BatchReferenceWidgetVocabulary"
+      provides="bika.lims.interfaces.IReferenceWidgetVocabulary"
+    />
+
 
     <!--
     FIELDS/WIDGETS VISIBILITY

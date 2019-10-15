@@ -22,7 +22,7 @@ import json
 
 from bika.lims import api
 from bika.lims import logger
-from bika.lims.interfaces import IReferenceWidgetVocabulary
+from bika.lims.interfaces import IReferenceWidgetVocabulary, IAnalysisRequest
 from bika.lims.utils import to_unicode as _u
 from bika.lims.utils import to_utf8 as _c
 from zope.interface import implements
@@ -256,3 +256,18 @@ class DefaultReferenceWidgetVocabulary(object):
 
         logger.info("Returned objects: {}".format(len(brains)))
         return brains
+
+
+class BatchReferenceWidgetVocabulary(DefaultReferenceWidgetVocabulary):
+
+    def get_raw_query(self):
+        """Returns the raw query to use for current search, based on the
+        base query + update query
+        """
+        query = super(BatchReferenceWidgetVocabulary, self).get_raw_query()
+        if IAnalysisRequest.providedBy(self.context):
+            # Display the Batches from the Client the Sample belongs to and
+            # those that do not belong to any Client
+            client = self.context.getClient()
+            query["getClientUID"] = [api.get_uid(client), ""]
+        return query
