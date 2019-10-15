@@ -172,7 +172,8 @@ class DefaultReferenceWidgetVocabulary(object):
                 sorting["sort_order"] = "ascending"
 
             # Sort limit
-            sort_limit = api.to_int(query.get("limit", 30), default=30)
+            sort_limit = query.get("sort_limit", query.get("limit"))
+            sort_limit = api.to_int(sort_limit, default=30)
             if sort_limit:
                 sorting["sort_limit"] = sort_limit
 

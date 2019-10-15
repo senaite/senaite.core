@@ -35,6 +35,7 @@ Changelog
 
 **Fixed**
 
+- #1449 sort_limit was not considered in ReferenceWidget searches
 - #1449 Fix Clients were unable to add batches
 - #1453 Fix initial IDs not starting with 1
 - #1454 Fix occasional error when labeling samples w/o report as printed
