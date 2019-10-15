@@ -872,6 +872,9 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             "sample": {
                 "getClientUID": [uid],
             },
+            "batch": {
+                "getClientUID": [uid, ""],
+            }
         }
         info["filter_queries"] = filter_queries
 

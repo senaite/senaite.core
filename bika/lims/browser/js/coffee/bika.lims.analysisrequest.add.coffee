@@ -492,6 +492,7 @@ class window.AnalysisRequestAdd
      * Filter ARTemplates
      * Filter Specification
      * Filter SamplingRound
+     * Filter Batch
     ###
 
     # filter Contacts
@@ -546,6 +547,11 @@ class window.AnalysisRequestAdd
     # filter Sample
     field = $("#PrimaryAnalysisRequest-#{arnum}")
     query = client.filter_queries.sample
+    @set_reference_field_query field, query
+
+    # filter Batch
+    field = $("#Batch-#{arnum}")
+    query = client.filter_queries.batch
     @set_reference_field_query field, query
 
 
@@ -862,6 +868,7 @@ class window.AnalysisRequestAdd
       "Profiles"
       "PrimaryAnalysisRequest"
       "Specification"
+      "Batch"
     ]
     $.each field_ids, (index, id) ->
       field = me.get_field_by_id id, arnum
