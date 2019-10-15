@@ -88,7 +88,8 @@ class ClientFieldVisibility(SenaiteATWidgetVisibility):
 
 class BatchFieldVisibility(SenaiteATWidgetVisibility):
     """This will force the 'Batch' field to 'hidden' in ar_add when the parent
-    context is a Batch.
+    context is a Batch and in Analysis Request view when current user is a
+    client and the assigned batch does not have a client assigned.
     """
     def __init__(self, context):
         super(BatchFieldVisibility, self).__init__(
@@ -97,6 +98,17 @@ class BatchFieldVisibility(SenaiteATWidgetVisibility):
     def isVisible(self, field, mode="view", default="visible"):
         if IBatch.providedBy(self.context.aq_parent):
             return "hidden"
+
+        if mode == "edit":
+            client = api.get_current_client()
+            if client:
+                # If current user is a client contact and the batch this Sample
+                # is assigned to does not have a client assigned (e.g., the
+                # batch was assigned by lab personnel), hide this field
+                batch = self.context.getBatch()
+                if batch.getClient() != client:
+                    return "invisible"
+
         return default
 
 
