@@ -22,7 +22,8 @@ from plone.indexer import indexer
 
 from bika.lims import api
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
-from bika.lims.interfaces import IAnalysisRequest
+from bika.lims.interfaces import IAnalysisRequest, \
+    IBikaCatalogAnalysisRequestListing
 
 
 @indexer(IAnalysisRequest)
@@ -42,7 +43,7 @@ def assigned_state(instance):
     return "assigned"
 
 
-@indexer(IAnalysisRequest)
+@indexer(IAnalysisRequest, IBikaCatalogAnalysisRequestListing)
 def listing_searchable_text(instance):
     """ Retrieves all the values of metadata columns in the catalog for
     wildcard searches

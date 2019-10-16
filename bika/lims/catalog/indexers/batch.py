@@ -2,10 +2,10 @@ from plone.indexer import indexer
 
 from bika.lims import api
 from bika.lims.catalog.bika_catalog import BIKA_CATALOG
-from bika.lims.interfaces import IBatch
+from bika.lims.interfaces import IBatch, IBikaCatalog
 
 
-@indexer(IBatch)
+@indexer(IBatch, IBikaCatalog)
 def listing_searchable_text(instance):
     entries = set()
     catalog = api.get_tool(BIKA_CATALOG)
@@ -23,4 +23,3 @@ def listing_searchable_text(instance):
 
     # Concatenate all strings to one text blob
     return " ".join(entries)
-

@@ -27,7 +27,7 @@ from bika.lims.api.snapshot import get_snapshot_count
 from bika.lims.api.snapshot import get_snapshot_metadata
 from bika.lims.api.snapshot import get_snapshots
 from bika.lims.api.user import get_user_id
-from bika.lims.interfaces import IAuditable
+from bika.lims.interfaces import IAuditable, IAuditLogCatalog
 from plone.indexer import indexer
 from plone.memoize.ram import DontCache
 from plone.memoize.ram import cache
@@ -129,7 +129,7 @@ def action(instance):
     return get_action(last_snapshot)
 
 
-@indexer(IAuditable)
+@indexer(IAuditable, IAuditLogCatalog)
 def listing_searchable_text(instance):
     """Fulltext search for the audit metadata
     """
