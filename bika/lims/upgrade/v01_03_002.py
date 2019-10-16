@@ -23,6 +23,7 @@ from bika.lims import api
 from bika.lims import logger
 from bika.lims.catalog.analysisrequest_catalog import \
     CATALOG_ANALYSIS_REQUEST_LISTING
+from bika.lims.catalog.bika_catalog import BIKA_CATALOG
 from bika.lims.config import PROJECTNAME as product
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
@@ -66,6 +67,7 @@ def upgrade(tool):
     unindex_orphaned_brains_in_auditlog_catalog(portal)
 
     # Allow clients to create batches (#1450)
+    add_indexng3_to_bika_catalog(portal)
     update_batches_role_mappings(portal)
     move_batch_to_client(portal)
 
@@ -137,6 +139,23 @@ def update_partitions_role_mappings(portal):
         partition.reindexObjectSecurity()
 
     logger.info("Updating role mappings of partitions [DONE]")
+
+
+def add_indexng3_to_bika_catalog(portal):
+    """Adds a TextIndexNG3 in bika_catalog
+    """
+    index_name = "listing_searchable_text"
+    logger.info("Adding index {} in {} ...".format(index_name, BIKA_CATALOG))
+    catalog = api.get_tool(BIKA_CATALOG)
+    if index_name in catalog.indexes():
+        logger.info("Index {} already in Catalog [SKIP]".format(index_name))
+        return
+
+    catalog.addIndex(index_name, "TextIndexNG3")
+
+    logger.info("Indexing new index {} ...".format(index_name))
+    catalog.manage_reindexIndex(index_name)
+    logger.info("Indexing new index {} [DONE]".format(index_name))
 
 
 def update_batches_role_mappings(portal):
