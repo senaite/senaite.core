@@ -484,6 +484,7 @@
        * Filter ARTemplates
        * Filter Specification
        * Filter SamplingRound
+       * Filter Batch
        */
       var contact_title, contact_uid, field, query;
       field = $("#Contact-" + arnum);
@@ -519,6 +520,9 @@
       this.set_reference_field_query(field, query);
       field = $("#PrimaryAnalysisRequest-" + arnum);
       query = client.filter_queries.sample;
+      this.set_reference_field_query(field, query);
+      field = $("#Batch-" + arnum);
+      query = client.filter_queries.batch;
       return this.set_reference_field_query(field, query);
     };
 
@@ -786,7 +790,7 @@
       uid = $el.attr("uid");
       arnum = $el.closest("[arnum]").attr("arnum");
       console.debug("°°° on_client_changed: arnum=" + arnum + " °°°");
-      field_ids = ["Contact", "CCContact", "InvoiceContact", "SamplePoint", "Template", "Profiles", "PrimaryAnalysisRequest", "Specification"];
+      field_ids = ["Contact", "CCContact", "InvoiceContact", "SamplePoint", "Template", "Profiles", "PrimaryAnalysisRequest", "Specification", "Batch"];
       $.each(field_ids, function(index, id) {
         var field;
         field = me.get_field_by_id(id, arnum);

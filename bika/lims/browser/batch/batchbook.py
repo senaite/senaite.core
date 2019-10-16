@@ -137,20 +137,7 @@ class BatchBookView(BikaListingView):
         wf = api.get_tool('portal_workflow')
         schema = self.context.Schema()
 
-        ars = []
-
-        for o in schema.getField('InheritedObjects').get(self.context):
-            if o.portal_type == 'AnalysisRequest':
-                if o not in ars:
-                    ars.append(o)
-            elif o.portal_type == 'Batch':
-                for ar in o.getAnalysisRequests(is_active=True):
-                    if ar not in ars:
-                        ars.append(ar)
-
-        for ar in self.context.getAnalysisRequests(is_active=True):
-            if ar not in ars:
-                ars.append(ar)
+        ars = self.context.getAnalysisRequests(is_active=True)
 
         self.categories = []
         analyses = {}

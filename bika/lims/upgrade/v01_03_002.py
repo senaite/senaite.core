@@ -23,6 +23,7 @@ from bika.lims import api
 from bika.lims import logger
 from bika.lims.catalog.analysisrequest_catalog import \
     CATALOG_ANALYSIS_REQUEST_LISTING
+from bika.lims.catalog.bika_catalog import BIKA_CATALOG
 from bika.lims.config import PROJECTNAME as product
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
@@ -52,6 +53,7 @@ def upgrade(tool):
 
     # Mixed permissions for transitions in client workflow (#1419)
     # Allow to detach a partition from its primary sample (#1420)
+    # Allow clients to create batches (#1450)
     setup.runImportStepFromProfile(profile, "workflow")
 
     # Allow to detach a partition from its primary sample (#1420)
@@ -63,6 +65,11 @@ def upgrade(tool):
     # Unindex stale catalog brains from the auditlog_catalog
     # https://github.com/senaite/senaite.core/issues/1438
     unindex_orphaned_brains_in_auditlog_catalog(portal)
+
+    # Allow clients to create batches (#1450)
+    add_indexng3_to_bika_catalog(portal)
+    update_batches_role_mappings(portal)
+    move_batch_to_client(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
@@ -132,6 +139,77 @@ def update_partitions_role_mappings(portal):
         partition.reindexObjectSecurity()
 
     logger.info("Updating role mappings of partitions [DONE]")
+
+
+def add_indexng3_to_bika_catalog(portal):
+    """Adds a TextIndexNG3 in bika_catalog
+    """
+    index_name = "listing_searchable_text"
+    logger.info("Adding index {} in {} ...".format(index_name, BIKA_CATALOG))
+    catalog = api.get_tool(BIKA_CATALOG)
+    if index_name in catalog.indexes():
+        logger.info("Index {} already in Catalog [SKIP]".format(index_name))
+        return
+
+    catalog.addIndex(index_name, "TextIndexNG3")
+
+    logger.info("Indexing new index {} ...".format(index_name))
+    catalog.manage_reindexIndex(index_name)
+    logger.info("Indexing new index {} [DONE]".format(index_name))
+
+
+def update_batches_role_mappings(portal):
+    """Updates the role mappings for batches folder cause we've changed the
+    workflow bound to this type and we've added permission to Delete Objects
+    """
+    logger.info("Updating role mappings of batches folder ...")
+    wf_tool = api.get_tool("portal_workflow")
+    workflow = wf_tool.getWorkflowById("senaite_batches_workflow")
+    workflow.updateRoleMappingsFor(portal.batches)
+    portal.batches.reindexObject()
+    logger.info("Updating role mappings of batches folder [DONE]")
+
+
+def move_batch_to_client(portal):
+    """
+    Moving each Batch inside BatchFolder to its Client if it belongs to a client.
+    This makes permissions easier.
+    """
+    logger.info("Moving Batches under Clients...")
+    batchfolder = portal.batches
+    total = batchfolder.objectCount()
+    for num, (b_id, batch) in enumerate(batchfolder.items()):
+        if num and num % 100 == 0:
+            logger.info("Moving Batches under Clients: {}/{}"
+                        .format(num, total))
+        client = batch.getField("Client").get(batch)
+        if client:
+            # Check if all samples inside this Batch belong to same client
+            samples = batch.getAnalysisRequestsBrains()
+            client_uids = map(lambda sample: sample.getClientUID, samples)
+            client_uids = list(set(client_uids))
+            if len(client_uids) > 1:
+                # Samples from different clients!. Unset the client
+                logger.warn("Batch with client assigned, but samples from "
+                            "others. Unassigning client: {} ({})"
+                            .format(b_id, api.get_title(client)))
+                batch.setClient(None)
+                batch.reindexObject()
+
+            elif client_uids and client_uids[0] != api.get_uid(client):
+                # Assigned client does not match with the ones from the samples
+                logger.warn("Batch with client assigned that does not match "
+                            "with the client from samples. Unassigning client: "
+                            "{} ({})".format(b_id, api.get_title(client)))
+                batch.setClient(None)
+                batch.reindexObject()
+
+            else:
+                # Move batch inside the client
+                cp = batchfolder.manage_cutObjects(b_id)
+                client.manage_pasteObjects(cp)
+
+    logger.info("Moving Batches under Clients [DONE]")
 
 
 def remove_identifiers(portal):

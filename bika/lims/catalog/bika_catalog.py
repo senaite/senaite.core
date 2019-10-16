@@ -23,6 +23,26 @@ from App.class_init import InitializeClass
 from bika.lims.catalog.bika_catalog_tool import BikaCatalogTool
 from bika.lims.interfaces import IBikaCatalog
 
+# Using a variable to avoid plain strings in code
+BIKA_CATALOG = "bika_catalog"
+
+# Defining the indexes for this catalog
+_indexes = {
+    "listing_searchable_text": "TextIndexNG3",
+}
+# Defining the columns for this catalog
+_columns = []
+# Defining the types for this catalog
+_types = []
+
+bika_catalog_definition = {
+    BIKA_CATALOG: {
+        "types": _types,
+        "indexes": _indexes,
+        "columns": _columns,
+    }
+}
+
 
 class BikaCatalog(BikaCatalogTool):
     """

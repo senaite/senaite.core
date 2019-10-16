@@ -8,6 +8,9 @@
   <!-- Default case-insenstive sortable_title -->
   <adapter name="sortable_title" factory=".sortable_title"/>
 
+  <!-- Default listing_searchable_text index adapter for bika_catalog -->
+  <adapter name="listing_searchable_text" factory=".listing_searchable_text"/>
+
   <!-- Case-insenstive + sortkey sortable_title for Categories and Analyses -->
   <adapter name="sortable_title" factory=".baseanalysis.sortable_title"/>
   <adapter name="sortable_title" factory=".analysiscategory.sortable_title"/>
@@ -29,5 +32,6 @@
   <adapter name="modifiers" factory=".auditlog.modifiers"/>
   <adapter name="snapshot_created" factory=".auditlog.snapshot_created"/>
   <adapter name="snapshot_version" factory=".auditlog.snapshot_version"/>
+
 
 </configure>

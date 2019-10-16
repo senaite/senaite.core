@@ -44,6 +44,7 @@ from bika.lims.browser.widgets import SelectionWidget as BikaSelectionWidget
 from bika.lims.browser.widgets.durationwidget import DurationWidget
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
+from bika.lims.catalog.bika_catalog import BIKA_CATALOG
 from bika.lims.config import PRIORITIES
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.analysisspec import ResultsRangeDict
@@ -310,7 +311,8 @@ schema = BikaSchema.copy() + Schema((
             visible={
                 'add': 'edit',
             },
-            catalog_name="bika_catalog",
+            catalog_name=BIKA_CATALOG,
+            search_fields=('listing_searchable_text',),
             base_query={"is_active": True,
                         "sort_limit": 50,
                         "sort_on": "sortable_title",
@@ -318,12 +320,13 @@ schema = BikaSchema.copy() + Schema((
             colModel=[
                 {'columnName': 'getId', 'width': '20',
                  'label': _('Batch ID'), 'align': 'left'},
+                {'columnName': 'Title', 'width': '20',
+                 'label': _('Title'), 'align': 'left'},
                 {'columnName': 'getClientBatchID', 'width': '20',
                  'label': _('CBID'), 'align': 'left'},
                 {'columnName': 'getClientTitle', 'width': '30',
                  'label': _('Client'), 'align': 'left'},
             ],
-            minLength=3,
             force_all = False,
             ui_item="getId",
             showOn=True,

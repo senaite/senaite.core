@@ -24,6 +24,7 @@ from bika.lims import api
 from bika.lims.api.security import check_permission
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
+from bika.lims.interfaces import IClient
 from bika.lims.permissions import AddBatch
 from bika.lims.utils import get_link
 
@@ -119,26 +120,29 @@ class BatchFolderContentsView(BikaListingView):
         if self.context.portal_type == "BatchFolder":
             self.request.set("disable_border", 1)
 
-    def update(self):
-        """Called before the listing renders
-        """
-        super(BatchFolderContentsView, self).update()
-
-        if self.on_batch_folder() and self.can_add_batches():
-            self.context_actions[_("Add")] = {
+        # By default, only users with AddBatch permissions for the current
+        # context can add batches.
+        self.context_actions = {
+            _("Add"): {
                 "url": "createObject?type_name=Batch",
-                "permission": "Add portal content",
-                "icon": "++resource++bika.lims.images/add.png"}
+                "permission": AddBatch,
+                "icon": "++resource++bika.lims.images/add.png"
+            }
+        }
 
-    def on_batch_folder(self):
-        """Checks if the current context is a Batch folder
-        """
-        return self.context.portal_type == "BatchFolder"
-
-    def can_add_batches(self):
-        """Checks if the current user is allowed to add batches
-        """
-        return check_permission(AddBatch, self.context)
+        # If current user is a client contact and current context is not a
+        # Client, then modify the url for Add action so the Batch gets created
+        # inside the Client object to which the current user belongs. The
+        # reason is that Client contacts do not have privileges to create
+        # Batches inside portal/batches
+        if not IClient.providedBy(self.context):
+            # Get the client the current user belongs to
+            client = api.get_current_client()
+            if client and check_permission(AddBatch, client):
+                add_url = self.context_actions[_("Add")]["url"]
+                add_url = "{}/{}".format(api.get_url(client), add_url)
+                self.context_actions[_("Add")]["url"] = add_url
+                del(self.context_actions[_("Add")]["permission"])
 
     def folderitem(self, obj, item, index):
         """Applies new properties to the item (Batch) that is currently being

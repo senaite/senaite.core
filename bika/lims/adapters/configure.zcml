@@ -19,6 +19,15 @@
       provides="bika.lims.interfaces.IReferenceWidgetVocabulary"
     />
 
+    <!-- Display the Batches that belong to same client or not assigned to any
+    client in Analysis Request view -->
+    <adapter
+      for="bika.lims.interfaces.IAnalysisRequest
+           zope.publisher.interfaces.browser.IBrowserRequest"
+      factory="bika.lims.adapters.referencewidgetvocabulary.BatchReferenceWidgetVocabulary"
+      provides="bika.lims.interfaces.IReferenceWidgetVocabulary"
+    />
+
 
     <!--
     FIELDS/WIDGETS VISIBILITY
@@ -141,6 +150,15 @@
       provides="bika.lims.interfaces.IATWidgetVisibility"
       for="bika.lims.interfaces.IAnalysisRequest"
       name="PrimaryAnalysisRequestFieldVisibility"
+    />
+
+    <!-- Batch: Hide Client field if the batch is assigned to a Client or the
+    batch contains samples from different clients -->
+    <adapter
+      factory=".widgetvisibility.BatchClientFieldVisibility"
+      provides="bika.lims.interfaces.IATWidgetVisibility"
+      for="bika.lims.interfaces.IBatch"
+      name="BatchClientFieldVisibility"
     />
     <!---
     END OF FIELDS/WIDGETS VISIBILITY

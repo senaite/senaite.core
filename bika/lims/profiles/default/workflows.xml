@@ -148,6 +148,13 @@
   -->
   <object name="senaite_worksheets_workflow" meta_type="Workflow" />
 
+  <!-- Workflow: senaite_batches_workflow
+  A "one-state workflow" for batches folder (BatchFolder type).
+  A copy of senaite_one_state_workflow, but:
+   - "Delete objects" granted to lab personnel
+  -->
+  <object name="senaite_batches_workflow" meta_type="Workflow"/>
+
   <!-- workflow: senaite_batch_workflow
   Custom workflow for batches. Batches can be cancelled and closed.
   Only lab personnel allowed.
@@ -272,7 +279,7 @@
       <bound-workflow workflow_id="senaite_one_state_workflow"/>
     </type>
     <type type_id="BatchFolder">
-      <bound-workflow workflow_id="senaite_one_state_workflow"/>
+      <bound-workflow workflow_id="senaite_batches_workflow"/>
     </type>
     <type type_id="InstrumentCalibration">
       <bound-workflow workflow_id="senaite_one_state_workflow"/>

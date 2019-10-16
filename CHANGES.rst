@@ -29,11 +29,14 @@ Changelog
 
 **Removed**
 
+- #1449 Removed InheritedObjects (Inherited from) field from Batch
 - #1430 Removed Identifier Types
 
 
 **Fixed**
 
+- #1449 sort_limit was not considered in ReferenceWidget searches
+- #1449 Fix Clients were unable to add batches
 - #1453 Fix initial IDs not starting with 1
 - #1454 Fix occasional error when labeling samples w/o report as printed
 - #1452 Fix missing error percentage calculation for reference samples
