@@ -22,6 +22,7 @@ from plone.indexer import indexer
 
 from bika.lims import api
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
+from bika.lims.catalog.indexers import get_metadata_for
 from bika.lims.interfaces import IAnalysisRequest, \
     IBikaCatalogAnalysisRequestListing
 
@@ -51,7 +52,7 @@ def listing_searchable_text(instance):
     """
     entries = set()
     catalog = api.get_tool(CATALOG_ANALYSIS_REQUEST_LISTING)
-    metadata = catalog.getMetadataForUID(api.get_path(instance))
+    metadata = get_metadata_for(instance, catalog)
     for key, brain_value in metadata.items():
         instance_value = api.safe_getattr(instance, key, None)
         parsed = api.to_searchable_text_metadata(brain_value or instance_value)
