@@ -51,12 +51,9 @@ def listing_searchable_text(instance):
     """
     entries = set()
     catalog = api.get_tool(CATALOG_ANALYSIS_REQUEST_LISTING)
-    columns = catalog.schema()
-    brains = catalog({"UID": api.get_uid(instance)})
-    brain = brains[0] if brains else None
-    for column in columns:
-        brain_value = api.safe_getattr(brain, column, None)
-        instance_value = api.safe_getattr(instance, column, None)
+    metadata = catalog.getMetadataForUID(api.get_path(instance))
+    for key, brain_value in metadata.items():
+        instance_value = api.safe_getattr(instance, key, None)
         parsed = api.to_searchable_text_metadata(brain_value or instance_value)
         entries.add(parsed)
 
