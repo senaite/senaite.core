@@ -23,7 +23,7 @@ from Products.CMFPlone.CatalogTool import sortable_title as plone_sortable_title
 from Products.CMFPlone.utils import safe_callable
 from plone.indexer import indexer
 
-from bika.lims import api
+from bika.lims import api, logger
 from bika.lims.catalog.bika_catalog import BIKA_CATALOG
 from bika.lims.interfaces import IBikaCatalog
 
@@ -68,7 +68,7 @@ def listing_searchable_text(instance):
     """
     entries = set()
     catalog = api.get_tool(BIKA_CATALOG)
-    metadata = catalog.getMetadataForUID(api.get_path(instance))
+    metadata = get_metadata_for(instance, catalog)
     for key, brain_value in metadata.items():
         instance_value = api.safe_getattr(instance, key, None)
         parsed = api.to_searchable_text_metadata(brain_value or instance_value)
@@ -79,3 +79,15 @@ def listing_searchable_text(instance):
 
     # Concatenate all strings to one text blob
     return " ".join(entries)
+
+
+def get_metadata_for(instance, catalog):
+    """Returns the metadata for the given instance from the specified catalog
+    """
+    path = api.get_path(instance)
+    try:
+        return catalog.getMetadataForUID(path)
+    except KeyError:
+        logger.warn("Cannot get metadata from {}. Path not found: {}"
+                    .format(catalog.id, path))
+        return {}
