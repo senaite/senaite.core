@@ -85,8 +85,9 @@ def get_metadata_for(instance, catalog):
     """Returns the metadata for the given instance from the specified catalog
     """
     path = api.get_path(instance)
-    if path not in catalog.uids:
-        logger.warn("Cannot get metadata from {}: {}".format(catalog.id, path))
+    try:
+        return catalog.getMetadataForUID(path)
+    except KeyError:
+        logger.warn("Cannot get metadata from {}. Path not found: {}"
+                    .format(catalog.id, path))
         return {}
-
-    return catalog.getMetadataForUID(path)
