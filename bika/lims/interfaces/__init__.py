@@ -961,3 +961,13 @@ class IGuardAdapter(Interface):
     def guard(self, transition):
         """Return False if you want to block the transition
         """
+
+
+class IAddSampleFieldFilter(Interface):
+    """Marker interface for field filters for Add Sample form
+    """
+
+    def get_info(self):
+        """Returns a dict where the key is the name of the field to be filtered
+        and the value is a dict with the search criteria
+        """

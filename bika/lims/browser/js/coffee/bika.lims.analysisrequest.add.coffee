@@ -495,10 +495,7 @@ class window.AnalysisRequestAdd
      * Filter Batch
     ###
 
-    # filter Contacts
-    field = $("#Contact-#{arnum}")
-    query = client.filter_queries.contact
-    @set_reference_field_query field, query
+    me = this
 
     # handle default contact for /analysisrequests listing
     # https://github.com/senaite/senaite.core/issues/705
@@ -508,51 +505,10 @@ class window.AnalysisRequestAdd
       if contact_title and contact_uid
         @set_reference_field field, contact_uid, contact_title
 
-    # filter CCContacts
-    field = $("#CCContact-#{arnum}")
-    query = client.filter_queries.cc_contact
-    @set_reference_field_query field, query
-
-    # filter InvoiceContact
-    # XXX Where is this field?
-    field = $("#InvoiceContact-#{arnum}")
-    query = client.filter_queries.invoice_contact
-    @set_reference_field_query field, query
-
-    # filter Sample Points
-    field = $("#SamplePoint-#{arnum}")
-    query = client.filter_queries.samplepoint
-    @set_reference_field_query field, query
-
-    # filter AR Templates
-    field = $("#Template-#{arnum}")
-    query = client.filter_queries.artemplates
-    @set_reference_field_query field, query
-
-    # filter Analysis Profiles
-    field = $("#Profiles-#{arnum}")
-    query = client.filter_queries.analysisprofiles
-    @set_reference_field_query field, query
-
-    # filter Analysis Specs
-    field = $("#Specification-#{arnum}")
-    query = client.filter_queries.analysisspecs
-    @set_reference_field_query field, query
-
-    # filter Samplinground
-    field = $("#SamplingRound-#{arnum}")
-    query = client.filter_queries.samplinground
-    @set_reference_field_query field, query
-
-    # filter Sample
-    field = $("#PrimaryAnalysisRequest-#{arnum}")
-    query = client.filter_queries.sample
-    @set_reference_field_query field, query
-
-    # filter Batch
-    field = $("#Batch-#{arnum}")
-    query = client.filter_queries.batch
-    @set_reference_field_query field, query
+    # Apply search filters to other fields
+    $.each client.filter_queries, (field_name, query) ->
+      field = $("#" + field_name + "-#{arnum}")
+      me.set_reference_field_query field, query
 
 
   set_contact: (arnum, contact) =>

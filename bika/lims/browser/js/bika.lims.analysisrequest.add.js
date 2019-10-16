@@ -486,10 +486,8 @@
        * Filter SamplingRound
        * Filter Batch
        */
-      var contact_title, contact_uid, field, query;
-      field = $("#Contact-" + arnum);
-      query = client.filter_queries.contact;
-      this.set_reference_field_query(field, query);
+      var contact_title, contact_uid, me;
+      me = this;
       if (document.URL.indexOf("analysisrequests") > -1) {
         contact_title = client.default_contact.title;
         contact_uid = client.default_contact.uid;
@@ -497,33 +495,11 @@
           this.set_reference_field(field, contact_uid, contact_title);
         }
       }
-      field = $("#CCContact-" + arnum);
-      query = client.filter_queries.cc_contact;
-      this.set_reference_field_query(field, query);
-      field = $("#InvoiceContact-" + arnum);
-      query = client.filter_queries.invoice_contact;
-      this.set_reference_field_query(field, query);
-      field = $("#SamplePoint-" + arnum);
-      query = client.filter_queries.samplepoint;
-      this.set_reference_field_query(field, query);
-      field = $("#Template-" + arnum);
-      query = client.filter_queries.artemplates;
-      this.set_reference_field_query(field, query);
-      field = $("#Profiles-" + arnum);
-      query = client.filter_queries.analysisprofiles;
-      this.set_reference_field_query(field, query);
-      field = $("#Specification-" + arnum);
-      query = client.filter_queries.analysisspecs;
-      this.set_reference_field_query(field, query);
-      field = $("#SamplingRound-" + arnum);
-      query = client.filter_queries.samplinground;
-      this.set_reference_field_query(field, query);
-      field = $("#PrimaryAnalysisRequest-" + arnum);
-      query = client.filter_queries.sample;
-      this.set_reference_field_query(field, query);
-      field = $("#Batch-" + arnum);
-      query = client.filter_queries.batch;
-      return this.set_reference_field_query(field, query);
+      return $.each(client.filter_queries, function(field_name, query) {
+        var field;
+        field = $("#" + field_name + ("-" + arnum));
+        return me.set_reference_field_query(field, query);
+      });
     };
 
     AnalysisRequestAdd.prototype.set_contact = function(arnum, contact) {

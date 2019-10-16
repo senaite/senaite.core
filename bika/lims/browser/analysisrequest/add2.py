@@ -28,7 +28,8 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.api.analysisservice import get_calculation_dependencies_for
 from bika.lims.api.analysisservice import get_service_dependencies_for
-from bika.lims.interfaces import IGetDefaultFieldValueARAddHook
+from bika.lims.interfaces import IGetDefaultFieldValueARAddHook, \
+    IAddSampleFieldFilter
 from bika.lims.utils import tmpID
 from bika.lims.utils.analysisrequest import create_analysisrequest as crar
 from bika.lims.workflow import ActionHandlerPool
@@ -42,6 +43,7 @@ from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.annotation.interfaces import IAnnotations
+from zope.component import getAdapters
 from zope.component import queryAdapter
 from zope.i18n.locales import locales
 from zope.interface import implements
@@ -845,38 +847,44 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
 
         # catalog queries for UI field filtering
         filter_queries = {
-            "contact": {
+            "Contact": {
                 "getParentUID": [uid]
             },
-            "cc_contact": {
+            "CCContact": {
                 "getParentUID": [uid]
             },
-            "invoice_contact": {
+            "InvoiceContact": {
                 "getParentUID": [uid]
             },
-            "samplepoint": {
+            "SamplePoint": {
                 "getClientUID": [uid, bika_samplepoints_uid],
             },
-            "artemplates": {
+            "Template": {
                 "getClientUID": [uid, bika_artemplates_uid],
             },
-            "analysisprofiles": {
+            "Profiles": {
                 "getClientUID": [uid, bika_analysisprofiles_uid],
             },
-            "analysisspecs": {
+            "Specification": {
                 "getClientUID": [uid, bika_analysisspecs_uid],
             },
-            "samplinground": {
+            "SamplingRound": {
                 "getParentUID": [uid],
             },
-            "sample": {
+            "Sample": {
                 "getClientUID": [uid],
             },
-            "batch": {
+            "Batch": {
                 "getClientUID": [uid, ""],
             }
         }
         info["filter_queries"] = filter_queries
+
+        # Maybe other add-ons have additional fields that require filtering too
+        import pdb;pdb.set_trace()
+        for name, ad in getAdapters((obj,), IAddSampleFieldFilter):
+            additional_filters = ad.get_info()
+            info["filter_queries"].update(additional_filters)
 
         return info
 
