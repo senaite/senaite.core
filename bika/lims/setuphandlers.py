@@ -160,6 +160,7 @@ INDEXES = (
     ("bika_catalog", "review_state", "", "FieldIndex"),
     ("bika_catalog", "sortable_title", "", "FieldIndex"),
     ("bika_catalog", "title", "", "FieldIndex"),
+    ("bika_catalog", "listing_searchable_text", "", "TextIndexNG3"),
 
     ("bika_setup_catalog", "Creator", "", "FieldIndex"),
     ("bika_setup_catalog", "Description", "", "ZCTextIndex"),
