@@ -156,6 +156,7 @@ def initialize(context):
     from controlpanel.bika_containers import Containers  # noqa
     from controlpanel.bika_containertypes import ContainerTypes  # noqa
     from controlpanel.bika_departments import Departments  # noqa
+    from controlpanel.bika_identifiertypes import IdentifierTypes  # noqa
     from controlpanel.bika_instrumentlocations import InstrumentLocations  # noqa
     from controlpanel.bika_instruments import Instruments  # noqa
     from controlpanel.bika_instrumenttypes import InstrumentTypes  # noqa
