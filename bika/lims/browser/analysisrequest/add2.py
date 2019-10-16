@@ -881,7 +881,6 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         info["filter_queries"] = filter_queries
 
         # Maybe other add-ons have additional fields that require filtering too
-        import pdb;pdb.set_trace()
         for name, ad in getAdapters((obj,), IAddSampleFieldFilter):
             additional_filters = ad.get_info()
             info["filter_queries"].update(additional_filters)
