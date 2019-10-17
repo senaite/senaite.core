@@ -29,7 +29,7 @@ from bika.lims import logger
 from bika.lims.api.analysisservice import get_calculation_dependencies_for
 from bika.lims.api.analysisservice import get_service_dependencies_for
 from bika.lims.interfaces import IGetDefaultFieldValueARAddHook, \
-    IAddSampleFieldFilter
+    IAddSampleFieldFilter, IAddSampleFieldsFlush
 from bika.lims.utils import tmpID
 from bika.lims.utils.analysisrequest import create_analysisrequest as crar
 from bika.lims.workflow import ActionHandlerPool
@@ -882,6 +882,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
 
         # Maybe other add-ons have additional fields that require filtering too
         for name, ad in getAdapters((obj,), IAddSampleFieldFilter):
+            logger.info("Additional field filters from {}".format(name))
             additional_filters = ad.get_info()
             info["filter_queries"].update(additional_filters)
 
@@ -1211,6 +1212,40 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             "show_prices": bika_setup.getShowPrices(),
         }
         return settings
+
+    def ajax_get_flush_settings(self):
+        """Returns the settings for fields flush
+        """
+        flush_settings = {
+            "Client": [
+                "Contact",
+                "CCContact",
+                "InvoiceContact",
+                "SamplePoint",
+                "Template",
+                "Profiles",
+                "PrimaryAnalysisRequest",
+                "Specification",
+                "Batch"
+            ],
+            "Contact": [
+                "CCContact"
+            ],
+            "SampleType": [
+                "SamplePoint",
+                "Specification"
+            ]
+        }
+
+        # Maybe other add-ons have additional fields that require flushing
+        for name, ad in getAdapters((self.context,), IAddSampleFieldsFlush):
+            logger.info("Additional flush settings from {}".format(name))
+            additional_settings = ad.get_flush_settings()
+            for key, values in additional_settings.items():
+                new_values = flush_settings.get(key, []) + values
+                flush_settings[key] = list(set(new_values))
+
+        return flush_settings
 
     def ajax_get_service(self):
         """Returns the services information

@@ -18,6 +18,9 @@ class window.AnalysisRequestAdd
     # storage for global Bika settings
     @global_settings = {}
 
+    # storage for mapping of fields to flush on_change
+    @flush_settings = {}
+
     # services data snapshot from recalculate_records
     # returns a mapping of arnum -> services data
     @records_snapshot = {}
@@ -39,6 +42,9 @@ class window.AnalysisRequestAdd
 
     # get the global settings on load
     @get_global_settings()
+
+    # get the flush settings
+    @get_flush_settings()
 
     # recalculate records on load (needed for AR copies)
     @recalculate_records()
@@ -187,6 +193,16 @@ class window.AnalysisRequestAdd
       @global_settings = settings
       # trigger event for whom it might concern
       $(@).trigger "settings:updated", settings
+
+
+  get_flush_settings: =>
+    ###
+     * Retrieve the flush settings
+    ###
+    @ajax_post_form("get_flush_settings").done (settings) ->
+      console.debug "Flush settings:", settings
+      @flush_settings = settings
+      $(@).trigger "flush_settings:updated", settings
 
 
   recalculate_records: =>
@@ -367,6 +383,18 @@ class window.AnalysisRequestAdd
     console.debug "get_field_by_id: $(#{field_id})"
     # query the field
     return $(field_id)
+
+
+  flush_fields_for: (field_name, arnum) ->
+    ###
+     * Flush dependant fields
+    ###
+    me = this
+    field_ids = @flush_settings[field_name]
+    $.each @flush_settings[field_name], (index, id) ->
+      console.debug "flushing: id=#{id}"
+      field = $("##{id}-#{arnum}")
+      me.flush_reference_field field
 
 
   flush_reference_field: (field) ->
@@ -815,20 +843,7 @@ class window.AnalysisRequestAdd
     console.debug "°°° on_client_changed: arnum=#{arnum} °°°"
 
     # Flush client depending fields
-    field_ids = [
-      "Contact"
-      "CCContact"
-      "InvoiceContact"
-      "SamplePoint"
-      "Template"
-      "Profiles"
-      "PrimaryAnalysisRequest"
-      "Specification"
-      "Batch"
-    ]
-    $.each field_ids, (index, id) ->
-      field = me.get_field_by_id id, arnum
-      me.flush_reference_field field
+    me.flush_fields_for "Client", arnum
 
     # trigger form:changed event
     $(me).trigger "form:changed"
@@ -847,13 +862,8 @@ class window.AnalysisRequestAdd
 
     console.debug "°°° on_contact_changed: arnum=#{arnum} °°°"
 
-    # Flush client depending fields
-    field_ids = [
-      "CCContact"
-    ]
-    $.each field_ids, (index, id) ->
-      field = me.get_field_by_id id, arnum
-      me.flush_reference_field field
+    # Flush contact depending fields
+    me.flush_fields_for "Contact", arnum
 
     # trigger form:changed event
     $(me).trigger "form:changed"
@@ -1008,13 +1018,7 @@ class window.AnalysisRequestAdd
       $("input[type=hidden]", $el.parent()).val("")
 
     # Flush sampletype depending fields
-    field_ids = [
-      "SamplePoint"
-      "Specification"
-    ]
-    $.each field_ids, (index, id) ->
-      field = me.get_field_by_id id, arnum
-      me.flush_reference_field field
+    me.flush_fields_for "SampleType", arnum
 
     # trigger form:changed event
     $(me).trigger "form:changed"

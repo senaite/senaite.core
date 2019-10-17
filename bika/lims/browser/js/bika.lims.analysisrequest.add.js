@@ -51,6 +51,7 @@
       this.update_form = bind(this.update_form, this);
       this.recalculate_prices = bind(this.recalculate_prices, this);
       this.recalculate_records = bind(this.recalculate_records, this);
+      this.get_flush_settings = bind(this.get_flush_settings, this);
       this.get_global_settings = bind(this.get_global_settings, this);
       this.render_template = bind(this.render_template, this);
       this.template_dialog = bind(this.template_dialog, this);
@@ -65,12 +66,14 @@
       this._ = window.jarn.i18n.MessageFactory("senaite.core");
       $('input[type=text]').prop('autocomplete', 'off');
       this.global_settings = {};
+      this.flush_settings = {};
       this.records_snapshot = {};
       this.applied_templates = {};
       $(".blurrable").removeClass("blurrable");
       this.bind_eventhandler();
       this.init_file_fields();
       this.get_global_settings();
+      this.get_flush_settings();
       return this.recalculate_records();
     };
 
@@ -200,6 +203,18 @@
         console.debug("Global Settings:", settings);
         this.global_settings = settings;
         return $(this).trigger("settings:updated", settings);
+      });
+    };
+
+    AnalysisRequestAdd.prototype.get_flush_settings = function() {
+
+      /*
+       * Retrieve the flush settings
+       */
+      return this.ajax_post_form("get_flush_settings").done(function(settings) {
+        console.debug("Flush settings:", settings);
+        this.flush_settings = settings;
+        return $(this).trigger("flush_settings:updated", settings);
       });
     };
 
@@ -370,6 +385,22 @@
       }
       console.debug("get_field_by_id: $(" + field_id + ")");
       return $(field_id);
+    };
+
+    AnalysisRequestAdd.prototype.flush_fields_for = function(field_name, arnum) {
+
+      /*
+       * Flush dependant fields
+       */
+      var field_ids, me;
+      me = this;
+      field_ids = this.flush_settings[field_name];
+      return $.each(this.flush_settings[field_name], function(index, id) {
+        var field;
+        console.debug("flushing: id=" + id);
+        field = $("#" + id + "-" + arnum);
+        return me.flush_reference_field(field);
+      });
     };
 
     AnalysisRequestAdd.prototype.flush_reference_field = function(field) {
@@ -759,19 +790,14 @@
       /*
        * Eventhandler when the client changed (happens on Batches)
        */
-      var $el, arnum, el, field_ids, me, uid;
+      var $el, arnum, el, me, uid;
       me = this;
       el = event.currentTarget;
       $el = $(el);
       uid = $el.attr("uid");
       arnum = $el.closest("[arnum]").attr("arnum");
       console.debug("°°° on_client_changed: arnum=" + arnum + " °°°");
-      field_ids = ["Contact", "CCContact", "InvoiceContact", "SamplePoint", "Template", "Profiles", "PrimaryAnalysisRequest", "Specification", "Batch"];
-      $.each(field_ids, function(index, id) {
-        var field;
-        field = me.get_field_by_id(id, arnum);
-        return me.flush_reference_field(field);
-      });
+      me.flush_fields_for("Client", arnum);
       return $(me).trigger("form:changed");
     };
 
@@ -780,19 +806,14 @@
       /*
        * Eventhandler when the contact changed
        */
-      var $el, arnum, el, field_ids, me, uid;
+      var $el, arnum, el, me, uid;
       me = this;
       el = event.currentTarget;
       $el = $(el);
       uid = $el.attr("uid");
       arnum = $el.closest("[arnum]").attr("arnum");
       console.debug("°°° on_contact_changed: arnum=" + arnum + " °°°");
-      field_ids = ["CCContact"];
-      $.each(field_ids, function(index, id) {
-        var field;
-        field = me.get_field_by_id(id, arnum);
-        return me.flush_reference_field(field);
-      });
+      me.flush_fields_for("Contact", arnum);
       return $(me).trigger("form:changed");
     };
 
@@ -921,7 +942,7 @@
        * Eventhandler when the SampleType was changed.
        * Fires form:changed event
        */
-      var $el, arnum, el, field_ids, has_sampletype_selected, me, uid, val;
+      var $el, arnum, el, has_sampletype_selected, me, uid, val;
       me = this;
       el = event.currentTarget;
       $el = $(el);
@@ -933,12 +954,7 @@
       if (!has_sampletype_selected) {
         $("input[type=hidden]", $el.parent()).val("");
       }
-      field_ids = ["SamplePoint", "Specification"];
-      $.each(field_ids, function(index, id) {
-        var field;
-        field = me.get_field_by_id(id, arnum);
-        return me.flush_reference_field(field);
-      });
+      me.flush_fields_for("SampleType", arnum);
       return $(me).trigger("form:changed");
     };
 

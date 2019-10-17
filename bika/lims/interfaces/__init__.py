@@ -971,3 +971,13 @@ class IAddSampleFieldFilter(Interface):
         """Returns a dict where the key is the name of the field to be filtered
         and the value is a dict with the search criteria
         """
+
+
+class IAddSampleFieldsFlush(Interface):
+    """Marker interface for field dependencies flush for Add Sample form
+    """
+
+    def get_flush_settings(self):
+        """Returns a dict where the key is the name of the field and the value
+        is an array dependencies as field names
+        """
