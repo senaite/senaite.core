@@ -380,6 +380,16 @@ class window.AnalysisRequestAdd
     return $(field_id)
 
 
+  apply_field_filters: (record, arnum) ->
+    ###
+     * Apply search filters to dependendents
+    ###
+    me = this
+    $.each record.filter_queries, (field_name, query) ->
+      field = $("#" + field_name + "-#{arnum}")
+      me.set_reference_field_query field, query
+
+
   flush_fields_for: (field_name, arnum) ->
     ###
      * Flush dependant fields
@@ -529,9 +539,7 @@ class window.AnalysisRequestAdd
         @set_reference_field field, contact_uid, contact_title
 
     # Apply search filters to other fields
-    $.each client.filter_queries, (field_name, query) ->
-      field = $("#" + field_name + "-#{arnum}")
-      me.set_reference_field_query field, query
+    me.apply_field_filters client, arnum
 
 
   set_contact: (arnum, contact) =>
@@ -835,6 +843,9 @@ class window.AnalysisRequestAdd
     uid = $el.attr "uid"
     field_name = $el.closest("tr[fieldname]").attr "fieldname"
     arnum = $el.closest("[arnum]").attr "arnum"
+    if field_name in ["Template", "Profiles"]
+      # These fields have it's own event handler
+      return
 
     console.debug "°°° on_referencefield_value_changed: field_name=#{field_name} arnum=#{arnum} °°°"
 

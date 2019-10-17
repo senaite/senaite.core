@@ -381,6 +381,20 @@
       return $(field_id);
     };
 
+    AnalysisRequestAdd.prototype.apply_field_filters = function(record, arnum) {
+
+      /*
+       * Apply search filters to dependendents
+       */
+      var me;
+      me = this;
+      return $.each(record.filter_queries, function(field_name, query) {
+        var field;
+        field = $("#" + field_name + ("-" + arnum));
+        return me.set_reference_field_query(field, query);
+      });
+    };
+
     AnalysisRequestAdd.prototype.flush_fields_for = function(field_name, arnum) {
 
       /*
@@ -520,11 +534,7 @@
           this.set_reference_field(field, contact_uid, contact_title);
         }
       }
-      return $.each(client.filter_queries, function(field_name, query) {
-        var field;
-        field = $("#" + field_name + ("-" + arnum));
-        return me.set_reference_field_query(field, query);
-      });
+      return me.apply_field_filters(client, arnum);
     };
 
     AnalysisRequestAdd.prototype.set_contact = function(arnum, contact) {
@@ -792,6 +802,9 @@
       uid = $el.attr("uid");
       field_name = $el.closest("tr[fieldname]").attr("fieldname");
       arnum = $el.closest("[arnum]").attr("arnum");
+      if (field_name === "Template" || field_name === "Profiles") {
+        return;
+      }
       console.debug("°°° on_referencefield_value_changed: field_name=" + field_name + " arnum=" + arnum + " °°°");
       me.flush_fields_for(field_name, arnum);
       if (!has_value) {
