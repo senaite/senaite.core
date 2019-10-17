@@ -87,10 +87,6 @@ class window.AnalysisRequestAdd
     $("body").on "click", ".service-infobtn", @on_analysis_details_click
     # Sample changed
     $("body").on "selected change", "tr[fieldname=PrimaryAnalysisRequest] input[type='text']", @on_sample_changed
-    # SampleType changed
-    $("body").on "selected change", "tr[fieldname=SampleType] input[type='text']", @on_sampletype_changed
-    # Specification changed
-    $("body").on "selected change", "tr[fieldname=Specification] input[type='text']", @on_specification_changed
     # Analysis Template changed
     $("body").on "selected change", "tr[fieldname=Template] input[type='text']", @on_analysis_template_changed
     # Analysis Profile selected
@@ -835,14 +831,19 @@ class window.AnalysisRequestAdd
     me = this
     el = event.currentTarget
     $el = $(el)
+    has_value = $el.val()
     uid = $el.attr "uid"
     field_name = $el.closest("tr[fieldname]").attr "fieldname"
     arnum = $el.closest("[arnum]").attr "arnum"
 
-    console.debug "°°° on_field_value_changed: field_name=#{field_name} arnum=#{arnum} °°°"
+    console.debug "°°° on_referencefield_value_changed: field_name=#{field_name} arnum=#{arnum} °°°"
 
     # Flush depending fields
     me.flush_fields_for field_name, arnum
+
+    # Manually flush UID field if the field does not have a selected value
+    if not has_value
+      $("input[type=hidden]", $el.parent()).val("")
 
     # trigger form:changed event
     $(me).trigger "form:changed"
@@ -969,53 +970,6 @@ class window.AnalysisRequestAdd
 
     # deselect the sample if the field is empty
     if not has_sample_selected
-      # XXX manually flush UID field
-      $("input[type=hidden]", $el.parent()).val("")
-
-    # trigger form:changed event
-    $(me).trigger "form:changed"
-
-
-  on_sampletype_changed: (event) =>
-    ###
-     * Eventhandler when the SampleType was changed.
-     * Fires form:changed event
-    ###
-
-    me = this
-    el = event.currentTarget
-    $el = $(el)
-    uid = $(el).attr "uid"
-    val = $el.val()
-    arnum = $el.closest("[arnum]").attr "arnum"
-    has_sampletype_selected = $el.val()
-    console.debug "°°° on_sampletype_change::UID=#{uid} SampleType=#{val}°°°"
-
-    # deselect the sampletype if the field is empty
-    if not has_sampletype_selected
-      # XXX manually flush UID field
-      $("input[type=hidden]", $el.parent()).val("")
-
-    # trigger form:changed event
-    $(me).trigger "form:changed"
-
-
-  on_specification_changed: (event) =>
-    ###
-     * Eventhandler when the Specification was changed.
-    ###
-
-    me = this
-    el = event.currentTarget
-    $el = $(el)
-    uid = $(el).attr "uid"
-    val = $el.val()
-    arnum = $el.closest("[arnum]").attr "arnum"
-    has_specification_selected = $el.val()
-    console.debug "°°° on_specification_change::UID=#{uid} Specification=#{val}°°°"
-
-    # deselect the specification if the field is empty
-    if not has_specification_selected
       # XXX manually flush UID field
       $("input[type=hidden]", $el.parent()).val("")
 

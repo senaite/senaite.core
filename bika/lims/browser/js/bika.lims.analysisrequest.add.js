@@ -23,8 +23,6 @@
       this.on_analysis_profile_removed = bind(this.on_analysis_profile_removed, this);
       this.on_analysis_profile_selected = bind(this.on_analysis_profile_selected, this);
       this.on_analysis_template_changed = bind(this.on_analysis_template_changed, this);
-      this.on_specification_changed = bind(this.on_specification_changed, this);
-      this.on_sampletype_changed = bind(this.on_sampletype_changed, this);
       this.on_sample_changed = bind(this.on_sample_changed, this);
       this.on_analysis_lock_button_click = bind(this.on_analysis_lock_button_click, this);
       this.on_analysis_details_click = bind(this.on_analysis_details_click, this);
@@ -103,8 +101,6 @@
       $("body").on("click", ".service-lockbtn", this.on_analysis_lock_button_click);
       $("body").on("click", ".service-infobtn", this.on_analysis_details_click);
       $("body").on("selected change", "tr[fieldname=PrimaryAnalysisRequest] input[type='text']", this.on_sample_changed);
-      $("body").on("selected change", "tr[fieldname=SampleType] input[type='text']", this.on_sampletype_changed);
-      $("body").on("selected change", "tr[fieldname=Specification] input[type='text']", this.on_specification_changed);
       $("body").on("selected change", "tr[fieldname=Template] input[type='text']", this.on_analysis_template_changed);
       $("body").on("selected", "tr[fieldname=Profiles] input[type='text']", this.on_analysis_profile_selected);
       $("body").on("click", "tr[fieldname=Profiles] img.deletebtn", this.on_analysis_profile_removed);
@@ -788,15 +784,19 @@
       /*
        * Generic event handler for when a field value changes
        */
-      var $el, arnum, el, field_name, me, uid;
+      var $el, arnum, el, field_name, has_value, me, uid;
       me = this;
       el = event.currentTarget;
       $el = $(el);
+      has_value = $el.val();
       uid = $el.attr("uid");
       field_name = $el.closest("tr[fieldname]").attr("fieldname");
       arnum = $el.closest("[arnum]").attr("arnum");
-      console.debug("°°° on_field_value_changed: field_name=" + field_name + " arnum=" + arnum + " °°°");
+      console.debug("°°° on_referencefield_value_changed: field_name=" + field_name + " arnum=" + arnum + " °°°");
       me.flush_fields_for(field_name, arnum);
+      if (!has_value) {
+        $("input[type=hidden]", $el.parent()).val("");
+      }
       return $(me).trigger("form:changed");
     };
 
@@ -914,47 +914,6 @@
       has_sample_selected = $el.val();
       console.debug("°°° on_sample_change::UID=" + uid + " PrimaryAnalysisRequest=" + val + "°°°");
       if (!has_sample_selected) {
-        $("input[type=hidden]", $el.parent()).val("");
-      }
-      return $(me).trigger("form:changed");
-    };
-
-    AnalysisRequestAdd.prototype.on_sampletype_changed = function(event) {
-
-      /*
-       * Eventhandler when the SampleType was changed.
-       * Fires form:changed event
-       */
-      var $el, arnum, el, has_sampletype_selected, me, uid, val;
-      me = this;
-      el = event.currentTarget;
-      $el = $(el);
-      uid = $(el).attr("uid");
-      val = $el.val();
-      arnum = $el.closest("[arnum]").attr("arnum");
-      has_sampletype_selected = $el.val();
-      console.debug("°°° on_sampletype_change::UID=" + uid + " SampleType=" + val + "°°°");
-      if (!has_sampletype_selected) {
-        $("input[type=hidden]", $el.parent()).val("");
-      }
-      return $(me).trigger("form:changed");
-    };
-
-    AnalysisRequestAdd.prototype.on_specification_changed = function(event) {
-
-      /*
-       * Eventhandler when the Specification was changed.
-       */
-      var $el, arnum, el, has_specification_selected, me, uid, val;
-      me = this;
-      el = event.currentTarget;
-      $el = $(el);
-      uid = $(el).attr("uid");
-      val = $el.val();
-      arnum = $el.closest("[arnum]").attr("arnum");
-      has_specification_selected = $el.val();
-      console.debug("°°° on_specification_change::UID=" + uid + " Specification=" + val + "°°°");
-      if (!has_specification_selected) {
         $("input[type=hidden]", $el.parent()).val("");
       }
       return $(me).trigger("form:changed");
