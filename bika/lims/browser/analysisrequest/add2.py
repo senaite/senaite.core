@@ -815,8 +815,6 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         """Returns the client info of an object
         """
         info = self.get_base_info(obj)
-
-        default_contact_info = {}
         default_contact = self.get_default_contact(client=obj)
         if default_contact:
             info["field_values"].update({
@@ -899,20 +897,24 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
 
         # Note: It might get a circular dependency when calling:
         #       map(self.get_contact_info, obj.getCCContact())
-        cccontacts = {}
+        cccontacts = []
         for contact in obj.getCCContact():
             uid = api.get_uid(contact)
             fullname = contact.getFullname()
             email = contact.getEmailAddress()
-            cccontacts[uid] = {
+            cccontacts.append({
+                "uid": uid,
+                "title": fullname,
                 "fullname": fullname,
                 "email": email
-            }
+            })
 
         info.update({
             "fullname": fullname,
             "email": email,
-            "cccontacts": cccontacts,
+            "field_values": {
+                "CCContact": cccontacts
+            },
         })
 
         return info

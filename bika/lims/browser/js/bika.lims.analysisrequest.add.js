@@ -10,6 +10,8 @@
     indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   window.AnalysisRequestAdd = (function() {
+    var typeIsArray;
+
     function AnalysisRequestAdd() {
       this.init_file_fields = bind(this.init_file_fields, this);
       this.on_form_submit = bind(this.on_form_submit, this);
@@ -35,7 +37,6 @@
       this.set_template = bind(this.set_template, this);
       this.set_sampletype = bind(this.set_sampletype, this);
       this.set_sample = bind(this.set_sample, this);
-      this.set_contact = bind(this.set_contact, this);
       this.set_reference_field = bind(this.set_reference_field, this);
       this.set_reference_field_query = bind(this.set_reference_field_query, this);
       this.get_field_by_id = bind(this.get_field_by_id, this);
@@ -261,7 +262,7 @@
           return me.apply_field_value(arnum, client);
         });
         $.each(record.contact_metadata, function(uid, contact) {
-          return me.set_contact(arnum, contact);
+          return me.apply_field_value(arnum, contact);
         });
         $.each(record.service_metadata, function(uid, metadata) {
           var lock;
@@ -380,6 +381,15 @@
       return $(field_id);
     };
 
+    typeIsArray = Array.isArray || function(value) {
+
+      /*
+       * Returns if the given value is an array
+       * Taken from: https://coffeescript-cookbook.github.io/chapters/arrays/check-type-is-array
+       */
+      return {}.toString.call(value) === '[object Array]';
+    };
+
     AnalysisRequestAdd.prototype.apply_field_value = function(arnum, record) {
 
       /*
@@ -400,22 +410,38 @@
       var me;
       me = this;
       return $.each(record.field_values, function(field_name, values) {
-        var field, values_json;
-        values_json = $.toJSON(values);
-        field = $("#" + field_name + ("-" + arnum));
-        console.debug("set_field_values: field_name=" + field_name + " field_values=" + values_json);
-        if ((values.uid != null) && (values.title != null)) {
-          return me.set_reference_field(field, values.uid, values.title);
-        } else if (values.value != null) {
-          return field.val(values.value);
-        }
+        return me.apply_dependent_value(arnum, field_name, values);
       });
+    };
+
+    AnalysisRequestAdd.prototype.apply_dependent_value = function(arnum, field_name, values) {
+
+      /*
+       * Apply search filters to dependendents
+       */
+      var field, me, values_json;
+      me = this;
+      values_json = $.toJSON(values);
+      field = $("#" + field_name + ("-" + arnum));
+      console.debug("apply_dependent_value: field_name=" + field_name + " field_values=" + values_json);
+      if ((values.uid != null) && (values.title != null)) {
+        return me.set_reference_field(field, values.uid, values.title);
+      } else if (values.value != null) {
+        return field.val(values.value);
+      } else if (typeIsArray(values)) {
+        return $.each(values, function(index, item) {
+          var item_json;
+          item_json = $.toJSON(item);
+          console.debug("" + item_json);
+          return me.apply_dependent_value(arnum, field_name, item);
+        });
+      }
     };
 
     AnalysisRequestAdd.prototype.apply_dependent_filter_queries = function(record, arnum) {
 
       /*
-       * Apply search filters to dependendents
+       * Apply search filters to dependents
        */
       var me;
       me = this;
@@ -544,21 +570,6 @@
       }
     };
 
-    AnalysisRequestAdd.prototype.set_contact = function(arnum, contact) {
-
-      /*
-       * Set CC Contacts
-       */
-      var field, me;
-      me = this;
-      field = $("#CCContact-" + arnum);
-      return $.each(contact.cccontacts, function(uid, cccontact) {
-        var fullname;
-        fullname = cccontact.fullname;
-        return me.set_reference_field(field, uid, fullname);
-      });
-    };
-
     AnalysisRequestAdd.prototype.set_sample = function(arnum, sample) {
 
       /*
@@ -574,7 +585,7 @@
       uid = contact.uid;
       fullname = contact.fullname;
       this.set_reference_field(field, uid, fullname);
-      this.set_contact(arnum, contact);
+      this.apply_field_value(arnum, contact);
       field = $("#SamplingDate-" + arnum);
       value = sample.sampling_date;
       field.val(value);

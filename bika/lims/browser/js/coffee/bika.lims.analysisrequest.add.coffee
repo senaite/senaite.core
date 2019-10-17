@@ -252,7 +252,7 @@ class window.AnalysisRequestAdd
 
       # set contact
       $.each record.contact_metadata, (uid, contact) ->
-        me.set_contact arnum, contact
+        me.apply_field_value arnum, contact
 
       # set services
       $.each record.service_metadata, (uid, metadata) ->
@@ -380,6 +380,14 @@ class window.AnalysisRequestAdd
     return $(field_id)
 
 
+  typeIsArray = Array.isArray || (value) ->
+    ###
+     * Returns if the given value is an array
+     * Taken from: https://coffeescript-cookbook.github.io/chapters/arrays/check-type-is-array
+    ###
+    return {}.toString.call( value ) is '[object Array]'
+
+
   apply_field_value: (arnum, record) ->
     ###
      * Applies the value for the given record, by setting values and applying
@@ -400,18 +408,37 @@ class window.AnalysisRequestAdd
     ###
     me = this
     $.each record.field_values, (field_name, values) ->
-      values_json = $.toJSON values
-      field = $("#" + field_name + "-#{arnum}")
-      console.debug "set_field_values: field_name=#{field_name} field_values=#{values_json}"
-      if values.uid? and values.title?
-        me.set_reference_field field, values.uid, values.title
-      else if values.value?
-        field.val values.value
+      me.apply_dependent_value arnum, field_name, values
+
+
+  apply_dependent_value: (arnum, field_name, values) ->
+    ###
+     * Apply search filters to dependendents
+    ###
+    me = this
+    values_json = $.toJSON values
+    field = $("#" + field_name + "-#{arnum}")
+    console.debug "apply_dependent_value: field_name=#{field_name} field_values=#{values_json}"
+
+    if values.uid? and values.title?
+      # This is a reference field
+      me.set_reference_field field, values.uid, values.title
+
+    else if values.value?
+      # This is a normal input field
+      field.val values.value
+
+    else if typeIsArray values
+      # This is a multi field (e.g. CCContact)
+      $.each values, (index, item) ->
+        item_json = $.toJSON item
+        console.debug "#{item_json}"
+        me.apply_dependent_value arnum, field_name, item
 
 
   apply_dependent_filter_queries: (record, arnum) ->
     ###
-     * Apply search filters to dependendents
+     * Apply search filters to dependents
     ###
     me = this
     $.each record.filter_queries, (field_name, query) ->
@@ -545,19 +572,6 @@ class window.AnalysisRequestAdd
       $field.val("")
 
 
-  set_contact: (arnum, contact) =>
-    ###
-     * Set CC Contacts
-    ###
-    me = this
-
-    field = $("#CCContact-#{arnum}")
-
-    $.each contact.cccontacts, (uid, cccontact) ->
-      fullname = cccontact.fullname
-      me.set_reference_field field, uid, fullname
-
-
   set_sample: (arnum, sample) =>
     ###
      * Apply the sample data to all fields of arnum
@@ -575,7 +589,7 @@ class window.AnalysisRequestAdd
     uid = contact.uid
     fullname = contact.fullname
     @set_reference_field field, uid, fullname
-    @set_contact(arnum, contact)
+    @apply_field_value(arnum, contact)
 
     # set the sampling date
     field = $("#SamplingDate-#{arnum}")
