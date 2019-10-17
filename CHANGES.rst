@@ -35,6 +35,7 @@ Changelog
 
 **Fixed**
 
+- #1461 Allow unassign transition for cancelled/rejected/retracted analyses
 - #1449 sort_limit was not considered in ReferenceWidget searches
 - #1449 Fix Clients were unable to add batches
 - #1453 Fix initial IDs not starting with 1
