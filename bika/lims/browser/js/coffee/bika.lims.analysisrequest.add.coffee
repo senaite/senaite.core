@@ -283,7 +283,7 @@ class window.AnalysisRequestAdd
 
       # set sampletype
       $.each record.sampletype_metadata, (uid, sampletype) ->
-        me.set_sampletype arnum, sampletype
+        me.apply_field_value arnum, sampletype
 
       # handle unmet dependencies, one at a time
       $.each record.unmet_dependencies, (uid, dependencies) ->
@@ -418,6 +418,12 @@ class window.AnalysisRequestAdd
     me = this
     values_json = $.toJSON values
     field = $("#" + field_name + "-#{arnum}")
+
+    if values.if_empty? and values.if_empty is true
+      # Set the value if the field is empty only
+      if not field.val()
+        return
+
     console.debug "apply_dependent_value: field_name=#{field_name} field_values=#{values_json}"
 
     if values.uid? and values.title?
@@ -660,32 +666,6 @@ class window.AnalysisRequestAdd
     uid = sample.sampling_deviation_uid
     title = sample.sampling_deviation_title
     @set_reference_field field, uid, title
-
-
-  set_sampletype: (arnum, sampletype) =>
-    ###
-     * Recalculate partitions
-     * Filter Sample Points
-    ###
-
-    # restrict the sample points
-    field = $("#SamplePoint-#{arnum}")
-    query = sampletype.filter_queries.samplepoint
-    @set_reference_field_query field, query
-
-    # set the default container
-    field = $("#DefaultContainerType-#{arnum}")
-    # apply default container if the field is empty
-    if not field.val()
-      uid = sampletype.container_type_uid
-      title = sampletype.container_type_title
-      @flush_reference_field field
-      @set_reference_field field, uid, title
-
-    # restrict the specifications
-    field = $("#Specification-#{arnum}")
-    query = sampletype.filter_queries.specification
-    @set_reference_field_query field, query
 
 
   set_template: (arnum, template) =>

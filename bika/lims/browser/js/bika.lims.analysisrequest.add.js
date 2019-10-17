@@ -35,7 +35,6 @@
       this.set_service_spec = bind(this.set_service_spec, this);
       this.set_service = bind(this.set_service, this);
       this.set_template = bind(this.set_template, this);
-      this.set_sampletype = bind(this.set_sampletype, this);
       this.set_sample = bind(this.set_sample, this);
       this.set_reference_field = bind(this.set_reference_field, this);
       this.set_reference_field_query = bind(this.set_reference_field_query, this);
@@ -284,7 +283,7 @@
           return me.set_sample(arnum, sample);
         });
         $.each(record.sampletype_metadata, function(uid, sampletype) {
-          return me.set_sampletype(arnum, sampletype);
+          return me.apply_field_value(arnum, sampletype);
         });
         return $.each(record.unmet_dependencies, function(uid, dependencies) {
           var context, dialog, service;
@@ -423,6 +422,11 @@
       me = this;
       values_json = $.toJSON(values);
       field = $("#" + field_name + ("-" + arnum));
+      if ((values.if_empty != null) && values.if_empty === true) {
+        if (!field.val()) {
+          return;
+        }
+      }
       console.debug("apply_dependent_value: field_name=" + field_name + " field_values=" + values_json);
       if ((values.uid != null) && (values.title != null)) {
         return me.set_reference_field(field, values.uid, values.title);
@@ -630,28 +634,6 @@
       uid = sample.sampling_deviation_uid;
       title = sample.sampling_deviation_title;
       return this.set_reference_field(field, uid, title);
-    };
-
-    AnalysisRequestAdd.prototype.set_sampletype = function(arnum, sampletype) {
-
-      /*
-       * Recalculate partitions
-       * Filter Sample Points
-       */
-      var field, query, title, uid;
-      field = $("#SamplePoint-" + arnum);
-      query = sampletype.filter_queries.samplepoint;
-      this.set_reference_field_query(field, query);
-      field = $("#DefaultContainerType-" + arnum);
-      if (!field.val()) {
-        uid = sampletype.container_type_uid;
-        title = sampletype.container_type_title;
-        this.flush_reference_field(field);
-        this.set_reference_field(field, uid, title);
-      }
-      field = $("#Specification-" + arnum);
-      query = sampletype.filter_queries.specification;
-      return this.set_reference_field_query(field, query);
     };
 
     AnalysisRequestAdd.prototype.set_template = function(arnum, template) {

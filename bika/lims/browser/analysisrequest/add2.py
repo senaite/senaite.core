@@ -1034,42 +1034,21 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         client = self.get_client()
         client_uid = client and api.get_uid(client) or ""
 
-        # sample matrix
-        sample_matrix = obj.getSampleMatrix()
-        sample_matrix_uid = sample_matrix and sample_matrix.UID() or ""
-        sample_matrix_title = sample_matrix and sample_matrix.Title() or ""
-
-        # container type
-        container_type = obj.getContainerType()
-        container_type_uid = container_type and container_type.UID() or ""
-        container_type_title = container_type and container_type.Title() or ""
-
-        # sample points
-        sample_points = obj.getSamplePoints()
-        sample_point_uids = map(lambda sp: sp.UID(), sample_points)
-        sample_point_titles = map(lambda sp: sp.Title(), sample_points)
-
         info.update({
             "prefix": obj.getPrefix(),
             "minimum_volume": obj.getMinimumVolume(),
             "hazardous": obj.getHazardous(),
             "retention_period": obj.getRetentionPeriod(),
-            "sample_matrix_uid": sample_matrix_uid,
-            "sample_matrix_title": sample_matrix_title,
-            "container_type_uid": container_type_uid,
-            "container_type_title": container_type_title,
-            "sample_point_uids": sample_point_uids,
-            "sample_point_titles": sample_point_titles,
         })
 
         # catalog queries for UI field filtering
         filter_queries = {
-            "samplepoint": {
+            "SamplePoint": {
                 "getSampleTypeTitles": [obj.Title(), ''],
                 "getClientUID": [client_uid, bika_samplepoints_uid],
                 "sort_order": "descending",
             },
-            "specification": {
+            "Specification": {
                 "getSampleTypeTitle": obj.Title(),
                 "getClientUID": [client_uid, bika_analysisspecs_uid],
                 "sort_order": "descending",
