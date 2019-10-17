@@ -393,7 +393,7 @@
   <state state_id="rejected" title="Rejected" i18n:attributes="title">
 
     <!-- TRANSITIONS -->
-    <exit-transition transition_id="unassign" />
+    <exit-transition transition_id="" />
     <!-- /TRANSITIONS -->
 
     <!-- Only allow modification of fields explicitly granted
