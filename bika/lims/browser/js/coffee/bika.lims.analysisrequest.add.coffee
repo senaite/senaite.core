@@ -85,8 +85,6 @@ class window.AnalysisRequestAdd
     $("body").on "click", ".service-lockbtn", @on_analysis_lock_button_click
     # Analysis info button clicked
     $("body").on "click", ".service-infobtn", @on_analysis_details_click
-    # Sample changed
-    $("body").on "selected change", "tr[fieldname=PrimaryAnalysisRequest] input[type='text']", @on_sample_changed
     # Analysis Template changed
     $("body").on "selected change", "tr[fieldname=Template] input[type='text']", @on_analysis_template_changed
     # Analysis Profile selected
@@ -279,7 +277,7 @@ class window.AnalysisRequestAdd
 
       # set sample
       $.each record.sample_metadata, (uid, sample) ->
-        me.set_sample arnum, sample
+        me.apply_field_value arnum, sample
 
       # set sampletype
       $.each record.sampletype_metadata, (uid, sampletype) ->
@@ -432,13 +430,14 @@ class window.AnalysisRequestAdd
 
     else if values.value?
       # This is a normal input field
-      field.val values.value
+      if typeof values.value == "boolean"
+        field.prop "checked", values.value
+      else
+        field.val values.value
 
     else if typeIsArray values
       # This is a multi field (e.g. CCContact)
       $.each values, (index, item) ->
-        item_json = $.toJSON item
-        console.debug "#{item_json}"
         me.apply_dependent_value arnum, field_name, item
 
 
@@ -576,96 +575,6 @@ class window.AnalysisRequestAdd
       div.append title
       mvl.append div
       $field.val("")
-
-
-  set_sample: (arnum, sample) =>
-    ###
-     * Apply the sample data to all fields of arnum
-    ###
-
-    # set the client
-    field = $("#Client-#{arnum}")
-    uid = sample.client_uid
-    title = sample.client_title
-    @set_reference_field field, uid, title
-
-    # set the client contact
-    field = $("#Contact-#{arnum}")
-    contact = sample.contact
-    uid = contact.uid
-    fullname = contact.fullname
-    @set_reference_field field, uid, fullname
-    @apply_field_value(arnum, contact)
-
-    # set the sampling date
-    field = $("#SamplingDate-#{arnum}")
-    value = sample.sampling_date
-    field.val value
-
-    # set the date sampled
-    field = $("#DateSampled-#{arnum}")
-    value = sample.date_sampled
-    field.val value
-
-    # set the sample type (required)
-    field = $("#SampleType-#{arnum}")
-    uid = sample.sample_type_uid
-    title = sample.sample_type_title
-    @set_reference_field field, uid, title
-
-    # set environmental conditions
-    field = $("#EnvironmentalConditions-#{arnum}")
-    value = sample.environmental_conditions
-    field.val value
-
-    # set client sample ID
-    field = $("#ClientSampleID-#{arnum}")
-    value = sample.client_sample_id
-    field.val value
-
-    # set client reference
-    field = $("#ClientReference-#{arnum}")
-    value = sample.client_reference
-    field.val value
-
-    # set the client order number
-    field = $("#ClientOrderNumber-#{arnum}")
-    value = sample.client_order_number
-    field.val value
-
-    # set composite
-    field = $("#Composite-#{arnum}")
-    field.prop "checked", sample.composite
-
-    # set the sample condition
-    field = $("#SampleCondition-#{arnum}")
-    uid = sample.sample_condition_uid
-    title = sample.sample_condition_title
-    @set_reference_field field, uid, title
-
-    # set the sample point
-    field = $("#SamplePoint-#{arnum}")
-    uid = sample.sample_point_uid
-    title = sample.sample_point_title
-    @set_reference_field field, uid, title
-
-    # set the storage location
-    field = $("#StorageLocation-#{arnum}")
-    uid = sample.storage_location_uid
-    title = sample.storage_location_title
-    @set_reference_field field, uid, title
-
-    # set the default container type
-    field = $("#DefaultContainerType-#{arnum}")
-    uid = sample.container_type_uid
-    title = sample.container_type_title
-    @set_reference_field field, uid, title
-
-    # set the sampling deviation
-    field = $("#SamplingDeviation-#{arnum}")
-    uid = sample.sampling_deviation_uid
-    title = sample.sampling_deviation_title
-    @set_reference_field field, uid, title
 
 
   set_template: (arnum, template) =>
@@ -960,29 +869,6 @@ class window.AnalysisRequestAdd
         $(@).dialog "close"
 
     dialog = @template_dialog "service-dependant-template", context, buttons
-
-
-  on_sample_changed: (event) =>
-    ###
-     * Eventhandler when the Sample was changed.
-    ###
-
-    me = this
-    el = event.currentTarget
-    $el = $(el)
-    uid = $(el).attr "uid"
-    val = $el.val()
-    arnum = $el.closest("[arnum]").attr "arnum"
-    has_sample_selected = $el.val()
-    console.debug "°°° on_sample_change::UID=#{uid} PrimaryAnalysisRequest=#{val}°°°"
-
-    # deselect the sample if the field is empty
-    if not has_sample_selected
-      # XXX manually flush UID field
-      $("input[type=hidden]", $el.parent()).val("")
-
-    # trigger form:changed event
-    $(me).trigger "form:changed"
 
 
   on_analysis_template_changed: (event) =>

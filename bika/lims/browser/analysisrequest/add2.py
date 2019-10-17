@@ -1064,69 +1064,59 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         """
         info = self.get_base_info(obj)
 
-        # sample type
+        batch = obj.getBatch()
+        client = obj.getClient()
         sample_type = obj.getSampleType()
-        sample_type_uid = sample_type and sample_type.UID() or ""
-        sample_type_title = sample_type and sample_type.Title() or ""
-
-        # sample condition
         sample_condition = obj.getSampleCondition()
-        sample_condition_uid = sample_condition \
-            and sample_condition.UID() or ""
-        sample_condition_title = sample_condition \
-            and sample_condition.Title() or ""
-
-        # storage location
         storage_location = obj.getStorageLocation()
-        storage_location_uid = storage_location \
-            and storage_location.UID() or ""
-        storage_location_title = storage_location \
-            and storage_location.Title() or ""
-
-        # sample point
         sample_point = obj.getSamplePoint()
-        sample_point_uid = sample_point and sample_point.UID() or ""
-        sample_point_title = sample_point and sample_point.Title() or ""
-
-        # container type
-        container_type = sample_type and sample_type.getContainerType() or None
-        container_type_uid = container_type and container_type.UID() or ""
-        container_type_title = container_type and container_type.Title() or ""
-
-        # Sampling deviation
+        container = obj.getContainer()
         deviation = obj.getSamplingDeviation()
-        deviation_uid = deviation and deviation.UID() or ""
-        deviation_title = deviation and deviation.Title() or ""
+        preservation = obj.getPreservation()
+        specification = obj.getSpecification()
+        sample_template = obj.getTemplate()
+        profiles = obj.getProfiles() or []
+        cccontacts = obj.getCCContact() or []
+        contact = obj.getContact()
 
         info.update({
-            "sample_id": obj.getId(),
-            "batch_uid": obj.getBatchUID() or None,
-            "date_sampled": self.to_iso_date(obj.getDateSampled()),
-            "sampling_date": self.to_iso_date(obj.getSamplingDate()),
-            "sample_type_uid": sample_type_uid,
-            "sample_type_title": sample_type_title,
-            "container_type_uid": container_type_uid,
-            "container_type_title": container_type_title,
-            "sample_condition_uid": sample_condition_uid,
-            "sample_condition_title": sample_condition_title,
-            "storage_location_uid": storage_location_uid,
-            "storage_location_title": storage_location_title,
-            "sample_point_uid": sample_point_uid,
-            "sample_point_title": sample_point_title,
-            "environmental_conditions": obj.getEnvironmentalConditions(),
             "composite": obj.getComposite(),
-            "client_uid": obj.getClientUID(),
-            "client_title": obj.getClientTitle(),
-            "contact": self.get_contact_info(obj.getContact()),
-            "client_order_number": obj.getClientOrderNumber(),
-            "client_sample_id": obj.getClientSampleID(),
-            "client_reference": obj.getClientReference(),
-            "sampling_deviation_uid": deviation_uid,
-            "sampling_deviation_title": deviation_title,
-            "sampling_workflow_enabled": obj.getSamplingWorkflowEnabled(),
-            "remarks": obj.getRemarks(),
         })
+
+        # Set the fields for which we want the value to be set automatically
+        # when the primary sample is selected
+        info["field_values"].update({
+            "Client": self.to_field_value(client),
+            "Contact": self.to_field_value(contact),
+            "CCContact": map(self.to_field_value, cccontacts),
+            "CCEmails": obj.getCCEmails() or [],
+            "Batch": self.to_field_value(batch),
+            "DateSampled": {"value": self.to_iso_date(obj.getDateSampled())},
+            "SamplingDate": {"value": self.to_iso_date(obj.getSamplingDate())},
+            "SampleType": self.to_field_value(sample_type),
+            "EnvironmentalConditions": {"value": obj.getEnvironmentalConditions()},
+            "ClientSampleID": {"value": obj.getClientSampleID()},
+            "ClientReference": {"value": obj.getClientReference()},
+            "ClientOrderNumber": {"value": obj.getClientOrderNumber()},
+            "SampleCondition": self.to_field_value(sample_condition),
+            "SamplePoint": self.to_field_value(sample_point),
+            "StorageLocation": self.to_field_value(storage_location),
+            "Container": self.to_field_value(container),
+            "SamplingDeviation": self.to_field_value(deviation),
+            "Preservation": self.to_field_value(preservation),
+            "Specification": self.to_field_value(specification),
+            "Template": self.to_field_value(sample_template),
+            "Profiles": map(self.to_field_value, profiles),
+            "Composite": {"value": obj.getComposite()}
+        })
+
         return info
+
+    def to_field_value(self, obj):
+        return {
+            "uid": obj and api.get_uid(obj) or "",
+            "title": obj and api.get_title(obj) or ""
+        }
 
     @cache(cache_key)
     def get_specification_info(self, obj):
@@ -1215,6 +1205,30 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             "SampleType": [
                 "SamplePoint",
                 "Specification"
+            ],
+            "PrimarySample": [
+                "Batch"
+                "Client",
+                "Contact",
+                "CCContact",
+                "CCEmails",
+                "ClientOrderNumber",
+                "ClientReference",
+                "ClientSampleID",
+                "ContainerType",
+                "DateSampled",
+                "EnvironmentalConditions",
+                "InvoiceContact",
+                "Preservation",
+                "Profiles",
+                "SampleCondition",
+                "SamplePoint",
+                "SampleType",
+                "SamplingDate",
+                "SamplingDeviation",
+                "StorageLocation",
+                "Specification",
+                "Template",
             ]
         }
 

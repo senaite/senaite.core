@@ -25,7 +25,6 @@
       this.on_analysis_profile_removed = bind(this.on_analysis_profile_removed, this);
       this.on_analysis_profile_selected = bind(this.on_analysis_profile_selected, this);
       this.on_analysis_template_changed = bind(this.on_analysis_template_changed, this);
-      this.on_sample_changed = bind(this.on_sample_changed, this);
       this.on_analysis_lock_button_click = bind(this.on_analysis_lock_button_click, this);
       this.on_analysis_details_click = bind(this.on_analysis_details_click, this);
       this.on_analysis_specification_changed = bind(this.on_analysis_specification_changed, this);
@@ -35,7 +34,6 @@
       this.set_service_spec = bind(this.set_service_spec, this);
       this.set_service = bind(this.set_service, this);
       this.set_template = bind(this.set_template, this);
-      this.set_sample = bind(this.set_sample, this);
       this.set_reference_field = bind(this.set_reference_field, this);
       this.set_reference_field_query = bind(this.set_reference_field_query, this);
       this.get_field_by_id = bind(this.get_field_by_id, this);
@@ -99,7 +97,6 @@
       $("body").on("change", "input.warn_max", this.on_analysis_specification_changed);
       $("body").on("click", ".service-lockbtn", this.on_analysis_lock_button_click);
       $("body").on("click", ".service-infobtn", this.on_analysis_details_click);
-      $("body").on("selected change", "tr[fieldname=PrimaryAnalysisRequest] input[type='text']", this.on_sample_changed);
       $("body").on("selected change", "tr[fieldname=Template] input[type='text']", this.on_analysis_template_changed);
       $("body").on("selected", "tr[fieldname=Profiles] input[type='text']", this.on_analysis_profile_selected);
       $("body").on("click", "tr[fieldname=Profiles] img.deletebtn", this.on_analysis_profile_removed);
@@ -280,7 +277,7 @@
           });
         });
         $.each(record.sample_metadata, function(uid, sample) {
-          return me.set_sample(arnum, sample);
+          return me.apply_field_value(arnum, sample);
         });
         $.each(record.sampletype_metadata, function(uid, sampletype) {
           return me.apply_field_value(arnum, sampletype);
@@ -431,12 +428,13 @@
       if ((values.uid != null) && (values.title != null)) {
         return me.set_reference_field(field, values.uid, values.title);
       } else if (values.value != null) {
-        return field.val(values.value);
+        if (typeof values.value === "boolean") {
+          return field.prop("checked", values.value);
+        } else {
+          return field.val(values.value);
+        }
       } else if (typeIsArray(values)) {
         return $.each(values, function(index, item) {
-          var item_json;
-          item_json = $.toJSON(item);
-          console.debug("" + item_json);
           return me.apply_dependent_value(arnum, field_name, item);
         });
       }
@@ -572,68 +570,6 @@
         mvl.append(div);
         return $field.val("");
       }
-    };
-
-    AnalysisRequestAdd.prototype.set_sample = function(arnum, sample) {
-
-      /*
-       * Apply the sample data to all fields of arnum
-       */
-      var contact, field, fullname, title, uid, value;
-      field = $("#Client-" + arnum);
-      uid = sample.client_uid;
-      title = sample.client_title;
-      this.set_reference_field(field, uid, title);
-      field = $("#Contact-" + arnum);
-      contact = sample.contact;
-      uid = contact.uid;
-      fullname = contact.fullname;
-      this.set_reference_field(field, uid, fullname);
-      this.apply_field_value(arnum, contact);
-      field = $("#SamplingDate-" + arnum);
-      value = sample.sampling_date;
-      field.val(value);
-      field = $("#DateSampled-" + arnum);
-      value = sample.date_sampled;
-      field.val(value);
-      field = $("#SampleType-" + arnum);
-      uid = sample.sample_type_uid;
-      title = sample.sample_type_title;
-      this.set_reference_field(field, uid, title);
-      field = $("#EnvironmentalConditions-" + arnum);
-      value = sample.environmental_conditions;
-      field.val(value);
-      field = $("#ClientSampleID-" + arnum);
-      value = sample.client_sample_id;
-      field.val(value);
-      field = $("#ClientReference-" + arnum);
-      value = sample.client_reference;
-      field.val(value);
-      field = $("#ClientOrderNumber-" + arnum);
-      value = sample.client_order_number;
-      field.val(value);
-      field = $("#Composite-" + arnum);
-      field.prop("checked", sample.composite);
-      field = $("#SampleCondition-" + arnum);
-      uid = sample.sample_condition_uid;
-      title = sample.sample_condition_title;
-      this.set_reference_field(field, uid, title);
-      field = $("#SamplePoint-" + arnum);
-      uid = sample.sample_point_uid;
-      title = sample.sample_point_title;
-      this.set_reference_field(field, uid, title);
-      field = $("#StorageLocation-" + arnum);
-      uid = sample.storage_location_uid;
-      title = sample.storage_location_title;
-      this.set_reference_field(field, uid, title);
-      field = $("#DefaultContainerType-" + arnum);
-      uid = sample.container_type_uid;
-      title = sample.container_type_title;
-      this.set_reference_field(field, uid, title);
-      field = $("#SamplingDeviation-" + arnum);
-      uid = sample.sampling_deviation_uid;
-      title = sample.sampling_deviation_title;
-      return this.set_reference_field(field, uid, title);
     };
 
     AnalysisRequestAdd.prototype.set_template = function(arnum, template) {
@@ -910,26 +846,6 @@
         }
       };
       return dialog = this.template_dialog("service-dependant-template", context, buttons);
-    };
-
-    AnalysisRequestAdd.prototype.on_sample_changed = function(event) {
-
-      /*
-       * Eventhandler when the Sample was changed.
-       */
-      var $el, arnum, el, has_sample_selected, me, uid, val;
-      me = this;
-      el = event.currentTarget;
-      $el = $(el);
-      uid = $(el).attr("uid");
-      val = $el.val();
-      arnum = $el.closest("[arnum]").attr("arnum");
-      has_sample_selected = $el.val();
-      console.debug("°°° on_sample_change::UID=" + uid + " PrimaryAnalysisRequest=" + val + "°°°");
-      if (!has_sample_selected) {
-        $("input[type=hidden]", $el.parent()).val("");
-      }
-      return $(me).trigger("form:changed");
     };
 
     AnalysisRequestAdd.prototype.on_analysis_template_changed = function(event) {
