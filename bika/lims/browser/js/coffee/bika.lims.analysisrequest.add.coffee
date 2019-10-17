@@ -248,7 +248,7 @@ class window.AnalysisRequestAdd
 
       # set client
       $.each record.client_metadata, (uid, client) ->
-        me.set_client arnum, client
+        me.apply_field_value arnum, client
 
       # set contact
       $.each record.contact_metadata, (uid, contact) ->
@@ -380,7 +380,36 @@ class window.AnalysisRequestAdd
     return $(field_id)
 
 
-  apply_field_filters: (record, arnum) ->
+  apply_field_value: (arnum, record) ->
+    ###
+     * Applies the value for the given record, by setting values and applying
+     * search filters to dependents
+    ###
+    me = this
+
+    # Set default values to dependents
+    me.apply_dependent_values arnum, record
+
+    # Apply search filters to other fields
+    me.apply_dependent_filter_queries record, arnum
+
+
+  apply_dependent_values: (arnum, record) ->
+    ###
+     * Sets default field values to dependents
+    ###
+    me = this
+    $.each record.field_values, (field_name, values) ->
+      values_json = $.toJSON values
+      field = $("#" + field_name + "-#{arnum}")
+      console.debug "set_field_values: field_name=#{field_name} field_values=#{values_json}"
+      if values.uid? and values.title?
+        me.set_reference_field field, values.uid, values.title
+      else if values.value?
+        field.val values.value
+
+
+  apply_dependent_filter_queries: (record, arnum) ->
     ###
      * Apply search filters to dependendents
     ###
@@ -514,32 +543,6 @@ class window.AnalysisRequestAdd
       div.append title
       mvl.append div
       $field.val("")
-
-
-  set_client: (arnum, client) =>
-    ###
-     * Filter Contacts
-     * Filter CCContacts
-     * Filter InvoiceContacts
-     * Filter SamplePoints
-     * Filter ARTemplates
-     * Filter Specification
-     * Filter SamplingRound
-     * Filter Batch
-    ###
-
-    me = this
-
-    # handle default contact for /analysisrequests listing
-    # https://github.com/senaite/senaite.core/issues/705
-    if document.URL.indexOf("analysisrequests") > -1
-      contact_title = client.default_contact.title
-      contact_uid = client.default_contact.uid
-      if contact_title and contact_uid
-        @set_reference_field field, contact_uid, contact_title
-
-    # Apply search filters to other fields
-    me.apply_field_filters client, arnum
 
 
   set_contact: (arnum, contact) =>

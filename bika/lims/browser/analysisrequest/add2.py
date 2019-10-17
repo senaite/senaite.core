@@ -435,7 +435,7 @@ class AnalysisRequestAddView(BrowserView):
                 "query": path,
                 "depth": 1
             },
-            "incactive_state": "active",
+            "is_active": True,
         }
         contacts = catalog(query)
         if len(contacts) == 1:
@@ -804,6 +804,8 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             "title": obj.Title(),
             "description": obj.Description(),
             "url": obj.absolute_url(),
+            "field_values": {},
+            "filter_queries": {},
         }
 
         return info
@@ -817,11 +819,9 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         default_contact_info = {}
         default_contact = self.get_default_contact(client=obj)
         if default_contact:
-            default_contact_info = self.get_contact_info(default_contact)
-
-        info.update({
-            "default_contact": default_contact_info
-        })
+            info["field_values"].update({
+                "Contact": self.get_contact_info(default_contact)
+            })
 
         # UID of the client
         uid = api.get_uid(obj)

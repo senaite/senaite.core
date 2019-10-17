@@ -36,7 +36,6 @@
       this.set_sampletype = bind(this.set_sampletype, this);
       this.set_sample = bind(this.set_sample, this);
       this.set_contact = bind(this.set_contact, this);
-      this.set_client = bind(this.set_client, this);
       this.set_reference_field = bind(this.set_reference_field, this);
       this.set_reference_field_query = bind(this.set_reference_field_query, this);
       this.get_field_by_id = bind(this.get_field_by_id, this);
@@ -259,7 +258,7 @@
       $(".service-lockbtn").hide();
       return $.each(records, function(arnum, record) {
         $.each(record.client_metadata, function(uid, client) {
-          return me.set_client(arnum, client);
+          return me.apply_field_value(arnum, client);
         });
         $.each(record.contact_metadata, function(uid, contact) {
           return me.set_contact(arnum, contact);
@@ -381,7 +380,39 @@
       return $(field_id);
     };
 
-    AnalysisRequestAdd.prototype.apply_field_filters = function(record, arnum) {
+    AnalysisRequestAdd.prototype.apply_field_value = function(arnum, record) {
+
+      /*
+       * Applies the value for the given record, by setting values and applying
+       * search filters to dependents
+       */
+      var me;
+      me = this;
+      me.apply_dependent_values(arnum, record);
+      return me.apply_dependent_filter_queries(record, arnum);
+    };
+
+    AnalysisRequestAdd.prototype.apply_dependent_values = function(arnum, record) {
+
+      /*
+       * Sets default field values to dependents
+       */
+      var me;
+      me = this;
+      return $.each(record.field_values, function(field_name, values) {
+        var field, values_json;
+        values_json = $.toJSON(values);
+        field = $("#" + field_name + ("-" + arnum));
+        console.debug("set_field_values: field_name=" + field_name + " field_values=" + values_json);
+        if ((values.uid != null) && (values.title != null)) {
+          return me.set_reference_field(field, values.uid, values.title);
+        } else if (values.value != null) {
+          return field.val(values.value);
+        }
+      });
+    };
+
+    AnalysisRequestAdd.prototype.apply_dependent_filter_queries = function(record, arnum) {
 
       /*
        * Apply search filters to dependendents
@@ -511,30 +542,6 @@
         mvl.append(div);
         return $field.val("");
       }
-    };
-
-    AnalysisRequestAdd.prototype.set_client = function(arnum, client) {
-
-      /*
-       * Filter Contacts
-       * Filter CCContacts
-       * Filter InvoiceContacts
-       * Filter SamplePoints
-       * Filter ARTemplates
-       * Filter Specification
-       * Filter SamplingRound
-       * Filter Batch
-       */
-      var contact_title, contact_uid, me;
-      me = this;
-      if (document.URL.indexOf("analysisrequests") > -1) {
-        contact_title = client.default_contact.title;
-        contact_uid = client.default_contact.uid;
-        if (contact_title && contact_uid) {
-          this.set_reference_field(field, contact_uid, contact_title);
-        }
-      }
-      return me.apply_field_filters(client, arnum);
     };
 
     AnalysisRequestAdd.prototype.set_contact = function(arnum, contact) {
