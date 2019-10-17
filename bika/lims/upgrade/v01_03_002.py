@@ -54,6 +54,7 @@ def upgrade(tool):
     # Mixed permissions for transitions in client workflow (#1419)
     # Allow to detach a partition from its primary sample (#1420)
     # Allow clients to create batches (#1450)
+    # Allow unassign transition for cancelled/rejected/retracted analyses #1461
     setup.runImportStepFromProfile(profile, "workflow")
 
     # Allow to detach a partition from its primary sample (#1420)
