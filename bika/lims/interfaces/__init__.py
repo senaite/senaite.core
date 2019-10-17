@@ -981,3 +981,23 @@ class IAddSampleFieldsFlush(Interface):
         """Returns a dict where the key is the name of the field and the value
         is an array dependencies as field names
         """
+
+
+class IAddSampleMetadata(Interface):
+    """Marker interface for additional fields that need to be taken into
+    account in recalculation of metadata from Add Sample form
+    """
+
+    def get_metadata(self, record):
+        """Returns a dict where the key is the fieldname (e.g. Batch) and the
+        value is another dict where the key is the UID of the object and the
+        value is its metadata representation as a dict:
+
+        {Batch: {
+             <uid>: {
+                 "id": <batch_id>,
+                 "title", <batch_title>,
+                 ...
+             },
+        }
+        """

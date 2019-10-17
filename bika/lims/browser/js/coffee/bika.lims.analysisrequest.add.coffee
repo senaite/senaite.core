@@ -283,6 +283,11 @@ class window.AnalysisRequestAdd
       $.each record.sampletype_metadata, (uid, sampletype) ->
         me.apply_field_value arnum, sampletype
 
+      # set additional records
+      $.each record.additional, (field_name, item) ->
+        $.each item, (uid, metadata) ->
+          me.apply_field_value arnum, metadata
+
       # handle unmet dependencies, one at a time
       $.each record.unmet_dependencies, (uid, dependencies) ->
         service = record.service_metadata[uid]

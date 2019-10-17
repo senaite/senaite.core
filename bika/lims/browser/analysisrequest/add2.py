@@ -29,7 +29,7 @@ from bika.lims import logger
 from bika.lims.api.analysisservice import get_calculation_dependencies_for
 from bika.lims.api.analysisservice import get_service_dependencies_for
 from bika.lims.interfaces import IGetDefaultFieldValueARAddHook, \
-    IAddSampleFieldFilter, IAddSampleFieldsFlush
+    IAddSampleFieldFilter, IAddSampleFieldsFlush, IAddSampleMetadata
 from bika.lims.utils import tmpID
 from bika.lims.utils.analysisrequest import create_analysisrequest as crar
 from bika.lims.workflow import ActionHandlerPool
@@ -1110,6 +1110,12 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             "Composite": {"value": obj.getComposite()}
         })
 
+        # Maybe other add-ons have additional fields that require filtering too
+        for name, ad in getAdapters((obj,), IAddSampleFieldFilter):
+            logger.info("Additional field filters from {}".format(name))
+            additional_filters = ad.get_info()
+            info["filter_queries"].update(additional_filters)
+
         return info
 
     def to_field_value(self, obj):
@@ -1472,7 +1478,16 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                 "service_to_profiles": service_to_profiles,
                 "service_metadata": service_metadata,
                 "unmet_dependencies": unmet_dependencies,
+                "additional": {}
             }
+
+            # Maybe other add-ons require other fields to be recalculated,
+            # either from core but not specifically recalculated (e.g Batch)
+            # or new add-on specific fields
+            for name, ad in getAdapters((self.context,), IAddSampleMetadata):
+                logger.info("Additional field records from {}".format(name))
+                additional_metadata = ad.get_metadata(record)
+                out[n]["additional"].update(additional_metadata)
 
         return out
 

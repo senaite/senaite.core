@@ -282,6 +282,11 @@
         $.each(record.sampletype_metadata, function(uid, sampletype) {
           return me.apply_field_value(arnum, sampletype);
         });
+        $.each(record.additional, function(field_name, item) {
+          return $.each(item, function(uid, metadata) {
+            return me.apply_field_value(arnum, metadata);
+          });
+        });
         return $.each(record.unmet_dependencies, function(uid, dependencies) {
           var context, dialog, service;
           service = record.service_metadata[uid];
