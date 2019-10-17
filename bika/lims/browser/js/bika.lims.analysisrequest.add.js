@@ -29,8 +29,7 @@
       this.on_analysis_lock_button_click = bind(this.on_analysis_lock_button_click, this);
       this.on_analysis_details_click = bind(this.on_analysis_details_click, this);
       this.on_analysis_specification_changed = bind(this.on_analysis_specification_changed, this);
-      this.on_contact_changed = bind(this.on_contact_changed, this);
-      this.on_client_changed = bind(this.on_client_changed, this);
+      this.on_referencefield_value_changed = bind(this.on_referencefield_value_changed, this);
       this.hide_all_service_info = bind(this.hide_all_service_info, this);
       this.get_service = bind(this.get_service, this);
       this.set_service_spec = bind(this.set_service_spec, this);
@@ -96,8 +95,7 @@
       $("body").on("click", "tr[fieldname=Composite] input[type='checkbox']", this.recalculate_records);
       $("body").on("click", "tr[fieldname=InvoiceExclude] input[type='checkbox']", this.recalculate_records);
       $("body").on("click", "tr[fieldname=Analyses] input[type='checkbox']", this.on_analysis_checkbox_click);
-      $("body").on("selected change", "tr[fieldname=Client] input[type='text']", this.on_client_changed);
-      $("body").on("selected change", "tr[fieldname=Contact] input[type='text']", this.on_contact_changed);
+      $("body").on("selected change", "input[type='text'].referencewidget", this.on_referencefield_value_changed);
       $("body").on("change", "input.min", this.on_analysis_specification_changed);
       $("body").on("change", "input.max", this.on_analysis_specification_changed);
       $("body").on("change", "input.warn_min", this.on_analysis_specification_changed);
@@ -785,35 +783,20 @@
 
     /* EVENT HANDLER */
 
-    AnalysisRequestAdd.prototype.on_client_changed = function(event) {
+    AnalysisRequestAdd.prototype.on_referencefield_value_changed = function(event) {
 
       /*
-       * Eventhandler when the client changed (happens on Batches)
+       * Generic event handler for when a field value changes
        */
-      var $el, arnum, el, me, uid;
+      var $el, arnum, el, field_name, me, uid;
       me = this;
       el = event.currentTarget;
       $el = $(el);
       uid = $el.attr("uid");
+      field_name = $el.closest("tr[fieldname]").attr("fieldname");
       arnum = $el.closest("[arnum]").attr("arnum");
-      console.debug("°°° on_client_changed: arnum=" + arnum + " °°°");
-      me.flush_fields_for("Client", arnum);
-      return $(me).trigger("form:changed");
-    };
-
-    AnalysisRequestAdd.prototype.on_contact_changed = function(event) {
-
-      /*
-       * Eventhandler when the contact changed
-       */
-      var $el, arnum, el, me, uid;
-      me = this;
-      el = event.currentTarget;
-      $el = $(el);
-      uid = $el.attr("uid");
-      arnum = $el.closest("[arnum]").attr("arnum");
-      console.debug("°°° on_contact_changed: arnum=" + arnum + " °°°");
-      me.flush_fields_for("Contact", arnum);
+      console.debug("°°° on_field_value_changed: field_name=" + field_name + " arnum=" + arnum + " °°°");
+      me.flush_fields_for(field_name, arnum);
       return $(me).trigger("form:changed");
     };
 
@@ -954,7 +937,6 @@
       if (!has_sampletype_selected) {
         $("input[type=hidden]", $el.parent()).val("");
       }
-      me.flush_fields_for("SampleType", arnum);
       return $(me).trigger("form:changed");
     };
 

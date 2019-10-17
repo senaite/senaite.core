@@ -73,10 +73,9 @@ class window.AnalysisRequestAdd
     $("body").on "click", "tr[fieldname=InvoiceExclude] input[type='checkbox']", @recalculate_records
     # Analysis Checkbox clicked
     $("body").on "click", "tr[fieldname=Analyses] input[type='checkbox']", @on_analysis_checkbox_click
-    # Client changed
-    $("body").on "selected change", "tr[fieldname=Client] input[type='text']", @on_client_changed
-    # Contact changed
-    $("body").on "selected change", "tr[fieldname=Contact] input[type='text']", @on_contact_changed
+    # Generic onchange event handler for reference fields
+    $("body").on "selected change" , "input[type='text'].referencewidget", @on_referencefield_value_changed
+
     # Analysis Specification changed
     $("body").on "change", "input.min", @on_analysis_specification_changed
     $("body").on "change", "input.max", @on_analysis_specification_changed
@@ -829,41 +828,21 @@ class window.AnalysisRequestAdd
 
   ### EVENT HANDLER ###
 
-  on_client_changed: (event) =>
+  on_referencefield_value_changed: (event) =>
     ###
-     * Eventhandler when the client changed (happens on Batches)
+     * Generic event handler for when a field value changes
     ###
-
     me = this
     el = event.currentTarget
     $el = $(el)
     uid = $el.attr "uid"
+    field_name = $el.closest("tr[fieldname]").attr "fieldname"
     arnum = $el.closest("[arnum]").attr "arnum"
 
-    console.debug "°°° on_client_changed: arnum=#{arnum} °°°"
+    console.debug "°°° on_field_value_changed: field_name=#{field_name} arnum=#{arnum} °°°"
 
-    # Flush client depending fields
-    me.flush_fields_for "Client", arnum
-
-    # trigger form:changed event
-    $(me).trigger "form:changed"
-
-
-  on_contact_changed: (event) =>
-    ###
-     * Eventhandler when the contact changed
-    ###
-
-    me = this
-    el = event.currentTarget
-    $el = $(el)
-    uid = $el.attr "uid"
-    arnum = $el.closest("[arnum]").attr "arnum"
-
-    console.debug "°°° on_contact_changed: arnum=#{arnum} °°°"
-
-    # Flush contact depending fields
-    me.flush_fields_for "Contact", arnum
+    # Flush depending fields
+    me.flush_fields_for field_name, arnum
 
     # trigger form:changed event
     $(me).trigger "form:changed"
@@ -1016,9 +995,6 @@ class window.AnalysisRequestAdd
     if not has_sampletype_selected
       # XXX manually flush UID field
       $("input[type=hidden]", $el.parent()).val("")
-
-    # Flush sampletype depending fields
-    me.flush_fields_for "SampleType", arnum
 
     # trigger form:changed event
     $(me).trigger "form:changed"
