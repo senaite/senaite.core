@@ -1,0 +1,34 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+    i18n_domain="senaite.core">
+
+  <adapter factory=".structure.ContentXMLAdapter"/>
+
+  <!-- Field Adapters
+       Know how to Import/Export field values
+  -->
+  <adapter factory=".adapters.ATFieldNodeAdapter"/>
+  <adapter factory=".adapters.ATTextFieldNodeAdapter"/>
+  <adapter factory=".adapters.ATFileFieldNodeAdapter"/>
+  <adapter factory=".adapters.BlobFileFieldNodeAdapter"/>
+  <adapter factory=".adapters.ATDateTimeFieldNodeAdapter"/>
+  <adapter factory=".adapters.ATReferenceFieldNodeAdapter"/>
+  <adapter factory=".adapters.ATUIDReferenceFieldNodeAdapter"/>
+
+  <genericsetup:exportStep
+      name="senaite.core.export"
+      title="SENAITE: Export Content Structure"
+      description="Export LIMS Content Structure"
+      handler=".structure.export_xml"
+      />
+
+  <genericsetup:importStep
+      name="senaite.core.import"
+      title="SENAITE: Import Content Structure"
+      description="Import LIMS Content Structure"
+      handler=".structure.import_xml">
+    <depends name="componentregistry"/>
+  </genericsetup:importStep>
+
+</configure>
