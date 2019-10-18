@@ -179,6 +179,13 @@ def export_xml(context):
 def import_xml(context):
     portal = context.getSite()
 
+    qi = api.get_tool("portal_quickinstaller")
+    installed = qi.isProductInstalled("bika.lims")
+
+    if not installed:
+        logger.debug("Nothing to export.")
+        return
+
     # create content slugs for UID references
     create_content_slugs(portal.bika_setup, "", context)
     create_content_slugs(portal.methods, "", context)
