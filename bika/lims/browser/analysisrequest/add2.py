@@ -19,6 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 import json
+import itertools
 from collections import OrderedDict
 from datetime import datetime
 
@@ -1275,6 +1276,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
 
     def get_record_metadata(self, record):
         metadata = {}
+        extra_fields = {}
         for key, value in record.items():
             if not key.endswith("_uid"):
                 continue
@@ -1293,6 +1295,30 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             objs_info = self.get_objects_info(record, key)
             objs_uids = map(lambda obj: obj["uid"], objs_info)
             metadata[metadata_key] = dict(zip(objs_uids, objs_info))
+
+            # Grab 'autofill' fields to be recalculated too
+            for obj_info in objs_info:
+                field_values = obj_info.get("field_values", {})
+                for field_name, field_value in field_values.items():
+                    if not isinstance(field_value, dict):
+                        # this is probably a list, e.g. "Profiles" field
+                        continue
+                    uids = self.get_uids_from_record(field_value, "uid")
+                    if len(uids) == 1:
+                        extra_fields[field_name] = uids[0]
+
+        # Get object info from extra fields
+        for field_name, uid in extra_fields.items():
+            key = "{}_metadata".format(field_name.lower())
+            if metadata.get(key):
+                continue
+            obj = self.get_object_by_uid(uid)
+            if not obj:
+                continue
+            obj_info = self.get_object_info(obj, field_name)
+            if not obj_info or "uid" not in obj_info:
+                continue
+            metadata[key] = {obj_info["uid"]: obj_info}
 
         return metadata
 

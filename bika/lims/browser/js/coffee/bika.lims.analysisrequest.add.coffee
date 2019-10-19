@@ -247,6 +247,8 @@ class window.AnalysisRequestAdd
       # Apply the values generically, but those to be handled differently
       discard = ["service_metadata", "specification_metadata"]
       $.each record, (name, metadata) ->
+        # Discard those fields that will be handled differently and those that
+        # do not contain explicit object metadata (e.g service_to_specification)
         if name in discard or !name.endsWith("_metadata")
           return
         $.each metadata, (uid, obj_info) ->
