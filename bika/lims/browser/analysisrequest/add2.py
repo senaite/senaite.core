@@ -19,9 +19,25 @@
 # Some rights reserved, see README and LICENSE.
 
 import json
-import itertools
 from collections import OrderedDict
 from datetime import datetime
+
+from BTrees.OOBTree import OOBTree
+from DateTime import DateTime
+from Products.CMFPlone.utils import _createObjectByType
+from Products.CMFPlone.utils import safe_unicode
+from Products.Five.browser import BrowserView
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from plone import protect
+from plone.memoize.volatile import DontCache
+from plone.memoize.volatile import cache
+from zope.annotation.interfaces import IAnnotations
+from zope.component import adapts
+from zope.component import getAdapters
+from zope.component import queryAdapter
+from zope.i18n.locales import locales
+from zope.interface import implements
+from zope.publisher.interfaces import IPublishTraverse
 
 from bika.lims import POINTS_OF_CAPTURE
 from bika.lims import api
@@ -30,27 +46,10 @@ from bika.lims import logger
 from bika.lims.api.analysisservice import get_calculation_dependencies_for
 from bika.lims.api.analysisservice import get_service_dependencies_for
 from bika.lims.interfaces import IGetDefaultFieldValueARAddHook, \
-    IAddSampleFieldFilter, IAddSampleFieldsFlush, IAddSampleMetadata, \
-    IAddSampleObjectInfo
+    IAddSampleFieldsFlush, IAddSampleObjectInfo
 from bika.lims.utils import tmpID
 from bika.lims.utils.analysisrequest import create_analysisrequest as crar
 from bika.lims.workflow import ActionHandlerPool
-from BTrees.OOBTree import OOBTree
-from DateTime import DateTime
-from plone import protect
-from plone.memoize.volatile import DontCache
-from plone.memoize.volatile import cache
-from Products.CMFPlone.utils import _createObjectByType
-from Products.CMFPlone.utils import safe_unicode
-from Products.Five.browser import BrowserView
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from zope.annotation.interfaces import IAnnotations
-from zope.component import adapts
-from zope.component import getAdapters
-from zope.component import queryAdapter
-from zope.i18n.locales import locales
-from zope.interface import implements
-from zope.publisher.interfaces import IPublishTraverse
 
 AR_CONFIGURATION_STORAGE = "bika.lims.browser.analysisrequest.manage.add"
 SKIP_FIELD_ON_COPY = ["Sample", "PrimaryAnalysisRequest", "Remarks"]
