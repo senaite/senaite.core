@@ -243,17 +243,14 @@ class window.AnalysisRequestAdd
 
     # set all values for one record (a single column in the AR Add form)
     $.each records, (arnum, record) ->
-      # set sample
-      $.each record.primaryanalysisrequest_metadata, (uid, sample) ->
-        me.apply_field_value arnum, sample
 
-      # set client
-      $.each record.client_metadata, (uid, client) ->
-        me.apply_field_value arnum, client
-
-      # set contact
-      $.each record.contact_metadata, (uid, contact) ->
-        me.apply_field_value arnum, contact
+      # Apply the values generically, but those to be handled differently
+      discard = ["service_metadata", "specification_metadata"]
+      $.each record, (name, metadata) ->
+        if name in discard or !name.endsWith("_metadata")
+          return
+        $.each metadata, (uid, obj_info) ->
+          me.apply_field_value arnum, obj_info
 
       # set services
       $.each record.service_metadata, (uid, metadata) ->
@@ -269,23 +266,10 @@ class window.AnalysisRequestAdd
         # select the service
         me.set_service arnum, uid, yes
 
-      # set template
-      $.each record.template_metadata, (uid, template) ->
-        me.set_template arnum, template
-
       # set specification
       $.each record.specification_metadata, (uid, spec) ->
         $.each spec.specifications, (uid, service_spec) ->
           me.set_service_spec arnum, uid, service_spec
-
-      # set sampletype
-      $.each record.sampletype_metadata, (uid, sampletype) ->
-        me.apply_field_value arnum, sampletype
-
-      # set additional records
-      $.each record.additional, (field_name, item) ->
-        $.each item, (uid, metadata) ->
-          me.apply_field_value arnum, metadata
 
       # handle unmet dependencies, one at a time
       $.each record.unmet_dependencies, (uid, dependencies) ->
@@ -396,6 +380,8 @@ class window.AnalysisRequestAdd
      * search filters to dependents
     ###
     me = this
+    title = record.title
+    console.debug "apply_field_value: arnum=#{arnum} record=#{title}"
 
     # Set default values to dependents
     me.apply_dependent_values arnum, record

@@ -44,6 +44,7 @@ from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.annotation.interfaces import IAnnotations
+from zope.component import adapts
 from zope.component import getAdapters
 from zope.component import queryAdapter
 from zope.i18n.locales import locales
@@ -785,13 +786,6 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             value = value.split(",")
         return filter(lambda uid: uid, value)
 
-    def get_objs_from_record(self, record, key):
-        """Returns a mapping of UID -> object
-        """
-        uids = self.get_uids_from_record(record, key)
-        objs = map(self.get_object_by_uid, uids)
-        return dict(zip(uids, objs))
-
     @cache(cache_key)
     def get_base_info(self, obj):
         """Returns the base info of an object
@@ -876,13 +870,6 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             }
         }
         info["filter_queries"] = filter_queries
-
-        # Maybe other add-ons have additional fields that require filtering too
-        for name, ad in getAdapters((obj,), IAddSampleFieldFilter):
-            logger.info("Additional field filters from {}".format(name))
-            additional_filters = ad.get_info()
-            info["filter_queries"].update(additional_filters)
-
         return info
 
     @cache(cache_key)
@@ -1430,60 +1417,58 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
 
     def get_objects_info(self, record, key):
         """
-        Returns a dictionary with the metadata for the objects the field with
+        Returns a list with the metadata for the objects the field with
         field_name passed in refers to. Returns empty list if the field is not
         a reference field or the record for this key cannot be handled
         :param record: a record for a single sample (column)
         :param key: The key of the field from the record (e.g. Client_uid)
-        :return:
+        :return: list of info objects
         """
-        if not key.endswith("_uid"):
-            return []
+        # Get the objects from this record. Returns a list because the field
+        # can be multivalued
+        uids = self.get_uids_from_record(record, key)
+        objects = map(self.get_object_by_uid, uids)
+        objects = map(lambda obj: self.get_object_info(obj, key), objects)
+        return filter(None, objects)
 
+    def get_object_info(self, obj, key):
+        """Returns the object info metadata for the passed in object and key
+        :param obj: the object from which extract the info from
+        :param key: The key of the field from the record (e.g. Client_uid)
+        :return: dict that represents the object
+        """
         # Check if there is a function to handle objects for this field
         field_name = key.replace("_uid", "")
         func_name = "get_{}_info".format(field_name.lower())
         func = getattr(self, func_name, None)
 
-        # Check if there is any adapter to handle objects for this field
-        adapters = []
-        #for name, ad in getAdapters((obj, ), IAddSampleObjectInfo):
-        #    adapters.append((name, ad))
-
-        if not callable(func):
-            logger.info("Function '{}' not found".format(func))
-
-        if not callable(func) and not adapters:
-            # Nobody can handle objects for this field
-            return []
-
-        # Get the objects from this record. Returns a list because the field
-        # can be multivalued
-        objects = self.get_objects_from_record(record, key)
-        return map(lambda obj: self.get_object_info(obj, func, adapters), objects)
-
-    def get_objects_from_record(self, record, key):
-        """Returns a list of objects that referenced by the key and from the
-        record passed in
-        """
-        objects = self.get_objs_from_record(record, key)
-        # We only want the objects, not the uids
-        return objects.values()
-
-    def get_object_info(self, obj, func, adapters):
         # Get the info for each object
+        info = {}
         if callable(func):
             info = func(obj)
 
-        for name, adapter in adapters:
-            ad_info = adapter.get_object_info(obj)
-            info = self.merge_object_info(info, ad_info)
+        # Check if there is any adapter to handle objects for this field
+        for name, adapter in getAdapters((obj, ), IAddSampleObjectInfo):
+            logger.info("adapter for '{}': {}".format(field_name, name))
+            ad_info = adapter.get_object_info()
+            self.update_object_info(info, ad_info)
 
         return info
 
-    def merge_object_info(self, base_info, additional_info):
-        # TODO: merge it correctly, giving priority to base_info!
-        return base_info.update(additional_info)
+    def update_object_info(self, base_info, additional_info):
+        if not base_info:
+            base_info.update(additional_info)
+            return
+
+        # Merge field_values info
+        field_values = base_info.get("field_values", {})
+        field_values.update(additional_info.get("field_values", {}))
+        base_info["field_values"] = field_values
+
+        # Merge filter_queries info
+        filter_queries = base_info.get("filter_queries", {})
+        filter_queries.update(additional_info.get("filter_queries", {}))
+        base_info["filter_queries"] = filter_queries
 
     def show_recalculate_prices(self):
         bika_setup = api.get_bika_setup()
@@ -1720,3 +1705,22 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             }
         else:
             return {'success': message}
+
+
+class AddSampleObjectInfoAdapter(object):
+    adapts(IAddSampleObjectInfo)
+
+    def __init__(self, context):
+        self.context = context
+
+    def get_base_info(self):
+        return {
+            "id": api.get_id(self.context),
+            "uid": api.get_uid(self.context),
+            "title": api.get_title(self.context),
+            "field_values": {},
+            "filter_queries": {},
+        }
+
+    def get_object_info(self):
+        raise NotImplementedError("get_object_info not implemented")

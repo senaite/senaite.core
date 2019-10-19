@@ -254,14 +254,15 @@
       me = this;
       $(".service-lockbtn").hide();
       return $.each(records, function(arnum, record) {
-        $.each(record.primaryanalysisrequest_metadata, function(uid, sample) {
-          return me.apply_field_value(arnum, sample);
-        });
-        $.each(record.client_metadata, function(uid, client) {
-          return me.apply_field_value(arnum, client);
-        });
-        $.each(record.contact_metadata, function(uid, contact) {
-          return me.apply_field_value(arnum, contact);
+        var discard;
+        discard = ["service_metadata", "specification_metadata"];
+        $.each(record, function(name, metadata) {
+          if (indexOf.call(discard, name) >= 0 || !name.endsWith("_metadata")) {
+            return;
+          }
+          return $.each(metadata, function(uid, obj_info) {
+            return me.apply_field_value(arnum, obj_info);
+          });
         });
         $.each(record.service_metadata, function(uid, metadata) {
           var lock;
@@ -271,20 +272,9 @@
           }
           return me.set_service(arnum, uid, true);
         });
-        $.each(record.template_metadata, function(uid, template) {
-          return me.set_template(arnum, template);
-        });
         $.each(record.specification_metadata, function(uid, spec) {
           return $.each(spec.specifications, function(uid, service_spec) {
             return me.set_service_spec(arnum, uid, service_spec);
-          });
-        });
-        $.each(record.sampletype_metadata, function(uid, sampletype) {
-          return me.apply_field_value(arnum, sampletype);
-        });
-        $.each(record.additional, function(field_name, item) {
-          return $.each(item, function(uid, metadata) {
-            return me.apply_field_value(arnum, metadata);
           });
         });
         return $.each(record.unmet_dependencies, function(uid, dependencies) {
@@ -397,8 +387,10 @@
        * Applies the value for the given record, by setting values and applying
        * search filters to dependents
        */
-      var me;
+      var me, title;
       me = this;
+      title = record.title;
+      console.debug("apply_field_value: arnum=" + arnum + " record=" + title);
       me.apply_dependent_values(arnum, record);
       return me.apply_dependent_filter_queries(record, arnum);
     };
