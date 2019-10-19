@@ -29,7 +29,8 @@ from bika.lims import logger
 from bika.lims.api.analysisservice import get_calculation_dependencies_for
 from bika.lims.api.analysisservice import get_service_dependencies_for
 from bika.lims.interfaces import IGetDefaultFieldValueARAddHook, \
-    IAddSampleFieldFilter, IAddSampleFieldsFlush, IAddSampleMetadata
+    IAddSampleFieldFilter, IAddSampleFieldsFlush, IAddSampleMetadata, \
+    IAddSampleObjectInfo
 from bika.lims.utils import tmpID
 from bika.lims.utils.analysisrequest import create_analysisrequest as crar
 from bika.lims.workflow import ActionHandlerPool
@@ -799,11 +800,9 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             return {}
 
         info = {
-            "id": obj.getId(),
-            "uid": obj.UID(),
-            "title": obj.Title(),
-            "description": obj.Description(),
-            "url": obj.absolute_url(),
+            "id": api.get_id(obj),
+            "uid": api.get_uid(obj),
+            "title": api.get_title(obj),
             "field_values": {},
             "filter_queries": {},
         }
@@ -1059,8 +1058,8 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         return info
 
     @cache(cache_key)
-    def get_sample_info(self, obj):
-        """Returns the info for a Sample
+    def get_primaryanalysisrequest_info(self, obj):
+        """Returns the info for a Primary Sample
         """
         info = self.get_base_info(obj)
 
@@ -1110,14 +1109,9 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             "Composite": {"value": obj.getComposite()}
         })
 
-        # Maybe other add-ons have additional fields that require filtering too
-        for name, ad in getAdapters((obj,), IAddSampleFieldFilter):
-            logger.info("Additional field filters from {}".format(name))
-            additional_filters = ad.get_info()
-            info["filter_queries"].update(additional_filters)
-
         return info
 
+    @cache(cache_key)
     def to_field_value(self, obj):
         return {
             "uid": obj and api.get_uid(obj) or "",
@@ -1264,232 +1258,232 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         return info
 
     def ajax_recalculate_records(self):
-        """Recalculate all AR records and dependencies
-
-            - samples
-            - templates
-            - profiles
-            - services
-            - dependecies
-
-        XXX: This function has grown too much and needs refactoring!
-        """
         out = {}
-
-        # The sorted records from the request
         records = self.get_records()
+        for num_sample, record in enumerate(records):
+            # Get reference fields metadata
+            metadata = self.get_record_metadata(record)
 
-        for n, record in enumerate(records):
+            # Extract additional metadata from this record
+            # service_to_specs
+            service_to_specs = self.get_service_to_specs_info(metadata)
+            metadata.update(service_to_specs)
 
-            # Mapping of client UID -> client object info
-            client_metadata = {}
-            # Mapping of contact UID -> contact object info
-            contact_metadata = {}
-            # Mapping of sample UID -> sample object info
-            sample_metadata = {}
-            # Mapping of sampletype UID -> sampletype object info
-            sampletype_metadata = {}
-            # Mapping of specification UID -> specification object info
-            specification_metadata = {}
-            # Mapping of specification UID -> list of service UIDs
-            specification_to_services = {}
-            # Mapping of service UID -> list of specification UIDs
-            service_to_specifications = {}
-            # Mapping of template UID -> template object info
-            template_metadata = {}
-            # Mapping of template UID -> list of service UIDs
-            template_to_services = {}
-            # Mapping of service UID -> list of template UIDs
-            service_to_templates = {}
-            # Mapping of profile UID -> list of service UIDs
-            profile_to_services = {}
-            # Mapping of service UID -> list of profile UIDs
-            service_to_profiles = {}
-            # Profile metadata for UI purposes
-            profile_metadata = {}
-            # Mapping of service UID -> service object info
-            service_metadata = {}
-            # mapping of service UID -> unmet service dependency UIDs
-            unmet_dependencies = {}
+            # service_to_templates, template_to_services
+            templates_additional = self.get_template_additional_info(metadata)
+            metadata.update(templates_additional)
 
-            # Mappings of UID -> object of selected items in this record
-            _clients = self.get_objs_from_record(record, "Client_uid")
-            _contacts = self.get_objs_from_record(record, "Contact_uid")
-            _specifications = self.get_objs_from_record(
-                record, "Specification_uid")
-            _templates = self.get_objs_from_record(record, "Template_uid")
-            _samples = self.get_objs_from_record(record, "PrimaryAnalysisRequest_uid")
-            _profiles = self.get_objs_from_record(record, "Profiles_uid")
-            _services = self.get_objs_from_record(record, "Analyses")
-            _sampletypes = self.get_objs_from_record(record, "SampleType_uid")
+            # service_to_profiles, profiles_to_services
+            profiles_additional = self.get_profiles_additional_info(metadata)
+            metadata.update(profiles_additional)
 
-            # CLIENTS
-            for uid, obj in _clients.iteritems():
-                # get the client metadata
-                metadata = self.get_client_info(obj)
-                # remember the sampletype metadata
-                client_metadata[uid] = metadata
+            # dependencies
+            dependencies = self.get_unmet_dependencies_info(metadata)
+            metadata.update(dependencies)
 
-            # CONTACTS
-            for uid, obj in _contacts.iteritems():
-                # get the client metadata
-                metadata = self.get_contact_info(obj)
-                # remember the sampletype metadata
-                contact_metadata[uid] = metadata
-
-            # SPECIFICATIONS
-            for uid, obj in _specifications.iteritems():
-                # get the specification metadata
-                metadata = self.get_specification_info(obj)
-                # remember the metadata of this specification
-                specification_metadata[uid] = metadata
-                # get the spec'd service UIDs
-                service_uids = metadata["service_uids"]
-                # remember a mapping of specification uid -> spec'd services
-                specification_to_services[uid] = service_uids
-                # remember a mapping of service uid -> specifications
-                for service_uid in service_uids:
-                    if service_uid in service_to_specifications:
-                        service_to_specifications[service_uid].append(uid)
-                    else:
-                        service_to_specifications[service_uid] = [uid]
-
-            # AR TEMPLATES
-            for uid, obj in _templates.iteritems():
-                # get the template metadata
-                metadata = self.get_template_info(obj)
-                # remember the template metadata
-                template_metadata[uid] = metadata
-
-                # profile from the template
-                profile = obj.getAnalysisProfile()
-                # add the profile to the other profiles
-                if profile is not None:
-                    profile_uid = api.get_uid(profile)
-                    _profiles[profile_uid] = profile
-
-                # get the template analyses
-                # [{'partition': 'part-1', 'service_uid': '...'},
-                # {'partition': 'part-1', 'service_uid': '...'}]
-                analyses = obj.getAnalyses() or []
-                # get all UIDs of the template records
-                service_uids = map(
-                    lambda rec: rec.get("service_uid"), analyses)
-                # remember a mapping of template uid -> service
-                template_to_services[uid] = service_uids
-                # remember a mapping of service uid -> templates
-                for service_uid in service_uids:
-                    # append service to services mapping
-                    service = self.get_object_by_uid(service_uid)
-                    # remember the template of all services
-                    if service_uid in service_to_templates:
-                        service_to_templates[service_uid].append(uid)
-                    else:
-                        service_to_templates[service_uid] = [uid]
-
-                    # remember the service metadata
-                    if service_uid not in service_metadata:
-                        metadata = self.get_service_info(service)
-                        service_metadata[service_uid] = metadata
-
-            # PROFILES
-            for uid, obj in _profiles.iteritems():
-                # get the profile metadata
-                metadata = self.get_profile_info(obj)
-                # remember the profile metadata
-                profile_metadata[uid] = metadata
-                # get all services of this profile
-                services = obj.getService()
-                # get all UIDs of the profile services
-                service_uids = map(api.get_uid, services)
-                # remember all services of this profile
-                profile_to_services[uid] = service_uids
-                # remember a mapping of service uid -> profiles
-                for service in services:
-                    # get the UID of this service
-                    service_uid = api.get_uid(service)
-                    # add the service to the other services
-                    _services[service_uid] = service
-                    # remember the profiles of this service
-                    if service_uid in service_to_profiles:
-                        service_to_profiles[service_uid].append(uid)
-                    else:
-                        service_to_profiles[service_uid] = [uid]
-
-            # PRIMARY ANALYSIS REQUESTS
-            for uid, obj in _samples.iteritems():
-                # get the sample metadata
-                metadata = self.get_sample_info(obj)
-                # remember the sample metadata
-                sample_metadata[uid] = metadata
-
-            # SAMPLETYPES
-            for uid, obj in _sampletypes.iteritems():
-                # get the sampletype metadata
-                metadata = self.get_sampletype_info(obj)
-                # remember the sampletype metadata
-                sampletype_metadata[uid] = metadata
-
-            # SERVICES
-            for uid, obj in _services.iteritems():
-                # get the service metadata
-                metadata = self.get_service_info(obj)
-
-                # remember the services' metadata
-                service_metadata[uid] = metadata
-
-            #  DEPENDENCIES
-            for uid, obj in _services.iteritems():
-                # get the dependencies of this service
-                deps = get_service_dependencies_for(obj)
-
-                # check for unmet dependencies
-                for dep in deps["dependencies"]:
-                    # we use the UID to test for equality
-                    dep_uid = api.get_uid(dep)
-                    if dep_uid not in _services.keys():
-                        if uid in unmet_dependencies:
-                            unmet_dependencies[uid].append(
-                                self.get_base_info(dep))
-                        else:
-                            unmet_dependencies[uid] = [self.get_base_info(dep)]
-                # remember the dependencies in the service metadata
-                service_metadata[uid].update({
-                    "dependencies": map(
-                        self.get_base_info, deps["dependencies"]),
-                })
-
-            # Each key `n` (1,2,3...) contains the form data for one AR Add
-            # column in the UI.
-            # All relevant form data will be set accoriding to this data.
-            out[n] = {
-                "client_metadata": client_metadata,
-                "contact_metadata": contact_metadata,
-                "sample_metadata": sample_metadata,
-                "sampletype_metadata": sampletype_metadata,
-                "specification_metadata": specification_metadata,
-                "specification_to_services": specification_to_services,
-                "service_to_specifications": service_to_specifications,
-                "template_metadata": template_metadata,
-                "template_to_services": template_to_services,
-                "service_to_templates": service_to_templates,
-                "profile_metadata": profile_metadata,
-                "profile_to_services": profile_to_services,
-                "service_to_profiles": service_to_profiles,
-                "service_metadata": service_metadata,
-                "unmet_dependencies": unmet_dependencies,
-                "additional": {}
-            }
-
-            # Maybe other add-ons require other fields to be recalculated,
-            # either from core but not specifically recalculated (e.g Batch)
-            # or new add-on specific fields
-            for name, ad in getAdapters((self.context,), IAddSampleMetadata):
-                logger.info("Additional field records from {}".format(name))
-                additional_metadata = ad.get_metadata(record)
-                out[n]["additional"].update(additional_metadata)
+            # Set the metadata for current sample number (column)
+            out[num_sample] = metadata
 
         return out
+
+    def get_record_metadata(self, record):
+        metadata = {}
+        for key, value in record.items():
+            if not key.endswith("_uid"):
+                continue
+
+            # This is a reference field (ends with _uid), so we add the
+            # metadata key, even if there is no way to handle objects this
+            # field refers to
+            metadata_key = key.replace("_uid", "")
+            metadata_key = "{}_metadata".format(metadata_key.lower())
+            metadata[metadata_key] = {}
+
+            if not value:
+                continue
+
+            # Get objects information (metadata)
+            objs_info = self.get_objects_info(record, key)
+            objs_uids = map(lambda obj: obj["uid"], objs_info)
+            metadata[metadata_key] = dict(zip(objs_uids, objs_info))
+
+        return metadata
+
+    def get_service_to_specs_info(self, metadata):
+        service_to_specs = {}
+        specifications = metadata.get("specification_metadata", {})
+        for uid, obj_info in specifications.items():
+            service_uids = obj_info["service_uids"]
+            for service_uid in service_uids:
+                if service_uid in service_to_specs:
+                    service_to_specs[service_uid].append(uid)
+                else:
+                    service_to_specs[service_uid] = [uid]
+        return {"service_to_specifications": service_to_specs}
+
+    def get_template_additional_info(self, metadata):
+        template_to_services = {}
+        service_to_templates = {}
+        service_metadata = metadata.get("service_metadata", {})
+        profiles_metadata = metadata.get("profiles_metadata", {})
+        template = metadata.get("template_metadata", {})
+        # We don't expect more than one template, but who knows about future?
+        for uid, obj_info in template.items():
+            obj = api.get_object_by_uid(uid)
+            # profile from the template
+            profile = obj.getAnalysisProfile()
+            # add the profile to the other profiles
+            if profile is not None:
+                profile_uid = api.get_uid(profile)
+                if profile_uid not in profiles_metadata:
+                    profile = self.get_object_by_uid(profile_uid)
+                    profile_info = self.get_profile_info(profile)
+                    profiles_metadata[profile_uid] = profile_info
+
+            # get the template analyses
+            # [{'partition': 'part-1', 'service_uid': '...'},
+            # {'partition': 'part-1', 'service_uid': '...'}]
+            analyses = obj.getAnalyses() or []
+            # get all UIDs of the template records
+            service_uids = map(lambda rec: rec.get("service_uid"), analyses)
+            # remember a mapping of template uid -> service
+            template_to_services[uid] = service_uids
+            # remember a mapping of service uid -> templates
+            for service_uid in service_uids:
+                # remember the template of all services
+                if service_uid in service_to_templates:
+                    service_to_templates[service_uid].append(uid)
+                else:
+                    service_to_templates[service_uid] = [uid]
+                # remember the service metadata
+                if service_uid not in service_metadata:
+                    service = self.get_object_by_uid(service_uid)
+                    service_info = self.get_service_info(service)
+                    service_metadata[service_uid] = service_info
+
+        return {
+            "service_to_templates": service_to_templates,
+            "template_to_services": template_to_services,
+            "service_metadata": service_metadata,
+            "profiles_metadata": profiles_metadata,
+        }
+
+    def get_profiles_additional_info(self, metadata):
+        profile_to_services = {}
+        service_to_profiles = metadata.get("service_to_profiles", {})
+        service_metadata = metadata.get("service_metadata", {})
+        profiles = metadata.get("profiles_metadata", {})
+        for uid, obj_info in profiles.items():
+            obj = api.get_object_by_uid(uid)
+            # get all services of this profile
+            services = obj.getService()
+            # get all UIDs of the profile services
+            service_uids = map(api.get_uid, services)
+            # remember all services of this profile
+            profile_to_services[uid] = service_uids
+            # remember a mapping of service uid -> profiles
+            for service in services:
+                # get the UID of this service
+                service_uid = api.get_uid(service)
+                # remember the profiles of this service
+                if service_uid in service_to_profiles:
+                    service_to_profiles[service_uid].append(uid)
+                else:
+                    service_to_profiles[service_uid] = [uid]
+                # remember the service metadata
+                if service_uid not in service_metadata:
+                    service_info = self.get_service_info(service)
+                    service_metadata[service_uid] = service_info
+
+        return {
+            "profile_to_services": profile_to_services,
+            "service_to_profiles": service_to_profiles,
+            "service_metadata": service_metadata,
+        }
+
+    def get_unmet_dependencies_info(self, metadata):
+        # mapping of service UID -> unmet service dependency UIDs
+        unmet_dependencies = {}
+        services = metadata.get("service_metadata", {}).copy()
+        for uid, obj_info in services.items():
+            obj = api.get_object_by_uid(uid)
+            # get the dependencies of this service
+            deps = get_service_dependencies_for(obj)
+
+            # check for unmet dependencies
+            for dep in deps["dependencies"]:
+                # we use the UID to test for equality
+                dep_uid = api.get_uid(dep)
+                if dep_uid not in services:
+                    if uid in unmet_dependencies:
+                        unmet_dependencies[uid].append(self.get_base_info(dep))
+                    else:
+                        unmet_dependencies[uid] = [self.get_base_info(dep)]
+            # remember the dependencies in the service metadata
+            metadata["service_metadata"][uid].update({
+                "dependencies": map(
+                    self.get_base_info, deps["dependencies"]),
+            })
+        return {
+            "unmet_dependencies": unmet_dependencies
+        }
+
+    def get_objects_info(self, record, key):
+        """
+        Returns a dictionary with the metadata for the objects the field with
+        field_name passed in refers to. Returns empty list if the field is not
+        a reference field or the record for this key cannot be handled
+        :param record: a record for a single sample (column)
+        :param key: The key of the field from the record (e.g. Client_uid)
+        :return:
+        """
+        if not key.endswith("_uid"):
+            return []
+
+        # Check if there is a function to handle objects for this field
+        field_name = key.replace("_uid", "")
+        func_name = "get_{}_info".format(field_name.lower())
+        func = getattr(self, func_name, None)
+
+        # Check if there is any adapter to handle objects for this field
+        adapters = []
+        #for name, ad in getAdapters((obj, ), IAddSampleObjectInfo):
+        #    adapters.append((name, ad))
+
+        if not callable(func):
+            logger.info("Function '{}' not found".format(func))
+
+        if not callable(func) and not adapters:
+            # Nobody can handle objects for this field
+            return []
+
+        # Get the objects from this record. Returns a list because the field
+        # can be multivalued
+        objects = self.get_objects_from_record(record, key)
+        return map(lambda obj: self.get_object_info(obj, func, adapters), objects)
+
+    def get_objects_from_record(self, record, key):
+        """Returns a list of objects that referenced by the key and from the
+        record passed in
+        """
+        objects = self.get_objs_from_record(record, key)
+        # We only want the objects, not the uids
+        return objects.values()
+
+    def get_object_info(self, obj, func, adapters):
+        # Get the info for each object
+        if callable(func):
+            info = func(obj)
+
+        for name, adapter in adapters:
+            ad_info = adapter.get_object_info(obj)
+            info = self.merge_object_info(info, ad_info)
+
+        return info
+
+    def merge_object_info(self, base_info, additional_info):
+        # TODO: merge it correctly, giving priority to base_info!
+        return base_info.update(additional_info)
 
     def show_recalculate_prices(self):
         bika_setup = api.get_bika_setup()

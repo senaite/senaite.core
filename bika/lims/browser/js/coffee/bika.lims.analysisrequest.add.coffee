@@ -243,6 +243,9 @@ class window.AnalysisRequestAdd
 
     # set all values for one record (a single column in the AR Add form)
     $.each records, (arnum, record) ->
+      # set sample
+      $.each record.primaryanalysisrequest_metadata, (uid, sample) ->
+        me.apply_field_value arnum, sample
 
       # set client
       $.each record.client_metadata, (uid, client) ->
@@ -274,10 +277,6 @@ class window.AnalysisRequestAdd
       $.each record.specification_metadata, (uid, spec) ->
         $.each spec.specifications, (uid, service_spec) ->
           me.set_service_spec arnum, uid, service_spec
-
-      # set sample
-      $.each record.sample_metadata, (uid, sample) ->
-        me.apply_field_value arnum, sample
 
       # set sampletype
       $.each record.sampletype_metadata, (uid, sampletype) ->
@@ -812,7 +811,7 @@ class window.AnalysisRequestAdd
     if uid of record.service_to_profiles
       profiles = record.service_to_profiles[uid]
       $.each profiles, (index, uid) ->
-        extra["profiles"].push record.profile_metadata[uid]
+        extra["profiles"].push record.profiles_metadata[uid]
 
     # inject template info
     if uid of record.service_to_templates
@@ -862,7 +861,7 @@ class window.AnalysisRequestAdd
     # collect profiles
     if uid of record.service_to_profiles
       profile_uid = record.service_to_profiles[uid]
-      context["profiles"].push record.profile_metadata[profile_uid]
+      context["profiles"].push record.profiles_metadata[profile_uid]
 
     # collect templates
     if uid of record.service_to_templates
@@ -1007,7 +1006,7 @@ class window.AnalysisRequestAdd
     arnum = $el.closest("[arnum]").attr "arnum"
 
     record = @records_snapshot[arnum]
-    profile_metadata = record.profile_metadata[uid]
+    profile_metadata = record.profiles_metadata[uid]
     profile_services = []
 
     # prepare a list of services used by the profile with the given UID

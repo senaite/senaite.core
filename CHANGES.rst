@@ -6,6 +6,7 @@ Changelog
 
 **Added**
 
+- #1462 Allow to extend Add Sample behavior with adapters
 - #1455 Added support for adapters in guard handler
 - #1436 Setting in setup for auto-reception of samples upon creation
 - #1433 Added Submitter column in Sample's analyses listing

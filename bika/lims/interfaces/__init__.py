@@ -1001,3 +1001,8 @@ class IAddSampleMetadata(Interface):
              },
         }
         """
+
+
+class IAddSampleObjectInfo(Interface):
+    """Marker interface for objects metadata mapping
+    """

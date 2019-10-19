@@ -254,6 +254,9 @@
       me = this;
       $(".service-lockbtn").hide();
       return $.each(records, function(arnum, record) {
+        $.each(record.primaryanalysisrequest_metadata, function(uid, sample) {
+          return me.apply_field_value(arnum, sample);
+        });
         $.each(record.client_metadata, function(uid, client) {
           return me.apply_field_value(arnum, client);
         });
@@ -275,9 +278,6 @@
           return $.each(spec.specifications, function(uid, service_spec) {
             return me.set_service_spec(arnum, uid, service_spec);
           });
-        });
-        $.each(record.sample_metadata, function(uid, sample) {
-          return me.apply_field_value(arnum, sample);
         });
         $.each(record.sampletype_metadata, function(uid, sampletype) {
           return me.apply_field_value(arnum, sampletype);
@@ -788,7 +788,7 @@
       if (uid in record.service_to_profiles) {
         profiles = record.service_to_profiles[uid];
         $.each(profiles, function(index, uid) {
-          return extra["profiles"].push(record.profile_metadata[uid]);
+          return extra["profiles"].push(record.profiles_metadata[uid]);
         });
       }
       if (uid in record.service_to_templates) {
@@ -839,7 +839,7 @@
       context["templates"] = [];
       if (uid in record.service_to_profiles) {
         profile_uid = record.service_to_profiles[uid];
-        context["profiles"].push(record.profile_metadata[profile_uid]);
+        context["profiles"].push(record.profiles_metadata[profile_uid]);
       }
       if (uid in record.service_to_templates) {
         template_uid = record.service_to_templates[uid];
@@ -962,7 +962,7 @@
       uid = $el.attr("uid");
       arnum = $el.closest("[arnum]").attr("arnum");
       record = this.records_snapshot[arnum];
-      profile_metadata = record.profile_metadata[uid];
+      profile_metadata = record.profiles_metadata[uid];
       profile_services = [];
       $.each(record.profile_to_services[uid], function(index, uid) {
         return profile_services.push(record.service_metadata[uid]);
