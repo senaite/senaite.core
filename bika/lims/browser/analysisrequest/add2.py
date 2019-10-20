@@ -1459,9 +1459,9 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         return filter(None, objects)
 
     def object_info_cache_key(method, self, obj, key):
-        if obj is None:
+        if obj is None or not key:
             raise DontCache
-        field_name = key.replace("_uid", "")
+        field_name = key.replace("_uid", "").lower()
         obj_key = api.get_cache_key(obj)
         return "-".join([field_name, obj_key])
 
