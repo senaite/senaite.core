@@ -36,6 +36,7 @@
       this.set_template = bind(this.set_template, this);
       this.set_reference_field = bind(this.set_reference_field, this);
       this.set_reference_field_query = bind(this.set_reference_field_query, this);
+      this.reset_reference_field_query = bind(this.reset_reference_field_query, this);
       this.get_field_by_id = bind(this.get_field_by_id, this);
       this.get_fields = bind(this.get_fields, this);
       this.get_form = bind(this.get_form, this);
@@ -470,7 +471,7 @@
     AnalysisRequestAdd.prototype.flush_reference_field = function(field) {
 
       /*
-       * Empty the reference field
+       * Empty the reference field and restore the search query
        */
       var catalog_name;
       catalog_name = field.attr("catalog_name");
@@ -479,7 +480,22 @@
       }
       field.val("");
       $("input[type=hidden]", field.parent()).val("");
-      return $(".multiValued-listing", field.parent()).empty();
+      $(".multiValued-listing", field.parent()).empty();
+      return this.reset_reference_field_query(field);
+    };
+
+    AnalysisRequestAdd.prototype.reset_reference_field_query = function(field) {
+
+      /*
+       * Restores the catalog search query for the given reference field
+       */
+      var catalog_name, query;
+      catalog_name = field.attr("catalog_name");
+      if (!catalog_name) {
+        return;
+      }
+      query = $.parseJSON(field.attr("base_query"));
+      return this.set_reference_field_query(field, query);
     };
 
     AnalysisRequestAdd.prototype.set_reference_field_query = function(field, query, type) {

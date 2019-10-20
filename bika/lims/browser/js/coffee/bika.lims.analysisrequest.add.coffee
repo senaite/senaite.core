@@ -457,7 +457,7 @@ class window.AnalysisRequestAdd
 
   flush_reference_field: (field) ->
     ###
-     * Empty the reference field
+     * Empty the reference field and restore the search query
     ###
 
     catalog_name = field.attr "catalog_name"
@@ -468,6 +468,17 @@ class window.AnalysisRequestAdd
     $("input[type=hidden]", field.parent()).val("")
     $(".multiValued-listing", field.parent()).empty()
 
+    # restore the original search query
+    @reset_reference_field_query field
+
+  reset_reference_field_query: (field) =>
+    ###
+     * Restores the catalog search query for the given reference field
+    ###
+    catalog_name = field.attr "catalog_name"
+    return unless catalog_name
+    query = $.parseJSON field.attr "base_query"
+    @set_reference_field_query field, query
 
   set_reference_field_query: (field, query, type="base_query") =>
     ###
