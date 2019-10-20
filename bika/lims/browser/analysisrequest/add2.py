@@ -111,7 +111,9 @@ class AnalysisRequestAddView(BrowserView):
             return url
         return "{}?{}".format(url, qs)
 
-    # XXX HEADS-UP!
+    # N.B.: We are caching here persistent objects!
+    #       It should be safe to do this but only on the view object,
+    #       because it get recreated per request (transaction border).
     @viewcache.memoize
     def get_object_by_uid(self, uid):
         """Get the object by UID
