@@ -6,6 +6,7 @@ Changelog
 
 **Added**
 
+- #1462 Allow to extend the behavior of fields from AddSample view with adapters
 - #1455 Added support for adapters in guard handler
 - #1436 Setting in setup for auto-reception of samples upon creation
 - #1433 Added Submitter column in Sample's analyses listing
@@ -35,6 +36,7 @@ Changelog
 
 **Fixed**
 
+- #1462 Autofill Client Contact in Sample Add form when current user is a client
 - #1461 Allow unassign transition for cancelled/rejected/retracted analyses
 - #1449 sort_limit was not considered in ReferenceWidget searches
 - #1449 Fix Clients were unable to add batches

@@ -10,6 +10,8 @@
     indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   window.AnalysisRequestAdd = (function() {
+    var typeIsArray;
+
     function AnalysisRequestAdd() {
       this.init_file_fields = bind(this.init_file_fields, this);
       this.on_form_submit = bind(this.on_form_submit, this);
@@ -23,25 +25,18 @@
       this.on_analysis_profile_removed = bind(this.on_analysis_profile_removed, this);
       this.on_analysis_profile_selected = bind(this.on_analysis_profile_selected, this);
       this.on_analysis_template_changed = bind(this.on_analysis_template_changed, this);
-      this.on_specification_changed = bind(this.on_specification_changed, this);
-      this.on_sampletype_changed = bind(this.on_sampletype_changed, this);
-      this.on_sample_changed = bind(this.on_sample_changed, this);
       this.on_analysis_lock_button_click = bind(this.on_analysis_lock_button_click, this);
       this.on_analysis_details_click = bind(this.on_analysis_details_click, this);
       this.on_analysis_specification_changed = bind(this.on_analysis_specification_changed, this);
-      this.on_contact_changed = bind(this.on_contact_changed, this);
-      this.on_client_changed = bind(this.on_client_changed, this);
+      this.on_referencefield_value_changed = bind(this.on_referencefield_value_changed, this);
       this.hide_all_service_info = bind(this.hide_all_service_info, this);
       this.get_service = bind(this.get_service, this);
       this.set_service_spec = bind(this.set_service_spec, this);
       this.set_service = bind(this.set_service, this);
       this.set_template = bind(this.set_template, this);
-      this.set_sampletype = bind(this.set_sampletype, this);
-      this.set_sample = bind(this.set_sample, this);
-      this.set_contact = bind(this.set_contact, this);
-      this.set_client = bind(this.set_client, this);
       this.set_reference_field = bind(this.set_reference_field, this);
       this.set_reference_field_query = bind(this.set_reference_field_query, this);
+      this.reset_reference_field_query = bind(this.reset_reference_field_query, this);
       this.get_field_by_id = bind(this.get_field_by_id, this);
       this.get_fields = bind(this.get_fields, this);
       this.get_form = bind(this.get_form, this);
@@ -51,6 +46,7 @@
       this.update_form = bind(this.update_form, this);
       this.recalculate_prices = bind(this.recalculate_prices, this);
       this.recalculate_records = bind(this.recalculate_records, this);
+      this.get_flush_settings = bind(this.get_flush_settings, this);
       this.get_global_settings = bind(this.get_global_settings, this);
       this.render_template = bind(this.render_template, this);
       this.template_dialog = bind(this.template_dialog, this);
@@ -65,12 +61,14 @@
       this._ = window.jarn.i18n.MessageFactory("senaite.core");
       $('input[type=text]').prop('autocomplete', 'off');
       this.global_settings = {};
+      this.flush_settings = {};
       this.records_snapshot = {};
       this.applied_templates = {};
       $(".blurrable").removeClass("blurrable");
       this.bind_eventhandler();
       this.init_file_fields();
       this.get_global_settings();
+      this.get_flush_settings();
       return this.recalculate_records();
     };
 
@@ -93,17 +91,13 @@
       $("body").on("click", "tr[fieldname=Composite] input[type='checkbox']", this.recalculate_records);
       $("body").on("click", "tr[fieldname=InvoiceExclude] input[type='checkbox']", this.recalculate_records);
       $("body").on("click", "tr[fieldname=Analyses] input[type='checkbox']", this.on_analysis_checkbox_click);
-      $("body").on("selected change", "tr[fieldname=Client] input[type='text']", this.on_client_changed);
-      $("body").on("selected change", "tr[fieldname=Contact] input[type='text']", this.on_contact_changed);
+      $("body").on("selected change", "input[type='text'].referencewidget", this.on_referencefield_value_changed);
       $("body").on("change", "input.min", this.on_analysis_specification_changed);
       $("body").on("change", "input.max", this.on_analysis_specification_changed);
       $("body").on("change", "input.warn_min", this.on_analysis_specification_changed);
       $("body").on("change", "input.warn_max", this.on_analysis_specification_changed);
       $("body").on("click", ".service-lockbtn", this.on_analysis_lock_button_click);
       $("body").on("click", ".service-infobtn", this.on_analysis_details_click);
-      $("body").on("selected change", "tr[fieldname=PrimaryAnalysisRequest] input[type='text']", this.on_sample_changed);
-      $("body").on("selected change", "tr[fieldname=SampleType] input[type='text']", this.on_sampletype_changed);
-      $("body").on("selected change", "tr[fieldname=Specification] input[type='text']", this.on_specification_changed);
       $("body").on("selected change", "tr[fieldname=Template] input[type='text']", this.on_analysis_template_changed);
       $("body").on("selected", "tr[fieldname=Profiles] input[type='text']", this.on_analysis_profile_selected);
       $("body").on("click", "tr[fieldname=Profiles] img.deletebtn", this.on_analysis_profile_removed);
@@ -203,6 +197,18 @@
       });
     };
 
+    AnalysisRequestAdd.prototype.get_flush_settings = function() {
+
+      /*
+       * Retrieve the flush settings
+       */
+      return this.ajax_post_form("get_flush_settings").done(function(settings) {
+        console.debug("Flush settings:", settings);
+        this.flush_settings = settings;
+        return $(this).trigger("flush_settings:updated", settings);
+      });
+    };
+
     AnalysisRequestAdd.prototype.recalculate_records = function() {
 
       /*
@@ -249,11 +255,15 @@
       me = this;
       $(".service-lockbtn").hide();
       return $.each(records, function(arnum, record) {
-        $.each(record.client_metadata, function(uid, client) {
-          return me.set_client(arnum, client);
-        });
-        $.each(record.contact_metadata, function(uid, contact) {
-          return me.set_contact(arnum, contact);
+        var discard;
+        discard = ["service_metadata", "specification_metadata", "template_metadata"];
+        $.each(record, function(name, metadata) {
+          if (indexOf.call(discard, name) >= 0 || !name.endsWith("_metadata")) {
+            return;
+          }
+          return $.each(metadata, function(uid, obj_info) {
+            return me.apply_field_value(arnum, obj_info);
+          });
         });
         $.each(record.service_metadata, function(uid, metadata) {
           var lock;
@@ -270,12 +280,6 @@
           return $.each(spec.specifications, function(uid, service_spec) {
             return me.set_service_spec(arnum, uid, service_spec);
           });
-        });
-        $.each(record.sample_metadata, function(uid, sample) {
-          return me.set_sample(arnum, sample);
-        });
-        $.each(record.sampletype_metadata, function(uid, sampletype) {
-          return me.set_sampletype(arnum, sampletype);
         });
         return $.each(record.unmet_dependencies, function(uid, dependencies) {
           var context, dialog, service;
@@ -372,10 +376,105 @@
       return $(field_id);
     };
 
+    typeIsArray = Array.isArray || function(value) {
+
+      /*
+       * Returns if the given value is an array
+       * Taken from: https://coffeescript-cookbook.github.io/chapters/arrays/check-type-is-array
+       */
+      return {}.toString.call(value) === '[object Array]';
+    };
+
+    AnalysisRequestAdd.prototype.apply_field_value = function(arnum, record) {
+
+      /*
+       * Applies the value for the given record, by setting values and applying
+       * search filters to dependents
+       */
+      var me, title;
+      me = this;
+      title = record.title;
+      console.debug("apply_field_value: arnum=" + arnum + " record=" + title);
+      me.apply_dependent_values(arnum, record);
+      return me.apply_dependent_filter_queries(record, arnum);
+    };
+
+    AnalysisRequestAdd.prototype.apply_dependent_values = function(arnum, record) {
+
+      /*
+       * Sets default field values to dependents
+       */
+      var me;
+      me = this;
+      return $.each(record.field_values, function(field_name, values) {
+        return me.apply_dependent_value(arnum, field_name, values);
+      });
+    };
+
+    AnalysisRequestAdd.prototype.apply_dependent_value = function(arnum, field_name, values) {
+
+      /*
+       * Apply search filters to dependendents
+       */
+      var field, me, values_json;
+      me = this;
+      values_json = $.toJSON(values);
+      field = $("#" + field_name + ("-" + arnum));
+      if ((values.if_empty != null) && values.if_empty === true) {
+        if (!field.val()) {
+          return;
+        }
+      }
+      console.debug("apply_dependent_value: field_name=" + field_name + " field_values=" + values_json);
+      if ((values.uid != null) && (values.title != null)) {
+        return me.set_reference_field(field, values.uid, values.title);
+      } else if (values.value != null) {
+        if (typeof values.value === "boolean") {
+          return field.prop("checked", values.value);
+        } else {
+          return field.val(values.value);
+        }
+      } else if (typeIsArray(values)) {
+        return $.each(values, function(index, item) {
+          return me.apply_dependent_value(arnum, field_name, item);
+        });
+      }
+    };
+
+    AnalysisRequestAdd.prototype.apply_dependent_filter_queries = function(record, arnum) {
+
+      /*
+       * Apply search filters to dependents
+       */
+      var me;
+      me = this;
+      return $.each(record.filter_queries, function(field_name, query) {
+        var field;
+        field = $("#" + field_name + ("-" + arnum));
+        return me.set_reference_field_query(field, query);
+      });
+    };
+
+    AnalysisRequestAdd.prototype.flush_fields_for = function(field_name, arnum) {
+
+      /*
+       * Flush dependant fields
+       */
+      var field_ids, me;
+      me = this;
+      field_ids = this.flush_settings[field_name];
+      return $.each(this.flush_settings[field_name], function(index, id) {
+        var field;
+        console.debug("flushing: id=" + id);
+        field = $("#" + id + "-" + arnum);
+        return me.flush_reference_field(field);
+      });
+    };
+
     AnalysisRequestAdd.prototype.flush_reference_field = function(field) {
 
       /*
-       * Empty the reference field
+       * Empty the reference field and restore the search query
        */
       var catalog_name;
       catalog_name = field.attr("catalog_name");
@@ -384,7 +483,22 @@
       }
       field.val("");
       $("input[type=hidden]", field.parent()).val("");
-      return $(".multiValued-listing", field.parent()).empty();
+      $(".multiValued-listing", field.parent()).empty();
+      return this.reset_reference_field_query(field);
+    };
+
+    AnalysisRequestAdd.prototype.reset_reference_field_query = function(field) {
+
+      /*
+       * Restores the catalog search query for the given reference field
+       */
+      var catalog_name, query;
+      catalog_name = field.attr("catalog_name");
+      if (!catalog_name) {
+        return;
+      }
+      query = $.parseJSON(field.attr("base_query"));
+      return this.set_reference_field_query(field, query);
     };
 
     AnalysisRequestAdd.prototype.set_reference_field_query = function(field, query, type) {
@@ -472,157 +586,6 @@
         mvl.append(div);
         return $field.val("");
       }
-    };
-
-    AnalysisRequestAdd.prototype.set_client = function(arnum, client) {
-
-      /*
-       * Filter Contacts
-       * Filter CCContacts
-       * Filter InvoiceContacts
-       * Filter SamplePoints
-       * Filter ARTemplates
-       * Filter Specification
-       * Filter SamplingRound
-       * Filter Batch
-       */
-      var contact_title, contact_uid, field, query;
-      field = $("#Contact-" + arnum);
-      query = client.filter_queries.contact;
-      this.set_reference_field_query(field, query);
-      if (document.URL.indexOf("analysisrequests") > -1) {
-        contact_title = client.default_contact.title;
-        contact_uid = client.default_contact.uid;
-        if (contact_title && contact_uid) {
-          this.set_reference_field(field, contact_uid, contact_title);
-        }
-      }
-      field = $("#CCContact-" + arnum);
-      query = client.filter_queries.cc_contact;
-      this.set_reference_field_query(field, query);
-      field = $("#InvoiceContact-" + arnum);
-      query = client.filter_queries.invoice_contact;
-      this.set_reference_field_query(field, query);
-      field = $("#SamplePoint-" + arnum);
-      query = client.filter_queries.samplepoint;
-      this.set_reference_field_query(field, query);
-      field = $("#Template-" + arnum);
-      query = client.filter_queries.artemplates;
-      this.set_reference_field_query(field, query);
-      field = $("#Profiles-" + arnum);
-      query = client.filter_queries.analysisprofiles;
-      this.set_reference_field_query(field, query);
-      field = $("#Specification-" + arnum);
-      query = client.filter_queries.analysisspecs;
-      this.set_reference_field_query(field, query);
-      field = $("#SamplingRound-" + arnum);
-      query = client.filter_queries.samplinground;
-      this.set_reference_field_query(field, query);
-      field = $("#PrimaryAnalysisRequest-" + arnum);
-      query = client.filter_queries.sample;
-      this.set_reference_field_query(field, query);
-      field = $("#Batch-" + arnum);
-      query = client.filter_queries.batch;
-      return this.set_reference_field_query(field, query);
-    };
-
-    AnalysisRequestAdd.prototype.set_contact = function(arnum, contact) {
-
-      /*
-       * Set CC Contacts
-       */
-      var field, me;
-      me = this;
-      field = $("#CCContact-" + arnum);
-      return $.each(contact.cccontacts, function(uid, cccontact) {
-        var fullname;
-        fullname = cccontact.fullname;
-        return me.set_reference_field(field, uid, fullname);
-      });
-    };
-
-    AnalysisRequestAdd.prototype.set_sample = function(arnum, sample) {
-
-      /*
-       * Apply the sample data to all fields of arnum
-       */
-      var contact, field, fullname, title, uid, value;
-      field = $("#Client-" + arnum);
-      uid = sample.client_uid;
-      title = sample.client_title;
-      this.set_reference_field(field, uid, title);
-      field = $("#Contact-" + arnum);
-      contact = sample.contact;
-      uid = contact.uid;
-      fullname = contact.fullname;
-      this.set_reference_field(field, uid, fullname);
-      this.set_contact(arnum, contact);
-      field = $("#SamplingDate-" + arnum);
-      value = sample.sampling_date;
-      field.val(value);
-      field = $("#DateSampled-" + arnum);
-      value = sample.date_sampled;
-      field.val(value);
-      field = $("#SampleType-" + arnum);
-      uid = sample.sample_type_uid;
-      title = sample.sample_type_title;
-      this.set_reference_field(field, uid, title);
-      field = $("#EnvironmentalConditions-" + arnum);
-      value = sample.environmental_conditions;
-      field.val(value);
-      field = $("#ClientSampleID-" + arnum);
-      value = sample.client_sample_id;
-      field.val(value);
-      field = $("#ClientReference-" + arnum);
-      value = sample.client_reference;
-      field.val(value);
-      field = $("#ClientOrderNumber-" + arnum);
-      value = sample.client_order_number;
-      field.val(value);
-      field = $("#Composite-" + arnum);
-      field.prop("checked", sample.composite);
-      field = $("#SampleCondition-" + arnum);
-      uid = sample.sample_condition_uid;
-      title = sample.sample_condition_title;
-      this.set_reference_field(field, uid, title);
-      field = $("#SamplePoint-" + arnum);
-      uid = sample.sample_point_uid;
-      title = sample.sample_point_title;
-      this.set_reference_field(field, uid, title);
-      field = $("#StorageLocation-" + arnum);
-      uid = sample.storage_location_uid;
-      title = sample.storage_location_title;
-      this.set_reference_field(field, uid, title);
-      field = $("#DefaultContainerType-" + arnum);
-      uid = sample.container_type_uid;
-      title = sample.container_type_title;
-      this.set_reference_field(field, uid, title);
-      field = $("#SamplingDeviation-" + arnum);
-      uid = sample.sampling_deviation_uid;
-      title = sample.sampling_deviation_title;
-      return this.set_reference_field(field, uid, title);
-    };
-
-    AnalysisRequestAdd.prototype.set_sampletype = function(arnum, sampletype) {
-
-      /*
-       * Recalculate partitions
-       * Filter Sample Points
-       */
-      var field, query, title, uid;
-      field = $("#SamplePoint-" + arnum);
-      query = sampletype.filter_queries.samplepoint;
-      this.set_reference_field_query(field, query);
-      field = $("#DefaultContainerType-" + arnum);
-      if (!field.val()) {
-        uid = sampletype.container_type_uid;
-        title = sampletype.container_type_title;
-        this.flush_reference_field(field);
-        this.set_reference_field(field, uid, title);
-      }
-      field = $("#Specification-" + arnum);
-      query = sampletype.filter_queries.specification;
-      return this.set_reference_field_query(field, query);
     };
 
     AnalysisRequestAdd.prototype.set_template = function(arnum, template) {
@@ -778,45 +741,27 @@
 
     /* EVENT HANDLER */
 
-    AnalysisRequestAdd.prototype.on_client_changed = function(event) {
+    AnalysisRequestAdd.prototype.on_referencefield_value_changed = function(event) {
 
       /*
-       * Eventhandler when the client changed (happens on Batches)
+       * Generic event handler for when a field value changes
        */
-      var $el, arnum, el, field_ids, me, uid;
+      var $el, arnum, el, field_name, has_value, me, uid;
       me = this;
       el = event.currentTarget;
       $el = $(el);
+      has_value = $el.val();
       uid = $el.attr("uid");
+      field_name = $el.closest("tr[fieldname]").attr("fieldname");
       arnum = $el.closest("[arnum]").attr("arnum");
-      console.debug("°°° on_client_changed: arnum=" + arnum + " °°°");
-      field_ids = ["Contact", "CCContact", "InvoiceContact", "SamplePoint", "Template", "Profiles", "PrimaryAnalysisRequest", "Specification", "Batch"];
-      $.each(field_ids, function(index, id) {
-        var field;
-        field = me.get_field_by_id(id, arnum);
-        return me.flush_reference_field(field);
-      });
-      return $(me).trigger("form:changed");
-    };
-
-    AnalysisRequestAdd.prototype.on_contact_changed = function(event) {
-
-      /*
-       * Eventhandler when the contact changed
-       */
-      var $el, arnum, el, field_ids, me, uid;
-      me = this;
-      el = event.currentTarget;
-      $el = $(el);
-      uid = $el.attr("uid");
-      arnum = $el.closest("[arnum]").attr("arnum");
-      console.debug("°°° on_contact_changed: arnum=" + arnum + " °°°");
-      field_ids = ["CCContact"];
-      $.each(field_ids, function(index, id) {
-        var field;
-        field = me.get_field_by_id(id, arnum);
-        return me.flush_reference_field(field);
-      });
+      if (field_name === "Template" || field_name === "Profiles") {
+        return;
+      }
+      console.debug("°°° on_referencefield_value_changed: field_name=" + field_name + " arnum=" + arnum + " °°°");
+      me.flush_fields_for(field_name, arnum);
+      if (!has_value) {
+        $("input[type=hidden]", $el.parent()).val("");
+      }
       return $(me).trigger("form:changed");
     };
 
@@ -854,7 +799,7 @@
       if (uid in record.service_to_profiles) {
         profiles = record.service_to_profiles[uid];
         $.each(profiles, function(index, uid) {
-          return extra["profiles"].push(record.profile_metadata[uid]);
+          return extra["profiles"].push(record.profiles_metadata[uid]);
         });
       }
       if (uid in record.service_to_templates) {
@@ -905,7 +850,7 @@
       context["templates"] = [];
       if (uid in record.service_to_profiles) {
         profile_uid = record.service_to_profiles[uid];
-        context["profiles"].push(record.profile_metadata[profile_uid]);
+        context["profiles"].push(record.profiles_metadata[profile_uid]);
       }
       if (uid in record.service_to_templates) {
         template_uid = record.service_to_templates[uid];
@@ -917,73 +862,6 @@
         }
       };
       return dialog = this.template_dialog("service-dependant-template", context, buttons);
-    };
-
-    AnalysisRequestAdd.prototype.on_sample_changed = function(event) {
-
-      /*
-       * Eventhandler when the Sample was changed.
-       */
-      var $el, arnum, el, has_sample_selected, me, uid, val;
-      me = this;
-      el = event.currentTarget;
-      $el = $(el);
-      uid = $(el).attr("uid");
-      val = $el.val();
-      arnum = $el.closest("[arnum]").attr("arnum");
-      has_sample_selected = $el.val();
-      console.debug("°°° on_sample_change::UID=" + uid + " PrimaryAnalysisRequest=" + val + "°°°");
-      if (!has_sample_selected) {
-        $("input[type=hidden]", $el.parent()).val("");
-      }
-      return $(me).trigger("form:changed");
-    };
-
-    AnalysisRequestAdd.prototype.on_sampletype_changed = function(event) {
-
-      /*
-       * Eventhandler when the SampleType was changed.
-       * Fires form:changed event
-       */
-      var $el, arnum, el, field_ids, has_sampletype_selected, me, uid, val;
-      me = this;
-      el = event.currentTarget;
-      $el = $(el);
-      uid = $(el).attr("uid");
-      val = $el.val();
-      arnum = $el.closest("[arnum]").attr("arnum");
-      has_sampletype_selected = $el.val();
-      console.debug("°°° on_sampletype_change::UID=" + uid + " SampleType=" + val + "°°°");
-      if (!has_sampletype_selected) {
-        $("input[type=hidden]", $el.parent()).val("");
-      }
-      field_ids = ["SamplePoint", "Specification"];
-      $.each(field_ids, function(index, id) {
-        var field;
-        field = me.get_field_by_id(id, arnum);
-        return me.flush_reference_field(field);
-      });
-      return $(me).trigger("form:changed");
-    };
-
-    AnalysisRequestAdd.prototype.on_specification_changed = function(event) {
-
-      /*
-       * Eventhandler when the Specification was changed.
-       */
-      var $el, arnum, el, has_specification_selected, me, uid, val;
-      me = this;
-      el = event.currentTarget;
-      $el = $(el);
-      uid = $(el).attr("uid");
-      val = $el.val();
-      arnum = $el.closest("[arnum]").attr("arnum");
-      has_specification_selected = $el.val();
-      console.debug("°°° on_specification_change::UID=" + uid + " Specification=" + val + "°°°");
-      if (!has_specification_selected) {
-        $("input[type=hidden]", $el.parent()).val("");
-      }
-      return $(me).trigger("form:changed");
     };
 
     AnalysisRequestAdd.prototype.on_analysis_template_changed = function(event) {
@@ -1095,7 +973,7 @@
       uid = $el.attr("uid");
       arnum = $el.closest("[arnum]").attr("arnum");
       record = this.records_snapshot[arnum];
-      profile_metadata = record.profile_metadata[uid];
+      profile_metadata = record.profiles_metadata[uid];
       profile_services = [];
       $.each(record.profile_to_services[uid], function(index, uid) {
         return profile_services.push(record.service_metadata[uid]);
