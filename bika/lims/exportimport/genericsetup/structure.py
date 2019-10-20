@@ -5,6 +5,7 @@ from xml.dom.minidom import parseString
 from bika.lims import api
 from bika.lims import logger
 from bika.lims.interfaces import ISenaiteSiteRoot
+from DateTime import DateTime
 from OFS.interfaces import IOrderedContainer
 from Products.Archetypes.interfaces import IBaseObject
 from Products.CMFPlone.utils import _createObjectByType
@@ -25,9 +26,10 @@ SKIP_TYPES = [
 
 
 # TODO
-# - Handle manually provided interfaces, e.g. IAuditable, ISubmitted etc.
-# - Handle annotation storage, e.g. Auditlog storage etc.
-# - Handle acl_users
+# - [ ] Handle manually provided interfaces, e.g. IAuditable, ISubmitted etc.
+# - [ ] Handle annotation storage, e.g. Auditlog storage etc.
+# - [ ] Handle acl_users
+# - [X] Handle WF State of object
 
 class SenaiteSiteXMLAdapter(XMLAdapterBase, ObjectManagerHelpers):
     adapts(ISenaiteSiteRoot, ISetupEnviron)
@@ -89,6 +91,10 @@ class ContentXMLAdapter(SenaiteSiteXMLAdapter):
         # remember the UID of the item for reference fields
         node.setAttribute("uid", self.context.UID())
 
+        # remember the WF Status
+        state = api.get_workflow_status_of(self.context)
+        node.setAttribute("state", state)
+
         # Extract all fields of the current context
         node.appendChild(self._extractFields(self.context))
 
@@ -100,11 +106,36 @@ class ContentXMLAdapter(SenaiteSiteXMLAdapter):
     def _importNode(self, node):
         """Import the object from the DOM node.
         """
+
+        # set workflow state
+        self._initWorkflow(self.context, node)
         self._initFields(self.context, node)
+
         self.context.reindexObject()
 
         obj_id = str(node.getAttribute("name"))
         self._logger.info("Imported '%r'" % obj_id)
+
+    def _initWorkflow(self, context, node):
+        state = node.getAttribute("state")
+
+        if not state:
+            return
+
+        if state == api.get_workflow_status_of(context):
+            return
+
+        wf_state = {
+            "action": None,
+            "actor": None,
+            "comments": "Generic Setup Import",
+            "review_state": state,
+            "time": DateTime(),
+        }
+
+        wf = api.get_tool("portal_workflow")
+        wf_id = wf.getChainFor(context)[0]
+        wf.setStatusOf(wf_id, context, wf_state)
 
     def _initFields(self, context, node):
         fields = api.get_fields(context)
