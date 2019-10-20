@@ -4,28 +4,76 @@ from xml.dom.minidom import parseString
 
 from bika.lims import api
 from bika.lims import logger
+from bika.lims.interfaces import ISenaiteSiteRoot
+from OFS.interfaces import IOrderedContainer
 from Products.Archetypes.interfaces import IBaseObject
 from Products.CMFPlone.utils import _createObjectByType
 from Products.GenericSetup.interfaces import IBody
 from Products.GenericSetup.interfaces import INode
 from Products.GenericSetup.interfaces import ISetupEnviron
-# from Products.GenericSetup.utils import exportObjects
 from Products.GenericSetup.utils import ObjectManagerHelpers
 from Products.GenericSetup.utils import XMLAdapterBase
-from Products.GenericSetup.utils import importObjects
 from zope.component import adapts
 from zope.component import queryMultiAdapter
 
 # Global UID mapping for reference fiedls
 UID_MAP = {}
 
-# Skip types and contents
 SKIP_TYPES = [
-    "AnalysisRequest",
+    "AnalysisRequest"
 ]
 
 
-class ContentXMLAdapter(XMLAdapterBase, ObjectManagerHelpers):
+# TODO
+# - Handle manually provided interfaces, e.g. IAuditable, ISubmitted etc.
+# - Handle annotation storage, e.g. Auditlog storage etc.
+# - Handle acl_users
+
+class SenaiteSiteXMLAdapter(XMLAdapterBase, ObjectManagerHelpers):
+    adapts(ISenaiteSiteRoot, ISetupEnviron)
+
+    def __init__(self, context, environ):
+        super(SenaiteSiteXMLAdapter, self).__init__(context, environ)
+
+    def _exportNode(self):
+        """Export the object as a DOM node.
+        """
+        node = self._getObjectNode("object")
+
+        # remember the UID of the item for reference fields
+        node.setAttribute("uid", "0")
+
+        # Extract all contained objects
+        node.appendChild(self._extractObjects())
+
+        return node
+
+    def _importNode(self, node):
+        """Import the object from the DOM node.
+        """
+        obj_id = str(node.getAttribute("name"))
+        self._logger.info("Imported '%r'" % obj_id)
+
+    def _extractObjects(self):
+        fragment = self._doc.createDocumentFragment()
+        objects = self.context.objectValues()
+        if not IOrderedContainer.providedBy(self.context):
+            objects = list(objects)
+            objects.sort(lambda x, y: cmp(x.getId(), y.getId()))
+        for obj in objects:
+            # Check if the object can be exported
+            if not can_export(obj):
+                logger.info("Skipping {}".format(repr(obj)))
+                continue
+            exporter = queryMultiAdapter((obj, self.environ), INode)
+            if exporter:
+                node = exporter.node
+                if node is not None:
+                    fragment.appendChild(exporter.node)
+        return fragment
+
+
+class ContentXMLAdapter(SenaiteSiteXMLAdapter):
     """Content XML Importer/Exporter
     """
     adapts(IBaseObject, ISetupEnviron)
@@ -97,7 +145,7 @@ def create_content_slugs(parent, parent_path, context):
     """
     logger.info("create_content_slugs: parent={} parent_path={}".format(
         repr(parent), parent_path))
-    path = "%s%s" % (parent_path, parent.getId().replace(" ", "_"))
+    path = "%s%s" % (parent_path, get_id(parent))
     filename = "%s.xml" % (path)
     items = dict(parent.objectItems())
 
@@ -146,16 +194,32 @@ def create_content_slugs(parent, parent_path, context):
         create_content_slugs(obj, path + "/", context)
 
 
-def exportObjects(obj, parent_path, context):
-    """Export subobjects recursively.
+def can_export(obj):
+    """Decides if the object can be exported or not
     """
-    portal_type = api.get_portal_type(obj)
-    if portal_type in SKIP_TYPES:
+    if not api.is_object(obj):
+        return False
+    if api.get_id(obj) in SKIP_TYPES:
+        return False
+    return True
+
+
+def get_id(obj):
+    if api.is_portal(obj):
+        return "senaite"
+    return obj.getId().replace(" ", "_")
+
+
+def exportObjects(obj, parent_path, context):
+    """ Export subobjects recursively.
+    """
+
+    if not can_export(obj):
         logger.info("Skipping {}".format(repr(obj)))
         return
 
     exporter = queryMultiAdapter((obj, context), IBody)
-    path = "%s%s" % (parent_path, obj.getId().replace(" ", "_"))
+    path = "%s%s" % (parent_path, get_id(obj))
     if exporter:
         if exporter.name:
             path = "%s%s" % (parent_path, exporter.name)
@@ -169,11 +233,29 @@ def exportObjects(obj, parent_path, context):
             exportObjects(sub, path + "/", context)
 
 
+def importObjects(obj, parent_path, context):
+    """ Import subobjects recursively.
+    """
+    importer = queryMultiAdapter((obj, context), IBody)
+    path = "%s%s" % (parent_path, get_id(obj))
+    __traceback_info__ = path
+    if importer:
+        if importer.name:
+            path = "%s%s" % (parent_path, importer.name)
+        filename = "%s%s" % (path, importer.suffix)
+        body = context.readDataFile(filename)
+        if body is not None:
+            importer.filename = filename  # for error reporting
+            importer.body = body
+
+    if getattr(obj, "objectValues", False):
+        for sub in obj.objectValues():
+            importObjects(sub, path + "/", context)
+
+
 def export_xml(context):
     portal = context.getSite()
-    exportObjects(portal.bika_setup, "", context)
-    exportObjects(portal.methods, "", context)
-    exportObjects(portal.clients, "", context)
+    exportObjects(portal, "", context)
 
 
 def import_xml(context):
@@ -187,11 +269,7 @@ def import_xml(context):
         return
 
     # create content slugs for UID references
-    create_content_slugs(portal.bika_setup, "", context)
-    create_content_slugs(portal.methods, "", context)
-    create_content_slugs(portal.clients, "", context)
+    create_content_slugs(portal, "", context)
 
     # import objects
-    importObjects(portal.bika_setup, "", context)
-    importObjects(portal.methods, "", context)
-    importObjects(portal.clients, "", context)
+    importObjects(portal, "", context)

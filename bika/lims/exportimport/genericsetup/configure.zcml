@@ -3,6 +3,8 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
     i18n_domain="senaite.core">
 
+  <!-- XML Import/Export Adapters -->
+  <adapter factory=".structure.SenaiteSiteXMLAdapter"/>
   <adapter factory=".structure.ContentXMLAdapter"/>
 
   <!-- Field Adapters

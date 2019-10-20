@@ -21,10 +21,20 @@
 from zope.interface import Interface
 
 
+class ISenaiteSiteRoot(Interface):
+    """Marker interface for the Senaite Site Root
+    """
+
+
 class IBikaLIMS(Interface):
     """Marker interface that defines a Zope 3 browser layer.
-       If you need to register a viewlet only for the
-       "bika" theme, this interface must be its layer
+
+    N.B. Please use ISenaiteSite interface
+    """
+
+
+class ISenaiteSite(IBikaLIMS):
+    """Marker interface for Zope 3 browser layers.
     """
 
 

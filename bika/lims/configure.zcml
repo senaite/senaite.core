@@ -26,10 +26,11 @@
 
   <include package=".adapters" />
   <include package=".browser" />
+  <include package=".catalog.indexers" />
   <include package=".content" />
   <include package=".controlpanel" />
   <include package=".exportimport" />
-  <include package=".catalog.indexers" />
+  <include package=".interfaces" />
   <include package=".jsonapi" />
   <include package=".locales" />
   <include package=".monkey" />
