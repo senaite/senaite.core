@@ -18,6 +18,9 @@ class window.AnalysisRequestAdd
     # storage for global Bika settings
     @global_settings = {}
 
+    # storage for mapping of fields to flush on_change
+    @flush_settings = {}
+
     # services data snapshot from recalculate_records
     # returns a mapping of arnum -> services data
     @records_snapshot = {}
@@ -39,6 +42,9 @@ class window.AnalysisRequestAdd
 
     # get the global settings on load
     @get_global_settings()
+
+    # get the flush settings
+    @get_flush_settings()
 
     # recalculate records on load (needed for AR copies)
     @recalculate_records()
@@ -67,10 +73,9 @@ class window.AnalysisRequestAdd
     $("body").on "click", "tr[fieldname=InvoiceExclude] input[type='checkbox']", @recalculate_records
     # Analysis Checkbox clicked
     $("body").on "click", "tr[fieldname=Analyses] input[type='checkbox']", @on_analysis_checkbox_click
-    # Client changed
-    $("body").on "selected change", "tr[fieldname=Client] input[type='text']", @on_client_changed
-    # Contact changed
-    $("body").on "selected change", "tr[fieldname=Contact] input[type='text']", @on_contact_changed
+    # Generic onchange event handler for reference fields
+    $("body").on "selected change" , "input[type='text'].referencewidget", @on_referencefield_value_changed
+
     # Analysis Specification changed
     $("body").on "change", "input.min", @on_analysis_specification_changed
     $("body").on "change", "input.max", @on_analysis_specification_changed
@@ -80,12 +85,6 @@ class window.AnalysisRequestAdd
     $("body").on "click", ".service-lockbtn", @on_analysis_lock_button_click
     # Analysis info button clicked
     $("body").on "click", ".service-infobtn", @on_analysis_details_click
-    # Sample changed
-    $("body").on "selected change", "tr[fieldname=PrimaryAnalysisRequest] input[type='text']", @on_sample_changed
-    # SampleType changed
-    $("body").on "selected change", "tr[fieldname=SampleType] input[type='text']", @on_sampletype_changed
-    # Specification changed
-    $("body").on "selected change", "tr[fieldname=Specification] input[type='text']", @on_specification_changed
     # Analysis Template changed
     $("body").on "selected change", "tr[fieldname=Template] input[type='text']", @on_analysis_template_changed
     # Analysis Profile selected
@@ -189,6 +188,16 @@ class window.AnalysisRequestAdd
       $(@).trigger "settings:updated", settings
 
 
+  get_flush_settings: =>
+    ###
+     * Retrieve the flush settings
+    ###
+    @ajax_post_form("get_flush_settings").done (settings) ->
+      console.debug "Flush settings:", settings
+      @flush_settings = settings
+      $(@).trigger "flush_settings:updated", settings
+
+
   recalculate_records: =>
     ###
      * Submit all form values to the server to recalculate the records
@@ -235,13 +244,15 @@ class window.AnalysisRequestAdd
     # set all values for one record (a single column in the AR Add form)
     $.each records, (arnum, record) ->
 
-      # set client
-      $.each record.client_metadata, (uid, client) ->
-        me.set_client arnum, client
-
-      # set contact
-      $.each record.contact_metadata, (uid, contact) ->
-        me.set_contact arnum, contact
+      # Apply the values generically, but those to be handled differently
+      discard = ["service_metadata", "specification_metadata", "template_metadata"]
+      $.each record, (name, metadata) ->
+        # Discard those fields that will be handled differently and those that
+        # do not contain explicit object metadata (e.g service_to_specification)
+        if name in discard or !name.endsWith("_metadata")
+          return
+        $.each metadata, (uid, obj_info) ->
+          me.apply_field_value arnum, obj_info
 
       # set services
       $.each record.service_metadata, (uid, metadata) ->
@@ -265,14 +276,6 @@ class window.AnalysisRequestAdd
       $.each record.specification_metadata, (uid, spec) ->
         $.each spec.specifications, (uid, service_spec) ->
           me.set_service_spec arnum, uid, service_spec
-
-      # set sample
-      $.each record.sample_metadata, (uid, sample) ->
-        me.set_sample arnum, sample
-
-      # set sampletype
-      $.each record.sampletype_metadata, (uid, sampletype) ->
-        me.set_sampletype arnum, sampletype
 
       # handle unmet dependencies, one at a time
       $.each record.unmet_dependencies, (uid, dependencies) ->
@@ -369,9 +372,96 @@ class window.AnalysisRequestAdd
     return $(field_id)
 
 
+  typeIsArray = Array.isArray || (value) ->
+    ###
+     * Returns if the given value is an array
+     * Taken from: https://coffeescript-cookbook.github.io/chapters/arrays/check-type-is-array
+    ###
+    return {}.toString.call( value ) is '[object Array]'
+
+
+  apply_field_value: (arnum, record) ->
+    ###
+     * Applies the value for the given record, by setting values and applying
+     * search filters to dependents
+    ###
+    me = this
+    title = record.title
+    console.debug "apply_field_value: arnum=#{arnum} record=#{title}"
+
+    # Set default values to dependents
+    me.apply_dependent_values arnum, record
+
+    # Apply search filters to other fields
+    me.apply_dependent_filter_queries record, arnum
+
+
+  apply_dependent_values: (arnum, record) ->
+    ###
+     * Sets default field values to dependents
+    ###
+    me = this
+    $.each record.field_values, (field_name, values) ->
+      me.apply_dependent_value arnum, field_name, values
+
+
+  apply_dependent_value: (arnum, field_name, values) ->
+    ###
+     * Apply search filters to dependendents
+    ###
+    me = this
+    values_json = $.toJSON values
+    field = $("#" + field_name + "-#{arnum}")
+
+    if values.if_empty? and values.if_empty is true
+      # Set the value if the field is empty only
+      if not field.val()
+        return
+
+    console.debug "apply_dependent_value: field_name=#{field_name} field_values=#{values_json}"
+
+    if values.uid? and values.title?
+      # This is a reference field
+      me.set_reference_field field, values.uid, values.title
+
+    else if values.value?
+      # This is a normal input field
+      if typeof values.value == "boolean"
+        field.prop "checked", values.value
+      else
+        field.val values.value
+
+    else if typeIsArray values
+      # This is a multi field (e.g. CCContact)
+      $.each values, (index, item) ->
+        me.apply_dependent_value arnum, field_name, item
+
+
+  apply_dependent_filter_queries: (record, arnum) ->
+    ###
+     * Apply search filters to dependents
+    ###
+    me = this
+    $.each record.filter_queries, (field_name, query) ->
+      field = $("#" + field_name + "-#{arnum}")
+      me.set_reference_field_query field, query
+
+
+  flush_fields_for: (field_name, arnum) ->
+    ###
+     * Flush dependant fields
+    ###
+    me = this
+    field_ids = @flush_settings[field_name]
+    $.each @flush_settings[field_name], (index, id) ->
+      console.debug "flushing: id=#{id}"
+      field = $("##{id}-#{arnum}")
+      me.flush_reference_field field
+
+
   flush_reference_field: (field) ->
     ###
-     * Empty the reference field
+     * Empty the reference field and restore the search query
     ###
 
     catalog_name = field.attr "catalog_name"
@@ -382,6 +472,17 @@ class window.AnalysisRequestAdd
     $("input[type=hidden]", field.parent()).val("")
     $(".multiValued-listing", field.parent()).empty()
 
+    # restore the original search query
+    @reset_reference_field_query field
+
+  reset_reference_field_query: (field) =>
+    ###
+     * Restores the catalog search query for the given reference field
+    ###
+    catalog_name = field.attr "catalog_name"
+    return unless catalog_name
+    query = $.parseJSON field.attr "base_query"
+    @set_reference_field_query field, query
 
   set_reference_field_query: (field, query, type="base_query") =>
     ###
@@ -481,207 +582,6 @@ class window.AnalysisRequestAdd
       div.append title
       mvl.append div
       $field.val("")
-
-
-  set_client: (arnum, client) =>
-    ###
-     * Filter Contacts
-     * Filter CCContacts
-     * Filter InvoiceContacts
-     * Filter SamplePoints
-     * Filter ARTemplates
-     * Filter Specification
-     * Filter SamplingRound
-     * Filter Batch
-    ###
-
-    # filter Contacts
-    field = $("#Contact-#{arnum}")
-    query = client.filter_queries.contact
-    @set_reference_field_query field, query
-
-    # handle default contact for /analysisrequests listing
-    # https://github.com/senaite/senaite.core/issues/705
-    if document.URL.indexOf("analysisrequests") > -1
-      contact_title = client.default_contact.title
-      contact_uid = client.default_contact.uid
-      if contact_title and contact_uid
-        @set_reference_field field, contact_uid, contact_title
-
-    # filter CCContacts
-    field = $("#CCContact-#{arnum}")
-    query = client.filter_queries.cc_contact
-    @set_reference_field_query field, query
-
-    # filter InvoiceContact
-    # XXX Where is this field?
-    field = $("#InvoiceContact-#{arnum}")
-    query = client.filter_queries.invoice_contact
-    @set_reference_field_query field, query
-
-    # filter Sample Points
-    field = $("#SamplePoint-#{arnum}")
-    query = client.filter_queries.samplepoint
-    @set_reference_field_query field, query
-
-    # filter AR Templates
-    field = $("#Template-#{arnum}")
-    query = client.filter_queries.artemplates
-    @set_reference_field_query field, query
-
-    # filter Analysis Profiles
-    field = $("#Profiles-#{arnum}")
-    query = client.filter_queries.analysisprofiles
-    @set_reference_field_query field, query
-
-    # filter Analysis Specs
-    field = $("#Specification-#{arnum}")
-    query = client.filter_queries.analysisspecs
-    @set_reference_field_query field, query
-
-    # filter Samplinground
-    field = $("#SamplingRound-#{arnum}")
-    query = client.filter_queries.samplinground
-    @set_reference_field_query field, query
-
-    # filter Sample
-    field = $("#PrimaryAnalysisRequest-#{arnum}")
-    query = client.filter_queries.sample
-    @set_reference_field_query field, query
-
-    # filter Batch
-    field = $("#Batch-#{arnum}")
-    query = client.filter_queries.batch
-    @set_reference_field_query field, query
-
-
-  set_contact: (arnum, contact) =>
-    ###
-     * Set CC Contacts
-    ###
-    me = this
-
-    field = $("#CCContact-#{arnum}")
-
-    $.each contact.cccontacts, (uid, cccontact) ->
-      fullname = cccontact.fullname
-      me.set_reference_field field, uid, fullname
-
-
-  set_sample: (arnum, sample) =>
-    ###
-     * Apply the sample data to all fields of arnum
-    ###
-
-    # set the client
-    field = $("#Client-#{arnum}")
-    uid = sample.client_uid
-    title = sample.client_title
-    @set_reference_field field, uid, title
-
-    # set the client contact
-    field = $("#Contact-#{arnum}")
-    contact = sample.contact
-    uid = contact.uid
-    fullname = contact.fullname
-    @set_reference_field field, uid, fullname
-    @set_contact(arnum, contact)
-
-    # set the sampling date
-    field = $("#SamplingDate-#{arnum}")
-    value = sample.sampling_date
-    field.val value
-
-    # set the date sampled
-    field = $("#DateSampled-#{arnum}")
-    value = sample.date_sampled
-    field.val value
-
-    # set the sample type (required)
-    field = $("#SampleType-#{arnum}")
-    uid = sample.sample_type_uid
-    title = sample.sample_type_title
-    @set_reference_field field, uid, title
-
-    # set environmental conditions
-    field = $("#EnvironmentalConditions-#{arnum}")
-    value = sample.environmental_conditions
-    field.val value
-
-    # set client sample ID
-    field = $("#ClientSampleID-#{arnum}")
-    value = sample.client_sample_id
-    field.val value
-
-    # set client reference
-    field = $("#ClientReference-#{arnum}")
-    value = sample.client_reference
-    field.val value
-
-    # set the client order number
-    field = $("#ClientOrderNumber-#{arnum}")
-    value = sample.client_order_number
-    field.val value
-
-    # set composite
-    field = $("#Composite-#{arnum}")
-    field.prop "checked", sample.composite
-
-    # set the sample condition
-    field = $("#SampleCondition-#{arnum}")
-    uid = sample.sample_condition_uid
-    title = sample.sample_condition_title
-    @set_reference_field field, uid, title
-
-    # set the sample point
-    field = $("#SamplePoint-#{arnum}")
-    uid = sample.sample_point_uid
-    title = sample.sample_point_title
-    @set_reference_field field, uid, title
-
-    # set the storage location
-    field = $("#StorageLocation-#{arnum}")
-    uid = sample.storage_location_uid
-    title = sample.storage_location_title
-    @set_reference_field field, uid, title
-
-    # set the default container type
-    field = $("#DefaultContainerType-#{arnum}")
-    uid = sample.container_type_uid
-    title = sample.container_type_title
-    @set_reference_field field, uid, title
-
-    # set the sampling deviation
-    field = $("#SamplingDeviation-#{arnum}")
-    uid = sample.sampling_deviation_uid
-    title = sample.sampling_deviation_title
-    @set_reference_field field, uid, title
-
-
-  set_sampletype: (arnum, sampletype) =>
-    ###
-     * Recalculate partitions
-     * Filter Sample Points
-    ###
-
-    # restrict the sample points
-    field = $("#SamplePoint-#{arnum}")
-    query = sampletype.filter_queries.samplepoint
-    @set_reference_field_query field, query
-
-    # set the default container
-    field = $("#DefaultContainerType-#{arnum}")
-    # apply default container if the field is empty
-    if not field.val()
-      uid = sampletype.container_type_uid
-      title = sampletype.container_type_title
-      @flush_reference_field field
-      @set_reference_field field, uid, title
-
-    # restrict the specifications
-    field = $("#Specification-#{arnum}")
-    query = sampletype.filter_queries.specification
-    @set_reference_field_query field, query
 
 
   set_template: (arnum, template) =>
@@ -845,59 +745,29 @@ class window.AnalysisRequestAdd
 
   ### EVENT HANDLER ###
 
-  on_client_changed: (event) =>
+  on_referencefield_value_changed: (event) =>
     ###
-     * Eventhandler when the client changed (happens on Batches)
+     * Generic event handler for when a field value changes
     ###
-
     me = this
     el = event.currentTarget
     $el = $(el)
+    has_value = $el.val()
     uid = $el.attr "uid"
+    field_name = $el.closest("tr[fieldname]").attr "fieldname"
     arnum = $el.closest("[arnum]").attr "arnum"
+    if field_name in ["Template", "Profiles"]
+      # These fields have it's own event handler
+      return
 
-    console.debug "°°° on_client_changed: arnum=#{arnum} °°°"
+    console.debug "°°° on_referencefield_value_changed: field_name=#{field_name} arnum=#{arnum} °°°"
 
-    # Flush client depending fields
-    field_ids = [
-      "Contact"
-      "CCContact"
-      "InvoiceContact"
-      "SamplePoint"
-      "Template"
-      "Profiles"
-      "PrimaryAnalysisRequest"
-      "Specification"
-      "Batch"
-    ]
-    $.each field_ids, (index, id) ->
-      field = me.get_field_by_id id, arnum
-      me.flush_reference_field field
+    # Flush depending fields
+    me.flush_fields_for field_name, arnum
 
-    # trigger form:changed event
-    $(me).trigger "form:changed"
-
-
-  on_contact_changed: (event) =>
-    ###
-     * Eventhandler when the contact changed
-    ###
-
-    me = this
-    el = event.currentTarget
-    $el = $(el)
-    uid = $el.attr "uid"
-    arnum = $el.closest("[arnum]").attr "arnum"
-
-    console.debug "°°° on_contact_changed: arnum=#{arnum} °°°"
-
-    # Flush client depending fields
-    field_ids = [
-      "CCContact"
-    ]
-    $.each field_ids, (index, id) ->
-      field = me.get_field_by_id id, arnum
-      me.flush_reference_field field
+    # Manually flush UID field if the field does not have a selected value
+    if not has_value
+      $("input[type=hidden]", $el.parent()).val("")
 
     # trigger form:changed event
     $(me).trigger "form:changed"
@@ -944,7 +814,7 @@ class window.AnalysisRequestAdd
     if uid of record.service_to_profiles
       profiles = record.service_to_profiles[uid]
       $.each profiles, (index, uid) ->
-        extra["profiles"].push record.profile_metadata[uid]
+        extra["profiles"].push record.profiles_metadata[uid]
 
     # inject template info
     if uid of record.service_to_templates
@@ -994,7 +864,7 @@ class window.AnalysisRequestAdd
     # collect profiles
     if uid of record.service_to_profiles
       profile_uid = record.service_to_profiles[uid]
-      context["profiles"].push record.profile_metadata[profile_uid]
+      context["profiles"].push record.profiles_metadata[profile_uid]
 
     # collect templates
     if uid of record.service_to_templates
@@ -1006,85 +876,6 @@ class window.AnalysisRequestAdd
         $(@).dialog "close"
 
     dialog = @template_dialog "service-dependant-template", context, buttons
-
-
-  on_sample_changed: (event) =>
-    ###
-     * Eventhandler when the Sample was changed.
-    ###
-
-    me = this
-    el = event.currentTarget
-    $el = $(el)
-    uid = $(el).attr "uid"
-    val = $el.val()
-    arnum = $el.closest("[arnum]").attr "arnum"
-    has_sample_selected = $el.val()
-    console.debug "°°° on_sample_change::UID=#{uid} PrimaryAnalysisRequest=#{val}°°°"
-
-    # deselect the sample if the field is empty
-    if not has_sample_selected
-      # XXX manually flush UID field
-      $("input[type=hidden]", $el.parent()).val("")
-
-    # trigger form:changed event
-    $(me).trigger "form:changed"
-
-
-  on_sampletype_changed: (event) =>
-    ###
-     * Eventhandler when the SampleType was changed.
-     * Fires form:changed event
-    ###
-
-    me = this
-    el = event.currentTarget
-    $el = $(el)
-    uid = $(el).attr "uid"
-    val = $el.val()
-    arnum = $el.closest("[arnum]").attr "arnum"
-    has_sampletype_selected = $el.val()
-    console.debug "°°° on_sampletype_change::UID=#{uid} SampleType=#{val}°°°"
-
-    # deselect the sampletype if the field is empty
-    if not has_sampletype_selected
-      # XXX manually flush UID field
-      $("input[type=hidden]", $el.parent()).val("")
-
-    # Flush sampletype depending fields
-    field_ids = [
-      "SamplePoint"
-      "Specification"
-    ]
-    $.each field_ids, (index, id) ->
-      field = me.get_field_by_id id, arnum
-      me.flush_reference_field field
-
-    # trigger form:changed event
-    $(me).trigger "form:changed"
-
-
-  on_specification_changed: (event) =>
-    ###
-     * Eventhandler when the Specification was changed.
-    ###
-
-    me = this
-    el = event.currentTarget
-    $el = $(el)
-    uid = $(el).attr "uid"
-    val = $el.val()
-    arnum = $el.closest("[arnum]").attr "arnum"
-    has_specification_selected = $el.val()
-    console.debug "°°° on_specification_change::UID=#{uid} Specification=#{val}°°°"
-
-    # deselect the specification if the field is empty
-    if not has_specification_selected
-      # XXX manually flush UID field
-      $("input[type=hidden]", $el.parent()).val("")
-
-    # trigger form:changed event
-    $(me).trigger "form:changed"
 
 
   on_analysis_template_changed: (event) =>
@@ -1218,7 +1009,7 @@ class window.AnalysisRequestAdd
     arnum = $el.closest("[arnum]").attr "arnum"
 
     record = @records_snapshot[arnum]
-    profile_metadata = record.profile_metadata[uid]
+    profile_metadata = record.profiles_metadata[uid]
     profile_services = []
 
     # prepare a list of services used by the profile with the given UID
