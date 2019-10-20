@@ -37,6 +37,7 @@ Changelog
 **Fixed**
 
 - #1462 Autofill Client Contact in Sample Add form when current user is a client
+- #1461 Allow unassign transition for cancelled/rejected/retracted analyses
 - #1449 sort_limit was not considered in ReferenceWidget searches
 - #1449 Fix Clients were unable to add batches
 - #1453 Fix initial IDs not starting with 1

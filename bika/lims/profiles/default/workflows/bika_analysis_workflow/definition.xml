@@ -244,6 +244,7 @@
 
     <!-- TRANSITIONS -->
     <exit-transition transition_id="reinstate" />
+    <exit-transition transition_id="unassign" />
     <!-- /TRANSITIONS -->
 
     <!-- Only allow modification of fields explicitly granted
@@ -348,7 +349,7 @@
   <state state_id="retracted" title="Retracted" i18n:attributes="title">
 
     <!-- TRANSITIONS -->
-    <exit-transition transition_id="" />
+    <exit-transition transition_id="unassign" />
     <!-- /TRANSITIONS -->
 
     <!-- Only allow modification of fields explicitly granted
@@ -393,7 +394,7 @@
   <state state_id="rejected" title="Rejected" i18n:attributes="title">
 
     <!-- TRANSITIONS -->
-    <exit-transition transition_id="" />
+    <exit-transition transition_id="unassign" />
     <!-- /TRANSITIONS -->
 
     <!-- Only allow modification of fields explicitly granted
