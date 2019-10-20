@@ -230,7 +230,7 @@ def can_export(obj):
     """
     if not api.is_object(obj):
         return False
-    if api.get_id(obj) in SKIP_TYPES:
+    if api.get_portal_type(obj) in SKIP_TYPES:
         return False
     return True
 
