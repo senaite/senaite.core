@@ -29,6 +29,7 @@ from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from plone import protect
+from plone.memoize import view as viewcache
 from plone.memoize.volatile import DontCache
 from plone.memoize.volatile import cache
 from zope.annotation.interfaces import IAnnotations
@@ -110,6 +111,8 @@ class AnalysisRequestAddView(BrowserView):
             return url
         return "{}?{}".format(url, qs)
 
+    # XXX HEADS-UP!
+    @viewcache.memoize
     def get_object_by_uid(self, uid):
         """Get the object by UID
         """
@@ -1332,7 +1335,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         template = metadata.get("template_metadata", {})
         # We don't expect more than one template, but who knows about future?
         for uid, obj_info in template.items():
-            obj = api.get_object_by_uid(uid)
+            obj = self.get_object_by_uid(uid)
             # profile from the template
             profile = obj.getAnalysisProfile()
             # add the profile to the other profiles
@@ -1377,7 +1380,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         service_metadata = metadata.get("service_metadata", {})
         profiles = metadata.get("profiles_metadata", {})
         for uid, obj_info in profiles.items():
-            obj = api.get_object_by_uid(uid)
+            obj = self.get_object_by_uid(uid)
             # get all services of this profile
             services = obj.getService()
             # get all UIDs of the profile services
@@ -1409,7 +1412,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         unmet_dependencies = {}
         services = metadata.get("service_metadata", {}).copy()
         for uid, obj_info in services.items():
-            obj = api.get_object_by_uid(uid)
+            obj = self.get_object_by_uid(uid)
             # get the dependencies of this service
             deps = get_service_dependencies_for(obj)
 
