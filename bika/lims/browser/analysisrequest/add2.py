@@ -32,7 +32,6 @@ from plone import protect
 from plone.memoize.volatile import DontCache
 from plone.memoize.volatile import cache
 from zope.annotation.interfaces import IAnnotations
-from zope.component import adapts
 from zope.component import getAdapters
 from zope.component import queryAdapter
 from zope.i18n.locales import locales
@@ -1274,6 +1273,8 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         return out
 
     def get_record_metadata(self, record):
+        """Returns the metadata for the record passed in
+        """
         metadata = {}
         extra_fields = {}
         for key, value in record.items():
@@ -1295,7 +1296,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             objs_uids = map(lambda obj: obj["uid"], objs_info)
             metadata[metadata_key] = dict(zip(objs_uids, objs_info))
 
-            # Grab 'autofill' fields to be recalculated too
+            # Grab 'field_values' fields to be recalculated too
             for obj_info in objs_info:
                 field_values = obj_info.get("field_values", {})
                 for field_name, field_value in field_values.items():
@@ -1306,10 +1307,11 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                     if len(uids) == 1:
                         extra_fields[field_name] = uids[0]
 
-        # Get object info from extra fields
+        # Populate metadata with object info from extra fields
         for field_name, uid in extra_fields.items():
             key = "{}_metadata".format(field_name.lower())
             if metadata.get(key):
+                # This object has been processed already, skip
                 continue
             obj = self.get_object_by_uid(uid)
             if not obj:
@@ -1481,6 +1483,10 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         return info
 
     def update_object_info(self, base_info, additional_info):
+        """Updates the dictionaries for keys 'field_values' and 'filter_queries'
+        from base_info with those defined in additional_info. If base_info is
+        empty or None, updates the whole base_info dict with additional_info
+        """
         if not base_info:
             base_info.update(additional_info)
             return
@@ -1730,22 +1736,3 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             }
         else:
             return {'success': message}
-
-
-class AddSampleObjectInfoAdapter(object):
-    adapts(IAddSampleObjectInfo)
-
-    def __init__(self, context):
-        self.context = context
-
-    def get_base_info(self):
-        return {
-            "id": api.get_id(self.context),
-            "uid": api.get_uid(self.context),
-            "title": api.get_title(self.context),
-            "field_values": {},
-            "filter_queries": {},
-        }
-
-    def get_object_info(self):
-        raise NotImplementedError("get_object_info not implemented")

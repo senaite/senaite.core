@@ -963,16 +963,6 @@ class IGuardAdapter(Interface):
         """
 
 
-class IAddSampleFieldFilter(Interface):
-    """Marker interface for field filters for Add Sample form
-    """
-
-    def get_info(self):
-        """Returns a dict where the key is the name of the field to be filtered
-        and the value is a dict with the search criteria
-        """
-
-
 class IAddSampleFieldsFlush(Interface):
     """Marker interface for field dependencies flush for Add Sample form
     """
@@ -983,26 +973,33 @@ class IAddSampleFieldsFlush(Interface):
         """
 
 
-class IAddSampleMetadata(Interface):
-    """Marker interface for additional fields that need to be taken into
-    account in recalculation of metadata from Add Sample form
-    """
-
-    def get_metadata(self, record):
-        """Returns a dict where the key is the fieldname (e.g. Batch) and the
-        value is another dict where the key is the UID of the object and the
-        value is its metadata representation as a dict:
-
-        {Batch: {
-             <uid>: {
-                 "id": <batch_id>,
-                 "title", <batch_title>,
-                 ...
-             },
-        }
-        """
-
-
 class IAddSampleObjectInfo(Interface):
     """Marker interface for objects metadata mapping
     """
+
+    def get_object_info(self):
+        """Returns the dict representation of the context object for its
+        correct consumption by Sample Add form:
+
+        {'id': <id_of_the_object>,
+         'uid': <uid_of_the_object>,
+         'title': <title_of_the_object>,
+         'filter_queries': {
+             <dependent_field_name>: {
+                 <catalog_index>: <criteria>
+             }
+         },
+         'field_values': {
+             <dependent_field_name>: {
+                <uid>: <dependent_uid>,
+                <title>: <dependent_title>
+            }
+         }
+
+        Besides the basic keys (id, uid, title), two additional keys can be
+        provided:
+        - filter_queries: contains the filter queries for other fields to be
+          applied when the value of current field changes.
+        - field_values: contains default values for other fields to be applied
+          when the value of the current field changes.
+        """
