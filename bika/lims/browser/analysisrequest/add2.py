@@ -441,6 +441,11 @@ class AnalysisRequestAddView(BrowserView):
         contacts = catalog(query)
         if len(contacts) == 1:
             return api.get_object(contacts[0])
+        elif client == api.get_current_client():
+            # Current user is a Client contact. Use current contact
+            current_user = api.get_current_user()
+            return api.get_user_contact(current_user, contact_types=["Contact"])
+
         return None
 
     def getMemberDiscountApplies(self):
