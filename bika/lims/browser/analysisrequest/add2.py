@@ -1145,22 +1145,6 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         info["service_uids"] = specifications.keys()
         return info
 
-    @cache(cache_key)
-    def get_container_info(self, obj):
-        """Returns the info for a Container
-        """
-        info = self.get_base_info(obj)
-        info.update({})
-        return info
-
-    @cache(cache_key)
-    def get_preservation_info(self, obj):
-        """Returns the info for a Preservation
-        """
-        info = self.get_base_info(obj)
-        info.update({})
-        return info
-
     def ajax_get_global_settings(self):
         """Returns the global Bika settings
         """
@@ -1478,9 +1462,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         func = getattr(self, func_name, None)
 
         # Get the info for each object
-        info = {}
-        if callable(func):
-            info = func(obj)
+        info = callable(func) and func(obj) or self.get_base_info(obj)
 
         # Check if there is any adapter to handle objects for this field
         for name, adapter in getAdapters((obj, ), IAddSampleObjectInfo):
