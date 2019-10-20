@@ -1458,6 +1458,14 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         objects = map(lambda obj: self.get_object_info(obj, key), objects)
         return filter(None, objects)
 
+    def object_info_cache_key(method, self, obj, key):
+        if obj is None:
+            raise DontCache
+        field_name = key.replace("_uid", "")
+        obj_key = api.get_cache_key(obj)
+        return "-".join([field_name, obj_key])
+
+    @cache(object_info_cache_key)
     def get_object_info(self, obj, key):
         """Returns the object info metadata for the passed in object and key
         :param obj: the object from which extract the info from
