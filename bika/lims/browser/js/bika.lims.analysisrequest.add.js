@@ -256,7 +256,7 @@
       $(".service-lockbtn").hide();
       return $.each(records, function(arnum, record) {
         var discard;
-        discard = ["service_metadata", "specification_metadata"];
+        discard = ["service_metadata", "specification_metadata", "template_metadata"];
         $.each(record, function(name, metadata) {
           if (indexOf.call(discard, name) >= 0 || !name.endsWith("_metadata")) {
             return;
@@ -272,6 +272,9 @@
             lock.show();
           }
           return me.set_service(arnum, uid, true);
+        });
+        $.each(record.template_metadata, function(uid, template) {
+          return me.set_template(arnum, template);
         });
         $.each(record.specification_metadata, function(uid, spec) {
           return $.each(spec.specifications, function(uid, service_spec) {

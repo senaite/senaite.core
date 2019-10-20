@@ -245,7 +245,7 @@ class window.AnalysisRequestAdd
     $.each records, (arnum, record) ->
 
       # Apply the values generically, but those to be handled differently
-      discard = ["service_metadata", "specification_metadata"]
+      discard = ["service_metadata", "specification_metadata", "template_metadata"]
       $.each record, (name, metadata) ->
         # Discard those fields that will be handled differently and those that
         # do not contain explicit object metadata (e.g service_to_specification)
@@ -267,6 +267,10 @@ class window.AnalysisRequestAdd
 
         # select the service
         me.set_service arnum, uid, yes
+
+      # set template
+      $.each record.template_metadata, (uid, template) ->
+        me.set_template arnum, template
 
       # set specification
       $.each record.specification_metadata, (uid, spec) ->
