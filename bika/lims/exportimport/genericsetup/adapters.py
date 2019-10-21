@@ -47,7 +47,7 @@ class ATFieldNodeAdapter(NodeAdapterBase):
     def set_field_value(self, value, **kw):
         """Set the field value
         """
-        logger.info("Set Field: {} -> {}".format(self.field.getName(), value))
+        # logger.info("Set: {} -> {}".format(self.field.getName(), value))
         return self.field.set(self.context, value, **kw)
 
     def get_field_value(self):
