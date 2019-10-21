@@ -83,6 +83,9 @@ class ATFieldNodeAdapter(NodeAdapterBase):
 
     def set_node_value(self, node):
         value = self.parse_json_value(node.nodeValue)
+        # encode unicodes to UTF8
+        if isinstance(value, unicode):
+            value = value.encode("utf8")
         self.set_field_value(value)
 
     def _exportNode(self):
