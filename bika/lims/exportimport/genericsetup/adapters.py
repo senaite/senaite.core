@@ -129,7 +129,8 @@ class ATFileFieldNodeAdapter(ATFieldNodeAdapter):
     def set_node_value(self, node):
         value = node.nodeValue
         filename = node.nodeValue
-        data = self.parse_json_value(value)
+        filepath = "/".join([self.get_path(), filename])
+        data = self.get_file_data(filepath)
         self.set_field_value(data, filename=filename)
 
     def get_path(self):
@@ -139,6 +140,11 @@ class ATFileFieldNodeAdapter(ATFieldNodeAdapter):
         site_path = api.get_path(site)
         obj_path = api.get_path(self.context)
         return obj_path.lstrip(site_path)
+
+    def get_file_data(self, path):
+        """Return the file data from the archive path
+        """
+        return self.environ.readDataFile(path)
 
     def get_json_value(self):
         """Returns the filename
@@ -155,11 +161,6 @@ class ATFileFieldNodeAdapter(ATFieldNodeAdapter):
             content_type = value.content_type
             self.environ.writeDataFile(filename, str(data), content_type, path)
         return filename
-
-    def parse_json_value(self, value):
-        filename = "/".join([self.get_path(), value])
-        data = self.environ.readDataFile(filename)
-        return data
 
 
 class BlobFileFieldNodeAdapter(ATFileFieldNodeAdapter):
