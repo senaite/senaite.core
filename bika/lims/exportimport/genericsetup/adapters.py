@@ -136,8 +136,7 @@ class ATFileFieldNodeAdapter(ATFieldNodeAdapter):
         site = self.environ.getSite()
         site_path = api.get_path(site)
         obj_path = api.get_path(self.context)
-        rel_path = obj_path.lstrip(site_path)
-        return "/".join([SITE_ID, rel_path])
+        return obj_path.replace(site_path, SITE_ID, 1)
 
     def get_file_data(self, path):
         """Return the file data from the archive path
