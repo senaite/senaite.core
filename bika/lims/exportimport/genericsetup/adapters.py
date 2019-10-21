@@ -75,10 +75,7 @@ class ATFieldNodeAdapter(NodeAdapterBase):
             return ""
 
     def parse_json_value(self, value):
-        value = json.loads(value)
-        if self.field.getName() == "id":
-            value = str(value)
-        return value
+        return json.loads(value)
 
     def get_node_value(self, value):
         """Convert the field value to a XML node
