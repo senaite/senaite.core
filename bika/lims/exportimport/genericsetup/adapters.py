@@ -48,17 +48,11 @@ class ATFieldNodeAdapter(NodeAdapterBase):
         """Set the field value
         """
         logger.info("Set Field: {} -> {}".format(self.field.getName(), value))
-        mutator = self.field.getMutator(self.context)
-        if callable(mutator):
-            return mutator(value, **kw)
         return self.field.set(self.context, value, **kw)
 
     def get_field_value(self):
         """Get the field value
         """
-        accessor = self.field.getAccessor(self.context)
-        if callable(accessor):
-            return accessor()
         return self.field.get(self.context)
 
     def get_json_value(self):
