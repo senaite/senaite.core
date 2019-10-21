@@ -222,7 +222,7 @@ def create_content_slugs(parent, parent_path, context):
             # get the fti
             types_tool = api.get_tool("portal_types")
             fti = types_tool.getTypeInfo(portal_type)
-            if fti.product:
+            if fti and fti.product:
                 obj = _createObjectByType(portal_type, parent, child_id)
             else:
                 continue
