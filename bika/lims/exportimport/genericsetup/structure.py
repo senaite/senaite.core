@@ -17,6 +17,8 @@ from Products.GenericSetup.utils import XMLAdapterBase
 from zope.component import adapts
 from zope.component import queryMultiAdapter
 
+from .config import SITE_ID
+
 # Global UID mapping for reference fiedls
 UID_MAP = {}
 
@@ -240,7 +242,7 @@ def can_export(obj):
 
 def get_id(obj):
     if api.is_portal(obj):
-        return "senaite"
+        return SITE_ID
     return obj.getId().replace(" ", "_")
 
 
