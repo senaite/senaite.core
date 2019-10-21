@@ -21,7 +21,10 @@ from zope.component import queryMultiAdapter
 UID_MAP = {}
 
 SKIP_TYPES = [
-    "AnalysisRequest"
+    "ARReport",
+    "AnalysisRequest",
+    "Attachment",
+    "Batch",
 ]
 
 
