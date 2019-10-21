@@ -10,13 +10,13 @@
   <!-- Field Adapters
        Know how to Import/Export field values
   -->
-  <adapter factory=".adapters.ATFieldNodeAdapter"/>
-  <adapter factory=".adapters.ATTextFieldNodeAdapter"/>
-  <adapter factory=".adapters.ATFileFieldNodeAdapter"/>
-  <adapter factory=".adapters.BlobFileFieldNodeAdapter"/>
-  <adapter factory=".adapters.ATDateTimeFieldNodeAdapter"/>
-  <adapter factory=".adapters.ATReferenceFieldNodeAdapter"/>
-  <adapter factory=".adapters.ATUIDReferenceFieldNodeAdapter"/>
+  <adapter provides=".interfaces.IFieldNode" factory=".adapters.ATFieldNodeAdapter"/>
+  <adapter provides=".interfaces.IFieldNode" factory=".adapters.ATTextFieldNodeAdapter"/>
+  <adapter provides=".interfaces.IFieldNode" factory=".adapters.ATFileFieldNodeAdapter"/>
+  <adapter provides=".interfaces.IFieldNode" factory=".adapters.BlobFileFieldNodeAdapter"/>
+  <adapter provides=".interfaces.IFieldNode" factory=".adapters.ATDateTimeFieldNodeAdapter"/>
+  <adapter provides=".interfaces.IFieldNode" factory=".adapters.ATReferenceFieldNodeAdapter"/>
+  <adapter provides=".interfaces.IFieldNode" factory=".adapters.ATUIDReferenceFieldNodeAdapter"/>
 
   <genericsetup:exportStep
       name="senaite.core.export"
