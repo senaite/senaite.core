@@ -20,7 +20,7 @@ from zope.component import adapts
 from zope.interface import implements
 
 from .interfaces import IFieldNode
-from .config import SITE_PATH
+from .config import SITE_ID
 
 
 SKIP_FIELDS = [
@@ -126,15 +126,18 @@ class ATFileFieldNodeAdapter(ATFieldNodeAdapter):
 
     def set_node_value(self, node):
         filename = node.nodeValue
-        filepath = "/".join([self.get_path(), filename])
+        filepath = "/".join([self.get_archive_path(), filename])
         data = self.get_file_data(filepath)
         self.set_field_value(data, filename=filename)
 
-    def get_path(self):
-        """Get the relative path
+    def get_archive_path(self):
+        """Get the unified archive path
         """
+        site = self.environ.getSite()
+        site_path = api.get_path(site)
         obj_path = api.get_path(self.context)
-        return obj_path.lstrip(SITE_PATH)
+        rel_path = obj_path.lstrip(site_path)
+        return "/".join([SITE_ID, rel_path])
 
     def get_file_data(self, path):
         """Return the file data from the archive path
@@ -152,7 +155,7 @@ class ATFileFieldNodeAdapter(ATFieldNodeAdapter):
         filename = safe_unicode(value.filename) or ""
         data = value.data
         if filename and data:
-            path = self.get_path()
+            path = self.get_archive_path()
             content_type = value.content_type
             self.environ.writeDataFile(filename, str(data), content_type, path)
         return filename
