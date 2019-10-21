@@ -14,6 +14,7 @@ from Products.Archetypes.interfaces import IField
 from Products.Archetypes.interfaces import IFileField
 from Products.Archetypes.interfaces import IReferenceField
 from Products.Archetypes.interfaces import ITextField
+from Products.CMFPlone.utils import safe_unicode
 from Products.GenericSetup.interfaces import ISetupEnviron
 from Products.GenericSetup.utils import NodeAdapterBase
 from zope.component import adapts
@@ -36,13 +37,32 @@ class ATFieldNodeAdapter(NodeAdapterBase):
         super(ATFieldNodeAdapter, self).__init__(context, environ)
         self.field = field
 
+    def _set_field(self, value, **kw):
+        """Set the field value
+        """
+        logger.info("Set Field: {} -> {}".format(self.get_field_name(), value))
+        mutator = self.field.getMutator(self.context)
+        if callable(mutator):
+            return mutator(value, **kw)
+        return self.field.set(self.context, value, **kw)
+
+    def _get_field(self):
+        """Get the field value
+        """
+        accessor = self.field.getAccessor(self.context)
+        if callable(accessor):
+            return accessor()
+        return self.field.get(self.context)
+
     def get_field_name(self):
+        """Get the field name
+        """
         return self.field.getName()
 
     def get_field_value(self):
-        value = self.field.get(self.context)
+        value = self._get_field()
         try:
-            return json.dumps(value)
+            return json.dumps(safe_unicode(value))
         except TypeError:
             logger.warning(
                 "ParseError: '{}.{} ('{}') -> {}' is not JSON serializable!"
@@ -56,13 +76,6 @@ class ATFieldNodeAdapter(NodeAdapterBase):
             value = str(value)
         return value
 
-    def set_field(self, value, **kw):
-        """Set the field value
-        """
-        logger.info(
-            "Set {} -> {}".format(self.field.getName(), repr(value)))
-        self.field.set(self.context, value, **kw)
-
     def make_field_node(self, value):
         node = self._doc.createElement("field")
         node.setAttribute("name", self.field.getName())
@@ -72,7 +85,7 @@ class ATFieldNodeAdapter(NodeAdapterBase):
 
     def import_node(self, node):
         value = self.parse_value(node.nodeValue)
-        self.set_field(value)
+        self._set_field(value)
 
     def _exportNode(self):
         """Export the object as a DOM node.
@@ -111,7 +124,7 @@ class ATFileFieldNodeAdapter(ATFieldNodeAdapter):
         value = node.nodeValue
         filename = node.nodeValue
         data = self.parse_value(value)
-        self.set_field(data, filename=filename)
+        self._set_field(data, filename=filename)
 
     def get_path(self):
         """Get the relative path
@@ -124,12 +137,12 @@ class ATFileFieldNodeAdapter(ATFieldNodeAdapter):
     def get_field_value(self):
         """Returns the filename
         """
-        value = self.field.get(self.context)
+        value = self._get_field()
 
         if isinstance(value, basestring):
             return value
 
-        filename = value.filename or ""
+        filename = safe_unicode(value.filename) or ""
         data = value.data
         if filename and data:
             path = self.get_path()
@@ -141,12 +154,6 @@ class ATFileFieldNodeAdapter(ATFieldNodeAdapter):
         filename = "/".join([self.get_path(), value])
         data = self.environ.readDataFile(filename)
         return data
-
-    def set_field(self, value, **kw):
-        """Set the field value
-        """
-        logger.info("Set file field {}".format(self.get_field_name()))
-        self.field.set(self.context, value, **kw)
 
 
 class BlobFileFieldNodeAdapter(ATFileFieldNodeAdapter):
