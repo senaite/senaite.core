@@ -36,6 +36,7 @@ SKIP_TYPES = [
 # - [ ] Handle annotation storage, e.g. Auditlog storage etc.
 # - [ ] Handle acl_users
 # - [X] Handle WF State of object
+# - [ ] Handle selected Services in ARTemplates
 
 class SenaiteSiteXMLAdapter(XMLAdapterBase, ObjectManagerHelpers):
     adapts(ISenaiteSiteRoot, ISetupEnviron)
