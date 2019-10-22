@@ -200,13 +200,15 @@ class ATReferenceFieldNodeAdapter(ATFieldNodeAdapter):
             value = ""
         return json.dumps(value)
 
-    def parse_json_value(self, value):
-        value = json.loads(value)
-        if value and not isinstance(value, list):
-            value = [value]
-        if not value:
-            return []
-        return map(lambda uid: self.uid_map.get(uid), value)
+    # N.B.: We are setting the original UID on the imported object
+    #
+    # def parse_json_value(self, value):
+    #     value = json.loads(value)
+    #     if value and not isinstance(value, list):
+    #         value = [value]
+    #     if not value:
+    #         return []
+    #     return map(lambda uid: self.uid_map.get(uid, uid), value)
 
 
 class ATUIDReferenceFieldNodeAdapter(ATReferenceFieldNodeAdapter):
@@ -220,11 +222,13 @@ class ATRecordFieldNodeAdapter(ATFieldNodeAdapter):
     """
     adapts(IBaseObject, IRecordField, ISetupEnviron)
 
-    def parse_json_value(self, value):
-        value = json.loads(value)
-        # map old UID -> new UID e.g. for ARTemplate.Analyses
-        if isinstance(value, list):
-            for record in value:
-                for k, v in record.items():
-                    record[k] = self.uid_map.get(v, v)
-        return value
+    # N.B.: We are setting the original UID on the imported object
+    #
+    # def parse_json_value(self, value):
+    #     value = json.loads(value)
+    #     # map old UID -> new UID e.g. for ARTemplate.Analyses
+    #     if isinstance(value, list):
+    #         for record in value:
+    #             for k, v in record.items():
+    #                 record[k] = self.uid_map.get(v, v)
+    #     return value

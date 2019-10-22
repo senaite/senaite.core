@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import json
 from xml.dom.minidom import parseString
 
 from bika.lims import api
@@ -31,13 +32,6 @@ SKIP_TYPES = [
 ]
 
 
-# TODO
-# - [ ] Handle manually provided interfaces, e.g. IAuditable, ISubmitted etc.
-# - [ ] Handle annotation storage, e.g. Auditlog storage etc.
-# - [ ] Handle acl_users
-# - [X] Handle WF State of object
-# - [X] Handle UIDs in records fields
-
 class SenaiteSiteXMLAdapter(XMLAdapterBase, ObjectManagerHelpers):
     adapts(ISenaiteSiteRoot, ISetupEnviron)
 
@@ -54,6 +48,8 @@ class SenaiteSiteXMLAdapter(XMLAdapterBase, ObjectManagerHelpers):
 
         # Extract all contained objects
         node.appendChild(self._extractObjects())
+
+        # TODO: Append acl_users
 
         return node
 
@@ -102,6 +98,9 @@ class ContentXMLAdapter(SenaiteSiteXMLAdapter):
         state = api.get_workflow_status_of(self.context)
         node.setAttribute("state", state)
 
+        # Extract AuditLog
+        node.appendChild(self._extractAuditLog(self.context))
+
         # Extract all fields of the current context
         node.appendChild(self._extractFields(self.context))
 
@@ -115,13 +114,25 @@ class ContentXMLAdapter(SenaiteSiteXMLAdapter):
         """
 
         # set workflow state
+        self._initAuditLog(self.context, node)
         self._initWorkflow(self.context, node)
         self._initFields(self.context, node)
+
+        # take a new snapshot
+        api.snapshot.take_snapshot(self.context)
 
         self.context.reindexObject()
 
         obj_id = str(node.getAttribute("name"))
         self._logger.info("Imported '%r'" % obj_id)
+
+    def _initAuditLog(self, context, node):
+        for child in node.childNodes:
+            if child.nodeName == "auditlog":
+                snapshots = json.loads(child.firstChild.nodeValue)
+                storage = api.snapshot.get_storage(context)
+                storage[:] = map(json.dumps, snapshots)[:]
+                return
 
     def _initWorkflow(self, context, node):
         state = node.getAttribute("state")
@@ -163,6 +174,13 @@ class ContentXMLAdapter(SenaiteSiteXMLAdapter):
                 importer.uid_map = UID_MAP
                 importer.node = child
 
+    def _extractAuditLog(self, context):
+        snapshots = api.snapshot.get_snapshots(self.context)
+        node = self._doc.createElement("auditlog")
+        child = self._doc.createTextNode(json.dumps(snapshots))
+        node.appendChild(child)
+        return node
+
     def _extractFields(self, context):
         fragment = self._doc.createDocumentFragment()
 
@@ -179,7 +197,7 @@ class ContentXMLAdapter(SenaiteSiteXMLAdapter):
 
 
 def create_content_slugs(parent, parent_path, context):
-    """Helper function to create initial content slugs for UID mapping
+    """Helper function to create initial content slugs
     """
     logger.info("create_content_slugs: parent={} parent_path={}".format(
         repr(parent), parent_path))
@@ -205,6 +223,10 @@ def create_content_slugs(parent, parent_path, context):
 
     # remember the UID mapping
     UID_MAP[uid] = api.get_uid(parent)
+
+    # set the UID
+    if uid and api.is_at_content(parent):
+        parent._setUID(uid)
 
     def is_object_node(n):
         return getattr(n, "nodeName", "") == "object"
