@@ -228,6 +228,8 @@ def create_content_slugs(parent, parent_path, context):
     # set the UID
     if uid and api.is_at_content(parent):
         parent._setUID(uid)
+    elif uid and api.is_dexterity_content(parent):
+        logger.warn("Set UID for Dexterity contents is not implemented")
 
     def is_object_node(n):
         return getattr(n, "nodeName", "") == "object"
