@@ -5,6 +5,7 @@ from xml.dom.minidom import parseString
 
 from bika.lims import api
 from bika.lims import logger
+from bika.lims.interfaces import IAuditable
 from bika.lims.interfaces import ISenaiteSiteRoot
 from DateTime import DateTime
 from OFS.interfaces import IOrderedContainer
@@ -17,6 +18,7 @@ from Products.GenericSetup.utils import ObjectManagerHelpers
 from Products.GenericSetup.utils import XMLAdapterBase
 from zope.component import adapts
 from zope.component import queryMultiAdapter
+from zope.interface import alsoProvides
 
 from .config import SITE_ID
 
@@ -118,9 +120,6 @@ class ContentXMLAdapter(SenaiteSiteXMLAdapter):
         self._initWorkflow(self.context, node)
         self._initFields(self.context, node)
 
-        # take a new snapshot
-        api.snapshot.take_snapshot(self.context)
-
         self.context.reindexObject()
 
         obj_id = str(node.getAttribute("name"))
@@ -132,6 +131,8 @@ class ContentXMLAdapter(SenaiteSiteXMLAdapter):
                 snapshots = json.loads(child.firstChild.nodeValue)
                 storage = api.snapshot.get_storage(context)
                 storage[:] = map(json.dumps, snapshots)[:]
+                # make sure the object provides `IAuditable`
+                alsoProvides(context, IAuditable)
                 return
 
     def _initWorkflow(self, context, node):
