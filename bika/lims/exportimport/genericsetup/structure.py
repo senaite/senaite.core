@@ -27,6 +27,7 @@ SKIP_TYPES = [
     "AnalysisRequest",
     "Attachment",
     "Batch",
+    "Worksheet",
 ]
 
 
