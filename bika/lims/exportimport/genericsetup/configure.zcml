@@ -17,6 +17,11 @@
   <adapter provides=".interfaces.IFieldNode" factory=".adapters.ATDateTimeFieldNodeAdapter"/>
   <adapter provides=".interfaces.IFieldNode" factory=".adapters.ATReferenceFieldNodeAdapter"/>
   <adapter provides=".interfaces.IFieldNode" factory=".adapters.ATUIDReferenceFieldNodeAdapter"/>
+  <adapter provides=".interfaces.IFieldNode" factory=".adapters.ATRecordFieldNodeAdapter"/>
+
+  <class class="Products.ATExtensions.field.records.RecordField">
+    <implements interface=".interfaces.IRecordField" />
+  </class>
 
   <genericsetup:exportStep
       name="senaite.core.export"

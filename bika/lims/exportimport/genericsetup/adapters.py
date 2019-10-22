@@ -20,6 +20,7 @@ from zope.component import adapts
 from zope.interface import implements
 
 from .interfaces import IFieldNode
+from .interfaces import IRecordField
 from .config import SITE_ID
 
 
@@ -212,3 +213,18 @@ class ATUIDReferenceFieldNodeAdapter(ATReferenceFieldNodeAdapter):
     """Import/Export UID Reference Fields
     """
     adapts(IBaseObject, IUIDReferenceField, ISetupEnviron)
+
+
+class ATRecordFieldNodeAdapter(ATFieldNodeAdapter):
+    """Import/Export Records Fields
+    """
+    adapts(IBaseObject, IRecordField, ISetupEnviron)
+
+    def parse_json_value(self, value):
+        value = json.loads(value)
+        # map old UID -> new UID e.g. for ARTemplate.Analyses
+        if isinstance(value, list):
+            for record in value:
+                for k, v in record.items():
+                    record[k] = self.uid_map.get(v, v)
+        return value

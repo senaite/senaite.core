@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from Products.GenericSetup.interfaces import INode
+from zope.interface import Interface
 
 
 class IFieldNode(INode):
@@ -30,3 +31,10 @@ class IFieldNode(INode):
     def get_node_value(value):
         """Get a node from the value
         """
+
+
+class IRecordField(Interface):
+    """Marker interface for Record Fields
+
+    N.B. There is no official interface provided by this Field!
+    """
