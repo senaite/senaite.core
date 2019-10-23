@@ -11,6 +11,7 @@ from DateTime import DateTime
 from OFS.interfaces import IOrderedContainer
 from Products.Archetypes.interfaces import IBaseObject
 from Products.CMFPlone.utils import _createObjectByType
+from Products.CMFPlone.utils import safe_unicode
 from Products.GenericSetup.interfaces import IBody
 from Products.GenericSetup.interfaces import INode
 from Products.GenericSetup.interfaces import ISetupEnviron
@@ -40,6 +41,22 @@ class SenaiteSiteXMLAdapter(XMLAdapterBase, ObjectManagerHelpers):
     def __init__(self, context, environ):
         super(SenaiteSiteXMLAdapter, self).__init__(context, environ)
 
+    def get_roles_for_principal(self, principal):
+        """Returs a list of roles for the user/group
+        """
+        ignored_roles = ["Authenticated"]
+        roles = filter(lambda r: r not in ignored_roles,
+                       principal.getRoles())
+        return roles
+
+    def get_groups_for_principal(self, principal):
+        """Returs a list of groups for the user/group
+        """
+        ignored_groups = ["AuthenticatedUsers"]
+        groups = filter(lambda r: r not in ignored_groups,
+                        principal.getGroupIds())
+        return groups
+
     def _exportNode(self):
         """Export the object as a DOM node.
         """
@@ -51,7 +68,11 @@ class SenaiteSiteXMLAdapter(XMLAdapterBase, ObjectManagerHelpers):
         # Extract all contained objects
         node.appendChild(self._extractObjects())
 
-        # TODO: Append acl_users
+        # Extract Groups
+        node.appendChild(self._extractGroups(self.context))
+
+        # Extract Users
+        node.appendChild(self._extractUsers(self.context))
 
         return node
 
@@ -60,6 +81,41 @@ class SenaiteSiteXMLAdapter(XMLAdapterBase, ObjectManagerHelpers):
         """
         obj_id = str(node.getAttribute("name"))
         self._logger.info("Imported '%r'" % obj_id)
+
+    def _get_users(self):
+        acl_users = api.get_tool("acl_users")
+        return acl_users.getUsers()
+
+    def _get_groups(self):
+        acl_users = api.get_tool("acl_users")
+        return acl_users.getGroups()
+
+    def _extractGroups(self, context):
+        node = self._doc.createElement("groups")
+        for group in self._get_groups():
+            name = group.getGroupName()
+            roles = self.get_roles_for_principal(group)
+            child = self._doc.createElement("group")
+            child.setAttribute("name", safe_unicode(name))
+            child.setAttribute("roles", ",".join(roles))
+            text = self._doc.createTextNode(group.getGroupId())
+            child.appendChild(text)
+            node.appendChild(child)
+        return node
+
+    def _extractUsers(self, context):
+        node = self._doc.createElement("users")
+        for user in self._get_users():
+            name = user.getProperty("fullname")
+            groups = self.get_groups_for_principal(user)
+            child = self._doc.createElement("user")
+            child.setAttribute("name", safe_unicode(name))
+            child.setAttribute("email", user.getProperty("email"))
+            child.setAttribute("groups", ",".join(groups))
+            text = self._doc.createTextNode(user.getId())
+            child.appendChild(text)
+            node.appendChild(child)
+        return node
 
     def _extractObjects(self):
         fragment = self._doc.createDocumentFragment()
