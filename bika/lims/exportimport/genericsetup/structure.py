@@ -345,6 +345,8 @@ def create_content_slugs(parent, parent_path, context):
     # set the UID
     if uid and api.is_at_content(parent):
         parent._setUID(uid)
+        # avoid renaming after edit
+        parent.unmarkCreationFlag()
     elif uid and api.is_dexterity_content(parent):
         logger.warn("Set UID for Dexterity contents is not implemented")
 
