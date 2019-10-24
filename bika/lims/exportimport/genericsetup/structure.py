@@ -285,7 +285,6 @@ class ContentXMLAdapter(SenaiteSiteXMLAdapter):
 
             importer = queryMultiAdapter((context, field, self.environ), INode)
             if importer:
-                importer.uid_map = UID_MAP
                 importer.node = child
 
     def _extractAuditLog(self, context):

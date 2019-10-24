@@ -19,10 +19,9 @@ from Products.GenericSetup.utils import NodeAdapterBase
 from zope.component import adapts
 from zope.interface import implements
 
+from .config import SITE_ID
 from .interfaces import IFieldNode
 from .interfaces import IRecordField
-from .config import SITE_ID
-
 
 SKIP_FIELDS = [
     "id",
@@ -200,16 +199,6 @@ class ATReferenceFieldNodeAdapter(ATFieldNodeAdapter):
             value = ""
         return json.dumps(value)
 
-    # N.B.: We are setting the original UID on the imported object
-    #
-    # def parse_json_value(self, value):
-    #     value = json.loads(value)
-    #     if value and not isinstance(value, list):
-    #         value = [value]
-    #     if not value:
-    #         return []
-    #     return map(lambda uid: self.uid_map.get(uid, uid), value)
-
 
 class ATUIDReferenceFieldNodeAdapter(ATReferenceFieldNodeAdapter):
     """Import/Export UID Reference Fields
@@ -221,14 +210,3 @@ class ATRecordFieldNodeAdapter(ATFieldNodeAdapter):
     """Import/Export Records Fields
     """
     adapts(IBaseObject, IRecordField, ISetupEnviron)
-
-    # N.B.: We are setting the original UID on the imported object
-    #
-    # def parse_json_value(self, value):
-    #     value = json.loads(value)
-    #     # map old UID -> new UID e.g. for ARTemplate.Analyses
-    #     if isinstance(value, list):
-    #         for record in value:
-    #             for k, v in record.items():
-    #                 record[k] = self.uid_map.get(v, v)
-    #     return value
