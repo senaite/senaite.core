@@ -210,6 +210,7 @@ class ContentXMLAdapter(SenaiteSiteXMLAdapter):
         node.setAttribute("uid", self.context.UID())
 
         # remember the WF Status
+        # TODO: Export the complete Review History
         state = api.get_workflow_status_of(self.context)
         node.setAttribute("state", state)
 
@@ -233,7 +234,11 @@ class ContentXMLAdapter(SenaiteSiteXMLAdapter):
         self._initWorkflow(self.context, node)
         self._initFields(self.context, node)
 
+        # reindex the object
         self.context.reindexObject()
+
+        # set a new snapshot
+        # api.snapshot.take_snapshot(self.context)
 
         obj_id = str(node.getAttribute("name"))
         self._logger.info("Imported '%r'" % obj_id)

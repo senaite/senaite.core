@@ -25,9 +25,6 @@ from .interfaces import IRecordField
 
 SKIP_FIELDS = [
     "id",
-    "created",
-    "Creator",
-    "modified",
     "rights",
 ]
 
