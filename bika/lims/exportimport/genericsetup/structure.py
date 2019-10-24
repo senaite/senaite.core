@@ -41,22 +41,6 @@ class SenaiteSiteXMLAdapter(XMLAdapterBase, ObjectManagerHelpers):
     def __init__(self, context, environ):
         super(SenaiteSiteXMLAdapter, self).__init__(context, environ)
 
-    def get_roles_for_principal(self, principal):
-        """Returs a list of roles for the user/group
-        """
-        ignored_roles = ["Authenticated"]
-        roles = filter(lambda r: r not in ignored_roles,
-                       principal.getRoles())
-        return roles
-
-    def get_groups_for_principal(self, principal):
-        """Returs a list of groups for the user/group
-        """
-        ignored_groups = ["AuthenticatedUsers"]
-        groups = filter(lambda r: r not in ignored_groups,
-                        principal.getGroupIds())
-        return groups
-
     def _exportNode(self):
         """Export the object as a DOM node.
         """
@@ -80,7 +64,64 @@ class SenaiteSiteXMLAdapter(XMLAdapterBase, ObjectManagerHelpers):
         """Import the object from the DOM node.
         """
         obj_id = str(node.getAttribute("name"))
+
+        if "acl_users" not in self.context:
+            return
+
+        # Add groups and users
+        self._initGroups(self.context, node)
+        self._initUsers(self.context, node)
+
         self._logger.info("Imported '%r'" % obj_id)
+
+    def _initGroups(self, context, node):
+        group_tool = api.get_tool("portal_groups")
+        for child in node.childNodes:
+            if child.nodeName != "groups":
+                continue
+            for cn in child.childNodes:
+                if cn.nodeName != "group":
+                    continue
+                group_id = cn.firstChild.nodeValue
+                group = api.user.get_group(group_id)
+                if not group:
+                    self._logger.info("Adding group {}".format(group_id))
+                    roles = cn.getAttribute("roles").split(",")
+                    group_tool.addGroup(group_id, roles=roles)
+                    group = group_tool.getGroupById(group_id)
+
+                # set the group properties
+                group.setProperties(properties={
+                    "title": cn.getAttribute("name"),
+                    "email": cn.getAttribute("email"),
+                })
+
+    def _initUsers(self, context, node):
+        reg_tool = api.get_tool("portal_registration")
+        for child in node.childNodes:
+            if child.nodeName != "users":
+                continue
+            for cn in child.childNodes:
+                if cn.nodeName != "user":
+                    continue
+                user_id = cn.firstChild.nodeValue
+                user = api.user.get_user(user_id)
+                if not user:
+                    self._logger.info("Adding user {}".format(user_id))
+                    # add a new user with the same password as the user id
+                    user = reg_tool.addMember(user_id, user_id)
+
+                # set the user properties
+                user.setProperties(properties={
+                    "fullname": cn.getAttribute("name"),
+                    "email": cn.getAttribute("email"),
+                })
+
+                # add the user to the groups
+                groups = cn.getAttribute("groups")
+                if groups:
+                    group_ids = groups.split(",")
+                    api.user.add_group(group_ids, user_id)
 
     def _get_users(self):
         acl_users = api.get_tool("acl_users")
@@ -90,11 +131,27 @@ class SenaiteSiteXMLAdapter(XMLAdapterBase, ObjectManagerHelpers):
         acl_users = api.get_tool("acl_users")
         return acl_users.getGroups()
 
+    def _get_roles_for_principal(self, principal):
+        """Returs a list of roles for the user/group
+        """
+        ignored_roles = ["Authenticated"]
+        roles = filter(lambda r: r not in ignored_roles,
+                       principal.getRoles())
+        return roles
+
+    def _get_groups_for_principal(self, principal):
+        """Returs a list of groups for the user/group
+        """
+        ignored_groups = ["AuthenticatedUsers"]
+        groups = filter(lambda r: r not in ignored_groups,
+                        principal.getGroupIds())
+        return groups
+
     def _extractGroups(self, context):
         node = self._doc.createElement("groups")
         for group in self._get_groups():
             name = group.getGroupName()
-            roles = self.get_roles_for_principal(group)
+            roles = self._get_roles_for_principal(group)
             child = self._doc.createElement("group")
             child.setAttribute("name", safe_unicode(name))
             child.setAttribute("roles", ",".join(roles))
@@ -107,7 +164,7 @@ class SenaiteSiteXMLAdapter(XMLAdapterBase, ObjectManagerHelpers):
         node = self._doc.createElement("users")
         for user in self._get_users():
             name = user.getProperty("fullname")
-            groups = self.get_groups_for_principal(user)
+            groups = self._get_groups_for_principal(user)
             child = self._doc.createElement("user")
             child.setAttribute("name", safe_unicode(name))
             child.setAttribute("email", user.getProperty("email"))
