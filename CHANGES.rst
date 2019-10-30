@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.3.2 (unreleased)
+1.3.2 (2019-10-30)
 ------------------
 
 **Added**
@@ -12,7 +12,6 @@ Changelog
 - #1436 Setting in setup for auto-reception of samples upon creation
 - #1433 Added Submitter column in Sample's analyses listing
 - #1441 Added Auto ID Behavior for Dexterity Contents
-- #1431 Added Submitter column in Sample's analyses listing
 - #1422 Notify user with failing addresses when emailing of results reports
 - #1420 Allow to detach a partition from its primary sample
 - #1410 Email API
@@ -56,9 +55,6 @@ Changelog
 - #1418 Subscriber adapters not supported in clients listing
 - #1419 Mixed permissions for transitions in client workflow
 - #1414 Occasional "OSError: [Errno 24] Too many open files" in frontpage
-
-
-**Security**
 
 
 1.3.1 (2019-07-01)
