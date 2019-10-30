@@ -6,6 +6,7 @@ Changelog
 
 **Added**
 
+- #1463 Structure Export/Import Handlers for Generic Setup
 - #1462 Allow to extend the behavior of fields from AddSample view with adapters
 - #1455 Added support for adapters in guard handler
 - #1436 Setting in setup for auto-reception of samples upon creation

@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    i18n_domain="senaite.core">
+
+  <class class="Products.CMFPlone.Portal.PloneSite">
+    <implements interface="bika.lims.interfaces.ISenaiteSiteRoot" />
+  </class>
+
+</configure>

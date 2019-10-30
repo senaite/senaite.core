@@ -1,0 +1,41 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+    i18n_domain="senaite.core">
+
+  <!-- XML Import/Export Adapters -->
+  <adapter factory=".structure.SenaiteSiteXMLAdapter"/>
+  <adapter factory=".structure.ContentXMLAdapter"/>
+
+  <!-- Field Adapters
+       Know how to Import/Export field values
+  -->
+  <adapter provides=".interfaces.IFieldNode" factory=".adapters.ATFieldNodeAdapter"/>
+  <adapter provides=".interfaces.IFieldNode" factory=".adapters.ATTextFieldNodeAdapter"/>
+  <adapter provides=".interfaces.IFieldNode" factory=".adapters.ATFileFieldNodeAdapter"/>
+  <adapter provides=".interfaces.IFieldNode" factory=".adapters.BlobFileFieldNodeAdapter"/>
+  <adapter provides=".interfaces.IFieldNode" factory=".adapters.ATDateTimeFieldNodeAdapter"/>
+  <adapter provides=".interfaces.IFieldNode" factory=".adapters.ATReferenceFieldNodeAdapter"/>
+  <adapter provides=".interfaces.IFieldNode" factory=".adapters.ATUIDReferenceFieldNodeAdapter"/>
+  <adapter provides=".interfaces.IFieldNode" factory=".adapters.ATRecordFieldNodeAdapter"/>
+
+  <class class="Products.ATExtensions.field.records.RecordField">
+    <implements interface=".interfaces.IRecordField" />
+  </class>
+
+  <genericsetup:exportStep
+      name="senaite.core.export"
+      title="SENAITE: Export Content Structure"
+      description="Export LIMS Content Structure"
+      handler=".structure.export_xml"
+      />
+
+  <genericsetup:importStep
+      name="senaite.core.import"
+      title="SENAITE: Import Content Structure"
+      description="Import LIMS Content Structure"
+      handler=".structure.import_xml">
+    <depends name="componentregistry"/>
+  </genericsetup:importStep>
+
+</configure>

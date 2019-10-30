@@ -6,6 +6,7 @@
     xmlns:i18n="http://namespaces.zope.org/i18n"
     i18n_domain="senaite.core">
 
+  <include package=".genericsetup"/>
   <include package=".setupdata"/>
 
   <browser:page
