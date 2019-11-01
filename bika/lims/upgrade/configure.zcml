@@ -179,10 +179,10 @@
        profile="bika.lims:default"/>
 
    <genericsetup:upgradeStep
-       title="Upgrade to SENAITE.CORE 2.0.0"
+       title="Upgrade to SENAITE.CORE 1.3.3"
        source="1.3.2"
-       destination="2.0.0"
-       handler="bika.lims.upgrade.v02_00_000.upgrade"
+       destination="1.3.3"
+       handler="bika.lims.upgrade.v01_03_03.upgrade"
        profile="bika.lims:default"/>
 
 </configure>
