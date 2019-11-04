@@ -7,6 +7,8 @@ Changelog
 
 **Added**
 
+- #1466 Support for "readonly" and "hidden" visibility modes in ReferenceWidget
+
 
 **Changed**
 
