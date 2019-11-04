@@ -16,6 +16,8 @@ Changelog
 
 **Fixed**
 
+- #1467 Cannot override behavior of Batch folder when using `before_render`
+
 
 **Security**
 
