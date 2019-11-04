@@ -164,11 +164,33 @@
         </metal:use>
       </tal:edit_visible>
 
-      <tal:edit_hidden tal:condition="python: visibility_mode == 'hidden'"
+      <tal:edit_hidden tal:condition="python: visibility_mode in ['hidden', 'readonly']"
         define="val python:context.Schema()[fieldName].getAccessor(context)();
                 text_default val/Title|nothing;
                 text_attr widget/ui_item|nothing;
                 text python:text_attr and getattr(val, text_attr, text_default) or text_default;">
+
+        <tal:readonly tal:condition="python: visibility_mode == 'readonly'">
+          <div class="field form-group">
+            <label class="formQuestion">
+                <span tal:replace="python:widget.Label(here)"
+                      i18n:translate="" />
+                <span class="required"
+                      tal:condition="field/required"
+                      title="Required"
+                      i18n:attributes="title title_required;">&nbsp;</span>
+                <span class="formHelp"
+                     tal:define="description python:widget.Description(here)"
+                     tal:content="structure description"
+                     tal:attributes="id string:${fieldName}_help"
+                     i18n:translate="">
+                </span>
+            </label>
+            <div>
+              <span tal:content="text"/>
+            </div>
+          </div>
+        </tal:readonly>
 
         <input type="hidden"
                tal:attributes="name fieldName;
