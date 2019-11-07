@@ -45,122 +45,164 @@
 
     </metal:view_macro>
 
-    <metal:define define-macro="edit">
-      <metal:use use-macro="field_macro | context/widgets/field/macros/edit">
-        <metal:fill metal:fill-slot="widget_body">
+    <metal:edit_macro define-macro="edit"
+      tal:define="visibility_mode python: widget.isVisible(context, mode='edit', field=field);">
 
-          <div class="multiValued-listing"
-                tal:condition="python:context.Schema()[fieldName].multiValued"
-                tal:attributes="id string:${fieldName}-listing;fieldName fieldName;"
-                tal:define="values python:context.Schema()[fieldName].getAccessor(context)();">
-                <tal:repeat repeat="value values">
-                  <div class="reference_multi_item"
-                       tal:attributes="uid value/UID">
-                    <img
-                      class="deletebtn"
-                      tal:attributes="
-                        src string:${portal/absolute_url}/++resource++bika.lims.images/delete.png;
-                        fieldName fieldName;
-                        uid value/UID"/>
-                    <span tal:replace="python:str(value.Title())"/>
-                  </div>
-                </tal:repeat>
+      <tal:edit_visible tal:condition="python: visibility_mode == 'visible'">
+        <metal:use use-macro="field_macro | context/widgets/field/macros/edit">
+          <metal:fill metal:fill-slot="widget_body">
+            <div class="multiValued-listing"
+                 tal:condition="python:context.Schema()[fieldName].multiValued"
+                 tal:attributes="id string:${fieldName}-listing;fieldName fieldName;"
+                 tal:define="values python:context.Schema()[fieldName].getAccessor(context)();">
+              <tal:repeat repeat="value values">
+                <div class="reference_multi_item"
+                     tal:attributes="uid value/UID">
+                  <img
+                    class="deletebtn"
+                    tal:attributes="
+                      src string:${portal/absolute_url}/++resource++bika.lims.images/delete.png;
+                      fieldName fieldName;
+                      uid value/UID"/>
+                  <span tal:replace="python:str(value.Title())"/>
+                </div>
+              </tal:repeat>
+            </div>
+
+            <tal:input_field define="val python:context.Schema()[fieldName].getAccessor(context)();
+                                     text_default val/Title|nothing;
+                                     text_attr widget/ui_item|nothing;
+                                     text python:text_attr and getattr(val, text_attr, text_default) or text_default;">
+              <input type="text"
+                     class="blurrable firstToFocus referencewidget"
+                     tal:condition="python:context.Schema()[fieldName].required"
+                     tal:attributes="name fieldName;
+                                     required python:True;
+                                     id fieldName;
+                                     value text;
+                                     uid val/UID|nothing;
+                                     size widget/size;
+                                     placeholder widget/placeholder|nothing;
+                                     maxlength widget/maxlength;
+                                     catalog_name widget/catalog_name;
+                                     base_query python:widget.get_base_query(context, fieldName);
+                                     search_query string:{};
+                                     showOn widget/showOn;
+                                     searchIcon widget/searchIcon;
+                                     resetButton widget/resetButton;
+                                     minLength python:widget.minLength;
+                                     ui_item widget/ui_item;
+                                     multiValued python:1 if context.Schema()[fieldName].multiValued else 0;
+                                     combogrid_options python:widget.get_combogrid_options(context, fieldName)" />
+
+              <input type="text"
+                     class="blurrable firstToFocus referencewidget"
+                     tal:condition="python:not context.Schema()[fieldName].required"
+                     tal:attributes="name fieldName;
+                                     id fieldName;
+                                     value text;
+                                     uid val/UID|nothing;
+                                     size widget/size;
+                                     placeholder widget/placeholder|nothing;
+                                     maxlength widget/maxlength;
+                                     catalog_name widget/catalog_name;
+                                     base_query python:widget.get_base_query(context, fieldName);
+                                     search_query string:{};
+                                     showOn widget/showOn;
+                                     searchIcon widget/searchIcon;
+                                     resetButton widget/resetButton;
+                                     minLength widget/minLength;
+                                     ui_item widget/ui_item;
+                                     multiValued python:1 if context.Schema()[fieldName].multiValued else 0;
+                                     combogrid_options python:widget.get_combogrid_options(context, fieldName)" />
+
+                <!-- AddButton definition -->
+                <a rel='#overlay'
+                   class='add-button referencewidget-add-button'
+                   tal:define="options python:widget.get_addbutton_options()"
+                   tal:condition="options/visible"
+                   tal:attributes="name python:fieldName+'_addbutton';
+                                   id   python:fieldName+'_addbutton';
+                                   href string:${portal/absolute_url}/${options/url};
+                                   data_fieldid fieldName;
+                                   data_fieldname fieldName;
+                                   data_overlay_handler options/overlay_handler;
+                                   data_returnfields options/return_fields;
+                                   data_jscontrollers options/js_controllers;
+                                   data_overlay options/overlay_options">
+                        <span class='notext' i18n:translate="">Add</span>
+                </a>
+
+                <!-- EditButton definition -->
+                <a rel='#overlay'
+                   class='edit-button referencewidget-edit-button'
+                   tal:define="options python:widget.get_editbutton_options()"
+                   tal:condition="options/visible"
+                   tal:attributes="name python:fieldName+'_editbutton';
+                                   id   python:fieldName+'_editbutton';
+                                   href string:${portal/absolute_url}/${options/url};
+                                   data_baseurl string:${portal/absolute_url}/${options/url};
+                                   data_fieldid fieldName;
+                                   data_fieldname fieldName;
+                                   data_overlay_handler options/overlay_handler;
+                                   data_returnfields options/return_fields;
+                                   data_jscontrollers options/js_controllers;
+                                   data_overlay options/overlay_options">
+                   <span class='notext' i18n:translate="">Edit</span>
+                </a>
+
+                <input type="hidden"
+                       name=""
+                       value=""
+                       tal:define="val python:context.Schema()[fieldName].getAccessor(context)();"
+                       tal:attributes="name string:${fieldName}_uid;
+                                       id string:${fieldName}_uid;
+                                       value python:widget.initial_uid_field_value(val);"/>
+              </tal:input_field>
+
+          </metal:fill>
+        </metal:use>
+      </tal:edit_visible>
+
+      <tal:edit_hidden tal:condition="python: visibility_mode in ['hidden', 'readonly']"
+        define="val python:context.Schema()[fieldName].getAccessor(context)();
+                text_default val/Title|nothing;
+                text_attr widget/ui_item|nothing;
+                text python:text_attr and getattr(val, text_attr, text_default) or text_default;">
+
+        <tal:readonly tal:condition="python: visibility_mode == 'readonly'">
+          <div class="field form-group">
+            <label class="formQuestion">
+                <span tal:replace="python:widget.Label(here)"
+                      i18n:translate="" />
+                <span class="required"
+                      tal:condition="field/required"
+                      title="Required"
+                      i18n:attributes="title title_required;">&nbsp;</span>
+                <span class="formHelp"
+                     tal:define="description python:widget.Description(here)"
+                     tal:content="structure description"
+                     tal:attributes="id string:${fieldName}_help"
+                     i18n:translate="">
+                </span>
+            </label>
+            <div>
+              <span tal:content="text"/>
+            </div>
           </div>
+        </tal:readonly>
 
-          <tal:input_field define="val python:context.Schema()[fieldName].getAccessor(context)();
-                                   text_default val/Title|nothing;
-                                   text_attr widget/ui_item|nothing;
-                                   text python:text_attr and getattr(val, text_attr, text_default) or text_default;">
-          <input
-                 type="text"
-                 class="blurrable firstToFocus referencewidget"
-                 tal:condition="python:context.Schema()[fieldName].required"
-                 tal:attributes="name fieldName;
-                                 required python:True;
-                                 id fieldName;
-                                 value text;
-                                 uid val/UID|nothing;
-                                 size widget/size;
-                                 placeholder widget/placeholder|nothing;
-                                 maxlength widget/maxlength;
-                                 catalog_name widget/catalog_name;
-                                 base_query python:widget.get_base_query(context, fieldName);
-                                 search_query string:{};
-                                 showOn widget/showOn;
-                                 searchIcon widget/searchIcon;
-                                 resetButton widget/resetButton;
-                                 minLength python:widget.minLength;
-                                 ui_item widget/ui_item;
-                                 multiValued python:1 if context.Schema()[fieldName].multiValued else 0;
-                                 combogrid_options python:widget.get_combogrid_options(context, fieldName)"
-                 />
-          <input
-                 type="text"
-                 class="blurrable firstToFocus referencewidget"
-                 tal:condition="python:not context.Schema()[fieldName].required"
-                 tal:attributes="name fieldName;
-                                 id fieldName;
-                                 value text;
-                                 uid val/UID|nothing;
-                                 size widget/size;
-                                 placeholder widget/placeholder|nothing;
-                                 maxlength widget/maxlength;
-                                 catalog_name widget/catalog_name;
-                                 base_query python:widget.get_base_query(context, fieldName);
-                                 search_query string:{};
-                                 showOn widget/showOn;
-                                 searchIcon widget/searchIcon;
-                                 resetButton widget/resetButton;
-                                 minLength widget/minLength;
-                                 ui_item widget/ui_item;
-                                 multiValued python:1 if context.Schema()[fieldName].multiValued else 0;
-                                 combogrid_options python:widget.get_combogrid_options(context, fieldName)"
-                 />
-            <!-- AddButton definition -->
-            <a rel='#overlay'
-               class='add-button referencewidget-add-button'
-               tal:define="options python:widget.get_addbutton_options()"
-               tal:condition="options/visible"
-               tal:attributes="name python:fieldName+'_addbutton';
-                               id   python:fieldName+'_addbutton';
-                               href string:${portal/absolute_url}/${options/url};
-                               data_fieldid fieldName;
-                               data_fieldname fieldName;
-                               data_overlay_handler options/overlay_handler;
-                               data_returnfields options/return_fields;
-                               data_jscontrollers options/js_controllers;
-                               data_overlay options/overlay_options">
-                    <span class='notext' i18n:translate="">Add</span>
-            </a>
-            <!-- EditButton definition -->
-            <a rel='#overlay'
-               class='edit-button referencewidget-edit-button'
-               tal:define="options python:widget.get_editbutton_options()"
-               tal:condition="options/visible"
-               tal:attributes="name python:fieldName+'_editbutton';
-                               id   python:fieldName+'_editbutton';
-                               href string:${portal/absolute_url}/${options/url};
-                               data_baseurl string:${portal/absolute_url}/${options/url};
-                               data_fieldid fieldName;
-                               data_fieldname fieldName;
-                               data_overlay_handler options/overlay_handler;
-                               data_returnfields options/return_fields;
-                               data_jscontrollers options/js_controllers;
-                               data_overlay options/overlay_options">
-                    <span class='notext' i18n:translate="">Edit</span>
-            </a>
-          <input
-                 type="hidden"
-                 name=""
-                 value=""
-                 tal:define="val python:context.Schema()[fieldName].getAccessor(context)();"
-                 tal:attributes="name string:${fieldName}_uid;
-                                 id string:${fieldName}_uid;
-                                 value python:widget.initial_uid_field_value(val);"/>
-          </tal:input_field>
-        </metal:fill>
-      </metal:use>
-    </metal:define>
+        <input type="hidden"
+               tal:attributes="name fieldName;
+                               id fieldName;
+                               value text;
+                               uid val/UID|nothing;" />
+        <input type="hidden"
+               tal:attributes="name string:${fieldName}_uid;
+                               id string:${fieldName}_uid;
+                               value python:widget.initial_uid_field_value(val);"/>
+      </tal:edit_hidden>
+    </metal:edit_macro>
 
     <div metal:define-macro="search">
       <div metal:use-macro="context/widgets/string/macros/edit">
