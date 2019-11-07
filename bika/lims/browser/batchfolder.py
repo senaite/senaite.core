@@ -112,10 +112,10 @@ class BatchFolderContentsView(BikaListingView):
             },
         ]
 
-    def before_render(self):
+    def update(self):
         """Before template render hook
         """
-        super(BatchFolderContentsView, self).before_render()
+        super(BatchFolderContentsView, self).update()
 
         if self.context.portal_type == "BatchFolder":
             self.request.set("disable_border", 1)
