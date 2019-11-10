@@ -41,5 +41,10 @@ def upgrade(tool):
 
     logger.info("Upgrading {0}: {1} -> {2}".format(product, ver_from, version))
 
+    # -------- ADD YOUR STUFF BELOW --------
+
+    # https://github.com/senaite/senaite.core/pull/1469
+    setup.runImportStepFromProfile(profile, "propertiestool")
+
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True

@@ -400,7 +400,13 @@ def exportObjects(obj, parent_path, context):
         logger.info("Skipping {}".format(repr(obj)))
         return
 
-    exporter = queryMultiAdapter((obj, context), IBody)
+    if api.is_portal(obj):
+        # explicitly instantiate the exporter to avoid adapter clash of
+        # Products.CMFCore.exportimport.properties.PropertiesXMLAdapter
+        exporter = SenaiteSiteXMLAdapter(obj, context)
+    else:
+        exporter = queryMultiAdapter((obj, context), IBody)
+
     path = "%s%s" % (parent_path, get_id(obj))
     if exporter:
         if exporter.name:

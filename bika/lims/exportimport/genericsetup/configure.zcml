@@ -4,7 +4,12 @@
     i18n_domain="senaite.core">
 
   <!-- XML Import/Export Adapters -->
-  <adapter factory=".structure.SenaiteSiteXMLAdapter"/>
+
+  <!-- N.B. Deactivated by purpose!
+            Avoid its usage when the site properties get exported:
+            Products.CMFCore.exportimport.properties.exportSiteProperties
+      <adapter factory=".structure.SenaiteSiteXMLAdapter"/>
+  -->
   <adapter factory=".structure.ContentXMLAdapter"/>
 
   <!-- Field Adapters
