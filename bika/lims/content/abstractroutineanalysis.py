@@ -174,22 +174,6 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientBindable):
         return request and request.getClient() or None
 
     @security.public
-    def getClientTitle(self):
-        """Used to populate catalog values.
-        Returns the Title of the client for this analysis' AR.
-        """
-        client = self.getClient()
-        return client and client.Title() or None
-
-    @security.public
-    def getClientURL(self):
-        """This method is used to populate catalog values
-        Returns the URL of the client for this analysis' AR.
-        """
-        client = self.getClient()
-        return client and client.absolute_url_path() or None
-
-    @security.public
     def getClientOrderNumber(self):
         """Used to populate catalog values.
         Returns the ClientOrderNumber of the associated AR
