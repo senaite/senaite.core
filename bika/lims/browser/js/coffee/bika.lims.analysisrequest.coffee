@@ -195,49 +195,6 @@ window.AnalysisRequestViewView = ->
   that.load = ->
     resultsinterpretation_move_below()
     filter_CCContacts()
-
-    if document.location.href.search('/clients/') >= 0 and $('#archetypes-fieldname-SamplePoint #SamplePoint').length > 0
-      cid = document.location.href.split('clients')[1].split('/')[1]
-      $.ajax
-        url: window.portal_url + '/clients/' + cid + '/getClientInfo'
-        type: 'POST'
-        data: '_authenticator': $('input[name="_authenticator"]').val()
-        dataType: 'json'
-        success: (data, textStatus, $XHR) ->
-          if data['ClientUID'] != ''
-            spelement = $('#archetypes-fieldname-SamplePoint #SamplePoint')
-            base_query = $.parseJSON($(spelement).attr('base_query'))
-            setup_uid = $('#bika_setup').attr('bika_samplepoints')
-            base_query['getClientUID'] = [
-              data['ClientUID']
-              setup_uid
-            ]
-            $(spelement).attr 'base_query', $.toJSON(base_query)
-            options = $.parseJSON($(spelement).attr('combogrid_options'))
-            # Getting the url like that will return the query
-            # part of it:
-            # http://localhost:8080/Plone/clients/client17-14/..
-            #    ..OA17-0030-R01
-            # In order to create a correct ajax call
-            # we only need until the pathname of that url:
-            # http://localhost:8080/Plone/clients/client17-14/..
-            #    ..OA17-0030-R01
-            simple_url = window.location.href.split('/ar')[0]
-            simple_url = simple_url.split('?')[0]
-            options.url = simple_url + '/' + options.url
-            options.url = options.url + '?_authenticator=' + $('input[name=\'_authenticator\']').val()
-            options.url = options.url + '&catalog_name=' + $(spelement).attr('catalog_name')
-            options.url = options.url + '&base_query=' + $.toJSON(base_query)
-            options.url = options.url + '&search_query=' + $(spelement).attr('search_query')
-            options.url = options.url + '&colModel=' + $.toJSON($.parseJSON($(spelement).attr('combogrid_options')).colModel)
-            options.url = options.url + '&search_fields=' + $.toJSON($.parseJSON($(spelement).attr('combogrid_options')).search_fields)
-            options.url = options.url + '&discard_empty=' + $.toJSON($.parseJSON($(spelement).attr('combogrid_options')).discard_empty)
-            options.url = options.url + '&minLength=' + $.toJSON($.parseJSON($(spelement).attr('combogrid_options')).minLength)
-            options.force_all = 'false'
-            $(spelement).combogrid options
-            $(spelement).addClass 'has_combogrid_widget'
-            $(spelement).attr 'search_query', '{}'
-          return
     return
 
   return
