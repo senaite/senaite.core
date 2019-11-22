@@ -126,56 +126,6 @@ window.AnalysisRequestViewView = ->
     ), 1500
     return
 
-  filter_CCContacts = ->
-
-    ###*
-    # Filter the CCContacts dropdown list by the current client.
-    ###
-
-    if $('#CCContact').length > 0
-      element = $('#CCContact')
-      clientUID = getClientUID()
-      filter_by_client element, 'getParentUID', clientUID
-    return
-
-  getClientUID = ->
-
-    ###*
-    # Return the AR client's UID.
-    ###
-
-    clientid = window.location.href.split('clients')[1].split('/')[1]
-    # ajax petition to obtain the current client info
-    clientuid = ''
-    $.ajax
-      url: window.portal_url + '/clients/' + clientid + '/getClientInfo'
-      type: 'POST'
-      async: false
-      data: '_authenticator': $('input[name="_authenticator"]').val()
-      dataType: 'json'
-      success: (data, textStatus, $XHR) ->
-        if data['ClientUID'] != ''
-          clientuid = if data['ClientUID'] != '' then data['ClientUID'] else null
-        return
-    clientuid
-
-  filter_by_client = (element, filterkey, filtervalue) ->
-
-    ###*
-    # Filter the dropdown's results (called element) by current client contacts.
-    ###
-
-    # Get the base_query data in array format
-    base_query = $.parseJSON($(element).attr('base_query'))
-    base_query[filterkey] = filtervalue
-    $(element).attr 'base_query', $.toJSON(base_query)
-    options = $.parseJSON($(element).attr('combogrid_options'))
-    $(element).attr 'base_query', $.toJSON(base_query)
-    $(element).attr 'combogrid_options', $.toJSON(options)
-    referencewidget_lookups $(element)
-    return
-
-
   parse_CCClist = ->
 
     ###*
@@ -194,7 +144,6 @@ window.AnalysisRequestViewView = ->
 
   that.load = ->
     resultsinterpretation_move_below()
-    filter_CCContacts()
     return
 
   return

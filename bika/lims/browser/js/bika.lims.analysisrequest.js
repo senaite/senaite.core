@@ -114,7 +114,7 @@
    */
 
   window.AnalysisRequestViewView = function() {
-    var filter_CCContacts, filter_by_client, getClientUID, parse_CCClist, resultsinterpretation_move_below, that;
+    var parse_CCClist, resultsinterpretation_move_below, that;
     that = this;
 
     /**
@@ -138,56 +138,6 @@
         $('table.mceToolbar a.mce_save').hide();
       }), 1500);
     };
-    filter_CCContacts = function() {
-
-      /**
-       * Filter the CCContacts dropdown list by the current client.
-       */
-      var clientUID, element;
-      if ($('#CCContact').length > 0) {
-        element = $('#CCContact');
-        clientUID = getClientUID();
-        filter_by_client(element, 'getParentUID', clientUID);
-      }
-    };
-    getClientUID = function() {
-
-      /**
-       * Return the AR client's UID.
-       */
-      var clientid, clientuid;
-      clientid = window.location.href.split('clients')[1].split('/')[1];
-      clientuid = '';
-      $.ajax({
-        url: window.portal_url + '/clients/' + clientid + '/getClientInfo',
-        type: 'POST',
-        async: false,
-        data: {
-          '_authenticator': $('input[name="_authenticator"]').val()
-        },
-        dataType: 'json',
-        success: function(data, textStatus, $XHR) {
-          if (data['ClientUID'] !== '') {
-            clientuid = data['ClientUID'] !== '' ? data['ClientUID'] : null;
-          }
-        }
-      });
-      return clientuid;
-    };
-    filter_by_client = function(element, filterkey, filtervalue) {
-
-      /**
-       * Filter the dropdown's results (called element) by current client contacts.
-       */
-      var base_query, options;
-      base_query = $.parseJSON($(element).attr('base_query'));
-      base_query[filterkey] = filtervalue;
-      $(element).attr('base_query', $.toJSON(base_query));
-      options = $.parseJSON($(element).attr('combogrid_options'));
-      $(element).attr('base_query', $.toJSON(base_query));
-      $(element).attr('combogrid_options', $.toJSON(options));
-      referencewidget_lookups($(element));
-    };
     parse_CCClist = function() {
 
       /**
@@ -207,7 +157,6 @@
     };
     that.load = function() {
       resultsinterpretation_move_below();
-      filter_CCContacts();
     };
   };
 

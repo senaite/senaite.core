@@ -32,4 +32,3 @@ from views.contacts import ClientContactVocabularyFactory
 from views.samplingrounds import ClientSamplingRoundsView
 
 from ajax import ReferenceWidgetVocabulary
-from ajax import ajaxGetClientInfo

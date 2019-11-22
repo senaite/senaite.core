@@ -267,6 +267,20 @@ class ClientBindableReferenceWidgetVocabulary(DefaultReferenceWidgetVocabulary):
         """
         query = super(ClientBindableReferenceWidgetVocabulary, self).get_raw_query()
         if IAnalysisRequest.providedBy(self.context):
+
+            # Apply the search criteria for this client
             client = self.context.getClient()
-            query["getClientUID"] = [api.get_uid(client), ""]
+            if "Contact" in self.get_portal_types(query):
+                query["getParentUID"] = [api.get_uid(client)]
+            else:
+                query["getClientUID"] = [api.get_uid(client), ""]
+
         return query
+
+    def get_portal_types(self, query):
+        """Return the list of portal types from the query passed-in
+        """
+        portal_types = query.get("portal_type", [])
+        if isinstance(portal_types, basestring):
+            portal_types = [portal_types]
+        return portal_types

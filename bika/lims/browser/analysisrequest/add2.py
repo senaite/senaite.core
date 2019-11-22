@@ -1022,12 +1022,12 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         filter_queries = {
             "SamplePoint": {
                 "getSampleTypeTitles": [obj.Title(), ''],
-                "getClientUID": [client_uid, bika_samplepoints_uid],
+                "getClientUID": [client_uid, ""],
                 "sort_order": "descending",
             },
             "Specification": {
                 "getSampleTypeTitle": obj.Title(),
-                "getClientUID": [client_uid, bika_analysisspecs_uid],
+                "getClientUID": [client_uid, ""],
                 "sort_order": "descending",
             }
         }

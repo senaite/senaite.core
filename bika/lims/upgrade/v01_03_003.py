@@ -77,7 +77,11 @@ def reindex_client_fields(portal):
 
     query = dict(portal_type=portal_types)
     brains = api.search(query, UID_CATALOG)
-    for brain in brains:
+    total = len(brains)
+    for num, brain in enumerate(brains):
+        if num and num % 100 == 0:
+            logger.info("Reindexing client fields: {}/{}".format(num, total))
+
         obj = api.get_object(brain)
         obj.reindexObject(idxs=fields_to_reindex)
 
