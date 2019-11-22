@@ -18,6 +18,7 @@
 # Copyright 2018-2019 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import itertools
 import os
 import tempfile
 from email.mime.multipart import MIMEMultipart
@@ -26,14 +27,19 @@ from email.mime.text import MIMEText
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
 from Products.CMFPlone.utils import safe_unicode
+from email.Utils import formataddr
+from zope.interface import alsoProvides
+from zope.lifecycleevent import modified
+
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.idserver import renameAfterCreation
-from bika.lims.interfaces import IAnalysisRequest, IReceived
+from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.interfaces import IAnalysisRequestRetest
 from bika.lims.interfaces import IAnalysisRequestSecondary
 from bika.lims.interfaces import IAnalysisService
+from bika.lims.interfaces import IReceived
 from bika.lims.interfaces import IRoutineAnalysis
 from bika.lims.utils import attachPdf
 from bika.lims.utils import changeWorkflowState
@@ -47,9 +53,6 @@ from bika.lims.workflow import doActionFor
 from bika.lims.workflow import push_reindex_to_actions_pool
 from bika.lims.workflow.analysisrequest import AR_WORKFLOW_ID
 from bika.lims.workflow.analysisrequest import do_action_to_analyses
-from email.Utils import formataddr
-from zope.interface import alsoProvides
-from zope.lifecycleevent import modified
 
 
 def create_analysisrequest(client, request, values, analyses=None,
@@ -87,6 +90,11 @@ def create_analysisrequest(client, request, values, analyses=None,
     ar.setAnalyses(service_uids, prices=prices, specs=specifications)
     values.update({"Analyses": service_uids})
     ar.processForm(REQUEST=request, values=values)
+
+    # Handle hidden analyses from template and profiles
+    # https://github.com/senaite/senaite.core/issues/1437
+    # https://github.com/senaite/senaite.core/issues/1326
+    apply_hidden_services(ar)
 
     # Handle rejection reasons
     rejection_reasons = resolve_rejection_reasons(values)
@@ -143,6 +151,42 @@ def create_analysisrequest(client, request, values, analyses=None,
         doActionFor(ar, "reject")
 
     return ar
+
+
+def apply_hidden_services(sample):
+    """
+    Applies the hidden setting to the sample analyses in accordance with the
+    settings from its template and/or profiles
+    :param sample: the sample that contains the analyses
+    """
+    hidden = list()
+
+    # Get the "hidden" service uids from the template
+    template = sample.getTemplate()
+    hidden = get_hidden_service_uids(template)
+
+    # Get the "hidden" service uids from profiles
+    profiles = sample.getProfiles()
+    hid_profiles = map(get_hidden_service_uids, profiles)
+    hid_profiles = list(itertools.chain(*hid_profiles))
+    hidden.extend(hid_profiles)
+
+    # Update the sample analyses
+    analyses = sample.getAnalyses(full_objects=True)
+    analyses = filter(lambda an: an.getServiceUID() in hidden, analyses)
+    for analysis in analyses:
+        analysis.setHidden(True)
+
+
+def get_hidden_service_uids(profile_or_template):
+    """Returns a list of service uids that are set as hidden
+    :param profile_or_template: ARTemplate or AnalysisProfile object
+    """
+    if not profile_or_template:
+        return []
+    settings = profile_or_template.getAnalysisServicesSettings()
+    hidden = filter(lambda ser: ser.get("hidden", False), settings)
+    return map(lambda setting: setting["uid"], hidden)
 
 
 def get_services_uids(context=None, analyses_serv=None, values=None):
