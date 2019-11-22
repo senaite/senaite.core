@@ -1067,10 +1067,6 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         sample_point = obj.getSamplePoint()
         container = obj.getContainer()
         deviation = obj.getSamplingDeviation()
-        preservation = obj.getPreservation()
-        specification = obj.getSpecification()
-        sample_template = obj.getTemplate()
-        profiles = obj.getProfiles() or []
         cccontacts = obj.getCCContact() or []
         contact = obj.getContact()
 
@@ -1098,10 +1094,6 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             "StorageLocation": self.to_field_value(storage_location),
             "Container": self.to_field_value(container),
             "SamplingDeviation": self.to_field_value(deviation),
-            "Preservation": self.to_field_value(preservation),
-            "Specification": self.to_field_value(specification),
-            "Template": self.to_field_value(sample_template),
-            "Profiles": map(self.to_field_value, profiles),
             "Composite": {"value": obj.getComposite()}
         })
 
