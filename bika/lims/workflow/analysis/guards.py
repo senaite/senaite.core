@@ -136,10 +136,11 @@ def guard_submit(analysis):
     if not analysis.bika_setup.getAllowToSubmitNotAssigned():
         if not user_has_super_roles():
             # Cannot submit if unassigned
-            if not analysis.getAnalyst():
+            analyst = analysis.getAnalyst()
+            if not analyst:
                 return False
             # Cannot submit if assigned analyst is not the current user
-            if analysis.getAnalyst() != api.get_current_user().getId():
+            if analyst != api.get_current_user().getId():
                 return False
 
     # Cannot submit unless all dependencies are submitted or can be submitted
