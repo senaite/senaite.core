@@ -259,16 +259,14 @@ class DefaultReferenceWidgetVocabulary(object):
         return brains
 
 
-class BatchReferenceWidgetVocabulary(DefaultReferenceWidgetVocabulary):
+class ClientBindableReferenceWidgetVocabulary(DefaultReferenceWidgetVocabulary):
 
     def get_raw_query(self):
         """Returns the raw query to use for current search, based on the
         base query + update query
         """
-        query = super(BatchReferenceWidgetVocabulary, self).get_raw_query()
+        query = super(ClientBindableReferenceWidgetVocabulary, self).get_raw_query()
         if IAnalysisRequest.providedBy(self.context):
-            # Display the Batches from the Client the Sample belongs to and
-            # those that do not belong to any Client
             client = self.context.getClient()
             query["getClientUID"] = [api.get_uid(client), ""]
         return query

@@ -19,14 +19,13 @@
       provides="bika.lims.interfaces.IReferenceWidgetVocabulary"
     />
 
-    <!-- Display the Batches that belong to same client or not assigned to any
-    client in Analysis Request view -->
+    <!-- Adds getClientUID criteria for reference widget searches in
+     AnaysisRequest context -->
     <adapter
       for="bika.lims.interfaces.IAnalysisRequest
            zope.publisher.interfaces.browser.IBrowserRequest"
-      factory="bika.lims.adapters.referencewidgetvocabulary.BatchReferenceWidgetVocabulary"
-      provides="bika.lims.interfaces.IReferenceWidgetVocabulary"
-    />
+      factory="bika.lims.adapters.referencewidgetvocabulary.ClientBindableReferenceWidgetVocabulary"
+      provides="bika.lims.interfaces.IReferenceWidgetVocabulary" />
 
 
     <!--
