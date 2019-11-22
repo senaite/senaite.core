@@ -75,7 +75,6 @@ class SRTemplateARTemplatesView(BikaListingView):
         if self.clientUID is None:
             self.clientUID = self.context.aq_parent.aq_parent.UID()
         # Only display client's and lab's arts
-        # FIXME
         if obj.aq_parent.aq_inner.meta_type == 'Client':
             obj_client = obj.getClientUID()
             if obj_client != self.clientUID:
