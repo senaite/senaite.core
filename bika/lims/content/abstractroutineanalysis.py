@@ -29,6 +29,7 @@ from bika.lims.catalog.indexers.baseanalysis import sortable_title
 from bika.lims.content.abstractanalysis import AbstractAnalysis
 from bika.lims.content.abstractanalysis import schema
 from bika.lims.content.analysisspec import ResultsRangeDict
+from bika.lims.content.clientbindable import ClientBindable
 from bika.lims.content.reflexrule import doReflexRuleAction
 from bika.lims.interfaces import IAnalysis
 from bika.lims.interfaces import ICancellable
@@ -124,7 +125,7 @@ schema = schema.copy() + Schema((
 ))
 
 
-class AbstractRoutineAnalysis(AbstractAnalysis):
+class AbstractRoutineAnalysis(AbstractAnalysis, ClientBindable):
     implements(IAnalysis, IRequestAnalysis, IRoutineAnalysis, ICancellable)
     security = ClassSecurityInfo()
     displayContentsTab = False
@@ -166,38 +167,27 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
         if request:
             return request.absolute_url_path()
 
+    def getClient(self):
+        """Returns the Client this analysis is bound to, if any
+        """
+        request = self.getRequest()
+        return request and request.getClient() or None
+
     @security.public
     def getClientTitle(self):
         """Used to populate catalog values.
         Returns the Title of the client for this analysis' AR.
         """
-        request = self.getRequest()
-        if request:
-            client = request.getClient()
-            if client:
-                return client.Title()
-
-    @security.public
-    def getClientUID(self):
-        """Used to populate catalog values.
-        Returns the UID of the client for this analysis' AR.
-        """
-        request = self.getRequest()
-        if request:
-            client = request.getClient()
-            if client:
-                return client.UID()
+        client = self.getClient()
+        return client and client.Title() or None
 
     @security.public
     def getClientURL(self):
         """This method is used to populate catalog values
         Returns the URL of the client for this analysis' AR.
         """
-        request = self.getRequest()
-        if request:
-            client = request.getClient()
-            if client:
-                return client.absolute_url_path()
+        client = self.getClient()
+        return client and client.absolute_url_path() or None
 
     @security.public
     def getClientOrderNumber(self):

@@ -1117,6 +1117,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             "results_range": results_range,
             "sample_type_uid": obj.getSampleTypeUID(),
             "sample_type_title": obj.getSampleTypeTitle(),
+            # FIXME
             "client_uid": obj.getClientUID(),
         })
 
