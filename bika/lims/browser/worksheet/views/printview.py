@@ -369,7 +369,7 @@ class PrintView(BrowserView):
                 ar = self._ar_data(arobj)
                 ar['client'] = self._client_data(arobj.aq_parent)
                 ar["sample"] = dict()
-                if IReferenceSample.providedBy(an):
+                if IReferenceSample.providedBy(arobj):
                     ar['sample'] = self._sample_data(an.getSample())
                 else:
                     ar['sample'] = self._sample_data(an.getRequest())
