@@ -261,25 +261,47 @@ class DefaultReferenceWidgetVocabulary(object):
         return brains
 
 
-class ClientBoundReferenceWidgetVocabulary(DefaultReferenceWidgetVocabulary):
+class ClientAwareReferenceWidgetVocabulary(DefaultReferenceWidgetVocabulary):
     """Injects search criteria (filters) in the query when the current context
     is, belongs or is associated to a Client
     """
+
+    # portal_types that might be bound to a client
+    client_bound_types = [
+        "Contact",
+        "Batch",
+        "AnalysisProfile",
+        "AnalysisSpec",
+        "ARTemplate",
+        "SamplePoint"
+    ]
 
     def get_raw_query(self):
         """Returns the raw query to use for current search, based on the
         base query + update query
         """
-        query = super(ClientBoundReferenceWidgetVocabulary, self).get_raw_query()
-        client_uid = self.get_client_uid(self.context)
-        if client_uid:
-            # Apply the search criteria for this client
-            if "Contact" in self.get_portal_types(query):
-                query["getParentUID"] = [client_uid]
-            else:
-                query["getClientUID"] = [client_uid, ""]
+        query = super(ClientAwareReferenceWidgetVocabulary, self).get_raw_query()
+
+        if self.requires_client_filter(query):
+            client_uid = self.get_client_uid(self.context)
+            if client_uid:
+                # Apply the search criteria for this client
+                # Contact is the only object bound to a Client that is stored
+                # in portal_catalog. And in this catalog, getClientUID does not
+                # exist, rather getParentUID
+                if "Contact" in self.get_portal_types(query):
+                    query["getParentUID"] = [client_uid]
+                else:
+                    query["getClientUID"] = [client_uid, ""]
 
         return query
+
+    def requires_client_filter(self, query):
+        """Returns whether the query passed in requires a filter by client
+        """
+        portal_types = self.get_portal_types(query)
+        bound = map(lambda pt: pt in self.client_bound_types, portal_types)
+        return any(bound)
 
     def get_client_uid(self, obj):
         """Returns the client uid the current object belongs to
