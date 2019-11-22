@@ -45,8 +45,9 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.api.analysisservice import get_calculation_dependencies_for
 from bika.lims.api.analysisservice import get_service_dependencies_for
-from bika.lims.interfaces import IGetDefaultFieldValueARAddHook, \
-    IAddSampleFieldsFlush, IAddSampleObjectInfo
+from bika.lims.interfaces import IAddSampleFieldsFlush
+from bika.lims.interfaces import IAddSampleObjectInfo
+from bika.lims.interfaces import IGetDefaultFieldValueARAddHook
 from bika.lims.utils import tmpID
 from bika.lims.utils.analysisrequest import create_analysisrequest as crar
 from bika.lims.workflow import ActionHandlerPool
@@ -826,25 +827,6 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         # UID of the client
         uid = api.get_uid(obj)
 
-        # Bika Setup folder
-        bika_setup = api.get_bika_setup()
-
-        # bika samplepoints
-        bika_samplepoints = bika_setup.bika_samplepoints
-        bika_samplepoints_uid = api.get_uid(bika_samplepoints)
-
-        # bika artemplates
-        bika_artemplates = bika_setup.bika_artemplates
-        bika_artemplates_uid = api.get_uid(bika_artemplates)
-
-        # bika analysisprofiles
-        bika_analysisprofiles = bika_setup.bika_analysisprofiles
-        bika_analysisprofiles_uid = api.get_uid(bika_analysisprofiles)
-
-        # bika analysisspecs
-        bika_analysisspecs = bika_setup.bika_analysisspecs
-        bika_analysisspecs_uid = api.get_uid(bika_analysisspecs)
-
         # catalog queries for UI field filtering
         filter_queries = {
             "Contact": {
@@ -857,16 +839,16 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                 "getParentUID": [uid]
             },
             "SamplePoint": {
-                "getClientUID": [uid, bika_samplepoints_uid],
+                "getClientUID": [uid, ""],
             },
             "Template": {
-                "getClientUID": [uid, bika_artemplates_uid],
+                "getClientUID": [uid, ""],
             },
             "Profiles": {
-                "getClientUID": [uid, bika_analysisprofiles_uid],
+                "getClientUID": [uid, ""],
             },
             "Specification": {
-                "getClientUID": [uid, bika_analysisspecs_uid],
+                "getClientUID": [uid, ""],
             },
             "SamplingRound": {
                 "getParentUID": [uid],
