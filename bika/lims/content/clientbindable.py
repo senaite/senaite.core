@@ -55,7 +55,7 @@ class ClientBindable(BaseObject):
         """Returns the Client ID the object is bound to, if any
         """
         client = self.getClient()
-        return client and api.get_id(client) or ""
+        return client and client.getClientID() or ""
 
     @security.public
     def getClientTitle(self):
