@@ -50,11 +50,12 @@ def upgrade(tool):
     setup.runImportStepFromProfile(profile, "propertiestool")
 
     # Reindex client's related fields (getClientUID, getClientTitle, etc.)
-    # https://github.com/senaite/senaite.core/pull/1476
+    # https://github.com/senaite/senaite.core/pull/1477
     reindex_client_fields(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
+
 
 def reindex_client_fields(portal):
     logger.info("Reindexing client fields ...")
