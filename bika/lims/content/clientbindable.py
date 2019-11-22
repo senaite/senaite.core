@@ -17,8 +17,9 @@ class ClientBindable(BaseObject):
         """Returns the Client the object is bound to, if any
         """
         # Look for the parent
-        if IClient.providedBy(self.aq_parent):
-            return self.aq_parent
+        client = self._infere_client()
+        if client:
+            return client
 
         # Look in Schema
         client_field = self.Schema().get("Client", default=None)
@@ -30,6 +31,17 @@ class ClientBindable(BaseObject):
 
         # No client bound
         return None
+
+    def _infere_client(self, obj=None):
+        """Inferes the client the object belongs to by walking through parents
+        """
+        if not obj:
+            obj = self
+        if IClient.providedBy(obj):
+            return obj
+        elif api.is_portal(obj):
+            return None
+        return self._infere_client(obj.aq_parent)
 
     @security.public
     def getClientUID(self):

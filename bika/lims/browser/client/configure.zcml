@@ -11,13 +11,6 @@
       name="getContacts"
     />
 
-    <adapter
-      for="bika.lims.interfaces.IClient
-           zope.publisher.interfaces.browser.IBrowserRequest"
-      factory="bika.lims.browser.client.ReferenceWidgetVocabulary"
-      provides="bika.lims.interfaces.IReferenceWidgetVocabulary"
-    />
-
     <browser:page
       for="bika.lims.interfaces.IClient"
       name="batches"

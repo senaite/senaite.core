@@ -22,6 +22,8 @@ import json
 
 from bika.lims import api
 from bika.lims import logger
+from bika.lims.interfaces import IClient
+from bika.lims.interfaces import IClientBindable
 from bika.lims.interfaces import IReferenceWidgetVocabulary, IAnalysisRequest
 from bika.lims.utils import to_unicode as _u
 from bika.lims.utils import to_utf8 as _c
@@ -259,23 +261,37 @@ class DefaultReferenceWidgetVocabulary(object):
         return brains
 
 
-class ClientBindableReferenceWidgetVocabulary(DefaultReferenceWidgetVocabulary):
+class ClientBoundReferenceWidgetVocabulary(DefaultReferenceWidgetVocabulary):
+    """Injects search criteria (filters) in the query when the current context
+    is, belongs or is associated to a Client
+    """
 
     def get_raw_query(self):
         """Returns the raw query to use for current search, based on the
         base query + update query
         """
-        query = super(ClientBindableReferenceWidgetVocabulary, self).get_raw_query()
-        if IAnalysisRequest.providedBy(self.context):
-
+        query = super(ClientBoundReferenceWidgetVocabulary, self).get_raw_query()
+        client_uid = self.get_client_uid(self.context)
+        if client_uid:
             # Apply the search criteria for this client
-            client = self.context.getClient()
             if "Contact" in self.get_portal_types(query):
-                query["getParentUID"] = [api.get_uid(client)]
+                query["getParentUID"] = [client_uid]
             else:
-                query["getClientUID"] = [api.get_uid(client), ""]
+                query["getClientUID"] = [client_uid, ""]
 
         return query
+
+    def get_client_uid(self, obj):
+        """Returns the client uid the current object belongs to
+        """
+        if IClient.providedBy(obj):
+            return api.get_uid(obj)
+        elif IClientBindable.providedBy(obj):
+            return obj.getClientUID()
+        elif api.is_portal(obj):
+            return None
+        return self.get_client_uid(obj.aq_parent)
+
 
     def get_portal_types(self, query):
         """Return the list of portal types from the query passed-in

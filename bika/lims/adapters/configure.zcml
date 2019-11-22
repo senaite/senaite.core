@@ -19,12 +19,20 @@
       provides="bika.lims.interfaces.IReferenceWidgetVocabulary"
     />
 
-    <!-- Adds getClientUID criteria for reference widget searches in
-     AnaysisRequest context -->
+
+    <!-- Client: Search criteria for client-bound reference fields -->
+    <adapter
+      for="bika.lims.interfaces.IClient
+           zope.publisher.interfaces.browser.IBrowserRequest"
+      factory=".referencewidgetvocabulary.ClientBoundReferenceWidgetVocabulary"
+      provides="bika.lims.interfaces.IReferenceWidgetVocabulary"
+    />
+
+    <!-- Sample: Search criteria for client-bound reference fields -->
     <adapter
       for="bika.lims.interfaces.IAnalysisRequest
            zope.publisher.interfaces.browser.IBrowserRequest"
-      factory="bika.lims.adapters.referencewidgetvocabulary.ClientBindableReferenceWidgetVocabulary"
+      factory=".referencewidgetvocabulary.ClientBoundReferenceWidgetVocabulary"
       provides="bika.lims.interfaces.IReferenceWidgetVocabulary" />
 
 
