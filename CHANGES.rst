@@ -19,6 +19,7 @@ Changelog
 **Fixed**
 
 - #1473 Hidden settings of analysis services lost on Sample creation
+- #1472 Secondary samples - removal of analysis profile not possible
 - #1469 Fix Site Properties Generic Setup Export Step
 - #1467 Cannot override behavior of Batch folder when using `before_render`
 
