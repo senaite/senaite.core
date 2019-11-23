@@ -142,7 +142,7 @@ def guard_submit(analysis):
             if not analyst:
                 return False
             # Cannot submit if assigned analyst is not the current user
-            if analyst != security.get_user_uid():
+            if analyst != security.get_user_id():
                 return False
 
     # Cannot submit unless all dependencies are submitted or can be submitted
