@@ -207,6 +207,10 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             if method and analysis.isMethodAllowed(method):
                 analysis.setMethod(method)
 
+        # Assign the worksheet's analyst to the analysis
+        # https://github.com/senaite/senaite.core/issues/1409
+        analysis.setAnalyst(self.getAnalyst())
+
         # Transition analysis to "assigned"
         actions_pool = ActionHandlerPool.get_instance()
         actions_pool.queue_pool()
