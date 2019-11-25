@@ -19,6 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 import json
+import six
 
 from zope.interface import implements
 
@@ -310,6 +311,6 @@ class ClientAwareReferenceWidgetVocabulary(DefaultReferenceWidgetVocabulary):
         """Return the list of portal types from the query passed-in
         """
         portal_types = query.get("portal_type", [])
-        if isinstance(portal_types, basestring):
+        if isinstance(portal_types, six.string_types):
             portal_types = [portal_types]
         return portal_types
