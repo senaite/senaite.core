@@ -25,7 +25,7 @@ from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import AnalysisSpecificationWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.content.clientbindable import ClientAwareMixin
+from bika.lims.content.clientawaremixin import ClientAwareMixin
 from bika.lims.interfaces import IAnalysisSpec, IDeactivable
 from Products.Archetypes import atapi
 from Products.Archetypes.public import BaseFolder

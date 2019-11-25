@@ -30,7 +30,7 @@ from bika.lims.browser.widgets import RemarksWidget
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaFolderSchema
-from bika.lims.content.clientbindable import ClientAwareMixin
+from bika.lims.content.clientawaremixin import ClientAwareMixin
 from bika.lims.interfaces import IBatch
 from bika.lims.interfaces import ICancellable
 from bika.lims.interfaces import IClient

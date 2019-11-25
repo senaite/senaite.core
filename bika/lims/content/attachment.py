@@ -27,7 +27,7 @@ from bika.lims.browser.widgets import DateTimeWidget
 from bika.lims.config import ATTACHMENT_REPORT_OPTIONS
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.content.clientbindable import ClientAwareMixin
+from bika.lims.content.clientawaremixin import ClientAwareMixin
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from DateTime import DateTime
 from plone.app.blob.field import FileField

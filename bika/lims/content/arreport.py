@@ -26,7 +26,7 @@ from bika.lims.browser.widgets import DateTimeWidget
 from bika.lims.browser.widgets import ReferenceWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.content.clientbindable import ClientAwareMixin
+from bika.lims.content.clientawaremixin import ClientAwareMixin
 from bika.lims.interfaces import IARReport
 from plone.app.blob.field import BlobField
 from Products.Archetypes import atapi

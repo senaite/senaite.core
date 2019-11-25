@@ -34,7 +34,7 @@ from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from Products.Archetypes.public import *
 
-from bika.lims.content.clientbindable import ClientAwareMixin
+from bika.lims.content.clientawaremixin import ClientAwareMixin
 from bika.lims.interfaces import IAnalysisProfile, IDeactivable
 from Products.Archetypes.references import HoldingReference
 from Products.ATExtensions.field import RecordsField

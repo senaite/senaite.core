@@ -44,7 +44,7 @@ from bika.lims.browser.widgets.referencewidget import \
     ReferenceWidget as BikaReferenceWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.content.clientbindable import ClientAwareMixin
+from bika.lims.content.clientawaremixin import ClientAwareMixin
 from bika.lims.interfaces import IDeactivable
 from plone.app.blob.field import FileField as BlobFileField
 from zope.interface import implements
