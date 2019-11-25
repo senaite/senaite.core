@@ -25,7 +25,7 @@ from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import AnalysisSpecificationWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.content.clientbindable import ClientBindable
+from bika.lims.content.clientbindable import ClientAwareMixin
 from bika.lims.interfaces import IAnalysisSpec, IDeactivable
 from Products.Archetypes import atapi
 from Products.Archetypes.public import BaseFolder
@@ -133,7 +133,7 @@ schema['description'].widget.visible = True
 schema['title'].required = True
 
 
-class AnalysisSpec(BaseFolder, HistoryAwareMixin, ClientBindable):
+class AnalysisSpec(BaseFolder, HistoryAwareMixin, ClientAwareMixin):
     """Analysis Specification
     """
     implements(IAnalysisSpec, IDeactivable)

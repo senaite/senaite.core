@@ -30,7 +30,7 @@ from bika.lims.browser.widgets import RemarksWidget
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaFolderSchema
-from bika.lims.content.clientbindable import ClientBindable
+from bika.lims.content.clientbindable import ClientAwareMixin
 from bika.lims.interfaces import IBatch
 from bika.lims.interfaces import ICancellable
 from bika.lims.interfaces import IClient
@@ -143,7 +143,7 @@ schema.moveField('title', before='description')
 schema.moveField('Client', after='title')
 
 
-class Batch(ATFolder, ClientBindable):
+class Batch(ATFolder, ClientAwareMixin):
     """A Batch combines multiple ARs into a logical unit
     """
     implements(IBatch, ICancellable)
@@ -160,7 +160,7 @@ class Batch(ATFolder, ClientBindable):
     def getClient(self):
         """Retrieves the Client the current Batch is assigned to
         """
-        # We override here getClient from ClientBindable because te schema's
+        # We override here getClient from ClientAwareMixin because te schema's
         # field Client is only used to allow the user to assign the batch to a
         # client in edit form. The entered value is used in
         # ObjectModifiedEventHandler to move the batch to the Client's folder,

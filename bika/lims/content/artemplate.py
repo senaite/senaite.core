@@ -30,7 +30,7 @@ from bika.lims.browser.widgets import ReferenceWidget
 from bika.lims.browser.widgets import RemarksWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.content.clientbindable import ClientBindable
+from bika.lims.content.clientbindable import ClientAwareMixin
 from bika.lims.interfaces import IARTemplate, IDeactivable
 from Products.Archetypes.public import BaseContent
 from Products.Archetypes.public import BooleanField
@@ -300,7 +300,7 @@ schema["title"].validators = ("uniquefieldvalidator",)
 schema["title"]._validationLayer()
 
 
-class ARTemplate(BaseContent, ClientBindable):
+class ARTemplate(BaseContent, ClientAwareMixin):
     security = ClassSecurityInfo()
     schema = schema
     displayContentsTab = False

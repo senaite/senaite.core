@@ -23,7 +23,7 @@ import json
 from bika.lims import api
 from bika.lims import logger
 from bika.lims.interfaces import IClient
-from bika.lims.interfaces import IClientBindable
+from bika.lims.interfaces import IClientAwareMixin
 from bika.lims.interfaces import IReferenceWidgetVocabulary, IAnalysisRequest
 from bika.lims.utils import to_unicode as _u
 from bika.lims.utils import to_utf8 as _c
@@ -308,7 +308,7 @@ class ClientAwareReferenceWidgetVocabulary(DefaultReferenceWidgetVocabulary):
         """
         if IClient.providedBy(obj):
             return api.get_uid(obj)
-        elif IClientBindable.providedBy(obj):
+        elif IClientAwareMixin.providedBy(obj):
             return obj.getClientUID()
         elif api.is_portal(obj):
             return None

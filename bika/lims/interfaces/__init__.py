@@ -1015,7 +1015,7 @@ class IAddSampleObjectInfo(Interface):
         """
 
 
-class IClientBindable(Interface):
+class IClientAwareMixin(Interface):
     """Marker interface for objects that can be bound to a Client, either
     because they can be added inside a Client folder or because it can be
     assigned through a Reference field

@@ -4,11 +4,11 @@ from zope.interface import implements
 
 from bika.lims import api
 from bika.lims.interfaces import IClient
-from bika.lims.interfaces import IClientBindable
+from bika.lims.interfaces import IClientAwareMixin
 
 
-class ClientBindable(BaseObject):
-    implements(IClientBindable)
+class ClientAwareMixin(BaseObject):
+    implements(IClientAwareMixin)
 
     security = ClassSecurityInfo()
 

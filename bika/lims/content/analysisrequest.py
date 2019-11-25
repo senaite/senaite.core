@@ -49,7 +49,7 @@ from bika.lims.config import PRIORITIES
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.analysisspec import ResultsRangeDict
 from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.content.clientbindable import ClientBindable
+from bika.lims.content.clientbindable import ClientAwareMixin
 from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.interfaces import IAnalysisRequestPartition
 from bika.lims.interfaces import IBatch
@@ -1393,7 +1393,7 @@ schema.moveField('ResultsInterpretationDepts', pos='bottom')
 schema.moveField("PrimaryAnalysisRequest", before="Client")
 
 
-class AnalysisRequest(BaseFolder, ClientBindable):
+class AnalysisRequest(BaseFolder, ClientAwareMixin):
     implements(IAnalysisRequest, ICancellable)
     security = ClassSecurityInfo()
     displayContentsTab = False
@@ -1433,7 +1433,7 @@ class AnalysisRequest(BaseFolder, ClientBindable):
 
     def getClient(self):
         """Returns the client this object is bound to. We override getClient
-        from ClientBindable because the "Client" schema field is only used to
+        from ClientAwareMixin because the "Client" schema field is only used to
         allow the user to set the client while creating the Sample through
         Sample Add form, but cannot be changed afterwards. The Sample is
         created directly inside the selected client folder on submit
