@@ -20,14 +20,14 @@
 
 import json
 
+from zope.interface import implements
+
 from bika.lims import api
 from bika.lims import logger
-from bika.lims.interfaces import IClient
-from bika.lims.interfaces import IClientAwareMixin
-from bika.lims.interfaces import IReferenceWidgetVocabulary, IAnalysisRequest
+from bika.lims.interfaces import IReferenceWidgetVocabulary
+from bika.lims.utils import get_client
 from bika.lims.utils import to_unicode as _u
 from bika.lims.utils import to_utf8 as _c
-from zope.interface import implements
 
 
 class DefaultReferenceWidgetVocabulary(object):
@@ -282,8 +282,11 @@ class ClientAwareReferenceWidgetVocabulary(DefaultReferenceWidgetVocabulary):
         """
         query = super(ClientAwareReferenceWidgetVocabulary, self).get_raw_query()
 
-        if self.requires_client_filter(query):
-            client_uid = self.get_client_uid(self.context)
+        if self.is_client_aware(query):
+
+            client = get_client(self.context)
+            client_uid = client and api.get_uid(client) or None
+
             if client_uid:
                 # Apply the search criteria for this client
                 # Contact is the only object bound to a Client that is stored
@@ -296,24 +299,12 @@ class ClientAwareReferenceWidgetVocabulary(DefaultReferenceWidgetVocabulary):
 
         return query
 
-    def requires_client_filter(self, query):
+    def is_client_aware(self, query):
         """Returns whether the query passed in requires a filter by client
         """
         portal_types = self.get_portal_types(query)
         bound = map(lambda pt: pt in self.client_bound_types, portal_types)
         return any(bound)
-
-    def get_client_uid(self, obj):
-        """Returns the client uid the current object belongs to
-        """
-        if IClient.providedBy(obj):
-            return api.get_uid(obj)
-        elif IClientAwareMixin.providedBy(obj):
-            return obj.getClientUID()
-        elif api.is_portal(obj):
-            return None
-        return self.get_client_uid(obj.aq_parent)
-
 
     def get_portal_types(self, query):
         """Return the list of portal types from the query passed-in

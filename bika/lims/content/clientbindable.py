@@ -5,6 +5,7 @@ from zope.interface import implements
 from bika.lims import api
 from bika.lims.interfaces import IClient
 from bika.lims.interfaces import IClientAwareMixin
+from bika.lims.utils import chain
 
 
 class ClientAwareMixin(BaseObject):
@@ -16,10 +17,10 @@ class ClientAwareMixin(BaseObject):
     def getClient(self):
         """Returns the Client the object is bound to, if any
         """
-        # Look for the parent
-        client = self._infere_client()
-        if client:
-            return client
+        # Look in the acquisition chain
+        for obj in chain(self):
+            if IClient.providedBy(obj):
+                return obj
 
         # Look in Schema
         client_field = self.Schema().get("Client", default=None)
@@ -31,17 +32,6 @@ class ClientAwareMixin(BaseObject):
 
         # No client bound
         return None
-
-    def _infere_client(self, obj=None):
-        """Inferes the client the object belongs to by walking through parents
-        """
-        if not obj:
-            obj = self
-        if IClient.providedBy(obj):
-            return obj
-        elif api.is_portal(obj):
-            return None
-        return self._infere_client(obj.aq_parent)
 
     @security.public
     def getClientUID(self):
