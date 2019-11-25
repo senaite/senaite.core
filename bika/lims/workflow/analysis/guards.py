@@ -18,14 +18,16 @@
 # Copyright 2018-2019 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from plone.memoize.request import cache
+
 from bika.lims import api
 from bika.lims import logger
 from bika.lims import workflow as wf
+from bika.lims.api import security
 from bika.lims.interfaces import ISubmitted
 from bika.lims.interfaces import IVerified
 from bika.lims.interfaces import IWorksheet
 from bika.lims.interfaces.analysis import IRequestAnalysis
-from plone.memoize.request import cache
 
 
 def is_worksheet_context():
@@ -136,10 +138,11 @@ def guard_submit(analysis):
     if not analysis.bika_setup.getAllowToSubmitNotAssigned():
         if not user_has_super_roles():
             # Cannot submit if unassigned
-            if not analysis.getAnalyst():
+            analyst = analysis.getAnalyst()
+            if not analyst:
                 return False
             # Cannot submit if assigned analyst is not the current user
-            if analysis.getAnalyst() != api.get_current_user().getId():
+            if analyst != security.get_user_id():
                 return False
 
     # Cannot submit unless all dependencies are submitted or can be submitted

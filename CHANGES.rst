@@ -19,6 +19,7 @@ Changelog
 **Fixed**
 
 - #1477 Sample edit form - some selection widgets empty
+- #1475 User with "Analyst" role cannot submit analyses from worksheet
 - #1474 Adding Control Reference to Worksheet causes print fail
 - #1473 Hidden settings of analysis services lost on Sample creation
 - #1472 Secondary samples - removal of analysis profile not possible
