@@ -18,6 +18,7 @@ Changelog
 
 **Fixed**
 
+- #1480 Worksheet removal results in 404
 - #1475 User with "Analyst" role cannot submit analyses from worksheet
 - #1474 Adding Control Reference to Worksheet causes print fail
 - #1473 Hidden settings of analysis services lost on Sample creation

@@ -20,6 +20,7 @@
 
 from bika.lims import logger
 from bika.lims.config import PROJECTNAME as product
+from bika.lims.setuphandlers import setup_form_controller_actions
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
 
@@ -45,6 +46,10 @@ def upgrade(tool):
 
     # https://github.com/senaite/senaite.core/pull/1469
     setup.runImportStepFromProfile(profile, "propertiestool")
+
+    # Redirect to worksheets folder when a Worksheet is removed
+    # https://github.com/senaite/senaite.core/pull/1480
+    setup_form_controller_actions(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
