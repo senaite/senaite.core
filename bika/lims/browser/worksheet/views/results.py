@@ -51,10 +51,6 @@ class ManageResultsView(BrowserView):
         self.layout_displaylist = WORKSHEET_LAYOUT_OPTIONS
 
     def __call__(self):
-        # TODO: Refactor Worfklow
-        if not self.is_edit_allowed():
-            redirect_url = api.get_url(self.context)
-            return self.request.response.redirect(redirect_url)
         # TODO: Refactor this function call
         showRejectionMessage(self.context)
 
@@ -98,13 +94,6 @@ class ManageResultsView(BrowserView):
         if not instrument:
             return ""
         return api.get_title(instrument)
-
-    @view.memoize
-    def is_edit_allowed(self):
-        """Check if edit is allowed
-        """
-        checkPermission = self.context.portal_membership.checkPermission
-        return checkPermission(EditWorksheet, self.context)
 
     @view.memoize
     def is_manage_allowed(self):
