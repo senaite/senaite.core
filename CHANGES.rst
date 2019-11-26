@@ -18,6 +18,7 @@ Changelog
 
 **Fixed**
 
+- #1478 Clients default CC E-Mails missing in Add Sample
 - #1475 User with "Analyst" role cannot submit analyses from worksheet
 - #1474 Adding Control Reference to Worksheet causes print fail
 - #1473 Hidden settings of analysis services lost on Sample creation
