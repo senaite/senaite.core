@@ -15,6 +15,7 @@ Changelog
 
 **Removed**
 
+- #1478 Remove AcquireFieldDefaults (was used for CCEmails field only)
 
 **Fixed**
 
