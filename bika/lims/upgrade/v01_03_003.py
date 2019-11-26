@@ -29,6 +29,39 @@ from bika.lims.upgrade.utils import UpgradeUtils
 version = "1.3.3"  # Remember version number in metadata.xml and setup.py
 profile = "profile-{0}:default".format(product)
 
+INDEXES_TO_REMOVE = [
+    # Only used in add2 to filter Sample Points by Sample Type when a Sample
+    # Type was selected. Now, getSampleTypeUID is used instead because of
+    # https://github.com/senaite/senaite.core/pull/1481
+    ("bika_setup_catalog", "getSampleTypeTitles"),
+
+    # Only used for when Sample and SamplePartition objects
+    # existed. The following are the portal types stored in bika_catalog:
+    #   Batch, BatchFolder and ReferenceSample
+    # and there are no searches by getSampleTypeTitle for none of them
+    ("bika_catalog", "getSampleTypeTitle"),
+
+    # Not used neither for searches nor filtering of any of the content types
+    # stored in bika_catalog (Batch, BatchFolder and ReferenceSample)
+    ("bika_catalog", "getSampleTypeUID")
+]
+
+METADATA_TO_REMOVE = [
+    # Not used anywhere. In SamplePoints and Specifications listings, the
+    # SampleType object is waken-up instead of calling the metadata
+    ("bika_setup_catalog", "getSampleTypeTitle"),
+
+    # getSampleTypeUID (as metadata field) is only used for analyses and
+    # samples (AnalysisRequest), and none of the two are stored in setup_catalog
+    ("bika_setup_catalog", "getSampleTypeUID"),
+
+    # Only used for when Sample and SamplePartition objects existed.
+    # The following are the portal types stored in bika_catalog:
+    #   Batch, BatchFolder and ReferenceSample
+    # and "getSampleTypeTitle" metadata is not used for none of them
+    ("bika_catalog", "getSampleTypeTitle")
+]
+
 
 @upgradestep(product, version)
 def upgrade(tool):
@@ -48,6 +81,11 @@ def upgrade(tool):
 
     # https://github.com/senaite/senaite.core/pull/1469
     setup.runImportStepFromProfile(profile, "propertiestool")
+
+    # Remove stale indexes and metadata
+    # https://github.com/senaite/senaite.core/pull/1481
+    remove_stale_indexes(portal)
+    remove_stale_metadata(portal)
 
     # Reindex client's related fields (getClientUID, getClientTitle, etc.)
     # https://github.com/senaite/senaite.core/pull/1477
@@ -87,3 +125,39 @@ def reindex_client_fields(portal):
         obj.reindexObject(idxs=fields_to_reindex)
 
     logger.info("Reindexing client fields ... [DONE]")
+
+
+def remove_stale_indexes(portal):
+    logger.info("Removing stale indexes ...")
+    for catalog, index in INDEXES_TO_REMOVE:
+        del_index(catalog, index)
+    logger.info("Removing stale indexes ... [DONE]")
+
+
+def remove_stale_metadata(portal):
+    logger.info("Removing stale metadata ...")
+    for catalog, column in METADATA_TO_REMOVE:
+        del_metadata(catalog, column)
+    logger.info("Removing stale metadata ... [DONE]")
+
+
+def del_index(catalog_id, index_name):
+    logger.info("Removing '{}' index from '{}' ..."
+                .format(index_name, catalog_id))
+    catalog = api.get_tool(catalog_id)
+    if index_name not in catalog.indexes():
+        logger.info("Index '{}' not in catalog '{}' [SKIP]"
+                    .format(index_name, catalog_id))
+        return
+    catalog.delIndex(index_name)
+
+
+def del_metadata(catalog_id, column):
+    logger.info("Removing '{}' metadata from '{}' ..."
+                .format(column, catalog_id))
+    catalog = api.get_tool(catalog_id)
+    if column not in catalog.schema():
+        logger.info("Metadata '{}' not in catalog '{}' [SKIP]"
+                    .format(column, catalog_id))
+        return
+    catalog.delColumn(column)

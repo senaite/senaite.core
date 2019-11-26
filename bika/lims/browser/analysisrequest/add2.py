@@ -1008,16 +1008,24 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         })
 
         # catalog queries for UI field filtering
+        sample_type_uid = api.get_uid(obj)
         filter_queries = {
+            # Display Sample Points that have this sample type assigned plus
+            # those that do not have a sample type assigned
             "SamplePoint": {
-                "getSampleTypeTitles": [obj.Title(), ''],
+                "getSampleTypeUID": [sample_type_uid, ''],
                 "getClientUID": [client_uid, ""],
-                "sort_order": "descending",
             },
+            # Display Specifications that have this sample type assigned only
             "Specification": {
-                "getSampleTypeTitle": obj.Title(),
+                "getSampleTypeUID": sample_type_uid,
                 "getClientUID": [client_uid, ""],
-                "sort_order": "descending",
+            },
+            # Display AR Templates that have this sample type assigned plus
+            # those that do not have a sample type assigned
+            "Template": {
+                "getSampleTypeUID": [api.get_uid(obj), ""],
+                "getClientUID": [client_uid, ""],
             }
         }
         info["filter_queries"] = filter_queries
@@ -1147,7 +1155,8 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             ],
             "SampleType": [
                 "SamplePoint",
-                "Specification"
+                "Specification",
+                "Template",
             ],
             "PrimarySample": [
                 "Batch"
