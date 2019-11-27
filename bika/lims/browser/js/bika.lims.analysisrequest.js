@@ -114,7 +114,7 @@
    */
 
   window.AnalysisRequestViewView = function() {
-    var filter_CCContacts, filter_by_client, getClientUID, parse_CCClist, resultsinterpretation_move_below, that;
+    var parse_CCClist, resultsinterpretation_move_below, that;
     that = this;
 
     /**
@@ -138,56 +138,6 @@
         $('table.mceToolbar a.mce_save').hide();
       }), 1500);
     };
-    filter_CCContacts = function() {
-
-      /**
-       * Filter the CCContacts dropdown list by the current client.
-       */
-      var clientUID, element;
-      if ($('#CCContact').length > 0) {
-        element = $('#CCContact');
-        clientUID = getClientUID();
-        filter_by_client(element, 'getParentUID', clientUID);
-      }
-    };
-    getClientUID = function() {
-
-      /**
-       * Return the AR client's UID.
-       */
-      var clientid, clientuid;
-      clientid = window.location.href.split('clients')[1].split('/')[1];
-      clientuid = '';
-      $.ajax({
-        url: window.portal_url + '/clients/' + clientid + '/getClientInfo',
-        type: 'POST',
-        async: false,
-        data: {
-          '_authenticator': $('input[name="_authenticator"]').val()
-        },
-        dataType: 'json',
-        success: function(data, textStatus, $XHR) {
-          if (data['ClientUID'] !== '') {
-            clientuid = data['ClientUID'] !== '' ? data['ClientUID'] : null;
-          }
-        }
-      });
-      return clientuid;
-    };
-    filter_by_client = function(element, filterkey, filtervalue) {
-
-      /**
-       * Filter the dropdown's results (called element) by current client contacts.
-       */
-      var base_query, options;
-      base_query = $.parseJSON($(element).attr('base_query'));
-      base_query[filterkey] = filtervalue;
-      $(element).attr('base_query', $.toJSON(base_query));
-      options = $.parseJSON($(element).attr('combogrid_options'));
-      $(element).attr('base_query', $.toJSON(base_query));
-      $(element).attr('combogrid_options', $.toJSON(options));
-      referencewidget_lookups($(element));
-    };
     parse_CCClist = function() {
 
       /**
@@ -206,46 +156,7 @@
       return fieldvalue;
     };
     that.load = function() {
-      var cid;
       resultsinterpretation_move_below();
-      filter_CCContacts();
-      if (document.location.href.search('/clients/') >= 0 && $('#archetypes-fieldname-SamplePoint #SamplePoint').length > 0) {
-        cid = document.location.href.split('clients')[1].split('/')[1];
-        $.ajax({
-          url: window.portal_url + '/clients/' + cid + '/getClientInfo',
-          type: 'POST',
-          data: {
-            '_authenticator': $('input[name="_authenticator"]').val()
-          },
-          dataType: 'json',
-          success: function(data, textStatus, $XHR) {
-            var base_query, options, setup_uid, simple_url, spelement;
-            if (data['ClientUID'] !== '') {
-              spelement = $('#archetypes-fieldname-SamplePoint #SamplePoint');
-              base_query = $.parseJSON($(spelement).attr('base_query'));
-              setup_uid = $('#bika_setup').attr('bika_samplepoints');
-              base_query['getClientUID'] = [data['ClientUID'], setup_uid];
-              $(spelement).attr('base_query', $.toJSON(base_query));
-              options = $.parseJSON($(spelement).attr('combogrid_options'));
-              simple_url = window.location.href.split('/ar')[0];
-              simple_url = simple_url.split('?')[0];
-              options.url = simple_url + '/' + options.url;
-              options.url = options.url + '?_authenticator=' + $('input[name=\'_authenticator\']').val();
-              options.url = options.url + '&catalog_name=' + $(spelement).attr('catalog_name');
-              options.url = options.url + '&base_query=' + $.toJSON(base_query);
-              options.url = options.url + '&search_query=' + $(spelement).attr('search_query');
-              options.url = options.url + '&colModel=' + $.toJSON($.parseJSON($(spelement).attr('combogrid_options')).colModel);
-              options.url = options.url + '&search_fields=' + $.toJSON($.parseJSON($(spelement).attr('combogrid_options')).search_fields);
-              options.url = options.url + '&discard_empty=' + $.toJSON($.parseJSON($(spelement).attr('combogrid_options')).discard_empty);
-              options.url = options.url + '&minLength=' + $.toJSON($.parseJSON($(spelement).attr('combogrid_options')).minLength);
-              options.force_all = 'false';
-              $(spelement).combogrid(options);
-              $(spelement).addClass('has_combogrid_widget');
-              $(spelement).attr('search_query', '{}');
-            }
-          }
-        });
-      }
     };
   };
 

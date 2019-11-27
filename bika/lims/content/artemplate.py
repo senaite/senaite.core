@@ -30,6 +30,7 @@ from bika.lims.browser.widgets import ReferenceWidget
 from bika.lims.browser.widgets import RemarksWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.content.clientawaremixin import ClientAwareMixin
 from bika.lims.interfaces import IARTemplate, IDeactivable
 from Products.Archetypes.public import BaseContent
 from Products.Archetypes.public import BooleanField
@@ -299,7 +300,7 @@ schema["title"].validators = ("uniquefieldvalidator",)
 schema["title"]._validationLayer()
 
 
-class ARTemplate(BaseContent):
+class ARTemplate(BaseContent, ClientAwareMixin):
     security = ClassSecurityInfo()
     schema = schema
     displayContentsTab = False
@@ -325,13 +326,6 @@ class ARTemplate(BaseContent):
             items.append((p.UID(), title))
         items = [["", ""]] + list(items)
         return DisplayList(items)
-
-    def getClientUID(self):
-        """This populates the getClientUID catalog
-        If the parent is the system bika_artemplates folder,
-        then that folder's UID must be returned in this index.
-        """
-        return self.aq_parent.UID()
 
     def getAnalysisServiceSettings(self, uid):
         """Returns a dictionary with the settings for the analysis service that

@@ -27,6 +27,7 @@ from Products.CMFCore.utils import getToolByName
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.config import PROJECTNAME
 from bika.lims import bikaMessageFactory as _
+from bika.lims.content.clientawaremixin import ClientAwareMixin
 from bika.lims.utils import t
 from bika.lims.browser import ulocalized_time
 from bika.lims.utils import user_fullname
@@ -56,7 +57,7 @@ schema = BikaSchema.copy() + Schema((
 schema['id'].required = False
 schema['title'].required = False
 
-class Report(BaseFolder):
+class Report(BaseFolder, ClientAwareMixin):
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
@@ -72,13 +73,6 @@ class Report(BaseFolder):
         return DateTime()
 
     @security.public
-    def getClientUID(self):
-        client = self.getClient()
-        if client:
-            return client.UID()
-        return ''
-
-    @security.public
     def getCreatorFullName(self):
         return user_fullname(self, self.Creator())
 
@@ -88,20 +82,5 @@ class Report(BaseFolder):
         if file:
             return '%sKb' % (file.get_size() / 1024)
         return ''
-
-    @security.public
-    def getClientURL(self):
-        client = self.getClient()
-        if client:
-            return client.absolute_url_path()
-        return ''
-
-    @security.public
-    def getClientTitle(self):
-        client = self.getClient()
-        if client:
-            return client.Title()
-        return ''
-
 
 atapi.registerType(Report, PROJECTNAME)

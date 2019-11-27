@@ -49,9 +49,12 @@ from bika.lims.config import PRIORITIES
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.analysisspec import ResultsRangeDict
 from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.content.clientawaremixin import ClientAwareMixin
 from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.interfaces import IAnalysisRequestPartition
+from bika.lims.interfaces import IBatch
 from bika.lims.interfaces import ICancellable
+from bika.lims.interfaces import IClient
 from bika.lims.interfaces import ISubmitted
 from bika.lims.permissions import FieldEditBatch
 from bika.lims.permissions import FieldEditClient
@@ -1095,14 +1098,6 @@ schema = BikaSchema.copy() + Schema((
             },
         ),
     ),
-    # TODO-catalog: move all these computed fields to methods
-    ComputedField(
-        'ClientUID',
-        expression='here.aq_parent.UID()',
-        widget=ComputedWidget(
-            visible=False,
-        ),
-    ),
 
     ComputedField(
         'SampleTypeTitle',
@@ -1188,27 +1183,6 @@ schema = BikaSchema.copy() + Schema((
         'BatchURL',
         expression="here.getBatch().absolute_url_path() " \
                    "if here.getBatch() else ''",
-        widget=ComputedWidget(visible=False),
-    ),
-    ComputedField(
-        'ClientUID',
-        expression="here.getClient().UID() if here.getClient() else ''",
-        widget=ComputedWidget(visible=False),
-    ),
-    ComputedField(
-        'ClientID',
-        expression="here.getClient().getClientID() if here.getClient() else ''",
-        widget=ComputedWidget(visible=False),
-    ),
-    ComputedField(
-        'ClientTitle',
-        expression="here.getClient().Title() if here.getClient() else ''",
-        widget=ComputedWidget(visible=False),
-    ),
-    ComputedField(
-        'ClientURL',
-        expression="here.getClient().absolute_url_path() " \
-                   "if here.getClient() else ''",
         widget=ComputedWidget(visible=False),
     ),
     ComputedField(
@@ -1417,7 +1391,7 @@ schema.moveField('ResultsInterpretationDepts', pos='bottom')
 schema.moveField("PrimaryAnalysisRequest", before="Client")
 
 
-class AnalysisRequest(BaseFolder):
+class AnalysisRequest(BaseFolder, ClientAwareMixin):
     implements(IAnalysisRequest, ICancellable)
     security = ClassSecurityInfo()
     displayContentsTab = False
@@ -1456,14 +1430,17 @@ class AnalysisRequest(BaseFolder):
         return safe_unicode(descr).encode('utf-8')
 
     def getClient(self):
-        if self.aq_parent.portal_type == 'Client':
+        """Returns the client this object is bound to. We override getClient
+        from ClientAwareMixin because the "Client" schema field is only used to
+        allow the user to set the client while creating the Sample through
+        Sample Add form, but cannot be changed afterwards. The Sample is
+        created directly inside the selected client folder on submit
+        """
+        if IClient.providedBy(self.aq_parent):
             return self.aq_parent
-        if self.aq_parent.portal_type == 'Batch':
+        if IBatch.providedBy(self.aq_parent):
             return self.aq_parent.getClient()
-        return ''
-
-    def getClientPath(self):
-        return "/".join(self.aq_parent.getPhysicalPath())
+        return None
 
     def getProfilesTitle(self):
         return [profile.Title() for profile in self.getProfiles()]

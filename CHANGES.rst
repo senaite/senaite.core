@@ -19,6 +19,7 @@ Changelog
 
 **Fixed**
 
+- #1477 Sample edit form - some selection widgets empty
 - #1478 Clients default CC E-Mails missing in Add Sample
 - #1479 Fixed too many redirects error: Labclerks viewing verified worksheets
 - #1480 Worksheet removal results in 404

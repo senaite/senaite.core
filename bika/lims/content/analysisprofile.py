@@ -33,6 +33,8 @@ from bika.lims.browser.widgets import ServicesWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from Products.Archetypes.public import *
+
+from bika.lims.content.clientawaremixin import ClientAwareMixin
 from bika.lims.interfaces import IAnalysisProfile, IDeactivable
 from Products.Archetypes.references import HoldingReference
 from Products.ATExtensions.field import RecordsField
@@ -41,6 +43,7 @@ from Products.CMFCore.utils import getToolByName
 from zope.interface import Interface, implements
 import sys
 from bika.lims.interfaces import IAnalysisProfile
+from bika.lims.interfaces import IClient
 
 schema = BikaSchema.copy() + Schema((
     StringField('ProfileKey',
@@ -145,7 +148,8 @@ schema['title'].widget.visible = True
 schema['description'].widget.visible = True
 IdField = schema['id']
 
-class AnalysisProfile(BaseContent):
+
+class AnalysisProfile(BaseContent, ClientAwareMixin):
     security = ClassSecurityInfo()
     schema = schema
     displayContentsTab = False
@@ -155,9 +159,6 @@ class AnalysisProfile(BaseContent):
     def _renameAfterCreation(self, check_auto_id=False):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
-
-    def getClientUID(self):
-        return self.aq_parent.UID()
 
     def getAnalysisServiceSettings(self, uid):
         """ Returns a dictionary with the settings for the analysis

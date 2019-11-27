@@ -30,6 +30,7 @@ from bika.lims.browser.widgets import RemarksWidget
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaFolderSchema
+from bika.lims.content.clientawaremixin import ClientAwareMixin
 from bika.lims.interfaces import IBatch
 from bika.lims.interfaces import ICancellable
 from bika.lims.interfaces import IClient
@@ -142,7 +143,7 @@ schema.moveField('title', before='description')
 schema.moveField('Client', after='title')
 
 
-class Batch(ATFolder):
+class Batch(ATFolder, ClientAwareMixin):
     """A Batch combines multiple ARs into a logical unit
     """
     implements(IBatch, ICancellable)
@@ -159,8 +160,9 @@ class Batch(ATFolder):
     def getClient(self):
         """Retrieves the Client the current Batch is assigned to
         """
-        # The schema's field Client is only used to allow the user to assign
-        # the batch to a client in edit form. The entered value is used in
+        # We override here getClient from ClientAwareMixin because te schema's
+        # field Client is only used to allow the user to assign the batch to a
+        # client in edit form. The entered value is used in
         # ObjectModifiedEventHandler to move the batch to the Client's folder,
         # so the value stored in the Schema's is not used anymore
         # See https://github.com/senaite/senaite.core/pull/1450
@@ -168,20 +170,6 @@ class Batch(ATFolder):
         if IClient.providedBy(client):
             return client
         return None
-
-    def getClientTitle(self):
-        client = self.getClient()
-        if client:
-            return client.Title()
-        return ""
-
-    def getClientUID(self):
-        """This index is required on batches so that batch listings can be
-        filtered by client
-        """
-        client = self.getClient()
-        if client:
-            return client.UID()
 
     def getContactTitle(self):
         return ""

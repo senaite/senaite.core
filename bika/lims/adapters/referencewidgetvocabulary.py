@@ -19,13 +19,16 @@
 # Some rights reserved, see README and LICENSE.
 
 import json
+import six
+
+from zope.interface import implements
 
 from bika.lims import api
 from bika.lims import logger
-from bika.lims.interfaces import IReferenceWidgetVocabulary, IAnalysisRequest
+from bika.lims.interfaces import IReferenceWidgetVocabulary
+from bika.lims.utils import get_client
 from bika.lims.utils import to_unicode as _u
 from bika.lims.utils import to_utf8 as _c
-from zope.interface import implements
 
 
 class DefaultReferenceWidgetVocabulary(object):
@@ -259,16 +262,56 @@ class DefaultReferenceWidgetVocabulary(object):
         return brains
 
 
-class BatchReferenceWidgetVocabulary(DefaultReferenceWidgetVocabulary):
+class ClientAwareReferenceWidgetVocabulary(DefaultReferenceWidgetVocabulary):
+    """Injects search criteria (filters) in the query when the current context
+    is, belongs or is associated to a Client
+    """
+
+    # portal_types that might be bound to a client
+    client_bound_types = [
+        "Contact",
+        "Batch",
+        "AnalysisProfile",
+        "AnalysisSpec",
+        "ARTemplate",
+        "SamplePoint"
+    ]
 
     def get_raw_query(self):
         """Returns the raw query to use for current search, based on the
         base query + update query
         """
-        query = super(BatchReferenceWidgetVocabulary, self).get_raw_query()
-        if IAnalysisRequest.providedBy(self.context):
-            # Display the Batches from the Client the Sample belongs to and
-            # those that do not belong to any Client
-            client = self.context.getClient()
-            query["getClientUID"] = [api.get_uid(client), ""]
+        query = super(
+            ClientAwareReferenceWidgetVocabulary, self).get_raw_query()
+
+        if self.is_client_aware(query):
+
+            client = get_client(self.context)
+            client_uid = client and api.get_uid(client) or None
+
+            if client_uid:
+                # Apply the search criteria for this client
+                # Contact is the only object bound to a Client that is stored
+                # in portal_catalog. And in this catalog, getClientUID does not
+                # exist, rather getParentUID
+                if "Contact" in self.get_portal_types(query):
+                    query["getParentUID"] = [client_uid]
+                else:
+                    query["getClientUID"] = [client_uid, ""]
+
         return query
+
+    def is_client_aware(self, query):
+        """Returns whether the query passed in requires a filter by client
+        """
+        portal_types = self.get_portal_types(query)
+        intersect = set(portal_types).intersection(self.client_bound_types)
+        return len(intersect) > 0
+
+    def get_portal_types(self, query):
+        """Return the list of portal types from the query passed-in
+        """
+        portal_types = query.get("portal_type", [])
+        if isinstance(portal_types, six.string_types):
+            portal_types = [portal_types]
+        return portal_types

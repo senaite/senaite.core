@@ -25,6 +25,7 @@ from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import AnalysisSpecificationWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.content.clientawaremixin import ClientAwareMixin
 from bika.lims.interfaces import IAnalysisSpec, IDeactivable
 from Products.Archetypes import atapi
 from Products.Archetypes.public import BaseFolder
@@ -40,6 +41,7 @@ from Products.CMFPlone.utils import safe_unicode
 from zope.i18n import translate
 from zope.interface import implements
 
+from bika.lims.interfaces import IClient
 
 schema = Schema((
 
@@ -131,7 +133,7 @@ schema['description'].widget.visible = True
 schema['title'].required = True
 
 
-class AnalysisSpec(BaseFolder, HistoryAwareMixin):
+class AnalysisSpec(BaseFolder, HistoryAwareMixin, ClientAwareMixin):
     """Analysis Specification
     """
     implements(IAnalysisSpec, IDeactivable)
@@ -207,9 +209,6 @@ class AnalysisSpec(BaseFolder, HistoryAwareMixin):
         sampletypes = map(
             lambda brain: (brain.UID, brain.Title), results)
         return DisplayList(sampletypes)
-
-    def getClientUID(self):
-        return self.aq_parent.UID()
 
 
 atapi.registerType(AnalysisSpec, PROJECTNAME)

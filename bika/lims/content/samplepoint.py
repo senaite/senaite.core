@@ -44,6 +44,7 @@ from bika.lims.browser.widgets.referencewidget import \
     ReferenceWidget as BikaReferenceWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.content.clientawaremixin import ClientAwareMixin
 from bika.lims.interfaces import IDeactivable
 from plone.app.blob.field import FileField as BlobFileField
 from zope.interface import implements
@@ -125,7 +126,7 @@ schema['description'].widget.visible = True
 schema['description'].schemata = 'default'
 
 
-class SamplePoint(BaseContent, HistoryAwareMixin):
+class SamplePoint(BaseContent, HistoryAwareMixin, ClientAwareMixin):
     implements(IDeactivable)
     security = ClassSecurityInfo()
     displayContentsTab = False
@@ -201,9 +202,6 @@ class SamplePoint(BaseContent, HistoryAwareMixin):
 
     def getSampleTypes(self, **kw):
         return self.Schema()['SampleTypes'].get(self)
-
-    def getClientUID(self):
-        return self.aq_parent.UID()
 
 
 registerType(SamplePoint, PROJECTNAME)
