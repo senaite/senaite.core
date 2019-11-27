@@ -909,23 +909,18 @@ def to_choices(display_list):
 def chain(obj):
     """Generator to walk the acquistion chain of object, considering that it
     could be a function.
+
+    If the thing we are accessing is actually a bound method on an instance,
+    then after we've checked the method itself, get the instance it's bound to
+    using im_self, so that we can continue to walk up the acquistion chain from
+    it (incidentally, this is why we can't juse use aq_chain()).
     """
-
-    # Walk up the acquisition chain of the object, to be able to check
-    # each one for IWorkspace.
-
-    # If the thing we are accessing is actually a bound method on an
-    # instance, then after we've checked the method itself, get the
-    # instance it's bound to using im_self, so that we can continue to
-    # walk up the acquistion chain from it (incidentally, this is why we
-    # can't juse use aq_chain()).
-
     context = aq_inner(obj)
 
     while context is not None:
         yield context
 
-        func_object = getattr(context, 'im_self', None)
+        func_object = getattr(context, "im_self", None)
         if func_object is not None:
             context = aq_inner(func_object)
         else:
@@ -937,8 +932,8 @@ def chain(obj):
 def get_client(obj):
     """Returns the client the object passed-in belongs to, if any
 
-    This walks the acquisition chain up until we find something which
-    provides either IClient or IClientAwareMixin
+    This walks the acquisition chain up until we find something which provides
+    either IClient or IClientAwareMixin
     """
     for obj in chain(obj):
         if IClient.providedBy(obj):

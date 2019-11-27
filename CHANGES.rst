@@ -16,10 +16,14 @@ Changelog
 
 **Removed**
 
+- #1478 Remove AcquireFieldDefaults (was used for CCEmails field only)
 
 **Fixed**
 
 - #1477 Sample edit form - some selection widgets empty
+- #1478 Clients default CC E-Mails missing in Add Sample
+- #1479 Fixed too many redirects error: Labclerks viewing verified worksheets
+- #1480 Worksheet removal results in 404
 - #1475 User with "Analyst" role cannot submit analyses from worksheet
 - #1474 Adding Control Reference to Worksheet causes print fail
 - #1473 Hidden settings of analysis services lost on Sample creation

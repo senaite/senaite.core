@@ -6,13 +6,6 @@
     i18n_domain="senaite.core">
 
     <adapter
-      factory=".acquirefielddefaults.AcquireFieldDefaults"
-      provides="bika.lims.interfaces.IAcquireFieldDefaults"
-      for="bika.lims.interfaces.IAnalysisRequest"
-      name="DefaultAquireFieldDefaults"
-    />
-
-    <adapter
       for="zope.interface.Interface
            zope.publisher.interfaces.browser.IBrowserRequest"
       factory="bika.lims.adapters.referencewidgetvocabulary.DefaultReferenceWidgetVocabulary"
