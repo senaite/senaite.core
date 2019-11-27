@@ -999,3 +999,17 @@ class IClientAwareMixin(Interface):
     def getClientUID(self):
         """Returns the client UID this object is bound to, if any
         """
+
+
+class ISampleTypeAwareMixin(Interface):
+    """Marker interface for objects that can be assigned to one, or multiple
+    SampleType objects through a ReferenceField
+    """
+
+    def getSampleType(self):
+        """Returns the sample type(s) assigned to this object, if any
+        """
+
+    def getSampleTypeUID(self):
+        """Returns the UID(s) of the Sample Type(s) assigned to this object
+        """

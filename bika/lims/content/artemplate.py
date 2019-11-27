@@ -31,6 +31,7 @@ from bika.lims.browser.widgets import RemarksWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.content.clientawaremixin import ClientAwareMixin
+from bika.lims.content.sampletype import SampleTypeAwareMixin
 from bika.lims.interfaces import IARTemplate, IDeactivable
 from Products.Archetypes.public import BaseContent
 from Products.Archetypes.public import BooleanField
@@ -94,13 +95,6 @@ schema = BikaSchema.copy() + Schema((
             catalog_name="bika_setup_catalog",
             base_query={"is_active": True},
             showOn=True,
-        ),
-    ),
-    ComputedField(
-        "SampleTypeUID",
-        expression="context.Schema()['SampleType'].get(context) and context.Schema()['SampleType'].get(context).UID() or ''",
-        widget=ComputedWidget(
-            visible=False,
         ),
     ),
     BooleanField(
@@ -300,7 +294,7 @@ schema["title"].validators = ("uniquefieldvalidator",)
 schema["title"]._validationLayer()
 
 
-class ARTemplate(BaseContent, ClientAwareMixin):
+class ARTemplate(BaseContent, ClientAwareMixin, SampleTypeAwareMixin):
     security = ClassSecurityInfo()
     schema = schema
     displayContentsTab = False

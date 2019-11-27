@@ -24,6 +24,9 @@
   <!-- Whether the object is neither cancelled nor invalid -->
   <adapter name="is_active" factory=".is_active"/>
 
+  <!-- BikaSetup Catalog Index adapters -->
+  <adapter name="getSampleTypeUID" factory=".bikasetup.getSampleTypeUID"/>
+
   <!-- Auditlog Catalog Index Adapters -->
   <adapter name="action" factory=".auditlog.action"/>
   <adapter name="actor" factory=".auditlog.actor"/>

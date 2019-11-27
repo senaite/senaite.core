@@ -1018,7 +1018,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             # Display Sample Points that have this sample type assigned plus
             # those that do not have a sample type assigned
             "SamplePoint": {
-                "getSampleTypeUID": [sample_type_uid, ''],
+                "getSampleTypeUID": [sample_type_uid, None],
                 "getClientUID": [client_uid, ""],
             },
             # Display Specifications that have this sample type assigned only
@@ -1029,7 +1029,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             # Display AR Templates that have this sample type assigned plus
             # those that do not have a sample type assigned
             "Template": {
-                "getSampleTypeUID": [sample_type_uid, ""],
+                "getSampleTypeUID": [sample_type_uid, None],
                 "getClientUID": [client_uid, ""],
             }
         }

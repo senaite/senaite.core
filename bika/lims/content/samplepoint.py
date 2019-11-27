@@ -34,6 +34,10 @@ from Products.Archetypes.public import StringWidget
 from Products.Archetypes.public import registerType
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
+from plone.app.blob.field import FileField as BlobFileField
+from zope.interface import implements
+
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import deprecated
 from bika.lims.browser.fields import CoordinateField
@@ -45,9 +49,8 @@ from bika.lims.browser.widgets.referencewidget import \
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.content.clientawaremixin import ClientAwareMixin
+from bika.lims.content.sampletype import SampleTypeAwareMixin
 from bika.lims.interfaces import IDeactivable
-from plone.app.blob.field import FileField as BlobFileField
-from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
     CoordinateField(
@@ -98,6 +101,11 @@ schema = BikaSchema.copy() + Schema((
             description=_("The list of sample types that can be collected "
                           "at this sample point.  If no sample types are "
                           "selected, then all sample types are available."),
+            catalog_name='bika_setup_catalog',
+            base_query={"is_active": True,
+                        "sort_on": "sortable_title",
+                        "sort_order": "ascending"},
+            showOn=True,
         ),
     ),
 
@@ -126,7 +134,8 @@ schema['description'].widget.visible = True
 schema['description'].schemata = 'default'
 
 
-class SamplePoint(BaseContent, HistoryAwareMixin, ClientAwareMixin):
+class SamplePoint(BaseContent, HistoryAwareMixin, ClientAwareMixin,
+                  SampleTypeAwareMixin):
     implements(IDeactivable)
     security = ClassSecurityInfo()
     displayContentsTab = False
@@ -140,19 +149,6 @@ class SamplePoint(BaseContent, HistoryAwareMixin, ClientAwareMixin):
 
     def Title(self):
         return safe_unicode(self.getField('title').get(self)).encode('utf-8')
-
-    def getSampleTypeTitle(self):
-        """Returns a comma separated list of sample type titles
-        """
-        sample_types = self.getSampleTypes()
-        sample_type_titles = map(lambda obj: obj.Title(), sample_types)
-        if not sample_type_titles:
-            return ""
-        return ",".join(sample_type_titles)
-
-    def SampleTypesVocabulary(self):
-        from bika.lims.content.sampletype import SampleTypes
-        return SampleTypes(self, allow_blank=False)
 
     def setSampleTypes(self, value, **kw):
         """ For the moment, we're manually trimming the sampletype<>samplepoint
@@ -188,31 +184,5 @@ class SamplePoint(BaseContent, HistoryAwareMixin, ClientAwareMixin):
 
         return ret
 
-    def getSampleTypes(self, **kw):
-        return self.Schema()['SampleTypes'].get(self)
-
 
 registerType(SamplePoint, PROJECTNAME)
-
-
-@deprecated("bika.lims.content.samplepoint.SamplePoints function will be removed in senaite.core 1.2.0")
-def SamplePoints(self, instance=None, allow_blank=True, lab_only=True):
-    instance = instance or self
-    bsc = getToolByName(instance, 'bika_setup_catalog')
-    items = []
-    contentFilter = {
-        'portal_type': 'SamplePoint',
-        'is_active': True,
-        'sort_on': 'sortable_title'}
-    if lab_only:
-        lab_path = instance.bika_setup.bika_samplepoints.getPhysicalPath()
-        contentFilter['path'] = {"query": "/".join(lab_path), "level": 0}
-    for sp in bsc(contentFilter):
-        sp = sp.getObject()
-        if sp.aq_parent.portal_type == 'Client':
-            sp_title = "{}: {}".format(sp.aq_parent.Title(), sp.Title())
-        else:
-            sp_title = sp.Title()
-        items.append((sp.UID(), sp_title))
-    items = allow_blank and [['', '']] + list(items) or list(items)
-    return DisplayList(items)
