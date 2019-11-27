@@ -42,7 +42,7 @@
       for="bika.lims.interfaces.IWorksheet"
       name="analyses_classic_view"
       class="bika.lims.browser.worksheet.views.AnalysesView"
-      permission="senaite.core.permissions.EditWorksheet"
+      permission="senaite.core.permissions.ViewResults"
       layer="bika.lims.interfaces.IBikaLIMS"
       />
 
@@ -51,7 +51,7 @@
       for="bika.lims.interfaces.IWorksheet"
       name="analyses_transposed_view"
       class="bika.lims.browser.worksheet.views.AnalysesTransposedView"
-      permission="senaite.core.permissions.EditWorksheet"
+      permission="senaite.core.permissions.ViewResults"
       layer="bika.lims.interfaces.IBikaLIMS"
       />
 
@@ -83,7 +83,7 @@
       for="bika.lims.interfaces.IWorksheet"
       name="export"
       class="bika.lims.browser.worksheet.views.ExportView"
-      permission="senaite.core.permissions.EditWorksheet"
+      permission="senaite.core.permissions.ViewResults"
       layer="bika.lims.interfaces.IBikaLIMS"
       />
 
@@ -99,7 +99,7 @@
       for="bika.lims.interfaces.IWorksheet"
       name="print"
       class="bika.lims.browser.worksheet.views.PrintView"
-      permission="senaite.core.permissions.EditWorksheet"
+      permission="senaite.core.permissions.ViewResults"
       layer="bika.lims.interfaces.IBikaLIMS"
       />
 

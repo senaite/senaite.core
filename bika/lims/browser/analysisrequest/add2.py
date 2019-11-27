@@ -821,8 +821,13 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         default_contact = self.get_default_contact(client=obj)
         if default_contact:
             info["field_values"].update({
-                "Contact": self.get_contact_info(default_contact)
+                "Contact": self.get_contact_info(default_contact),
             })
+
+        # Set default CC Email field
+        info["field_values"].update({
+            "CCEmails": {"value": obj.getCCEmails()}
+        })
 
         # UID of the client
         uid = api.get_uid(obj)

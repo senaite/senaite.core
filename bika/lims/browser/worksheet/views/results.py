@@ -18,21 +18,21 @@
 # Copyright 2018-2019 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from Products.Archetypes.public import DisplayList
+from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import safe_unicode
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from plone.app.layout.globals.interfaces import IViewView
+from plone.memoize import view
+from zope.interface import implements
+
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser import BrowserView
 from bika.lims.browser.worksheet.tools import showRejectionMessage
 from bika.lims.config import WORKSHEET_LAYOUT_OPTIONS
-from bika.lims.utils import getUsers
-from plone.app.layout.globals.interfaces import IViewView
-from Products.Archetypes.public import DisplayList
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import safe_unicode
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from zope.interface import implements
-from plone.memoize import view
-from bika.lims.permissions import EditWorksheet
 from bika.lims.permissions import ManageWorksheets
+from bika.lims.utils import getUsers
 
 
 class ManageResultsView(BrowserView):
@@ -51,10 +51,6 @@ class ManageResultsView(BrowserView):
         self.layout_displaylist = WORKSHEET_LAYOUT_OPTIONS
 
     def __call__(self):
-        # TODO: Refactor Worfklow
-        if not self.is_edit_allowed():
-            redirect_url = api.get_url(self.context)
-            return self.request.response.redirect(redirect_url)
         # TODO: Refactor this function call
         showRejectionMessage(self.context)
 
@@ -98,13 +94,6 @@ class ManageResultsView(BrowserView):
         if not instrument:
             return ""
         return api.get_title(instrument)
-
-    @view.memoize
-    def is_edit_allowed(self):
-        """Check if edit is allowed
-        """
-        checkPermission = self.context.portal_membership.checkPermission
-        return checkPermission(EditWorksheet, self.context)
 
     @view.memoize
     def is_manage_allowed(self):
