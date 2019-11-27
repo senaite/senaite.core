@@ -356,6 +356,9 @@ def setup_handler(context):
     # Run after all catalogs have been setup
     setup_auditlog_catalog(portal)
 
+    # Set CMF Form actions
+    setup_form_controller_actions(portal)
+
     logger.info("SENAITE setup handler [DONE]")
 
 
@@ -533,3 +536,21 @@ def setup_auditlog_catalog(portal):
             at.setCatalogsByType(portal_type, new_catalogs)
             logger.info("*** Adding catalog '{}' for '{}'".format(
                 catalog_id, portal_type))
+
+
+def setup_form_controller_actions(portal):
+    """Setup custom CMF Form actions
+    """
+    logger.info("*** Setup Form Controller custom actions ***")
+    fc_tool = api.get_tool("portal_form_controller")
+
+    # Redirect the user to Worksheets listing view after the "remove" action
+    # from inside Worksheet context is pressed
+    # https://github.com/senaite/senaite.core/pull/1480
+    fc_tool.addFormAction(
+        object_id="content_status_modify",
+        status="success",
+        context_type="Worksheet",
+        button=None,
+        action_type="redirect_to",
+        action_arg="python:object.aq_inner.aq_parent.absolute_url()")
