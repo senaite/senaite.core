@@ -281,7 +281,8 @@ class ClientAwareReferenceWidgetVocabulary(DefaultReferenceWidgetVocabulary):
         """Returns the raw query to use for current search, based on the
         base query + update query
         """
-        query = super(ClientAwareReferenceWidgetVocabulary, self).get_raw_query()
+        query = super(
+            ClientAwareReferenceWidgetVocabulary, self).get_raw_query()
 
         if self.is_client_aware(query):
 
@@ -304,8 +305,8 @@ class ClientAwareReferenceWidgetVocabulary(DefaultReferenceWidgetVocabulary):
         """Returns whether the query passed in requires a filter by client
         """
         portal_types = self.get_portal_types(query)
-        bound = map(lambda pt: pt in self.client_bound_types, portal_types)
-        return any(bound)
+        intersect = set(portal_types).intersection(self.client_bound_types)
+        return len(intersect) > 0
 
     def get_portal_types(self, query):
         """Return the list of portal types from the query passed-in
