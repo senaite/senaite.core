@@ -412,7 +412,6 @@
                   <tal:services tal:repeat="service python:services[category_title];">
                     <tr tal:define="service_uid service/UID;
                                     service_id service/getId;
-                                    service_acc service/getAccredited;
                                     service_keyword service/getKeyword;
                                     service_title service/Title;"
                         tal:attributes="id string:${service_id};

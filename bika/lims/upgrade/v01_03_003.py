@@ -54,7 +54,13 @@ INDEXES_TO_REMOVE = [
 
     # We remove this index because we changed it's type to KeywordIndex
     # https://github.com/senaite/senaite.core/pull/1481
-    ("bika_setup_catalog", "getSampleTypeUID")
+    ("bika_setup_catalog", "getSampleTypeUID"),
+
+    # getAccredited was only used in the "hidden" view accreditation to filter
+    # services labeled as "accredited". Since we don't expect that listing to
+    # contain too many items, they are now filtered by waking-up the object
+    # https://github.com/senaite/senaite.core/pull/1484
+    ("bika_setup_catalog", "getAccredited"),
 ]
 
 METADATA_TO_REMOVE = [
@@ -70,7 +76,11 @@ METADATA_TO_REMOVE = [
     # The following are the portal types stored in bika_catalog:
     #   Batch, BatchFolder and ReferenceSample
     # and "getSampleTypeTitle" metadata is not used for none of them
-    ("bika_catalog", "getSampleTypeTitle")
+    ("bika_catalog", "getSampleTypeTitle"),
+
+    # Not used anywhere
+    # https://github.com/senaite/senaite.core/pull/1484
+    ("bika_setup_catalog", "getAccredited"),
 ]
 
 
