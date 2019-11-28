@@ -5,7 +5,7 @@ any add-ons for `senaite` too.
 
 ## Catalogs
 
-## Indexes naming
+### Indexes naming
 
 Names for catalog indexes don't follow the `CamelCase` naming convention, rather
 all in lowercase and words separated by `_`:
@@ -13,7 +13,7 @@ all in lowercase and words separated by `_`:
 - Wrong: `getSampleTypeUID`
 - Good: `sampletype_uids`
 
-## Metadata fields naming
+### Metadata fields naming
 
 Metadata fields use the `get` prefix and eventually might follow the `CamelCase`
 naming convention. The reason is that, at present time, SENAITE still uses 
