@@ -196,6 +196,8 @@ INDEXES = (
     ("bika_setup_catalog", "getPointOfCapture", "", "FieldIndex"),
     # Sorting of listings: LabProducts
     ("bika_setup_catalog", "price", "", "FieldIndex"),
+    # Sorting of listings: LabProducts
+    ("bika_setup_catalog", "price_total", "", "FieldIndex"),
     ("bika_setup_catalog", "getSamplePointTitle", "", "KeywordIndex"),
     ("bika_setup_catalog", "getSamplePointUID", "", "FieldIndex"),
     # Sorting of listings: Sample Points, Specifications
@@ -204,7 +206,6 @@ INDEXES = (
     ("bika_setup_catalog", "sampletype_uids", "", "KeywordIndex"),
     ("bika_setup_catalog", "getServiceUID", "", "FieldIndex"),
     ("bika_setup_catalog", "getServiceUIDs", "", "KeywordIndex"),
-    ("bika_setup_catalog", "getTotalPrice", "", "FieldIndex"),
     ("bika_setup_catalog", "getUnit", "", "FieldIndex"),
     ("bika_setup_catalog", "getVATAmount", "getVATAmount", "FieldIndex"),
     ("bika_setup_catalog", "getVolume", "", "FieldIndex"),
@@ -273,7 +274,6 @@ COLUMNS = (
     ("bika_setup_catalog", "getSamplePointTitle"),
     ("bika_setup_catalog", "getSamplePointUID"),
     ("bika_setup_catalog", "getServiceUID"),
-    ("bika_setup_catalog", "getTotalPrice"),
     ("bika_setup_catalog", "getUnit"),
     ("bika_setup_catalog", "getVATAmount"),
     ("bika_setup_catalog", "getVolume"),

@@ -40,6 +40,7 @@
 
   <!-- price: sorting of LabProducts listing -->
   <adapter name="price" factory=".bikasetup.price"/>
+  <adapter name="price_total" factory=".bikasetup.price_total"/>
 
   <!-- Auditlog Catalog Index Adapters -->
   <adapter name="action" factory=".auditlog.action"/>

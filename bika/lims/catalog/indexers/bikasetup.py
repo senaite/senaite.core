@@ -68,3 +68,10 @@ def price(instance):
     """Returns the price of the instance
     """
     return instance.getPrice()
+
+
+@indexer(ILabProduct, IBikaSetupCatalog)
+def price_total(instance):
+    """Returns the total price of the instance
+    """
+    return instance.getTotalPrice()

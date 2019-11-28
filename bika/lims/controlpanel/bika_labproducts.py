@@ -65,7 +65,7 @@ class LabProductsView(BikaListingView):
                        'index': 'getVATAmount',
                        'toggle': True},
             'TotalPrice': {'title': _('Total Price'),
-                       'index': 'getTotalPrice',
+                       'index': 'price_total',
                        'toggle': True},
         }
         self.review_states = [
