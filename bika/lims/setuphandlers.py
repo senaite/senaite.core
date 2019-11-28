@@ -167,7 +167,6 @@ INDEXES = (
     ("bika_setup_catalog", "UID", "", "FieldIndex"),
     ("bika_setup_catalog", "allowedRolesAndUsers", "", "KeywordIndex"),
     ("bika_setup_catalog", "created", "", "DateIndex"),
-    ("bika_setup_catalog", "getAnalyst", "", "FieldIndex"),
     ("bika_setup_catalog", "getAvailableMethodUIDs", "", "KeywordIndex"),
     ("bika_setup_catalog", "getBlank", "", "FieldIndex"),
     ("bika_setup_catalog", "getCalculationTitle", "", "FieldIndex"),

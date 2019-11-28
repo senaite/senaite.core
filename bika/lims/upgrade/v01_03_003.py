@@ -61,6 +61,11 @@ INDEXES_TO_REMOVE = [
     # contain too many items, they are now filtered by waking-up the object
     # https://github.com/senaite/senaite.core/pull/1484
     ("bika_setup_catalog", "getAccredited"),
+
+    # getAnalyst index is used in Analyses (Duplicates and Reference included)
+    # and Worksheets. None of the types stored in setup_catalog support Analyst
+    # https://github.com/senaite/senaite.core/pull/1484
+    ("bika_setup_catalog", "getAnalyst"),
 ]
 
 METADATA_TO_REMOVE = [
