@@ -167,7 +167,9 @@ INDEXES = (
     ("bika_setup_catalog", "UID", "", "FieldIndex"),
     ("bika_setup_catalog", "allowedRolesAndUsers", "", "KeywordIndex"),
     ("bika_setup_catalog", "created", "", "DateIndex"),
-    ("bika_setup_catalog", "getAvailableMethodUIDs", "", "KeywordIndex"),
+    # Filter services in Worksheet's Add Analyses View for when the Worksheet
+    # Template being used has a Method assigned
+    ("bika_setup_catalog", "method_available_uids", "", "KeywordIndex"),
     ("bika_setup_catalog", "getBlank", "", "FieldIndex"),
     ("bika_setup_catalog", "getCalculationTitle", "", "FieldIndex"),
     ("bika_setup_catalog", "getCalculationUID", "", "FieldIndex"),

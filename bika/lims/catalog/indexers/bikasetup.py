@@ -20,6 +20,7 @@
 
 from plone.indexer import indexer
 
+from bika.lims.interfaces import IAnalysisService
 from bika.lims.interfaces import IBikaSetupCatalog
 from bika.lims.interfaces import ISampleTypeAwareMixin
 
@@ -34,3 +35,18 @@ def sampletype_uids(instance):
     searches for `MissingValue` entries too.
     """
     return instance.getSampleTypeUID() or (None, )
+
+
+@indexer(IAnalysisService, IBikaSetupCatalog)
+def method_available_uids(instance):
+    """Returns a list of Method UIDs that are available for this instance
+
+    If the instance (AnalysisService) has InstrumentEntryOfResults set to True,
+    it returns the methods available from the instruments capable to perform the
+    service, as well as the methods set manually to the analysis. Otherwise, it
+    returns the methods assigned manually only.
+
+    If the instance has no available method assigned, it returns a tuple with
+    a None value. This allows searches for `MissingValue` entries too.
+    """
+    return instance.getAvailableMethodUIDs() or (None, )

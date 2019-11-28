@@ -31,9 +31,15 @@ version = "1.3.3"  # Remember version number in metadata.xml and setup.py
 profile = "profile-{0}:default".format(product)
 
 INDEXES_TO_ADD = [
-    # We changed the type of this index from FieldIndex to KeywordIndex
+    # Replaces getSampleTypeUIDs
     # https://github.com/senaite/senaite.core/pull/1481
     ("bika_setup_catalog", "sampletype_uids", "KeywordIndex"),
+
+    # Replaces getAvailableMethodUIDs
+    # Used to filter services in Worksheet's Add Analyses View for when the
+    # Worksheet Template being used has a Method assigned.
+    # https://github.com/senaite/senaite.core/pull/1481
+    ("bika_setup_catalog", "method_available_uids", "KeywordIndex"),
 ]
 
 INDEXES_TO_REMOVE = [
@@ -52,10 +58,6 @@ INDEXES_TO_REMOVE = [
     # stored in bika_catalog (Batch, BatchFolder and ReferenceSample)
     ("bika_catalog", "getSampleTypeUID"),
 
-    # We remove this index because we changed it's type to KeywordIndex
-    # https://github.com/senaite/senaite.core/pull/1481
-    ("bika_setup_catalog", "getSampleTypeUID"),
-
     # getAccredited was only used in the "hidden" view accreditation to filter
     # services labeled as "accredited". Since we don't expect that listing to
     # contain too many items, they are now filtered by waking-up the object
@@ -66,6 +68,17 @@ INDEXES_TO_REMOVE = [
     # and Worksheets. None of the types stored in setup_catalog support Analyst
     # https://github.com/senaite/senaite.core/pull/1484
     ("bika_setup_catalog", "getAnalyst"),
+
+
+    # REPLACEMENTS (indexes to be removed because of a replacement)
+
+    # getSampleTypeUID --> sampletype_uid (FieldIndex --> KeywordIndex)
+    # https://github.com/senaite/senaite.core/pull/1481
+    ("bika_setup_catalog", "getSampleTypeUID"),
+
+    # getAvailableMethodUIDs --> method_available_uids
+    # https://github.com/senaite/senaite.core/pull/1484
+    ("bika_setup_catalog", "getAvailableMethodUIDs"),
 ]
 
 METADATA_TO_REMOVE = [

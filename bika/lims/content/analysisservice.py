@@ -488,18 +488,15 @@ class AnalysisService(AbstractBaseAnalysis):
             is unset, only the methods assigned manually to that service
             are returned.
         """
-        methods = self.getMethods()
-        muids = [m.UID() for m in methods]
-        if self.getInstrumentEntryOfResults():
-            # Add the methods from the instruments capable to perform
-            # this analysis service
-            for ins in self.getInstruments():
-                for method in ins.getMethods():
-                    if method and method.UID() not in muids:
-                        methods.append(method)
-                        muids.append(method.UID())
+        if not self.getInstrumentEntryOfResults():
+            # No need to go further, just return the manually assigned methods
+            return self.getMethods()
 
-        return methods
+        # Return the manually assigned methods plus those from instruments
+        method_uids = self.getAvailableMethodUIDs()
+        query = dict(portal_type="Method", UID=method_uids)
+        brains = api.search(query, "bika_setup_catalog")
+        return map(api.get_object_by_uid, brains)
 
     @security.public
     def getAvailableMethodUIDs(self):
@@ -507,7 +504,13 @@ class AnalysisService(AbstractBaseAnalysis):
         Returns the UIDs of the available methods. it is used as a
         vocabulary to fill the selection list of 'Methods' field.
         """
-        return [m.UID() for m in self.getAvailableMethods()]
+        method_uids = self.getRawMethods()
+        if self.getInstrumentEntryOfResults():
+            for instrument in self.getInstruments():
+                method_uids.extend(instrument.getRawMethods())
+            method_uids = filter(None, method_uids)
+            method_uids = list(set(method_uids))
+        return method_uids
 
     @security.public
     def getMethods(self):
@@ -530,7 +533,7 @@ class AnalysisService(AbstractBaseAnalysis):
 
         :returns: List of method UIDs
         """
-        return map(api.get_uid, self.getMethods())
+        return self.getRawMethods()
 
     @security.public
     def getInstruments(self):
@@ -550,7 +553,7 @@ class AnalysisService(AbstractBaseAnalysis):
 
         :returns: List of instrument UIDs
         """
-        return map(api.get_uid, self.getInstruments())
+        return self.getRawInstruments()
 
     @security.public
     def getAvailableInstruments(self):
