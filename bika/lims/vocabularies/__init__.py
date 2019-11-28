@@ -214,16 +214,6 @@ class SamplePointVocabulary(BikaContentVocabulary):
 SamplePointVocabularyFactory = SamplePointVocabulary()
 
 
-class SampleTypeVocabulary(BikaContentVocabulary):
-    def __init__(self):
-        BikaContentVocabulary.__init__(self,
-                                       ['bika_setup/bika_sampletypes', ],
-                                       ['SampleType', ])
-
-
-SampleTypeVocabularyFactory = SampleTypeVocabulary()
-
-
 class AnalysisServiceVocabulary(BikaContentVocabulary):
     def __init__(self):
         BikaContentVocabulary.__init__(self,

@@ -94,7 +94,6 @@ schema = BikaSchema.copy() + Schema((
         required=0,
         multiValued=1,
         allowed_types=('SampleType',),
-        vocabulary='SampleTypesVocabulary',
         relationship='SamplePointSampleType',
         widget=BikaReferenceWidget(
             label=_("Sample Types"),
