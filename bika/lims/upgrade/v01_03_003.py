@@ -46,11 +46,12 @@ INDEXES_TO_ADD = [
     # https://github.com/senaite/senaite.core/pull/1481
     ("bika_setup_catalog", "instrument_title", "FieldIndex"),
 
-    # Replaces getPrice
+    # Replaces getPrice, getTotalPrice, getVolume
     # Used for sorting LabProducts listing
     # https://github.com/senaite/senaite.core/pull/1481
     ("bika_setup_catalog", "price", "FieldIndex"),
     ("bika_setup_catalog", "price_total", "FieldIndex"),
+    ("bika_setup_catalog", "volume", "FieldIndex"),
 ]
 
 INDEXES_TO_REMOVE = [
@@ -110,6 +111,8 @@ INDEXES_TO_REMOVE = [
     ("bika_setup_catalog", "getPrice"),
     # getTotalPrice --> price_total
     ("bika_setup_catalog", "getTotalPrice"),
+    # getVolume --> volume
+    ("bika_setup_catalog", "getVolume"),
 ]
 
 METADATA_TO_REMOVE = [
@@ -140,6 +143,7 @@ METADATA_TO_REMOVE = [
     ("bika_setup_catalog", "getInstrumentTitle"),
     ("bika_setup_catalog", "getPrice"),
     ("bika_setup_catalog", "getTotalPrice"),
+    ("bika_setup_catalog", "getVolume"),
 ]
 
 
