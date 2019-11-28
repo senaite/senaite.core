@@ -61,6 +61,9 @@ def sticker_templates():
 class SampleTypeAwareMixin(BaseObject):
     implements(ISampleTypeAwareMixin)
 
+    security = ClassSecurityInfo()
+
+    @security.public
     def getSampleType(self):
         """Returns the sample type(s) assigned to this object, if any
         """
@@ -74,6 +77,7 @@ class SampleTypeAwareMixin(BaseObject):
         sample_type = field.get(self)
         return sample_type or None
 
+    @security.public
     def getSampleTypeUID(self):
         """Returns the UID(s) of the Sample Type(s) assigned to this object
         """
@@ -84,13 +88,14 @@ class SampleTypeAwareMixin(BaseObject):
             return api.get_uid(sample_type)
         return None
 
+    @security.public
     def getSampleTypeTitle(self):
         """Returns the title or a comma separated list of sample type titles
         """
         sample_type = self.getSampleType()
         if isinstance(sample_type, (list, tuple)):
             title = map(api.get_title, sample_type)
-            return ",".join(title)
+            return ", ".join(title)
         elif sample_type:
             return api.get_title(sample_type)
         return None
