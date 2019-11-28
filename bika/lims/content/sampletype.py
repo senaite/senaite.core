@@ -109,9 +109,6 @@ class SampleTypeAwareMixin(BaseObject):
         if not field:
             field = self.getField("SampleTypes", None)
 
-        if not field:
-            return None
-
         return field
 
 
