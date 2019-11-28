@@ -38,6 +38,8 @@
   <!-- instrument_title: sorting of WorksheetTemplate listing by Instrument -->
   <adapter name="instrument_title" factory=".bikasetup.instrument_title"/>
 
+  <!-- price: sorting of LabProducts listing -->
+  <adapter name="price" factory=".bikasetup.price"/>
 
   <!-- Auditlog Catalog Index Adapters -->
   <adapter name="action" factory=".auditlog.action"/>

@@ -454,6 +454,9 @@ class ILabProducts(Interface):
     """Marker interface for Lab Products
     """
 
+class ILabProduct(Interface):
+    """Marker interface for a LabProduct
+    """
 
 class ISamplePoint(Interface):
     """Marker interface for a Sample Point

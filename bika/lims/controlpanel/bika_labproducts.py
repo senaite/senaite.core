@@ -59,7 +59,7 @@ class LabProductsView(BikaListingView):
                        'index': 'getUnit',
                        'toggle': True},
             'Price': {'title': _('Price'),
-                       'index': 'getPrice',
+                       'index': 'price',
                        'toggle': True},
             'VATAmount': {'title': _('VAT Amount'),
                        'index': 'getVATAmount',
