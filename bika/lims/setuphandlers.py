@@ -203,7 +203,7 @@ INDEXES = (
     # Sorting of listings: Sample Points, Specifications
     ("bika_setup_catalog", "getSampleTypeTitle", "", "FieldIndex"),
     # Filter in Add2: Sample Points, Specifications, Templates
-    ("bika_setup_catalog", "getSampleTypeUID", "", "KeywordIndex"),
+    ("bika_setup_catalog", "sampletype_uids", "", "KeywordIndex"),
     ("bika_setup_catalog", "getServiceUID", "", "FieldIndex"),
     ("bika_setup_catalog", "getServiceUIDs", "", "KeywordIndex"),
     ("bika_setup_catalog", "getTotalPrice", "", "FieldIndex"),

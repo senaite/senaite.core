@@ -25,7 +25,11 @@
   <adapter name="is_active" factory=".is_active"/>
 
   <!-- BikaSetup Catalog Index adapters -->
-  <adapter name="getSampleTypeUID" factory=".bikasetup.getSampleTypeUID"/>
+
+  <!-- sampletype_uids
+  Used in Add Sample form to filter Sample Points, Specifications and Templates
+  by Sample Type when a Sample Type is selected -->
+  <adapter name="sampletype_uids" factory=".bikasetup.sampletype_uids"/>
 
   <!-- Auditlog Catalog Index Adapters -->
   <adapter name="action" factory=".auditlog.action"/>

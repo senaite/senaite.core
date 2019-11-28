@@ -33,7 +33,7 @@ profile = "profile-{0}:default".format(product)
 INDEXES_TO_ADD = [
     # We changed the type of this index from FieldIndex to KeywordIndex
     # https://github.com/senaite/senaite.core/pull/1481
-    ("bika_setup_catalog", "getSampleTypeUID", "KeywordIndex"),
+    ("bika_setup_catalog", "sampletype_uids", "KeywordIndex"),
 ]
 
 INDEXES_TO_REMOVE = [

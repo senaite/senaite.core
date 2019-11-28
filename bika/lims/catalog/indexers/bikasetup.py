@@ -6,7 +6,7 @@ from bika.lims.interfaces import ISampleTypeAwareMixin
 
 
 @indexer(ISampleTypeAwareMixin, IBikaSetupCatalog)
-def getSampleTypeUID(instance):
+def sampletype_uids(instance):
     """Returns the list of SampleType UIDs the instance is assigned to
 
     This is a KeywordIndex, so it will be indexed as a list, even if only one
