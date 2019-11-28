@@ -1013,3 +1013,7 @@ class ISampleTypeAwareMixin(Interface):
     def getSampleTypeUID(self):
         """Returns the UID(s) of the Sample Type(s) assigned to this object
         """
+
+    def getSampleTypeTitle(self):
+        """Returns the title or a comma separated list of sample type titles
+        """
