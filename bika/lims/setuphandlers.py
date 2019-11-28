@@ -138,6 +138,7 @@ INDEXES = (
     ("bika_catalog", "UID", "", "FieldIndex"),
     ("bika_catalog", "allowedRolesAndUsers", "", "KeywordIndex"),
     ("bika_catalog", "created", "", "DateIndex"),
+    # Filter ReferenceSamples in AddControl and AddBlank views from Worksheet
     ("bika_catalog", "getBlank", "", "BooleanIndex"),
     ("bika_catalog", "getClientBatchID", "", "FieldIndex"),
     ("bika_catalog", "getClientID", "", "FieldIndex"),
@@ -170,7 +171,6 @@ INDEXES = (
     # Filter services in Worksheet's Add Analyses View for when the Worksheet
     # Template being used has a Method assigned
     ("bika_setup_catalog", "method_available_uids", "", "KeywordIndex"),
-    ("bika_setup_catalog", "getBlank", "", "FieldIndex"),
     ("bika_setup_catalog", "getCalculationTitle", "", "FieldIndex"),
     ("bika_setup_catalog", "getCalculationUID", "", "FieldIndex"),
     ("bika_setup_catalog", "getCalibrationExpiryDate", "", "FieldIndex"),
@@ -256,7 +256,6 @@ COLUMNS = (
     ("bika_setup_catalog", "getInstrumentType"),
     ("bika_setup_catalog", "getInstrumentTypeName"),
     ("bika_setup_catalog", "getInstrumentLocationName"),
-    ("bika_setup_catalog", "getBlank"),
     ("bika_setup_catalog", "getCalculationTitle"),
     ("bika_setup_catalog", "getCalculationUID"),
     ("bika_setup_catalog", "getCalibrationExpiryDate"),

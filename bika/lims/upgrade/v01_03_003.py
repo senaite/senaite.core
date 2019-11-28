@@ -69,6 +69,10 @@ INDEXES_TO_REMOVE = [
     # https://github.com/senaite/senaite.core/pull/1484
     ("bika_setup_catalog", "getAnalyst"),
 
+    # getBlank index is not used in setup_catalog, but in bika_catalog, where
+    # is used in AddControl and AddBlank views (Worksheet)
+    # https://github.com/senaite/senaite.core/pull/1484
+    ("bika_setup_catalog", "getBlank"),
 
     # REPLACEMENTS (indexes to be removed because of a replacement)
 
@@ -99,6 +103,10 @@ METADATA_TO_REMOVE = [
     # Not used anywhere
     # https://github.com/senaite/senaite.core/pull/1484
     ("bika_setup_catalog", "getAccredited"),
+
+    # Not used anywhere
+    # https://github.com/senaite/senaite.core/pull/1484
+    ("bika_setup_catalog", "getBlank"),
 ]
 
 
