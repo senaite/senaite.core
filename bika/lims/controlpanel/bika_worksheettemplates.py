@@ -82,7 +82,7 @@ class WorksheetTemplatesView(BikaListingView):
                 "toggle": True}),
             ("Instrument", {
                 "title": _("Instrument"),
-                "index": "getInstrumentTitle",
+                "index": "instrument_title",
                 "toggle": True,
             }),
         ))

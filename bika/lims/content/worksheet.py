@@ -1116,17 +1116,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         if method:
             self.setMethod(method, True)
 
-    def getInstrumentTitle(self):
-        """
-        Returns the instrument title
-        :returns: instrument's title
-        :rtype: string
-        """
-        instrument = self.getInstrument()
-        if instrument:
-            return instrument.Title()
-        return ''
-
     def getWorksheetTemplateUID(self):
         """
         Returns the template's UID assigned to this worksheet

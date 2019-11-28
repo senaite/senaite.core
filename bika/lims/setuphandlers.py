@@ -181,7 +181,8 @@ INDEXES = (
     ("bika_setup_catalog", "getFullname", "", "FieldIndex"),
     ("bika_setup_catalog", "getHazardous", "", "FieldIndex"),
     ("bika_setup_catalog", "getId", "", "FieldIndex"),
-    ("bika_setup_catalog", "getInstrumentTitle", "", "FieldIndex"),
+    # Sorting of listings: Worksheet Templates
+    ("bika_setup_catalog", "instrument_title", "", "FieldIndex"),
     ("bika_setup_catalog", "getInstrumentType", "", "FieldIndex"),
     ("bika_setup_catalog", "getInstrumentTypeName", "", "FieldIndex"),
     ("bika_setup_catalog", "getKeyword", "", "FieldIndex"),
@@ -260,7 +261,6 @@ COLUMNS = (
     ("bika_setup_catalog", "getDepartmentTitle"),
     ("bika_setup_catalog", "getFullname"),
     ("bika_setup_catalog", "getHazardous"),
-    ("bika_setup_catalog", "getInstrumentTitle"),
     ("bika_setup_catalog", "getKeyword"),
     ("bika_setup_catalog", "getManagerName"),
     ("bika_setup_catalog", "getManagerPhone"),

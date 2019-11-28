@@ -968,14 +968,6 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
             return method.absolute_url_path()
 
     @security.public
-    def getInstrumentTitle(self):
-        """Used to populate catalog values
-        """
-        instrument = self.getInstrument()
-        if instrument:
-            return instrument.Title()
-
-    @security.public
     def getInstrument(self):
         """Returns the assigned instrument
 

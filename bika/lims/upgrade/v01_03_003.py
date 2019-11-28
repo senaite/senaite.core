@@ -40,6 +40,11 @@ INDEXES_TO_ADD = [
     # Worksheet Template being used has a Method assigned.
     # https://github.com/senaite/senaite.core/pull/1481
     ("bika_setup_catalog", "method_available_uids", "KeywordIndex"),
+
+    # Replaces getInstrumentTitle
+    # Used for sorting Worksheet Templates listing by Instrument
+    # https://github.com/senaite/senaite.core/pull/1481
+    ("bika_setup_catalog", "instrument_title", "FieldIndex")
 ]
 
 INDEXES_TO_REMOVE = [
@@ -91,6 +96,9 @@ INDEXES_TO_REMOVE = [
     # getAvailableMethodUIDs --> method_available_uids
     # https://github.com/senaite/senaite.core/pull/1484
     ("bika_setup_catalog", "getAvailableMethodUIDs"),
+
+    # getInstrumentTitle --> instrument_title
+    ("bika_setup_catalog", "getInstrumentTitle"),
 ]
 
 METADATA_TO_REMOVE = [
@@ -118,6 +126,7 @@ METADATA_TO_REMOVE = [
     ("bika_setup_catalog", "getDuplicateVariation"),
     ("bika_setup_catalog", "getFormula"),
     ("bika_setup_catalog", "getInstrumentLocationName"),
+    ("bika_setup_catalog", "getInstrumentTitle"),
 ]
 
 

@@ -20,9 +20,11 @@
 
 from plone.indexer import indexer
 
+from bika.lims import api
 from bika.lims.interfaces import IAnalysisService
 from bika.lims.interfaces import IBikaSetupCatalog
 from bika.lims.interfaces import ISampleTypeAwareMixin
+from bika.lims.interfaces import IWorksheetTemplate
 
 
 @indexer(ISampleTypeAwareMixin, IBikaSetupCatalog)
@@ -50,3 +52,11 @@ def method_available_uids(instance):
     a None value. This allows searches for `MissingValue` entries too.
     """
     return instance.getAvailableMethodUIDs() or (None, )
+
+
+@indexer(IWorksheetTemplate, IBikaSetupCatalog)
+def instrument_title(instance):
+    """Returns the title of the instrument assigned to the instance
+    """
+    instrument = instance.getInstrument()
+    return instrument and api.get_title(instrument) or ""

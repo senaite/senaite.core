@@ -35,6 +35,9 @@
   Analyses View for when the Worksheet Template being has a Method assigned -->
   <adapter name="method_available_uids" factory=".bikasetup.method_available_uids" />
 
+  <!-- instrument_title: sorting of WorksheetTemplate listing by Instrument -->
+  <adapter name="instrument_title" factory=".bikasetup.instrument_title"/>
+
 
   <!-- Auditlog Catalog Index Adapters -->
   <adapter name="action" factory=".auditlog.action"/>
