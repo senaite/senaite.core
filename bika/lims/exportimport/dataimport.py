@@ -119,23 +119,15 @@ class ajaxGetImportTemplate(BrowserView):
 
     def __call__(self):
         plone.protect.CheckAuthenticator(self.request)
-        exim = self.request.get('exim')
-        core_instrument = self.is_exim_in_core(exim)
-        exim = exim.replace(".", "/")
+        exim = self.request.get('exim').replace(".", "/")
         # If a specific template for this instrument doesn't exist yet,
         # use the default template for instrument results file import located
         # at bika/lims/exportimport/instruments/instrument.pt
-        # if exim.startswith('senaite/instruments'):
-        if core_instrument:
-            instrpath = os.path.join("exportimport", "instruments")
-            templates_dir = resource_filename("bika.lims", instrpath)
-            fname = "%s/%s_import.pt" % (templates_dir, exim)
-        else:
-            instrpath = '/'.join(exim.split('/')[2:-2])
-            templates_dir = resource_filename("senaite.instruments", instrpath)
-            fname = "{}/{}_import.pt".format(templates_dir, exim.split('/')[-1])
+        instrpath = os.path.join("exportimport", "instruments")
+        templates_dir = resource_filename("bika.lims", instrpath)
+        fname = "%s/%s_import.pt" % (templates_dir, exim)
         if os.path.isfile(fname):
-            return ViewPageTemplateFile(fname)(self)
+            return ViewPageTemplateFile("instruments/%s_import.pt" % exim)(self)
         else:
             return ViewPageTemplateFile("instruments/instrument.pt")(self)
 
@@ -151,14 +143,6 @@ class ajaxGetImportTemplate(BrowserView):
             items.append((item.getKeyword, item.Title))
         items.sort(lambda x, y: cmp(x[1].lower(), y[1].lower()))
         return DisplayList(list(items))
-
-    def is_exim_in_core(self, exim):
-        portal_tool = plone.api.portal.get_tool('portal_setup')
-        profiles = portal_tool.listProfileInfo()
-        for profile in profiles:
-            if exim.startswith(profile['product']):
-                return False
-        return True
 
 
 class ajaxGetImportInterfaces(BrowserView):
