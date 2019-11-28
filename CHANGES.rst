@@ -7,6 +7,7 @@ Changelog
 
 **Added**
 
+- #1483 Added Accredited symbol in Analyses listings
 - #1466 Support for "readonly" and "hidden" visibility modes in ReferenceWidget
 
 
