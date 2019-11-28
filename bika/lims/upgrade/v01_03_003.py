@@ -74,6 +74,11 @@ INDEXES_TO_REMOVE = [
     # https://github.com/senaite/senaite.core/pull/1484
     ("bika_setup_catalog", "getBlank"),
 
+    # Not used anywhere
+    # https://github.com/senaite/senaite.core/pull/1484
+    ("bika_setup_catalog", "getDuplicateVariation"),
+
+
     # REPLACEMENTS (indexes to be removed because of a replacement)
 
     # getSampleTypeUID --> sampletype_uid (FieldIndex --> KeywordIndex)
@@ -107,6 +112,10 @@ METADATA_TO_REMOVE = [
     # Not used anywhere
     # https://github.com/senaite/senaite.core/pull/1484
     ("bika_setup_catalog", "getBlank"),
+
+    # Not used anywhere
+    # https://github.com/senaite/senaite.core/pull/1484
+    ("bika_setup_catalog", "getDuplicateVariation"),
 ]
 
 
