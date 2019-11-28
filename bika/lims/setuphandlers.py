@@ -178,7 +178,6 @@ INDEXES = (
     ("bika_setup_catalog", "getCategoryUID", "", "FieldIndex"),
     ("bika_setup_catalog", "getClientUID", "", "FieldIndex"),
     ("bika_setup_catalog", "getDepartmentTitle", "", "FieldIndex"),
-    ("bika_setup_catalog", "getDocumentID", "", "FieldIndex"),
     ("bika_setup_catalog", "getFullname", "", "FieldIndex"),
     ("bika_setup_catalog", "getHazardous", "", "FieldIndex"),
     ("bika_setup_catalog", "getId", "", "FieldIndex"),

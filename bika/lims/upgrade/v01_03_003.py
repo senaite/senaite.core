@@ -76,6 +76,7 @@ INDEXES_TO_REMOVE = [
 
     # Not used anywhere
     # https://github.com/senaite/senaite.core/pull/1484
+    ("bika_setup_catalog", "getDocumentID"),
     ("bika_setup_catalog", "getDuplicateVariation"),
     ("bika_setup_catalog", "getFormula"),
 
