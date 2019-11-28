@@ -31,8 +31,8 @@
   Specifications and Templates when a Sample Type is selected -->
   <adapter name="sampletype_uids" factory=".bikasetup.sampletype_uids"/>
 
-  <!-- method_uids: Used to filter services in Worksheet's Add Analyses View
-  for when the Worksheet Template being used has a Method assigned. -->
+  <!-- method_available_uids: Used to filter services in Worksheet's Add
+  Analyses View for when the Worksheet Template being has a Method assigned -->
   <adapter name="method_available_uids" factory=".bikasetup.method_available_uids" />
 
 
