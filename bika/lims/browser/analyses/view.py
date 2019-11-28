@@ -569,6 +569,8 @@ class AnalysesView(BikaListingView):
         self._folder_item_verify_icons(obj, item)
         # Fill worksheet anchor/icon
         self._folder_item_assigned_worksheet(obj, item)
+        # Fill accredited icon
+        self._folder_item_accredited_icon(obj, item)
         # Fill reflex analysis icons
         self._folder_item_reflex_icons(obj, item)
         # Fill hidden field (report visibility)
@@ -1161,6 +1163,14 @@ class AnalysesView(BikaListingView):
         img = get_image('reflexrule.png',
                         title=t(_('It comes form a reflex rule')))
         self._append_html_element(item, 'Service', img)
+
+    def _folder_item_accredited_icon(self, analysis_brain, item):
+        """Adds an icon to the item dictionary if it is an accredited analysis
+        """
+        full_obj = self.get_object(analysis_brain)
+        if full_obj.getAccredited():
+            img = get_image("accredited.png", title=t(_("Accredited")))
+            self._append_html_element(item, "Service", img)
 
     def _folder_item_report_visibility(self, analysis_brain, item):
         """Set if the hidden field can be edited (enabled/disabled)
