@@ -77,6 +77,7 @@ INDEXES_TO_REMOVE = [
     # Not used anywhere
     # https://github.com/senaite/senaite.core/pull/1484
     ("bika_setup_catalog", "getDuplicateVariation"),
+    ("bika_setup_catalog", "getFormula"),
 
 
     # REPLACEMENTS (indexes to be removed because of a replacement)
@@ -112,10 +113,8 @@ METADATA_TO_REMOVE = [
     # Not used anywhere
     # https://github.com/senaite/senaite.core/pull/1484
     ("bika_setup_catalog", "getBlank"),
-
-    # Not used anywhere
-    # https://github.com/senaite/senaite.core/pull/1484
     ("bika_setup_catalog", "getDuplicateVariation"),
+    ("bika_setup_catalog", "getFormula"),
 ]
 
 
