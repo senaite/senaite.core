@@ -19,6 +19,17 @@
 # Some rights reserved, see README and LICENSE.
 
 from AccessControl import ClassSecurityInfo
+from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
+from Products.ATExtensions.field.records import RecordsField
+from Products.Archetypes import atapi
+from Products.Archetypes.public import BaseFolder
+from Products.Archetypes.public import ReferenceWidget
+from Products.Archetypes.public import Schema
+from Products.Archetypes.utils import DisplayList
+from Products.CMFPlone.utils import safe_unicode
+from zope.i18n import translate
+from zope.interface import implements
+
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import UIDReferenceField
@@ -27,18 +38,8 @@ from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.content.clientawaremixin import ClientAwareMixin
 from bika.lims.content.sampletype import SampleTypeAwareMixin
-from bika.lims.interfaces import IAnalysisSpec, IDeactivable
-from Products.Archetypes import atapi
-from Products.Archetypes.public import BaseFolder
-from Products.Archetypes.public import ReferenceWidget
-from Products.Archetypes.public import Schema
-from Products.Archetypes.utils import DisplayList
-from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
-from Products.ATExtensions.field.records import RecordsField
-from Products.CMFPlone.utils import safe_unicode
-from zope.i18n import translate
-from zope.interface import implements
-
+from bika.lims.interfaces import IAnalysisSpec
+from bika.lims.interfaces import IDeactivable
 
 schema = Schema((
 

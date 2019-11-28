@@ -25,7 +25,6 @@ from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.Archetypes.public import BaseContent
 from Products.Archetypes.public import BooleanField
 from Products.Archetypes.public import BooleanWidget
-from Products.Archetypes.public import DisplayList
 from Products.Archetypes.public import FileWidget
 from Products.Archetypes.public import ReferenceField
 from Products.Archetypes.public import Schema
@@ -37,9 +36,7 @@ from Products.CMFPlone.utils import safe_unicode
 from plone.app.blob.field import FileField as BlobFileField
 from zope.interface import implements
 
-from bika.lims import api
 from bika.lims import bikaMessageFactory as _
-from bika.lims import deprecated
 from bika.lims.browser.fields import CoordinateField
 from bika.lims.browser.fields import DurationField
 from bika.lims.browser.widgets import CoordinateWidget

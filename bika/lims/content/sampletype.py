@@ -25,6 +25,10 @@ from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
+from magnitude import mg
+from zope.interface import implements
+
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.browser.fields import DurationField
@@ -33,12 +37,10 @@ from bika.lims.browser.widgets import SampleTypeStickersWidget
 from bika.lims.browser.widgets.referencewidget import ReferenceWidget as brw
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.interfaces import ISampleType, IDeactivable
+from bika.lims.interfaces import IDeactivable
+from bika.lims.interfaces import ISampleType
 from bika.lims.interfaces import ISampleTypeAwareMixin
 from bika.lims.vocabularies import getStickerTemplates
-from magnitude import mg
-from zope.interface import implements
-from bika.lims import api
 
 SMALL_DEFAULT_STICKER = 'small_default'
 LARGE_DEFAULT_STICKER = 'large_default'

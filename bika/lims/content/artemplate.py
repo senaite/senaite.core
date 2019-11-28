@@ -21,6 +21,20 @@
 import sys
 
 from AccessControl import ClassSecurityInfo
+from Products.ATExtensions.field.records import RecordsField
+from Products.Archetypes.public import BaseContent
+from Products.Archetypes.public import BooleanField
+from Products.Archetypes.public import BooleanWidget
+from Products.Archetypes.public import ComputedField
+from Products.Archetypes.public import ComputedWidget
+from Products.Archetypes.public import DisplayList
+from Products.Archetypes.public import ReferenceField
+from Products.Archetypes.public import Schema
+from Products.Archetypes.public import registerType
+from Products.Archetypes.references import HoldingReference
+from Products.CMFCore.utils import getToolByName
+from zope.interface import implements
+
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields.remarksfield import RemarksField
@@ -32,20 +46,8 @@ from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.content.clientawaremixin import ClientAwareMixin
 from bika.lims.content.sampletype import SampleTypeAwareMixin
-from bika.lims.interfaces import IARTemplate, IDeactivable
-from Products.Archetypes.public import BaseContent
-from Products.Archetypes.public import BooleanField
-from Products.Archetypes.public import BooleanWidget
-from Products.Archetypes.public import ComputedField
-from Products.Archetypes.public import ComputedWidget
-from Products.Archetypes.public import DisplayList
-from Products.Archetypes.public import ReferenceField
-from Products.Archetypes.public import Schema
-from Products.Archetypes.public import registerType
-from Products.Archetypes.references import HoldingReference
-from Products.ATExtensions.field.records import RecordsField
-from Products.CMFCore.utils import getToolByName
-from zope.interface import implements
+from bika.lims.interfaces import IARTemplate
+from bika.lims.interfaces import IDeactivable
 
 schema = BikaSchema.copy() + Schema((
     ReferenceField(
