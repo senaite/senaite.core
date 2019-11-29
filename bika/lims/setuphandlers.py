@@ -185,7 +185,6 @@ INDEXES = (
     # Sorting of listings: Instruments
     ("bika_setup_catalog", "instrumenttype_name", "", "FieldIndex"),
     ("bika_setup_catalog", "getKeyword", "", "FieldIndex"),
-    ("bika_setup_catalog", "getModel", "", "FieldIndex"),
     ("bika_setup_catalog", "getName", "", "FieldIndex"),
     ("bika_setup_catalog", "getPointOfCapture", "", "FieldIndex"),
     # Sorting of listings: LabProducts
@@ -256,7 +255,6 @@ COLUMNS = (
     ("bika_setup_catalog", "getDepartmentTitle"),
     ("bika_setup_catalog", "getFullname"),
     ("bika_setup_catalog", "getKeyword"),
-    ("bika_setup_catalog", "getModel"),
     ("bika_setup_catalog", "getName"),
     ("bika_setup_catalog", "getPointOfCapture"),
     ("bika_setup_catalog", "getSamplePointTitle"),

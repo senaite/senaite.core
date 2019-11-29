@@ -102,6 +102,7 @@ INDEXES_TO_REMOVE = [
     ("bika_setup_catalog", "getManagerName"),
     ("bika_setup_catalog", "getMethodID"),
     ("bika_setup_catalog", "getMaxTimeAllowed"),
+    ("bika_setup_catalog", "getModel"),
 
 
     # REPLACEMENTS (indexes to be removed because of a replacement)
@@ -166,6 +167,7 @@ METADATA_TO_REMOVE = [
     ("bika_setup_catalog", "getManagerPhone"),
     ("bika_setup_catalog", "getManagerName"),
     ("bika_setup_catalog", "getMaxTimeAllowed"),
+    ("bika_setup_catalog", "getModel"),
 ]
 
 

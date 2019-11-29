@@ -81,7 +81,6 @@ class InstrumentsView(BikaListingView):
                 "toggle": True}),
             ("Model", {
                 "title": _("Model"),
-                "index": "getModel",
                 "toggle": True}),
             ("ExpiryDate", {
                 "title": _("Expiry Date"),
