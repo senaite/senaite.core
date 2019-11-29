@@ -96,6 +96,8 @@ INDEXES_TO_REMOVE = [
     ("bika_setup_catalog", "getFormula"),
     ("bika_setup_catalog", "getInstrumentLocationName"),
     ("bika_setup_catalog", "getInstrumentType"),
+    ("bika_setup_catalog", "getHazardous"),
+    ("bika_setup_catalog", "getManagerEmail"),
 
 
     # REPLACEMENTS (indexes to be removed because of a replacement)
@@ -155,6 +157,8 @@ METADATA_TO_REMOVE = [
     ("bika_setup_catalog", "getVolume"),
     ("bika_setup_catalog", "getInstrumentTypeName"),
     ("bika_setup_catalog", "getInstrumentType"),
+    ("bika_setup_catalog", "getHazardous"),
+    ("bika_setup_catalog", "getManagerEmail"),
 ]
 
 
