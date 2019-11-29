@@ -82,3 +82,4 @@ def volume(instance):
     """Returns the total price of the instance
     """
     return instance.getVolume()
+
