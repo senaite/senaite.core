@@ -171,7 +171,6 @@ INDEXES = (
     # Filter services in Worksheet's Add Analyses View for when the Worksheet
     # Template being used has a Method assigned
     ("bika_setup_catalog", "method_available_uid", "", "KeywordIndex"),
-    ("bika_setup_catalog", "getCategoryTitle", "", "FieldIndex"),
     ("bika_setup_catalog", "getCategoryUID", "", "FieldIndex"),
     ("bika_setup_catalog", "getClientUID", "", "FieldIndex"),
     # Sorting of listings: Analysis Categories

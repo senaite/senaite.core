@@ -59,6 +59,7 @@ INDEXES_TO_ADD = [
 
     # Replaces getPointOfCapture
     ("bika_setup_catalog", "point_of_capture", "FieldIndex"),
+
 ]
 
 INDEXES_TO_REMOVE = [
@@ -117,6 +118,7 @@ INDEXES_TO_REMOVE = [
     ("bika_setup_catalog", "getSamplePointTitle"),
     ("bika_setup_catalog", "getVolume"),
     ("bika_setup_catalog", "getSamplePointUID"),
+    ("bika_setup_catalog", "getCategoryTitle"),
 
 
     # REPLACEMENTS (indexes to be removed because of a replacement)
@@ -148,6 +150,7 @@ INDEXES_TO_REMOVE = [
 
     # getPointOfCapture --> point_of_capture
     ("bika_setup_catalog", "getPointOfCapture"),
+
 ]
 
 METADATA_TO_REMOVE = [

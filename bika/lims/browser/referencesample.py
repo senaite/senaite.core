@@ -266,11 +266,10 @@ class ReferenceResultsView(BikaListingView):
         self.show_search = False
 
         # Categories
+        self.categories = []
         if self.show_categories_enabled():
-            self.categories = []
             self.show_categories = True
             self.expand_all_categories = True
-            self.category_index = "getCategoryTitle"
 
         self.columns = collections.OrderedDict((
             ("Title", {
