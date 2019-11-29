@@ -26,7 +26,6 @@ from bika.lims.interfaces import IAnalysisService
 from bika.lims.interfaces import IBikaSetupCatalog
 from bika.lims.interfaces import IHavePrice
 from bika.lims.interfaces import IInstrument
-from bika.lims.interfaces import ILabProduct
 from bika.lims.interfaces import ISampleTypeAwareMixin
 from bika.lims.interfaces import IWorksheetTemplate
 

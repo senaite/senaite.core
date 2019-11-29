@@ -190,7 +190,6 @@ INDEXES = (
     ("bika_setup_catalog", "price", "", "FieldIndex"),
     # Sorting of listings: LabProducts
     ("bika_setup_catalog", "price_total", "", "FieldIndex"),
-    ("bika_setup_catalog", "getSamplePointUID", "", "FieldIndex"),
     # Sorting of listings: Sample Points, Specifications
     ("bika_setup_catalog", "getSampleTypeTitle", "", "FieldIndex"),
     # Filter in Add2: Sample Points, Specifications, Templates
@@ -247,7 +246,6 @@ COLUMNS = (
     ("bika_setup_catalog", "getKeyword"),
     ("bika_setup_catalog", "getName"),
     ("bika_setup_catalog", "getSamplePointTitle"),
-    ("bika_setup_catalog", "getSamplePointUID"),
     ("bika_setup_catalog", "getServiceUID"),
 
     ("portal_catalog", "Analyst"),

@@ -117,6 +117,7 @@ INDEXES_TO_REMOVE = [
     ("bika_setup_catalog", "getUnit"),
     ("bika_setup_catalog", "getSamplePointTitle"),
     ("bika_setup_catalog", "getVolume"),
+    ("bika_setup_catalog", "getSamplePointUID"),
 
 
     # REPLACEMENTS (indexes to be removed because of a replacement)
@@ -192,6 +193,7 @@ METADATA_TO_REMOVE = [
     ("bika_setup_catalog", "getVATAmount"),
     ("bika_setup_catalog", "getUnit"),
     ("bika_setup_catalog", "getPointOfCapture"),
+    ("bika_setup_catalog", "getSamplePointUID"),
 ]
 
 
