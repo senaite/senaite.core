@@ -185,7 +185,6 @@ INDEXES = (
     # Sorting of listings: Instruments
     ("bika_setup_catalog", "instrumenttype_name", "", "FieldIndex"),
     ("bika_setup_catalog", "getKeyword", "", "FieldIndex"),
-    ("bika_setup_catalog", "getManagerName", "", "FieldIndex"),
     ("bika_setup_catalog", "getMaxTimeAllowed", "", "FieldIndex"),
     ("bika_setup_catalog", "getMethodID", "", "FieldIndex"),
     ("bika_setup_catalog", "getModel", "", "FieldIndex"),
@@ -259,7 +258,6 @@ COLUMNS = (
     ("bika_setup_catalog", "getDepartmentTitle"),
     ("bika_setup_catalog", "getFullname"),
     ("bika_setup_catalog", "getKeyword"),
-    ("bika_setup_catalog", "getManagerName"),
     ("bika_setup_catalog", "getMaxTimeAllowed"),
     ("bika_setup_catalog", "getModel"),
     ("bika_setup_catalog", "getName"),

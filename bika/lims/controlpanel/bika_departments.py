@@ -79,7 +79,6 @@ class DepartmentsView(BikaListingView):
                 "toggle": True}),
             ("Manager", {
                 "title": _("Manager"),
-                "index": "getManagerName",
                 "toggle": True}),
             ("ManagerPhone", {
                 "title": _("Manager Phone"),
