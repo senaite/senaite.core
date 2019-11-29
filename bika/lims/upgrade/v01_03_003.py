@@ -100,6 +100,7 @@ INDEXES_TO_REMOVE = [
     ("bika_setup_catalog", "getManagerEmail"),
     ("bika_setup_catalog", "getManagerPhone"),
     ("bika_setup_catalog", "getManagerName"),
+    ("bika_setup_catalog", "getMethodID"),
 
 
     # REPLACEMENTS (indexes to be removed because of a replacement)

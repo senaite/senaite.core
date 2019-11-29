@@ -186,7 +186,6 @@ INDEXES = (
     ("bika_setup_catalog", "instrumenttype_name", "", "FieldIndex"),
     ("bika_setup_catalog", "getKeyword", "", "FieldIndex"),
     ("bika_setup_catalog", "getMaxTimeAllowed", "", "FieldIndex"),
-    ("bika_setup_catalog", "getMethodID", "", "FieldIndex"),
     ("bika_setup_catalog", "getModel", "", "FieldIndex"),
     ("bika_setup_catalog", "getName", "", "FieldIndex"),
     ("bika_setup_catalog", "getPointOfCapture", "", "FieldIndex"),
