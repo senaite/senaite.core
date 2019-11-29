@@ -424,7 +424,13 @@ def exportObjects(obj, parent_path, context):
 def importObjects(obj, parent_path, context):
     """ Import subobjects recursively.
     """
-    importer = queryMultiAdapter((obj, context), IBody)
+    if api.is_portal(obj):
+        # explicitly instantiate the importer to avoid adapter clash of
+        # Products.CMFCore.exportimport.properties.PropertiesXMLAdapter
+        importer = SenaiteSiteXMLAdapter(obj, context)
+    else:
+        importer = queryMultiAdapter((obj, context), IBody)
+
     path = "%s%s" % (parent_path, get_id(obj))
     __traceback_info__ = path
     if importer:
@@ -453,7 +459,11 @@ def import_xml(context):
     installed = qi.isProductInstalled("bika.lims")
 
     if not installed:
-        logger.debug("Nothing to export.")
+        logger.debug("Nothing to import.")
+        return
+
+    if not context.readDataFile("senaite.xml"):
+        logger.debug("Nothing to import.")
         return
 
     # create content slugs for UID references
