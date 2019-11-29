@@ -24,6 +24,7 @@ from bika.lims import api
 from bika.lims.interfaces import IAnalysisService
 from bika.lims.interfaces import IBikaSetupCatalog
 from bika.lims.interfaces import IHavePrice
+from bika.lims.interfaces import IInstrument
 from bika.lims.interfaces import ILabProduct
 from bika.lims.interfaces import ISampleTypeAwareMixin
 from bika.lims.interfaces import IWorksheetTemplate
@@ -84,3 +85,9 @@ def volume(instance):
     """
     return instance.getVolume()
 
+
+@indexer(IInstrument, IBikaSetupCatalog)
+def instrumenttype_name(instance):
+    """Returns the name of the Instrument Type the instance is assigned to
+    """
+    return instance.getInstrumentTypeName()

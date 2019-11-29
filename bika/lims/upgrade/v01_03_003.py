@@ -52,6 +52,9 @@ INDEXES_TO_ADD = [
     ("bika_setup_catalog", "price", "FieldIndex"),
     ("bika_setup_catalog", "price_total", "FieldIndex"),
     ("bika_setup_catalog", "volume", "FieldIndex"),
+
+    # Replaces getInstrumentTypeName
+    ("bika_setup_catalog", "instrumenttype_name", "FieldIndex"),
 ]
 
 INDEXES_TO_REMOVE = [
@@ -109,10 +112,15 @@ INDEXES_TO_REMOVE = [
 
     # getPrice --> price
     ("bika_setup_catalog", "getPrice"),
+
     # getTotalPrice --> price_total
     ("bika_setup_catalog", "getTotalPrice"),
+
     # getVolume --> volume
     ("bika_setup_catalog", "getVolume"),
+
+    # getInstrumentTypeName --> instrumenttype_name
+    ("bika_setup_catalog", "getInstrumentTypeName"),
 ]
 
 METADATA_TO_REMOVE = [
@@ -144,6 +152,7 @@ METADATA_TO_REMOVE = [
     ("bika_setup_catalog", "getPrice"),
     ("bika_setup_catalog", "getTotalPrice"),
     ("bika_setup_catalog", "getVolume"),
+    ("bika_setup_catalog", "getInstrumentTypeName"),
 ]
 
 

@@ -43,6 +43,8 @@
   <adapter name="price_total" factory=".bikasetup.price_total"/>
   <adapter name="volume" factory=".bikasetup.volume"/>
 
+  <!-- Sorting of Instruments listing -->
+  <adapter name="instrumenttype_name" factory=".bikasetup.instrumenttype_name"/>
 
   <!-- Auditlog Catalog Index Adapters -->
   <adapter name="action" factory=".auditlog.action"/>
