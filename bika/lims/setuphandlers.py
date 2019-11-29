@@ -190,7 +190,6 @@ INDEXES = (
     ("bika_setup_catalog", "price", "", "FieldIndex"),
     # Sorting of listings: LabProducts
     ("bika_setup_catalog", "price_total", "", "FieldIndex"),
-    ("bika_setup_catalog", "getSamplePointTitle", "", "KeywordIndex"),
     ("bika_setup_catalog", "getSamplePointUID", "", "FieldIndex"),
     # Sorting of listings: Sample Points, Specifications
     ("bika_setup_catalog", "getSampleTypeTitle", "", "FieldIndex"),

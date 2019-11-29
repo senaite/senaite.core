@@ -116,6 +116,7 @@ INDEXES_TO_REMOVE = [
     ("bika_setup_catalog", "getCalibrationExpiryDate"),
     ("bika_setup_catalog", "getVATAmount"),
     ("bika_setup_catalog", "getUnit"),
+    ("bika_setup_catalog", "getSamplePointTitle"),
 
 
     # REPLACEMENTS (indexes to be removed because of a replacement)
