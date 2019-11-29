@@ -31,7 +31,7 @@ from bika.lims.interfaces import IWorksheetTemplate
 
 
 @indexer(ISampleTypeAwareMixin, IBikaSetupCatalog)
-def sampletype_uids(instance):
+def sampletype_uid(instance):
     """Returns the list of SampleType UIDs the instance is assigned to
 
     This is a KeywordIndex, so it will be indexed as a list, even if only one
@@ -54,7 +54,7 @@ def sampletype_title(instance):
 
 
 @indexer(IAnalysisService, IBikaSetupCatalog)
-def method_available_uids(instance):
+def method_available_uid(instance):
     """Returns a list of Method UIDs that are available for this instance
 
     If the instance (AnalysisService) has InstrumentEntryOfResults set to True,

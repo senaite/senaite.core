@@ -32,7 +32,7 @@ profile = "profile-{0}:default".format(product)
 
 INDEXES_TO_ADD = [
     # Replaces getSampleTypeUIDs
-    ("bika_setup_catalog", "sampletype_uids", "KeywordIndex"),
+    ("bika_setup_catalog", "sampletype_uid", "KeywordIndex"),
 
     # Replaces getSampleTypeTitle
     ("bika_setup_catalog", "sampletype_title", "KeywordIndex"),
@@ -40,7 +40,7 @@ INDEXES_TO_ADD = [
     # Replaces getAvailableMethodUIDs
     # Used to filter services in Worksheet's Add Analyses View for when the
     # Worksheet Template being used has a Method assigned
-    ("bika_setup_catalog", "method_available_uids", "KeywordIndex"),
+    ("bika_setup_catalog", "method_available_uid", "KeywordIndex"),
 
     # Replaces getInstrumentTitle
     # Used for sorting Worksheet Templates listing by Instrument
@@ -123,11 +123,12 @@ INDEXES_TO_REMOVE = [
 
     # getSampleTypeUID --> sampletype_uid (FieldIndex --> KeywordIndex)
     ("bika_setup_catalog", "getSampleTypeUID"),
+    ("bika_setup_catalog", "sampletype_uids"),
 
     # getSampleTypeTitle --> sampletype_title
     ("bika_setup_catalog", "getSampleTypeTitle"),
 
-    # getAvailableMethodUIDs --> method_available_uids
+    # getAvailableMethodUIDs --> method_available_uid
     ("bika_setup_catalog", "getAvailableMethodUIDs"),
 
     # getInstrumentTitle --> instrument_title

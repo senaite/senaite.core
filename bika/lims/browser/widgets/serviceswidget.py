@@ -49,7 +49,7 @@ class ServicesView(BikaListingView):
             method_uid = context.getMethodUID()
             if method_uid:
                 self.contentFilter.update({
-                    "method_available_uids": method_uid
+                    "method_available_uid": method_uid
                 })
 
         self.context_actions = {}

@@ -170,7 +170,7 @@ INDEXES = (
     ("bika_setup_catalog", "created", "", "DateIndex"),
     # Filter services in Worksheet's Add Analyses View for when the Worksheet
     # Template being used has a Method assigned
-    ("bika_setup_catalog", "method_available_uids", "", "KeywordIndex"),
+    ("bika_setup_catalog", "method_available_uid", "", "KeywordIndex"),
     ("bika_setup_catalog", "getCategoryTitle", "", "FieldIndex"),
     ("bika_setup_catalog", "getCategoryUID", "", "FieldIndex"),
     ("bika_setup_catalog", "getClientUID", "", "FieldIndex"),
@@ -193,7 +193,7 @@ INDEXES = (
     # Sorting of listings: Sample Points, Specifications
     ("bika_setup_catalog", "sampletype_title", "", "KeywordIndex"),
     # Filter in Add2: Sample Points, Specifications, Templates
-    ("bika_setup_catalog", "sampletype_uids", "", "KeywordIndex"),
+    ("bika_setup_catalog", "sampletype_uid", "", "KeywordIndex"),
     ("bika_setup_catalog", "getServiceUID", "", "FieldIndex"),
     ("bika_setup_catalog", "getServiceUIDs", "", "KeywordIndex"),
     ("bika_setup_catalog", "id", "getId", "FieldIndex"),
