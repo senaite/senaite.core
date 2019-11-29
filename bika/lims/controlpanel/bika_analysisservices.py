@@ -34,6 +34,7 @@ from bika.lims.config import PROJECTNAME
 from bika.lims.idserver import renameAfterCreation
 from bika.lims.interfaces import IAnalysisServices
 from bika.lims.permissions import AddAnalysisService
+from bika.lims.utils import format_supsub
 from bika.lims.utils import get_image
 from bika.lims.utils import get_link
 from bika.lims.utils import tmpID
@@ -230,7 +231,6 @@ class AnalysisServicesView(BikaListingView):
                 "sortable": self.can_sort}),
             ("Unit", {
                 "title": _("Unit"),
-                "attr": "getUnit",
                 "sortable": False}),
             ("Price", {
                 "title": _("Price"),
@@ -389,6 +389,10 @@ class AnalysisServicesView(BikaListingView):
         if dup_variation:
             item["DuplicateVariation"] = self.format_duplication_variation(
                 dup_variation)
+
+        # Unit
+        unit = obj.getUnit()
+        item["Unit"] = format_supsub(unit) if unit else ""
 
         # Icons
         after_icons = ""

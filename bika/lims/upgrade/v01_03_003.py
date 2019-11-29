@@ -112,6 +112,7 @@ INDEXES_TO_REMOVE = [
     ("bika_setup_catalog", "getCalculationTitle"),
     ("bika_setup_catalog", "getCalibrationExpiryDate"),
     ("bika_setup_catalog", "getVATAmount"),
+    ("bika_setup_catalog", "getUnit"),
 
 
     # REPLACEMENTS (indexes to be removed because of a replacement)
@@ -185,6 +186,7 @@ METADATA_TO_REMOVE = [
     ("bika_setup_catalog", "getCalibrationExpiryDate"),
     ("bika_setup_catalog", "getDepartmentTitle"),
     ("bika_setup_catalog", "getVATAmount"),
+    ("bika_setup_catalog", "getUnit"),
 ]
 
 
