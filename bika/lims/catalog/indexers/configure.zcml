@@ -24,6 +24,14 @@
   <!-- Whether the object is neither cancelled nor invalid -->
   <adapter name="is_active" factory=".is_active"/>
 
+
+  <!-- BikaSetup Catalog Index adapters -->
+
+  <!-- sampletype_uids: used in Add Sample form to filter Sample Points,
+  Specifications and Templates when a Sample Type is selected -->
+  <adapter name="sampletype_uids" factory=".bikasetup.sampletype_uids"/>
+
+
   <!-- Auditlog Catalog Index Adapters -->
   <adapter name="action" factory=".auditlog.action"/>
   <adapter name="actor" factory=".auditlog.actor"/>

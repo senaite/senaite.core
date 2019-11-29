@@ -25,6 +25,10 @@ from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
+from magnitude import mg
+from zope.interface import implements
+
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.browser.fields import DurationField
@@ -33,10 +37,10 @@ from bika.lims.browser.widgets import SampleTypeStickersWidget
 from bika.lims.browser.widgets.referencewidget import ReferenceWidget as brw
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.interfaces import ISampleType, IDeactivable
+from bika.lims.interfaces import IDeactivable
+from bika.lims.interfaces import ISampleType
+from bika.lims.interfaces import ISampleTypeAwareMixin
 from bika.lims.vocabularies import getStickerTemplates
-from magnitude import mg
-from zope.interface import implements
 
 SMALL_DEFAULT_STICKER = 'small_default'
 LARGE_DEFAULT_STICKER = 'large_default'
@@ -54,6 +58,58 @@ def sticker_templates():
     if voc.index == 0:
         logger.warning('Sampletype: getStickerTemplates is empty!')
     return voc
+
+
+class SampleTypeAwareMixin(BaseObject):
+    implements(ISampleTypeAwareMixin)
+
+    security = ClassSecurityInfo()
+
+    @security.public
+    def getSampleType(self):
+        """Returns the sample type(s) assigned to this object, if any
+        """
+        if ISampleType.providedBy(self):
+            return self
+
+        field = self._get_field()
+        if not field:
+            return None
+
+        sample_type = field.get(self)
+        return sample_type or None
+
+    @security.public
+    def getSampleTypeUID(self):
+        """Returns the UID(s) of the Sample Type(s) assigned to this object
+        """
+        sample_type = self.getSampleType()
+        if isinstance(sample_type, (list, tuple)):
+            return map(api.get_uid, sample_type)
+        elif sample_type:
+            return api.get_uid(sample_type)
+        return None
+
+    @security.public
+    def getSampleTypeTitle(self):
+        """Returns the title or a comma separated list of sample type titles
+        """
+        sample_type = self.getSampleType()
+        if isinstance(sample_type, (list, tuple)):
+            title = map(api.get_title, sample_type)
+            return ", ".join(title)
+        elif sample_type:
+            return api.get_title(sample_type)
+        return None
+
+    def _get_field(self):
+        """Returns the field that stores the SampleType object, if any
+        """
+        field = self.getField("SampleType", None)
+        if not field:
+            field = self.getField("SampleTypes", None)
+
+        return field
 
 
 schema = BikaSchema.copy() + Schema((
@@ -119,13 +175,17 @@ schema = BikaSchema.copy() + Schema((
         required = 0,
         multiValued = 1,
         allowed_types = ('SamplePoint',),
-        vocabulary = 'SamplePointsVocabulary',
         relationship = 'SampleTypeSamplePoint',
         widget = brw(
             label=_("Sample Points"),
             description =_("The list of sample points from which this sample "
                            "type can be collected.  If no sample points are "
                            "selected, then all sample points are available."),
+            catalog_name='bika_setup_catalog',
+            base_query={"is_active": True,
+                        "sort_on": "sortable_title",
+                        "sort_order": "ascending"},
+            showOn=True,
         ),
     ),
     ComputedField(
@@ -181,7 +241,8 @@ schema = BikaSchema.copy() + Schema((
 schema['description'].schemata = 'default'
 schema['description'].widget.visible = True
 
-class SampleType(BaseContent, HistoryAwareMixin):
+
+class SampleType(BaseContent, HistoryAwareMixin, SampleTypeAwareMixin):
 
     implements(ISampleType, IDeactivable)
     security = ClassSecurityInfo()
@@ -221,10 +282,6 @@ class SampleType(BaseContent, HistoryAwareMixin):
         settings = getToolByName(self, 'bika_setup')
         return settings.getDefaultSampleLifetime()
 
-    def SamplePointsVocabulary(self):
-        from bika.lims.content.samplepoint import SamplePoints
-        return SamplePoints(self, allow_blank=False, lab_only=False)
-
     def setSamplePoints(self, value, **kw):
         """ For the moment, we're manually trimming the sampletype<>samplepoint
             relation to be equal on both sides, here.
@@ -256,9 +313,6 @@ class SampleType(BaseContent, HistoryAwareMixin):
             sp.setSampleTypes(list(sp.getSampleTypes()) + [self,])
 
         return ret
-
-    def getSamplePoints(self, **kw):
-        return self.Schema()['SamplePoints'].get(self)
 
     def SampleMatricesVocabulary(self):
         from bika.lims.content.samplematrix import SampleMatrices
@@ -367,14 +421,3 @@ class SampleType(BaseContent, HistoryAwareMixin):
 
 
 registerType(SampleType, PROJECTNAME)
-
-def SampleTypes(self, instance=None, allow_blank=False):
-    instance = instance or self
-    bsc = getToolByName(instance, 'bika_setup_catalog')
-    items = []
-    for st in bsc(portal_type='SampleType',
-                  is_active=True,
-                  sort_on = 'sortable_title'):
-        items.append((st.UID, st.Title))
-    items = allow_blank and [['','']] + list(items) or list(items)
-    return DisplayList(items)

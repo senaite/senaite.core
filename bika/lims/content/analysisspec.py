@@ -19,6 +19,17 @@
 # Some rights reserved, see README and LICENSE.
 
 from AccessControl import ClassSecurityInfo
+from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
+from Products.ATExtensions.field.records import RecordsField
+from Products.Archetypes import atapi
+from Products.Archetypes.public import BaseFolder
+from Products.Archetypes.public import ReferenceWidget
+from Products.Archetypes.public import Schema
+from Products.Archetypes.utils import DisplayList
+from Products.CMFPlone.utils import safe_unicode
+from zope.i18n import translate
+from zope.interface import implements
+
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import UIDReferenceField
@@ -26,22 +37,9 @@ from bika.lims.browser.widgets import AnalysisSpecificationWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.content.clientawaremixin import ClientAwareMixin
-from bika.lims.interfaces import IAnalysisSpec, IDeactivable
-from Products.Archetypes import atapi
-from Products.Archetypes.public import BaseFolder
-from Products.Archetypes.public import ComputedField
-from Products.Archetypes.public import ComputedWidget
-from Products.Archetypes.public import ReferenceWidget
-from Products.Archetypes.public import Schema
-from Products.Archetypes.utils import DisplayList
-from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
-from Products.ATExtensions.field.records import RecordsField
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import safe_unicode
-from zope.i18n import translate
-from zope.interface import implements
-
-from bika.lims.interfaces import IClient
+from bika.lims.content.sampletype import SampleTypeAwareMixin
+from bika.lims.interfaces import IAnalysisSpec
+from bika.lims.interfaces import IDeactivable
 
 schema = Schema((
 
@@ -55,21 +53,6 @@ schema = Schema((
         ),
     ),
 
-    ComputedField(
-        'SampleTypeTitle',
-        expression="context.getSampleType().Title() if context.getSampleType() else ''",
-        widget=ComputedWidget(
-            visible=False,
-        ),
-    ),
-
-    ComputedField(
-        'SampleTypeUID',
-        expression="context.getSampleType().UID() if context.getSampleType() else ''",
-        widget=ComputedWidget(
-            visible=False,
-        ),
-    ),
 )) + BikaSchema.copy() + Schema((
 
     RecordsField(
@@ -119,21 +102,14 @@ schema = Schema((
                 "in lists and results reports instead of the real result.")
         ),
     ),
-
-    ComputedField(
-        'ClientUID',
-        expression="context.aq_parent.UID()",
-        widget=ComputedWidget(
-            visible=False,
-        ),
-    ),
 ))
 
 schema['description'].widget.visible = True
 schema['title'].required = True
 
 
-class AnalysisSpec(BaseFolder, HistoryAwareMixin, ClientAwareMixin):
+class AnalysisSpec(BaseFolder, HistoryAwareMixin, ClientAwareMixin,
+                   SampleTypeAwareMixin):
     """Analysis Specification
     """
     implements(IAnalysisSpec, IDeactivable)
@@ -155,9 +131,7 @@ class AnalysisSpec(BaseFolder, HistoryAwareMixin, ClientAwareMixin):
         if self.title:
             title = self.title
         else:
-            sampletype = self.getSampleType()
-            if sampletype:
-                title = sampletype.Title()
+            title = self.getSampleTypeTitle() or ""
         return safe_unicode(title).encode('utf-8')
 
     def contextual_title(self):

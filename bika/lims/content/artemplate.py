@@ -21,17 +21,7 @@
 import sys
 
 from AccessControl import ClassSecurityInfo
-from bika.lims import api
-from bika.lims import bikaMessageFactory as _
-from bika.lims.browser.fields.remarksfield import RemarksField
-from bika.lims.browser.widgets import ARTemplateAnalysesWidget
-from bika.lims.browser.widgets import ARTemplatePartitionsWidget
-from bika.lims.browser.widgets import ReferenceWidget
-from bika.lims.browser.widgets import RemarksWidget
-from bika.lims.config import PROJECTNAME
-from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.content.clientawaremixin import ClientAwareMixin
-from bika.lims.interfaces import IARTemplate, IDeactivable
+from Products.ATExtensions.field.records import RecordsField
 from Products.Archetypes.public import BaseContent
 from Products.Archetypes.public import BooleanField
 from Products.Archetypes.public import BooleanWidget
@@ -42,9 +32,22 @@ from Products.Archetypes.public import ReferenceField
 from Products.Archetypes.public import Schema
 from Products.Archetypes.public import registerType
 from Products.Archetypes.references import HoldingReference
-from Products.ATExtensions.field.records import RecordsField
 from Products.CMFCore.utils import getToolByName
 from zope.interface import implements
+
+from bika.lims import api
+from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.fields.remarksfield import RemarksField
+from bika.lims.browser.widgets import ARTemplateAnalysesWidget
+from bika.lims.browser.widgets import ARTemplatePartitionsWidget
+from bika.lims.browser.widgets import ReferenceWidget
+from bika.lims.browser.widgets import RemarksWidget
+from bika.lims.config import PROJECTNAME
+from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.content.clientawaremixin import ClientAwareMixin
+from bika.lims.content.sampletype import SampleTypeAwareMixin
+from bika.lims.interfaces import IARTemplate
+from bika.lims.interfaces import IDeactivable
 
 schema = BikaSchema.copy() + Schema((
     ReferenceField(
@@ -94,13 +97,6 @@ schema = BikaSchema.copy() + Schema((
             catalog_name="bika_setup_catalog",
             base_query={"is_active": True},
             showOn=True,
-        ),
-    ),
-    ComputedField(
-        "SampleTypeUID",
-        expression="context.Schema()['SampleType'].get(context) and context.Schema()['SampleType'].get(context).UID() or ''",
-        widget=ComputedWidget(
-            visible=False,
         ),
     ),
     BooleanField(
@@ -300,7 +296,7 @@ schema["title"].validators = ("uniquefieldvalidator",)
 schema["title"]._validationLayer()
 
 
-class ARTemplate(BaseContent, ClientAwareMixin):
+class ARTemplate(BaseContent, ClientAwareMixin, SampleTypeAwareMixin):
     security = ClassSecurityInfo()
     schema = schema
     displayContentsTab = False

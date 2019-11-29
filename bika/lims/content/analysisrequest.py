@@ -690,7 +690,7 @@ schema = BikaSchema.copy() + Schema((
                  'width': '30',
                  'label': _('Title'),
                  'align': 'left'},
-                {'columnName': 'SampleTypeTitle',
+                {'columnName': 'getSampleTypeTitle',
                  'width': '70',
                  'label': _('SampleType'),
                  'align': 'left'},
