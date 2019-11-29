@@ -45,13 +45,12 @@ def sampletype_uids(instance):
 @indexer(ISampleTypeAwareMixin, IBikaSetupCatalog)
 def sampletype_title(instance):
     """Returns a list of titles from SampleType the instance is assigned to
+
+    If the instance has no sample type assigned, it returns a tuple with
+    a None value. This allows searches for `MissingValue` entries too.
     """
     sample_type = instance.getSampleType()
-    if isinstance(sample_type, (list, tuple)):
-        return map(api.get_title, sample_type)
-    elif sample_type:
-        return [api.get_title(sample_type)]
-    return [None]
+    return to_title_list(sample_type)
 
 
 @indexer(IAnalysisService, IBikaSetupCatalog)
@@ -71,10 +70,13 @@ def method_available_uids(instance):
 
 @indexer(IWorksheetTemplate, IBikaSetupCatalog)
 def instrument_title(instance):
-    """Returns the title of the instrument assigned to the instance
+    """Returns a list of titles from SampleType the instance is assigned to
+
+    If the instance has no instrument assigned, it returns a tuple with
+    a None value. This allows searches for `MissingValue` entries too.
     """
     instrument = instance.getInstrument()
-    return instrument and api.get_title(instrument) or ""
+    return to_title_list(instrument)
 
 
 @indexer(IHavePrice, IBikaSetupCatalog)
@@ -94,17 +96,23 @@ def price_total(instance):
 @indexer(IInstrument, IBikaSetupCatalog)
 def instrumenttype_title(instance):
     """Returns the title of the Instrument Type the instance is assigned to
+
+    If the instance has no instrument type assigned, it returns a tuple with
+    a None value. This allows searches for `MissingValue` entries too.
     """
     instrument_type = instance.getInstrumentType()
-    return instrument_type and api.get_title(instrument_type) or ""
+    return to_title_list(instrument_type)
 
 
 @indexer(IAnalysisCategory, IBikaSetupCatalog)
 def department_title(instance):
     """Returns the title of the Department the instance is assigned to
+
+    If the instance has no instrument type assigned, it returns a tuple with
+    a None value. This allows searches for `MissingValue` entries too.
     """
     department = instance.getDepartment()
-    return department and api.get_title(department) or ""
+    return to_title_list(department)
 
 
 @indexer(IAnalysisService, IBikaSetupCatalog)
@@ -112,3 +120,11 @@ def point_of_capture(instance):
     """Returns the point of capture of the instance
     """
     return instance.getPointOfCapture()
+
+
+def to_title_list(obj):
+    if isinstance(obj, (list, tuple)):
+        return map(api.get_title, obj)
+    elif obj:
+        return [api.get_title(obj)]
+    return [None]

@@ -39,26 +39,23 @@ INDEXES_TO_ADD = [
 
     # Replaces getAvailableMethodUIDs
     # Used to filter services in Worksheet's Add Analyses View for when the
-    # Worksheet Template being used has a Method assigned.
-    # https://github.com/senaite/senaite.core/pull/1481
+    # Worksheet Template being used has a Method assigned
     ("bika_setup_catalog", "method_available_uids", "KeywordIndex"),
 
     # Replaces getInstrumentTitle
     # Used for sorting Worksheet Templates listing by Instrument
-    # https://github.com/senaite/senaite.core/pull/1481
-    ("bika_setup_catalog", "instrument_title", "FieldIndex"),
+    ("bika_setup_catalog", "instrument_title", "KeywordIndex"),
 
     # Replaces getPrice, getTotalPrice, getVolume
     # Used for sorting LabProducts listing
-    # https://github.com/senaite/senaite.core/pull/1481
     ("bika_setup_catalog", "price", "FieldIndex"),
     ("bika_setup_catalog", "price_total", "FieldIndex"),
 
     # Replaces getInstrumentTypeName
-    ("bika_setup_catalog", "instrumenttype_title", "FieldIndex"),
+    ("bika_setup_catalog", "instrumenttype_title", "KeywordIndex"),
 
     # Replaces getDepartmentTitle
-    ("bika_setup_catalog", "department_title", "FieldIndex"),
+    ("bika_setup_catalog", "department_title", "KeywordIndex"),
 
     # Replaces getPointOfCapture
     ("bika_setup_catalog", "point_of_capture", "FieldIndex"),

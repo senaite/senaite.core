@@ -175,13 +175,13 @@ INDEXES = (
     ("bika_setup_catalog", "getCategoryUID", "", "FieldIndex"),
     ("bika_setup_catalog", "getClientUID", "", "FieldIndex"),
     # Sorting of listings: Analysis Categories
-    ("bika_setup_catalog", "department_title", "", "FieldIndex"),
+    ("bika_setup_catalog", "department_title", "", "KeywordIndex"),
     ("bika_setup_catalog", "getFullname", "", "FieldIndex"),
     ("bika_setup_catalog", "getId", "", "FieldIndex"),
     # Sorting of listings: Worksheet Templates
-    ("bika_setup_catalog", "instrument_title", "", "FieldIndex"),
+    ("bika_setup_catalog", "instrument_title", "", "KeywordIndex"),
     # Sorting of listings: Instruments
-    ("bika_setup_catalog", "instrumenttype_title", "", "FieldIndex"),
+    ("bika_setup_catalog", "instrumenttype_title", "", "KeywordIndex"),
     ("bika_setup_catalog", "getKeyword", "", "FieldIndex"),
     ("bika_setup_catalog", "getName", "", "FieldIndex"),
     # Add Sample form to split services in listing
