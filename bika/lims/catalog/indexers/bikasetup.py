@@ -21,6 +21,7 @@
 from plone.indexer import indexer
 
 from bika.lims import api
+from bika.lims.interfaces import IAnalysisCategory
 from bika.lims.interfaces import IAnalysisService
 from bika.lims.interfaces import IBikaSetupCatalog
 from bika.lims.interfaces import IHavePrice
@@ -91,3 +92,11 @@ def instrumenttype_name(instance):
     """Returns the name of the Instrument Type the instance is assigned to
     """
     return instance.getInstrumentTypeName()
+
+
+@indexer(IAnalysisCategory, IBikaSetupCatalog)
+def department_title(instance):
+    """Returns the title of the Department the instance is assigned to
+    """
+    department = instance.getDepartment()
+    return department and api.get_title(department) or ""

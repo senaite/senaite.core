@@ -92,11 +92,6 @@ class AnalysisCategory(BaseContent):
             deps.append((d.UID, d.Title))
         return DisplayList(deps)
 
-    def getDepartmentTitle(self):
-        field = self.Schema().getField('Department')
-        dept = field.get(self)
-        return dept.Title() if dept else ''
-
     def workflow_script_deactivate(self):
         # A instance cannot be deactivated if it contains services
         pu = getToolByName(self, 'plone_utils')

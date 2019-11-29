@@ -1015,14 +1015,6 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
             return category.UID()
 
     @security.public
-    def getDepartmentTitle(self):
-        """Used to populate catalog values
-        """
-        department = self.getDepartment()
-        if department:
-            return department.Title()
-
-    @security.public
     def getMaxTimeAllowed(self):
         """Returns the maximum turnaround time for this analysis. If no TAT is
         set for this particular analysis, it returns the value set at setup

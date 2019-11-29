@@ -55,6 +55,9 @@ INDEXES_TO_ADD = [
 
     # Replaces getInstrumentTypeName
     ("bika_setup_catalog", "instrumenttype_name", "FieldIndex"),
+
+    # Replaces getDepartmentTitle
+    ("bika_setup_catalog", "department_title", "FieldIndex"),
 ]
 
 INDEXES_TO_REMOVE = [
@@ -134,6 +137,9 @@ INDEXES_TO_REMOVE = [
 
     # getInstrumentTypeName --> instrumenttype_name
     ("bika_setup_catalog", "getInstrumentTypeName"),
+
+    # getDepartmentTitle --> department_title
+    ("bika_setup_catalog", "getDepartmentTitle"),
 ]
 
 METADATA_TO_REMOVE = [
@@ -176,6 +182,7 @@ METADATA_TO_REMOVE = [
     ("bika_setup_catalog", "getCalculationTitle"),
     ("bika_setup_catalog", "getCalculationUID"),
     ("bika_setup_catalog", "getCalibrationExpiryDate"),
+    ("bika_setup_catalog", "getDepartmentTitle"),
 ]
 
 

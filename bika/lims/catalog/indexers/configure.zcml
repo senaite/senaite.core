@@ -46,6 +46,9 @@
   <!-- Sorting of Instruments listing -->
   <adapter name="instrumenttype_name" factory=".bikasetup.instrumenttype_name"/>
 
+  <!-- Sorting of Analyses Categories listing -->
+  <adapter name="department_title" factory=".bikasetup.department_title"/>
+
   <!-- Auditlog Catalog Index Adapters -->
   <adapter name="action" factory=".auditlog.action"/>
   <adapter name="actor" factory=".auditlog.actor"/>
