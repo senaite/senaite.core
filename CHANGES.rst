@@ -17,6 +17,7 @@ Changelog
 
 **Removed**
 
+- #1482 Remove `senaite.instruments` dependency for instrument import form
 - #1478 Remove AcquireFieldDefaults (was used for CCEmails field only)
 
 **Fixed**
