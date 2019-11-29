@@ -101,3 +101,10 @@ def department_title(instance):
     """
     department = instance.getDepartment()
     return department and api.get_title(department) or ""
+
+
+@indexer(IAnalysisService, IBikaSetupCatalog)
+def point_of_capture(instance):
+    """Returns the point of capture of the instance
+    """
+    return instance.getPointOfCapture()

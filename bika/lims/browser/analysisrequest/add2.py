@@ -538,7 +538,7 @@ class AnalysisRequestAddView(BrowserView):
         bsc = api.get_tool("bika_setup_catalog")
         query = {
             "portal_type": "AnalysisService",
-            "getPointOfCapture": poc,
+            "point_of_capture": poc,
             "is_active": True,
             "sort_on": "sortable_title",
         }

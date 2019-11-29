@@ -49,6 +49,10 @@
   <!-- Sorting of Analyses Categories listing -->
   <adapter name="department_title" factory=".bikasetup.department_title"/>
 
+  <!-- Split analyses services listing in Add Sample form -->
+  <adapter name="point_of_capture" factory=".bikasetup.point_of_capture"/>
+
+
   <!-- Auditlog Catalog Index Adapters -->
   <adapter name="action" factory=".auditlog.action"/>
   <adapter name="actor" factory=".auditlog.actor"/>

@@ -58,6 +58,9 @@ INDEXES_TO_ADD = [
 
     # Replaces getDepartmentTitle
     ("bika_setup_catalog", "department_title", "FieldIndex"),
+
+    # Replaces getPointOfCapture
+    ("bika_setup_catalog", "point_of_capture", "FieldIndex"),
 ]
 
 INDEXES_TO_REMOVE = [
@@ -142,6 +145,9 @@ INDEXES_TO_REMOVE = [
 
     # getDepartmentTitle --> department_title
     ("bika_setup_catalog", "getDepartmentTitle"),
+
+    # getPointOfCapture --> point_of_capture
+    ("bika_setup_catalog", "getPointOfCapture"),
 ]
 
 METADATA_TO_REMOVE = [
@@ -187,6 +193,7 @@ METADATA_TO_REMOVE = [
     ("bika_setup_catalog", "getDepartmentTitle"),
     ("bika_setup_catalog", "getVATAmount"),
     ("bika_setup_catalog", "getUnit"),
+    ("bika_setup_catalog", "getPointOfCapture"),
 ]
 
 
