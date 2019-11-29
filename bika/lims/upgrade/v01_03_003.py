@@ -89,6 +89,9 @@ INDEXES_TO_REMOVE = [
     # https://github.com/senaite/senaite.core/pull/1484
     ("bika_setup_catalog", "getBlank"),
 
+    # Only used in analyses listing, but from analysis_catalog
+    ("bika_setup_catalog", "getCalculationUID"),
+
     # Not used anywhere
     # https://github.com/senaite/senaite.core/pull/1484
     ("bika_setup_catalog", "getDocumentID"),
@@ -104,6 +107,7 @@ INDEXES_TO_REMOVE = [
     ("bika_setup_catalog", "getMaxTimeAllowed"),
     ("bika_setup_catalog", "getModel"),
     ("bika_setup_catalog", "getCalculationTitle"),
+    ("bika_setup_catalog", "getCalibrationExpiryDate"),
 
 
     # REPLACEMENTS (indexes to be removed because of a replacement)
@@ -170,6 +174,8 @@ METADATA_TO_REMOVE = [
     ("bika_setup_catalog", "getMaxTimeAllowed"),
     ("bika_setup_catalog", "getModel"),
     ("bika_setup_catalog", "getCalculationTitle"),
+    ("bika_setup_catalog", "getCalculationUID"),
+    ("bika_setup_catalog", "getCalibrationExpiryDate"),
 ]
 
 
