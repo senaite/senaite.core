@@ -1023,3 +1023,16 @@ class ISampleTypeAwareMixin(Interface):
     def getSampleTypeTitle(self):
         """Returns the title or a comma separated list of sample type titles
         """
+
+
+class IHavePrice(Interface):
+    """Marker interface for objects that have a Price
+    """
+
+    def getPrice(self):
+        """Returns the price of the instance
+        """
+
+    def getTotalPrice(self):
+        """Returns the total price of the instance
+        """

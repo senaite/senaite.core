@@ -23,6 +23,7 @@ from plone.indexer import indexer
 from bika.lims import api
 from bika.lims.interfaces import IAnalysisService
 from bika.lims.interfaces import IBikaSetupCatalog
+from bika.lims.interfaces import IHavePrice
 from bika.lims.interfaces import ILabProduct
 from bika.lims.interfaces import ISampleTypeAwareMixin
 from bika.lims.interfaces import IWorksheetTemplate
@@ -63,14 +64,14 @@ def instrument_title(instance):
     return instrument and api.get_title(instrument) or ""
 
 
-@indexer(ILabProduct, IBikaSetupCatalog)
+@indexer(IHavePrice, IBikaSetupCatalog)
 def price(instance):
     """Returns the price of the instance
     """
     return instance.getPrice()
 
 
-@indexer(ILabProduct, IBikaSetupCatalog)
+@indexer(IHavePrice, IBikaSetupCatalog)
 def price_total(instance):
     """Returns the total price of the instance
     """
@@ -79,7 +80,7 @@ def price_total(instance):
 
 @indexer(ILabProduct, IBikaSetupCatalog)
 def volume(instance):
-    """Returns the total price of the instance
+    """Returns the volume of the instance
     """
     return instance.getVolume()
 
