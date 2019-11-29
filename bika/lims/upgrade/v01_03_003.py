@@ -32,8 +32,10 @@ profile = "profile-{0}:default".format(product)
 
 INDEXES_TO_ADD = [
     # Replaces getSampleTypeUIDs
-    # https://github.com/senaite/senaite.core/pull/1481
     ("bika_setup_catalog", "sampletype_uids", "KeywordIndex"),
+
+    # Replaces getSampleTypeTitle
+    ("bika_setup_catalog", "sampletype_title", "KeywordIndex"),
 
     # Replaces getAvailableMethodUIDs
     # Used to filter services in Worksheet's Add Analyses View for when the
@@ -123,11 +125,12 @@ INDEXES_TO_REMOVE = [
     # REPLACEMENTS (indexes to be removed because of a replacement)
 
     # getSampleTypeUID --> sampletype_uid (FieldIndex --> KeywordIndex)
-    # https://github.com/senaite/senaite.core/pull/1481
     ("bika_setup_catalog", "getSampleTypeUID"),
 
+    # getSampleTypeTitle --> sampletype_title
+    ("bika_setup_catalog", "getSampleTypeTitle"),
+
     # getAvailableMethodUIDs --> method_available_uids
-    # https://github.com/senaite/senaite.core/pull/1484
     ("bika_setup_catalog", "getAvailableMethodUIDs"),
 
     # getInstrumentTitle --> instrument_title

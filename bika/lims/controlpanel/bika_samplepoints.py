@@ -89,7 +89,7 @@ class SamplePointsView(BikaListingView):
                 "toggle": False}),
             ("SampleTypes", {
                 "title": _("Sample Types"),
-                "index": "getSampleTypeTitle",
+                "index": "sampletype_title",
                 "toggle": True}),
         ))
 

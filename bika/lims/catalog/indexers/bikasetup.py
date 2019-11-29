@@ -42,6 +42,18 @@ def sampletype_uids(instance):
     return instance.getSampleTypeUID() or (None, )
 
 
+@indexer(ISampleTypeAwareMixin, IBikaSetupCatalog)
+def sampletype_title(instance):
+    """Returns a list of titles from SampleType the instance is assigned to
+    """
+    sample_type = instance.getSampleType()
+    if isinstance(sample_type, (list, tuple)):
+        return map(api.get_title, sample_type)
+    elif sample_type:
+        return [api.get_title(sample_type)]
+    return [None]
+
+
 @indexer(IAnalysisService, IBikaSetupCatalog)
 def method_available_uids(instance):
     """Returns a list of Method UIDs that are available for this instance
