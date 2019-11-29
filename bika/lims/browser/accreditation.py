@@ -108,12 +108,12 @@ class AccreditationView(AnalysisServicesView):
         # Boil out those that are not accredited
         # There is no need to keep a `getAccredited` index in the catalog only
         # for this view. Since we don't expect a lot of items from this content
-        # type (AnalysisService), so is fine to wake-up them
+        # type (AnalysisService), is fine to wake-up them
         brains = super(AccreditationView, self).search(searchterm, ignorecase)
-        out_brains = []
-        for brain in brains:
+
+        def is_accredited(brain):
             obj = api.get_object(brain)
-            if obj.getAccredited():
-                out_brains.append(brain)
-        return out_brains
+            return obj.getAccredited()
+
+        return filter(is_accredited, brains)
 

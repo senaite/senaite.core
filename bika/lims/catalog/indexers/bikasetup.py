@@ -21,13 +21,13 @@
 from plone.indexer import indexer
 
 from bika.lims import api
-from bika.lims.interfaces import IAnalysisCategory
 from bika.lims.interfaces import IAnalysisService
 from bika.lims.interfaces import IBikaSetupCatalog
+from bika.lims.interfaces import IHaveDepartment
+from bika.lims.interfaces import IHaveInstrument
 from bika.lims.interfaces import IHavePrice
 from bika.lims.interfaces import IInstrument
 from bika.lims.interfaces import ISampleTypeAwareMixin
-from bika.lims.interfaces import IWorksheetTemplate
 
 
 @indexer(ISampleTypeAwareMixin, IBikaSetupCatalog)
@@ -39,7 +39,8 @@ def sampletype_uid(instance):
     SampleType assigned, it returns a tuple with a None value. This allows
     searches for `MissingValue` entries too.
     """
-    return instance.getSampleTypeUID() or (None, )
+    sample_type = instance.getSampleType()
+    return to_keywords_list(sample_type, api.get_uid)
 
 
 @indexer(ISampleTypeAwareMixin, IBikaSetupCatalog)
@@ -50,7 +51,7 @@ def sampletype_title(instance):
     a None value. This allows searches for `MissingValue` entries too.
     """
     sample_type = instance.getSampleType()
-    return to_title_list(sample_type)
+    return to_keywords_list(sample_type, api.get_title)
 
 
 @indexer(IAnalysisService, IBikaSetupCatalog)
@@ -68,15 +69,15 @@ def method_available_uid(instance):
     return instance.getAvailableMethodUIDs() or (None, )
 
 
-@indexer(IWorksheetTemplate, IBikaSetupCatalog)
+@indexer(IHaveInstrument, IBikaSetupCatalog)
 def instrument_title(instance):
-    """Returns a list of titles from SampleType the instance is assigned to
+    """Returns a list of titles from Instrument the instance is assigned to
 
     If the instance has no instrument assigned, it returns a tuple with
     a None value. This allows searches for `MissingValue` entries too.
     """
     instrument = instance.getInstrument()
-    return to_title_list(instrument)
+    return to_keywords_list(instrument, api.get_title)
 
 
 @indexer(IHavePrice, IBikaSetupCatalog)
@@ -95,24 +96,26 @@ def price_total(instance):
 
 @indexer(IInstrument, IBikaSetupCatalog)
 def instrumenttype_title(instance):
-    """Returns the title of the Instrument Type the instance is assigned to
-
-    If the instance has no instrument type assigned, it returns a tuple with
-    a None value. This allows searches for `MissingValue` entries too.
+    """Returns a list of Instrument Type titles the instance is assigned to
     """
     instrument_type = instance.getInstrumentType()
-    return to_title_list(instrument_type)
+    return to_keywords_list(instrument_type, api.get_title)
 
 
-@indexer(IAnalysisCategory, IBikaSetupCatalog)
-def department_title(instance):
-    """Returns the title of the Department the instance is assigned to
-
-    If the instance has no instrument type assigned, it returns a tuple with
-    a None value. This allows searches for `MissingValue` entries too.
+@indexer(IHaveDepartment, IBikaSetupCatalog)
+def department_uid(instance):
+    """Returns a list of Department UIDs the instance is assigned to
     """
     department = instance.getDepartment()
-    return to_title_list(department)
+    return to_keywords_list(department, api.get_uid)
+
+
+@indexer(IHaveDepartment, IBikaSetupCatalog)
+def department_title(instance):
+    """Returns the title of the Department the instance is assigned to
+    """
+    department = instance.getDepartment()
+    return to_keywords_list(department, api.get_title)
 
 
 @indexer(IAnalysisService, IBikaSetupCatalog)
@@ -122,9 +125,9 @@ def point_of_capture(instance):
     return instance.getPointOfCapture()
 
 
-def to_title_list(obj):
+def to_keywords_list(obj, func):
     if isinstance(obj, (list, tuple)):
-        return map(api.get_title, obj)
+        return map(func, obj)
     elif obj:
-        return [api.get_title(obj)]
+        return [func(obj)]
     return [None]

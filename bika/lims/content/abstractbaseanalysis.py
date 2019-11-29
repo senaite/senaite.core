@@ -19,21 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 from AccessControl import ClassSecurityInfo
-from bika.lims import api
-from bika.lims import bikaMessageFactory as _
-from bika.lims.browser.fields import DurationField
-from bika.lims.browser.fields import UIDReferenceField
-from bika.lims.browser.widgets.durationwidget import DurationWidget
-from bika.lims.browser.widgets.recordswidget import RecordsWidget
-from bika.lims.browser.widgets.referencewidget import ReferenceWidget
-from bika.lims.config import ATTACHMENT_OPTIONS
-from bika.lims.config import SERVICE_POINT_OF_CAPTURE
-from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.interfaces import IBaseAnalysis, ISubmitted
-from bika.lims.permissions import FieldEditAnalysisHidden
-from bika.lims.permissions import FieldEditAnalysisRemarks
-from bika.lims.permissions import FieldEditAnalysisResult
-from bika.lims.utils import to_utf8 as _c
+from Products.ATExtensions.ateapi import RecordsField
 from Products.Archetypes.BaseContent import BaseContent
 from Products.Archetypes.Field import BooleanField
 from Products.Archetypes.Field import FixedPointField
@@ -42,17 +28,34 @@ from Products.Archetypes.Field import IntegerField
 from Products.Archetypes.Field import StringField
 from Products.Archetypes.Field import TextField
 from Products.Archetypes.Schema import Schema
-from Products.Archetypes.utils import DisplayList
-from Products.Archetypes.utils import IntDisplayList
 from Products.Archetypes.Widget import BooleanWidget
 from Products.Archetypes.Widget import DecimalWidget
 from Products.Archetypes.Widget import IntegerWidget
 from Products.Archetypes.Widget import SelectionWidget
 from Products.Archetypes.Widget import StringWidget
-from Products.ATExtensions.ateapi import RecordsField
+from Products.Archetypes.utils import DisplayList
+from Products.Archetypes.utils import IntDisplayList
 from Products.CMFCore.permissions import View
 from Products.CMFCore.utils import getToolByName
 from zope.interface import implements
+
+from bika.lims import api
+from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.fields import DurationField
+from bika.lims.browser.fields import UIDReferenceField
+from bika.lims.browser.widgets.durationwidget import DurationWidget
+from bika.lims.browser.widgets.recordswidget import RecordsWidget
+from bika.lims.browser.widgets.referencewidget import ReferenceWidget
+from bika.lims.catalog.bikasetup_catalog import SETUP_CATALOG
+from bika.lims.config import ATTACHMENT_OPTIONS
+from bika.lims.config import SERVICE_POINT_OF_CAPTURE
+from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.interfaces import IBaseAnalysis
+from bika.lims.interfaces import IHaveDepartment
+from bika.lims.permissions import FieldEditAnalysisHidden
+from bika.lims.permissions import FieldEditAnalysisRemarks
+from bika.lims.permissions import FieldEditAnalysisResult
+from bika.lims.utils import to_utf8 as _c
 
 # Anywhere that there just isn't space for unpredictably long names,
 # this value will be used instead.  It's set on the AnalysisService,
@@ -477,13 +480,16 @@ Department = UIDReferenceField(
     schemata="Description",
     required=0,
     allowed_types=('Department',),
-    vocabulary='getDepartments',
     widget=ReferenceWidget(
-        checkbox_bound=0,
         label=_("Department"),
         description=_("The laboratory department"),
-        catalog_name='bika_setup_catalog',
-        base_query={'is_active': True},
+        showOn=True,
+        catalog_name=SETUP_CATALOG,
+        base_query=dict(
+            is_active=True,
+            sort_on="sortable_title",
+            sort_order="ascending",
+        ),
     )
 )
 
@@ -744,7 +750,7 @@ schema['title']._validationLayer()
 
 
 class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
-    implements(IBaseAnalysis)
+    implements(IBaseAnalysis, IHaveDepartment)
     security = ClassSecurityInfo()
     schema = schema
     displayContentsTab = False
@@ -843,20 +849,6 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
         cats = bsc(portal_type='AnalysisCategory', is_active=True)
         items = [(o.UID, o.Title) for o in cats]
         o = self.getCategory()
-        if o and o.UID() not in [i[0] for i in items]:
-            items.append((o.UID(), o.Title()))
-        items.sort(lambda x, y: cmp(x[1], y[1]))
-        return DisplayList(list(items))
-
-    @security.public
-    def getDepartments(self):
-        """A vocabulary listing available (and activated) departments.
-        """
-        bsc = getToolByName(self, 'bika_setup_catalog')
-        items = [('', '')] + [(o.UID, o.Title) for o in
-                              bsc(portal_type='Department',
-                                  is_active=True)]
-        o = self.getDepartment()
         if o and o.UID() not in [i[0] for i in items]:
             items.append((o.UID(), o.Title()))
         items.sort(lambda x, y: cmp(x[1], y[1]))

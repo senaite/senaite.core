@@ -23,17 +23,16 @@ from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.ATExtensions.field.records import RecordsField
 from Products.Archetypes import atapi
 from Products.Archetypes.public import BaseFolder
-from Products.Archetypes.public import ReferenceWidget
 from Products.Archetypes.public import Schema
-from Products.Archetypes.utils import DisplayList
 from Products.CMFPlone.utils import safe_unicode
 from zope.i18n import translate
 from zope.interface import implements
 
-from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import AnalysisSpecificationWidget
+from bika.lims.browser.widgets import ReferenceWidget
+from bika.lims.catalog.bikasetup_catalog import SETUP_CATALOG
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.content.clientawaremixin import ClientAwareMixin
@@ -45,11 +44,17 @@ schema = Schema((
 
     UIDReferenceField(
         'SampleType',
-        vocabulary="getSampleTypes",
         allowed_types=('SampleType',),
+        required=1,
         widget=ReferenceWidget(
-            checkbox_bound=0,
             label=_("Sample Type"),
+            showOn=True,
+            catalog_name=SETUP_CATALOG,
+            base_query=dict(
+                is_active=True,
+                sort_on="sortable_title",
+                sort_order="ascending"
+            ),
         ),
     ),
 
@@ -127,7 +132,6 @@ class AnalysisSpec(BaseFolder, HistoryAwareMixin, ClientAwareMixin,
         """ Return the title if possible, else return the Sample type.
         Fall back on the instance's ID if there's no sample type or title.
         """
-        title = ''
         if self.title:
             title = self.title
         else:
@@ -141,8 +145,7 @@ class AnalysisSpec(BaseFolder, HistoryAwareMixin, ClientAwareMixin,
         else:
             return self.title + " (" + translate(_("Client")) + ")"
 
-    security.declarePublic('getResultsRangeDict')
-
+    @security.public
     def getResultsRangeDict(self):
         """Return a dictionary with the specification fields for each
            service. The keys of the dictionary are the keywords of each
@@ -162,27 +165,6 @@ class AnalysisSpec(BaseFolder, HistoryAwareMixin, ClientAwareMixin,
                 if key not in ['uid', 'keyword']:
                     specs[keyword][key] = spec.get(key, '')
         return specs
-
-    security.declarePublic('getRemainingSampleTypes')
-
-    def getSampleTypes(self, active_only=True):
-        """Return all sampletypes
-        """
-        catalog = api.get_tool("bika_setup_catalog")
-        query = {
-            "portal_type": "SampleType",
-            # N.B. The `sortable_title` index sorts case sensitive. Since there
-            #      is no sort key for sample types, it makes more sense to sort
-            #      them alphabetically in the selection
-            "sort_on": "title",
-            "sort_order": "ascending"
-        }
-        results = catalog(query)
-        if active_only:
-            results = filter(api.is_active, results)
-        sampletypes = map(
-            lambda brain: (brain.UID, brain.Title), results)
-        return DisplayList(sampletypes)
 
 
 atapi.registerType(AnalysisSpec, PROJECTNAME)

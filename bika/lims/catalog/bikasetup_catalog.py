@@ -24,6 +24,9 @@ from bika.lims.catalog.bika_catalog_tool import BikaCatalogTool
 from bika.lims.interfaces import IBikaSetupCatalog
 
 
+SETUP_CATALOG = "bika_setup_catalog"
+
+
 class BikaSetupCatalog(BikaCatalogTool):
     """
     Catalog for all bika_setup objects
@@ -31,7 +34,7 @@ class BikaSetupCatalog(BikaCatalogTool):
     implements(IBikaSetupCatalog)
 
     def __init__(self):
-        BikaCatalogTool.__init__(self, 'bika_setup_catalog',
+        BikaCatalogTool.__init__(self, SETUP_CATALOG,
                                  'Bika Setup Catalog',
                                  'BikaSetupCatalog')
 

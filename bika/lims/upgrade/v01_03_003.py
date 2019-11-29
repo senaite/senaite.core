@@ -60,6 +60,8 @@ INDEXES_TO_ADD = [
     # Replaces getPointOfCapture
     ("bika_setup_catalog", "point_of_capture", "FieldIndex"),
 
+    # Replaces getDepartmentUID
+    ("bika_setup_catalog", "department_uid", "KeywordIndex"),
 ]
 
 INDEXES_TO_REMOVE = [
@@ -150,6 +152,9 @@ INDEXES_TO_REMOVE = [
 
     # getPointOfCapture --> point_of_capture
     ("bika_setup_catalog", "getPointOfCapture"),
+
+    # getDepartmentUID --> department_uid
+    ("bika_setup_catalog", "getDepartmentUID"),
 
 ]
 

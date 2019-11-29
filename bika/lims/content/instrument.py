@@ -84,7 +84,11 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         widget=ReferenceWidget(
             label=_("Instrument type"),
             catalog_name='bika_setup_catalog',
-            base_query={"is_active": True},
+            base_query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending",
+            },
         ),
     ),
 

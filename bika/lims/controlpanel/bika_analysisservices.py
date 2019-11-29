@@ -392,7 +392,7 @@ class AnalysisServicesView(BikaListingView):
 
         # Unit
         unit = obj.getUnit()
-        item["Unit"] = format_supsub(unit) if unit else ""
+        item["Unit"] = unit and format_supsub(unit) or ""
 
         # Icons
         after_icons = ""

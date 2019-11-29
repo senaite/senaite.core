@@ -54,6 +54,7 @@
   <!-- Split analyses services listing in Add Sample form -->
   <adapter name="point_of_capture" factory=".bikasetup.point_of_capture"/>
 
+  <adapter name="department_uid" factory=".bikasetup.department_uid"/>
 
   <!-- Auditlog Catalog Index Adapters -->
   <adapter name="action" factory=".auditlog.action"/>

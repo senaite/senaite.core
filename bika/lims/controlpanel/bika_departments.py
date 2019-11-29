@@ -130,26 +130,22 @@ class DepartmentsView(BikaListingView):
         item["replace"]["Title"] = get_link(url, value=title)
         item["Description"] = description
 
+        item["Manager"] = ""
+        item["ManagerPhone"] = ""
+        item["ManagerEmail"] = ""
         manager = obj.getManager()
-        manager_name = obj.getManagerName()
-        manager_phone = obj.getManagerPhone()
-        manager_email = obj.getManagerEmail()
-
         if manager:
+            manager_name = manager.getFullname()
             item["Manager"] = manager_name
-            item["replace"]["Manager"] = get_link(
-                manager.absolute_url(), manager_name)
-        else:
-            item["Manager"] = ""
 
-        if manager_email:
-            item["ManagerEmail"] = manager_email
+            manager_url = manager.absolute_url()
+            item["replace"]["Manager"] = get_link(manager_url, manager_name)
+
+            manager_email = manager.getEmailAddress()
             item["replace"]["ManagerEmail"] = get_email_link(
                 manager_email, value=manager_email)
-        else:
-            item["ManagerEmail"] = ""
 
-        item["ManagerPhone"] = manager_phone
+            item["ManagerPhone"] = manager.getBusinessPhone()
 
         return item
 
@@ -161,25 +157,6 @@ class Departments(ATFolder):
     implements(IDepartments)
     displayContentsTab = False
     schema = schema
-
-    def getContacts(self, active_only=True):
-        catalog = api.get_tool("bika_setup_catalog")
-        query = {
-            "portal_type": "LabContact",
-            "sort_on": "sortable_title",
-            "sort_order": "ascending"
-        }
-        results = catalog(query)
-
-        # XXX  Better directly filter in the catalog query as soon as we have
-        #      the active/inactive state in the primary workflow
-        if active_only:
-            results = filter(api.is_active, results)
-
-        pairs = map(
-            lambda brain: (brain.UID, brain.Title), results)
-
-        return DisplayList(pairs)
 
 
 schemata.finalizeATCTSchema(schema, folderish=True, moveDiscussion=False)

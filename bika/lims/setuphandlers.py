@@ -202,6 +202,7 @@ INDEXES = (
     ("bika_setup_catalog", "review_state", "", "FieldIndex"),
     ("bika_setup_catalog", "sortable_title", "", "FieldIndex"),
     ("bika_setup_catalog", "title", "", "FieldIndex"),
+    ("bika_setup_catalog", "department_uid", "", "KeywordIndex"),
 
     ("portal_catalog", "Analyst", "", "FieldIndex"),
 )

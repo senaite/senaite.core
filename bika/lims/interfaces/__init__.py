@@ -1036,3 +1036,21 @@ class IHavePrice(Interface):
     def getTotalPrice(self):
         """Returns the total price of the instance
         """
+
+
+class IHaveInstrument(Interface):
+    """Marker interface for objects that have Instrument(s) assigned
+    """
+
+    def getInstrument(self):
+        """Returns the instrument or instruments the instance is assigned to
+        """
+
+
+class IHaveDepartment(Interface):
+    """Marker interface for objects that have Department(s) assigned
+    """
+
+    def getDepartment(self):
+        """Returns the department or departments the instance is assigned to
+        """
