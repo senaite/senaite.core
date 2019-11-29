@@ -41,7 +41,6 @@
   <!-- Sorting of LabProducts listing -->
   <adapter name="price" factory=".bikasetup.price"/>
   <adapter name="price_total" factory=".bikasetup.price_total"/>
-  <adapter name="volume" factory=".bikasetup.volume"/>
 
   <!-- Sorting of Instruments listing -->
   <adapter name="instrumenttype_title" factory=".bikasetup.instrumenttype_title"/>

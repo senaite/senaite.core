@@ -197,8 +197,6 @@ INDEXES = (
     ("bika_setup_catalog", "sampletype_uids", "", "KeywordIndex"),
     ("bika_setup_catalog", "getServiceUID", "", "FieldIndex"),
     ("bika_setup_catalog", "getServiceUIDs", "", "KeywordIndex"),
-    # Sorting of listings: LabProducts
-    ("bika_setup_catalog", "volume", "", "FieldIndex"),
     ("bika_setup_catalog", "id", "getId", "FieldIndex"),
     ("bika_setup_catalog", "is_active", "", "BooleanIndex"),
     ("bika_setup_catalog", "path", "getPhysicalPath", "ExtendedPathIndex"),

@@ -51,7 +51,6 @@ INDEXES_TO_ADD = [
     # https://github.com/senaite/senaite.core/pull/1481
     ("bika_setup_catalog", "price", "FieldIndex"),
     ("bika_setup_catalog", "price_total", "FieldIndex"),
-    ("bika_setup_catalog", "volume", "FieldIndex"),
 
     # Replaces getInstrumentTypeName
     ("bika_setup_catalog", "instrumenttype_title", "FieldIndex"),
@@ -117,6 +116,7 @@ INDEXES_TO_REMOVE = [
     ("bika_setup_catalog", "getVATAmount"),
     ("bika_setup_catalog", "getUnit"),
     ("bika_setup_catalog", "getSamplePointTitle"),
+    ("bika_setup_catalog", "getVolume"),
 
 
     # REPLACEMENTS (indexes to be removed because of a replacement)
@@ -137,9 +137,6 @@ INDEXES_TO_REMOVE = [
 
     # getTotalPrice --> price_total
     ("bika_setup_catalog", "getTotalPrice"),
-
-    # getVolume --> volume
-    ("bika_setup_catalog", "getVolume"),
 
     # getInstrumentTypeName --> instrumenttype_title
     ("bika_setup_catalog", "getInstrumentTypeName"),

@@ -80,13 +80,6 @@ def price_total(instance):
     return instance.getTotalPrice()
 
 
-@indexer(ILabProduct, IBikaSetupCatalog)
-def volume(instance):
-    """Returns the volume of the instance
-    """
-    return instance.getVolume()
-
-
 @indexer(IInstrument, IBikaSetupCatalog)
 def instrumenttype_title(instance):
     """Returns the title of the Instrument Type the instance is assigned to

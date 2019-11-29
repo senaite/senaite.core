@@ -53,7 +53,6 @@ class LabProductsView(BikaListingView):
                       'index': 'sortable_title',
                       'toggle': True},
             'Volume': {'title': _('Volume'),
-                       'index': 'volume',
                        'toggle': True},
             'Unit': {'title': _('Unit'),
                        'toggle': True},
