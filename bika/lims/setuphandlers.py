@@ -198,7 +198,6 @@ INDEXES = (
     ("bika_setup_catalog", "getServiceUID", "", "FieldIndex"),
     ("bika_setup_catalog", "getServiceUIDs", "", "KeywordIndex"),
     ("bika_setup_catalog", "getUnit", "", "FieldIndex"),
-    ("bika_setup_catalog", "getVATAmount", "getVATAmount", "FieldIndex"),
     # Sorting of listings: LabProducts
     ("bika_setup_catalog", "volume", "", "FieldIndex"),
     ("bika_setup_catalog", "id", "getId", "FieldIndex"),
@@ -255,7 +254,6 @@ COLUMNS = (
     ("bika_setup_catalog", "getSamplePointUID"),
     ("bika_setup_catalog", "getServiceUID"),
     ("bika_setup_catalog", "getUnit"),
-    ("bika_setup_catalog", "getVATAmount"),
 
     ("portal_catalog", "Analyst"),
 )
