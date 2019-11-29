@@ -430,14 +430,6 @@ class AnalysisService(AbstractBaseAnalysis):
         return renameAfterCreation(self)
 
     @security.public
-    def getCalculationTitle(self):
-        """Used to populate catalog values
-        """
-        calculation = self.getCalculation()
-        if calculation:
-            return calculation.Title()
-
-    @security.public
     def getCalculation(self):
         """Returns the assigned calculation
 
