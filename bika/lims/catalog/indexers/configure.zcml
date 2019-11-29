@@ -44,7 +44,7 @@
   <adapter name="volume" factory=".bikasetup.volume"/>
 
   <!-- Sorting of Instruments listing -->
-  <adapter name="instrumenttype_name" factory=".bikasetup.instrumenttype_name"/>
+  <adapter name="instrumenttype_title" factory=".bikasetup.instrumenttype_title"/>
 
   <!-- Sorting of Analyses Categories listing -->
   <adapter name="department_title" factory=".bikasetup.department_title"/>

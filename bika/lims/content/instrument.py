@@ -55,10 +55,10 @@ from Products.Archetypes.atapi import FileWidget
 from Products.Archetypes.atapi import ImageWidget
 from Products.Archetypes.atapi import BooleanWidget
 from Products.Archetypes.atapi import SelectionWidget
-from Products.Archetypes.atapi import ReferenceWidget
 from Products.Archetypes.atapi import MultiSelectionWidget
 from bika.lims.browser.widgets import DateTimeWidget
 from bika.lims.browser.widgets import RecordsWidget
+from bika.lims.browser.widgets import ReferenceWidget
 
 # bika.lims imports
 from bika.lims import api
@@ -81,10 +81,10 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         allowed_types=('InstrumentType',),
         relationship='InstrumentInstrumentType',
         required=1,
-        widget=SelectionWidget(
-            format='select',
+        widget=ReferenceWidget(
             label=_("Instrument type"),
-            visible={'view': 'invisible', 'edit': 'visible'}
+            catalog_name='bika_setup_catalog',
+            base_query={"is_active": True},
         ),
     ),
 
@@ -263,16 +263,6 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         ),
     ),
 
-    # Needed since InstrumentType is sorted by its own object, not by its name.
-    ComputedField(
-        'InstrumentTypeName',
-        expression='here.getInstrumentType().Title() if here.getInstrumentType() else ""',
-        widget=ComputedWidget(
-            label=_('Instrument Type'),
-            visible=True,
-        ),
-    ),
-
     ComputedField(
         'InstrumentLocationName',
         expression='here.getInstrumentLocation().Title() if here.getInstrumentLocation() else ""',
@@ -360,7 +350,6 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
 schema.moveField('AssetNumber', before='description')
 schema.moveField('SupplierName', before='Model')
 schema.moveField('ManufacturerName', before='SupplierName')
-schema.moveField('InstrumentTypeName', before='ManufacturerName')
 
 schema['description'].widget.visible = True
 schema['description'].schemata = 'default'
@@ -454,14 +443,6 @@ class Instrument(ATFolder):
                               is_active=True)]
         items.sort(lambda x, y: cmp(x[1], y[1]))
         items.insert(0, ('', t(_('None'))))
-        return DisplayList(items)
-
-    def getInstrumentTypes(self):
-        bsc = getToolByName(self, 'bika_setup_catalog')
-        items = [(c.UID, c.Title)
-                 for c in bsc(portal_type='InstrumentType',
-                              is_active=True)]
-        items.sort(lambda x, y: cmp(x[1], y[1]))
         return DisplayList(items)
 
     def getInstrumentLocations(self):

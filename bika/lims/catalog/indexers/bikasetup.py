@@ -88,10 +88,11 @@ def volume(instance):
 
 
 @indexer(IInstrument, IBikaSetupCatalog)
-def instrumenttype_name(instance):
-    """Returns the name of the Instrument Type the instance is assigned to
+def instrumenttype_title(instance):
+    """Returns the title of the Instrument Type the instance is assigned to
     """
-    return instance.getInstrumentTypeName()
+    instrument_type = instance.getInstrumentType()
+    return instrument_type and api.get_title(instrument_type) or ""
 
 
 @indexer(IAnalysisCategory, IBikaSetupCatalog)

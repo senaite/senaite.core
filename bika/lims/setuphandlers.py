@@ -181,7 +181,7 @@ INDEXES = (
     # Sorting of listings: Worksheet Templates
     ("bika_setup_catalog", "instrument_title", "", "FieldIndex"),
     # Sorting of listings: Instruments
-    ("bika_setup_catalog", "instrumenttype_name", "", "FieldIndex"),
+    ("bika_setup_catalog", "instrumenttype_title", "", "FieldIndex"),
     ("bika_setup_catalog", "getKeyword", "", "FieldIndex"),
     ("bika_setup_catalog", "getName", "", "FieldIndex"),
     ("bika_setup_catalog", "getPointOfCapture", "", "FieldIndex"),

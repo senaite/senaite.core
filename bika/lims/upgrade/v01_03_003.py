@@ -54,7 +54,7 @@ INDEXES_TO_ADD = [
     ("bika_setup_catalog", "volume", "FieldIndex"),
 
     # Replaces getInstrumentTypeName
-    ("bika_setup_catalog", "instrumenttype_name", "FieldIndex"),
+    ("bika_setup_catalog", "instrumenttype_title", "FieldIndex"),
 
     # Replaces getDepartmentTitle
     ("bika_setup_catalog", "department_title", "FieldIndex"),
@@ -135,7 +135,7 @@ INDEXES_TO_REMOVE = [
     # getVolume --> volume
     ("bika_setup_catalog", "getVolume"),
 
-    # getInstrumentTypeName --> instrumenttype_name
+    # getInstrumentTypeName --> instrumenttype_title
     ("bika_setup_catalog", "getInstrumentTypeName"),
 
     # getDepartmentTitle --> department_title
