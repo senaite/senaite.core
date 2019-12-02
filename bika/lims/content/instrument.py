@@ -83,6 +83,7 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         required=1,
         widget=ReferenceWidget(
             label=_("Instrument type"),
+            showOn=True,
             catalog_name='bika_setup_catalog',
             base_query={
                 "is_active": True,
@@ -107,14 +108,18 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
 
     ReferenceField(
         'Supplier',
-        vocabulary='getSuppliers',
         allowed_types=('Supplier',),
         relationship='InstrumentSupplier',
         required=1,
-        widget=SelectionWidget(
-            format='select',
+        widget=ReferenceWidget(
             label=_("Supplier"),
-            visible={'view': 'invisible', 'edit': 'visible'}
+            showOn=True,
+            catalog_name='bika_setup_catalog',
+            base_query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending",
+            },
         ),
     ),
 
@@ -427,14 +432,6 @@ class Instrument(ATFolder):
         if self.getMethods():
             uids = [m.UID() for m in self.getMethods()]
         return uids
-
-    def getSuppliers(self):
-        bsc = getToolByName(self, 'bika_setup_catalog')
-        items = [(c.UID, c.getName)
-                 for c in bsc(portal_type='Supplier',
-                              is_active=True)]
-        items.sort(lambda x, y: cmp(x[1], y[1]))
-        return DisplayList(items)
 
     def _getAvailableMethods(self):
         """ Returns the available (active) methods.

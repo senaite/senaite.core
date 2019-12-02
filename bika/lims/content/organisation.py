@@ -171,6 +171,12 @@ class Organisation(ATFolder):
     displayContentsTab = False
     schema = schema
 
+    @property
+    def title(self):
+        """Return the name of the Organisation
+        """
+        return self.Title()
+
     def Title(self):
         """Return the name of the Organisation
         """

@@ -71,7 +71,7 @@ class SuppliersView(BikaListingView):
         self.columns = collections.OrderedDict((
             ("Name", {
                 "title": _("Name"),
-                "index": "getName"}),
+                "index": "sortable_title"}),
             ("Email", {
                 "title": _("Email"),
                 "toggle": True}),

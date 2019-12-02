@@ -181,7 +181,6 @@ INDEXES = (
     # Sorting of listings: Instruments
     ("bika_setup_catalog", "instrumenttype_title", "", "KeywordIndex"),
     ("bika_setup_catalog", "getKeyword", "", "FieldIndex"),
-    ("bika_setup_catalog", "getName", "", "FieldIndex"),
     # Add Sample form to split services in listing
     ("bika_setup_catalog", "point_of_capture", "", "FieldIndex"),
     # Sorting of listings: LabProducts
@@ -242,7 +241,6 @@ COLUMNS = (
     ("bika_setup_catalog", "getCategoryUID"),
     ("bika_setup_catalog", "getClientUID"),
     ("bika_setup_catalog", "getKeyword"),
-    ("bika_setup_catalog", "getName"),
     ("bika_setup_catalog", "getSamplePointTitle"),
     ("bika_setup_catalog", "getServiceUID"),
 
