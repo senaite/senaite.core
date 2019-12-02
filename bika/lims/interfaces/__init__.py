@@ -1059,3 +1059,7 @@ class IHaveDepartment(Interface):
 class IOrganisation(Interface):
     """Marker interface for IOrganisation object
     """
+
+    def getName(self):
+        """Returns the name of the organisation. Masks Title()
+        """
