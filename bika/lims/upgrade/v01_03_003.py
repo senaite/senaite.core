@@ -63,6 +63,9 @@ INDEXES_TO_ADD = [
 
     # Replaces getDepartmentUID
     ("bika_setup_catalog", "department_uid", "KeywordIndex"),
+
+    # Default listing_searchable_text index adapter for setup_catalog
+    ("bika_setup_catalog", "listing_searchable_text", "TextIndexNG3"),
 ]
 
 INDEXES_TO_REMOVE = [
@@ -131,6 +134,7 @@ INDEXES_TO_REMOVE = [
     ("bika_setup_catalog", "cancellation_state"),
     ("bika_setup_catalog", "getName"),
     ("bika_setup_catalog", "getServiceUIDs"),
+    ("bika_setup_catalog", "SearchableText"),
 
 
     # REPLACEMENTS (indexes to be removed because of a replacement)

@@ -59,6 +59,10 @@
 
   <adapter name="department_uid" factory=".bikasetup.department_uid"/>
 
+  <!-- Default listing_searchable_text index adapter for setup_catalog -->
+  <adapter name="listing_searchable_text" factory=".bikasetup.listing_searchable_text"/>
+
+
 
   <!-- Auditlog Catalog Index Adapters -->
   <adapter name="action" factory=".auditlog.action"/>

@@ -199,6 +199,7 @@ INDEXES = (
     ("bika_setup_catalog", "sortable_title", "", "FieldIndex"),
     ("bika_setup_catalog", "title", "", "FieldIndex"),
     ("bika_setup_catalog", "department_uid", "", "KeywordIndex"),
+    ("bika_setup_catalog", "listing_searchable_text", "", "TextIndexNG3"),
 
     ("portal_catalog", "Analyst", "", "FieldIndex"),
 )

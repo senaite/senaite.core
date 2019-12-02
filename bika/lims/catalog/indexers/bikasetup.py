@@ -17,10 +17,12 @@
 #
 # Copyright 2018-2019 by it's authors.
 # Some rights reserved, see README and LICENSE.
-
+from Products.Archetypes.interfaces import IBaseObject
 from plone.indexer import indexer
 
 from bika.lims import api
+from bika.lims.catalog.bikasetup_catalog import SETUP_CATALOG
+from bika.lims.catalog.indexers import generic_listing_searchable_text
 from bika.lims.interfaces import IAnalysisService
 from bika.lims.interfaces import IBikaSetupCatalog
 from bika.lims.interfaces import IHaveDepartment
@@ -123,6 +125,15 @@ def point_of_capture(instance):
     """Returns the point of capture of the instance
     """
     return instance.getPointOfCapture()
+
+
+@indexer(IBaseObject, IBikaSetupCatalog)
+def listing_searchable_text(instance):
+    """ Retrieves all the values of metadata columns in the catalog for
+    wildcard searches
+    :return: all metadata values joined in a string
+    """
+    return generic_listing_searchable_text(instance, SETUP_CATALOG)
 
 
 def to_keywords_list(obj, func):

@@ -66,19 +66,7 @@ def listing_searchable_text(instance):
     wildcard searches
     :return: all metadata values joined in a string
     """
-    entries = set()
-    catalog = api.get_tool(BIKA_CATALOG)
-    metadata = get_metadata_for(instance, catalog)
-    for key, brain_value in metadata.items():
-        instance_value = api.safe_getattr(instance, key, None)
-        parsed = api.to_searchable_text_metadata(brain_value or instance_value)
-        entries.add(parsed)
-
-    # Remove empties
-    entries = filter(None, entries)
-
-    # Concatenate all strings to one text blob
-    return " ".join(entries)
+    return generic_listing_searchable_text(instance, BIKA_CATALOG)
 
 
 def get_metadata_for(instance, catalog):
@@ -91,3 +79,22 @@ def get_metadata_for(instance, catalog):
         logger.warn("Cannot get metadata from {}. Path not found: {}"
                     .format(catalog.id, path))
         return {}
+
+
+def generic_listing_searchable_text(instance, catalog_name):
+    """Retrieves all the values of metadata columns in the catalog for
+    wildcard searches
+    """
+    entries = set()
+    catalog = api.get_tool(catalog_name)
+    metadata = get_metadata_for(instance, catalog)
+    for key, brain_value in metadata.items():
+        instance_value = api.safe_getattr(instance, key, None)
+        parsed = api.to_searchable_text_metadata(brain_value or instance_value)
+        entries.add(parsed)
+
+    # Remove empties
+    entries = filter(None, entries)
+
+    # Concatenate all strings to one text blob
+    return " ".join(entries)
