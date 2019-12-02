@@ -1054,3 +1054,8 @@ class IHaveDepartment(Interface):
     def getDepartment(self):
         """Returns the department or departments the instance is assigned to
         """
+
+
+class IOrganisation(Interface):
+    """Marker interface for IOrganisation object
+    """

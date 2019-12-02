@@ -23,7 +23,8 @@ from Products.CMFPlone.CatalogTool import sortable_title as plone_sortable_title
 from Products.CMFPlone.utils import safe_callable
 from plone.indexer import indexer
 
-from bika.lims import api, logger
+from bika.lims import api
+from bika.lims import logger
 from bika.lims.catalog.bika_catalog import BIKA_CATALOG
 from bika.lims.interfaces import IBikaCatalog
 

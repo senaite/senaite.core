@@ -44,12 +44,9 @@ Specifications and Templates when a Sample Type is selected.
 
 - `sortable_title`: Case-insenstive contact's fullname for default sorting
 
+### IOrganisation (Supplier, Manufacturer, Client, etc.)
 
-
-
-
-
-
-
-
-
+- `title`: Organisation-like objects don't use the default attribute `title`
+provided by AT. Rather, they keep this attribute empty and the schema field
+`Name` is used (`Title` acts as a shortcut to `getName`). We need to handle this
+behavior to simulate default behavior of `title` index
