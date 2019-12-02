@@ -108,7 +108,7 @@ CATALOG_MAPPINGS = (
     ("Instrument", ["bika_setup_catalog", "portal_catalog"]),
     ("InstrumentLocation", ["bika_setup_catalog", "portal_catalog"]),
     ("InstrumentType", ["bika_setup_catalog", "portal_catalog"]),
-    ("LabContact", ["bika_setup_catalog"]),
+    ("LabContact", ["bika_setup_catalog", "portal_catalog"]),
     ("LabProduct", ["bika_setup_catalog", "portal_catalog"]),
     ("Manufacturer", ["bika_setup_catalog", "portal_catalog"]),
     ("Method", ["bika_setup_catalog", "portal_catalog"]),
