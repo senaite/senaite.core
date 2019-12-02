@@ -166,11 +166,6 @@ class Client(Organisation):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
 
-    def Title(self):
-        """Return the Organisation's Name as its title
-        """
-        return self.getName()
-
     security.declarePublic("getContactFromUsername")
 
     def getContactFromUsername(self, username):
