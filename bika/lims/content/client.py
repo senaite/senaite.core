@@ -18,33 +18,33 @@
 # Copyright 2018-2019 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-import sys
-
 from AccessControl import ClassSecurityInfo
 from AccessControl import Unauthorized
 from Products.ATContentTypes.content import schemata
 from Products.Archetypes.public import BooleanField
 from Products.Archetypes.public import BooleanWidget
 from Products.Archetypes.public import ReferenceField
-from Products.Archetypes.public import ReferenceWidget
 from Products.Archetypes.public import Schema
 from Products.Archetypes.public import SelectionWidget
 from Products.Archetypes.public import StringField
 from Products.Archetypes.public import StringWidget
 from Products.Archetypes.public import registerType
-from Products.Archetypes.utils import DisplayList
 from Products.CMFCore import permissions
 from Products.CMFCore.PortalFolder import PortalFolderBase as PortalFolder
 from Products.CMFCore.utils import _checkPermission
+from zope.interface import implements
+
 from bika.lims import _
 from bika.lims import api
+from bika.lims.browser.widgets import ReferenceWidget
+from bika.lims.catalog.bikasetup_catalog import SETUP_CATALOG
 from bika.lims.config import ARIMPORT_OPTIONS
 from bika.lims.config import DECIMAL_MARKS
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.attachment import Attachment
 from bika.lims.content.organisation import Organisation
-from bika.lims.interfaces import IClient, IDeactivable
-from zope.interface import implements
+from bika.lims.interfaces import IClient
+from bika.lims.interfaces import IDeactivable
 
 schema = Organisation.schema.copy() + Schema((
     StringField(
@@ -93,15 +93,19 @@ schema = Organisation.schema.copy() + Schema((
         schemata="Preferences",
         required=0,
         multiValued=1,
-        vocabulary="getAnalysisCategories",
-        vocabulary_display_path_bound=sys.maxint,
         allowed_types=("AnalysisCategory",),
         relationship="ClientDefaultCategories",
         widget=ReferenceWidget(
-            checkbox_bound=0,
             label=_("Default categories"),
             description=_(
                 "Always expand the selected categories in client views"),
+            showOn=True,
+            catalog_name=SETUP_CATALOG,
+            base_query=dict(
+                is_active=True,
+                sort_on="sortable_title",
+                sort_order="ascending",
+            ),
         ),
     ),
 
@@ -110,15 +114,19 @@ schema = Organisation.schema.copy() + Schema((
         schemata="Preferences",
         required=0,
         multiValued=1,
-        vocabulary="getAnalysisCategories",
         validators=("restrictedcategoriesvalidator",),
-        vocabulary_display_path_bound=sys.maxint,
         allowed_types=("AnalysisCategory",),
         relationship="ClientRestrictedCategories",
         widget=ReferenceWidget(
-            checkbox_bound=0,
             label=_("Restrict categories"),
             description=_("Show only selected categories in client views"),
+            showOn=True,
+            catalog_name=SETUP_CATALOG,
+            base_query=dict(
+                is_active=True,
+                sort_on="sortable_title",
+                sort_order="ascending",
+            ),
         ),
     ),
 
@@ -192,19 +200,6 @@ class Client(Organisation):
 
     def getARImportOptions(self):
         return ARIMPORT_OPTIONS
-
-    security.declarePublic("getAnalysisCategories")
-
-    def getAnalysisCategories(self):
-        """Return all available analysis categories
-        """
-        bsc = api.get_tool("bika_setup_catalog")
-        cats = []
-        for st in bsc(portal_type="AnalysisCategory",
-                      is_active=True,
-                      sort_on="sortable_title"):
-            cats.append((st.UID, st.Title))
-        return DisplayList(cats)
 
     def getContacts(self, only_active=True):
         """Return an array containing the contacts from this Client
