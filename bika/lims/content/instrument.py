@@ -95,14 +95,18 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
 
     ReferenceField(
         'Manufacturer',
-        vocabulary='getManufacturers',
         allowed_types=('Manufacturer',),
         relationship='InstrumentManufacturer',
         required=1,
-        widget=SelectionWidget(
-            format='select',
+        widget=ReferenceWidget(
             label=_("Manufacturer"),
-            visible={'view': 'invisible', 'edit': 'visible'}
+            showOn=True,
+            catalog_name='bika_setup_catalog',
+            base_query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending",
+            },
         ),
     ),
 
@@ -313,17 +317,19 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
     ReferenceField(
         'InstrumentLocation',
         schemata='Additional info.',
-        vocabulary='getInstrumentLocations',
         allowed_types=('InstrumentLocation', ),
         relationship='InstrumentInstrumentLocation',
         required=0,
-        widget=SelectionWidget(
-            format='select',
+        widget=ReferenceWidget(
             label=_("Instrument Location"),
-            label_msgid="instrument_location",
             description=_("The room and location where the instrument is installed"),
-            description_msgid="help_instrument_location",
-            visible={'view': 'invisible', 'edit': 'visible'}
+            showOn=True,
+            catalog_name='bika_setup_catalog',
+            base_query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending",
+            },
         )
     ),
 
@@ -419,14 +425,6 @@ class Instrument(ATFolder):
     def getCalibrationAgentsList(self):
         return getCalibrationAgents(self)
 
-    def getManufacturers(self):
-        bsc = getToolByName(self, 'bika_setup_catalog')
-        items = [(c.UID, c.Title)
-                 for c in bsc(portal_type='Manufacturer',
-                              is_active=True)]
-        items.sort(lambda x, y: cmp(x[1], y[1]))
-        return DisplayList(items)
-
     def getMethodUIDs(self):
         uids = []
         if self.getMethods():
@@ -441,15 +439,6 @@ class Instrument(ATFolder):
         bsc = getToolByName(self, 'bika_setup_catalog')
         items = [(c.UID, c.Title)
                  for c in bsc(portal_type='Method',
-                              is_active=True)]
-        items.sort(lambda x, y: cmp(x[1], y[1]))
-        items.insert(0, ('', t(_('None'))))
-        return DisplayList(items)
-
-    def getInstrumentLocations(self):
-        bsc = getToolByName(self, 'bika_setup_catalog')
-        items = [(c.UID, c.Title)
-                 for c in bsc(portal_type='InstrumentLocation',
                               is_active=True)]
         items.sort(lambda x, y: cmp(x[1], y[1]))
         items.insert(0, ('', t(_('None'))))

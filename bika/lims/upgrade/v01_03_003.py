@@ -249,7 +249,7 @@ def upgrade(tool):
 
     # Some indexes in setup_catalog changed
     reindex_labcontact_sortable_title(portal)
-    reindex_supplier_titles(portal)
+    reindex_supplier_manufacturers_titles(portal)
 
     # Redirect to worksheets folder when a Worksheet is removed
     # https://github.com/senaite/senaite.core/pull/1480
@@ -300,13 +300,13 @@ def reindex_labcontact_sortable_title(portal):
     logger.info("Reindexing sortable_title for LabContacts ... [DONE]")
 
 
-def reindex_supplier_titles(portal):
-    logger.info("Reindexing title indexes for Suppliers ...")
+def reindex_supplier_manufacturers_titles(portal):
+    logger.info("Reindexing title indexes for Suppliers and Manufacturers ...")
     query = dict(portal_type="Supplier")
     for brain in api.search(query, SETUP_CATALOG):
         obj = api.get_object(brain)
         obj.reindexObject(idxs=["title", "sortable_title"])
-    logger.info("Reindexing title indexes for Suppliers ... [DONE]")
+    logger.info("Reindexing title indexes for Suppliers and Manufacturers ... [DONE]")
 
 
 def remove_stale_indexes(portal):
