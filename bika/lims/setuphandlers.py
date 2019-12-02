@@ -191,7 +191,6 @@ INDEXES = (
     ("bika_setup_catalog", "sampletype_title", "", "KeywordIndex"),
     # Filter in Add2: Sample Points, Specifications, Templates
     ("bika_setup_catalog", "sampletype_uid", "", "KeywordIndex"),
-    ("bika_setup_catalog", "getServiceUID", "", "FieldIndex"),
     ("bika_setup_catalog", "id", "getId", "FieldIndex"),
     ("bika_setup_catalog", "is_active", "", "BooleanIndex"),
     ("bika_setup_catalog", "path", "getPhysicalPath", "ExtendedPathIndex"),
@@ -241,7 +240,6 @@ COLUMNS = (
     ("bika_setup_catalog", "getClientUID"),
     ("bika_setup_catalog", "getKeyword"),
     ("bika_setup_catalog", "getSamplePointTitle"),
-    ("bika_setup_catalog", "getServiceUID"),
 
     ("portal_catalog", "Analyst"),
 )
