@@ -29,4 +29,5 @@ def title(instance):
     Name schema field. We need this type-specific index to simulate the default
     behavior for index `title`
     """
-    return instance.Title()
+    name = getattr(instance, "Name", None)
+    return name and name or ""
