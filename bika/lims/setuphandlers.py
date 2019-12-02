@@ -229,7 +229,6 @@ COLUMNS = (
     ("bika_setup_catalog", "getCategoryUID"),
     ("bika_setup_catalog", "getClientUID"),
     ("bika_setup_catalog", "getKeyword"),
-    ("bika_setup_catalog", "getSamplePointTitle"),
 
     ("portal_catalog", "Analyst"),
 )
