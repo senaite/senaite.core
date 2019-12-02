@@ -71,7 +71,6 @@ INDEXES_TO_ADD = [
 INDEXES_TO_REMOVE = [
     # Only used in add2 to filter Sample Points by Sample Type when a Sample
     # Type was selected. Now, getSampleTypeUID is used instead because of
-    # https://github.com/senaite/senaite.core/pull/1481
     ("bika_setup_catalog", "getSampleTypeTitles"),
 
     # Only used for when Sample and SamplePartition objects
@@ -87,17 +86,14 @@ INDEXES_TO_REMOVE = [
     # getAccredited was only used in the "hidden" view accreditation to filter
     # services labeled as "accredited". Since we don't expect that listing to
     # contain too many items, they are now filtered by waking-up the object
-    # https://github.com/senaite/senaite.core/pull/1484
     ("bika_setup_catalog", "getAccredited"),
 
     # getAnalyst index is used in Analyses (Duplicates and Reference included)
     # and Worksheets. None of the types stored in setup_catalog support Analyst
-    # https://github.com/senaite/senaite.core/pull/1484
     ("bika_setup_catalog", "getAnalyst"),
 
     # getBlank index is not used in setup_catalog, but in bika_catalog, where
     # is used in AddControl and AddBlank views (Worksheet)
-    # https://github.com/senaite/senaite.core/pull/1484
     ("bika_setup_catalog", "getBlank"),
 
     # Only used in analyses listing, but from analysis_catalog
@@ -110,7 +106,6 @@ INDEXES_TO_REMOVE = [
     ("bika_setup_catalog", "getServiceUID"),
 
     # Not used anywhere
-    # https://github.com/senaite/senaite.core/pull/1484
     ("bika_setup_catalog", "getDocumentID"),
     ("bika_setup_catalog", "getDuplicateVariation"),
     ("bika_setup_catalog", "getFormula"),
@@ -188,11 +183,9 @@ METADATA_TO_REMOVE = [
     ("bika_catalog", "getSampleTypeTitle"),
 
     # Not used anywhere
-    # https://github.com/senaite/senaite.core/pull/1484
     ("bika_setup_catalog", "getAccredited"),
 
     # Not used anywhere
-    # https://github.com/senaite/senaite.core/pull/1484
     ("bika_setup_catalog", "getBlank"),
     ("bika_setup_catalog", "getDuplicateVariation"),
     ("bika_setup_catalog", "getFormula"),
@@ -240,25 +233,18 @@ def upgrade(tool):
 
     # -------- ADD YOUR STUFF BELOW --------
 
+    # Fix Site Properties Generic Setup Export Step
     # https://github.com/senaite/senaite.core/pull/1469
     setup.runImportStepFromProfile(profile, "propertiestool")
 
-    # Remove stale indexes and metadata
-    # https://github.com/senaite/senaite.core/pull/1481
-    remove_stale_indexes(portal)
-    remove_stale_metadata(portal)
+    # Remove, rename and add indexes/metadata
+    # https://github.com/senaite/senaite.core/pull/1486
+    cleanup_indexes_and_metadata(portal)
 
-    # Add new indexes
-    # https://github.com/senaite/senaite.core/pull/1481
-    add_new_indexes(portal)
-
+    # Sample edit form (some selection widgets empty)
     # Reindex client's related fields (getClientUID, getClientTitle, etc.)
     # https://github.com/senaite/senaite.core/pull/1477
     reindex_client_fields(portal)
-
-    # Some indexes in setup_catalog changed
-    reindex_labcontact_sortable_title(portal)
-    reindex_supplier_manufacturers_titles(portal)
 
     # Redirect to worksheets folder when a Worksheet is removed
     # https://github.com/senaite/senaite.core/pull/1480
@@ -298,6 +284,18 @@ def reindex_client_fields(portal):
         obj.reindexObject(idxs=fields_to_reindex)
 
     logger.info("Reindexing client fields ... [DONE]")
+
+def cleanup_indexes_and_metadata(portal):
+    # Remove stale indexes and metadata
+    remove_stale_indexes(portal)
+    remove_stale_metadata(portal)
+
+    # Add new indexes
+    add_new_indexes(portal)
+
+    # Some indexes in setup_catalog changed
+    reindex_labcontact_sortable_title(portal)
+    reindex_supplier_manufacturers_titles(portal)
 
 
 def reindex_labcontact_sortable_title(portal):
