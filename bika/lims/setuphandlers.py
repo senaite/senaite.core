@@ -108,7 +108,7 @@ CATALOG_MAPPINGS = (
     ("Instrument", ["bika_setup_catalog", "portal_catalog"]),
     ("InstrumentLocation", ["bika_setup_catalog", "portal_catalog"]),
     ("InstrumentType", ["bika_setup_catalog", "portal_catalog"]),
-    ("LabContact", ["bika_setup_catalog", "portal_catalog"]),
+    ("LabContact", ["bika_setup_catalog"]),
     ("LabProduct", ["bika_setup_catalog", "portal_catalog"]),
     ("Manufacturer", ["bika_setup_catalog", "portal_catalog"]),
     ("Method", ["bika_setup_catalog", "portal_catalog"]),
@@ -175,7 +175,6 @@ INDEXES = (
     ("bika_setup_catalog", "getClientUID", "", "FieldIndex"),
     # Sorting of listings: Analysis Categories
     ("bika_setup_catalog", "department_title", "", "KeywordIndex"),
-    ("bika_setup_catalog", "getFullname", "", "FieldIndex"),
     ("bika_setup_catalog", "getId", "", "FieldIndex"),
     # Sorting of listings: Worksheet Templates
     ("bika_setup_catalog", "instrument_title", "", "KeywordIndex"),
@@ -242,7 +241,6 @@ COLUMNS = (
     ("bika_setup_catalog", "getCategoryTitle"),
     ("bika_setup_catalog", "getCategoryUID"),
     ("bika_setup_catalog", "getClientUID"),
-    ("bika_setup_catalog", "getFullname"),
     ("bika_setup_catalog", "getKeyword"),
     ("bika_setup_catalog", "getName"),
     ("bika_setup_catalog", "getSamplePointTitle"),

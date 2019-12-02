@@ -67,10 +67,9 @@ class LabContactsView(BikaListingView):
         self.pagesize = 25
 
         self.columns = collections.OrderedDict((
-            # TODO: Better sort by last name (index required!)
             ("Fullname", {
                 "title": _("Name"),
-                "index": "getFullname"}),
+                "index": "sortable_title"}),
             ("DefaultDepartment", {
                 "title": _("Default Department"),
                 "toggle": False}),

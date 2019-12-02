@@ -46,7 +46,7 @@ class LabContactsView(LabContactsView):
         }
         self.columns = {
             'Fullname': {'title': _('Name'),
-                         'index': 'getFullname'},
+                         'index': 'fullname'},
             'Department': {'title': _('Department')},
             'BusinessPhone': {'title': _('Phone')},
             'MobilePhone': {'title': _('Mobile Phone')},

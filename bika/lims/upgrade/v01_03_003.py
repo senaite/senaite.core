@@ -22,6 +22,7 @@ from Products.Archetypes.config import UID_CATALOG
 
 from bika.lims import api
 from bika.lims import logger
+from bika.lims.catalog.bikasetup_catalog import SETUP_CATALOG
 from bika.lims.config import PROJECTNAME as product
 from bika.lims.setuphandlers import setup_form_controller_actions
 from bika.lims.upgrade import upgradestep
@@ -98,6 +99,9 @@ INDEXES_TO_REMOVE = [
 
     # Only used in analyses listing, but from analysis_catalog
     ("bika_setup_catalog", "getCalculationUID"),
+
+    # Only used for sorting in LabContacts listing. Replaced by sortable_title
+    ("bika_setup_catalog", "getFullname"),
 
     # Not used anywhere
     # https://github.com/senaite/senaite.core/pull/1484
@@ -203,6 +207,7 @@ METADATA_TO_REMOVE = [
     ("bika_setup_catalog", "getUnit"),
     ("bika_setup_catalog", "getPointOfCapture"),
     ("bika_setup_catalog", "getSamplePointUID"),
+    ("bika_setup_catalog", "getFullname"),
 ]
 
 
@@ -237,6 +242,9 @@ def upgrade(tool):
     # Reindex client's related fields (getClientUID, getClientTitle, etc.)
     # https://github.com/senaite/senaite.core/pull/1477
     reindex_client_fields(portal)
+
+    # Some indexes in setup_catalog changed
+    reindex_labcontact_sortable_title(portal)
 
     # Redirect to worksheets folder when a Worksheet is removed
     # https://github.com/senaite/senaite.core/pull/1480
@@ -276,6 +284,15 @@ def reindex_client_fields(portal):
         obj.reindexObject(idxs=fields_to_reindex)
 
     logger.info("Reindexing client fields ... [DONE]")
+
+
+def reindex_labcontact_sortable_title(portal):
+    logger.info("Reindexing sortable_title for LabContacts ...")
+    query = dict(portal_type="LabContact")
+    for brain in api.search(query, SETUP_CATALOG):
+        obj = api.get_object(brain)
+        obj.reindexObject(idxs=["sortable_title"])
+    logger.info("Reindexing sortable_title for LabContacts ... [DONE]")
 
 
 def remove_stale_indexes(portal):

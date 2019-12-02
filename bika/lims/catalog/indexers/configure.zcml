@@ -15,6 +15,9 @@
   <adapter name="sortable_title" factory=".baseanalysis.sortable_title"/>
   <adapter name="sortable_title" factory=".analysiscategory.sortable_title"/>
 
+  <!-- Case-insenstive sortable_title for Contacts (as "surname, name") -->
+  <adapter name="sortable_title" factory=".contact.sortable_title"/>
+
   <!-- Partitioning. Analyses masking in searches -->
   <adapter name="getAncestorsUIDs" factory=".requestanalysis.getAncestorsUIDs"/>
 
@@ -55,6 +58,7 @@
   <adapter name="point_of_capture" factory=".bikasetup.point_of_capture"/>
 
   <adapter name="department_uid" factory=".bikasetup.department_uid"/>
+
 
   <!-- Auditlog Catalog Index Adapters -->
   <adapter name="action" factory=".auditlog.action"/>
