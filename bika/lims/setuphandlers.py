@@ -138,7 +138,6 @@ INDEXES = (
     ("bika_catalog", "UID", "", "FieldIndex"),
     ("bika_catalog", "allowedRolesAndUsers", "", "KeywordIndex"),
     ("bika_catalog", "created", "", "DateIndex"),
-    # Filter ReferenceSamples in AddControl and AddBlank views from Worksheet
     ("bika_catalog", "getBlank", "", "BooleanIndex"),
     ("bika_catalog", "getClientBatchID", "", "FieldIndex"),
     ("bika_catalog", "getClientID", "", "FieldIndex"),
@@ -168,38 +167,28 @@ INDEXES = (
     ("bika_setup_catalog", "UID", "", "FieldIndex"),
     ("bika_setup_catalog", "allowedRolesAndUsers", "", "KeywordIndex"),
     ("bika_setup_catalog", "created", "", "DateIndex"),
-    # Filter services in Worksheet's Add Analyses View for when the Worksheet
-    # Template being used has a Method assigned
-    ("bika_setup_catalog", "method_available_uid", "", "KeywordIndex"),
+    ("bika_setup_catalog", "department_title", "", "KeywordIndex"),
+    ("bika_setup_catalog", "department_uid", "", "KeywordIndex"),
     ("bika_setup_catalog", "getCategoryUID", "", "FieldIndex"),
     ("bika_setup_catalog", "getClientUID", "", "FieldIndex"),
-    # Sorting of listings: Analysis Categories
-    ("bika_setup_catalog", "department_title", "", "KeywordIndex"),
     ("bika_setup_catalog", "getId", "", "FieldIndex"),
-    # Sorting of listings: Worksheet Templates
-    ("bika_setup_catalog", "instrument_title", "", "KeywordIndex"),
-    # Sorting of listings: Instruments
-    ("bika_setup_catalog", "instrumenttype_title", "", "KeywordIndex"),
     ("bika_setup_catalog", "getKeyword", "", "FieldIndex"),
-    # Add Sample form to split services in listing
-    ("bika_setup_catalog", "point_of_capture", "", "FieldIndex"),
-    # Sorting of listings: LabProducts
-    ("bika_setup_catalog", "price", "", "FieldIndex"),
-    # Sorting of listings: LabProducts
-    ("bika_setup_catalog", "price_total", "", "FieldIndex"),
-    # Sorting of listings: Sample Points, Specifications
-    ("bika_setup_catalog", "sampletype_title", "", "KeywordIndex"),
-    # Filter in Add2: Sample Points, Specifications, Templates
-    ("bika_setup_catalog", "sampletype_uid", "", "KeywordIndex"),
     ("bika_setup_catalog", "id", "getId", "FieldIndex"),
+    ("bika_setup_catalog", "instrument_title", "", "KeywordIndex"),
+    ("bika_setup_catalog", "instrumenttype_title", "", "KeywordIndex"),
     ("bika_setup_catalog", "is_active", "", "BooleanIndex"),
+    ("bika_setup_catalog", "listing_searchable_text", "", "TextIndexNG3"),
+    ("bika_setup_catalog", "method_available_uid", "", "KeywordIndex"),
     ("bika_setup_catalog", "path", "getPhysicalPath", "ExtendedPathIndex"),
+    ("bika_setup_catalog", "point_of_capture", "", "FieldIndex"),
     ("bika_setup_catalog", "portal_type", "", "FieldIndex"),
+    ("bika_setup_catalog", "price", "", "FieldIndex"),
+    ("bika_setup_catalog", "price_total", "", "FieldIndex"),
     ("bika_setup_catalog", "review_state", "", "FieldIndex"),
+    ("bika_setup_catalog", "sampletype_title", "", "KeywordIndex"),
+    ("bika_setup_catalog", "sampletype_uid", "", "KeywordIndex"),
     ("bika_setup_catalog", "sortable_title", "", "FieldIndex"),
     ("bika_setup_catalog", "title", "", "FieldIndex"),
-    ("bika_setup_catalog", "department_uid", "", "KeywordIndex"),
-    ("bika_setup_catalog", "listing_searchable_text", "", "TextIndexNG3"),
 
     ("portal_catalog", "Analyst", "", "FieldIndex"),
 )
