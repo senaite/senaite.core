@@ -103,6 +103,9 @@ INDEXES_TO_REMOVE = [
     # Only used for sorting in LabContacts listing. Replaced by sortable_title
     ("bika_setup_catalog", "getFullname"),
 
+    # Used in analysis_catalog, but not in setup_catalog
+    ("bika_setup_catalog", "getServiceUID"),
+
     # Not used anywhere
     # https://github.com/senaite/senaite.core/pull/1484
     ("bika_setup_catalog", "getDocumentID"),
@@ -213,6 +216,7 @@ METADATA_TO_REMOVE = [
     ("bika_setup_catalog", "getFullname"),
     ("bika_setup_catalog", "cancellation_state"),
     ("bika_setup_catalog", "getName"),
+    ("bika_setup_catalog", "getServiceUID"),
 ]
 
 
