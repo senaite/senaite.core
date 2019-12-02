@@ -386,6 +386,14 @@ def can_export(obj):
     return True
 
 
+def can_import(obj):
+    """Decides if the object can be imported or not
+    """
+    if not api.is_object(obj):
+        return False
+    return True
+
+
 def get_id(obj):
     if api.is_portal(obj):
         return SITE_ID
@@ -397,7 +405,7 @@ def exportObjects(obj, parent_path, context):
     """
 
     if not can_export(obj):
-        logger.info("Skipping {}".format(repr(obj)))
+        logger.info("Skipping export of {}".format(repr(obj)))
         return
 
     if api.is_portal(obj):
@@ -424,6 +432,11 @@ def exportObjects(obj, parent_path, context):
 def importObjects(obj, parent_path, context):
     """ Import subobjects recursively.
     """
+
+    if not can_import(obj):
+        logger.info("Skipping import of {}".format(repr(obj)))
+        return
+
     if api.is_portal(obj):
         # explicitly instantiate the importer to avoid adapter clash of
         # Products.CMFCore.exportimport.properties.PropertiesXMLAdapter
