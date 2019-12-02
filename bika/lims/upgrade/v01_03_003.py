@@ -127,6 +127,7 @@ INDEXES_TO_REMOVE = [
     ("bika_setup_catalog", "getCategoryTitle"),
     ("bika_setup_catalog", "cancellation_state"),
     ("bika_setup_catalog", "getName"),
+    ("bika_setup_catalog", "getServiceUIDs"),
 
 
     # REPLACEMENTS (indexes to be removed because of a replacement)
