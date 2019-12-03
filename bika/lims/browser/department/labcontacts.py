@@ -41,12 +41,12 @@ class LabContactsView(LabContactsView):
         self.context_actions = {}
         self.contentFilter = {
             'portal_type': 'LabContact',
-            'sort_on': 'getFirstname',
+            'sort_on': 'sortable_title',
             'sort_order': 'ascending'
         }
         self.columns = {
             'Fullname': {'title': _('Name'),
-                         'index': 'fullname'},
+                         'index': 'sortable_title'},
             'Department': {'title': _('Department')},
             'BusinessPhone': {'title': _('Phone')},
             'MobilePhone': {'title': _('Mobile Phone')},
