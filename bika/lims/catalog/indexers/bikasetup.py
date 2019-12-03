@@ -139,9 +139,12 @@ def listing_searchable_text(instance):
     include = ["getCalculation"
                "getDepartment",
                "getInstrument",
-               "getInstrumentType",
                "getInstruments",
-               "getSampleTypeTitle", ]
+               "getInstrumentType",
+               "getSamplePoint"
+               "getSampleType",
+               "getSupplier",
+               "getManufacturer", ]
 
     return generic_listing_searchable_text(instance, SETUP_CATALOG,
                                            exclude_field_names=exclude,
