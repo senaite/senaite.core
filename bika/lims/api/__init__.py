@@ -1323,12 +1323,8 @@ def to_searchable_text_metadata(value):
         values = map(to_searchable_text_metadata, value)
         values = filter(None, values)
         return " ".join(values)
-    if isinstance(value, (dict)):
-        values = set()
-        for k, v in value.items():
-            values.add(to_searchable_text_metadata(v))
-        values = filter(None, values)
-        return " ".join(values)
+    if isinstance(value, dict):
+        return to_searchable_text_metadata(value.values())
     if is_date(value):
         return value.strftime("%Y-%m-%d")
     if is_at_content(value):
