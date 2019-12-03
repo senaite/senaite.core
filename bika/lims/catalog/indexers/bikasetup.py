@@ -133,7 +133,19 @@ def listing_searchable_text(instance):
     wildcard searches
     :return: all metadata values joined in a string
     """
-    return generic_listing_searchable_text(instance, SETUP_CATALOG)
+    exclude = ["getObjPositionInParent", ]
+
+    # Additional fields to include values from
+    include = ["getCalculation"
+               "getDepartment",
+               "getInstrument",
+               "getInstrumentType",
+               "getInstruments",
+               "getSampleTypeTitle", ]
+
+    return generic_listing_searchable_text(instance, SETUP_CATALOG,
+                                           exclude_field_names=exclude,
+                                           include_field_names=include)
 
 
 def to_keywords_list(obj, func):

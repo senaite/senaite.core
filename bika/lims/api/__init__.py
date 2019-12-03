@@ -1327,6 +1327,8 @@ def to_searchable_text_metadata(value):
             return to_searchable_text_metadata(v)
     if is_date(value):
         return value.strftime("%Y-%m-%d")
+    if is_at_content(value):
+        return to_searchable_text_metadata(get_title(value))
     if not isinstance(value, basestring):
         value = str(value)
     return safe_unicode(value)

@@ -25,6 +25,7 @@ from plone.indexer import indexer
 
 from bika.lims import api
 from bika.lims import logger
+from bika.lims.api import safe_getattr
 from bika.lims.catalog.bika_catalog import BIKA_CATALOG
 from bika.lims.interfaces import IBikaCatalog
 
@@ -82,17 +83,41 @@ def get_metadata_for(instance, catalog):
         return {}
 
 
-def generic_listing_searchable_text(instance, catalog_name):
+def generic_listing_searchable_text(instance, catalog_name,
+                                    exclude_field_names=None,
+                                    include_field_names=None):
     """Retrieves all the values of metadata columns in the catalog for
     wildcard searches
+    :param instance: the object to retrieve metadata/values from
+    :param catalog_name: the catalog to retrieve metadata from
+    :param exclude_field_names: field names to exclude from the metadata
+    :param include_field_names: field names to include, even if no metadata
     """
     entries = set()
+
+    # Fields to include/exclude
+    include = include_field_names or []
+    exclude = exclude_field_names or []
+
+    # Get the metadata fields from this instance and catalog
     catalog = api.get_tool(catalog_name)
     metadata = get_metadata_for(instance, catalog)
     for key, brain_value in metadata.items():
+        if key in exclude:
+            continue
+        elif key in include:
+            # A metadata field already
+            include.remove(key)
+
         instance_value = api.safe_getattr(instance, key, None)
         parsed = api.to_searchable_text_metadata(brain_value or instance_value)
         entries.add(parsed)
+
+    # Include values from additional fields
+    for field_name in include:
+        field_value = api.safe_getattr(instance, field_name, None)
+        field_value = api.to_searchable_text_metadata(field_value)
+        entries.add(field_value)
 
     # Remove empties
     entries = filter(None, entries)
