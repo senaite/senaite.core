@@ -1063,3 +1063,20 @@ class IOrganisation(Interface):
     def getName(self):
         """Returns the name of the organisation. Masks Title()
         """
+
+
+class IHaveAnalysisCategory(Interface):
+    """Marker interface for objects that have AnalysisCategory(ies) assigned
+    """
+
+    def getCategory(self):
+        """Returns the category(ies) assigned to this instance
+        """
+
+    def getCategoryUID(self):
+        """Returns the UID of the category(ies) assigned to this instance
+        """
+
+    def getCategoryTitle(self):
+        """Returns the title of the category(ies) assigned to this instance
+        """

@@ -107,8 +107,8 @@ class AnalysisCategory(BaseContent):
 
     def workflow_script_deactivate(self):
         # A instance cannot be deactivated if it contains services
-        query = dict(portal_type="AnalysisService", getCategoryUID=self.UID())
-        brains = api.search(query)
+        query = dict(portal_type="AnalysisService", category_uid=self.UID())
+        brains = api.search(query, SETUP_CATALOG)
         if brains:
             pu = api.get_tool("plone_utils")
             message = _("Category cannot be deactivated because it contains "

@@ -12,6 +12,7 @@
   <adapter name="sortable_title" factory=".sortable_title"/>
 
   <!-- bika_setup Catalog Index adapters -->
+  <adapter name="category_uid" factory=".bikasetup.category_uid"/>
   <adapter name="department_title" factory=".bikasetup.department_title"/>
   <adapter name="department_uid" factory=".bikasetup.department_uid"/>
   <adapter name="instrument_title" factory=".bikasetup.instrument_title"/>

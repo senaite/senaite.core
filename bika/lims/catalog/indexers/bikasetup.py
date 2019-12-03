@@ -25,6 +25,7 @@ from bika.lims.catalog.bikasetup_catalog import SETUP_CATALOG
 from bika.lims.catalog.indexers import generic_listing_searchable_text
 from bika.lims.interfaces import IAnalysisService
 from bika.lims.interfaces import IBikaSetupCatalog
+from bika.lims.interfaces import IHaveAnalysisCategory
 from bika.lims.interfaces import IHaveDepartment
 from bika.lims.interfaces import IHaveInstrument
 from bika.lims.interfaces import IHavePrice
@@ -148,6 +149,14 @@ def listing_searchable_text(instance):
     return generic_listing_searchable_text(instance, SETUP_CATALOG,
                                            exclude_field_names=exclude,
                                            include_field_names=include)
+
+
+@indexer(IHaveAnalysisCategory, IBikaSetupCatalog)
+def category_uid(instance):
+    """Returns a list of Category UIDs the instance is assigned to
+    """
+    category = instance.getCategory()
+    return to_keywords_list(category, api.get_uid)
 
 
 def to_keywords_list(obj, func):

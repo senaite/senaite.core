@@ -658,8 +658,7 @@ class RestrictedCategoriesValidator:
         for category in value:
             if not category:
                 continue
-            services = bsc(
-                portal_type="AnalysisService", getCategoryUID=category)
+            services = bsc(portal_type="AnalysisService", category_uid=category)
             for service in services:
                 service = service.getObject()
                 calc = service.getCalculation()

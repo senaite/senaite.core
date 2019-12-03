@@ -10,6 +10,7 @@
 
 ### bika_setup_catalog
 
+- `category_uid`: Searches by analysis category
 - `department_title`: Sorting of Analyses Categories listing
 - `instrument_title`: Sorting of Worksheet Templates listing by Instrument
 - `instrumenttype_title`: Sorting of Instruments listing
@@ -42,7 +43,7 @@ Specifications and Templates when a Sample Type is selected.
 
 ### IContact (LabContact, Contact)
 
-- `sortable_title`: Case-insenstive contact's fullname for default sorting
+- `sortable_title`: Case-insensitive contact's fullname for default sorting
 
 ### IOrganisation (Supplier, Manufacturer, Client, etc.)
 
