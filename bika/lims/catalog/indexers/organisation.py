@@ -30,4 +30,4 @@ def title(instance):
     behavior for index `title`
     """
     name = getattr(instance, "Name", None)
-    return name and name or ""
+    return name or ""

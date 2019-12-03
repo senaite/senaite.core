@@ -28,7 +28,6 @@ from Products.Archetypes.atapi import DisplayList, PicklistWidget
 from Products.Archetypes.atapi import registerType
 from bika.lims.api.analysis import is_out_of_range
 from bika.lims.catalog.analysis_catalog import CATALOG_ANALYSIS_LISTING
-from zope.component._api import getAdapters
 
 from zope.interface import implements
 from plone.app.folder.folder import ATFolder
@@ -68,7 +67,6 @@ from bika.lims.utils import to_utf8
 from bika.lims.config import PROJECTNAME
 from bika.lims.exportimport import instruments
 from bika.lims.interfaces import IInstrument, IDeactivable
-from bika.lims.config import QCANALYSIS_TYPES
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.content.bikaschema import BikaFolderSchema
 from bika.lims import bikaMessageFactory as _
@@ -276,36 +274,6 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         ),
     ),
 
-    ComputedField(
-        'InstrumentLocationName',
-        expression='here.getInstrumentLocation().Title() if here.getInstrumentLocation() else ""',
-        widget=ComputedWidget(
-            label=_("Instrument Location"),
-            label_msgid="instrument_location",
-            description=_("The room and location where the instrument is installed"),
-            description_msgid="help_instrument_location",
-            visible=True,
-        ),
-    ),
-
-    ComputedField(
-        'ManufacturerName',
-        expression='here.getManufacturer().Title() if here.getManufacturer() else ""',
-        widget=ComputedWidget(
-            label=_('Manufacturer'),
-            visible=True,
-        ),
-    ),
-
-    ComputedField(
-        'SupplierName',
-        expression='here.getSupplier().Title() if here.getSupplier() else ""',
-        widget=ComputedWidget(
-            label=_('Supplier'),
-            visible=True,
-        ),
-    ),
-
     StringField(
         'AssetNumber',
         widget=StringWidget(
@@ -363,8 +331,6 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
 ))
 
 schema.moveField('AssetNumber', before='description')
-schema.moveField('SupplierName', before='Model')
-schema.moveField('ManufacturerName', before='SupplierName')
 
 schema['description'].widget.visible = True
 schema['description'].schemata = 'default'
