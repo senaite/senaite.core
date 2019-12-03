@@ -135,7 +135,7 @@ def listing_searchable_text(instance):
     """
     exclude = ["getObjPositionInParent", ]
 
-    # Additional fields to include values from
+    # Additional non-metadata fields to include in the index
     include = ["getCalculation"
                "getDepartment",
                "getInstrument",
