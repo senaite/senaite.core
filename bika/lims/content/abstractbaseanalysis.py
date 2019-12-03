@@ -52,6 +52,7 @@ from bika.lims.config import SERVICE_POINT_OF_CAPTURE
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IBaseAnalysis
 from bika.lims.interfaces import IHaveDepartment
+from bika.lims.interfaces import IHaveInstrument
 from bika.lims.permissions import FieldEditAnalysisHidden
 from bika.lims.permissions import FieldEditAnalysisRemarks
 from bika.lims.permissions import FieldEditAnalysisResult
@@ -750,7 +751,7 @@ schema['title']._validationLayer()
 
 
 class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
-    implements(IBaseAnalysis, IHaveDepartment)
+    implements(IBaseAnalysis, IHaveDepartment, IHaveInstrument)
     security = ClassSecurityInfo()
     schema = schema
     displayContentsTab = False

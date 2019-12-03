@@ -139,7 +139,6 @@ def listing_searchable_text(instance):
     include = ["getCalculation"
                "getDepartment",
                "getInstrument",
-               "getInstruments",
                "getInstrumentType",
                "getSamplePoint"
                "getSampleType",

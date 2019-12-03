@@ -44,6 +44,7 @@ from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IDeactivable
 from zope.interface import implements
 
+from bika.lims.interfaces import IHaveInstrument
 from bika.lims.interfaces import IWorksheetTemplate
 
 schema = BikaSchema.copy() + Schema((
@@ -161,7 +162,7 @@ schema["description"].widget.visible = True
 class WorksheetTemplate(BaseContent):
     """Worksheet Templates
     """
-    implements(IWorksheetTemplate, IDeactivable)
+    implements(IWorksheetTemplate, IHaveInstrument, IDeactivable)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
