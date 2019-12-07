@@ -1320,13 +1320,15 @@ def to_searchable_text_metadata(value):
     if isinstance(value, (bool)):
         return u""
     if isinstance(value, (list, tuple)):
-        for v in value:
-            return to_searchable_text_metadata(v)
-    if isinstance(value, (dict)):
-        for k, v in value.items():
-            return to_searchable_text_metadata(v)
+        values = map(to_searchable_text_metadata, value)
+        values = filter(None, values)
+        return " ".join(values)
+    if isinstance(value, dict):
+        return to_searchable_text_metadata(value.values())
     if is_date(value):
         return value.strftime("%Y-%m-%d")
+    if is_at_content(value):
+        return to_searchable_text_metadata(get_title(value))
     if not isinstance(value, basestring):
         value = str(value)
     return safe_unicode(value)

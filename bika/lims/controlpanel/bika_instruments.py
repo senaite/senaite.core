@@ -72,7 +72,7 @@ class InstrumentsView(BikaListingView):
                 "index": "sortable_title"}),
             ("Type", {
                 "title": _("Type"),
-                "index": "getInstrumentTypeName",
+                "index": "instrumenttype_title",
                 "toggle": True,
                 "sortable": True}),
             ("Brand", {
@@ -81,7 +81,6 @@ class InstrumentsView(BikaListingView):
                 "toggle": True}),
             ("Model", {
                 "title": _("Model"),
-                "index": "getModel",
                 "toggle": True}),
             ("ExpiryDate", {
                 "title": _("Expiry Date"),

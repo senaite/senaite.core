@@ -55,11 +55,10 @@ class ReferenceResultsView(BikaListingView):
         self.omit_form = True
 
         # Categories
+        self.categories = []
         if self.show_categories_enabled():
-            self.categories = []
             self.show_categories = True
             self.expand_all_categories = False
-            self.category_index = "getCategoryTitle"
 
         self.columns = collections.OrderedDict((
             ("Title", {

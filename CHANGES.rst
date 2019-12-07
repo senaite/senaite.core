@@ -14,6 +14,7 @@ Changelog
 
 **Changed**
 
+- #1486 Clean-up of indexes and metadata from `setup_catalog`
 
 **Removed**
 

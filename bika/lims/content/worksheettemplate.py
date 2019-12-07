@@ -44,6 +44,9 @@ from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IDeactivable
 from zope.interface import implements
 
+from bika.lims.interfaces import IHaveInstrument
+from bika.lims.interfaces import IWorksheetTemplate
+
 schema = BikaSchema.copy() + Schema((
     RecordsField(
         "Layout",
@@ -159,7 +162,7 @@ schema["description"].widget.visible = True
 class WorksheetTemplate(BaseContent):
     """Worksheet Templates
     """
-    implements(IDeactivable)
+    implements(IWorksheetTemplate, IHaveInstrument, IDeactivable)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
@@ -168,15 +171,6 @@ class WorksheetTemplate(BaseContent):
     def _renameAfterCreation(self, check_auto_id=False):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
-
-    @security.public
-    def getInstrumentTitle(self):
-        """Return the instrument title
-        """
-        instrument = self.getInstrument()
-        if not instrument:
-            return ""
-        return api.get_title(instrument)
 
     @security.public
     def getAnalysisTypes(self):

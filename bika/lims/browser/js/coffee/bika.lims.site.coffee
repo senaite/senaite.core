@@ -18,9 +18,6 @@ class window.SiteView
     # initialze the client add overlay
     @init_client_add_overlay()
 
-    # initialze the client combogrid
-    @init_client_combogrid()
-
     # initialze datepickers
     @init_datepickers()
 
@@ -128,34 +125,6 @@ class window.SiteView
     # crate a spinner and append it to the body
     @spinner = $("<div id='bika-spinner'><img src='#{@get_portal_url()}/spinner.gif' alt=''/></div>")
     @spinner.appendTo('body').hide()
-
-
-  init_client_combogrid: =>
-    ###
-     * Initialize client combogrid, e.g. on the Client Add View
-    ###
-    console.debug "SiteView::init_client_combogrid"
-
-    $("input[id*='ClientID']").combogrid
-      colModel: [
-        'columnName': 'ClientUID'
-        'hidden': true
-      ,
-        'columnName': 'ClientID'
-        'width': '20'
-        'label': _('Client ID')
-      ,
-        'columnName': 'Title'
-        'width': '80'
-        'label': _('Title')
-      ]
-      showOn: true
-      width: '450px'
-      url: "#{@get_portal_url()}/getClients?_authenticator=#{@get_authenticator()}"
-      select: (event, ui) ->
-        $(this).val ui.item.ClientID
-        $(this).change()
-        false
 
 
   init_datepickers: =>

@@ -28,7 +28,6 @@ from Products.Archetypes.atapi import DisplayList, PicklistWidget
 from Products.Archetypes.atapi import registerType
 from bika.lims.api.analysis import is_out_of_range
 from bika.lims.catalog.analysis_catalog import CATALOG_ANALYSIS_LISTING
-from zope.component._api import getAdapters
 
 from zope.interface import implements
 from plone.app.folder.folder import ATFolder
@@ -55,10 +54,10 @@ from Products.Archetypes.atapi import FileWidget
 from Products.Archetypes.atapi import ImageWidget
 from Products.Archetypes.atapi import BooleanWidget
 from Products.Archetypes.atapi import SelectionWidget
-from Products.Archetypes.atapi import ReferenceWidget
 from Products.Archetypes.atapi import MultiSelectionWidget
 from bika.lims.browser.widgets import DateTimeWidget
 from bika.lims.browser.widgets import RecordsWidget
+from bika.lims.browser.widgets import ReferenceWidget
 
 # bika.lims imports
 from bika.lims import api
@@ -68,7 +67,6 @@ from bika.lims.utils import to_utf8
 from bika.lims.config import PROJECTNAME
 from bika.lims.exportimport import instruments
 from bika.lims.interfaces import IInstrument, IDeactivable
-from bika.lims.config import QCANALYSIS_TYPES
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.content.bikaschema import BikaFolderSchema
 from bika.lims import bikaMessageFactory as _
@@ -81,36 +79,49 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         allowed_types=('InstrumentType',),
         relationship='InstrumentInstrumentType',
         required=1,
-        widget=SelectionWidget(
-            format='select',
+        widget=ReferenceWidget(
             label=_("Instrument type"),
-            visible={'view': 'invisible', 'edit': 'visible'}
+            showOn=True,
+            catalog_name='bika_setup_catalog',
+            base_query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending",
+            },
         ),
     ),
 
     ReferenceField(
         'Manufacturer',
-        vocabulary='getManufacturers',
         allowed_types=('Manufacturer',),
         relationship='InstrumentManufacturer',
         required=1,
-        widget=SelectionWidget(
-            format='select',
+        widget=ReferenceWidget(
             label=_("Manufacturer"),
-            visible={'view': 'invisible', 'edit': 'visible'}
+            showOn=True,
+            catalog_name='bika_setup_catalog',
+            base_query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending",
+            },
         ),
     ),
 
     ReferenceField(
         'Supplier',
-        vocabulary='getSuppliers',
         allowed_types=('Supplier',),
         relationship='InstrumentSupplier',
         required=1,
-        widget=SelectionWidget(
-            format='select',
+        widget=ReferenceWidget(
             label=_("Supplier"),
-            visible={'view': 'invisible', 'edit': 'visible'}
+            showOn=True,
+            catalog_name='bika_setup_catalog',
+            base_query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending",
+            },
         ),
     ),
 
@@ -263,46 +274,6 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         ),
     ),
 
-    # Needed since InstrumentType is sorted by its own object, not by its name.
-    ComputedField(
-        'InstrumentTypeName',
-        expression='here.getInstrumentType().Title() if here.getInstrumentType() else ""',
-        widget=ComputedWidget(
-            label=_('Instrument Type'),
-            visible=True,
-        ),
-    ),
-
-    ComputedField(
-        'InstrumentLocationName',
-        expression='here.getInstrumentLocation().Title() if here.getInstrumentLocation() else ""',
-        widget=ComputedWidget(
-            label=_("Instrument Location"),
-            label_msgid="instrument_location",
-            description=_("The room and location where the instrument is installed"),
-            description_msgid="help_instrument_location",
-            visible=True,
-        ),
-    ),
-
-    ComputedField(
-        'ManufacturerName',
-        expression='here.getManufacturer().Title() if here.getManufacturer() else ""',
-        widget=ComputedWidget(
-            label=_('Manufacturer'),
-            visible=True,
-        ),
-    ),
-
-    ComputedField(
-        'SupplierName',
-        expression='here.getSupplier().Title() if here.getSupplier() else ""',
-        widget=ComputedWidget(
-            label=_('Supplier'),
-            visible=True,
-        ),
-    ),
-
     StringField(
         'AssetNumber',
         widget=StringWidget(
@@ -314,17 +285,19 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
     ReferenceField(
         'InstrumentLocation',
         schemata='Additional info.',
-        vocabulary='getInstrumentLocations',
         allowed_types=('InstrumentLocation', ),
         relationship='InstrumentInstrumentLocation',
         required=0,
-        widget=SelectionWidget(
-            format='select',
+        widget=ReferenceWidget(
             label=_("Instrument Location"),
-            label_msgid="instrument_location",
             description=_("The room and location where the instrument is installed"),
-            description_msgid="help_instrument_location",
-            visible={'view': 'invisible', 'edit': 'visible'}
+            showOn=True,
+            catalog_name='bika_setup_catalog',
+            base_query={
+                "is_active": True,
+                "sort_on": "sortable_title",
+                "sort_order": "ascending",
+            },
         )
     ),
 
@@ -358,9 +331,6 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
 ))
 
 schema.moveField('AssetNumber', before='description')
-schema.moveField('SupplierName', before='Model')
-schema.moveField('ManufacturerName', before='SupplierName')
-schema.moveField('InstrumentTypeName', before='ManufacturerName')
 
 schema['description'].widget.visible = True
 schema['description'].schemata = 'default'
@@ -421,27 +391,11 @@ class Instrument(ATFolder):
     def getCalibrationAgentsList(self):
         return getCalibrationAgents(self)
 
-    def getManufacturers(self):
-        bsc = getToolByName(self, 'bika_setup_catalog')
-        items = [(c.UID, c.Title)
-                 for c in bsc(portal_type='Manufacturer',
-                              is_active=True)]
-        items.sort(lambda x, y: cmp(x[1], y[1]))
-        return DisplayList(items)
-
     def getMethodUIDs(self):
         uids = []
         if self.getMethods():
             uids = [m.UID() for m in self.getMethods()]
         return uids
-
-    def getSuppliers(self):
-        bsc = getToolByName(self, 'bika_setup_catalog')
-        items = [(c.UID, c.getName)
-                 for c in bsc(portal_type='Supplier',
-                              is_active=True)]
-        items.sort(lambda x, y: cmp(x[1], y[1]))
-        return DisplayList(items)
 
     def _getAvailableMethods(self):
         """ Returns the available (active) methods.
@@ -451,23 +405,6 @@ class Instrument(ATFolder):
         bsc = getToolByName(self, 'bika_setup_catalog')
         items = [(c.UID, c.Title)
                  for c in bsc(portal_type='Method',
-                              is_active=True)]
-        items.sort(lambda x, y: cmp(x[1], y[1]))
-        items.insert(0, ('', t(_('None'))))
-        return DisplayList(items)
-
-    def getInstrumentTypes(self):
-        bsc = getToolByName(self, 'bika_setup_catalog')
-        items = [(c.UID, c.Title)
-                 for c in bsc(portal_type='InstrumentType',
-                              is_active=True)]
-        items.sort(lambda x, y: cmp(x[1], y[1]))
-        return DisplayList(items)
-
-    def getInstrumentLocations(self):
-        bsc = getToolByName(self, 'bika_setup_catalog')
-        items = [(c.UID, c.Title)
-                 for c in bsc(portal_type='InstrumentLocation',
                               is_active=True)]
         items.sort(lambda x, y: cmp(x[1], y[1]))
         items.insert(0, ('', t(_('None'))))

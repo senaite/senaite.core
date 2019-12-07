@@ -103,7 +103,7 @@ class Report(BrowserView):
                          'colspan': 2}, ]
             datalines.append(dataline)
             for service in sc(portal_type="AnalysisService",
-                              getCategoryUID=cat.UID,
+                              category_uid=cat.UID,
                               sort_on='sortable_title'):
                 query['getServiceUID'] = service.UID
                 analyses = bc(query)

@@ -19,11 +19,13 @@
 # Some rights reserved, see README and LICENSE.
 
 from Products.CMFPlone.utils import safe_unicode
+from plone.app.content.browser.interfaces import IFolderContentsView
+from zope.interface import implements
+
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.controlpanel.bika_analysisservices import AnalysisServicesView
 from bika.lims.utils import t
-from plone.app.content.browser.interfaces import IFolderContentsView
-from zope.interface import implements
 
 
 class AccreditationView(AnalysisServicesView):
@@ -34,7 +36,6 @@ class AccreditationView(AnalysisServicesView):
         self.contentFilter = {
             'portal_type': 'AnalysisService',
             'sort_on': 'sortable_title',
-            'getAccredited': True,
             'is_active': True}
         self.context_actions = {}
         self.title = self.context.translate(_("Accreditation"))
@@ -102,3 +103,17 @@ class AccreditationView(AnalysisServicesView):
             if 'category' in item and item['category'] not in cats:
                 cats.append(item['category'])
         return cats
+
+    def search(self, searchterm="", ignorecase=True):
+        # Boil out those that are not accredited
+        # There is no need to keep a `getAccredited` index in the catalog only
+        # for this view. Since we don't expect a lot of items from this content
+        # type (AnalysisService), is fine to wake-up them
+        brains = super(AccreditationView, self).search(searchterm, ignorecase)
+
+        def is_accredited(brain):
+            obj = api.get_object(brain)
+            return obj.getAccredited()
+
+        return filter(is_accredited, brains)
+

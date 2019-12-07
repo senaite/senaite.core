@@ -454,6 +454,9 @@ class ILabProducts(Interface):
     """Marker interface for Lab Products
     """
 
+class ILabProduct(Interface):
+    """Marker interface for a LabProduct
+    """
 
 class ISamplePoint(Interface):
     """Marker interface for a Sample Point
@@ -539,6 +542,9 @@ class IWorksheetTemplates(Interface):
     """Marker interface for Worksheet Templates
     """
 
+class IWorksheetTemplate(Interface):
+    """Marker interface for Worksheet Template
+    """
 
 class IBikaCatalog(Interface):
     """Marker interface for bika_catalog
@@ -1016,4 +1022,61 @@ class ISampleTypeAwareMixin(Interface):
 
     def getSampleTypeTitle(self):
         """Returns the title or a comma separated list of sample type titles
+        """
+
+
+class IHavePrice(Interface):
+    """Marker interface for objects that have a Price
+    """
+
+    def getPrice(self):
+        """Returns the price of the instance
+        """
+
+    def getTotalPrice(self):
+        """Returns the total price of the instance
+        """
+
+
+class IHaveInstrument(Interface):
+    """Marker interface for objects that have Instrument(s) assigned
+    """
+
+    def getInstrument(self):
+        """Returns the instrument or instruments the instance is assigned to
+        """
+
+
+class IHaveDepartment(Interface):
+    """Marker interface for objects that have Department(s) assigned
+    """
+
+    def getDepartment(self):
+        """Returns the department or departments the instance is assigned to
+        """
+
+
+class IOrganisation(Interface):
+    """Marker interface for IOrganisation object
+    """
+
+    def getName(self):
+        """Returns the name of the organisation. Masks Title()
+        """
+
+
+class IHaveAnalysisCategory(Interface):
+    """Marker interface for objects that have AnalysisCategory(ies) assigned
+    """
+
+    def getCategory(self):
+        """Returns the category(ies) assigned to this instance
+        """
+
+    def getCategoryUID(self):
+        """Returns the UID of the category(ies) assigned to this instance
+        """
+
+    def getCategoryTitle(self):
+        """Returns the title of the category(ies) assigned to this instance
         """

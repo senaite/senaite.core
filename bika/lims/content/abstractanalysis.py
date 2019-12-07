@@ -1129,14 +1129,6 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         return uids
 
     @security.public
-    def getCalculationTitle(self):
-        """Used to populate catalog values
-        """
-        calculation = self.getCalculation()
-        if calculation:
-            return calculation.Title()
-
-    @security.public
     def getCalculationUID(self):
         """Used to populate catalog values
         """

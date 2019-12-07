@@ -18,16 +18,17 @@
 # Copyright 2018-2019 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from decimal import Decimal
+
 from AccessControl import ClassSecurityInfo
 from Products.Archetypes.public import *
-from Products.CMFCore.permissions import View, ModifyPortalContent
+from zope.interface import implements
+
+from bika.lims import bikaMessageFactory as _
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
-from decimal import Decimal
-from bika.lims import bikaMessageFactory as _
 from bika.lims.interfaces import IDeactivable
-from bika.lims.utils import t
-from zope.interface import implements
+from bika.lims.interfaces import IHavePrice
 
 schema = BikaSchema.copy() + Schema((
     StringField('Volume',
@@ -72,8 +73,9 @@ schema = BikaSchema.copy() + Schema((
 schema['description'].schemata = 'default'
 schema['description'].widget.visible = True
 
+
 class LabProduct(BaseContent):
-    implements(IDeactivable)
+    implements(IDeactivable, IHavePrice)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
@@ -109,5 +111,6 @@ class LabProduct(BaseContent):
         except:
             vatamount = Decimal('0.00')
         return vatamount.quantize(Decimal('0.00'))
+
 
 registerType(LabProduct, PROJECTNAME)

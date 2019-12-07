@@ -658,8 +658,7 @@ class RestrictedCategoriesValidator:
         for category in value:
             if not category:
                 continue
-            services = bsc(
-                portal_type="AnalysisService", getCategoryUID=category)
+            services = bsc(portal_type="AnalysisService", category_uid=category)
             for service in services:
                 service = service.getObject()
                 calc = service.getCalculation()
@@ -1322,7 +1321,7 @@ class ReflexRuleValidator:
         bsc = getToolByName(instance, 'bika_setup_catalog')
         query = {
             'portal_type': 'AnalysisService',
-            'getAvailableMethodUIDs': method.UID()
+            'method_available_uid': method.UID()
         }
         method_ans_uids = [b.UID for b in bsc(query)]
         rules = instance.getReflexRules()

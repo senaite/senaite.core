@@ -20,6 +20,9 @@
 
 from Products.CMFCore.utils import getToolByName
 
+from bika.lims import api
+from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
+
 
 def ObjectModifiedEventHandler(obj, event):
     """ Various types need automation on edit.
@@ -59,9 +62,9 @@ def ObjectModifiedEventHandler(obj, event):
     elif obj.portal_type == 'AnalysisCategory':
         # If the analysis category's Title is modified, we must
         # re-index all services and analyses that refer to this title.
-        for i in [['Analysis', 'bika_analysis_catalog'],
-                  ['AnalysisService', 'bika_setup_catalog']]:
-            cat = getToolByName(obj, i[1])
-            brains = cat(portal_type=i[0], getCategoryUID=obj.UID())
-            for brain in brains:
-                brain.getObject().reindexObject(idxs=['getCategoryTitle'])
+        query = dict(getCategoryUID=obj.UID())
+        brains = api.search(query, CATALOG_ANALYSIS_LISTING)
+        for brain in brains:
+            obj = api.get_object(brain)
+            obj.reindexObject(idxs=['getCategoryTitle'])
+

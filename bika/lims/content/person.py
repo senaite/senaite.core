@@ -253,42 +253,6 @@ class Person(BaseFolder):
                 fullname = '%s %s' % (self.getFirstname(), self.getSurname())
         return fullname.strip()
 
-    def getListingname(self):
-        """Person's Fullname as Surname, Firstname
-        """
-        fn = self.getFirstname()
-        mi = self.getMiddleinitial()
-        md = self.getMiddlename()
-        sn = self.getSurname()
-        fullname = ""
-        if fn and sn:
-            fullname = "%s, %s" % (
-                self.getSurname(),
-                self.getFirstname())
-        elif fn or sn:
-            fullname = "%s %s" % (
-                self.getSurname(),
-                self.getFirstname())
-        else:
-            fullname = ""
-
-        if fullname != "":
-            if mi and md:
-                fullname = "%s %s %s" % (
-                    fullname,
-                    self.getMiddleinitial(),
-                    self.getMiddlename())
-            elif mi:
-                fullname = "%s %s" % (
-                    fullname,
-                    self.getMiddleinitial())
-            elif md:
-                fullname = "%s %s" % (
-                    fullname,
-                    self.getMiddlename())
-
-        return fullname.strip()
-
     Title = getFullname
 
     @security.protected(CMFCorePermissions.ManagePortal)

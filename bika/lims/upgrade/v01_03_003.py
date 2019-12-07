@@ -22,6 +22,7 @@ from Products.Archetypes.config import UID_CATALOG
 
 from bika.lims import api
 from bika.lims import logger
+from bika.lims.catalog.bikasetup_catalog import SETUP_CATALOG
 from bika.lims.config import PROJECTNAME as product
 from bika.lims.setuphandlers import setup_form_controller_actions
 from bika.lims.upgrade import upgradestep
@@ -31,15 +32,48 @@ version = "1.3.3"  # Remember version number in metadata.xml and setup.py
 profile = "profile-{0}:default".format(product)
 
 INDEXES_TO_ADD = [
-    # We changed the type of this index from FieldIndex to KeywordIndex
-    # https://github.com/senaite/senaite.core/pull/1481
-    ("bika_setup_catalog", "sampletype_uids", "KeywordIndex"),
+    # Replaces getSampleTypeUIDs
+    ("bika_setup_catalog", "sampletype_uid", "KeywordIndex"),
+
+    # Replaces getSampleTypeTitle
+    ("bika_setup_catalog", "sampletype_title", "KeywordIndex"),
+
+    # Replaces getAvailableMethodUIDs
+    # Used to filter services in Worksheet's Add Analyses View for when the
+    # Worksheet Template being used has a Method assigned
+    ("bika_setup_catalog", "method_available_uid", "KeywordIndex"),
+
+    # Replaces getInstrumentTitle
+    # Used for sorting Worksheet Templates listing by Instrument
+    ("bika_setup_catalog", "instrument_title", "KeywordIndex"),
+
+    # Replaces getPrice, getTotalPrice, getVolume
+    # Used for sorting LabProducts listing
+    ("bika_setup_catalog", "price", "FieldIndex"),
+    ("bika_setup_catalog", "price_total", "FieldIndex"),
+
+    # Replaces getInstrumentTypeName
+    ("bika_setup_catalog", "instrumenttype_title", "KeywordIndex"),
+
+    # Replaces getDepartmentTitle
+    ("bika_setup_catalog", "department_title", "KeywordIndex"),
+
+    # Replaces getPointOfCapture
+    ("bika_setup_catalog", "point_of_capture", "FieldIndex"),
+
+    # Replaces getDepartmentUID
+    ("bika_setup_catalog", "department_uid", "KeywordIndex"),
+
+    # Default listing_searchable_text index adapter for setup_catalog
+    ("bika_setup_catalog", "listing_searchable_text", "TextIndexNG3"),
+
+    # Default listing_searchable_text index adapter for setup_catalog
+    ("bika_setup_catalog", "category_uid", "KeywordIndex"),
 ]
 
 INDEXES_TO_REMOVE = [
     # Only used in add2 to filter Sample Points by Sample Type when a Sample
     # Type was selected. Now, getSampleTypeUID is used instead because of
-    # https://github.com/senaite/senaite.core/pull/1481
     ("bika_setup_catalog", "getSampleTypeTitles"),
 
     # Only used for when Sample and SamplePartition objects
@@ -52,9 +86,91 @@ INDEXES_TO_REMOVE = [
     # stored in bika_catalog (Batch, BatchFolder and ReferenceSample)
     ("bika_catalog", "getSampleTypeUID"),
 
-    # We remove this index because we changed it's type to KeywordIndex
-    # https://github.com/senaite/senaite.core/pull/1481
-    ("bika_setup_catalog", "getSampleTypeUID")
+    # getAccredited was only used in the "hidden" view accreditation to filter
+    # services labeled as "accredited". Since we don't expect that listing to
+    # contain too many items, they are now filtered by waking-up the object
+    ("bika_setup_catalog", "getAccredited"),
+
+    # getAnalyst index is used in Analyses (Duplicates and Reference included)
+    # and Worksheets. None of the types stored in setup_catalog support Analyst
+    ("bika_setup_catalog", "getAnalyst"),
+
+    # getBlank index is not used in setup_catalog, but in bika_catalog, where
+    # is used in AddControl and AddBlank views (Worksheet)
+    ("bika_setup_catalog", "getBlank"),
+
+    # Only used in analyses listing, but from analysis_catalog
+    ("bika_setup_catalog", "getCalculationUID"),
+
+    # Only used for sorting in LabContacts listing. Replaced by sortable_title
+    ("bika_setup_catalog", "getFullname"),
+
+    # Used in analysis_catalog, but not in setup_catalog
+    ("bika_setup_catalog", "getServiceUID"),
+
+    # Not used anywhere
+    ("bika_setup_catalog", "getDocumentID"),
+    ("bika_setup_catalog", "getDuplicateVariation"),
+    ("bika_setup_catalog", "getFormula"),
+    ("bika_setup_catalog", "getInstrumentLocationName"),
+    ("bika_setup_catalog", "getInstrumentType"),
+    ("bika_setup_catalog", "getHazardous"),
+    ("bika_setup_catalog", "getManagerEmail"),
+    ("bika_setup_catalog", "getManagerPhone"),
+    ("bika_setup_catalog", "getManagerName"),
+    ("bika_setup_catalog", "getMethodID"),
+    ("bika_setup_catalog", "getMaxTimeAllowed"),
+    ("bika_setup_catalog", "getModel"),
+    ("bika_setup_catalog", "getCalculationTitle"),
+    ("bika_setup_catalog", "getCalibrationExpiryDate"),
+    ("bika_setup_catalog", "getVATAmount"),
+    ("bika_setup_catalog", "getUnit"),
+    ("bika_setup_catalog", "getSamplePointTitle"),
+    ("bika_setup_catalog", "getVolume"),
+    ("bika_setup_catalog", "getSamplePointUID"),
+    ("bika_setup_catalog", "getCategoryTitle"),
+    ("bika_setup_catalog", "cancellation_state"),
+    ("bika_setup_catalog", "getName"),
+    ("bika_setup_catalog", "getServiceUIDs"),
+    ("bika_setup_catalog", "SearchableText"),
+
+
+    # REPLACEMENTS (indexes to be removed because of a replacement)
+
+    # getSampleTypeUID --> sampletype_uid (FieldIndex --> KeywordIndex)
+    ("bika_setup_catalog", "getSampleTypeUID"),
+    ("bika_setup_catalog", "sampletype_uids"),
+
+    # getSampleTypeTitle --> sampletype_title
+    ("bika_setup_catalog", "getSampleTypeTitle"),
+
+    # getAvailableMethodUIDs --> method_available_uid
+    ("bika_setup_catalog", "getAvailableMethodUIDs"),
+
+    # getInstrumentTitle --> instrument_title
+    ("bika_setup_catalog", "getInstrumentTitle"),
+
+    # getPrice --> price
+    ("bika_setup_catalog", "getPrice"),
+
+    # getTotalPrice --> price_total
+    ("bika_setup_catalog", "getTotalPrice"),
+
+    # getInstrumentTypeName --> instrumenttype_title
+    ("bika_setup_catalog", "getInstrumentTypeName"),
+
+    # getDepartmentTitle --> department_title
+    ("bika_setup_catalog", "getDepartmentTitle"),
+
+    # getPointOfCapture --> point_of_capture
+    ("bika_setup_catalog", "getPointOfCapture"),
+
+    # getDepartmentUID --> department_uid
+    ("bika_setup_catalog", "getDepartmentUID"),
+
+    # getCategoryUID --> category_uid
+    ("bika_setup_catalog", "getCategoryUID"),
+
 ]
 
 METADATA_TO_REMOVE = [
@@ -70,7 +186,40 @@ METADATA_TO_REMOVE = [
     # The following are the portal types stored in bika_catalog:
     #   Batch, BatchFolder and ReferenceSample
     # and "getSampleTypeTitle" metadata is not used for none of them
-    ("bika_catalog", "getSampleTypeTitle")
+    ("bika_catalog", "getSampleTypeTitle"),
+
+    # Not used anywhere
+    ("bika_setup_catalog", "getAccredited"),
+
+    # Not used anywhere
+    ("bika_setup_catalog", "getBlank"),
+    ("bika_setup_catalog", "getDuplicateVariation"),
+    ("bika_setup_catalog", "getFormula"),
+    ("bika_setup_catalog", "getInstrumentLocationName"),
+    ("bika_setup_catalog", "getInstrumentTitle"),
+    ("bika_setup_catalog", "getPrice"),
+    ("bika_setup_catalog", "getTotalPrice"),
+    ("bika_setup_catalog", "getVolume"),
+    ("bika_setup_catalog", "getInstrumentTypeName"),
+    ("bika_setup_catalog", "getInstrumentType"),
+    ("bika_setup_catalog", "getHazardous"),
+    ("bika_setup_catalog", "getManagerEmail"),
+    ("bika_setup_catalog", "getManagerPhone"),
+    ("bika_setup_catalog", "getManagerName"),
+    ("bika_setup_catalog", "getMaxTimeAllowed"),
+    ("bika_setup_catalog", "getModel"),
+    ("bika_setup_catalog", "getCalculationTitle"),
+    ("bika_setup_catalog", "getCalculationUID"),
+    ("bika_setup_catalog", "getCalibrationExpiryDate"),
+    ("bika_setup_catalog", "getDepartmentTitle"),
+    ("bika_setup_catalog", "getVATAmount"),
+    ("bika_setup_catalog", "getUnit"),
+    ("bika_setup_catalog", "getPointOfCapture"),
+    ("bika_setup_catalog", "getSamplePointUID"),
+    ("bika_setup_catalog", "getFullname"),
+    ("bika_setup_catalog", "cancellation_state"),
+    ("bika_setup_catalog", "getName"),
+    ("bika_setup_catalog", "getServiceUID"),
 ]
 
 
@@ -90,18 +239,15 @@ def upgrade(tool):
 
     # -------- ADD YOUR STUFF BELOW --------
 
+    # Fix Site Properties Generic Setup Export Step
     # https://github.com/senaite/senaite.core/pull/1469
     setup.runImportStepFromProfile(profile, "propertiestool")
 
-    # Remove stale indexes and metadata
-    # https://github.com/senaite/senaite.core/pull/1481
-    remove_stale_indexes(portal)
-    remove_stale_metadata(portal)
+    # Remove, rename and add indexes/metadata
+    # https://github.com/senaite/senaite.core/pull/1486
+    cleanup_indexes_and_metadata(portal)
 
-    # Add new indexes
-    # https://github.com/senaite/senaite.core/pull/1481
-    add_new_indexes(portal)
-
+    # Sample edit form (some selection widgets empty)
     # Reindex client's related fields (getClientUID, getClientTitle, etc.)
     # https://github.com/senaite/senaite.core/pull/1477
     reindex_client_fields(portal)
@@ -144,6 +290,36 @@ def reindex_client_fields(portal):
         obj.reindexObject(idxs=fields_to_reindex)
 
     logger.info("Reindexing client fields ... [DONE]")
+
+def cleanup_indexes_and_metadata(portal):
+    # Remove stale indexes and metadata
+    remove_stale_indexes(portal)
+    remove_stale_metadata(portal)
+
+    # Add new indexes
+    add_new_indexes(portal)
+
+    # Some indexes in setup_catalog changed
+    reindex_labcontact_sortable_title(portal)
+    reindex_supplier_manufacturers_titles(portal)
+
+
+def reindex_labcontact_sortable_title(portal):
+    logger.info("Reindexing sortable_title for LabContacts ...")
+    query = dict(portal_type="LabContact")
+    for brain in api.search(query, SETUP_CATALOG):
+        obj = api.get_object(brain)
+        obj.reindexObject(idxs=["sortable_title"])
+    logger.info("Reindexing sortable_title for LabContacts ... [DONE]")
+
+
+def reindex_supplier_manufacturers_titles(portal):
+    logger.info("Reindexing title indexes for Suppliers and Manufacturers ...")
+    query = dict(portal_type="Supplier")
+    for brain in api.search(query, SETUP_CATALOG):
+        obj = api.get_object(brain)
+        obj.reindexObject(idxs=["title", "sortable_title"])
+    logger.info("Reindexing title indexes for Suppliers and Manufacturers ... [DONE]")
 
 
 def remove_stale_indexes(portal):

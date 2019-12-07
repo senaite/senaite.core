@@ -131,9 +131,6 @@ window.bika.lims.controllers =  {
     ".portaltype-worksheetfolder":
         ['WorksheetFolderView'],
 
-    ".portaltype-worksheet.template-add_analyses":
-        ['WorksheetAddAnalysesView'],
-
     ".portaltype-worksheet.template-add_blank":
         ['WorksheetAddQCAnalysesView'],
 

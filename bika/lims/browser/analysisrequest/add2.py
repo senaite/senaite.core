@@ -538,7 +538,7 @@ class AnalysisRequestAddView(BrowserView):
         bsc = api.get_tool("bika_setup_catalog")
         query = {
             "portal_type": "AnalysisService",
-            "getPointOfCapture": poc,
+            "point_of_capture": poc,
             "is_active": True,
             "sort_on": "sortable_title",
         }
@@ -1018,18 +1018,18 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             # Display Sample Points that have this sample type assigned plus
             # those that do not have a sample type assigned
             "SamplePoint": {
-                "sampletype_uids": [sample_type_uid, None],
+                "sampletype_uid": [sample_type_uid, None],
                 "getClientUID": [client_uid, ""],
             },
             # Display Specifications that have this sample type assigned only
             "Specification": {
-                "sampletype_uids": sample_type_uid,
+                "sampletype_uid": sample_type_uid,
                 "getClientUID": [client_uid, ""],
             },
             # Display AR Templates that have this sample type assigned plus
             # those that do not have a sample type assigned
             "Template": {
-                "sampletype_uids": [sample_type_uid, None],
+                "sampletype_uid": [sample_type_uid, None],
                 "getClientUID": [client_uid, ""],
             }
         }

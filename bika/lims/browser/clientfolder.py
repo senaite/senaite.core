@@ -19,20 +19,19 @@
 # Some rights reserved, see README and LICENSE.
 
 import collections
-import json
 
 from Products.CMFCore.permissions import ModifyPortalContent
-from bika.lims import api, logger
+from plone.app.content.browser.interfaces import IFolderContentsView
+from zope.interface import implements
+
 from bika.lims import bikaMessageFactory as _
-from bika.lims.browser import BrowserView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.permissions import AddClient
 from bika.lims.permissions import ManageAnalysisRequests
-from bika.lims.utils import (check_permission, get_email_link, get_link,
-                             get_registry_value)
-from plone import protect
-from plone.app.content.browser.interfaces import IFolderContentsView
-from zope.interface import implements
+from bika.lims.utils import check_permission
+from bika.lims.utils import get_email_link
+from bika.lims.utils import get_link
+from bika.lims.utils import get_registry_value
 
 
 class ClientFolderContentsView(BikaListingView):
@@ -199,61 +198,3 @@ def client_match(client, search_term):
     if search_term in client.Description().lower():
         return True
     return False
-
-
-class ajaxGetClients(BrowserView):
-    """Vocabulary source for jquery combo dropdown box
-    """
-
-    def __call__(self):
-        protect.CheckAuthenticator(self.request)
-        searchTerm = self.request.get("searchTerm", "").lower()
-        page = self.request.get("page", 1)
-        nr_rows = self.request.get("rows", 20)
-        sort_order = self.request.get("sord") or "ascending"
-        sort_index = self.request.get("sidx") or "sortable_title"
-
-        if sort_order == "desc":
-            sort_order = "descending"
-
-        # Use the catalog to speed things up and also limit the results
-        catalog = api.get_tool("portal_catalog")
-        catalog_query = {
-            "portal_type": "Client",
-            "review_state": "active",
-            "sort_on": sort_index,
-            "sort_order": sort_order,
-            "sort_limit": 500
-        }
-        # Inject the searchTerm to narrow the results further
-        if searchTerm:
-            catalog_query["SearchableText"] = searchTerm
-        logger.debug("ajaxGetClients::catalog_query=%s" % catalog_query)
-        brains = catalog(catalog_query)
-        rows = []
-
-        for brain in brains:
-            client = brain.getObject()
-            # skip clients where the search term does not match
-            if searchTerm and not client_match(client, searchTerm):
-                continue
-            rows.append(
-                {
-                    "ClientID": client.getClientID(),
-                    "Title": client.Title(),
-                    "ClientUID": client.UID(),
-                }
-            )
-
-        pages = len(rows) / int(nr_rows)
-        pages += divmod(len(rows), int(nr_rows))[1] and 1 or 0
-        ret = {
-            "page": page,
-            "total": pages,
-            "records": len(rows),
-            "rows": rows[
-                (int(page) - 1) * int(nr_rows): int(page) * int(nr_rows)
-            ]
-        }
-
-        return json.dumps(ret)

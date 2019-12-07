@@ -18,24 +18,16 @@
 # Copyright 2018-2019 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from zope.interface import implements
-from App.class_init import InitializeClass
-from bika.lims.catalog.bika_catalog_tool import BikaCatalogTool
-from bika.lims.interfaces import IBikaSetupCatalog
+from plone.indexer import indexer
+
+from bika.lims.interfaces import IOrganisation
 
 
-SETUP_CATALOG = "bika_setup_catalog"
-
-
-class BikaSetupCatalog(BikaCatalogTool):
+@indexer(IOrganisation)
+def title(instance):
+    """Organisation objects does not use the built-in title, rather it uses
+    Name schema field. We need this type-specific index to simulate the default
+    behavior for index `title`
     """
-    Catalog for all bika_setup objects
-    """
-    implements(IBikaSetupCatalog)
-
-    def __init__(self):
-        BikaCatalogTool.__init__(self, SETUP_CATALOG,
-                                 'Bika Setup Catalog',
-                                 'BikaSetupCatalog')
-
-InitializeClass(BikaSetupCatalog)
+    name = getattr(instance, "Name", None)
+    return name or ""

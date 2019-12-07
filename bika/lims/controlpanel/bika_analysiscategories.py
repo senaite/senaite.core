@@ -80,8 +80,7 @@ class AnalysisCategoriesView(BikaListingView):
             }),
             ("Department", {
                 "title": _("Department"),
-                "index": "getDepartmentTitle",
-                "attr": "getDepartmentTitle",
+                "index": "department_title",
             }),
             ("SortKey", {
                 "title": _("Sort Key"),
