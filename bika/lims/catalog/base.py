@@ -19,8 +19,15 @@
 # Some rights reserved, see README and LICENSE.
 
 from Products.CMFPlone.CatalogTool import CatalogTool
+from Products.ZCatalog.ZCatalog import ZCatalog
 
 
 class BaseCatalog(CatalogTool):
     """Base class for specialized catalogs
     """
+
+    def __init__(self, id, title, portal_meta_type):
+        self.portal_type = portal_meta_type
+        self.meta_type = portal_meta_type
+        self.title = title
+        ZCatalog.__init__(self, id)
