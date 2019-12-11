@@ -74,7 +74,7 @@ class BikaCatalogWorksheetListing(BaseCatalog):
 
     def __init__(self):
         BaseCatalog.__init__(self, CATALOG_WORKSHEET_LISTING,
-                             "Bika Catalog Worksheet Listing",
+                             "Catalog Worksheet Listing",
                              "BikaCatalogWorksheetListing")
 
 

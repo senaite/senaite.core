@@ -33,7 +33,7 @@ class BikaSetupCatalog(BaseCatalog):
 
     def __init__(self):
         BaseCatalog.__init__(self, SETUP_CATALOG,
-                             "Bika Setup Catalog",
+                             "Setup Catalog",
                              "BikaSetupCatalog")
 
 

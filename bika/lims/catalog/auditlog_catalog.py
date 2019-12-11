@@ -47,8 +47,9 @@ class AuditLogCatalog(BaseCatalog):
     implements(IAuditLogCatalog)
 
     def __init__(self):
-        BaseCatalog.__init__(
-            self, CATALOG_AUDITLOG, "Audit Log Catalog", "AuditLogCatalog")
+        BaseCatalog.__init__(self, CATALOG_AUDITLOG,
+                             "Audit Log Catalog",
+                             "AuditLogCatalog")
 
 
 InitializeClass(AuditLogCatalog)

@@ -69,7 +69,7 @@ class BikaCatalogReport(BaseCatalog):
 
     def __init__(self):
         BaseCatalog.__init__(self, CATALOG_REPORT_LISTING,
-                             "Bika Catalog Report Listing",
+                             "Catalog Report Listing",
                              "BikaCatalogReportListing")
 
 

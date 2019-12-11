@@ -147,7 +147,7 @@ class BikaAnalysisCatalog(BaseCatalog):
 
     def __init__(self):
         BaseCatalog.__init__(self, CATALOG_ANALYSIS_LISTING,
-                             "Bika Analysis Catalog",
+                             "Analysis Catalog",
                              "BikaAnalysisCatalog")
 
 
