@@ -73,9 +73,9 @@ class BaseCatalog(CatalogTool):
     def is_indexable(self, obj):
         """Checks if the object can be indexed
         """
-        if not (base_hasattr(obj, "indexObject")):
+        if not (base_hasattr(obj, "reindexObject")):
             return False
-        if not (safe_callable(obj.indexObject)):
+        if not (safe_callable(obj.reindexObject)):
             return False
         return True
 
@@ -108,7 +108,7 @@ class BaseCatalog(CatalogTool):
             self.counter += 1
 
             try:
-                obj.indexObject(idxs=idxs)
+                obj.reindexObject(idxs=idxs)
             except TypeError:
                 # Catalogs have 'indexObject' as well, but they
                 # take different args, and will fail
