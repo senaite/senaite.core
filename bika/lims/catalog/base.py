@@ -60,7 +60,24 @@ class BaseCatalog(CatalogTool):
         dx_ftis = filter(lambda fti: IDexterityFTI.providedBy(fti),
                          pt.listTypeInfo())
         dx_types = map(lambda fti: fti.getId(), dx_ftis)
+
         return at_types + dx_types
+
+    def get_portal_type(self, obj):
+        """Returns the portal type of the object
+        """
+        if not api.is_object(obj):
+            return None
+        return api.get_portal_type(obj)
+
+    def is_indexable(self, obj):
+        """Checks if the object can be indexed
+        """
+        if not (base_hasattr(obj, "indexObject")):
+            return False
+        if not (safe_callable(obj.indexObject)):
+            return False
+        return True
 
     @security.protected(ManageZCatalogEntries)
     def clearFindAndRebuild(self):
@@ -69,22 +86,33 @@ class BaseCatalog(CatalogTool):
         # This may take a long time.
 
         # The Catalog ID
-        cid = self.id
+        cid = self.getId()
 
         # The catalog indexes
         idxs = list(self.indexes())
 
+        # Types to consider for this catalog
+        obj_metatypes = self.get_mapped_types()
+
         def indexObject(obj, path):
-            self.counter += 1
             __traceback_info__ = path
-            if (base_hasattr(obj, "reindexObject") and
-                    safe_callable(obj.reindexObject)):
-                try:
-                    self.reindexObject(obj, idxs=idxs)
-                except TypeError:
-                    # Catalogs have 'indexObject' as well, but they
-                    # take different args, and will fail
-                    pass
+
+            # skip non-indexable types
+            if not self.is_indexable(obj):
+                return
+
+            # skip types that are not mapped to this catalog
+            if self.get_portal_type(obj) not in obj_metatypes:
+                return
+
+            self.counter += 1
+
+            try:
+                obj.reindexObject(idxs=idxs)
+            except TypeError:
+                # Catalogs have 'indexObject' as well, but they
+                # take different args, and will fail
+                pass
 
             if self.counter % 100 == 0:
                 logger.info("Progress: {} objects have been cataloged for {}."
@@ -97,7 +125,6 @@ class BaseCatalog(CatalogTool):
         portal = aq_parent(aq_inner(self))
         portal.ZopeFindAndApply(
             portal,
-            obj_metatypes=self.get_mapped_types(),
             search_sub=True,
             apply_func=indexObject)
         logger.info("Catalog '{}' cleaned and rebuilt".format(cid))
