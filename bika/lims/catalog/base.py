@@ -108,7 +108,7 @@ class BaseCatalog(CatalogTool):
             self.counter += 1
 
             try:
-                obj.reindexObject(idxs=idxs)
+                obj.indexObject(idxs=idxs)
             except TypeError:
                 # Catalogs have 'indexObject' as well, but they
                 # take different args, and will fail
