@@ -75,6 +75,7 @@ def getCatalog(instance, field='UID'):
         catalog = getToolByName(plone, catalog_name)
         return catalog
 
+
 def setup_catalogs(
         portal, catalogs_definition={},
         force_reindex=False, catalogs_extension={}, force_no_reindex=False):
@@ -135,6 +136,7 @@ def setup_catalogs(
     if not force_no_reindex:
         _cleanAndRebuildIfNeeded(portal, clean_and_rebuild)
     return clean_and_rebuild
+
 
 def _merge_catalog_definitions(dict1, dict2):
     """
@@ -198,6 +200,7 @@ def _merge_catalog_definitions(dict1, dict2):
             continue
         outdict[k] = v.copy()
     return outdict
+
 
 def _map_content_types(archetype_tool, catalogs_definition):
     """
@@ -426,12 +429,9 @@ def _cleanAndRebuildIfNeeded(portal, cleanrebuild):
     for cat in cleanrebuild:
         catalog = getToolByName(portal, cat)
         if catalog:
-            if hasattr(catalog, "softClearFindAndRebuild"):
-                catalog.softClearFindAndRebuild()
-            else:
-                catalog.clearFindAndRebuild()
+            catalog.clearFindAndRebuild()
         else:
-            logger.warning('%s do not found' % cat)
+            logger.warning("Catalog '%s' not found" % cat)
 
 
 class Empty:

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from App.class_init import InitializeClass
-from bika.lims.catalog.bika_catalog_tool import BikaCatalogTool as BaseCatalog
+from bika.lims.catalog.base import BaseCatalog
 from bika.lims.interfaces import IAuditLogCatalog
 from zope.interface import implements
 
