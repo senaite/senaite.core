@@ -18,7 +18,7 @@ Changelog
 
 **Removed**
 
-- #1487 Removed custom catalog rebuild methods
+- #1487 Dexterity Compatible Catalog Base Class
 - #1482 Remove `senaite.instruments` dependency for instrument import form
 - #1478 Remove AcquireFieldDefaults (was used for CCEmails field only)
 
