@@ -18,19 +18,18 @@
 # Copyright 2018-2019 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from Products.Archetypes.interfaces import IBaseObject
-from Products.CMFPlone.CatalogTool import sortable_title as plone_sortable_title
-from Products.CMFPlone.utils import safe_callable
-from plone.indexer import indexer
-
 from bika.lims import api
 from bika.lims import logger
-from bika.lims.api import safe_getattr
 from bika.lims.catalog.bika_catalog import BIKA_CATALOG
 from bika.lims.interfaces import IBikaCatalog
+from plone.indexer import indexer
+from Products.CMFCore.interfaces import IContentish
+from Products.CMFPlone.CatalogTool import \
+    sortable_title as plone_sortable_title
+from Products.CMFPlone.utils import safe_callable
 
 
-@indexer(IBaseObject)
+@indexer(IContentish)
 def is_active(instance):
     """Returns False if the status of the instance is 'cancelled' or 'inactive'.
     Otherwise returns True
@@ -38,7 +37,7 @@ def is_active(instance):
     return api.is_active(instance)
 
 
-@indexer(IBaseObject)
+@indexer(IContentish)
 def sortable_title(instance):
     """Uses the default Plone sortable_text index lower-case
     """
@@ -62,7 +61,7 @@ def sortable_sortkey_title(instance):
     return "{:010.3f}{}".format(sort_key, title)
 
 
-@indexer(IBaseObject, IBikaCatalog)
+@indexer(IContentish, IBikaCatalog)
 def listing_searchable_text(instance):
     """ Retrieves all the values of metadata columns in the catalog for
     wildcard searches
