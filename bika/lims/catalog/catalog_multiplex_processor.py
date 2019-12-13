@@ -59,15 +59,17 @@ class CatalogMultiplexProcessor(object):
         self.index(obj, attributes)
 
     def unindex(self, obj):
+        wrapped_obj = obj
         if aq_base(obj).__class__.__name__ == "PathWrapper":
             # Could be a PathWrapper object from collective.indexing.
             obj = obj.context
 
-        if IMultiCatalogBehavior(obj, None) is None:
+        if not self.supports_multi_catalogs(obj):
             return
 
         catalogs = self.get_catalogs_for(obj)
-        url = api.get_path(obj)
+        # get the old path from the wrapped object
+        url = api.get_path(wrapped_obj)
 
         for catalog in catalogs:
             if catalog._catalog.uids.get(url, None) is not None:
