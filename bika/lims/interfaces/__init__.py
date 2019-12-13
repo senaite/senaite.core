@@ -43,6 +43,11 @@ class IAutoGenerateID(Interface):
     """
 
 
+class IMultiCatalogBehavior(Interface):
+    """Support multiple catalogs for Dexterity contents
+    """
+
+
 class IActionHandlerPool(Interface):
     """Marker interface for the ActionHandlerPool utility
     """

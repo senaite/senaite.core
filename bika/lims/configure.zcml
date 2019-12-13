@@ -26,7 +26,7 @@
 
   <include package=".adapters" />
   <include package=".browser" />
-  <include package=".catalog.indexers" />
+  <include package=".catalog" />
   <include package=".content" />
   <include package=".controlpanel" />
   <include package=".exportimport" />
@@ -49,6 +49,13 @@
       title="Auto-Generate ID Beahvior for Dexterity Contents"
       description="Generates an ID with the IDServer"
       provides="bika.lims.interfaces.IAutoGenerateID"
+      />
+
+  <!-- Multicatalog Behavior for Dexterity based contents -->
+  <plone:behavior
+      title="Multi Catalog Behavior for Dexterity Contents"
+      description="Catalog Dexterity contents in multiple catalogs"
+      provides="bika.lims.interfaces.IMultiCatalogBehavior"
       />
 
   <!-- jquery redirects here when values are entered into 'document' context (barcodes) -->
