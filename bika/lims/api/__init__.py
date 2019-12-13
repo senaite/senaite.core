@@ -19,6 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 import re
+from collections import OrderedDict
 from datetime import datetime
 from datetime import timedelta
 
@@ -29,7 +30,6 @@ from bika.lims import logger
 from bika.lims.interfaces import IClient
 from bika.lims.interfaces import IContact
 from bika.lims.interfaces import ILabContact
-from collection import OrderedDict
 from DateTime import DateTime
 from DateTime.interfaces import DateTimeError
 from plone import api as ploneapi
