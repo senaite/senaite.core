@@ -14,6 +14,7 @@ Changelog
 
 **Changed**
 
+- #1488 Support Dexterity Contents in Catalog Indexers
 - #1486 Clean-up of indexes and metadata from `setup_catalog`
 
 **Removed**

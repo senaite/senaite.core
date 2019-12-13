@@ -17,8 +17,6 @@
 #
 # Copyright 2018-2019 by it's authors.
 # Some rights reserved, see README and LICENSE.
-from Products.Archetypes.interfaces import IBaseObject
-from plone.indexer import indexer
 
 from bika.lims import api
 from bika.lims.catalog.bikasetup_catalog import SETUP_CATALOG
@@ -31,6 +29,8 @@ from bika.lims.interfaces import IHaveInstrument
 from bika.lims.interfaces import IHavePrice
 from bika.lims.interfaces import IInstrument
 from bika.lims.interfaces import ISampleTypeAwareMixin
+from plone.indexer import indexer
+from Products.CMFCore.interfaces import IContentish
 
 
 @indexer(ISampleTypeAwareMixin, IBikaSetupCatalog)
@@ -38,8 +38,8 @@ def sampletype_uid(instance):
     """Returns the list of SampleType UIDs the instance is assigned to
 
     This is a KeywordIndex, so it will be indexed as a list, even if only one
-    SampleType can be assigned to the instance. Moreover, if the instance has no
-    SampleType assigned, it returns a tuple with a None value. This allows
+    SampleType can be assigned to the instance. Moreover, if the instance has
+    no SampleType assigned, it returns a tuple with a None value. This allows
     searches for `MissingValue` entries too.
     """
     sample_type = instance.getSampleType()
@@ -62,9 +62,9 @@ def method_available_uid(instance):
     """Returns a list of Method UIDs that are available for this instance
 
     If the instance (AnalysisService) has InstrumentEntryOfResults set to True,
-    it returns the methods available from the instruments capable to perform the
-    service, as well as the methods set manually to the analysis. Otherwise, it
-    returns the methods assigned manually only.
+    it returns the methods available from the instruments capable to perform
+    the service, as well as the methods set manually to the analysis.
+    Otherwise, it returns the methods assigned manually only.
 
     If the instance has no available method assigned, it returns a tuple with
     a None value. This allows searches for `MissingValue` entries too.
@@ -128,7 +128,7 @@ def point_of_capture(instance):
     return instance.getPointOfCapture()
 
 
-@indexer(IBaseObject, IBikaSetupCatalog)
+@indexer(IContentish, IBikaSetupCatalog)
 def listing_searchable_text(instance):
     """ Retrieves all the values of metadata columns in the catalog for
     wildcard searches
