@@ -18,37 +18,37 @@
 # Copyright 2018-2019 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from zope.interface import implements
 from App.class_init import InitializeClass
-from bika.lims.catalog.bika_catalog_tool import BikaCatalogTool
-from bika.lims.catalog.catalog_basic_template import BASE_CATALOG_INDEXES
+from bika.lims.catalog.base import BaseCatalog
 from bika.lims.catalog.catalog_basic_template import BASE_CATALOG_COLUMNS
+from bika.lims.catalog.catalog_basic_template import BASE_CATALOG_INDEXES
 # Bika LIMS imports
 from bika.lims.interfaces import IBikaCatalogWorksheetListing
-
+from zope.interface import implements
 
 # Using a variable to avoid plain strings in code
-CATALOG_WORKSHEET_LISTING = 'bika_catalog_worksheet_listing'
+CATALOG_WORKSHEET_LISTING = "bika_catalog_worksheet_listing"
+
 # Defining the types for this catalog
-_types_list = ['Worksheet', ]
+_types_list = ["Worksheet", ]
 # Defining the indexes for this catalog
 _indexes_dict = {
-    'getAnalyst': 'FieldIndex',
-    'getWorksheetTemplateTitle': 'FieldIndex',
-    'getAnalysesUIDs': 'KeywordIndex',
+    "getAnalyst": "FieldIndex",
+    "getWorksheetTemplateTitle": "FieldIndex",
+    "getAnalysesUIDs": "KeywordIndex",
 }
 # Defining the columns for this catalog
 _columns_list = [
-    'getAnalyst',
-    'getWorksheetTemplateUID',
-    'getWorksheetTemplateTitle',
-    'getWorksheetTemplateURL',
-    'getAnalysesUIDs',
+    "getAnalyst",
+    "getWorksheetTemplateUID",
+    "getWorksheetTemplateTitle",
+    "getWorksheetTemplateURL",
+    "getAnalysesUIDs",
     # Only used to list
-    'getNumberOfQCAnalyses',
-    'getNumberOfRegularAnalyses',
-    'getNumberOfRegularSamples',
-    'getProgressPercentage',
+    "getNumberOfQCAnalyses",
+    "getNumberOfRegularAnalyses",
+    "getNumberOfRegularSamples",
+    "getProgressPercentage",
 ]
 # Adding basic indexes
 _base_indexes_copy = BASE_CATALOG_INDEXES.copy()
@@ -60,23 +60,22 @@ _columns_list += _base_columns_copy
 # Defining the catalog
 bika_catalog_worksheet_listing_definition = {
     CATALOG_WORKSHEET_LISTING: {
-        'types':   _types_list,
-        'indexes': _indexes_dict,
-        'columns': _columns_list
+        "types":   _types_list,
+        "indexes": _indexes_dict,
+        "columns": _columns_list
     }
 }
 
 
-class BikaCatalogWorksheetListing(BikaCatalogTool):
-    """
-    Catalog for Auto import listings
+class BikaCatalogWorksheetListing(BaseCatalog):
+    """Catalog for Auto import listings
     """
     implements(IBikaCatalogWorksheetListing)
 
     def __init__(self):
-        BikaCatalogTool.__init__(self, CATALOG_WORKSHEET_LISTING,
-                                 'Bika Catalog Worksheet Listing',
-                                 'BikaCatalogWorksheetListing')
+        BaseCatalog.__init__(self, CATALOG_WORKSHEET_LISTING,
+                             "Catalog Worksheet Listing",
+                             "BikaCatalogWorksheetListing")
 
 
 InitializeClass(BikaCatalogWorksheetListing)

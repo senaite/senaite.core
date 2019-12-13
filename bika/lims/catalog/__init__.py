@@ -18,25 +18,27 @@
 # Copyright 2018-2019 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from .auditlog_catalog import CATALOG_AUDITLOG
-from .analysisrequest_catalog import CATALOG_ANALYSIS_REQUEST_LISTING
-from .analysis_catalog import CATALOG_ANALYSIS_LISTING
-from .autoimportlogs_catalog import CATALOG_AUTOIMPORTLOGS_LISTING
-from .worksheet_catalog import CATALOG_WORKSHEET_LISTING
-from .report_catalog import CATALOG_REPORT_LISTING
+from .auditlog_catalog import CATALOG_AUDITLOG  # noqa
+from .analysisrequest_catalog import CATALOG_ANALYSIS_REQUEST_LISTING  # noqa
+from .analysis_catalog import CATALOG_ANALYSIS_LISTING  # noqa
+from .autoimportlogs_catalog import CATALOG_AUTOIMPORTLOGS_LISTING  # noqa
+from .worksheet_catalog import CATALOG_WORKSHEET_LISTING  # noqa
+from .report_catalog import CATALOG_REPORT_LISTING  # noqa
+from .bikasetup_catalog import SETUP_CATALOG  # noqa
+from .bikasetup_catalog import SETUP_CATALOG as CATALOG_SETUP  # noqa
 # Catalog classes
-from .auditlog_catalog import AuditLogCatalog
-from .bika_catalog import BikaCatalog
-from .bikasetup_catalog import BikaSetupCatalog
-from .analysis_catalog import BikaAnalysisCatalog
-from .analysisrequest_catalog import BikaCatalogAnalysisRequestListing
-from .autoimportlogs_catalog import BikaCatalogAutoImportLogsListing
-from .worksheet_catalog import BikaCatalogWorksheetListing
-from .report_catalog import BikaCatalogReport
+from .auditlog_catalog import AuditLogCatalog  # noqa
+from .bika_catalog import BikaCatalog  # noqa
+from .bikasetup_catalog import BikaSetupCatalog  # noqa
+from .analysis_catalog import BikaAnalysisCatalog  # noqa
+from .analysisrequest_catalog import BikaCatalogAnalysisRequestListing  # noqa
+from .autoimportlogs_catalog import BikaCatalogAutoImportLogsListing  # noqa
+from .worksheet_catalog import BikaCatalogWorksheetListing  # noqa
+from .report_catalog import BikaCatalogReport  # noqa
 # Catalog public functions
-from .catalog_utilities import getCatalogDefinitions
-from .catalog_utilities import setup_catalogs
-from .catalog_utilities import getCatalog
+from .catalog_utilities import getCatalogDefinitions  # noqa
+from .catalog_utilities import setup_catalogs  # noqa
+from .catalog_utilities import getCatalog  # noqa
 
 # --Some important information:--
 #
