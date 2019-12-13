@@ -11,17 +11,31 @@
       handler=".objectadded.auto_generate_id"
       />
 
-  <!-- Audit Log: Object Created -->
+  <!-- Audit Log: AT Object Created -->
   <subscriber
-      for="*
+      for="Products.Archetypes.interfaces.IBaseObject
            Products.Archetypes.interfaces.IObjectInitializedEvent"
       handler=".auditlog.ObjectInitializedEventHandler"
       />
 
-  <!-- Audit Log: Object Modified -->
+  <!-- Audit Log: Dexterity Object Created -->
   <subscriber
-      for="*
+      for="plone.dexterity.interfaces.IDexterityContent
+           zope.lifecycleevent.interfaces.IObjectAddedEvent"
+      handler=".auditlog.ObjectInitializedEventHandler"
+      />
+
+  <!-- Audit Log: AT Object Modified -->
+  <subscriber
+      for="Products.Archetypes.interfaces.IBaseObject
            Products.Archetypes.interfaces.IObjectEditedEvent"
+      handler=".auditlog.ObjectModifiedEventHandler"
+      />
+
+  <!-- Audit Log: Dexterity Object Modified -->
+  <subscriber
+      for="plone.dexterity.interfaces.IDexterityContent
+           zope.lifecycleevent.interfaces.IObjectModifiedEvent"
       handler=".auditlog.ObjectModifiedEventHandler"
       />
 
