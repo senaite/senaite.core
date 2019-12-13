@@ -18,24 +18,23 @@
 # Copyright 2018-2019 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from zope.interface import implements
 from App.class_init import InitializeClass
-from bika.lims.catalog.bika_catalog_tool import BikaCatalogTool
+from bika.lims.catalog.base import BaseCatalog
 from bika.lims.interfaces import IBikaSetupCatalog
-
+from zope.interface import implements
 
 SETUP_CATALOG = "bika_setup_catalog"
 
 
-class BikaSetupCatalog(BikaCatalogTool):
-    """
-    Catalog for all bika_setup objects
+class BikaSetupCatalog(BaseCatalog):
+    """ Catalog for all bika_setup objects
     """
     implements(IBikaSetupCatalog)
 
     def __init__(self):
-        BikaCatalogTool.__init__(self, SETUP_CATALOG,
-                                 'Bika Setup Catalog',
-                                 'BikaSetupCatalog')
+        BaseCatalog.__init__(self, SETUP_CATALOG,
+                             "Setup Catalog",
+                             "BikaSetupCatalog")
+
 
 InitializeClass(BikaSetupCatalog)

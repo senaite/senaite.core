@@ -18,10 +18,10 @@
 # Copyright 2018-2019 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from zope.interface import implements
 from App.class_init import InitializeClass
-from bika.lims.catalog.bika_catalog_tool import BikaCatalogTool
+from bika.lims.catalog.base import BaseCatalog
 from bika.lims.interfaces import IBikaCatalog
+from zope.interface import implements
 
 # Using a variable to avoid plain strings in code
 BIKA_CATALOG = "bika_catalog"
@@ -44,15 +44,15 @@ bika_catalog_definition = {
 }
 
 
-class BikaCatalog(BikaCatalogTool):
-    """
-    Catalog for Bika Catalog
+class BikaCatalog(BaseCatalog):
+    """Bika Catalog
     """
     implements(IBikaCatalog)
 
     def __init__(self):
-        BikaCatalogTool.__init__(self, 'bika_catalog',
-                                 'Bika Catalog',
-                                 'BikaCatalog')
+        BaseCatalog.__init__(self, "bika_catalog",
+                             "Bika Catalog",
+                             "BikaCatalog")
+
 
 InitializeClass(BikaCatalog)

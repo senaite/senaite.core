@@ -15,10 +15,12 @@ Changelog
 **Changed**
 
 - #1490 Support Dexterity Behavior Fields in API
+- #1488 Support Dexterity Contents in Catalog Indexers
 - #1486 Clean-up of indexes and metadata from `setup_catalog`
 
 **Removed**
 
+- #1487 Dexterity Compatible Catalog Base Class
 - #1482 Remove `senaite.instruments` dependency for instrument import form
 - #1478 Remove AcquireFieldDefaults (was used for CCEmails field only)
 
