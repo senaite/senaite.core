@@ -29,11 +29,13 @@ from bika.lims import logger
 from bika.lims.interfaces import IClient
 from bika.lims.interfaces import IContact
 from bika.lims.interfaces import ILabContact
+from collection import OrderedDict
 from DateTime import DateTime
 from DateTime.interfaces import DateTimeError
 from plone import api as ploneapi
 from plone.api.exc import InvalidParameterError
 from plone.app.layout.viewlets.content import ContentHistoryView
+from plone.behavior.interfaces import IBehaviorAssignable
 from plone.dexterity.interfaces import IDexterityContent
 from plone.i18n.normalizer.interfaces import IFileNameNormalizer
 from plone.i18n.normalizer.interfaces import IIDNormalizer
@@ -57,6 +59,7 @@ from zope.component.interfaces import IFactory
 from zope.event import notify
 from zope.lifecycleevent import ObjectCreatedEvent
 from zope.lifecycleevent import modified
+from zope.schema import getFieldsInOrder
 from zope.security.interfaces import Unauthorized
 
 """SENAITE LIMS Framework API
