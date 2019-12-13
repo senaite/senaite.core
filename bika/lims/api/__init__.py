@@ -336,20 +336,26 @@ def get_schema(brain_or_object):
 
 
 def get_fields(brain_or_object):
-    """Get the list of fields from the object
+    """Get a name to field mapping of the object
 
     :param brain_or_object: A single catalog brain or content object
     :type brain_or_object: ATContentType/DexterityContentType/CatalogBrain
-    :returns: List of fields
-    :rtype: list
+    :returns: Mapping of name -> field
+    :rtype: OrderedDict
     """
     obj = get_object(brain_or_object)
     schema = get_schema(obj)
     if is_dexterity_content(obj):
-        names = schema.names()
-        fields = map(lambda name: schema.get(name), names)
-        return dict(zip(names, fields))
-    return dict(zip(schema.keys(), schema.fields()))
+        # get the fields directly provided by the interface
+        fields = getFieldsInOrder(schema)
+        # append the fields coming from behaviors
+        behavior_assignable = IBehaviorAssignable(obj)
+        if behavior_assignable:
+            behaviors = behavior_assignable.enumerateBehaviors()
+            for behavior in behaviors:
+                fields.extend(getFieldsInOrder(behavior.interface))
+        return OrderedDict(fields)
+    return OrderedDict(schema)
 
 
 def get_id(brain_or_object):
