@@ -27,6 +27,14 @@ from zope.i18n.locales import locales
 from bika.lims.utils import t  # noqa
 from bika.lims.permissions import *  # noqa
 
+try:
+    import collective.indexing
+    collective.indexing  # noqa
+except ImportError:
+    USE_COLLECTIVE_INDEXING = False
+else:
+    USE_COLLECTIVE_INDEXING = True
+
 
 PROJECTNAME = "bika.lims"
 

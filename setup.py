@@ -84,6 +84,9 @@ setup(
         'senaite.impress>=1.2.0',
         # Python 2/3 compatibility library: https://six.readthedocs.io/
         'six',
+        # Needed for `IPortalCatalogQueueProcessor`, which will be included in
+        # `Products.CMFCore` in Plone 5. Remove after we are on Plone 5!
+        'collective.indexing',
     ],
     extras_require={
         'test': [

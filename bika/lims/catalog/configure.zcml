@@ -1,0 +1,21 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+           xmlns:zcml="http://namespaces.zope.org/zcml"
+           i18n_domain="senaite.core">
+
+  <!-- Catalog Indexes -->
+  <include package=".indexers" />
+
+  <!-- N.B. `IPortalCatalogQueueProcessor` will be included in
+            `Products.CMFCore` in Plone 5 and can be removed then -->
+  <include
+      zcml:condition="installed collective.indexing"
+      package="collective.indexing" />
+
+  <utility
+      zcml:condition="installed collective.indexing"
+      factory=".catalog_multiplex_processor.CatalogMultiplexProcessor"
+      provides="collective.indexing.indexer.IPortalCatalogQueueProcessor"
+      name="catalogmultiplex"
+      />
+
+</configure>

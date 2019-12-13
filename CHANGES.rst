@@ -8,6 +8,7 @@ Changelog
 **Added**
 
 - #1491 Enable Audit-logging for Dexterity Contents
+- #1489 Support Multiple Catalogs for Dexterity Contents
 - #1481 Filter Templates field when Sample Type is selected in Sample Add form
 - #1483 Added Accredited symbol in Analyses listings
 - #1466 Support for "readonly" and "hidden" visibility modes in ReferenceWidget
@@ -15,10 +16,13 @@ Changelog
 
 **Changed**
 
+- #1490 Support Dexterity Behavior Fields in API
+- #1488 Support Dexterity Contents in Catalog Indexers
 - #1486 Clean-up of indexes and metadata from `setup_catalog`
 
 **Removed**
 
+- #1487 Dexterity Compatible Catalog Base Class
 - #1482 Remove `senaite.instruments` dependency for instrument import form
 - #1478 Remove AcquireFieldDefaults (was used for CCEmails field only)
 
