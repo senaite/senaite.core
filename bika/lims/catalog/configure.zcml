@@ -15,7 +15,7 @@
       zcml:condition="installed collective.indexing"
       factory=".catalog_multiplex_processor.CatalogMultiplexProcessor"
       provides="collective.indexing.indexer.IPortalCatalogQueueProcessor"
-      name="catalogmulitplex"
+      name="catalogmultiplex"
       />
 
 </configure>
