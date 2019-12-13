@@ -53,6 +53,10 @@ class CatalogMultiplexProcessor(object):
             # We want the intersection of the catalogs idxs
             # and the incoming list.
             indexes = set(catalog.indexes()).intersection(attributes)
+            # Skip reindexing if no indexes match
+            if attributes and not indexes:
+                continue
+            # recatalog the object
             catalog.catalog_object(obj, url, idxs=list(indexes))
 
     def reindex(self, obj, attributes=None):
