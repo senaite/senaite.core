@@ -16,8 +16,8 @@ from zope.interface import invariant
 
 REQUIRED_COLUMNS = [
     "Keyword",  # The Analysis Keyword
-    "Min",  # Lower Limit
-    "Max",  # Upper Limit
+    "min",  # Lower Limit
+    "max",  # Upper Limit
 ]
 
 

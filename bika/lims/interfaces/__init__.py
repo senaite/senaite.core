@@ -395,6 +395,11 @@ class IAnalysisSpecs(Interface):
     """
 
 
+class IDynamicResultsRange(Interface):
+    """Marker interface for Dynamic Result Range
+    """
+
+
 class IAnalysisProfile(Interface):
     """Marker interface for an Analysis Profile
     """
