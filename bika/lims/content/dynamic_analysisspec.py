@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from collections import OrderedDict
-from itertools import groupby
+from collections import defaultdict
 from StringIO import StringIO
 
 from bika.lims import _
@@ -17,7 +16,8 @@ from zope.interface import invariant
 
 REQUIRED_COLUMNS = [
     "Keyword",  # The Analysis Keyword
-    "SampleType",
+    "Min",  # Lower Limit
+    "Max",  # Upper Limit
 ]
 
 
@@ -100,5 +100,8 @@ class DynamicAnalysisSpec(Item):
         return specs
 
     def get_by_keyword(self):
-        return OrderedDict(
-            groupby(self.get_specs(), lambda spec: spec.get("Keyword")))
+        specs = self.get_specs()
+        groups = defaultdict(list)
+        for spec in specs:
+            groups[spec.get("Keyword")].append(spec)
+        return groups
