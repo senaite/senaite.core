@@ -1,14 +1,24 @@
 # -*- coding: utf-8 -*-
 
+from collections import OrderedDict
+from itertools import groupby
 from StringIO import StringIO
 
 from bika.lims import _
 from bika.lims.catalog import SETUP_CATALOG
 from openpyxl.reader.excel import load_workbook
+from openpyxl.shared.exc import InvalidFileException
 from plone.dexterity.content import Item
 from plone.namedfile import field as namedfile
 from plone.supermodel import model
+from zope.interface import Invalid
 from zope.interface import implementer
+from zope.interface import invariant
+
+REQUIRED_COLUMNS = [
+    "Keyword",  # The Analysis Keyword
+    "SampleType",
+]
 
 
 class IDynamicAnalysisSpec(model.Schema):
@@ -19,6 +29,29 @@ class IDynamicAnalysisSpec(model.Schema):
         title=_(u"Specification File"),
         description=_(u"Only Excel files supported"),
         required=True)
+
+    @invariant
+    def validate_sepecs_file(data):
+        """Checks the Excel file contains the required header columns
+        """
+        fd = StringIO(data.specs_file.data)
+        try:
+            xls = load_workbook(fd)
+        except (InvalidFileException, TypeError):
+            raise Invalid(_(
+                "Invalid specifications file detected. "
+                "Please upload an Excel spreadsheet with at least "
+                "the following columns defined: '{}'"
+                .format(", ".join(REQUIRED_COLUMNS))))
+        try:
+            header = map(lambda c: c.value, xls.worksheets[0].rows[0])
+        except IndexError:
+            raise Invalid(
+                _("First sheet does not contain a valid column definition"))
+        for col in REQUIRED_COLUMNS:
+            if col not in header:
+                raise Invalid(_("Column '{}' is missing".format(col)))
+
 
 
 @implementer(IDynamicAnalysisSpec)
@@ -66,3 +99,7 @@ class DynamicAnalysisSpec(Item):
             data = dict(zip(keys, values))
             specs.append(data)
         return specs
+
+    def get_by_keyword(self):
+        return OrderedDict(
+            groupby(self.get_specs(), lambda spec: spec.get("Keyword")))
