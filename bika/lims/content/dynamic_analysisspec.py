@@ -53,7 +53,6 @@ class IDynamicAnalysisSpec(model.Schema):
                 raise Invalid(_("Column '{}' is missing".format(col)))
 
 
-
 @implementer(IDynamicAnalysisSpec)
 class DynamicAnalysisSpec(Item):
     """Dynamic Analysis Specification
