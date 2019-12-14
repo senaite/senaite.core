@@ -58,6 +58,21 @@ schema = Schema((
         ),
     ),
 
+    UIDReferenceField(
+        'DynamicAnalysisSpec',
+        allowed_types=('DynamicAnalysisSpec',),
+        required=1,
+        widget=ReferenceWidget(
+            label=_("Dynamic Analysis Specification"),
+            showOn=True,
+            catalog_name=SETUP_CATALOG,
+            base_query=dict(
+                sort_on="sortable_title",
+                sort_order="ascending"
+            ),
+        ),
+    ),
+
 )) + BikaSchema.copy() + Schema((
 
     RecordsField(

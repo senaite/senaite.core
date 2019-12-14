@@ -18,15 +18,15 @@
 # Copyright 2018-2019 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from Products.Archetypes.config import UID_CATALOG
-
 from bika.lims import api
 from bika.lims import logger
 from bika.lims.catalog.bikasetup_catalog import SETUP_CATALOG
 from bika.lims.config import PROJECTNAME as product
+from bika.lims.setuphandlers import add_dexterity_setup_items
 from bika.lims.setuphandlers import setup_form_controller_actions
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
+from Products.Archetypes.config import UID_CATALOG
 
 version = "1.3.3"  # Remember version number in metadata.xml and setup.py
 profile = "profile-{0}:default".format(product)
@@ -255,6 +255,11 @@ def upgrade(tool):
     # Redirect to worksheets folder when a Worksheet is removed
     # https://github.com/senaite/senaite.core/pull/1480
     setup_form_controller_actions(portal)
+
+    # Add the dynamic analysisspecs folder
+    setup.runImportStepFromProfile(profile, "typeinfo")
+    setup.runImportStepFromProfile(profile, "typeinfo")
+    add_dexterity_setup_items(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True

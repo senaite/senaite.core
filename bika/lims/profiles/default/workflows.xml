@@ -412,6 +412,11 @@
       <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
     </type>
 
+    <!-- Dexterity: Dynamic AnalysisSpec -->
+    <type type_id="DynamicAnalysisSpec">
+      <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
+    </type>
+
 
     <!--
     *** BINDINGS TO "senaite_cancellable_type_workflow" ***
