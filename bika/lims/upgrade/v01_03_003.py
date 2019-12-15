@@ -258,7 +258,6 @@ def upgrade(tool):
 
     # Add the dynamic analysisspecs folder
     setup.runImportStepFromProfile(profile, "typeinfo")
-    setup.runImportStepFromProfile(profile, "typeinfo")
     add_dexterity_setup_items(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
