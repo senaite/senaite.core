@@ -283,14 +283,14 @@ class AnalysisSpecificationWidget(TypesWidget):
         # selected services
         service_uids = form.get("uids", [])
 
+        # return immediately if now services were selected
+        if not service_uids:
+            return values, {}
+
         # dynamic analysis specification
         dynamic_spec = {}
         if instance.getDynamicAnalysisSpec():
             dynamic_spec = instance.getDynamicAnalysisSpec().get_by_keyword()
-
-        if not service_uids:
-            # Inject empty fields for the validator
-            values = [dict.fromkeys(field.getSubfields())]
 
         for uid in service_uids:
             s_min = self._get_spec_value(form, uid, "min")
