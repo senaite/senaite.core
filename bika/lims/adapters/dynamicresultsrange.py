@@ -6,6 +6,18 @@ from zope.interface import implementer
 
 marker = object()
 
+DEFAULT_RANGE_KEYS = [
+    "min",
+    "warn_min",
+    "min_operator",
+    "minpanic",
+    "max",
+    "warn_max",
+    "max",
+    "maxpanic",
+    "error",
+]
+
 
 @implementer(IDynamicResultsRange)
 class DynamicResultsRange(object):
@@ -19,6 +31,21 @@ class DynamicResultsRange(object):
         self.dynamicspec = None
         if self.specification:
             self.dynamicspec = self.specification.getDynamicAnalysisSpec()
+
+    @property
+    def keyword(self):
+        """Analysis Keyword
+        """
+        return self.analysis.getKeyword()
+
+    @property
+    def range_keys(self):
+        """The keys of the result range dict
+        """
+        if not self.specification:
+            return DEFAULT_RANGE_KEYS
+        # return the subfields of the specification
+        return self.specification.getField("ResultsRange").subfields
 
     def convert(self, value):
         # convert referenced UIDs to the Title
@@ -74,17 +101,30 @@ class DynamicResultsRange(object):
         # the field names of the Analysis.
         match_data = self.get_match_data()
 
+        rr = {}
+
         # Iterate over the rows and return the first where all values match
         # with the analysis' values
         for spec in specs:
-            match = True
             for k, v in match_data.items():
+                # continue if the values do not match
                 if v != spec[k]:
-                    match = False
-                    break
-            if match:
-                return spec
-        return {}
+                    continue
+                # at this point we have a match, update the results range dict
+                for key in self.range_keys:
+                    value = spec.get(key, marker)
+                    # skip if the range key is not set in the Excel
+                    if value is marker:
+                        continue
+                    # skip if the value is not floatable
+                    if not api.is_floatable(value):
+                        continue
+                    # set the range value
+                    rr[key] = value
+                # return the updated result range
+                return rr
+
+        return rr
 
     def __call__(self):
         return self.get_results_range()
