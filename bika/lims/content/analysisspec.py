@@ -61,7 +61,7 @@ schema = Schema((
     UIDReferenceField(
         'DynamicAnalysisSpec',
         allowed_types=('DynamicAnalysisSpec',),
-        required=1,
+        required=0,
         widget=ReferenceWidget(
             label=_("Dynamic Analysis Specification"),
             showOn=True,
