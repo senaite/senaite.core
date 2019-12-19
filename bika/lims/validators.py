@@ -794,9 +794,7 @@ class AnalysisSpecificationsValidator:
             service = api.get_object_by_uid(uid)
             title = api.get_title(service)
 
-            err_msg = "{}: {}".format(_("Validation for '{}' failed"),
-                                      _(err_msg))
-            err_msg = err_msg.format(title)
+            err_msg = "{}: {}".format(title, _(err_msg))
             translate = api.get_tool('translation_service').translate
             instance.REQUEST[key] = to_utf8(translate(safe_unicode(err_msg)))
             return instance.REQUEST[key]
