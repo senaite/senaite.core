@@ -322,7 +322,7 @@ class AnalysisSpecificationWidget(TypesWidget):
                 form, uid, "max_operator", check_floatable=False)
 
             service = api.get_object_by_uid(uid)
-            values.append({
+            subfield_values = {
                 "keyword": service.getKeyword(),
                 "uid": uid,
                 "min_operator": min_operator,
@@ -334,7 +334,20 @@ class AnalysisSpecificationWidget(TypesWidget):
                 "hidemin": self._get_spec_value(form, uid, "hidemin"),
                 "hidemax": self._get_spec_value(form, uid, "hidemax"),
                 "rangecomment": self._get_spec_value(form, uid, "rangecomment",
-                                                     check_floatable=False)})
+                                                     check_floatable=False)
+            }
+
+            # Include values from other subfields that might be added
+            # by other add-ons independently via SchemaModifier
+            for subfield in field.subfields:
+                if subfield not in subfield_values.keys():
+                    subfield_values.update({
+                        subfield: self._get_spec_value(form, uid, subfield)
+                    })
+
+            values.append(subfield_values)
+
+
         return values, {}
 
     def _get_spec_value(self, form, uid, key, check_floatable=True,

@@ -777,21 +777,26 @@ class AnalysisSpecificationsValidator:
         fieldname = kwargs['field'].getName()
 
         # This value in request prevents running once per subfield value.
-        key = '{}{}'.format(instance.getId(), fieldname)
+        # self.name returns the name of the validator. This allows other
+        # subfield validators to be called if defined (eg. in other add-ons)
+        key = '{}-{}-{}'.format(self.name, instance.getId(), fieldname)
         if instance.REQUEST.get(key, False):
             return True
 
         # Walk through all AS UIDs and validate each parameter for that AS
-        services = request.get('service', [{}])[0]
-        for uid, service_name in services.items():
+        service_uids = request.get("uids", [])
+        for uid in service_uids:
             err_msg = self.validate_service(request, uid)
             if not err_msg:
                 continue
 
             # Validation failed
+            service = api.get_object_by_uid(uid)
+            title = api.get_title(service)
+
             err_msg = "{}: {}".format(_("Validation for '{}' failed"),
                                       _(err_msg))
-            err_msg = err_msg.format(service_name)
+            err_msg = err_msg.format(title)
             translate = api.get_tool('translation_service').translate
             instance.REQUEST[key] = to_utf8(translate(safe_unicode(err_msg)))
             return instance.REQUEST[key]
