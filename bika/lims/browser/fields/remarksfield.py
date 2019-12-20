@@ -18,6 +18,9 @@
 # Copyright 2018-2019 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import json
+import six
+
 from AccessControl import ClassSecurityInfo
 from AccessControl import getSecurityManager
 from bika.lims.browser.widgets import RemarksWidget
@@ -28,6 +31,39 @@ from Products.Archetypes.Field import ObjectField
 from Products.Archetypes.Registry import registerField
 from zope import event
 from zope.interface import implements
+from bika.lims import api
+from bika.lims.utils import tmpID
+
+
+class RemarksHistory(list):
+    """A list containing a remarks history, but __str__ returns the legacy
+    format from instances prior v1.3.3
+    """
+    def to_legacy(self):
+        """Returns the remarks in legacy format
+        """
+        remarks = list()
+        for record in self:
+            msg = record.get("content")
+            if not msg:
+                continue
+            date_msg = record.get("date")
+            user_name = record.get("user_name")
+            if date_msg and user_name:
+                # Build the legacy format
+                msg = "=== {} ({})\n{}".format(date_msg, user_name, msg)
+            remarks.append(msg)
+        return "\n".join(remarks)
+
+    def __str__(self):
+        """Returns the remarks in legacy format
+        """
+        return self.to_legacy()
+
+    def __eq__(self, y):
+        if isinstance(y, six.string_types):
+            return str(self) == y
+        return super(list, self).__eq__(y)
 
 
 class RemarksField(ObjectField):
@@ -55,29 +91,66 @@ class RemarksField(ObjectField):
         """
         if not value:
             return
-        value = value.strip()
-        date = DateTime().rfc822()
-        user = getSecurityManager().getUser()
-        username = user.getUserName()
-        divider = "=== {} ({})".format(date, username)
-        existing_remarks = instance.getRawRemarks()
-        remarks = '\n'.join([divider, value, existing_remarks])
+
+        if isinstance(value, RemarksHistory):
+            # Override the whole history here
+            history = value
+        else:
+            # Create a new history record
+            record = self.to_history_record(value)
+
+            # Append the new record to the history
+            history = self.get_history(instance)
+            history.append(record)
+
+        # Generate the json and store
+        remarks = json.dumps(history)
         ObjectField.set(self, instance, remarks)
-        # reindex the object after save to update all catalog metadata
-        instance.reindexObject()
+
         # notify object edited event
         event.notify(ObjectEditedEvent(instance))
 
-    def get_cooked_remarks(self, instance):
-        text = self.get(instance)
-        if not text:
-            return ""
-        return text.replace('\n', '<br/>')
+    def to_history_record(self, value):
+        """Transforms the value to an history record
+        """
+        value = value.strip()
+        user = getSecurityManager().getUser()
+        contact = api.get_user_contact(user)
+        record = {
+            "id": tmpID(),
+            "date": DateTime().ISO(),
+            "user_name": user.getUserName(),
+            "user_full_name": contact and contact.getFullname() or "",
+            "content": value,
+        }
+        return record
+
+    def get_history(self, instance):
+        """Returns a RemarksHistory object with the remarks entries
+        """
+        remarks = instance.getRawRemarks()
+        if not remarks:
+            return []
+        try:
+            records = json.loads(remarks)
+        except ValueError as ex:
+            # This is for backwards compatibility with legacy format < v1.3.3
+            records = [{"id": tmpID(),
+                        "date": "",
+                        "user_name": "",
+                        "user_full_name": "",
+                        "content": remarks}]
+        return RemarksHistory(records)
+
+    def to_html(self, value):
+        """Convert the value to HTML format
+        """
+        return api.text_to_html(value)
 
     def get(self, instance, **kwargs):
-        """Returns raw field value.
+        """Returns the value in legacy format
         """
-        return self.getRaw(instance, **kwargs)
+        return str(self.get_history(instance))
 
     def getRaw(self, instance, **kwargs):
         """Returns raw field value (possible wrapped in BaseUnit)
