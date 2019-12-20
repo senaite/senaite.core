@@ -25,6 +25,7 @@ from bika.lims import logger
 
 import json
 import Missing
+import six
 import sys, traceback
 
 
@@ -129,9 +130,15 @@ def load_field_values(instance, include_fields):
 def get_include_methods(request):
     """Retrieve include_methods values from the request
     """
-    methods = request.get("include_methods", "")
-    include_methods = [
-        x.strip() for x in methods.split(",") if x.strip()]
+    include_methods = []
+    if "include_methods" in request:
+        methods = request.get("include_methods", "")
+        include_methods = [
+            x.strip() for x in methods.split(",") if x.strip()]
+    if "include_methods[]" in request:
+        include_methods = request["include_methods[]"]
+        if isinstance(include_methods, six.string_types):
+            include_methods = [include_methods]
     return include_methods
 
 
