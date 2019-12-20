@@ -8,21 +8,6 @@
   <head>
     <title></title>
     <metal:block fill-slot="javascript_head_slot">
-      <!-- TODO move to senaite.lims bootstrap css -->
-      <style type="text/css">
-       #remarks-widget {
-         padding-top: 2em;
-       }
-       #archetypes-fieldname-Remarks {
-         padding: 0!important;
-       }
-       #remarks-widget fieldset legend {
-         display: none;
-       }
-       #remarks-widget input.saveRemarks {
-         margin-top: 1em;
-       }
-      </style>
     </metal:block>
   </head>
 

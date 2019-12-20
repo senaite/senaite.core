@@ -12,18 +12,6 @@
     </metal:block>
     <metal:block fill-slot="style_slot"
                  tal:define="portal context/@@plone_portal_state/portal;">
-      <!-- TODO move to senaite.lims bootstrap css -->
-      <style type="text/css">
-       #archetypes-fieldname-Remarks {
-         padding: 0!important;
-       }
-       #remarks-widget fieldset legend {
-         display: none;
-       }
-       #remarks-widget input.saveRemarks {
-         margin-top: 1em;
-       }
-      </style>
     </metal:block>
   </head>
 

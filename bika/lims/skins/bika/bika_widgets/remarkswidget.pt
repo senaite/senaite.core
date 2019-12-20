@@ -7,7 +7,7 @@
   <metal:view_macro define-macro="view">
     <span metal:define-macro="textarea-field-view"
           tal:define="uid context/UID|nothing;
-                      history python:field.get_cooked_remarks(context)"
+                      history python:field.get_history_records(context)"
           tal:condition="history"
           tal:attributes="id string:parent-fieldname-$fieldName-$uid"
           class="remarks_history">
@@ -24,32 +24,68 @@
     <textarea class="form-control"
               tal:attributes="name fieldName;
                               id fieldName;"></textarea>
-    <tal:comment tal:replace="nothing">
-      Hide the widget's save button when rendering in portal_factory URLs:
-      XXX Need some abstracted way to instruct the widget to hide the save button
-    </tal:comment>
     <div tal:condition="python: 'portal_factory' not in context.absolute_url()">
-      <input class="saveRemarks allowMultiSubmit btn btn-secondary btn-xs"
+      <input class="saveRemarks allowMultiSubmit btn btn-secondary btn-sm input-sm"
              type="submit"
-             value="Save remarks"
+             value="Add remarks"
              i18n:attributes="value"
              i18n:domain="senaite.core"/>
     </div>
   </metal:remarks_edit>
 
   <metal:remarks_history define-macro="remarks_history">
-    <fieldset tal:define="history python:field.get_cooked_remarks(context)">
-      <span class="remarks_history" tal:content="structure history">
-        content
-      </span>
-    </fieldset>
+    <style>
+    #remarks-widget {
+      margin: 20px 0 20px;
+    }
+    input.saveRemarks {
+      margin: 10px 0 20px;
+    }
+    .remarks_history div.record {
+      box-shadow: 1px 1px 4px #AAA;
+      border-radius: 5px;
+      margin: 10px 0 10px;
+    }
+    .remarks_history div.record-header {
+      background-color: antiquewhite;
+      padding:2px 10px;
+      border-radius: 5px 5px 0 0;
+      font-size: 0.8em;
+      color: #666;
+    }
+    .record-date {
+      float: right;
+    }
+    .remarks_history div.record .record-content {
+      clear: both;
+      padding: 10px;
+      background-color: #fff;
+      border-radius: 5px;
+    }
+    </style>
+    <div class="remarks_history">
+      <tal:record repeat="record python:field.get_history(context)">
+        <div class="record" tal:attributes="id record/id">
+          <div class="record-header">
+            <div class="record-date" tal:content="record/date"></div>
+            <div class="record-user"
+                 tal:define="user_name record/user_name;
+                             user_fullname record/user_full_name;
+                             user_name python: '{} ({})'.format(user_fullname, user_name).strip();"
+                 tal:content="python:user_name"></div>
+          </div>
+          <div class="record-content"
+               tal:content="structure python:field.to_html(record['content'])"></div>
+        </div>
+      </tal:record>
+    </div>
   </metal:remarks_history>
 
   <metal:edit define-macro="edit">
     <metal:use use-macro="field_macro | context/widgets/field/macros/edit">
       <metal:fill fill-slot="widget_body">
-        <metal:block use-macro="context/bika_widgets/remarkswidget/macros/remarks_edit"/>
         <metal:block use-macro="context/bika_widgets/remarkswidget/macros/remarks_history"/>
+        <metal:block use-macro="context/bika_widgets/remarkswidget/macros/remarks_edit"/>
       </metal:fill>
     </metal:use>
   </metal:edit>
