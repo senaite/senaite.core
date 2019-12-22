@@ -119,7 +119,6 @@ schema = BikaFolderSchema.copy() + Schema((
 
     RemarksField(
         'Remarks',
-        searchable=True,
         widget=RemarksWidget(
             label=_('Remarks'),
         )

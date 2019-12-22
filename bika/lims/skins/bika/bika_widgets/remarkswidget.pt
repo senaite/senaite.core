@@ -7,13 +7,12 @@
   <metal:view_macro define-macro="view">
     <span metal:define-macro="textarea-field-view"
           tal:define="uid context/UID|nothing;
-                      history python:field.get_history_records(context)"
+                      history accessor"
           tal:condition="history"
           tal:attributes="id string:parent-fieldname-$fieldName-$uid"
           class="remarks_history">
       <span metal:define-slot="inside"
-            tal:define="history accessor"
-            tal:replace="structure history">textarea</span>
+            tal:replace="structure history/html">textarea</span>
     </span>
   </metal:view_macro>
 
@@ -41,41 +40,33 @@
     input.saveRemarks {
       margin: 10px 0 20px;
     }
-    .remarks_history div.record {
-      box-shadow: 1px 1px 4px #AAA;
-      border-radius: 5px;
-      margin: 10px 0 10px;
+    .record {
+      margin: 20px 0 20px;
     }
-    .remarks_history div.record-header {
-      background-color: antiquewhite;
-      padding:2px 10px;
-      border-radius: 5px 5px 0 0;
-      font-size: 0.8em;
+    .record-header {
+      font-size: 0.9em;
       color: #666;
+      border-bottom: 1px solid #efefef;
+      margin: 0 0 5px;
+      padding: 0 0 3px;
     }
-    .record-date {
-      float: right;
+    .record-header span {
+      padding-right:10px;
     }
-    .remarks_history div.record .record-content {
-      clear: both;
-      padding: 10px;
-      background-color: #fff;
-      border-radius: 5px;
+    .record-header .record-user {
+      font-weight:bold;
     }
     </style>
     <div class="remarks_history">
       <tal:record repeat="record python:field.get_history(context)">
-        <div class="record" tal:attributes="id record/id">
+        <div tal:attributes="id record/id;">
           <div class="record-header">
-            <div class="record-date" tal:content="record/date"></div>
-            <div class="record-user"
-                 tal:define="user_name record/user_name;
-                             user_fullname record/user_full_name;
-                             user_name python: '{} ({})'.format(user_fullname, user_name).strip();"
-                 tal:content="python:user_name"></div>
+            <span class="record-user" tal:content="record/user_id"/>
+            <span class="record-username" tal:content="record/user_name"/>
+            <span class="record-date" tal:content="record/friendly_created"/>
           </div>
           <div class="record-content"
-               tal:content="structure python:field.to_html(record['content'])"></div>
+               tal:content="structure record/html_content"></div>
         </div>
       </tal:record>
     </div>

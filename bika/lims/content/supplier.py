@@ -36,7 +36,6 @@ schema = Organisation.schema.copy() + ManagedSchema((
 
     RemarksField(
         "Remarks",
-        searchable=True,
         widget=RemarksWidget(
             label=_("Remarks"),
         ),

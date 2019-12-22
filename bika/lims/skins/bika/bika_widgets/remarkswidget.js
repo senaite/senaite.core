@@ -91,13 +91,22 @@
       /*
        * Clear and update the widget's History with the provided value.
        */
-      var el, widget;
+      var el, record, record_content, record_header, val, widget;
       widget = this.get_remarks_widget(uid);
       if (widget === null) {
         return;
       }
       el = widget.find('.remarks_history');
-      return el.html(this.format(value));
+      val = value.pop();
+      record_header = $("<div class='record-header'/>");
+      record_header.append($("<span class='record-user'>" + val["user_id"] + "</span>"));
+      record_header.append($("<span class='record-username'>" + val["user_name"] + "</span>"));
+      record_content = $("<div class='record-content'/>");
+      record_content.html(this.format(val["content"]));
+      record = $("<div class='record' id='" + val['id'] + "'/>");
+      record.append(record_header);
+      record.append(record_content);
+      return el.append(record);
     };
 
     RemarksWidgetView.prototype.clear_remarks_textarea = function(uid) {

@@ -103,7 +103,6 @@ schema = BikaSchema.copy() + Schema((
     RemarksField(
         'Remarks',
         schemata='Description',
-        searchable=True,
         widget=RemarksWidget(
             label=_("Remarks"),
         ),

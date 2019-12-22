@@ -1069,7 +1069,6 @@ schema = BikaSchema.copy() + Schema((
 
     RemarksField(
         'Remarks',
-        searchable=True,
         read_permission=View,
         write_permission=FieldEditRemarks,
         widget=RemarksWidget(
