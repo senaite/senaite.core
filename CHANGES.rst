@@ -28,6 +28,7 @@ Changelog
 
 **Fixed**
 
+- #1494 Fix KeyError in Sample Type Listing
 - #1477 Sample edit form - some selection widgets empty
 - #1478 Clients default CC E-Mails missing in Add Sample
 - #1479 Fixed too many redirects error: Labclerks viewing verified worksheets
