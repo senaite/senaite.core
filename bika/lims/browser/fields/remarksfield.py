@@ -221,20 +221,10 @@ class RemarksField(ObjectField):
 
         # Backwards compatibility with legacy from < v1.3.3
         if isinstance(remarks, six.string_types):
-            remarks = self.handle_legacy_value(remarks)
+            remark = RemarksHistoryRecord(content=remarks.strip())
+            remarks = RemarksHistory([remark,])
 
-        return RemarksHistory(remarks)
-
-    def handle_legacy_value(self, remarks):
-        # This is for backwards compatibility with legacy format < v1.3.3
-        try:
-            # json.loads does unicode conversion, which will fail in the catalog
-            # search for some cases. So we need to convert the strings to utf8
-            records = json.loads(remarks)
-        except ValueError as ex:
-            records = [dict(content=remarks)]
-
-        return map(lambda record: RemarksHistoryRecord(record), records)
+        return remarks
 
     def get(self, instance, **kwargs):
         """Returns a RemarksHistory object
