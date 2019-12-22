@@ -18,27 +18,25 @@
 # Copyright 2018-2019 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-import json
+from datetime import datetime
 
+import pytz
 import six
 from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
+from Products.ATContentTypes.utils import DT2dt
 from Products.Archetypes.Field import ObjectField
 from Products.Archetypes.Registry import registerField
 from Products.Archetypes.event import ObjectEditedEvent
+from dateutil.relativedelta import relativedelta
 from zope import event
 from zope.interface import implements
 
 from bika.lims import api
+from bika.lims.browser import ulocalized_time
 from bika.lims.browser.widgets import RemarksWidget
 from bika.lims.interfaces import IRemarksField
 from bika.lims.utils import tmpID
-from datetime import datetime
-
-from Products.ATContentTypes.utils import DT2dt
-from dateutil.relativedelta import relativedelta
-from bika.lims.browser import ulocalized_time
-import pytz
 
 
 class RemarksHistory(list):
