@@ -18,26 +18,20 @@
 # Copyright 2018-2019 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from datetime import datetime
-
-import pytz
+import markdown
 import six
 from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
-from Products.ATContentTypes.utils import DT2dt
 from Products.Archetypes.Field import ObjectField
 from Products.Archetypes.Registry import registerField
 from Products.Archetypes.event import ObjectEditedEvent
-from dateutil.relativedelta import relativedelta
 from zope import event
 from zope.interface import implements
 
 from bika.lims import api
-from bika.lims.browser import ulocalized_time
 from bika.lims.browser.widgets import RemarksWidget
 from bika.lims.interfaces import IRemarksField
 from bika.lims.utils import tmpID
-import markdown
 
 
 class RemarksHistory(list):
@@ -100,36 +94,6 @@ class RemarksHistoryRecord(dict):
     @property
     def markdown_content(self):
         return markdown.markdown(self.content)
-
-    @property
-    def friendly_created(self):
-        """Formats to `h m s` if the elapsed time between now and the time
-        passed-in is less than 1 month. Otherwise, returns the date time in
-        long format
-        """
-        if not self.created:
-            return ""
-
-        date_from = DT2dt(api.to_date(self.created)).replace(tzinfo=pytz.utc)
-        date_to = datetime.now().replace(tzinfo=pytz.utc)
-        diff = relativedelta(date_to, date_from)
-        if diff.years or diff.months:
-            return ulocalized_time(self.created, long_format=True,
-                                   context=api.get_portal())
-        if diff.days > 5:
-            return ulocalized_time(self.created, long_format=True,
-                                   context=api.get_portal())
-        if diff.days:
-            tuples = [(diff.days, "d"), (diff.hours, "h")]
-        elif diff.hours:
-            tuples = [(diff.hours, "h"), (diff.minutes, "m")]
-        else:
-            tuples = [(diff.minutes, "m"), (diff.seconds, "s")]
-
-        # Boil out empties
-        tuples = filter(lambda tup: tup[0] > 0, tuples)
-        tokens = map(lambda tup: "{}{}".format(tup[0], tup[1]), tuples)
-        return " ".join(tokens)
 
     def __str__(self):
         """Returns a legacy string format of the Remarks record

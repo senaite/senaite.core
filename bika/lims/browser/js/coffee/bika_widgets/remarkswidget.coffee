@@ -69,6 +69,7 @@ class window.RemarksWidgetView
     record_header = $("<div class='record-header'/>")
     record_header.append $("<span class='record-user'>"+val["user_id"]+"</span>")
     record_header.append $("<span class='record-username'>"+val["user_name"]+"</span>")
+    record_header.append $("<span class='record-date'>"+val["created"]+"</span>")
     record_content = $("<div class='record-content'/>")
     record_content.html(@format(val["content"]))
     record = $("<div class='record' id='"+val['id']+"'/>")

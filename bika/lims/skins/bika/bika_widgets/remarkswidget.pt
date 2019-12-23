@@ -63,7 +63,7 @@
           <div class="record-header">
             <span class="record-user" tal:content="record/user_id"/>
             <span class="record-username" tal:content="record/user_name"/>
-            <span class="record-date" tal:content="record/friendly_created"/>
+            <span class="record-date" tal:content="record/created"/>
           </div>
           <div class="record-content"
                tal:content="structure record/markdown_content"></div>
