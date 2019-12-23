@@ -152,9 +152,9 @@ class SampleTypesView(BikaListingView):
 
         retention_period = obj.getRetentionPeriod()
         if retention_period:
-            hours = retention_period["hours"]
-            minutes = retention_period["minutes"]
-            days = retention_period["days"]
+            hours = retention_period.get("hours", "0")
+            minutes = retention_period.get("minutes", "0")
+            days = retention_period.get("days", "0")
             item["RetentionPeriod"] = _("hours: {} minutes: {} days: {}"
                                         .format(hours, minutes, days))
         else:
