@@ -111,6 +111,7 @@ schema = BikaSchema.copy() + Schema((
     RemarksField(
         'Remarks',
         widget=RemarksWidget(
+            render_own_label=True,
             label=_("Remarks"),
         ),
     ),

@@ -213,9 +213,7 @@
             <img i18n:attributes="title" title="Remarks" src="++resource++bika.lims.images/remarks.png"/>
             <span i18n:translate="">Remarks</span>
           </h3>
-          <div class="well">
-            <metal:widget use-macro="python:context.widget('Remarks', mode=mode)"/>
-          </div>
+          <metal:widget use-macro="python:context.widget('Remarks', mode=mode)"/>
         </div>
       </div>
       <!-- /Remarks Widget -->
