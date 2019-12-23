@@ -42,7 +42,7 @@
           <div class="record-header" tal:condition="record/user_id">
             <span class="record-user" tal:content="record/user_id"/>
             <span class="record-username" tal:content="record/user_name"/>
-            <span class="record-date" tal:content="record/created"/>
+            <span class="record-date" tal:content="record/created_ulocalized"/>
           </div>
           <div class="record-content"
                tal:content="structure record/markdown_content"></div>

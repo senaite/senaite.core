@@ -32,6 +32,7 @@ from bika.lims import api
 from bika.lims.browser.widgets import RemarksWidget
 from bika.lims.interfaces import IRemarksField
 from bika.lims.utils import tmpID
+from Products.CMFPlone.i18nl10n import ulocalized_time
 
 
 class RemarksHistory(list):
@@ -82,6 +83,14 @@ class RemarksHistoryRecord(dict):
     @property
     def created(self):
         return self.get("created", "")
+
+    @property
+    def created_ulocalized(self):
+        return ulocalized_time(self.created,
+                               long_format=True,
+                               context=api.get_portal(),
+                               request=api.get_request(),
+                               domain="senaite.core")
 
     @property
     def content(self):
