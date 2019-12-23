@@ -17,9 +17,12 @@
   </metal:view_macro>
 
   <metal:remarks_edit define-macro="remarks_edit">
-    <script type="text/javascript"
-            tal:define="portal context/@@plone_portal_state/portal;"
-            tal:attributes="src python:portal.absolute_url() + '/bika_widgets/remarkswidget.js'"></script>
+    <tal:static define="static_path string:${portal/absolute_url}/bika_widgets">
+      <script type="text/javascript"
+              tal:attributes="src string:${static_path}/remarkswidget.js"></script>
+      <link rel="stylesheet" type="text/css" media="all" href=""
+            tal:attributes="href string:${static_path}/remarkswidget.css"/>
+    </tal:static>
     <textarea class="form-control"
               tal:attributes="name fieldName;
                               id fieldName;"></textarea>
@@ -33,30 +36,6 @@
   </metal:remarks_edit>
 
   <metal:remarks_history define-macro="remarks_history">
-    <style>
-    #remarks-widget {
-      margin: 20px 0 20px;
-    }
-    input.saveRemarks {
-      margin: 10px 0 20px;
-    }
-    .record {
-      margin: 20px 0 20px;
-    }
-    .record-header {
-      font-size: 0.9em;
-      color: #666;
-      border-bottom: 1px solid #efefef;
-      margin: 0 0 5px;
-      padding: 0 0 3px;
-    }
-    .record-header span {
-      padding-right:10px;
-    }
-    .record-header .record-user {
-      font-weight:bold;
-    }
-    </style>
     <div class="remarks_history">
       <tal:record repeat="record python:field.get_history(context)">
         <div class="record" tal:attributes="id record/id;">
