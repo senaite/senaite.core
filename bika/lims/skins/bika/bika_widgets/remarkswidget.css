@@ -4,18 +4,18 @@
   .ArchetypesRemarksWidget input.saveRemarks {
     margin: 10px 0 20px; }
 
-   .ArchetypesRemarksWidget .record {
+  .ArchetypesRemarksWidget .record {
     margin: 20px 0 20px; }
 
-     .ArchetypesRemarksWidget .record .record-header {
+    .ArchetypesRemarksWidget .record .record-header {
       font-size: 0.9em;
       color: #666;
       border-bottom: 1px solid #efefef;
       margin: 0 0 5px;
       padding: 0 0 3px; }
 
-       .ArchetypesRemarksWidget .record .record-header span {
+      .ArchetypesRemarksWidget .record .record-header span {
         padding-right:10px; }
 
-       .ArchetypesRemarksWidget .record .record-header .record-user {
+      .ArchetypesRemarksWidget .record .record-header .record-user {
         font-weight:bold; }
