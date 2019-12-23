@@ -59,7 +59,7 @@
     </style>
     <div class="remarks_history">
       <tal:record repeat="record python:field.get_history(context)">
-        <div tal:attributes="id record/id;">
+        <div class="record" tal:attributes="id record/id;">
           <div class="record-header">
             <span class="record-user" tal:content="record/user_id"/>
             <span class="record-username" tal:content="record/user_name"/>
