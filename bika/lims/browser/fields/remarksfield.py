@@ -93,7 +93,8 @@ class RemarksHistoryRecord(dict):
 
     @property
     def markdown_content(self):
-        return markdown.markdown(self.content)
+        content = self.content.decode('utf-8')
+        return markdown.markdown(content)
 
     def __str__(self):
         """Returns a legacy string format of the Remarks record
