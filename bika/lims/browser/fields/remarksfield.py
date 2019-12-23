@@ -146,7 +146,8 @@ class RemarksField(ObjectField):
 
         elif isinstance(value, (list, tuple)):
             # This is a list, convert to RemarksHistory
-            history = RemarksHistory(list(value))
+            remarks = map(lambda item: RemarksHistoryRecord(item), value)
+            history = RemarksHistory(remarks)
 
         elif isinstance(value, RemarksHistoryRecord):
             # This is a record, append to the history
