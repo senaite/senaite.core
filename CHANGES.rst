@@ -28,6 +28,7 @@ Changelog
 
 **Fixed**
 
+- #1493 jsonapi.read omits `include_methods` when a single parameter is used
 - #1494 Fix KeyError in Sample Type Listing
 - #1477 Sample edit form - some selection widgets empty
 - #1478 Clients default CC E-Mails missing in Add Sample
