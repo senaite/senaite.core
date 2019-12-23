@@ -87,6 +87,7 @@ setup(
         # Needed for `IPortalCatalogQueueProcessor`, which will be included in
         # `Products.CMFCore` in Plone 5. Remove after we are on Plone 5!
         'collective.indexing',
+        'markdown',
     ],
     extras_require={
         'test': [

@@ -37,6 +37,7 @@ from bika.lims.browser import ulocalized_time
 from bika.lims.browser.widgets import RemarksWidget
 from bika.lims.interfaces import IRemarksField
 from bika.lims.utils import tmpID
+import markdown
 
 
 class RemarksHistory(list):
@@ -95,6 +96,10 @@ class RemarksHistoryRecord(dict):
     @property
     def html_content(self):
         return api.text_to_html(self.content)
+
+    @property
+    def markdown_content(self):
+        return markdown.markdown(self.content)
 
     @property
     def friendly_created(self):

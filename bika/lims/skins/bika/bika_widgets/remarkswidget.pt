@@ -66,7 +66,7 @@
             <span class="record-date" tal:content="record/friendly_created"/>
           </div>
           <div class="record-content"
-               tal:content="structure record/html_content"></div>
+               tal:content="structure record/markdown_content"></div>
         </div>
       </tal:record>
     </div>
