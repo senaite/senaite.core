@@ -53,7 +53,7 @@ class RemarksHistory(list):
     def __eq__(self, y):
         if isinstance(y, six.string_types):
             return str(self) == y
-        return super(list, self).__eq__(y)
+        return super(RemarksHistory, self).__eq__(y)
 
 
 class RemarksHistoryRecord(dict):
