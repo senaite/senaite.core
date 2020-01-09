@@ -200,7 +200,7 @@ class RemarksField(ObjectField):
         # Backwards compatibility with legacy from < v1.3.3
         if isinstance(remarks, six.string_types):
             remark = RemarksHistoryRecord(content=remarks.strip())
-            remarks = RemarksHistory([remark,])
+            remarks = RemarksHistory([remark, ])
 
         return remarks
 
