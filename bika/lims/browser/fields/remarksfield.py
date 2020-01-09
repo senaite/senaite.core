@@ -18,6 +18,8 @@
 # Copyright 2018-2019 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import re
+
 import markdown
 import six
 
@@ -146,6 +148,7 @@ class RemarksField(ObjectField):
         """Adds the value to the existing text stored in the field,
         along with a small divider showing username and date of this entry.
         """
+
         if not value:
             return
 
@@ -185,9 +188,13 @@ class RemarksField(ObjectField):
         """
         user = api.get_current_user()
         contact = api.get_user_contact(user)
-        full_name = contact and contact.getFullname() or ""
+        fullname = contact and contact.getFullname() or ""
+        if not contact:
+            # get the fullname from the user properties
+            props = api.get_user_properties(user)
+            fullname = props.get("fullname", "")
         return RemarksHistoryRecord(user_id=user.id,
-                                    user_name=full_name,
+                                    user_name=fullname,
                                     content=value.strip())
 
     def get_history(self, instance):
@@ -199,10 +206,53 @@ class RemarksField(ObjectField):
 
         # Backwards compatibility with legacy from < v1.3.3
         if isinstance(remarks, six.string_types):
-            remark = RemarksHistoryRecord(content=remarks.strip())
-            remarks = RemarksHistory([remark, ])
+            parsed_remarks = self._parse_legacy_remarks(remarks)
+            if parsed_remarks is None:
+                remark = RemarksHistoryRecord(content=remarks.strip())
+                remarks = RemarksHistory([remark, ])
+            else:
+                remarks = map(lambda r: RemarksHistoryRecord(r),
+                              parsed_remarks)
 
         return remarks
+
+    def _parse_legacy_remarks(self, remarks):
+        """Parse legacy remarks
+        """
+        records = []
+        groups = re.findall(r"=== (.*) \((.*)\)\n(.*)", remarks)
+
+        for group in groups:
+            # cancel the whole parsing
+            if len(group) != 3:
+                return None
+
+            created, userid, content = group
+
+            # try to get the full name of the user id
+            fullname = self._get_fullname_from_user_id(userid)
+
+            # append the record
+            records.append({
+                "created": created,
+                "user_id": userid,
+                "user_name": fullname,
+                "content": content,
+            })
+
+        return records
+
+    def _get_fullname_from_user_id(self, userid, default=""):
+        """Try the fullname of the user
+        """
+        fullname = default
+        user = api.get_user(userid)
+        if user:
+            props = api.get_user_properties(user)
+            fullname = props.get("fullname", fullname)
+            contact = api.get_user_contact(user)
+            fullname = contact and contact.getFullname() or fullname
+        return fullname
 
     def get(self, instance, **kwargs):
         """Returns a RemarksHistory object
