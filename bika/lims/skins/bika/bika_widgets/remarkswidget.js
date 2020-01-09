@@ -11,6 +11,7 @@
       this.get_portal_url = bind(this.get_portal_url, this);
       this.ajax_submit = bind(this.ajax_submit, this);
       this.on_remarks_submit = bind(this.on_remarks_submit, this);
+      this.on_remarks_change = bind(this.on_remarks_change, this);
       this.post_remarks = bind(this.post_remarks, this);
       this.fetch_remarks = bind(this.fetch_remarks, this);
       this.set_remarks = bind(this.set_remarks, this);
@@ -41,6 +42,7 @@
        */
       console.debug("RemarksWidgetView::bind_eventhandler");
       $("body").on("click", "input.saveRemarks", this.on_remarks_submit);
+      $("body").on("keyup", "textarea[name='Remarks']", this.on_remarks_change);
       return window.rem = this;
     };
 
@@ -214,10 +216,24 @@
 
     /* EVENT HANDLERS */
 
+    RemarksWidgetView.prototype.on_remarks_change = function(event) {
+
+      /*
+       * Eventhandler for RemarksWidget's textarea changes
+       *
+       */
+      var btn, el, me;
+      console.debug("°°° RemarksWidgetView::on_remarks_change °°°");
+      me = this;
+      el = event.target;
+      btn = el.parentElement.querySelector("input.saveRemarks");
+      return btn.disabled = false;
+    };
+
     RemarksWidgetView.prototype.on_remarks_submit = function(event) {
 
       /*
-       * Eventhandler for RemarksWidget"s "Save Remarks" button
+       * Eventhandler for RemarksWidget's "Save Remarks" button
        *
        */
       var widget;

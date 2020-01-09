@@ -23,6 +23,7 @@ class window.RemarksWidgetView
     console.debug "RemarksWidgetView::bind_eventhandler"
 
     $("body").on "click", "input.saveRemarks", @on_remarks_submit
+    $("body").on "keyup", "textarea[name='Remarks']", @on_remarks_change
 
     # dev only
     window.rem = @
@@ -164,9 +165,23 @@ class window.RemarksWidgetView
 
   ### EVENT HANDLERS ###
 
+  on_remarks_change: (event) =>
+    ###
+     * Eventhandler for RemarksWidget's textarea changes
+     *
+    ###
+    console.debug "°°° RemarksWidgetView::on_remarks_change °°°"
+    me = this
+
+    el = event.target
+    btn = el.parentElement.querySelector("input.saveRemarks") 
+    # Enable the button
+    btn.disabled = false
+
+
   on_remarks_submit: (event) =>
     ###
-     * Eventhandler for RemarksWidget"s "Save Remarks" button
+     * Eventhandler for RemarksWidget's "Save Remarks" button
      *
     ###
     console.debug "°°° RemarksWidgetView::on_remarks_submit °°°"

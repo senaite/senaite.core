@@ -30,6 +30,7 @@
       <input class="saveRemarks allowMultiSubmit btn btn-secondary btn-sm input-sm"
              type="submit"
              value="Add remarks"
+             disabled="disabled"
              i18n:attributes="value"
              i18n:domain="senaite.core"/>
     </div>
