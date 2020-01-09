@@ -20,19 +20,19 @@
 
 import markdown
 import six
-from AccessControl import ClassSecurityInfo
-from DateTime import DateTime
-from Products.Archetypes.Field import ObjectField
-from Products.Archetypes.Registry import registerField
-from Products.Archetypes.event import ObjectEditedEvent
-from zope import event
-from zope.interface import implements
 
+from AccessControl import ClassSecurityInfo
 from bika.lims import api
 from bika.lims.browser.widgets import RemarksWidget
 from bika.lims.interfaces import IRemarksField
 from bika.lims.utils import tmpID
+from DateTime import DateTime
+from Products.Archetypes.event import ObjectEditedEvent
+from Products.Archetypes.Field import ObjectField
+from Products.Archetypes.Registry import registerField
 from Products.CMFPlone.i18nl10n import ulocalized_time
+from zope import event
+from zope.interface import implements
 
 
 class RemarksHistory(list):
