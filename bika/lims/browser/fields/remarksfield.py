@@ -210,12 +210,13 @@ class RemarksField(ObjectField):
 
         # Backwards compatibility with legacy from < v1.3.3
         if isinstance(remarks, six.string_types):
-            parsed = self._parse_legacy_remarks(remarks)
-            if parsed is None:
+            parsed_remarks = self._parse_legacy_remarks(remarks)
+            if parsed_remarks is None:
                 remark = RemarksHistoryRecord(content=remarks.strip())
                 remarks = RemarksHistory([remark, ])
             else:
-                remarks = map(lambda r: RemarksHistoryRecord(r), parsed)
+                remarks = RemarksHistory(
+                    map(lambda r: RemarksHistoryRecord(r), parsed_remarks))
 
         return remarks
 
