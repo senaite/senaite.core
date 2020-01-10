@@ -225,10 +225,12 @@
        * Eventhandler for RemarksWidget's textarea changes
        *
        */
-      var btn, el, me;
+      var btn, el;
       console.debug("°°° RemarksWidgetView::on_remarks_change °°°");
-      me = this;
       el = event.target;
+      if (!el.value) {
+        return;
+      }
       btn = el.parentElement.querySelector("input.saveRemarks");
       return btn.disabled = false;
     };

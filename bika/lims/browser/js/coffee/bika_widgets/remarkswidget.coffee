@@ -172,10 +172,9 @@ class window.RemarksWidgetView
      *
     ###
     console.debug "°°° RemarksWidgetView::on_remarks_change °°°"
-    me = this
-
     el = event.target
-    btn = el.parentElement.querySelector("input.saveRemarks") 
+    return unless el.value
+    btn = el.parentElement.querySelector("input.saveRemarks")
     # Enable the button
     btn.disabled = false
 
