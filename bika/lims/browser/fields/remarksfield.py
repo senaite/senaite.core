@@ -164,7 +164,7 @@ class RemarksField(ObjectField):
         elif isinstance(value, RemarksHistoryRecord):
             # This is a record, append to the history
             history = self.get_history(instance)
-            history.append(value)
+            history.insert(0, value)
 
         elif isinstance(value, six.string_types):
             # Create a new history record
@@ -172,7 +172,7 @@ class RemarksField(ObjectField):
 
             # Append the new record to the history
             history = self.get_history(instance)
-            history.append(record)
+            history.insert(0, record)
 
         else:
             raise ValueError("Type not supported: {}".format(type(value)))
@@ -206,13 +206,12 @@ class RemarksField(ObjectField):
 
         # Backwards compatibility with legacy from < v1.3.3
         if isinstance(remarks, six.string_types):
-            parsed_remarks = self._parse_legacy_remarks(remarks)
-            if parsed_remarks is None:
+            parsed = self._parse_legacy_remarks(remarks)
+            if parsed is None:
                 remark = RemarksHistoryRecord(content=remarks.strip())
                 remarks = RemarksHistory([remark, ])
             else:
-                remarks = map(lambda r: RemarksHistoryRecord(r),
-                              parsed_remarks)
+                remarks = map(lambda r: RemarksHistoryRecord(r), parsed)
 
         return remarks
 

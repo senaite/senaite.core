@@ -63,10 +63,11 @@ class window.RemarksWidgetView
     ###
      * Clear and update the widget's History with the provided value.
     ###
+    return if value.length < 1
     widget = @get_remarks_widget(uid)
     return if widget is null
     el = widget.find('.remarks_history')
-    val = value.pop()
+    val = value[0]
     record_header = $("<div class='record-header'/>")
     record_header.append $("<span class='record-user'>"+val["user_id"]+"</span>")
     record_header.append $("<span class='record-username'>"+val["user_name"]+"</span>")
@@ -76,7 +77,7 @@ class window.RemarksWidgetView
     record = $("<div class='record' id='"+val['id']+"'/>")
     record.append record_header
     record.append record_content
-    el.append record
+    el.prepend record
 
   clear_remarks_textarea: (uid) =>
     ###
