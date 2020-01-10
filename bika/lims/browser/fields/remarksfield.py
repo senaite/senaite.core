@@ -26,6 +26,7 @@ import six
 from AccessControl import ClassSecurityInfo
 from bika.lims import api
 from bika.lims.browser.widgets import RemarksWidget
+from bika.lims.events import RemarksAddedEvent
 from bika.lims.interfaces import IRemarksField
 from bika.lims.utils import tmpID
 from DateTime import DateTime
@@ -182,6 +183,9 @@ class RemarksField(ObjectField):
 
         # notify object edited event
         event.notify(ObjectEditedEvent(instance))
+
+        # notify new remarks
+        event.notify(RemarksAddedEvent(instance, history))
 
     def to_history_record(self, value):
         """Transforms the value to an history record
