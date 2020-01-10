@@ -7,12 +7,29 @@
   <metal:view_macro define-macro="view">
     <span metal:define-macro="textarea-field-view"
           tal:define="uid context/UID|nothing;
+                      portal_state context/@@plone_portal_state;
+                      portal portal_state/portal;
                       history accessor"
           tal:condition="history"
           tal:attributes="id string:parent-fieldname-$fieldName-$uid"
           class="remarks_history">
-      <span metal:define-slot="inside"
-            tal:replace="structure history/html">textarea</span>
+      <tal:static define="static_path string:${portal/absolute_url}/bika_widgets">
+        <link rel="stylesheet" type="text/css" media="all" href=""
+              tal:attributes="href string:${static_path}/remarkswidget.css"/>
+      </tal:static>
+      <div class="remarks_history">
+        <tal:record repeat="record history">
+          <div class="record" tal:attributes="id record/id;">
+            <div class="record-header" tal:condition="record/user_id">
+              <span class="record-user" tal:content="record/user_id"/>
+              <span class="record-username" tal:content="record/user_name"/>
+              <span class="record-date" tal:content="record/created_ulocalized"/>
+            </div>
+            <div class="record-content"
+                tal:content="structure record/markdown_content"></div>
+          </div>
+        </tal:record>
+      </div>
     </span>
   </metal:view_macro>
 
