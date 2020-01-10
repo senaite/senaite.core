@@ -881,13 +881,15 @@
       el = event.currentTarget;
       $(el).prepOverlay({
         subtype: "ajax",
-        filter: "h1,div.ArchetypesRemarksWidget",
+        filter: "h1,div.remarks-widget",
         config: {
           closeOnClick: true,
           closeOnEsc: true,
           onBeforeLoad: function(event) {
             var overlay;
             overlay = this.getOverlay();
+            $("div.pb-ajax>div", overlay).addClass("container");
+            $("h3", overlay).remove();
             $("textarea", overlay).remove();
             $("input", overlay).remove();
             return overlay.draggable();

@@ -824,13 +824,15 @@ class window.WorksheetManageResultsView
     # https://github.com/plone/plone.app.jquerytools/blob/master/plone/app/jquerytools/browser/overlayhelpers.js
     $(el).prepOverlay
       subtype: "ajax"
-      filter: "h1,div.ArchetypesRemarksWidget"
+      filter: "h1,div.remarks-widget"
       config:
         closeOnClick: yes
         closeOnEsc: yes
         onBeforeLoad: (event) ->
           overlay = this.getOverlay()
-          # Remove the textarea and button
+          $("div.pb-ajax>div", overlay).addClass("container")
+          # Remove editable elements
+          $("h3", overlay).remove()
           $("textarea", overlay).remove()
           $("input", overlay).remove()
           # make the overlay draggable
