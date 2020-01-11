@@ -180,6 +180,9 @@ class RemarksField(ObjectField):
         # Store the data
         ObjectField.set(self, instance, history)
 
+        # N.B. ensure updated catalog metadata for the snapshot
+        instance.reindexObject()
+
         # notify object edited event
         event.notify(ObjectEditedEvent(instance))
 
