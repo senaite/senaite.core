@@ -272,4 +272,4 @@ class RemarksField(ObjectField):
         return fullname
 
 
-registerField(RemarksField, title='Remarks', description='')
+registerField(RemarksField, title="Remarks", description="")
