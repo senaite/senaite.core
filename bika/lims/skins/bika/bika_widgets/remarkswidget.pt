@@ -26,7 +26,7 @@
               <span class="record-date" tal:content="record/created_ulocalized"/>
             </div>
             <div class="record-content"
-                tal:content="structure record/markdown_content"></div>
+                tal:content="structure record/html_content"></div>
           </div>
         </tal:record>
       </div>
@@ -63,7 +63,7 @@
             <span class="record-date" tal:content="record/created_ulocalized"/>
           </div>
           <div class="record-content"
-               tal:content="structure record/markdown_content"></div>
+               tal:content="structure record/html_content"></div>
         </div>
       </tal:record>
     </div>

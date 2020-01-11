@@ -20,7 +20,6 @@
 
 import re
 
-import markdown
 import six
 
 from AccessControl import ClassSecurityInfo
@@ -102,11 +101,6 @@ class RemarksHistoryRecord(dict):
     @property
     def html_content(self):
         return api.text_to_html(self.content)
-
-    @property
-    def markdown_content(self):
-        content = self.content.decode('utf-8')
-        return markdown.markdown(content)
 
     def __str__(self):
         """Returns a legacy string format of the Remarks record
