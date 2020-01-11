@@ -183,7 +183,7 @@ class RemarksField(ObjectField):
         # notify object edited event
         event.notify(ObjectEditedEvent(instance))
 
-        # notify new remarks
+        # notify new remarks for e.g. later email notification etc.
         event.notify(RemarksAddedEvent(instance, history))
 
     def get(self, instance, **kwargs):
