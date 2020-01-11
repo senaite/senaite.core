@@ -136,8 +136,6 @@ class RemarksField(ObjectField):
     implements(IRemarksField)
     security = ClassSecurityInfo()
 
-    security.declarePrivate('set')
-
     @property
     def searchable(self):
         """Returns False, preventing this field to be searchable by AT's
@@ -145,6 +143,7 @@ class RemarksField(ObjectField):
         """
         return False
 
+    @security.private
     def set(self, instance, value, **kwargs):
         """Adds the value to the existing text stored in the field,
         along with a small divider showing username and date of this entry.
@@ -186,6 +185,20 @@ class RemarksField(ObjectField):
 
         # notify new remarks
         event.notify(RemarksAddedEvent(instance, history))
+
+    def get(self, instance, **kwargs):
+        """Returns a RemarksHistory object
+        """
+        return self.get_history(instance)
+
+    def getRaw(self, instance, **kwargs):
+        """Returns raw field value (possible wrapped in BaseUnit)
+        """
+        value = ObjectField.get(self, instance, **kwargs)
+        # getattr(instance, "Remarks") returns a BaseUnit
+        if callable(value):
+            value = value()
+        return value
 
     def to_history_record(self, value):
         """Transforms the value to an history record
@@ -257,20 +270,6 @@ class RemarksField(ObjectField):
             contact = api.get_user_contact(user)
             fullname = contact and contact.getFullname() or fullname
         return fullname
-
-    def get(self, instance, **kwargs):
-        """Returns a RemarksHistory object
-        """
-        return self.get_history(instance)
-
-    def getRaw(self, instance, **kwargs):
-        """Returns raw field value (possible wrapped in BaseUnit)
-        """
-        value = ObjectField.get(self, instance, **kwargs)
-        # getattr(instance, "Remarks") returns a BaseUnit
-        if callable(value):
-            value = value()
-        return value
 
 
 registerField(RemarksField, title='Remarks', description='')
