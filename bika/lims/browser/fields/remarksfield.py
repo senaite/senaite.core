@@ -237,9 +237,25 @@ class RemarksField(ObjectField):
         """Parse legacy remarks
         """
         records = []
-        groups = re.findall(r"=== (.*) \((.*)\)\n(.*)", remarks)
+        # split legacy remarks on the "===" delimiter into lines
+        lines = remarks.split("===")
+        for line in lines:
+            # skip empty lines
+            if line == "":
+                continue
 
-        for group in groups:
+            # strip leading and trailing whitespaces
+            line = line.strip()
+
+            # split the line into date, user and content
+            groups = re.findall(r"(.*) \((.*)\)\n(.*)", line, re.DOTALL)
+
+            # we should have one tuple in the list
+            if len(groups) != 1:
+                continue
+
+            group = groups[0]
+
             # cancel the whole parsing
             if len(group) != 3:
                 return None
