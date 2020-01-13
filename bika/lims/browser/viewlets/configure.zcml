@@ -2,6 +2,15 @@
            xmlns:browser="http://namespaces.zope.org/browser"
            i18n_domain="senaite.core">
 
+  <!-- Footer Viewlet -->
+  <browser:viewlet
+      name="plone.footer"
+      manager="plone.app.layout.viewlets.interfaces.IPortalFooter"
+      class=".footer.FooterViewlet"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
+
   <!-- AR Attachments Viewlet -->
   <browser:viewlet
       for="bika.lims.interfaces.IAnalysisRequest"
@@ -80,15 +89,6 @@
       layer="bika.lims.interfaces.IBikaLIMS"
       />
 
-  <browser:viewlet
-      name="plone.footer"
-      manager="plone.app.layout.viewlets.interfaces.IPortalFooter"
-      class="plone.app.layout.viewlets.common.FooterViewlet"
-      template="templates/footer.pt"
-      for="*"
-      layer="bika.lims.interfaces.IBikaLIMS"
-      permission="zope2.View"
-      />
   <browser:viewlet
       name="plone.colophon"
       manager="plone.app.layout.viewlets.interfaces.IPortalFooter"
