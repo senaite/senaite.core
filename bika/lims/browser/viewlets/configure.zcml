@@ -2,6 +2,15 @@
            xmlns:browser="http://namespaces.zope.org/browser"
            i18n_domain="senaite.core">
 
+  <!-- Colophon Viewlet -->
+  <browser:viewlet
+      name="plone.colophon"
+      manager="plone.app.layout.viewlets.interfaces.IPortalFooter"
+      class=".colophon.ColophonViewlet"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
+
   <!-- Language Selector -->
   <browser:viewlet
       name="plone.app.i18n.locales.languageselector"
@@ -151,15 +160,6 @@
       template="templates/blank.pt"
       permission="zope2.View"
       layer="bika.lims.interfaces.IBikaLIMS"
-      />
-
-  <browser:viewlet
-      name="plone.colophon"
-      manager="plone.app.layout.viewlets.interfaces.IPortalFooter"
-      template="templates/colophon.pt"
-      for="*"
-      layer="bika.lims.interfaces.IBikaLIMS"
-      permission="zope2.View"
       />
 
   <browser:viewlet
