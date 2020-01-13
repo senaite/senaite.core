@@ -1,12 +1,35 @@
 <?xml version="1.0"?>
-<!-- This file holds the setup configuration of the viewlet managers
-     for the "bika" skin.
-     -->
-
 <object>
 
-    <order manager="plone.portalfooter" skinname="bika" based-on="Plone Default">
-        <viewlet name="bika.lims.authenticator" insert-before="plone.colophon"/>
-    </order>
+  <!-- Hidden vielets in plone.portalheader -->
+  <hidden manager="plone.portalheader" skinname="*" purge="True">
+    <viewlet name="plone.searchbox"/>
+  </hidden>
+
+  <!-- Order vielets in plone.portalheader -->
+  <order manager="plone.portalheader" skinname="*" purge="True">
+    <viewlet name="plone.skip_links"/>
+    <viewlet name="plone.personal_bar"/>
+    <viewlet name="senaite.setupbutton"/>
+    <viewlet name="senaite.sections_dropdown"/>
+    <viewlet name="plone.app.i18n.locales.languageselector"/>
+    <viewlet name="plone.searchbox"/>
+    <viewlet name="plone.logo"/>
+    <viewlet name="plone.global_sections"/>
+  </order>
+
+  <!-- Hidden vielets in plone.belowcontenttitle -->
+  <hidden manager="plone.belowcontenttitle" skinname="*" purge="True">
+    <viewlet name="plone.belowcontenttitle.documentbyline"/>
+  </hidden>
+
+  <!-- Hidden vielets in plone.belowcontentbody -->
+  <hidden manager="plone.belowcontentbody" skinname="*" purge="True">
+    <viewlet name="plone.abovecontenttitle.documentactions"/>
+  </hidden>
+
+  <!-- Hidden vielets in plone.portalfooter -->
+  <hidden manager="plone.portalfooter" skinname="*" purge="True">
+  </hidden>
 
 </object>

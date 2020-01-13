@@ -239,6 +239,9 @@ def upgrade(tool):
 
     # -------- ADD YOUR STUFF BELOW --------
 
+    # Moved all Viewlets from senaite.lims to senaite.core
+    setup.runImportStepFromProfile(profile, "viewlets")
+
     # Fix Site Properties Generic Setup Export Step
     # https://github.com/senaite/senaite.core/pull/1469
     setup.runImportStepFromProfile(profile, "propertiestool")

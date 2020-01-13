@@ -151,16 +151,6 @@
       layer="bika.lims.interfaces.IBikaLIMS"
       />
 
-  <!-- Hide ByLine for everything -->
-  <browser:viewlet
-      for="*"
-      name="plone.belowcontenttitle.documentbyline"
-      manager="plone.app.layout.viewlets.interfaces.IBelowContentTitle"
-      template="templates/blank.pt"
-      permission="zope2.View"
-      layer="bika.lims.interfaces.IBikaLIMS"
-      />
-
   <!-- Authenticator Viewlet -->
   <browser:viewlet
       name="bika.lims.authenticator"
