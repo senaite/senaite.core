@@ -4,13 +4,14 @@
 # Translators:
 # Ramon Bartl <rb@ridingbytes.com>, 2018
 # Jordi Puiggené <jpuiggene@naralabs.com>, 2019
+# Piotr Turek <piotr.turek@borpol.com.pl>, 2020
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2019-09-30 11:23+0000\n"
+"POT-Creation-Date: 2020-01-13 19:41+0000\n"
 "PO-Revision-Date: 2018-06-01 18:46+0000\n"
-"Last-Translator: Jordi Puiggené <jpuiggene@naralabs.com>, 2019\n"
+"Last-Translator: Piotr Turek <piotr.turek@borpol.com.pl>, 2020\n"
 "Language-Team: Polish (https://www.transifex.com/senaite/teams/87045/pl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -34,7 +35,7 @@ msgstr "Szablony AR"
 
 #: bika/lims/profiles/default/types/ARReport.xml
 msgid "ARReport"
-msgstr ""
+msgstr "AR Raport"
 
 # Manual Workflow State and Transition MsgIds
 # Despite the fact, that these are defined in the "bika" domain, they are not
@@ -45,7 +46,7 @@ msgid "Activate"
 msgstr ""
 
 msgid "Active"
-msgstr ""
+msgstr "Aktywne"
 
 #: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Add Analyses"
@@ -114,13 +115,13 @@ msgid "Analysis Specifications"
 msgstr "Specyfikacje analiz"
 
 msgid "Assign"
-msgstr ""
+msgstr "Przypisz"
 
 msgid "Assigned"
-msgstr ""
+msgstr "Przypisane"
 
 msgid "Attach"
-msgstr ""
+msgstr "Dołącz"
 
 #: bika/lims/profiles/default/types/Attachment.xml
 msgid "Attachment"
@@ -183,14 +184,14 @@ msgstr "Obliczenia"
 
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "Calibration Certificates"
-msgstr ""
+msgstr "Certyfikaty kalibracji"
 
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "Calibrations"
 msgstr "Kalibracje"
 
 msgid "Cancel"
-msgstr ""
+msgstr "Anuluj"
 
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Client"
@@ -201,7 +202,7 @@ msgid "Clients"
 msgstr "Klienci"
 
 msgid "Close"
-msgstr ""
+msgstr "Zamknij"
 
 msgid "Complete"
 msgstr ""
@@ -209,7 +210,7 @@ msgstr ""
 #: bika/lims/profiles/default/types/Contact.xml
 #: bika/lims/profiles/default/types/SupplierContact.xml
 msgid "Contact"
-msgstr ""
+msgstr "Kontakt"
 
 #: bika/lims/profiles/default/types/Client.xml
 #: bika/lims/profiles/default/types/Supplier.xml
@@ -236,13 +237,13 @@ msgstr "Pojemniki"
 
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 msgid "Create Invoice PDF"
-msgstr ""
+msgstr "Utwórz fakturę PDF"
 
 msgid "Current"
-msgstr ""
+msgstr "Bieżące"
 
 msgid "Deactivate"
-msgstr ""
+msgstr "Dezaktywuj"
 
 #: bika/lims/profiles/default/types/Department.xml
 msgid "Department"
@@ -259,14 +260,14 @@ msgid "Dispatched"
 msgstr ""
 
 msgid "Dispose"
-msgstr ""
+msgstr "Usuń"
 
 msgid "Disposed"
-msgstr ""
+msgstr "Usunięte"
 
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "Documents"
-msgstr ""
+msgstr "Dokumenty"
 
 msgid "Dormant"
 msgstr ""
@@ -285,7 +286,7 @@ msgid "Expire"
 msgstr ""
 
 msgid "Expired"
-msgstr ""
+msgstr "Przedawnione"
 
 #: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Export"
@@ -301,60 +302,51 @@ msgstr "Extracts"
 
 #: bika/lims/profiles/default/types/ReportFolder.xml
 msgid "History"
-msgstr ""
+msgstr "Historia"
 
 #: bika/lims/profiles/default/actions.xml
 msgid "Home"
 msgstr ""
 
-#: bika/lims/profiles/default/types/IdentifierType.xml
-msgid "Identifier Type"
-msgstr ""
-
-#: bika/lims/profiles/default/controlpanel.xml
-#: bika/lims/profiles/default/types/IdentifierTypes.xml
-msgid "Identifier Types"
-msgstr ""
-
 #: bika/lims/profiles/default/actions.xml
 msgid "Import"
-msgstr ""
+msgstr "Import"
 
 msgid "Imported"
-msgstr ""
+msgstr "Zaimportowane"
 
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Imports"
 msgstr "Importowanie"
 
 msgid "Inactive"
-msgstr ""
+msgstr "Nieaktywne"
 
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "Instrument"
-msgstr "Przyrząd"
+msgstr "Instrument"
 
 #: bika/lims/profiles/default/controlpanel.xml
 msgid "Instrument Locations"
-msgstr ""
+msgstr "Lokalizacje instrumentu"
 
 #: bika/lims/profiles/default/types/InstrumentType.xml
 msgid "Instrument Type"
-msgstr "Typ przyrządu"
+msgstr "Typ instrumentu"
 
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/InstrumentTypes.xml
 msgid "Instrument Types"
-msgstr "Typy przyrządów"
+msgstr "Typy instrumentów"
 
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/InstrumentType.xml
 #: bika/lims/profiles/default/types/Instruments.xml
 msgid "Instruments"
-msgstr "Przyrządy"
+msgstr "Instrumenty"
 
 msgid "Invalid"
-msgstr ""
+msgstr "Nieprawidłowe"
 
 msgid "Invalidate"
 msgstr ""
@@ -402,7 +394,7 @@ msgstr "Szczegóły logowania"
 
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "Maintenance"
-msgstr ""
+msgstr "Konserwacja"
 
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 msgid "Manage Analyses"
@@ -432,7 +424,7 @@ msgid "Methods"
 msgstr "Metody"
 
 msgid "No preservation required"
-msgstr ""
+msgstr "Utrwalenie nie jest wymagane"
 
 msgid "No sampling workflow"
 msgstr ""
@@ -451,14 +443,14 @@ msgid "Pending"
 msgstr ""
 
 msgid "Prepublish"
-msgstr ""
+msgstr "Wstępna publikacja"
 
 #: bika/lims/profiles/default/types/Preservation.xml
 msgid "Preservation"
 msgstr "Utrwalenie"
 
 msgid "Preservation required"
-msgstr ""
+msgstr "Utrwalenie wymagane"
 
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/Preservations.xml
@@ -487,7 +479,7 @@ msgstr "Drukuj"
 
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 msgid "Print Invoice"
-msgstr ""
+msgstr "Wydrukuj fakturę"
 
 #: bika/lims/profiles/default/types/Pricelist.xml
 msgid "Print pricelist"
@@ -501,7 +493,7 @@ msgid "Publish"
 msgstr ""
 
 msgid "Published"
-msgstr ""
+msgstr "Opublikowane"
 
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 msgid "Published results"
@@ -509,7 +501,7 @@ msgstr "Opublikowane wyniki"
 
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "QC Results"
-msgstr ""
+msgstr "Wyniki QC"
 
 msgid "Receive"
 msgstr ""
@@ -560,20 +552,20 @@ msgid "ReflexRule"
 msgstr ""
 
 msgid "Registered"
-msgstr ""
+msgstr "Zarejestrowane"
 
 msgid "Reinstate"
 msgstr ""
 
 msgid "Reject"
-msgstr ""
+msgstr "Odrzuć"
 
 #: bika/lims/profiles/default/types/RejectAnalysis.xml
 msgid "Reject Analysis"
 msgstr "Analiza Odrzucona"
 
 msgid "Rejected"
-msgstr ""
+msgstr "Odrzucone"
 
 msgid "Remove"
 msgstr ""
@@ -638,7 +630,7 @@ msgstr "Punkty poboru próbek"
 
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Sample Templates"
-msgstr ""
+msgstr "Szablony próbek"
 
 #: bika/lims/profiles/default/types/SampleType.xml
 msgid "Sample Type"
@@ -710,7 +702,7 @@ msgstr ""
 
 #: bika/lims/profiles/default/types/BikaSetup.xml
 msgid "Setup"
-msgstr ""
+msgstr "Konfiguracja"
 
 #: bika/lims/profiles/default/actions.xml
 msgid "Sharing"
@@ -734,7 +726,7 @@ msgstr "Naklejka"
 #: bika/lims/profiles/default/types/Batch.xml
 #: bika/lims/profiles/default/types/ReferenceSample.xml
 msgid "Stickers preview"
-msgstr ""
+msgstr "Podgląd naklejek"
 
 #: bika/lims/profiles/default/types/StorageLocation.xml
 msgid "Storage Location"
@@ -755,10 +747,10 @@ msgid "Sub-groups"
 msgstr "Podgrupy"
 
 msgid "Submit"
-msgstr ""
+msgstr "Prześlij"
 
 msgid "Submit for verification"
-msgstr ""
+msgstr "Prześlij do weryfikacji"
 
 #: bika/lims/profiles/default/types/Supplier.xml
 msgid "Supplier"
@@ -779,16 +771,16 @@ msgid "Supply Orders"
 msgstr "Zamówienia dostaw"
 
 msgid "To be preserved"
-msgstr ""
+msgstr "Do utrwalenia"
 
 msgid "To be sampled"
-msgstr ""
+msgstr "Do pobrania"
 
 msgid "To be verified"
-msgstr ""
+msgstr "Do weryfikacji"
 
 msgid "Unpublished"
-msgstr ""
+msgstr "Nieopublikowane"
 
 msgid "Unsassign"
 msgstr ""
@@ -804,7 +796,7 @@ msgid "Validations"
 msgstr "walidacje"
 
 msgid "Verified"
-msgstr ""
+msgstr "Zweryfikowane"
 
 msgid "Verify"
 msgstr ""
