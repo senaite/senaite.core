@@ -103,7 +103,6 @@
 
   <!-- /Path Bar -->
 
-
   <!-- Global Sections Dropdown -->
   <browser:viewlet
       name="senaite.sections_dropdown"
@@ -115,7 +114,7 @@
 
   <!-- Global sections
        NOTE: This viewlet only renders a horizontal line
-             All sections are located inside the sections dropdown
+       All sections are located inside the sections dropdown
   -->
   <browser:viewlet
       name="plone.global_sections"
@@ -162,6 +161,7 @@
       layer="bika.lims.interfaces.IBikaLIMS"
       />
 
+  <!-- Authenticator Viewlet -->
   <browser:viewlet
       name="bika.lims.authenticator"
       manager="plone.app.layout.viewlets.interfaces.IPortalFooter"
@@ -171,78 +171,79 @@
 
   <!-- Invalid Analysis Request viewlet -->
   <browser:viewlet
-    for="bika.lims.interfaces.IAnalysisRequest"
-    name="bika.lims.invalid_ar_viewlet"
-    class=".analysisrequest.InvalidAnalysisRequestViewlet"
-    manager="plone.app.layout.viewlets.interfaces.IAboveContent"
-    template="templates/invalid_ar_viewlet.pt"
-    permission="zope2.View"
-    layer="bika.lims.interfaces.IBikaLIMS"
-  />
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="bika.lims.invalid_ar_viewlet"
+      class=".analysisrequest.InvalidAnalysisRequestViewlet"
+      manager="plone.app.layout.viewlets.interfaces.IAboveContent"
+      template="templates/invalid_ar_viewlet.pt"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
 
   <!-- Retest Analysis Request viewlet -->
   <browser:viewlet
-    for="bika.lims.interfaces.IAnalysisRequest"
-    name="bika.lims.retest_ar_viewlet"
-    class=".analysisrequest.RetestAnalysisRequestViewlet"
-    manager="plone.app.layout.viewlets.interfaces.IAboveContent"
-    template="templates/retest_ar_viewlet.pt"
-    permission="zope2.View"
-    layer="bika.lims.interfaces.IBikaLIMS"
-  />
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="bika.lims.retest_ar_viewlet"
+      class=".analysisrequest.RetestAnalysisRequestViewlet"
+      manager="plone.app.layout.viewlets.interfaces.IAboveContent"
+      template="templates/retest_ar_viewlet.pt"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
 
   <!-- Primary Analysis Request viewlet -->
   <browser:viewlet
-    for="bika.lims.interfaces.IAnalysisRequest"
-    name="bika.lims.primary_ar_viewlet"
-    class=".analysisrequest.PrimaryAnalysisRequestViewlet"
-    manager="plone.app.layout.viewlets.interfaces.IAboveContent"
-    template="templates/primary_ar_viewlet.pt"
-    permission="zope2.View"
-    layer="bika.lims.interfaces.IBikaLIMS"
-  />
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="bika.lims.primary_ar_viewlet"
+      class=".analysisrequest.PrimaryAnalysisRequestViewlet"
+      manager="plone.app.layout.viewlets.interfaces.IAboveContent"
+      template="templates/primary_ar_viewlet.pt"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
 
   <!-- Partition Analysis Request viewlet -->
   <browser:viewlet
-    for="bika.lims.interfaces.IAnalysisRequest"
-    name="bika.lims.partition_ar_viewlet"
-    class=".analysisrequest.PartitionAnalysisRequestViewlet"
-    manager="plone.app.layout.viewlets.interfaces.IAboveContent"
-    template="templates/partition_ar_viewlet.pt"
-    permission="zope2.View"
-    layer="bika.lims.interfaces.IBikaLIMS"
-  />
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="bika.lims.partition_ar_viewlet"
+      class=".analysisrequest.PartitionAnalysisRequestViewlet"
+      manager="plone.app.layout.viewlets.interfaces.IAboveContent"
+      template="templates/partition_ar_viewlet.pt"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
 
-  <!-- Dettached partition viewlet -->
+  <!-- Detached Partition Viewlet -->
   <browser:viewlet
-    for="bika.lims.interfaces.IAnalysisRequest"
-    name="bika.lims.detached_partition_viewlet"
-    class=".analysisrequest.DetachedPartitionViewlet"
-    manager="plone.app.layout.viewlets.interfaces.IAboveContent"
-    template="templates/detached_partition_viewlet.pt"
-    permission="zope2.View"
-    layer="bika.lims.interfaces.IBikaLIMS"
-  />
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="bika.lims.detached_partition_viewlet"
+      class=".analysisrequest.DetachedPartitionViewlet"
+      manager="plone.app.layout.viewlets.interfaces.IAboveContent"
+      template="templates/detached_partition_viewlet.pt"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
 
   <!-- Secondary Analysis Request viewlet -->
   <browser:viewlet
-    for="bika.lims.interfaces.IAnalysisRequestSecondary"
-    name="bika.lims.secondary_ar_viewlet"
-    class=".analysisrequest.SecondaryAnalysisRequestViewlet"
-    manager="plone.app.layout.viewlets.interfaces.IAboveContent"
-    template="templates/secondary_ar_viewlet.pt"
-    permission="zope2.View"
-    layer="bika.lims.interfaces.IBikaLIMS"
-  />
+      for="bika.lims.interfaces.IAnalysisRequestSecondary"
+      name="bika.lims.secondary_ar_viewlet"
+      class=".analysisrequest.SecondaryAnalysisRequestViewlet"
+      manager="plone.app.layout.viewlets.interfaces.IAboveContent"
+      template="templates/secondary_ar_viewlet.pt"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
 
   <!-- Rejected Analysis Request viewlet -->
   <browser:viewlet
-    for="bika.lims.interfaces.IAnalysisRequest"
-    name="bika.lims.rejected_ar_viewlet"
-    class=".analysisrequest.RejectedAnalysisRequestViewlet"
-    manager="plone.app.layout.viewlets.interfaces.IAboveContent"
-    template="templates/rejected_ar_viewlet.pt"
-    permission="zope2.View"
-    layer="bika.lims.interfaces.IBikaLIMS"
-  />
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="bika.lims.rejected_ar_viewlet"
+      class=".analysisrequest.RejectedAnalysisRequestViewlet"
+      manager="plone.app.layout.viewlets.interfaces.IAboveContent"
+      template="templates/rejected_ar_viewlet.pt"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
+
 </configure>
