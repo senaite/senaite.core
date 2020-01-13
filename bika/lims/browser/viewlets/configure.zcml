@@ -2,6 +2,40 @@
            xmlns:browser="http://namespaces.zope.org/browser"
            i18n_domain="senaite.core">
 
+  <!-- Path Bar -->
+
+  <!-- Standard Breadcrumbs -->
+  <browser:viewlet
+      name="plone.path_bar"
+      manager="plone.app.layout.viewlets.interfaces.IAboveContent"
+      class=".path_bar.PathBarViewlet"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
+
+  <!-- Hide BreadCrumbs for root view -->
+  <browser:viewlet
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+      name="plone.path_bar"
+      manager="plone.app.layout.viewlets.interfaces.IAboveContent"
+      template="templates/blank.pt"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
+
+  <!-- Hide BreadCrumbs for contents providing the `IHaveNoBreadCrumbs` interface -->
+  <browser:viewlet
+      for="bika.lims.interfaces.IHaveNoBreadCrumbs"
+      name="plone.path_bar"
+      manager="plone.app.layout.viewlets.interfaces.IAboveContent"
+      template="templates/blank.pt"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
+
+  <!-- /Path Bar -->
+
+
   <!-- Global Sections Dropdown -->
   <browser:viewlet
       name="senaite.sections_dropdown"
@@ -66,37 +100,6 @@
       name="bika.lims.viewlets.worksheet_attachments"
       class="bika.lims.browser.viewlets.attachments.WorksheetAttachmentsViewlet"
       manager="plone.app.layout.viewlets.interfaces.IBelowContentTitle"
-      permission="zope2.View"
-      layer="bika.lims.interfaces.IBikaLIMS"
-      />
-
-  <!-- Hide BreadCrumbs for root views -->
-  <browser:viewlet
-      for="Products.CMFPlone.interfaces.IPloneSiteRoot"
-      name="plone.path_bar"
-      manager="plone.app.layout.viewlets.interfaces.IAboveContent"
-      template="templates/blank.pt"
-      permission="zope2.View"
-      layer="bika.lims.interfaces.IBikaLIMS"
-      />
-
-  <!-- Hide BreadCrumbs for other stuff -->
-  <browser:viewlet
-      for="bika.lims.interfaces.IHaveNoBreadCrumbs"
-      name="plone.path_bar"
-      manager="plone.app.layout.viewlets.interfaces.IAboveContent"
-      template="templates/blank.pt"
-      permission="zope2.View"
-      layer="bika.lims.interfaces.IBikaLIMS"
-      />
-
-  <!-- Translated breadcrumbs -->
-  <browser:viewlet
-      for="*"
-      name="plone.path_bar"
-      manager="plone.app.layout.viewlets.interfaces.IAboveContent"
-      template="templates/path_bar.pt"
-      class="bika.lims.browser.viewlets.path_bar.PathBarViewlet"
       permission="zope2.View"
       layer="bika.lims.interfaces.IBikaLIMS"
       />
