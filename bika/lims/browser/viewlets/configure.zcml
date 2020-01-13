@@ -2,6 +2,26 @@
            xmlns:browser="http://namespaces.zope.org/browser"
            i18n_domain="senaite.core">
 
+  <!-- AR Attachments Viewlet -->
+  <browser:viewlet
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="bika.lims.viewlets.attachments"
+      class="bika.lims.browser.viewlets.attachments.AttachmentsViewlet"
+      manager="plone.app.layout.viewlets.interfaces.IBelowContentTitle"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
+
+  <!-- Worksheet Attachments Viewlet -->
+  <browser:viewlet
+      for="bika.lims.interfaces.IWorksheet"
+      name="bika.lims.viewlets.worksheet_attachments"
+      class="bika.lims.browser.viewlets.attachments.WorksheetAttachmentsViewlet"
+      manager="plone.app.layout.viewlets.interfaces.IBelowContentTitle"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
+
   <!-- Instrument QC Failures Viewlet -->
   <browser:viewlet
       for="*"
@@ -100,26 +120,6 @@
       name="plone.footer"
       manager="plone.app.layout.viewlets.interfaces.IPortalFooter"
       class=".footer.FooterViewlet"
-      permission="zope2.View"
-      layer="bika.lims.interfaces.IBikaLIMS"
-      />
-
-  <!-- AR Attachments Viewlet -->
-  <browser:viewlet
-      for="bika.lims.interfaces.IAnalysisRequest"
-      name="bika.lims.viewlets.attachments"
-      class="bika.lims.browser.viewlets.attachments.AttachmentsViewlet"
-      manager="plone.app.layout.viewlets.interfaces.IBelowContentTitle"
-      permission="zope2.View"
-      layer="bika.lims.interfaces.IBikaLIMS"
-      />
-
-  <!-- Worksheet Attachments Viewlet -->
-  <browser:viewlet
-      for="bika.lims.interfaces.IWorksheet"
-      name="bika.lims.viewlets.worksheet_attachments"
-      class="bika.lims.browser.viewlets.attachments.WorksheetAttachmentsViewlet"
-      manager="plone.app.layout.viewlets.interfaces.IBelowContentTitle"
       permission="zope2.View"
       layer="bika.lims.interfaces.IBikaLIMS"
       />

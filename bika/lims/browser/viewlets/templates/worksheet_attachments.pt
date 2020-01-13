@@ -1,17 +1,23 @@
-<div class="attachments"
-     tal:define="attachments_view python:view.get_attachments_view()"
+<div id="ws-attachments"
+     class="attachments"
      i18n:domain="senaite.core">
 
-  <!-- Attachments Viewlet -->
-  <dl class="collapsible collapsedOnLoad">
-    <dt class="attachments collapsibleHeader">
-      <img src='++resource++bika.lims.images/attachment.png'
-           title='Attachment'
-           i18n:attributes="title"/>
+  <p>
+    <button type="button"
+            class="btn btn-default"
+            data-toggle="collapse"
+            data-target="#ws-attachments-panel">
+      <i class="fa fa-paperclip" aria-hidden="true"></i>
       <span i18n:translate="">Attachments</span>
-    </dt>
+    </button>
+  </p>
 
-    <dd class="collapsibleContent">
+  <div id="ws-attachments-panel"
+       class="collapse panel panel-default"
+       tal:define="attachments_view python:view.get_attachments_view()">
+
+    <!-- Attachments Viewlet -->
+    <div class="panel-body">
 
       <!-- Add Attachments -->
       <div class="ws_attachments_add">
@@ -90,10 +96,8 @@
                  name="addWSAttachment"
                  value="Add"
                  i18n:attributes="value"/>
-        </form>
+        </form> <!-- /Add Attachment Form -->
       </div>
-
-    </dd> <!-- Collapsible content -->
-  </dl>
-
+    </div>
+  </div> <!-- Collapsible content -->
 </div>
