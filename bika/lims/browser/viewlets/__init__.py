@@ -18,11 +18,17 @@
 # Copyright 2018-2019 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from analysisrequest import *  # noqa
 from attachments import AttachmentsViewlet  # noqa
 from attachments import WorksheetAttachmentsViewlet  # noqa
 from authenticator import AuthenticatorViewlet  # noqa
+from colophon import ColophonViewlet  # noqa
+from content_views import ContentViewsViewlet  # noqa
 from document_actions import DocumentActionsViewlet  # noqa
 from footer import FooterViewlet  # noqa
 from instruments import InstrumentQCFailuresViewlet  # noqa
 from logo import LogoViewlet  # noqa
 from path_bar import PathBarViewlet  # noqa
+from personal_bar import PersonalBarViewlet  # noqa
+from sections import GlobalSectionsDropdownViewlet  # noqa
+from site_actions import SiteActionsViewlet  # noqa
