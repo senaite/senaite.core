@@ -2,6 +2,15 @@
            xmlns:browser="http://namespaces.zope.org/browser"
            i18n_domain="senaite.core">
 
+  <!-- Content Views Viewlet (Tabs) -->
+  <browser:viewlet
+      name="plone.contentviews"
+      manager="plone.app.layout.viewlets.interfaces.IContentViews"
+      class=".content_views.ContentViewsViewlet"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
+
   <!-- Colophon Viewlet -->
   <browser:viewlet
       name="plone.colophon"
