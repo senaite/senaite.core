@@ -53,8 +53,8 @@ from Products.CMFPlone.utils import safe_unicode
 from Products.PlonePAS.tools.memberdata import MemberData
 from Products.ZCatalog.interfaces import ICatalogBrain
 from zope import globalrequest
-from zope.component import getMultiAdapter
 from zope.component import getUtility
+from zope.component import queryMultiAdapter
 from zope.component.interfaces import IFactory
 from zope.event import notify
 from zope.lifecycleevent import ObjectCreatedEvent
@@ -951,7 +951,7 @@ def get_version(brain_or_object):
     return getattr(aq_base(obj), "version_id", 0)
 
 
-def get_view(name, context=None, request=None):
+def get_view(name, context=None, request=None, default=None):
     """Get the view by name
 
     :param name: The name of the view
@@ -965,8 +965,10 @@ def get_view(name, context=None, request=None):
     """
     context = context or get_portal()
     request = request or get_request() or None
-    return getMultiAdapter((get_object(context), request), name=name)
-
+    view = queryMultiAdapter((get_object(context), request), name=name)
+    if view is None:
+        return default
+    return view
 
 def get_request():
     """Get the global request object
