@@ -2,6 +2,15 @@
            xmlns:browser="http://namespaces.zope.org/browser"
            i18n_domain="senaite.core">
 
+  <!-- Document actions -->
+  <browser:viewlet
+      name="plone.abovecontenttitle.documentactions"
+      manager="plone.app.layout.viewlets.interfaces.IAboveContentTitle"
+      class=".document_actions.DocumentActionsViewlet"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
+
   <!-- Logo Viewlet -->
   <browser:viewlet
       name="plone.logo"
@@ -77,23 +86,6 @@
       name="plone.belowcontenttitle.documentbyline"
       manager="plone.app.layout.viewlets.interfaces.IBelowContentTitle"
       template="templates/blank.pt"
-      permission="zope2.View"
-      layer="bika.lims.interfaces.IBikaLIMS"
-      />
-
-  <!-- Make document actions beautiful -->
-  <browser:viewlet
-      name="plone.abovecontenttitle.documentactions"
-      manager="plone.app.layout.viewlets.interfaces.IBelowContentBody"
-      template="templates/blank.pt"
-      permission="zope2.View"
-      layer="bika.lims.interfaces.IBikaLIMS"
-      />
-
-  <browser:viewlet
-      name="plone.abovecontenttitle.documentactions"
-      manager="plone.app.layout.viewlets.interfaces.IAboveContentTitle"
-      class="bika.lims.browser.viewlets.document_actions.DocumentActionsViewlet"
       permission="zope2.View"
       layer="bika.lims.interfaces.IBikaLIMS"
       />
