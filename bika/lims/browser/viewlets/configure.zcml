@@ -2,6 +2,15 @@
            xmlns:browser="http://namespaces.zope.org/browser"
            i18n_domain="senaite.core">
 
+  <!-- Global Sections Dropdown -->
+  <browser:viewlet
+      name="senaite.sections_dropdown"
+      manager="plone.app.layout.viewlets.interfaces.IPortalHeader"
+      class=".sections.GlobalSectionsDropdownViewlet"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
+
   <!-- Global sections
        NOTE: This viewlet only renders a horizontal line
              All sections are located inside the sections dropdown
