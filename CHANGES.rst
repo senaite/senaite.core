@@ -7,6 +7,7 @@ Changelog
 
 **Added**
 
+- #1498 Moved all viewlets from senaite.lims to senaite.core
 - #1491 Enable Audit-logging for Dexterity Contents
 - #1489 Support Multiple Catalogs for Dexterity Contents
 - #1481 Filter Templates field when Sample Type is selected in Sample Add form
