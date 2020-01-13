@@ -7,6 +7,7 @@ Changelog
 
 **Added**
 
+- #1499 Moved navigation portlet into core 
 - #1498 Moved all viewlets from senaite.lims to senaite.core
 - #1491 Enable Audit-logging for Dexterity Contents
 - #1489 Support Multiple Catalogs for Dexterity Contents
