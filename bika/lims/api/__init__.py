@@ -970,6 +970,7 @@ def get_view(name, context=None, request=None, default=None):
         return default
     return view
 
+
 def get_request():
     """Get the global request object
 
