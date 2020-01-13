@@ -2,6 +2,17 @@
            xmlns:browser="http://namespaces.zope.org/browser"
            i18n_domain="senaite.core">
 
+  <!-- Instrument QC Failures Viewlet -->
+  <browser:viewlet
+      for="*"
+      name="bika.lims.instrument_qc_failures_viewlet"
+      class="bika.lims.browser.viewlets.InstrumentQCFailuresViewlet"
+      manager="plone.app.layout.viewlets.interfaces.IAboveContent"
+      template="templates/instrument_qc_failures_viewlet.pt"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
+
   <!-- Site Actions -->
   <browser:viewlet
       name="plone.site_actions"
@@ -138,17 +149,6 @@
       class="bika.lims.browser.viewlets.authenticator.AuthenticatorViewlet"
       permission="zope2.View"
       />
-
-    <!-- Show Instrument QC failures viewlet -->
-    <browser:viewlet
-        for="*"
-        name="bika.lims.instrument_qc_failures_viewlet"
-        class="bika.lims.browser.viewlets.InstrumentQCFailuresViewlet"
-        manager="plone.app.layout.viewlets.interfaces.IAboveContent"
-        template="templates/instrument_qc_failures_viewlet.pt"
-        permission="zope2.View"
-        layer="bika.lims.interfaces.IBikaLIMS"
-    />
 
   <!-- Invalid Analysis Request viewlet -->
   <browser:viewlet
