@@ -1,25 +1,22 @@
 # --- PLEASE EDIT THE LINES BELOW CORRECTLY ---
 # SOME DESCRIPTIVE TITLE.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# Translators:
-# Ramon Bartl <rb@ridingbytes.com>, 2018
-#
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "POT-Creation-Date: 2020-01-13 19:41+0000\n"
 "PO-Revision-Date: 2018-06-01 18:46+0000\n"
-"Last-Translator: Ramon Bartl <rb@ridingbytes.com>, 2018\n"
-"Language-Team: Kannada (https://www.transifex.com/senaite/teams/87045/kn/)\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Thai (Thailand) (https://www.transifex.com/senaite/teams/87045/th_TH/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 "Language-Code: en\n"
 "Language-Name: English\n"
 "Preferred-Encodings: utf-8 latin1\n"
 "Domain: plone\n"
-"Language: kn\n"
+"Language: th_TH\n"
 
 #: bika/lims/profiles/default/types/ARTemplate.xml
 msgid "AR Template"
@@ -824,13 +821,13 @@ msgid "Worksheets"
 msgstr ""
 
 msgid "label_schema_Accounting"
-msgstr "Accounting"
+msgstr ""
 
 msgid "label_schema_Address"
-msgstr "Address"
+msgstr ""
 
 msgid "label_schema_Analyses"
-msgstr "Analyses"
+msgstr ""
 
 msgid "label_schema_Analysis Templates"
 msgstr ""
@@ -839,64 +836,64 @@ msgid "label_schema_Appearance"
 msgstr ""
 
 msgid "label_schema_Bank details"
-msgstr "Bank details"
+msgstr ""
 
 msgid "label_schema_Calculation"
-msgstr "Calculation"
+msgstr ""
 
 msgid "label_schema_Container and Preservation"
-msgstr "Container and Preservation"
+msgstr ""
 
 msgid "label_schema_Dates"
-msgstr "Dates"
+msgstr ""
 
 msgid "label_schema_Description"
-msgstr "Description"
+msgstr ""
 
 msgid "label_schema_Email Telephone Fax"
-msgstr "Email Telephone Fax"
+msgstr ""
 
 msgid "label_schema_ID Server"
-msgstr "ID Server"
+msgstr ""
 
 msgid "label_schema_Labels"
-msgstr "Labels"
+msgstr ""
 
 msgid "label_schema_Layout"
-msgstr "Layout"
+msgstr ""
 
 msgid "label_schema_Location"
-msgstr "Location"
+msgstr ""
 
 msgid "label_schema_Method"
-msgstr "Method"
+msgstr ""
 
 msgid "label_schema_Notifications"
 msgstr ""
 
 msgid "label_schema_Preferences"
-msgstr "Preferences"
+msgstr ""
 
 msgid "label_schema_Publication preference"
-msgstr "Publication preference"
+msgstr ""
 
 msgid "label_schema_Reference Values"
-msgstr "Reference Values"
+msgstr ""
 
 msgid "label_schema_Reflex Rule Folder"
 msgstr ""
 
 msgid "label_schema_Result Options"
-msgstr "Result Options"
+msgstr ""
 
 msgid "label_schema_Results Reports"
-msgstr "Results Reports"
+msgstr ""
 
 msgid "label_schema_SR Templates"
-msgstr "SR Templates"
+msgstr ""
 
 msgid "label_schema_Sample Partitions"
-msgstr "Sample Partitions"
+msgstr ""
 
 msgid "label_schema_Sample Templates"
 msgstr ""
@@ -906,10 +903,10 @@ msgstr ""
 
 # Setup Schemata
 msgid "label_schema_Security"
-msgstr "Security"
+msgstr ""
 
 msgid "label_schema_Sticker"
 msgstr ""
 
 msgid "label_schema_Uncertainties"
-msgstr "Uncertainties"
+msgstr ""
