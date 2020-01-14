@@ -194,11 +194,12 @@ schema = BikaSchema.copy() + Schema((
         )
     ),
 
-    RemarksField(
-        'Remarks',
-        widget=RemarksWidget(
+    TextField(
+        "Remarks",
+        allowable_content_types=("text/plain",),
+        widget=TextAreaWidget(
             label=_("Remarks"),
-        ),
+        )
     ),
 
 ))

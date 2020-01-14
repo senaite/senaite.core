@@ -30,6 +30,8 @@ from Products.Archetypes.public import ComputedWidget
 from Products.Archetypes.public import DisplayList
 from Products.Archetypes.public import ReferenceField
 from Products.Archetypes.public import Schema
+from Products.Archetypes.public import TextAreaWidget
+from Products.Archetypes.public import TextField
 from Products.Archetypes.public import registerType
 from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.utils import getToolByName
@@ -37,11 +39,9 @@ from zope.interface import implements
 
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
-from bika.lims.browser.fields.remarksfield import RemarksField
 from bika.lims.browser.widgets import ARTemplateAnalysesWidget
 from bika.lims.browser.widgets import ARTemplatePartitionsWidget
 from bika.lims.browser.widgets import ReferenceWidget
-from bika.lims.browser.widgets import RemarksWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.content.clientawaremixin import ClientAwareMixin
@@ -115,11 +115,12 @@ schema = BikaSchema.copy() + Schema((
             description=_("Enable sampling workflow for the created sample")
         ),
     ),
-    RemarksField(
+    TextField(
         "Remarks",
-        widget=RemarksWidget(
+        allowable_content_types=("text/plain",),
+        widget=TextAreaWidget(
             label=_("Remarks"),
-        ),
+        )
     ),
     RecordsField(
         "Partitions",

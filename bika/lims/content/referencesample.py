@@ -100,12 +100,13 @@ schema = BikaSchema.copy() + Schema((
             label=_("Lot Number"),
         ),
     ),
-    RemarksField(
-        'Remarks',
-        schemata='Description',
-        widget=RemarksWidget(
+    TextField(
+        "Remarks",
+        allowable_content_types=("text/plain",),
+        schemata="Description",
+        widget=TextAreaWidget(
             label=_("Remarks"),
-        ),
+        )
     ),
     DateTimeField('DateSampled',
         schemata = 'Dates',

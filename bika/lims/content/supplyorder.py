@@ -19,30 +19,36 @@
 # Some rights reserved, see README and LICENSE.
 
 import sys
-
-from Products.Archetypes.public import *
+from decimal import Decimal
 
 from AccessControl import ClassSecurityInfo
-from bika.lims import bikaMessageFactory as _
-from bika.lims.browser.fields.remarksfield import RemarksField
-from bika.lims.browser.widgets import DateTimeWidget
-from bika.lims.browser.widgets import RemarksWidget
-from bika.lims.browser.widgets import ReferenceWidget as BikaReferenceWidget
-from bika.lims.config import PROJECTNAME
-from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.interfaces import ISupplyOrder, ICancellable
-from bika.lims.utils import t
 from DateTime import DateTime
-from persistent.mapping import PersistentMapping
-from decimal import Decimal
 from Products.Archetypes import atapi
+from Products.Archetypes.public import BaseFolder
+from Products.Archetypes.public import ComputedField
+from Products.Archetypes.public import ComputedWidget
+from Products.Archetypes.public import DateTimeField
+from Products.Archetypes.public import ReferenceField
+from Products.Archetypes.public import Schema
+from Products.Archetypes.public import StringField
+from Products.Archetypes.public import StringWidget
+from Products.Archetypes.public import TextAreaWidget
+from Products.Archetypes.public import TextField
 from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.permissions import View
 from Products.CMFPlone.interfaces import IConstrainTypes
 from Products.CMFPlone.utils import safe_unicode
+from persistent.mapping import PersistentMapping
 from zope.component import getAdapter
 from zope.interface import implements
 
+from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.widgets import DateTimeWidget
+from bika.lims.browser.widgets import ReferenceWidget as BikaReferenceWidget
+from bika.lims.config import PROJECTNAME
+from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.interfaces import ICancellable
+from bika.lims.interfaces import ISupplyOrder
 
 schema = BikaSchema.copy() + Schema((
     ReferenceField(
@@ -96,11 +102,12 @@ schema = BikaSchema.copy() + Schema((
                       label=_("Date Dispatched"),
                       ),
                   ),
-    RemarksField(
-        'Remarks',
-        widget=RemarksWidget(
+    TextField(
+        "Remarks",
+        allowable_content_types=("text/plain",),
+        widget=TextAreaWidget(
             label=_("Remarks"),
-        ),
+        )
     ),
     ComputedField('ClientUID',
                   expression = 'here.aq_parent.UID()',
