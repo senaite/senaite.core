@@ -239,6 +239,9 @@ def upgrade(tool):
 
     # -------- ADD YOUR STUFF BELOW --------
 
+    # Add additional JavaScripts to registry
+    setup.runImportStepFromProfile(profile, "jsregistry")
+
     # Fix Site Properties Generic Setup Export Step
     # https://github.com/senaite/senaite.core/pull/1469
     setup.runImportStepFromProfile(profile, "propertiestool")
