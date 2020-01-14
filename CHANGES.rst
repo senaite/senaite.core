@@ -28,6 +28,7 @@ Changelog
 
 **Fixed**
 
+- #1503 Avoid duplicate CSS IDs in multi-column Add form
 - #1501 Fix Attribute Error in Reference Sample Popup
 - #1493 jsonapi.read omits `include_methods` when a single parameter is used
 - #1494 Fix KeyError in Sample Type Listing
