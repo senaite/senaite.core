@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2019-09-30 11:23+0000\n"
+"POT-Creation-Date: 2020-01-13 19:41+0000\n"
 "PO-Revision-Date: 2018-06-01 18:46+0000\n"
 "Last-Translator: Ramon Bartl <rb@ridingbytes.com>, 2018\n"
 "Language-Team: Portuguese (Brazil) (https://www.transifex.com/senaite/teams/87045/pt_BR/)\n"
@@ -305,15 +305,6 @@ msgstr "História"
 #: bika/lims/profiles/default/actions.xml
 msgid "Home"
 msgstr "Início"
-
-#: bika/lims/profiles/default/types/IdentifierType.xml
-msgid "Identifier Type"
-msgstr "Tipo de Identificador"
-
-#: bika/lims/profiles/default/controlpanel.xml
-#: bika/lims/profiles/default/types/IdentifierTypes.xml
-msgid "Identifier Types"
-msgstr "Tipos de Identificadores"
 
 #: bika/lims/profiles/default/actions.xml
 msgid "Import"
