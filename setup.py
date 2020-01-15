@@ -87,6 +87,11 @@ setup(
         # Needed for `IPortalCatalogQueueProcessor`, which will be included in
         # `Products.CMFCore` in Plone 5. Remove after we are on Plone 5!
         'collective.indexing',
+        # Fix Scrutinizer (remove after we migrated to Python 3)
+        # https://github.com/python-pillow/Pillow/blob/master/CHANGES.rst#622-2020-01-02
+        'Pillow<7.0.0',
+        # https://pypi.org/project/more-itertools/
+        'more-itertools<6.0.0'
     ],
     extras_require={
         'test': [

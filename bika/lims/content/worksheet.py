@@ -110,8 +110,8 @@ schema = BikaSchema.copy() + Schema((
 
     RemarksField(
         'Remarks',
-        searchable=True,
         widget=RemarksWidget(
+            render_own_label=True,
             label=_("Remarks"),
         ),
     ),
