@@ -29,6 +29,7 @@ from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.interfaces import IAnalysis, ISubmitted
 from bika.lims.interfaces import IAnalysisService
 from bika.lims.interfaces import IARAnalysesField
+from bika.lims.interfaces import IBaseAnalysis
 from bika.lims.permissions import AddAnalysis
 from bika.lims.utils.analysis import create_analysis
 from Products.Archetypes.public import Field
@@ -99,9 +100,6 @@ class ARAnalysesField(ObjectField):
         :type hidden: list
         :returns: list of new assigned Analyses
         """
-        # This setter returns a list of new set Analyses
-        new_analyses = []
-
         # Current assigned analyses
         analyses = instance.objectValues("Analysis")
 
@@ -114,7 +112,7 @@ class ARAnalysesField(ObjectField):
         #       Therefore, their UIDs are not included in the submitted UIDs.
         if not items and not submitted:
             logger.warn("Not allowed to remove all Analyses from AR.")
-            return new_analyses
+            return []
 
         # Bail out if the items is not a list type
         if not isinstance(items, (list, tuple)):
@@ -156,24 +154,10 @@ class ARAnalysesField(ObjectField):
         if prices is None:
             prices = dict()
 
-        # CREATE/MODIFY ANALYSES
-
-        for service in services:
-            service_uid = api.get_uid(service)
-            keyword = service.getKeyword()
-
-            # Create the Analysis if it doesn't exist
-            if shasattr(instance, keyword):
-                analysis = instance._getOb(keyword)
-            else:
-                analysis = create_analysis(instance, service)
-                new_analyses.append(analysis)
-
-            # set the hidden status
-            analysis.setHidden(hidden.get(service_uid, False))
-
-            # Set the price of the Analysis
-            analysis.setPrice(prices.get(service_uid, service.getPrice()))
+        # Add analyses
+        new_analyses = map(lambda service:
+                           self.add_analysis(instance, service, prices, hidden),
+                           services)
 
         # DELETE ANALYSES
 
@@ -223,6 +207,91 @@ class ARAnalysesField(ObjectField):
                 api.get_parent(attachment).manage_delObjects(attachment_id)
 
         return new_analyses
+
+    def add_analysis(self, instance, service, prices, hidden):
+        service_uid = api.get_uid(service)
+
+        # Gets the analysis or creates the analysis for this service
+        # Note this analysis might not belong to this current instance, but
+        # from a descendant (partition)
+        analysis = self.resolve_analysis(instance, service)
+
+        # Set the hidden status
+        analysis.setHidden(hidden.get(service_uid, False))
+
+        # Set the price of the Analysis
+        analysis.setPrice(prices.get(service_uid, service.getPrice()))
+        return analysis
+
+    def resolve_analysis(self, instance, service):
+        """Resolves an analysis for the service and instance
+        """
+        # Does the analysis exists in this instance already?
+        analysis = self.get_from_instance(instance, service)
+        if analysis:
+            keyword = service.getKeyword()
+            logger.info("Analysis for '{}' already exists".format(keyword))
+            return analysis
+
+        # Does the analysis exists in an ancestor?
+        from_ancestor = self.get_from_ancestor(instance, service)
+        if from_ancestor:
+            # Move the analysis into this instance. The ancestor's
+            # analysis will be masked otherwise
+            analysis_id = api.get_id(from_ancestor)
+            logger.info("Analysis {} is from an ancestor".format(analysis_id))
+            cp = from_ancestor.aq_parent.manage_cutObjects(analysis_id)
+            instance.manage_pasteObjects(cp)
+            return instance._getOb(analysis_id)
+
+        # Does the analysis exists in a descendant?
+        from_descendant = self.get_from_descendant(instance, service)
+        if from_descendant:
+            # The analysis already exists in a partition, keep it. The
+            # analysis from current instance will be masked otherwise
+            analysis_id = api.get_id(from_descendant)
+            logger.info("Analysis {} is from a descendant".format(analysis_id))
+            return from_descendant
+
+        # Create the analysis
+        logger.info("Creating new analysis '{}'".format(service.getKeyword()))
+        return create_analysis(instance, service)
+
+    def get_from_instance(self, instance, service):
+        """Returns an analysis for the given service from the instance
+        """
+        # Note we filter by keyword cause services are history-aware
+        keyword = service.getKeyword()
+        for analysis in instance.objectValues("Analysis"):
+            if analysis.getKeyword() == keyword:
+                return analysis
+        return None
+
+    def get_from_ancestor(self, instance, service):
+        """Returns an analysis for the given service from ancestors
+        """
+        ancestor = instance.getParentAnalysisRequest()
+        if not ancestor:
+            return None
+
+        analysis = self.get_from_instance(ancestor, service)
+        return analysis or self.get_from_ancestor(ancestor, service)
+
+    def get_from_descendant(self, instance, service):
+        """Returns an analysis for the given service from descendants
+        """
+        for descendant in instance.getDescendants():
+            # Does the analysis exists in the current descendant?
+            analysis = self.get_from_instance(descendant, service)
+            if analysis:
+                return analysis
+
+            # Search in descendants from current descendant
+            analysis = self.get_from_descendant(descendant, service)
+            if analysis:
+                return analysis
+
+        return None
 
     def _get_services(self, full_objects=False):
         """Fetch and return analysis service objects
