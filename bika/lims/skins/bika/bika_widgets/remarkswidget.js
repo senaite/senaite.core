@@ -11,6 +11,7 @@
       this.get_portal_url = bind(this.get_portal_url, this);
       this.ajax_submit = bind(this.ajax_submit, this);
       this.on_remarks_submit = bind(this.on_remarks_submit, this);
+      this.on_remarks_change = bind(this.on_remarks_change, this);
       this.post_remarks = bind(this.post_remarks, this);
       this.fetch_remarks = bind(this.fetch_remarks, this);
       this.set_remarks = bind(this.set_remarks, this);
@@ -41,6 +42,7 @@
        */
       console.debug("RemarksWidgetView::bind_eventhandler");
       $("body").on("click", "input.saveRemarks", this.on_remarks_submit);
+      $("body").on("keyup", "textarea[name='Remarks']", this.on_remarks_change);
       return window.rem = this;
     };
 
@@ -91,13 +93,26 @@
       /*
        * Clear and update the widget's History with the provided value.
        */
-      var el, widget;
+      var el, record, record_content, record_header, val, widget;
+      if (value.length < 1) {
+        return;
+      }
       widget = this.get_remarks_widget(uid);
       if (widget === null) {
         return;
       }
       el = widget.find('.remarks_history');
-      return el.html(this.format(value));
+      val = value[0];
+      record_header = $("<div class='record-header'/>");
+      record_header.append($("<span class='record-user'>" + val["user_id"] + "</span>"));
+      record_header.append($("<span class='record-username'>" + val["user_name"] + "</span>"));
+      record_header.append($("<span class='record-date'>" + val["created"] + "</span>"));
+      record_content = $("<div class='record-content'/>");
+      record_content.html(this.format(val["content"]));
+      record = $("<div class='record' id='" + val['id'] + "'/>");
+      record.append(record_header);
+      record.append(record_content);
+      return el.prepend(record);
     };
 
     RemarksWidgetView.prototype.clear_remarks_textarea = function(uid) {
@@ -204,10 +219,26 @@
 
     /* EVENT HANDLERS */
 
+    RemarksWidgetView.prototype.on_remarks_change = function(event) {
+
+      /*
+       * Eventhandler for RemarksWidget's textarea changes
+       *
+       */
+      var btn, el;
+      console.debug("°°° RemarksWidgetView::on_remarks_change °°°");
+      el = event.target;
+      if (!el.value) {
+        return;
+      }
+      btn = el.parentElement.querySelector("input.saveRemarks");
+      return btn.disabled = false;
+    };
+
     RemarksWidgetView.prototype.on_remarks_submit = function(event) {
 
       /*
-       * Eventhandler for RemarksWidget"s "Save Remarks" button
+       * Eventhandler for RemarksWidget's "Save Remarks" button
        *
        */
       var widget;

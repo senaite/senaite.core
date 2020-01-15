@@ -16,6 +16,7 @@ Changelog
 
 **Changed**
 
+- #1495 Better Remarks handling and display
 - #1502 Improved DateTime Widget
 - #1490 Support Dexterity Behavior Fields in API
 - #1488 Support Dexterity Contents in Catalog Indexers

@@ -8,21 +8,6 @@
     <title></title>
     <metal:block fill-slot="javascript_head_slot"
                  tal:define="portal context/@@plone_portal_state/portal;">
-      <!-- TODO move to senaite.lims bootstrap css -->
-      <style type="text/css">
-       #remarks-widget {
-         padding-top: 2em;
-       }
-       #archetypes-fieldname-Remarks {
-         padding: 0!important;
-       }
-       #remarks-widget fieldset legend {
-         display: none;
-       }
-       #remarks-widget input.saveRemarks {
-         margin-top: 1em;
-       }
-      </style>
     </metal:block>
   </head>
 
@@ -72,7 +57,7 @@
            https://github.com/senaite/senaite.core/pull/920 -->
       <div class="row">
         <div id="remarks-widget"
-             class="col-sm-12"
+             class="col-sm-12 remarks-widget"
              tal:define="checkPermission nocall: context/portal_membership/checkPermission;
                  mode python:'edit' if checkPermission('senaite.core: Field: Edit Remarks', context) else 'view';
                  field python:context.Schema()['Remarks'];
@@ -81,9 +66,7 @@
             <img i18n:attributes="title" title="Remarks" src="++resource++bika.lims.images/remarks.png"/>
             <span i18n:translate="">Remarks</span>
           </h3>
-          <div class="well">
-            <metal:widget use-macro="python:context.widget('Remarks', mode=mode)"/>
-          </div>
+          <metal:widget use-macro="python:context.widget('Remarks', mode=mode)"/>
         </div>
       </div>
       <!-- /Remarks Widget -->
