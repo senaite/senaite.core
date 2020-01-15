@@ -323,11 +323,21 @@ def remove_cascaded_analyses_of_root_samples(portal):
         logger.info("Found {} Root Samples that contain cascaded Analyses"
                     .format(len(to_clean)))
 
-        # Uncomment before flight
-        # for sample, analyses in to_clean:
-        #     sample.manage_delObjects(analyses)
+        for sample, analyses in to_clean:
+            sid = api.get_id(sample)
+            for analysis in analyses:
+                an = sample[analysis]
+                state = api.get_workflow_status_of(an)
+                if state != "unassigned":
+                    # XXX What to do when assigned, rejected ... ?
+                    pass
+                logger.info("Deleting Analysis '{}' in State '{}' from '{}'"
+                            .format(analysis, state, sid))
+                # Uncomment before flight
+                # sample._delObject(analysis)
 
-    logger.info("Removing cascaded analyses from Root Samples... [DONE]")
+    logger.info("Removing cascaded analyses from {} Root Samples... [DONE]"
+                .format(len(to_clean)))
 
 
 def reindex_client_fields(portal):
