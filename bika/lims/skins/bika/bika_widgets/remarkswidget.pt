@@ -40,11 +40,9 @@
       <link rel="stylesheet" type="text/css" media="all" href=""
             tal:attributes="href string:${static_path}/remarkswidget.css"/>
     </tal:static>
-    <textarea class="form-control"
-              tal:attributes="name fieldName;
-                              id fieldName;"></textarea>
+    <textarea class="form-control" tal:attributes="name fieldName; id fieldName;"></textarea>
     <div tal:condition="python: 'portal_factory' not in context.absolute_url()">
-      <input class="saveRemarks allowMultiSubmit btn btn-secondary btn-sm input-sm"
+      <input class="saveRemarks allowMultiSubmit btn btn-primary btn-sm input-sm"
              type="submit"
              value="Add remarks"
              disabled="disabled"
