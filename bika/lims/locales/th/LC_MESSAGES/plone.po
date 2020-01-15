@@ -1,0 +1,915 @@
+# --- PLEASE EDIT THE LINES BELOW CORRECTLY ---
+# SOME DESCRIPTIVE TITLE.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Translators:
+# Suphachock Upalee <suphamew@gmail.com>, 2020
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2020-01-13 19:41+0000\n"
+"PO-Revision-Date: 2018-06-01 18:46+0000\n"
+"Last-Translator: Suphachock Upalee <suphamew@gmail.com>, 2020\n"
+"Language-Team: Thai (https://www.transifex.com/senaite/teams/87045/th/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Language-Code: en\n"
+"Language-Name: English\n"
+"Preferred-Encodings: utf-8 latin1\n"
+"Domain: plone\n"
+"Language: th\n"
+
+#: bika/lims/profiles/default/types/ARTemplate.xml
+msgid "AR Template"
+msgstr "แบบ AR"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/ARTemplates.xml
+#: bika/lims/profiles/default/types/SRTemplate.xml
+msgid "AR Templates"
+msgstr "แบบ AR ทั้งหมด"
+
+#: bika/lims/profiles/default/types/ARReport.xml
+msgid "ARReport"
+msgstr "รายงาน AR"
+
+# Manual Workflow State and Transition MsgIds
+# Despite the fact, that these are defined in the "bika" domain, they are not
+# translated
+# in the action menu of Plone.
+# Please don't remove
+msgid "Activate"
+msgstr "เปิดใช้"
+
+msgid "Active"
+msgstr "ทำงาน"
+
+#: bika/lims/profiles/default/types/Worksheet.xml
+msgid "Add Analyses"
+msgstr "เพิ่มรายการวิเคราะห์"
+
+#: bika/lims/profiles/default/types/Worksheet.xml
+msgid "Add Blank Reference"
+msgstr "เพิ่มแบลงก์อ้างอิง"
+
+#: bika/lims/profiles/default/types/Worksheet.xml
+msgid "Add Control Reference"
+msgstr "เพิ่มตัวอย่างอ้างอิง"
+
+#: bika/lims/profiles/default/types/Worksheet.xml
+msgid "Add Duplicate"
+msgstr "เพิ่มซ้ำ"
+
+#: bika/lims/profiles/default/types/ReportFolder.xml
+msgid "Administration"
+msgstr "การจัดการ"
+
+#: bika/lims/profiles/default/types/ReferenceSample.xml
+msgid "Analyses"
+msgstr "รายการวิเคราะห์"
+
+#: bika/lims/profiles/default/types/Analysis.xml
+msgid "Analysis"
+msgstr "การวิเคราะห์"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/AnalysisCategories.xml
+msgid "Analysis Categories"
+msgstr "กลุ่มการวิเคราะห์ต่างๆ"
+
+#: bika/lims/profiles/default/types/AnalysisCategory.xml
+msgid "Analysis Category"
+msgstr "กลุ่มการวิเคราะห์"
+
+#: bika/lims/profiles/default/types/AnalysisProfile.xml
+msgid "Analysis Profile"
+msgstr "โพรไฟล์การวิเคราะห์"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/AnalysisProfiles.xml
+#: bika/lims/profiles/default/types/Client.xml
+msgid "Analysis Profiles"
+msgstr "โพรไฟล์การวิเคราะห์ต่างๆ"
+
+#: bika/lims/profiles/default/types/AnalysisService.xml
+msgid "Analysis Service"
+msgstr "บริการวิเคราะห์"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/AnalysisServices.xml
+msgid "Analysis Services"
+msgstr "บริการวิเคราะห์ต่างๆ"
+
+#: bika/lims/profiles/default/types/AnalysisSpec.xml
+msgid "Analysis Specification"
+msgstr "คุณลักษณะการวิเคราะห์"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/AnalysisSpecs.xml
+#: bika/lims/profiles/default/types/Client.xml
+msgid "Analysis Specifications"
+msgstr "คุณลักษณะการวิเคราะห์ต่างๆ"
+
+msgid "Assign"
+msgstr "แจกงาน"
+
+msgid "Assigned"
+msgstr "แจกงานแล้ว"
+
+msgid "Attach"
+msgstr "แนบ"
+
+#: bika/lims/profiles/default/types/Attachment.xml
+msgid "Attachment"
+msgstr "สิ่งที่แนบ"
+
+#: bika/lims/profiles/default/types/AttachmentType.xml
+msgid "Attachment Type"
+msgstr "ชนิดเอกสารแนบ"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/AttachmentTypes.xml
+msgid "Attachment Types"
+msgstr "ชนิดเอกสารแนบต่างๆ"
+
+msgid "Attachment due"
+msgstr "กำหนดเอกสารแนบ"
+
+#: bika/lims/profiles/default/types/Client.xml
+msgid "Attachments"
+msgstr "รายการสิ่งแนบ"
+
+#: bika/lims/profiles/default/actions.xml
+msgid "Audit Log"
+msgstr "รายการบันทึกการทำงาน"
+
+#: bika/lims/profiles/default/types/Instrument.xml
+msgid "Auto-Import Logs"
+msgstr "รายการบันทึกการนำเข้าอัตโนมัติ"
+
+#: bika/lims/profiles/default/types/Batch.xml
+msgid "Batch"
+msgstr "กลุ่มตัวอย่าง"
+
+#: bika/lims/profiles/default/types/Batch.xml
+msgid "Batch Book"
+msgstr "สมุดกลุ่มตัวอย่าง"
+
+#: bika/lims/profiles/default/types/BatchLabel.xml
+msgid "Batch Label"
+msgstr "ป้ายกลุ่มตัวอย่าง"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/BatchLabels.xml
+msgid "Batch Labels"
+msgstr "ป้ายกลุ่มตัวอย่างต่างๆ"
+
+#: bika/lims/profiles/default/types/BatchFolder.xml
+#: bika/lims/profiles/default/types/Client.xml
+msgid "Batches"
+msgstr "กลุ่มตัวอย่างต่างๆ"
+
+#: bika/lims/profiles/default/types/Calculation.xml
+msgid "Calculation"
+msgstr "การคำนวณ"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/Calculations.xml
+msgid "Calculations"
+msgstr "การคำนวณต่างๆ"
+
+#: bika/lims/profiles/default/types/Instrument.xml
+msgid "Calibration Certificates"
+msgstr "ใบรับรองการสอบเทียบต่างๆ"
+
+#: bika/lims/profiles/default/types/Instrument.xml
+msgid "Calibrations"
+msgstr "การสอบเทียบต่างๆ"
+
+msgid "Cancel"
+msgstr "ยกเลิก"
+
+#: bika/lims/profiles/default/types/Client.xml
+msgid "Client"
+msgstr "ผู้รับบริการ"
+
+#: bika/lims/profiles/default/types/ClientFolder.xml
+msgid "Clients"
+msgstr "ผู้รับบริการต่างๆ"
+
+msgid "Close"
+msgstr "ปิด"
+
+msgid "Complete"
+msgstr "สมบูรณ์"
+
+#: bika/lims/profiles/default/types/Contact.xml
+#: bika/lims/profiles/default/types/SupplierContact.xml
+msgid "Contact"
+msgstr "ผู้ติดต่อ"
+
+#: bika/lims/profiles/default/types/Client.xml
+#: bika/lims/profiles/default/types/Supplier.xml
+msgid "Contacts"
+msgstr "ผู้ติดต่อต่างๆ"
+
+#: bika/lims/profiles/default/types/Container.xml
+msgid "Container"
+msgstr "ภาชนะบรรจุ"
+
+#: bika/lims/profiles/default/types/ContainerType.xml
+msgid "Container Type"
+msgstr "ชนิดภาชนะบรรจุ"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/ContainerTypes.xml
+msgid "Container Types"
+msgstr "ชนิดภาชนะบรรจุต่างๆ"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/Containers.xml
+msgid "Containers"
+msgstr "ภาชนะต่างๆ"
+
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
+msgid "Create Invoice PDF"
+msgstr "สร้างใบแจ้งหนี้เป็น PDF"
+
+msgid "Current"
+msgstr "ปัจจุบัน"
+
+msgid "Deactivate"
+msgstr "ปิดการใช้งาน"
+
+#: bika/lims/profiles/default/types/Department.xml
+msgid "Department"
+msgstr "หน่วยงาน"
+
+#: bika/lims/profiles/default/types/Departments.xml
+msgid "Departments"
+msgstr "หน่วยงานต่างๆ"
+
+msgid "Dispatch"
+msgstr "เดินเรื่อง"
+
+msgid "Dispatched"
+msgstr "การเดินเรื่องต่างๆ"
+
+msgid "Dispose"
+msgstr "ทำลาย"
+
+msgid "Disposed"
+msgstr "การทำลายต่างๆ"
+
+#: bika/lims/profiles/default/types/Instrument.xml
+msgid "Documents"
+msgstr "เอกสารต่างๆ"
+
+msgid "Dormant"
+msgstr "ความเห็น"
+
+#: bika/lims/profiles/default/types/DuplicateAnalysis.xml
+msgid "Duplicate Analysis"
+msgstr "ทำซ้ำการวิเคราะห์"
+
+#: bika/lims/profiles/default/types/ARImport.xml
+#: bika/lims/profiles/default/types/ARTemplate.xml
+#: bika/lims/profiles/default/types/AnalysisCategory.xml
+msgid "Edit"
+msgstr "แก้ไข"
+
+msgid "Expire"
+msgstr "หมดอายุ"
+
+msgid "Expired"
+msgstr "หมดอายุแล้ว"
+
+#: bika/lims/profiles/default/types/Worksheet.xml
+msgid "Export"
+msgstr "ส่งออก"
+
+#: bika/lims/profiles/default/types/InvoiceBatch.xml
+msgid "Export Batch To CSV"
+msgstr "ส่งออกกลุ่มตัวอย่างเป็น CSV"
+
+#: bika/lims/profiles/default/actions.xml
+msgid "Extracts"
+msgstr "การสกัดต่างๆ"
+
+#: bika/lims/profiles/default/types/ReportFolder.xml
+msgid "History"
+msgstr "ประวัติ"
+
+#: bika/lims/profiles/default/actions.xml
+msgid "Home"
+msgstr "หน้าจอหลัก"
+
+#: bika/lims/profiles/default/actions.xml
+msgid "Import"
+msgstr "นำเข้า"
+
+msgid "Imported"
+msgstr "นำเข้าแล้ว"
+
+#: bika/lims/profiles/default/types/Client.xml
+msgid "Imports"
+msgstr "การนำเข้าต่างๆ"
+
+msgid "Inactive"
+msgstr "ไม่ใช้งาน"
+
+#: bika/lims/profiles/default/types/Instrument.xml
+msgid "Instrument"
+msgstr "เครื่องมือ"
+
+#: bika/lims/profiles/default/controlpanel.xml
+msgid "Instrument Locations"
+msgstr "แหล่งเครื่องมือ"
+
+#: bika/lims/profiles/default/types/InstrumentType.xml
+msgid "Instrument Type"
+msgstr "ชนิดเครื่องมือ"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/InstrumentTypes.xml
+msgid "Instrument Types"
+msgstr "ชนิดเครื่องมือต่างๆ"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/InstrumentType.xml
+#: bika/lims/profiles/default/types/Instruments.xml
+msgid "Instruments"
+msgstr "เครื่องมือต่างๆ"
+
+msgid "Invalid"
+msgstr "ไม่ถูกต้อง"
+
+msgid "Invalidate"
+msgstr "ไม่ปรับแก้ให้สมบูรณ์"
+
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
+#: bika/lims/profiles/default/types/Invoice.xml
+msgid "Invoice"
+msgstr "ใบแจ้งหนี้"
+
+#: bika/lims/profiles/default/types/LabContact.xml
+msgid "Lab Contact"
+msgstr "ผู้ติดต่อ"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/Department.xml
+#: bika/lims/profiles/default/types/LabContacts.xml
+msgid "Lab Contacts"
+msgstr "ผู้ติดต่อต่างๆ"
+
+#: bika/lims/profiles/default/controlpanel.xml
+msgid "Lab Departments"
+msgstr "หน่วยงานต่างๆ"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/LabProducts.xml
+msgid "Lab Products"
+msgstr "ผลิตผลห้องปฏิบัติการต่างๆ"
+
+#: bika/lims/profiles/default/types/Laboratory.xml
+msgid "Laboratory"
+msgstr "ห้องปฏิบัติการ"
+
+#: bika/lims/profiles/default/controlpanel.xml
+msgid "Laboratory Information"
+msgstr "ข้อมูลห้องปฏิบัติการ"
+
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
+msgid "Large Sticker"
+msgstr "สติ๊กเกอร์ดวงใหญ่"
+
+#: bika/lims/profiles/default/types/Contact.xml
+#: bika/lims/profiles/default/types/LabContact.xml
+msgid "Login details"
+msgstr "รายละเอียดการเข้าสู่ระบบ"
+
+#: bika/lims/profiles/default/types/Instrument.xml
+msgid "Maintenance"
+msgstr "การบำรุงรักษา"
+
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
+msgid "Manage Analyses"
+msgstr "จัดการแผนการวิเคราะห์"
+
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
+#: bika/lims/profiles/default/types/Worksheet.xml
+msgid "Manage Results"
+msgstr "จัดการผลการวิเคราะห์"
+
+#: bika/lims/profiles/default/types/Manufacturer.xml
+msgid "Manufacturer"
+msgstr "ผู้ผลิต"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/Manufacturers.xml
+msgid "Manufacturers"
+msgstr "ผู้ผลิตต่างๆ"
+
+#: bika/lims/profiles/default/types/Method.xml
+msgid "Method"
+msgstr "วิธีการ"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/Methods.xml
+msgid "Methods"
+msgstr "วิธีการต่างๆ"
+
+msgid "No preservation required"
+msgstr "ไม่ต้องเก็บรักษา"
+
+msgid "No sampling workflow"
+msgstr "ไม่มีผังงานตัวอย่าง"
+
+msgid "Not requested"
+msgstr "ไม่ต้องการ"
+
+msgid "Open"
+msgstr "เปิด"
+
+#: bika/lims/profiles/default/types/Client.xml
+msgid "Orders"
+msgstr "รายการสั่งต่างๆ"
+
+msgid "Pending"
+msgstr "รออยู่"
+
+msgid "Prepublish"
+msgstr "ก่อนตีพิมพ์"
+
+#: bika/lims/profiles/default/types/Preservation.xml
+msgid "Preservation"
+msgstr "การเก็บรักษา"
+
+msgid "Preservation required"
+msgstr "ต้องการการเก็บรักษา"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/Preservations.xml
+msgid "Preservations"
+msgstr "การเก็บรักษาต่างๆ"
+
+msgid "Preserve"
+msgstr "เก็บรักษา"
+
+#: bika/lims/profiles/default/types/Pricelist.xml
+msgid "Pricelist"
+msgstr "ค่าใช้จ่าย"
+
+#: bika/lims/profiles/default/types/PricelistFolder.xml
+msgid "Pricelists"
+msgstr "ค่าใช้จ่ายต่างๆ"
+
+#: bika/lims/profiles/default/actions.xml
+msgid "Prices"
+msgstr "ราคา"
+
+#: bika/lims/profiles/default/types/Invoice.xml
+#: bika/lims/profiles/default/types/SupplyOrder.xml
+msgid "Print"
+msgstr "พิมพ์"
+
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
+msgid "Print Invoice"
+msgstr "พิมพ์ใบแจ้งหนี้"
+
+#: bika/lims/profiles/default/types/Pricelist.xml
+msgid "Print pricelist"
+msgstr "พิมพ์ค่าใช้จ่าย"
+
+#: bika/lims/profiles/default/types/ReportFolder.xml
+msgid "Productivity"
+msgstr "ผลผลิต"
+
+msgid "Publish"
+msgstr "ตีพิมพ์"
+
+msgid "Published"
+msgstr "ตีพิมพ์แล้ว"
+
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
+msgid "Published results"
+msgstr "ผลที่ตีพิมพ์แล้วต่างๆ"
+
+#: bika/lims/profiles/default/types/Instrument.xml
+msgid "QC Results"
+msgstr "ผล QC ต่างๆ"
+
+msgid "Receive"
+msgstr "รับ"
+
+msgid "Receive sample"
+msgstr "รับตัวอย่าง"
+
+msgid "Received"
+msgstr "รับแล้ว"
+
+#: bika/lims/profiles/default/types/ReferenceAnalysis.xml
+msgid "Reference Analysis"
+msgstr "การวิเคราะห์อ้างอิง"
+
+#: bika/lims/profiles/default/types/ReferenceDefinition.xml
+msgid "Reference Definition"
+msgstr "คำอธิบายการอ้างอิง"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/ReferenceDefinitions.xml
+msgid "Reference Definitions"
+msgstr "คำอธิบายการอ้างอิงต่างๆ"
+
+#: bika/lims/profiles/default/types/ReferenceSample.xml
+msgid "Reference Sample"
+msgstr "ตัวอย่างอ้างอิง"
+
+#: bika/lims/profiles/default/actions.xml
+#: bika/lims/profiles/default/types/ReferenceSamplesFolder.xml
+#: bika/lims/profiles/default/types/Supplier.xml
+msgid "Reference Samples"
+msgstr "ตัวอย่างอ้างอิงต่างๆ"
+
+#: bika/lims/profiles/default/types/ReferenceSample.xml
+msgid "Reference Values"
+msgstr "ค่าอ้างอิงต่างๆ"
+
+#: bika/lims/profiles/default/controlpanel.xml
+msgid "Reflex Rules"
+msgstr "กฎการสะท้อนต่างๆ"
+
+#: bika/lims/profiles/default/types/ReflexRuleFolder.xml
+msgid "Reflex Rules Folder"
+msgstr "โฟลเดอร์กฎการสะท้อน"
+
+#: bika/lims/profiles/default/types/ReflexRule.xml
+msgid "ReflexRule"
+msgstr "กฎการสะท้อน"
+
+msgid "Registered"
+msgstr "ลงทะเบียนแล้ว"
+
+msgid "Reinstate"
+msgstr "คืนสถานะเดิม"
+
+msgid "Reject"
+msgstr "ปฏิเสธ"
+
+#: bika/lims/profiles/default/types/RejectAnalysis.xml
+msgid "Reject Analysis"
+msgstr "ปฏิเสธการวิเคราะห์"
+
+msgid "Rejected"
+msgstr "ปฏิเสธแล้ว"
+
+msgid "Remove"
+msgstr "นำออก"
+
+#: bika/lims/profiles/default/actions.xml
+#: bika/lims/profiles/default/types/Report.xml
+msgid "Report"
+msgstr "รายงาน"
+
+#: bika/lims/profiles/default/types/ReportFolder.xml
+msgid "Reports"
+msgstr "รายงานต่างๆ"
+
+msgid "Republish"
+msgstr "ตีพิมพ์ใหม่"
+
+msgid "Retract"
+msgstr "ถอนกลับ"
+
+msgid "Retracted"
+msgstr "ถอนกลับแล้ว"
+
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
+#: bika/lims/profiles/default/types/Sample.xml
+msgid "Sample"
+msgstr "ตัวอย่าง"
+
+#: bika/lims/profiles/default/types/SampleCondition.xml
+msgid "Sample Condition"
+msgstr "สภาพตัวอย่าง"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/SampleConditions.xml
+msgid "Sample Conditions"
+msgstr "สภาพตัวอย่างต่างๆ"
+
+msgid "Sample Imports"
+msgstr "การนำเข้าตัวอย่างต่างๆ"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/SampleMatrices.xml
+msgid "Sample Matrices"
+msgstr "เมทริกซ์ตัวอย่างต่างๆ"
+
+#: bika/lims/profiles/default/types/SampleMatrix.xml
+msgid "Sample Matrix"
+msgstr "เมทริกซ์ตัวอย่าง"
+
+#: bika/lims/profiles/default/types/SamplePartition.xml
+msgid "Sample Partition"
+msgstr "การแบ่งตัวอย่าง"
+
+#: bika/lims/profiles/default/types/SamplePoint.xml
+msgid "Sample Point"
+msgstr "จุดตัวอย่าง"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/Client.xml
+#: bika/lims/profiles/default/types/SamplePoints.xml
+msgid "Sample Points"
+msgstr "จุดตัวอย่างต่างๆ"
+
+#: bika/lims/profiles/default/types/Client.xml
+msgid "Sample Templates"
+msgstr "แบบตัวอย่างต่างๆ"
+
+#: bika/lims/profiles/default/types/SampleType.xml
+msgid "Sample Type"
+msgstr "ชนิดตัวอย่าง"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/SampleTypes.xml
+msgid "Sample Types"
+msgstr "ชนิดตัวอย่างต่างๆ"
+
+msgid "Sample due"
+msgstr "กำหนดการตัวอย่าง"
+
+msgid "Sample received"
+msgstr "ตัวอย่างที่รับแล้ว"
+
+msgid "Sample registered"
+msgstr "ตัวอย่างที่ลงทะเบียนแล้ว"
+
+msgid "Sampled"
+msgstr "เก็บตัวอย่างแล้ว"
+
+#: bika/lims/profiles/default/actions.xml
+#: bika/lims/profiles/default/types/AnalysisRequestsFolder.xml
+#: bika/lims/profiles/default/types/Batch.xml
+msgid "Samples"
+msgstr "ตัวอย่างต่างๆ"
+
+#: bika/lims/profiles/default/types/SamplesFolder.xml
+msgid "SamplesFolder"
+msgstr "โฟลเดอร์ตัวอย่าง"
+
+#: bika/lims/profiles/default/types/SamplingDeviation.xml
+msgid "Sampling Deviation"
+msgstr "ตัวอย่างผันแปร"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/SamplingDeviations.xml
+msgid "Sampling Deviations"
+msgstr "ตัวอย่างผันแปรต่างๆ"
+
+#: bika/lims/profiles/default/types/SRTemplate.xml
+msgid "Sampling Round Template"
+msgstr "แบบการเวียนตัวอย่าง"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/Client.xml
+#: bika/lims/profiles/default/types/SRTemplates.xml
+msgid "Sampling Round Templates"
+msgstr "แบบการเวียนตัวอย่างทั้งหมด"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/Client.xml
+msgid "Sampling Rounds"
+msgstr "การเวียนตัวอย่าง"
+
+msgid "Sampling workflow"
+msgstr "ผังงานเก็บตัวอย่าง"
+
+#: bika/lims/profiles/default/types/Instrument.xml
+msgid "Schedule"
+msgstr "นัดหมาย"
+
+msgid "Schedule sampling"
+msgstr "นัดหมายเพื่อเก็บตัวอย่าง"
+
+msgid "Scheduled sampling"
+msgstr "นัดหมายเก็บตัวอย่างแล้ว"
+
+#: bika/lims/profiles/default/types/BikaSetup.xml
+msgid "Setup"
+msgstr "ติดตั้ง"
+
+#: bika/lims/profiles/default/actions.xml
+msgid "Sharing"
+msgstr "ใช้ร่วมกัน"
+
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
+msgid "Small Sticker"
+msgstr "สติ๊กเกอร์ดวงเล็ก"
+
+#: bika/lims/profiles/default/types/InvoiceFolder.xml
+msgid "Statements"
+msgstr "สเตทเมนท์ทั้งหมด"
+
+#: bika/lims/profiles/default/types/Batch.xml
+#: bika/lims/profiles/default/types/ReferenceSample.xml
+#: bika/lims/profiles/default/types/Worksheet.xml
+msgid "Sticker"
+msgstr "สตื๊กเกอร์"
+
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
+#: bika/lims/profiles/default/types/Batch.xml
+#: bika/lims/profiles/default/types/ReferenceSample.xml
+msgid "Stickers preview"
+msgstr "แสดงสตื๊กเกอร์"
+
+#: bika/lims/profiles/default/types/StorageLocation.xml
+msgid "Storage Location"
+msgstr "แหล่งเก็บ"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/StorageLocations.xml
+msgid "Storage Locations"
+msgstr "รายการแหล่งเก็บ"
+
+#: bika/lims/profiles/default/types/SubGroup.xml
+msgid "Sub-group"
+msgstr "กลุ่มย่อย"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/SubGroups.xml
+msgid "Sub-groups"
+msgstr "รายการกลุ่มย่อย"
+
+msgid "Submit"
+msgstr "ส่ง"
+
+msgid "Submit for verification"
+msgstr "ส่งไปตรวจสอบ"
+
+#: bika/lims/profiles/default/types/Supplier.xml
+msgid "Supplier"
+msgstr "ผู้จำหน่าย"
+
+#: bika/lims/profiles/default/actions.xml
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/Suppliers.xml
+msgid "Suppliers"
+msgstr "รายการผู้จำหน่าย"
+
+#: bika/lims/profiles/default/types/SupplyOrder.xml
+msgid "Supply Order"
+msgstr "การสั่งซื้อ"
+
+#: bika/lims/profiles/default/types/SupplyOrderFolder.xml
+msgid "Supply Orders"
+msgstr "รายการสั่งซื้อ"
+
+msgid "To be preserved"
+msgstr "ต้องนำไปเก็บ"
+
+msgid "To be sampled"
+msgstr "ต้องเตรียมตัวอย่าง"
+
+msgid "To be verified"
+msgstr "ต้องตรวจสอบ"
+
+msgid "Unpublished"
+msgstr "ไม่ตีพิมพ์"
+
+msgid "Unsassign"
+msgstr "ไม่แจกงาน"
+
+msgid "Valid"
+msgstr "ใช้ได้"
+
+msgid "Validate"
+msgstr "ปรับแก้ให้สมบูรณ์"
+
+#: bika/lims/profiles/default/types/Instrument.xml
+msgid "Validations"
+msgstr "รายการปรับแก้ให้สมบูรณ์"
+
+msgid "Verified"
+msgstr "ตรวจแล้ว"
+
+msgid "Verify"
+msgstr "ตรวจ"
+
+#: bika/lims/profiles/default/types/ARImport.xml
+#: bika/lims/profiles/default/types/ARReport.xml
+#: bika/lims/profiles/default/types/ARTemplate.xml
+msgid "View"
+msgstr "แสดง"
+
+#: bika/lims/profiles/default/types/Worksheet.xml
+msgid "Worksheet"
+msgstr "ใบงาน"
+
+#: bika/lims/profiles/default/types/WorksheetTemplate.xml
+msgid "Worksheet Template"
+msgstr "แบบใบงาน"
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/WorksheetTemplates.xml
+msgid "Worksheet Templates"
+msgstr "แบบใบงานทั้งหมด"
+
+#: bika/lims/profiles/default/actions.xml
+#: bika/lims/profiles/default/types/WorksheetFolder.xml
+msgid "Worksheets"
+msgstr "ใบงานทั้งหมด"
+
+msgid "label_schema_Accounting"
+msgstr "label_schema_Accounting"
+
+msgid "label_schema_Address"
+msgstr "label_schema_Address"
+
+msgid "label_schema_Analyses"
+msgstr "label_schema_Analyses"
+
+msgid "label_schema_Analysis Templates"
+msgstr "label_schema_Analysis Templates"
+
+msgid "label_schema_Appearance"
+msgstr "label_schema_Appearance"
+
+msgid "label_schema_Bank details"
+msgstr "label_schema_Bank details"
+
+msgid "label_schema_Calculation"
+msgstr "label_schema_Calculation"
+
+msgid "label_schema_Container and Preservation"
+msgstr "label_schema_Container and Preservation"
+
+msgid "label_schema_Dates"
+msgstr "label_schema_Dates"
+
+msgid "label_schema_Description"
+msgstr "label_schema_Description"
+
+msgid "label_schema_Email Telephone Fax"
+msgstr "label_schema_Email Telephone Fax"
+
+msgid "label_schema_ID Server"
+msgstr "label_schema_ID Server"
+
+msgid "label_schema_Labels"
+msgstr "label_schema_Labels"
+
+msgid "label_schema_Layout"
+msgstr "label_schema_Layout"
+
+msgid "label_schema_Location"
+msgstr "label_schema_Location"
+
+msgid "label_schema_Method"
+msgstr "label_schema_Method"
+
+msgid "label_schema_Notifications"
+msgstr "label_schema_Notifications"
+
+msgid "label_schema_Preferences"
+msgstr "label_schema_Preferences"
+
+msgid "label_schema_Publication preference"
+msgstr "label_schema_Publication preference"
+
+msgid "label_schema_Reference Values"
+msgstr "label_schema_Reference Values"
+
+msgid "label_schema_Reflex Rule Folder"
+msgstr "label_schema_Reflex Rule Folder"
+
+msgid "label_schema_Result Options"
+msgstr "label_schema_Result Options"
+
+msgid "label_schema_Results Reports"
+msgstr "label_schema_Results Reports"
+
+msgid "label_schema_SR Templates"
+msgstr "label_schema_SR Templates"
+
+msgid "label_schema_Sample Partitions"
+msgstr "label_schema_Sample Partitions"
+
+msgid "label_schema_Sample Templates"
+msgstr "label_schema_Sample Templates"
+
+msgid "label_schema_Sampling"
+msgstr "label_schema_Sampling"
+
+# Setup Schemata
+msgid "label_schema_Security"
+msgstr "label_schema_Security"
+
+msgid "label_schema_Sticker"
+msgstr "label_schema_Sticker"
+
+msgid "label_schema_Uncertainties"
+msgstr "label_schema_Uncertainties"

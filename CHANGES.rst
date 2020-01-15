@@ -17,6 +17,8 @@ Changelog
 
 **Changed**
 
+- #1495 Better Remarks handling and display
+- #1502 Improved DateTime Widget
 - #1490 Support Dexterity Behavior Fields in API
 - #1488 Support Dexterity Contents in Catalog Indexers
 - #1486 Clean-up of indexes and metadata from `setup_catalog`
@@ -29,6 +31,8 @@ Changelog
 
 **Fixed**
 
+- #1503 Avoid duplicate CSS IDs in multi-column Add form
+- #1501 Fix Attribute Error in Reference Sample Popup
 - #1493 jsonapi.read omits `include_methods` when a single parameter is used
 - #1494 Fix KeyError in Sample Type Listing
 - #1477 Sample edit form - some selection widgets empty
