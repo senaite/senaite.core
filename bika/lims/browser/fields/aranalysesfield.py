@@ -103,17 +103,6 @@ class ARAnalysesField(ObjectField):
         # Current assigned analyses
         analyses = instance.objectValues("Analysis")
 
-        # Submitted analyses must be retained
-        submitted = filter(lambda an: ISubmitted.providedBy(an), analyses)
-
-        # Prevent removing all analyses
-        #
-        # N.B.: Submitted analyses are rendered disabled in the HTML form.
-        #       Therefore, their UIDs are not included in the submitted UIDs.
-        if not items and not submitted:
-            logger.warn("Not allowed to remove all Analyses from AR.")
-            return []
-
         # Bail out if the items is not a list type
         if not isinstance(items, (list, tuple)):
             raise TypeError(
@@ -181,7 +170,7 @@ class ARAnalysesField(ObjectField):
                 continue
 
             # Skip non-open Analyses
-            if analysis in submitted:
+            if ISubmitted.providedBy(analysis):
                 continue
 
             # Remember assigned attachments
