@@ -155,17 +155,20 @@ class ARAnalysesField(ObjectField):
             prices = dict()
 
         # Add analyses
+        # The returned analyses can contain either newly created analyses or
+        # analyses from partitions and/or ancestors
         new_analyses = map(lambda service:
                            self.add_analysis(instance, service, prices, hidden),
                            services)
 
-        # DELETE ANALYSES
+        # Remove analyses
+        # Since Manage Analyses view displays the analyses from partitions, we
+        # also need to take them into consideration here. Analyses from
+        # ancestors can be omitted
+        analyses.extend(self.get_analyses_from_descendants(instance))
 
         # Service UIDs
         service_uids = map(api.get_uid, services)
-
-        # Analyses IDs to delete
-        delete_ids = []
 
         # Assigned Attachments
         assigned_attachments = []
@@ -191,11 +194,9 @@ class ARAnalysesField(ObjectField):
             if worksheet:
                 worksheet.removeAnalysis(analysis)
 
-            delete_ids.append(analysis.getId())
-
-        if delete_ids:
-            # Note: subscriber might promote the AR
-            instance.manage_delObjects(ids=delete_ids)
+            # Remove the analysis
+            # Note the analysis might belong to a partition
+            analysis.aq_parent.manage_delObjects(ids=[api.get_id(analysis)])
 
         # Remove orphaned attachments
         for attachment in assigned_attachments:
@@ -257,13 +258,20 @@ class ARAnalysesField(ObjectField):
         logger.info("Creating new analysis '{}'".format(service.getKeyword()))
         return create_analysis(instance, service)
 
+    def get_analyses_from_descendants(self, instance):
+        """Returns all the analyses from descendants
+        """
+        analyses = []
+        for descendant in instance.getDescendants(all_descendants=True):
+            analyses.extend(descendant.objectValues("Analysis"))
+        return analyses
+
     def get_from_instance(self, instance, service):
         """Returns an analysis for the given service from the instance
         """
-        # Note we filter by keyword cause services are history-aware
-        keyword = service.getKeyword()
+        service_uid = api.get_uid(service)
         for analysis in instance.objectValues("Analysis"):
-            if analysis.getKeyword() == keyword:
+            if analysis.getServiceUID() == service_uid:
                 return analysis
         return None
 
