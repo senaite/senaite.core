@@ -22,22 +22,22 @@ import itertools
 
 from AccessControl import ClassSecurityInfo
 from AccessControl import Unauthorized
+from Products.Archetypes.Registry import registerField
+from Products.Archetypes.public import Field
+from Products.Archetypes.public import ObjectField
+from Products.CMFCore.utils import getToolByName
+from zope.interface import implements
+
 from bika.lims import api
 from bika.lims import logger
 from bika.lims.api.security import check_permission
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
-from bika.lims.interfaces import IAnalysis, ISubmitted
-from bika.lims.interfaces import IAnalysisService
 from bika.lims.interfaces import IARAnalysesField
-from bika.lims.interfaces import IBaseAnalysis
+from bika.lims.interfaces import IAnalysis
+from bika.lims.interfaces import IAnalysisService
+from bika.lims.interfaces import ISubmitted
 from bika.lims.permissions import AddAnalysis
 from bika.lims.utils.analysis import create_analysis
-from Products.Archetypes.public import Field
-from Products.Archetypes.public import ObjectField
-from Products.Archetypes.Registry import registerField
-from Products.Archetypes.utils import shasattr
-from Products.CMFCore.utils import getToolByName
-from zope.interface import implements
 
 """Field to manage Analyses on ARs
 
@@ -100,9 +100,6 @@ class ARAnalysesField(ObjectField):
         :type hidden: list
         :returns: list of new assigned Analyses
         """
-        # Current assigned analyses
-        analyses = instance.objectValues("Analysis")
-
         # Bail out if the items is not a list type
         if not isinstance(items, (list, tuple)):
             raise TypeError(
@@ -153,7 +150,8 @@ class ARAnalysesField(ObjectField):
         # Remove analyses
         # Since Manage Analyses view displays the analyses from partitions, we
         # also need to take them into consideration here. Analyses from
-        # ancestors can be omitted
+        # ancestors can be omitted.
+        analyses = instance.objectValues("Analysis")
         analyses.extend(self.get_analyses_from_descendants(instance))
 
         # Service UIDs
