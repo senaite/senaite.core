@@ -146,6 +146,7 @@ class ARAnalysesField(ObjectField):
         new_analyses = map(lambda service:
                            self.add_analysis(instance, service, prices, hidden),
                            services)
+        new_analyses = filter(None, new_analyses)
 
         # Remove analyses
         # Since Manage Analyses view displays the analyses from partitions, we
@@ -198,18 +199,30 @@ class ARAnalysesField(ObjectField):
 
     def add_analysis(self, instance, service, prices, hidden):
         service_uid = api.get_uid(service)
+        new_analysis = False
 
         # Gets the analysis or creates the analysis for this service
         # Note this analysis might not belong to this current instance, but
         # from a descendant (partition)
         analysis = self.resolve_analysis(instance, service)
+        if not analysis:
+            # Create the analysis
+            new_analysis = True
+            keyword = service.getKeyword()
+            logger.info("Creating new analysis '{}'".format(keyword))
+            analysis = create_analysis(instance, service)
 
         # Set the hidden status
         analysis.setHidden(hidden.get(service_uid, False))
 
         # Set the price of the Analysis
         analysis.setPrice(prices.get(service_uid, service.getPrice()))
-        return analysis
+
+        # Only return the analysis if is a new one
+        if new_analysis:
+            return analysis
+
+        return None
 
     def resolve_analysis(self, instance, service):
         """Resolves an analysis for the service and instance
@@ -241,9 +254,7 @@ class ARAnalysesField(ObjectField):
             logger.info("Analysis {} is from a descendant".format(analysis_id))
             return from_descendant
 
-        # Create the analysis
-        logger.info("Creating new analysis '{}'".format(service.getKeyword()))
-        return create_analysis(instance, service)
+        return None
 
     def get_analyses_from_descendants(self, instance):
         """Returns all the analyses from descendants
