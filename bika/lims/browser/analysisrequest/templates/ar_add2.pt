@@ -458,7 +458,6 @@
                                    style="height:auto;"
                                    tal:attributes="name string:${fieldname}:list;
                                                    value string:${service_uid};
-                                                   id string:cb_${service_uid};
                                                    class string:analysisservice-cb analysisservice-cb-${arnum};
                                                    alt service_title;
                                                    checked python:checked and 'checked' or '';"/>
