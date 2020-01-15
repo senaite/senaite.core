@@ -239,6 +239,9 @@ def upgrade(tool):
 
     # -------- ADD YOUR STUFF BELOW --------
 
+    # https://github.com/senaite/senaite.core/issues/1504
+    remove_cascaded_analyses_of_root_samples(portal)
+
     # Add additional JavaScripts to registry
     setup.runImportStepFromProfile(profile, "jsregistry")
 
@@ -261,6 +264,70 @@ def upgrade(tool):
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
+
+
+def remove_cascaded_analyses_of_root_samples(portal):
+    """Removes Analyses from Root Samples that belong to Partitions
+
+    https://github.com/senaite/senaite.core/issues/1504
+    """
+    logger.info("Removing cascaded analyses from Root Samples...")
+
+    # Query all root Samples
+    query = {
+        "isRootAncestor": True,
+        "sort_on": "created",
+        "sort_order": "ascending",
+    }
+    root_samples = api.search(query, "bika_catalog_analysisrequest_listing")
+    total = len(root_samples)
+    logger.info("{} Samples to check... ".format(total))
+
+    to_clean = []
+
+    for num, brain in enumerate(root_samples):
+        logger.debug("Checking Root Sample {}/{}".format(num+1, total))
+
+        # No Partitions, continue...
+        if not brain.getDescendantsUIDs:
+            continue
+
+        # get the root sample
+        root_sample = api.get_object(brain)
+        # get the contained analyses of the root sample
+        root_analyses = root_sample.objectIds(spec=["Analysis"])
+
+        analyses_to_remove = []
+
+        # check if a root analysis is located as well in one of the partitions
+        for partition in root_sample.getDescendants():
+            # get the contained analyses of the partition
+            part_analyses = partition.objectIds(spec=["Analysis"])
+            # filter analyses that cascade root analyses
+            cascaded = filter(lambda an: an in root_analyses, part_analyses)
+            # Some of the partition analyses cascade the root analyses
+            if cascaded:
+                # remember IDs to be removed from the root sample
+                analyses_to_remove.extend(cascaded)
+                logger.debug(
+                    "Sample {} contains cascaded Analyses of Partition {}: {}"
+                    .format(api.get_id(root_sample),
+                            api.get_id(partition),
+                            cascaded))
+
+        if analyses_to_remove:
+            # append to cleanup list
+            to_clean.append((root_sample, analyses_to_remove))
+
+    if to_clean:
+        logger.info("Found {} Root Samples that contain cascaded Analyses"
+                    .format(len(to_clean)))
+
+        # Uncomment before flight
+        # for sample, analyses in to_clean:
+        #     sample.manage_delObjects(analyses)
+
+    logger.info("Removing cascaded analyses from Root Samples... [DONE]")
 
 
 def reindex_client_fields(portal):
