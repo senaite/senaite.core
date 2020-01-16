@@ -104,6 +104,9 @@ class ARAnalysesField(ObjectField):
         :type hidden: list
         :returns: list of new assigned Analyses
         """
+        if items is None:
+            items = []
+
         # Bail out if the items is not a list type
         if not isinstance(items, (list, tuple)):
             raise TypeError(
