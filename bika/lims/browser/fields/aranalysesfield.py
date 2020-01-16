@@ -141,8 +141,6 @@ class ARAnalysesField(ObjectField):
             prices = dict()
 
         # Add analyses
-        # The returned analyses can contain either newly created analyses or
-        # analyses from partitions and/or ancestors
         new_analyses = map(lambda service:
                            self.add_analysis(instance, service, prices, hidden),
                            services)
