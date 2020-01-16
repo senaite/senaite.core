@@ -82,7 +82,7 @@ class ARAnalysesField(ObjectField):
 
         # Do the search against the catalog
         query["portal_type"] = "Analysis"
-        query["getRequestUID"] = api.get_uid(instance)
+        query["getAncestorsUIDs"] = api.get_uid(instance)
         brains = catalog(query)
         if full_objects:
             return map(api.get_object, brains)
