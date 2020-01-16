@@ -341,6 +341,12 @@ def remove_cascaded_analyses_of_root_samples(portal):
                     .format(analysis_id, root_an_state,
                             api.get_id(sample), api.get_url(sample)))
 
+            # root analysis is in invalid state
+            elif root_an_state in ["rejected", "retracted"]:
+                # -> probably the retest was automatically created in the
+                #    parent instead of the partition
+                pass
+
             # partition analysis is in invalid state
             elif part_an_state in ["rejected", "retracted"]:
                 # -> probably the retest was automatically created in the
