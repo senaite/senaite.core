@@ -25,7 +25,6 @@ from AccessControl import Unauthorized
 from Products.Archetypes.Registry import registerField
 from Products.Archetypes.public import Field
 from Products.Archetypes.public import ObjectField
-from Products.CMFCore.utils import getToolByName
 from zope.interface import implements
 
 from bika.lims import api
@@ -73,16 +72,21 @@ class ARAnalysesField(ObjectField):
         :param kwargs: Keyword arguments to inject in the search query
         :returns: A list of Analysis Objects/Catalog Brains
         """
-        catalog = getToolByName(instance, CATALOG_ANALYSIS_LISTING)
-        query = dict(
-            [(k, v) for k, v in kwargs.items() if k in catalog.indexes()])
+        # Do we need to return objects or brains
+        full_objects = kwargs.get("full_objects", False)
+
+        # Bail out parameters from kwargs that don't match with indexes
+        catalog = api.get_tool(CATALOG_ANALYSIS_LISTING)
+        indexes = catalog.indexes()
+        query = dict([(k, v) for k, v in kwargs.items() if k in indexes])
+
+        # Do the search against the catalog
         query["portal_type"] = "Analysis"
         query["getRequestUID"] = api.get_uid(instance)
-        analyses = catalog(query)
-        if not kwargs.get("full_objects", False):
-            return analyses
-
-        return map(api.get_object, analyses)
+        brains = catalog(query)
+        if full_objects:
+            return map(api.get_object, brains)
+        return brains
 
     security.declarePrivate('set')
 
