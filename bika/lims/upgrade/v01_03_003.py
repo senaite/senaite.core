@@ -18,11 +18,15 @@
 # Copyright 2018-2019 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from collections import defaultdict
+from operator import itemgetter
+
 from bika.lims import api
 from bika.lims import logger
 from bika.lims.catalog.bikasetup_catalog import SETUP_CATALOG
 from bika.lims.config import PROJECTNAME as product
 from bika.lims.interfaces import ISubmitted
+from bika.lims.interfaces import IVerified
 from bika.lims.setuphandlers import setup_form_controller_actions
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
@@ -313,6 +317,9 @@ def remove_cascaded_analyses_of_root_samples(portal):
         if analysis_mapping:
             to_clean.append((root_sample, analysis_mapping))
 
+    # count the cases for each condition
+    case_counter = defaultdict(int)
+
     # cleanup cascaded analyses
     # mapping maps the analysis id -> partition
     for sample, mapping in to_clean:
@@ -332,6 +339,8 @@ def remove_cascaded_analyses_of_root_samples(portal):
             # WF state from the partition sample analysis
             part_an_state = api.get_workflow_status_of(part_an)
 
+            case_counter["{}_{}".format(root_an_state, part_an_state)] += 1
+
             # both analyses have the same WF state
             if root_an_state == part_an_state:
                 # -> remove the analysis from the root sample
@@ -340,6 +349,27 @@ def remove_cascaded_analyses_of_root_samples(portal):
                     "Remove analysis '{}' in state '{}' from sample {}: {}"
                     .format(analysis_id, root_an_state,
                             api.get_id(sample), api.get_url(sample)))
+
+            # both are in verified/published state
+            elif IVerified.providedBy(root_an) and IVerified.providedBy(part_an):
+                root_an_result = root_an.getResult()
+                part_an_result = root_an.getResult()
+                if root_an_result == part_an_result:
+                    # remove the root analysis
+                    sample._delObject(analysis_id)
+                    logger.info(
+                        "Remove analysis '{}' in state '{}' from sample {}: {}"
+                        .format(analysis_id, root_an_state,
+                                api.get_id(sample), api.get_url(sample)))
+                else:
+                    # -> unsolvable edge case
+                    #    display an error message
+                    logger.error(
+                        "Analysis '{}' of root sample in state '{}' "
+                        "and Analysis of partition in state {}. "
+                        "Please fix manually: {}"
+                        .format(analysis_id, root_an_state, part_an_state,
+                                api.get_url(sample)))
 
             # root analysis is in invalid state
             elif root_an_state in ["rejected", "retracted"]:
@@ -374,10 +404,15 @@ def remove_cascaded_analyses_of_root_samples(portal):
             # inconsistent state
             else:
                 logger.warning(
-                    "Can not handle analysis '{}' located in '{}' and '{}'"
-                    .format(analysis_id, repr(sample), repr(partition)))
+                    "Can not handle analysis '{}' located in '{}' (state {}) and '{}' (state {})"
+                    .format(analysis_id,
+                            repr(sample), root_an_state,
+                            repr(partition), part_an_state))
 
     logger.info("Removing cascaded analyses from Root Samples... [DONE]")
+
+    logger.info("State Combinations (root_an_state, part_an_state): {}"
+                .format(sorted(case_counter.items(), key=itemgetter(1), reverse=True)))
 
 
 def reindex_client_fields(portal):
