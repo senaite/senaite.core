@@ -66,6 +66,7 @@ Create some basic objects for the test:
     >>> Cu = api.create(setup.bika_analysisservices, "AnalysisService", title="Copper", Keyword="Cu", Price="15", Category=category.UID(), Accredited=True)
     >>> Fe = api.create(setup.bika_analysisservices, "AnalysisService", title="Iron", Keyword="Fe", Price="10", Category=category.UID())
     >>> Au = api.create(setup.bika_analysisservices, "AnalysisService", title="Gold", Keyword="Au", Price="20", Category=category.UID())
+    >>> Mg = api.create(setup.bika_analysisservices, "AnalysisService", title="Magnesium", Keyword="Mg", Price="20", Category=category.UID())
 
 
 Creation of a Sample with a Partition
@@ -285,5 +286,84 @@ while the function returns None:
     True
     >>> sample.objectValues("Analysis")
     []
+    >>> partition.objectValues("Analysis")
+    [<Analysis at /plone/clients/client-1/W-0001-P01/Cu>, <Analysis at /plone/clients/client-1/W-0001-P01/Fe>, <Analysis at /plone/clients/client-1/W-0001-P01/Au>]
+
+
+Set analyses
+------------
+
+If we try to set same analyses as before to the root sample, nothing happens
+because the analyses are already there:
+
+    >>> field.set(sample, [Cu, Fe, Au])
+    []
+
+The analyses still belong to the partition though:
+
+    >>> sample.objectValues("Analysis")
+    []
+    >>> partition.objectValues("Analysis")
+    [<Analysis at /plone/clients/client-1/W-0001-P01/Cu>, <Analysis at /plone/clients/client-1/W-0001-P01/Fe>, <Analysis at /plone/clients/client-1/W-0001-P01/Au>]
+
+Same result if I set the analyses to the partition:
+
+    >>> field.set(partition, [Cu, Fe, Au])
+    []
+    >>> sample.objectValues("Analysis")
+    []
+    >>> partition.objectValues("Analysis")
+    [<Analysis at /plone/clients/client-1/W-0001-P01/Cu>, <Analysis at /plone/clients/client-1/W-0001-P01/Fe>, <Analysis at /plone/clients/client-1/W-0001-P01/Au>]
+
+If I add a new analysis in the list, the analysis is successfully added:
+
+    >>> field.set(sample, [Cu, Fe, Au, Mg])
+    [<Analysis at /plone/clients/client-1/W-0001/Mg>]
+    >>> sample.objectValues("Analysis")
+    [<Analysis at /plone/clients/client-1/W-0001/Mg>]
+
+And the partition keeps its own analyses:
+
+    >>> partition.objectValues("Analysis")
+    [<Analysis at /plone/clients/client-1/W-0001-P01/Cu>, <Analysis at /plone/clients/client-1/W-0001-P01/Fe>, <Analysis at /plone/clients/client-1/W-0001-P01/Au>]
+
+Apply the changes:
+
+    >>> transaction.commit()
+
+If I set the same analyses to the partition, I don't get any result:
+
+    >>> field.set(partition, [Cu, Fe, Au, Mg])
+    []
+
+but, the `Mg` analysis has been moved into the partition:
+
+    >>> sample.objectValues("Analysis")
+    []
+    >>> partition.objectValues("Analysis")
+    [<Analysis at /plone/clients/client-1/W-0001-P01/Cu>, <Analysis at /plone/clients/client-1/W-0001-P01/Fe>, <Analysis at /plone/clients/client-1/W-0001-P01/Au>, <Analysis at /plone/clients/client-1/W-0001-P01/Mg>]
+
+To remove `Mg` analysis, pass the list without `Mg`:
+
+    >>> field.set(sample, [Cu, Fe, Au])
+    []
+
+The analysis `Mg` has been removed, although it belonged to the partition:
+
+    >>> sample.objectValues("Analysis")
+    []
+    >>> partition.objectValues("Analysis")
+    [<Analysis at /plone/clients/client-1/W-0001-P01/Cu>, <Analysis at /plone/clients/client-1/W-0001-P01/Fe>, <Analysis at /plone/clients/client-1/W-0001-P01/Au>]
+
+But if I add a new analysis to the primary and I try to remove it from the
+partition, nothing will happen:
+
+    >>> field.set(sample, [Cu, Fe, Au, Mg])
+    [<Analysis at /plone/clients/client-1/W-0001/Mg>]
+
+    >>> field.set(partition, [Cu, Fe, Au])
+    []
+    >>> sample.objectValues("Analysis")
+    [<Analysis at /plone/clients/client-1/W-0001/Mg>]
     >>> partition.objectValues("Analysis")
     [<Analysis at /plone/clients/client-1/W-0001-P01/Cu>, <Analysis at /plone/clients/client-1/W-0001-P01/Fe>, <Analysis at /plone/clients/client-1/W-0001-P01/Au>]
