@@ -18,15 +18,15 @@
 # Copyright 2018-2019 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from Products.Archetypes.config import UID_CATALOG
-
 from bika.lims import api
 from bika.lims import logger
 from bika.lims.catalog.bikasetup_catalog import SETUP_CATALOG
 from bika.lims.config import PROJECTNAME as product
+from bika.lims.interfaces import ISubmitted
 from bika.lims.setuphandlers import setup_form_controller_actions
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
+from Products.Archetypes.config import UID_CATALOG
 
 version = "1.3.3"  # Remember version number in metadata.xml and setup.py
 profile = "profile-{0}:default".format(product)
@@ -297,7 +297,8 @@ def remove_cascaded_analyses_of_root_samples(portal):
         # get the contained analyses of the root sample
         root_analyses = root_sample.objectIds(spec=["Analysis"])
 
-        analyses_to_remove = []
+        # Mapping of cascaded Analysis -> Partition
+        analysis_mapping = {}
 
         # check if a root analysis is located as well in one of the partitions
         for partition in root_sample.getDescendants():
@@ -305,39 +306,66 @@ def remove_cascaded_analyses_of_root_samples(portal):
             part_analyses = partition.objectIds(spec=["Analysis"])
             # filter analyses that cascade root analyses
             cascaded = filter(lambda an: an in root_analyses, part_analyses)
-            # Some of the partition analyses cascade the root analyses
-            if cascaded:
-                # remember IDs to be removed from the root sample
-                analyses_to_remove.extend(cascaded)
-                logger.debug(
-                    "Sample {} contains cascaded Analyses of Partition {}: {}"
-                    .format(api.get_id(root_sample),
-                            api.get_id(partition),
-                            cascaded))
+            # keep a mapping of analysis -> partition
+            for analysis in cascaded:
+                analysis_mapping[analysis] = partition
 
-        if analyses_to_remove:
-            # append to cleanup list
-            to_clean.append((root_sample, analyses_to_remove))
+        if analysis_mapping:
+            to_clean.append((root_sample, analysis_mapping))
 
-    if to_clean:
-        logger.info("Found {} Root Samples that contain cascaded Analyses"
-                    .format(len(to_clean)))
+    # cleanup cascaded analyses
+    # mapping maps the analysis id -> partition
+    for sample, mapping in to_clean:
 
-        for sample, analyses in to_clean:
-            sid = api.get_id(sample)
-            for analysis in analyses:
-                an = sample[analysis]
-                state = api.get_workflow_status_of(an)
-                if state != "unassigned":
-                    # XXX What to do when assigned, rejected ... ?
-                    pass
-                logger.info("Deleting Analysis '{}' in State '{}' from '{}'"
-                            .format(analysis, state, sid))
-                # Uncomment before flight
-                # sample._delObject(analysis)
+        # go through the cascaded analyses and decide if the cascaded analysis
+        # should be removed from (a) the root sample or (b) the partition.
 
-    logger.info("Removing cascaded analyses from {} Root Samples... [DONE]"
-                .format(len(to_clean)))
+        for analysis_id, partition in mapping.items():
+
+            # analysis from the root sample
+            root_an = sample[analysis_id]
+            # WF state from the root sample analysis
+            root_an_state = api.get_workflow_status_of(root_an)
+
+            # analysis from the partition sample
+            part_an = partition[analysis_id]
+            # WF state from the partition sample analysis
+            part_an_state = api.get_workflow_status_of(part_an)
+
+            # both analyses have the same WF state
+            if root_an_state == part_an_state:
+                # -> remove the analysis from the root sample
+                sample._delObject(analysis_id)
+                logger.info(
+                    "Remove analysis '{}' in state '{}' from sample {}: {}"
+                    .format(analysis_id, root_an_state,
+                            api.get_id(sample), api.get_url(sample)))
+
+            # root analysis was submitted, but not the partition analysis
+            elif ISubmitted.providedBy(root_an) and not ISubmitted.providedBy(part_an):
+                # -> remove the analysis from the partition
+                partition._delObject(analysis_id)
+                logger.info(
+                    "Remove analysis '{}' in state '{}' from partition {}: {}"
+                    .format(analysis_id, part_an_state,
+                            api.get_id(partition), api.get_url(partition)))
+
+            # partition analysis was submitted, but not the root analysis
+            elif ISubmitted.providedBy(part_an) and not ISubmitted.providedBy(root_an):
+                # -> remove the analysis from the root sample
+                sample._delObject(analysis_id)
+                logger.info(
+                    "Remove analysis '{}' in state '{}' from sample {}: {}"
+                    .format(analysis_id, root_an_state,
+                            api.get_id(sample), api.get_url(sample)))
+
+            # inconsistent state
+            else:
+                logger.warning(
+                    "Can not handle analysis '{}' located in '{}' and '{}'"
+                    .format(analysis_id, repr(sample), repr(partition)))
+
+    logger.info("Removing cascaded analyses from Root Samples... [DONE]")
 
 
 def reindex_client_fields(portal):
