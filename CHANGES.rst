@@ -7,6 +7,7 @@ Changelog
 
 **Added**
 
+- #1505 Display partition link in analyses listing
 - #1491 Enable Audit-logging for Dexterity Contents
 - #1489 Support Multiple Catalogs for Dexterity Contents
 - #1481 Filter Templates field when Sample Type is selected in Sample Add form
@@ -30,6 +31,7 @@ Changelog
 
 **Fixed**
 
+- #1505 Manage Analyses Form re-applies partitioned Analyses back to the Root
 - #1503 Avoid duplicate CSS IDs in multi-column Add form
 - #1501 Fix Attribute Error in Reference Sample Popup
 - #1493 jsonapi.read omits `include_methods` when a single parameter is used

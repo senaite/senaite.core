@@ -18,15 +18,19 @@
 # Copyright 2018-2019 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from Products.Archetypes.config import UID_CATALOG
+from collections import defaultdict
+from operator import itemgetter
 
 from bika.lims import api
 from bika.lims import logger
 from bika.lims.catalog.bikasetup_catalog import SETUP_CATALOG
 from bika.lims.config import PROJECTNAME as product
+from bika.lims.interfaces import ISubmitted
+from bika.lims.interfaces import IVerified
 from bika.lims.setuphandlers import setup_form_controller_actions
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
+from Products.Archetypes.config import UID_CATALOG
 
 version = "1.3.3"  # Remember version number in metadata.xml and setup.py
 profile = "profile-{0}:default".format(product)
@@ -239,6 +243,9 @@ def upgrade(tool):
 
     # -------- ADD YOUR STUFF BELOW --------
 
+    # https://github.com/senaite/senaite.core/issues/1504
+    remove_cascaded_analyses_of_root_samples(portal)
+
     # Add additional JavaScripts to registry
     setup.runImportStepFromProfile(profile, "jsregistry")
 
@@ -261,6 +268,151 @@ def upgrade(tool):
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
+
+
+def remove_cascaded_analyses_of_root_samples(portal):
+    """Removes Analyses from Root Samples that belong to Partitions
+
+    https://github.com/senaite/senaite.core/issues/1504
+    """
+    logger.info("Removing cascaded analyses from Root Samples...")
+
+    # Query all root Samples
+    query = {
+        "isRootAncestor": True,
+        "sort_on": "created",
+        "sort_order": "ascending",
+    }
+    root_samples = api.search(query, "bika_catalog_analysisrequest_listing")
+    total = len(root_samples)
+    logger.info("{} Samples to check... ".format(total))
+
+    to_clean = []
+
+    for num, brain in enumerate(root_samples):
+        logger.debug("Checking Root Sample {}/{}".format(num+1, total))
+
+        # No Partitions, continue...
+        if not brain.getDescendantsUIDs:
+            continue
+
+        # get the root sample
+        root_sample = api.get_object(brain)
+        # get the contained analyses of the root sample
+        root_analyses = root_sample.objectIds(spec=["Analysis"])
+
+        # Mapping of cascaded Analysis -> Partition
+        analysis_mapping = {}
+
+        # check if a root analysis is located as well in one of the partitions
+        for partition in root_sample.getDescendants():
+            # get the contained analyses of the partition
+            part_analyses = partition.objectIds(spec=["Analysis"])
+            # filter analyses that cascade root analyses
+            cascaded = filter(lambda an: an in root_analyses, part_analyses)
+            # keep a mapping of analysis -> partition
+            for analysis in cascaded:
+                analysis_mapping[analysis] = partition
+
+        if analysis_mapping:
+            to_clean.append((root_sample, analysis_mapping))
+
+    # count the cases for each condition
+    case_counter = defaultdict(int)
+
+    # cleanup cascaded analyses
+    # mapping maps the analysis id -> partition
+    for sample, mapping in to_clean:
+
+        # go through the cascaded analyses and decide if the cascaded analysis
+        # should be removed from (a) the root sample or (b) the partition.
+
+        for analysis_id, partition in mapping.items():
+
+            # analysis from the root sample
+            root_an = sample[analysis_id]
+            # WF state from the root sample analysis
+            root_an_state = api.get_workflow_status_of(root_an)
+
+            # analysis from the partition sample
+            part_an = partition[analysis_id]
+            # WF state from the partition sample analysis
+            part_an_state = api.get_workflow_status_of(part_an)
+
+            case_counter["{}_{}".format(root_an_state, part_an_state)] += 1
+
+            # both analyses have the same WF state
+            if root_an_state == part_an_state:
+                # -> remove the analysis from the root sample
+                sample._delObject(analysis_id)
+                logger.info(
+                    "Remove analysis '{}' in state '{}' from sample {}: {}"
+                    .format(analysis_id, root_an_state,
+                            api.get_id(sample), api.get_url(sample)))
+
+            # both are in verified/published state
+            elif IVerified.providedBy(root_an) and IVerified.providedBy(part_an):
+                root_an_result = root_an.getResult()
+                part_an_result = root_an.getResult()
+                if root_an_result == part_an_result:
+                    # remove the root analysis
+                    sample._delObject(analysis_id)
+                    logger.info(
+                        "Remove analysis '{}' in state '{}' from sample {}: {}"
+                        .format(analysis_id, root_an_state,
+                                api.get_id(sample), api.get_url(sample)))
+                else:
+                    # -> unsolvable edge case
+                    #    display an error message
+                    logger.error(
+                        "Analysis '{}' of root sample in state '{}' "
+                        "and Analysis of partition in state {}. "
+                        "Please fix manually: {}"
+                        .format(analysis_id, root_an_state, part_an_state,
+                                api.get_url(sample)))
+
+            # root analysis is in invalid state
+            elif root_an_state in ["rejected", "retracted"]:
+                # -> probably the retest was automatically created in the
+                #    parent instead of the partition
+                pass
+
+            # partition analysis is in invalid state
+            elif part_an_state in ["rejected", "retracted"]:
+                # -> probably the retest was automatically created in the
+                #    parent instead of the partition
+                pass
+
+            # root analysis was submitted, but not the partition analysis
+            elif ISubmitted.providedBy(root_an) and not ISubmitted.providedBy(part_an):
+                # -> remove the analysis from the partition
+                partition._delObject(analysis_id)
+                logger.info(
+                    "Remove analysis '{}' in state '{}' from partition {}: {}"
+                    .format(analysis_id, part_an_state,
+                            api.get_id(partition), api.get_url(partition)))
+
+            # partition analysis was submitted, but not the root analysis
+            elif ISubmitted.providedBy(part_an) and not ISubmitted.providedBy(root_an):
+                # -> remove the analysis from the root sample
+                sample._delObject(analysis_id)
+                logger.info(
+                    "Remove analysis '{}' in state '{}' from sample {}: {}"
+                    .format(analysis_id, root_an_state,
+                            api.get_id(sample), api.get_url(sample)))
+
+            # inconsistent state
+            else:
+                logger.warning(
+                    "Can not handle analysis '{}' located in '{}' (state {}) and '{}' (state {})"
+                    .format(analysis_id,
+                            repr(sample), root_an_state,
+                            repr(partition), part_an_state))
+
+    logger.info("Removing cascaded analyses from Root Samples... [DONE]")
+
+    logger.info("State Combinations (root_an_state, part_an_state): {}"
+                .format(sorted(case_counter.items(), key=itemgetter(1), reverse=True)))
 
 
 def reindex_client_fields(portal):

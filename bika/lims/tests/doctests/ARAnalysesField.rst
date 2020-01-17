@@ -269,32 +269,15 @@ We expect to have just the `PH` Analysis again:
     >>> ar.objectValues("Analysis")
     [<Analysis at /plone/clients/client-1/water-0001/PH>]
 
-Removing all Analyses is prevented, because it can not be empty:
-
-    >>> new_analyses = field.set(ar, [])
-    >>> ar.objectValues("Analysis")
-    [<Analysis at /plone/clients/client-1/water-0001/PH>]
-
 The field can also handle UIDs of Analyses Services:
 
     >>> service_uids = map(api.get_uid, all_services)
     >>> new_analyses = field.set(ar, service_uids)
 
-We expect again to have the `CA` and `MG` Analyses as well:
-
-    >>> sorted(new_analyses, key=methodcaller('getId'))
-    [<Analysis at /plone/clients/client-1/water-0001/CA>, <Analysis at /plone/clients/client-1/water-0001/MG>]
-
-And all the three Analyses in total:
+We expect again to have all the three Analyses:
 
     >>> sorted(ar.objectValues("Analysis"), key=methodcaller("getId"))
     [<Analysis at /plone/clients/client-1/water-0001/CA>, <Analysis at /plone/clients/client-1/water-0001/MG>, <Analysis at /plone/clients/client-1/water-0001/PH>]
-
-Set again only the `PH` Analysis:
-
-    >>> new_analyses = field.set(ar, [analysisservice1])
-    >>> ar.objectValues("Analysis")
-    [<Analysis at /plone/clients/client-1/water-0001/PH>]
 
 The field should also handle catalog brains:
 
