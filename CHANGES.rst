@@ -31,6 +31,7 @@ Changelog
 
 **Fixed**
 
+- #1505 Manage Analyses Form re-applies partitioned Analyses back to the Root
 - #1503 Avoid duplicate CSS IDs in multi-column Add form
 - #1501 Fix Attribute Error in Reference Sample Popup
 - #1493 jsonapi.read omits `include_methods` when a single parameter is used
