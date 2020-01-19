@@ -25,6 +25,33 @@ from decimal import Decimal
 from urlparse import urljoin
 
 from AccessControl import ClassSecurityInfo
+from DateTime import DateTime
+from Products.ATExtensions.field import RecordsField
+from Products.Archetypes.Widget import RichWidget
+from Products.Archetypes.atapi import BaseFolder
+from Products.Archetypes.atapi import BooleanField
+from Products.Archetypes.atapi import BooleanWidget
+from Products.Archetypes.atapi import ComputedField
+from Products.Archetypes.atapi import ComputedWidget
+from Products.Archetypes.atapi import FileField
+from Products.Archetypes.atapi import FileWidget
+from Products.Archetypes.atapi import FixedPointField
+from Products.Archetypes.atapi import ReferenceField
+from Products.Archetypes.atapi import StringField
+from Products.Archetypes.atapi import StringWidget
+from Products.Archetypes.atapi import TextField
+from Products.Archetypes.atapi import registerType
+from Products.Archetypes.public import Schema
+from Products.Archetypes.references import HoldingReference
+from Products.CMFCore.permissions import ModifyPortalContent
+from Products.CMFCore.permissions import View
+from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import _createObjectByType
+from Products.CMFPlone.utils import safe_unicode
+from zope.interface import alsoProvides
+from zope.interface import implements
+from zope.interface import noLongerProvides
+
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import deprecated
@@ -34,6 +61,7 @@ from bika.lims.browser.fields import DateTimeField
 from bika.lims.browser.fields import DurationField
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.fields.remarksfield import RemarksField
+from bika.lims.browser.fields.specificationsfield import SpecificationsField
 from bika.lims.browser.widgets import DateTimeWidget
 from bika.lims.browser.widgets import DecimalWidget
 from bika.lims.browser.widgets import PrioritySelectionWidget
@@ -47,7 +75,6 @@ from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.catalog.bika_catalog import BIKA_CATALOG
 from bika.lims.config import PRIORITIES
 from bika.lims.config import PROJECTNAME
-from bika.lims.content.analysisspec import ResultsRangeDict
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.content.clientawaremixin import ClientAwareMixin
 from bika.lims.interfaces import IAnalysisRequest
@@ -81,8 +108,8 @@ from bika.lims.permissions import FieldEditRemarks
 from bika.lims.permissions import FieldEditResultsInterpretation
 from bika.lims.permissions import FieldEditSampleCondition
 from bika.lims.permissions import FieldEditSamplePoint
-from bika.lims.permissions import FieldEditSampler
 from bika.lims.permissions import FieldEditSampleType
+from bika.lims.permissions import FieldEditSampler
 from bika.lims.permissions import FieldEditSamplingDate
 from bika.lims.permissions import FieldEditSamplingDeviation
 from bika.lims.permissions import FieldEditSamplingRound
@@ -97,32 +124,6 @@ from bika.lims.utils import user_email
 from bika.lims.utils import user_fullname
 from bika.lims.workflow import getTransitionDate
 from bika.lims.workflow import getTransitionUsers
-from DateTime import DateTime
-from Products.Archetypes.atapi import BaseFolder
-from Products.Archetypes.atapi import BooleanField
-from Products.Archetypes.atapi import BooleanWidget
-from Products.Archetypes.atapi import ComputedField
-from Products.Archetypes.atapi import ComputedWidget
-from Products.Archetypes.atapi import FileField
-from Products.Archetypes.atapi import FileWidget
-from Products.Archetypes.atapi import FixedPointField
-from Products.Archetypes.atapi import ReferenceField
-from Products.Archetypes.atapi import StringField
-from Products.Archetypes.atapi import StringWidget
-from Products.Archetypes.atapi import TextField
-from Products.Archetypes.atapi import registerType
-from Products.Archetypes.public import Schema
-from Products.Archetypes.references import HoldingReference
-from Products.Archetypes.Widget import RichWidget
-from Products.ATExtensions.field import RecordsField
-from Products.CMFCore.permissions import ModifyPortalContent
-from Products.CMFCore.permissions import View
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import _createObjectByType
-from Products.CMFPlone.utils import safe_unicode
-from zope.interface import alsoProvides
-from zope.interface import implements
-from zope.interface import noLongerProvides
 
 IMG_SRC_RX = re.compile(r'<img.*?src="(.*?)"')
 IMG_DATA_SRC_RX = re.compile(r'<img.*?src="(data:image/.*?;base64,)(.*?)"')
@@ -685,6 +686,7 @@ schema = BikaSchema.copy() + Schema((
             base_query={"is_active": True,
                         "sort_on": "sortable_title",
                         "sort_order": "ascending"},
+            search_fields=('listing_searchable_text',),
             colModel=[
                 {'columnName': 'contextual_title',
                  'width': '30',
@@ -702,13 +704,16 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
-    # see setResultsRange below.
-    RecordsField(
-        'ResultsRange',
-        required=0,
-        type='resultsrange',
-        subfields=('keyword', 'min', 'max', 'warn_min', 'warn_max', 'hidemin',
-                   'hidemax', 'rangecomment', 'min_operator', 'max_operator'),
+    # Field to keep the result ranges from the specification initially set
+    # through "Specifications" field. This guarantees that the result ranges
+    # set by default to this Sample won't change even if the Specifications
+    # object referenced gets modified thereafter.
+    # This field does not consider result ranges manually set to analyses.
+    # Therefore, is also used to "detect" changes between the result ranges
+    # specifically set to analyses and the results ranges set to the sample
+    SpecificationsField(
+        "ResultsRange",
+        write_permission=FieldEditSpecification,
         widget=ComputedWidget(visible=False),
     ),
 
@@ -1428,6 +1433,18 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         descr = " ".join((self.getId(), self.aq_parent.Title()))
         return safe_unicode(descr).encode('utf-8')
 
+    def setSpecification(self, value):
+        """Sets the Specifications and ResultRange values
+        """
+        self.getField("Specification").set(self, value)
+        # Set the value for field ResultsRange, so results ranges defined by
+        # the specification won't change for this Sample, even if they are
+        # changed later in the Specification object or result ranges are
+        # manually changed for the analyses this Sample contains
+        spec = self.getSpecification()
+        results_range = spec and spec.getResultsRange() or []
+        self.getField("ResultsRange").set(self, results_range)
+
     def getClient(self):
         """Returns the client this object is bound to. We override getClient
         from ClientAwareMixin because the "Client" schema field is only used to
@@ -1881,45 +1898,6 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         if sl:
             return sl.Title()
         return ''
-
-    @security.public
-    def getResultsRange(self):
-        """Returns the valid result ranges for the analyses this Analysis
-        Request contains.
-
-        By default uses the result ranges defined in the Analysis Specification
-        set in "Specification" field if any. Values manually set through
-        `ResultsRange` field for any given analysis keyword have priority over
-        the result ranges defined in "Specification" field.
-
-        :return: A list of dictionaries, where each dictionary defines the
-            result range to use for any analysis contained in this Analysis
-            Request for the keyword specified. Each dictionary has, at least,
-                the following keys: "keyword", "min", "max"
-        :rtype: dict
-        """
-        specs_range = []
-        specification = self.getSpecification()
-        if specification:
-            specs_range = specification.getResultsRange()
-            specs_range = specs_range and specs_range or []
-
-        # Override with AR's custom ranges
-        ar_range = self.Schema().getField("ResultsRange").get(self)
-        if not ar_range:
-            return specs_range
-
-        # Remove those analysis ranges that neither min nor max are floatable
-        an_specs = [an for an in ar_range if
-                    api.is_floatable(an.get('min', None)) or
-                    api.is_floatable(an.get('max', None))]
-        # Want to know which are the analyses that needs to be overriden
-        keywords = map(lambda item: item.get('keyword'), an_specs)
-        # Get rid of those analyses to be overriden
-        out_specs = [sp for sp in specs_range if sp['keyword'] not in keywords]
-        # Add manually set ranges
-        out_specs.extend(an_specs)
-        return map(lambda spec: ResultsRangeDict(spec), out_specs)
 
     def getDatePublished(self):
         """

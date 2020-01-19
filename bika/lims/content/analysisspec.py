@@ -30,6 +30,7 @@ from zope.interface import implements
 
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import UIDReferenceField
+from bika.lims.browser.fields.specificationsfield import SpecificationsField
 from bika.lims.browser.widgets import AnalysisSpecificationWidget
 from bika.lims.browser.widgets import ReferenceWidget
 from bika.lims.catalog.bikasetup_catalog import SETUP_CATALOG
@@ -60,42 +61,10 @@ schema = Schema((
 
 )) + BikaSchema.copy() + Schema((
 
-    RecordsField(
+    SpecificationsField(
         'ResultsRange',
-        # schemata = 'Specifications',
         required=1,
-        type='resultsrange',
-        subfields=(
-            'keyword',
-            'min_operator',
-            'min',
-            'max_operator',
-            'max',
-            'warn_min',
-            'warn_max',
-            'hidemin',
-            'hidemax',
-            'rangecomment'
-        ),
-        required_subfields=('keyword',),
-        subfield_validators={
-            'min': 'analysisspecs_validator',
-            'max': 'analysisspecs_validator',
-        },
-        subfield_labels={
-            'keyword': _('Analysis Service'),
-            'min_operator': _('Min operator'),
-            'min': _('Min'),
-            'max_operator': _('Max operator'),
-            'max': _('Max'),
-            'warn_min': _('Min warn'),
-            'warn_max': _('Max warn'),
-            'hidemin': _('< Min'),
-            'hidemax': _('> Max'),
-            'rangecomment': _('Range Comment'),
-        },
         widget=AnalysisSpecificationWidget(
-            checkbox_bound=0,
             label=_("Specifications"),
             description=_(
                 "'Min' and 'Max' values indicate a valid results range. Any "
