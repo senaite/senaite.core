@@ -20,7 +20,11 @@
 
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from plone.app.layout.viewlets import ViewletBase
+
+from bika.lims import FieldEditSpecification
 from bika.lims import api
+from bika.lims import logger
+from bika.lims.api.security import check_permission
 
 
 class InvalidAnalysisRequestViewlet(ViewletBase):
@@ -73,3 +77,37 @@ class DetachedPartitionViewlet(ViewletBase):
     detached from
     """
     template = ViewPageTemplateFile("templates/detached_partition_viewlet.pt")
+
+
+class ResultsRangesOutOfDateViewlet(ViewletBase):
+    """Print a viewlet that displays if results ranges from Sample are different
+    from results ranges initially set through Specifications field. If so, this
+    means the Specifications initially set have changed since they were set and
+    for new analyses, the old specifications will be kept
+    """
+
+    def is_specification_editable(self):
+        """Returns whether the Specification field is editable or not
+        """
+        return check_permission(FieldEditSpecification, self.context)
+
+    def is_results_ranges_out_of_date(self):
+        """Returns whether the value for ResultsRange field does not match with
+        the results ranges that come from the Specification assigned
+        """
+        sample = self.context
+        sample_rr = sample.getResultsRange()
+        if not sample_rr:
+            # No results ranges set to this Sample, do nothing
+            return False
+
+        specifications = sample.getSpecification()
+        if not specifications:
+            # This should never happen
+            logger.error("No specifications, but results ranges set for {}"
+                         .format(api.get_id(sample)))
+            return False
+
+        # Compare if results ranges are different
+        spec_rr = specifications.getResultsRange()
+        return sample_rr != spec_rr
