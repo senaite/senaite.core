@@ -113,6 +113,21 @@ class IAnalysisRequest(Interface):
     """
 
 
+class IHaveDescendants(Interface):
+    """Marker interface for objects that have Descendants
+    """
+
+    def getDescendants(self, all_descendants=False):
+        """Returns descendants of this object
+        :param all_descendants: if True, returns all descendants from hierarchy
+        """
+
+
+class IAnalysisRequestWithPartitions(IHaveDescendants):
+    """Marker interface for Analysis Requests that have Partitions
+    """
+
+
 class IAnalysisRequestPartition(Interface):
     """Marker interface for Analysis Requests that are also Partitions
     """

@@ -21,10 +21,14 @@
 from collections import defaultdict
 from operator import itemgetter
 
+from zope.interface import alsoProvides
+
 from bika.lims import api
 from bika.lims import logger
+from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.catalog.bikasetup_catalog import SETUP_CATALOG
 from bika.lims.config import PROJECTNAME as product
+from bika.lims.interfaces import IAnalysisRequestWithPartitions
 from bika.lims.interfaces import ISubmitted
 from bika.lims.interfaces import IVerified
 from bika.lims.setuphandlers import setup_form_controller_actions
@@ -265,6 +269,9 @@ def upgrade(tool):
     # Redirect to worksheets folder when a Worksheet is removed
     # https://github.com/senaite/senaite.core/pull/1480
     setup_form_controller_actions(portal)
+
+    # Mark primary samples with IAnalysisRequestPrimary
+    mark_samples_with_partitions(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
@@ -530,3 +537,24 @@ def add_index(catalog_id, index_name, index_metatype):
     catalog.addIndex(index_name, index_metatype)
     logger.info("Indexing new index '{}' ...".format(index_name))
     catalog.manage_reindexIndex(index_name)
+
+
+def mark_samples_with_partitions(portal):
+    logger.info("Marking Samples with partitions ...")
+    query = dict(portal_type="AnalysisRequest", isRootAncestor=False)
+    brains = api.search(query, CATALOG_ANALYSIS_REQUEST_LISTING)
+    total = len(brains)
+    for num, brain in enumerate(brains):
+        if num and num % 100 == 0:
+            logger.info("Marking samples with partitions: {}/{}"
+                        .format(num, total))
+        part = api.get_object(brain)
+        parent = part.getParentAnalysisRequest()
+        if not parent:
+            logger.error("Partition w/o Parent: {}".format(api.get_id(part)))
+
+        elif not IAnalysisRequestWithPartitions.providedBy(parent):
+            alsoProvides(parent, IAnalysisRequestWithPartitions)
+
+    logger.info("Marking Samples with partitions [DONE]")
+    api.search(query, CATALOG_ANALYSIS_REQUEST_LISTING)

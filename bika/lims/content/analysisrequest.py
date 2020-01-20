@@ -80,6 +80,7 @@ from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.content.clientawaremixin import ClientAwareMixin
 from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.interfaces import IAnalysisRequestPartition
+from bika.lims.interfaces import IAnalysisRequestWithPartitions
 from bika.lims.interfaces import IBatch
 from bika.lims.interfaces import ICancellable
 from bika.lims.interfaces import IClient
@@ -2273,11 +2274,16 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
     def setParentAnalysisRequest(self, value):
         """Sets a parent analysis request, making the current a partition
         """
+        parent = self.getParentAnalysisRequest()
         self.Schema().getField("ParentAnalysisRequest").set(self, value)
         if not value:
             noLongerProvides(self, IAnalysisRequestPartition)
+            if parent and not parent.getDescendants(all_descendants=False):
+                noLongerProvides(self, IAnalysisRequestWithPartitions)
         else:
             alsoProvides(self, IAnalysisRequestPartition)
+            parent = self.getParentAnalysisRequest()
+            alsoProvides(parent, IAnalysisRequestWithPartitions)
 
     def getSecondaryAnalysisRequests(self):
         """Returns the secondary analysis requests from this analysis request

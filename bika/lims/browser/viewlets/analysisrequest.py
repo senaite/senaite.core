@@ -25,7 +25,6 @@ from bika.lims import FieldEditSpecification
 from bika.lims import api
 from bika.lims import logger
 from bika.lims.api.security import check_permission
-from zope.schema import getFields
 
 
 class InvalidAnalysisRequestViewlet(ViewletBase):
