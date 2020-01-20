@@ -1441,15 +1441,21 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         """
         self.getField("Specification").set(self, value)
 
-        # Set the value for field ResultsRange, so results ranges defined by
-        # the specification won't change for this Sample, even if they are
-        # changed later in the Specification object or result ranges are
-        # manually changed for the analyses this Sample contains
+        # Set the value for field ResultsRange, cause Specification is only used
+        # as a template: all the results range logic relies on ResultsRange
+        # field, so changes in setup's Specification object won't have effect to
+        # already created samples
         spec = self.getSpecification()
-        results_range = spec and spec.getResultsRange() or []
-        self.getField("ResultsRange").set(self, results_range)
+        if spec:
+            # Update only results ranges if specs is not None, so results ranges
+            # manually set previously (e.g. via ManageAnalyses view) are
+            # preserved unless a new Specification overrides them
+            self.getField("ResultsRange").set(self, spec.getResultsRange())
 
-        # Apply same change to partitions
+        # Cascade the changes to partitions, but only to those for which that
+        # are in a status in which the specification can be updated. This
+        # prevents the re-assignment of Specifications to already verified or
+        # published samples
         permission = self.getField("Specification").write_permission
         for descendant in self.getDescendants(all_descendants=True):
             if check_permission(permission, descendant):

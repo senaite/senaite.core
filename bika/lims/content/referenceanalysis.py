@@ -120,7 +120,9 @@ class ReferenceAnalysis(AbstractAnalysis):
         :return: A dictionary with the keys min and max
         :rtype: dict
         """
-        specs = ResultsRangeDict(result="")
+        specs = ResultsRangeDict(uid=api.get_uid(self),
+                                 keyword=self.getKeyword(),
+                                 result="")
         sample = self.getSample()
         if not sample:
             return specs

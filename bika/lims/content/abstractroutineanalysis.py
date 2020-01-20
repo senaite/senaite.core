@@ -21,6 +21,15 @@
 from datetime import timedelta
 
 from AccessControl import ClassSecurityInfo
+from Products.ATContentTypes.utils import DT2dt
+from Products.ATContentTypes.utils import dt2DT
+from Products.Archetypes.Field import BooleanField
+from Products.Archetypes.Field import FixedPointField
+from Products.Archetypes.Field import StringField
+from Products.Archetypes.Schema import Schema
+from Products.CMFCore.permissions import View
+from zope.interface import implements
+
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import UIDReferenceField
@@ -28,7 +37,6 @@ from bika.lims.browser.widgets import DecimalWidget
 from bika.lims.catalog.indexers.baseanalysis import sortable_title
 from bika.lims.content.abstractanalysis import AbstractAnalysis
 from bika.lims.content.abstractanalysis import schema
-from bika.lims.content.analysisspec import ResultsRangeDict
 from bika.lims.content.clientawaremixin import ClientAwareMixin
 from bika.lims.content.reflexrule import doReflexRuleAction
 from bika.lims.interfaces import IAnalysis
@@ -36,15 +44,6 @@ from bika.lims.interfaces import ICancellable
 from bika.lims.interfaces import IRoutineAnalysis
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.workflow import getTransitionDate
-from Products.Archetypes.Field import BooleanField
-from Products.Archetypes.Field import FixedPointField
-from Products.Archetypes.Field import StringField
-from Products.Archetypes.Schema import Schema
-from Products.ATContentTypes.utils import DT2dt
-from Products.ATContentTypes.utils import dt2DT
-from Products.CMFCore.permissions import View
-from zope.interface import implements
-
 
 # True if the analysis is created by a reflex rule
 IsReflexAnalysis = BooleanField(
@@ -111,7 +110,6 @@ HiddenManually = BooleanField(
     'HiddenManually',
     default=False,
 )
-
 
 schema = schema.copy() + Schema((
     IsReflexAnalysis,
@@ -331,31 +329,6 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
         request = self.getRequest()
         if request:
             return request.getPrinted()
-
-    @security.public
-    def getResultsRange(self):
-        """Returns the valid result range for this routine analysis based on the
-        results ranges defined in the Analysis Request this routine analysis is
-        assigned to.
-
-        A routine analysis will be considered out of range if it result falls
-        out of the range defined in "min" and "max". If there are values set for
-        "warn_min" and "warn_max", these are used to compute the shoulders in
-        both ends of the range. Thus, an analysis can be out of range, but be
-        within shoulders still.
-        :return: A dictionary with keys "min", "max", "warn_min" and "warn_max"
-        :rtype: dict
-        """
-        specs = ResultsRangeDict()
-        analysis_request = self.getRequest()
-        if not analysis_request:
-            return specs
-
-        keyword = self.getKeyword()
-        ar_ranges = analysis_request.getResultsRange()
-        # Get the result range that corresponds to this specific analysis
-        an_range = [rr for rr in ar_ranges if rr.get('keyword', '') == keyword]
-        return an_range and an_range[0] or specs
 
     @security.public
     def getSiblings(self, retracted=False):

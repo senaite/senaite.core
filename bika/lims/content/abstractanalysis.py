@@ -40,6 +40,7 @@ from bika.lims import workflow as wf
 from bika.lims.browser.fields import HistoryAwareReferenceField
 from bika.lims.browser.fields import InterimFieldsField
 from bika.lims.browser.fields import UIDReferenceField
+from bika.lims.browser.fields.specificationsfield import ResultsRangeField
 from bika.lims.browser.fields.uidreferencefield import get_backreferences
 from bika.lims.browser.widgets import RecordsWidget
 from bika.lims.config import LDL
@@ -148,6 +149,12 @@ InterimFields = InterimFieldsField(
     )
 )
 
+# Results Range that applies to this analysis
+ResultsRange = ResultsRangeField(
+    "ResultsRange",
+    required=0
+)
+
 schema = schema.copy() + Schema((
     AnalysisService,
     Analyst,
@@ -160,7 +167,8 @@ schema = schema.copy() + Schema((
     RetestOf,
     Uncertainty,
     Calculation,
-    InterimFields
+    InterimFields,
+    ResultsRange,
 ))
 
 
@@ -483,10 +491,6 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
         # Set the result field
         self.getField("Result").set(self, val)
-
-    @security.public
-    def getResultsRange(self):
-        raise NotImplementedError("getResultsRange is not implemented.")
 
     @security.public
     def calculateResult(self, override=False, cascade=False):

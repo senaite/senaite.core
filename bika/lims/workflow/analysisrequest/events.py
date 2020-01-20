@@ -202,3 +202,9 @@ def after_detach(analysis_request):
     # Reindex both the parent and the detached one
     analysis_request.reindexObject()
     parent.reindexObject()
+
+    # And the analyses too. aranalysesfield relies on a search against the
+    # catalog to return the analyses: calling `getAnalyses` to the parent
+    # will return all them, so no need to do the same with the detached
+    analyses = parent.getAnalyses(full_objects=True)
+    map(lambda an: an.reindexObject(), analyses)

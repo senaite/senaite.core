@@ -136,7 +136,7 @@ class ARAnalysesField(ObjectField):
         services = set(services + dependencies)
 
         # Modify existing AR specs with new form values of selected analyses.
-        self._update_specs(instance, specs)
+        specs = self.resolve_specs(instance, specs)
 
         # Create a mapping of Service UID -> Hidden status
         if hidden is None:
@@ -148,10 +148,11 @@ class ARAnalysesField(ObjectField):
             prices = dict()
 
         # Add analyses
-        new_analyses = map(lambda service:
-                           self.add_analysis(instance, service, prices, hidden),
-                           services)
-        new_analyses = filter(None, new_analyses)
+        new_analyses = []
+        for service in services:
+            an = self.add_analysis(instance, service, prices, hidden, specs)
+            if an:
+                new_analyses.append(an)
 
         # Remove analyses
         # Since Manage Analyses view displays the analyses from partitions, we
@@ -202,42 +203,122 @@ class ARAnalysesField(ObjectField):
 
         return new_analyses
 
-    def add_analysis(self, instance, service, prices, hidden):
+    def resolve_specs(self, instance, specs):
+        """Returns a dictionary where the key is the service_uid and the value
+        is its results range. If a result range for a given service does not
+        exist or does not match with the specs defined in the sample, the
+        function resets the Sample's Specification field to guarantee compliance
+        with the Specification value actually set
+        """
+        form_specs = specs or []
+
+        # Copy the passed in dict, otherwise the specification might be written
+        # directly to the attached specification of the sample
+        sample_specs = dict(map(lambda rr: (rr["uid"], rr.copy()),
+                                instance.getResultsRange()))
+
+        out_specs = dict()
+        reset_specification = False
+        for form_rr in form_specs:
+            service_uid = form_rr["uid"]
+            sample_rr = sample_specs.get(service_uid)
+            if not sample_rr:
+                # Sample's ResultsRange (a "copy" of Specification initially set
+                # does not contain a result range for this service
+                logger.info("Result range for {} not present in Sample's"
+                            .format(form_rr["keyword"]))
+                reset_specification = True
+
+            else:
+                # Clean-up the result range passed in
+                form_rr = self.resolve_result_range(form_rr, sample_rr)
+
+                if form_rr != sample_rr:
+                    # Result range for this service has been changed manually,
+                    # it does not match with sample's ResultRange
+                    logger.warn("Result Range for {} do not match with Sample's"
+                                .format(form_rr["keyword"]))
+                    reset_specification = True
+
+            # Generate the results_range format
+            out_specs[service_uid] = form_rr
+
+        if reset_specification:
+            # Reset the specification, cause the sample won't longer be fully
+            # compliant with the Specifications it has assigned
+            instance.setSpecification(None)
+
+            # We store the values in Sample's ResultsRange because although the
+            # specification is not met, we still want Sample's ResultsRange to
+            # act as a "template" for new analyses
+            instance.setResultsRange(out_specs.values())
+
+        return out_specs
+
+    def resolve_result_range(self, result_range, original):
+        """Cleans up the result range passed-in to match with same keys as the
+        original result range, that presumably comes from a Specification
+        """
+        if not original:
+            return result_range
+
+        # Remove keys-values not present in original
+        extra_keys = filter(lambda key: key not in original, result_range)
+        for key in extra_keys:
+            del result_range[key]
+
+        # Add keys-values not present in current result_range but in original
+        for key, val in original.items():
+            if key not in result_range:
+                result_range[key] = val
+
+        return result_range
+
+    def add_analysis(self, instance, service, prices, hidden, specs=None):
         service_uid = api.get_uid(service)
         new_analysis = False
 
         # Gets the analysis or creates the analysis for this service
-        # Note this analysis might not belong to this current instance, but
-        # from a descendant (partition)
-        analysis = self.resolve_analysis(instance, service)
-        if not analysis:
+        # Note this returns a list, because is possible to have multiple
+        # partitions with same analysis
+        analyses = self.resolve_analyses(instance, service)
+        if not analyses:
             # Create the analysis
             new_analysis = True
             keyword = service.getKeyword()
             logger.info("Creating new analysis '{}'".format(keyword))
             analysis = create_analysis(instance, service)
+            analyses.append(analysis)
 
-        # Set the hidden status
-        analysis.setHidden(hidden.get(service_uid, False))
+        for analysis in analyses:
+            # Set the hidden status
+            analysis.setHidden(hidden.get(service_uid, False))
 
-        # Set the price of the Analysis
-        analysis.setPrice(prices.get(service_uid, service.getPrice()))
+            # Set the price of the Analysis
+            analysis.setPrice(prices.get(service_uid, service.getPrice()))
+
+            # Set the result range to the Analysis
+            analysis_rr = specs.get(service_uid) or analysis.getResultsRange()
+            analysis.setResultsRange(analysis_rr)
+            analysis.reindexObject()
 
         # Only return the analysis if is a new one
         if new_analysis:
-            return analysis
+            return analyses[0]
 
         return None
 
-    def resolve_analysis(self, instance, service):
-        """Resolves an analysis for the service and instance
+    def resolve_analyses(self, instance, service):
+        """Resolves analyses for the service and instance
+        It returns a list, cause for a given sample, multiple analyses for same
+        service can exist due to the possibility of having multiple partitions
         """
+        analyses = []
+
         # Does the analysis exists in this instance already?
         analysis = self.get_from_instance(instance, service)
         if analysis:
-            keyword = service.getKeyword()
-            logger.info("Analysis for '{}' already exists".format(keyword))
-            return analysis
+            analyses.append(analysis)
 
         # Does the analysis exists in an ancestor?
         from_ancestor = self.get_from_ancestor(instance, service)
@@ -248,18 +329,12 @@ class ARAnalysesField(ObjectField):
             logger.info("Analysis {} is from an ancestor".format(analysis_id))
             cp = from_ancestor.aq_parent.manage_cutObjects(analysis_id)
             instance.manage_pasteObjects(cp)
-            return instance._getOb(analysis_id)
+            analyses.append(instance._getOb(analysis_id))
 
-        # Does the analysis exists in a descendant?
+        # Does the analysis exists in descendants?
         from_descendant = self.get_from_descendant(instance, service)
-        if from_descendant:
-            # The analysis already exists in a partition, keep it. The
-            # analysis from current instance will be masked otherwise
-            analysis_id = api.get_id(from_descendant)
-            logger.info("Analysis {} is from a descendant".format(analysis_id))
-            return from_descendant
-
-        return None
+        analyses.extend(from_descendant)
+        return analyses
 
     def get_analyses_from_descendants(self, instance):
         """Returns all the analyses from descendants
@@ -289,20 +364,20 @@ class ARAnalysesField(ObjectField):
         return analysis or self.get_from_ancestor(ancestor, service)
 
     def get_from_descendant(self, instance, service):
-        """Returns an analysis for the given service from descendants
+        """Returns analyses for the given service from descendants
         """
+        analyses = []
         for descendant in instance.getDescendants():
             # Does the analysis exists in the current descendant?
             analysis = self.get_from_instance(descendant, service)
             if analysis:
-                return analysis
+                analyses.append(analysis)
 
             # Search in descendants from current descendant
-            analysis = self.get_from_descendant(descendant, service)
-            if analysis:
-                return analysis
+            from_descendant = self.get_from_descendant(descendant, service)
+            analyses.extend(from_descendant)
 
-        return None
+        return analyses
 
     def _get_services(self, full_objects=False):
         """Fetch and return analysis service objects
@@ -344,33 +419,6 @@ class ARAnalysesField(ObjectField):
         logger.error("ARAnalysesField doesn't accept objects from {} type. "
                      "The object will be dismissed.".format(portal_type))
         return None
-
-    def _update_specs(self, instance, specs):
-        """Update AR specifications
-
-        :param instance: Analysis Request
-        :param specs: List of Specification Records
-        """
-
-        if specs is None:
-            return
-
-        # N.B. we copy the records here, otherwise the spec will be written to
-        #      the attached specification of this AR
-        rr = {item["keyword"]: item.copy()
-              for item in instance.getResultsRange()}
-        for spec in specs:
-            keyword = spec.get("keyword")
-            if keyword in rr:
-                # overwrite the instance specification only, if the specific
-                # analysis spec has min/max values set
-                if all([spec.get("min"), spec.get("max")]):
-                    rr[keyword].update(spec)
-                else:
-                    rr[keyword] = spec
-            else:
-                rr[keyword] = spec
-        return instance.setResultsRange(rr.values())
 
 
 registerField(ARAnalysesField,
