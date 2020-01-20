@@ -15,12 +15,10 @@
       <button type="button" class="close" data-dismiss="alert" aria-label="Close">
         <span aria-hidden="true">&times;</span>
       </button>
-      <strong i18n:translate="" tal:condition="python: not editable">Info</strong>
-      <strong i18n:translate="" tal:condition="python: editable">Warning</strong>
       <p class="title">
-        <span i18n:translate="">
-          Specification ranges have changed since they were assigned.
-        </span>
+        <strong i18n:translate="">
+          Specification ranges have changed since they were assigned
+        </strong>
       </p>
       <p class="description">
         <span tal:condition="python: editable" i18n:translate="">

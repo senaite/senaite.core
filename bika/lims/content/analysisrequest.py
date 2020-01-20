@@ -56,6 +56,7 @@ from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import deprecated
 from bika.lims import logger
+from bika.lims.api.security import check_permission
 from bika.lims.browser.fields import ARAnalysesField
 from bika.lims.browser.fields import DateTimeField
 from bika.lims.browser.fields import DurationField
@@ -669,6 +670,7 @@ schema = BikaSchema.copy() + Schema((
     ReferenceField(
         'Specification',
         required=0,
+        primary_bound=True,
         allowed_types='AnalysisSpec',
         relationship='AnalysisRequestAnalysisSpec',
         mode="rw",
@@ -1437,6 +1439,7 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         """Sets the Specifications and ResultRange values
         """
         self.getField("Specification").set(self, value)
+
         # Set the value for field ResultsRange, so results ranges defined by
         # the specification won't change for this Sample, even if they are
         # changed later in the Specification object or result ranges are
@@ -1444,6 +1447,12 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         spec = self.getSpecification()
         results_range = spec and spec.getResultsRange() or []
         self.getField("ResultsRange").set(self, results_range)
+
+        # Apply same change to partitions
+        permission = self.getField("Specification").write_permission
+        for descendant in self.getDescendants(all_descendants=True):
+            if check_permission(permission, descendant):
+                descendant.setSpecification(spec)
 
     def getClient(self):
         """Returns the client this object is bound to. We override getClient

@@ -25,6 +25,7 @@ from bika.lims import FieldEditSpecification
 from bika.lims import api
 from bika.lims import logger
 from bika.lims.api.security import check_permission
+from zope.schema import getFields
 
 
 class InvalidAnalysisRequestViewlet(ViewletBase):
@@ -52,6 +53,27 @@ class PrimaryAnalysisRequestViewlet(ViewletBase):
             if not api.get_setup().getShowPartitions():
                 return []
         return self.context.getDescendants()
+
+    def get_primary_bound_fields(self):
+        """Returns a list with the names of the fields the current user has
+        write priveleges and for which changes in primary sample will apply to
+        its descendants too
+        """
+        bound = []
+        schema = api.get_schema(self.context)
+        for field in schema.fields():
+            if not hasattr(field, "primary_bound"):
+                continue
+
+            if not check_permission(field.write_permission, self.context):
+                # Current user does not have permission to edit this field
+                continue
+
+            if field.primary_bound:
+                # Change in this field will populate to partitions
+                bound.append(field.widget.label)
+
+        return bound
 
 
 class PartitionAnalysisRequestViewlet(ViewletBase):
