@@ -150,7 +150,6 @@ effect to neither the Sample nor analyses:
     >>> specification.getResultsRange() == sample.getResultsRange()
     False
 
-    >>> au = get_analysis_from(sample, Au)
     >>> au.getResultsRange() == get_results_range_from(specification, Au)
     False
 
@@ -161,8 +160,17 @@ effect to neither the Sample nor analyses:
     >>> (rr_sample_au.min, rr_sample_au.max)
     (10, 20)
 
+We need to re-apply the Specification for the Sample's results range to update:
 
+    >>> sample.setSpecification(specification)
+    >>> specification.getResultsRange() == sample.getResultsRange()
+    True
 
+As well as the analyses the sample contains:
 
+    >>> au.getResultsRange() == get_results_range_from(specification, Au)
+    True
 
-
+    >>> rr_sample_au = au.getResultsRange()
+    >>> (rr_sample_au.min, rr_sample_au.max)
+    (15, 25)
