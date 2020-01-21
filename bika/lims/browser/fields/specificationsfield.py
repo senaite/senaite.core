@@ -41,7 +41,7 @@ class ResultsRangeField(RecordField):
         from bika.lims.content.analysisspec import ResultsRangeDict
         value = super(ResultsRangeField, self).get(instance, **kwargs)
         if value:
-            return ResultsRangeDict(value)
+            return ResultsRangeDict(dict(value.items()))
         return {}
 
 
@@ -77,7 +77,7 @@ class SpecificationsField(RecordsField):
             return self.getResultsRange(values, uid or keyword)
 
         # Convert the dict items to ResultRangeDict for easy handling
-        return map(lambda val: ResultsRangeDict(val), values)
+        return map(lambda val: ResultsRangeDict(dict(val.items())), values)
 
     def getResultsRange(self, values, uid_keyword_service):
         from bika.lims.content.analysisspec import ResultsRangeDict
@@ -94,7 +94,7 @@ class SpecificationsField(RecordsField):
 
         # Find out the item for the given uid/keyword
         value = filter(lambda v: v.get(key) == uid_keyword_service, values)
-        return value and ResultsRangeDict(value[0]) or None
+        return value and ResultsRangeDict(dict(value[0].items())) or None
 
     def _to_dict(self, value):
         """Convert the records to persistent dictionaries
