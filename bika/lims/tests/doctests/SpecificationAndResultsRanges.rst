@@ -263,3 +263,80 @@ Sample, are reestablished:
 
     >>> zn.getResultsRange().min
     50
+
+
+Sample with Specifications and Partitions
+-----------------------------------------
+
+When a sample has partitions, the Specification set to the root Sample is
+populated to all its descendants:
+
+    >>> partition = create_partition(sample, request, [zn])
+    >>> partition
+    <AnalysisRequest at /plone/clients/client-1/W-0001-P01>
+
+    >>> zn = get_analysis_from(partition, Zn)
+    >>> zn
+    <Analysis at /plone/clients/client-1/W-0001-P01/Zn>
+
+The partition keeps the Specification and ResultsRange by its own:
+
+    >>> partition.getSpecification()
+    <AnalysisSpec at /plone/bika_setup/bika_analysisspecs/analysisspec-1>
+
+    >>> partition.getResultsRange() == specification.getResultsRange()
+    True
+
+If we reset an Analysis with it's own ResultsRange, different from the range
+defined by the Specification, the system will clear the Specification from
+both the root sample and the partition to guarantee compliance:
+
+    >>> rr_zn = zn.getResultsRange()
+    >>> rr_zn.min = 56
+    >>> partition.setAnalyses([Zn], specs=[rr_zn])
+    []
+
+    >>> partition.getSpecification() is None
+    True
+
+But the root sample will keep its own ResultsRange and Specification untouched:
+
+    >>> sample.getSpecification()
+    <AnalysisSpec at /plone/bika_setup/bika_analysisspecs/analysisspec-1>
+
+    >>> sample.getResultsRange() == specification.getResultsRange()
+    True
+
+We can re-assign the Specification to the partition, though:
+
+    >>> partition.setSpecification(specification)
+    >>> specification.getResultsRange() == partition.getResultsRange()
+    True
+
+    >>> zn.getResultsRange() == get_results_range_from(specification, Zn)
+    True
+
+    >>> zn.getResultsRange().min
+    50
+
+If we reset the same analysis, but in the root sample, both root and partition
+loose the Specification:
+
+    >>> rr_zn = zn.getResultsRange()
+    >>> rr_zn.min = 57
+    >>> sample.setAnalyses([Au, Cu, Fe, Zn], specs=[rr_zn])
+    []
+
+    >>> sample.getSpecification() is None
+    True
+
+    >>> partition.getSpecification() is None
+    True
+
+And ResultsRange for Zn is stored in both the root and the partition:
+
+    >>> get_results_range_from(sample, Zn).min
+    57
+
+    >>> get_results_range_from(partition, Zn).min
+    57
