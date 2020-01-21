@@ -215,7 +215,7 @@ class ARAnalysesField(ObjectField):
 
         # Append those from sample that are missing in the ranges passed-in
         service_uids = map(lambda rr: rr["uid"], rrs)
-        rrs.extend(filter(lambda rr: rr not in service_uids, sample_rrs))
+        rrs.extend(filter(lambda rr: rr["uid"] not in service_uids, sample_rrs))
 
         # Do the results ranges passed-in are compliant with Sample's spec?
         if not self.is_compliant_with_specification(instance, rrs):
