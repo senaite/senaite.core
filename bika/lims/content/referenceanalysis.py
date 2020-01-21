@@ -19,18 +19,20 @@
 # Some rights reserved, see README and LICENSE.
 
 from AccessControl import ClassSecurityInfo
+from DateTime import DateTime
+from Products.Archetypes.Field import StringField
+from Products.Archetypes.public import Schema
+from Products.Archetypes.public import registerType
+from plone.app.blob.field import BlobField
+from zope.interface import implements
+
+from bika.lims import api
 from bika.lims.config import PROJECTNAME
 from bika.lims.config import STD_TYPES
 from bika.lims.content.abstractanalysis import AbstractAnalysis
 from bika.lims.content.abstractanalysis import schema
 from bika.lims.content.analysisspec import ResultsRangeDict
 from bika.lims.interfaces import IReferenceAnalysis
-from DateTime import DateTime
-from plone.app.blob.field import BlobField
-from Products.Archetypes.Field import StringField
-from Products.Archetypes.public import Schema
-from Products.Archetypes.public import registerType
-from zope.interface import implements
 
 schema = schema.copy() + Schema((
     StringField(
