@@ -9,9 +9,10 @@ from zope.interface import implements
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.widgets import AnalysisSpecificationWidget
-# A tuple of (subfield_id, subfield_label,)
+from bika.lims.catalog import SETUP_CATALOG
 from bika.lims.interfaces.analysis import IRequestAnalysis
 
+# A tuple of (subfield_id, subfield_label,)
 SUB_FIELDS = (
     ("keyword", _("Analysis Service")),
     ("min_operator", _("Min operator")),
@@ -41,7 +42,7 @@ class ResultsRangeField(RecordField):
         value = super(ResultsRangeField, self).get(instance, **kwargs)
         if value:
             return ResultsRangeDict(value)
-        return None
+        return {}
 
 
 registerField(ResultsRangeField, title="ResultsRange",
@@ -67,12 +68,16 @@ class SpecificationsField(RecordsField):
     def get(self, instance, **kwargs):
         from bika.lims.content.analysisspec import ResultsRangeDict
         values = super(SpecificationsField, self).get(instance, **kwargs)
-        uid_keyword_service = kwargs.get("uid", kwargs.get("keyword", None))
-        if uid_keyword_service:
-            return self.getResultsRange(values, uid_keyword_service)
-        if values:
-            return map(lambda val: ResultsRangeDict(val), values)
-        return []
+
+        # If a keyword or an uid has been specified, return the result range
+        # for that uid or keyword only
+        uid = kwargs.get("uid")
+        keyword = kwargs.get("keyword")
+        if uid or keyword:
+            return self.getResultsRange(values, uid or keyword)
+
+        # Convert the dict items to ResultRangeDict for easy handling
+        return map(lambda val: ResultsRangeDict(val), values)
 
     def getResultsRange(self, values, uid_keyword_service):
         from bika.lims.content.analysisspec import ResultsRangeDict
@@ -94,11 +99,25 @@ class SpecificationsField(RecordsField):
     def _to_dict(self, value):
         """Convert the records to persistent dictionaries
         """
+        # Resolve items to guarantee all them have the key uid
         value = super(SpecificationsField, self)._to_dict(value)
+        return map(self.resolve_uid, value)
 
-        # Bail out items without "uid" key (uid is used everywhere to know the
-        # service the result range refers to)
-        return filter(lambda result_range: "uid" in result_range, value)
+    def resolve_uid(self, raw_dict):
+        value = raw_dict.copy()
+        uid = value.get("uid")
+        if api.is_uid(uid) and uid != "0":
+            return value
+
+        # uid key does not exist or is not valid, try to infere from keyword
+        keyword = value.get("keyword")
+        if keyword:
+            query = dict(portal_type="AnalysisService", getKeyword=keyword)
+            brains = api.search(query, SETUP_CATALOG)
+            if len(brains) == 1:
+                uid = api.get_uid(brains[0])
+        value["uid"] = uid
+        return value
 
 
 class DefaultResultsRangeProvider(object):
@@ -116,14 +135,18 @@ class DefaultResultsRangeProvider(object):
         """Get the default value.
         """
         if not IRequestAnalysis.providedBy(self.context):
-            return None
+            return {}
 
         keyword = self.context.getKeyword()
         sample = self.context.getRequest()
-        field = sample.getField("ResultsRange")
-        rr = field.get(sample, keyword=keyword)
-        if rr:
-            self.context.setResultsRange(rr)
-            return self.context.getResultsRange()
+        if sample and keyword:
+            field = sample.getField("ResultsRange")
+            rr = field.get(sample, keyword=keyword)
+            if rr:
+                #self.context.setResultsRange(rr)
+                return rr
+                #return self.context.getResultsRange()
 
-        return None
+        return {}
+        #from bika.lims.content.analysisspec import ResultsRangeDict
+        #return ResultsRangeDict(uid=api.get_uid(self.context), keyword=keyword)
