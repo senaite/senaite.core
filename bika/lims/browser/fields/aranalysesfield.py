@@ -25,15 +25,19 @@ from AccessControl import Unauthorized
 from Products.Archetypes.Registry import registerField
 from Products.Archetypes.public import Field
 from Products.Archetypes.public import ObjectField
+from zope.interface import alsoProvides
 from zope.interface import implements
+from zope.interface import noLongerProvides
 
 from bika.lims import api
 from bika.lims import logger
 from bika.lims.api.security import check_permission
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
+from bika.lims.catalog import SETUP_CATALOG
 from bika.lims.interfaces import IARAnalysesField
 from bika.lims.interfaces import IAnalysis
 from bika.lims.interfaces import IAnalysisService
+from bika.lims.interfaces import IInternalUse
 from bika.lims.interfaces import ISubmitted
 from bika.lims.permissions import AddAnalysis
 from bika.lims.utils.analysis import create_analysis
@@ -135,17 +139,8 @@ class ARAnalysesField(ObjectField):
         # Merge dependencies and services
         services = set(services + dependencies)
 
-        # Modify existing AR specs with new form values of selected analyses.
+        # Modify existing AR specs with new form values of selected analyses
         specs = self.resolve_specs(instance, specs)
-
-        # Create a mapping of Service UID -> Hidden status
-        if hidden is None:
-            hidden = []
-        hidden = dict(map(lambda d: (d.get("uid"), d.get("hidden")), hidden))
-
-        # Ensure we have a prices dictionary
-        if prices is None:
-            prices = dict()
 
         # Add analyses
         new_analyses = []
@@ -203,57 +198,96 @@ class ARAnalysesField(ObjectField):
 
         return new_analyses
 
-    def resolve_specs(self, instance, specs):
+    def resolve_specs(self, instance, results_ranges):
         """Returns a dictionary where the key is the service_uid and the value
         is its results range. If a result range for a given service does not
         exist or does not match with the specs defined in the sample, the
         function resets the Sample's Specification field to guarantee compliance
         with the Specification value actually set
         """
-        form_specs = specs or []
+        rrs = results_ranges or []
 
-        # Copy the passed in dict, otherwise the specification might be written
-        # directly to the attached specification of the sample
-        sample_specs = dict(map(lambda rr: (rr["uid"], rr.copy()),
-                                instance.getResultsRange()))
+        # Sample's Results ranges
+        sample_rrs = instance.getResultsRange()
 
-        out_specs = dict()
-        reset_specification = False
-        for form_rr in form_specs:
-            service_uid = form_rr["uid"]
-            sample_rr = sample_specs.get(service_uid)
-            if not sample_rr:
-                # Sample's ResultsRange (a "copy" of Specification initially set
-                # does not contain a result range for this service
-                logger.info("Result range for {} not present in Sample's"
-                            .format(form_rr["keyword"]))
-                reset_specification = True
+        # Resolve results_ranges passed-in to make sure they contain uid
+        rrs = map(lambda rr: self.resolve_uid(rr), rrs)
 
-            else:
-                # Clean-up the result range passed in
-                form_rr = self.resolve_result_range(form_rr, sample_rr)
+        # Append those from sample that are missing in the ranges passed-in
+        service_uids = map(lambda rr: rr["uid"], rrs)
+        rrs.extend(filter(lambda rr: rr not in service_uids, sample_rrs))
 
-                if form_rr != sample_rr:
-                    # Result range for this service has been changed manually,
-                    # it does not match with sample's ResultRange
-                    logger.warn("Result Range for {} do not match with Sample's"
-                                .format(form_rr["keyword"]))
-                    reset_specification = True
-
-            # Generate the results_range format
-            out_specs[service_uid] = form_rr
-
-        if reset_specification:
-            # Reset the specification, cause the sample won't longer be fully
-            # compliant with the Specifications it has assigned
+        # Do the results ranges passed-in are compliant with Sample's spec?
+        if not self.is_compliant_with_specification(instance, rrs):
+            # Reset the specification, we cannot keep a Specification assigned
+            # to a Sample if there are results ranges set not compliant
             instance.setSpecification(None)
 
             # We store the values in Sample's ResultsRange because although the
             # specification is not met, we still want Sample's ResultsRange to
             # act as a "template" for new analyses
-            instance.setResultsRange(out_specs.values())
+            instance.setResultsRange(rrs)
 
-        return out_specs
+        # Create a dict for easy access to results ranges
+        return dict(map(lambda rr: (rr["uid"], rr), rrs))
+
+    def resolve_uid(self, result_range):
+        """Resolves the uid key for the result_range passed in if it does not
+        exist when contains a keyword
+        """
+        value = result_range.copy()
+        uid = value.get("uid")
+        if api.is_uid(uid) and uid != "0":
+            return value
+
+        # uid key does not exist or is not valid, try to infere from keyword
+        keyword = value.get("keyword")
+        if keyword:
+            query = dict(portal_type="AnalysisService", getKeyword=keyword)
+            brains = api.search(query, SETUP_CATALOG)
+            if len(brains) == 1:
+                uid = api.get_uid(brains[0])
+        value["uid"] = uid
+        return value
+
+    def is_compliant_with_specification(self, instance, results_range):
+        """Returns whether the results_range passed-in are compliant with the
+        instance's Specification results ranges. This, is the results ranges
+        for each service match with those from the instance
+        """
+        specification = instance.getSpecification()
+        if not specification:
+            # If there is no specification set, assume is compliant
+            return True
+
+        # Get the results ranges to check against for compliance
+        sample_rrs = instance.getResultsRange()
+        sample_rrs = sample_rrs or specification.getResultsRanges()
+
+        # Create a dict for easy access to results ranges
+        sample_rrs = dict(map(lambda rr: (rr["uid"], rr), sample_rrs))
+
+        # The Sample has Specification set: the ResultsRange from the sample is
+        # a copy of those from the Specification. If so, we need to check that
+        # there is no result range passed-in violating the Spec
+        for rr in results_range:
+            service_uid = rr["uid"]
+            sample_rr = sample_rrs.get(service_uid)
+            if not sample_rr:
+                # Sample's ResultsRange (a "copy" of Specification initially set
+                # does not contain a result range for this service
+                return False
+
+            else:
+                # Clean-up the result range passed in
+                form_rr = self.resolve_result_range(rr, sample_rr)
+                if form_rr != sample_rr:
+                    # Result range for this service has been changed manually,
+                    # it does not match with sample's ResultRange
+                    return False
+
+        # No anomalies found, compliant
+        return True
 
     def resolve_result_range(self, result_range, original):
         """Cleans up the result range passed-in to match with same keys as the
@@ -278,6 +312,19 @@ class ARAnalysesField(ObjectField):
         service_uid = api.get_uid(service)
         new_analysis = False
 
+        # Ensure we have suitable parameters
+        specs = specs or {}
+
+        # Get the hidden status for the service
+        hidden = filter(lambda d: d.get("uid") == service_uid, hidden or [])
+        hidden = hidden and hidden[0] or service.getHidden()
+
+        # Get the price for the service
+        price = prices and prices.get(service_uid) or service.getPrice()
+
+        # Does analyses are for internal use
+        internal_use = instance.getInternalUse()
+
         # Gets the analysis or creates the analysis for this service
         # Note this returns a list, because is possible to have multiple
         # partitions with same analysis
@@ -292,10 +339,17 @@ class ARAnalysesField(ObjectField):
 
         for analysis in analyses:
             # Set the hidden status
-            analysis.setHidden(hidden.get(service_uid, False))
+            analysis.setHidden(hidden)
 
             # Set the price of the Analysis
-            analysis.setPrice(prices.get(service_uid, service.getPrice()))
+            analysis.setPrice(price)
+
+            # Set internal use
+            analysis.setInternalUse(internal_use)
+            if internal_use and not IInternalUse.providedBy(analysis):
+                alsoProvides(analysis, IInternalUse)
+            elif not internal_use and IInternalUse.providedBy(analysis):
+                noLongerProvides(analysis, IInternalUse)
 
             # Set the result range to the Analysis
             analysis_rr = specs.get(service_uid) or analysis.getResultsRange()
