@@ -19,14 +19,6 @@
 # Some rights reserved, see README and LICENSE.
 
 from AccessControl import ClassSecurityInfo
-from bika.lims import bikaMessageFactory as _
-from bika.lims.browser.fields.remarksfield import RemarksField
-from bika.lims.browser.widgets import RemarksWidget
-from bika.lims.config import PRICELIST_TYPES
-from bika.lims.config import PROJECTNAME
-from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.interfaces import IDeactivable
-from bika.lims.interfaces import IPricelist
 from DateTime import DateTime
 from Products.Archetypes.public import BaseFolder
 from Products.Archetypes.public import BooleanField
@@ -36,9 +28,17 @@ from Products.Archetypes.public import FixedPointField
 from Products.Archetypes.public import Schema
 from Products.Archetypes.public import SelectionWidget
 from Products.Archetypes.public import StringField
+from Products.Archetypes.public import TextAreaWidget
+from Products.Archetypes.public import TextField
 from Products.Archetypes.public import registerType
 from zope.interface import implements
 
+from bika.lims import bikaMessageFactory as _
+from bika.lims.config import PRICELIST_TYPES
+from bika.lims.config import PROJECTNAME
+from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.interfaces import IDeactivable
+from bika.lims.interfaces import IPricelist
 
 schema = BikaSchema.copy() + Schema((
 
@@ -77,14 +77,14 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
-    RemarksField(
+    TextField(
         "Remarks",
-        searchable=True,
-        widget=RemarksWidget(
+        allowable_content_types=("text/plain",),
+        widget=TextAreaWidget(
             label=_("Remarks"),
-        ),
-    )),
-)
+        )
+    ),
+))
 
 Field = schema["title"]
 Field.required = 1

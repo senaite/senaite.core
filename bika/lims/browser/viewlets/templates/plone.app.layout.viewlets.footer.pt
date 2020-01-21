@@ -1,0 +1,32 @@
+<footer i18n:domain="senaite.core"
+        id="senaite-footer">
+
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-12">
+        <hr/>
+        <div class="pull-left text-muted">
+          <span i18n:translate="description_copyright" tal:omit-tag="">
+            <abbr title="Copyright" i18n:name="copyright" i18n:attributes="title title_copyright;">&copy;</abbr>
+            2017-<tal:year i18n:name="current_year" tal:content="view/year" />
+            <span i18n:name="senaitelims" tal:omit-tag="">
+              <a href="https://www.senaite.com"
+                 target="_blank"
+                 i18n:translate="label_senaite">SENAITE LIMS</a>
+            </span>
+          </span>
+        </div>
+        <div class="pull-right text-muted">
+          <ul class="nav nav-pills social-icon">
+            <li><a href="https://www.senaite.com" title="Visit the Website" target="_blank"><i class="fa fa-globe"></i></a></li>
+            <li><a href="https://www.senaite.com/docs/quickstart.html" title="Browse the Docs" target="_blank"><i class="fa fa-book"></i></a></li>
+            <li><a href="https://github.com/senaite/senaite.lims" title="Browse the code on GitHub" target="_blank"><i class="fa fa-github"></i></a></li>
+            <li><a href="https://twitter.com/senaitelims" title="Spread the word on Twitter" target="_blank"><i class="fa fa-twitter"></i></a></li>
+            <li><a href="https://gitter.im/senaite" title="Talk with us on Gitter" target="_blank"><i class="fa fa-comments"></i></a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</footer>

@@ -24,26 +24,32 @@
 """
 
 from AccessControl import ClassSecurityInfo
+from Products.ATExtensions.field import RecordsField
+from Products.Archetypes.public import BaseContent
+from Products.Archetypes.public import BooleanField
+from Products.Archetypes.public import BooleanWidget
+from Products.Archetypes.public import ComputedField
+from Products.Archetypes.public import ComputedWidget
+from Products.Archetypes.public import DecimalWidget
+from Products.Archetypes.public import FixedPointField
+from Products.Archetypes.public import ReferenceField
+from Products.Archetypes.public import Schema
+from Products.Archetypes.public import StringField
+from Products.Archetypes.public import StringWidget
+from Products.Archetypes.public import TextAreaWidget
+from Products.Archetypes.public import TextField
+from Products.Archetypes.public import registerType
+from Products.CMFCore.utils import getToolByName
+from zope.interface import implements
+
 from bika.lims import api
-from bika.lims import PMF, bikaMessageFactory as _
-from bika.lims.browser.fields.remarksfield import RemarksField
+from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.widgets import AnalysisProfileAnalysesWidget
-from bika.lims.browser.widgets import RemarksWidget
-from bika.lims.browser.widgets import ServicesWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
-from Products.Archetypes.public import *
-
 from bika.lims.content.clientawaremixin import ClientAwareMixin
-from bika.lims.interfaces import IAnalysisProfile, IDeactivable
-from Products.Archetypes.references import HoldingReference
-from Products.ATExtensions.field import RecordsField
-from Products.CMFCore.permissions import View, ModifyPortalContent
-from Products.CMFCore.utils import getToolByName
-from zope.interface import Interface, implements
-import sys
 from bika.lims.interfaces import IAnalysisProfile
-from bika.lims.interfaces import IClient
+from bika.lims.interfaces import IDeactivable
 
 schema = BikaSchema.copy() + Schema((
     StringField('ProfileKey',
@@ -65,10 +71,11 @@ schema = BikaSchema.copy() + Schema((
             description = _("The analyses included in this profile, grouped per category"),
         )
     ),
-    RemarksField('Remarks',
-        searchable=True,
-        widget=RemarksWidget(
-            label=_("Remarks")
+    TextField(
+        "Remarks",
+        allowable_content_types=("text/plain",),
+        widget=TextAreaWidget(
+            label=_("Remarks"),
         )
     ),
     # Custom settings for the assigned analysis services

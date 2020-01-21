@@ -1,0 +1,21 @@
+.remarks-widget {
+  margin: 20px 0 20px; }
+
+.remarks-widget input.saveRemarks {
+  margin: 10px 0 20px; }
+
+.remarks-widget .record {
+  margin: 20px 0 20px; }
+
+.remarks-widget .record .record-header {
+  font-size: 0.9em;
+  color: #666;
+  border-bottom: 1px solid #efefef;
+  margin: 0 0 5px;
+  padding: 0 0 3px; }
+
+.remarks-widget .record .record-header span {
+  padding-right:10px; }
+
+.remarks-widget .record .record-header .record-user {
+  font-weight:bold; }

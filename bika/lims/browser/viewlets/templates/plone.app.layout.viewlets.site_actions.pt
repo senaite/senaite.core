@@ -1,0 +1,35 @@
+<div i18n:domain="senaite"
+     id="portal-siteactions-footer">
+
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-12 text-center">
+        <ul class="list-inline"
+            tal:define="accesskeys python: {'sitemap' : '3', 'accessibility' : '0', 'contact' : '9'};"
+            tal:condition="view/site_actions"
+            i18n:domain="plone">
+
+          <li tal:repeat="saction view/site_actions"
+              tal:attributes="id string:siteaction-${saction/id}">
+            <a href=""
+               class=""
+               tal:define="title saction/title;
+                           id saction/id;
+                           accesskey python: accesskeys.get(id, '');"
+               i18n:attributes="title"
+               i18n:translate=""
+               tal:content="title"
+               tal:attributes="href saction/url;
+                              target saction/link_target|nothing;
+                              title title;
+                              accesskey accesskey;">
+              Site action
+            </a>
+          </li>
+        </ul>
+
+      </div>
+    </div>
+  </div>
+
+</div>

@@ -18,19 +18,10 @@
 # Copyright 2018-2019 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from plone.app.layout.viewlets.common import PathBarViewlet as Base
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from plone.app.layout.viewlets.common import ViewletBase
-from zope.component import getMultiAdapter
 
 
-class PathBarViewlet(ViewletBase):
-    index = ViewPageTemplateFile('templates/path_bar.pt')
-
-    def update(self):
-        super(PathBarViewlet, self).update()
-
-        self.is_rtl = self.portal_state.is_rtl()
-
-        breadcrumbs_view = getMultiAdapter((self.context, self.request),
-                                           name='breadcrumbs_view')
-        self.breadcrumbs = breadcrumbs_view.breadcrumbs()
+class PathBarViewlet(Base):
+    index = ViewPageTemplateFile(
+        "templates/plone.app.layout.viewlets.path_bar.pt")
