@@ -20,7 +20,6 @@
 
 from AccessControl import ClassSecurityInfo
 from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
-from Products.ATExtensions.field.records import RecordsField
 from Products.Archetypes import atapi
 from Products.Archetypes.public import BaseFolder
 from Products.Archetypes.public import Schema
@@ -143,6 +142,7 @@ class ResultsRangeDict(dict):
 
     def __init__(self, *arg, **kw):
         super(ResultsRangeDict, self).__init__(*arg, **kw)
+        self["uid"] = self.uid
         self["min"] = self.min
         self["max"] = self.max
         self["error"] = self.error
@@ -150,6 +150,12 @@ class ResultsRangeDict(dict):
         self["warn_max"] = self.warn_max
         self["min_operator"] = self.min_operator
         self["max_operator"] = self.max_operator
+
+    @property
+    def uid(self):
+        """The uid of the service this ResultsRange refers to
+        """
+        return self.get("uid", '')
 
     @property
     def min(self):
