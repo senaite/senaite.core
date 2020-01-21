@@ -24,8 +24,6 @@ Needed imports:
     >>> from bika.lims.utils.analysisrequest import create_analysisrequest
     >>> from bika.lims.utils.analysisrequest import create_partition
     >>> from bika.lims.workflow import doActionFor as do_action_for
-    >>> from zope.interface import alsoProvides
-    >>> from zope.interface import noLongerProvides
 
 Functional Helpers:
 
@@ -80,6 +78,7 @@ Create some basic objects for the test:
     >>> Cu = api.create(setup.bika_analysisservices, "AnalysisService", title="Copper", Keyword="Cu", Price="15", Category=category.UID())
     >>> Fe = api.create(setup.bika_analysisservices, "AnalysisService", title="Iron", Keyword="Fe", Price="10", Category=category.UID())
     >>> Mg = api.create(setup.bika_analysisservices, "AnalysisService", title="Magnesium", Keyword="Mg", Price="20", Category=category.UID())
+    >>> Zn = api.create(setup.bika_analysisservices, "AnalysisService", title="Zinc", Keyword="Zn", Price="10", Category=category.UID())
 
 Create an Analysis Specification for `Water`:
 
@@ -88,12 +87,22 @@ Create an Analysis Specification for `Water`:
     >>> rr2 = {"uid": api.get_uid(Cu), "min": 20, "max": 30, "warn_min": 15, "warn_max": 35}
     >>> rr3 = {"uid": api.get_uid(Fe), "min": 30, "max": 40, "warn_min": 25, "warn_max": 45}
     >>> rr4 = {"uid": api.get_uid(Mg), "min": 40, "max": 50, "warn_min": 35, "warn_max": 55}
-    >>> rr = [rr1, rr2, rr3, rr4]
+    >>> rr5 = {"uid": api.get_uid(Zn), "min": 50, "max": 60, "warn_min": 45, "warn_max": 65}
+    >>> rr = [rr1, rr2, rr3, rr4, rr5]
     >>> specification = api.create(setup.bika_analysisspecs, "AnalysisSpec", title="Lab Water Spec", SampleType=sampletype_uid, ResultsRange=rr)
 
 
 Creation of a Sample with Specification
 ---------------------------------------
+
+A given Specification can be assigned to the Sample during the creation process.
+The results ranges of the mentioned Specification will be stored in ResultsRange
+field from the Sample and the analyses will acquire those results ranges
+individually.
+
+Specification from Sample is history-aware, so even if the Specification object
+is changed after its assignment to the Sample, the Results Ranges from either
+the Sample and its Analyses will remain untouched.
 
 Create a Sample and receive:
 
@@ -174,3 +183,83 @@ As well as the analyses the sample contains:
     >>> rr_sample_au = au.getResultsRange()
     >>> (rr_sample_au.min, rr_sample_au.max)
     (15, 25)
+
+Removal of Analyses from a Sample with Specifications
+-----------------------------------------------------
+
+User can remove analyses from the Sample. If the user removes one of the
+analyses, the Specification assigned to the Sample will remain intact, as well
+as Sample's Results Range:
+
+    >>> sample.setAnalyses([Au, Cu, Fe])
+    []
+
+    >>> analyses = sample.objectValues()
+    >>> sorted(analyses, key=lambda an: an.getKeyword())
+    [<Analysis at /plone/clients/client-1/W-0001/Au>, <Analysis at /plone/clients/client-1/W-0001/Cu>, <Analysis at /plone/clients/client-1/W-0001/Fe>]
+
+    >>> sample.getSpecification()
+    <AnalysisSpec at /plone/bika_setup/bika_analysisspecs/analysisspec-1>
+
+    >>> specification.getResultsRange() == sample.getResultsRange()
+    True
+
+
+Addition of Analyses to a Sample with Specifications
+----------------------------------------------------
+
+User can add new analyses to the Sample as well. If the Sample has an
+Specification set and the specification had a results range registered for
+such analysis, the result range for the new analysis will be set automatically:
+
+    >>> sample.setAnalyses([Au, Cu, Fe, Zn])
+    [<Analysis at /plone/clients/client-1/W-0001/Zn>]
+
+    >>> sample.getSpecification()
+    <AnalysisSpec at /plone/bika_setup/bika_analysisspecs/analysisspec-1>
+
+    >>> zn = get_analysis_from(sample, Zn)
+    >>> zn.getResultsRange() == get_results_range_from(specification, Zn)
+    True
+
+But if we reset an Analysis with it's own ResultsRange, different from the
+range defined by the Specification, the system will clear the Specification to
+guarantee compliance:
+
+    >>> rr_zn = zn.getResultsRange()
+    >>> rr_zn.min = 55
+    >>> sample.setAnalyses([Au, Cu, Fe, Zn], specs=[rr_zn])
+    []
+
+    >>> sample.getSpecification() is None
+    True
+
+Nevertheless, Sample's ResultsRange is kept unchanged:
+
+    >>> sample_rr = sample.getResultsRange()
+    >>> len(sample_rr)
+    5
+
+but with the results range for `Zn` updated, different from the Specification:
+
+    >>> sample_rr_zn = filter(lambda rr: rr["uid"] == api.get_uid(Zn), sample_rr)[0]
+    >>> sample_rr_zn.min
+    55
+
+As well as for the analysis itself:
+
+    >>> zn.getResultsRange().min
+    55
+
+If we re-apply the Specification, the result range for `Zn`, as well as for the
+Sample, are reestablished:
+
+    >>> sample.setSpecification(specification)
+    >>> specification.getResultsRange() == sample.getResultsRange()
+    True
+
+    >>> zn.getResultsRange() == get_results_range_from(specification, Zn)
+    True
+
+    >>> zn.getResultsRange().min
+    50
