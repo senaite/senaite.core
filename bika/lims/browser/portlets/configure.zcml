@@ -1,0 +1,17 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:plone="http://namespaces.plone.org/plone"
+    xmlns:cmf="http://namespaces.zope.org/cmf"
+    i18n_domain="senaite.core">
+
+  <!-- Navigation Portlet -->
+  <include package="plone.app.portlets"/>
+
+  <plone:portletRenderer
+      portlet="plone.app.portlets.portlets.navigation.INavigationPortlet"
+      class=".navigation.NavigationPortletRenderer"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
+
+</configure>

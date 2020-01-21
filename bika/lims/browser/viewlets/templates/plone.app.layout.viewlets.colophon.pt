@@ -1,0 +1,27 @@
+<div id="senaite-colophon"
+     i18n:domain="senaite.core">
+
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-12">
+
+        <div class="text-center text-muted">
+          <ul class="list-inline">
+            <li i18n:translate="label_powered_by">
+              SENAITE is powered by:
+            </li>
+            <li>
+              <a href="http://plone.org"
+                 title="This site was built using the Plone Open Source CMS/WCM."
+                 i18n:attributes="title title_built_with_plone;"
+                 i18n:translate="label_powered_by_plone">
+                Plone &amp; Python</a>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>

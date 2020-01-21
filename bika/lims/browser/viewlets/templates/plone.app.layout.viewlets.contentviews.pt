@@ -1,0 +1,32 @@
+<div i18n:domain="plone"
+     tal:omit-tag=""
+     tal:define="ploneview context/@@plone;"
+     tal:condition="ploneview/showEditableBorder">
+
+  <tal:block define="view_actions view/prepareObjectTabs;">
+    <p class="hidden"
+       tal:condition="view_actions"
+       i18n:translate="heading_views">Views</p>
+
+    <ul class="nav nav-tabs pull-left col-md-12"
+        id="edit-content-views"
+        i18n:domain="plone">
+
+      <tal:views repeat="action view_actions">
+        <li tal:define="selected action/selected|nothing;"
+            tal:attributes="id string:contentview-${action/id};
+                            class python:selected and 'active' or 'plain'">
+          <a href=""
+             tal:content="action/title"
+             tal:attributes="href action/url;
+                   target action/link_target|nothing;"
+             i18n:translate="">
+            View name
+          </a>
+        </li>
+      </tal:views>
+
+    </ul>
+  </tal:block>
+  <div class="clearfix"></div>
+</div>
