@@ -1,0 +1,41 @@
+<tal:sections tal:define="portal_tabs view/portal_tabs"
+              tal:condition="portal_tabs"
+              i18n:domain="plone">
+
+  <div id="senaite-sections"
+       class="dropdown pull-right"
+       style="padding-left: 1em;"
+       i18n:domain="plone">
+
+    <button class="btn btn-default dropdown-toggle"
+            type="button"
+            data-toggle="dropdown"
+            aria-haspopup="true"
+            aria-expanded="false">
+      <span tal:omit-tag="" i18n:translate="">
+        <span class="glyphicon glyphicon-th" aria-hidden="true"></span>
+      </span>
+      <span class="caret"></span>
+    </button>
+
+  <ul id="senaite-portal-globalnav"
+      class="dropdown-menu"
+      tal:define="selected_tab python:view.selected_portal_tab">
+
+    <tal:tabs tal:repeat="tab portal_tabs">
+      <li tal:define="tid tab/id"
+          tal:attributes="id string:portaltab-${tid};
+                          class python:selected_tab==tid and 'active' or ''">
+        <a href=""
+           tal:content="tab/name"
+           tal:attributes="href tab/url;
+                 title tab/description|nothing;
+                 target tab/link_target|nothing;">
+          Tab Name
+        </a>
+      </li>
+    </tal:tabs>
+  </ul>
+
+  </div>
+</tal:sections>

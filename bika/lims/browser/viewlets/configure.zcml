@@ -2,6 +2,43 @@
            xmlns:browser="http://namespaces.zope.org/browser"
            i18n_domain="senaite.core">
 
+  <!-- Content Views Viewlet (Tabs) -->
+  <browser:viewlet
+      name="plone.contentviews"
+      manager="plone.app.layout.viewlets.interfaces.IContentViews"
+      class=".content_views.ContentViewsViewlet"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
+
+  <!-- Colophon Viewlet -->
+  <browser:viewlet
+      name="plone.colophon"
+      manager="plone.app.layout.viewlets.interfaces.IPortalFooter"
+      class=".colophon.ColophonViewlet"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
+
+  <!-- Language Selector -->
+  <browser:viewlet
+      name="plone.app.i18n.locales.languageselector"
+      manager="plone.app.layout.viewlets.interfaces.IPortalHeader"
+      class="plone.app.i18n.locales.browser.selector.LanguageSelector"
+      permission="zope2.View"
+      template="templates/plone.app.i18n.locales.browser.languageselector.pt"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
+
+  <!-- Personal bar -->
+  <browser:viewlet
+      name="plone.personal_bar"
+      manager="plone.app.layout.viewlets.interfaces.IPortalHeader"
+      class=".personal_bar.PersonalBarViewlet"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
+
   <!-- AR Attachments Viewlet -->
   <browser:viewlet
       for="bika.lims.interfaces.IAnalysisRequest"
@@ -22,7 +59,38 @@
       layer="bika.lims.interfaces.IBikaLIMS"
       />
 
-  <!-- Hide BreadCrumbs for root views -->
+  <!-- Instrument QC Failures Viewlet -->
+  <browser:viewlet
+      for="*"
+      name="bika.lims.instrument_qc_failures_viewlet"
+      class="bika.lims.browser.viewlets.InstrumentQCFailuresViewlet"
+      manager="plone.app.layout.viewlets.interfaces.IAboveContent"
+      template="templates/instrument_qc_failures_viewlet.pt"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
+
+  <!-- Site Actions -->
+  <browser:viewlet
+      name="plone.site_actions"
+      manager="plone.app.layout.viewlets.interfaces.IPortalFooter"
+      class=".site_actions.SiteActionsViewlet"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
+
+  <!-- Path Bar -->
+
+  <!-- Standard Breadcrumbs -->
+  <browser:viewlet
+      name="plone.path_bar"
+      manager="plone.app.layout.viewlets.interfaces.IAboveContent"
+      class=".path_bar.PathBarViewlet"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
+
+  <!-- Hide BreadCrumbs for root view -->
   <browser:viewlet
       for="Products.CMFPlone.interfaces.IPloneSiteRoot"
       name="plone.path_bar"
@@ -32,7 +100,7 @@
       layer="bika.lims.interfaces.IBikaLIMS"
       />
 
-  <!-- Hide BreadCrumbs for other stuff -->
+  <!-- Hide BreadCrumbs for contents providing the `IHaveNoBreadCrumbs` interface -->
   <browser:viewlet
       for="bika.lims.interfaces.IHaveNoBreadCrumbs"
       name="plone.path_bar"
@@ -42,62 +110,57 @@
       layer="bika.lims.interfaces.IBikaLIMS"
       />
 
-  <!-- Translated breadcrumbs -->
+  <!-- /Path Bar -->
+
+  <!-- Global Sections Dropdown -->
   <browser:viewlet
-      for="*"
-      name="plone.path_bar"
-      manager="plone.app.layout.viewlets.interfaces.IAboveContent"
-      template="templates/path_bar.pt"
-      class="bika.lims.browser.viewlets.path_bar.PathBarViewlet"
+      name="senaite.sections_dropdown"
+      manager="plone.app.layout.viewlets.interfaces.IPortalHeader"
+      class=".sections.GlobalSectionsDropdownViewlet"
       permission="zope2.View"
       layer="bika.lims.interfaces.IBikaLIMS"
       />
 
-  <!-- Hide ByLine for everything -->
+  <!-- Global sections
+       NOTE: This viewlet only renders a horizontal line
+       All sections are located inside the sections dropdown
+  -->
   <browser:viewlet
-      for="*"
-      name="plone.belowcontenttitle.documentbyline"
-      manager="plone.app.layout.viewlets.interfaces.IBelowContentTitle"
-      template="templates/blank.pt"
+      name="plone.global_sections"
+      manager="plone.app.layout.viewlets.interfaces.IPortalHeader"
+      class=".sections.GlobalSectionsViewlet"
       permission="zope2.View"
       layer="bika.lims.interfaces.IBikaLIMS"
       />
 
-  <!-- Make document actions beautiful -->
-  <browser:viewlet
-      name="plone.abovecontenttitle.documentactions"
-      manager="plone.app.layout.viewlets.interfaces.IBelowContentBody"
-      template="templates/blank.pt"
-      permission="zope2.View"
-      layer="bika.lims.interfaces.IBikaLIMS"
-      />
-
+  <!-- Document actions -->
   <browser:viewlet
       name="plone.abovecontenttitle.documentactions"
       manager="plone.app.layout.viewlets.interfaces.IAboveContentTitle"
-      class="bika.lims.browser.viewlets.document_actions.DocumentActionsViewlet"
+      class=".document_actions.DocumentActionsViewlet"
       permission="zope2.View"
       layer="bika.lims.interfaces.IBikaLIMS"
       />
 
+  <!-- Logo Viewlet -->
+  <browser:viewlet
+      name="plone.logo"
+      manager="plone.app.layout.viewlets.interfaces.IPortalHeader"
+      class=".logo.LogoViewlet"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
+
+  <!-- Footer Viewlet -->
   <browser:viewlet
       name="plone.footer"
       manager="plone.app.layout.viewlets.interfaces.IPortalFooter"
-      class="plone.app.layout.viewlets.common.FooterViewlet"
-      template="templates/footer.pt"
-      for="*"
-      layer="bika.lims.interfaces.IBikaLIMS"
+      class=".footer.FooterViewlet"
       permission="zope2.View"
-      />
-  <browser:viewlet
-      name="plone.colophon"
-      manager="plone.app.layout.viewlets.interfaces.IPortalFooter"
-      template="templates/colophon.pt"
-      for="*"
       layer="bika.lims.interfaces.IBikaLIMS"
-      permission="zope2.View"
       />
 
+  <!-- Authenticator Viewlet -->
   <browser:viewlet
       name="bika.lims.authenticator"
       manager="plone.app.layout.viewlets.interfaces.IPortalFooter"
@@ -105,91 +168,81 @@
       permission="zope2.View"
       />
 
-    <!-- Show Instrument QC failures viewlet -->
-    <browser:viewlet
-        for="*"
-        name="bika.lims.instrument_qc_failures_viewlet"
-        class="bika.lims.browser.viewlets.InstrumentQCFailuresViewlet"
-        manager="plone.app.layout.viewlets.interfaces.IAboveContent"
-        template="templates/instrument_qc_failures_viewlet.pt"
-        permission="zope2.View"
-        layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
   <!-- Invalid Analysis Request viewlet -->
   <browser:viewlet
-    for="bika.lims.interfaces.IAnalysisRequest"
-    name="bika.lims.invalid_ar_viewlet"
-    class=".analysisrequest.InvalidAnalysisRequestViewlet"
-    manager="plone.app.layout.viewlets.interfaces.IAboveContent"
-    template="templates/invalid_ar_viewlet.pt"
-    permission="zope2.View"
-    layer="bika.lims.interfaces.IBikaLIMS"
-  />
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="bika.lims.invalid_ar_viewlet"
+      class=".analysisrequest.InvalidAnalysisRequestViewlet"
+      manager="plone.app.layout.viewlets.interfaces.IAboveContent"
+      template="templates/invalid_ar_viewlet.pt"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
 
   <!-- Retest Analysis Request viewlet -->
   <browser:viewlet
-    for="bika.lims.interfaces.IAnalysisRequest"
-    name="bika.lims.retest_ar_viewlet"
-    class=".analysisrequest.RetestAnalysisRequestViewlet"
-    manager="plone.app.layout.viewlets.interfaces.IAboveContent"
-    template="templates/retest_ar_viewlet.pt"
-    permission="zope2.View"
-    layer="bika.lims.interfaces.IBikaLIMS"
-  />
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="bika.lims.retest_ar_viewlet"
+      class=".analysisrequest.RetestAnalysisRequestViewlet"
+      manager="plone.app.layout.viewlets.interfaces.IAboveContent"
+      template="templates/retest_ar_viewlet.pt"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
 
   <!-- Primary Analysis Request viewlet -->
   <browser:viewlet
-    for="bika.lims.interfaces.IAnalysisRequest"
-    name="bika.lims.primary_ar_viewlet"
-    class=".analysisrequest.PrimaryAnalysisRequestViewlet"
-    manager="plone.app.layout.viewlets.interfaces.IAboveContent"
-    template="templates/primary_ar_viewlet.pt"
-    permission="zope2.View"
-    layer="bika.lims.interfaces.IBikaLIMS"
-  />
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="bika.lims.primary_ar_viewlet"
+      class=".analysisrequest.PrimaryAnalysisRequestViewlet"
+      manager="plone.app.layout.viewlets.interfaces.IAboveContent"
+      template="templates/primary_ar_viewlet.pt"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
 
   <!-- Partition Analysis Request viewlet -->
   <browser:viewlet
-    for="bika.lims.interfaces.IAnalysisRequest"
-    name="bika.lims.partition_ar_viewlet"
-    class=".analysisrequest.PartitionAnalysisRequestViewlet"
-    manager="plone.app.layout.viewlets.interfaces.IAboveContent"
-    template="templates/partition_ar_viewlet.pt"
-    permission="zope2.View"
-    layer="bika.lims.interfaces.IBikaLIMS"
-  />
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="bika.lims.partition_ar_viewlet"
+      class=".analysisrequest.PartitionAnalysisRequestViewlet"
+      manager="plone.app.layout.viewlets.interfaces.IAboveContent"
+      template="templates/partition_ar_viewlet.pt"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
 
-  <!-- Dettached partition viewlet -->
+  <!-- Detached Partition Viewlet -->
   <browser:viewlet
-    for="bika.lims.interfaces.IAnalysisRequest"
-    name="bika.lims.detached_partition_viewlet"
-    class=".analysisrequest.DetachedPartitionViewlet"
-    manager="plone.app.layout.viewlets.interfaces.IAboveContent"
-    template="templates/detached_partition_viewlet.pt"
-    permission="zope2.View"
-    layer="bika.lims.interfaces.IBikaLIMS"
-  />
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="bika.lims.detached_partition_viewlet"
+      class=".analysisrequest.DetachedPartitionViewlet"
+      manager="plone.app.layout.viewlets.interfaces.IAboveContent"
+      template="templates/detached_partition_viewlet.pt"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
 
   <!-- Secondary Analysis Request viewlet -->
   <browser:viewlet
-    for="bika.lims.interfaces.IAnalysisRequestSecondary"
-    name="bika.lims.secondary_ar_viewlet"
-    class=".analysisrequest.SecondaryAnalysisRequestViewlet"
-    manager="plone.app.layout.viewlets.interfaces.IAboveContent"
-    template="templates/secondary_ar_viewlet.pt"
-    permission="zope2.View"
-    layer="bika.lims.interfaces.IBikaLIMS"
-  />
+      for="bika.lims.interfaces.IAnalysisRequestSecondary"
+      name="bika.lims.secondary_ar_viewlet"
+      class=".analysisrequest.SecondaryAnalysisRequestViewlet"
+      manager="plone.app.layout.viewlets.interfaces.IAboveContent"
+      template="templates/secondary_ar_viewlet.pt"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
 
   <!-- Rejected Analysis Request viewlet -->
   <browser:viewlet
-    for="bika.lims.interfaces.IAnalysisRequest"
-    name="bika.lims.rejected_ar_viewlet"
-    class=".analysisrequest.RejectedAnalysisRequestViewlet"
-    manager="plone.app.layout.viewlets.interfaces.IAboveContent"
-    template="templates/rejected_ar_viewlet.pt"
-    permission="zope2.View"
-    layer="bika.lims.interfaces.IBikaLIMS"
-  />
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="bika.lims.rejected_ar_viewlet"
+      class=".analysisrequest.RejectedAnalysisRequestViewlet"
+      manager="plone.app.layout.viewlets.interfaces.IAboveContent"
+      template="templates/rejected_ar_viewlet.pt"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
+
 </configure>

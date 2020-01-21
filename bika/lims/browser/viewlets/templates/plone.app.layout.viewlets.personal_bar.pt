@@ -1,0 +1,68 @@
+<div id="portal-personaltools-wrapper"
+     class="dropdown pull-right"
+     style="padding-left: 1em;"
+     i18n:domain="plone">
+
+<p class="hiddenStructure" i18n:translate="heading_personal_tools">Personal tools</p>
+
+<tal:logged
+    tal:condition="python:view.user_actions and not view.anonymous">
+
+    <a id="user-name"
+       class="btn btn-info dropdown-toggle"
+       data-toggle="dropdown"
+       tal:attributes="href view/homelink_url">
+       <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+       <span tal:replace="view/user_name">John</span>
+      <span class="caret"></span>
+    </a>
+    <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+        <li tal:repeat="action view/user_actions"
+            tal:attributes="id string:personaltools-${action/id}">
+            <a href=""
+               tal:attributes="href action/url;
+                               target action/link_target|nothing"
+               tal:content="action/title"
+               i18n:translate="">
+                action title
+            </a>
+        </li>
+    </ul>
+</tal:logged>
+<tal:anon
+  tal:condition="python:view.user_actions and view.anonymous"
+  tal:define="actions view/user_actions;
+              action python:len(actions)!= 0 and actions[0] or None;
+              other_actions python:len(actions) > 1 and actions[1:] or []">
+      <a id="user-name"
+          class="btn btn-info dropdown-toggle"
+          data-target="#"
+          data-toggle="dropdown"
+          tal:attributes="href action/url;
+                          id string:personaltools-${action/id};
+                          target action/link_target|nothing;
+                          class python:other_actions and 'btn btn-info dropdown-toggle' or 'btn btn-info';
+                          data-toggle python:other_actions and 'dropdown' or None"
+          tal:content="action/title"
+          i18n:translate="">
+              action title
+      </a>
+      <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel"
+          tal:condition="other_actions"
+          id="portal-personaltools"
+          >
+        <li id="anon-personalbar">
+          <tal:actions repeat="action other_actions">
+              <a href=""
+                 tal:attributes="href action/url;
+                                 id string:personaltools-${action/id};
+                                 target action/link_target|nothing;"
+                 tal:content="action/title"
+                 i18n:translate="">
+                  action title
+              </a>
+          </tal:actions>
+        </li>
+      </ul>
+</tal:anon>
+</div>

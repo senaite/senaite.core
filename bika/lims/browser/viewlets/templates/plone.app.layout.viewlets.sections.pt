@@ -1,0 +1,64 @@
+<hr />
+
+<tal:hidden condition="python:False">
+  <!-- NOTE: All Items located in the sections dropdown!
+
+       This viewlet can be probably removed in Plone 5
+  -->
+
+  <nav class="topbar-nav navbar navbar-default">
+    <div class="container-fluid">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header">
+        <button type="button"
+                class="navbar-toggle collapsed"
+                data-toggle="collapse"
+                data-target="#senaite-navbar-collapse"
+                aria-expanded="false">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+
+        <a class="nav-brand senaite-navbar-brand"
+          tal:attributes="href view/navigation_root_url;
+                          title view/portal_title | nothing">
+          &#11041;
+        </a>
+      </div>
+
+      <div class="collapse navbar-collapse" id="senaite-navbar-collapse">
+        <tal:sections tal:define="portal_tabs view/portal_tabs"
+                      tal:condition="portal_tabs"
+                      i18n:domain="plone">
+
+          <p class="hiddenStructure" i18n:translate="heading_sections">Navigation</p>
+          <ul id="senaite-portal-globalnav"
+              class="nav navbar-nav"
+              tal:define="selected_tab python:view.selected_portal_tab">
+
+            <tal:tabs tal:repeat="tab portal_tabs">
+              <li tal:define="tid tab/id"
+                  tal:attributes="id string:portaltab-${tid};
+                              class python:selected_tab==tid and 'active' or ''">
+                <a href=""
+                  tal:content="tab/name"
+                  tal:attributes="href tab/url;
+                        title tab/description|nothing;
+                        target tab/link_target|nothing;">
+                  Tab Name
+                </a>
+              </li>
+            </tal:tabs>
+          </ul>
+        </tal:sections>
+
+        <!-- Below Navbar Sections Viewlet Manager -->
+        <div tal:replace="structure provider:senaite.belownavbarsections" />
+
+      </div>
+
+    </div>
+  </nav>
+</tal:hidden>

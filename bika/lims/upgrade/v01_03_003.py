@@ -243,10 +243,14 @@ def upgrade(tool):
 
     # -------- ADD YOUR STUFF BELOW --------
 
+    # Moved all Viewlets from senaite.lims to senaite.core
+    setup.runImportStepFromProfile(profile, "viewlets")
+
     # https://github.com/senaite/senaite.core/issues/1504
     remove_cascaded_analyses_of_root_samples(portal)
 
     # Add additional JavaScripts to registry
+    # https://github.com/senaite/senaite.core/pull/1502
     setup.runImportStepFromProfile(profile, "jsregistry")
 
     # Fix Site Properties Generic Setup Export Step
@@ -445,6 +449,7 @@ def reindex_client_fields(portal):
         obj.reindexObject(idxs=fields_to_reindex)
 
     logger.info("Reindexing client fields ... [DONE]")
+
 
 def cleanup_indexes_and_metadata(portal):
     # Remove stale indexes and metadata
