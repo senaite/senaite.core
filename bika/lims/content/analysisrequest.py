@@ -1450,7 +1450,7 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
             # Update only results ranges if specs is not None, so results ranges
             # manually set previously (e.g. via ManageAnalyses view) are
             # preserved unless a new Specification overrides them
-            self.getField("ResultsRange").set(self, spec.getResultsRange())
+            self.setResultsRange(spec.getResultsRange())
 
         # Cascade the changes to partitions, but only to those for which that
         # are in a status in which the specification can be updated. This
@@ -1460,6 +1460,16 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         for descendant in self.getDescendants(all_descendants=True):
             if check_permission(permission, descendant):
                 descendant.setSpecification(spec)
+
+    def setResultsRange(self, value):
+        field = self.getField("ResultsRange")
+        field.set(self, value)
+
+        # Reset results ranges from analyses
+        for analysis in self.objectValues("Analysis"):
+            service_uid = analysis.getRawAnalysisService()
+            result_range = field.get(self, uid=service_uid)
+            analysis.setResultsRange(result_range)
 
     def getClient(self):
         """Returns the client this object is bound to. We override getClient
