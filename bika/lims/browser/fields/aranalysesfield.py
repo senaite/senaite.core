@@ -22,21 +22,21 @@ import itertools
 
 from AccessControl import ClassSecurityInfo
 from AccessControl import Unauthorized
+from Products.Archetypes.Registry import registerField
+from Products.Archetypes.public import Field
+from Products.Archetypes.public import ObjectField
+from zope.interface import implements
+
 from bika.lims import api
 from bika.lims import logger
 from bika.lims.api.security import check_permission
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
-from bika.lims.interfaces import IAnalysis, ISubmitted
-from bika.lims.interfaces import IAnalysisService
 from bika.lims.interfaces import IARAnalysesField
+from bika.lims.interfaces import IAnalysis
+from bika.lims.interfaces import IAnalysisService
+from bika.lims.interfaces import ISubmitted
 from bika.lims.permissions import AddAnalysis
 from bika.lims.utils.analysis import create_analysis
-from Products.Archetypes.public import Field
-from Products.Archetypes.public import ObjectField
-from Products.Archetypes.Registry import registerField
-from Products.Archetypes.utils import shasattr
-from Products.CMFCore.utils import getToolByName
-from zope.interface import implements
 
 """Field to manage Analyses on ARs
 
@@ -72,16 +72,21 @@ class ARAnalysesField(ObjectField):
         :param kwargs: Keyword arguments to inject in the search query
         :returns: A list of Analysis Objects/Catalog Brains
         """
-        catalog = getToolByName(instance, CATALOG_ANALYSIS_LISTING)
-        query = dict(
-            [(k, v) for k, v in kwargs.items() if k in catalog.indexes()])
-        query["portal_type"] = "Analysis"
-        query["getRequestUID"] = api.get_uid(instance)
-        analyses = catalog(query)
-        if not kwargs.get("full_objects", False):
-            return analyses
+        # Do we need to return objects or brains
+        full_objects = kwargs.get("full_objects", False)
 
-        return map(api.get_object, analyses)
+        # Bail out parameters from kwargs that don't match with indexes
+        catalog = api.get_tool(CATALOG_ANALYSIS_LISTING)
+        indexes = catalog.indexes()
+        query = dict([(k, v) for k, v in kwargs.items() if k in indexes])
+
+        # Do the search against the catalog
+        query["portal_type"] = "Analysis"
+        query["getAncestorsUIDs"] = api.get_uid(instance)
+        brains = catalog(query)
+        if full_objects:
+            return map(api.get_object, brains)
+        return brains
 
     security.declarePrivate('set')
 
@@ -99,22 +104,8 @@ class ARAnalysesField(ObjectField):
         :type hidden: list
         :returns: list of new assigned Analyses
         """
-        # This setter returns a list of new set Analyses
-        new_analyses = []
-
-        # Current assigned analyses
-        analyses = instance.objectValues("Analysis")
-
-        # Submitted analyses must be retained
-        submitted = filter(lambda an: ISubmitted.providedBy(an), analyses)
-
-        # Prevent removing all analyses
-        #
-        # N.B.: Submitted analyses are rendered disabled in the HTML form.
-        #       Therefore, their UIDs are not included in the submitted UIDs.
-        if not items and not submitted:
-            logger.warn("Not allowed to remove all Analyses from AR.")
-            return new_analyses
+        if items is None:
+            items = []
 
         # Bail out if the items is not a list type
         if not isinstance(items, (list, tuple)):
@@ -156,32 +147,21 @@ class ARAnalysesField(ObjectField):
         if prices is None:
             prices = dict()
 
-        # CREATE/MODIFY ANALYSES
+        # Add analyses
+        new_analyses = map(lambda service:
+                           self.add_analysis(instance, service, prices, hidden),
+                           services)
+        new_analyses = filter(None, new_analyses)
 
-        for service in services:
-            service_uid = api.get_uid(service)
-            keyword = service.getKeyword()
-
-            # Create the Analysis if it doesn't exist
-            if shasattr(instance, keyword):
-                analysis = instance._getOb(keyword)
-            else:
-                analysis = create_analysis(instance, service)
-                new_analyses.append(analysis)
-
-            # set the hidden status
-            analysis.setHidden(hidden.get(service_uid, False))
-
-            # Set the price of the Analysis
-            analysis.setPrice(prices.get(service_uid, service.getPrice()))
-
-        # DELETE ANALYSES
+        # Remove analyses
+        # Since Manage Analyses view displays the analyses from partitions, we
+        # also need to take them into consideration here. Analyses from
+        # ancestors can be omitted.
+        analyses = instance.objectValues("Analysis")
+        analyses.extend(self.get_analyses_from_descendants(instance))
 
         # Service UIDs
         service_uids = map(api.get_uid, services)
-
-        # Analyses IDs to delete
-        delete_ids = []
 
         # Assigned Attachments
         assigned_attachments = []
@@ -194,7 +174,7 @@ class ARAnalysesField(ObjectField):
                 continue
 
             # Skip non-open Analyses
-            if analysis in submitted:
+            if ISubmitted.providedBy(analysis):
                 continue
 
             # Remember assigned attachments
@@ -207,11 +187,9 @@ class ARAnalysesField(ObjectField):
             if worksheet:
                 worksheet.removeAnalysis(analysis)
 
-            delete_ids.append(analysis.getId())
-
-        if delete_ids:
-            # Note: subscriber might promote the AR
-            instance.manage_delObjects(ids=delete_ids)
+            # Remove the analysis
+            # Note the analysis might belong to a partition
+            analysis.aq_parent.manage_delObjects(ids=[api.get_id(analysis)])
 
         # Remove orphaned attachments
         for attachment in assigned_attachments:
@@ -223,6 +201,108 @@ class ARAnalysesField(ObjectField):
                 api.get_parent(attachment).manage_delObjects(attachment_id)
 
         return new_analyses
+
+    def add_analysis(self, instance, service, prices, hidden):
+        service_uid = api.get_uid(service)
+        new_analysis = False
+
+        # Gets the analysis or creates the analysis for this service
+        # Note this analysis might not belong to this current instance, but
+        # from a descendant (partition)
+        analysis = self.resolve_analysis(instance, service)
+        if not analysis:
+            # Create the analysis
+            new_analysis = True
+            keyword = service.getKeyword()
+            logger.info("Creating new analysis '{}'".format(keyword))
+            analysis = create_analysis(instance, service)
+
+        # Set the hidden status
+        analysis.setHidden(hidden.get(service_uid, False))
+
+        # Set the price of the Analysis
+        analysis.setPrice(prices.get(service_uid, service.getPrice()))
+
+        # Only return the analysis if is a new one
+        if new_analysis:
+            return analysis
+
+        return None
+
+    def resolve_analysis(self, instance, service):
+        """Resolves an analysis for the service and instance
+        """
+        # Does the analysis exists in this instance already?
+        analysis = self.get_from_instance(instance, service)
+        if analysis:
+            keyword = service.getKeyword()
+            logger.info("Analysis for '{}' already exists".format(keyword))
+            return analysis
+
+        # Does the analysis exists in an ancestor?
+        from_ancestor = self.get_from_ancestor(instance, service)
+        if from_ancestor:
+            # Move the analysis into this instance. The ancestor's
+            # analysis will be masked otherwise
+            analysis_id = api.get_id(from_ancestor)
+            logger.info("Analysis {} is from an ancestor".format(analysis_id))
+            cp = from_ancestor.aq_parent.manage_cutObjects(analysis_id)
+            instance.manage_pasteObjects(cp)
+            return instance._getOb(analysis_id)
+
+        # Does the analysis exists in a descendant?
+        from_descendant = self.get_from_descendant(instance, service)
+        if from_descendant:
+            # The analysis already exists in a partition, keep it. The
+            # analysis from current instance will be masked otherwise
+            analysis_id = api.get_id(from_descendant)
+            logger.info("Analysis {} is from a descendant".format(analysis_id))
+            return from_descendant
+
+        return None
+
+    def get_analyses_from_descendants(self, instance):
+        """Returns all the analyses from descendants
+        """
+        analyses = []
+        for descendant in instance.getDescendants(all_descendants=True):
+            analyses.extend(descendant.objectValues("Analysis"))
+        return analyses
+
+    def get_from_instance(self, instance, service):
+        """Returns an analysis for the given service from the instance
+        """
+        service_uid = api.get_uid(service)
+        for analysis in instance.objectValues("Analysis"):
+            if analysis.getServiceUID() == service_uid:
+                return analysis
+        return None
+
+    def get_from_ancestor(self, instance, service):
+        """Returns an analysis for the given service from ancestors
+        """
+        ancestor = instance.getParentAnalysisRequest()
+        if not ancestor:
+            return None
+
+        analysis = self.get_from_instance(ancestor, service)
+        return analysis or self.get_from_ancestor(ancestor, service)
+
+    def get_from_descendant(self, instance, service):
+        """Returns an analysis for the given service from descendants
+        """
+        for descendant in instance.getDescendants():
+            # Does the analysis exists in the current descendant?
+            analysis = self.get_from_instance(descendant, service)
+            if analysis:
+                return analysis
+
+            # Search in descendants from current descendant
+            analysis = self.get_from_descendant(descendant, service)
+            if analysis:
+                return analysis
+
+        return None
 
     def _get_services(self, full_objects=False):
         """Fetch and return analysis service objects

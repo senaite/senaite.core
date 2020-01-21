@@ -563,6 +563,8 @@ class AnalysesView(BikaListingView):
         self._folder_item_detection_limits(obj, item)
         # Fill Specifications
         self._folder_item_specifications(obj, item)
+        # Fill Partition
+        self._folder_item_partition(obj, item)
         # Fill Due Date and icon if late/overdue
         self._folder_item_duedate(obj, item)
         # Fill verification criteria
@@ -1171,6 +1173,20 @@ class AnalysesView(BikaListingView):
         if full_obj.getAccredited():
             img = get_image("accredited.png", title=t(_("Accredited")))
             self._append_html_element(item, "Service", img)
+
+    def _folder_item_partition(self, analysis_brain, item):
+        """Adds an anchor to the partition if the current analysis is from a
+        partition that does not match with the current context
+        """
+        if not IAnalysisRequest.providedBy(self.context):
+            return
+
+        sample_id = analysis_brain.getRequestID
+        if sample_id != api.get_id(self.context):
+            part_url = analysis_brain.getRequestURL
+            url = get_link(part_url, value=sample_id, **{"class": "small"})
+            title = item["replace"].get("Service") or item["Service"]
+            item["replace"]["Service"] = "{}<br/>{}".format(title, url)
 
     def _folder_item_report_visibility(self, analysis_brain, item):
         """Set if the hidden field can be edited (enabled/disabled)
