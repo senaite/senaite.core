@@ -1,0 +1,61 @@
+<tal:master define="level options/level|python:0;
+                    children options/children | nothing;
+                    bottomLevel options/bottomLevel | nothing;
+                    bootstrapview nocall:context/@@bootstrapview"
+            i18n:domain="plone">
+
+  <metal:main define-macro="nav_main">
+
+    <tal:navitem repeat="node children">
+      <li tal:define="show_children   node/show_children;
+                      children        node/children;
+                      has_children    python:len(children)>0;
+                      item_url        node/getURL;
+                      item_remote_url node/getRemoteUrl;
+                      use_remote_url  node/useRemoteUrl | nothing;
+                      item            nocall:node/item;
+                      item_icon       python:bootstrapview.get_icon_for(item);
+                      item_type       node/portal_type;
+                      is_current      node/currentItem;
+                      is_in_path      node/currentParent;
+                      li_class        python:is_current and ' active' or '';
+                      li_extr_class   python:is_in_path and ' expanded' or '';
+                      li_folder_class python:show_children and ' folderish' or '';
+                      normalizeString nocall: context/plone_utils/normalizeString;"
+          tal:attributes="class string:nav-item${li_class}${li_extr_class}${li_folder_class} section-${node/normalized_id}"
+          tal:condition="python:bottomLevel &lt;= 0 or level &lt;= bottomLevel">
+
+        <tal:level define="item_class string:senaite-state-${node/normalized_review_state};
+                           item_type_class python:'senatite-contenttype-' + normalizeString(item_type);
+                           item_class python:is_current and item_class + ' active' or item_class;">
+
+          <a tal:attributes="href python:use_remote_url and item_remote_url or item_url;
+                             title node/Description;
+                             class string:$item_class${li_class}${li_extr_class}${li_folder_class} $item_type_class">
+            <tal:root tal:condition="python: level==1">
+              <img tal:replace="structure item_icon"/>
+              <span tal:condition="not:item_icon">
+                <span class="glyphicon glyphicon-folder-close" aria-hidden="true"></span>
+              </span>
+              <span tal:replace="node/Title">Selected Item Title</span>
+            </tal:root>
+            <tal:children tal:condition="python: level>1">
+              <div style="white-space:nowrap;">
+                <span class="glyphicon glyphicon-menu-right" aria-hidden="true"></span>
+                <span tal:replace="node/Title">Selected Item Title</span>
+              </div>
+            </tal:children>
+          </a>
+
+          <tal:children condition="has_children">
+            <ul tal:attributes="class python:'nav submenu nav-level-'+str(level)"
+                tal:condition="python: len(children) > 0 and show_children and bottomLevel and level < bottomLevel or True">
+              <span tal:replace="structure python:view.recurse(children=children, level=level+1, bottomLevel=bottomLevel)" />
+            </ul>
+          </tal:children>
+
+        </tal:level>
+      </li>
+    </tal:navitem>
+  </metal:main>
+</tal:master>

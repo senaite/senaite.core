@@ -1,0 +1,31 @@
+<tal:sidebar i18n:domain="plone">
+  <div class="sidebar-nav"
+       tal:define="root view/navigation_root">
+
+    <div class="navbar navbar-default" role="navigation">
+      <div class="navbar-header">
+        <button type="button"
+                class="navbar-toggle"
+                data-toggle="collapse"
+                data-target=".sidebar-navbar-collapse">
+          <span class="sr-only" i18n:translate="">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <span class="visible-xs navbar-brand" tal:content="view/title">
+          Navigation
+        </span>
+      </div>
+
+      <div class="navbar-collapse collapse sidebar-navbar-collapse">
+        <ul class="nav navbar-nav">
+          <li tal:replace="structure view/createNavTree">
+            SUBTREE
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</tal:sidebar>
