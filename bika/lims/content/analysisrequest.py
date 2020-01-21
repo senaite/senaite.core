@@ -85,6 +85,7 @@ from bika.lims.interfaces import IBatch
 from bika.lims.interfaces import ICancellable
 from bika.lims.interfaces import IClient
 from bika.lims.interfaces import ISubmitted
+from bika.lims.permissions import EditResults
 from bika.lims.permissions import FieldEditBatch
 from bika.lims.permissions import FieldEditClient
 from bika.lims.permissions import FieldEditClientOrderNumber
@@ -1450,26 +1451,34 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
             # Update only results ranges if specs is not None, so results ranges
             # manually set previously (e.g. via ManageAnalyses view) are
             # preserved unless a new Specification overrides them
-            self.setResultsRange(spec.getResultsRange())
+            self.setResultsRange(spec.getResultsRange(), recursive=False)
 
         # Cascade the changes to partitions, but only to those for which that
         # are in a status in which the specification can be updated. This
         # prevents the re-assignment of Specifications to already verified or
         # published samples
         permission = self.getField("Specification").write_permission
-        for descendant in self.getDescendants(all_descendants=True):
+        for descendant in self.getDescendants():
             if check_permission(permission, descendant):
                 descendant.setSpecification(spec)
 
-    def setResultsRange(self, value):
+    def setResultsRange(self, value, recursive=True):
         field = self.getField("ResultsRange")
         field.set(self, value)
 
         # Reset results ranges from analyses
         for analysis in self.objectValues("Analysis"):
-            service_uid = analysis.getRawAnalysisService()
-            result_range = field.get(self, uid=service_uid)
-            analysis.setResultsRange(result_range)
+            if check_permission(EditResults, analysis):
+                service_uid = analysis.getRawAnalysisService()
+                result_range = field.get(self, uid=service_uid)
+                analysis.setResultsRange(result_range)
+
+        if recursive:
+            # Cascade the changes to partitions
+            permission = self.getField("Specification").write_permission
+            for descendant in self.getDescendants():
+                if check_permission(permission, descendant):
+                    descendant.setResultsRange(value)
 
     def getClient(self):
         """Returns the client this object is bound to. We override getClient
