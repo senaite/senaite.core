@@ -166,28 +166,24 @@ get_from_descendant
 When asked for `Fe` to primary, it returns None because there is no descendant
 containing `Fe`:
 
-    >>> fe = field.get_from_descendant(sample, Fe)
-    >>> fe is None
-    True
+    >>> field.get_from_descendant(sample, Fe)
+    []
 
 And same with partition:
 
-    >>> fe = field.get_from_descendant(partition, Fe)
-    >>> fe is None
-    True
+    >>> field.get_from_descendant(partition, Fe)
+    []
 
 When asked for `Cu` to primary, it returns the analysis, because it lives in a
 descendant (partition):
 
-    >>> cu = field.get_from_descendant(sample, Cu)
-    >>> cu.getServiceUID() == api.get_uid(Cu)
-    True
+    >>> field.get_from_descendant(sample, Cu)
+    [<Analysis at /plone/clients/client-1/W-0001-P01/Cu>]
 
 But returns None if I ask to the partition:
 
-    >>> cu = field.get_from_descendant(partition, Cu)
-    >>> cu is None
-    True
+    >>> field.get_from_descendant(partition, Cu)
+    []
 
 get_analyses_from_descendants
 .............................
@@ -204,37 +200,29 @@ It returns the analyses contained by the descendants:
 Resolution of analyses from the Sample lineage
 ----------------------------------------------
 
-resolve_analysis
+resolve_analyses
 ................
 
 Resolves the analysis from the sample lineage if exists:
 
-    >>> fe = field.resolve_analysis(sample, Fe)
-    >>> fe.getServiceUID() == api.get_uid(Fe)
-    True
-    >>> fe.aq_parent == sample
-    True
+    >>> field.resolve_analyses(sample, Fe)
+    [<Analysis at /plone/clients/client-1/W-0001/Fe>]
 
-    >>> cu = field.resolve_analysis(sample, Cu)
-    >>> cu.getServiceUID() == api.get_uid(Cu)
-    True
-    >>> cu.aq_parent == partition
-    True
+    >>> field.resolve_analyses(sample, Cu)
+    [<Analysis at /plone/clients/client-1/W-0001-P01/Cu>]
 
-    >>> au = field.resolve_analysis(sample, Au)
-    >>> au is None
-    True
+    >>> field.resolve_analyses(sample, Au)
+    []
 
 But when we use the partition and the analysis is found in an ancestor, it
 moves the analysis into the partition:
 
-    >>> fe = field.resolve_analysis(partition, Fe)
-    >>> fe.getServiceUID() == api.get_uid(Fe)
-    True
-    >>> fe.aq_parent == partition
-    True
+    >>> field.resolve_analyses(partition, Fe)
+    [<Analysis at /plone/clients/client-1/W-0001-P01/Fe>]
+
     >>> sample.objectValues("Analysis")
     []
+
     >>> partition.objectValues("Analysis")
     [<Analysis at /plone/clients/client-1/W-0001-P01/Cu>, <Analysis at /plone/clients/client-1/W-0001-P01/Fe>]
 
