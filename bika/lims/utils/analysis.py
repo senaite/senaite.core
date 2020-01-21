@@ -78,6 +78,7 @@ def copy_analysis_field_values(source, analysis, **kwargs):
             mutator = getattr(analysis, mutator_name)
             mutator(value)
 
+
 def create_analysis(context, source, **kwargs):
     """Create a new Analysis.  The source can be an Analysis Service or
     an existing Analysis, and all possible field values will be set to the
@@ -85,7 +86,7 @@ def create_analysis(context, source, **kwargs):
     :param context: The analysis will be created inside this object.
     :param source: The schema of this object will be used to populate analysis.
     :param kwargs: The values of any keys which match schema fieldnames will
-    be inserted into the corrosponding fields in the new analysis.
+    be inserted into the corresponding fields in the new analysis.
     :returns: Analysis object that was created
     :rtype: Analysis
     """
