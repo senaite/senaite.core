@@ -364,10 +364,10 @@ Request and have precedence over the lab specifications:
     >>> myspec3.get("rangecomment")
     'My CA Spec'
 
-All Result Ranges are set on the AR:
+Result Ranges are set to analyses level, but not present in the AR:
 
     >>> sorted(map(lambda r: r.get("rangecomment"), ar.getResultsRange()))
-    ['My CA Spec', 'My MG Spec', 'My PH Spec']
+    []
 
 Now we simulate the form input data of the ARs "Manage Analysis" form, so that
 the User only selected the `PH` service and gave some custom specifications for
