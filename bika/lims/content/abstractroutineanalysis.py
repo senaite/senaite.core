@@ -41,9 +41,12 @@ from bika.lims.content.clientawaremixin import ClientAwareMixin
 from bika.lims.content.reflexrule import doReflexRuleAction
 from bika.lims.interfaces import IAnalysis
 from bika.lims.interfaces import ICancellable
+from bika.lims.interfaces import IInternalUse
 from bika.lims.interfaces import IRoutineAnalysis
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.workflow import getTransitionDate
+from zope.interface import noLongerProvides
+from zope.interface import alsoProvides
 
 # True if the analysis is created by a reflex rule
 IsReflexAnalysis = BooleanField(
@@ -450,6 +453,16 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
         """
         self.setHiddenManually(True)
         self.getField('Hidden').set(self, hidden)
+
+    @security.public
+    def setInternalUse(self, internal_use):
+        """Applies the internal use of this Analysis. Analyses set for internal
+        use are not accessible to clients and are not visible in reports
+        """
+        if internal_use:
+            alsoProvides(self, IInternalUse)
+        else:
+            noLongerProvides(self, IInternalUse)
 
     @security.public
     def setReflexAnalysisOf(self, analysis):

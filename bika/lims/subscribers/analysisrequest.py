@@ -41,12 +41,7 @@ def ObjectModifiedEventHandler(instance, event):
         # Mark/Unmark all analyses with IInternalUse to control their
         # visibility in results reports
         for analysis in instance.objectValues("Analysis"):
-            if internal_use:
-                alsoProvides(analysis, IInternalUse)
-            else:
-                noLongerProvides(analysis, IInternalUse)
-
-            # Reindex analysis security in catalogs
+            analysis.setInternalUse(internal_use)
             analysis.reindexObjectSecurity()
 
         # If internal use is True, cascade same setting to partitions
@@ -62,6 +57,10 @@ def AfterTransitionEventHandler(instance, event):
     This function does not superseds workflow.analysisrequest.events, rather it
     only updates the permissions in accordance with InternalUse value
     """
+    # Permissions for a given object change after transitions to meet with the
+    # workflow definition. InternalUse prevents Clients to access to Samples
+    # and analyses as well. Therefore, we have to update the permissions
+    # manually here to override those set by default
     update_internal_use_permissions(instance)
 
 

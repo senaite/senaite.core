@@ -281,9 +281,6 @@ class ARAnalysesField(ObjectField):
         prices = kwargs.get("prices") or {}
         price = prices.get(service_uid) or service.getPrice()
 
-        # Does analyses are for internal use
-        internal_use = instance.getInternalUse()
-
         # Gets the analysis or creates the analysis for this service
         # Note this returns a list, because is possible to have multiple
         # partitions with same analysis
@@ -302,12 +299,9 @@ class ARAnalysesField(ObjectField):
             # Set the price of the Analysis
             analysis.setPrice(price)
 
-            # Set internal use
-            analysis.setInternalUse(internal_use)
-            if internal_use and not IInternalUse.providedBy(analysis):
-                alsoProvides(analysis, IInternalUse)
-            elif not internal_use and IInternalUse.providedBy(analysis):
-                noLongerProvides(analysis, IInternalUse)
+            # Set the internal use status
+            parent_sample = analysis.getRequest()
+            analysis.setInternalUse(parent_sample.getInternalUse())
 
             # Set the result range to the Analysis
             analysis_rr = specs.get(service_uid) or analysis.getResultsRange()
