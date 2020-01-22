@@ -233,30 +233,20 @@ Addition of analyses
 add_analysis
 ............
 
-Setup required parameters:
-
-    >>> prices = hidden = dict()
-
 If we try to add now an analysis that already exists, either in the partition or
 in the primary, the analysis won't be added:
 
-    >>> added = field.add_analysis(sample, Fe, prices, hidden)
-    >>> added is None
-    True
+    >>> field.add_analysis(sample, Fe)
     >>> sample.objectValues("Analysis")
     []
 
-    >>> added = field.add_analysis(partition, Fe, prices, hidden)
-    >>> added is None
-    True
+    >>> field.add_analysis(partition, Fe)
     >>> partition.objectValues("Analysis")
     [<Analysis at /plone/clients/client-1/W-0001-P01/Cu>, <Analysis at /plone/clients/client-1/W-0001-P01/Fe>]
 
 If we add a new analysis, this will be added in the sample we are working with:
 
-    >>> au = field.add_analysis(sample, Au, prices, hidden)
-    >>> au.getServiceUID() == api.get_uid(Au)
-    True
+    >>> field.add_analysis(sample, Au)
     >>> sample.objectValues("Analysis")
     [<Analysis at /plone/clients/client-1/W-0001/Au>]
     >>> partition.objectValues("Analysis")
@@ -269,9 +259,7 @@ Apply the changes:
 If I try to add an analysis that exists in an ancestor, the analysis gets moved
 while the function returns None:
 
-    >>> added = field.add_analysis(partition, Au, prices, hidden)
-    >>> added is None
-    True
+    >>> field.add_analysis(partition, Au)
     >>> sample.objectValues("Analysis")
     []
     >>> partition.objectValues("Analysis")
@@ -285,7 +273,6 @@ If we try to set same analyses as before to the root sample, nothing happens
 because the analyses are already there:
 
     >>> field.set(sample, [Cu, Fe, Au])
-    []
 
 The analyses still belong to the partition though:
 
@@ -297,7 +284,6 @@ The analyses still belong to the partition though:
 Same result if I set the analyses to the partition:
 
     >>> field.set(partition, [Cu, Fe, Au])
-    []
     >>> sample.objectValues("Analysis")
     []
     >>> partition.objectValues("Analysis")
@@ -306,7 +292,6 @@ Same result if I set the analyses to the partition:
 If I add a new analysis in the list, the analysis is successfully added:
 
     >>> field.set(sample, [Cu, Fe, Au, Mg])
-    [<Analysis at /plone/clients/client-1/W-0001/Mg>]
     >>> sample.objectValues("Analysis")
     [<Analysis at /plone/clients/client-1/W-0001/Mg>]
 
@@ -319,13 +304,10 @@ Apply the changes:
 
     >>> transaction.commit()
 
-If I set the same analyses to the partition, I don't get any result:
+If I set the same analyses to the partition, the `Mg` analysis is moved into
+the partition:
 
     >>> field.set(partition, [Cu, Fe, Au, Mg])
-    []
-
-but, the `Mg` analysis has been moved into the partition:
-
     >>> sample.objectValues("Analysis")
     []
     >>> partition.objectValues("Analysis")
@@ -334,7 +316,6 @@ but, the `Mg` analysis has been moved into the partition:
 To remove `Mg` analysis, pass the list without `Mg`:
 
     >>> field.set(sample, [Cu, Fe, Au])
-    []
 
 The analysis `Mg` has been removed, although it belonged to the partition:
 
@@ -347,10 +328,9 @@ But if I add a new analysis to the primary and I try to remove it from the
 partition, nothing will happen:
 
     >>> field.set(sample, [Cu, Fe, Au, Mg])
-    [<Analysis at /plone/clients/client-1/W-0001/Mg>]
 
     >>> field.set(partition, [Cu, Fe, Au])
-    []
+
     >>> sample.objectValues("Analysis")
     [<Analysis at /plone/clients/client-1/W-0001/Mg>]
     >>> partition.objectValues("Analysis")

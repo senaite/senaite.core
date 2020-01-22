@@ -192,8 +192,6 @@ analyses, the Specification assigned to the Sample will remain intact, as well
 as Sample's Results Range:
 
     >>> sample.setAnalyses([Au, Cu, Fe])
-    []
-
     >>> analyses = sample.objectValues()
     >>> sorted(analyses, key=lambda an: an.getKeyword())
     [<Analysis at /plone/clients/client-1/W-0001/Au>, <Analysis at /plone/clients/client-1/W-0001/Cu>, <Analysis at /plone/clients/client-1/W-0001/Fe>]
@@ -213,8 +211,6 @@ Specification set and the specification had a results range registered for
 such analysis, the result range for the new analysis will be set automatically:
 
     >>> sample.setAnalyses([Au, Cu, Fe, Zn])
-    [<Analysis at /plone/clients/client-1/W-0001/Zn>]
-
     >>> sample.getSpecification()
     <AnalysisSpec at /plone/bika_setup/bika_analysisspecs/analysisspec-1>
 
@@ -229,8 +225,6 @@ guarantee compliance:
     >>> rr_zn = zn.getResultsRange()
     >>> rr_zn.min = 55
     >>> sample.setAnalyses([Au, Cu, Fe, Zn], specs=[rr_zn])
-    []
-
     >>> sample.getSpecification() is None
     True
 
@@ -294,8 +288,6 @@ both the root sample and the partition to guarantee compliance:
     >>> rr_zn = zn.getResultsRange()
     >>> rr_zn.min = 56
     >>> partition.setAnalyses([Zn], specs=[rr_zn])
-    []
-
     >>> partition.getSpecification() is None
     True
 
@@ -325,8 +317,6 @@ loose the Specification:
     >>> rr_zn = zn.getResultsRange()
     >>> rr_zn.min = 57
     >>> sample.setAnalyses([Au, Cu, Fe, Zn], specs=[rr_zn])
-    []
-
     >>> sample.getSpecification() is None
     True
 

@@ -41,6 +41,13 @@ Functional Helpers:
     >>> def timestamp(format="%Y-%m-%d"):
     ...     return DateTime().strftime(format)
 
+    >>> def get_analyses_from(sample, services):
+    ...     if not isinstance(services, (list, tuple)):
+    ...         services = [services]
+    ...     uids = map(api.get_uid, services)
+    ...     analyses = sample.getAnalyses(full_objects=True)
+    ...     return filter(lambda an: an.getServiceUID() in uids, analyses)
+
 Variables::
 
     >>> date_now = timestamp()
@@ -241,23 +248,16 @@ The field takes the following parameters:
 Pass in all prior created Analysis Services:
 
     >>> all_services = [analysisservice1, analysisservice2, analysisservice3]
-    >>> new_analyses = field.set(ar, all_services)
+    >>> field.set(ar, all_services)
 
 We expect to have now the `CA` and `MG` Analyses as well:
 
-    >>> sorted(new_analyses, key=methodcaller('getId'))
-    [<Analysis at /plone/clients/client-1/water-0001/CA>, <Analysis at /plone/clients/client-1/water-0001/MG>]
-
-In the Analyis Request should be now three Analyses:
-
-    >>> len(ar.objectValues("Analysis"))
-    3
+    >>> sorted(ar.objectValues("Analysis"), key=methodcaller('getId'))
+    [<Analysis at /plone/clients/client-1/water-0001/CA>, <Analysis at /plone/clients/client-1/water-0001/MG>, <Analysis at /plone/clients/client-1/water-0001/PH>]
 
 Removing Analyses is done by omitting those from the `items` list:
 
-    >>> new_analyses = field.set(ar, [analysisservice1])
-    >>> sorted(new_analyses, key=methodcaller('getId'))
-    []
+    >>> field.set(ar, [analysisservice1])
 
 Now there should be again only one Analysis assigned:
 
@@ -272,7 +272,7 @@ We expect to have just the `PH` Analysis again:
 The field can also handle UIDs of Analyses Services:
 
     >>> service_uids = map(api.get_uid, all_services)
-    >>> new_analyses = field.set(ar, service_uids)
+    >>> field.set(ar, service_uids)
 
 We expect again to have all the three Analyses:
 
@@ -289,7 +289,7 @@ The field should also handle catalog brains:
     >>> api.get_title(brain)
     'Calcium'
 
-    >>> new_analyses = field.set(ar, [brain])
+    >>> field.set(ar, [brain])
 
 We expect now to have just the `CA` analysis assigned:
 
@@ -298,7 +298,7 @@ We expect now to have just the `CA` analysis assigned:
 
 Now let's try int mixed, one catalog brain and one object:
 
-    >>> new_analyses = field.set(ar, [analysisservice1, brain])
+    >>> field.set(ar, [analysisservice1, brain])
 
 We expect now to have now `PH` and `CA`:
 
@@ -308,7 +308,7 @@ We expect now to have now `PH` and `CA`:
 Finally, we test it with an `Analysis` object:
 
     >>> analysis1 = ar["PH"]
-    >>> new_analyses = field.set(ar, [analysis1])
+    >>> field.set(ar, [analysis1])
 
     >>> sorted(ar.objectValues("Analysis"), key=methodcaller("getId"))
     [<Analysis at /plone/clients/client-1/water-0001/PH>]
@@ -330,7 +330,7 @@ It is a dictionary with the following keys and values:
 
 Each Analysis can request its own Specification (Result Range):
 
-    >>> new_analyses = field.set(ar, all_services)
+    >>> field.set(ar, all_services)
 
     >>> analysis1 = ar[analysisservice1.getKeyword()]
     >>> analysis2 = ar[analysisservice2.getKeyword()]
@@ -350,7 +350,7 @@ Request and have precedence over the lab specifications:
     >>> arr = [arr1, arr2, arr3]
 
     >>> all_analyses = [analysis1, analysis2, analysis3]
-    >>> new_analyses = field.set(ar, all_analyses, specs=arr)
+    >>> field.set(ar, all_analyses, specs=arr)
 
     >>> myspec1 = analysis1.getResultsRange()
     >>> myspec1.get("rangecomment")
@@ -376,7 +376,7 @@ this Analysis.
 The specifications get applied if the keyword matches:
 
     >>> ph_specs = {"keyword": analysis1.getKeyword(), "min": 5.2, "max": 7.9, "error": 3}
-    >>> new_analyses = field.set(ar, [analysis1], specs=[ph_specs])
+    >>> field.set(ar, [analysis1], specs=[ph_specs])
 
 We expect to have now just one Analysis set:
 
@@ -415,7 +415,7 @@ Prices are primarily defined on Analyses Services:
 
 Created Analyses inherit that price:
 
-    >>> new_analyses = field.set(ar, all_services)
+    >>> field.set(ar, all_services)
 
     >>> analysis1 = ar[analysisservice1.getKeyword()]
     >>> analysis2 = ar[analysisservice2.getKeyword()]
@@ -440,7 +440,7 @@ The `setter` also allows to set custom prices for the Analyses:
 
 Now we set the field with all analyses services and new prices:
 
-    >>> new_analyses = field.set(ar, all_services, prices=prices)
+    >>> field.set(ar, all_services, prices=prices)
 
 The Analyses have now the new prices:
 
@@ -491,7 +491,8 @@ Append interim field `B` to the `Total Hardness` Analysis Service:
 
 Now we assign the `Total Hardness` Analysis Service:
 
-    >>> new_analyses = field.set(ar, [analysisservice4])
+    >>> field.set(ar, [analysisservice4])
+    >>> new_analyses = get_analyses_from(ar, analysisservice4)
     >>> analysis = new_analyses[0]
     >>> analysis
     <Analysis at /plone/clients/client-1/water-0001/THCaCO3>
@@ -532,12 +533,7 @@ The Analysis Service returns the interim fields from the Calculation too:
 
 Update the AR with the new Analysis Service:
 
-    >>> new_analyses = field.set(ar, [analysisservice4])
-
-Since no new Analyses were created, the field should return an empty list:
-
-    >>> new_analyses
-    []
+    >>> field.set(ar, [analysisservice4])
 
 The Analysis should be still there:
 
@@ -571,9 +567,8 @@ is removed from an Analysis Request.
 
 Assign the `PH` Analysis:
 
-    >>> new_analyses = field.set(ar, [analysisservice1])
-    >>> new_analyses
-    [<Analysis at /plone/clients/client-1/water-0001/PH>]
+    >>> field.set(ar, [analysisservice1])
+    >>> new_analyses = ar.getAnalyses(full_objects=True)
 
 Create a new Worksheet and assign the Analysis to it:
 
@@ -607,9 +602,7 @@ The worksheet contains now the Analysis:
 
 Removing the analysis from the AR also unassignes it from the worksheet:
 
-    >>> new_analyses = field.set(ar, [analysisservice2])
-    >>> new_analyses
-    [<Analysis at /plone/clients/client-1/water-0001/MG>]
+    >>> field.set(ar, [analysisservice2])
 
     >>> ws.getAnalyses()
     []
@@ -635,7 +628,7 @@ Get the dependent services:
 
 We expect that dependent services get automatically set:
 
-    >>> new_analyses = field.set(ar, [analysisservice4])
+    >>> field.set(ar, [analysisservice4])
 
     >>> sorted(ar.objectValues("Analysis"), key=methodcaller('getId'))
     [<Analysis at /plone/clients/client-1/water-0001/CA>, <Analysis at /plone/clients/client-1/water-0001/MG>, <Analysis at /plone/clients/client-1/water-0001/THCaCO3>]
@@ -681,7 +674,7 @@ We create a new attachment in the client and assign it to this specific analysis
 Now we remove the *PH* analysis. Since it is prohibited by the field to remove
 all analyses from an AR, we will set here some other analyses instead:
 
-    >>> new_analyses = field.set(ar2, [analysisservice2, analysisservice3])
+    >>> field.set(ar2, [analysisservice2, analysisservice3])
 
 The attachment should be deleted from the client folder as well:
 
@@ -690,14 +683,14 @@ The attachment should be deleted from the client folder as well:
 
 Re-adding the *PH* analysis should start with no attachments:
 
-    >>> new_analyses = field.set(ar2, [analysisservice1, analysisservice2, analysisservice3])
+    >>> field.set(ar2, [analysisservice1, analysisservice2, analysisservice3])
     >>> an1 = ar2[analysisservice1.getKeyword()]
     >>> an1.getAttachment()
     []
 
 This should work as well when multiple attachments are assigned.
 
-    >>> new_analyses = field.set(ar2, [analysisservice1, analysisservice2])
+    >>> field.set(ar2, [analysisservice1, analysisservice2])
 
     >>> an1 = ar2[analysisservice1.getKeyword()]
     >>> an2 = ar2[analysisservice2.getKeyword()]
@@ -724,7 +717,7 @@ Assign the second half of the attachments to the *Magnesium* analysis:
 
 Removing the *PH* analysis should also remove all the assigned attachments:
 
-    >>> new_analyses = field.set(ar2, [analysisservice2])
+    >>> field.set(ar2, [analysisservice2])
 
     >>> att2.getId() in ar2.getClient().objectIds()
     False
@@ -837,7 +830,7 @@ And all contained Analyses of the retest keep references to the same Attachments
 This means that removing that attachment from the retest should **not** delete
 the attachment from the original AR:
 
-    >>> new_analyses = field.set(ar_retest, [analysisservice1])
+    >>> field.set(ar_retest, [analysisservice1])
     >>> an.getAttachment()
     [<Attachment at /plone/clients/client-1/attachment-9>]
 

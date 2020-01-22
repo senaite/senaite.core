@@ -141,7 +141,8 @@ class ARAnalysesField(ObjectField):
         specs = self.resolve_specs(instance, specs)
 
         # Add analyses
-        new_analyses = self.add_analyses(instance, services, prices, hidden, specs)
+        params = dict(prices=prices, hidden=hidden, specs=specs)
+        map(lambda serv: self.add_analysis(instance, serv, **params), services)
 
         # Get all analyses (those from descendants included)
         analyses = instance.objectValues("Analysis")
@@ -154,8 +155,6 @@ class ARAnalysesField(ObjectField):
 
         # Remove analyses
         map(self.remove_analysis, to_remove)
-
-        return new_analyses
 
     def resolve_specs(self, instance, results_ranges):
         """Returns a dictionary where the key is the service_uid and the value
@@ -267,27 +266,20 @@ class ARAnalysesField(ObjectField):
 
         return result_range
 
-    def add_analyses(self, instance, services, prices, hidden, specs):
-        new_analyses = []
-        for service in services:
-            an = self.add_analysis(instance, service, prices, hidden, specs)
-            if an:
-                new_analyses.append(an)
-        return new_analyses
-
-    def add_analysis(self, instance, service, prices, hidden, specs=None):
+    def add_analysis(self, instance, service, **kwargs):
         service_uid = api.get_uid(service)
-        new_analysis = False
 
         # Ensure we have suitable parameters
-        specs = specs or {}
+        specs = kwargs.get("specs") or {}
 
         # Get the hidden status for the service
-        hidden = filter(lambda d: d.get("uid") == service_uid, hidden or [])
+        hidden = kwargs.get("hidden") or []
+        hidden = filter(lambda d: d.get("uid") == service_uid, hidden)
         hidden = hidden and hidden[0] or service.getHidden()
 
         # Get the price for the service
-        price = prices and prices.get(service_uid) or service.getPrice()
+        prices = kwargs.get("prices") or {}
+        price = prices.get(service_uid) or service.getPrice()
 
         # Does analyses are for internal use
         internal_use = instance.getInternalUse()
@@ -298,7 +290,6 @@ class ARAnalysesField(ObjectField):
         analyses = self.resolve_analyses(instance, service)
         if not analyses:
             # Create the analysis
-            new_analysis = True
             keyword = service.getKeyword()
             logger.info("Creating new analysis '{}'".format(keyword))
             analysis = create_analysis(instance, service)
@@ -322,12 +313,6 @@ class ARAnalysesField(ObjectField):
             analysis_rr = specs.get(service_uid) or analysis.getResultsRange()
             analysis.setResultsRange(analysis_rr)
             analysis.reindexObject()
-
-        # Only return the analysis if is a new one
-        if new_analysis:
-            return analyses[0]
-
-        return None
 
     def remove_analysis(self, analysis):
         """Removes a given analysis from the instance
@@ -425,15 +410,6 @@ class ARAnalysesField(ObjectField):
             analyses.extend(from_descendant)
 
         return analyses
-
-    def _get_services(self, full_objects=False):
-        """Fetch and return analysis service objects
-        """
-        bsc = api.get_tool("bika_setup_catalog")
-        brains = bsc(portal_type="AnalysisService")
-        if full_objects:
-            return map(api.get_object, brains)
-        return brains
 
     def _to_service(self, thing):
         """Convert to Analysis Service
