@@ -113,20 +113,6 @@ class AnalysisSpec(BaseFolder, HistoryAwareMixin, ClientAwareMixin,
         else:
             return self.title + " (" + translate(_("Client")) + ")"
 
-    @security.public
-    def getResultsRangeDict(self):
-        """Return a dictionary with the specification fields for each
-           service. The keys of the dictionary are the keywords of each
-           analysis service. Each service contains a dictionary in which
-           each key is the name of the spec field:
-           specs['keyword'] = {'min': value,
-                               'max': value,
-                               'warnmin': value,
-                               ... }
-        """
-        results_range = self.getResultsRange()
-        return dict(map(lambda rr: (rr["keyword"], rr), results_range))
-
 
 atapi.registerType(AnalysisSpec, PROJECTNAME)
 
