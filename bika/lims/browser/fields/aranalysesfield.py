@@ -131,8 +131,6 @@ class ARAnalysesField(ObjectField):
         services = filter(None, map(self._to_service, items))
 
         # Calculate dependencies
-        # FIXME Infinite recursion error possible here, if the formula includes
-        #       the Keyword of the Service that includes the Calculation
         dependencies = map(lambda s: s.getServiceDependencies(), services)
         dependencies = list(itertools.chain.from_iterable(dependencies))
 
