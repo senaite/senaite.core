@@ -2,12 +2,12 @@
     xmlns="http://namespaces.zope.org/zope"
     i18n_domain="senaite.core">
 
-    <!-- Default Results Range provider for analyses
+    <!-- Default Result Range provider for analyses
     This is used for backwards-compatibility for when the analysis' ResultsRange
     was obtained directly from Sample's ResultsRanges field, before this:
     https://github.com/senaite/senaite.core/pull/1506 -->
     <adapter
-      factory=".specificationsfield.DefaultResultsRangeProvider"
+      factory=".resultrangefield.DefaultResultsRangeProvider"
       for="bika.lims.interfaces.analysis.IRequestAnalysis"
       provides="Products.Archetypes.interfaces.IFieldDefaultProvider"
       name="ResultsRange" />

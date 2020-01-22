@@ -29,7 +29,7 @@ from zope.interface import implements
 
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import UIDReferenceField
-from bika.lims.browser.fields.specificationsfield import SpecificationsField
+from bika.lims.browser.fields import ResultsRangesField
 from bika.lims.browser.widgets import AnalysisSpecificationWidget
 from bika.lims.browser.widgets import ReferenceWidget
 from bika.lims.catalog.bikasetup_catalog import SETUP_CATALOG
@@ -60,7 +60,7 @@ schema = Schema((
 
 )) + BikaSchema.copy() + Schema((
 
-    SpecificationsField(
+    ResultsRangesField(
         'ResultsRange',
         required=1,
         widget=AnalysisSpecificationWidget(

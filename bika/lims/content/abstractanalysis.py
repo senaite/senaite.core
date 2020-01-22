@@ -40,7 +40,7 @@ from bika.lims import workflow as wf
 from bika.lims.browser.fields import HistoryAwareReferenceField
 from bika.lims.browser.fields import InterimFieldsField
 from bika.lims.browser.fields import UIDReferenceField
-from bika.lims.browser.fields.specificationsfield import ResultsRangeField
+from bika.lims.browser.fields import ResultRangeField
 from bika.lims.browser.fields.uidreferencefield import get_backreferences
 from bika.lims.browser.widgets import RecordsWidget
 from bika.lims.config import LDL
@@ -150,7 +150,7 @@ InterimFields = InterimFieldsField(
 )
 
 # Results Range that applies to this analysis
-ResultsRange = ResultsRangeField(
+ResultsRange = ResultRangeField(
     "ResultsRange",
     required=0
 )

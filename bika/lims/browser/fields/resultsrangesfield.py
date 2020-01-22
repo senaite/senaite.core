@@ -1,55 +1,35 @@
+# -*- coding: utf-8 -*-
+#
+# This file is part of SENAITE.CORE.
+#
+# SENAITE.CORE is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, version 2.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 51
+# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# Copyright 2018-2020 by it's authors.
+# Some rights reserved, see README and LICENSE.
+
 from operator import itemgetter
 
-from Products.ATExtensions.field import RecordField
 from Products.ATExtensions.field import RecordsField
 from Products.Archetypes.Registry import registerField
-from Products.Archetypes.interfaces import IFieldDefaultProvider
-from zope.interface import implements
 
 from bika.lims import api
-from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.fields.resultrangefield import SUB_FIELDS
 from bika.lims.browser.widgets import AnalysisSpecificationWidget
 from bika.lims.catalog import SETUP_CATALOG
-from bika.lims.interfaces.analysis import IRequestAnalysis
-
-# A tuple of (subfield_id, subfield_label,)
-SUB_FIELDS = (
-    ("keyword", _("Analysis Service")),
-    ("min_operator", _("Min operator")),
-    ("min", _('Min')),
-    ("max_operator", _("Max operator")),
-    ("max", _('Max')),
-    ("warn_min", _('Min warn')),
-    ("warn_max", _('Max warn')),
-    ("hidemin", _('< Min')),
-    ("hidemax", _('> Max')),
-    ("rangecomment", _('Range Comment')),
-)
 
 
-class ResultsRangeField(RecordField):
-    """A field that stores a results range
-    """
-    _properties = RecordField._properties.copy()
-    _properties.update({
-        "type": "results_range_field",
-        "subfields": map(itemgetter(0), SUB_FIELDS),
-        "subfield_labels": dict(SUB_FIELDS),
-    })
-
-    def get(self, instance, **kwargs):
-        from bika.lims.content.analysisspec import ResultsRangeDict
-        value = super(ResultsRangeField, self).get(instance, **kwargs)
-        if value:
-            return ResultsRangeDict(dict(value.items()))
-        return {}
-
-
-registerField(ResultsRangeField, title="ResultsRange",
-              description="Used for storing a results range",)
-
-
-class SpecificationsField(RecordsField):
+class ResultsRangesField(RecordsField):
     """A field that stores a list of results ranges
     """
     _properties = RecordsField._properties.copy()
@@ -67,7 +47,7 @@ class SpecificationsField(RecordsField):
 
     def get(self, instance, **kwargs):
         from bika.lims.content.analysisspec import ResultsRangeDict
-        values = super(SpecificationsField, self).get(instance, **kwargs)
+        values = super(ResultsRangesField, self).get(instance, **kwargs)
 
         # If a keyword or an uid has been specified, return the result range
         # for that uid or keyword only
@@ -100,7 +80,7 @@ class SpecificationsField(RecordsField):
         """Convert the records to persistent dictionaries
         """
         # Resolve items to guarantee all them have the key uid
-        value = super(SpecificationsField, self)._to_dict(value)
+        value = super(ResultsRangesField, self)._to_dict(value)
         return map(self.resolve_uid, value)
 
     def resolve_uid(self, raw_dict):
@@ -120,33 +100,5 @@ class SpecificationsField(RecordsField):
         return value
 
 
-class DefaultResultsRangeProvider(object):
-    """Default Results Range provider for analyses
-    This is used for backwards-compatibility for when the analysis' ResultsRange
-    was obtained directly from Sample's ResultsRanges field, before this:
-    https://github.com/senaite/senaite.core/pull/1506
-    """
-    implements(IFieldDefaultProvider)
-
-    def __init__(self, context):
-        self.context = context
-
-    def __call__(self):
-        """Get the default value.
-        """
-        if not IRequestAnalysis.providedBy(self.context):
-            return {}
-
-        keyword = self.context.getKeyword()
-        sample = self.context.getRequest()
-        if sample and keyword:
-            field = sample.getField("ResultsRange")
-            rr = field.get(sample, keyword=keyword)
-            if rr:
-                #self.context.setResultsRange(rr)
-                return rr
-                #return self.context.getResultsRange()
-
-        return {}
-        #from bika.lims.content.analysisspec import ResultsRangeDict
-        #return ResultsRangeDict(uid=api.get_uid(self.context), keyword=keyword)
+registerField(ResultsRangesField, title="ResultsRanges",
+              description="Used for storing a results ranges",)

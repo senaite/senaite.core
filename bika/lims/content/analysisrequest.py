@@ -62,7 +62,7 @@ from bika.lims.browser.fields import DateTimeField
 from bika.lims.browser.fields import DurationField
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.fields.remarksfield import RemarksField
-from bika.lims.browser.fields.specificationsfield import SpecificationsField
+from bika.lims.browser.fields import ResultsRangesField
 from bika.lims.browser.widgets import DateTimeWidget
 from bika.lims.browser.widgets import DecimalWidget
 from bika.lims.browser.widgets import PrioritySelectionWidget
@@ -715,7 +715,7 @@ schema = BikaSchema.copy() + Schema((
     # This field does not consider result ranges manually set to analyses.
     # Therefore, is also used to "detect" changes between the result ranges
     # specifically set to analyses and the results ranges set to the sample
-    SpecificationsField(
+    ResultsRangesField(
         "ResultsRange",
         write_permission=FieldEditSpecification,
         widget=ComputedWidget(visible=False),
