@@ -1453,20 +1453,25 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
             # preserved unless a new Specification overrides them
             self.setResultsRange(spec.getResultsRange(), recursive=False)
 
-        # Cascade the changes to partitions, but only to those for which that
-        # are in a status in which the specification can be updated. This
-        # prevents the re-assignment of Specifications to already verified or
-        # published samples
+        # Cascade the changes to partitions, but only to those that are in a
+        # status in which the specification can be updated. This prevents the
+        # re-assignment of Specifications to already verified or published
+        # samples
         permission = self.getField("Specification").write_permission
         for descendant in self.getDescendants():
             if check_permission(permission, descendant):
                 descendant.setSpecification(spec)
 
     def setResultsRange(self, value, recursive=True):
+        """Sets the results range for this Sample and analyses it contains.
+        If recursive is True, then applies the results ranges to descendants
+        (partitions) as well as their analyses too
+        """
+        # Set Results Range to the Sample
         field = self.getField("ResultsRange")
         field.set(self, value)
 
-        # Reset results ranges from analyses
+        # Set Results Range to analyses
         for analysis in self.objectValues("Analysis"):
             if check_permission(EditResults, analysis):
                 service_uid = analysis.getRawAnalysisService()
