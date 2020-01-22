@@ -143,58 +143,19 @@ class ARAnalysesField(ObjectField):
         specs = self.resolve_specs(instance, specs)
 
         # Add analyses
-        new_analyses = []
-        for service in services:
-            an = self.add_analysis(instance, service, prices, hidden, specs)
-            if an:
-                new_analyses.append(an)
+        new_analyses = self.add_analyses(instance, services, prices, hidden, specs)
 
-        # Remove analyses
-        # Since Manage Analyses view displays the analyses from partitions, we
-        # also need to take them into consideration here. Analyses from
-        # ancestors can be omitted.
+        # Get all analyses (those from descendants included)
         analyses = instance.objectValues("Analysis")
         analyses.extend(self.get_analyses_from_descendants(instance))
 
-        # Service UIDs
-        service_uids = map(api.get_uid, services)
+        # Bail out those not in services list or submitted
+        uids = map(api.get_uid, services)
+        to_remove = filter(lambda an: an.getServiceUID() not in uids, analyses)
+        to_remove = filter(lambda an: not ISubmitted.providedBy(an), to_remove)
 
-        # Assigned Attachments
-        assigned_attachments = []
-
-        for analysis in analyses:
-            service_uid = analysis.getServiceUID()
-
-            # Skip if the Service is selected
-            if service_uid in service_uids:
-                continue
-
-            # Skip non-open Analyses
-            if ISubmitted.providedBy(analysis):
-                continue
-
-            # Remember assigned attachments
-            # https://github.com/senaite/senaite.core/issues/1025
-            assigned_attachments.extend(analysis.getAttachment())
-            analysis.setAttachment([])
-
-            # If it is assigned to a worksheet, unassign it before deletion.
-            worksheet = analysis.getWorksheet()
-            if worksheet:
-                worksheet.removeAnalysis(analysis)
-
-            # Remove the analysis
-            # Note the analysis might belong to a partition
-            analysis.aq_parent.manage_delObjects(ids=[api.get_id(analysis)])
-
-        # Remove orphaned attachments
-        for attachment in assigned_attachments:
-            # only delete attachments which are no further linked
-            if not attachment.getLinkedAnalyses():
-                logger.info(
-                    "Deleting attachment: {}".format(attachment.getId()))
-                attachment_id = api.get_id(attachment)
-                api.get_parent(attachment).manage_delObjects(attachment_id)
+        # Remove analyses
+        map(self.remove_analysis, to_remove)
 
         return new_analyses
 
@@ -308,6 +269,14 @@ class ARAnalysesField(ObjectField):
 
         return result_range
 
+    def add_analyses(self, instance, services, prices, hidden, specs):
+        new_analyses = []
+        for service in services:
+            an = self.add_analysis(instance, service, prices, hidden, specs)
+            if an:
+                new_analyses.append(an)
+        return new_analyses
+
     def add_analysis(self, instance, service, prices, hidden, specs=None):
         service_uid = api.get_uid(service)
         new_analysis = False
@@ -361,6 +330,32 @@ class ARAnalysesField(ObjectField):
             return analyses[0]
 
         return None
+
+    def remove_analysis(self, analysis):
+        """Removes a given analysis from the instance
+        """
+        # Remember assigned attachments
+        # https://github.com/senaite/senaite.core/issues/1025
+        attachments = analysis.getAttachment()
+        analysis.setAttachment([])
+
+        # If assigned to a worksheet, unassign it before deletion
+        worksheet = analysis.getWorksheet()
+        if worksheet:
+            worksheet.removeAnalysis(analysis)
+
+        # Remove the analysis
+        # Note the analysis might belong to a partition
+        analysis.aq_parent.manage_delObjects(ids=[api.get_id(analysis)])
+
+        # Remove orphaned attachments
+        for attachment in attachments:
+            if not attachment.getLinkedAnalyses():
+                # only delete attachments which are no further linked
+                logger.info(
+                    "Deleting attachment: {}".format(attachment.getId()))
+                attachment_id = api.get_id(attachment)
+                api.get_parent(attachment).manage_delObjects(attachment_id)
 
     def resolve_analyses(self, instance, service):
         """Resolves analyses for the service and instance
