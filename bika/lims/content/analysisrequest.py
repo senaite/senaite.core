@@ -60,9 +60,9 @@ from bika.lims.api.security import check_permission
 from bika.lims.browser.fields import ARAnalysesField
 from bika.lims.browser.fields import DateTimeField
 from bika.lims.browser.fields import DurationField
+from bika.lims.browser.fields import ResultsRangesField
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.fields.remarksfield import RemarksField
-from bika.lims.browser.fields import ResultsRangesField
 from bika.lims.browser.widgets import DateTimeWidget
 from bika.lims.browser.widgets import DecimalWidget
 from bika.lims.browser.widgets import PrioritySelectionWidget
@@ -85,7 +85,6 @@ from bika.lims.interfaces import IBatch
 from bika.lims.interfaces import ICancellable
 from bika.lims.interfaces import IClient
 from bika.lims.interfaces import ISubmitted
-from bika.lims.permissions import EditResults
 from bika.lims.permissions import FieldEditBatch
 from bika.lims.permissions import FieldEditClient
 from bika.lims.permissions import FieldEditClientOrderNumber
@@ -1473,7 +1472,7 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
 
         # Set Results Range to analyses
         for analysis in self.objectValues("Analysis"):
-            if check_permission(EditResults, analysis):
+            if not ISubmitted.providedBy(analysis):
                 service_uid = analysis.getRawAnalysisService()
                 result_range = field.get(self, search_by=service_uid)
                 analysis.setResultsRange(result_range)
