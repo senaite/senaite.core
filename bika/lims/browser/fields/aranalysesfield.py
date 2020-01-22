@@ -232,9 +232,9 @@ class ARAnalysesField(ObjectField):
             service_uid = rr["uid"]
             sample_rr = sample_rrs.get(service_uid)
             if not sample_rr:
-                # Sample's ResultsRange (a "copy" of Specification initially set
-                # does not contain a result range for this service
-                return False
+                # This service is not defined in Sample's ResultsRange, we
+                # assume this *does not* break the compliance
+                continue
 
             else:
                 # Clean-up the result range passed in
