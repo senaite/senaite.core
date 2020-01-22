@@ -15,49 +15,10 @@ Test Setup
 
 Needed imports:
 
-    >>> import transaction
-    >>> from DateTime import DateTime
     >>> from plone.app.testing import setRoles
     >>> from plone.app.testing import TEST_USER_ID
     >>> from plone.app.testing import TEST_USER_PASSWORD
     >>> from bika.lims import api
-    >>> from bika.lims.utils.analysisrequest import create_analysisrequest
-    >>> from bika.lims.utils.analysisrequest import create_partition
-    >>> from bika.lims.workflow import doActionFor as do_action_for
-
-Functional Helpers:
-
-    >>> def new_sample(services, specification=None, results_ranges=None):
-    ...     values = {
-    ...         'Client': client.UID(),
-    ...         'Contact': contact.UID(),
-    ...         'DateSampled': DateTime().strftime("%Y-%m-%d"),
-    ...         'SampleType': sampletype.UID(),
-    ...         'Analyses': map(api.get_uid, services),
-    ...         'Specification': specification or None }
-    ...
-    ...     ar = create_analysisrequest(client, request, values, results_ranges=results_ranges)
-    ...     transitioned = do_action_for(ar, "receive")
-    ...     return ar
-
-    >>> def get_analysis_from(sample, service):
-    ...     service_uid = api.get_uid(service)
-    ...     for analysis in sample.getAnalyses(full_objects=True):
-    ...         if analysis.getServiceUID() == service_uid:
-    ...             return analysis
-    ...     return None
-
-    >>> def get_results_range_from(obj, service):
-    ...     field = obj.getField("ResultsRange")
-    ...     return field.get(obj, uid=api.get_uid(service))
-
-    >>> def set_results_range_for(obj, results_range):
-    ...     rrs = obj.getResultsRange()
-    ...     uid = results_range["uid"]
-    ...     rrs = filter(lambda rr: rr["uid"] != uid, rrs)
-    ...     rrs.append(results_range)
-    ...     obj.setResultsRange(rrs)
-
 
 Variables:
 
@@ -68,9 +29,6 @@ Variables:
 Create some basic objects for the test:
 
     >>> setRoles(portal, TEST_USER_ID, ['Manager',])
-    >>> client = api.create(portal.clients, "Client", Name="Happy Hills", ClientID="HH", MemberDiscountApplies=True)
-    >>> contact = api.create(client, "Contact", Firstname="Rita", Lastname="Mohale")
-    >>> sampletype = api.create(setup.bika_sampletypes, "SampleType", title="Water", Prefix="W")
     >>> labcontact = api.create(setup.bika_labcontacts, "LabContact", Firstname="Lab", Lastname="Manager")
     >>> department = api.create(setup.bika_departments, "Department", title="Chemistry", Manager=labcontact)
     >>> category = api.create(setup.bika_analysiscategories, "AnalysisCategory", title="Metals", Department=department)
