@@ -83,16 +83,12 @@ class DefaultResultsRangeProvider(object):
         if not IRequestAnalysis.providedBy(self.context):
             return {}
 
-        keyword = self.context.getKeyword()
+        service_uid = self.context.getServiceUID()
         sample = self.context.getRequest()
-        if sample and keyword:
+        if sample and service_uid:
             field = sample.getField("ResultsRange")
-            rr = field.get(sample, keyword=keyword)
+            rr = field.get(sample, uid=service_uid)
             if rr:
-                #self.context.setResultsRange(rr)
                 return rr
-                #return self.context.getResultsRange()
 
         return {}
-        #from bika.lims.content.analysisspec import ResultsRangeDict
-        #return ResultsRangeDict(uid=api.get_uid(self.context), keyword=keyword)

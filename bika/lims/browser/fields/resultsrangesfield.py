@@ -46,7 +46,6 @@ class ResultsRangesField(RecordsField):
     })
 
     def get(self, instance, **kwargs):
-        from bika.lims.content.analysisspec import ResultsRangeDict
         values = super(ResultsRangesField, self).get(instance, **kwargs)
 
         # If a keyword or an uid has been specified, return the result range
@@ -54,13 +53,13 @@ class ResultsRangesField(RecordsField):
         uid = kwargs.get("uid")
         keyword = kwargs.get("keyword")
         if uid or keyword:
-            return self.getResultsRange(values, uid or keyword)
+            return self.getResultRange(values, uid or keyword)
 
         # Convert the dict items to ResultRangeDict for easy handling
+        from bika.lims.content.analysisspec import ResultsRangeDict
         return map(lambda val: ResultsRangeDict(dict(val.items())), values)
 
-    def getResultsRange(self, values, uid_keyword_service):
-        from bika.lims.content.analysisspec import ResultsRangeDict
+    def getResultRange(self, values, uid_keyword_service):
         if not uid_keyword_service:
             return None
 
@@ -73,6 +72,7 @@ class ResultsRangesField(RecordsField):
             key = "uid"
 
         # Find out the item for the given uid/keyword
+        from bika.lims.content.analysisspec import ResultsRangeDict
         value = filter(lambda v: v.get(key) == uid_keyword_service, values)
         return value and ResultsRangeDict(dict(value[0].items())) or None
 
@@ -84,6 +84,9 @@ class ResultsRangesField(RecordsField):
         return map(self.resolve_uid, value)
 
     def resolve_uid(self, raw_dict):
+        """Returns a copy of the raw dictionary passed in, but with additional
+        key "uid". It's value is inferred from "keyword" if present
+        """
         value = raw_dict.copy()
         uid = value.get("uid")
         if api.is_uid(uid) and uid != "0":
