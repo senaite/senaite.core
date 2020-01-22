@@ -470,10 +470,14 @@ def create_partition(analysis_request, request, analyses, sample_type=None,
     client = ar.getClient()
     analyses = list(set(map(api.get_object, analyses)))
     services = map(lambda an: an.getAnalysisService(), analyses)
-    specs = ar.getSpecification()
-    specs = specs and specs.getResultsRange() or []
-    partition = create_analysisrequest(client, request=request, values=record,
-                                       analyses=services, results_ranges=specs)
+
+    # Populate the root's ResultsRanges to partitions
+    results_ranges = ar.getResultsRange() or []
+    partition = create_analysisrequest(client,
+                                       request=request,
+                                       values=record,
+                                       analyses=services,
+                                       results_ranges=results_ranges)
 
     # Reindex Parent Analysis Request
     ar.reindexObject(idxs=["isRootAncestor"])
