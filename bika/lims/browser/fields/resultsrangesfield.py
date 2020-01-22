@@ -50,10 +50,11 @@ class ResultsRangesField(RecordsField):
 
         # If a keyword or an uid has been specified, return the result range
         # for that uid or keyword only
-        uid = kwargs.get("uid")
-        keyword = kwargs.get("keyword")
-        if uid or keyword:
-            return self.getResultRange(values, uid or keyword)
+        if "search_by" in kwargs:
+            uid_or_keyword = kwargs.get("search_by")
+            if uid_or_keyword:
+                return self.getResultRange(values, uid_or_keyword) or {}
+            return {}
 
         # Convert the dict items to ResultRangeDict for easy handling
         from bika.lims.content.analysisspec import ResultsRangeDict

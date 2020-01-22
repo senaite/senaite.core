@@ -49,7 +49,7 @@ Functional Helpers:
 
     >>> def get_results_range_from(obj, service):
     ...     field = obj.getField("ResultsRange")
-    ...     return field.get(obj, uid=api.get_uid(service))
+    ...     return field.get(obj, search_by=api.get_uid(service))
 
     >>> def set_results_range_for(obj, results_range):
     ...     rrs = obj.getResultsRange()

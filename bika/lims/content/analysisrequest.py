@@ -1470,7 +1470,7 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         for analysis in self.objectValues("Analysis"):
             if check_permission(EditResults, analysis):
                 service_uid = analysis.getRawAnalysisService()
-                result_range = field.get(self, uid=service_uid)
+                result_range = field.get(self, search_by=service_uid)
                 analysis.setResultsRange(result_range)
 
         if recursive:

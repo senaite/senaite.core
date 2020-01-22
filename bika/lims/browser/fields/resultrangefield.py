@@ -54,6 +54,15 @@ class ResultRangeField(RecordField):
         "subfield_labels": dict(SUB_FIELDS),
     })
 
+    def set(self, instance, value, **kwargs):
+        from bika.lims.content.analysisspec import ResultsRangeDict
+        if isinstance(value, ResultsRangeDict):
+            # Better store a built-in dict so it will always be available even
+            # if ResultsRangeDict is removed or changed
+            value = dict(value)
+
+        super(ResultRangeField, self).set(instance, value, **kwargs)
+
     def get(self, instance, **kwargs):
         from bika.lims.content.analysisspec import ResultsRangeDict
         value = super(ResultRangeField, self).get(instance, **kwargs)
@@ -83,12 +92,19 @@ class DefaultResultsRangeProvider(object):
         if not IRequestAnalysis.providedBy(self.context):
             return {}
 
-        service_uid = self.context.getServiceUID()
-        sample = self.context.getRequest()
-        if sample and service_uid:
-            field = sample.getField("ResultsRange")
-            rr = field.get(sample, uid=service_uid)
-            if rr:
-                return rr
+        # Get the AnalysisRequest to look at
+        analysis = self.context
+        sample = analysis.getRequest()
+        if not sample:
+            return {}
 
-        return {}
+        # Search by keyword
+        field = sample.getField("ResultsRange")
+        keyword = analysis.getKeyword()
+        rr = field.get(sample, search_by=keyword)
+        if rr:
+            return rr
+
+        # Try with uid (this shouldn't be necessary)
+        service_uid = analysis.getServiceUID()
+        return field.get(sample, search_by=service_uid) or {}

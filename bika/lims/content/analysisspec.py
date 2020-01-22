@@ -124,15 +124,8 @@ class AnalysisSpec(BaseFolder, HistoryAwareMixin, ClientAwareMixin,
                                'warnmin': value,
                                ... }
         """
-        specs = {}
-        subfields = self.Schema()['ResultsRange'].subfields
-        for spec in self.getResultsRange():
-            keyword = spec['keyword']
-            specs[keyword] = {}
-            for key in subfields:
-                if key not in ['uid', 'keyword']:
-                    specs[keyword][key] = spec.get(key, '')
-        return specs
+        results_range = self.getResultsRange()
+        return dict(map(lambda rr: (rr["keyword"], rr), results_range))
 
 
 atapi.registerType(AnalysisSpec, PROJECTNAME)
