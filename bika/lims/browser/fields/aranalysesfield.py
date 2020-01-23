@@ -158,10 +158,9 @@ class ARAnalysesField(ObjectField):
 
     def resolve_specs(self, instance, results_ranges):
         """Returns a dictionary where the key is the service_uid and the value
-        is its results range. If a result range for a given service does not
-        exist or does not match with the specs defined in the sample, the
-        function resets the Sample's Specification field to guarantee compliance
-        with the Specification value actually set
+        is its results range. The dictionary is made by extending the
+        results_ranges passed-in with the Sample's ResultsRanges (a copy of the
+        specifications initially set)
         """
         rrs = results_ranges or []
 
@@ -174,17 +173,6 @@ class ARAnalysesField(ObjectField):
         # Append those from sample that are missing in the ranges passed-in
         service_uids = map(lambda rr: rr["uid"], rrs)
         rrs.extend(filter(lambda rr: rr["uid"] not in service_uids, sample_rrs))
-
-        # Do the results ranges passed-in are compliant with Sample's spec?
-        if not self.is_compliant_with_specification(instance, rrs):
-            # Reset the specification, we cannot keep a Specification assigned
-            # to a Sample if there are results ranges set not compliant
-            instance.setSpecification(None)
-
-            # We store the values in Sample's ResultsRange because although the
-            # specification is not met, we still want Sample's ResultsRange to
-            # act as a "template" for new analyses
-            instance.setResultsRange(rrs)
 
         # Create a dict for easy access to results ranges
         return dict(map(lambda rr: (rr["uid"], rr), rrs))
@@ -207,64 +195,6 @@ class ARAnalysesField(ObjectField):
                 uid = api.get_uid(brains[0])
         value["uid"] = uid
         return value
-
-    def is_compliant_with_specification(self, instance, results_range):
-        """Returns whether the results_range passed-in are compliant with the
-        instance's Specification results ranges. This, is the results ranges
-        for each service match with those from the instance
-        """
-        specification = instance.getSpecification()
-        if not specification:
-            # If there is no specification set, assume is compliant
-            return True
-
-        # Get the results ranges to check against for compliance
-        sample_rrs = instance.getResultsRange()
-        sample_rrs = sample_rrs or specification.getResultsRanges()
-
-        # Create a dict for easy access to results ranges
-        sample_rrs = dict(map(lambda rr: (rr["uid"], rr), sample_rrs))
-
-        # The Sample has Specification set: the ResultsRange from the sample is
-        # a copy of those from the Specification. If so, we need to check that
-        # there is no result range passed-in violating the Spec
-        for rr in results_range:
-            service_uid = rr["uid"]
-            sample_rr = sample_rrs.get(service_uid)
-            if not sample_rr:
-                # This service is not defined in Sample's ResultsRange, we
-                # assume this *does not* break the compliance
-                continue
-
-            else:
-                # Clean-up the result range passed in
-                form_rr = self.resolve_result_range(rr, sample_rr)
-                if form_rr != sample_rr:
-                    # Result range for this service has been changed manually,
-                    # it does not match with sample's ResultRange
-                    return False
-
-        # No anomalies found, compliant
-        return True
-
-    def resolve_result_range(self, result_range, original):
-        """Cleans up the result range passed-in to match with same keys as the
-        original result range, that presumably comes from a Specification
-        """
-        if not original:
-            return result_range
-
-        # Remove keys-values not present in original
-        extra_keys = filter(lambda key: key not in original, result_range)
-        for key in extra_keys:
-            del result_range[key]
-
-        # Add keys-values not present in current result_range but in original
-        for key, val in original.items():
-            if key not in result_range:
-                result_range[key] = val
-
-        return result_range
 
     def add_analysis(self, instance, service, **kwargs):
         service_uid = api.get_uid(service)
