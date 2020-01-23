@@ -29,6 +29,7 @@ from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import MAX_OPERATORS
 from bika.lims.config import MIN_OPERATORS
 from bika.lims.permissions import FieldEditSpecification
+from bika.lims.utils import dicts_to_dict
 from bika.lims.utils import get_image
 from bika.lims.utils import get_link
 from bika.lims.utils import to_choices
@@ -134,7 +135,8 @@ class AnalysisSpecificationView(BikaListingView):
         """
         super(AnalysisSpecificationView, self).update()
         self.allow_edit = self.is_edit_allowed()
-        self.specification = self.get_results_range_by_keyword()
+        results_range = self.context.getResultsRange()
+        self.specification = dicts_to_dict(results_range, "keyword")
 
     @view.memoize
     def is_edit_allowed(self):
@@ -147,19 +149,6 @@ class AnalysisSpecificationView(BikaListingView):
         """Check in the setup if categories are enabled
         """
         return self.context.bika_setup.getCategoriseAnalysisServices()
-
-    def get_results_range_by_keyword(self):
-        """Return a dictionary with the specification fields for each
-           service. The keys of the dictionary are the keywords of each
-           analysis service. Each service contains a dictionary in which
-           each key is the name of the spec field:
-           specs['keyword'] = {'min': value,
-                               'max': value,
-                               'warnmin': value,
-                               ... }
-        """
-        results_range = self.context.getResultsRange()
-        return dict(map(lambda rr: (rr["keyword"], rr), results_range))
 
     def get_editable_columns(self):
         """Return editable fields
