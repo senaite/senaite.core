@@ -1476,6 +1476,7 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
                 service_uid = analysis.getRawAnalysisService()
                 result_range = field.get(self, search_by=service_uid)
                 analysis.setResultsRange(result_range)
+                analysis.reindexObject()
 
         if recursive:
             # Cascade the changes to partitions

@@ -187,3 +187,15 @@ class ResultsRangeDict(dict):
     @max_operator.setter
     def max_operator(self, value):
         self['max_operator'] = value
+
+    def __eq__(self, other):
+        if isinstance(other, dict):
+            other = ResultsRangeDict(other)
+
+        if isinstance(other, ResultsRangeDict):
+            # Balance both dicts with same keys, but without corrupting them
+            current = dict(filter(lambda o: o[0] in other, self.items()))
+            other_dict = dict(filter(lambda o: o[0] in current, other.items()))
+            return current == other_dict
+
+        return super(ResultsRangeDict, self).__eq__(other)

@@ -24,6 +24,7 @@ from plone.app.layout.viewlets import ViewletBase
 from bika.lims import FieldEditSpecification
 from bika.lims import api
 from bika.lims import logger
+from bika.lims.api.analysis import is_result_range_compliant
 from bika.lims.api.security import check_permission
 
 
@@ -154,66 +155,17 @@ class SpecificationNotCompliantViewlet(ViewletBase):
         result range set not compliant with the result range of the Sample
         """
         non_compliant = []
-        sample = self.context
-
-        # If no Specification is set, assume is compliant
-        specification = sample.getSpecification()
-        if not specification:
-            return []
-
-        # Get the Sample's ResultsRanges, that are copy of those from the
-        # Specification initially set.
-        sample_rrs = sample.getResultsRange()
-        if not sample_rrs:
-            # No results range set at Sample level. Assume is compliant
-            return []
-
-        # Create a dict for easy access to results ranges
-        sample_rrs = dict(map(lambda rr: (rr["uid"], rr), sample_rrs))
 
         # Check if the results ranges set to analyses individually remain
         # compliant with the Sample's ResultRange
-        analyses = sample.getAnalyses(full_objects=True)
+        analyses = self.context.getAnalyses(full_objects=True)
         for analysis in analyses:
-            rr = analysis.getResultsRange()
-            service_uid = rr.get("uid", None)
-            if not api.is_uid(service_uid):
-                continue
-
-            sample_rr = sample_rrs.get(service_uid)
-            if not sample_rr:
-                # This service is not defined in Sample's ResultsRange, we
-                # assume this *does not* break the compliance
-                continue
-
-            else:
-                # Clean-up the result range passed in
-                form_rr = self.resolve_result_range(rr, sample_rr)
-                if form_rr != sample_rr:
-                    # Result range for this service has been changed manually,
-                    # it does not match with sample's ResultRange
-                    an_title = api.get_title(analysis)
-                    keyword = analysis.getKeyword()
-                    non_compliant.append("{} ({})".format(an_title, keyword))
+            if not is_result_range_compliant(analysis):
+                # Result range for this service has been changed manually,
+                # it does not match with sample's ResultRange
+                an_title = api.get_title(analysis)
+                keyword = analysis.getKeyword()
+                non_compliant.append("{} ({})".format(an_title, keyword))
 
         # Return the list of keywords from non-compliant analyses
         return list(set(non_compliant))
-
-    def resolve_result_range(self, result_range, original):
-        """Cleans up the result range passed-in to match with same keys as the
-        original result range, that presumably comes from a Specification
-        """
-        if not original:
-            return result_range
-
-        # Remove keys-values not present in original
-        extra_keys = filter(lambda key: key not in original, result_range)
-        for key in extra_keys:
-            del result_range[key]
-
-        # Add keys-values not present in current result_range but in original
-        for key, val in original.items():
-            if key not in result_range:
-                result_range[key] = val
-
-        return result_range

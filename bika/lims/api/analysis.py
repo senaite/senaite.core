@@ -27,6 +27,8 @@ from bika.lims.interfaces import IAnalysis, IReferenceAnalysis, \
     IResultOutOfRange
 from zope.component._api import getAdapters
 
+from bika.lims.interfaces.analysis import IRequestAnalysis
+
 
 def is_out_of_range(brain_or_object, result=_marker):
     """Checks if the result for the analysis passed in is out of range and/or
@@ -148,3 +150,33 @@ def get_formatted_interval(results_range, default=_marker):
     max_bracket = max_operator == 'leq' and ']' or ')'
 
     return "{}{};{}{}".format(min_bracket, min_str, max_str, max_bracket)
+
+
+def is_result_range_compliant(analysis):
+    """Returns whether the result range from the analysis matches with the
+    result range for the service counterpart defined in the Sample
+    """
+    if not IRequestAnalysis.providedBy(analysis):
+        return True
+
+    rr = analysis.getResultsRange()
+    service_uid = rr.get("uid", None)
+    if not api.is_uid(service_uid):
+        return True
+
+    # Compare with Sample
+    sample = analysis.getRequest()
+
+    # If no Specification is set, assume is compliant
+    specification = sample.getRawSpecification()
+    if not specification:
+        return True
+
+    # Compare with the Specification that was initially set to the Sample
+    sample_rr = sample.getResultsRange(search_by=service_uid)
+    if not sample_rr:
+        # This service is not defined in Sample's ResultsRange, we
+        # assume this *does not* break the compliance
+        return True
+
+    return rr == sample_rr
