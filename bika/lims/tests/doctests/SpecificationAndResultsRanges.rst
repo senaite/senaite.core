@@ -172,6 +172,9 @@ effect to neither the Sample nor analyses:
 We need to re-apply the Specification for the Sample's results range to update:
 
     >>> sample.setSpecification(specification)
+
+And the ResultsRange value from Sample is updated accordingly:
+
     >>> specification.getResultsRange() == sample.getResultsRange()
     True
 
@@ -218,29 +221,28 @@ such analysis, the result range for the new analysis will be set automatically:
     >>> zn.getResultsRange() == get_results_range_from(specification, Zn)
     True
 
-But if we reset an Analysis with it's own ResultsRange, different from the
-range defined by the Specification, the system will clear the Specification to
-guarantee compliance:
+If we reset an Analysis with it's own ResultsRange, different from the range
+defined by the Specification, the system does not clear the Specification:
 
     >>> rr_zn = zn.getResultsRange()
     >>> rr_zn.min = 55
     >>> sample.setAnalyses([Au, Cu, Fe, Zn], specs=[rr_zn])
-    >>> sample.getSpecification() is None
-    True
+    >>> sample.getSpecification()
+    <AnalysisSpec at /plone/bika_setup/bika_analysisspecs/analysisspec-1>
 
-Nevertheless, Sample's ResultsRange is kept unchanged:
+and Sample's ResultsRange is kept unchanged:
 
     >>> sample_rr = sample.getResultsRange()
     >>> len(sample_rr)
     5
 
-but with the results range for `Zn` updated, different from the Specification:
+with result range for `Zn` unchanged:
 
-    >>> sample_rr_zn = filter(lambda rr: rr["uid"] == api.get_uid(Zn), sample_rr)[0]
+    >>> sample_rr_zn = sample.getResultsRange(search_by=api.get_uid(Zn))
     >>> sample_rr_zn.min
-    55
+    50
 
-As well as for the analysis itself:
+But analysis' result range has indeed changed:
 
     >>> zn.getResultsRange().min
     55
@@ -282,16 +284,20 @@ The partition keeps the Specification and ResultsRange by its own:
     True
 
 If we reset an Analysis with it's own ResultsRange, different from the range
-defined by the Specification, the system will clear the Specification from
-both the root sample and the partition to guarantee compliance:
+defined by the Specification, the system does not clear the Specification,
+neither from the root sample nor the partition:
 
     >>> rr_zn = zn.getResultsRange()
     >>> rr_zn.min = 56
     >>> partition.setAnalyses([Zn], specs=[rr_zn])
-    >>> partition.getSpecification() is None
-    True
 
-But the root sample will keep its own ResultsRange and Specification untouched:
+    >>> sample.getSpecification()
+    <AnalysisSpec at /plone/bika_setup/bika_analysisspecs/analysisspec-1>
+
+    >>> partition.getSpecification()
+    <AnalysisSpec at /plone/bika_setup/bika_analysisspecs/analysisspec-1>
+
+And Results Range from both Sample and partition are kept untouched:
 
     >>> sample.getSpecification()
     <AnalysisSpec at /plone/bika_setup/bika_analysisspecs/analysisspec-1>
@@ -299,34 +305,8 @@ But the root sample will keep its own ResultsRange and Specification untouched:
     >>> sample.getResultsRange() == specification.getResultsRange()
     True
 
-We can re-assign the Specification to the partition, though:
+    >>> partition.getSpecification()
+    <AnalysisSpec at /plone/bika_setup/bika_analysisspecs/analysisspec-1>
 
-    >>> partition.setSpecification(specification)
-    >>> specification.getResultsRange() == partition.getResultsRange()
+    >>> partition.getResultsRange() == specification.getResultsRange()
     True
-
-    >>> zn.getResultsRange() == get_results_range_from(specification, Zn)
-    True
-
-    >>> zn.getResultsRange().min
-    50
-
-If we reset the same analysis, but in the root sample, both root and partition
-loose the Specification:
-
-    >>> rr_zn = zn.getResultsRange()
-    >>> rr_zn.min = 57
-    >>> sample.setAnalyses([Au, Cu, Fe, Zn], specs=[rr_zn])
-    >>> sample.getSpecification() is None
-    True
-
-    >>> partition.getSpecification() is None
-    True
-
-And ResultsRange for Zn is stored in both the root and the partition:
-
-    >>> get_results_range_from(sample, Zn).min
-    57
-
-    >>> get_results_range_from(partition, Zn).min
-    57
