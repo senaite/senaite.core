@@ -729,7 +729,7 @@ class EmailView(BrowserView):
         # CC Contacts
         cc = filter(None, map(recipient_from_contact, ar.getCCContact()))
         # CC Emails
-        cc_emails = map(lambda x: x.strip(), re.split("[;,]", ar.getCCEmails()))
+        cc_emails = ar.getCCEmails(as_list=True)
         cc_emails = filter(None, map(recipient_from_email, cc_emails))
 
         return to + cc + cc_emails

@@ -35,10 +35,27 @@ class EmailsField(StringField):
     def set(self, instance, value, **kwargs):
         if value:
             # Standardize to comma-separated and remove duplicates
-            values = re.split("[;,]", value)
-            values = list(set(values))
-            value = ", ".join(values)
+            validator = instance.plone_utils.validateSingleEmailAddress
+            value = ", ".join(self.to_list(value, validator=validator))
         super(EmailsField, self).set(instance, value, **kwargs)
+
+    def get(self, instance, **kwargs):
+        if kwargs.get("as_list", False):
+            # Return as a list
+            validator = instance.plone_utils.validateSingleEmailAddress
+            return self.to_list(self.get(instance), validator)
+        return super(EmailsField, self).get(instance, **kwargs)
+
+    def to_list(self, value, validator=None):
+        """Transforms the value to a list of values
+        """
+        if not value:
+            return []
+        emails = map(lambda x: x.strip(), re.split("[;,]", value))
+        emails = filter(None, emails)
+        if validator:
+            emails = filter(lambda email: validator(email), emails)
+        return emails
 
 
 registerField(EmailsField,
