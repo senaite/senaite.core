@@ -36,6 +36,7 @@ from zope.interface import implements
 
 from bika.lims import _
 from bika.lims import api
+from bika.lims.browser.fields import EmailsField
 from bika.lims.browser.widgets import ReferenceWidget
 from bika.lims.catalog.bikasetup_catalog import SETUP_CATALOG
 from bika.lims.config import ARIMPORT_OPTIONS
@@ -73,7 +74,7 @@ schema = Organisation.schema.copy() + Schema((
         ),
     ),
 
-    StringField(
+    EmailsField(
         "CCEmails",
         schemata="Preferences",
         mode="rw",
