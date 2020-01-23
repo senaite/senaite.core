@@ -41,9 +41,8 @@
       </p>
       <p class="title">
         <span i18n:translate="">
-          Changes to any of the following fields will also be applied to the
-          partitions in which the field is editable, even if they have a
-          different value already set:
+          Changes to any of the following fields will override the value in
+          underlying partitions for which the given field is editable:
         </span>
         <span tal:content="python: ', '.join(primary_bound_fields)"/>
       </p>

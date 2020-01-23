@@ -23,13 +23,12 @@
       <p class="description">
         <span i18n:translate="">
           The ranges for the following analyses have been manually changed and
-          they are not compliant with the ranges from the Specification:
-        </span>&nbsp;<span tal:content="python: ', '.join(non_compliant)" />
-
+          they are no longer compliant with the ranges of the Specification:
+        </span>
+        <span tal:content="python: ', '.join(non_compliant)" />
         <br tal condition="python: editable"/>
         <span tal:condition="python: editable" i18n:translate="">
-          The re-assignment of the Specification will override the ranges of
-          analyses.
+          Re-assign the Specification if you want to restore analysis ranges.
         </span>
       </p>
     </div>

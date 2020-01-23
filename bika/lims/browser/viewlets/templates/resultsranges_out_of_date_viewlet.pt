@@ -22,9 +22,8 @@
       </p>
       <p class="description">
         <span tal:condition="python: editable" i18n:translate="">
-          New ranges won't be applied to neither new nor current analyses. The
-          reassignment of the Specification will apply latest changes, but will
-          also override those that have been manually set to analyses.
+          New ranges won't be applied to neither new nor current analyses.
+          Re-assign the Specification if you want to apply latest changes.
         </span>
         <br tal condition="python: editable"/>
         <span i18n:translate="">
