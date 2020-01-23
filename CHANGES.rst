@@ -7,6 +7,9 @@ Changelog
 
 **Added**
 
+- #1506 Specification non-compliant viewlet in Sample
+- #1506 Sample results ranges out-of-date viewlet in Sample
+- #1506 Warn icon in analyses when range is not compliant with Specification
 - #1499 Moved navigation portlet into core 
 - #1498 Moved all viewlets from senaite.lims to senaite.core
 - #1505 Display partition link in analyses listing
@@ -33,6 +36,9 @@ Changelog
 
 **Fixed**
 
+- #1506 Changes via manage results don't get applied to partitions
+- #1506 Fix recursion error when getting dependencies through Calculation
+- #1506 setter from ARAnalysisField does no longer return values
 - #1505 Manage Analyses Form re-applies partitioned Analyses back to the Root
 - #1503 Avoid duplicate CSS IDs in multi-column Add form
 - #1501 Fix Attribute Error in Reference Sample Popup
