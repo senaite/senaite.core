@@ -11,14 +11,14 @@ Example
 
 Given is an Excel with the following minimal set of columns:
 
-<!--table-->
-| Keyword | Method   | min | max |
-|---------|----------|-----|-----|
-| Ca      | Method A | 1   | 2   |
-| Ca      | Method B | 3   | 4   |
-| Mg      | Method A | 5   | 6   |
-| Mg      | Method B | 7   | 8   |
-<!--endtable-->
+======= ======== === ===
+Keyword Method   min max
+======= ======== === ===
+Ca      Method A 1   2
+Ca      Method B 3   4
+Mg      Method A 5   6
+Mg      Method B 7   8
+======= ======== === ===
 
 This Excel is uploaded to an *Dynamic Analysis Specification* object, which is
 linked to an Analysis Specification for the Sample Type "Water".
