@@ -1064,7 +1064,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             "Client": self.to_field_value(client),
             "Contact": self.to_field_value(contact),
             "CCContact": map(self.to_field_value, cccontacts),
-            "CCEmails": obj.getCCEmails() or [],
+            "CCEmails": obj.getCCEmails(),
             "Batch": self.to_field_value(batch),
             "DateSampled": {"value": self.to_iso_date(obj.getDateSampled())},
             "SamplingDate": {"value": self.to_iso_date(obj.getSamplingDate())},

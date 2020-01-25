@@ -7,6 +7,7 @@ Changelog
 
 **Added**
 
+- #1507 Support for semi-colon character separator in CCEmails field
 - #1499 Moved navigation portlet into core 
 - #1498 Moved all viewlets from senaite.lims to senaite.core
 - #1505 Display partition link in analyses listing

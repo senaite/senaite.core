@@ -33,6 +33,7 @@ from bika.lims.browser.fields import ARAnalysesField
 from bika.lims.browser.fields import DateTimeField
 from bika.lims.browser.fields import DurationField
 from bika.lims.browser.fields import UIDReferenceField
+from bika.lims.browser.fields import EmailsField
 from bika.lims.browser.fields.remarksfield import RemarksField
 from bika.lims.browser.widgets import DateTimeWidget
 from bika.lims.browser.widgets import DecimalWidget
@@ -204,7 +205,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
-    StringField(
+    EmailsField(
         'CCEmails',
         mode="rw",
         read_permission=View,
