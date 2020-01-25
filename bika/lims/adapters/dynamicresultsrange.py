@@ -103,26 +103,34 @@ class DynamicResultsRange(object):
 
         rr = {}
 
-        # Iterate over the rows and return the first where all values match
+        # Iterate over the rows and return the first where **all** values match
         # with the analysis' values
         for spec in specs:
+            skip = False
+
             for k, v in match_data.items():
-                # continue if the values do not match
+                # break if the values do not match
                 if v != spec[k]:
+                    skip = True
+                    break
+
+            # skip the whole specification row
+            if skip:
+                continue
+
+            # at this point we have a match, update the results range dict
+            for key in self.range_keys:
+                value = spec.get(key, marker)
+                # skip if the range key is not set in the Excel
+                if value is marker:
                     continue
-                # at this point we have a match, update the results range dict
-                for key in self.range_keys:
-                    value = spec.get(key, marker)
-                    # skip if the range key is not set in the Excel
-                    if value is marker:
-                        continue
-                    # skip if the value is not floatable
-                    if not api.is_floatable(value):
-                        continue
-                    # set the range value
-                    rr[key] = value
-                # return the updated result range
-                return rr
+                # skip if the value is not floatable
+                if not api.is_floatable(value):
+                    continue
+                # set the range value
+                rr[key] = value
+            # return the updated result range
+            return rr
 
         return rr
 
