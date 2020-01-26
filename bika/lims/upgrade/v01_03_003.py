@@ -272,7 +272,9 @@ def upgrade(tool):
     setup_form_controller_actions(portal)
 
     # Add the dynamic analysisspecs folder
+    # https://github.com/senaite/senaite.core/pull/1492
     setup.runImportStepFromProfile(profile, "typeinfo")
+    setup.runImportStepFromProfile(profile, "controlpanel")
     add_dexterity_setup_items(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
