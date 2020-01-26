@@ -21,7 +21,7 @@ class IDynamicAnalysisSpecs(model.Schema):
 
 
 class DynamicAnalysisSpecsView(ListingView):
-    """Displays all system's sampling rounds
+    """Displays all system's dynamic analysis specifications
     """
 
     def __init__(self, context, request):
