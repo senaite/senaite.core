@@ -18,11 +18,15 @@
 # Copyright 2018-2019 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from operator import itemgetter
+from collections import OrderedDict
 
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.analyses.view import AnalysesView
 from bika.lims.config import QCANALYSIS_TYPES
+from bika.lims.interfaces import IDuplicateAnalysis
+from bika.lims.utils import get_image
+from bika.lims.utils import get_link
 
 
 class QCAnalysesView(AnalysesView):
@@ -36,81 +40,80 @@ class QCAnalysesView(AnalysesView):
     """
 
     def __init__(self, context, request, **kwargs):
-        AnalysesView.__init__(self, context, request, **kwargs)
-        self.columns['getReferenceAnalysesGroupID'] = {
-            'title': _('QC Sample ID'),
-            'sortable': False}
-        self.columns['Worksheet'] = {'title': _('Worksheet'),
-                                     'sortable': False}
-        self.review_states[0]['columns'] = ['Service',
-                                            'Worksheet',
-                                            'getReferenceAnalysesGroupID',
-                                            'Partition',
-                                            'Method',
-                                            'Instrument',
-                                            'Result',
-                                            'Uncertainty',
-                                            'CaptureDate',
-                                            'DueDate',
-                                            'state_title']
+        super(QCAnalysesView, self).__init__(context, request, **kwargs)
 
-        qcanalyses = context.getQCAnalyses()
-        asuids = [an.UID() for an in qcanalyses]
-        self.contentFilter = {'UID': asuids,
-                              'sort_on': 'getId'}
-        self.icon = self.portal_url + \
-            "/++resource++bika.lims.images/referencesample.png"
+        icon_path = "/++resource++bika.lims.images/referencesample.png"
+        self.icon = "{}{}".format(self.portal_url, icon_path)
 
-    # TODO-performance: Do not use object. Using brain, use meta_type in
-    # order to get the object's type
-    def folderitem(self, obj, item, index):
-        """Prepare a data item for the listing.
-
-        :param obj: The catalog brain or content object
-        :param item: Listing item (dictionary)
-        :param index: Index of the listing item
-        :returns: Augmented listing data item
+    def update(self):
+        """Update hook
         """
+        super(AnalysesView, self).update()
 
-        obj = obj.getObject()
-        # Group items by RefSample - Worksheet - Position
-        ws = obj.getWorksheet()
-        wsid = ws and ws.id or ''
-        wshref = ws.absolute_url() or None
-        if wshref:
-            item['replace']['Worksheet'] = "<a href='%s'>%s</a>" % (
-                wshref, wsid)
+        # Update the query with the Sample's worksheet UIDs
+        worksheet_uids = map(api.get_uid, self.context.getWorksheets())
+        self.contentFilter.update({
+            "portal_type": ["DuplicateAnalysis", "ReferenceAnalysis"],
+            "getWorksheetUID": worksheet_uids,
+            "sort_on": "getId"
+        })
 
-        imgtype = ""
-        if obj.portal_type == 'ReferenceAnalysis':
-            antype = QCANALYSIS_TYPES.getValue(obj.getReferenceType())
-            if obj.getReferenceType() == 'c':
-                imgtype = "<img title='%s' " \
-                          "src='%s/++resource++bika.lims.images/control.png" \
-                          "'/>&nbsp;" % (
-                              antype, self.context.absolute_url())
-            if obj.getReferenceType() == 'b':
-                imgtype = "<img title='%s' " \
-                          "src='%s/++resource++bika.lims.images/blank.png" \
-                          "'/>&nbsp;" % (
-                              antype, self.context.absolute_url())
-            item['replace']['Partition'] = "<a href='%s'>%s</a>" % (
-                obj.aq_parent.absolute_url(), obj.aq_parent.id)
-        elif obj.portal_type == 'DuplicateAnalysis':
-            antype = QCANALYSIS_TYPES.getValue('d')
-            imgtype = "<img title='%s' " \
-                      "src='%s/++resource++bika.lims.images/duplicate.png" \
-                      "'/>&nbsp;" % (
-                          antype, self.context.absolute_url())
-            item['sortcode'] = '%s_%s' % (obj.getRequestID(), obj.getKeyword())
+        # Add Worksheet and QC Sample ID columns
+        new_columns = OrderedDict((
+            ("Worksheet", {
+                "title": _("Worksheet"),
+                "sortable": True,
+            }),
+            ("getReferenceAnalysesGroupID", {
+                "title": _('QC Sample ID'),
+                "sortable": False,
+            }),
+            ("Parent", {
+                "title": _("Source"),
+                "sortable": False,
+            })
+        ))
+        self.columns.update(new_columns)
 
-        item['before']['Service'] = imgtype
-        item['sortcode'] = '%s_%s' % (obj.getReferenceAnalysesGroupID(),
-                                      obj.getKeyword())
+        # Remove unnecessary columns
+        if "Hidden" in self.columns:
+            del(self.columns["Hidden"])
+
+        # Apply the columns to all review_states
+        for review_state in self.review_states:
+            review_state.update({"columns": self.columns.keys()})
+
+    def folderitem(self, obj, item, index):
+        item = super(QCAnalysesView, self).folderitem(obj, item, index)
+
+        obj = self.get_object(obj)
+
+        # Fill Worksheet cell
+        worksheet = obj.getWorksheet()
+        if not worksheet:
+            return item
+
+        # Fill the Worksheet cell
+        ws_id = api.get_id(worksheet)
+        ws_url = api.get_url(worksheet)
+        item["replace"]["Worksheet"] = get_link(ws_url, value=ws_id)
+
+        if IDuplicateAnalysis.providedBy(obj):
+            an_type = "d"
+            img_name = "duplicate.png"
+            parent = obj.getRequest()
+        else:
+            an_type = obj.getReferenceType()
+            img_name = an_type == "c" and "control.png" or "blank.png"
+            parent = obj.aq_parent
+
+        # Render the image
+        an_type = QCANALYSIS_TYPES.getValue(an_type)
+        item['before']['Service'] = get_image(img_name, title=an_type)
+
+        # Fill the Parent cell
+        parent_url = api.get_url(parent)
+        parent_id = api.get_id(parent)
+        item["replace"]["Parent"] = get_link(parent_url, value=parent_id)
+
         return item
-
-    def folderitems(self):
-        items = AnalysesView.folderitems(self)
-        # Sort items
-        items = sorted(items, key=itemgetter('sortcode'))
-        return items
