@@ -1829,10 +1829,16 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         if not worksheet_uids:
             return []
 
-        # Get the qc analyses from these worksheets
-        portal_types = ["ReferenceAnalysis", "DuplicateAnalysis"]
-        query = dict(portal_type=portal_types, getWorksheetUID=worksheet_uids)
+        # Get reference qc analyses from these worksheets
+        query = dict(portal_type="ReferenceAnalysis",
+                     getWorksheetUID=worksheet_uids)
         qc_analyses = api.search(query, CATALOG_ANALYSIS_LISTING)
+
+        # Extend with duplicate qc analyses from these worksheets and Sample
+        query = dict(portal_type="DuplicateAnalysis",
+                     getWorksheetUID=worksheet_uids,
+                     getAncestorsUIDs=[api.get_uid(self)])
+        qc_analyses += api.search(query, CATALOG_ANALYSIS_LISTING)
 
         # Bail out analyses with a different review_state
         if review_state:

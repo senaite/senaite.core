@@ -50,11 +50,11 @@ class QCAnalysesView(AnalysesView):
         """
         super(AnalysesView, self).update()
 
-        # Update the query with the Sample's worksheet UIDs
-        worksheet_uids = map(api.get_uid, self.context.getWorksheets())
+        # Update the query with the QC Analyses uids
+        qc_uids = map(api.get_uid, self.context.getQCAnalyses())
         self.contentFilter.update({
+            "UID": qc_uids,
             "portal_type": ["DuplicateAnalysis", "ReferenceAnalysis"],
-            "getWorksheetUID": worksheet_uids,
             "sort_on": "getId"
         })
 
