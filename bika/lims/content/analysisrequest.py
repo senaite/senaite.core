@@ -1810,6 +1810,8 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         """
         # Get the Analyses UIDs of this Sample
         analyses_uids = map(api.get_uid, self.getAnalyses())
+        if not analyses_uids:
+            return []
 
         # Get the worksheets that contain any of these analyses
         query = dict(getAnalysesUIDs=analyses_uids)
@@ -1824,6 +1826,8 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         """
         # Get the worksheet uids
         worksheet_uids = map(api.get_uid, self.getWorksheets())
+        if not worksheet_uids:
+            return []
 
         # Get the qc analyses from these worksheets
         portal_types = ["ReferenceAnalysis", "DuplicateAnalysis"]
