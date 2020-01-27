@@ -79,9 +79,13 @@ class QCAnalysesView(AnalysesView):
         if "Hidden" in self.columns:
             del(self.columns["Hidden"])
 
+        # Remove filters (Valid, Invalid, All)
+        self.review_states = [self.review_states[0]]
+
         # Apply the columns to all review_states
         for review_state in self.review_states:
             review_state.update({"columns": self.columns.keys()})
+
 
     def folderitem(self, obj, item, index):
         item = super(QCAnalysesView, self).folderitem(obj, item, index)
