@@ -106,7 +106,7 @@ class BatchFieldVisibility(SenaiteATWidgetVisibility):
                 # is assigned to does not have a client assigned (e.g., the
                 # batch was assigned by lab personnel), hide this field
                 batch = self.context.getBatch()
-                if batch.getClient() != client:
+                if batch and batch.getClient() != client:
                     return "invisible"
 
         return default
