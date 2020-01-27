@@ -20,6 +20,7 @@ Changelog
 
 **Changed**
 
+- #1508 Do not try to render InstrumentQCFailuresViewlet to non-lab personnel
 - #1495 Better Remarks handling and display
 - #1502 Improved DateTime Widget
 - #1490 Support Dexterity Behavior Fields in API
