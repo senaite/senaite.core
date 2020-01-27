@@ -43,11 +43,20 @@ class PrimaryAnalysisRequestViewlet(ViewletBase):
     def get_partitions(self):
         """Returns whether this viewlet is visible or not
         """
+        partitions = []
+
         # If current user is a client contact, rely on Setup's ShowPartitions
-        if api.get_current_client():
+        client = api.get_current_client()
+        if client:
             if not api.get_setup().getShowPartitions():
-                return []
-        return self.context.getDescendants()
+                return partitions
+
+        partitions = self.context.getDescendants()
+        if client:
+            # Do not display partitions for Internal use
+            return filter(lambda part: not part.getInternalUse(), partitions)
+
+        return partitions
 
 
 class PartitionAnalysisRequestViewlet(ViewletBase):
