@@ -237,6 +237,16 @@ class AnalysesView(BikaListingView):
         super(AnalysesView, self).before_render()
         self.request.set("disable_plone.rightcolumn", 1)
 
+    @property
+    @viewcache.memoize
+    def show_partitions(self):
+        """Returns whether the partitions must be displayed or not
+        """
+        if api.get_current_client():
+            # Current user is a client contact
+            return api.get_setup().getShowPartitions()
+        return True
+
     @viewcache.memoize
     def analysis_remarks_enabled(self):
         """Check if analysis remarks are enabled
@@ -1183,6 +1193,10 @@ class AnalysesView(BikaListingView):
 
         sample_id = analysis_brain.getRequestID
         if sample_id != api.get_id(self.context):
+            if not self.show_partitions:
+                # Do not display the link
+                return
+
             part_url = analysis_brain.getRequestURL
             url = get_link(part_url, value=sample_id, **{"class": "small"})
             title = item["replace"].get("Service") or item["Service"]
