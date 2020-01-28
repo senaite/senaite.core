@@ -45,6 +45,7 @@ from bika.lims.browser.widgets import SelectionWidget as BikaSelectionWidget
 from bika.lims.browser.widgets.durationwidget import DurationWidget
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
+from bika.lims.catalog import CATALOG_WORKSHEET_LISTING
 from bika.lims.catalog.bika_catalog import BIKA_CATALOG
 from bika.lims.config import PRIORITIES
 from bika.lims.config import PROJECTNAME
@@ -1804,59 +1805,50 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         # noinspection PyCallingNonCallable
         return DateTime()
 
-    def getQCAnalyses(self, qctype=None, review_state=None):
-        """return the QC analyses performed in the worksheet in which, at
-        least, one sample of this AR is present.
-
-        Depending on qctype value, returns the analyses of:
-
-            - 'b': all Blank Reference Samples used in related worksheet/s
-            - 'c': all Control Reference Samples used in related worksheet/s
-            - 'd': duplicates only for samples contained in this AR
-
-        If qctype==None, returns all type of qc analyses mentioned above
+    def getWorksheets(self, full_objects=False):
+        """Returns the worksheets that contains analyses from this Sample
         """
-        qcanalyses = []
-        suids = []
-        ans = self.getAnalyses()
-        wf = getToolByName(self, 'portal_workflow')
-        for an in ans:
-            an = an.getObject()
-            if an.getServiceUID() not in suids:
-                suids.append(an.getServiceUID())
+        # Get the Analyses UIDs of this Sample
+        analyses_uids = map(api.get_uid, self.getAnalyses())
+        if not analyses_uids:
+            return []
 
-        def valid_dup(wan):
-            if wan.portal_type == 'ReferenceAnalysis':
-                return False
-            an_state = wf.getInfoFor(wan, 'review_state')
-            return \
-                wan.portal_type == 'DuplicateAnalysis' \
-                and wan.getRequestID() == self.id \
-                and (review_state is None or an_state in review_state)
+        # Get the worksheets that contain any of these analyses
+        query = dict(getAnalysesUIDs=analyses_uids)
+        worksheets = api.search(query, CATALOG_WORKSHEET_LISTING)
+        if full_objects:
+            worksheets = map(api.get_object, worksheets)
+        return worksheets
 
-        def valid_ref(wan):
-            if wan.portal_type != 'ReferenceAnalysis':
-                return False
-            an_state = wf.getInfoFor(wan, 'review_state')
-            an_reftype = wan.getReferenceType()
-            return wan.getServiceUID() in suids \
-                and wan not in qcanalyses \
-                and (qctype is None or an_reftype == qctype) \
-                and (review_state is None or an_state in review_state)
+    def getQCAnalyses(self, review_state=None):
+        """Returns the Quality Control analyses assigned to worksheets that
+        contains analyses from this Sample
+        """
+        # Get the worksheet uids
+        worksheet_uids = map(api.get_uid, self.getWorksheets())
+        if not worksheet_uids:
+            return []
 
-        for an in ans:
-            an = an.getObject()
-            ws = an.getWorksheet()
-            if not ws:
-                continue
-            was = ws.getAnalyses()
-            for wa in was:
-                if valid_dup(wa):
-                    qcanalyses.append(wa)
-                elif valid_ref(wa):
-                    qcanalyses.append(wa)
+        # Get reference qc analyses from these worksheets
+        query = dict(portal_type="ReferenceAnalysis",
+                     getWorksheetUID=worksheet_uids)
+        qc_analyses = api.search(query, CATALOG_ANALYSIS_LISTING)
 
-        return qcanalyses
+        # Extend with duplicate qc analyses from these worksheets and Sample
+        query = dict(portal_type="DuplicateAnalysis",
+                     getWorksheetUID=worksheet_uids,
+                     getAncestorsUIDs=[api.get_uid(self)])
+        qc_analyses += api.search(query, CATALOG_ANALYSIS_LISTING)
+
+        # Bail out analyses with a different review_state
+        if review_state:
+            qc_analyses = filter(
+                lambda an: api.get_review_status(an) in review_state,
+                qc_analyses
+            )
+
+        # Return the objects
+        return map(api.get_object, qc_analyses)
 
     def isInvalid(self):
         """return if the Analysis Request has been invalidated

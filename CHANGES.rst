@@ -20,6 +20,7 @@ Changelog
 
 **Changed**
 
+- #1508 Do not try to render InstrumentQCFailuresViewlet to non-lab personnel
 - #1495 Better Remarks handling and display
 - #1502 Improved DateTime Widget
 - #1490 Support Dexterity Behavior Fields in API
@@ -34,6 +35,9 @@ Changelog
 
 **Fixed**
 
+- #1512 QC Analyses listing appears empty in Sample view
+- #1510 Error when viewing a Sample w/o Batch as client contact
+- #1511 Links to partitions for Internal Use are displayed in partitions viewlet
 - #1505 Manage Analyses Form re-applies partitioned Analyses back to the Root
 - #1503 Avoid duplicate CSS IDs in multi-column Add form
 - #1501 Fix Attribute Error in Reference Sample Popup
