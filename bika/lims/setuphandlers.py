@@ -288,6 +288,7 @@ def setup_handler(context):
     setup_groups(portal)
     setup_catalog_mappings(portal)
     setup_core_catalogs(portal)
+    add_dexterity_setup_items(portal)
 
     # Setting up all LIMS catalogs defined in catalog folder
     setup_catalogs(portal, getCatalogDefinitions())
@@ -493,3 +494,36 @@ def setup_form_controller_actions(portal):
         button=None,
         action_type="redirect_to",
         action_arg="python:object.aq_inner.aq_parent.absolute_url()")
+
+
+def add_dexterity_setup_items(portal):
+    """Adds the Dexterity Container in the Setup Folder
+
+    N.B.: We do this in code, because adding this as Generic Setup Profile in
+          `profiles/default/structure` flushes the contents on every import.
+    """
+    setup = api.get_setup()
+    pt = api.get_tool("portal_types")
+    ti = pt.getTypeInfo(setup)
+
+    # Disable content type filtering
+    ti.filter_content_types = False
+
+    # Tuples of ID, Title, FTI
+    items = [
+        ("dynamic_analysisspecs",  # ID
+         "Dynamic Analysis Specifications",  # Title
+         "DynamicAnalysisSpecs"),  # FTI
+    ]
+
+    for id, title, fti in items:
+        obj = setup.get(id)
+        if setup.get(id) is None:
+            logger.info("Adding Setup Item for '{}'".format(id))
+            setup.invokeFactory(fti, id, title=title)
+        else:
+            obj.setTitle(title)
+            obj.reindexObject()
+
+    # Enable content type filtering
+    ti.filter_content_types = True

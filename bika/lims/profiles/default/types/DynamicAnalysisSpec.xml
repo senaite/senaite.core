@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<object name="DynamicAnalysisSpec" meta_type="Dexterity FTI"
+        i18n:domain="senaite.core"
+        xmlns:i18n="http://xml.zope.org/namespaces/i18n">
+
+  <!-- Title and Description -->
+  <property name="title"
+            i18n:translate="">Dynamic Analysis Specification</property>
+  <property name="description"
+            i18n:translate=""></property>
+
+  <!-- content-type icon -->
+  <property name="icon_expr">string:${portal_url}/++resource++bika.lims.images/analysisspec.png</property>
+
+  <!-- factory name; usually the same as type name -->
+  <property name="factory">DynamicAnalysisSpec</property>
+
+  <!-- URL TALES expression to add an item TTW -->
+  <property name="add_view_expr">string:${folder_url}/++add++DynamicAnalysisSpec</property>
+
+  <property name="link_target"></property>
+  <property name="immediate_view">view</property>
+
+  <!-- Is this item addable globally, or is it restricted? -->
+  <property name="global_allow">False</property>
+
+  <!-- If we're a container, should we filter addable content types? -->
+  <property name="filter_content_types">True</property>
+  <!-- If filtering, what's allowed -->
+  <property name="allowed_content_types">
+  </property>
+
+  <property name="allow_discussion">False</property>
+
+  <!-- what are our available view methods, and what's the default? -->
+  <property name="default_view">view</property>
+  <!-- the view methods below will be selectable via the display tab -->
+  <property name="view_methods">
+    <element value="view"/>
+  </property>
+  <property name="default_view_fallback">False</property>
+
+  <!-- permission required to add an item of this type -->
+  <property name="add_permission">cmf.AddPortalContent</property>
+
+  <!-- Python class for content items of this sort -->
+  <property name="schema">bika.lims.content.dynamic_analysisspec.IDynamicAnalysisSpec</property>
+  <property name="klass">bika.lims.content.dynamic_analysisspec.DynamicAnalysisSpec</property>
+
+  <!-- Dexterity behaviours for this type -->
+  <property name="behaviors">
+    <element value="bika.lims.interfaces.IAutoGenerateID"/>
+    <element value="bika.lims.interfaces.IMultiCatalogBehavior"/>
+    <element value="plone.app.dexterity.behaviors.metadata.IBasic"/>
+    <element value="plone.app.referenceablebehavior.referenceable.IReferenceable" />
+  </property>
+
+  <!-- Action aliases -->
+  <alias from="(Default)" to="(dynamic view)"/>
+  <alias from="edit" to="@@edit"/>
+  <alias from="sharing" to="@@sharing"/>
+  <alias from="view" to="(selected layout)"/>
+
+  <!-- View -->
+  <action title="View"
+          action_id="view"
+          category="object"
+          condition_expr=""
+          description=""
+          icon_expr=""
+          link_target=""
+          url_expr="string:${object_url}"
+          visible="True">
+    <permission value="View"/>
+  </action>
+
+  <!-- Edit -->
+  <action title="Edit"
+          action_id="edit"
+          category="object"
+          condition_expr=""
+          description=""
+          icon_expr=""
+          link_target=""
+          url_expr="string:${object_url}/edit" visible="True">
+    <permission value="Modify portal content"/>
+  </action>
+
+</object>

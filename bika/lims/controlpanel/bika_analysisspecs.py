@@ -77,6 +77,10 @@ class AnalysisSpecsView(BikaListingView):
             ("SampleType", {
                 "title": _("Sample Type"),
                 "index": "sampletype_title"}),
+            ("DynamicSpec", {
+                "title": _("Dynamic Specification"),
+                "sortable": False,
+            })
         ))
 
         self.review_states = [
@@ -124,6 +128,12 @@ class AnalysisSpecsView(BikaListingView):
             title = sampletype.Title()
             url = sampletype.absolute_url()
             item["replace"]["SampleType"] = get_link(url, value=title)
+
+        dynamic_spec = obj.getDynamicAnalysisSpec()
+        if dynamic_spec:
+            title = dynamic_spec.Title()
+            url = api.get_url(dynamic_spec)
+            item["replace"]["DynamicSpec"] = get_link(url, value=title)
 
         return item
 

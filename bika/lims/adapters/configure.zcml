@@ -5,6 +5,14 @@
     xmlns:monkey="http://namespaces.plone.org/monkey"
     i18n_domain="senaite.core">
 
+    <!-- Dynamic Results Range Adapter
+         Looked up in `abstractroutineanalysis.getResultsRange` -->
+    <adapter
+      for="bika.lims.interfaces.IRoutineAnalysis"
+      factory=".dynamicresultsrange.DynamicResultsRange"
+      provides="bika.lims.interfaces.IDynamicResultsRange"
+      />
+
     <adapter
       for="zope.interface.Interface
            zope.publisher.interfaces.browser.IBrowserRequest"

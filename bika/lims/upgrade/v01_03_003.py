@@ -25,6 +25,7 @@ from bika.lims import api
 from bika.lims import logger
 from bika.lims.catalog.bikasetup_catalog import SETUP_CATALOG
 from bika.lims.config import PROJECTNAME as product
+from bika.lims.setuphandlers import add_dexterity_setup_items
 from bika.lims.interfaces import ISubmitted
 from bika.lims.interfaces import IVerified
 from bika.lims.setuphandlers import setup_form_controller_actions
@@ -269,6 +270,12 @@ def upgrade(tool):
     # Redirect to worksheets folder when a Worksheet is removed
     # https://github.com/senaite/senaite.core/pull/1480
     setup_form_controller_actions(portal)
+
+    # Add the dynamic analysisspecs folder
+    # https://github.com/senaite/senaite.core/pull/1492
+    setup.runImportStepFromProfile(profile, "typeinfo")
+    setup.runImportStepFromProfile(profile, "controlpanel")
+    add_dexterity_setup_items(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True

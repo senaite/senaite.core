@@ -33,6 +33,7 @@ from bika.lims.content.clientawaremixin import ClientAwareMixin
 from bika.lims.content.reflexrule import doReflexRuleAction
 from bika.lims.interfaces import IAnalysis
 from bika.lims.interfaces import ICancellable
+from bika.lims.interfaces import IDynamicResultsRange
 from bika.lims.interfaces import IRoutineAnalysis
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.workflow import getTransitionDate
@@ -355,7 +356,12 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
         ar_ranges = analysis_request.getResultsRange()
         # Get the result range that corresponds to this specific analysis
         an_range = [rr for rr in ar_ranges if rr.get('keyword', '') == keyword]
-        return an_range and an_range[0] or specs
+        rr = an_range and an_range[0] or specs
+        # dynamic results range adapter
+        adapter = IDynamicResultsRange(self, None)
+        if adapter:
+            rr.update(adapter())
+        return rr
 
     @security.public
     def getSiblings(self, retracted=False):
