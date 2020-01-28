@@ -35,6 +35,7 @@ Changelog
 
 **Fixed**
 
+- #1510 Error when viewing a Sample w/o Batch as client contact
 - #1511 Links to partitions for Internal Use are displayed in partitions viewlet
 - #1505 Manage Analyses Form re-applies partitioned Analyses back to the Root
 - #1503 Avoid duplicate CSS IDs in multi-column Add form
