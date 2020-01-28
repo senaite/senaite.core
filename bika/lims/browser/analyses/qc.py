@@ -45,19 +45,6 @@ class QCAnalysesView(AnalysesView):
         icon_path = "/++resource++bika.lims.images/referencesample.png"
         self.icon = "{}{}".format(self.portal_url, icon_path)
 
-    def update(self):
-        """Update hook
-        """
-        super(AnalysesView, self).update()
-
-        # Update the query with the QC Analyses uids
-        qc_uids = map(api.get_uid, self.context.getQCAnalyses())
-        self.contentFilter.update({
-            "UID": qc_uids,
-            "portal_type": ["DuplicateAnalysis", "ReferenceAnalysis"],
-            "sort_on": "getId"
-        })
-
         # Add Worksheet and QC Sample ID columns
         new_columns = OrderedDict((
             ("Worksheet", {
@@ -86,6 +73,18 @@ class QCAnalysesView(AnalysesView):
         for review_state in self.review_states:
             review_state.update({"columns": self.columns.keys()})
 
+    def update(self):
+        """Update hook
+        """
+        super(AnalysesView, self).update()
+
+        # Update the query with the QC Analyses uids
+        qc_uids = map(api.get_uid, self.context.getQCAnalyses())
+        self.contentFilter.update({
+            "UID": qc_uids,
+            "portal_type": ["DuplicateAnalysis", "ReferenceAnalysis"],
+            "sort_on": "getId"
+        })
 
     def folderitem(self, obj, item, index):
         item = super(QCAnalysesView, self).folderitem(obj, item, index)
