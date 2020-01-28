@@ -77,7 +77,6 @@ class QCAnalysesView(AnalysesView):
         """Update hook
         """
         super(AnalysesView, self).update()
-
         # Update the query with the QC Analyses uids
         qc_uids = map(api.get_uid, self.context.getQCAnalyses())
         self.contentFilter.update({
@@ -85,6 +84,13 @@ class QCAnalysesView(AnalysesView):
             "portal_type": ["DuplicateAnalysis", "ReferenceAnalysis"],
             "sort_on": "getId"
         })
+
+    def is_analysis_edition_allowed(self, analysis_brain):
+        """Overwrite this method to ensure the table is recognized as readonly
+
+        XXX: why is the super method not recognizing `self.allow_edit`?
+        """
+        return False
 
     def folderitem(self, obj, item, index):
         item = super(QCAnalysesView, self).folderitem(obj, item, index)
