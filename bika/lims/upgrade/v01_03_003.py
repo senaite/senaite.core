@@ -29,6 +29,7 @@ from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.catalog.bikasetup_catalog import SETUP_CATALOG
 from bika.lims.config import PROJECTNAME as product
 from bika.lims.interfaces import IAnalysisRequestWithPartitions
+from bika.lims.setuphandlers import add_dexterity_setup_items
 from bika.lims.interfaces import ISubmitted
 from bika.lims.interfaces import IVerified
 from bika.lims.setuphandlers import setup_form_controller_actions
@@ -276,6 +277,12 @@ def upgrade(tool):
 
     # Mark primary samples with IAnalysisRequestPrimary
     mark_samples_with_partitions(portal)
+
+    # Add the dynamic analysisspecs folder
+    # https://github.com/senaite/senaite.core/pull/1492
+    setup.runImportStepFromProfile(profile, "typeinfo")
+    setup.runImportStepFromProfile(profile, "controlpanel")
+    add_dexterity_setup_items(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True

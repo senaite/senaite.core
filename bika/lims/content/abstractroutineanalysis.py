@@ -28,7 +28,9 @@ from Products.Archetypes.Field import FixedPointField
 from Products.Archetypes.Field import StringField
 from Products.Archetypes.Schema import Schema
 from Products.CMFCore.permissions import View
+from zope.interface import alsoProvides
 from zope.interface import implements
+from zope.interface import noLongerProvides
 
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
@@ -41,12 +43,12 @@ from bika.lims.content.clientawaremixin import ClientAwareMixin
 from bika.lims.content.reflexrule import doReflexRuleAction
 from bika.lims.interfaces import IAnalysis
 from bika.lims.interfaces import ICancellable
+from bika.lims.interfaces import IDynamicResultsRange
 from bika.lims.interfaces import IInternalUse
 from bika.lims.interfaces import IRoutineAnalysis
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.workflow import getTransitionDate
-from zope.interface import noLongerProvides
-from zope.interface import alsoProvides
+
 
 # True if the analysis is created by a reflex rule
 IsReflexAnalysis = BooleanField(
@@ -113,6 +115,7 @@ HiddenManually = BooleanField(
     'HiddenManually',
     default=False,
 )
+
 
 schema = schema.copy() + Schema((
     IsReflexAnalysis,
@@ -332,6 +335,27 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
         request = self.getRequest()
         if request:
             return request.getPrinted()
+
+    @security.public
+    def getResultsRange(self):
+        """Returns the valid result range for this routine analysis based on the
+        results ranges defined in the Analysis Request this routine analysis is
+        assigned to.
+
+        A routine analysis will be considered out of range if it result falls
+        out of the range defined in "min" and "max". If there are values set for
+        "warn_min" and "warn_max", these are used to compute the shoulders in
+        both ends of the range. Thus, an analysis can be out of range, but be
+        within shoulders still.
+        :return: A dictionary with keys "min", "max", "warn_min" and "warn_max"
+        :rtype: dict
+        """
+        results_range = self.getField("ResultsRange").get(self)
+        # dynamic results range adapter
+        adapter = IDynamicResultsRange(self, None)
+        if adapter:
+            results_range.update(adapter())
+        return results_range
 
     @security.public
     def getSiblings(self, retracted=False):

@@ -15,20 +15,16 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2019 by it's authors.
+# Copyright 2018-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from .addressfield import AddressField
-from .datetimefield import DateTimeField
-from .durationfield import DurationField
-from .aranalysesfield import ARAnalysesField
-from .interimfieldsfield import InterimFieldsField
-from .referenceresultsfield import ReferenceResultsField
-from .historyawarereferencefield import HistoryAwareReferenceField
-from .coordinatefield import CoordinateField
-from .reflexrulefield import ReflexRuleField
-from .proxyfield import ProxyField
-from .uidreferencefield import UIDReferenceField
-from .emailsfield import EmailsField
-from .resultrangefield import ResultRangeField
-from .resultsrangesfield import ResultsRangesField
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from plone.app.layout.viewlets import ViewletBase
+
+
+class DynamicSpecsViewlet(ViewletBase):
+    """ Displays an informative message when the specification has a dynamic
+    specification assigned, so ranges might be overriden by the ranges provided
+    in the xls file from the Dynamic Specification
+    """
+    template = ViewPageTemplateFile("templates/dynamic_specs_viewlet.pt")

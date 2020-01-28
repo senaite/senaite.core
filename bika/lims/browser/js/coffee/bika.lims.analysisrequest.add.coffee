@@ -649,7 +649,7 @@ class window.AnalysisRequestAdd
     ###
     console.debug "*** set_service::AR=#{arnum} UID=#{uid} checked=#{checked}"
     # get the service checkbox element
-    el = $("td[fieldname='Analyses-#{arnum}'] #cb_#{uid}")
+    el = $("td[fieldname='Analyses-#{arnum}'] #cb_#{arnum}_#{uid}")
     # select the checkbox
     el.prop "checked", checked
     # get the point of capture of this element

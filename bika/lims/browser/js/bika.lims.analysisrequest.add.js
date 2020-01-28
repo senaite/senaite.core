@@ -644,7 +644,7 @@
        */
       var el, poc;
       console.debug("*** set_service::AR=" + arnum + " UID=" + uid + " checked=" + checked);
-      el = $("td[fieldname='Analyses-" + arnum + "'] #cb_" + uid);
+      el = $("td[fieldname='Analyses-" + arnum + "'] #cb_" + arnum + "_" + uid);
       el.prop("checked", checked);
       poc = el.closest("tr[poc]").attr("poc");
       if (this.is_poc_expanded(poc)) {

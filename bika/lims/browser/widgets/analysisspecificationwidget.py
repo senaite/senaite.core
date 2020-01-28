@@ -137,6 +137,7 @@ class AnalysisSpecificationView(BikaListingView):
         self.allow_edit = self.is_edit_allowed()
         results_range = self.context.getResultsRange()
         self.specification = dicts_to_dict(results_range, "keyword")
+        self.dynamic_spec = self.context.getDynamicAnalysisSpec()
 
     @view.memoize
     def is_edit_allowed(self):
@@ -163,6 +164,12 @@ class AnalysisSpecificationView(BikaListingView):
         columns = []
         return columns
 
+    @view.memoize
+    def get_dynamic_analysisspecs(self):
+        if not self.dynamic_spec:
+            return {}
+        return self.dynamic_spec.get_by_keyword()
+
     def folderitems(self):
         """TODO: Refactor to non-classic mode
         """
@@ -186,6 +193,16 @@ class AnalysisSpecificationView(BikaListingView):
         title = api.get_title(obj)
         keyword = obj.getKeyword()
 
+        # dynamic analysisspecs
+        dspecs = self.get_dynamic_analysisspecs()
+        dspec = dspecs.get(keyword)
+        # show the dynamic specification icon next to the Keyword
+        if dspec:
+            item["before"]["Keyword"] = get_image(
+                "dynamic_analysisspec.png",
+                title=_("Found Dynamic Analysis Specification for '{}' in '{}'"
+                        .format(keyword, self.dynamic_spec.Title())))
+
         # get the category
         if self.show_categories_enabled():
             category = obj.getCategoryTitle()
@@ -201,6 +218,7 @@ class AnalysisSpecificationView(BikaListingView):
         item["required"] = self.get_required_columns()
 
         spec = self.specification.get(keyword, {})
+
         item["selected"] = spec and True or False
         item["min_operator"] = spec.get("min_operator", "geq")
         item["min"] = spec.get("min", "")
@@ -245,7 +263,6 @@ class AnalysisSpecificationWidget(TypesWidget):
     """
     _properties = TypesWidget._properties.copy()
     _properties.update({
-        "checkbox_bound": 0,
         "macro": "bika_widgets/analysisspecificationwidget",
     })
 
@@ -268,20 +285,31 @@ class AnalysisSpecificationWidget(TypesWidget):
         # selected services
         service_uids = form.get("uids", [])
 
+        # return immediately if now services were selected
         if not service_uids:
-            # Inject empty fields for the validator
-            values = [dict.fromkeys(field.getSubfields())]
+            return values, {}
+
+        # dynamic analysis specification
+        dynamic_spec = {}
+        if instance.getDynamicAnalysisSpec():
+            dynamic_spec = instance.getDynamicAnalysisSpec().get_by_keyword()
 
         for uid in service_uids:
             s_min = self._get_spec_value(form, uid, "min")
             s_max = self._get_spec_value(form, uid, "max")
 
             if not s_min and not s_max:
-                # If user has not set value neither for min nor max, omit this
-                # record. Otherwise, since 'min' and 'max' are defined as
-                # mandatory subfields, the following message will appear after
-                # submission: "Specifications is required, please correct."
-                continue
+                service = api.get_object_by_uid(uid)
+                keyword = service.getKeyword()
+                if not dynamic_spec.get(keyword):
+                    # If user has not set value neither for min nor max, omit
+                    # this record. Otherwise, since 'min' and 'max' are defined
+                    # as mandatory subfields, the following message will appear
+                    # after submission: "Specifications is required, please
+                    # correct."
+                    continue
+                s_min = 0
+                s_max = 0
 
             # TODO: disallow this case in the UI
             if s_min and s_max:
@@ -296,7 +324,7 @@ class AnalysisSpecificationWidget(TypesWidget):
                 form, uid, "max_operator", check_floatable=False)
 
             service = api.get_object_by_uid(uid)
-            values.append({
+            subfield_values = {
                 "keyword": service.getKeyword(),
                 "uid": uid,
                 "min_operator": min_operator,
@@ -308,7 +336,19 @@ class AnalysisSpecificationWidget(TypesWidget):
                 "hidemin": self._get_spec_value(form, uid, "hidemin"),
                 "hidemax": self._get_spec_value(form, uid, "hidemax"),
                 "rangecomment": self._get_spec_value(form, uid, "rangecomment",
-                                                     check_floatable=False)})
+                                                     check_floatable=False)
+            }
+
+            # Include values from other subfields that might be added
+            # by other add-ons independently via SchemaModifier
+            for subfield in field.subfields:
+                if subfield not in subfield_values.keys():
+                    subfield_values.update({
+                        subfield: self._get_spec_value(form, uid, subfield)
+                    })
+
+            values.append(subfield_values)
+
         return values, {}
 
     def _get_spec_value(self, form, uid, key, check_floatable=True,

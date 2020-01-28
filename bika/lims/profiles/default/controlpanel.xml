@@ -311,4 +311,13 @@
   <permission>senaite.core: Manage Bika</permission>
  </configlet>
 
+ <configlet title="Dynamic Analysis Specifications" action_id="dynamic_analysisspecs"
+            appId="bika.lims" category="bika" condition_expr=""
+            icon_expr="string:++resource++bika.lims.images/analysisspec.png"
+            url_expr="string:$portal_url/bika_setup/dynamic_analysisspecs"
+            visible="True"
+            i18n:attributes="title">
+   <permission>senaite.core: Manage Bika</permission>
+ </configlet>
+
 </object>

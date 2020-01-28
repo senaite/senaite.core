@@ -1,0 +1,17 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    i18n_domain="senaite.core">
+
+  <!-- Needed for cmf.AddPortalContent permission -->
+  <include package="Products.CMFCore" file="permissions.zcml" />
+
+  <browser:page
+      name="view"
+      for="bika.lims.content.dynamic_analysisspec.IDynamicAnalysisSpec"
+      class=".dynamic_analysisspec.DynamicAnalysisSpecView"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
+
+</configure>

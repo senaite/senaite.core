@@ -1,0 +1,25 @@
+<div tal:omit-tag=""
+     tal:define="dynamic_spec python:context.getDynamicAnalysisSpec()"
+     tal:condition="python:dynamic_spec"
+     i18n:domain="senaite.core">
+
+  <div class="visualClear"></div>
+
+  <div id="portal-alert">
+    <div class="portlet-alert-item alert alert-warning alert-dismissible">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      <strong i18n:translate="">
+        This Analysis Specification has a Dynamic Specification assigned
+      </strong>
+      <p class="title">
+        <span i18n:translate="">
+          Be aware that the ranges provided in the spreadsheet file from the
+          dynamic specification might override the ranges defined in the
+          Specifications list below.
+        </span>
+      </p>
+    </div>
+  </div>
+</div>
