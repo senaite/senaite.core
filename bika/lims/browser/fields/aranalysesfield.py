@@ -205,7 +205,7 @@ class ARAnalysesField(ObjectField):
         # Get the hidden status for the service
         hidden = kwargs.get("hidden") or []
         hidden = filter(lambda d: d.get("uid") == service_uid, hidden)
-        hidden = hidden and hidden[0] or service.getHidden()
+        hidden = hidden and hidden[0].get("hidden") or service.getHidden()
 
         # Get the price for the service
         prices = kwargs.get("prices") or {}
@@ -222,6 +222,10 @@ class ARAnalysesField(ObjectField):
             analysis = create_analysis(instance, service)
             analyses.append(analysis)
 
+        # Bail out analyses to better not be modified
+        skip = ["cancelled", "retracted", "rejected"]
+        analyses = filter(lambda a: api.get_review_status(a) in skip, analyses)
+
         for analysis in analyses:
             # Set the hidden status
             analysis.setHidden(hidden)
@@ -233,7 +237,7 @@ class ARAnalysesField(ObjectField):
             parent_sample = analysis.getRequest()
             analysis.setInternalUse(parent_sample.getInternalUse())
 
-            # Set the result range to the Analysis
+            # Set the result range to the analysis
             analysis_rr = specs.get(service_uid) or analysis.getResultsRange()
             analysis.setResultsRange(analysis_rr)
             analysis.reindexObject()
@@ -272,18 +276,18 @@ class ARAnalysesField(ObjectField):
         analyses = []
 
         # Does the analysis exists in this instance already?
-        analysis = self.get_from_instance(instance, service)
-        if analysis:
-            analyses.append(analysis)
+        instance_analyses = self.get_from_instance(instance, service)
+        if instance_analyses:
+            analyses.extend(instance_analyses)
 
         # Does the analysis exists in an ancestor?
         from_ancestor = self.get_from_ancestor(instance, service)
-        if from_ancestor:
+        for ancestor_analysis in from_ancestor:
             # Move the analysis into this instance. The ancestor's
             # analysis will be masked otherwise
-            analysis_id = api.get_id(from_ancestor)
+            analysis_id = api.get_id(ancestor_analysis)
             logger.info("Analysis {} is from an ancestor".format(analysis_id))
-            cp = from_ancestor.aq_parent.manage_cutObjects(analysis_id)
+            cp = ancestor_analysis.aq_parent.manage_cutObjects(analysis_id)
             instance.manage_pasteObjects(cp)
             analyses.append(instance._getOb(analysis_id))
 
@@ -301,23 +305,23 @@ class ARAnalysesField(ObjectField):
         return analyses
 
     def get_from_instance(self, instance, service):
-        """Returns an analysis for the given service from the instance
+        """Returns analyses for the given service from the instance
         """
         service_uid = api.get_uid(service)
-        for analysis in instance.objectValues("Analysis"):
-            if analysis.getServiceUID() == service_uid:
-                return analysis
-        return None
+        analyses = instance.objectValues("Analysis")
+        # Filter those analyses with same keyword. Note that a Sample can
+        # contain more than one analysis with same keyword because of retests
+        return filter(lambda an: an.getServiceUID() == service_uid, analyses)
 
     def get_from_ancestor(self, instance, service):
-        """Returns an analysis for the given service from ancestors
+        """Returns analyses for the given service from ancestors
         """
         ancestor = instance.getParentAnalysisRequest()
         if not ancestor:
-            return None
+            return []
 
-        analysis = self.get_from_instance(ancestor, service)
-        return analysis or self.get_from_ancestor(ancestor, service)
+        analyses = self.get_from_instance(ancestor, service)
+        return analyses or self.get_from_ancestor(ancestor, service)
 
     def get_from_descendant(self, instance, service):
         """Returns analyses for the given service from descendants
@@ -325,9 +329,9 @@ class ARAnalysesField(ObjectField):
         analyses = []
         for descendant in instance.getDescendants():
             # Does the analysis exists in the current descendant?
-            analysis = self.get_from_instance(descendant, service)
-            if analysis:
-                analyses.append(analysis)
+            descendant_analyses = self.get_from_instance(descendant, service)
+            if descendant_analyses:
+                analyses.extend(descendant_analyses)
 
             # Search in descendants from current descendant
             from_descendant = self.get_from_descendant(descendant, service)
