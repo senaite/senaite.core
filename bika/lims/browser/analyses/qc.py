@@ -82,7 +82,7 @@ class QCAnalysesView(AnalysesView):
         self.contentFilter.update({
             "UID": qc_uids,
             "portal_type": ["DuplicateAnalysis", "ReferenceAnalysis"],
-            "sort_on": "getId"
+            "sort_on": "sortable_title"
         })
 
     def is_analysis_edition_allowed(self, analysis_brain):
