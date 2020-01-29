@@ -137,11 +137,11 @@ class ResultsRangeDict(dict):
     def __init__(self, *arg, **kw):
         super(ResultsRangeDict, self).__init__(*arg, **kw)
         self["uid"] = self.uid
-        self["min"] = self.min
-        self["max"] = self.max
-        self["error"] = self.error
-        self["warn_min"] = self.warn_min
-        self["warn_max"] = self.warn_max
+        self["min"] = str(self.min)
+        self["max"] = str(self.max)
+        self["error"] = str(self.error)
+        self["warn_min"] = str(self.warn_min)
+        self["warn_max"] = str(self.warn_max)
         self["min_operator"] = self.min_operator
         self["max_operator"] = self.max_operator
 

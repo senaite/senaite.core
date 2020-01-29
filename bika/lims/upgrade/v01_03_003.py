@@ -284,6 +284,9 @@ def upgrade(tool):
     setup.runImportStepFromProfile(profile, "controlpanel")
     add_dexterity_setup_items(portal)
 
+    # Reset the results ranges from Specification objects (to include uid)
+    reset_specifications_ranges(portal)
+
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
 
@@ -569,4 +572,15 @@ def mark_samples_with_partitions(portal):
             alsoProvides(parent, IAnalysisRequestWithPartitions)
 
     logger.info("Marking Samples with partitions [DONE]")
-    api.search(query, CATALOG_ANALYSIS_REQUEST_LISTING)
+
+
+def reset_specifications_ranges(portal):
+    """Reset the result ranges to existing Specification objects. Prior
+    versions were not storing the service uid in the result range
+    """
+    logger.info("Add uids to Specification ranges subfields ...")
+    specifications = portal.bika_setup.bika_analysisspecs
+    for specification in specifications.objectValues("AnalysisSpec"):
+        specification.setResultsRange(specification.getResultsRange())
+    logger.info("Add uids to Specification ranges subfields [DONE]")
+
