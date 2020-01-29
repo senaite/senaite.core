@@ -140,8 +140,13 @@ class ResultsRangesOutOfDateViewlet(ViewletBase):
                          .format(api.get_id(sample)))
             return False
 
-        # Compare if results ranges are different
         spec_rr = specifications.getResultsRange()
+
+        # Omit services not present in current Sample
+        services = map(lambda an: an.getServiceUID, sample.getAnalyses())
+        sample_rr = filter(lambda rr: rr.uid in services, sample_rr)
+        spec_rr = filter(lambda rr: rr.uid in services, spec_rr)
+
         return sample_rr != spec_rr
 
 
