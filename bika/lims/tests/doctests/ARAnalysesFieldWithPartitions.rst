@@ -109,56 +109,51 @@ get_from_instance
 When asked for `Fe` when the primary is given, it returns the analysis, cause
 it lives in the primary:
 
-    >>> fe = field.get_from_instance(sample, Fe)
+    >>> fe = field.get_from_instance(sample, Fe)[0]
     >>> fe.getServiceUID() == api.get_uid(Fe)
     True
 
-But when asked for `Cu` when the primary is given, it returns None, cause it
+But when asked for `Cu` when the primary is given, it returns empty, cause it
 lives in the partition:
 
-    >>> cu = field.get_from_instance(sample, Cu)
-    >>> cu is None
-    True
+    >>> field.get_from_instance(sample, Cu)
+    []
 
 While it returns the analysis when the partition is used:
 
-    >>> cu = field.get_from_instance(partition, Cu)
+    >>> cu = field.get_from_instance(partition, Cu)[0]
     >>> cu.getServiceUID() == api.get_uid(Cu)
     True
 
-But when asking the partition for `Fe` it returns None, cause it lives in the
+But when asking the partition for `Fe` it returns empty, cause it lives in the
 ancestor:
 
-    >>> fe = field.get_from_instance(partition, Fe)
-    >>> fe is None
-    True
+    >>> field.get_from_instance(partition, Fe)
+    []
 
 get_from_ancestor
 .................
 
-When asked for `Fe` to primary, it returns None because there is no ancestor
+When asked for `Fe` to primary, it returns empty because there is no ancestor
 containing `Fe`:
 
-    >>> fe = field.get_from_ancestor(sample, Fe)
-    >>> fe is None
-    True
+    >>> field.get_from_ancestor(sample, Fe)
+    []
 
 But when asked for `Fe` to the partition, it returns the analysis, cause it
 it lives in an ancestor from the partition:
 
-    >>> fe = field.get_from_ancestor(partition, Fe)
+    >>> fe = field.get_from_ancestor(partition, Fe)[0]
     >>> fe.getServiceUID() == api.get_uid(Fe)
     True
 
-If I ask for `Cu`, that lives in the partition, it will return None for both:
+If I ask for `Cu`, that lives in the partition, it will return empty for both:
 
-    >>> cu = field.get_from_ancestor(sample, Cu)
-    >>> cu is None
-    True
+    >>> field.get_from_ancestor(sample, Cu)
+    []
 
-    >>> cu = field.get_from_ancestor(partition, Cu)
-    >>> cu is None
-    True
+    >>> field.get_from_ancestor(partition, Cu)
+    []
 
 get_from_descendant
 ...................
