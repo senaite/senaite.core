@@ -278,16 +278,29 @@
       layer="bika.lims.interfaces.IBikaLIMS"
       />
 
-  <!-- Dynamic Specifications viewlet. Displays an informative message when the
-    specification has a dynamic specification assigned, so ranges might be
-    overriden by the ranges provided in the xls file from the Dynamic
-    Specification -->
+  <!-- Dynamic Specifications viewlet for AnalysisSpec.
+  Displays an informative message when the specification has a dynamic
+  specification assigned, so ranges might be overriden by the ranges provided in
+  the xls file from the Dynamic Specification -->
   <browser:viewlet
     for="bika.lims.interfaces.IAnalysisSpec"
     name="bika.lims.dynamic_spec_viewlet"
     class=".dynamic_specs.DynamicSpecsViewlet"
     manager="plone.app.layout.viewlets.interfaces.IAboveContent"
     template="templates/dynamic_specs_viewlet.pt"
+    permission="zope2.View"
+    layer="bika.lims.interfaces.IBikaLIMS"
+  />
+
+  <!-- Dynamic Specifications viewlet for Sample.
+  Displays an informative message when the
+  specification assigned to the Sample has a dynamic specification assigned -->
+  <browser:viewlet
+    for="bika.lims.interfaces.IAnalysisRequest"
+    name="bika.lims.sample_dynamic_spec_viewlet"
+    class=".dynamic_specs.SampleDynamicSpecsViewlet"
+    manager="plone.app.layout.viewlets.interfaces.IAboveContent"
+    template="templates/sample_dynamic_specs_viewlet.pt"
     permission="zope2.View"
     layer="bika.lims.interfaces.IBikaLIMS"
   />

@@ -1,5 +1,5 @@
 <div tal:omit-tag=""
-     tal:define="dynamic_spec python:context.getDynamicAnalysisSpec()"
+     tal:define="dynamic_spec python:view.get_dynamic_specification()"
      tal:condition="python:dynamic_spec"
      i18n:domain="senaite.core">
 
@@ -12,14 +12,14 @@
       </button>
       <p class="title">
         <strong i18n:translate="">
-          This Analysis Specification has a Dynamic Specification assigned
+          The specification has a Dynamic Specification assigned
         </strong>
       </p>
       <p class="description">
         <span i18n:translate="">
           Be aware that the ranges provided in the spreadsheet file from the
-          dynamic specification might override the ranges defined in the
-          Specifications list below.
+          dynamic specification might override the ranges manually defined in
+          the list below.
         </span><br/>
         <span i18n:translate="">
           Visit the Dynamic Specification for additional information:
