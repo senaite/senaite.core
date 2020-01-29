@@ -222,11 +222,12 @@ class ARAnalysesField(ObjectField):
             analysis = create_analysis(instance, service)
             analyses.append(analysis)
 
-        # Bail out analyses to better not be modified
         skip = ["cancelled", "retracted", "rejected"]
-        analyses = filter(lambda a: api.get_review_status(a) in skip, analyses)
-
         for analysis in analyses:
+            # Skip analyses to better not modify
+            if api.get_review_status(analysis) in skip:
+                continue
+
             # Set the hidden status
             analysis.setHidden(hidden)
 

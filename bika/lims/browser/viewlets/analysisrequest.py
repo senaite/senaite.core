@@ -164,11 +164,16 @@ class SpecificationNotCompliantViewlet(ViewletBase):
         result range set not compliant with the result range of the Sample
         """
         non_compliant = []
+        skip = ["cancelled", "retracted", "rejected"]
 
         # Check if the results ranges set to analyses individually remain
         # compliant with the Sample's ResultRange
         analyses = self.context.getAnalyses(full_objects=True)
         for analysis in analyses:
+            # Skip non-valid/inactive analyses
+            if api.get_review_status(analysis) in skip:
+                continue
+
             if not is_result_range_compliant(analysis):
                 # Result range for this service has been changed manually,
                 # it does not match with sample's ResultRange
