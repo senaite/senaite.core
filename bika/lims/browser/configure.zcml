@@ -11,7 +11,6 @@
   <include file="analysisprofile.zcml"/>
   <include file="analysisreport.zcml"/>
   <include file="analysisservice.zcml"/>
-  <include file="analysisspec.zcml"/>
   <include file="arimports.zcml"/>
   <include file="artemplate.zcml"/>
   <include file="attachment.zcml"/>
