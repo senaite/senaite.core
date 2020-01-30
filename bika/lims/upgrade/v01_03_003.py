@@ -37,6 +37,8 @@ from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
 from Products.Archetypes.config import UID_CATALOG
 
+from bika.lims.utils import dicts_to_dict
+
 version = "1.3.3"  # Remember version number in metadata.xml and setup.py
 profile = "profile-{0}:default".format(product)
 
@@ -285,7 +287,12 @@ def upgrade(tool):
     add_dexterity_setup_items(portal)
 
     # Reset the results ranges from Specification objects (to include uid)
+    # https://github.com/senaite/senaite.core/pull/1506
     reset_specifications_ranges(portal)
+
+    # Update the ResultsRange field from Samples and their analyses as needed
+    # https://github.com/senaite/senaite.core/pull/1506
+    update_samples_result_ranges(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
@@ -584,3 +591,56 @@ def reset_specifications_ranges(portal):
         specification.setResultsRange(specification.getResultsRange())
     logger.info("Add uids to Specification ranges subfields [DONE]")
 
+
+def update_samples_result_ranges(portal):
+    """Stores the result range field for those samples that have a
+    specification assigned. In prior versions, getResultsRange was relying
+    on Specification's ResultsRange
+    """
+    query = dict(portal_type="AnalysisRequest")
+    brains = api.search(query, CATALOG_ANALYSIS_REQUEST_LISTING)
+    total = len(brains)
+    for num, brain in enumerate(brains):
+        if num and num % 1000 == 0:
+            logger.info("{}/{} samples processed".format(num, total))
+        sample = api.get_object(brain)
+
+        # Check if the ResultsRange field from sample contains values already
+        ar_range = sample.getResultsRange()
+        if ar_range:
+            # This sample has results range already set, probably assigned
+            # manually through Manage analyses
+            # Reassign the results range (for uid subfield resolution)
+            field = sample.getField("ResultsRange")
+            field.set(sample, ar_range)
+
+            # Store the result range directly to their analyses
+            update_analyses_results_range(sample)
+
+            # No need to go further
+            continue
+
+        # Check if the Sample has Specification set
+        spec_uid = sample.getRawSpecification()
+        if not spec_uid:
+            # This sample does not have a specification set, skip
+            continue
+
+        # Store the specification results range to the Sample
+        specification = sample.getSpecification()
+        result_range = specification.getResultsRange()
+        sample.getField("ResultsRange").set(sample, result_range)
+
+        # Store the result range directly to their analyses
+        update_analyses_results_range(sample)
+
+
+def update_analyses_results_range(sample):
+    field = sample.getField("ResultsRange")
+    for analysis in sample.objectValues("Analysis"):
+        service_uid = analysis.getRawAnalysisService()
+        analysis_rr = field.get(sample, search_by=service_uid)
+        if analysis_rr:
+            analysis = api.get_object(analysis)
+            analysis.setResultsRange(analysis_rr)
+            analysis.reindexObject()
