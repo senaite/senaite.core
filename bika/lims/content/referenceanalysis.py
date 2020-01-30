@@ -31,7 +31,7 @@ from bika.lims.config import PROJECTNAME
 from bika.lims.config import STD_TYPES
 from bika.lims.content.abstractanalysis import AbstractAnalysis
 from bika.lims.content.abstractanalysis import schema
-from bika.lims.content.analysisspec import ResultsRangeDict
+from bika.lims.browser.fields.resultrangefield import ResultsRangeDict
 from bika.lims.interfaces import IReferenceAnalysis
 
 schema = schema.copy() + Schema((
