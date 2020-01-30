@@ -137,11 +137,11 @@ class ResultsRangeDict(dict):
     def __init__(self, *arg, **kw):
         super(ResultsRangeDict, self).__init__(*arg, **kw)
         self["uid"] = self.uid
-        self["min"] = str(self.min)
-        self["max"] = str(self.max)
-        self["error"] = str(self.error)
-        self["warn_min"] = str(self.warn_min)
-        self["warn_max"] = str(self.warn_max)
+        self["min"] = self.min
+        self["max"] = self.max
+        self["error"] = self.error
+        self["warn_min"] = self.warn_min
+        self["warn_max"] = self.warn_max
         self["min_operator"] = self.min_operator
         self["max_operator"] = self.max_operator
 
@@ -210,7 +210,14 @@ class ResultsRangeDict(dict):
         if isinstance(other, ResultsRangeDict):
             # Balance both dicts with same keys, but without corrupting them
             current = dict(filter(lambda o: o[0] in other, self.items()))
-            other_dict = dict(filter(lambda o: o[0] in current, other.items()))
-            return current == other_dict
+            other = dict(filter(lambda o: o[0] in current, other.items()))
+
+            # Ensure that all values are str (sometimes ranges are stored as
+            # numeric values and sometimes are stored as str)
+            current = dict(map(lambda o: (o[0], str(o[1])), current.items()))
+            other = dict(map(lambda o: (o[0], str(o[1])), other.items()))
+
+            # Check if both are equal
+            return current == other
 
         return super(ResultsRangeDict, self).__eq__(other)
