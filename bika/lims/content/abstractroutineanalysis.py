@@ -338,9 +338,7 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
 
     @security.public
     def getResultsRange(self):
-        """Returns the valid result range for this routine analysis based on the
-        results ranges defined in the Analysis Request this routine analysis is
-        assigned to.
+        """Returns the valid result range for this routine analysis
 
         A routine analysis will be considered out of range if it result falls
         out of the range defined in "min" and "max". If there are values set for
