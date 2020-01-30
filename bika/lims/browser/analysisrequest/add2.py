@@ -1670,7 +1670,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                     client,
                     self.request,
                     record,
-                    specifications=specifications
+                    results_ranges=specifications
                 )
             except (KeyError, RuntimeError) as e:
                 actions.resume()
