@@ -114,9 +114,7 @@ class ResultsRangesOutOfDateViewlet(ViewletBase):
 
         specifications = sample.getSpecification()
         if not specifications:
-            # This should never happen
-            logger.error("No specifications, but results ranges set for {}"
-                         .format(api.get_id(sample)))
+            # The specification was once assigned, but unassigned later
             return False
 
         spec_rr = specifications.getResultsRange()
