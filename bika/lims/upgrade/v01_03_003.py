@@ -21,23 +21,21 @@
 from collections import defaultdict
 from operator import itemgetter
 
-from zope.interface import alsoProvides
-
+import transaction
 from bika.lims import api
 from bika.lims import logger
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.catalog.bikasetup_catalog import SETUP_CATALOG
 from bika.lims.config import PROJECTNAME as product
 from bika.lims.interfaces import IAnalysisRequestWithPartitions
-from bika.lims.setuphandlers import add_dexterity_setup_items
 from bika.lims.interfaces import ISubmitted
 from bika.lims.interfaces import IVerified
+from bika.lims.setuphandlers import add_dexterity_setup_items
 from bika.lims.setuphandlers import setup_form_controller_actions
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
 from Products.Archetypes.config import UID_CATALOG
-
-from bika.lims.utils import dicts_to_dict
+from zope.interface import alsoProvides
 
 version = "1.3.3"  # Remember version number in metadata.xml and setup.py
 profile = "profile-{0}:default".format(product)
@@ -570,6 +568,7 @@ def mark_samples_with_partitions(portal):
         if num and num % 100 == 0:
             logger.info("Marking samples with partitions: {}/{}"
                         .format(num, total))
+            transaction.commit()
         part = api.get_object(brain)
         parent = part.getParentAnalysisRequest()
         if not parent:
@@ -602,7 +601,9 @@ def update_samples_result_ranges(portal):
     total = len(brains)
     for num, brain in enumerate(brains):
         if num and num % 1000 == 0:
-            logger.info("{}/{} samples processed".format(num, total))
+            logger.info("{}/{} samples processed ...".format(num, total))
+            transaction.commit()
+            logger.info("Changes commited")
         sample = api.get_object(brain)
 
         # Check if the ResultsRange field from sample contains values already
