@@ -1438,19 +1438,26 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         descr = " ".join((self.getId(), self.aq_parent.Title()))
         return safe_unicode(descr).encode('utf-8')
 
-    def setSpecification(self, value):
+    def setSpecification(self, value, override=False):
         """Sets the Specifications and ResultRange values
         """
+        current_spec = self.getRawSpecification()
+        changed = current_spec != value
+
+        if changed and not override:
+            # preserve the current value
+            return
+
         self.getField("Specification").set(self, value)
 
-        # Set the value for field ResultsRange, cause Specification is only used
-        # as a template: all the results range logic relies on ResultsRange
-        # field, so changes in setup's Specification object won't have effect to
-        # already created samples
+        # Set the value for field ResultsRange, cause Specification is only
+        # used as a template: all the results range logic relies on
+        # ResultsRange field, so changes in setup's Specification object won't
+        # have effect to already created samples
         spec = self.getSpecification()
         if spec:
-            # Update only results ranges if specs is not None, so results ranges
-            # manually set previously (e.g. via ManageAnalyses view) are
+            # Update only results ranges if specs is not None, so results
+            # ranges manually set previously (e.g. via ManageAnalyses view) are
             # preserved unless a new Specification overrides them
             self.setResultsRange(spec.getResultsRange(), recursive=False)
 
