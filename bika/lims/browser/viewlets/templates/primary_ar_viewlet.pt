@@ -5,8 +5,7 @@
 
   <div class="visualClear"></div>
 
-  <div id="portal-alert"
-       tal:define="primary_bound_fields python: view.get_primary_bound_fields();">
+  <div id="portal-alert">
 
     <div class="portlet-alert-item alert alert-info alert-dismissible">
       <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -29,23 +28,5 @@
       </p>
     </div>
 
-    <div tal:condition="python: len(primary_bound_fields) > 0"
-         class="portlet-alert-item alert alert-warning alert-dismissible">
-      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-      </button>
-      <p class="title">
-        <strong i18n:translate="">
-          Some changes might override partitions
-        </strong>
-      </p>
-      <p class="title">
-        <span i18n:translate="">
-          Changes to any of the following fields will override the value in
-          underlying partitions for which the given field is editable:
-        </span>
-        <span tal:content="python: ', '.join(primary_bound_fields)"/>
-      </p>
-    </div>
   </div>
 </div>

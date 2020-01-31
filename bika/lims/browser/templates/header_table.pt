@@ -12,7 +12,8 @@
   </head>
 
   <body
-    tal:define="dummy python:view.get_fields_grouped_by_location();
+    tal:define="root_sample python:view.is_primary_with_partitions();
+                dummy python:view.get_fields_grouped_by_location();
                 prominent python:dummy[0];
                 sublists python:dummy[1]"
     tal:condition="sublists">
@@ -21,22 +22,34 @@
 
       <table class="header_table table table-condensed table-bordered table-sm">
 
+        <!-- Render "Prominent" Fields -->
         <tr tal:repeat="action prominent">
           <tal:def define="mode python:action['mode'];
                            fieldName python:action['fieldName'];
                            field python:context.Schema()[fieldName];
                            field_macro here/widgets/field/macros/edit;
+                           editable python:mode=='edit';
+                           primary_bound python:getattr(field, 'primary_bound', False);
                            widget python:field.widget;
                            accessor python:field.getAccessor(context);
                            errors python:{};">
             <td class="active">
               <span tal:replace="python:widget.label"/>
+              <!-- Display a notification icon if the field is primary bound
+                   (if changes propagate to partitions) -->
+              <tal:primary_bound condition="python:all([root_sample, editable, primary_bound])">
+                <span title="Changes will be propagated to partitions"
+                      i18n:attributes="title"
+                      class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+              </tal:primary_bound>
+              <!-- Display Required Icon -->
               <span class="fieldRequired"
-                    tal:condition="python:field.required and mode == 'edit'"
+                    tal:condition="python:field.required and editable"
                     title="Required"
                     i18n:attributes="title title_required;"> </span>
             </td>
             <td colspan="5">
+              <!-- Render the Field -->
               <tal:x condition="python:mode!='structure'">
                 <metal:field use-macro="python:context.widget(fieldName, mode=mode)"/>
               </tal:x>
@@ -47,6 +60,7 @@
           </tal:def>
         </tr>
 
+        <!-- Render "Standard" Fields -->
         <tr tal:repeat="row_nr python:range(len(sublists[0]))">
           <tal:repeat repeat="col_nr python:range(3)">
             <tal:print_blanks condition="python:len(sublists[col_nr]) <= row_nr">
@@ -59,17 +73,28 @@
                                fieldName python:action['fieldName'];
                                field python:context.Schema()[fieldName];
                                field_macro here/widgets/field/macros/edit;
+                               editable python:mode=='edit';
+                               primary_bound python:getattr(field, 'primary_bound', False);
                                widget python:field.widget;
                                accessor python:field.getAccessor(context);
                                errors python:{};">
                 <td tal:attributes="class python:row_nr%2 and 'key odd active' or 'key even active'">
                   <span tal:replace="python:widget.label"/>
+                  <!-- Display a notification icon if the field is primary bound
+                       (if changes propagate to partitions) -->
+                  <tal:primary_bound condition="python:all([root_sample, editable, primary_bound])">
+                    <span title="Changes will be propagated to partitions"
+                          i18n:attributes="title"
+                          class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                  </tal:primary_bound>
+                  <!-- Display Required Icon -->
                   <span class="fieldRequired"
-                        tal:condition="python:field.required and mode == 'edit'"
+                        tal:condition="python:field.required and editable"
                         title="Required"
                         i18n:attributes="title title_required;"> </span>
                 </td>
                 <td tal:attributes="class python:row_nr%2 and 'value odd' or 'value even'">
+                  <!-- Render Field -->
                   <tal:x condition="python:mode!='structure'">
                     <metal:field
                       use-macro="python:context.widget(fieldName, mode=mode)"/>
@@ -77,6 +102,7 @@
                   <span
                     tal:condition="python:mode=='structure' and action['html']"
                     tal:content="structure action/html"/>
+
                 </td>
               </tal:def>
             </tal:skip_blanks>
