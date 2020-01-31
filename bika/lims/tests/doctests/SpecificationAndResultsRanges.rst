@@ -169,12 +169,18 @@ effect to neither the Sample nor analyses:
     >>> (rr_sample_au.min, rr_sample_au.max)
     (10, 20)
 
-We need to re-apply the Specification for the Sample's results range to update:
+If we re-apply the Specification, nothing will change though, because its `uid`
+is still the same:
 
     >>> sample.setSpecification(specification)
+    >>> specification.getResultsRange() == sample.getResultsRange()
+    False
 
-And the ResultsRange value from Sample is updated accordingly:
+But the ResultsRange value from Sample is updated accordingly if we set the
+specification to `None` first:
 
+    >>> sample.setSpecification(None)
+    >>> sample.setSpecification(specification)
     >>> specification.getResultsRange() == sample.getResultsRange()
     True
 
@@ -250,6 +256,7 @@ But analysis' result range has indeed changed:
 If we re-apply the Specification, the result range for `Zn`, as well as for the
 Sample, are reestablished:
 
+    >>> sample.setSpecification(None)
     >>> sample.setSpecification(specification)
     >>> specification.getResultsRange() == sample.getResultsRange()
     True

@@ -1438,14 +1438,14 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         descr = " ".join((self.getId(), self.aq_parent.Title()))
         return safe_unicode(descr).encode('utf-8')
 
-    def setSpecification(self, value, override=False):
+    def setSpecification(self, value):
         """Sets the Specifications and ResultRange values
         """
         current_spec = self.getRawSpecification()
-        changed = current_spec != value
-
-        if changed and not override:
-            # preserve the current value
+        if value and current_spec == api.get_uid(value):
+            # Specification has not changed, preserve the current value to
+            # prevent result ranges (both from Sample and from analyses) from
+            # being overriden
             return
 
         self.getField("Specification").set(self, value)

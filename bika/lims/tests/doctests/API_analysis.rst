@@ -514,6 +514,7 @@ Set open interval for min and max from water specification
 
 We need to re-apply the Specification for the changes to take effect:
 
+    >>> ar.setSpecification(None)
     >>> ar.setSpecification(specification)
 
 First, get the analyses from slot 1 and sort them asc:
@@ -546,6 +547,7 @@ Set left-open interval for min and max from water specification
 
 We need to re-apply the Specification for the changes to take effect:
 
+    >>> ar.setSpecification(None)
     >>> ar.setSpecification(specification)
 
 First, get the analyses from slot 1 and sort them asc:
@@ -578,6 +580,7 @@ Set right-open interval for min and max from water specification
 
 We need to re-apply the Specification for the changes to take effect:
 
+    >>> ar.setSpecification(None)
     >>> ar.setSpecification(specification)
 
 First, get the analyses from slot 1 and sort them asc:
