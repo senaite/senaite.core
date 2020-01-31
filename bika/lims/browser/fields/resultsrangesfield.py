@@ -24,7 +24,6 @@ from Products.ATExtensions.field import RecordsField
 from Products.Archetypes.Registry import registerField
 
 from bika.lims import api
-from bika.lims.browser.fields.resultrangefield import ResultsRangeDict
 from bika.lims.browser.fields.resultrangefield import SUB_FIELDS
 from bika.lims.browser.widgets import AnalysisSpecificationWidget
 from bika.lims.catalog import SETUP_CATALOG
@@ -58,6 +57,7 @@ class ResultsRangesField(RecordsField):
             return {}
 
         # Convert the dict items to ResultRangeDict for easy handling
+        from bika.lims.content.analysisspec import ResultsRangeDict
         return map(lambda val: ResultsRangeDict(dict(val.items())), values)
 
     def getResultRange(self, values, uid_keyword_service):
@@ -73,6 +73,7 @@ class ResultsRangesField(RecordsField):
             key = "uid"
 
         # Find out the item for the given uid/keyword
+        from bika.lims.content.analysisspec import ResultsRangeDict
         value = filter(lambda v: v.get(key) == uid_keyword_service, values)
         return value and ResultsRangeDict(dict(value[0].items())) or None
 

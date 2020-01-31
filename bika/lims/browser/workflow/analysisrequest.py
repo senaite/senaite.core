@@ -28,7 +28,7 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.browser.workflow import RequestContextAware
 from bika.lims.browser.workflow import WorkflowActionGenericAdapter
-from bika.lims.browser.fields.resultrangefield import ResultsRangeDict
+from bika.lims.content.analysisspec import ResultsRangeDict
 from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.interfaces import IWorkflowActionUIDsAdapter
 from bika.lims.utils import encode_header

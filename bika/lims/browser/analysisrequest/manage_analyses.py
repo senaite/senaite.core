@@ -23,7 +23,7 @@ import collections
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims.browser.fields.resultrangefield import ResultsRangeDict
+from bika.lims.content.analysisspec import ResultsRangeDict
 from bika.lims.interfaces import ISubmitted
 from bika.lims.utils import dicts_to_dict
 from bika.lims.utils import get_image

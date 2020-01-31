@@ -26,7 +26,7 @@ from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.abstractroutineanalysis import AbstractRoutineAnalysis
 from bika.lims.content.abstractroutineanalysis import schema
-from bika.lims.browser.fields.resultrangefield import ResultsRangeDict
+from bika.lims.content.analysisspec import ResultsRangeDict
 from bika.lims.interfaces import IDuplicateAnalysis
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.workflow import in_state

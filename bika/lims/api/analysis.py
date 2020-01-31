@@ -22,7 +22,7 @@ from collections import Mapping
 from bika.lims import api
 from bika.lims.api import _marker
 from bika.lims.config import MIN_OPERATORS, MAX_OPERATORS
-from bika.lims.browser.fields.resultrangefield import ResultsRangeDict
+from bika.lims.content.analysisspec import ResultsRangeDict
 from bika.lims.interfaces import IAnalysis, IReferenceAnalysis, \
     IResultOutOfRange
 from zope.component._api import getAdapters

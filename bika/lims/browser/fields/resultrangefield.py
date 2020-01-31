@@ -55,6 +55,7 @@ class ResultRangeField(RecordField):
     })
 
     def set(self, instance, value, **kwargs):
+        from bika.lims.content.analysisspec import ResultsRangeDict
         if isinstance(value, ResultsRangeDict):
             # Better store a built-in dict so it will always be available even
             # if ResultsRangeDict is removed or changed
@@ -63,6 +64,7 @@ class ResultRangeField(RecordField):
         super(ResultRangeField, self).set(instance, value, **kwargs)
 
     def get(self, instance, **kwargs):
+        from bika.lims.content.analysisspec import ResultsRangeDict
         value = super(ResultRangeField, self).get(instance, **kwargs)
         if value:
             return ResultsRangeDict(dict(value.items()))
@@ -106,94 +108,3 @@ class DefaultResultsRangeProvider(object):
         # Try with uid (this shouldn't be necessary)
         service_uid = analysis.getServiceUID()
         return field.get(sample, search_by=service_uid) or {}
-
-
-class ResultsRangeDict(dict):
-
-    def __init__(self, *arg, **kw):
-        super(ResultsRangeDict, self).__init__(*arg, **kw)
-        self["uid"] = self.uid
-        self["min"] = self.min
-        self["max"] = self.max
-        self["error"] = self.error
-        self["warn_min"] = self.warn_min
-        self["warn_max"] = self.warn_max
-        self["min_operator"] = self.min_operator
-        self["max_operator"] = self.max_operator
-
-    @property
-    def uid(self):
-        """The uid of the service this ResultsRange refers to
-        """
-        return self.get("uid", '')
-
-    @property
-    def min(self):
-        return self.get("min", '')
-
-    @property
-    def max(self):
-        return self.get("max", '')
-
-    @property
-    def error(self):
-        return self.get("error", '')
-
-    @property
-    def warn_min(self):
-        return self.get("warn_min", self.min)
-
-    @property
-    def warn_max(self):
-        return self.get('warn_max', self.max)
-
-    @property
-    def min_operator(self):
-        return self.get('min_operator', 'geq')
-
-    @property
-    def max_operator(self):
-        return self.get('max_operator', 'leq')
-
-    @min.setter
-    def min(self, value):
-        self["min"] = value
-
-    @max.setter
-    def max(self, value):
-        self["max"] = value
-
-    @warn_min.setter
-    def warn_min(self, value):
-        self['warn_min'] = value
-
-    @warn_max.setter
-    def warn_max(self, value):
-        self['warn_max'] = value
-
-    @min_operator.setter
-    def min_operator(self, value):
-        self['min_operator'] = value
-
-    @max_operator.setter
-    def max_operator(self, value):
-        self['max_operator'] = value
-
-    def __eq__(self, other):
-        if isinstance(other, dict):
-            other = ResultsRangeDict(other)
-
-        if isinstance(other, ResultsRangeDict):
-            # Balance both dicts with same keys, but without corrupting them
-            current = dict(filter(lambda o: o[0] in other, self.items()))
-            other = dict(filter(lambda o: o[0] in current, other.items()))
-
-            # Ensure that all values are str (sometimes ranges are stored as
-            # numeric values and sometimes are stored as str)
-            current = dict(map(lambda o: (o[0], str(o[1])), current.items()))
-            other = dict(map(lambda o: (o[0], str(o[1])), other.items()))
-
-            # Check if both are equal
-            return current == other
-
-        return super(ResultsRangeDict, self).__eq__(other)
