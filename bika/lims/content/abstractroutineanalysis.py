@@ -21,6 +21,17 @@
 from datetime import timedelta
 
 from AccessControl import ClassSecurityInfo
+from Products.ATContentTypes.utils import DT2dt
+from Products.ATContentTypes.utils import dt2DT
+from Products.Archetypes.Field import BooleanField
+from Products.Archetypes.Field import FixedPointField
+from Products.Archetypes.Field import StringField
+from Products.Archetypes.Schema import Schema
+from Products.CMFCore.permissions import View
+from zope.interface import alsoProvides
+from zope.interface import implements
+from zope.interface import noLongerProvides
+
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import UIDReferenceField
@@ -28,23 +39,15 @@ from bika.lims.browser.widgets import DecimalWidget
 from bika.lims.catalog.indexers.baseanalysis import sortable_title
 from bika.lims.content.abstractanalysis import AbstractAnalysis
 from bika.lims.content.abstractanalysis import schema
-from bika.lims.content.analysisspec import ResultsRangeDict
 from bika.lims.content.clientawaremixin import ClientAwareMixin
 from bika.lims.content.reflexrule import doReflexRuleAction
 from bika.lims.interfaces import IAnalysis
 from bika.lims.interfaces import ICancellable
 from bika.lims.interfaces import IDynamicResultsRange
+from bika.lims.interfaces import IInternalUse
 from bika.lims.interfaces import IRoutineAnalysis
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.workflow import getTransitionDate
-from Products.Archetypes.Field import BooleanField
-from Products.Archetypes.Field import FixedPointField
-from Products.Archetypes.Field import StringField
-from Products.Archetypes.Schema import Schema
-from Products.ATContentTypes.utils import DT2dt
-from Products.ATContentTypes.utils import dt2DT
-from Products.CMFCore.permissions import View
-from zope.interface import implements
 
 
 # True if the analysis is created by a reflex rule
@@ -335,9 +338,7 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
 
     @security.public
     def getResultsRange(self):
-        """Returns the valid result range for this routine analysis based on the
-        results ranges defined in the Analysis Request this routine analysis is
-        assigned to.
+        """Returns the valid result range for this routine analysis
 
         A routine analysis will be considered out of range if it result falls
         out of the range defined in "min" and "max". If there are values set for
@@ -347,21 +348,12 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
         :return: A dictionary with keys "min", "max", "warn_min" and "warn_max"
         :rtype: dict
         """
-        specs = ResultsRangeDict()
-        analysis_request = self.getRequest()
-        if not analysis_request:
-            return specs
-
-        keyword = self.getKeyword()
-        ar_ranges = analysis_request.getResultsRange()
-        # Get the result range that corresponds to this specific analysis
-        an_range = [rr for rr in ar_ranges if rr.get('keyword', '') == keyword]
-        rr = an_range and an_range[0] or specs
+        results_range = self.getField("ResultsRange").get(self)
         # dynamic results range adapter
         adapter = IDynamicResultsRange(self, None)
         if adapter:
-            rr.update(adapter())
-        return rr
+            results_range.update(adapter())
+        return results_range
 
     @security.public
     def getSiblings(self, retracted=False):
@@ -483,6 +475,16 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
         """
         self.setHiddenManually(True)
         self.getField('Hidden').set(self, hidden)
+
+    @security.public
+    def setInternalUse(self, internal_use):
+        """Applies the internal use of this Analysis. Analyses set for internal
+        use are not accessible to clients and are not visible in reports
+        """
+        if internal_use:
+            alsoProvides(self, IInternalUse)
+        else:
+            noLongerProvides(self, IInternalUse)
 
     @security.public
     def setReflexAnalysisOf(self, analysis):

@@ -252,14 +252,39 @@ class Calculation(BaseFolder, HistoryAwareMixin):
         if deps is None:
             deps = [] if flat is True else {}
 
+        def get_fetched(deps):
+            if isinstance(deps, list):
+                return map(api.get_uid, deps)
+            if isinstance(deps, dict):
+                fetched = deps.keys()
+                for value in deps.values():
+                    fetched.extend(get_fetched(value))
+                return fetched
+            return []
+
+        # List of service uids that have been grabbed already. This is used to
+        # prevent an infinite recursion error when the formula includes the
+        # Keyword of the Service that includes the Calculation
+        fetched = get_fetched(deps)
+
         for service in self.getDependentServices():
-            calc = service.getCalculation()
-            if calc:
-                calc.getCalculationDependencies(flat, deps)
+            if api.get_uid(service) in fetched:
+                # Processed already. Omit to prevent recursion
+                continue
+
             if flat:
                 deps.append(service)
             else:
                 deps[service.UID()] = {}
+
+            calc = service.getCalculation()
+            if calc:
+                calc.getCalculationDependencies(flat, deps)
+
+        if flat:
+            # Remove duplicates
+            deps = list(set(deps))
+
         return deps
 
     def getCalculationDependants(self, deps=None):

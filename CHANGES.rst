@@ -7,6 +7,9 @@ Changelog
 
 **Added**
 
+- #1506 Specification non-compliant viewlet in Sample
+- #1506 Sample results ranges out-of-date viewlet in Sample
+- #1506 Warn icon in analyses when range is not compliant with Specification
 - #1492 Dynamic Analysis Specifications
 - #1507 Support for semi-colon character separator in CCEmails field
 - #1499 Moved navigation portlet into core 
@@ -36,6 +39,9 @@ Changelog
 
 **Fixed**
 
+- #1506 Changes via manage results don't get applied to partitions
+- #1506 Fix recursion error when getting dependencies through Calculation
+- #1506 setter from ARAnalysisField does no longer return values
 - #1512 QC Analyses listing appears empty in Sample view
 - #1510 Error when viewing a Sample w/o Batch as client contact
 - #1511 Links to partitions for Internal Use are displayed in partitions viewlet

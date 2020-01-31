@@ -1,7 +1,15 @@
 <configure
     xmlns="http://namespaces.zope.org/zope"
-    xmlns:browser="http://namespaces.zope.org/browser"
-    xmlns:i18n="http://namespaces.zope.org/i18n"
     i18n_domain="senaite.core">
+
+    <!-- Default Result Range provider for analyses
+    This is used for backwards-compatibility for when the analysis' ResultsRange
+    was obtained directly from Sample's ResultsRanges field, before this:
+    https://github.com/senaite/senaite.core/pull/1506 -->
+    <adapter
+      factory=".resultrangefield.DefaultResultsRangeProvider"
+      for="bika.lims.interfaces.analysis.IRequestAnalysis"
+      provides="Products.Archetypes.interfaces.IFieldDefaultProvider"
+      name="ResultsRange" />
 
 </configure>

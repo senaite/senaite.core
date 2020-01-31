@@ -6,20 +6,27 @@
   <div class="visualClear"></div>
 
   <div id="portal-alert">
+
     <div class="portlet-alert-item alert alert-info alert-dismissible">
       <button type="button" class="close" data-dismiss="alert" aria-label="Close">
         <span aria-hidden="true">&times;</span>
       </button>
-      <strong i18n:translate="">Info</strong>
       <p class="title">
-        <span i18n:translate="">The following partitions have been created from this Sample: </span>
+        <strong i18n:translate="">
+          Sample with partitions
+        </strong>
+      </p>
+      <p class="description">
+        <span i18n:translate="">
+          The following partitions have been created from this Sample:
+        </span>
         <tal:parts repeat="part descendants">
           <a tal:attributes="href python:part.absolute_url()"
-             tal:content="python:part.getId()"></a>
-          <span tal:condition="not:repeat/part/end"
-                tal:replace="string:, "></span>
+             tal:content="python:part.getId()" />
+          <span tal:condition="not:repeat/part/end" tal:replace="string:, " />
         </tal:parts>
       </p>
     </div>
+
   </div>
 </div>

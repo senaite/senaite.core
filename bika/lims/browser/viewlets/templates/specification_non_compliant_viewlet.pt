@@ -1,0 +1,36 @@
+<div tal:omit-tag=""
+     tal:define="non_compliant python:view.get_non_compliant_analyses()"
+     tal:condition="python:non_compliant"
+     i18n:domain="senaite.core">
+
+  <div class="visualClear"></div>
+
+  <div id="portal-alert"
+       tal:define="sample python:view.context;
+                   editable python:view.is_specification_editable();
+                   alert_class python: editable and 'alert-warning' or 'alert-info';
+                   alert_class python: 'portlet-alert-item alert {} alert-dismissible'.format(alert_class)">
+
+    <div tal:attributes="class python: alert_class">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      <p class="title">
+        <strong i18n:translate="">
+          Ranges for some analyses are different from the Specification
+        </strong>
+      </p>
+      <p class="description">
+        <span i18n:translate="">
+          The ranges for the following analyses have been manually changed and
+          they are no longer compliant with the ranges of the Specification:
+        </span>
+        <span tal:content="python: ', '.join(non_compliant)" />
+        <br tal condition="python: editable"/>
+        <span tal:condition="python: editable" i18n:translate="">
+          Re-assign the Specification if you want to restore analysis ranges.
+        </span>
+      </p>
+    </div>
+  </div>
+</div>

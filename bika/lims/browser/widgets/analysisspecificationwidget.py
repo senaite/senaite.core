@@ -29,6 +29,7 @@ from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import MAX_OPERATORS
 from bika.lims.config import MIN_OPERATORS
 from bika.lims.permissions import FieldEditSpecification
+from bika.lims.utils import dicts_to_dict
 from bika.lims.utils import get_image
 from bika.lims.utils import get_link
 from bika.lims.utils import to_choices
@@ -134,7 +135,8 @@ class AnalysisSpecificationView(BikaListingView):
         """
         super(AnalysisSpecificationView, self).update()
         self.allow_edit = self.is_edit_allowed()
-        self.specification = self.context.getResultsRangeDict()
+        results_range = self.context.getResultsRange()
+        self.specification = dicts_to_dict(results_range, "keyword")
         self.dynamic_spec = self.context.getDynamicAnalysisSpec()
 
     @view.memoize
@@ -346,7 +348,6 @@ class AnalysisSpecificationWidget(TypesWidget):
                     })
 
             values.append(subfield_values)
-
 
         return values, {}
 

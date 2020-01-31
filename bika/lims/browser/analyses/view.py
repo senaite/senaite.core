@@ -25,11 +25,15 @@ from copy import copy
 from DateTime import DateTime
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFPlone.utils import safe_unicode
+from plone.memoize import view as viewcache
+from zope.component import getAdapters
+
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.api.analysis import get_formatted_interval
 from bika.lims.api.analysis import is_out_of_range
+from bika.lims.api.analysis import is_result_range_compliant
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.config import LDL
@@ -51,8 +55,6 @@ from bika.lims.utils import get_image
 from bika.lims.utils import get_link
 from bika.lims.utils import t
 from bika.lims.utils.analysis import format_uncertainty
-from plone.memoize import view as viewcache
-from zope.component import getAdapters
 
 
 class AnalysesView(BikaListingView):
@@ -1033,13 +1035,25 @@ class AnalysesView(BikaListingView):
 
         # Show an icon if out of range
         out_range, out_shoulders = is_out_of_range(analysis_brain)
-        if not out_range:
-            return
-        # At least is out of range
-        img = get_image("exclamation.png", title=_("Result out of range"))
-        if not out_shoulders:
-            img = get_image("warning.png", title=_("Result in shoulder range"))
-        self._append_html_element(item, "Result", img)
+        if out_range:
+            msg = _("Result out of range")
+            img = get_image("exclamation.png", title=msg)
+            if not out_shoulders:
+                msg = _("Result in shoulder range")
+                img = get_image("warning.png", title=msg)
+            self._append_html_element(item, "Result", img)
+
+        # Show an icon if the analysis range is different from the Sample spec
+        if IAnalysisRequest.providedBy(self.context):
+            analysis = self.get_object(analysis_brain)
+            if not is_result_range_compliant(analysis):
+                service_uid = analysis_brain.getServiceUID
+                original = self.context.getResultsRange(search_by=service_uid)
+                original = get_formatted_interval(original, "")
+                msg = _("Result range is different from Specification: {}"
+                        .format(original))
+                img = get_image("warning.png", title=msg)
+                self._append_html_element(item, "Specification", img)
 
     def _folder_item_verify_icons(self, analysis_brain, item):
         """Set the analysis' verification icons to the item passed in.

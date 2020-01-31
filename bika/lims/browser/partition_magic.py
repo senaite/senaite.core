@@ -86,8 +86,6 @@ class PartitionMagicView(BrowserView):
                 # The creation of partitions w/o analyses is allowed. Maybe the
                 # user wants to add the analyses later manually or wants to keep
                 # this partition stored in a freezer for some time
-                # Note we set "remove_primary_analyses" to False cause we want
-                # user to be able to add same analyses to different partitions.
                 analyses_uids = partition.get("analyses", [])
                 partition = create_partition(
                     request=self.request,
@@ -96,7 +94,6 @@ class PartitionMagicView(BrowserView):
                     container=container_uid,
                     preservation=preservation_uid,
                     analyses=analyses_uids,
-                    remove_primary_analyses=False,
                     internal_use=internal_use,
                 )
                 partitions.append(partition)
@@ -111,9 +108,6 @@ class PartitionMagicView(BrowserView):
             if not partitions:
                 # If no partitions were created, show a warning message
                 return self.redirect(message=_("No partitions were created"))
-
-            # Remove analyses from primary Analysis Requests
-            self.remove_primary_analyses()
 
             message = _("Created {} partitions: {}".format(
                 len(partitions), ", ".join(map(api.get_title, partitions))))
@@ -132,14 +126,6 @@ class PartitionMagicView(BrowserView):
         to_remove = self.analyses_to_remove.get(analysis_request, [])
         to_remove.extend(analyses)
         self.analyses_to_remove[analysis_request] = list(set(to_remove))
-
-    def remove_primary_analyses(self):
-        """Remove analyses relocated to partitions
-        """
-        for ar, analyses in self.analyses_to_remove.items():
-            analyses_ids = list(set(map(api.get_id, analyses)))
-            ar.manage_delObjects(analyses_ids)
-        self.analyses_to_remove = dict()
 
     def get_ar_data(self):
         """Returns a list of AR data

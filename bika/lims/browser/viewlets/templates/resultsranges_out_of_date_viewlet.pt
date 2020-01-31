@@ -1,0 +1,38 @@
+<div tal:omit-tag=""
+     tal:define="out_of_date python:view.is_results_ranges_out_of_date()"
+     tal:condition="python:out_of_date"
+     i18n:domain="senaite.core">
+
+  <div class="visualClear"></div>
+
+  <div id="portal-alert"
+       tal:define="sample python:view.context;
+                   editable python:view.is_specification_editable();
+                   alert_class python: editable and 'alert-warning' or 'alert-info';
+                   alert_class python: 'portlet-alert-item alert {} alert-dismissible'.format(alert_class)">
+
+    <div tal:attributes="class python: alert_class">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      <p class="title">
+        <strong i18n:translate="">
+          Specification ranges have changed since they were assigned
+        </strong>
+      </p>
+      <p class="description">
+        <span tal:condition="python: editable" i18n:translate="">
+          New ranges won't be applied to neither new nor current analyses.
+          Re-assign the Specification if you want to apply latest changes.
+        </span>
+        <br tal condition="python: editable"/>
+        <span i18n:translate="">
+          Visit the Specification's changes history for additional information:
+        </span>
+        <a tal:define="spec python: sample.getSpecification()"
+           tal:attributes="href python:spec.absolute_url()"
+           tal:content="python:spec.Title()"/>
+      </p>
+    </div>
+  </div>
+</div>

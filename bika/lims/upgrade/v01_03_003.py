@@ -21,17 +21,21 @@
 from collections import defaultdict
 from operator import itemgetter
 
+import transaction
 from bika.lims import api
 from bika.lims import logger
+from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.catalog.bikasetup_catalog import SETUP_CATALOG
 from bika.lims.config import PROJECTNAME as product
-from bika.lims.setuphandlers import add_dexterity_setup_items
+from bika.lims.interfaces import IAnalysisRequestWithPartitions
 from bika.lims.interfaces import ISubmitted
 from bika.lims.interfaces import IVerified
+from bika.lims.setuphandlers import add_dexterity_setup_items
 from bika.lims.setuphandlers import setup_form_controller_actions
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
 from Products.Archetypes.config import UID_CATALOG
+from zope.interface import alsoProvides
 
 version = "1.3.3"  # Remember version number in metadata.xml and setup.py
 profile = "profile-{0}:default".format(product)
@@ -271,11 +275,22 @@ def upgrade(tool):
     # https://github.com/senaite/senaite.core/pull/1480
     setup_form_controller_actions(portal)
 
+    # Mark primary samples with IAnalysisRequestPrimary
+    mark_samples_with_partitions(portal)
+
     # Add the dynamic analysisspecs folder
     # https://github.com/senaite/senaite.core/pull/1492
     setup.runImportStepFromProfile(profile, "typeinfo")
     setup.runImportStepFromProfile(profile, "controlpanel")
     add_dexterity_setup_items(portal)
+
+    # Reset the results ranges from Specification objects (to include uid)
+    # https://github.com/senaite/senaite.core/pull/1506
+    reset_specifications_ranges(portal)
+
+    # Update the ResultsRange field from Samples and their analyses as needed
+    # https://github.com/senaite/senaite.core/pull/1506
+    update_samples_result_ranges(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
@@ -542,3 +557,91 @@ def add_index(catalog_id, index_name, index_metatype):
     catalog.addIndex(index_name, index_metatype)
     logger.info("Indexing new index '{}' ...".format(index_name))
     catalog.manage_reindexIndex(index_name)
+
+
+def mark_samples_with_partitions(portal):
+    logger.info("Marking Samples with partitions ...")
+    query = dict(portal_type="AnalysisRequest", isRootAncestor=False)
+    brains = api.search(query, CATALOG_ANALYSIS_REQUEST_LISTING)
+    total = len(brains)
+    for num, brain in enumerate(brains):
+        if num and num % 100 == 0:
+            logger.info("Marking samples with partitions: {}/{}"
+                        .format(num, total))
+            transaction.commit()
+        part = api.get_object(brain)
+        parent = part.getParentAnalysisRequest()
+        if not parent:
+            logger.error("Partition w/o Parent: {}".format(api.get_id(part)))
+
+        elif not IAnalysisRequestWithPartitions.providedBy(parent):
+            alsoProvides(parent, IAnalysisRequestWithPartitions)
+
+    logger.info("Marking Samples with partitions [DONE]")
+
+
+def reset_specifications_ranges(portal):
+    """Reset the result ranges to existing Specification objects. Prior
+    versions were not storing the service uid in the result range
+    """
+    logger.info("Add uids to Specification ranges subfields ...")
+    specifications = portal.bika_setup.bika_analysisspecs
+    for specification in specifications.objectValues("AnalysisSpec"):
+        specification.setResultsRange(specification.getResultsRange())
+    logger.info("Add uids to Specification ranges subfields [DONE]")
+
+
+def update_samples_result_ranges(portal):
+    """Stores the result range field for those samples that have a
+    specification assigned. In prior versions, getResultsRange was relying
+    on Specification's ResultsRange
+    """
+    query = dict(portal_type="AnalysisRequest")
+    brains = api.search(query, CATALOG_ANALYSIS_REQUEST_LISTING)
+    total = len(brains)
+    for num, brain in enumerate(brains):
+        if num and num % 1000 == 0:
+            logger.info("{}/{} samples processed ...".format(num, total))
+            transaction.commit()
+            logger.info("Changes commited")
+        sample = api.get_object(brain)
+
+        # Check if the ResultsRange field from sample contains values already
+        ar_range = sample.getResultsRange()
+        if ar_range:
+            # This sample has results range already set, probably assigned
+            # manually through Manage analyses
+            # Reassign the results range (for uid subfield resolution)
+            field = sample.getField("ResultsRange")
+            field.set(sample, ar_range)
+
+            # Store the result range directly to their analyses
+            update_analyses_results_range(sample)
+
+            # No need to go further
+            continue
+
+        # Check if the Sample has Specification set
+        spec_uid = sample.getRawSpecification()
+        if not spec_uid:
+            # This sample does not have a specification set, skip
+            continue
+
+        # Store the specification results range to the Sample
+        specification = sample.getSpecification()
+        result_range = specification.getResultsRange()
+        sample.getField("ResultsRange").set(sample, result_range)
+
+        # Store the result range directly to their analyses
+        update_analyses_results_range(sample)
+
+
+def update_analyses_results_range(sample):
+    field = sample.getField("ResultsRange")
+    for analysis in sample.objectValues("Analysis"):
+        service_uid = analysis.getRawAnalysisService()
+        analysis_rr = field.get(sample, search_by=service_uid)
+        if analysis_rr:
+            analysis = api.get_object(analysis)
+            analysis.setResultsRange(analysis_rr)
+            analysis.reindexObject()

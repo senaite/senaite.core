@@ -30,3 +30,5 @@ from .reflexrulefield import ReflexRuleField
 from .proxyfield import ProxyField
 from .uidreferencefield import UIDReferenceField
 from .emailsfield import EmailsField
+from .resultrangefield import ResultRangeField
+from .resultsrangesfield import ResultsRangesField

@@ -1718,7 +1718,6 @@ class Analysis_Specifications(WorksheetImporter):
                 "keyword": service.getKeyword(),
                 "min": row["min"] if row["min"] else "0",
                 "max": row["max"] if row["max"] else "0",
-                "error": row["error"] if row["error"] else "0"
             })
         # write objects.
         for parent in bucket.keys():

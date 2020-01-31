@@ -18,8 +18,8 @@
 # Copyright 2018-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from plone.app.layout.viewlets import ViewletBase
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
 
 class DynamicSpecsViewlet(ViewletBase):
@@ -28,3 +28,26 @@ class DynamicSpecsViewlet(ViewletBase):
     in the xls file from the Dynamic Specification
     """
     template = ViewPageTemplateFile("templates/dynamic_specs_viewlet.pt")
+
+
+class SampleDynamicSpecsViewlet(ViewletBase):
+    """Displays an informative message in Sample view when the assigned
+    specification has a dynamic specification assigned, so ranges set manually
+    might be overriden by the ranges provided in the xls file from the Dynamic
+    Specification
+    """
+    template = ViewPageTemplateFile(
+        "templates/sample_dynamic_specs_viewlet.pt")
+
+    def get_dynamic_specification(self):
+        """Returns the dynamic specification assigned to the Sample via
+        Specification, but only if the current view is manage analyses
+        """
+        if not self.request.getURL().endswith("analyses"):
+            # Do not display the viewlet if not in manage analyses
+            return None
+
+        spec = self.context.getSpecification()
+        if spec:
+            return spec.getDynamicAnalysisSpec()
+        return None

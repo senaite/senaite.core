@@ -80,7 +80,7 @@ Create a new Analysis Request:
 
 And remove two analyses (`Cu` and `Fe`):
 
-    >>> new_analyses = ar.setAnalyses([Au])
+    >>> ar.setAnalyses([Au])
     >>> map(lambda an: an.getKeyword(), ar.getAnalyses(full_objects=True))
     ['Au']
 
@@ -144,7 +144,7 @@ Again, the Analysis Request status is still `sample_received`:
 But if we remove the analysis without result (`Cu`), the Analysis Request
 transitions to "to_be_verified" because follows `Fe`:
 
-    >>> new_analyses = ar.setAnalyses([Fe, Au])
+    >>> ar.setAnalyses([Fe, Au])
     >>> api.get_workflow_status_of(ar)
     'to_be_verified'
 
@@ -153,7 +153,7 @@ Therefore, if we try to remove the analysis `Fe` (in `to_be_verified` state),
 the Analysis Request will stay in `to_be_verified` and the Analysis will still
 be assigned:
 
-    >>> new_analyses = ar.setAnalyses([Au])
+    >>> ar.setAnalyses([Au])
 
     >>> analysis_fe in ar.objectValues()
     True
@@ -173,7 +173,7 @@ The only way to remove the `Fe` analysis is to retract it first:
 And if we remove analysis `Fe`, the Analysis Request will follow `Au` analysis
 (that is `verified`):
 
-    >>> new_analyses = ar.setAnalyses([Au])
+    >>> ar.setAnalyses([Au])
     >>> api.get_workflow_status_of(ar)
     'verified'
 
@@ -228,6 +228,6 @@ The Analysis Request status is still `sample_received`:
 But if we remove the analysis without result (`Cu`), the Analysis Request
 transitions to "verfied" because follows `Fe` and `Au`:
 
-    >>> new_analyses = ar.setAnalyses([Fe, Au])
+    >>> ar.setAnalyses([Fe, Au])
     >>> api.get_workflow_status_of(ar)
     'verified'

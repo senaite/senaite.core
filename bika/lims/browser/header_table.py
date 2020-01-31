@@ -24,6 +24,7 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.api.security import check_permission
 from bika.lims.browser import BrowserView
+from bika.lims.interfaces import IAnalysisRequestWithPartitions
 from bika.lims.interfaces import IHeaderTableFieldRenderer
 from bika.lims.utils import t
 from plone.memoize import view as viewcache
@@ -81,6 +82,12 @@ class HeaderTableView(BrowserView):
             event.notify(ObjectEditedEvent(self.context))
             self.context.plone_utils.addPortalMessage(message, "info")
         return self.template()
+
+    @viewcache.memoize
+    def is_primary_with_partitions(self):
+        """Check if the Sample is a primary with partitions
+        """
+        return IAnalysisRequestWithPartitions.providedBy(self.context)
 
     @viewcache.memoize
     def is_edit_allowed(self):

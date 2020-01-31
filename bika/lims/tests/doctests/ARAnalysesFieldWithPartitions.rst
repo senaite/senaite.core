@@ -109,56 +109,51 @@ get_from_instance
 When asked for `Fe` when the primary is given, it returns the analysis, cause
 it lives in the primary:
 
-    >>> fe = field.get_from_instance(sample, Fe)
+    >>> fe = field.get_from_instance(sample, Fe)[0]
     >>> fe.getServiceUID() == api.get_uid(Fe)
     True
 
-But when asked for `Cu` when the primary is given, it returns None, cause it
+But when asked for `Cu` when the primary is given, it returns empty, cause it
 lives in the partition:
 
-    >>> cu = field.get_from_instance(sample, Cu)
-    >>> cu is None
-    True
+    >>> field.get_from_instance(sample, Cu)
+    []
 
 While it returns the analysis when the partition is used:
 
-    >>> cu = field.get_from_instance(partition, Cu)
+    >>> cu = field.get_from_instance(partition, Cu)[0]
     >>> cu.getServiceUID() == api.get_uid(Cu)
     True
 
-But when asking the partition for `Fe` it returns None, cause it lives in the
+But when asking the partition for `Fe` it returns empty, cause it lives in the
 ancestor:
 
-    >>> fe = field.get_from_instance(partition, Fe)
-    >>> fe is None
-    True
+    >>> field.get_from_instance(partition, Fe)
+    []
 
 get_from_ancestor
 .................
 
-When asked for `Fe` to primary, it returns None because there is no ancestor
+When asked for `Fe` to primary, it returns empty because there is no ancestor
 containing `Fe`:
 
-    >>> fe = field.get_from_ancestor(sample, Fe)
-    >>> fe is None
-    True
+    >>> field.get_from_ancestor(sample, Fe)
+    []
 
 But when asked for `Fe` to the partition, it returns the analysis, cause it
 it lives in an ancestor from the partition:
 
-    >>> fe = field.get_from_ancestor(partition, Fe)
+    >>> fe = field.get_from_ancestor(partition, Fe)[0]
     >>> fe.getServiceUID() == api.get_uid(Fe)
     True
 
-If I ask for `Cu`, that lives in the partition, it will return None for both:
+If I ask for `Cu`, that lives in the partition, it will return empty for both:
 
-    >>> cu = field.get_from_ancestor(sample, Cu)
-    >>> cu is None
-    True
+    >>> field.get_from_ancestor(sample, Cu)
+    []
 
-    >>> cu = field.get_from_ancestor(partition, Cu)
-    >>> cu is None
-    True
+    >>> field.get_from_ancestor(partition, Cu)
+    []
 
 get_from_descendant
 ...................
@@ -166,28 +161,24 @@ get_from_descendant
 When asked for `Fe` to primary, it returns None because there is no descendant
 containing `Fe`:
 
-    >>> fe = field.get_from_descendant(sample, Fe)
-    >>> fe is None
-    True
+    >>> field.get_from_descendant(sample, Fe)
+    []
 
 And same with partition:
 
-    >>> fe = field.get_from_descendant(partition, Fe)
-    >>> fe is None
-    True
+    >>> field.get_from_descendant(partition, Fe)
+    []
 
 When asked for `Cu` to primary, it returns the analysis, because it lives in a
 descendant (partition):
 
-    >>> cu = field.get_from_descendant(sample, Cu)
-    >>> cu.getServiceUID() == api.get_uid(Cu)
-    True
+    >>> field.get_from_descendant(sample, Cu)
+    [<Analysis at /plone/clients/client-1/W-0001-P01/Cu>]
 
 But returns None if I ask to the partition:
 
-    >>> cu = field.get_from_descendant(partition, Cu)
-    >>> cu is None
-    True
+    >>> field.get_from_descendant(partition, Cu)
+    []
 
 get_analyses_from_descendants
 .............................
@@ -204,37 +195,29 @@ It returns the analyses contained by the descendants:
 Resolution of analyses from the Sample lineage
 ----------------------------------------------
 
-resolve_analysis
+resolve_analyses
 ................
 
 Resolves the analysis from the sample lineage if exists:
 
-    >>> fe = field.resolve_analysis(sample, Fe)
-    >>> fe.getServiceUID() == api.get_uid(Fe)
-    True
-    >>> fe.aq_parent == sample
-    True
+    >>> field.resolve_analyses(sample, Fe)
+    [<Analysis at /plone/clients/client-1/W-0001/Fe>]
 
-    >>> cu = field.resolve_analysis(sample, Cu)
-    >>> cu.getServiceUID() == api.get_uid(Cu)
-    True
-    >>> cu.aq_parent == partition
-    True
+    >>> field.resolve_analyses(sample, Cu)
+    [<Analysis at /plone/clients/client-1/W-0001-P01/Cu>]
 
-    >>> au = field.resolve_analysis(sample, Au)
-    >>> au is None
-    True
+    >>> field.resolve_analyses(sample, Au)
+    []
 
 But when we use the partition and the analysis is found in an ancestor, it
 moves the analysis into the partition:
 
-    >>> fe = field.resolve_analysis(partition, Fe)
-    >>> fe.getServiceUID() == api.get_uid(Fe)
-    True
-    >>> fe.aq_parent == partition
-    True
+    >>> field.resolve_analyses(partition, Fe)
+    [<Analysis at /plone/clients/client-1/W-0001-P01/Fe>]
+
     >>> sample.objectValues("Analysis")
     []
+
     >>> partition.objectValues("Analysis")
     [<Analysis at /plone/clients/client-1/W-0001-P01/Cu>, <Analysis at /plone/clients/client-1/W-0001-P01/Fe>]
 
@@ -245,30 +228,20 @@ Addition of analyses
 add_analysis
 ............
 
-Setup required parameters:
-
-    >>> prices = hidden = dict()
-
 If we try to add now an analysis that already exists, either in the partition or
 in the primary, the analysis won't be added:
 
-    >>> added = field.add_analysis(sample, Fe, prices, hidden)
-    >>> added is None
-    True
+    >>> field.add_analysis(sample, Fe)
     >>> sample.objectValues("Analysis")
     []
 
-    >>> added = field.add_analysis(partition, Fe, prices, hidden)
-    >>> added is None
-    True
+    >>> field.add_analysis(partition, Fe)
     >>> partition.objectValues("Analysis")
     [<Analysis at /plone/clients/client-1/W-0001-P01/Cu>, <Analysis at /plone/clients/client-1/W-0001-P01/Fe>]
 
 If we add a new analysis, this will be added in the sample we are working with:
 
-    >>> au = field.add_analysis(sample, Au, prices, hidden)
-    >>> au.getServiceUID() == api.get_uid(Au)
-    True
+    >>> field.add_analysis(sample, Au)
     >>> sample.objectValues("Analysis")
     [<Analysis at /plone/clients/client-1/W-0001/Au>]
     >>> partition.objectValues("Analysis")
@@ -281,9 +254,7 @@ Apply the changes:
 If I try to add an analysis that exists in an ancestor, the analysis gets moved
 while the function returns None:
 
-    >>> added = field.add_analysis(partition, Au, prices, hidden)
-    >>> added is None
-    True
+    >>> field.add_analysis(partition, Au)
     >>> sample.objectValues("Analysis")
     []
     >>> partition.objectValues("Analysis")
@@ -297,7 +268,6 @@ If we try to set same analyses as before to the root sample, nothing happens
 because the analyses are already there:
 
     >>> field.set(sample, [Cu, Fe, Au])
-    []
 
 The analyses still belong to the partition though:
 
@@ -309,7 +279,6 @@ The analyses still belong to the partition though:
 Same result if I set the analyses to the partition:
 
     >>> field.set(partition, [Cu, Fe, Au])
-    []
     >>> sample.objectValues("Analysis")
     []
     >>> partition.objectValues("Analysis")
@@ -318,7 +287,6 @@ Same result if I set the analyses to the partition:
 If I add a new analysis in the list, the analysis is successfully added:
 
     >>> field.set(sample, [Cu, Fe, Au, Mg])
-    [<Analysis at /plone/clients/client-1/W-0001/Mg>]
     >>> sample.objectValues("Analysis")
     [<Analysis at /plone/clients/client-1/W-0001/Mg>]
 
@@ -331,13 +299,10 @@ Apply the changes:
 
     >>> transaction.commit()
 
-If I set the same analyses to the partition, I don't get any result:
+If I set the same analyses to the partition, the `Mg` analysis is moved into
+the partition:
 
     >>> field.set(partition, [Cu, Fe, Au, Mg])
-    []
-
-but, the `Mg` analysis has been moved into the partition:
-
     >>> sample.objectValues("Analysis")
     []
     >>> partition.objectValues("Analysis")
@@ -346,7 +311,6 @@ but, the `Mg` analysis has been moved into the partition:
 To remove `Mg` analysis, pass the list without `Mg`:
 
     >>> field.set(sample, [Cu, Fe, Au])
-    []
 
 The analysis `Mg` has been removed, although it belonged to the partition:
 
@@ -359,10 +323,9 @@ But if I add a new analysis to the primary and I try to remove it from the
 partition, nothing will happen:
 
     >>> field.set(sample, [Cu, Fe, Au, Mg])
-    [<Analysis at /plone/clients/client-1/W-0001/Mg>]
 
     >>> field.set(partition, [Cu, Fe, Au])
-    []
+
     >>> sample.objectValues("Analysis")
     [<Analysis at /plone/clients/client-1/W-0001/Mg>]
     >>> partition.objectValues("Analysis")

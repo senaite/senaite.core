@@ -270,7 +270,7 @@ Comparing Snapshots
 
 The changes of two snapshots can be compared with `compare_snapshots`:
 
-   >>> snap0 = get_snapshot_by_version(sample, 0)
+   >>> snap0 = get_snapshot_by_version(sample, 2)
 
 Add 2 more analyses (Mg and Ca):
 

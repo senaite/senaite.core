@@ -18,12 +18,14 @@
 # Copyright 2018-2019 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import six
 import itertools
 import os
 import tempfile
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
+from Products.Archetypes.config import UID_CATALOG
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
 from Products.CMFPlone.utils import safe_unicode
@@ -34,6 +36,7 @@ from zope.lifecycleevent import modified
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
+from bika.lims.catalog import SETUP_CATALOG
 from bika.lims.idserver import renameAfterCreation
 from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.interfaces import IAnalysisRequestRetest
@@ -56,40 +59,35 @@ from bika.lims.workflow.analysisrequest import do_action_to_analyses
 
 
 def create_analysisrequest(client, request, values, analyses=None,
-                           partitions=None, specifications=None, prices=None):
-    """This is meant for general use and should do everything necessary to
-    create and initialise an AR and any other required auxilliary objects
-    (Sample, SamplePartition, Analysis...)
-    :param client:
-        The container (Client) in which the ARs will be created.
-    :param request:
-        The current Request object.
-    :param values:
-        a dict, where keys are AR|Sample schema field names.
-    :param analyses:
-        Analysis services list.  If specified, augments the values in
-        values['Analyses']. May consist of service objects, UIDs, or Keywords.
-    :param partitions:
-        A list of dictionaries, if specific partitions are required.  If not
-        specified, AR's sample is created with a single partition.
-    :param specifications:
-        These values augment those found in values['Specifications']
-    :param prices:
-        Allow different prices to be set for analyses.  If not set, prices
+                           results_ranges=None, prices=None):
+    """Creates a new AnalysisRequest (a Sample) object
+    :param client: The container where the Sample will be created
+    :param request: The current Http Request object
+    :param values: A dict, with keys as AnalaysisRequest's schema field names
+    :param analyses: List of Services or Analyses (brains, objects, UIDs,
+        keywords). Extends the list from values["Analyses"]
+    :param results_ranges: List of Results Ranges. Extends the results ranges
+        from the Specification object defined in values["Specification"]
+    :param prices: Mapping of AnalysisService UID -> price. If not set, prices
         are read from the associated analysis service.
     """
     # Don't pollute the dict param passed in
     values = dict(values.items())
 
-    # Create the Analysis Request
-    ar = _createObjectByType('AnalysisRequest', client, tmpID())
+    # Resolve the Service uids of analyses to be added in the Sample. Values
+    # passed-in might contain Profiles and also values that are not uids. Also,
+    # additional analyses can be passed-in through either values or services
+    service_uids = to_services_uids(values=values, services=analyses)
 
-    # Resolve the services uids and set the analyses for this Analysis Request
-    service_uids = get_services_uids(context=client, values=values,
-                                     analyses_serv=analyses)
-    ar.setAnalyses(service_uids, prices=prices, specs=specifications)
-    values.update({"Analyses": service_uids})
+    # Remove the Analyses from values. We will add them manually
+    values.update({"Analyses": []})
+
+    # Create the Analysis Request and submit the form
+    ar = _createObjectByType('AnalysisRequest', client, tmpID())
     ar.processForm(REQUEST=request, values=values)
+
+    # Set the analyses manually
+    ar.setAnalyses(service_uids, prices=prices, specs=results_ranges)
 
     # Handle hidden analyses from template and profiles
     # https://github.com/senaite/senaite.core/issues/1437
@@ -189,93 +187,78 @@ def get_hidden_service_uids(profile_or_template):
     return map(lambda setting: setting["uid"], hidden)
 
 
-def get_services_uids(context=None, analyses_serv=None, values=None):
+def to_services_uids(services=None, values=None):
     """
-    This function returns a list of UIDs from analyses services from its
-    parameters.
-    :param analyses_serv: A list (or one object) of service-related info items.
-        see _resolve_items_to_service_uids() docstring.
-    :type analyses_serv: list
+    Returns a list of Analysis Services uids
+    :param services: A list of service items (uid, keyword, brain, obj, title)
     :param values: a dict, where keys are AR|Sample schema field names.
-    :type values: dict
-    :returns: a list of analyses services UIDs
+    :returns: a list of Analyses Services UIDs
     """
-    if not analyses_serv:
-        analyses_serv = []
-    if not values:
-        values = {}
-
-    if not context or (not analyses_serv and not values):
-        raise RuntimeError(
-            "get_services_uids: Missing or wrong parameters.")
-
-    # Merge analyses from analyses_serv and values into one list
-    analyses_services = analyses_serv + (values.get("Analyses", None) or [])
-
-    # It is possible to create analysis requests
-    # by JSON petitions and services, profiles or types aren't allways send.
-    # Sometimes we can get analyses and profiles that doesn't match and we
-    # should act in consequence.
-    # Getting the analyses profiles
-    analyses_profiles = values.get('Profiles', [])
-    if not isinstance(analyses_profiles, (list, tuple)):
-        # Plone converts the incoming form value to a list, if there are
-        # multiple values; but if not, it will send a string (a single UID).
-        analyses_profiles = [analyses_profiles]
-
-    if not analyses_services and not analyses_profiles:
+    def to_list(value):
+        if not value:
+            return []
+        if isinstance(value, six.string_types):
+            return [value]
+        if isinstance(value, (list, tuple)):
+            return value
+        logger.warn("Cannot convert to a list: {}".format(value))
         return []
 
-    # Add analysis services UIDs from profiles to analyses_services variable.
-    if analyses_profiles:
-        uid_catalog = getToolByName(context, 'uid_catalog')
-        for brain in uid_catalog(UID=analyses_profiles):
+    services = services or []
+    values = values or {}
+
+    # Merge analyses from analyses_serv and values into one list
+    uids = to_list(services) + to_list(values.get("Analyses"))
+
+    # Convert them to a list of service uids
+    uids = filter(None, map(to_service_uid, uids))
+
+    # Extend with service uids from profiles
+    profiles = to_list(values.get("Profiles"))
+    if profiles:
+        uid_catalog = api.get_tool(UID_CATALOG)
+        for brain in uid_catalog(UID=profiles):
             profile = api.get_object(brain)
-            # Only services UIDs
-            services_uids = profile.getRawService()
-            # _resolve_items_to_service_uids() will remove duplicates
-            analyses_services += services_uids
+            uids.extend(profile.getRawService() or [])
 
-    return _resolve_items_to_service_uids(analyses_services)
+    # Get the service uids without duplicates, but preserving the order
+    return list(dict.fromkeys(uids).keys())
 
 
-def _resolve_items_to_service_uids(items):
-    """ Returns a list of service uids without duplicates based on the items
-    :param items:
-        A list (or one object) of service-related info items. The list can be
-        heterogeneous and each item can be:
-        - Analysis Service instance
-        - Analysis instance
-        - Analysis Service title
-        - Analysis Service UID
-        - Analysis Service Keyword
-        If an item that doesn't match any of the criterias above is found, the
-        function will raise a RuntimeError
+def to_service_uid(uid_brain_obj_str):
+    """Resolves the passed in element to a valid uid. Returns None if the value
+    cannot be resolved to a valid uid
     """
-    def resolve_to_uid(item):
-        if api.is_uid(item):
-            return item
-        elif IAnalysisService.providedBy(item):
-            return item.UID()
-        elif IRoutineAnalysis.providedBy(item):
-            return item.getServiceUID()
+    if api.is_uid(uid_brain_obj_str) and uid_brain_obj_str != "0":
+        return uid_brain_obj_str
 
-        bsc = api.get_tool("bika_setup_catalog")
-        brains = bsc(portal_type='AnalysisService', getKeyword=item)
-        if brains:
-            return brains[0].UID
-        brains = bsc(portal_type='AnalysisService', title=item)
-        if brains:
-            return brains[0].UID
-        raise RuntimeError(
-            str(item) + " should be the UID, title, keyword "
-                        " or title of an AnalysisService.")
+    if api.is_object(uid_brain_obj_str):
+        obj = api.get_object(uid_brain_obj_str)
 
-    # Maybe only a single item was passed
-    if type(items) not in (list, tuple):
-        items = [items, ]
-    service_uids = map(resolve_to_uid, list(set(items)))
-    return list(set(service_uids))
+        if IAnalysisService.providedBy(obj):
+            return api.get_uid(obj)
+
+        elif IRoutineAnalysis.providedBy(obj):
+            return obj.getServiceUID()
+
+        else:
+            logger.error("Type not supported: {}".format(obj.portal_type))
+            return None
+
+    if isinstance(uid_brain_obj_str, six.string_types):
+        # Maybe is a keyword?
+        query = dict(portal_type="AnalysisService", getKeyword=uid_brain_obj_str)
+        brains = api.search(query, SETUP_CATALOG)
+        if len(brains) == 1:
+            return api.get_uid(brains[0])
+
+        # Or maybe a title
+        query = dict(portal_type="AnalysisService", title=uid_brain_obj_str)
+        brains = api.search(query, SETUP_CATALOG)
+        if len(brains) == 1:
+            return api.get_uid(brains[0])
+
+    return None
 
 
 def notify_rejection(analysisrequest):
@@ -432,7 +415,7 @@ def create_retest(ar):
 
 def create_partition(analysis_request, request, analyses, sample_type=None,
                      container=None, preservation=None, skip_fields=None,
-                     remove_primary_analyses=True, internal_use=True):
+                     internal_use=True):
     """
     Creates a partition for the analysis_request (primary) passed in
     :param analysis_request: uid/brain/object of IAnalysisRequest type
@@ -442,7 +425,6 @@ def create_partition(analysis_request, request, analyses, sample_type=None,
     :param container: uid/brain/object of Container
     :param preservation: uid/brain/object of Preservation
     :param skip_fields: names of fields to be skipped on copy from primary
-    :param remove_primary_analyses: removes the analyses from the parent
     :return: the new partition
     """
     partition_skip_fields = [
@@ -488,15 +470,14 @@ def create_partition(analysis_request, request, analyses, sample_type=None,
     client = ar.getClient()
     analyses = list(set(map(api.get_object, analyses)))
     services = map(lambda an: an.getAnalysisService(), analyses)
-    specs = ar.getSpecification()
-    specs = specs and specs.getResultsRange() or []
-    partition = create_analysisrequest(client, request=request, values=record,
-                                       analyses=services, specifications=specs)
 
-    # Remove analyses from the primary
-    if remove_primary_analyses:
-        analyses_ids = map(api.get_id, analyses)
-        ar.manage_delObjects(analyses_ids)
+    # Populate the root's ResultsRanges to partitions
+    results_ranges = ar.getResultsRange() or []
+    partition = create_analysisrequest(client,
+                                       request=request,
+                                       values=record,
+                                       analyses=services,
+                                       results_ranges=results_ranges)
 
     # Reindex Parent Analysis Request
     ar.reindexObject(idxs=["isRootAncestor"])

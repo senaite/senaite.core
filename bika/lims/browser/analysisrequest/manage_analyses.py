@@ -142,12 +142,24 @@ class AnalysisRequestAnalysesView(BikaListingView):
 
     @view.memoize
     def get_results_range(self):
-        """Get the results Range from the AR
+        """Get the results Range from the Sample, but gives priority to the
+        result ranges set in analyses. This guarantees that result ranges for
+        already present analyses are not overriden after form submission
         """
-        spec = self.context.getResultsRange()
-        if spec:
-            return dicts_to_dict(spec, "keyword")
-        return ResultsRangeDict()
+        # Extract the result ranges from Sample analyses
+        analyses = self.analyses.values()
+        analyses_rrs = map(lambda an: an.getResultsRange(), analyses)
+        analyses_rrs = filter(None, analyses_rrs)
+        rrs = dicts_to_dict(analyses_rrs, "keyword")
+
+        # Bail out ranges from Sample that are already present in analyses
+        sample_rrs = self.context.getResultsRange()
+        sample_rrs = filter(lambda rr: rr["keyword"] not in rrs, sample_rrs)
+        sample_rrs = dicts_to_dict(sample_rrs, "keyword")
+
+        # Extend result ranges with those from Sample
+        rrs.update(sample_rrs)
+        return rrs
 
     @view.memoize
     def get_currency_symbol(self):

@@ -20,7 +20,12 @@
 
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from plone.app.layout.viewlets import ViewletBase
+
+from bika.lims import FieldEditSpecification
 from bika.lims import api
+from bika.lims import logger
+from bika.lims.api.analysis import is_result_range_compliant
+from bika.lims.api.security import check_permission
 
 
 class InvalidAnalysisRequestViewlet(ViewletBase):
@@ -82,3 +87,81 @@ class DetachedPartitionViewlet(ViewletBase):
     detached from
     """
     template = ViewPageTemplateFile("templates/detached_partition_viewlet.pt")
+
+
+class ResultsRangesOutOfDateViewlet(ViewletBase):
+    """Print a viewlet that displays if results ranges from Sample are different
+    from results ranges initially set through Specifications field. If so, this
+    means the Specification initially set has changed since it was assigned to
+    the Sample and for new analyses, the ranges defined in the initial
+    specification ranges will be used instead of the new ones.
+    """
+
+    def is_specification_editable(self):
+        """Returns whether the Specification field is editable or not
+        """
+        return check_permission(FieldEditSpecification, self.context)
+
+    def is_results_ranges_out_of_date(self):
+        """Returns whether the value for ResultsRange field does not match with
+        the results ranges that come from the Specification assigned
+        """
+        sample = self.context
+        sample_rr = sample.getResultsRange()
+        if not sample_rr:
+            # No results ranges set to this Sample, do nothing
+            return False
+
+        specifications = sample.getSpecification()
+        if not specifications:
+            # The specification was once assigned, but unassigned later
+            return False
+
+        spec_rr = specifications.getResultsRange()
+
+        # Omit services not present in current Sample
+        services = map(lambda an: an.getServiceUID, sample.getAnalyses())
+        sample_rr = filter(lambda rr: rr.uid in services, sample_rr)
+        spec_rr = filter(lambda rr: rr.uid in services, spec_rr)
+
+        return sample_rr != spec_rr
+
+
+class SpecificationNotCompliantViewlet(ViewletBase):
+    """Print a viewlet that displays if the sample contains analyses that are
+    not compliant with the Specification initially set (stored in Sample's
+    ResultsRange field). If so, this means that user changed the results ranges
+    of the analyses manually, either by adding new ones or by modifying the
+    existing ones via "Manage analyses" view. And results range for those
+    analyses are different from the Specification initially set.
+    """
+
+    def is_specification_editable(self):
+        """Returns whether the Specification field is editable or not
+        """
+        return check_permission(FieldEditSpecification, self.context)
+
+    def get_non_compliant_analyses(self):
+        """Returns the list of analysis keywords from this sample with a
+        result range set not compliant with the result range of the Sample
+        """
+        non_compliant = []
+        skip = ["cancelled", "retracted", "rejected"]
+
+        # Check if the results ranges set to analyses individually remain
+        # compliant with the Sample's ResultRange
+        analyses = self.context.getAnalyses(full_objects=True)
+        for analysis in analyses:
+            # Skip non-valid/inactive analyses
+            if api.get_review_status(analysis) in skip:
+                continue
+
+            if not is_result_range_compliant(analysis):
+                # Result range for this service has been changed manually,
+                # it does not match with sample's ResultRange
+                an_title = api.get_title(analysis)
+                keyword = analysis.getKeyword()
+                non_compliant.append("{} ({})".format(an_title, keyword))
+
+        # Return the list of keywords from non-compliant analyses
+        return list(set(non_compliant))

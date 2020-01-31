@@ -20,7 +20,6 @@
 
 from AccessControl import ClassSecurityInfo
 from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
-from Products.ATExtensions.field.records import RecordsField
 from Products.Archetypes import atapi
 from Products.Archetypes.public import BaseFolder
 from Products.Archetypes.public import Schema
@@ -30,6 +29,7 @@ from zope.interface import implements
 
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import UIDReferenceField
+from bika.lims.browser.fields import ResultsRangesField
 from bika.lims.browser.widgets import AnalysisSpecificationWidget
 from bika.lims.browser.widgets import ReferenceWidget
 from bika.lims.catalog.bikasetup_catalog import SETUP_CATALOG
@@ -75,42 +75,10 @@ schema = Schema((
 
 )) + BikaSchema.copy() + Schema((
 
-    RecordsField(
+    ResultsRangesField(
         'ResultsRange',
-        # schemata = 'Specifications',
         required=1,
-        type='resultsrange',
-        subfields=(
-            'keyword',
-            'min_operator',
-            'min',
-            'max_operator',
-            'max',
-            'warn_min',
-            'warn_max',
-            'hidemin',
-            'hidemax',
-            'rangecomment'
-        ),
-        required_subfields=('keyword',),
-        subfield_validators={
-            'min': 'analysisspecs_validator',
-            'max': 'analysisspecs_validator',
-        },
-        subfield_labels={
-            'keyword': _('Analysis Service'),
-            'min_operator': _('Min operator'),
-            'min': _('Min'),
-            'max_operator': _('Max operator'),
-            'max': _('Max'),
-            'warn_min': _('Min warn'),
-            'warn_max': _('Max warn'),
-            'hidemin': _('< Min'),
-            'hidemax': _('> Max'),
-            'rangecomment': _('Range Comment'),
-        },
         widget=AnalysisSpecificationWidget(
-            checkbox_bound=0,
             label=_("Specifications"),
             description=_(
                 "'Min' and 'Max' values indicate a valid results range. Any "
@@ -160,27 +128,6 @@ class AnalysisSpec(BaseFolder, HistoryAwareMixin, ClientAwareMixin,
         else:
             return self.title + " (" + translate(_("Client")) + ")"
 
-    @security.public
-    def getResultsRangeDict(self):
-        """Return a dictionary with the specification fields for each
-           service. The keys of the dictionary are the keywords of each
-           analysis service. Each service contains a dictionary in which
-           each key is the name of the spec field:
-           specs['keyword'] = {'min': value,
-                               'max': value,
-                               'warnmin': value,
-                               ... }
-        """
-        specs = {}
-        subfields = self.Schema()['ResultsRange'].subfields
-        for spec in self.getResultsRange():
-            keyword = spec['keyword']
-            specs[keyword] = {}
-            for key in subfields:
-                if key not in ['uid', 'keyword']:
-                    specs[keyword][key] = spec.get(key, '')
-        return specs
-
 
 atapi.registerType(AnalysisSpec, PROJECTNAME)
 
@@ -189,6 +136,7 @@ class ResultsRangeDict(dict):
 
     def __init__(self, *arg, **kw):
         super(ResultsRangeDict, self).__init__(*arg, **kw)
+        self["uid"] = self.uid
         self["min"] = self.min
         self["max"] = self.max
         self["error"] = self.error
@@ -196,6 +144,12 @@ class ResultsRangeDict(dict):
         self["warn_max"] = self.warn_max
         self["min_operator"] = self.min_operator
         self["max_operator"] = self.max_operator
+
+    @property
+    def uid(self):
+        """The uid of the service this ResultsRange refers to
+        """
+        return self.get("uid", '')
 
     @property
     def min(self):
@@ -248,3 +202,22 @@ class ResultsRangeDict(dict):
     @max_operator.setter
     def max_operator(self, value):
         self['max_operator'] = value
+
+    def __eq__(self, other):
+        if isinstance(other, dict):
+            other = ResultsRangeDict(other)
+
+        if isinstance(other, ResultsRangeDict):
+            # Balance both dicts with same keys, but without corrupting them
+            current = dict(filter(lambda o: o[0] in other, self.items()))
+            other = dict(filter(lambda o: o[0] in current, other.items()))
+
+            # Ensure that all values are str (sometimes ranges are stored as
+            # numeric values and sometimes are stored as str)
+            current = dict(map(lambda o: (o[0], str(o[1])), current.items()))
+            other = dict(map(lambda o: (o[0], str(o[1])), other.items()))
+
+            # Check if both are equal
+            return current == other
+
+        return super(ResultsRangeDict, self).__eq__(other)

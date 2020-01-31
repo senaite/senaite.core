@@ -25,15 +25,19 @@ from AccessControl import Unauthorized
 from Products.Archetypes.Registry import registerField
 from Products.Archetypes.public import Field
 from Products.Archetypes.public import ObjectField
+from zope.interface import alsoProvides
 from zope.interface import implements
+from zope.interface import noLongerProvides
 
 from bika.lims import api
 from bika.lims import logger
 from bika.lims.api.security import check_permission
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
+from bika.lims.catalog import SETUP_CATALOG
 from bika.lims.interfaces import IARAnalysesField
 from bika.lims.interfaces import IAnalysis
 from bika.lims.interfaces import IAnalysisService
+from bika.lims.interfaces import IInternalUse
 from bika.lims.interfaces import ISubmitted
 from bika.lims.permissions import AddAnalysis
 from bika.lims.utils.analysis import create_analysis
@@ -127,139 +131,171 @@ class ARAnalysesField(ObjectField):
         services = filter(None, map(self._to_service, items))
 
         # Calculate dependencies
-        # FIXME Infinite recursion error possible here, if the formula includes
-        #       the Keyword of the Service that includes the Calculation
         dependencies = map(lambda s: s.getServiceDependencies(), services)
         dependencies = list(itertools.chain.from_iterable(dependencies))
 
         # Merge dependencies and services
         services = set(services + dependencies)
 
-        # Modify existing AR specs with new form values of selected analyses.
-        self._update_specs(instance, specs)
-
-        # Create a mapping of Service UID -> Hidden status
-        if hidden is None:
-            hidden = []
-        hidden = dict(map(lambda d: (d.get("uid"), d.get("hidden")), hidden))
-
-        # Ensure we have a prices dictionary
-        if prices is None:
-            prices = dict()
+        # Modify existing AR specs with new form values of selected analyses
+        specs = self.resolve_specs(instance, specs)
 
         # Add analyses
-        new_analyses = map(lambda service:
-                           self.add_analysis(instance, service, prices, hidden),
-                           services)
-        new_analyses = filter(None, new_analyses)
+        params = dict(prices=prices, hidden=hidden, specs=specs)
+        map(lambda serv: self.add_analysis(instance, serv, **params), services)
 
-        # Remove analyses
-        # Since Manage Analyses view displays the analyses from partitions, we
-        # also need to take them into consideration here. Analyses from
-        # ancestors can be omitted.
+        # Get all analyses (those from descendants included)
         analyses = instance.objectValues("Analysis")
         analyses.extend(self.get_analyses_from_descendants(instance))
 
-        # Service UIDs
-        service_uids = map(api.get_uid, services)
+        # Bail out those not in services list or submitted
+        uids = map(api.get_uid, services)
+        to_remove = filter(lambda an: an.getServiceUID() not in uids, analyses)
+        to_remove = filter(lambda an: not ISubmitted.providedBy(an), to_remove)
 
-        # Assigned Attachments
-        assigned_attachments = []
+        # Remove analyses
+        map(self.remove_analysis, to_remove)
 
+    def resolve_specs(self, instance, results_ranges):
+        """Returns a dictionary where the key is the service_uid and the value
+        is its results range. The dictionary is made by extending the
+        results_ranges passed-in with the Sample's ResultsRanges (a copy of the
+        specifications initially set)
+        """
+        rrs = results_ranges or []
+
+        # Sample's Results ranges
+        sample_rrs = instance.getResultsRange()
+
+        # Resolve results_ranges passed-in to make sure they contain uid
+        rrs = map(lambda rr: self.resolve_uid(rr), rrs)
+
+        # Append those from sample that are missing in the ranges passed-in
+        service_uids = map(lambda rr: rr["uid"], rrs)
+        rrs.extend(filter(lambda rr: rr["uid"] not in service_uids, sample_rrs))
+
+        # Create a dict for easy access to results ranges
+        return dict(map(lambda rr: (rr["uid"], rr), rrs))
+
+    def resolve_uid(self, result_range):
+        """Resolves the uid key for the result_range passed in if it does not
+        exist when contains a keyword
+        """
+        value = result_range.copy()
+        uid = value.get("uid")
+        if api.is_uid(uid) and uid != "0":
+            return value
+
+        # uid key does not exist or is not valid, try to infere from keyword
+        keyword = value.get("keyword")
+        if keyword:
+            query = dict(portal_type="AnalysisService", getKeyword=keyword)
+            brains = api.search(query, SETUP_CATALOG)
+            if len(brains) == 1:
+                uid = api.get_uid(brains[0])
+        value["uid"] = uid
+        return value
+
+    def add_analysis(self, instance, service, **kwargs):
+        service_uid = api.get_uid(service)
+
+        # Ensure we have suitable parameters
+        specs = kwargs.get("specs") or {}
+
+        # Get the hidden status for the service
+        hidden = kwargs.get("hidden") or []
+        hidden = filter(lambda d: d.get("uid") == service_uid, hidden)
+        hidden = hidden and hidden[0].get("hidden") or service.getHidden()
+
+        # Get the price for the service
+        prices = kwargs.get("prices") or {}
+        price = prices.get(service_uid) or service.getPrice()
+
+        # Gets the analysis or creates the analysis for this service
+        # Note this returns a list, because is possible to have multiple
+        # partitions with same analysis
+        analyses = self.resolve_analyses(instance, service)
+        if not analyses:
+            # Create the analysis
+            keyword = service.getKeyword()
+            logger.info("Creating new analysis '{}'".format(keyword))
+            analysis = create_analysis(instance, service)
+            analyses.append(analysis)
+
+        skip = ["cancelled", "retracted", "rejected"]
         for analysis in analyses:
-            service_uid = analysis.getServiceUID()
-
-            # Skip if the Service is selected
-            if service_uid in service_uids:
+            # Skip analyses to better not modify
+            if api.get_review_status(analysis) in skip:
                 continue
 
-            # Skip non-open Analyses
-            if ISubmitted.providedBy(analysis):
-                continue
+            # Set the hidden status
+            analysis.setHidden(hidden)
 
-            # Remember assigned attachments
-            # https://github.com/senaite/senaite.core/issues/1025
-            assigned_attachments.extend(analysis.getAttachment())
-            analysis.setAttachment([])
+            # Set the price of the Analysis
+            analysis.setPrice(price)
 
-            # If it is assigned to a worksheet, unassign it before deletion.
-            worksheet = analysis.getWorksheet()
-            if worksheet:
-                worksheet.removeAnalysis(analysis)
+            # Set the internal use status
+            parent_sample = analysis.getRequest()
+            analysis.setInternalUse(parent_sample.getInternalUse())
 
-            # Remove the analysis
-            # Note the analysis might belong to a partition
-            analysis.aq_parent.manage_delObjects(ids=[api.get_id(analysis)])
+            # Set the result range to the analysis
+            analysis_rr = specs.get(service_uid) or analysis.getResultsRange()
+            analysis.setResultsRange(analysis_rr)
+            analysis.reindexObject()
+
+    def remove_analysis(self, analysis):
+        """Removes a given analysis from the instance
+        """
+        # Remember assigned attachments
+        # https://github.com/senaite/senaite.core/issues/1025
+        attachments = analysis.getAttachment()
+        analysis.setAttachment([])
+
+        # If assigned to a worksheet, unassign it before deletion
+        worksheet = analysis.getWorksheet()
+        if worksheet:
+            worksheet.removeAnalysis(analysis)
+
+        # Remove the analysis
+        # Note the analysis might belong to a partition
+        analysis.aq_parent.manage_delObjects(ids=[api.get_id(analysis)])
 
         # Remove orphaned attachments
-        for attachment in assigned_attachments:
-            # only delete attachments which are no further linked
+        for attachment in attachments:
             if not attachment.getLinkedAnalyses():
+                # only delete attachments which are no further linked
                 logger.info(
                     "Deleting attachment: {}".format(attachment.getId()))
                 attachment_id = api.get_id(attachment)
                 api.get_parent(attachment).manage_delObjects(attachment_id)
 
-        return new_analyses
-
-    def add_analysis(self, instance, service, prices, hidden):
-        service_uid = api.get_uid(service)
-        new_analysis = False
-
-        # Gets the analysis or creates the analysis for this service
-        # Note this analysis might not belong to this current instance, but
-        # from a descendant (partition)
-        analysis = self.resolve_analysis(instance, service)
-        if not analysis:
-            # Create the analysis
-            new_analysis = True
-            keyword = service.getKeyword()
-            logger.info("Creating new analysis '{}'".format(keyword))
-            analysis = create_analysis(instance, service)
-
-        # Set the hidden status
-        analysis.setHidden(hidden.get(service_uid, False))
-
-        # Set the price of the Analysis
-        analysis.setPrice(prices.get(service_uid, service.getPrice()))
-
-        # Only return the analysis if is a new one
-        if new_analysis:
-            return analysis
-
-        return None
-
-    def resolve_analysis(self, instance, service):
-        """Resolves an analysis for the service and instance
+    def resolve_analyses(self, instance, service):
+        """Resolves analyses for the service and instance
+        It returns a list, cause for a given sample, multiple analyses for same
+        service can exist due to the possibility of having multiple partitions
         """
+        analyses = []
+
         # Does the analysis exists in this instance already?
-        analysis = self.get_from_instance(instance, service)
-        if analysis:
-            keyword = service.getKeyword()
-            logger.info("Analysis for '{}' already exists".format(keyword))
-            return analysis
+        instance_analyses = self.get_from_instance(instance, service)
+        if instance_analyses:
+            analyses.extend(instance_analyses)
 
         # Does the analysis exists in an ancestor?
         from_ancestor = self.get_from_ancestor(instance, service)
-        if from_ancestor:
+        for ancestor_analysis in from_ancestor:
             # Move the analysis into this instance. The ancestor's
             # analysis will be masked otherwise
-            analysis_id = api.get_id(from_ancestor)
+            analysis_id = api.get_id(ancestor_analysis)
             logger.info("Analysis {} is from an ancestor".format(analysis_id))
-            cp = from_ancestor.aq_parent.manage_cutObjects(analysis_id)
+            cp = ancestor_analysis.aq_parent.manage_cutObjects(analysis_id)
             instance.manage_pasteObjects(cp)
-            return instance._getOb(analysis_id)
+            analyses.append(instance._getOb(analysis_id))
 
-        # Does the analysis exists in a descendant?
+        # Does the analysis exists in descendants?
         from_descendant = self.get_from_descendant(instance, service)
-        if from_descendant:
-            # The analysis already exists in a partition, keep it. The
-            # analysis from current instance will be masked otherwise
-            analysis_id = api.get_id(from_descendant)
-            logger.info("Analysis {} is from a descendant".format(analysis_id))
-            return from_descendant
-
-        return None
+        analyses.extend(from_descendant)
+        return analyses
 
     def get_analyses_from_descendants(self, instance):
         """Returns all the analyses from descendants
@@ -270,48 +306,39 @@ class ARAnalysesField(ObjectField):
         return analyses
 
     def get_from_instance(self, instance, service):
-        """Returns an analysis for the given service from the instance
+        """Returns analyses for the given service from the instance
         """
         service_uid = api.get_uid(service)
-        for analysis in instance.objectValues("Analysis"):
-            if analysis.getServiceUID() == service_uid:
-                return analysis
-        return None
+        analyses = instance.objectValues("Analysis")
+        # Filter those analyses with same keyword. Note that a Sample can
+        # contain more than one analysis with same keyword because of retests
+        return filter(lambda an: an.getServiceUID() == service_uid, analyses)
 
     def get_from_ancestor(self, instance, service):
-        """Returns an analysis for the given service from ancestors
+        """Returns analyses for the given service from ancestors
         """
         ancestor = instance.getParentAnalysisRequest()
         if not ancestor:
-            return None
+            return []
 
-        analysis = self.get_from_instance(ancestor, service)
-        return analysis or self.get_from_ancestor(ancestor, service)
+        analyses = self.get_from_instance(ancestor, service)
+        return analyses or self.get_from_ancestor(ancestor, service)
 
     def get_from_descendant(self, instance, service):
-        """Returns an analysis for the given service from descendants
+        """Returns analyses for the given service from descendants
         """
+        analyses = []
         for descendant in instance.getDescendants():
             # Does the analysis exists in the current descendant?
-            analysis = self.get_from_instance(descendant, service)
-            if analysis:
-                return analysis
+            descendant_analyses = self.get_from_instance(descendant, service)
+            if descendant_analyses:
+                analyses.extend(descendant_analyses)
 
             # Search in descendants from current descendant
-            analysis = self.get_from_descendant(descendant, service)
-            if analysis:
-                return analysis
+            from_descendant = self.get_from_descendant(descendant, service)
+            analyses.extend(from_descendant)
 
-        return None
-
-    def _get_services(self, full_objects=False):
-        """Fetch and return analysis service objects
-        """
-        bsc = api.get_tool("bika_setup_catalog")
-        brains = bsc(portal_type="AnalysisService")
-        if full_objects:
-            return map(api.get_object, brains)
-        return brains
+        return analyses
 
     def _to_service(self, thing):
         """Convert to Analysis Service
@@ -344,33 +371,6 @@ class ARAnalysesField(ObjectField):
         logger.error("ARAnalysesField doesn't accept objects from {} type. "
                      "The object will be dismissed.".format(portal_type))
         return None
-
-    def _update_specs(self, instance, specs):
-        """Update AR specifications
-
-        :param instance: Analysis Request
-        :param specs: List of Specification Records
-        """
-
-        if specs is None:
-            return
-
-        # N.B. we copy the records here, otherwise the spec will be written to
-        #      the attached specification of this AR
-        rr = {item["keyword"]: item.copy()
-              for item in instance.getResultsRange()}
-        for spec in specs:
-            keyword = spec.get("keyword")
-            if keyword in rr:
-                # overwrite the instance specification only, if the specific
-                # analysis spec has min/max values set
-                if all([spec.get("min"), spec.get("max")]):
-                    rr[keyword].update(spec)
-                else:
-                    rr[keyword] = spec
-            else:
-                rr[keyword] = spec
-        return instance.setResultsRange(rr.values())
 
 
 registerField(ARAnalysesField,
