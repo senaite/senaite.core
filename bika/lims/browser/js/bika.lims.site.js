@@ -8,9 +8,6 @@
 
   window.SiteView = (function() {
     function SiteView() {
-      this.on_ajax_error = bind(this.on_ajax_error, this);
-      this.on_ajax_end = bind(this.on_ajax_end, this);
-      this.on_ajax_start = bind(this.on_ajax_start, this);
       this.on_service_info_click = bind(this.on_service_info_click, this);
       this.on_reference_definition_list_change = bind(this.on_reference_definition_list_change, this);
       this.on_numeric_field_keypress = bind(this.on_numeric_field_keypress, this);
@@ -20,8 +17,6 @@
       this.on_autocomplete_keydown = bind(this.on_autocomplete_keydown, this);
       this.on_date_range_end_change = bind(this.on_date_range_end_change, this);
       this.on_date_range_start_change = bind(this.on_date_range_start_change, this);
-      this.stop_spinner = bind(this.stop_spinner, this);
-      this.start_spinner = bind(this.start_spinner, this);
       this.notify_in_panel = bind(this.notify_in_panel, this);
       this.notificationPanel = bind(this.notificationPanel, this);
       this.set_cookie = bind(this.set_cookie, this);
@@ -35,7 +30,6 @@
       this.get_portal_url = bind(this.get_portal_url, this);
       this.init_referencedefinition = bind(this.init_referencedefinition, this);
       this.init_datepickers = bind(this.init_datepickers, this);
-      this.init_spinner = bind(this.init_spinner, this);
       this.init_client_add_overlay = bind(this.init_client_add_overlay, this);
       this.bind_eventhandler = bind(this.bind_eventhandler, this);
       this.load = bind(this.load, this);
@@ -45,7 +39,6 @@
       console.debug("SiteView::load");
       jarn.i18n.loadCatalog('senaite.core');
       this._ = window.jarn.i18n.MessageFactory("senaite.core");
-      this.init_spinner();
       this.init_client_add_overlay();
       this.init_datepickers();
       this.init_referencedefinition();
@@ -74,9 +67,17 @@
       $("body").on("change", ".date_range_start", this.on_date_range_start_change);
       $("body").on("change", ".date_range_end", this.on_date_range_end_change);
       $("body").on("click", "a.service_info", this.on_service_info_click);
-      $(document).on("ajaxStart", this.on_ajax_start);
-      $(document).on("ajaxStop", this.on_ajax_end);
-      return $(document).on("ajaxError", this.on_ajax_error);
+      return $(document).on({
+        ajaxStart: function() {
+          $("body").addClass("loading");
+        },
+        ajaxStop: function() {
+          $("body").removeClass("loading");
+        },
+        ajaxError: function() {
+          $("body").removeClass("loading");
+        }
+      });
     };
 
     SiteView.prototype.init_client_add_overlay = function() {
@@ -100,20 +101,6 @@
           onClose: function() {}
         }
       });
-    };
-
-    SiteView.prototype.init_spinner = function() {
-
-      /*
-       * Initialize Spinner Overlay
-       */
-      console.debug("SiteView::init_spinner");
-      $(document).unbind('ajaxStart');
-      $(document).unbind('ajaxStop');
-      $('#ajax-spinner').remove();
-      this.counter = 0;
-      this.spinner = $("<div id='bika-spinner'><img src='" + (this.get_portal_url()) + "/spinner.gif' alt=''/></div>");
-      return this.spinner.appendTo('body').hide();
     };
 
     SiteView.prototype.init_datepickers = function() {
@@ -356,39 +343,6 @@
       });
     };
 
-    SiteView.prototype.start_spinner = function() {
-
-      /*
-       * Start Spinner Overlay
-       */
-      console.debug("SiteView::start_spinner");
-      this.counter++;
-      this.timer = setTimeout(((function(_this) {
-        return function() {
-          if (_this.counter > 0) {
-            _this.spinner.show('fast');
-          }
-        };
-      })(this)), 500);
-    };
-
-    SiteView.prototype.stop_spinner = function() {
-
-      /*
-       * Stop Spinner Overlay
-       */
-      console.debug("SiteView::stop_spinner");
-      this.counter--;
-      if (this.counter < 0) {
-        this.counter = 0;
-      }
-      if (this.counter === 0) {
-        clearTimeout(this.timer);
-        this.spinner.stop();
-        this.spinner.hide();
-      }
-    };
-
 
     /* EVENT HANDLER */
 
@@ -601,34 +555,6 @@
         }
       });
       return $(el).click();
-    };
-
-    SiteView.prototype.on_ajax_start = function(event) {
-
-      /*
-       * Eventhandler if an global Ajax Request started
-       */
-      console.debug("°°° SiteView::on_ajax_start °°°");
-      return this.start_spinner();
-    };
-
-    SiteView.prototype.on_ajax_end = function(event) {
-
-      /*
-       * Eventhandler if an global Ajax Request ended
-       */
-      console.debug("°°° SiteView::on_ajax_end °°°");
-      return this.stop_spinner();
-    };
-
-    SiteView.prototype.on_ajax_error = function(event, jqxhr, settings, thrownError) {
-
-      /*
-       * Eventhandler if an global Ajax Request error
-       */
-      console.debug("°°° SiteView::on_ajax_error °°°");
-      this.stop_spinner();
-      return this.log("Error at " + settings.url + ": " + thrownError);
     };
 
     return SiteView;

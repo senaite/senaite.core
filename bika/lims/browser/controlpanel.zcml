@@ -1,0 +1,18 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:plone="http://namespaces.plone.org/plone"
+    xmlns:cmf="http://namespaces.zope.org/cmf"
+    i18n_domain="senaite.core">
+
+  <include package="plone.app.controlpanel" file="permissions.zcml" />
+
+  <!-- Controlpanel View -->
+  <browser:page
+      name="overview-controlpanel"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+      class=".controlpanel.SenaiteOverviewControlPanel"
+      permission="plone.app.controlpanel.Overview"
+      layer="bika.lims.interfaces.IBikaLIMS"/>
+
+</configure>

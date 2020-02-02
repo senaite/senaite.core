@@ -1,0 +1,17 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:plone="http://namespaces.plone.org/plone"
+    xmlns:cmf="http://namespaces.zope.org/cmf"
+    i18n_domain="senaite.core">
+
+  <!-- Bootstrap Helper View -->
+  <browser:page
+      name="bootstrapview"
+      for="*"
+      class=".bootstrap.BootstrapView"
+      allowed_interface=".bootstrap.IBootstrapView"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"/>
+
+</configure>

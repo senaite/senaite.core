@@ -24,6 +24,7 @@ Changelog
 
 **Changed**
 
+- #1513 Better Ajax Loader for Sample Add Form
 - #1508 Do not try to render InstrumentQCFailuresViewlet to non-lab personnel
 - #1495 Better Remarks handling and display
 - #1502 Improved DateTime Widget

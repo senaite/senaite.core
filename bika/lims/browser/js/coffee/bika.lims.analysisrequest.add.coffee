@@ -1273,6 +1273,7 @@ class window.AnalysisRequestAdd
     # deactivate the button
     button = $("input[name=save_button]")
     button.prop "disabled": yes
+    button[0].value = _("Loading ...")
 
 
   on_ajax_end: =>
@@ -1284,6 +1285,7 @@ class window.AnalysisRequestAdd
     # reactivate the button
     button = $("input[name=save_button]")
     button.prop "disabled": no
+    button[0].value = _("Save")
 
 
   # Note: Context of callback bound to this object

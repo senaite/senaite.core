@@ -12,9 +12,6 @@ class window.SiteView
     jarn.i18n.loadCatalog 'senaite.core'
     @_ = window.jarn.i18n.MessageFactory("senaite.core")
 
-    # initialze the loading spinner
-    @init_spinner()
-
     # initialze the client add overlay
     @init_client_add_overlay()
 
@@ -78,10 +75,17 @@ class window.SiteView
 
     $("body").on "click", "a.service_info", @on_service_info_click
 
-    # handle Ajax events
-    $(document).on "ajaxStart", @on_ajax_start
-    $(document).on "ajaxStop", @on_ajax_end
-    $(document).on "ajaxError", @on_ajax_error
+    # Show loader on Ajax events
+    $(document).on
+      ajaxStart: ->
+        $("body").addClass "loading"
+        return
+      ajaxStop: ->
+        $("body").removeClass "loading"
+        return
+      ajaxError: ->
+        $("body").removeClass "loading"
+        return
 
 
   init_client_add_overlay: =>
@@ -106,25 +110,6 @@ class window.SiteView
         onClose: ->
           # here is where we'd populate the form controls, if we cared to.
           return
-
-
-  init_spinner: =>
-    ###
-     * Initialize Spinner Overlay
-    ###
-    console.debug "SiteView::init_spinner"
-
-    # unbind default Plone loader
-    $(document).unbind 'ajaxStart'
-    $(document).unbind 'ajaxStop'
-    $('#ajax-spinner').remove()
-
-    # counter of active spinners
-    @counter = 0
-
-    # crate a spinner and append it to the body
-    @spinner = $("<div id='bika-spinner'><img src='#{@get_portal_url()}/spinner.gif' alt=''/></div>")
-    @spinner.appendTo('body').hide()
 
 
   init_datepickers: =>
@@ -364,42 +349,6 @@ class window.SiteView
     return
 
 
-  start_spinner: =>
-    ###
-     * Start Spinner Overlay
-    ###
-    console.debug "SiteView::start_spinner"
-
-    # increase the counter
-    @counter++
-
-    @timer = setTimeout (=>
-      if @counter > 0
-        @spinner.show 'fast'
-      return
-    ), 500
-
-    return
-
-
-  stop_spinner: =>
-    ###
-     * Stop Spinner Overlay
-    ###
-    console.debug "SiteView::stop_spinner"
-
-    # decrease the counter
-    @counter--
-
-    if @counter < 0
-      @counter = 0
-    if @counter == 0
-      clearTimeout @timer
-      @spinner.stop()
-      @spinner.hide()
-    return
-
-
   ### EVENT HANDLER ###
 
   on_date_range_start_change: (event) =>
@@ -626,35 +575,3 @@ class window.SiteView
 
     # workaround un-understandable overlay api
     $(el).click()
-
-
-  on_ajax_start: (event) =>
-    ###
-     * Eventhandler if an global Ajax Request started
-    ###
-    console.debug "°°° SiteView::on_ajax_start °°°"
-
-    # start the loading spinner
-    @start_spinner()
-
-
-  on_ajax_end: (event) =>
-    ###
-     * Eventhandler if an global Ajax Request ended
-    ###
-    console.debug "°°° SiteView::on_ajax_end °°°"
-
-    # stop the loading spinner
-    @stop_spinner()
-
-
-  on_ajax_error: (event, jqxhr, settings, thrownError) =>
-    ###
-     * Eventhandler if an global Ajax Request error
-    ###
-    console.debug "°°° SiteView::on_ajax_error °°°"
-
-    # stop the loading spinner
-    @stop_spinner()
-
-    @log "Error at #{settings.url}: #{thrownError}"

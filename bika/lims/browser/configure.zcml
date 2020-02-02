@@ -16,9 +16,11 @@
   <include file="attachment.zcml"/>
   <include file="auditlog.zcml"/>
   <include file="batchfolder.zcml"/>
+  <include file="bootstrap.zcml"/>
   <include file="calcs.zcml"/>
   <include file="clientfolder.zcml"/>
   <include file="contact.zcml"/>
+  <include file="controlpanel.zcml"/>
   <include file="dynamic_analysisspec.zcml"/>
   <include file="instrument.zcml"/>
   <include file="instrumentlocation.zcml"/>
