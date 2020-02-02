@@ -9,7 +9,7 @@
   <browser:page
       name="bootstrapview"
       for="*"
-      class=".views.BootstrapView"
+      class=".bootstrap.BootstrapView"
       allowed_interface=".interfaces.IBootstrapView"
       permission="zope2.View"
       layer="bika.lims.interfaces.IBikaLIMS"/>
