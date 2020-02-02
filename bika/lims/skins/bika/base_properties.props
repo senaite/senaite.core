@@ -1,4 +1,4 @@
-title:string=Plone's color, font, logo and border defaults
+title:string=SENAITE Theme
 plone_skin:string=Plone Default
 
 logoName:string=logo.png
