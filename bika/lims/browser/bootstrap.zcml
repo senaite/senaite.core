@@ -10,7 +10,7 @@
       name="bootstrapview"
       for="*"
       class=".bootstrap.BootstrapView"
-      allowed_interface=".interfaces.IBootstrapView"
+      allowed_interface=".bootstrap.IBootstrapView"
       permission="zope2.View"
       layer="bika.lims.interfaces.IBikaLIMS"/>
 
