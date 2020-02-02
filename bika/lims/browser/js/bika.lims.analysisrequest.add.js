@@ -1250,9 +1250,10 @@
       var button;
       console.debug("°°° on_ajax_start °°°");
       button = $("input[name=save_button]");
-      return button.prop({
+      button.prop({
         "disabled": true
       });
+      return button[0].value = _("Loading ...");
     };
 
     AnalysisRequestAdd.prototype.on_ajax_end = function() {
@@ -1263,9 +1264,10 @@
       var button;
       console.debug("°°° on_ajax_end °°°");
       button = $("input[name=save_button]");
-      return button.prop({
+      button.prop({
         "disabled": false
       });
+      return button[0].value = _("Save");
     };
 
     AnalysisRequestAdd.prototype.on_form_submit = function(event, callback) {
