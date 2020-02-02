@@ -167,8 +167,9 @@ class ARAnalysesField(ObjectField):
         # Sample's Results ranges
         sample_rrs = instance.getResultsRange()
 
-        # Resolve results_ranges passed-in to make sure they contain uid
-        rrs = map(lambda rr: self.resolve_uid(rr), rrs)
+        # Ensure all subfields from specification are kept and missing values
+        # for subfields are filled in accordance with the specs
+        rrs = map(lambda rr: self.resolve_range(rr, sample_rrs), rrs)
 
         # Append those from sample that are missing in the ranges passed-in
         service_uids = map(lambda rr: rr["uid"], rrs)
@@ -176,6 +177,25 @@ class ARAnalysesField(ObjectField):
 
         # Create a dict for easy access to results ranges
         return dict(map(lambda rr: (rr["uid"], rr), rrs))
+
+    def resolve_range(self, result_range, sample_result_ranges):
+        """Resolves the range by adding the uid if not present and filling the
+        missing subfield values with those that come from the Sample
+        specification if they are not present in the result_range passed-in
+        """
+        # Resolve result_range to make sure it contain uid subfield
+        rrs = self.resolve_uid(result_range)
+        uid = rrs.get("uid")
+
+        for sample_rr in sample_result_ranges:
+            if uid and sample_rr.get("uid") == uid:
+                # Keep same fields from sample
+                rr = sample_rr.copy()
+                rr.update(rrs)
+                return rr
+
+        # Return the original with no changes
+        return rrs
 
     def resolve_uid(self, result_range):
         """Resolves the uid key for the result_range passed in if it does not
