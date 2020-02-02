@@ -1,0 +1,156 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      lang="en"
+      metal:use-macro="here/prefs_main_template/macros/master"
+      i18n:domain="plone">
+
+  <body>
+
+    <metal:override fill-slot="top_slot"
+                    tal:define="disable_column_one python:request.set('disable_plone.leftcolumn',1);
+                               disable_column_two python:request.set('disable_plone.rightcolumn',1);"/>
+
+    <div metal:fill-slot="prefs_configlet_main">
+
+      <h1 class="documentFirstHeading"
+          i18n:translate="">Site Setup</h1>
+
+      <p class="documentDescription" i18n:translate="description_control_panel">
+        Configuration area for Plone and add-on Products.
+      </p>
+
+      <dl class="portalMessage alert alert-warning"
+          tal:condition="view/upgrade_warning">
+        <dt i18n:translate="">
+          Warning
+        </dt>
+        <dd i18n:translate="">
+          The site configuration is outdated and needs to be
+          upgraded. Please
+          <a href="#"
+             tal:attributes="href string:${context/portal_url}/@@plone-upgrade"
+             title="Go to the upgrade page"
+             i18n:attributes="title;"
+             i18n:name="link_continue_with_the_upgrade"
+             i18n:translate="">
+            continue with the upgrade
+          </a>.
+        </dd>
+      </dl>
+
+      <dl class="portalMessage alert alert-warning"
+          tal:condition="view/mailhost_warning">
+        <dt i18n:translate="">
+          Warning
+        </dt>
+        <dd i18n:translate="text_no_mailhost_configured">
+          You have not configured a mail host or a site 'From'
+          address, various features including contact forms, email
+          notification and password reset will not work. Go to the
+          <tal:link i18n:name="label_mail_control_panel_link">
+            <a href=""
+               i18n:translate="text_no_mailhost_configured_control_panel_link"
+               tal:attributes="href string:${portal_url}/@@mail-controlpanel"
+            >Mail control panel</a>
+          </tal:link>
+          to fix this.
+        </dd>
+      </dl>
+
+      <dl class="portalMessage alert alrt-warning"
+          tal:condition="not:view/pil">
+        <dt i18n:translate="">
+          Warning
+        </dt>
+        <dd i18n:translate="text_no_pil_installed">
+          Warning: PIL is not installed properly, image scaling will not work.
+        </dd>
+      </dl>
+
+      <tal:category tal:repeat="category view/categories">
+        <div class="col-md-12">
+
+          <h2 tal:content="category/title"
+              i18n:translate="">Category</h2>
+
+          <div tal:define="sublists python:view.sublists(category.get('id'))">
+
+            <div tal:repeat="sublist sublists"
+                 tal:condition="sublists"
+                 class="col-md-3">
+
+              <ul class="configlets nav nav-stacked nav-pills"
+                  tal:condition="sublist">
+                <tal:actions tal:repeat="action sublist">
+                  <li tal:condition="action/visible">
+                    <a href=""
+                       tal:define="icon action/icon"
+                       tal:attributes="href action/url">
+                      <img src="" alt=""
+                           tal:condition="not:icon"
+                           tal:attributes="src string:${portal_url}/maintenance_icon.png" />
+                      <img src="" alt=""
+                           tal:condition="icon"
+                           tal:attributes="src icon;
+                                alt action/title;"
+                           i18n:attributes="alt" />
+                      <tal:title tal:content="action/title"
+                                 i18n:translate="">
+                        Title
+                      </tal:title>
+                    </a>
+                  </li>
+                </tal:actions>
+              </ul>
+            </div>
+
+            <div class="discreet help-block"
+                 tal:condition="not:sublists"
+                 i18n:translate="label_no_prefs_panels_available">
+              No preference panels available.
+            </div>
+
+          </div>
+
+        </div>
+      </tal:category>
+
+      <div class="col-md-12">
+        <h2 i18n:translate="heading_version_overview">Version Overview</h2>
+
+        <ul tal:repeat="version view/version_overview">
+          <li tal:content="version">Version</li>
+        </ul>
+
+        <!-- Production Mode -->
+        <p tal:condition="not:view/is_dev_mode"
+           class="discreet text-muted"
+           i18n:translate="description_production_mode">
+          You are running in "production mode". This is the preferred mode of
+          operation for a live Plone site, but means that some
+          configuration changes will not take effect until your server is
+          restarted or a product refreshed. If this is a development instance,
+          and you want to enable debug mode, stop the server, set 'debug-mode=on'
+          in your buildout.cfg, re-run bin/buildout and then restart the server
+          process.
+        </p>
+
+        <!-- DEV Mode -->
+        <p tal:condition="view/is_dev_mode"
+           class="discreet text-muted"
+           i18n:translate="description_debug_mode">
+          You are running in "debug mode". This mode is intended for sites that
+          are under development. This allows many configuration changes to be
+          immediately visible, but will make your site run more slowly. To turn
+          off debug mode, stop the server, set 'debug-mode=off' in your
+          buildout.cfg, re-run bin/buildout and then restart the server
+          process.
+        </p>
+      </div>
+
+    </div>
+
+  </body>
+</html>
