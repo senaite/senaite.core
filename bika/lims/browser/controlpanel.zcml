@@ -11,7 +11,7 @@
   <browser:page
       name="overview-controlpanel"
       for="Products.CMFPlone.interfaces.IPloneSiteRoot"
-      class=".views.SenaiteOverviewControlPanel"
+      class=".controlpanel.SenaiteOverviewControlPanel"
       permission="plone.app.controlpanel.Overview"
       layer="bika.lims.interfaces.IBikaLIMS"/>
 
