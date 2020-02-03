@@ -7,6 +7,7 @@ Changelog
 
 **Added**
 
+- #1516 Consider analyses with result options or string in duplicate valid range
 - #1515 Moved Setup View into Core
 - #1506 Specification non-compliant viewlet in Sample
 - #1506 Sample results ranges out-of-date viewlet in Sample
@@ -21,7 +22,6 @@ Changelog
 - #1481 Filter Templates field when Sample Type is selected in Sample Add form
 - #1483 Added Accredited symbol in Analyses listings
 - #1466 Support for "readonly" and "hidden" visibility modes in ReferenceWidget
-
 
 **Changed**
 
