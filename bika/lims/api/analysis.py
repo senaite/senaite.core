@@ -69,25 +69,27 @@ def is_out_of_range(brain_or_object, result=_marker):
         # result options enabled or string results enabled, system returns an
         # empty result range for the duplicate: result must match %100 with the
         # original result
-        if analysis.getResultOptions() or not api.is_floatable(result):
-            # Result options enabled or non-numeric result
-            original = analysis.getAnalysis()
-            original_result = original.getResult()
-            if original_result in [None, '']:
-                # There is no result to compare
-                return False, False
+        original = analysis.getAnalysis()
+        original_result = original.getResult()
 
-            if api.is_floatable(original_result) != api.is_floatable(result):
-                # Different types of result (numeric vs non-numeric)
-                return True, True
+        # Does original analysis have a valid result?
+        if original_result in [None, '']:
+            return False, False
 
+        # Does original result type matches with duplicate result type?
+        if api.is_floatable(result) != api.is_floatable(original_result):
+            return True, True
+
+        # Does analysis has result options enabled or non-floatable?
+        if analysis.getResultOptions() or not api.is_floatable(original_result):
             # Let's always assume the result is 'out from shoulders', cause we
             # consider the shoulders are precisely the duplicate variation %
             out_of_range = original_result != result
             return out_of_range, out_of_range
 
     elif not api.is_floatable(result):
-        # Result is not floatable
+        # A non-duplicate with non-floatable result. There is no chance to know
+        # if the result is out-of-range
         return False, False
 
     # Convert result to a float
