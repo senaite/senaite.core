@@ -39,6 +39,7 @@ from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.config import LDL
 from bika.lims.config import UDL
 from bika.lims.interfaces import IAnalysisRequest
+from bika.lims.interfaces import IDuplicateAnalysis
 from bika.lims.interfaces import IFieldIcons
 from bika.lims.permissions import EditFieldResults
 from bika.lims.permissions import EditResults
@@ -1024,17 +1025,35 @@ class AnalysesView(BikaListingView):
 
     def _folder_item_specifications(self, analysis_brain, item):
         """Set the results range to the item passed in"""
-        # Everyone can see valid-ranges
-        item['Specification'] = ''
-        results_range = analysis_brain.getResultsRange
-        if not results_range:
+
+        item["Specification"] = ""
+
+        # TODO Remove getResultsRange metadata, can lead to inconsistencies with
+        #      DuplicateAnalysis. If a duplicate is submitted before its
+        #      counterpart analysis, the getResultRange metadata of duplicate
+        #      wont be updated afterwards when regular analysis is submitted.
+        #      This is the reason why we get the ResultsRange from the object
+        #      directly here (instead of relying on metadata)
+        if analysis_brain.portal_type == "DuplicateAnalysis":
+            analysis = self.get_object(analysis_brain)
+            results_range = analysis.getResultsRange()
+        else:
+            results_range = analysis_brain.getResultsRange
+            if not results_range:
+                # Regular analysis with no results range, nothing to do here
+                return
+
+        if results_range:
+            # Display the specification interval
+            item["Specification"] = get_formatted_interval(results_range, "")
+
+        if analysis_brain.getResult in [None, ""]:
+            # No result yet, no need to wake-up the object
             return
 
-        # Display the specification interval
-        item["Specification"] = get_formatted_interval(results_range, "")
-
         # Show an icon if out of range
-        out_range, out_shoulders = is_out_of_range(analysis_brain)
+        analysis = self.get_object(analysis_brain)
+        out_range, out_shoulders = is_out_of_range(analysis)
         if out_range:
             msg = _("Result out of range")
             img = get_image("exclamation.png", title=msg)
@@ -1045,7 +1064,6 @@ class AnalysesView(BikaListingView):
 
         # Show an icon if the analysis range is different from the Sample spec
         if IAnalysisRequest.providedBy(self.context):
-            analysis = self.get_object(analysis_brain)
             if not is_result_range_compliant(analysis):
                 service_uid = analysis_brain.getServiceUID
                 original = self.context.getResultsRange(search_by=service_uid)
