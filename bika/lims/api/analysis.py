@@ -77,8 +77,8 @@ def is_out_of_range(brain_or_object, result=_marker):
                 # There is no result to compare
                 return False, False
 
-            if api.is_floatable(result):
-                # Original analysis has a numeric result, but duplicate doesn't
+            if api.is_floatable(original_result) != api.is_floatable(result):
+                # Different types of result (numeric vs non-numeric)
                 return True, True
 
             # Let's always assume the result is 'out from shoulders', cause we
