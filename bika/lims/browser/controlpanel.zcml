@@ -15,4 +15,12 @@
       permission="plone.app.controlpanel.Overview"
       layer="bika.lims.interfaces.IBikaLIMS"/>
 
+  <!-- SENAITE Setup View -->
+  <browser:page
+      name="lims-setup"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+      class=".controlpanel.SetupView"
+      permission="senaite.core.permissions.ManageBika"
+      layer="bika.lims.interfaces.IBikaLIMS"/>
+
 </configure>

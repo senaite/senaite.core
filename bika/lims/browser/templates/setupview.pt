@@ -1,0 +1,85 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      lang="en"
+      metal:use-macro="here/prefs_main_template/macros/master"
+      i18n:domain="senaite.core">
+
+  <head>
+    <metal:block fill-slot="javascript_head_slot"
+                 tal:define="portal context/@@plone_portal_state/portal;">
+    </metal:block>
+
+    <metal:block fill-slot="style_slot"
+                 tal:define="portal context/@@plone_portal_state/portal;">
+      <!-- Link in the Setup CSS -->
+      <link href="++resource++bika.lims.css/setupview.css" rel="stylesheet">
+    </metal:block>
+
+  </head>
+  <body>
+
+    <metal:override fill-slot="top_slot"
+                    tal:define="disable_column_one python:request.set('disable_plone.leftcolumn', 1);
+                                disable_column_two python:request.set('disable_plone.rightcolumn', 1);"/>
+
+    <div metal:fill-slot="prefs_configlet_main" id="lims-controlpanel">
+
+      <div class="row">
+
+        <!-- The setup item -->
+        <tal:setup tal:define="setup python:view.setup">
+          <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+            <a class="tile setup text-capitalized"
+               tal:attributes="href setup/absolute_url">
+
+              <div class="row item">
+                <div class="col-xs-2 vcenter">
+                  <img src="#"
+                       class="icon"
+                       tal:attributes="src python:view.get_icon_url(setup);
+                                       title setup/Title"/>
+                </div>
+                <div class="col-xs-9 vcenter">
+                  <div class="title"
+                       i18n:translate=""
+                       tal:content="setup/Title">
+                    Setup Item Title
+                  </div>
+                </div>
+              </div>
+            </a>
+          </div>
+        </tal:setup>
+
+        <!-- The other setup items -->
+        <tal:tiles tal:repeat="brain view/setupitems">
+          <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
+            <a class="tile text-capitalized"
+               tal:attributes="href brain/getURL">
+
+              <div class="row item">
+                <div class="col-xs-2 vcenter">
+                  <img src="#"
+                       class="icon"
+                       tal:attributes="src python:view.get_icon_url(brain);
+                                       title brain/Title"/>
+                </div>
+                <div class="col-xs-9 vcenter">
+                  <div class="title"
+                       i18n:translate=""
+                       tal:content="brain/Title">
+                    Setup Item Title
+                  </div>
+                </div>
+              </div>
+            </a>
+          </div>
+        </tal:tiles>
+      </div>
+
+    </div>
+
+  </body>
+</html>

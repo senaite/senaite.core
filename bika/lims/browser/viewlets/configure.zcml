@@ -2,6 +2,15 @@
            xmlns:browser="http://namespaces.zope.org/browser"
            i18n_domain="senaite.core">
 
+  <!-- Setup Button Viewlet -->
+  <browser:viewlet
+      name="senaite.setupbutton"
+      manager="plone.app.layout.viewlets.interfaces.IPortalHeader"
+      class=".setupbutton.SenaiteSetupButtonViewlet"
+      permission="senaite.core.permissions.ManageBika"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
+
   <!-- Content Views Viewlet (Tabs) -->
   <browser:viewlet
       name="plone.contentviews"
