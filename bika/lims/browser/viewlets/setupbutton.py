@@ -18,9 +18,9 @@
 # Copyright 2018-2019 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from bika.lims import api
 from plone.app.layout.viewlets.common import ViewletBase
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from bika.lims import api
 
 
 class SenaiteSetupButtonViewlet(ViewletBase):
