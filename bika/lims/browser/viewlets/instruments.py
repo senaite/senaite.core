@@ -91,9 +91,11 @@ class InstrumentQCFailuresViewlet(ViewletBase):
     def available(self):
         """Control availability of the viewlet
         """
-        url = api.get_url(self.context)
+        context_state = api.get_view("plone_context_state")
+        url = context_state.current_page_url()
+        portal_url = api.get_url(api.get_portal())
         # render on the portal root
-        if self.context == api.get_portal():
+        if url.endswith(portal_url):
             return True
         # render on the front-page
         if url.endswith("/front-page"):
