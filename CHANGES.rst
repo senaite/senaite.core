@@ -35,6 +35,7 @@ Changelog
 
 **Removed**
 
+- #1516 Removed getResultsRange metadata from analysis_catalog
 - #1487 Dexterity Compatible Catalog Base Class
 - #1482 Remove `senaite.instruments` dependency for instrument import form
 - #1478 Remove AcquireFieldDefaults (was used for CCEmails field only)
