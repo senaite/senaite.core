@@ -482,11 +482,12 @@ class Instrument(ATFolder):
                  "getReferenceAnalysesGroupID": group_id,}
         brains = api.search(query, CATALOG_ANALYSIS_LISTING)
         for brain in brains:
-            results_range = brain.getResultsRange
+            analysis = api.get_object(brain)
+            results_range = analysis.getResultsRange()
             if not results_range:
                 continue
             # Is out of range?
-            out_of_range = is_out_of_range(brain)[0]
+            out_of_range = is_out_of_range(analysis)[0]
             if out_of_range:
                 return False
 
