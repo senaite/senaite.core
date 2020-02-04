@@ -24,9 +24,11 @@ from operator import itemgetter
 import transaction
 from bika.lims import api
 from bika.lims import logger
+from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.catalog.bikasetup_catalog import SETUP_CATALOG
 from bika.lims.config import PROJECTNAME as product
+from bika.lims.exportimport.setupdata import Analysis_Categories
 from bika.lims.interfaces import IAnalysisRequestWithPartitions
 from bika.lims.interfaces import ISubmitted
 from bika.lims.interfaces import IVerified
@@ -179,6 +181,10 @@ INDEXES_TO_REMOVE = [
 
     # getCategoryUID --> category_uid
     ("bika_setup_catalog", "getCategoryUID"),
+
+    # Not used anywhere
+    (CATALOG_ANALYSIS_LISTING, "getAnalysisRequestPrintStatus"),
+    (CATALOG_ANALYSIS_LISTING, "getBatchUID"),
 
 ]
 

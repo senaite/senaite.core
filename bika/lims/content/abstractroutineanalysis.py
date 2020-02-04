@@ -329,14 +329,6 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
             return request.getBatchUID()
 
     @security.public
-    def getAnalysisRequestPrintStatus(self):
-        """This method is used to populate catalog values
-        """
-        request = self.getRequest()
-        if request:
-            return request.getPrinted()
-
-    @security.public
     def getResultsRange(self):
         """Returns the valid result range for this routine analysis
 
