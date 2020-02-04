@@ -575,6 +575,8 @@ class AnalysesView(BikaListingView):
         self._folder_item_detection_limits(obj, item)
         # Fill Specifications
         self._folder_item_specifications(obj, item)
+        self._folder_item_out_of_range(obj, item)
+        self._folder_item_result_range_compliance(obj, item)
         # Fill Partition
         self._folder_item_partition(obj, item)
         # Fill Due Date and icon if late/overdue
@@ -1024,17 +1026,18 @@ class AnalysesView(BikaListingView):
 
     def _folder_item_specifications(self, analysis_brain, item):
         """Set the results range to the item passed in"""
-        # Everyone can see valid-ranges
-        item['Specification'] = ''
-        results_range = analysis_brain.getResultsRange
-        if not results_range:
-            return
+        analysis = self.get_object(analysis_brain)
+        results_range = analysis.getResultsRange()
 
-        # Display the specification interval
-        item["Specification"] = get_formatted_interval(results_range, "")
+        item["Specification"] = ""
+        if results_range:
+            item["Specification"] = get_formatted_interval(results_range, "")
 
-        # Show an icon if out of range
-        out_range, out_shoulders = is_out_of_range(analysis_brain)
+    def _folder_item_out_of_range(self, analysis_brain, item):
+        """Displays an icon if result is out of range
+        """
+        analysis = self.get_object(analysis_brain)
+        out_range, out_shoulders = is_out_of_range(analysis)
         if out_range:
             msg = _("Result out of range")
             img = get_image("exclamation.png", title=msg)
@@ -1043,17 +1046,25 @@ class AnalysesView(BikaListingView):
                 img = get_image("warning.png", title=msg)
             self._append_html_element(item, "Result", img)
 
-        # Show an icon if the analysis range is different from the Sample spec
-        if IAnalysisRequest.providedBy(self.context):
-            analysis = self.get_object(analysis_brain)
-            if not is_result_range_compliant(analysis):
-                service_uid = analysis_brain.getServiceUID
-                original = self.context.getResultsRange(search_by=service_uid)
-                original = get_formatted_interval(original, "")
-                msg = _("Result range is different from Specification: {}"
-                        .format(original))
-                img = get_image("warning.png", title=msg)
-                self._append_html_element(item, "Specification", img)
+    def _folder_item_result_range_compliance(self, analysis_brain, item):
+        """Displays an icon if the range is different from the results ranges
+        defined in the Sample
+        """
+        if not IAnalysisRequest.providedBy(self.context):
+            return
+
+        analysis = self.get_object(analysis_brain)
+        if is_result_range_compliant(analysis):
+            return
+
+        # Non-compliant range, display an icon
+        service_uid = analysis_brain.getServiceUID
+        original = self.context.getResultsRange(search_by=service_uid)
+        original = get_formatted_interval(original, "")
+        msg = _("Result range is different from Specification: {}"
+                .format(original))
+        img = get_image("warning.png", title=msg)
+        self._append_html_element(item, "Specification", img)
 
     def _folder_item_verify_icons(self, analysis_brain, item):
         """Set the analysis' verification icons to the item passed in.

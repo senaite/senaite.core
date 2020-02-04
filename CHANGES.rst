@@ -7,6 +7,7 @@ Changelog
 
 **Added**
 
+- #1516 Consider analyses with result options or string in duplicate valid range
 - #1515 Moved Setup View into Core
 - #1506 Specification non-compliant viewlet in Sample
 - #1506 Sample results ranges out-of-date viewlet in Sample
@@ -22,7 +23,6 @@ Changelog
 - #1483 Added Accredited symbol in Analyses listings
 - #1466 Support for "readonly" and "hidden" visibility modes in ReferenceWidget
 
-
 **Changed**
 
 - #1513 Better Ajax Loader for Sample Add Form
@@ -35,6 +35,7 @@ Changelog
 
 **Removed**
 
+- #1516 Removed getResultsRange metadata from analysis_catalog
 - #1487 Dexterity Compatible Catalog Base Class
 - #1482 Remove `senaite.instruments` dependency for instrument import form
 - #1478 Remove AcquireFieldDefaults (was used for CCEmails field only)

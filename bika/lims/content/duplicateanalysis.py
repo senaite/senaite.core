@@ -28,7 +28,9 @@ from bika.lims.content.abstractroutineanalysis import AbstractRoutineAnalysis
 from bika.lims.content.abstractroutineanalysis import schema
 from bika.lims.content.analysisspec import ResultsRangeDict
 from bika.lims.interfaces import IDuplicateAnalysis
+from bika.lims.interfaces import ISubmitted
 from bika.lims.interfaces.analysis import IRequestAnalysis
+from bika.lims import logger
 from bika.lims.workflow import in_state
 from bika.lims.workflow.analysis import STATE_RETRACTED, STATE_REJECTED
 from zope.interface import implements
@@ -143,28 +145,41 @@ class DuplicateAnalysis(AbstractRoutineAnalysis):
         A Duplicate will be out of range if its result does not match with the
         result for the parent analysis plus the duplicate variation in % as the
         margin error.
+
+        If the duplicate is from an analysis with result options and/or string
+        results enabled (with non-numeric value), returns an empty result range
+
         :return: A dictionary with the keys min and max
         :rtype: dict
         """
-        specs = ResultsRangeDict()
-        analysis = self.getAnalysis()
-        if not analysis:
-            return specs
+        # Get the original analysis
+        original_analysis = self.getAnalysis()
+        if not original_analysis:
+            logger.warn("Orphan duplicate: {}".format(repr(self)))
+            return {}
 
-        result = analysis.getResult()
-        if not api.is_floatable(result):
-            return specs
+        # Return empty if results option enabled (exact match expected)
+        if original_analysis.getResultOptions():
+            return {}
 
-        specs.min = specs.max = result
-        result = api.to_float(result)
-        dup_variation = analysis.getDuplicateVariation()
-        dup_variation = api.to_float(dup_variation)
+        # Return empty if non-floatable (exact match expected)
+        original_result = original_analysis.getResult()
+        if not api.is_floatable(original_result):
+            return {}
+
+        # Calculate the min/max based on duplicate variation %
+        specs = ResultsRangeDict(uid=self.getServiceUID())
+        dup_variation = original_analysis.getDuplicateVariation()
+        dup_variation = api.to_float(dup_variation, default=0)
         if not dup_variation:
+            # We expect an exact match
+            specs.min = specs.max = original_result
             return specs
 
-        margin = abs(result) * (dup_variation / 100.0)
-        specs.min = str(result - margin)
-        specs.max = str(result + margin)
+        original_result = api.to_float(original_result)
+        margin = abs(original_result) * (dup_variation / 100.0)
+        specs.min = str(original_result - margin)
+        specs.max = str(original_result + margin)
         return specs
 
 
