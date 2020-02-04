@@ -28,7 +28,6 @@ from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.catalog.bikasetup_catalog import SETUP_CATALOG
 from bika.lims.config import PROJECTNAME as product
-from bika.lims.exportimport.setupdata import Analysis_Categories
 from bika.lims.interfaces import IAnalysisRequestWithPartitions
 from bika.lims.interfaces import ISubmitted
 from bika.lims.interfaces import IVerified
