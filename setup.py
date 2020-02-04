@@ -76,6 +76,7 @@ setup(
         'zopyx.txng3.ext==3.4.0',
         "senaite.core.supermodel>=1.2.0",
         "senaite.core.listing>=1.1.0",
+        "senaite.core.spotlight",
         # Python 2.x is not supported by WeasyPrint v43
         'WeasyPrint==0.42.3',
         # tinycss2 >= 1.0.0 does not support Python 2.x anymore
