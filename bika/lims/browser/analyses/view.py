@@ -39,7 +39,6 @@ from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.config import LDL
 from bika.lims.config import UDL
 from bika.lims.interfaces import IAnalysisRequest
-from bika.lims.interfaces import IDuplicateAnalysis
 from bika.lims.interfaces import IFieldIcons
 from bika.lims.permissions import EditFieldResults
 from bika.lims.permissions import EditResults
