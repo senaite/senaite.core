@@ -1037,8 +1037,7 @@ class AnalysesView(BikaListingView):
         """Displays an icon if result is out of range
         """
         analysis = self.get_object(analysis_brain)
-        result = analysis.getResult()
-        out_range, out_shoulders = is_out_of_range(analysis, result=result)
+        out_range, out_shoulders = is_out_of_range(analysis)
         if out_range:
             msg = _("Result out of range")
             img = get_image("exclamation.png", title=msg)
