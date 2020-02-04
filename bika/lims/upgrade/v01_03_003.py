@@ -299,6 +299,10 @@ def upgrade(tool):
     # https://github.com/senaite/senaite.core/pull/1506
     update_samples_result_ranges(portal)
 
+    # Try to install the spotlight add-on
+    # https://github.com/senaite/senaite.core/pull/1517
+    install_senaite_core_spotlight(portal)
+
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
 
@@ -610,7 +614,7 @@ def update_samples_result_ranges(portal):
         if num and num % 1000 == 0:
             logger.info("{}/{} samples processed ...".format(num, total))
             transaction.commit()
-            logger.info("Changes commited")
+            logger.info("Changes committed")
         sample = api.get_object(brain)
 
         # Check if the ResultsRange field from sample contains values already
@@ -651,3 +655,18 @@ def update_analyses_results_range(sample):
         if analysis_rr:
             analysis = api.get_object(analysis)
             analysis.setResultsRange(analysis_rr)
+
+
+def install_senaite_core_spotlight(portal):
+    """Install the senaite.core.spotlight addon
+    """
+    qi = api.get_tool("portal_quickinstaller")
+    profile = "senaite.core.spotlight"
+    if profile not in qi.listInstallableProfiles():
+        logger.error("Profile '{}' not found. Forgot to run buildout?"
+                     .format(profile))
+        return
+    if qi.isProductInstalled(profile):
+        logger.info("'{}' is installed".format(profile))
+        return
+    qi.installProduct(profile)

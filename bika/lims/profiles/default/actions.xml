@@ -158,6 +158,20 @@
 			</property>
 			<property name="visible">True</property>
 		</object>
+    <!-- Search -->
+    <object name="spotlight_search" meta_type="CMF Action" i18n:domain="plone">
+      <property name="title" i18n:translate="">Search</property>
+      <property name="description" i18n:translate=""/>
+      <property name="url_expr">string:${globals_view/navigationRootUrl}/spotlight</property>
+      <property name="link_target"/>
+      <property name="icon_expr"/>
+      <property name="available_expr"/>
+      <property name="permissions">
+        <element value="View"/>
+      </property>
+      <property name="visible">True</property>
+    </object>
+    <!-- Audit Log -->
 		<object name="auditlog" meta_type="CMF Action" i18n:domain="plone">
 			<property name="title" i18n:translate="">Audit Log</property>
 			<property name="description" i18n:translate=""/>

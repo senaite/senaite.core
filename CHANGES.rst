@@ -7,6 +7,7 @@ Changelog
 
 **Added**
 
+- #1517 Integrate senaite.core.spotlight
 - #1516 Consider analyses with result options or string in duplicate valid range
 - #1515 Moved Setup View into Core
 - #1506 Specification non-compliant viewlet in Sample
