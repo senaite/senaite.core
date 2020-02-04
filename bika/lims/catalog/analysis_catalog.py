@@ -115,7 +115,6 @@ _columns_list = [
     "getInstrumentEntryOfResults",
     "getAllowedInstrumentUIDs",
     "getInstrumentUID",
-    "getResultsRange",
     "getSampleTypeUID",
     "getClientOrderNumber",
     "getDateReceived",

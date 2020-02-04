@@ -24,6 +24,7 @@ from operator import itemgetter
 import transaction
 from bika.lims import api
 from bika.lims import logger
+from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.catalog.bikasetup_catalog import SETUP_CATALOG
 from bika.lims.config import PROJECTNAME as product
@@ -229,6 +230,12 @@ METADATA_TO_REMOVE = [
     ("bika_setup_catalog", "cancellation_state"),
     ("bika_setup_catalog", "getName"),
     ("bika_setup_catalog", "getServiceUID"),
+
+    # Was only used in analyses listing, but it can lead to inconsistencies
+    # because there are some analyses (Duplicates) their result range depends
+    # on the result of an original analysis. Thus, better to remove the metadata
+    # and wake-up object than add additional reindexes, etc. everywhere
+    (CATALOG_ANALYSIS_LISTING, "getResultsRange")
 ]
 
 
@@ -644,4 +651,3 @@ def update_analyses_results_range(sample):
         if analysis_rr:
             analysis = api.get_object(analysis)
             analysis.setResultsRange(analysis_rr)
-            analysis.reindexObject()
