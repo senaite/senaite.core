@@ -7,6 +7,7 @@ Changelog
 
 **Added**
 
+- #1517 Integrate senaite.core.spotlight
 - #1515 Moved Setup View into Core
 - #1506 Specification non-compliant viewlet in Sample
 - #1506 Sample results ranges out-of-date viewlet in Sample
