@@ -186,6 +186,10 @@ INDEXES_TO_REMOVE = [
     (CATALOG_ANALYSIS_LISTING, "getAnalysisRequestPrintStatus"),
     (CATALOG_ANALYSIS_LISTING, "getBatchUID"),
 
+    # Only used in Add analyses (as sortable column)
+    (CATALOG_ANALYSIS_LISTING, "getClientOrderNumber"),
+    (CATALOG_ANALYSIS_LISTING, "getDateSampled"),
+
 ]
 
 METADATA_TO_REMOVE = [

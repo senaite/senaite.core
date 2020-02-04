@@ -82,7 +82,7 @@ class AddAnalysesView(BikaListingView):
             ("getClientOrderNumber", {
                 "title": _("Order"),
                 "toggle": False,
-                "index": "getClientOrderNumber"}),
+                "attr": "getClientOrderNumber"}),
             ("getRequestID", {
                 "title": _("Request ID"),
                 "attr": "getRequestID",

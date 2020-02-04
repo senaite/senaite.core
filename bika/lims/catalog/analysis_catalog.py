@@ -39,7 +39,6 @@ _indexes_dict = {
     "getParentUID": "FieldIndex",
     "getRequestUID": "FieldIndex",
     "getDueDate": "DateIndex",
-    "getDateSampled": "DateIndex",
     "getDateReceived": "DateIndex",
     "getResultCaptureDate": "DateIndex",
     "getClientUID": "FieldIndex",
@@ -47,7 +46,6 @@ _indexes_dict = {
     # Only used in Productivity report: productivity_analysestats_overtime
     "getAnalyst": "FieldIndex",
     "getRequestID": "FieldIndex",
-    "getClientOrderNumber": "FieldIndex",
     "getKeyword": "FieldIndex",
     "getServiceUID": "FieldIndex",
     "getCategoryUID": "FieldIndex",
