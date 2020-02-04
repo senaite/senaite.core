@@ -662,7 +662,7 @@ def install_senaite_core_spotlight(portal):
     """
     qi = api.get_tool("portal_quickinstaller")
     profile = "senaite.core.spotlight"
-    if profile not in qi.listInstallableProfile():
+    if profile not in qi.listInstallableProfiles():
         logger.error("Profile '{}' not found. Forgot to run buildout?"
                      .format(profile))
         return
