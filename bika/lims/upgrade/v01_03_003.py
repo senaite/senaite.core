@@ -614,7 +614,7 @@ def update_samples_result_ranges(portal):
         if num and num % 1000 == 0:
             logger.info("{}/{} samples processed ...".format(num, total))
             transaction.commit()
-            logger.info("Changes commited")
+            logger.info("Changes committed")
         sample = api.get_object(brain)
 
         # Check if the ResultsRange field from sample contains values already
