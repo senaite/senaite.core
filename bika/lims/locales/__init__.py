@@ -18665,6 +18665,7 @@ DISTRICTS = [
  ['CR', '02', 'Cant\xc3\xb3n de Jim\xc3\xa9nez'],
  ['CR', '03', 'Cant\xc3\xb3n de Hojancha'],
  ['CR', '04', 'Cant\xc3\xb3n Central de Heredia'],
+ ['CR', '07', 'Cant\xc3\xb3n de Garabito'],
  ['CR', '01', 'Cant\xc3\xb3n de Guatuso'],
  ['CR', '06', 'Cant\xc3\xb3n de Gu\xc3\xa1cimo'],
  ['CR', '01', 'Cant\xc3\xb3n de Grecia'],
