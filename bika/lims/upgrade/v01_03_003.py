@@ -65,7 +65,6 @@ CSS_TO_REMOVE = [
     "++resource++senaite.lims.bootstrap.static/css/bootstrap-integration.css",
     # removed completely
     "++resource++senaite.lims.fontawesome.vendor/css/font-awesome.min.css",
-    "++resource++plone.app.discussion.stylesheets/discussion.css",
 ]
 
 INDEXES_TO_ADD = [
