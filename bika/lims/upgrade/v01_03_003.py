@@ -333,7 +333,7 @@ def upgrade(tool):
     # apply resource profiles
     setup.runImportStepFromProfile(profile, "jsregistry")
     setup.runImportStepFromProfile(profile, "cssregistry")
-    setup.runImportStepFromProfile(profile, "tinymce")
+    setup.runImportStepFromProfile(profile, "tinymce_settings")
 
     # remove stale CSS/JS resources
     remove_stale_css(portal)

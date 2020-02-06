@@ -18,7 +18,8 @@
       <!-- AR Add form -->
       <script type="text/javascript"
               src="handlebars.js"
-              tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.js/thirdparty/handlebars.runtime.min-v4.7.2.js"></script>
+              tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.js/thirdparty/handlebars.min-v4.7.2.js"></script>
+
       <script type="text/javascript"
               src="bika.lims.analysisrequest.add.js"
               tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.js/bika.lims.analysisrequest.add.js"></script>
