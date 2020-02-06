@@ -3,7 +3,7 @@
 
   <!-- Bootstrap CSS -->
   <stylesheet
-    id="++resource++bika.lims.css/bootstrap-3.4.1.min.css"
+    id="++resource++senaite.core.bootstrap.static/css/bootstrap.min.css"
     applyPrefix="True"
     media="" rel="stylesheet" rendering="link"
     cacheable="True" compression="safe" cookable="True"
@@ -12,88 +12,89 @@
 
   <!-- Bootstrap Integration CSS -->
   <stylesheet
-    id="++resource++bika.lims.css/bootstrap-integration.css"
+    id="++resource++senaite.core.bootstrap.static/css/bootstrap-integration.css"
     applyPrefix="True"
     media="" rel="stylesheet" rendering="link"
     cacheable="True" compression="safe" cookable="True"
     enabled="1" expression=""
-    insert-after="++resource++bika.lims.css/bootstrap-3.4.1.min.css"/>
+    insert-after="++resource++senaite.core.bootstrap.static/css/bootstrap.min.css"/>
 
-<stylesheet
+  <!-- Core CSS -->
+  <stylesheet
     id="bika.lims.graphics.css"
     media="screen"
     rel="stylesheet"
     rendering="link"
     insert-after="*"/>
 
-<stylesheet
+  <stylesheet
     id="++resource++bika.lims.css/jquery.ui.combogrid.css"
     media="screen"
     rel="stylesheet"
     rendering="link"
     insert-after="*"/>
 
-<!-- Overwrite default jqueryui.css -->
-<stylesheet
+  <!-- Overwrite default jqueryui.css -->
+  <stylesheet
     id="++resource++jquery-ui-themes/sunburst/jqueryui.css"
     media="screen"
     rel="stylesheet"
     rendering="link"
     insert-after="*"/>
 
- <!-- Activate CSS stylesheets we need -->
- <stylesheet
+  <!-- Activate CSS stylesheets we need -->
+  <stylesheet
     id="++resource++plone.app.jquerytools.overlays.css"
     enabled="1"/>
 
- <!-- Remove broken CSS -->
- <stylesheet remove="True" id="invisible.css"/>
+  <!-- Remove broken CSS -->
+  <stylesheet remove="True" id="invisible.css"/>
 
- <!-- Deactivate (Remove?) CSS stylesheets that come with Sunburst theme -->
- <!-- Keep synced with Plone's cssregistry.xml -->
- <stylesheet
+  <!-- Deactivate (Remove?) CSS stylesheets that come with Sunburst theme -->
+  <!-- Keep synced with Plone's cssregistry.xml -->
+  <stylesheet
     id="reset.css"
     enabled="0"/>
- <stylesheet
-     id="base.css"
-     enabled="0"/>
- <stylesheet
+  <stylesheet
+    id="base.css"
+    enabled="0"/>
+  <stylesheet
     id="print.css"
     enabled="0"/>
- <stylesheet
+  <stylesheet
     id="authoring.css"
     enabled="0"/>
- <stylesheet
+  <stylesheet
     id="RTL.css"
     enabled="0"/>
- <stylesheet
+  <stylesheet
     id="forms.css"
     enabled="0"/>
- <stylesheet
+  <stylesheet
     id="member.css"
     enabled="0"/>
- <stylesheet
+  <stylesheet
     id="controlpanel.css"
     enabled="0"/>
- <stylesheet
+  <stylesheet
     id="navtree.css"
     enabled="0"/>
- <stylesheet
+  <stylesheet
     id="public.css"
     enabled="0"/>
- <stylesheet
+  <stylesheet
     id="ploneCustom.css"
     enabled="0"/>
- <stylesheet
+  <stylesheet
     id="columns.css"
     enabled="0"/>
- <stylesheet
+  <stylesheet
     id="mobile.css"
     enabled="0"/>
- <stylesheet
+  <stylesheet
     id="IEFixes.css"
     enabled="0"/>
- <stylesheet
+  <stylesheet
     id="deprecated.css"
     enabled="0"/>
 

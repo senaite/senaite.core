@@ -14,4 +14,10 @@
       permission="zope2.View"
       layer="bika.lims.interfaces.IBikaLIMS"/>
 
+  <!-- Register static directory for STATIC files-->
+  <browser:resourceDirectory
+      name="senaite.core.bootstrap.static"
+      directory="static"
+      layer="bika.lims.interfaces.IBikaLIMS"/>
+
 </configure>
