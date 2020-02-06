@@ -44,7 +44,10 @@ profile = "profile-{0}:default".format(product)
 
 JAVASCRIPTS_TO_REMOVE = [
     # replaced by minimized version in parent folder
-
+    # before 77K; after 41K -> reduces 36K per request
+    "++resource++bika.lims.js/thirdparty/jquery/jquery-timepicker.js",
+    # before 26K; after 16K -> reduces 10K per request
+    "++resource++bika.lims.js/thirdparty/jquery/jquery-timepicker-i18n.js",
     # completely removed: reduces 7,7K per request
     "++resource++bika.lims.js/thirdparty/jquery/jquery-query-2.1.7.js",
 ]
@@ -317,6 +320,8 @@ def upgrade(tool):
     # remove stale CSS/JS resources
     remove_stale_css(portal)
     remove_stale_javascripts(portal)
+    # apply resource profiles
+    setup.runImportStepFromProfile(profile, "jsregistry")
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True

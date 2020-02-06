@@ -3,7 +3,7 @@
 
   <!-- Third-party libs first, always -->
   <javascript authenticated="False"
-              id="++resource++bika.lims.js/thirdparty/jquery/jquery.json.js"
+              id="++resource++bika.lims.js/thirdparty/jquery-ui-timepicker-addon.min.js"
               cacheable="True"
               compression="safe"
               conditionalcomment=""
@@ -12,6 +12,28 @@
               expression=""
               inline="False"
               insert-after="*"/>
+
+  <javascript authenticated="False"
+              id="++resource++bika.lims.js/thirdparty/jquery-ui-timepicker-addon-i18n.min.js"
+              cacheable="True"
+              compression="safe"
+              conditionalcomment=""
+              cookable="True"
+              enabled="on"
+              expression=""
+              inline="False"
+              insert-after="++resource++bika.lims.js/thirdparty/jquery-ui-timepicker-addon.min.js"/>
+
+  <javascript authenticated="False"
+              id="++resource++bika.lims.js/thirdparty/jquery/jquery.json.js"
+              cacheable="True"
+              compression="safe"
+              conditionalcomment=""
+              cookable="True"
+              enabled="on"
+              expression=""
+              inline="False"
+              insert-after="++resource++bika.lims.js/thirdparty/jquery-ui-timepicker-addon-i18n.min.js"/>
 
   <javascript authenticated="True"
               id="++resource++bika.lims.js/thirdparty/jquery/jquery-barcode-2.0.2.js"
@@ -25,28 +47,6 @@
               insert-after="++resource++bika.lims.js/thirdparty/jquery/jquery.json.js"/>
 
   <javascript authenticated="False"
-              id="++resource++bika.lims.js/thirdparty/jquery/jquery-timepicker.js"
-              cacheable="True"
-              compression="safe"
-              conditionalcomment=""
-              cookable="True"
-              enabled="on"
-              expression=""
-              inline="False"
-              insert-after="++resource++bika.lims.js/thirdparty/jquery/jquery-barcode-2.0.2.js"/>
-
-  <javascript authenticated="False"
-              id="++resource++bika.lims.js/thirdparty/jquery/jquery-timepicker-i18n.js"
-              cacheable="True"
-              compression="safe"
-              conditionalcomment=""
-              cookable="True"
-              enabled="on"
-              expression=""
-              inline="False"
-              insert-after="++resource++bika.lims.js/thirdparty/jquery/jquery-timepicker.js"/>
-
-  <javascript authenticated="False"
               id="++resource++bika.lims.js/thirdparty/jquery/jquery.ui.combogrid-1.6.3.js"
               cacheable="True"
               compression="safe"
@@ -55,7 +55,7 @@
               enabled="on"
               expression=""
               inline="False"
-              insert-after="++resource++bika.lims.js/thirdparty/jquery/jquery-timepicker-i18n.js"/>
+              insert-after="++resource++bika.lims.js/thirdparty/jquery/jquery-barcode-2.0.2.js"/>
 
   <javascript cacheable="True"
               id="++resource++plone.app.jquerytools.dateinput.js"
@@ -88,7 +88,10 @@
               inline="False"
               insert-after="++resource++bika.lims.js/thirdparty/d3/d3.js"/>
 
-  <!-- Bika LIMS javascripts -->
+
+  <!-- *** Core JavaScripts *** -->
+
+
   <javascript authenticated="False"
               id="++resource++bika.lims.js/bika.lims.common.js"
               cacheable="True"
