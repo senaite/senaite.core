@@ -3,17 +3,6 @@
 
   <!-- Third-party libs first, always -->
   <javascript authenticated="False"
-              id="++resource++bika.lims.js/thirdparty/jquery/jquery-query-2.1.7.js"
-              cacheable="True"
-              compression="safe"
-              conditionalcomment=""
-              cookable="True"
-              enabled="on"
-              expression=""
-              inline="False"
-              insert-after="*"/>
-
-  <javascript authenticated="False"
               id="++resource++bika.lims.js/thirdparty/jquery/jquery.json.js"
               cacheable="True"
               compression="safe"
@@ -22,7 +11,7 @@
               enabled="on"
               expression=""
               inline="False"
-              insert-after="++resource++bika.lims.js/thirdparty/jquery/jquery-query-2.1.7.js"/>
+              insert-after="*"/>
 
   <javascript authenticated="True"
               id="++resource++bika.lims.js/thirdparty/jquery/jquery-barcode-2.0.2.js"

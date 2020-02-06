@@ -41,6 +41,17 @@ from zope.interface import alsoProvides
 version = "1.3.3"  # Remember version number in metadata.xml and setup.py
 profile = "profile-{0}:default".format(product)
 
+
+JAVASCRIPTS_TO_REMOVE = [
+    # replaced by minimized version in parent folder
+
+    # completely removed: reduces 7,7K per request
+    "++resource++bika.lims.js/thirdparty/jquery/jquery-query-2.1.7.js",
+]
+
+CSS_TO_REMOVE = [
+]
+
 INDEXES_TO_ADD = [
     # Replaces getSampleTypeUIDs
     ("bika_setup_catalog", "sampletype_uid", "KeywordIndex"),
@@ -302,6 +313,10 @@ def upgrade(tool):
     # Try to install the spotlight add-on
     # https://github.com/senaite/senaite.core/pull/1517
     install_senaite_core_spotlight(portal)
+
+    # remove stale CSS/JS resources
+    remove_stale_css(portal)
+    remove_stale_javascripts(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
@@ -670,3 +685,21 @@ def install_senaite_core_spotlight(portal):
         logger.info("'{}' is installed".format(profile))
         return
     qi.installProduct(profile)
+
+
+def remove_stale_javascripts(portal):
+    """Removes stale javascripts
+    """
+    logger.info("Removing stale javascripts ...")
+    for js in JAVASCRIPTS_TO_REMOVE:
+        logger.info("Unregistering JS %s" % js)
+        portal.portal_javascripts.unregisterResource(js)
+
+
+def remove_stale_css(portal):
+    """Removes stale CSS
+    """
+    logger.info("Removing stale css ...")
+    for css in CSS_TO_REMOVE:
+        logger.info("Unregistering CSS %s" % css)
+        portal.portal_css.unregisterResource(css)
