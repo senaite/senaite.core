@@ -473,4 +473,48 @@
               inline="False"
               insert-after="*"/>
 
+  <!-- Deactivate unneeded JS -->
+  <javascript
+      id="++resource++plone.app.jquery.js"
+      enabled="0"/>
+  <javascript
+      id="++resource++plone.app.discussion.javascripts/comments.js"
+      enabled="0"/>
+  <javascript
+      id="++resource++search.js"
+      enabled="0"/>
+  <javascript
+      id="modernizr.js"
+      enabled="0"/>
+  <javascript
+      id="styleswitcher.js"
+      enabled="0"/>
+  <javascript
+      id="dropdown.js"
+      enabled="0"/>
+  <javascript
+      id="inline_validation.js"
+      enabled="0"/>
+  <javascript
+      id="jquery.highlightsearchterms.js"
+      enabled="0"/>
+  <javascript
+      id="register_function.js"
+      enabled="0"/>
+  <javascript
+      id="select_all.js"
+      enabled="0"/>
+  <javascript
+      id="first_input_focus.js"
+      enabled="0"/>
+  <javascript
+      id="accessibility.js"
+      enabled="0"/>
+  <javascript
+      id="toc.js"
+      enabled="0"/>
+  <javascript
+      id="kss-bbb.js"
+      enabled="0"/>
+
 </object>

@@ -47,7 +47,7 @@ JAVASCRIPTS_TO_REMOVE = [
     "++resource++senaite.lims.jquery.js/jquery-2.2.4.min.js",
     "++resource++senaite.lims.jquery.js/jquery-migrate-1.4.1.min.js",
     "++resource++senaite.lims.bootstrap.vendor/js/bootstrap.min.js",
-    "++resource++senaite.lims.bootstrap.static/js/bootstrap-integration.js"
+    "++resource++senaite.lims.bootstrap.static/js/bootstrap-integration.js",
     # replaced by minimized version in parent folder
     # before 77K; after 41K -> reduces 36K per request
     "++resource++bika.lims.js/thirdparty/jquery/jquery-timepicker.js",
@@ -60,6 +60,7 @@ JAVASCRIPTS_TO_REMOVE = [
 CSS_TO_REMOVE = [
     # moved from lims -> core
     "++resource++senaite.lims.bootstrap.vendor/css/bootstrap.min.css",
+    "++resource++senaite.lims.bootstrap.static/css/bootstrap-integration.css",
     # removed completely
     "++resource++senaite.lims.fontawesome.vendor/css/font-awesome.min.css",
 ]
@@ -326,11 +327,13 @@ def upgrade(tool):
     # https://github.com/senaite/senaite.core/pull/1517
     install_senaite_core_spotlight(portal)
 
+    # apply resource profiles
+    setup.runImportStepFromProfile(profile, "jsregistry")
+    setup.runImportStepFromProfile(profile, "cssregistry")
+
     # remove stale CSS/JS resources
     remove_stale_css(portal)
     remove_stale_javascripts(portal)
-    # apply resource profiles
-    setup.runImportStepFromProfile(profile, "jsregistry")
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True

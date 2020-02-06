@@ -41,4 +41,60 @@
     rendering="link"
     insert-after="*"/>
 
+ <!-- Activate CSS stylesheets we need -->
+ <stylesheet
+    id="++resource++plone.app.jquerytools.overlays.css"
+    enabled="1"/>
+
+ <!-- Remove broken CSS -->
+ <stylesheet remove="True" id="invisible.css"/>
+
+ <!-- Deactivate (Remove?) CSS stylesheets that come with Sunburst theme -->
+ <!-- Keep synced with Plone's cssregistry.xml -->
+ <stylesheet
+    id="reset.css"
+    enabled="0"/>
+ <stylesheet
+     id="base.css"
+     enabled="0"/>
+ <stylesheet
+    id="print.css"
+    enabled="0"/>
+ <stylesheet
+    id="authoring.css"
+    enabled="0"/>
+ <stylesheet
+    id="RTL.css"
+    enabled="0"/>
+ <stylesheet
+    id="forms.css"
+    enabled="0"/>
+ <stylesheet
+    id="member.css"
+    enabled="0"/>
+ <stylesheet
+    id="controlpanel.css"
+    enabled="0"/>
+ <stylesheet
+    id="navtree.css"
+    enabled="0"/>
+ <stylesheet
+    id="public.css"
+    enabled="0"/>
+ <stylesheet
+    id="ploneCustom.css"
+    enabled="0"/>
+ <stylesheet
+    id="columns.css"
+    enabled="0"/>
+ <stylesheet
+    id="mobile.css"
+    enabled="0"/>
+ <stylesheet
+    id="IEFixes.css"
+    enabled="0"/>
+ <stylesheet
+    id="deprecated.css"
+    enabled="0"/>
+
 </object>
