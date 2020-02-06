@@ -30,3 +30,15 @@ Downloaded on 2020-02-05 from https://cdnjs.com/libraries/jquery-ui-timepicker-a
 
 - jquery-ui-timepicker-addon-i18n.min.js
 - jquery-ui-timepicker-addon.min.js
+
+
+## Handlebars
+
+Minimal templating on steroids
+
+URL: https://handlebarsjs.com/
+LICENSE: MIT (https://github.com/wycats/handlebars.js/blob/master/LICENSE)
+
+Downloaded on 2020-02-06 from https://s3.amazonaws.com/builds.handlebarsjs.com/handlebars.runtime.min-v4.7.2.js:
+
+- handlebars.runtime.min-v4.7.2.js
