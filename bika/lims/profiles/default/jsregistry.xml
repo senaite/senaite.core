@@ -22,12 +22,12 @@
     enabled="True" inline="False" expression="" bundle="default"
     insert-after="++resource++bika.lims.js/thirdparty/jquery-migrate-1.4.1.min.js"/>
 
-  <!-- Senaite Bootstrap Integration -->
+  <!-- Senaite Bootstrap Integration (insert at the end) -->
   <javascript
     id="++resource++senaite.core.bootstrap.static/js/bootstrap-integration.js"
     cacheable="True" compression="none" cookable="True"
     enabled="True" inline="False" expression="" bundle="default"
-    insert-after="++resource++senaite.core.bootstrap.static/js/bootstrap.min.js"/>
+    insert-after="*"/>
 
   <!-- Third-party libraries -->
   <javascript authenticated="False"
