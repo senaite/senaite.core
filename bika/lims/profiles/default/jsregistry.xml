@@ -1,7 +1,21 @@
 <?xml version="1.0"?>
 <object name="portal_javascripts" meta_type="JavaScripts Registry">
 
-  <!-- Third-party libs first, always -->
+  <!-- jQuery -->
+  <javascript
+    id="++resource++bika.lims.js/thirdparty/jquery-2.2.4.min.js"
+    cacheable="True" compression="none" cookable="True"
+    enabled="True" inline="False" expression="" bundle="default"
+    insert-before="*"/>
+
+  <!-- jQuery Migration -->
+  <javascript
+    id="++resource++bika.lims.js/thirdparty/jquery-migrate-1.4.1.min.js"
+    cacheable="True" compression="none" cookable="True"
+    enabled="True" inline="False" expression="" bundle="default"
+    insert-after="++resource++senaite.lims.jquery.js/jquery-2.2.4.min.js"/>
+
+  <!-- Third-party libraries -->
   <javascript authenticated="False"
               id="++resource++bika.lims.js/thirdparty/jquery-ui-timepicker-addon.min.js"
               cacheable="True"
