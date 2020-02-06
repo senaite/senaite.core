@@ -55,6 +55,8 @@ JAVASCRIPTS_TO_REMOVE = [
     "++resource++bika.lims.js/thirdparty/jquery/jquery-timepicker-i18n.js",
     # completely removed: reduces 7,7K per request
     "++resource++bika.lims.js/thirdparty/jquery/jquery-query-2.1.7.js",
+    # directly provided via template
+    "++resource++bika.lims.js/bika.lims.analysisrequest.add.js"
 ]
 
 CSS_TO_REMOVE = [
@@ -63,6 +65,7 @@ CSS_TO_REMOVE = [
     "++resource++senaite.lims.bootstrap.static/css/bootstrap-integration.css",
     # removed completely
     "++resource++senaite.lims.fontawesome.vendor/css/font-awesome.min.css",
+    "++resource++plone.app.discussion.stylesheets/discussion.css",
 ]
 
 INDEXES_TO_ADD = [

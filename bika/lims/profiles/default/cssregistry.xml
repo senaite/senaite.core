@@ -97,5 +97,8 @@
   <stylesheet
     id="deprecated.css"
     enabled="0"/>
+  <stylesheet
+    id="++resource++plone.app.discussion.stylesheets/discussion.css"
+    enabled="0"/>
 
 </object>

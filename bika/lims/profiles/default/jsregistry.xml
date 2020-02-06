@@ -154,17 +154,6 @@
               insert-after="*"/>
 
   <javascript authenticated="True"
-              id="++resource++bika.lims.js/bika.lims.analysisrequest.add.js"
-              cacheable="True"
-              compression="safe"
-              conditionalcomment=""
-              cookable="True"
-              enabled="on"
-              expression=""
-              inline="False"
-              insert-after="*"/>
-
-  <javascript authenticated="True"
               id="++resource++bika.lims.js/bika.lims.analysisrequest.manageresults.js"
               cacheable="True"
               compression="safe"
@@ -475,46 +464,76 @@
 
   <!-- Deactivate unneeded JS -->
   <javascript
-      id="++resource++plone.app.jquery.js"
-      enabled="0"/>
+    id="++resource++plone.app.jquery.js"
+    enabled="0"/>
   <javascript
-      id="++resource++plone.app.discussion.javascripts/comments.js"
-      enabled="0"/>
+    id="++resource++plone.app.discussion.javascripts/comments.js"
+    enabled="0"/>
   <javascript
-      id="++resource++search.js"
-      enabled="0"/>
+    id="++resource++search.js"
+    enabled="0"/>
   <javascript
-      id="modernizr.js"
-      enabled="0"/>
+    id="modernizr.js"
+    enabled="0"/>
   <javascript
-      id="styleswitcher.js"
-      enabled="0"/>
+    id="styleswitcher.js"
+    enabled="0"/>
   <javascript
-      id="dropdown.js"
-      enabled="0"/>
+    id="dropdown.js"
+    enabled="0"/>
   <javascript
-      id="inline_validation.js"
-      enabled="0"/>
+    id="inline_validation.js"
+    enabled="0"/>
   <javascript
-      id="jquery.highlightsearchterms.js"
-      enabled="0"/>
+    id="jquery.highlightsearchterms.js"
+    enabled="0"/>
   <javascript
-      id="register_function.js"
-      enabled="0"/>
+    id="register_function.js"
+    enabled="0"/>
   <javascript
-      id="select_all.js"
-      enabled="0"/>
+    id="select_all.js"
+    enabled="0"/>
   <javascript
-      id="first_input_focus.js"
-      enabled="0"/>
+    id="first_input_focus.js"
+    enabled="0"/>
   <javascript
-      id="accessibility.js"
-      enabled="0"/>
+    id="accessibility.js"
+    enabled="0"/>
   <javascript
-      id="toc.js"
-      enabled="0"/>
+    id="toc.js"
+    enabled="0"/>
   <javascript
-      id="kss-bbb.js"
-      enabled="0"/>
+    id="kss-bbb.js"
+    enabled="0"/>
+  <javascript
+    id="formsubmithelpers.js"
+    enabled="0"/>
+  <javascript
+    id="table_sorter.js"
+    enabled="0"/>
+  <javascript
+    id="dragdropreorder.js"
+    enabled="0"/>
+  <javascript
+    id="dragdropreorder.js"
+    enabled="0"/>
+  <javascript
+    id="livesearch.js"
+    enabled="0"/>
+  <javascript
+    id="nodeutilities.js"
+    enabled="0"/>
+  <javascript
+    id="discussion.js"
+    enabled="0"/>
+  <javascript
+    id="collapsiblesections.js"
+    enabled="0"/>
+  <javascript
+    id="collapsibleformfields.js"
+    enabled="0"/>
+  <javascript
+    id="calendar_formfield.js"
+    enabled="0"/>
 
 </object>
