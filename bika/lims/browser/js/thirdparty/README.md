@@ -16,6 +16,20 @@ Downloaded on 2020-02-06 from https://code.jquery.com/jquery-migrate-1.4.1.min.j
 - jquery-migrate-1.4.1.min.js
 
 
+## Bootstrap
+
+Bootstrap is the most popular HTML, CSS, and JS framework for developing
+responsive, mobile first projects on the web.
+
+URL: https://getbootstrap.com
+LICENSE: MIT (https://github.com/twbs/bootstrap/blob/v3-dev/LICENSE)
+
+Downloaded on 2020-02-06 from https://github.com/twbs/bootstrap/releases/download/v3.4.1/bootstrap-3.4.1-dist.zip:
+
+- bootstrap-3.4.1.min.js
+- bootstrap-3.4.1.min.css
+
+
 ## Timepicker for jQuery UI Datepicker
 
 The timepicker addon adds a timepicker to jQuery UI Datepicker, thus the

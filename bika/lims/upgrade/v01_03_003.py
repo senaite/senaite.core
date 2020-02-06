@@ -46,6 +46,8 @@ JAVASCRIPTS_TO_REMOVE = [
     # moved from lims -> core
     "++resource++senaite.lims.jquery.js/jquery-2.2.4.min.js",
     "++resource++senaite.lims.jquery.js/jquery-migrate-1.4.1.min.js",
+    "++resource++senaite.lims.bootstrap.vendor/js/bootstrap.min.js",
+    "++resource++senaite.lims.bootstrap.static/js/bootstrap-integration.js"
     # replaced by minimized version in parent folder
     # before 77K; after 41K -> reduces 36K per request
     "++resource++bika.lims.js/thirdparty/jquery/jquery-timepicker.js",
@@ -56,6 +58,10 @@ JAVASCRIPTS_TO_REMOVE = [
 ]
 
 CSS_TO_REMOVE = [
+    # moved from lims -> core
+    "++resource++senaite.lims.bootstrap.vendor/css/bootstrap.min.css",
+    # removed completely
+    "++resource++senaite.lims.fontawesome.vendor/css/font-awesome.min.css",
 ]
 
 INDEXES_TO_ADD = [
