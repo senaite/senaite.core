@@ -1,0 +1,138 @@
+<?xml version="1.0"?>
+<object>
+ <resourcetypes>
+  <linkable>
+   <element value="AnalysisRequest"/>
+   <element value="Client"/>
+  </linkable>
+  <customplugins>
+   <element value="plonebrowser"/>
+  </customplugins>
+  <containsanchors>
+   <element value="AnalysisRequest"/>
+  </containsanchors>
+  <allow_captioned_images value="False"/>
+  <plugins>
+   <element value="advhr"/>
+   <element value="definitionlist"/>
+   <element value="directionality"/>
+   <element value="emotions"/>
+   <element value="fullscreen"/>
+   <element value="inlinepopups"/>
+   <element value="insertdatetime"/>
+   <element value="media"/>
+   <element value="nonbreaking"/>
+   <element value="noneditable"/>
+   <element value="pagebreak"/>
+   <element value="paste"/>
+   <element value="plonebrowser"/>
+   <element value="ploneinlinestyles"/>
+   <element value="plonestyle"/>
+   <element value="preview"/>
+   <element value="print"/>
+   <element value="save"/>
+   <element value="searchreplace"/>
+   <element value="tabfocus"/>
+   <element value="table"/>
+   <element value="visualchars"/>
+   <element value="xhtmlxtras"/>
+  </plugins>
+  <containsobjects>
+   <element value="Folder"/>
+   <element value="Large Plone Folder"/>
+   <element value="Plone Site"/>
+  </containsobjects>
+  <entity_encoding value="raw"/>
+  <imageobjects>
+   <element value="Attachment"/>
+  </imageobjects>
+  <link_using_uids value="True"/>
+  <rooted value="False"/>
+ </resourcetypes>
+ <contentbrowser>
+  <anchor_selector value="h2,h3"/>
+  <image_shortcuts>
+   <element value="Home"/>
+   <element value="Current Folder"/>
+  </image_shortcuts>
+  <link_shortcuts>
+   <element value="Home"/>
+   <element value="Current Folder"/>
+  </link_shortcuts>
+ </contentbrowser>
+ <layout>
+  <styles value=""/>
+  <tablestyles>
+   <element value="Full-width|table"/>
+   <element value="Condensed|table-condensed"/>
+   <element value="Striped|table-striped"/>
+   <element value="Bordered|table-bordered"/>
+  </tablestyles>
+  <content_css
+     value="++resource++senaite.core.bootstrap.static/css/bootstrap.min.css"/>
+  <editor_height value="600"/>
+  <editor_width value="100%"/>
+  <contextmenu value="True"/>
+  <tablerowstyles>
+  </tablerowstyles>
+  <resizing value="True"/>
+  <autoresize value="False"/>
+ </layout>
+ <toolbar>
+  <toolbar_anchor value="True"/>
+  <toolbar_hr value="False"/>
+  <toolbar_insertdate value="False"/>
+  <toolbar_cut value="False"/>
+  <toolbar_definitionlist value="True"/>
+  <customtoolbarbuttons value=""/>
+  <toolbar_paste value="False"/>
+  <toolbar_justifycenter value="True"/>
+  <toolbar_inserttime value="False"/>
+  <toolbar_tablecontrols value="True"/>
+  <toolbar_justifyleft value="True"/>
+  <toolbar_redo value="False"/>
+  <toolbar_unlink value="True"/>
+  <toolbar_visualchars value="False"/>
+  <toolbar_media value="False"/>
+  <toolbar_nonbreaking value="False"/>
+  <toolbar_image value="True"/>
+  <toolbar_advhr value="False"/>
+  <toolbar_removeformat value="True"/>
+  <toolbar_undo value="False"/>
+  <toolbar_save value="True"/>
+  <toolbar_sub value="True"/>
+  <toolbar_numlist value="True"/>
+  <toolbar_underline value="True"/>
+  <toolbar_sup value="True"/>
+  <toolbar_preview value="False"/>
+  <toolbar_forecolor value="True"/>
+  <toolbar_code value="True"/>
+  <toolbar_style value="True"/>
+  <toolbar_link value="True"/>
+  <toolbar_emotions value="False"/>
+  <toolbar_justifyright value="True"/>
+  <toolbar_replace value="False"/>
+  <toolbar_outdent value="True"/>
+  <toolbar_strikethrough value="False"/>
+  <toolbar_pasteword value="True"/>
+  <toolbar_width value="440"/>
+  <toolbar_print value="False"/>
+  <toolbar_spellchecker value="False"/>
+  <toolbar_justifyfull value="True"/>
+  <toolbar_charmap value="False"/>
+  <toolbar_bullist value="True"/>
+  <toolbar_copy value="False"/>
+  <toolbar_pastetext value="False"/>
+  <toolbar_visualaid value="False"/>
+  <toolbar_indent value="True"/>
+  <toolbar_search value="False"/>
+  <toolbar_fullscreen value="True"/>
+  <toolbar_italic value="True"/>
+  <toolbar_attribs value="False"/>
+  <toolbar_pagebreak value="False"/>
+  <toolbar_bold value="True"/>
+  <toolbar_backcolor value="True"/>
+  <toolbar_external value="False"/>
+  <toolbar_cleanup value="False"/>
+ </toolbar>
+</object>

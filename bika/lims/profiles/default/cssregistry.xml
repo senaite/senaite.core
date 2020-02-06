@@ -10,14 +10,14 @@
     enabled="1" expression=""
     insert-before="*"/>
 
-  <!-- Bootstrap Integration CSS -->
+  <!-- Bootstrap Integration CSS (insert at the end) -->
   <stylesheet
     id="++resource++senaite.core.bootstrap.static/css/bootstrap-integration.css"
     applyPrefix="True"
     media="" rel="stylesheet" rendering="link"
     cacheable="True" compression="safe" cookable="True"
     enabled="1" expression=""
-    insert-after="++resource++senaite.core.bootstrap.static/css/bootstrap.min.css"/>
+    insert-after="*"/>
 
   <!-- Core CSS -->
   <stylesheet
