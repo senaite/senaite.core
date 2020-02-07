@@ -41,6 +41,32 @@ from zope.interface import alsoProvides
 version = "1.3.3"  # Remember version number in metadata.xml and setup.py
 profile = "profile-{0}:default".format(product)
 
+
+JAVASCRIPTS_TO_REMOVE = [
+    # moved from lims -> core
+    "++resource++senaite.lims.jquery.js/jquery-2.2.4.min.js",
+    "++resource++senaite.lims.jquery.js/jquery-migrate-1.4.1.min.js",
+    "++resource++senaite.lims.bootstrap.vendor/js/bootstrap.min.js",
+    "++resource++senaite.lims.bootstrap.static/js/bootstrap-integration.js",
+    # replaced by minimized version in parent folder
+    # before 77K; after 41K -> reduces 36K per request
+    "++resource++bika.lims.js/thirdparty/jquery/jquery-timepicker.js",
+    # before 26K; after 16K -> reduces 10K per request
+    "++resource++bika.lims.js/thirdparty/jquery/jquery-timepicker-i18n.js",
+    # completely removed: reduces 7,7K per request
+    "++resource++bika.lims.js/thirdparty/jquery/jquery-query-2.1.7.js",
+    # directly provided via template
+    "++resource++bika.lims.js/bika.lims.analysisrequest.add.js"
+]
+
+CSS_TO_REMOVE = [
+    # moved from lims -> core
+    "++resource++senaite.lims.bootstrap.vendor/css/bootstrap.min.css",
+    "++resource++senaite.lims.bootstrap.static/css/bootstrap-integration.css",
+    # removed completely
+    "++resource++senaite.lims.fontawesome.vendor/css/font-awesome.min.css",
+]
+
 INDEXES_TO_ADD = [
     # Replaces getSampleTypeUIDs
     ("bika_setup_catalog", "sampletype_uid", "KeywordIndex"),
@@ -302,6 +328,15 @@ def upgrade(tool):
     # Try to install the spotlight add-on
     # https://github.com/senaite/senaite.core/pull/1517
     install_senaite_core_spotlight(portal)
+
+    # apply resource profiles
+    setup.runImportStepFromProfile(profile, "jsregistry")
+    setup.runImportStepFromProfile(profile, "cssregistry")
+    setup.runImportStepFromProfile(profile, "tinymce_settings")
+
+    # remove stale CSS/JS resources
+    remove_stale_css(portal)
+    remove_stale_javascripts(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
@@ -670,3 +705,21 @@ def install_senaite_core_spotlight(portal):
         logger.info("'{}' is installed".format(profile))
         return
     qi.installProduct(profile)
+
+
+def remove_stale_javascripts(portal):
+    """Removes stale javascripts
+    """
+    logger.info("Removing stale javascripts ...")
+    for js in JAVASCRIPTS_TO_REMOVE:
+        logger.info("Unregistering JS %s" % js)
+        portal.portal_javascripts.unregisterResource(js)
+
+
+def remove_stale_css(portal):
+    """Removes stale CSS
+    """
+    logger.info("Removing stale css ...")
+    for css in CSS_TO_REMOVE:
+        logger.info("Unregistering CSS %s" % css)
+        portal.portal_css.unregisterResource(css)

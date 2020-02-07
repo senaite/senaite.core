@@ -16,7 +16,6 @@
   <include file="attachment.zcml"/>
   <include file="auditlog.zcml"/>
   <include file="batchfolder.zcml"/>
-  <include file="bootstrap.zcml"/>
   <include file="calcs.zcml"/>
   <include file="clientfolder.zcml"/>
   <include file="contact.zcml"/>
@@ -39,6 +38,7 @@
 
   <include package=".analysisrequest"/>
   <include package=".batch"/>
+  <include package=".bootstrap"/>
   <include package=".client"/>
   <include package=".dashboard"/>
   <include package=".department"/>
