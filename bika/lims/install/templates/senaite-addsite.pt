@@ -12,7 +12,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title i18n:translate="">Install SENAITE LIMS</title>
   <link rel="stylesheet" type="text/css"
-        tal:attributes="href string:${context/absolute_url}/++resource++senaite.core.bootstrap.static/css/bootstrap.min.css"
+        tal:attributes="href string:${context/absolute_url}/++resource++bootstrap.min.css"
         href="bootstrap.min.css" />
   <link href="favicon.ico" rel="icon" type="image/x-icon"
         tal:attributes="href string:${context/absolute_url}/++resource++favicon.ico"/>

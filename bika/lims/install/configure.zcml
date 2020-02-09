@@ -30,6 +30,10 @@
 
   <!-- browser resources used in templates -->
   <browser:resource
+      file="../browser/bootstrap/static/css/bootstrap.min.css"
+      name="bootstrap.min.css"/>
+
+  <browser:resource
       file="images/logo.png"
       name="senaite-logo.png"/>
 
