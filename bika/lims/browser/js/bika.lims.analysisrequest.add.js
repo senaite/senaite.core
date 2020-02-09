@@ -1230,7 +1230,8 @@
         cache: false,
         dataType: 'json',
         processData: false,
-        contentType: false
+        contentType: false,
+        timeout: 600000
       };
       $.extend(ajax_options, options);
 
@@ -1239,6 +1240,11 @@
       $(me).trigger("ajax:start");
       return $.ajax(ajax_options).always(function(data) {
         return $(me).trigger("ajax:end");
+      }).fail(function(request, status, error) {
+        var msg;
+        msg = _("Sorry, an error occured: " + status);
+        window.bika.lims.portalMessage(msg);
+        return window.scroll(0, 0);
       });
     };
 
