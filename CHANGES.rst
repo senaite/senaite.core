@@ -7,6 +7,7 @@ Changelog
 
 **Added**
 
+- #1523 Moved Installation Screens into core
 - #1520 JavaScripts/CSS Integration and Cleanup
 - #1517 Integrate senaite.core.spotlight
 - #1516 Consider analyses with result options or string in duplicate valid range
@@ -33,7 +34,7 @@ Changelog
 - #1502 Improved DateTime Widget
 - #1490 Support Dexterity Behavior Fields in API
 - #1488 Support Dexterity Contents in Catalog Indexers
-- #1486 Clean-up of indexes and metadata from `setup_catalog`
+- #1486 Clean-up of indexes and metadata from `setup_catalog
 
 **Removed**
 
