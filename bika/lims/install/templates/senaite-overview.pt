@@ -1,0 +1,117 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      lang="en"
+      i18n:domain="senaite.lims">
+
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title i18n:translate="">Welcome to SENAITE LIMS</title>
+  <link rel="stylesheet" type="text/css"
+        tal:attributes="href string:${context/absolute_url}/++resource++bootstrap.min.css"
+        href="bootstrap.min.css" />
+  <link href="favicon.ico" rel="icon" type="image/x-icon"
+        tal:attributes="href string:${context/absolute_url}/++resource++favicon.ico"/>
+</head>
+<body tal:define="sites view/sites">
+
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-6 col-sm-offset-3">
+
+        <h1>
+          <!-- SENAITE LOGO -->
+          <img src="senaite-logo.png"
+               width="250"
+               tal:attributes="src string:${context/absolute_url}/++resource++senaite-logo.png" />
+          <small class="lead">Open Source LIMS Project</small>
+        </h1>
+        <hr/>
+
+        <!-- Found 1 SENAITE installation -->
+        <tal:block tal:condition="sites">
+          <div class="row">
+            <div class="col-sm-12">
+              <p class="lead text-muted" i18n:translate="">Current SENAITE Installations</p>
+              <div class="list-group">
+                <div class="list-group-item" tal:repeat="site sites">
+                  <img class="img"
+                       height="16"
+                       style="vertical-align:middle;"
+                       tal:attributes="src string:${site/absolute_url}/++resource++senaite-icon.png"/>
+                  <a href="#"
+                     tal:attributes="href site/absolute_url"
+                     title="Go to your SENAITE installation"
+                     i18n:attributes="title;">
+                    <span tal:replace="site/title"/> (<span tal:replace="site/id"/>)
+                  </a>
+                  <form action=""
+                        method="get"
+                        class="form-inline"
+                        tal:condition="python:view.outdated(site)"
+                        tal:attributes="action python:view.upgrade_url(site)">
+                    <div i18n:translate="" class="help-block">
+                      This site configuration is outdated and needs to be upgraded:
+                    </div>
+                    <input tal:condition="not:view/can_manage"
+                           type="hidden" name="came_from"
+                           tal:attributes="value python:view.upgrade_url(site, can_manage=True)"/>
+                    <input type="submit"
+                           class="btn btn-xs btn-success"
+                           value="Upgrade&hellip;"
+                           i18n:attributes="value label_upgrade_hellip" />
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </tal:block>
+
+        <!-- SENAITE not installed -->
+        <tal:block tal:condition="not:sites">
+          <div class="row">
+            <div class="col-sm-12">
+              <form id="add-senaite-site"
+                    method="get"
+                    action="#"
+                    tal:attributes="action string:${context/absolute_url}/@@senaite-addsite">
+                <p i18n:translate="" class="">
+                  SENAITE is not installed yet. Click the button below to install it now:
+                </p>
+                <input type="hidden" name="site_id" value="senaite" />
+                <input type="submit"
+                       class="btn btn-xl btn-primary"
+                       i18n:attributes="value"
+                       value="Install SENAITE LIMS" />
+              </form>
+            </div>
+          </div>
+        </tal:block>
+
+        <!-- Community Links -->
+        <div class="row">
+          <div class="col-sm-12">
+            <hr/>
+            <div i18n:translate="" class="lead">
+              Meet the community, browse the code and get support on
+            </div>
+            <ul class="list list-inline list-justified">
+              <li><a class="btn btn-default" href="https://www.senaite.com" title="Website" target="_blank">Website</a></li>
+              <li><a class="btn btn-default" href="https://community.senaite.com" title="SENAITE community" target="_blank">Community Site</a></li>
+              <li><a class="btn btn-default" href="https://gitter.im/senaite/Lobby" title="Gitter Chat" target="_blank">Gitter Chat</a></li>
+              <li><a class="btn btn-default" href="https://github.com/senaite" title="GitHub" target="_blank">GitHub</a></li>
+              <li><a class="btn btn-default" href="https://twitter.com/senaitelims" title="Twitter" target="_blank">Twitter</a></li>
+            </ul>
+          </div>
+        </div>
+
+      </div> <!-- col-sm-6 col-sm-offset-3 -->
+    </div> <!-- /row -->
+  </div> <!-- /container -->
+
+</body>
+</html>

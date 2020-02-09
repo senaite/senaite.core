@@ -30,6 +30,7 @@
   <include package=".content" />
   <include package=".controlpanel" />
   <include package=".exportimport" />
+  <include package=".install" />
   <include package=".interfaces" />
   <include package=".jsonapi" />
   <include package=".locales" />
