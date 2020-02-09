@@ -44,6 +44,7 @@ Changelog
 
 **Fixed**
 
+- #1522 Fix sporadical timeout issue when adding new samples/remarks
 - #1506 Changes via manage results don't get applied to partitions
 - #1506 Fix recursion error when getting dependencies through Calculation
 - #1506 setter from ARAnalysisField does no longer return values
