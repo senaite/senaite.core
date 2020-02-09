@@ -206,18 +206,12 @@
       options = {
         url: this.get_portal_url() + "/@@API/update",
         data: {
-          obj_uid: widget.attr('data-uid'),
-          timeout: 600000
+          obj_uid: widget.attr('data-uid')
         }
       };
       options.data[fieldname] = value;
       this.ajax_submit(options).done(function(data) {
         return deferred.resolveWith(this, [[]]);
-      }).fail(function(request, status, error) {
-        var msg;
-        msg = _("Sorry, an error occured: " + status);
-        window.bika.lims.portalMessage(msg);
-        return window.scroll(0, 0);
       });
       return deferred.promise();
     };
@@ -266,7 +260,7 @@
        *    jQuery ajax options
        * @returns {Deferred} XHR request
        */
-      var done;
+      var done, fail;
       console.debug("°°° ajax_submit °°°");
       if (options == null) {
         options = {};
@@ -286,12 +280,21 @@
       if (options.data == null) {
         options.data = {};
       }
+      if (options.timeout == null) {
+        options.timeout = 600000;
+      }
       console.debug(">>> ajax_submit::options=", options);
       $(this).trigger("ajax:submit:start");
       done = function() {
         return $(this).trigger("ajax:submit:end");
       };
-      return $.ajax(options).done(done);
+      fail = function(request, status, error) {
+        var msg;
+        msg = _("Sorry, an error occured: " + status);
+        window.bika.lims.portalMessage(msg);
+        return window.scroll(0, 0);
+      };
+      return $.ajax(options).done(done).fail(fail);
     };
 
     RemarksWidgetView.prototype.get_portal_url = function() {
