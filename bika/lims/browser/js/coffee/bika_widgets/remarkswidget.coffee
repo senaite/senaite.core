@@ -158,15 +158,10 @@ class window.RemarksWidgetView
       url: @get_portal_url() + "/@@API/update"
       data:
         obj_uid: widget.attr('data-uid')
-        timeout: 600000  # 10 minutes timeout
     options.data[fieldname] = value
     @ajax_submit options
     .done (data) ->
       return deferred.resolveWith this, [[]]
-    .fail (request, status, error) ->
-      msg = _("Sorry, an error occured: #{status}")
-      window.bika.lims.portalMessage msg
-      window.scroll 0, 0
     return deferred.promise()
 
   ### EVENT HANDLERS ###
@@ -213,13 +208,18 @@ class window.RemarksWidgetView
     options.context ?= this
     options.dataType ?= "json"
     options.data ?= {}
+    options.timeout ?= 600000  # 10 minutes timeout
 
     console.debug ">>> ajax_submit::options=", options
 
     $(this).trigger "ajax:submit:start"
     done = ->
       $(this).trigger "ajax:submit:end"
-    return $.ajax(options).done done
+    fail = (request, status, error) ->
+      msg = _("Sorry, an error occured: #{status}")
+      window.bika.lims.portalMessage msg
+      window.scroll 0, 0
+    return $.ajax(options).done(done).fail(fail)
 
   get_portal_url: =>
     ###
