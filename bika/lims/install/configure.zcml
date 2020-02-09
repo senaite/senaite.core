@@ -1,0 +1,48 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:plone="http://namespaces.plone.org/plone"
+    i18n_domain="senaite.core">
+
+  <include package="plone.app.controlpanel" file="permissions.zcml" />
+
+  <!-- SENAITE install screen -->
+  <browser:page
+      for="OFS.interfaces.IApplication"
+      name="senaite-addsite"
+      class="Products.CMFPlone.browser.admin.AddPloneSite"
+      permission="zope2.ViewManagementScreens"
+      template="templates/senaite-addsite.pt"/>
+
+  <!-- ZOPE root overview screen -->
+  <browser:page
+      for="OFS.interfaces.IApplication"
+      name="senaite-overview"
+      class="Products.CMFPlone.browser.admin.Overview"
+      permission="zope.Public"
+      template="templates/senaite-overview.pt"/>
+
+  <!-- App traverser to show the overview screen -->
+  <adapter
+      for="OFS.interfaces.IApplication
+           zope.publisher.interfaces.browser.IBrowserRequest"
+      factory=".adapters.SenaiteAppTraverser"/>
+
+  <!-- browser resources used in templates -->
+  <browser:resource
+      file="../browser/bootstrap/static/css/bootstrap.min.css"
+      name="bootstrap.min.css"/>
+
+  <browser:resource
+      file="images/logo.png"
+      name="senaite-logo.png"/>
+
+  <browser:resource
+      file="images/icon.png"
+      name="senaite-icon.png"/>
+
+  <browser:resource
+      file="images/favicon.ico"
+      name="favicon.ico"/>
+
+</configure>

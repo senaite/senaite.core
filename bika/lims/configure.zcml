@@ -11,12 +11,7 @@
 
   <i18n:registerTranslations directory="locales" />
 
-<includeDependencies package="." />
-//  <include package="jarn.jsi18n" />
-//  <include package="plone.app.z3cform" />
-//  <include package="Products.TinyMCE" />
-//  <include package="Products.CMFCore" />
-//  <include package="collective.monkeypatcher" />
+  <includeDependencies package="." />
 
   <five:registerPackage package="." initialize=".initialize" />
 
@@ -30,6 +25,7 @@
   <include package=".content" />
   <include package=".controlpanel" />
   <include package=".exportimport" />
+  <include package=".install" />
   <include package=".interfaces" />
   <include package=".jsonapi" />
   <include package=".locales" />
@@ -60,35 +56,38 @@
 
   <!-- jquery redirects here when values are entered into 'document' context (barcodes) -->
   <browser:page
-    for="*"
-    name="barcode_entry"
-    class="bika.lims.barcode.barcode_entry"
-    permission="zope.Public"
-    layer="bika.lims.interfaces.IBikaLIMS"
-  />
+      for="*"
+      name="barcode_entry"
+      class="bika.lims.barcode.barcode_entry"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
 
-  <!-- Put javascript errors in Plone log -->
+  <!-- XXX: to be removed
+       Put javascript errors in Plone log -->
   <browser:page
-    for="*"
-    name="js_log"
-    class="bika.lims.utils.js_log"
-    permission="zope.Public"
-    layer="bika.lims.interfaces.IBikaLIMS"
-  />
-   <browser:page
-    for="*"
-    name="js_warn"
-    class="bika.lims.utils.js_warn"
-    permission="zope.Public"
-    layer="bika.lims.interfaces.IBikaLIMS"
-  />
+      for="*"
+      name="js_log"
+      class="bika.lims.utils.js_log"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
+
   <browser:page
-    for="*"
-    name="js_err"
-    class="bika.lims.utils.js_err"
-    permission="zope.Public"
-    layer="bika.lims.interfaces.IBikaLIMS"
-  />
+      for="*"
+      name="js_warn"
+      class="bika.lims.utils.js_warn"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
+
+  <browser:page
+      for="*"
+      name="js_err"
+      class="bika.lims.utils.js_err"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
 
   <browser:resource
       file="skins/bika/senaite-core-logo.png"
@@ -103,5 +102,6 @@
   <utility
       provides="bika.lims.interfaces.INumberGenerator"
       factory=".numbergenerator.NumberGenerator"
-  />
+      />
+
 </configure>

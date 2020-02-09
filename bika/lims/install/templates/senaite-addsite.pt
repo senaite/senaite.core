@@ -1,0 +1,138 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      lang="en"
+      i18n:domain="senaite.lims">
+
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title i18n:translate="">Install SENAITE LIMS</title>
+  <link rel="stylesheet" type="text/css"
+        tal:attributes="href string:${context/absolute_url}/++resource++bootstrap.min.css"
+        href="bootstrap.min.css" />
+  <link href="favicon.ico" rel="icon" type="image/x-icon"
+        tal:attributes="href string:${context/absolute_url}/++resource++favicon.ico"/>
+</head>
+<body>
+
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-6 col-sm-offset-3">
+        <h1>
+          <!-- SENAITE LOGO -->
+          <img src="senaite-logo.png"
+               width="250"
+               tal:attributes="src string:${context/absolute_url}/++resource++senaite-logo.png" />
+          <small class="lead">Open Source LIMS Project</small>
+        </h1>
+        <hr/>
+
+        <!-- SENAITE install form -->
+        <div class="row">
+          <div class="col-sm-12">
+            <form class="form"
+                  action="/"
+                  method="post"
+                  tal:attributes="action string:${context/absolute_url}/@@senaite-addsite"
+                  tal:define="profiles view/profiles;
+                              base_profiles profiles/base;
+                              default_profile profiles/default;
+                              extension_profiles profiles/extensions;
+                              advanced request/advanced|nothing;">
+
+              <div class="form-group">
+                <label for="site_id" i18n:translate="">Path identifier</label>
+                <input class="form-control" type="text" name="site_id" id="site_id"
+                       tal:attributes="value request/site_id|nothing" />
+                <div class="help-block" i18n:translate="">
+                  The id of the site. This ends up as part of the URL.<br />
+                  No special characters are allowed.
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="title" i18n:translate="label_title">Title</label>
+                <input class="form-control" type="text" name="title" value="SENAITE" />
+                <div class="help-block" i18n:translate="">
+                  A short title for the site. This will be shown in the title of the
+                  browser window on each page.
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="default_language" i18n:translate="">Language</label>
+                <select class="form-control"
+                        name="default_language"
+                        tal:define="browser_language view/browser_language;
+                               languages python:view.languages(browser_language)">
+                  <option value="en"
+                          tal:repeat="lang languages"
+                          tal:attributes="value python:lang[0];
+                                 selected python:lang[0]==browser_language"
+                          tal:content="python: lang[1]">
+                    English
+                  </option>
+                </select>
+                <div class="help-block" i18n:translate="">
+                  The main language of the site.
+                </div>
+
+              </div>
+
+              <tal:extensionprofiles condition="extension_profiles">
+                <tal:addons tal:repeat="info extension_profiles">
+                  <tal:info tal:define="selected info/selected|nothing">
+                    <tal:normal tal:condition="python: not selected or advanced">
+                      <input type="checkbox" name="extension_ids:list" value=""
+                             style="display:none;"
+                             tal:attributes="value info/id;
+                                   id info/id;
+                                   checked info/selected|nothing;" />
+                    </tal:normal>
+                    <tal:hidden tal:condition="python: selected and not advanced">
+                      <input type="hidden" name="extension_ids:list" value=""
+                             tal:attributes="value info/id;
+                                   checked info/selected|nothing;" />
+                    </tal:hidden>
+                  </tal:info>
+                </tal:addons>
+              </tal:extensionprofiles>
+
+              <div>
+                <input type="hidden" name="extension_ids:list" value="senaite.lims:default" />
+                <input type="hidden" name="form.submitted:boolean" value="True" />
+                <input  class="btn btn-primary btn-xl" type="submit" name="submit" value="Install SENAITE LIMS"
+                        i18n:attributes="value;" />
+              </div>
+
+            </form>
+          </div>
+        </div>
+
+        <!-- Community Links -->
+        <div class="row">
+          <div class="col-sm-12">
+            <hr/>
+            <div i18n:translate="" class="lead">
+              Meet the community, browse the code and get support on
+            </div>
+            <ul class="list list-inline list-justified">
+              <li><a class="btn btn-default" href="https://www.senaite.com" title="Website" target="_blank">Website</a></li>
+              <li><a class="btn btn-default" href="https://community.senaite.com" title="SENAITE community" target="_blank">Community Site</a></li>
+              <li><a class="btn btn-default" href="https://gitter.im/senaite/Lobby" title="Gitter Chat" target="_blank">Gitter Chat</a></li>
+              <li><a class="btn btn-default" href="https://github.com/senaite" title="GitHub" target="_blank">GitHub</a></li>
+              <li><a class="btn btn-default" href="https://twitter.com/senaitelims" title="Twitter" target="_blank">Twitter</a></li>
+            </ul>
+          </div>
+        </div>
+
+      </div> <!-- col-sm-6 col-sm-offset-3 -->
+    </div> <!-- /row -->
+  </div> <!-- /container -->
+
+</body>
+</html>
