@@ -158,10 +158,15 @@ class window.RemarksWidgetView
       url: @get_portal_url() + "/@@API/update"
       data:
         obj_uid: widget.attr('data-uid')
+        timeout: 600000  # 10 minutes timeout
     options.data[fieldname] = value
     @ajax_submit options
     .done (data) ->
       return deferred.resolveWith this, [[]]
+    .fail (request, status, error) ->
+      msg = _("Sorry, an error occured: #{status}")
+      window.bika.lims.portalMessage msg
+      window.scroll 0, 0
     return deferred.promise()
 
   ### EVENT HANDLERS ###

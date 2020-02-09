@@ -1250,6 +1250,7 @@ class window.AnalysisRequestAdd
       processData: false
       contentType: false
       # contentType: 'application/x-www-form-urlencoded; charset=UTF-8'
+      timeout: 600000  # 10 minutes timeout
 
     # Update Options
     $.extend(ajax_options, options)
@@ -1262,6 +1263,10 @@ class window.AnalysisRequestAdd
     $.ajax(ajax_options).always (data) ->
       # Always notify Ajax end
       $(me).trigger "ajax:end"
+    .fail (request, status, error) ->
+      msg = _("Sorry, an error occured: #{status}")
+      window.bika.lims.portalMessage msg
+      window.scroll 0, 0
 
 
   on_ajax_start: =>

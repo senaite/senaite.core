@@ -206,12 +206,18 @@
       options = {
         url: this.get_portal_url() + "/@@API/update",
         data: {
-          obj_uid: widget.attr('data-uid')
+          obj_uid: widget.attr('data-uid'),
+          timeout: 600000
         }
       };
       options.data[fieldname] = value;
       this.ajax_submit(options).done(function(data) {
         return deferred.resolveWith(this, [[]]);
+      }).fail(function(request, status, error) {
+        var msg;
+        msg = _("Sorry, an error occured: " + status);
+        window.bika.lims.portalMessage(msg);
+        return window.scroll(0, 0);
       });
       return deferred.promise();
     };
