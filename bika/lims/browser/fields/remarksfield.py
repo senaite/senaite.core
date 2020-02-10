@@ -230,47 +230,53 @@ class RemarksField(ObjectField):
 
         return remarks
 
-    def _parse_legacy_remarks(self, remarks):
-        """Parse legacy remarks
+    def _parse_legacy_remarks(self, text):
+        """Parse legacy remarks from the text
         """
+
+        # split legacy remarks on the complete delimiter, e.g.:
+        # === Tue, 28 Jan 2020 06:53:58 +0100 (admin)\nThis is a Test
+        lines = re.split(r"(===) ([A-Za-z]{3}, \d{1,2} [A-Za-z]{3} \d{2,4} \d{2}:\d{2}:\d{2} [+-]{1}\d{4}) \((.*?)\)", text)  # noqa
+
+        entry = None
         records = []
-        # split legacy remarks on the "===" delimiter into lines
-        lines = remarks.split("===")
+
+        # group into remark entries of date, user-id and content
         for line in lines:
-            # skip empty lines
-            if line == "":
+            # start a new remarks entry when the marker was found
+            if line == "===":
+                entry = []
+                # immediately append the new entry to the records
+                records.append(entry)
+                # skip the marker entry
                 continue
 
-            # strip leading and trailing whitespaces
-            line = line.strip()
+            # append the line to the entry until the next marker is found
+            # -> this also skips the empty first line
+            if entry is not None:
+                entry.append(line)
 
-            # split the line into date, user and content
-            groups = re.findall(r"([A-Za-z]{3}, \d{1,2} [A-Za-z]{3} \d{2,4} \d{2}:\d{2}:\d{2} \+\d{4}) \((.*?)\)\n(.*)", line, re.DOTALL)  # noqa
-
-            # we should have one tuple in the list
-            if len(groups) != 1:
-                continue
-
-            group = groups[0]
-
-            # cancel the whole parsing
-            if len(group) != 3:
+        remarks = []
+        for record in records:
+            # each record must contain the date, user-id and text
+            # -> we invalidate the whole parsing if this is not given
+            if len(record) != 3:
                 return None
 
-            created, userid, content = group
+            created, userid, content = record
 
             # try to get the full name of the user id
             fullname = self._get_fullname_from_user_id(userid)
 
-            # append the record
-            records.append({
-                "created": created,
-                "user_id": userid,
-                "user_name": fullname,
-                "content": content,
+            # append a remarks record
+            remarks.append({
+               "created": created,
+               "user_id": userid,
+               "user_name": fullname,
+               "content": content,
             })
 
-        return records
+        return remarks
 
     def _get_fullname_from_user_id(self, userid, default=""):
         """Try the fullname of the user
