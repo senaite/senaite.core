@@ -329,6 +329,10 @@ def upgrade(tool):
     # https://github.com/senaite/senaite.core/pull/1517
     install_senaite_core_spotlight(portal)
 
+    # Don't allow Analysts to create partitions
+    setup.runImportStepFromProfile(profile, "workflow")
+    update_wf_received_samples(portal)
+
     # apply resource profiles
     setup.runImportStepFromProfile(profile, "jsregistry")
     setup.runImportStepFromProfile(profile, "cssregistry")
@@ -723,3 +727,24 @@ def remove_stale_css(portal):
     for css in CSS_TO_REMOVE:
         logger.info("Unregistering CSS %s" % css)
         portal.portal_css.unregisterResource(css)
+
+
+def update_wf_received_samples(portal):
+    """Updates workflow mappings for root samples that are in received status
+    """
+    logger.info("Updating workflow mappings for received samples ...")
+    wf_tool = api.get_tool("portal_workflow")
+    sample_workflow = wf_tool.getWorkflowById("bika_ar_workflow")
+    query = dict(portal_type="AnalysisRequest",
+                 isRootAncestor=True,
+                 review_state="received")
+    brains = api.search(query, CATALOG_ANALYSIS_REQUEST_LISTING)
+    total = len(brains)
+    for num, brain in enumerate(brains):
+        if num and num % 1000 == 0:
+            logger.info("{}/{} samples processed ...".format(num, total))
+        sample = api.get_object(brain)
+        sample_workflow.updateRoleMappingsFor(sample)
+        sample.reindexObject()
+
+    logger.info("Updating workflow mappings for received samples [DONE]")

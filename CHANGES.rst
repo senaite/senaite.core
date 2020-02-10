@@ -45,6 +45,7 @@ Changelog
 
 **Fixed**
 
+- #1525 Fix error when creating partitions with analyst user
 - #1522 Fix sporadical timeout issue when adding new samples/remarks
 - #1506 Changes via manage results don't get applied to partitions
 - #1506 Fix recursion error when getting dependencies through Calculation
