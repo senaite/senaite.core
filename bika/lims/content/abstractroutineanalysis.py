@@ -226,11 +226,11 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
         return None
 
     @security.public
-    def isSampleSampled(instance):
+    def isSampleSampled(self):
         """Returns whether if the Analysis Request this analysis comes from has
         been received or not
         """
-        return instance.getDateSampled() and True or False
+        return self.getDateSampled() and True or False
 
     @security.public
     def getStartProcessDate(self):
@@ -319,22 +319,6 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
         sample_type = self.getSampleType()
         if sample_type:
             return api.get_uid(sample_type)
-
-    @security.public
-    def getBatchUID(self):
-        """This method is used to populate catalog values
-        """
-        request = self.getRequest()
-        if request:
-            return request.getBatchUID()
-
-    @security.public
-    def getAnalysisRequestPrintStatus(self):
-        """This method is used to populate catalog values
-        """
-        request = self.getRequest()
-        if request:
-            return request.getPrinted()
 
     @security.public
     def getResultsRange(self):

@@ -207,6 +207,14 @@ INDEXES_TO_REMOVE = [
     # getCategoryUID --> category_uid
     ("bika_setup_catalog", "getCategoryUID"),
 
+    # Not used anywhere
+    (CATALOG_ANALYSIS_LISTING, "getAnalysisRequestPrintStatus"),
+    (CATALOG_ANALYSIS_LISTING, "getBatchUID"),
+
+    # Only used in Add analyses (as sortable column)
+    (CATALOG_ANALYSIS_LISTING, "getClientOrderNumber"),
+    (CATALOG_ANALYSIS_LISTING, "getDateSampled"),
+
 ]
 
 METADATA_TO_REMOVE = [

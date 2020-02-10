@@ -171,9 +171,6 @@ def after_sample(analysis_request):
     passed in is performed
     """
     analysis_request.setDateSampled(DateTime())
-    idxs = ['getDateSampled']
-    for analysis in analysis_request.getAnalyses(full_objects=True):
-        analysis.reindexObject(idxs=idxs)
 
 
 def after_rollback_to_receive(analysis_request):

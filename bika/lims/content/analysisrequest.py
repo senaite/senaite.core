@@ -1554,7 +1554,6 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         original_value = self.Schema().getField('Batch').get(self)
         if original_value != value:
             self.Schema().getField('Batch').set(self, value)
-            self._reindexAnalyses(['getBatchUID'], False)
 
     def getDefaultMemberDiscount(self):
         """Compute default member discount if it applies
