@@ -245,7 +245,7 @@ class RemarksField(ObjectField):
             line = line.strip()
 
             # split the line into date, user and content
-            groups = re.findall(r"(.*) \((.*)\)\n(.*)", line, re.DOTALL)
+            groups = re.findall(r"([A-Za-z]{3}, \d{1,2} [A-Za-z]{3} \d{2,4} \d{2}:\d{2}:\d{2} \+\d{4}) \((.*?)\)\n(.*)", line, re.DOTALL)  # noqa
 
             # we should have one tuple in the list
             if len(groups) != 1:
