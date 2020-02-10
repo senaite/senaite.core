@@ -761,8 +761,7 @@ class AnalysisRequestsView(BikaListingView):
     @property
     def copy_to_new_allowed(self):
         mtool = api.get_tool("portal_membership")
-        if mtool.checkPermission(ManageAnalysisRequests, self.context) \
-                or mtool.checkPermission(ModifyPortalContent, self.context):
+        if mtool.checkPermission(AddAnalysisRequest, self.context):
             return True
         return False
 
