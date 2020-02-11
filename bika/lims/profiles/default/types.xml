@@ -24,7 +24,6 @@
  <object name="BatchFolder" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="BatchLabel" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="BatchLabels" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="BikaCache" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="BikaSetup" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Calculation" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Calculations" meta_type="Factory-based Type Information with dynamic views"/>
@@ -50,8 +49,6 @@
  <object name="InstrumentLocations" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="InstrumentValidation" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Invoice" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="InvoiceBatch" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="InvoiceFolder" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="LabContact" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="LabContacts" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="LabProduct" meta_type="Factory-based Type Information with dynamic views"/>

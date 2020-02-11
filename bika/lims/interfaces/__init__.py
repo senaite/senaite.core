@@ -270,16 +270,6 @@ class IInvoice(Interface):
     """
 
 
-class IInvoiceBatch(Interface):
-    """Invoice Batch
-    """
-
-
-class IInvoiceFolder(Interface):
-    """Invoices Folder
-    """
-
-
 class IBikaSetup(Interface):
     """Marker interface for the LIMS Setup
     """

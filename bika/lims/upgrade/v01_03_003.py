@@ -42,6 +42,14 @@ version = "1.3.3"  # Remember version number in metadata.xml and setup.py
 profile = "profile-{0}:default".format(product)
 
 
+TYPES_TO_REMOVE = [
+    "BikaCache",
+    "RejectAnalysis",
+    # invoices were removed in upgrade step 1.3.0
+    "InvoiceBatch",
+    "InvoiceFolder",
+]
+
 JAVASCRIPTS_TO_REMOVE = [
     # moved from lims -> core
     "++resource++senaite.lims.jquery.js/jquery-2.2.4.min.js",
@@ -349,6 +357,9 @@ def upgrade(tool):
     # remove stale CSS/JS resources
     remove_stale_css(portal)
     remove_stale_javascripts(portal)
+
+    # remove stale type regsitrations
+    remove_stale_type_registrations(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
@@ -756,3 +767,17 @@ def update_wf_received_samples(portal):
         sample.reindexObject()
 
     logger.info("Updating workflow mappings for received samples [DONE]")
+
+
+def remove_stale_type_registrations(portal):
+    """Remove stale contents from the portal_types
+    """
+    logger.info("Removing stale type registrations ...")
+
+    pt = portal.portal_types
+    for t in TYPES_TO_REMOVE:
+        logger.info("Removing type registrations for '{}'".format(t))
+        if t in pt.objectIds():
+            pt.manage_delObjects(t)
+
+    logger.info("Removing stale type registrations [DONE]")

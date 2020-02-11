@@ -82,7 +82,6 @@ def initialize(context):
     from content.batch import Batch  # noqa
     from content.batchfolder import BatchFolder  # noqa
     from content.batchlabel import BatchLabel  # noqa
-    from content.bikacache import BikaCache  # noqa
     from content.bikaschema import BikaSchema  # noqa
     from content.bikasetup import BikaSetup  # noqa
     from content.calculation import Calculation  # noqa
@@ -103,8 +102,6 @@ def initialize(context):
     from content.instrumenttype import InstrumentType  # noqa
     from content.instrumentvalidation import InstrumentValidation  # noqa
     from content.invoice import Invoice  # noqa
-    from content.invoicebatch import InvoiceBatch  # noqa
-    from content.invoicefolder import InvoiceFolder  # noqa
     from content.labcontact import LabContact  # noqa
     from content.laboratory import Laboratory  # noqa
     from content.labproduct import LabProduct  # noqa

@@ -60,7 +60,6 @@
     <element value="InstrumentLocation"/>
     <element value="InstrumentValidation"/>
     <element value="Invoice"/>
-    <element value="InvoiceBatch"/>
     <element value="LabContact"/>
     <element value="LabProduct"/>
     <element value="LogEntry"/>
@@ -104,7 +103,6 @@
     <element value="ATRelativePathCriterion"/>
     <element value="SamplingRound"/>
     <element value="ReflexRule"/>
-    <element value="BikaCache"/>
     <element value="AutoImportLog"/>
   </property>
   <property name="enable_wf_state_filtering" type="boolean">False</property>
