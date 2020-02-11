@@ -38,6 +38,7 @@ Changelog
 
 **Removed**
 
+- #1530 Removed stale type registrations
 - #1518 Removed stale indexes from `analysis_catalog`
 - #1516 Removed getResultsRange metadata from analysis_catalog
 - #1487 Dexterity Compatible Catalog Base Class
