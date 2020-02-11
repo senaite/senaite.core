@@ -64,7 +64,7 @@
               insert-after="++resource++bika.lims.js/thirdparty/jquery-ui-timepicker-addon-i18n.min.js"/>
 
   <javascript authenticated="True"
-              id="++resource++bika.lims.js/thirdparty/jquery/jquery-barcode-2.0.2.js"
+              id="++resource++bika.lims.js/thirdparty/jquery/jquery-barcode-2.2.0.min.js"
               cacheable="True"
               compression="safe"
               conditionalcomment=""
