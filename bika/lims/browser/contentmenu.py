@@ -40,7 +40,7 @@ class SenaiteContentMenuProvider(ContentMenuProvider):
         return True
 
     def menu(self):
-        menu = getUtility(IBrowserMenu, name='plone_contentmenu')
+        menu = getUtility(IBrowserMenu, name="plone_contentmenu")
         items = menu.getMenuItems(self.context, self.request)
         # always filter out the selection of the default view
         items = filter(
