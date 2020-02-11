@@ -15,7 +15,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# Copyright 2018-2019 by it's authors.
+# Copyright 2018-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
 from setuptools import setup, find_packages
@@ -39,8 +39,8 @@ setup(
         "Programming Language :: Python",
     ],
     keywords=['senaite', 'lims', 'opensource'],
-    author='SENAITE Foundation',
-    author_email='support@senaite.com',
+    author="RIDING BYTES & NARALABS",
+    author_email="senaite@senaite.com",
     url='https://github.com/senaite/senaite.core',
     license='GPLv2',
     packages=find_packages(exclude=['ez_setup']),
