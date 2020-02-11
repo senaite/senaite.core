@@ -855,9 +855,6 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             "Specification": {
                 "getClientUID": [uid, ""],
             },
-            "SamplingRound": {
-                "getParentUID": [uid],
-            },
             "Sample": {
                 "getClientUID": [uid],
             },

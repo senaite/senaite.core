@@ -129,7 +129,6 @@ def initialize(context):
     from content.samplesfolder import SamplesFolder  # noqa
     from content.sampletype import SampleType  # noqa
     from content.samplingdeviation import SamplingDeviation  # noqa
-    from content.srtemplate import SRTemplate  # noqa
     from content.storagelocation import StorageLocation  # noqa
     from content.subgroup import SubGroup  # noqa
     from content.supplier import Supplier  # noqa
@@ -167,7 +166,6 @@ def initialize(context):
     from controlpanel.bika_samplepoints import SamplePoints  # noqa
     from controlpanel.bika_sampletypes import SampleTypes  # noqa
     from controlpanel.bika_samplingdeviations import SamplingDeviations  # noqa
-    from controlpanel.bika_srtemplates import SRTemplates  # noqa
     from controlpanel.bika_storagelocations import StorageLocations  # noqa
     from controlpanel.bika_subgroups import SubGroups  # noqa
     from controlpanel.bika_suppliers import Suppliers  # noqa

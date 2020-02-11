@@ -503,16 +503,6 @@ class ISampleTypes(Interface):
     """
 
 
-class ISamplingRoundTemplates(Interface):
-    """Marker interface for Sampling Round Templates
-    """
-
-
-class ISamplingRoundTemplate(Interface):
-    """Marker interface for a Sampling Round Template
-    """
-
-
 class ISupplier(Interface):
     """Marker interface for a Supplier
     """

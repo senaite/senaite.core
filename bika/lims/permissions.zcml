@@ -52,8 +52,6 @@
   <permission id="senaite.core.permissions.AddSamplePoint" title="senaite.core: Add SamplePoint"/>
   <permission id="senaite.core.permissions.AddSampleType" title="senaite.core: Add SampleType"/>
   <permission id="senaite.core.permissions.AddSamplingDeviation" title="senaite.core: Add SamplingDeviation"/>
-  <permission id="senaite.core.permissions.AddSamplingRound" title="senaite.core: Add SamplingRound"/>
-  <permission id="senaite.core.permissions.AddSRTemplate" title="senaite.core: Add SRTemplate"/>
   <permission id="senaite.core.permissions.AddStorageLocation" title="senaite.core: Add StorageLocation"/>
   <permission id="senaite.core.permissions.AddSubGroup" title="senaite.core: Add SubGroup"/>
   <permission id="senaite.core.permissions.AddSupplier" title="senaite.core: Add Supplier"/>
@@ -90,10 +88,6 @@
 
   # Transition Permissions (Supply Order)
   <permission id="senaite.core.permissions.TransitionDispatchOrder" title="senaite.core: Transition: Dispatch Order"/>
-
-  # Transition Permissions (Sampling Round)
-  <permission id="senaite.core.permissions.TransitionCloseSamplingRound" title="senaite.core: Transition: Close Sampling Round"/>
-  <permission id="senaite.core.permissions.TransitionReopenSamplingRound" title="senaite.core: Transition: Reopen Sampling Round"/>
 
   # Transition Permissions (Worksheet)
   <permission id="senaite.core.permissions.TransitionRejectWorksheet" title="senaite.core: Transition: Reject Worksheet"/>
@@ -132,7 +126,6 @@
   <permission id="senaite.core.permissions.FieldEditSampler" title="senaite.core: Field: Edit Sampler"/>
   <permission id="senaite.core.permissions.FieldEditSamplingDate" title="senaite.core: Field: Edit Sampling Date"/>
   <permission id="senaite.core.permissions.FieldEditSamplingDeviation" title="senaite.core: Field: Edit Sampling Deviation"/>
-  <permission id="senaite.core.permissions.FieldEditSamplingRound" title="senaite.core: Field: Edit Sampling Round"/>
   <permission id="senaite.core.permissions.FieldEditScheduledSampler" title="senaite.core: Field: Edit Scheduled Sampler"/>
   <permission id="senaite.core.permissions.FieldEditSpecification" title="senaite.core: Field: Edit Specification"/>
   <permission id="senaite.core.permissions.FieldEditStorageLocation" title="senaite.core: Field: Edit Storage Location"/>

@@ -330,20 +330,6 @@
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
-    <permission name="senaite.core: Add SamplingRound" acquire="False">
-      <role name="LabClerk"/>
-      <role name="LabManager"/>
-      <role name="Manager"/>
-      <role name="SamplingCoordinator"/>
-      <role name="Owner"/>
-    </permission>
-    <permission name="senaite.core: Add SRTemplate" acquire="False">
-      <role name="LabClerk"/>
-      <role name="LabManager"/>
-      <role name="Manager"/>
-      <role name="SamplingCoordinator"/>
-      <role name="Owner"/>
-    </permission>
     <permission name="senaite.core: Add StorageLocation" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>

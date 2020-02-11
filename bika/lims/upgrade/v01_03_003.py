@@ -361,6 +361,9 @@ def upgrade(tool):
     # remove stale type regsitrations
     remove_stale_type_registrations(portal)
 
+    # remove samplingrounds et.al
+    remove_samplingrounds(portal)
+
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
 
@@ -781,3 +784,59 @@ def remove_stale_type_registrations(portal):
             pt.manage_delObjects(t)
 
     logger.info("Removing stale type registrations [DONE]")
+
+
+def remove_samplingrounds(portal):
+    """Remove Samplingrounds from the portal
+    """
+    logger.info("Removing samplingrounds ...")
+
+    types_to_remove = ["SamplingRound", "SamplingRounds",
+                       "SRTemplate", "SRTemplates"]
+    objs_to_remove = ["bika_srtemplates", "bika_samplingrounds"]
+    idxs_to_remove = ["SamplingRoundUID", "samplingRoundSamplingDate"]
+    js_to_remove = [
+        "++resource++bika.lims.js/bika.lims.samplinground.print.js",
+        "++resource++bika.lims.js/bika.lims.samplingrounds.js"]
+    wfs_to_remove = ["bika_samplinground_workflow"]
+
+    # 1. Remove the identifiers and identifier types
+    setup = portal.bika_setup
+    try:
+        # we use _delOb because manage_delObjects raises an unauthorized here
+        for oid in objs_to_remove:
+            parent = setup[oid]
+            for obj in parent.objectValues():
+                obj.unindexObject()
+            parent.unindexObject()
+            setup._delOb(oid)
+    except KeyError:
+        pass
+
+    # 2. Remove controlpanel configlet
+    cp = portal.portal_controlpanel
+    for oid in objs_to_remove:
+        cp.unregisterConfiglet(oid)
+
+    # 3. Remove catalog indexes
+    cat = portal.portal_catalog
+    for idx in idxs_to_remove:
+        if idx in cat.indexes():
+            cat.manage_delIndex(idx)
+
+    # 4. Remove type registration
+    pt = portal.portal_types
+    for t in types_to_remove:
+        if t in pt.objectIds():
+            pt.manage_delObjects(t)
+
+    # 5. Remove javascripts
+    for js in js_to_remove:
+        portal.portal_javascripts.unregisterResource(js)
+
+    # 6. Remove Workflows
+    wf_tool = portal.portal_workflow
+    for wf in wfs_to_remove:
+        wf_tool.manage_delObjects(wf)
+
+    logger.info("Removing samplingrounds [DONE]")

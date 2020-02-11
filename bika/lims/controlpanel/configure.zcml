@@ -213,14 +213,6 @@
     />
 
     <browser:page
-      for="bika.lims.interfaces.ISamplingRoundTemplates"
-      name="folder_view"
-      class=".bika_srtemplates.SamplingRoundTemplatesView"
-      permission="senaite.core.permissions.ManageBika"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
       for="bika.lims.interfaces.ISubGroups"
       name="folder_view"
       class=".bika_subgroups.SubGroupsView"
@@ -274,14 +266,6 @@
       name="ajax_samplepoints"
       class=".bika_samplepoints.ajax_SamplePoints"
       permission="zope.Public"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
-      for="bika.lims.controlpanel.bika_samplingrounds.ISamplingRounds"
-      name="folder_view"
-      class=".bika_samplingrounds.SamplingRoundsView"
-      permission="senaite.core.permissions.ManageBika"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 

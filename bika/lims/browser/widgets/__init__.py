@@ -33,7 +33,6 @@ from .coordinatewidget import CoordinateWidget
 from .analysisprofileanalyseswidget import AnalysisProfileAnalysesWidget
 from .artemplateanalyseswidget import ARTemplateAnalysesWidget
 from .artemplatepartitionswidget import ARTemplatePartitionsWidget
-from .srtemplateartemplateswidget import SRTemplateARTemplatesWidget
 from .addresswidget import AddressWidget
 from .scheduleinputwidget import ScheduleInputWidget
 from .integer import IntegerWidget

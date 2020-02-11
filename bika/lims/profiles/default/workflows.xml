@@ -10,7 +10,6 @@
   <object name="bika_referencesample_workflow" meta_type="Workflow"/>
   <object name="bika_reject_analysis_workflow" meta_type="Workflow"/>
   <object name="bika_sample_workflow" meta_type="Workflow"/>
-  <object name="bika_samplinground_workflow" meta_type="Workflow"/>
   <object name="bika_worksheet_workflow" meta_type="Workflow"/>
   <object name="folder_workflow" meta_type="Workflow"/>
   <object name="intranet_folder_workflow" meta_type="Workflow"/>
@@ -252,12 +251,6 @@
     <type type_id="SamplingDeviations">
       <bound-workflow workflow_id="senaite_one_state_workflow"/>
     </type>
-    <type type_id="SamplingRounds">
-      <bound-workflow workflow_id="senaite_one_state_workflow"/>
-    </type>
-    <type type_id="SRTemplates">
-      <bound-workflow workflow_id="senaite_one_state_workflow"/>
-    </type>
     <type type_id="SubGroups">
       <bound-workflow workflow_id="senaite_one_state_workflow"/>
     </type>
@@ -380,12 +373,6 @@
       <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
     </type>
     <type type_id="SamplingDeviation">
-      <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
-    </type>
-    <type type_id="SamplingRound">
-      <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
-    </type>
-    <type type_id="SRTemplate">
       <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
     </type>
     <type type_id="StorageLocation">

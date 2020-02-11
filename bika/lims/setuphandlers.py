@@ -116,7 +116,6 @@ CATALOG_MAPPINGS = (
     ("Preservation", ["bika_setup_catalog"]),
     ("ReferenceDefinition", ["bika_setup_catalog", "portal_catalog"]),
     ("ReferenceSample", ["bika_catalog", "portal_catalog"]),
-    ("SRTemplate", ["bika_setup_catalog", "portal_catalog"]),
     ("SampleCondition", ["bika_setup_catalog"]),
     ("SampleMatrix", ["bika_setup_catalog"]),
     ("SamplePoint", ["bika_setup_catalog", "portal_catalog"]),

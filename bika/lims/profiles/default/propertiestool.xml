@@ -65,7 +65,6 @@
     <element value="LogEntry"/>
     <element value="Manufacturer"/>
     <element value="Method"/>
-    <element value="SRTemplate"/>
     <element value="Supplier"/>
     <element value="SupplyOrder"/>
     <element value="Preservation"/>
@@ -101,7 +100,6 @@
     <element value="ATCurrentAuthorCriterion"/>
     <element value="ATPathCriterion"/>
     <element value="ATRelativePathCriterion"/>
-    <element value="SamplingRound"/>
     <element value="ReflexRule"/>
     <element value="AutoImportLog"/>
   </property>

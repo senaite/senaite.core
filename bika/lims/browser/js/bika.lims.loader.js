@@ -72,14 +72,6 @@ window.bika.lims.controllers =  {
     "div.overlay #client-base-edit":
         ['ClientOverlayHandler'],
 
-    // Client Sampling Rounds
-    ".template-bika-lims-content-samplingsround.portaltype-client":
-        ['ClientSamplingRoundAddEditView'],
-
-    // Sampling Rounds PrintView
-    "#sr_publish_container":
-        ['SamplingRoundPrintView'],
-
     // Reference Samples
     ".portaltype-referencesample.template-analyses":
         ['ReferenceSampleAnalysesView'],

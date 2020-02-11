@@ -7,8 +7,6 @@
     i18n_domain="senaite.core">
 
   <adapter name="BatchDate" factory=".batch.BatchDate" />
-  <adapter name="analysisRequestTemplates" factory=".samplinground.analysisRequestTemplates" />
-  <adapter name="samplingRoundSamplingDate" factory=".samplinground.samplingRoundSamplingDate" />
 
   <browser:page
       for="*"

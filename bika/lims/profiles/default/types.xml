@@ -88,10 +88,6 @@
  <object name="SampleTypes" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="SamplingDeviation" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="SamplingDeviations" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="SamplingRound" meta_type="Dexterity FTI" />
- <object name="SamplingRounds" meta_type="Dexterity FTI" />
- <object name="SRTemplate" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="SRTemplates" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="SubGroups" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="SubGroup" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Supplier" meta_type="Factory-based Type Information with dynamic views"/>

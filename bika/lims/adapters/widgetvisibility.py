@@ -132,7 +132,7 @@ class ScheduledSamplingFieldsVisibility(SenaiteATWidgetVisibility):
     def __init__(self, context):
         super(ScheduledSamplingFieldsVisibility, self).__init__(
             context=context, sort=10,
-            field_names=["ScheduledSamplingSampler", "SamplingRound"])
+            field_names=["ScheduledSamplingSampler"])
 
     def isVisible(self, field, mode="view", default="visible"):
         if not self.context.bika_setup.getScheduleSamplingEnabled():

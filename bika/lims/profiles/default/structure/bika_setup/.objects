@@ -26,8 +26,6 @@ bika_samplepoints,SamplePoints
 bika_sampletypes,SampleTypes
 bika_storagelocations,StorageLocations
 bika_samplingdeviations,SamplingDeviations
-bika_samplingrounds,SamplingRounds
-bika_srtemplates,SRTemplates
 bika_subgroups,SubGroups
 bika_suppliers,Suppliers
 bika_worksheettemplates,WorksheetTemplates
