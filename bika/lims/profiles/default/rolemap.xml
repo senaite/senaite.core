@@ -676,11 +676,6 @@
       <role name="Manager"/>
       <role name="Client"/>
     </permission>
-    <permission name="senaite.core: Field: Edit Sampling Round" acquire="False">
-      <role name="LabClerk"/>
-      <role name="LabManager"/>
-      <role name="Manager"/>
-    </permission>
     <permission name="senaite.core: Field: Edit Specification" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
