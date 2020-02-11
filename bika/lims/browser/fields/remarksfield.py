@@ -238,25 +238,26 @@ class RemarksField(ObjectField):
         # === Tue, 28 Jan 2020 06:53:58 +0100 (admin)\nThis is a Test
         lines = re.split(r"(===) ([A-Za-z]{3}, \d{1,2} [A-Za-z]{3} \d{2,4} \d{2}:\d{2}:\d{2} [+-]{1}\d{4}) \((.*?)\)", text)  # noqa
 
-        entry = None
+        record = None
         records = []
 
-        # group into remark entries of date, user-id and content
+        # group into remark records of date, user-id and content
         for line in lines:
-            # start a new remarks entry when the marker was found
+            # start a new remarks record when the marker was found
             if line == "===":
-                entry = []
+                record = []
                 # immediately append the new entry to the records
-                records.append(entry)
+                records.append(record)
                 # skip the marker entry
                 continue
 
             # append the line to the entry until the next marker is found
             # -> this also skips the empty first line
-            if entry is not None:
-                entry.append(line)
+            if record is not None:
+                record.append(line)
 
         remarks = []
+
         for record in records:
             # each record must contain the date, user-id and text
             # -> we invalidate the whole parsing if this is not given
