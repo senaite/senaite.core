@@ -79,7 +79,7 @@ Feedback and support
 License
 =======
 
-**SENAITE.CORE** Copyright (C) 2018-2019 Senaite Foundation
+**SENAITE.CORE** Copyright (C) 2018-2020 RIDING BYTES & NARALABS
 
 This software, henceforth "SENAITE.CORE" is an add-on for the
 `Plone CMS <https://plone.org/>`_ and a derivative work of BIKA LIMS.
