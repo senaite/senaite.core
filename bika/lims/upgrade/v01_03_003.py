@@ -362,6 +362,7 @@ def upgrade(tool):
     remove_stale_type_registrations(portal)
 
     # remove samplingrounds et.al
+    # https://github.com/senaite/senaite.core/pull/1531
     remove_samplingrounds(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
