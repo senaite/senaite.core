@@ -802,6 +802,20 @@ def remove_samplingrounds(portal):
         "++resource++bika.lims.js/bika.lims.samplingrounds.js"]
     wfs_to_remove = ["bika_samplinground_workflow"]
 
+    # 0. Remove all samplingrounds and srtemplates
+    pc = portal.portal_catalog
+    for brain in pc({"portal_type": "SamplingRound"}):
+        obj = brain.getObject()
+        if hasattr(obj, "unindexObject"):
+            obj.unindexObject()
+        obj.aq_parent._delOb(obj.id)
+
+    for brain in pc({"portal_type": "SRTemplate"}):
+        obj = brain.getObject()
+        if hasattr(obj, "unindexObject"):
+            obj.unindexObject()
+        obj.aq_parent._delOb(obj.id)
+
     # 1. Remove the identifiers and identifier types
     setup = portal.bika_setup
     try:
@@ -810,7 +824,8 @@ def remove_samplingrounds(portal):
             parent = setup[oid]
             for obj in parent.objectValues():
                 obj.unindexObject()
-            parent.unindexObject()
+            if hasattr(parent, "unindexObject"):
+                parent.unindexObject()
             setup._delOb(oid)
     except KeyError:
         pass
@@ -821,10 +836,10 @@ def remove_samplingrounds(portal):
         cp.unregisterConfiglet(oid)
 
     # 3. Remove catalog indexes
-    cat = portal.portal_catalog
+    pc = portal.portal_catalog
     for idx in idxs_to_remove:
-        if idx in cat.indexes():
-            cat.manage_delIndex(idx)
+        if idx in pc.indexes():
+            pc.manage_delIndex(idx)
 
     # 4. Remove type registration
     pt = portal.portal_types
