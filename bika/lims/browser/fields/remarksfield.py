@@ -268,6 +268,9 @@ class RemarksField(ObjectField):
             # try to get the full name of the user id
             fullname = self._get_fullname_from_user_id(userid)
 
+            # strip off leading and trailing escape sequences from the content
+            content = content.strip("\n\r\t")
+
             # append a remarks record
             remarks.append({
                "created": created,
