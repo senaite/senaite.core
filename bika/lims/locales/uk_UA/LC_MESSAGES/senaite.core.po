@@ -1,12 +1,13 @@
 # Translators:
 # Ramon Bartl <rb@ridingbytes.com>, 2018
+# Misha Bychkov <mich.bychkov@gmail.com>, 2020
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "POT-Creation-Date: 2020-01-13 19:41+0000\n"
 "PO-Revision-Date: 2018-06-01 18:44+0000\n"
-"Last-Translator: Ramon Bartl <rb@ridingbytes.com>, 2018\n"
+"Last-Translator: Misha Bychkov <mich.bychkov@gmail.com>, 2020\n"
 "Language-Team: Ukrainian (Ukraine) (https://www.transifex.com/senaite/teams/87045/uk_UA/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -97,7 +98,7 @@ msgstr "(Повторно)"
 
 #: bika/lims/content/referencesample.py:203
 msgid "(Hazardous)"
-msgstr ""
+msgstr "(Небезпечно)"
 
 #: bika/lims/browser/templates/login_details.pt:223
 msgid "(Required)"
@@ -105,7 +106,7 @@ msgstr "(Потребується)"
 
 #: bika/lims/browser/publish/templates/email_template.pt:25
 msgid "*** This is an automatically generated email, please do not reply to this message. ***"
-msgstr ""
+msgstr "*** Цей e-mail генеровано автоматично, будь-ласка, не відповідайте на нього. ***"
 
 #: bika/lims/browser/analyses/view.py:148
 #: bika/lims/browser/referencesample.py:175
@@ -116,48 +117,48 @@ msgstr "+-"
 #: bika/lims/browser/widgets/analysisspecificationwidget.py:110
 #: bika/lims/content/analysisspec.py:93
 msgid "< Min"
-msgstr ""
+msgstr "< мінімум"
 
 #: bika/lims/browser/templates/senaite-frontpage.pt:15
 msgid "<img src=\"${DYNAMIC_CONTENT}\" /> Welcome to SENAITE"
-msgstr ""
+msgstr "<img src=\"${DYNAMIC_CONTENT}\" />Ласкаво просимо до SENAITE"
 
 #: bika/lims/skins/bika/bika_widgets/rejectionwidget.pt:59
 msgid "<input type=\"checkbox\" class=\"rejectionwidget-checkbox-other rejectionwidget-field\" name=\"${DYNAMIC_CONTENT}\" id=\"${DYNAMIC_CONTENT}\" /> Other"
-msgstr ""
+msgstr "<input type=\"checkbox\" class=\"rejectionwidget-checkbox-other rejectionwidget-field\" name=\"${DYNAMIC_CONTENT}\" id=\"${DYNAMIC_CONTENT}\" />Інший"
 
 #: bika/lims/browser/analysisrequest/templates/ar_add2.pt:504
 msgid "<max"
-msgstr ""
+msgstr "< максимум"
 
 #: bika/lims/browser/analysisrequest/templates/ar_add2.pt:491
 msgid "<min"
-msgstr ""
+msgstr "< мінімум"
 
 #: bika/lims/content/calculation.py:120
 msgid "<p>The formula you type here will be dynamically calculated when an analysis using this calculation is displayed.</p><p>To enter a Calculation, use standard maths operators,  + - * / ( ), and all keywords available, both from other Analysis Services and the Interim Fields specified here, as variables. Enclose them in square brackets [ ].</p><p>E.g, the calculation for Total Hardness, the total of Calcium (ppm) and Magnesium (ppm) ions in water, is entered as [Ca] + [Mg], where Ca and MG are the keywords for those two Analysis Services.</p>"
-msgstr ""
+msgstr "<p>Формула, яку ви тут введете, буде динамічно обчислена при відображенні аналізу, який використовує цей розрахунок</p><p>Для вводу розрахунку використовуйте стандартні математичні оператори + - * / ( ), а також, в якості змінних величин, всі доступні ключові слова із Служб аналізів та Проміжних полів, які вказані тут. Їх потрібно заключати у квадратні скобки [ ].</p><p>Наприклад, розрахунок повної жорсткості води, сума концентрації іонів кальцію (ppm) та магнію (ppm) в воді, вводиться як [Ca] + [Mg], де Ca та Mg - ключові слова для цих двох Служб аналізів.</p>"
 
 #: bika/lims/skins/bika/bika_widgets/rejectionsetupwidget.pt:33
 msgid "<span>x</span> <span class=\"formHelp\">x</span>"
-msgstr ""
+msgstr "<span>x</span> <span class=\"formHelp\">x</span>"
 
 #: bika/lims/browser/widgets/analysisspecificationwidget.py:113
 #: bika/lims/content/analysisspec.py:94
 msgid "> Max"
-msgstr ""
+msgstr "> Максимум "
 
 #: bika/lims/browser/analysisrequest/templates/ar_add2.pt:511
 msgid ">max"
-msgstr ""
+msgstr "> Максимум "
 
 #: bika/lims/browser/analysisrequest/templates/ar_add2.pt:497
 msgid ">min"
-msgstr ""
+msgstr "> Мінімум"
 
 #: bika/lims/content/samplinground.py:159
 msgid "A short name that describes the Round for it to be easily identified on forms and drop-down menus"
-msgstr ""
+msgstr "Коротке ім'я, яке описує Раунд для легкої ідентифікації в формах і випадаючих меню"
 
 #: bika/lims/browser/arimports.py:60
 msgid "AR Import"
@@ -194,7 +195,7 @@ msgstr "URL тіла акредитації"
 
 #: bika/lims/content/laboratory.py:154
 msgid "Accreditation Logo"
-msgstr ""
+msgstr "Логотип акредитації"
 
 #: bika/lims/content/laboratory.py:144
 msgid "Accreditation Reference"
@@ -202,7 +203,7 @@ msgstr "Еталон акредитації"
 
 #: bika/lims/content/laboratory.py:167
 msgid "Accreditation page header"
-msgstr ""
+msgstr "Заголовок сторінки акредитації"
 
 #: bika/lims/browser/analyses/view.py:1172
 #: bika/lims/browser/analysisrequest/manage_analyses.py:248
@@ -218,13 +219,13 @@ msgstr "Дія"
 
 #: bika/lims/browser/reports/templates/administration.pt:133
 msgid "Actions performed by users (or specific user) between a period of time"
-msgstr ""
+msgstr "Дії, що було проведено користувачами (або конкретним користувачем) в певний проміжок часу"
 
 #: bika/lims/profiles/default/workflows/bika_referencesample_workflow/definition.xml
 #: bika/lims/profiles/default/workflows/senaite_client_workflow/definition.xml
 #: bika/lims/profiles/default/workflows/senaite_clientcontact_workflow/definition.xml
 msgid "Activate"
-msgstr ""
+msgstr "Активувати"
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:239
 #: bika/lims/browser/client/views/analysisprofiles.py:64
@@ -235,11 +236,11 @@ msgstr "Активний"
 #: bika/lims/browser/auditlog.py:65
 #: bika/lims/controlpanel/auditlog.py:77
 msgid "Actor"
-msgstr ""
+msgstr "Діяч"
 
 #: bika/lims/content/sample.py:339
 msgid "Ad-Hoc"
-msgstr ""
+msgstr "Ad-Hoc"
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:473
 #: bika/lims/browser/analysisrequest/templates/analysisrequests.pt:36
@@ -253,7 +254,7 @@ msgstr "Додати аналізи"
 
 #: bika/lims/browser/viewlets/templates/attachments.pt:296
 msgid "Add Attachment"
-msgstr ""
+msgstr "Додати вкладення"
 
 #: bika/lims/browser/worksheet/views/add_blank.py:43
 msgid "Add Blank Reference"
@@ -270,66 +271,66 @@ msgstr "Додати повторний"
 
 #: bika/lims/controlpanel/bika_reflexrulefolder.py:84
 msgid "Add Reflex rule"
-msgstr ""
+msgstr "Додати правило реагування"
 
 #: bika/lims/content/bikasetup.py:341
 msgid "Add a remarks field to all analyses"
-msgstr ""
+msgstr "Додати поле \"Замітки\" до всіх аналізів"
 
 #: bika/lims/content/artemplate.py:250
 msgid "Add analyses from the selected profile to the template"
-msgstr ""
+msgstr "Додати аналізи з вибраного профілю до шаблону"
 
 #: bika/lims/browser/samplinground/analysisrequests.py:240
 msgid "Add new"
-msgstr ""
+msgstr "Додати новий"
 
 #: bika/lims/browser/viewlets/templates/attachments.pt:189
 #: bika/lims/browser/viewlets/templates/worksheet_attachments.pt:31
 msgid "Add new Attachment"
-msgstr ""
+msgstr "Додати нове вкладення"
 
 #: bika/lims/content/analysisrequest.py:1013
 msgid "Add one or more attachments to describe the sample in this sample, or to specify your request."
-msgstr ""
+msgstr "Додати одне або більше вкладень для опису зразка, або для уточнення вашого запросу."
 
 #: bika/lims/content/calculation.py:98
 msgid "Additional Python Libraries"
-msgstr ""
+msgstr "Додаткові бібліотеки Python"
 
 #: bika/lims/content/analysisservice.py:387
 msgid "Additional Values"
-msgstr ""
+msgstr "Додаткові значення"
 
 #: bika/lims/content/analysisrequest.py:214
 msgid "Additional email addresses to be notified"
-msgstr ""
+msgstr "Додаткові адреси e-mail для сповіщення"
 
 #: bika/lims/content/storagelocation.py:93
 #: bika/lims/skins/bika/bika_widgets/addresswidget.pt:137
 msgid "Address"
-msgstr ""
+msgstr "Адреса"
 
 #: bika/lims/browser/reports/templates/administration.pt:80
 msgid "Administrative Reports"
-msgstr ""
+msgstr "Адміністративні звіти"
 
 #: bika/lims/content/sampletype.py:233
 msgid "Admitted sticker templates"
-msgstr ""
+msgstr "Затверджені шаблони стікерів"
 
 #: bika/lims/content/sampletype.py:206
 msgid "Admitted stickers for the sample type"
-msgstr ""
+msgstr "Затверджені стікери для типу зразка"
 
 #: bika/lims/browser/reports/selection_macros/__init__.py:359
 msgid "After ${end_date}"
-msgstr ""
+msgstr "Після ${end_date}"
 
 #: bika/lims/browser/instrument.py:644
 #: bika/lims/content/instrumentcertification.py:98
 msgid "Agency"
-msgstr ""
+msgstr "Агентство"
 
 #: bika/lims/browser/accreditation.py:83
 #: bika/lims/browser/analyses/view.py:217
@@ -339,11 +340,11 @@ msgstr "Всі"
 
 #: bika/lims/browser/accreditation.py:75
 msgid "All Accredited analysis services are listed here."
-msgstr ""
+msgstr "Всі акредитовані аналізи наведені тут."
 
 #: bika/lims/browser/viewlets/templates/worksheet_attachments.pt:34
 msgid "All Analyses of Service"
-msgstr ""
+msgstr "Всі аналізи служби"
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:627
 msgid "All analyses assigned"
@@ -351,31 +352,31 @@ msgstr "Всі аналізи призначено"
 
 #: bika/lims/content/abstractbaseanalysis.py:220
 msgid "Allow Manual Detection Limit input"
-msgstr ""
+msgstr "Дозволити ручне визначення межі входу"
 
 #: bika/lims/content/bikasetup.py:181
 msgid "Allow access to worksheets only to assigned analysts"
-msgstr ""
+msgstr "Дозволити доступ до робочих листів тільки для призначених лаборантів"
 
 #: bika/lims/content/abstractbaseanalysis.py:569
 msgid "Allow manual uncertainty value input"
-msgstr ""
+msgstr "Дозволити ручне введення величини невизначеності"
 
 #: bika/lims/config.py:150
 msgid "Allow same user to verify multiple times"
-msgstr ""
+msgstr "Дозволити одному і тому самому користувачу перевіряти кілька разів"
 
 #: bika/lims/config.py:151
 msgid "Allow same user to verify multiple times, but not consecutively"
-msgstr ""
+msgstr "Дозволити одному і тому самому користувачу перевіряти кілька разів, але не послідовно"
 
 #: bika/lims/content/bikasetup.py:353
 msgid "Allow self-verification of results"
-msgstr ""
+msgstr "Дозволити самоперевірку результатів"
 
 #: bika/lims/content/abstractbaseanalysis.py:221
 msgid "Allow the analyst to manually replace the default Detection Limits (LDL and UDL) on results entry views"
-msgstr ""
+msgstr "Дозволити лаборанту самостійно заміняти межі виявлення (LDL та UDL) при перегляді результатів запису"
 
 #: bika/lims/content/abstractbaseanalysis.py:570
 msgid "Allow the analyst to manually replace the default uncertainty value."
