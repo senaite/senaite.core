@@ -31,8 +31,6 @@
   <type portal_type="InstrumentLocation"/>
   <type portal_type="InstrumentLocations"/>
   <type portal_type="InstrumentValidation"/>
-  <type portal_type="Invoice"/>
-  <type portal_type="InvoiceBatch"/>
   <type portal_type="LabContact"/>
   <type portal_type="LabProduct"/>
   <type portal_type="Manufacturer"/>
