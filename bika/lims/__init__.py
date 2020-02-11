@@ -119,7 +119,6 @@ def initialize(context):
     from content.referencesample import ReferenceSample  # noqa
     from content.referencesamplesfolder import ReferenceSamplesFolder  # noqa
     from content.reflexrule import ReflexRule  # noqa
-    from content.rejectanalysis import RejectAnalysis  # noqa
     from content.report import Report  # noqa
     from content.reportfolder import ReportFolder  # noqa
     from content.sample import Sample  # noqa
