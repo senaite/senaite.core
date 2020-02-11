@@ -359,6 +359,7 @@ def upgrade(tool):
     remove_stale_javascripts(portal)
 
     # remove stale type regsitrations
+    # https://github.com/senaite/senaite.core/pull/1530
     remove_stale_type_registrations(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
