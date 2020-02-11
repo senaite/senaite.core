@@ -493,22 +493,6 @@
       <role name="Manager"/>
     </permission>
 
-    <!-- Transition permissions (Sampling Round) -->
-    <permission name="senaite.core: Transition: Close Sampling Round" acquire="False">
-      <role name="LabClerk"/>
-      <role name="LabManager"/>
-      <role name="Manager"/>
-      <role name="Owner"/>
-      <role name="SamplingCoordinator"/>
-    </permission>
-    <permission name="senaite.core: Transition: Reopen Sampling Round" acquire="False">
-      <role name="LabClerk"/>
-      <role name="LabManager"/>
-      <role name="Manager"/>
-      <role name="Owner"/>
-      <role name="SamplingCoordinator"/>
-    </permission>
-
     <!-- Transition permissions (Worksheet) -->
     <permission name="senaite.core: Transition: Reject Worksheet" acquire="False">
       <role name="LabManager"/>
