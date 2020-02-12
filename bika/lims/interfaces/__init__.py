@@ -215,11 +215,6 @@ class ISampleMatrices(Interface):
     """
 
 
-class ISamplePartition(Interface):
-    """Sample
-    """
-
-
 class ISamplesFolder(Interface):
     """Samples Folder
     """
