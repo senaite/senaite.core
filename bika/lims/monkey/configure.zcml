@@ -8,6 +8,13 @@
     xmlns:monkey="http://namespaces.plone.org/monkey"
     i18n_domain="senaite.core">
 
+  <!-- Make overlayhelpers.js compatible with jQuery > 1.9
+       https://github.com/senaite/senaite.lims/issues/21 -->
+  <browser:resource
+      name="plone.app.jquerytools.overlayhelpers.js"
+      file="overlayhelpers.js"
+      layer="bika.lims.interfaces.IBikaLIMS"/>
+
   <monkey:patch
       description="This adds the bika.lims category to controlpanel-overview."
       class="plone.app.controlpanel.overview.OverviewControlPanel"
