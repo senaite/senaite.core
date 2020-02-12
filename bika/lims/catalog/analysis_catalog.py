@@ -37,7 +37,6 @@ CATALOG_ANALYSIS_LISTING = "bika_analysis_catalog"
 _indexes_dict = {
     "sortable_title": "FieldIndex",
     "getParentUID": "FieldIndex",
-    "getRequestUID": "FieldIndex",
     "getDueDate": "DateIndex",
     "getDateReceived": "DateIndex",
     "getResultCaptureDate": "DateIndex",

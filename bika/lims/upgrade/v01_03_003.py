@@ -216,6 +216,7 @@ INDEXES_TO_REMOVE = [
     # Only used in Add analyses (as sortable column)
     (CATALOG_ANALYSIS_LISTING, "getClientOrderNumber"),
     (CATALOG_ANALYSIS_LISTING, "getDateSampled"),
+    (CATALOG_ANALYSIS_LISTING, "getRequestUID"),
 
 ]
 
