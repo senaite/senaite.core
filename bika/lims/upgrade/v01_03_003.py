@@ -56,7 +56,9 @@ JAVASCRIPTS_TO_REMOVE = [
     # completely removed: reduces 7,7K per request
     "++resource++bika.lims.js/thirdparty/jquery/jquery-query-2.1.7.js",
     # directly provided via template
-    "++resource++bika.lims.js/bika.lims.analysisrequest.add.js"
+    "++resource++bika.lims.js/bika.lims.analysisrequest.add.js",
+    # replaced by jquery-barcode-2.2.0.js
+    "++resource++bika.lims.js/thirdparty/jquery/jquery-barcode-2.0.2.js",
 ]
 
 CSS_TO_REMOVE = [

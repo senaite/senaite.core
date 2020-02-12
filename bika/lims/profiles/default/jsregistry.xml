@@ -83,7 +83,7 @@
               enabled="on"
               expression=""
               inline="False"
-              insert-after="++resource++bika.lims.js/thirdparty/jquery/jquery-barcode-2.0.2.js"/>
+              insert-after="++resource++bika.lims.js/thirdparty/jquery/jquery-barcode-2.2.0.js"/>
 
   <javascript cacheable="True"
               id="++resource++plone.app.jquerytools.dateinput.js"
