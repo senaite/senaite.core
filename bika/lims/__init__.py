@@ -127,7 +127,6 @@ def initialize(context):
     from content.samplematrix import SampleMatrix  # noqa
     from content.samplepartition import SamplePartition  # noqa
     from content.samplepoint import SamplePoint  # noqa
-    from content.samplesfolder import SamplesFolder  # noqa
     from content.sampletype import SampleType  # noqa
     from content.samplingdeviation import SamplingDeviation  # noqa
     from content.srtemplate import SRTemplate  # noqa

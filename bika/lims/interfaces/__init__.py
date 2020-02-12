@@ -215,11 +215,6 @@ class ISampleMatrices(Interface):
     """
 
 
-class ISamplesFolder(Interface):
-    """Samples Folder
-    """
-
-
 class ISamplingDeviation(Interface):
     """Sampling Deviation
     """

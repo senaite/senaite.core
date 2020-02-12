@@ -43,6 +43,7 @@ profile = "profile-{0}:default".format(product)
 
 
 TYPES_TO_REMOVE = [
+    "SamplesFolder",
     "BikaCache",
     # invoices were removed in upgrade step 1.3.0
     "InvoiceBatch",
