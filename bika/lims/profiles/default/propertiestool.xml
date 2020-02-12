@@ -37,7 +37,6 @@
     <element value="AnalysisRequest"/>
     <element value="AnalysisService"/>
     <element value="AnalysisSpec"/>
-    <element value="ARImport"/>
     <element value="AnalysisProfile"/>
     <element value="ARReport"/>
     <element value="ARTemplate"/>
@@ -74,8 +73,6 @@
     <element value="RejectAnalysis"/>
     <element value="Report"/>
     <element value="ReportFolder"/>
-    <element value="Sample"/>
-    <element value="SamplePartition"/>
     <element value="SamplePoint"/>
     <element value="StorageLocation"/>
     <element value="SampleType"/>

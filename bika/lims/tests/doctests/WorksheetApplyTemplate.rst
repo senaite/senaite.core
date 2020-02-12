@@ -33,7 +33,6 @@ Needed Imports:
     >>> from AccessControl.PermissionRole import rolesForPermissionOn
     >>> from bika.lims import api
     >>> from bika.lims.content.analysisrequest import AnalysisRequest
-    >>> from bika.lims.content.sample import Sample
     >>> from bika.lims.utils.analysisrequest import create_analysisrequest
     >>> from bika.lims.utils import tmpID
     >>> from bika.lims.workflow import doActionFor

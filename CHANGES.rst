@@ -7,6 +7,7 @@ Changelog
 
 **Added**
 
+- #1534 Integrate browser resources from senaite.lims
 - #1529 Moved contentmenu provider into core
 - #1523 Moved Installation Screens into core
 - #1520 JavaScripts/CSS Integration and Cleanup
@@ -41,7 +42,9 @@ Changelog
 **Removed**
 
 - #1530 Remove sampling rounds from core
+- #1530 Removed ARImport
 - #1530 Removed stale type registrations
+- #1535 Remove `zcatalog` monkey (and `getRequestUID` index)
 - #1518 Removed stale indexes from `analysis_catalog`
 - #1516 Removed getResultsRange metadata from analysis_catalog
 - #1487 Dexterity Compatible Catalog Base Class
@@ -50,6 +53,7 @@ Changelog
 
 **Fixed**
 
+- #1533 Fix traceback from log when rendering stickers preview
 - #1525 Fix error when creating partitions with analyst user
 - #1522 Fix sporadical timeout issue when adding new samples/remarks
 - #1506 Changes via manage results don't get applied to partitions

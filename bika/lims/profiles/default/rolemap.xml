@@ -796,11 +796,6 @@
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
-    <permission name="senaite.core: Manage ARImport" acquire="False">
-      <role name="LabManager"/>
-      <role name="Manager"/>
-      <role name="Owner"/>
-    </permission>
     <permission name="senaite.core: Manage Invoices" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
