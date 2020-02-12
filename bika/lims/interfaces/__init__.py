@@ -720,16 +720,6 @@ class ISetupDataImporter(Interface):
     """
 
 
-class IARImportFolder(Interface):
-    """Marker interface for a folder that contains ARImports
-    """
-
-
-class IARImport(Interface):
-    """Marker interface for an ARImport
-    """
-
-
 class IPricelist(Interface):
     """Folder view marker for Pricelist
     """

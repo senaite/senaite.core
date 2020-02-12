@@ -88,11 +88,6 @@ ATTACHMENT_REPORT_OPTIONS = DisplayList((
     ('r', _('Render in Report')),
     ('i', _('Ignore in Report')),
 ))
-ARIMPORT_OPTIONS = DisplayList((
-    ('c', _('Classic')),
-    ('p', _('Profiles')),
-    # ('s', _('Special')),
-))
 GENDERS = DisplayList((
     ('male', _('Male')),
     ('female', _('Female')),

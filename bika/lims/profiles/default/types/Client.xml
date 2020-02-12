@@ -16,7 +16,6 @@
   <property name="global_allow">False</property>
   <property name="filter_content_types">True</property>
   <property name="allowed_content_types">
-    <element value="ARImport"/>
     <element value="ARTemplate"/>
     <element value="AnalysisProfile"/>
     <element value="AnalysisRequest"/>
@@ -82,18 +81,6 @@
           url_expr="string:${object_url}/batches"
           i18n:attributes="title"
           visible="True">
-    <permission value="View"/>
-  </action>
-
-  <action title="Imports"
-          action_id="imports"
-          category="object"
-          condition_expr=""
-          icon_expr="string:${portal_url}/images/arimport.png"
-          link_target=""
-          url_expr="string:${object_url}/arimports"
-          i18n:attributes="title"
-          visible="False">
     <permission value="View"/>
   </action>
 

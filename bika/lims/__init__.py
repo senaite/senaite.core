@@ -73,7 +73,6 @@ def initialize(context):
     from content.analysisrequestsfolder import AnalysisRequestsFolder  # noqa
     from content.analysisservice import AnalysisService  # noqa
     from content.analysisspec import AnalysisSpec  # noqa
-    from content.arimport import ARImport  # noqa
     from content.arreport import ARReport  # noqa
     from content.artemplate import ARTemplate  # noqa
     from content.attachment import Attachment  # noqa

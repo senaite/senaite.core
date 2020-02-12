@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 <object name="portal_factory" meta_type="Plone Factory Tool">
  <factorytypes>
-  <type portal_type="ARImport"/>
   <type portal_type="ARReport"/>
   <type portal_type="AnalysisProfile"/>
   <type portal_type="ARTemplate"/>

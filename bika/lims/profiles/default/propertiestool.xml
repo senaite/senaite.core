@@ -37,7 +37,6 @@
     <element value="AnalysisRequest"/>
     <element value="AnalysisService"/>
     <element value="AnalysisSpec"/>
-    <element value="ARImport"/>
     <element value="AnalysisProfile"/>
     <element value="ARReport"/>
     <element value="ARTemplate"/>

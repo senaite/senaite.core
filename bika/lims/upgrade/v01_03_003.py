@@ -43,11 +43,16 @@ profile = "profile-{0}:default".format(product)
 
 
 TYPES_TO_REMOVE = [
+    "ARImport",
     "SamplesFolder",
     "BikaCache",
     # invoices were removed in upgrade step 1.3.0
     "InvoiceBatch",
     "InvoiceFolder",
+]
+
+WFS_TO_REMOVE = [
+    "bika_arimport_workflow",
 ]
 
 JAVASCRIPTS_TO_REMOVE = [
@@ -782,5 +787,11 @@ def remove_stale_type_registrations(portal):
         logger.info("Removing type registrations for '{}'".format(t))
         if t in pt.objectIds():
             pt.manage_delObjects(t)
+
+    wf_tool = portal.portal_workflow
+    for wf in WFS_TO_REMOVE:
+        if wf in wf_tool:
+            logger.info("Removing Workflow '{}'".format(wf))
+            wf_tool.manage_delObjects(wf)
 
     logger.info("Removing stale type registrations [DONE]")
