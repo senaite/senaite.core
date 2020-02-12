@@ -58,12 +58,4 @@
       replacement=".Widget.isVisible"
       />
 
-  <!-- Mask analyses with those from descendants (partitioning) -->
-  <monkey:patch
-    description=""
-    class="Products.ZCatalog.ZCatalog.ZCatalog"
-    original="searchResults"
-    replacement=".zcatalog.searchResults"
-  />
-
 </configure>
