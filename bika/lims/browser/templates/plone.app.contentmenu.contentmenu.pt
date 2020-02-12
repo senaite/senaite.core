@@ -1,0 +1,89 @@
+<div id="editContentActionMenus"
+     xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+     xmlns:tal="http://xml.zope.org/namespaces/tal"
+     tal:define="menu view/menu"
+     tal:condition="view/available"
+     i18n:domain="plone"
+     class="pull-right btn-toolbar">
+
+  <tal:menuItem repeat="menuItem menu">
+    <div class="editActionMenu dropdown btn-group pull-right"
+         tal:attributes="id menuItem/extra/id"
+         tal:define="submenu menuItem/submenu">
+      <button tal:define="state_class menuItem/extra/class | nothing;
+                          state_class python:state_class and state_class or ''"
+              data-toggle="dropdown"
+              tal:omit-tag="not:menuItem/action"
+              tal:attributes="href menuItem/action;
+                              title menuItem/description;
+                              class string:btn btn-default dropdown-toggle actionMenuHeader label-${state_class}"
+              i18n:attributes="title;">
+        <span tal:omit-tag="menuItem/action"
+              class="noMenuAction">
+          <span tal:content="menuItem/title"
+                i18n:translate="">
+            Title
+          </span>
+          <span tal:condition="menuItem/extra/stateTitle | nothing"
+                tal:attributes="class menuItem/extra/class | nothing"
+                tal:define="title menuItem/extra/stateTitle | nothing"
+                tal:content="python:title.capitalize()"
+                i18n:translate="">
+            State title
+          </span>
+          <span class="caret"
+                tal:condition="not:menuItem/extra/hideChildren | not:submenu | nothing"></span>
+        </span>
+      </button>
+      <ul class="dropdown-menu editActionMenuContent" role="menu"
+          tal:condition="not:menuItem/extra/hideChildren | not:submenu | nothing">
+        <tal:block repeat="subMenuItem submenu">
+          <tal:separator condition="subMenuItem/extra/separator">
+            <li class="divider"></li>
+          </tal:separator>
+          <li tal:attributes="class python:subMenuItem.get('selected', None) and 'active' or None">
+            <a href="#"
+               tal:condition="subMenuItem/action"
+               tal:attributes="href subMenuItem/action;
+                     title subMenuItem/description;
+                     id subMenuItem/extra/id | nothing;
+                     class subMenuItem/extra/class | nothing"
+               i18n:attributes="title">
+              <img width="16"
+                   height="16"
+                   alt=""
+                   tal:condition="subMenuItem/icon"
+                   tal:attributes="src subMenuItem/icon;
+                          title subMenuItem/description;
+                          width subMenuItem/width|string:16;
+                          height subMenuItem/height|string:16;"
+                   i18n:attributes="alt;"/>
+              <span tal:replace="structure subMenuItem/title"
+                    i18n:translate=""
+                    class="editSubMenuTitle">
+                Title
+              </span>
+            </a>
+            <a tal:condition="not:subMenuItem/action"
+               href="#"
+               tal:attributes="id subMenuItem/extra/id | nothing;
+                              class subMenuItem/extra/class | nothing">
+              <img width="16"
+                   height="16"
+                   alt=""
+                   tal:condition="subMenuItem/icon"
+                   tal:attributes="src subMenuItem/icon;
+                          title subMenuItem/description"
+                   i18n:attributes="alt;"/>
+              <span tal:replace="structure subMenuItem/title"
+                    i18n:translate=""
+                    class="subMenuTitle">
+                Title
+              </span>
+            </a>
+          </li>
+        </tal:block>
+      </ul>
+    </div>
+  </tal:menuItem>
+</div>

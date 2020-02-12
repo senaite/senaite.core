@@ -7,6 +7,7 @@ Changelog
 
 **Added**
 
+- #1529 Moved contentmenu provider into core
 - #1523 Moved Installation Screens into core
 - #1520 JavaScripts/CSS Integration and Cleanup
 - #1517 Integrate senaite.core.spotlight
