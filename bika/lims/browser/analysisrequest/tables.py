@@ -33,7 +33,7 @@ class LabAnalysesTable(AnalysesView):
 
         self.contentFilter.update({
             "getPointOfCapture": "lab",
-            "getRequestUID": api.get_uid(context)
+            "getAncestorsUIDs": [api.get_uid(context)]
         })
 
         self.form_id = "lab_analyses"
@@ -52,7 +52,7 @@ class FieldAnalysesTable(AnalysesView):
 
         self.contentFilter.update({
             "getPointOfCapture": "field",
-            "getRequestUID": api.get_uid(context)
+            "getAncestorsUIDs": [api.get_uid(context)]
         })
 
         self.form_id = "field_analyses"
