@@ -19,6 +19,7 @@
   <include file="calcs.zcml"/>
   <include file="clientfolder.zcml"/>
   <include file="contact.zcml"/>
+  <include file="contentmenu.zcml"/>
   <include file="controlpanel.zcml"/>
   <include file="dynamic_analysisspec.zcml"/>
   <include file="instrument.zcml"/>

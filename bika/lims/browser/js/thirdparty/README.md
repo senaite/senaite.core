@@ -42,3 +42,15 @@ LICENSE: MIT (https://github.com/wycats/handlebars.js/blob/master/LICENSE)
 Downloaded on 2020-02-06 from https://s3.amazonaws.com/builds.handlebarsjs.com/handlebars.min-v4.7.2.js:
 
 - handlebars.min-v4.7.2.js
+
+
+## jQuery Barcode
+
+Barcode generator for jQuery.
+
+URL: https://barcode-coder.com/en/barcode-jquery-plugin-201.html
+LICENSE: GPL / Cecill
+
+Downloaded on 2020-02-11 from https://barcode-coder.com/download/jquery-barcode-2.2.0.zip
+
+- jquery-barcode-2.2.0.min.js

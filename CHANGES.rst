@@ -7,6 +7,7 @@ Changelog
 
 **Added**
 
+- #1529 Moved contentmenu provider into core
 - #1523 Moved Installation Screens into core
 - #1520 JavaScripts/CSS Integration and Cleanup
 - #1517 Integrate senaite.core.spotlight
@@ -28,6 +29,7 @@ Changelog
 
 **Changed**
 
+- #1532 Updated jQuery Barcode to version 2.2.0
 - #1513 Better Ajax Loader for Sample Add Form
 - #1508 Do not try to render InstrumentQCFailuresViewlet to non-lab personnel
 - #1495 Better Remarks handling and display
