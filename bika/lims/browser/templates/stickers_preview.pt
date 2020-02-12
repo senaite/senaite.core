@@ -273,10 +273,8 @@
           </tal:tick>
         </div>
         <tal:stickers repeat="item view/items">
-          <tal:sticker define="item_id python:item.getId()">
-            <div class='sticker'
-                 tal:content='structure python:view.renderItem(item)'></div>
-          </tal:sticker>
+          <div class='sticker'
+               tal:content='structure python:view.renderItem(item)'></div>
         </tal:stickers>
       </div>
     </div>
