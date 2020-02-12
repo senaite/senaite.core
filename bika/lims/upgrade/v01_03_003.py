@@ -796,7 +796,7 @@ def remove_samplingrounds(portal):
 
     types_to_remove = ["SamplingRound", "SamplingRounds",
                        "SRTemplate", "SRTemplates"]
-    objs_to_remove = ["bika_srtemplates", "bika_samplingrounds"]
+    ids_to_remove = ["bika_srtemplates", "bika_samplingrounds"]
     idxs_to_remove = ["SamplingRoundUID", "samplingRoundSamplingDate"]
     columns_to_remove = ["SamplingRoundUID", "samplingRoundSamplingDate"]
     js_to_remove = [
@@ -811,23 +811,6 @@ def remove_samplingrounds(portal):
             if action in action_ids:
                 type_info.deleteActions([index])
 
-    # Remove all samplingrounds
-    pc = portal.portal_catalog
-    for brain in pc({"portal_type": "SamplingRound"}):
-        obj = brain.getObject()
-        if hasattr(obj, "unindexObject"):
-            obj.unindexObject()
-        logger.info("Removing object '{}'".format(api.get_path(obj)))
-        obj.aq_parent._delOb(obj.id)
-
-    # Remove all samplinground templates
-    for brain in pc({"portal_type": "SRTemplate"}):
-        obj = brain.getObject()
-        if hasattr(obj, "unindexObject"):
-            obj.unindexObject()
-        logger.info("Removing object '{}'".format(api.get_path(obj)))
-        obj.aq_parent._delOb(obj.id)
-
     # Remove actions from clients
     for client in portal.clients.objectValues():
         logger.info("Removing actions for '{}'".format(api.get_path(client)))
@@ -837,7 +820,7 @@ def remove_samplingrounds(portal):
     setup = portal.bika_setup
     try:
         # we use _delOb because manage_delObjects raises an unauthorized here
-        for oid in objs_to_remove:
+        for oid in ids_to_remove:
             parent = setup[oid]
             # remove contained objects
             for obj in parent.objectValues():
@@ -853,7 +836,7 @@ def remove_samplingrounds(portal):
 
     #  Remove controlpanel configlet
     cp = portal.portal_controlpanel
-    for oid in objs_to_remove:
+    for oid in ids_to_remove:
         logger.info("Removing configlet '{}'".format(oid))
         cp.unregisterConfiglet(oid)
 
