@@ -48,6 +48,7 @@ Changelog
 
 **Fixed**
 
+- #1533 Fix traceback from log when rendering stickers preview
 - #1525 Fix error when creating partitions with analyst user
 - #1522 Fix sporadical timeout issue when adding new samples/remarks
 - #1506 Changes via manage results don't get applied to partitions
