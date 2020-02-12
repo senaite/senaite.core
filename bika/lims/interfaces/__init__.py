@@ -194,11 +194,6 @@ class IReportFolder(Interface):
     """Report folder
     """
 
-# TODO Remove in >v1.3.0
-class ISample(Interface):
-    """Sample
-    """
-
 
 class ISampleCondition(Interface):
     """Sample Condition
