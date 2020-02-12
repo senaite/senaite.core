@@ -7,6 +7,7 @@ Changelog
 
 **Added**
 
+- #1534 Integrate browser resources from senaite.lims
 - #1529 Moved contentmenu provider into core
 - #1523 Moved Installation Screens into core
 - #1520 JavaScripts/CSS Integration and Cleanup
