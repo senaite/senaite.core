@@ -121,10 +121,8 @@ def initialize(context):
     from content.rejectanalysis import RejectAnalysis  # noqa
     from content.report import Report  # noqa
     from content.reportfolder import ReportFolder  # noqa
-    from content.sample import Sample  # noqa
     from content.samplecondition import SampleCondition  # noqa
     from content.samplematrix import SampleMatrix  # noqa
-    from content.samplepartition import SamplePartition  # noqa
     from content.samplepoint import SamplePoint  # noqa
     from content.sampletype import SampleType  # noqa
     from content.samplingdeviation import SamplingDeviation  # noqa
