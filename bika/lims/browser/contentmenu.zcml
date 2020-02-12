@@ -1,0 +1,16 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    i18n_domain="senaite.core">
+
+  <!-- Content Menu -->
+  <adapter
+      name="plone.contentmenu"
+      for="*
+           bika.lims.interfaces.IBikaLIMS
+           *"
+      factory=".contentmenu.SenaiteContentMenuProvider"
+      provides="zope.contentprovider.interfaces.IContentProvider"
+      />
+
+</configure>

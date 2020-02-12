@@ -7,6 +7,7 @@ Changelog
 
 **Added**
 
+- #1529 Moved contentmenu provider into core
 - #1523 Moved Installation Screens into core
 - #1520 JavaScripts/CSS Integration and Cleanup
 - #1517 Integrate senaite.core.spotlight
@@ -28,6 +29,7 @@ Changelog
 
 **Changed**
 
+- #1532 Updated jQuery Barcode to version 2.2.0
 - #1513 Better Ajax Loader for Sample Add Form
 - #1508 Do not try to render InstrumentQCFailuresViewlet to non-lab personnel
 - #1495 Better Remarks handling and display
@@ -47,6 +49,7 @@ Changelog
 
 **Fixed**
 
+- #1533 Fix traceback from log when rendering stickers preview
 - #1525 Fix error when creating partitions with analyst user
 - #1522 Fix sporadical timeout issue when adding new samples/remarks
 - #1506 Changes via manage results don't get applied to partitions
