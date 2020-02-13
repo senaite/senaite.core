@@ -59,6 +59,8 @@ JAVASCRIPTS_TO_REMOVE = [
     "++resource++bika.lims.js/bika.lims.analysisrequest.add.js",
     # replaced by jquery-barcode-2.2.0.js
     "++resource++bika.lims.js/thirdparty/jquery/jquery-barcode-2.0.2.js",
+    # replaced with jquery-qrcode-0.17.0.min
+    "++resource++bika.lims.js/thirdparty/jquery/jquery.qrcode-0.12.0.min.js",
 ]
 
 CSS_TO_REMOVE = [
