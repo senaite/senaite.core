@@ -43,6 +43,7 @@ Changelog
 
 **Removed**
 
+- #1541 Remove add/edit options of ReferenceWidget
 - #1535 Remove `zcatalog` monkey (and `getRequestUID` index)
 - #1518 Removed stale indexes from `analysis_catalog`
 - #1516 Removed getResultsRange metadata from analysis_catalog
