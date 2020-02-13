@@ -33,6 +33,7 @@ from bika.lims.interfaces import ISubmitted
 from bika.lims.interfaces import IVerified
 from bika.lims.setuphandlers import add_dexterity_setup_items
 from bika.lims.setuphandlers import setup_form_controller_actions
+from bika.lims.setuphandlers import setup_html_filter
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
 from Products.Archetypes.config import UID_CATALOG
@@ -352,6 +353,12 @@ def upgrade(tool):
     # remove stale CSS/JS resources
     remove_stale_css(portal)
     remove_stale_javascripts(portal)
+
+    # setup portal languages
+    setup.runImportStepFromProfile(profile, "languagetool")
+
+    # setup html filtering
+    setup_html_filter(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
