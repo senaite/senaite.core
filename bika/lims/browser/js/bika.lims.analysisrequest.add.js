@@ -104,10 +104,10 @@
       $("body").on("click", "img.copybutton", this.on_copy_button_click);
 
       /* internal events */
-      $(this).on("form:changed", this.debounce(this.recalculate_records, 500));
-      $(this).on("data:updated", this.debounce(this.recalculate_prices, 3000));
-      $(this).on("data:updated", this.debounce(this.update_form, 300));
-      $(this).on("data:updated", this.debounce(this.hide_all_service_info, 300));
+      $(this).on("form:changed", this.debounce(this.recalculate_records, 1500));
+      $(this).on("services:changed", this.debounce(this.recalculate_prices, 3000));
+      $(this).on("data:updated", this.debounce(this.update_form));
+      $(this).on("data:updated", this.debounce(this.hide_all_service_info));
       $(this).on("ajax:start", this.on_ajax_start);
       return $(this).on("ajax:end", this.on_ajax_end);
     };
@@ -135,7 +135,7 @@
         } else if (execAsap) {
           func.apply(obj, args);
         }
-        return timeout = setTimeout(delayed, threshold || 100);
+        return timeout = setTimeout(delayed, threshold || 300);
       };
     };
 
@@ -421,7 +421,7 @@
       values_json = $.toJSON(values);
       field = $("#" + field_name + ("-" + arnum));
       if ((values.if_empty != null) && values.if_empty === true) {
-        if (!field.val()) {
+        if (field.val()) {
           return;
         }
       }
@@ -645,11 +645,15 @@
       var el, poc;
       console.debug("*** set_service::AR=" + arnum + " UID=" + uid + " checked=" + checked);
       el = $("td[fieldname='Analyses-" + arnum + "'] #cb_" + arnum + "_" + uid);
+      if (el.is(":checked") === checked) {
+        return;
+      }
       el.prop("checked", checked);
       poc = el.closest("tr[poc]").attr("poc");
       if (this.is_poc_expanded(poc)) {
-        return el.closest("tr").addClass("visible");
+        el.closest("tr").addClass("visible");
       }
+      return $(this).trigger("services:changed");
     };
 
     AnalysisRequestAdd.prototype.set_service_spec = function(arnum, uid, spec) {
@@ -1006,7 +1010,8 @@
       $el = $(el);
       uid = $el.val();
       console.debug("°°° on_analysis_click::UID=" + uid + " checked=" + checked + "°°°");
-      return $(me).trigger("form:changed");
+      $(me).trigger("form:changed");
+      return $(me).trigger("services:changed");
     };
 
     AnalysisRequestAdd.prototype.on_service_listing_header_click = function(event) {
@@ -1114,7 +1119,7 @@
         console.debug("-> Copy checkbox field");
         $el = $(el);
         checked = $el.prop("checked");
-        return $.each((function() {
+        $.each((function() {
           results1 = [];
           for (var j = 1; 1 <= ar_count ? j <= ar_count : j >= ar_count; 1 <= ar_count ? j++ : j--){ results1.push(j); }
           return results1;
@@ -1127,6 +1132,9 @@
           _el = $(_td).find("input[type=checkbox]")[index];
           return $(_el).prop("checked", checked);
         });
+        if ($el.hasClass("analysisservice-cb")) {
+          return $(me).trigger("services:changed");
+        }
       });
       $td1.find("select").each(function(index, el) {
         var j, results1;

@@ -220,8 +220,7 @@
        }
 
        // If autoprint=1, render the pdf automatically
-       var autoprint = $.query.get('autoprint');
-       if (autoprint == '1') {
+       if (location.href.indexOf("autoprint=1") != -1) {
          printPdf();
          window.location = $('#cancel-button').attr('data-url');
        }

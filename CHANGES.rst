@@ -7,6 +7,7 @@ Changelog
 
 **Added**
 
+- #1536 Integrated Setup and Profiles from senaite.lims
 - #1534 Integrate browser resources from senaite.lims
 - #1529 Moved contentmenu provider into core
 - #1523 Moved Installation Screens into core
@@ -30,6 +31,7 @@ Changelog
 
 **Changed**
 
+- #1539 Avoid unnecessary Price recalculations in Sample Add Form
 - #1532 Updated jQuery Barcode to version 2.2.0
 - #1513 Better Ajax Loader for Sample Add Form
 - #1508 Do not try to render InstrumentQCFailuresViewlet to non-lab personnel
@@ -52,6 +54,7 @@ Changelog
 
 **Fixed**
 
+- #1540 Fix flushing CCEmail fields in Sample Add Form
 - #1533 Fix traceback from log when rendering stickers preview
 - #1525 Fix error when creating partitions with analyst user
 - #1522 Fix sporadical timeout issue when adding new samples/remarks
