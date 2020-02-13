@@ -415,7 +415,7 @@ class window.AnalysisRequestAdd
 
     if values.if_empty? and values.if_empty is true
       # Set the value if the field is empty only
-      if field.val() isnt ""
+      if field.val()
         return
 
     console.debug "apply_dependent_value: field_name=#{field_name} field_values=#{values_json}"
