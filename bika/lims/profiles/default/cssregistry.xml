@@ -53,6 +53,9 @@
   <!-- Deactivate (Remove?) CSS stylesheets that come with Sunburst theme -->
   <!-- Keep synced with Plone's cssregistry.xml -->
   <stylesheet
+    id="invisibles.css"
+    enabled="0"/>
+  <stylesheet
     id="reset.css"
     enabled="0"/>
   <stylesheet
