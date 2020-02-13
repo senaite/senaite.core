@@ -826,7 +826,7 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
 
         # Set default CC Email field
         info["field_values"].update({
-            "CCEmails": {"value": obj.getCCEmails()}
+            "CCEmails": {"value": obj.getCCEmails(), "if_empty": True}
         })
 
         # UID of the client

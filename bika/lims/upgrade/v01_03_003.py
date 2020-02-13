@@ -33,6 +33,7 @@ from bika.lims.interfaces import ISubmitted
 from bika.lims.interfaces import IVerified
 from bika.lims.setuphandlers import add_dexterity_setup_items
 from bika.lims.setuphandlers import setup_form_controller_actions
+from bika.lims.setuphandlers import setup_html_filter
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
 from Products.Archetypes.config import UID_CATALOG
@@ -72,6 +73,8 @@ JAVASCRIPTS_TO_REMOVE = [
     "++resource++bika.lims.js/bika.lims.analysisrequest.add.js",
     # replaced by jquery-barcode-2.2.0.js
     "++resource++bika.lims.js/thirdparty/jquery/jquery-barcode-2.0.2.js",
+    # replaced with jquery-qrcode-0.17.0.min
+    "++resource++bika.lims.js/thirdparty/jquery/jquery.qrcode-0.12.0.min.js",
 ]
 
 CSS_TO_REMOVE = [
@@ -365,6 +368,12 @@ def upgrade(tool):
     # remove stale CSS/JS resources
     remove_stale_css(portal)
     remove_stale_javascripts(portal)
+
+    # setup portal languages
+    setup.runImportStepFromProfile(profile, "languagetool")
+
+    # setup html filtering
+    setup_html_filter(portal)
 
     # remove stale type regsitrations
     # https://github.com/senaite/senaite.core/pull/1530
@@ -678,6 +687,7 @@ def update_samples_result_ranges(portal):
     specification assigned. In prior versions, getResultsRange was relying
     on Specification's ResultsRange
     """
+    logger.info("Update samples result ranges ...")
     query = dict(portal_type="AnalysisRequest")
     brains = api.search(query, CATALOG_ANALYSIS_REQUEST_LISTING)
     total = len(brains)
@@ -716,6 +726,8 @@ def update_samples_result_ranges(portal):
 
         # Store the result range directly to their analyses
         update_analyses_results_range(sample)
+
+    logger.info("Update samples result ranges [DONE]")
 
 
 def update_analyses_results_range(sample):

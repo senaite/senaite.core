@@ -106,7 +106,7 @@
               insert-after="++resource++plone.app.jquerytools.dateinput.js"/>
 
   <javascript authenticated="False"
-              id="++resource++bika.lims.js/thirdparty/jquery/jquery.qrcode-0.12.0.min.js"
+              id="++resource++bika.lims.js/thirdparty/jquery-qrcode-0.17.0.min.js"
               cacheable="True"
               compression="none"
               conditionalcomment=""

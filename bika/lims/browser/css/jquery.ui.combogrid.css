@@ -4,7 +4,7 @@
 	font-size: 0.8em !important;
 }
 .input-bg{
-	background-image: url("cg-images/magnifier.png");
+  background-image: url("++resource++bika.lims.css/cg-images/magnifier.png");
   background-position: 100% 4px;
   background-repeat: no-repeat;
   padding-right: 16px;
@@ -35,11 +35,11 @@
 	position: absolute;
 }
 .cg-colHeader.asc{
-	background-image: url("images/ui-icons_888888_256x240.png");
+	background-image: url("++resource++bika.lims.css/images/ui-icons_888888_256x240.png");
 	background-position: -64px -16px;
 }
 .cg-colHeader.desc{
-	background-image: url("images/ui-icons_888888_256x240.png");
+  background-image: url("++resource++bika.lims.css/images/ui-icons_888888_256x240.png");
 	background-position: 0 -16px;
 }
 .cg-colItem{
@@ -116,7 +116,7 @@
 }
 .cg-pg-button:hover {
 	 border: 1px solid #999999;
-	 background: #dadada url(images/ui-bg_glass_75_dadada_1x400.png) 50% 50% repeat-x;
+	 background: #dadada url(++resource++bika.lims.css/images/ui-bg_glass_75_dadada_1x400.png) 50% 50% repeat-x;
 	 font-weight: normal;
 	 color: #212121;
 	 padding: 0;
@@ -178,12 +178,12 @@
   vertical-align: bottom;
 }
 .cg-loading{
-	background-image: url("cg-images/loading.gif");
-  background-position: 100% 2px;
-  background-repeat: no-repeat;
+  background-image: url("++resource++bika.lims.css/cg-images/loading.gif");
+	background-position: 100% 2px;
+	background-repeat: no-repeat;
 }
 .ok-icon{
-	background-image: url("cg-images/accept.png");
+  background-image: url("++resource++bika.lims.css/cg-images/accept.png");
 	margin-bottom: 6px;
   vertical-align: bottom;
   height: 16px;
@@ -192,7 +192,7 @@
   margin-left: 3px;
 }
 .notok-icon{
-	background-image: url("cg-images/exclamation.png");
+  background-image: url("++resource++bika.lims.css/cg-images/exclamation.png");
 	margin-bottom: 6px;
   vertical-align: bottom;
   height: 16px;
@@ -203,7 +203,7 @@
 
 /* Reference Browser Widget */
 .cg-comboItem {
-    height: 45px;
+  height: 45px;
 }
 
 /*
@@ -213,10 +213,9 @@
 .ui-state-default,
 .ui-widget-content .ui-state-default,
 .ui-widget-header .ui-state-default{
-    background: #f5f5f5!important;
-    color: black!important;
+  background: #f5f5f5!important;
+  color: black!important;
 }
 .ui-icon {
-    background-image: url(++resource++bika.lims.css/images/ui-icons_72a7cf_256x240.png)!important;
+  background-image: url(++resource++bika.lims.css/images/ui-icons_72a7cf_256x240.png)!important;
 }
-

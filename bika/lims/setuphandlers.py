@@ -28,6 +28,8 @@ from bika.lims.catalog import getCatalogDefinitions
 from bika.lims.catalog import setup_catalogs
 from bika.lims.catalog.catalog_utilities import addZCTextIndex
 from plone import api as ploneapi
+from plone.app.controlpanel.filter import IFilterSchema
+
 
 PROFILE_ID = "profile-bika.lims:default"
 
@@ -231,6 +233,11 @@ COLUMNS = (
     ("portal_catalog", "Analyst"),
 )
 
+ALLOWED_STYLES = [
+    "color",
+    "background-color"
+]
+
 
 def pre_install(portal_setup):
     """Runs before the first import step of the *default* profile
@@ -287,6 +294,7 @@ def setup_handler(context):
     setup_catalog_mappings(portal)
     setup_core_catalogs(portal)
     add_dexterity_setup_items(portal)
+    setup_html_filter(portal)
 
     # Setting up all LIMS catalogs defined in catalog folder
     setup_catalogs(portal, getCatalogDefinitions())
@@ -525,3 +533,17 @@ def add_dexterity_setup_items(portal):
 
     # Enable content type filtering
     ti.filter_content_types = True
+
+
+def setup_html_filter(portal):
+    """Setup HTML filtering for resultsinterpretations
+    """
+    logger.info("*** Setup HTML Filter ***")
+    # bypass the broken API from portal_transforms
+    adapter = IFilterSchema(portal)
+    style_whitelist = adapter.style_whitelist
+    for style in ALLOWED_STYLES:
+        logger.info("Allow style '{}'".format(style))
+        if style not in style_whitelist:
+            style_whitelist.append(style)
+    adapter.style_whitelist = style_whitelist
