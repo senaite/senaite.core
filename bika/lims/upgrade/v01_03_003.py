@@ -354,6 +354,9 @@ def upgrade(tool):
     remove_stale_css(portal)
     remove_stale_javascripts(portal)
 
+    # setup portal languages
+    setup.runImportStepFromProfile(profile, "languagetool")
+
     # setup html filtering
     setup_html_filter(portal)
 
