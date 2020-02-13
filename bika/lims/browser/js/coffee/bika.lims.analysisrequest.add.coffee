@@ -97,13 +97,13 @@ class window.AnalysisRequestAdd
     ### internal events ###
 
     # handle value changes in the form
-    $(this).on "form:changed", @debounce @recalculate_records, 500
-    # recalculate prices after data changed
-    $(this).on "data:updated", @debounce @recalculate_prices, 3000
+    $(this).on "form:changed", @debounce @recalculate_records, 1500
+    # recalculate prices after services changed
+    $(this).on "services:changed", @debounce @recalculate_prices, 3000
     # update form from records after the data changed
-    $(this).on "data:updated", @debounce @update_form, 300
+    $(this).on "data:updated", @debounce @update_form
     # hide open service info after data changed
-    $(this).on "data:updated", @debounce @hide_all_service_info, 300
+    $(this).on "data:updated", @debounce @hide_all_service_info
     # handle Ajax events
     $(this).on "ajax:start", @on_ajax_start
     $(this).on "ajax:end", @on_ajax_end
@@ -116,7 +116,7 @@ class window.AnalysisRequestAdd
     ###
     timeout = null
 
-    (args...) ->
+    return (args...) ->
       obj = this
       delayed = ->
         func.apply(obj, args) unless execAsap
@@ -125,7 +125,7 @@ class window.AnalysisRequestAdd
         clearTimeout(timeout)
       else if (execAsap)
         func.apply(obj, args)
-      timeout = setTimeout delayed, threshold || 100
+      timeout = setTimeout(delayed, threshold || 300)
 
 
   template_dialog: (template_id, context, buttons) =>
@@ -650,6 +650,9 @@ class window.AnalysisRequestAdd
     console.debug "*** set_service::AR=#{arnum} UID=#{uid} checked=#{checked}"
     # get the service checkbox element
     el = $("td[fieldname='Analyses-#{arnum}'] #cb_#{arnum}_#{uid}")
+    # avoid unneccessary event triggers if the checkbox status is unchanged
+    if el.is(":checked") == checked
+      return
     # select the checkbox
     el.prop "checked", checked
     # get the point of capture of this element
@@ -657,6 +660,8 @@ class window.AnalysisRequestAdd
     # make the element visible if the categories are visible
     if @is_poc_expanded poc
       el.closest("tr").addClass "visible"
+    # trigger event for price recalculation
+    $(@).trigger "services:changed"
 
 
   set_service_spec: (arnum, uid, spec) =>
@@ -1048,6 +1053,8 @@ class window.AnalysisRequestAdd
 
     # trigger form:changed event
     $(me).trigger "form:changed"
+    # trigger event for price recalculation
+    $(me).trigger "services:changed"
 
 
   on_service_listing_header_click: (event) =>
@@ -1169,6 +1176,9 @@ class window.AnalysisRequestAdd
         _td = $tr.find("td[arnum=#{arnum}]")
         _el = $(_td).find("input[type=checkbox]")[index]
         $(_el).prop "checked", checked
+      # trigger event for price recalculation
+      if $el.hasClass "analysisservice-cb"
+        $(me).trigger "services:changed"
 
     # Copy <select> fields
     $td1.find("select").each (index, el) ->
