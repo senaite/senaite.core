@@ -13,11 +13,11 @@
   <use_subdomain_negotiation value="False"/>
   <authenticated_users_only value="False"/>
   <supported_langs>
+    <element value="de"/>
     <element value="en"/>
     <element value="es"/>
-    <element value="de"/>
-    <element value="cn"/>
-    <element value="th"/>
     <element value="pl"/>
+    <element value="th"/>
+    <element value="zh"/>
   </supported_langs>
 </object>
