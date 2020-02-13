@@ -421,7 +421,7 @@
       values_json = $.toJSON(values);
       field = $("#" + field_name + ("-" + arnum));
       if ((values.if_empty != null) && values.if_empty === true) {
-        if (!field.val()) {
+        if (field.val()) {
           return;
         }
       }
