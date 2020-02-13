@@ -657,6 +657,7 @@ def update_samples_result_ranges(portal):
     specification assigned. In prior versions, getResultsRange was relying
     on Specification's ResultsRange
     """
+    logger.info("Update samples result ranges ...")
     query = dict(portal_type="AnalysisRequest")
     brains = api.search(query, CATALOG_ANALYSIS_REQUEST_LISTING)
     total = len(brains)
@@ -695,6 +696,8 @@ def update_samples_result_ranges(portal):
 
         # Store the result range directly to their analyses
         update_analyses_results_range(sample)
+
+    logger.info("Update samples result ranges [DONE]")
 
 
 def update_analyses_results_range(sample):
