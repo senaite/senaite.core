@@ -249,13 +249,6 @@ schema = BikaSchema.copy() + Schema((
                         "sort_on": "sortable_title",
                         "sort_order": "ascending"},
             showOn=True,
-            add_button={
-                    'visible': True,
-                    'url': 'clients/createObject?type_name=Client',
-                    'return_fields': ['Title'],
-                    'js_controllers': ['#client-base-edit'],
-                    'overlay_handler': 'ClientOverlayHandler',
-                }
         ),
     ),
 
