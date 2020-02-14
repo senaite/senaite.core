@@ -116,6 +116,7 @@ _columns_list = [
     "getSamplingWorkflowEnabled",
     "assigned_state",
     "getInternalUse",
+    "getProgress",
 ]
 
 # Adding basic indexes

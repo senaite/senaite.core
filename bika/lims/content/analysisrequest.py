@@ -2469,5 +2469,31 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
 
         return html
 
+    def getProgress(self):
+        """Returns the progress in percent of all analyses
+        """
+        review_state = api.get_review_status(self)
+        if review_state == "published":
+            return 100
+
+        numbers = self.getAnalysesNum()
+
+        num_analyses = numbers[1] or 0
+        if not num_analyses:
+            return 0
+
+        # [verified, total, not_submitted, to_be_verified]
+        num_to_be_verified = numbers[3] or 0
+        num_verified = numbers[0] or 0
+
+        # 2 steps per analysis (submit, verify) plus one step for publish
+        max_num_steps = (num_analyses * 2) + 1
+        num_steps = num_to_be_verified + (num_verified * 2)
+        if not num_steps:
+            return 0
+        if num_steps > max_num_steps:
+            return 100
+        return (num_steps * 100) / max_num_steps
+
 
 registerType(AnalysisRequest, PROJECTNAME)
