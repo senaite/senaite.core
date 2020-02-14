@@ -2473,7 +2473,7 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         """Returns the progress in percent of all analyses
         """
         review_state = api.get_review_status(self)
-        if review_state == "published":
+        if review_state in ["published", "invalid"]:
             return 100
 
         numbers = self.getAnalysesNum()
