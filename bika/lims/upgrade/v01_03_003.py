@@ -391,6 +391,9 @@ def upgrade(tool):
     # https://github.com/senaite/senaite.core/pull/
     # Add progress metadata column for Samples
     add_metadata(portal, CATALOG_ANALYSIS_REQUEST_LISTING, "getProgress", True)
+    # Add progress metadata column for Batches
+    add_metadata(portal, BIKA_CATALOG, "getProgress", True)
+
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
 
