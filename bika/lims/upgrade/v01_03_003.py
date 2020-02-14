@@ -388,7 +388,7 @@ def upgrade(tool):
     fix_email_address(portal)
 
     # Add metadata for progress bar
-    # https://github.com/senaite/senaite.core/pull/
+    # https://github.com/senaite/senaite.core/pull/1544
     # Add progress metadata column for Samples
     add_metadata(portal, CATALOG_ANALYSIS_REQUEST_LISTING, "getProgress", True)
     # Add progress metadata column for Batches
