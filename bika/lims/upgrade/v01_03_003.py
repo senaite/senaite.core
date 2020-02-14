@@ -21,9 +21,11 @@
 from collections import defaultdict
 from operator import itemgetter
 
+import re
 import transaction
 from bika.lims import api
 from bika.lims import logger
+from bika.lims.api.mail import is_valid_email_address
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.catalog.bikasetup_catalog import SETUP_CATALOG
@@ -361,6 +363,10 @@ def upgrade(tool):
 
     # setup html filtering
     setup_html_filter(portal)
+
+    # Fix email addresses
+    # https://github.com/senaite/senaite.core/pull/1542
+    fix_email_address(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
@@ -771,3 +777,47 @@ def update_wf_received_samples(portal):
         sample.reindexObject()
 
     logger.info("Updating workflow mappings for received samples [DONE]")
+
+
+def fix_email_address(portal, portal_types=None, catalog_id="portal_catalog"):
+    """Validates the email address of portal types that inherit from Person.
+    The field did not have an email validator, causing some views to fail when
+    rendering the value while expecting a valid email address format
+    """
+    logger.info("Fixing email addresses ...")
+    if not portal_types:
+        portal_types = ["Contact", "LabContact", "SupplierContact"]
+    query = dict(portal_type=portal_types)
+    brains = api.search(query, catalog_id)
+    total = len(brains)
+    for num, brain in enumerate(brains):
+        if num and num % 1000 == 0:
+            logger.info("{}/{} Fixing email addresses ...".format(num, total))
+
+        obj = api.get_object(brain)
+        email_address = obj.getEmailAddress()
+        if not email_address:
+            continue
+
+        if not is_valid_email_address(email_address):
+            obj_id = api.get_id(obj)
+            logger.info("No valid email address for {}: {}"
+                        .format(obj_id, email_address))
+
+            # Maybe is a list of email addresses
+            emails = map(lambda x: x.strip(), re.split("[;:, ]", email_address))
+
+            # Bail out non-valid emails
+            emails = filter(lambda em: is_valid_email_address(em), emails)
+            if emails:
+                email = emails[0]
+                logger.info("Email address assigned for {}: {}"
+                            .format(api.get_id(obj), email))
+                obj.setEmailAddress(email)
+                obj.reindexObject()
+
+            else:
+                logger.warn("Cannot resolve email address from '{}'"
+                            .format(email_address))
+
+    logger.info("Fixing email addresses [DONE]")

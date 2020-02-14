@@ -52,6 +52,7 @@ Changelog
 
 **Fixed**
 
+- #1542 Fix sporadical errors when contacts do not have a valid email address
 - #1540 Fix flushing CCEmail fields in Sample Add Form
 - #1533 Fix traceback from log when rendering stickers preview
 - #1525 Fix error when creating partitions with analyst user
