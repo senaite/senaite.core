@@ -61,7 +61,7 @@ class BatchFolderContentsView(BikaListingView):
                 "title": _("Title"),
                 "index": "title", }),
             ("Progress", {
-                "title": "Progress",
+                "title": _("Progress"),
                 "index": "getProgress",
                 "sortable": True,
                 "toggle": True}),
