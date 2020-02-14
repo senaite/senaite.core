@@ -73,7 +73,6 @@ def initialize(context):
     from content.analysisrequestsfolder import AnalysisRequestsFolder  # noqa
     from content.analysisservice import AnalysisService  # noqa
     from content.analysisspec import AnalysisSpec  # noqa
-    from content.arimport import ARImport  # noqa
     from content.arreport import ARReport  # noqa
     from content.artemplate import ARTemplate  # noqa
     from content.attachment import Attachment  # noqa
@@ -82,7 +81,6 @@ def initialize(context):
     from content.batch import Batch  # noqa
     from content.batchfolder import BatchFolder  # noqa
     from content.batchlabel import BatchLabel  # noqa
-    from content.bikacache import BikaCache  # noqa
     from content.bikaschema import BikaSchema  # noqa
     from content.bikasetup import BikaSetup  # noqa
     from content.calculation import Calculation  # noqa
@@ -103,8 +101,6 @@ def initialize(context):
     from content.instrumenttype import InstrumentType  # noqa
     from content.instrumentvalidation import InstrumentValidation  # noqa
     from content.invoice import Invoice  # noqa
-    from content.invoicebatch import InvoiceBatch  # noqa
-    from content.invoicefolder import InvoiceFolder  # noqa
     from content.labcontact import LabContact  # noqa
     from content.laboratory import Laboratory  # noqa
     from content.labproduct import LabProduct  # noqa
@@ -125,12 +121,9 @@ def initialize(context):
     from content.rejectanalysis import RejectAnalysis  # noqa
     from content.report import Report  # noqa
     from content.reportfolder import ReportFolder  # noqa
-    from content.sample import Sample  # noqa
     from content.samplecondition import SampleCondition  # noqa
     from content.samplematrix import SampleMatrix  # noqa
-    from content.samplepartition import SamplePartition  # noqa
     from content.samplepoint import SamplePoint  # noqa
-    from content.samplesfolder import SamplesFolder  # noqa
     from content.sampletype import SampleType  # noqa
     from content.samplingdeviation import SamplingDeviation  # noqa
     from content.srtemplate import SRTemplate  # noqa

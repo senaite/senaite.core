@@ -194,11 +194,6 @@ class IReportFolder(Interface):
     """Report folder
     """
 
-# TODO Remove in >v1.3.0
-class ISample(Interface):
-    """Sample
-    """
-
 
 class ISampleCondition(Interface):
     """Sample Condition
@@ -217,16 +212,6 @@ class ISampleMatrix(Interface):
 
 class ISampleMatrices(Interface):
     """Sample Matrices
-    """
-
-
-class ISamplePartition(Interface):
-    """Sample
-    """
-
-
-class ISamplesFolder(Interface):
-    """Samples Folder
     """
 
 
@@ -267,16 +252,6 @@ class IReportsFolder(Interface):
 
 class IInvoice(Interface):
     """Invoice
-    """
-
-
-class IInvoiceBatch(Interface):
-    """Invoice Batch
-    """
-
-
-class IInvoiceFolder(Interface):
-    """Invoices Folder
     """
 
 
@@ -742,16 +717,6 @@ class IJSONReadExtender(Interface):
 class ISetupDataImporter(Interface):
     """ISetupDataImporter adapters are responsible for importing sections of
     the load_setup_data xlsx workbooks.
-    """
-
-
-class IARImportFolder(Interface):
-    """Marker interface for a folder that contains ARImports
-    """
-
-
-class IARImport(Interface):
-    """Marker interface for an ARImport
     """
 
 

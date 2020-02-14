@@ -46,7 +46,6 @@ from bika.lims.browser.fields import DurationField
 from bika.lims.browser.widgets import DurationWidget
 from bika.lims.browser.widgets import RecordsWidget
 from bika.lims.browser.widgets import RejectionSetupWidget
-from bika.lims.config import ARIMPORT_OPTIONS
 from bika.lims.config import ATTACHMENT_OPTIONS
 from bika.lims.config import CURRENCIES
 from bika.lims.config import WEEKDAYS
@@ -388,19 +387,6 @@ schema = BikaFolderSchema.copy() + Schema((
             format='select',
         )
     ),
-    LinesField(
-        'ARImportOption',
-        schemata="Analyses",
-        vocabulary=ARIMPORT_OPTIONS,
-        widget=MultiSelectionWidget(
-            visible=False,
-            label=_("AR Import options"),
-            description=_(
-                "'Classic' indicates importing samples per sample and "
-                "analysis service selection. With 'Profiles', analysis profile keywords "
-                "are used to select multiple analysis services together"),
-        )
-    ),
     StringField(
         'ARAttachmentOption',
         schemata="Analyses",
@@ -717,11 +703,6 @@ schema = BikaFolderSchema.copy() + Schema((
         schemata="ID Server",
         default=[
             {
-                'form': 'AI-{seq:03d}',
-                'portal_type': 'ARImport',
-                'sequence_type': 'generated',
-                'split_length': 1
-            }, {
                 'form': 'B-{seq:03d}',
                 'portal_type': 'Batch',
                 'prefix': 'batch',

@@ -79,7 +79,6 @@ GROUPS = [
 
 NAV_BAR_ITEMS_TO_HIDE = (
     # List of items to hide from navigation bar
-    "arimports",
     "pricelists",
     "supplyorders",
 )

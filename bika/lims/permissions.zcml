@@ -152,7 +152,6 @@
   <permission id="senaite.core.permissions.EditWorksheet" title="senaite.core: Edit Worksheet"/>
   <permission id="senaite.core.permissions.ManageBika" title="senaite.core: Manage Bika"/>
   <permission id="senaite.core.permissions.ManageAnalysisRequests" title="senaite.core: Manage Analysis Requests"/>
-  <permission id="senaite.core.permissions.ManageARImport" title="senaite.core: Manage ARImport"/>
   <permission id="senaite.core.permissions.ManageInvoices" title="senaite.core: Manage Invoices"/>
   <permission id="senaite.core.permissions.ManageLoginDetails" title="senaite.core: Manage Login Details"/>
   <permission id="senaite.core.permissions.ManageReference" title="senaite.core: Manage Reference"/>

@@ -39,7 +39,6 @@ from bika.lims import api
 from bika.lims.browser.fields import EmailsField
 from bika.lims.browser.widgets import ReferenceWidget
 from bika.lims.catalog.bikasetup_catalog import SETUP_CATALOG
-from bika.lims.config import ARIMPORT_OPTIONS
 from bika.lims.config import DECIMAL_MARKS
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.attachment import Attachment
@@ -196,11 +195,6 @@ class Client(Organisation):
         )
         if len(r) == 1:
             return r[0].UID
-
-    security.declarePublic("getARImportOptions")
-
-    def getARImportOptions(self):
-        return ARIMPORT_OPTIONS
 
     def getContacts(self, only_active=True):
         """Return an array containing the contacts from this Client

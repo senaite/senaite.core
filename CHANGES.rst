@@ -43,6 +43,8 @@ Changelog
 
 **Removed**
 
+- #1530 Removed ARImport
+- #1530 Removed stale type registrations
 - #1541 Remove add/edit options of ReferenceWidget
 - #1535 Remove `zcatalog` monkey (and `getRequestUID` index)
 - #1518 Removed stale indexes from `analysis_catalog`

@@ -2,7 +2,6 @@
 <object name="portal_types" meta_type="Plone Types Tool">
  <property name="title">Controls the available content types in your portal</property>
  <object name="AuditLog" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="ARImport" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="AnalysisProfile" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="AnalysisProfiles" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="ARReport" meta_type="Factory-based Type Information with dynamic views"/>
@@ -24,7 +23,6 @@
  <object name="BatchFolder" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="BatchLabel" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="BatchLabels" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="BikaCache" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="BikaSetup" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Calculation" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Calculations" meta_type="Factory-based Type Information with dynamic views"/>
@@ -50,8 +48,6 @@
  <object name="InstrumentLocations" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="InstrumentValidation" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Invoice" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="InvoiceBatch" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="InvoiceFolder" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="LabContact" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="LabContacts" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="LabProduct" meta_type="Factory-based Type Information with dynamic views"/>
@@ -76,17 +72,14 @@
  <object name="RejectAnalysis" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="ReportFolder" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Report" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="Sample" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="SampleCondition" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="SampleConditions" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="SampleMatrix" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="SampleMatrices" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="SamplePartition" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="StorageLocation" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="StorageLocations" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="SamplePoint" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="SamplePoints" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="SamplesFolder" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="SampleType" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="SampleTypes" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="SamplingDeviation" meta_type="Factory-based Type Information with dynamic views"/>

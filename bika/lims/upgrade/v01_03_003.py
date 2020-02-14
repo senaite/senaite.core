@@ -45,6 +45,19 @@ version = "1.3.3"  # Remember version number in metadata.xml and setup.py
 profile = "profile-{0}:default".format(product)
 
 
+TYPES_TO_REMOVE = [
+    "ARImport",
+    "SamplesFolder",
+    "BikaCache",
+    # invoices were removed in upgrade step 1.3.0
+    "InvoiceBatch",
+    "InvoiceFolder",
+]
+
+WFS_TO_REMOVE = [
+    "bika_arimport_workflow",
+]
+
 JAVASCRIPTS_TO_REMOVE = [
     # moved from lims -> core
     "++resource++senaite.lims.jquery.js/jquery-2.2.4.min.js",
@@ -363,6 +376,10 @@ def upgrade(tool):
 
     # setup html filtering
     setup_html_filter(portal)
+
+    # remove stale type regsitrations
+    # https://github.com/senaite/senaite.core/pull/1530
+    remove_stale_type_registrations(portal)
 
     # Fix email addresses
     # https://github.com/senaite/senaite.core/pull/1542
@@ -779,6 +796,26 @@ def update_wf_received_samples(portal):
     logger.info("Updating workflow mappings for received samples [DONE]")
 
 
+def remove_stale_type_registrations(portal):
+    """Remove stale contents from the portal_types
+    """
+    logger.info("Removing stale type registrations ...")
+
+    pt = portal.portal_types
+    for t in TYPES_TO_REMOVE:
+        logger.info("Removing type registrations for '{}'".format(t))
+        if t in pt.objectIds():
+            pt.manage_delObjects(t)
+
+    wf_tool = portal.portal_workflow
+    for wf in WFS_TO_REMOVE:
+        if wf in wf_tool:
+            logger.info("Removing Workflow '{}'".format(wf))
+            wf_tool.manage_delObjects(wf)
+
+    logger.info("Removing stale type registrations [DONE]")
+
+    
 def fix_email_address(portal, portal_types=None, catalog_id="portal_catalog"):
     """Validates the email address of portal types that inherit from Person.
     The field did not have an email validator, causing some views to fail when
