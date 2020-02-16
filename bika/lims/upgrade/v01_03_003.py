@@ -377,6 +377,9 @@ def upgrade(tool):
     # setup html filtering
     setup_html_filter(portal)
 
+    # Remove ARImports folder
+    remove_arimports(portal)
+
     # remove stale type regsitrations
     # https://github.com/senaite/senaite.core/pull/1530
     remove_stale_type_registrations(portal)
@@ -858,3 +861,18 @@ def fix_email_address(portal, portal_types=None, catalog_id="portal_catalog"):
                             .format(email_address))
 
     logger.info("Fixing email addresses [DONE]")
+
+
+def remove_arimports(portal):
+    """Removes arimports folder
+    """
+    logger.info("Removing AR Imports folder")
+
+    arimports = portal.get("arimports")
+    if arimports is None:
+        return
+
+    # delete de arimports folder
+    portal.manage_delObjects(arimports.getId())
+
+    logger.info("Removing AR Imports folder [DONE]")
