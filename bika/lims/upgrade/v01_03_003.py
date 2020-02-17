@@ -18,14 +18,15 @@
 # Copyright 2018-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import re
 from collections import defaultdict
 from operator import itemgetter
 
-import re
 import transaction
 from bika.lims import api
 from bika.lims import logger
 from bika.lims.api.mail import is_valid_email_address
+from bika.lims.catalog import BIKA_CATALOG
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.catalog.bikasetup_catalog import SETUP_CATALOG
@@ -39,6 +40,7 @@ from bika.lims.setuphandlers import setup_html_filter
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
 from Products.Archetypes.config import UID_CATALOG
+from Products.ZCatalog.ProgressHandler import ZLogHandler
 from zope.interface import alsoProvides
 
 version = "1.3.3"  # Remember version number in metadata.xml and setup.py
@@ -387,6 +389,13 @@ def upgrade(tool):
     # Fix email addresses
     # https://github.com/senaite/senaite.core/pull/1542
     fix_email_address(portal)
+
+    # Add metadata for progress bar
+    # https://github.com/senaite/senaite.core/pull/1544
+    # Add progress metadata column for Samples
+    add_metadata(portal, CATALOG_ANALYSIS_REQUEST_LISTING, "getProgress", True)
+    # Add progress metadata column for Batches
+    add_metadata(portal, BIKA_CATALOG, "getProgress", True)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
@@ -863,6 +872,21 @@ def fix_email_address(portal, portal_types=None, catalog_id="portal_catalog"):
     logger.info("Fixing email addresses [DONE]")
 
 
+def add_metadata(portal, catalog_id, column, refresh_catalog=False):
+    logger.info("Adding '{}' metadata to '{}' ...".format(column, catalog_id))
+    catalog = api.get_tool(catalog_id)
+    if column in catalog.schema():
+        logger.info("Metadata '{}' already in catalog '{}' [SKIP]"
+                    .format(column, catalog_id))
+        return
+    catalog.addColumn(column)
+
+    if refresh_catalog:
+        logger.info("Refreshing catalog '{}' ...".format(catalog_id))
+        handler = ZLogHandler(steps=100)
+        catalog.refreshCatalog(pghandler=handler)
+
+
 def remove_arimports(portal):
     """Removes arimports folder
     """
@@ -876,3 +900,4 @@ def remove_arimports(portal):
     portal.manage_delObjects(arimports.getId())
 
     logger.info("Removing AR Imports folder [DONE]")
+

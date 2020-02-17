@@ -22,6 +22,7 @@ from .auditlog_catalog import CATALOG_AUDITLOG  # noqa
 from .analysisrequest_catalog import CATALOG_ANALYSIS_REQUEST_LISTING  # noqa
 from .analysis_catalog import CATALOG_ANALYSIS_LISTING  # noqa
 from .autoimportlogs_catalog import CATALOG_AUTOIMPORTLOGS_LISTING  # noqa
+from .bika_catalog import BIKA_CATALOG  # noqa
 from .worksheet_catalog import CATALOG_WORKSHEET_LISTING  # noqa
 from .report_catalog import CATALOG_REPORT_LISTING  # noqa
 from .bikasetup_catalog import SETUP_CATALOG  # noqa

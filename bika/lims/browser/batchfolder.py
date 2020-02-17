@@ -21,12 +21,13 @@
 import collections
 
 from bika.lims import api
-from bika.lims.api.security import check_permission
 from bika.lims import bikaMessageFactory as _
+from bika.lims.api.security import check_permission
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.interfaces import IClient
 from bika.lims.permissions import AddBatch
 from bika.lims.utils import get_link
+from bika.lims.utils import get_progress_bar_html
 
 
 class BatchFolderContentsView(BikaListingView):
@@ -41,7 +42,7 @@ class BatchFolderContentsView(BikaListingView):
             "portal_type": "Batch",
             "sort_on": "created",
             "sort_order": "descending",
-            "is_active": True
+            "is_active": True,
         }
 
         self.context_actions = {}
@@ -59,6 +60,11 @@ class BatchFolderContentsView(BikaListingView):
             ("Title", {
                 "title": _("Title"),
                 "index": "title", }),
+            ("Progress", {
+                "title": _("Progress"),
+                "index": "getProgress",
+                "sortable": True,
+                "toggle": True}),
             ("BatchID", {
                 "title": _("Batch ID"),
                 "index": "getId", }),
@@ -166,6 +172,11 @@ class BatchFolderContentsView(BikaListingView):
         client = obj.getClient()
         created = api.get_creation_date(obj)
         date = obj.getBatchDate()
+
+        # total sample progress
+        progress = obj.getProgress()
+        item["Progress"] = progress
+        item["replace"]["Progress"] = get_progress_bar_html(progress)
 
         item["BatchID"] = bid
         item["ClientBatchID"] = cbid
