@@ -10,7 +10,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2020-01-13 19:41+0000\n"
+"POT-Creation-Date: 2020-02-16 19:07+0000\n"
 "PO-Revision-Date: 2018-06-01 18:46+0000\n"
 "Last-Translator: Zhuo Song, 2019\n"
 "Language-Team: Chinese (China) (https://www.transifex.com/senaite/teams/87045/zh_CN/)\n"
@@ -277,9 +277,13 @@ msgstr "不活动"
 msgid "Duplicate Analysis"
 msgstr "复制分析"
 
-#: bika/lims/profiles/default/types/ARImport.xml
+#: bika/lims/profiles/default/controlpanel.xml
+msgid "Dynamic Analysis Specifications"
+msgstr ""
+
 #: bika/lims/profiles/default/types/ARTemplate.xml
 #: bika/lims/profiles/default/types/AnalysisCategory.xml
+#: bika/lims/profiles/default/types/AnalysisProfile.xml
 msgid "Edit"
 msgstr "编辑"
 
@@ -293,21 +297,9 @@ msgstr "已过期"
 msgid "Export"
 msgstr "导出"
 
-#: bika/lims/profiles/default/types/InvoiceBatch.xml
-msgid "Export Batch To CSV"
-msgstr "将批次导出至CSV文件"
-
-#: bika/lims/profiles/default/actions.xml
-msgid "Extracts"
-msgstr "提取"
-
 #: bika/lims/profiles/default/types/ReportFolder.xml
 msgid "History"
 msgstr "历史"
-
-#: bika/lims/profiles/default/actions.xml
-msgid "Home"
-msgstr "主页"
 
 #: bika/lims/profiles/default/actions.xml
 msgid "Import"
@@ -315,10 +307,6 @@ msgstr "导入"
 
 msgid "Imported"
 msgstr "已导入"
-
-#: bika/lims/profiles/default/types/Client.xml
-msgid "Imports"
-msgstr "导入"
 
 msgid "Inactive"
 msgstr "在用"
@@ -469,10 +457,6 @@ msgstr "价目表"
 msgid "Pricelists"
 msgstr "价目表"
 
-#: bika/lims/profiles/default/actions.xml
-msgid "Prices"
-msgstr "价格"
-
 #: bika/lims/profiles/default/types/Invoice.xml
 #: bika/lims/profiles/default/types/SupplyOrder.xml
 msgid "Print"
@@ -530,7 +514,6 @@ msgstr "参考样品定义"
 msgid "Reference Sample"
 msgstr "参考样品"
 
-#: bika/lims/profiles/default/actions.xml
 #: bika/lims/profiles/default/types/ReferenceSamplesFolder.xml
 #: bika/lims/profiles/default/types/Supplier.xml
 msgid "Reference Samples"
@@ -590,7 +573,6 @@ msgid "Retracted"
 msgstr "已撤回"
 
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
-#: bika/lims/profiles/default/types/Sample.xml
 msgid "Sample"
 msgstr "样品"
 
@@ -614,10 +596,6 @@ msgstr "样品基体"
 #: bika/lims/profiles/default/types/SampleMatrix.xml
 msgid "Sample Matrix"
 msgstr "样品基体"
-
-#: bika/lims/profiles/default/types/SamplePartition.xml
-msgid "Sample Partition"
-msgstr "样品分切"
 
 #: bika/lims/profiles/default/types/SamplePoint.xml
 msgid "Sample Point"
@@ -654,15 +632,11 @@ msgstr "样品已注册"
 msgid "Sampled"
 msgstr "取样"
 
-#: bika/lims/profiles/default/actions.xml
 #: bika/lims/profiles/default/types/AnalysisRequestsFolder.xml
 #: bika/lims/profiles/default/types/Batch.xml
+#: bika/lims/profiles/default/types/Client.xml
 msgid "Samples"
 msgstr "多个样品"
-
-#: bika/lims/profiles/default/types/SamplesFolder.xml
-msgid "SamplesFolder"
-msgstr "样品集"
 
 #: bika/lims/profiles/default/types/SamplingDeviation.xml
 msgid "Sampling Deviation"
@@ -701,6 +675,10 @@ msgstr "计划采样"
 msgid "Scheduled sampling"
 msgstr "已计划抽样"
 
+#: bika/lims/profiles/default/actions.xml
+msgid "Search"
+msgstr ""
+
 #: bika/lims/profiles/default/types/BikaSetup.xml
 msgid "Setup"
 msgstr "配置"
@@ -712,10 +690,6 @@ msgstr "分享"
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 msgid "Small Sticker"
 msgstr "小标签"
-
-#: bika/lims/profiles/default/types/InvoiceFolder.xml
-msgid "Statements"
-msgstr "声明"
 
 #: bika/lims/profiles/default/types/Batch.xml
 #: bika/lims/profiles/default/types/ReferenceSample.xml
@@ -757,7 +731,6 @@ msgstr "提交验证"
 msgid "Supplier"
 msgstr "供应商"
 
-#: bika/lims/profiles/default/actions.xml
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/Suppliers.xml
 msgid "Suppliers"
@@ -802,9 +775,9 @@ msgstr "已验证"
 msgid "Verify"
 msgstr "已确认"
 
-#: bika/lims/profiles/default/types/ARImport.xml
 #: bika/lims/profiles/default/types/ARReport.xml
 #: bika/lims/profiles/default/types/ARTemplate.xml
+#: bika/lims/profiles/default/types/AnalysisCategory.xml
 msgid "View"
 msgstr "示图"
 
@@ -821,7 +794,6 @@ msgstr "工作表模板"
 msgid "Worksheet Templates"
 msgstr "工作表模板"
 
-#: bika/lims/profiles/default/actions.xml
 #: bika/lims/profiles/default/types/WorksheetFolder.xml
 msgid "Worksheets"
 msgstr "多个工作表"

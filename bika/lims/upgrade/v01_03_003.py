@@ -379,6 +379,9 @@ def upgrade(tool):
     # setup html filtering
     setup_html_filter(portal)
 
+    # Remove ARImports folder
+    remove_arimports(portal)
+
     # remove stale type regsitrations
     # https://github.com/senaite/senaite.core/pull/1530
     remove_stale_type_registrations(portal)
@@ -882,3 +885,19 @@ def add_metadata(portal, catalog_id, column, refresh_catalog=False):
         logger.info("Refreshing catalog '{}' ...".format(catalog_id))
         handler = ZLogHandler(steps=100)
         catalog.refreshCatalog(pghandler=handler)
+
+
+def remove_arimports(portal):
+    """Removes arimports folder
+    """
+    logger.info("Removing AR Imports folder")
+
+    arimports = portal.get("arimports")
+    if arimports is None:
+        return
+
+    # delete de arimports folder
+    portal.manage_delObjects(arimports.getId())
+
+    logger.info("Removing AR Imports folder [DONE]")
+

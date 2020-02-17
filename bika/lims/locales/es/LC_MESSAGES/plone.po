@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2020-01-13 19:41+0000\n"
+"POT-Creation-Date: 2020-02-16 19:07+0000\n"
 "PO-Revision-Date: 2018-06-01 18:46+0000\n"
 "Last-Translator: Pau Soliva <psoliva@naralabs.com>, 2019\n"
 "Language-Team: Spanish (https://www.transifex.com/senaite/teams/87045/es/)\n"
@@ -275,9 +275,13 @@ msgstr "Inactivo"
 msgid "Duplicate Analysis"
 msgstr "Análisis duplicados"
 
-#: bika/lims/profiles/default/types/ARImport.xml
+#: bika/lims/profiles/default/controlpanel.xml
+msgid "Dynamic Analysis Specifications"
+msgstr ""
+
 #: bika/lims/profiles/default/types/ARTemplate.xml
 #: bika/lims/profiles/default/types/AnalysisCategory.xml
+#: bika/lims/profiles/default/types/AnalysisProfile.xml
 msgid "Edit"
 msgstr "Editar"
 
@@ -291,21 +295,9 @@ msgstr "Caducado"
 msgid "Export"
 msgstr "Exportar"
 
-#: bika/lims/profiles/default/types/InvoiceBatch.xml
-msgid "Export Batch To CSV"
-msgstr "Exportar lote a CSV"
-
-#: bika/lims/profiles/default/actions.xml
-msgid "Extracts"
-msgstr "Extractos"
-
 #: bika/lims/profiles/default/types/ReportFolder.xml
 msgid "History"
 msgstr "Historial"
-
-#: bika/lims/profiles/default/actions.xml
-msgid "Home"
-msgstr "Inicio"
 
 #: bika/lims/profiles/default/actions.xml
 msgid "Import"
@@ -313,10 +305,6 @@ msgstr "Importar"
 
 msgid "Imported"
 msgstr "Importado"
-
-#: bika/lims/profiles/default/types/Client.xml
-msgid "Imports"
-msgstr "Importaciones"
 
 msgid "Inactive"
 msgstr "Inactivo"
@@ -467,10 +455,6 @@ msgstr "Lista de precios"
 msgid "Pricelists"
 msgstr "Listas de precios"
 
-#: bika/lims/profiles/default/actions.xml
-msgid "Prices"
-msgstr "Precios"
-
 #: bika/lims/profiles/default/types/Invoice.xml
 #: bika/lims/profiles/default/types/SupplyOrder.xml
 msgid "Print"
@@ -528,7 +512,6 @@ msgstr "Definiciones de referencia"
 msgid "Reference Sample"
 msgstr "Muestra de referencia"
 
-#: bika/lims/profiles/default/actions.xml
 #: bika/lims/profiles/default/types/ReferenceSamplesFolder.xml
 #: bika/lims/profiles/default/types/Supplier.xml
 msgid "Reference Samples"
@@ -588,7 +571,6 @@ msgid "Retracted"
 msgstr "Retirado"
 
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
-#: bika/lims/profiles/default/types/Sample.xml
 msgid "Sample"
 msgstr "Muestra"
 
@@ -612,10 +594,6 @@ msgstr "Soportes de muestra"
 #: bika/lims/profiles/default/types/SampleMatrix.xml
 msgid "Sample Matrix"
 msgstr "Soporte de muestra"
-
-#: bika/lims/profiles/default/types/SamplePartition.xml
-msgid "Sample Partition"
-msgstr "Partición de la muestra"
 
 #: bika/lims/profiles/default/types/SamplePoint.xml
 msgid "Sample Point"
@@ -652,14 +630,10 @@ msgstr "Muestra registrada"
 msgid "Sampled"
 msgstr "Muestreado"
 
-#: bika/lims/profiles/default/actions.xml
 #: bika/lims/profiles/default/types/AnalysisRequestsFolder.xml
 #: bika/lims/profiles/default/types/Batch.xml
+#: bika/lims/profiles/default/types/Client.xml
 msgid "Samples"
-msgstr "Muestras"
-
-#: bika/lims/profiles/default/types/SamplesFolder.xml
-msgid "SamplesFolder"
 msgstr "Muestras"
 
 #: bika/lims/profiles/default/types/SamplingDeviation.xml
@@ -699,6 +673,10 @@ msgstr "Programar muestreo"
 msgid "Scheduled sampling"
 msgstr "Muestreo programado"
 
+#: bika/lims/profiles/default/actions.xml
+msgid "Search"
+msgstr ""
+
 #: bika/lims/profiles/default/types/BikaSetup.xml
 msgid "Setup"
 msgstr "Configuración"
@@ -710,10 +688,6 @@ msgstr "Compartir"
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 msgid "Small Sticker"
 msgstr "Etiqueta pequeña"
-
-#: bika/lims/profiles/default/types/InvoiceFolder.xml
-msgid "Statements"
-msgstr "Extractos de facturación"
 
 #: bika/lims/profiles/default/types/Batch.xml
 #: bika/lims/profiles/default/types/ReferenceSample.xml
@@ -755,7 +729,6 @@ msgstr "Enviar para verificación"
 msgid "Supplier"
 msgstr "Proveedor"
 
-#: bika/lims/profiles/default/actions.xml
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/Suppliers.xml
 msgid "Suppliers"
@@ -800,9 +773,9 @@ msgstr "Verificado"
 msgid "Verify"
 msgstr "Verificar"
 
-#: bika/lims/profiles/default/types/ARImport.xml
 #: bika/lims/profiles/default/types/ARReport.xml
 #: bika/lims/profiles/default/types/ARTemplate.xml
+#: bika/lims/profiles/default/types/AnalysisCategory.xml
 msgid "View"
 msgstr "Detalle"
 
@@ -819,7 +792,6 @@ msgstr "Plantilla para hoja de trabajo"
 msgid "Worksheet Templates"
 msgstr "Plantillas para hojas de trabajo"
 
-#: bika/lims/profiles/default/actions.xml
 #: bika/lims/profiles/default/types/WorksheetFolder.xml
 msgid "Worksheets"
 msgstr "Hojas de trabajo"
