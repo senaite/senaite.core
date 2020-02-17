@@ -131,6 +131,7 @@ from bika.lims.workflow import getTransitionUsers
 
 IMG_SRC_RX = re.compile(r'<img.*?src="(.*?)"')
 IMG_DATA_SRC_RX = re.compile(r'<img.*?src="(data:image/.*?;base64,)(.*?)"')
+FINAL_STATES = ["published", "retracted", "rejected", "cancelled"]
 
 
 # SCHEMA DEFINITION
@@ -2473,7 +2474,10 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         """Returns the progress in percent of all analyses
         """
         review_state = api.get_review_status(self)
-        if review_state in ["published", "invalid"]:
+
+        # Consider final states as 100%
+        # https://github.com/senaite/senaite.core/pull/1544#discussion_r379821841
+        if review_state in FINAL_STATES:
             return 100
 
         numbers = self.getAnalysesNum()
