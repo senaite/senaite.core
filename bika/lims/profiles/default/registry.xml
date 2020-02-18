@@ -36,4 +36,329 @@
         </value>
     </record>
 
+    <!-- jQuery UI -->
+    <record name="collective.js.jqueryui.controlpanel.IJQueryUICSS.css" interface="collective.js.jqueryui.controlpanel.IJQueryUICSS" field="css">
+      <field type="plone.registry.field.Bool">
+        <default>False</default>
+        <description>Activate the JQueryUI theme 'Sunburst'</description>
+        <title>Sunburst CSS for jqueryui</title>
+      </field>
+      <value>True</value>
+    </record>
+    <record name="collective.js.jqueryui.controlpanel.IJQueryUICSS.patch" interface="collective.js.jqueryui.controlpanel.IJQueryUICSS" field="patch">
+      <field type="plone.registry.field.Bool">
+        <default>False</default>
+        <description>Activate the integration between JQueryUI 'Sunburst' theme and the Plone 'Sunburst' theme</description>
+        <title>Sunburst CSS Integration</title>
+      </field>
+      <value>False</value>
+    </record>
+    <!-- Core -->
+    <record name="collective.js.jqueryui.controlpanel.IJQueryUIPlugins.ui_core" interface="collective.js.jqueryui.controlpanel.IJQueryUIPlugins" field="ui_core">
+      <field type="plone.registry.field.Bool">
+        <default>False</default>
+        <description>The core of jQuery UI, required for all interactions and widgets.</description>
+        <required>False</required>
+        <title>Core</title>
+      </field>
+      <value>True</value>
+    </record>
+    <!-- Widget -->
+    <record name="collective.js.jqueryui.controlpanel.IJQueryUIPlugins.ui_widget" interface="collective.js.jqueryui.controlpanel.IJQueryUIPlugins" field="ui_widget">
+      <field type="plone.registry.field.Bool">
+        <default>False</default>
+        <required>False</required>
+        <title>Widget</title>
+      </field>
+      <value>True</value>
+    </record>
+    <!-- Mouse -->
+    <record name="collective.js.jqueryui.controlpanel.IJQueryUIPlugins.ui_mouse" interface="collective.js.jqueryui.controlpanel.IJQueryUIPlugins" field="ui_mouse">
+      <field type="plone.registry.field.Bool">
+        <default>False</default>
+        <required>False</required>
+        <title>Mouse</title>
+      </field>
+      <value>False</value>
+    </record>
+    <!-- Position -->
+    <record name="collective.js.jqueryui.controlpanel.IJQueryUIPlugins.ui_position" interface="collective.js.jqueryui.controlpanel.IJQueryUIPlugins" field="ui_position">
+      <field type="plone.registry.field.Bool">
+        <default>False</default>
+        <required>False</required>
+        <title>Position</title>
+      </field>
+      <value>True</value>
+    </record>
+    <!-- Draggable -->
+    <record name="collective.js.jqueryui.controlpanel.IJQueryUIPlugins.ui_draggable" interface="collective.js.jqueryui.controlpanel.IJQueryUIPlugins" field="ui_draggable">
+      <field type="plone.registry.field.Bool">
+        <default>False</default>
+        <required>False</required>
+        <title>Draggable</title>
+      </field>
+      <value>True</value>
+    </record>
+    <!-- Droppable -->
+    <record name="collective.js.jqueryui.controlpanel.IJQueryUIPlugins.ui_droppable" interface="collective.js.jqueryui.controlpanel.IJQueryUIPlugins" field="ui_droppable">
+      <field type="plone.registry.field.Bool">
+        <default>False</default>
+        <required>False</required>
+        <title>Droppable</title>
+      </field>
+      <value>False</value>
+    </record>
+    <!-- Resizable -->
+    <record name="collective.js.jqueryui.controlpanel.IJQueryUIPlugins.ui_resizable" interface="collective.js.jqueryui.controlpanel.IJQueryUIPlugins" field="ui_resizable">
+      <field type="plone.registry.field.Bool">
+        <default>False</default>
+        <required>False</required>
+        <title>Resizable</title>
+      </field>
+      <value>True</value>
+    </record>
+    <!-- Selectable -->
+    <record name="collective.js.jqueryui.controlpanel.IJQueryUIPlugins.ui_selectable" interface="collective.js.jqueryui.controlpanel.IJQueryUIPlugins" field="ui_selectable">
+      <field type="plone.registry.field.Bool">
+        <default>False</default>
+        <required>False</required>
+        <title>Selectable</title>
+      </field>
+      <value>False</value>
+    </record>
+    <!-- Sortable -->
+    <record name="collective.js.jqueryui.controlpanel.IJQueryUIPlugins.ui_sortable" interface="collective.js.jqueryui.controlpanel.IJQueryUIPlugins" field="ui_sortable">
+      <field type="plone.registry.field.Bool">
+        <default>False</default>
+        <required>False</required>
+        <title>Sortable</title>
+      </field>
+      <value>True</value>
+    </record>
+    <!-- Accordion -->
+    <record name="collective.js.jqueryui.controlpanel.IJQueryUIPlugins.ui_accordion" interface="collective.js.jqueryui.controlpanel.IJQueryUIPlugins" field="ui_accordion">
+      <field type="plone.registry.field.Bool">
+        <default>False</default>
+        <required>False</required>
+        <title>Accordion</title>
+      </field>
+      <value>False</value>
+    </record>
+    <!-- Autocomplete -->
+    <record name="collective.js.jqueryui.controlpanel.IJQueryUIPlugins.ui_autocomplete" interface="collective.js.jqueryui.controlpanel.IJQueryUIPlugins" field="ui_autocomplete">
+      <field type="plone.registry.field.Bool">
+        <default>False</default>
+        <required>False</required>
+        <title>Autocomplete</title>
+      </field>
+      <value>False</value>
+    </record>
+    <!-- Button -->
+    <record name="collective.js.jqueryui.controlpanel.IJQueryUIPlugins.ui_button" interface="collective.js.jqueryui.controlpanel.IJQueryUIPlugins" field="ui_button">
+      <field type="plone.registry.field.Bool">
+        <default>False</default>
+        <required>False</required>
+        <title>Button</title>
+      </field>
+      <value>False</value>
+    </record>
+    <!-- Date Picker -->
+    <record name="collective.js.jqueryui.controlpanel.IJQueryUIPlugins.ui_datepicker" interface="collective.js.jqueryui.controlpanel.IJQueryUIPlugins" field="ui_datepicker">
+      <field type="plone.registry.field.Bool">
+        <default>False</default>
+        <required>False</required>
+        <title>Date picker</title>
+      </field>
+      <value>True</value>
+    </record>
+    <!-- Dialog -->
+    <record name="collective.js.jqueryui.controlpanel.IJQueryUIPlugins.ui_dialog" interface="collective.js.jqueryui.controlpanel.IJQueryUIPlugins" field="ui_dialog">
+      <field type="plone.registry.field.Bool">
+        <default>False</default>
+        <required>False</required>
+        <title>Dialog</title>
+      </field>
+      <value>True</value>
+    </record>
+    <!-- Menu -->
+    <record name="collective.js.jqueryui.controlpanel.IJQueryUIPlugins.ui_menu" interface="collective.js.jqueryui.controlpanel.IJQueryUIPlugins" field="ui_menu">
+      <field type="plone.registry.field.Bool">
+        <default>False</default>
+        <required>False</required>
+        <title>Menu</title>
+      </field>
+      <value>False</value>
+    </record>
+    <!-- Progress Bar -->
+    <record name="collective.js.jqueryui.controlpanel.IJQueryUIPlugins.ui_progressbar" interface="collective.js.jqueryui.controlpanel.IJQueryUIPlugins" field="ui_progressbar">
+      <field type="plone.registry.field.Bool">
+        <default>False</default>
+        <required>False</required>
+        <title>Progress bar</title>
+      </field>
+      <value>False</value>
+    </record>
+    <!-- Slider -->
+    <record name="collective.js.jqueryui.controlpanel.IJQueryUIPlugins.ui_slider" interface="collective.js.jqueryui.controlpanel.IJQueryUIPlugins" field="ui_slider">
+      <field type="plone.registry.field.Bool">
+        <default>False</default>
+        <required>False</required>
+        <title>Slider</title>
+      </field>
+      <value>True</value>
+    </record>
+    <!-- Spinner -->
+    <record name="collective.js.jqueryui.controlpanel.IJQueryUIPlugins.ui_spinner" interface="collective.js.jqueryui.controlpanel.IJQueryUIPlugins" field="ui_spinner">
+      <field type="plone.registry.field.Bool">
+        <default>False</default>
+        <required>False</required>
+        <title>Spinner</title>
+      </field>
+      <value>False</value>
+    </record>
+    <!-- Tabs -->
+    <record name="collective.js.jqueryui.controlpanel.IJQueryUIPlugins.ui_tabs" interface="collective.js.jqueryui.controlpanel.IJQueryUIPlugins" field="ui_tabs">
+      <field type="plone.registry.field.Bool">
+        <default>False</default>
+        <required>False</required>
+        <title>Tabs</title>
+      </field>
+      <value>False</value>
+    </record>
+    <!-- Tooltip -->
+    <record name="collective.js.jqueryui.controlpanel.IJQueryUIPlugins.ui_tooltip" interface="collective.js.jqueryui.controlpanel.IJQueryUIPlugins" field="ui_tooltip">
+      <field type="plone.registry.field.Bool">
+        <default>False</default>
+        <required>False</required>
+        <title>Tooltip</title>
+      </field>
+      <value>False</value>
+    </record>
+    <!-- Effects 'core' -->
+    <record name="collective.js.jqueryui.controlpanel.IJQueryUIPlugins.ui_effect" interface="collective.js.jqueryui.controlpanel.IJQueryUIPlugins" field="ui_effect">
+      <field type="plone.registry.field.Bool">
+        <default>False</default>
+        <required>False</required>
+        <title>Effects 'core'</title>
+      </field>
+      <value>False</value>
+    </record>
+    <!-- Effects 'blind' -->
+    <record name="collective.js.jqueryui.controlpanel.IJQueryUIPlugins.ui_effect_blind" interface="collective.js.jqueryui.controlpanel.IJQueryUIPlugins" field="ui_effect_blind">
+      <field type="plone.registry.field.Bool">
+        <default>False</default>
+        <required>False</required>
+        <title>Effects 'blind'</title>
+      </field>
+      <value>False</value>
+    </record>
+    <!-- Effects 'bounce' -->
+    <record name="collective.js.jqueryui.controlpanel.IJQueryUIPlugins.ui_effect_bounce" interface="collective.js.jqueryui.controlpanel.IJQueryUIPlugins" field="ui_effect_bounce">
+      <field type="plone.registry.field.Bool">
+        <default>False</default>
+        <required>False</required>
+        <title>Effects 'bounce'</title>
+      </field>
+      <value>False</value>
+    </record>
+    <!-- Effects 'clip' -->
+    <record name="collective.js.jqueryui.controlpanel.IJQueryUIPlugins.ui_effect_clip" interface="collective.js.jqueryui.controlpanel.IJQueryUIPlugins" field="ui_effect_clip">
+      <field type="plone.registry.field.Bool">
+        <default>False</default>
+        <required>False</required>
+        <title>Effects 'clip'</title>
+      </field>
+      <value>False</value>
+    </record>
+    <!-- Effects 'drop' -->
+    <record name="collective.js.jqueryui.controlpanel.IJQueryUIPlugins.ui_effect_drop" interface="collective.js.jqueryui.controlpanel.IJQueryUIPlugins" field="ui_effect_drop">
+      <field type="plone.registry.field.Bool">
+        <default>False</default>
+        <required>False</required>
+        <title>Effects 'drop'</title>
+      </field>
+      <value>False</value>
+    </record>
+    <!-- Effects 'explode' -->
+    <record name="collective.js.jqueryui.controlpanel.IJQueryUIPlugins.ui_effect_explode" interface="collective.js.jqueryui.controlpanel.IJQueryUIPlugins" field="ui_effect_explode">
+      <field type="plone.registry.field.Bool">
+        <default>False</default>
+        <required>False</required>
+        <title>Effects 'explode'</title>
+      </field>
+      <value>False</value>
+    </record>
+    <!-- Effects 'fade' -->
+    <record name="collective.js.jqueryui.controlpanel.IJQueryUIPlugins.ui_effect_fade" interface="collective.js.jqueryui.controlpanel.IJQueryUIPlugins" field="ui_effect_fade">
+      <field type="plone.registry.field.Bool">
+        <default>False</default>
+        <required>False</required>
+        <title>Effects 'fade'</title>
+      </field>
+      <value>False</value>
+    </record>
+    <!-- Effects 'fold' -->
+    <record name="collective.js.jqueryui.controlpanel.IJQueryUIPlugins.ui_effect_fold" interface="collective.js.jqueryui.controlpanel.IJQueryUIPlugins" field="ui_effect_fold">
+      <field type="plone.registry.field.Bool">
+        <default>False</default>
+        <required>False</required>
+        <title>Effects 'fold</title>
+      </field>
+      <value>False</value>
+    </record>
+    <!-- Effects 'highlight' -->
+    <record name="collective.js.jqueryui.controlpanel.IJQueryUIPlugins.ui_effect_highlight" interface="collective.js.jqueryui.controlpanel.IJQueryUIPlugins" field="ui_effect_highlight">
+      <field type="plone.registry.field.Bool">
+        <default>False</default>
+        <required>False</required>
+        <title>Effects 'highlight'</title>
+      </field>
+      <value>False</value>
+    </record>
+    <!-- Effects 'pulsate' -->
+    <record name="collective.js.jqueryui.controlpanel.IJQueryUIPlugins.ui_effect_pulsate" interface="collective.js.jqueryui.controlpanel.IJQueryUIPlugins" field="ui_effect_pulsate">
+      <field type="plone.registry.field.Bool">
+        <default>False</default>
+        <required>False</required>
+        <title>Effects 'pulsate'</title>
+      </field>
+      <value>False</value>
+    </record>
+    <!-- Effects 'scale' -->
+    <record name="collective.js.jqueryui.controlpanel.IJQueryUIPlugins.ui_effect_scale" interface="collective.js.jqueryui.controlpanel.IJQueryUIPlugins" field="ui_effect_scale">
+      <field type="plone.registry.field.Bool">
+        <default>False</default>
+        <required>False</required>
+        <title>Effects 'scale'</title>
+      </field>
+      <value>False</value>
+    </record>
+    <!-- Effects 'shake' -->
+    <record name="collective.js.jqueryui.controlpanel.IJQueryUIPlugins.ui_effect_shake" interface="collective.js.jqueryui.controlpanel.IJQueryUIPlugins" field="ui_effect_shake">
+      <field type="plone.registry.field.Bool">
+        <default>False</default>
+        <required>False</required>
+        <title>Effects 'shake'</title>
+      </field>
+      <value>False</value>
+    </record>
+    <!-- Effects 'slide' -->
+    <record name="collective.js.jqueryui.controlpanel.IJQueryUIPlugins.ui_effect_slide" interface="collective.js.jqueryui.controlpanel.IJQueryUIPlugins" field="ui_effect_slide">
+      <field type="plone.registry.field.Bool">
+        <default>False</default>
+        <required>False</required>
+        <title>Effects 'slide'</title>
+      </field>
+      <value>False</value>
+    </record>
+    <!-- Effects 'transfer' -->
+    <record name="collective.js.jqueryui.controlpanel.IJQueryUIPlugins.ui_effect_transfer" interface="collective.js.jqueryui.controlpanel.IJQueryUIPlugins" field="ui_effect_transfer">
+      <field type="plone.registry.field.Bool">
+        <default>False</default>
+        <required>False</required>
+        <title>Effects 'transfer'</title>
+      </field>
+      <value>False</value>
+    </record>
+
 </registry>
