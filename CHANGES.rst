@@ -7,6 +7,7 @@ Changelog
 
 **Added**
 
+- #1549 Added registry profile for jQuery UI settings
 - #1544 Progress indicator for Batch listing
 - #1536 Integrated Setup and Profiles from senaite.lims
 - #1534 Integrate browser resources from senaite.lims
