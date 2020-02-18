@@ -34,14 +34,6 @@
     rendering="link"
     insert-after="*"/>
 
-  <!-- Overwrite default jqueryui.css -->
-  <stylesheet
-    id="++resource++jquery-ui-themes/sunburst/jqueryui.css"
-    media="screen"
-    rel="stylesheet"
-    rendering="link"
-    insert-after="*"/>
-
   <!-- Activate CSS stylesheets we need -->
   <stylesheet
     id="++resource++plone.app.jquerytools.overlays.css"
@@ -103,5 +95,8 @@
   <stylesheet
     id="++resource++plone.app.discussion.stylesheets/discussion.css"
     enabled="0"/>
+  <stylesheet
+    id="++resource++jquery-ui-themes/sunburst/jqueryui.css"
+    enable="0"/>
 
 </object>
