@@ -397,6 +397,8 @@ def upgrade(tool):
     # Add progress metadata column for Batches
     add_metadata(portal, BIKA_CATALOG, "getProgress", True)
 
+    uninstall_plone_app_iterate(portal)
+
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
 
@@ -901,3 +903,13 @@ def remove_arimports(portal):
 
     logger.info("Removing AR Imports folder [DONE]")
 
+
+def uninstall_plone_app_iterate(portal):
+    """Uninstall plone.app.iterate
+    """
+    qi = api.get_tool("portal_quickinstaller")
+    profile = "plone.app.iterate"
+    if qi.isProductInstalled(profile):
+        logger.info("Uninstalling '{}' ...".format(profile))
+        qi.uninstallProducts(products=[profile])
+        logger.info("Uninstalling '{}' [DONE]".format(profile))
