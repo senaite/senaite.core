@@ -47,6 +47,12 @@ version = "1.3.3"  # Remember version number in metadata.xml and setup.py
 profile = "profile-{0}:default".format(product)
 
 
+SKIN_LAYERS_TO_REMOVE = [
+    "senaite_images",
+    "senaite_templates",
+    "senaite_bootstrap_templates",
+]
+
 TYPES_TO_REMOVE = [
     "ARImport",
     "SamplesFolder",
@@ -399,6 +405,14 @@ def upgrade(tool):
 
     # https://github.com/senaite/senaite.core/pull/1551
     uninstall_plone_app_iterate(portal)
+
+    # Remove stale skin layers from portal_skins
+    # https://github.com/senaite/senaite.core/pull/1547
+    remove_skin_layers(portal)
+
+    # Disable not needed plugins and settings for jQuery UI
+    # https://github.com/senaite/senaite.core/pull/1549
+    setup.runImportStepFromProfile(profile, "plone.app.registry")
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
@@ -914,3 +928,32 @@ def uninstall_plone_app_iterate(portal):
         logger.info("Uninstalling '{}' ...".format(profile))
         qi.uninstallProducts(products=[profile])
         logger.info("Uninstalling '{}' [DONE]".format(profile))
+
+
+def remove_skin_layers(portal):
+    """Remove registered skin layers from portal_skins tool
+    """
+    logger.info("Removing skin layers...")
+
+    portal_skins = api.get_tool("portal_skins")
+    # this returns a dict
+    skins = portal_skins.selections
+
+    # remove layer registrations
+    for skin_name in skins.keys():
+        logger.info("Checking skin layers of '{}'".format(skin_name))
+        registered_layers = skins.get(skin_name).split(",")
+        for layer in SKIN_LAYERS_TO_REMOVE:
+            if layer in registered_layers:
+                logger.info("Removing layer '{}'".format(layer))
+                registered_layers.remove(layer)
+        new_layers = ",".join(registered_layers)
+        skins[skin_name] = new_layers
+
+    # remove skin folders from portal_skins tool
+    for layer in SKIN_LAYERS_TO_REMOVE:
+        if layer in portal_skins:
+            logger.info("Removing skin folder '{}'".format(layer))
+            portal_skins.manage_delObjects(layer)
+
+    logger.info("Removing skin layers [DONE]")
