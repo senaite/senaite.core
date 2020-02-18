@@ -397,6 +397,7 @@ def upgrade(tool):
     # Add progress metadata column for Batches
     add_metadata(portal, BIKA_CATALOG, "getProgress", True)
 
+    # https://github.com/senaite/senaite.core/pull/1551
     uninstall_plone_app_iterate(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
