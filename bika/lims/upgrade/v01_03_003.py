@@ -403,7 +403,13 @@ def upgrade(tool):
     # Add progress metadata column for Batches
     add_metadata(portal, BIKA_CATALOG, "getProgress", True)
 
+    # Remove stale skin layers from portal_skins
+    # https://github.com/senaite/senaite.core/pull/1547
     remove_skin_layers(portal)
+
+    # Disable not needed plugins and settings for jQuery UI
+    # https://github.com/senaite/senaite.core/pull/1549
+    setup.runImportStepFromProfile(profile, "plone.app.registry")
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
