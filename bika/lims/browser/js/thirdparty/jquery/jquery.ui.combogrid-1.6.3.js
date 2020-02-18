@@ -326,7 +326,7 @@ $.widget( "cg.combogrid", {
 						$( document ).one( 'mousedown', function( event ) {
 							if ( event.target !== self.element[ 0 ] &&
 								event.target !== menuElement &&
-								!$.ui.contains( menuElement, event.target ) ) {
+								!$.contains( menuElement, event.target ) ) {
 								self.close();
 							}
 						});

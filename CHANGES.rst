@@ -58,6 +58,7 @@ Changelog
 
 **Fixed**
 
+- #1550 Fix Uncaught TypeError in combogrid
 - #1542 Fix sporadical errors when contacts do not have a valid email address
 - #1540 Fix flushing CCEmail fields in Sample Add Form
 - #1533 Fix traceback from log when rendering stickers preview
