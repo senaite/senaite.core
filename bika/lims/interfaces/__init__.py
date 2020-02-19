@@ -1060,3 +1060,14 @@ class IHaveAnalysisCategory(Interface):
     def getCategoryTitle(self):
         """Returns the title of the category(ies) assigned to this instance
         """
+
+
+# Legacy types to remove after 1.3.3
+class IARImportFolder(Interface):
+    """Marker interface for a folder that contains ARImports
+    """
+
+
+class IARImport(Interface):
+    """Marker interface for an ARImport
+    """

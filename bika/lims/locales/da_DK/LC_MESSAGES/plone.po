@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2020-01-13 19:41+0000\n"
+"POT-Creation-Date: 2020-02-16 19:07+0000\n"
 "PO-Revision-Date: 2018-06-01 18:46+0000\n"
 "Last-Translator: Jordi Puiggené <jpuiggene@naralabs.com>, 2019\n"
 "Language-Team: Danish (Denmark) (https://www.transifex.com/senaite/teams/87045/da_DK/)\n"
@@ -275,9 +275,13 @@ msgstr ""
 msgid "Duplicate Analysis"
 msgstr "Kopier Analyser"
 
-#: bika/lims/profiles/default/types/ARImport.xml
+#: bika/lims/profiles/default/controlpanel.xml
+msgid "Dynamic Analysis Specifications"
+msgstr ""
+
 #: bika/lims/profiles/default/types/ARTemplate.xml
 #: bika/lims/profiles/default/types/AnalysisCategory.xml
+#: bika/lims/profiles/default/types/AnalysisProfile.xml
 msgid "Edit"
 msgstr ""
 
@@ -291,20 +295,8 @@ msgstr ""
 msgid "Export"
 msgstr "Eksporter"
 
-#: bika/lims/profiles/default/types/InvoiceBatch.xml
-msgid "Export Batch To CSV"
-msgstr ""
-
-#: bika/lims/profiles/default/actions.xml
-msgid "Extracts"
-msgstr "Udtræk"
-
 #: bika/lims/profiles/default/types/ReportFolder.xml
 msgid "History"
-msgstr ""
-
-#: bika/lims/profiles/default/actions.xml
-msgid "Home"
 msgstr ""
 
 #: bika/lims/profiles/default/actions.xml
@@ -313,10 +305,6 @@ msgstr ""
 
 msgid "Imported"
 msgstr ""
-
-#: bika/lims/profiles/default/types/Client.xml
-msgid "Imports"
-msgstr "Imports"
 
 msgid "Inactive"
 msgstr ""
@@ -467,10 +455,6 @@ msgstr "Prisliste"
 msgid "Pricelists"
 msgstr "Prislister"
 
-#: bika/lims/profiles/default/actions.xml
-msgid "Prices"
-msgstr "Priser"
-
 #: bika/lims/profiles/default/types/Invoice.xml
 #: bika/lims/profiles/default/types/SupplyOrder.xml
 msgid "Print"
@@ -528,7 +512,6 @@ msgstr "Reference Definitioner"
 msgid "Reference Sample"
 msgstr "Referenceprøve"
 
-#: bika/lims/profiles/default/actions.xml
 #: bika/lims/profiles/default/types/ReferenceSamplesFolder.xml
 #: bika/lims/profiles/default/types/Supplier.xml
 msgid "Reference Samples"
@@ -588,7 +571,6 @@ msgid "Retracted"
 msgstr ""
 
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
-#: bika/lims/profiles/default/types/Sample.xml
 msgid "Sample"
 msgstr "Prøve"
 
@@ -612,10 +594,6 @@ msgstr "Prøvematrices"
 #: bika/lims/profiles/default/types/SampleMatrix.xml
 msgid "Sample Matrix"
 msgstr "Prøvematrix"
-
-#: bika/lims/profiles/default/types/SamplePartition.xml
-msgid "Sample Partition"
-msgstr "Prøve Partition"
 
 #: bika/lims/profiles/default/types/SamplePoint.xml
 msgid "Sample Point"
@@ -652,15 +630,11 @@ msgstr ""
 msgid "Sampled"
 msgstr ""
 
-#: bika/lims/profiles/default/actions.xml
 #: bika/lims/profiles/default/types/AnalysisRequestsFolder.xml
 #: bika/lims/profiles/default/types/Batch.xml
+#: bika/lims/profiles/default/types/Client.xml
 msgid "Samples"
 msgstr "Prøver"
-
-#: bika/lims/profiles/default/types/SamplesFolder.xml
-msgid "SamplesFolder"
-msgstr "Prøvemappe"
 
 #: bika/lims/profiles/default/types/SamplingDeviation.xml
 msgid "Sampling Deviation"
@@ -699,6 +673,10 @@ msgstr ""
 msgid "Scheduled sampling"
 msgstr ""
 
+#: bika/lims/profiles/default/actions.xml
+msgid "Search"
+msgstr ""
+
 #: bika/lims/profiles/default/types/BikaSetup.xml
 msgid "Setup"
 msgstr ""
@@ -710,10 +688,6 @@ msgstr ""
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 msgid "Small Sticker"
 msgstr "Lille mærkat"
-
-#: bika/lims/profiles/default/types/InvoiceFolder.xml
-msgid "Statements"
-msgstr ""
 
 #: bika/lims/profiles/default/types/Batch.xml
 #: bika/lims/profiles/default/types/ReferenceSample.xml
@@ -755,7 +729,6 @@ msgstr ""
 msgid "Supplier"
 msgstr ""
 
-#: bika/lims/profiles/default/actions.xml
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/Suppliers.xml
 msgid "Suppliers"
@@ -800,9 +773,9 @@ msgstr ""
 msgid "Verify"
 msgstr ""
 
-#: bika/lims/profiles/default/types/ARImport.xml
 #: bika/lims/profiles/default/types/ARReport.xml
 #: bika/lims/profiles/default/types/ARTemplate.xml
+#: bika/lims/profiles/default/types/AnalysisCategory.xml
 msgid "View"
 msgstr ""
 
@@ -819,7 +792,6 @@ msgstr "Arbejdsark Template"
 msgid "Worksheet Templates"
 msgstr "Arbejdsark Templates"
 
-#: bika/lims/profiles/default/actions.xml
 #: bika/lims/profiles/default/types/WorksheetFolder.xml
 msgid "Worksheets"
 msgstr "Arbejdsark"

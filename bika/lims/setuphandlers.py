@@ -212,6 +212,7 @@ COLUMNS = (
     ("bika_catalog", "getDateReceived"),
     ("bika_catalog", "getDateSampled"),
     ("bika_catalog", "review_state"),
+    ("bika_catalog", "getProgress"),
 
     ("bika_setup_catalog", "path"),
     ("bika_setup_catalog", "UID"),

@@ -7,6 +7,8 @@ Changelog
 
 **Added**
 
+- #1549 Added registry profile for jQuery UI settings
+- #1544 Progress indicator for Batch listing
 - #1536 Integrated Setup and Profiles from senaite.lims
 - #1534 Integrate browser resources from senaite.lims
 - #1529 Moved contentmenu provider into core
@@ -31,6 +33,7 @@ Changelog
 
 **Changed**
 
+- #1543 Sort navigation child-nodes alphabetically
 - #1539 Avoid unnecessary Price recalculations in Sample Add Form
 - #1532 Updated jQuery Barcode to version 2.2.0
 - #1513 Better Ajax Loader for Sample Add Form
@@ -43,9 +46,11 @@ Changelog
 
 **Removed**
 
-- #1530 Remove sampling rounds from core
+- #1531 Remove sampling rounds from core
+- #1551 Removed dependency to plone.app.iterate
 - #1530 Removed ARImport
 - #1530 Removed stale type registrations
+- #1541 Remove add/edit options of ReferenceWidget
 - #1535 Remove `zcatalog` monkey (and `getRequestUID` index)
 - #1518 Removed stale indexes from `analysis_catalog`
 - #1516 Removed getResultsRange metadata from analysis_catalog
@@ -55,6 +60,8 @@ Changelog
 
 **Fixed**
 
+- #1550 Fix Uncaught TypeError in combogrid
+- #1542 Fix sporadical errors when contacts do not have a valid email address
 - #1540 Fix flushing CCEmail fields in Sample Add Form
 - #1533 Fix traceback from log when rendering stickers preview
 - #1525 Fix error when creating partitions with analyst user

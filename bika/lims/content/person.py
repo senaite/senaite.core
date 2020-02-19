@@ -101,6 +101,7 @@ schema = BikaSchema.copy() + Schema((
         widget=StringWidget(
             label=_("Email Address"),
         ),
+        validators=("isEmail", )
     ),
 
     StringField(

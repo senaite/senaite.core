@@ -249,5 +249,16 @@ class Batch(ATFolder, ClientAwareMixin):
         labels = [label.getObject().title for label in uc(UID=uids)]
         return labels
 
+    def getProgress(self):
+        """Returns the progress in percent of all samples
+        """
+        total_progress = 0
+        samples = self.getAnalysisRequests()
+        total = len(samples)
+        if total > 0:
+            sample_progresses = map(lambda s: s.getProgress(), samples)
+            total_progress = sum(sample_progresses) / total
+        return total_progress
+
 
 registerType(Batch, PROJECTNAME)

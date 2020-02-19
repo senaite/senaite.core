@@ -30,7 +30,6 @@
       this.get_portal_url = bind(this.get_portal_url, this);
       this.init_referencedefinition = bind(this.init_referencedefinition, this);
       this.init_datepickers = bind(this.init_datepickers, this);
-      this.init_client_add_overlay = bind(this.init_client_add_overlay, this);
       this.bind_eventhandler = bind(this.bind_eventhandler, this);
       this.load = bind(this.load, this);
     }
@@ -39,7 +38,6 @@
       console.debug("SiteView::load");
       jarn.i18n.loadCatalog('senaite.core');
       this._ = window.jarn.i18n.MessageFactory("senaite.core");
-      this.init_client_add_overlay();
       this.init_datepickers();
       this.init_referencedefinition();
       this.bind_eventhandler();
@@ -76,29 +74,6 @@
         },
         ajaxError: function() {
           $("body").removeClass("loading");
-        }
-      });
-    };
-
-    SiteView.prototype.init_client_add_overlay = function() {
-
-      /*
-       * Initialize Client Overlay
-       */
-      console.debug("SiteView::init_client_add_overlay");
-      return $('a.add_client').prepOverlay({
-        subtype: 'ajax',
-        filter: 'head>*,#content>*:not(div.configlet),dl.portalMessage.error,dl.portalMessage.info',
-        formselector: '#client-base-edit',
-        closeselector: '[name="form.button.cancel"]',
-        width: '70%',
-        noform: 'close',
-        config: {
-          closeOnEsc: false,
-          onLoad: function() {
-            this.getOverlay().find('.ArchetypesRemarksWidget').remove();
-          },
-          onClose: function() {}
         }
       });
     };

@@ -18,12 +18,15 @@
 # Copyright 2018-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import re
 from collections import defaultdict
 from operator import itemgetter
 
 import transaction
 from bika.lims import api
 from bika.lims import logger
+from bika.lims.api.mail import is_valid_email_address
+from bika.lims.catalog import BIKA_CATALOG
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.catalog.bikasetup_catalog import SETUP_CATALOG
@@ -37,11 +40,18 @@ from bika.lims.setuphandlers import setup_html_filter
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
 from Products.Archetypes.config import UID_CATALOG
+from Products.ZCatalog.ProgressHandler import ZLogHandler
 from zope.interface import alsoProvides
 
 version = "1.3.3"  # Remember version number in metadata.xml and setup.py
 profile = "profile-{0}:default".format(product)
 
+
+SKIN_LAYERS_TO_REMOVE = [
+    "senaite_images",
+    "senaite_templates",
+    "senaite_bootstrap_templates",
+]
 
 TYPES_TO_REMOVE = [
     "ARImport",
@@ -375,13 +385,38 @@ def upgrade(tool):
     # setup html filtering
     setup_html_filter(portal)
 
-    # remove stale type regsitrations
-    # https://github.com/senaite/senaite.core/pull/1530
-    remove_stale_type_registrations(portal)
+    # Remove ARImports folder
+    remove_arimports(portal)
 
     # remove samplingrounds et.al
     # https://github.com/senaite/senaite.core/pull/1531
     remove_samplingrounds(portal)
+    
+    # remove stale type regsitrations
+    # https://github.com/senaite/senaite.core/pull/1530
+    remove_stale_type_registrations(portal)
+
+    # Fix email addresses
+    # https://github.com/senaite/senaite.core/pull/1542
+    fix_email_address(portal)
+
+    # Add metadata for progress bar
+    # https://github.com/senaite/senaite.core/pull/1544
+    # Add progress metadata column for Samples
+    add_metadata(portal, CATALOG_ANALYSIS_REQUEST_LISTING, "getProgress", True)
+    # Add progress metadata column for Batches
+    add_metadata(portal, BIKA_CATALOG, "getProgress", True)
+
+    # https://github.com/senaite/senaite.core/pull/1551
+    uninstall_plone_app_iterate(portal)
+
+    # Remove stale skin layers from portal_skins
+    # https://github.com/senaite/senaite.core/pull/1547
+    remove_skin_layers(portal)
+
+    # Disable not needed plugins and settings for jQuery UI
+    # https://github.com/senaite/senaite.core/pull/1549
+    setup.runImportStepFromProfile(profile, "plone.app.registry")
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
@@ -898,3 +933,118 @@ def remove_samplingrounds(portal):
             wf_tool.manage_delObjects(wf)
 
     logger.info("Removing samplingrounds [DONE]")
+
+    
+def fix_email_address(portal, portal_types=None, catalog_id="portal_catalog"):
+    """Validates the email address of portal types that inherit from Person.
+    The field did not have an email validator, causing some views to fail when
+    rendering the value while expecting a valid email address format
+    """
+    logger.info("Fixing email addresses ...")
+    if not portal_types:
+        portal_types = ["Contact", "LabContact", "SupplierContact"]
+    query = dict(portal_type=portal_types)
+    brains = api.search(query, catalog_id)
+    total = len(brains)
+    for num, brain in enumerate(brains):
+        if num and num % 1000 == 0:
+            logger.info("{}/{} Fixing email addresses ...".format(num, total))
+
+        obj = api.get_object(brain)
+        email_address = obj.getEmailAddress()
+        if not email_address:
+            continue
+
+        if not is_valid_email_address(email_address):
+            obj_id = api.get_id(obj)
+            logger.info("No valid email address for {}: {}"
+                        .format(obj_id, email_address))
+
+            # Maybe is a list of email addresses
+            emails = map(lambda x: x.strip(), re.split("[;:, ]", email_address))
+
+            # Bail out non-valid emails
+            emails = filter(lambda em: is_valid_email_address(em), emails)
+            if emails:
+                email = emails[0]
+                logger.info("Email address assigned for {}: {}"
+                            .format(api.get_id(obj), email))
+                obj.setEmailAddress(email)
+                obj.reindexObject()
+
+            else:
+                logger.warn("Cannot resolve email address from '{}'"
+                            .format(email_address))
+
+    logger.info("Fixing email addresses [DONE]")
+
+
+def add_metadata(portal, catalog_id, column, refresh_catalog=False):
+    logger.info("Adding '{}' metadata to '{}' ...".format(column, catalog_id))
+    catalog = api.get_tool(catalog_id)
+    if column in catalog.schema():
+        logger.info("Metadata '{}' already in catalog '{}' [SKIP]"
+                    .format(column, catalog_id))
+        return
+    catalog.addColumn(column)
+
+    if refresh_catalog:
+        logger.info("Refreshing catalog '{}' ...".format(catalog_id))
+        handler = ZLogHandler(steps=100)
+        catalog.refreshCatalog(pghandler=handler)
+
+
+def remove_arimports(portal):
+    """Removes arimports folder
+    """
+    logger.info("Removing AR Imports folder")
+
+    arimports = portal.get("arimports")
+    if arimports is None:
+        return
+
+    # delete de arimports folder
+    portal.manage_delObjects(arimports.getId())
+
+    logger.info("Removing AR Imports folder [DONE]")
+
+
+def uninstall_plone_app_iterate(portal):
+    """Uninstall plone.app.iterate
+    """
+    qi = api.get_tool("portal_quickinstaller")
+    profile = "plone.app.iterate"
+    if qi.isProductInstalled(profile):
+        logger.info("Uninstalling '{}' ...".format(profile))
+        qi.uninstallProducts(products=[profile])
+        logger.info("Uninstalling '{}' [DONE]".format(profile))
+
+
+def remove_skin_layers(portal):
+    """Remove registered skin layers from portal_skins tool
+    """
+    logger.info("Removing skin layers...")
+
+    portal_skins = api.get_tool("portal_skins")
+    # this returns a dict
+    skins = portal_skins.selections
+
+    # remove layer registrations
+    for skin_name in skins.keys():
+        logger.info("Checking skin layers of '{}'".format(skin_name))
+        registered_layers = skins.get(skin_name).split(",")
+        for layer in SKIN_LAYERS_TO_REMOVE:
+            if layer in registered_layers:
+                logger.info("Removing layer '{}'".format(layer))
+                registered_layers.remove(layer)
+        new_layers = ",".join(registered_layers)
+        skins[skin_name] = new_layers
+
+    # remove skin folders from portal_skins tool
+    for layer in SKIN_LAYERS_TO_REMOVE:
+        if layer in portal_skins:
+            logger.info("Removing skin folder '{}'".format(layer))
+            portal_skins.manage_delObjects(layer)
+
+    logger.info("Removing skin layers [DONE]")
+

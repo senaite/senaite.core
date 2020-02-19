@@ -358,27 +358,6 @@ div.overlay div.close {
     width: 30px;
     opacity: 1;
 }
-/* /Fixture for overlays */
-
-/* Patient and Doctor Add and Edit buttons */
-a.add-button {
-    font-weight: bold;
-    background: transparent url(++resource++bika.lims.images/add.png) left center no-repeat;
-    padding: 8px 8px 8px 10px;
-}
-a.edit-button {
-    font-weight: bold;
-    background: transparent url(++resource++bika.lims.images/edit.png) left center no-repeat;
-    padding: 8px 8px 8px 10px;
-}
-#content a.add-button.referencewidget-add-button.link-overlay,
-#content a.edit-button.referencewidget-edit-button.link-overlay {
-    border-bottom: medium none !important;
-}
-h2 a.add-button {
-    padding: 12px 0 0 38px;
-    background-position: 15px 10px;
-}
 
 /* Flatten the first heading from content a bit
 https://github.com/senaite/senaite.lims/pull/92 */

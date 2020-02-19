@@ -12,9 +12,6 @@ class window.SiteView
     jarn.i18n.loadCatalog 'senaite.core'
     @_ = window.jarn.i18n.MessageFactory("senaite.core")
 
-    # initialze the client add overlay
-    @init_client_add_overlay()
-
     # initialze datepickers
     @init_datepickers()
 
@@ -86,30 +83,6 @@ class window.SiteView
       ajaxError: ->
         $("body").removeClass "loading"
         return
-
-
-  init_client_add_overlay: =>
-    ###
-     * Initialize Client Overlay
-    ###
-    console.debug "SiteView::init_client_add_overlay"
-
-    $('a.add_client').prepOverlay
-      subtype: 'ajax'
-      filter: 'head>*,#content>*:not(div.configlet),dl.portalMessage.error,dl.portalMessage.info'
-      formselector: '#client-base-edit'
-      closeselector: '[name="form.button.cancel"]'
-      width: '70%'
-      noform: 'close'
-      config:
-        closeOnEsc: false
-        onLoad: ->
-          # manually remove remarks
-          @getOverlay().find('.ArchetypesRemarksWidget').remove()
-          return
-        onClose: ->
-          # here is where we'd populate the form controls, if we cared to.
-          return
 
 
   init_datepickers: =>
