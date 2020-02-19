@@ -403,6 +403,9 @@ def upgrade(tool):
     # Add progress metadata column for Batches
     add_metadata(portal, BIKA_CATALOG, "getProgress", True)
 
+    # https://github.com/senaite/senaite.core/pull/1551
+    uninstall_plone_app_iterate(portal)
+
     # Remove stale skin layers from portal_skins
     # https://github.com/senaite/senaite.core/pull/1547
     remove_skin_layers(portal)
@@ -914,6 +917,17 @@ def remove_arimports(portal):
     portal.manage_delObjects(arimports.getId())
 
     logger.info("Removing AR Imports folder [DONE]")
+
+
+def uninstall_plone_app_iterate(portal):
+    """Uninstall plone.app.iterate
+    """
+    qi = api.get_tool("portal_quickinstaller")
+    profile = "plone.app.iterate"
+    if qi.isProductInstalled(profile):
+        logger.info("Uninstalling '{}' ...".format(profile))
+        qi.uninstallProducts(products=[profile])
+        logger.info("Uninstalling '{}' [DONE]".format(profile))
 
 
 def remove_skin_layers(portal):

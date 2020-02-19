@@ -46,6 +46,7 @@ Changelog
 
 **Removed**
 
+- #1551 Removed dependency to plone.app.iterate
 - #1530 Removed ARImport
 - #1530 Removed stale type registrations
 - #1541 Remove add/edit options of ReferenceWidget
