@@ -30,9 +30,6 @@ class AnalysisRequestRejectPdfView(BrowserView):
     """
     template = ViewPageTemplateFile("templates/analysisrequest_retract_pdf.pt")
 
-    def __init__(self, context, request):
-        super(AnalysisRequestRejectPdfView, self).__init__(context, request)
-
     def __call__(self):
         return self.template()
 
