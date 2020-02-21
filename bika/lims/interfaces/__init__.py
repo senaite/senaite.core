@@ -1073,6 +1073,7 @@ class IARImport(Interface):
     TODO: Legacy type. Remove after 1.3.3
     """
 
+
 class ISamplingRoundTemplates(Interface):
     """Marker interface for Sampling Round Templates
     TODO: Legacy type. Remove after 1.3.3

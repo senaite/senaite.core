@@ -889,7 +889,7 @@ def remove_samplingrounds(portal):
             # remove parent objects
             if hasattr(parent, "unindexObject"):
                 parent.unindexObject()
-            logger.info("Removing object '{}'".format(api.get_path(obj)))
+            logger.info("Removing object '{}'".format(api.get_path(parent)))
             setup._delOb(oid)
     except KeyError:
         pass
