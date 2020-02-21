@@ -21,6 +21,7 @@
 import mimetypes
 import os
 import re
+import six
 import socket
 from email import encoders
 from email.header import Header
@@ -176,7 +177,7 @@ def compose_email(from_addr, to_addr, subj, body, attachments=[], **kw):
     """Compose a RFC 2822 MIME message
 
     :param from_address: Email from address
-    :param to_address: List of email or (name, email) pairs
+    :param to_address: An email or a list of emails
     :param subject: Email subject
     :param body: Email body
     :param attachments: List of email attachments
@@ -184,7 +185,9 @@ def compose_email(from_addr, to_addr, subj, body, attachments=[], **kw):
     """
     _preamble = "This is a multi-part message in MIME format.\n"
     _from = to_email_address(from_addr)
-    _to = to_email_address(to_addr)
+    if isinstance(to_addr, six.string_types):
+        to_addr = [to_addr]
+    _to = map(to_email_address, to_addr)
     _subject = to_email_subject(subj)
     _body = to_email_body_text(body, **kw)
 
@@ -193,7 +196,7 @@ def compose_email(from_addr, to_addr, subj, body, attachments=[], **kw):
     mime_msg.preamble = _preamble
     mime_msg["Subject"] = _subject
     mime_msg["From"] = _from
-    mime_msg["To"] = _to
+    mime_msg["To"] = ", ".join(_to)
     mime_msg.attach(_body)
 
     # Attach attachments

@@ -19,7 +19,6 @@
 # Some rights reserved, see README and LICENSE.
 
 import itertools
-from email.mime.multipart import MIMEMultipart
 
 import six
 from Products.Archetypes.config import UID_CATALOG
@@ -32,12 +31,9 @@ from zope.lifecycleevent import modified
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
+from bika.lims.api.mail import compose_email
 from bika.lims.api.mail import is_valid_email_address
 from bika.lims.api.mail import send_email
-from bika.lims.api.mail import to_email_address
-from bika.lims.api.mail import to_email_attachment
-from bika.lims.api.mail import to_email_body_text
-from bika.lims.api.mail import to_email_subject
 from bika.lims.catalog import SETUP_CATALOG
 from bika.lims.idserver import renameAfterCreation
 from bika.lims.interfaces import IAnalysisRequest
@@ -499,10 +495,8 @@ def do_rejection(sample, notify=None):
         notify = setup.getNotifyOnSampleRejection()
 
     if notify:
-        # Compose the email
-        mime_msg = get_rejection_mail(sample)
-        # Attach the pdf
-        mime_msg.attach(to_email_attachment(pdf))
+        # Compose and send the email
+        mime_msg = get_rejection_mail(sample, pdf)
         # Send the email
         send_email(mime_msg)
 
@@ -523,7 +517,7 @@ def get_rejection_pdf(sample):
     return createPdf(htmlreport=html)
 
 
-def get_rejection_mail(sample):
+def get_rejection_mail(sample, rejection_pdf=None):
     """Generates an email to sample contacts with rejection reasons
     """
     # Avoid circular dependencies
@@ -540,28 +534,19 @@ def get_rejection_mail(sample):
         address = contact.getEmailAddress()
         if not is_valid_email_address(address):
             return None
-        name = contact.getFullname() or ""
-        return to_email_address(address, name=name)
+        return address
 
     # Get the recipients
     _to = [sample.getContact()] + sample.getCCContact()
     _to = map(to_valid_email_address, _to)
     _to = filter(None, _to)
 
-    # Compose the email
     lab = api.get_setup().laboratory
-    _from = to_email_address(lab.getEmailAddress(), lab.getName())
-    _subject = _("%s has been rejected") % api.get_id(sample)
-    _subject = to_email_subject(_subject)
-    _body = to_email_body_text(email_body)
+    attachments = rejection_pdf and [rejection_pdf] or []
 
-    # Create the enclosing message
-    _preamble = "This is a multi-part message in MIME format.\n"
-    mime_msg = MIMEMultipart()
-    mime_msg.preamble = _preamble
-    mime_msg["Subject"] = _subject
-    mime_msg["From"] = _from
-    mime_msg["To"] = ", ".join(_to)
-    mime_msg.attach(_body)
-    return mime_msg
-
+    return compose_email(
+        from_addr=lab.getEmailAddress(),
+        to_addr=_to,
+        subj=_("%s has been rejected") % api.get_id(sample),
+        body=email_body,
+        attachments=attachments)
