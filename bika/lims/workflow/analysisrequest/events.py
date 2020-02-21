@@ -19,12 +19,16 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
+from bika.lims.api.mail import send_email
+from bika.lims.api.mail import to_email_attachment
 from bika.lims.interfaces import IAnalysisRequestPartition
 from bika.lims.interfaces import IDetachedPartition
 from bika.lims.interfaces import IReceived
 from bika.lims.interfaces import IVerified
 from bika.lims.utils import changeWorkflowState
 from bika.lims.utils.analysisrequest import create_retest
+from bika.lims.utils.analysisrequest import get_rejection_mail
+from bika.lims.utils.analysisrequest import get_rejection_pdf
 from bika.lims.workflow import doActionFor as do_action_for
 from bika.lims.workflow import get_prev_status_from_history
 from bika.lims.workflow.analysisrequest import AR_WORKFLOW_ID

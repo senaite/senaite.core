@@ -26,8 +26,9 @@ from bika.lims import workflow as wf
 from bika.lims.browser import BrowserView, ulocalized_time
 from bika.lims.catalog.analysisrequest_catalog import \
     CATALOG_ANALYSIS_REQUEST_LISTING
-from bika.lims.utils.analysisrequest import notify_rejection
 from plone.memoize import view
+
+from bika.lims.utils.analysisrequest import do_rejection
 
 
 class RejectSamplesView(BrowserView):
@@ -97,14 +98,14 @@ class RejectSamplesView(BrowserView):
                 obj = api.get_object_by_uid(sample_uid)
                 rejection_reasons = {
                     "other": other,
-                    "selected": reasons }
+                    "selected": reasons
+                }
                 obj.setRejectionReasons([rejection_reasons])
-                wf.doActionFor(obj, "reject")
-                processed.append(obj)
 
-                # Client needs to be notified?
-                if sample.get("notify", "") == "on":
-                    notify_rejection(obj)
+                # Reject the sample
+                notify = sample.get("notify", "") == "on"
+                do_rejection(obj, notify=notify)
+                processed.append(obj)
 
             if not processed:
                 return self.redirect(message=_("No samples were rejected"))
