@@ -18,6 +18,7 @@
 # Copyright 2018-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import io
 import mimetypes
 import os
 import re
@@ -34,9 +35,16 @@ from smtplib import SMTPException
 from string import Template
 from StringIO import StringIO
 
+import six
+
 from bika.lims import api
 from bika.lims import logger
 from Products.CMFPlone.utils import safe_unicode
+
+try:
+    file_types = (file, io.IOBase)
+except NameError:
+    file_types = (io.IOBase,)
 
 # RFC 2822 local-part: dot-atom or quoted-string
 # characters allowed in atom: A-Za-z0-9!#$%&'*+-/=?^_`{|}~
@@ -73,7 +81,7 @@ def parse_email_address(address):
     :type address: basestring
     :returns: Tuple of (name, email)
     """
-    if not isinstance(address, basestring):
+    if not isinstance(address, six.string_types):
         raise ValueError("Expected a string, got {}".format(type(address)))
     return parseaddr(address)
 
@@ -85,7 +93,7 @@ def to_email_subject(subject):
     :type subject: basestring
     :returns: Encoded email subject header
     """
-    if not isinstance(subject, basestring):
+    if not isinstance(subject, six.string_types):
         raise TypeError("Expected string, got '{}'".format(type(subject)))
     return Header(s=safe_unicode(subject), charset="utf8")
 
@@ -109,7 +117,7 @@ def to_email_attachment(filedata, filename="", **kw):
     taken from the keyword arguments.
 
     :param filedata: File, file path, filedata
-    :type filedata: FileIO, MIMEBase, basestring
+    :type filedata: FileIO, MIMEBase, str
     :param filename: Filename to use
     :type filename: str
     :returns: MIME Attachment
@@ -129,7 +137,7 @@ def to_email_attachment(filedata, filename="", **kw):
         # return immediately
         return filedata
     # Handle file/StringIO
-    elif isinstance(filedata, (file, StringIO)):
+    elif isinstance(filedata, (file_types, StringIO)):
         data = filedata.read()
     # Handle file paths
     if is_file(filedata):
@@ -138,7 +146,7 @@ def to_email_attachment(filedata, filename="", **kw):
             # read the filedata from the filepath
             data = f.read()
     # Handle raw filedata
-    elif isinstance(filedata, basestring):
+    elif isinstance(filedata, six.string_types):
         data = filedata
 
     # Set MIME type from keyword arguments or guess it from the filename
@@ -160,10 +168,10 @@ def is_valid_email_address(address):
     Code taken from `CMFDefault.utils.checkEmailAddress`
 
     :param address: The email address to check
-    :type address: basestring
+    :type address: str
     :returns: True if the address is a valid email
     """
-    if not isinstance(address, basestring):
+    if not isinstance(address, six.string_types):
         return False
     if not _LOCAL_RE.match(address):
         return False
@@ -176,7 +184,7 @@ def compose_email(from_addr, to_addr, subj, body, attachments=[], **kw):
     """Compose a RFC 2822 MIME message
 
     :param from_address: Email from address
-    :param to_address: List of email or (name, email) pairs
+    :param to_address: An email or a list of emails
     :param subject: Email subject
     :param body: Email body
     :param attachments: List of email attachments
@@ -184,7 +192,9 @@ def compose_email(from_addr, to_addr, subj, body, attachments=[], **kw):
     """
     _preamble = "This is a multi-part message in MIME format.\n"
     _from = to_email_address(from_addr)
-    _to = to_email_address(to_addr)
+    if isinstance(to_addr, six.string_types):
+        to_addr = [to_addr]
+    _to = map(to_email_address, to_addr)
     _subject = to_email_subject(subj)
     _body = to_email_body_text(body, **kw)
 
@@ -193,7 +203,7 @@ def compose_email(from_addr, to_addr, subj, body, attachments=[], **kw):
     mime_msg.preamble = _preamble
     mime_msg["Subject"] = _subject
     mime_msg["From"] = _from
-    mime_msg["To"] = _to
+    mime_msg["To"] = ", ".join(_to)
     mime_msg.attach(_body)
 
     # Attach attachments
@@ -207,13 +217,13 @@ def send_email(email, immediate=True):
     """Send the email via the MailHost tool
 
     :param email: Email message or string
-    :type email: Message or basestring
+    :type email: Message or str
     :param immediate: True to send the email immediately
     :type immediately: bool
     :returns: True if the email delivery was successful
     """
-    if not isinstance(email, (basestring, Message)):
-        raise TypeError("Email must be a Message or basestring")
+    if not isinstance(email, (six.string_types, Message)):
+        raise TypeError("Email must be a Message or str")
 
     try:
         mailhost = api.get_tool("MailHost")

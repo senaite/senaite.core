@@ -19,6 +19,8 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
+from bika.lims.api.mail import send_email
+from bika.lims.api.mail import to_email_attachment
 from bika.lims.interfaces import IAnalysisRequestPartition
 from bika.lims.interfaces import IDetachedPartition
 from bika.lims.interfaces import IReceived
