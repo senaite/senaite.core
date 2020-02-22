@@ -74,7 +74,7 @@ def parse_email_address(address):
     :type address: basestring
     :returns: Tuple of (name, email)
     """
-    if not isinstance(address, basestring):
+    if not isinstance(address, six.string_types):
         raise ValueError("Expected a string, got {}".format(type(address)))
     return parseaddr(address)
 
