@@ -49,6 +49,12 @@ class window.AnalysisRequestAdd
     # recalculate records on load (needed for AR copies)
     @recalculate_records()
 
+    # always recalculate prices in the first run
+    @recalculate_prices()
+
+    # return a reference to the instance
+    return @
+
 
   ### METHODS ###
 
