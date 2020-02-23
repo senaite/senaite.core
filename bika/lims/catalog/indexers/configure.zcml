@@ -43,6 +43,9 @@
   <adapter name="is_received" factory=".analysisrequest.is_received"/>
   <adapter name="listing_searchable_text" factory=".analysisrequest.listing_searchable_text"/>
 
+  <!-- ARReport Index Adapters -->
+  <adapter name="contained_sample_uids" factory=".arreport.contained_sample_uids"/>
+
   <!-- BaseAnalysis Index Adapters -->
   <adapter name="sortable_title" factory=".baseanalysis.sortable_title"/>
 

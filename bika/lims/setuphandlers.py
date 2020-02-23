@@ -192,6 +192,7 @@ INDEXES = (
     ("bika_setup_catalog", "title", "", "FieldIndex"),
 
     ("portal_catalog", "Analyst", "", "FieldIndex"),
+    ("portal_catalog", "contained_sample_uids", "", "KeywordIndex"),
 )
 
 COLUMNS = (

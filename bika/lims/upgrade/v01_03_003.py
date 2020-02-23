@@ -133,6 +133,9 @@ INDEXES_TO_ADD = [
 
     # Default listing_searchable_text index adapter for setup_catalog
     ("bika_setup_catalog", "category_uid", "KeywordIndex"),
+
+    # Allows to search ARReports where the current Sample is contained 
+    ("portal_catalog", "contained_sample_uids", "KeywordIndex"),
 ]
 
 INDEXES_TO_REMOVE = [
