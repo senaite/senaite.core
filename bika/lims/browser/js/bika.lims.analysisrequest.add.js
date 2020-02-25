@@ -69,7 +69,9 @@
       this.init_file_fields();
       this.get_global_settings();
       this.get_flush_settings();
-      return this.recalculate_records();
+      this.recalculate_records();
+      this.recalculate_prices();
+      return this;
     };
 
 
