@@ -43,7 +43,7 @@ class AnalysisRequestPublishedResults(ReportsListingView):
                 "depth": 2,
             },
             # search all reports where the current sample is contained
-            "contained_sample_uids": [sample_uid],
+            "report_sample_uid": [sample_uid],
             "sort_on": "created",
             "sort_order": "descending",
         }
