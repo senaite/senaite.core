@@ -68,7 +68,7 @@ class ReportsListingView(BikaListingView):
             "This will also publish the contained samples of the reports "
             "after the email was successfully sent.")
 
-        send_email_transition = {
+        self.send_email_transition = {
             "id": "send_email",
             "title": _("Email"),
             "url": "email",
@@ -79,7 +79,7 @@ class ReportsListingView(BikaListingView):
         help_publish_text = _(
             "Manually publish all contained samples of the selected reports.")
 
-        publish_samples_transition = {
+        self.publish_samples_transition = {
             "id": "publish_samples",
             "title": _("Publish"),
             # see senaite.core.browser.workflow
@@ -116,8 +116,8 @@ class ReportsListingView(BikaListingView):
                 "contentFilter": {},
                 "columns": self.columns.keys(),
                 "custom_transitions": [
-                    send_email_transition,
-                    publish_samples_transition,
+                    self.send_email_transition,
+                    self.publish_samples_transition,
                 ]
             },
         ]
