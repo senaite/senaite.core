@@ -44,7 +44,7 @@
   <adapter name="listing_searchable_text" factory=".analysisrequest.listing_searchable_text"/>
 
   <!-- ARReport Index Adapters -->
-  <adapter name="report_sample_uid" factory=".arreport.report_sample_uid"/>
+  <adapter name="sample_uid" factory=".arreport.sample_uid"/>
 
   <!-- BaseAnalysis Index Adapters -->
   <adapter name="sortable_title" factory=".baseanalysis.sortable_title"/>

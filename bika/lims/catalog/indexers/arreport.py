@@ -24,7 +24,7 @@ from bika.lims.interfaces import IARReport
 
 
 @indexer(IARReport)
-def report_sample_uid(instance):
+def sample_uid(instance):
     """Returns a list of UIDs of the contained Samples
     """
     return instance.getRawContainedAnalysisRequests()

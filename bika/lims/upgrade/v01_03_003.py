@@ -135,7 +135,7 @@ INDEXES_TO_ADD = [
     ("bika_setup_catalog", "category_uid", "KeywordIndex"),
 
     # Allows to search ARReports where the current Sample UID is included
-    ("portal_catalog", "report_sample_uid", "KeywordIndex"),
+    ("portal_catalog", "sample_uid", "KeywordIndex"),
 ]
 
 INDEXES_TO_REMOVE = [
