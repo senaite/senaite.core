@@ -22,9 +22,18 @@
       layer="bika.lims.interfaces.IBikaLIMS"
       />
 
-  <!-- Email View -->
+  <!-- Email View on Client context -->
   <browser:page
       for="bika.lims.interfaces.IClient"
+      name="email"
+      class=".emailview.EmailView"
+      permission="senaite.core.permissions.ManageAnalysisRequests"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
+
+  <!-- Email View on Sample context -->
+  <browser:page
+      for="bika.lims.interfaces.IAnalysisRequest"
       name="email"
       class=".emailview.EmailView"
       permission="senaite.core.permissions.ManageAnalysisRequests"

@@ -173,7 +173,7 @@ Compose Email
 This function composes a new MIME message:
 
     >>> message = compose_email("from@senaite.com",
-    ...                         "to@senaite.com",
+    ...                         ["to@senaite.com", "to2@senaite.com"],
     ...                         "Test Émail",
     ...                         "Check out the new SENAITE website: $url",
     ...                         attachments=[filepath],
@@ -188,7 +188,7 @@ This function composes a new MIME message:
     MIME-Version: 1.0
     Subject: =?utf-8?q?Test_=C3=89mail?=
     From: from@senaite.com
-    To: to@senaite.com
+    To: to@senaite.com, to2@senaite.com
     <BLANKLINE>
     This is a multi-part message in MIME format.
     <BLANKLINE>

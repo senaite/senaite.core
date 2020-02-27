@@ -33,7 +33,7 @@ Changelog
 - #1466 Support for "readonly" and "hidden" visibility modes in ReferenceWidget
 
 **Changed**
-
+- #1555 List all multi-reports for samples, where the current sample is contained
 - #1543 Sort navigation child-nodes alphabetically
 - #1539 Avoid unnecessary Price recalculations in Sample Add Form
 - #1532 Updated jQuery Barcode to version 2.2.0
