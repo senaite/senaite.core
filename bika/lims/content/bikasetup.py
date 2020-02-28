@@ -601,6 +601,31 @@ schema = BikaFolderSchema.copy() + Schema((
                           "via email to the Client when a Sample is rejected.")
         ),
     ),
+    TextField(
+        "EmailBodySampleRejection",
+        default_content_type='text/html',
+        default_output_type='text/x-html-safe',
+        schemata="Notifications",
+        label=_("Email body for Sample Rejection notifications"),
+        default="The sample $sample_link has been rejected because of the "
+                "following reasons:"
+                "<br/><br/>$reasons<br/><br/>"
+                "For further information, please contact us under the "
+                "following address.<br/><br/>"
+                "$lab_address",
+        widget=RichWidget(
+            label=_("Email body for Sample Rejection notifications"),
+            description=_(
+                "Set the text for the body of the email to be sent to the "
+                "Sample's client contact if the option 'Email notification on "
+                "Sample rejection' is enabled. You can use reserved keywords: "
+                "$sample_id, $sample_link, $reasons, $lab_address"),
+            default_mime_type='text/x-rst',
+            output_mime_type='text/x-html',
+            allow_file_upload=False,
+            rows=15,
+        ),
+    ),
     BooleanField(
         'NotifyOnSampleInvalidation',
         schemata="Notifications",
@@ -640,7 +665,7 @@ schema = BikaFolderSchema.copy() + Schema((
             default_mime_type='text/x-rst',
             output_mime_type='text/x-html',
             allow_file_upload=False,
-            rows=10,
+            rows=15,
         ),
     ),
     StringField(

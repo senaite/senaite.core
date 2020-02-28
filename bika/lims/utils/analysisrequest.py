@@ -19,6 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 import itertools
+from string import Template
 
 import six
 from Products.Archetypes.config import UID_CATALOG
@@ -45,6 +46,7 @@ from bika.lims.interfaces import IRoutineAnalysis
 from bika.lims.utils import changeWorkflowState
 from bika.lims.utils import copy_field_values
 from bika.lims.utils import createPdf
+from bika.lims.utils import get_link
 from bika.lims.utils import tmpID
 from bika.lims.workflow import ActionHandlerPool
 from bika.lims.workflow import doActionFor
@@ -520,13 +522,23 @@ def get_rejection_pdf(sample):
 def get_rejection_mail(sample, rejection_pdf=None):
     """Generates an email to sample contacts with rejection reasons
     """
-    # Avoid circular dependencies
-    from bika.lims.browser.analysisrequest.reject import \
-        AnalysisRequestRejectEmailView
+    # Get the reasons
+    reasons = sample.getRejectionReasons()
+    reasons = reasons and reasons[0] or {}
+    reasons = reasons.get("selected", []) + [reasons.get("other")]
+    reasons = filter(None, reasons)
+    reasons = "<br/>- ".join(reasons)
 
     # Render the email body
-    tpl = AnalysisRequestRejectEmailView(sample, api.get_request())
-    email_body = tpl.template()
+    setup = api.get_setup()
+    lab_address = setup.laboratory.getPrintAddress()
+    email_body = Template(setup.getEmailBodySampleRejection())
+    email_body = email_body.safe_substitute({
+        "lab_address": "<br/>".join(lab_address),
+        "reasons": reasons and "<br/>-{}".format(reasons) or "",
+        "sample_id": api.get_id(sample),
+        "sample_link": get_link(api.get_url(sample), api.get_id(sample))
+    })
 
     def to_valid_email_address(contact):
         if not contact:

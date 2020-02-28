@@ -7,6 +7,7 @@ Changelog
 
 **Added**
 
+- #1553 Allow to modify the email template for rejection notification
 - #1549 Added registry profile for jQuery UI settings
 - #1544 Progress indicator for Batch listing
 - #1536 Integrated Setup and Profiles from senaite.lims

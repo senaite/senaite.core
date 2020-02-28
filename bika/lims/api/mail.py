@@ -22,6 +22,7 @@ import io
 import mimetypes
 import os
 import re
+import six
 import socket
 from email import encoders
 from email.header import Header
