@@ -391,6 +391,10 @@ def upgrade(tool):
     # Remove ARImports folder
     remove_arimports(portal)
 
+    # remove samplingrounds et.al
+    # https://github.com/senaite/senaite.core/pull/1531
+    remove_samplingrounds(portal)
+    
     # remove stale type regsitrations
     # https://github.com/senaite/senaite.core/pull/1530
     remove_stale_type_registrations(portal)
@@ -847,6 +851,92 @@ def remove_stale_type_registrations(portal):
 
     logger.info("Removing stale type registrations [DONE]")
 
+
+def remove_samplingrounds(portal):
+    """Remove Samplingrounds from the portal
+    """
+    logger.info("Removing samplingrounds ...")
+
+    types_to_remove = ["SamplingRound", "SamplingRounds",
+                       "SRTemplate", "SRTemplates"]
+    ids_to_remove = ["bika_srtemplates", "bika_samplingrounds"]
+    idxs_to_remove = ["SamplingRoundUID", "samplingRoundSamplingDate"]
+    columns_to_remove = ["SamplingRoundUID", "samplingRoundSamplingDate"]
+    js_to_remove = [
+        "++resource++bika.lims.js/bika.lims.samplinground.print.js",
+        "++resource++bika.lims.js/bika.lims.samplingrounds.js"]
+    wfs_to_remove = ["bika_samplinground_workflow"]
+
+    def remove_actions(action_ids, obj):
+        type_info = obj.getTypeInfo()
+        actions = map(lambda action: action.id, type_info._actions)
+        for index, action in enumerate(actions, start=0):
+            if action in action_ids:
+                type_info.deleteActions([index])
+
+    # Remove actions from clients
+    for client in portal.clients.objectValues():
+        logger.info("Removing actions for '{}'".format(api.get_path(client)))
+        remove_actions(["sampling_rounds_view", "srtemplates"], client)
+
+    #  Remove the setup objects
+    setup = portal.bika_setup
+    try:
+        # we use _delOb because manage_delObjects raises an unauthorized here
+        for oid in ids_to_remove:
+            parent = setup[oid]
+            # remove contained objects
+            for obj in parent.objectValues():
+                if hasattr(obj, "unindexObject"):
+                    obj.unindexObject()
+            # remove parent objects
+            if hasattr(parent, "unindexObject"):
+                parent.unindexObject()
+            logger.info("Removing object '{}'".format(api.get_path(parent)))
+            setup._delOb(oid)
+    except KeyError:
+        pass
+
+    #  Remove controlpanel configlet
+    cp = portal.portal_controlpanel
+    for oid in ids_to_remove:
+        logger.info("Removing configlet '{}'".format(oid))
+        cp.unregisterConfiglet(oid)
+
+    # Remove catalog indexes
+    pc = portal.portal_catalog
+    for idx in idxs_to_remove:
+        if idx in pc.indexes():
+            logger.info("Removing catalog index '{}'".format(idx))
+            pc.manage_delIndex(idx)
+
+    # Remove catalog metadata
+    for column in columns_to_remove:
+        if column in pc.schema():
+            logger.info("Removing catalog column '{}'".format(column))
+            pc.delColumn(column)
+
+    # Remove portal_type registration
+    pt = portal.portal_types
+    for t in types_to_remove:
+        if t in pt.objectIds():
+            logger.info("Removing portal type '{}'".format(t))
+            pt.manage_delObjects(t)
+
+    # Remove javascripts
+    for js in js_to_remove:
+        logger.info("Removing JavaScript '{}'".format(js))
+        portal.portal_javascripts.unregisterResource(js)
+
+    # Remove Workflows
+    wf_tool = portal.portal_workflow
+    for wf in wfs_to_remove:
+        if wf in wf_tool:
+            logger.info("Removing Workflow '{}'".format(wf))
+            wf_tool.manage_delObjects(wf)
+
+    logger.info("Removing samplingrounds [DONE]")
+
     
 def fix_email_address(portal, portal_types=None, catalog_id="portal_catalog"):
     """Validates the email address of portal types that inherit from Person.
@@ -960,3 +1050,4 @@ def remove_skin_layers(portal):
             portal_skins.manage_delObjects(layer)
 
     logger.info("Removing skin layers [DONE]")
+

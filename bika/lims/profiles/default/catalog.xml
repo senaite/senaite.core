@@ -9,10 +9,6 @@
  <index name="is_active" meta_type="BooleanIndex"> <indexed_attr value="is_active"/> </index>
  <index name="analysisRequestTemplates" meta_type="FieldIndex"> <indexed_attr value="analysisRequestTemplates"/> </index>
  <column value="analysisRequestTemplates"/>
- <index name="samplingRoundSamplingDate" meta_type="FieldIndex"> <indexed_attr value="samplingRoundSamplingDate"/> </index>
- <column value="samplingRoundSamplingDate"/>
- <index name="SamplingRoundUID" meta_type="FieldIndex"> <indexed_attr value="SamplingRoundUID"/> </index>
- <column value="SamplingRoundUID"/>
  <column value="review_state"/>
  <column value="getClientID"/>
 </object>

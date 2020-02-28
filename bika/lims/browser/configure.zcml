@@ -48,8 +48,6 @@
   <include package=".publish"/>
   <include package=".reports"/>
   <include package=".resultsimport"/>
-  <include package=".samplinground"/>
-  <include package=".srtemplate"/>
   <include package=".viewlets"/>
   <include package=".widgets"/>
   <include package=".workflow"/>

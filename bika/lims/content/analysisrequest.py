@@ -116,7 +116,6 @@ from bika.lims.permissions import FieldEditSampleType
 from bika.lims.permissions import FieldEditSampler
 from bika.lims.permissions import FieldEditSamplingDate
 from bika.lims.permissions import FieldEditSamplingDeviation
-from bika.lims.permissions import FieldEditSamplingRound
 from bika.lims.permissions import FieldEditScheduledSampler
 from bika.lims.permissions import FieldEditSpecification
 from bika.lims.permissions import FieldEditStorageLocation
@@ -329,27 +328,6 @@ schema = BikaSchema.copy() + Schema((
             ],
             force_all = False,
             ui_item="getId",
-            showOn=True,
-        ),
-    ),
-
-    ReferenceField(
-        'SamplingRound',
-        allowed_types=('SamplingRound',),
-        relationship='AnalysisRequestSamplingRound',
-        mode="rw",
-        read_permission=View,
-        write_permission=FieldEditSamplingRound,
-        widget=ReferenceWidget(
-            label=_("Sampling Round"),
-            description=_("The assigned sampling round of this request"),
-            size=20,
-            render_own_label=True,
-            visible={
-                'add': 'invisible',
-            },
-            catalog_name='portal_catalog',
-            base_query={},
             showOn=True,
         ),
     ),
@@ -1162,12 +1140,6 @@ schema = BikaSchema.copy() + Schema((
         widget=ComputedWidget(visible=False),
     ),
     ComputedField(
-        'SamplingRoundUID',
-        expression="here.getSamplingRound().UID() " \
-                   "if here.getSamplingRound() else ''",
-        widget=ComputedWidget(visible=False),
-    ),
-    ComputedField(
         'SamplerFullName',
         expression="here._getSamplerFullName()",
         widget=ComputedWidget(visible=False),
@@ -1912,16 +1884,6 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         """
         workflow = getToolByName(self, 'portal_workflow')
         return workflow.getInfoFor(self, 'review_state') == 'invalid'
-
-    def getSamplingRoundUID(self):
-        """Obtains the sampling round UID
-        :returns: UID
-        """
-        sr = self.getSamplingRound()
-        if sr:
-            return sr.UID()
-        else:
-            return ''
 
     def getStorageLocationTitle(self):
         """ A method for AR listing catalog metadata

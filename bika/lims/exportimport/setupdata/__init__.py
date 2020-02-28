@@ -516,7 +516,7 @@ class Lab_Products(WorksheetImporter):
         folder = self.context.bika_setup.bika_labproducts
         # Iterate through the rows
         for row in self.get_rows(3):
-            # Create the SRTemplate object
+            # Create the LabProduct object
             obj = _createObjectByType('LabProduct', folder, tmpID())
             # Apply the row values
             obj.edit(

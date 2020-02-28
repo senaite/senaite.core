@@ -488,16 +488,6 @@ class ISampleTypes(Interface):
     """
 
 
-class ISamplingRoundTemplates(Interface):
-    """Marker interface for Sampling Round Templates
-    """
-
-
-class ISamplingRoundTemplate(Interface):
-    """Marker interface for a Sampling Round Template
-    """
-
-
 class ISupplier(Interface):
     """Marker interface for a Supplier
     """
@@ -1072,12 +1062,25 @@ class IHaveAnalysisCategory(Interface):
         """
 
 
-# Legacy types to remove after 1.3.3
 class IARImportFolder(Interface):
     """Marker interface for a folder that contains ARImports
+    TODO: Legacy type. Remove after 1.3.3
     """
 
 
 class IARImport(Interface):
     """Marker interface for an ARImport
+    TODO: Legacy type. Remove after 1.3.3
+    """
+
+
+class ISamplingRoundTemplates(Interface):
+    """Marker interface for Sampling Round Templates
+    TODO: Legacy type. Remove after 1.3.3
+    """
+
+
+class ISamplingRoundTemplate(Interface):
+    """Marker interface for a Sampling Round Template
+    TODO: Legacy type. Remove after 1.3.3
     """

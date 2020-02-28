@@ -79,12 +79,6 @@
       handler="bika.lims.subscribers.analysis.ObjectRemovedEventHandler"
       />
 
-  <subscriber
-      for="bika.lims.content.samplinground.ISamplingRound
-           zope.lifecycleevent.interfaces.IObjectAddedEvent"
-      handler="bika.lims.subscribers.samplinground.SamplingRoundAddedEventHandler"
-      />
-
   <!-- Pricelists -->
   <subscriber
       for="bika.lims.interfaces.IPricelist
