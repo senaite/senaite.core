@@ -62,6 +62,7 @@ Changelog
 
 **Fixed**
 
+- #1556 Fix TypeError when retracting analyses with ExtendedField
 - #1552 Rejection on registration is neither generating rejection pdf nor email
 - #1550 Fix Uncaught TypeError in combogrid
 - #1542 Fix sporadical errors when contacts do not have a valid email address
