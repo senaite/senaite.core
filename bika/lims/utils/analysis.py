@@ -25,6 +25,8 @@ import zope.event
 from Products.Archetypes.event import ObjectInitializedEvent
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
+from archetypes.schemaextender.interfaces import IExtensionField
+
 from bika.lims import bikaMessageFactory as _
 from bika.lims.interfaces import IAnalysisService
 from bika.lims.utils import formatDecimalMark
@@ -74,9 +76,14 @@ def copy_analysis_field_values(source, analysis, **kwargs):
             # to give the value. We have realized that in some cases using
             # 'set' when the value is a string, it saves the value
             # as unicode instead of plain string.
-            mutator_name = analysis.getField(fieldname).mutator
-            mutator = getattr(analysis, mutator_name)
-            mutator(value)
+            field = analysis.getField(fieldname)
+            if IExtensionField.providedBy(field):
+                # SchemaExtender fields don't auto-generate the accessor/mutator
+                field.set(analysis, value)
+            else:
+                mutator_name = field.mutator
+                mutator = getattr(analysis, mutator_name)
+                mutator(value)
 
 
 def create_analysis(context, source, **kwargs):
