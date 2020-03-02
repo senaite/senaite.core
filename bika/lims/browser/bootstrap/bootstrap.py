@@ -19,9 +19,9 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
+from bika.lims import logger
 from plone.memoize.ram import cache
 from Products.Five import BrowserView
-from senaite.lims import logger
 from zope.component import getMultiAdapter
 from zope.interface import Interface
 from zope.interface import implements
