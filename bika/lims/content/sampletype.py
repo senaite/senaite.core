@@ -34,10 +34,8 @@ from bika.lims import logger
 from bika.lims.browser.fields import DurationField
 from bika.lims.browser.widgets import DurationWidget
 from bika.lims.browser.widgets import SampleTypeStickersWidget
-from bika.lims.browser.widgets.referencewidget import ReferenceWidget as brw
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.interfaces import IClient
 from bika.lims.interfaces import IDeactivable
 from bika.lims.interfaces import ISampleType
 from bika.lims.interfaces import ISampleTypeAwareMixin
@@ -172,13 +170,6 @@ schema = BikaSchema.copy() + Schema((
                 "per analysis service"),
         ),
     ),
-    ComputedField(
-        'SamplePointTitle',
-        expression="[o.Title() for o in context.getSamplePoints()]",
-        widget = ComputedWidget(
-            visibile=False,
-        )
-    ),
     RecordsField(
         'AdmittedStickerTemplates',
         subfields=(
@@ -270,6 +261,11 @@ class SampleType(BaseContent, HistoryAwareMixin, SampleTypeAwareMixin):
         """Returns the Sample Points where current Sample Type is supported
         """
         return self.getBackReferences("SamplePointSampleType")
+
+    def getSamplePointTitle(self):
+        """Returns a list of Sample Point titles
+        """
+        return map(api.get_title, self.getSamplePoints())
 
     def SampleMatricesVocabulary(self):
         from bika.lims.content.samplematrix import SampleMatrices
