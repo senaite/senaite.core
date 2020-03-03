@@ -1155,7 +1155,7 @@ class Sample_Types(WorksheetImporter):
             samplepoint = self.get_object(bsc, 'SamplePoint',
                                           row.get('SamplePoint_title'))
             if samplepoint:
-                obj.setSamplePoints([samplepoint, ])
+                samplepoint.setSampleType([obj, ])
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
             notify(ObjectInitializedEvent(obj))
@@ -1219,11 +1219,6 @@ class Sample_Point_Sample_Types(WorksheetImporter):
                     sampletypes.append(sampletype)
                     samplepoint.setSampleTypes(sampletypes)
 
-            if sampletype:
-                samplepoints = sampletype.getSamplePoints()
-                if samplepoint not in samplepoints:
-                    samplepoints.append(samplepoint)
-                    sampletype.setSamplePoints(samplepoints)
 
 class Storage_Locations(WorksheetImporter):
 
