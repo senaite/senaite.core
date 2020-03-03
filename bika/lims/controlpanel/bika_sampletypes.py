@@ -165,6 +165,8 @@ class SampleTypesView(BikaListingView):
         container_type = obj.getContainerType()
         item["replace"]["ContainerType"] = get_link_for(container_type)
 
+        # Hide sample points assigned to this sample type that do not belong
+        # to the same container (Client or Setup)
         sample_points = obj.getSamplePoints()
         path = api.get_path(self.context)
         setup = api.get_setup()
