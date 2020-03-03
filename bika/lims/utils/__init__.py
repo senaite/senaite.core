@@ -726,6 +726,8 @@ def get_link(href, value=None, **kwargs):
 def get_link_for(obj, **kwargs):
     """Returns a well-formed html anchor to the object
     """
+    if not obj:
+        return ""
     href = api.get_url(obj)
     value = api.get_title(obj)
     return get_link(href=href, value=value, **kwargs)

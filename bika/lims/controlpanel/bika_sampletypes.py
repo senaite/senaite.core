@@ -24,19 +24,23 @@ import json
 import plone
 from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
+from Products.CMFCore.permissions import ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
-from bika.lims import bikaMessageFactory as _
-from bika.lims.browser import BrowserView
-from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims.config import PROJECTNAME
-from bika.lims.interfaces import ISampleTypes
-from bika.lims.permissions import AddSampleType
-from bika.lims.utils import get_link
 from plone.app.folder.folder import ATFolder
 from plone.app.folder.folder import ATFolderSchema
 from zope.interface.declarations import implements
 
+from bika.lims import api
+from bika.lims import bikaMessageFactory as _
+from bika.lims.api.security import check_permission
+from bika.lims.browser import BrowserView
+from bika.lims.browser.bika_listing import BikaListingView
+from bika.lims.catalog import SETUP_CATALOG
+from bika.lims.config import PROJECTNAME
+from bika.lims.interfaces import ISampleTypes
+from bika.lims.permissions import AddSampleType
+from bika.lims.utils import get_link_for
 
 # TODO: Separate content and view into own modules!
 
@@ -46,12 +50,15 @@ class SampleTypesView(BikaListingView):
     def __init__(self, context, request):
         super(SampleTypesView, self).__init__(context, request)
 
-        self.catalog = "bika_setup_catalog"
-
+        self.catalog = SETUP_CATALOG
         self.contentFilter = {
             "portal_type": "SampleType",
             "sort_on": "sortable_title",
             "sort_order": "ascending",
+            "path": {
+                "query": api.get_path(self.context),
+                "depth": 1,
+            }
         }
 
         self.context_actions = {
@@ -99,7 +106,7 @@ class SampleTypesView(BikaListingView):
             ("ContainerType", {
                 "title": _("Default Container"),
                 "toggle": True}),
-            ("getSamplePoints", {
+            ("SamplePoints", {
                 "title": _("Sample Points"),
                 "toggle": True}),
         ))
@@ -141,14 +148,8 @@ class SampleTypesView(BikaListingView):
             the template
         :index: current index of the item
         """
-
-        title = obj.Title()
-        description = obj.Description()
-        url = obj.absolute_url()
-
-        item["Description"] = description
-
-        item["replace"]["Title"] = get_link(url, value=title)
+        item["replace"]["Title"] = get_link_for(obj)
+        item["Description"] = obj.Description()
 
         retention_period = obj.getRetentionPeriod()
         if retention_period:
@@ -157,39 +158,39 @@ class SampleTypesView(BikaListingView):
             days = retention_period.get("days", "0")
             item["RetentionPeriod"] = _("hours: {} minutes: {} days: {}"
                                         .format(hours, minutes, days))
-        else:
-            item["RetentionPeriod"] = ""
 
         sample_matrix = obj.getSampleMatrix()
-        if sample_matrix:
-            title = sample_matrix.Title()
-            url = sample_matrix.absolute_url()
-            item["SampleMatrix"] = title
-            item["replace"]["SampleMatrix"] = get_link(url, value=title)
-        else:
-            item["SampleMatrix"] = ""
+        item["replace"]["SampleMatrix"] = self.resolve_link(sample_matrix)
 
         container_type = obj.getContainerType()
-        if container_type:
-            title = container_type.Title()
-            url = container_type.absolute_url()
-            item["ContainerType"] = title
-            item["replace"]["ContainerType"] = get_link(url, value=title)
-        else:
-            item["ContainerType"] = ""
+        item["replace"]["ContainerType"] = self.resolve_link(container_type)
 
+        # Hide sample points assigned to this sample type that do not belong
+        # to the same container (Client or Setup)
         sample_points = obj.getSamplePoints()
-        if sample_points:
-            links = map(
-                lambda sp: get_link(sp.absolute_url(),
-                                    value=sp.Title(),
-                                    css_class="link"),
-                sample_points)
-            item["replace"]["getSamplePoints"] = ", ".join(links)
-        else:
-            item["getSamplePoints"] = ""
+        path = api.get_path(self.context)
+        setup = api.get_setup()
+        if api.get_parent(self.context) == setup:
+            path = api.get_path(setup.bika_samplepoints)
+
+        sample_points = filter(lambda sp: api.get_parent_path(sp) == path,
+                               sample_points)
+
+        # Display the links to the sample points
+        links = map(self.resolve_link, sample_points)
+        item["replace"]["SamplePoints"] = ", ".join(links)
 
         return item
+
+    def resolve_link(self, obj, permission=ModifyPortalContent):
+        """Generates a valid html anchor element for the obj provided if the
+        current user has the permission granted. Otherwise, returns the title
+        """
+        if not obj:
+            return ""
+        if check_permission(permission, obj):
+            return get_link_for(obj)
+        return api.get_title(obj)
 
 
 class ajax_SampleTypes(BrowserView):

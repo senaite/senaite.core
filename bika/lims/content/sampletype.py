@@ -37,6 +37,7 @@ from bika.lims.browser.widgets import SampleTypeStickersWidget
 from bika.lims.browser.widgets.referencewidget import ReferenceWidget as brw
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.interfaces import IClient
 from bika.lims.interfaces import IDeactivable
 from bika.lims.interfaces import ISampleType
 from bika.lims.interfaces import ISampleTypeAwareMixin
@@ -265,16 +266,10 @@ class SampleType(BaseContent, HistoryAwareMixin, SampleTypeAwareMixin):
         settings = getToolByName(self, 'bika_setup')
         return settings.getDefaultSampleLifetime()
 
-    def getSamplePoints(self, preserve_context=True):
+    def getSamplePoints(self):
         """Returns the Sample Points where current Sample Type is supported
-        :param preserve_context: returns the sample points that belong to the
-        same context as the current Sample Type (e.g. client vs. setup)
         """
-        objs = self.getBackReferences("SamplePointSampleType")
-        if preserve_context:
-            path = api.get_parent_path(self)
-            objs = filter(lambda st: api.get_parent_path(st) == path, objs)
-        return objs
+        return self.getBackReferences("SamplePointSampleType")
 
     def SampleMatricesVocabulary(self):
         from bika.lims.content.samplematrix import SampleMatrices
