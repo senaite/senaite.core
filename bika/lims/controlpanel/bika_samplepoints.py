@@ -138,18 +138,10 @@ class SamplePointsView(BikaListingView):
         item["Description"] = obj.Description()
 
         sample_types = obj.getSampleTypes()
-        links = map(self.resolve_link, sample_types)
+        links = map(get_link_for, sample_types)
         item["replace"]["SampleTypes"] = ", ".join(links)
 
         return item
-
-    def resolve_link(self, obj, permission=ModifyPortalContent):
-        """Generates a valid html anchor element for the obj provided if the
-        current user has the permission granted. Otherwise, returns the title
-        """
-        if check_permission(permission, obj):
-            return get_link_for(obj)
-        return api.get_title(obj)
 
 
 class ajax_SamplePoints(BrowserView):
