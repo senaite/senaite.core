@@ -18,11 +18,7 @@
 # Copyright 2018-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from bika.lims import bikaMessageFactory as _
-from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.controlpanel.bika_samplepoints import SamplePointsView
-from bika.lims.permissions import *
-from Products.CMFCore.utils import getToolByName
 
 
 class ClientSamplePointsView(SamplePointsView):
