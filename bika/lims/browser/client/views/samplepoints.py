@@ -24,4 +24,10 @@ from bika.lims.controlpanel.bika_samplepoints import SamplePointsView
 class ClientSamplePointsView(SamplePointsView):
     """This is displayed in the "Sample Points" tab on each client
     """
-    pass
+
+    def before_render(self):
+        """Before template render hook
+        """
+        # Display the Client's tab bar at the top
+        if "disable_border" in self.request:
+            del(self.request["disable_border"])
