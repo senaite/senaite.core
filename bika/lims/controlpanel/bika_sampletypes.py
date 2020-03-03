@@ -160,13 +160,11 @@ class SampleTypesView(BikaListingView):
                                         .format(hours, minutes, days))
 
         sample_matrix = obj.getSampleMatrix()
-        item["replace"]["SampleMatrix"] = self.resolve_link(sample_matrix)
+        item["replace"]["SampleMatrix"] = get_link_for(sample_matrix)
 
         container_type = obj.getContainerType()
-        item["replace"]["ContainerType"] = self.resolve_link(container_type)
+        item["replace"]["ContainerType"] = get_link_for(container_type)
 
-        # Hide sample points assigned to this sample type that do not belong
-        # to the same container (Client or Setup)
         sample_points = obj.getSamplePoints()
         path = api.get_path(self.context)
         setup = api.get_setup()
