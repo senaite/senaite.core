@@ -3,7 +3,6 @@
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # Translators:
 # Ramon Bartl <rb@ridingbytes.com>, 2018
-# Jordi Puiggené <jpuiggene@naralabs.com>, 2019
 # Piotr Turek <piotr.turek@borpol.com.pl>, 2020
 #
 msgid ""

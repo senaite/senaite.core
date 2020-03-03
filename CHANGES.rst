@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-1.3.3 (unreleased)
+1.3.3 (2020-03-03)
 ------------------
 
 **Added**
@@ -44,7 +44,7 @@ Changelog
 - #1502 Improved DateTime Widget
 - #1490 Support Dexterity Behavior Fields in API
 - #1488 Support Dexterity Contents in Catalog Indexers
-- #1486 Clean-up of indexes and metadata from `setup_catalog
+- #1486 Clean-up of indexes and metadata from `setup_catalog`
 
 **Removed**
 
@@ -91,10 +91,6 @@ Changelog
 - #1472 Secondary samples - removal of analysis profile not possible
 - #1469 Fix Site Properties Generic Setup Export Step
 - #1467 Cannot override behavior of Batch folder when using `before_render`
-
-
-**Security**
-
 
 
 1.3.2 (2019-10-30)
