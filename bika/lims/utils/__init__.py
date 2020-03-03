@@ -723,6 +723,16 @@ def get_link(href, value=None, **kwargs):
     return '<a href="{}" {}>{}</a>'.format(href, attr, anchor_value)
 
 
+def get_link_for(obj, **kwargs):
+    """Returns a well-formed html anchor to the object
+    """
+    if not obj:
+        return ""
+    href = api.get_url(obj)
+    value = api.get_title(obj)
+    return get_link(href=href, value=value, **kwargs)
+
+
 def get_email_link(email, value=None):
     """
     Returns a well-formed link to an email address. If email is None/empty,
