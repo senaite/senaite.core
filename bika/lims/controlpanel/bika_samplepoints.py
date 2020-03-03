@@ -23,7 +23,6 @@ import json
 
 import plone
 from Products.ATContentTypes.content import schemata
-from Products.Archetypes import PloneMessageFactory as _p
 from Products.Archetypes import atapi
 from Products.CMFCore.permissions import ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
@@ -32,7 +31,6 @@ from plone.app.folder.folder import ATFolder
 from plone.app.folder.folder import ATFolderSchema
 from zope.interface.declarations import implements
 
-from bika.lims import ManageBika
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.api.security import check_permission
