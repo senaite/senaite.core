@@ -1,6 +1,13 @@
 Changelog
 =========
 
+1.3.3.1 (2020-03-04)
+--------------------
+
+**Fixed**
+
+- #1560 Fix missing Add Dynamic Analysis Specifications Button for Lab Managers
+
 
 1.3.3 (2020-03-03)
 ------------------

@@ -20,7 +20,7 @@
 
 from setuptools import setup, find_packages
 
-version = '1.3.3'
+version = '1.3.3.1'
 
 setup(
     name='senaite.core',
