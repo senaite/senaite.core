@@ -22,6 +22,7 @@ import collections
 
 from bika.lims import _
 from bika.lims.catalog import SETUP_CATALOG
+from bika.lims.permissions import AddAnalysisSpec
 from plone.dexterity.content import Container
 from plone.supermodel import model
 from senaite.core.listing import ListingView
@@ -56,7 +57,7 @@ class DynamicAnalysisSpecsView(ListingView):
         self.context_actions = {
             _("Add"): {
                 "url": "++add++DynamicAnalysisSpec",
-                "permission": "cmf.AddPortalContent",
+                "permission": AddAnalysisSpec,
                 "icon": "++resource++bika.lims.images/add.png"}
             }
 
