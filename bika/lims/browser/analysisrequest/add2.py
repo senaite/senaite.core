@@ -818,10 +818,16 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         """Returns the client info of an object
         """
         info = self.get_base_info(obj)
+
+        # Set the default contact, but only if empty. The Contact field is
+        # flushed each time the Client changes, so we can assume that if there
+        # is a selected contact, it belongs to current client already
         default_contact = self.get_default_contact(client=obj)
         if default_contact:
+            contact_info = self.get_contact_info(default_contact)
+            contact_info.update({"if_empty": True})
             info["field_values"].update({
-                "Contact": self.get_contact_info(default_contact),
+                "Contact": contact_info
             })
 
         # Set default CC Email field
