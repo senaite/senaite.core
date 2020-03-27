@@ -94,7 +94,7 @@ setup(
         # https://pypi.org/project/more-itertools/
         'more-itertools<6.0.0',
         # cssselect2 0.3.0 does not support Python 2.x anymore
-        'cssselect<0.3.0',
+        'cssselect2<0.3.0',
     ],
     extras_require={
         'test': [
