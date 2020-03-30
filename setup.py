@@ -92,7 +92,9 @@ setup(
         # https://github.com/python-pillow/Pillow/blob/master/CHANGES.rst#622-2020-01-02
         'Pillow<7.0.0',
         # https://pypi.org/project/more-itertools/
-        'more-itertools<6.0.0'
+        'more-itertools<6.0.0',
+        # cssselect2 0.3.0 does not support Python 2.x anymore
+        'cssselect2<0.3.0',
     ],
     extras_require={
         'test': [
