@@ -590,6 +590,27 @@ class window.AnalysisRequestAdd
       $field.val("")
 
 
+  get_reference_field_value: (field) =>
+    ###
+     * Return the value of a single/multi reference field
+    ###
+    $field = $(field)
+    if $field.attr("multivalued") is undefined
+      return []
+
+    multivalued = $field.attr("multivalued") == "1"
+
+    if not multivalued
+      return [$field.val()]
+
+    $parent = field.closest("div.field")
+    uids = $("input[type=hidden]", $parent)?.val()
+    if not uids
+      return []
+
+    return uids.split(",")
+
+
   set_template: (arnum, template) =>
     ###
      * Apply the template data to all fields of arnum
@@ -763,7 +784,7 @@ class window.AnalysisRequestAdd
     me = this
     el = event.currentTarget
     $el = $(el)
-    has_value = $el.val()
+    has_value = @get_reference_field_value $el
     uid = $el.attr "uid"
     field_name = $el.closest("tr[fieldname]").attr "fieldname"
     arnum = $el.closest("[arnum]").attr "arnum"
