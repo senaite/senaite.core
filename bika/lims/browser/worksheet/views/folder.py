@@ -94,6 +94,7 @@ class FolderView(BikaListingView):
 
         self.columns = collections.OrderedDict((
             ("Progress", {
+               "index": "getProgressPercentage",
                "title": _("Progress")}),
             ("Title", {
                 "title": _("Worksheet"),
@@ -104,12 +105,16 @@ class FolderView(BikaListingView):
             ("Template", {
                 "title": _("Template"),
                 "attr": "getWorksheetTemplateTitle",
+                "index": "getWorksheetTemplateTitle",
                 "replace_url": "getWorksheetTemplateURL"}),
             ("NumRegularSamples", {
+                "index": "getNumberOfRegularSamples",
                 "title": _("Samples")}),
             ("NumQCAnalyses", {
+                "index": "getNumberOfQCAnalyses",
                 "title": _("QC Analyses")}),
             ("NumRegularAnalyses", {
+                "index": "getNumberOfRegularAnalyses",
                 "title": _("Routine Analyses")}),
             ("CreationDate", {
                 "title": _("Created"),
