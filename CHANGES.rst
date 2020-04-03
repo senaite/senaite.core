@@ -6,6 +6,7 @@ Changelog
 
 **Fixed**
 
+- #1566 Fix column sorting in Worksheet listing
 - #1563 Fix Client Contacts can create Samples without Contact
 - #1560 Fix missing Add Dynamic Analysis Specifications Button for Lab Managers
 
