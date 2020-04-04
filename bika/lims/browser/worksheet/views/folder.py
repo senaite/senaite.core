@@ -93,7 +93,7 @@ class FolderView(BikaListingView):
             })
 
         self.columns = collections.OrderedDict((
-            ("Progress", {
+            ("getProgressPercentage", {
                "title": _("Progress")}),
             ("Title", {
                 "title": _("Worksheet"),
@@ -101,15 +101,14 @@ class FolderView(BikaListingView):
             ("Analyst", {
                 "title": _("Analyst"),
                 "index": "getAnalyst"}),
-            ("Template", {
+            ("getWorksheetTemplateTitle", {
                 "title": _("Template"),
-                "attr": "getWorksheetTemplateTitle",
                 "replace_url": "getWorksheetTemplateURL"}),
-            ("NumRegularSamples", {
+            ("getNumberOfRegularSamples", {
                 "title": _("Samples")}),
-            ("NumQCAnalyses", {
+            ("getNumberOfQCAnalyses", {
                 "title": _("QC Analyses")}),
-            ("NumRegularAnalyses", {
+            ("getNumberOfRegularAnalyses", {
                 "title": _("Routine Analyses")}),
             ("CreationDate", {
                 "title": _("Created"),
@@ -309,15 +308,19 @@ class FolderView(BikaListingView):
         item["replace"]["Title"] = get_link(title_link, value=title)
 
         # Total QC Analyses
-        item["NumQCAnalyses"] = str(obj.getNumberOfQCAnalyses)
+        item["getNumberOfQCAnalyses"] = str(
+            obj.getNumberOfQCAnalyses)
         # Total Routine Analyses
-        item["NumRegularAnalyses"] = str(obj.getNumberOfRegularAnalyses)
+        item["getNumberOfRegularAnalyses"] = str(
+            obj.getNumberOfRegularAnalyses)
         # Total Number of Samples
-        item["NumRegularSamples"] = str(obj.getNumberOfRegularSamples)
+        item["getNumberOfRegularSamples"] = str(
+            obj.getNumberOfRegularSamples)
 
         # Progress
-        progress_perc = obj.getProgressPercentage
-        item["replace"]["Progress"] = get_progress_bar_html(progress_perc)
+        progress = obj.getProgressPercentage
+        progress_bar_html = get_progress_bar_html(progress)
+        item["replace"]["getProgressPercentage"] = progress_bar_html
 
         review_state = item["review_state"]
         if self.can_reassign and review_state == "open":
