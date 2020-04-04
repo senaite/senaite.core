@@ -1,13 +1,21 @@
 Changelog
 =========
 
+1.3.4 (undefined)
+-----------------
+
+**Fixed**
+
+- #1567 Fix missing CCContact after adding a new Sample
+- #1566 Fix column sorting in Worksheet listing
+- #1563 Fix Client Contacts can create Samples without Contact
+
+
 1.3.3.1 (2020-03-04)
 --------------------
 
 **Fixed**
 
-- #1566 Fix column sorting in Worksheet listing
-- #1563 Fix Client Contacts can create Samples without Contact
 - #1560 Fix missing Add Dynamic Analysis Specifications Button for Lab Managers
 
 

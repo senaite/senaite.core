@@ -34,6 +34,7 @@
       this.set_service_spec = bind(this.set_service_spec, this);
       this.set_service = bind(this.set_service, this);
       this.set_template = bind(this.set_template, this);
+      this.get_reference_field_value = bind(this.get_reference_field_value, this);
       this.set_reference_field = bind(this.set_reference_field, this);
       this.set_reference_field_query = bind(this.set_reference_field_query, this);
       this.reset_reference_field_query = bind(this.reset_reference_field_query, this);
@@ -590,6 +591,28 @@
       }
     };
 
+    AnalysisRequestAdd.prototype.get_reference_field_value = function(field) {
+
+      /*
+       * Return the value of a single/multi reference field
+       */
+      var $field, $parent, multivalued, ref, uids;
+      $field = $(field);
+      if ($field.attr("multivalued") === void 0) {
+        return [];
+      }
+      multivalued = $field.attr("multivalued") === "1";
+      if (!multivalued) {
+        return [$field.val()];
+      }
+      $parent = field.closest("div.field");
+      uids = (ref = $("input[type=hidden]", $parent)) != null ? ref.val() : void 0;
+      if (!uids) {
+        return [];
+      }
+      return uids.split(",");
+    };
+
     AnalysisRequestAdd.prototype.set_template = function(arnum, template) {
 
       /*
@@ -756,7 +779,7 @@
       me = this;
       el = event.currentTarget;
       $el = $(el);
-      has_value = $el.val();
+      has_value = this.get_reference_field_value($el);
       uid = $el.attr("uid");
       field_name = $el.closest("tr[fieldname]").attr("fieldname");
       arnum = $el.closest("[arnum]").attr("arnum");
