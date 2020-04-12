@@ -3,7 +3,8 @@
                      sample_type item/getSampleTypeTitle|nothing;
                      date_sampled python:view.ulocalized_time(item.getDateSampled());
                      client_sample_id item/getClientSampleID|nothing;
-                     hazardous item/getHazardous|nothing;">
+                     hazardous item/getHazardous|nothing;
+                     portal_url nocall:context/portal_url;">
 
 
   <!-- Sample ID -->
