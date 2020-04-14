@@ -6,7 +6,8 @@ Changelog
 
 **Fixed**
 
-- #1580 Fix Cannot reject Sample when contact has no email set
+- #1570 Fix Date time picker does not translates well to current language
+- #1571 Fix Cannot reject Sample when contact has no email set
 - #1568 Fix Traceback when rendering sticker `Code_39_2ix1i`
 - #1567 Fix missing CCContact after adding a new Sample
 - #1566 Fix column sorting in Worksheet listing
