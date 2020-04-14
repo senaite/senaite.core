@@ -2,7 +2,7 @@ jQuery( function($) {
   $(document).ready(function() {
 
     var lang = jarn.i18n.currentLanguage;
-    var config = $.timepicker.regional[lang] || {};
+    var config = $.datepicker.regional[lang] || $.datepicker.regional[''];
 
     $('[datepicker="1"]').datepicker(
       Object.assign(config, {
