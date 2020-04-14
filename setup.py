@@ -95,6 +95,10 @@ setup(
         'more-itertools<6.0.0',
         # cssselect2 0.3.0 does not support Python 2.x anymore
         'cssselect2<0.3.0',
+        # beautifulsoup4 4.9.0 requires 'soupsieve<2.0'
+        'soupsieve<2.0.0',
+        # dependency for jsonapi
+        'simplejson',
     ],
     extras_require={
         'test': [
