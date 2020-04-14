@@ -499,8 +499,9 @@ def do_rejection(sample, notify=None):
     if notify:
         # Compose and send the email
         mime_msg = get_rejection_mail(sample, pdf)
-        # Send the email
-        send_email(mime_msg)
+        if mime_msg:
+            # Send the email
+            send_email(mime_msg)
 
 
 def get_rejection_pdf(sample):
@@ -552,6 +553,11 @@ def get_rejection_mail(sample, rejection_pdf=None):
     _to = [sample.getContact()] + sample.getCCContact()
     _to = map(to_valid_email_address, _to)
     _to = filter(None, _to)
+
+    if not _to:
+        # Cannot send an e-mail without recipient!
+        logger.warn("No valid recipients for {}".format(api.get_id(sample)))
+        return None
 
     lab = api.get_setup().laboratory
     attachments = rejection_pdf and [rejection_pdf] or []
