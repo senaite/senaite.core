@@ -6,6 +6,7 @@ Changelog
 
 **Fixed**
 
+- #1572 Fix Unable to get the previous status when duplicated in review history
 - #1570 Fix Date time picker does not translates well to current language
 - #1571 Fix Cannot reject Sample when contact has no email set
 - #1568 Fix Traceback when rendering sticker `Code_39_2ix1i`
