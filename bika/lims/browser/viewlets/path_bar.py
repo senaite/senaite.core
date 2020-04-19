@@ -17,14 +17,14 @@
 #
 # Copyright 2018-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
-
+from Products.CMFCore.permissions import View
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from plone.app.layout.viewlets.common import PathBarViewlet as Base
 
 from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
+from bika.lims.api.security import check_permission
 from bika.lims.interfaces import IClient
-from bika.lims.interfaces import IClientFolder
 
 
 class PathBarViewlet(Base):
@@ -34,39 +34,43 @@ class PathBarViewlet(Base):
     def update(self):
         super(PathBarViewlet, self).update()
 
-        # If current user is a Client, hide Clients folder from breadcrumbs
-        user = api.get_current_user()
-        client_folder = self.get_client_folder()
-        if "Client" in user.getRoles() and client_folder:
-            skip = api.get_title(client_folder)
-            self.breadcrumbs = filter(lambda b: b.get("Title") not in skip,
-                                      self.breadcrumbs)
+        # Hide breadcrumbs for which current user does not have "View" perm
+        self.breadcrumbs = self.get_breadcrumbs()
 
-        # Objects from inside Client folder are always stored directly, w/o
-        # subfolders, making it difficult for user to know if what is looking at
-        # is a Sample, a Batch or a Contact. Append the name of the portal type
-        if IClient.providedBy(self.context.aq_parent):
-            title = self.get_portal_type_title()
-            if title:
-                last = self.breadcrumbs[-1]
-                last.update({
-                    "Title": "{} ({})".format(last.get("Title", ""), _(title))
-                })
-
-    def get_client_folder(self, obj=None):
-        """Returns the client folder from the hierarchy, if any. Otherwise,
-        returns None
+    def get_breadcrumbs(self):
+        """Generates the breadcrumbs. Items for which current user does not
+        have the View permission granted are omitted
         """
-        if not obj:
-            obj = self.context
-        if api.is_portal(obj):
-            return None
-        if IClientFolder.providedBy(obj):
-            return obj
-        parent = api.get_parent(obj)
-        return self.get_client_folder(parent)
+        hierarchy = []
+        current = self.context
+        while not api.is_portal(current):
+            if check_permission(View, current):
+                hierarchy.append(current)
+            current = current.aq_parent
+        hierarchy = sorted(hierarchy, reverse=True)
+        return map(self.to_breadcrumb, hierarchy)
 
-    def get_portal_type_title(self):
+    def to_breadcrumb(self, obj):
+        """Converts the object to a breadcrumb for the template consumption
+        """
+        return {"Title": self.get_obj_title(obj),
+                "absolute_url": api.get_url(obj)}
+
+    def get_obj_title(self, obj):
+        """Returns the title of the object to be displayed as breadcrumb
+        """
+        title = api.get_title(obj)
+        if IClient.providedBy(obj.aq_parent):
+            # Objects from inside Client folder are always stored directly, w/o
+            # subfolders, making it difficult for user to know if what is
+            # looking at is a Sample, a Batch or a Contact. Append the name of
+            # the portal type
+            pt_title = self.get_portal_type_title(obj)
+            if pt_title:
+                title = "{} ({})".format(title, _(pt_title))
+        return title
+
+    def get_portal_type_title(self, obj):
         """Returns the title of the portal type of the current context
         """
         portal = api.get_portal()
