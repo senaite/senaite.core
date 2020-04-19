@@ -71,10 +71,10 @@ class PathBarViewlet(Base):
         return title
 
     def get_portal_type_title(self, obj):
-        """Returns the title of the portal type of the current context
+        """Returns the title of the portal type of the obj passed-in
         """
         portal = api.get_portal()
-        portal_type = api.get_portal_type(self.context)
+        portal_type = api.get_portal_type(obj)
         portal_type = portal.portal_types.getTypeInfo(portal_type)
         if portal_type:
             return portal_type.title
