@@ -18,10 +18,22 @@
 # Copyright 2018-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from plone.app.layout.viewlets.common import PathBarViewlet as Base
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from plone.app.layout.viewlets.common import PathBarViewlet as Base
+
+from bika.lims import api
 
 
 class PathBarViewlet(Base):
     index = ViewPageTemplateFile(
         "templates/plone.app.layout.viewlets.path_bar.pt")
+
+    def update(self):
+        super(PathBarViewlet, self).update()
+
+        # If current user is a Client, hide Clients folder from breadcrumbs
+        user = api.get_current_user()
+        if "Client" in user.getRoles():
+            skip = api.get_title(api.get_portal().clients)
+            self.breadcrumbs = filter(lambda b: b.get("Title") not in skip,
+                                      self.breadcrumbs)
