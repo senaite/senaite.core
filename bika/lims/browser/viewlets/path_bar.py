@@ -24,6 +24,7 @@ from plone.app.layout.viewlets.common import PathBarViewlet as Base
 from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
 from bika.lims.interfaces import IClient
+from bika.lims.interfaces import IClientFolder
 
 
 class PathBarViewlet(Base):
@@ -35,8 +36,9 @@ class PathBarViewlet(Base):
 
         # If current user is a Client, hide Clients folder from breadcrumbs
         user = api.get_current_user()
-        if "Client" in user.getRoles():
-            skip = api.get_title(api.get_portal().clients)
+        client_folder = self.get_client_folder()
+        if "Client" in user.getRoles() and client_folder:
+            skip = api.get_title(client_folder)
             self.breadcrumbs = filter(lambda b: b.get("Title") not in skip,
                                       self.breadcrumbs)
 
@@ -50,6 +52,19 @@ class PathBarViewlet(Base):
                 last.update({
                     "Title": "{} ({})".format(last.get("Title", ""), _(title))
                 })
+
+    def get_client_folder(self, obj=None):
+        """Returns the client folder from the hierarchy, if any. Otherwise,
+        returns None
+        """
+        if not obj:
+            obj = self.context
+        if api.is_portal(obj):
+            return None
+        if IClientFolder.providedBy(obj):
+            return obj
+        parent = api.get_parent(obj)
+        return self.get_client_folder(parent)
 
     def get_portal_type_title(self):
         """Returns the title of the portal type of the current context
