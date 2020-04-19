@@ -17,7 +17,7 @@
 #
 # Copyright 2018-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
-
+from AccessControl import Unauthorized
 from Products.CMFCore.permissions import View
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from plone.app.portlets.portlets.navigation import Renderer as BaseRenderer
@@ -52,11 +52,13 @@ class NavigationPortletRenderer(BaseRenderer):
         """Purges the items of the nav tree for which the current user does not
         have "View" permission granted
         """
-        uid = data.get("UID", "")
-        if api.is_uid(uid):
+        item = data.get("item", "")
+        if item:
             # Check if current user has "View" permission granted
-            obj = api.get_object_by_uid(uid)
-            if not check_permission(View, obj):
+            try:
+                if not check_permission(View, item):
+                    return None
+            except Unauthorized:
                 return None
 
         if "children" in data:
