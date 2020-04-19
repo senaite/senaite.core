@@ -22,6 +22,8 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from plone.app.layout.viewlets.common import PathBarViewlet as Base
 
 from bika.lims import api
+from bika.lims import senaiteMessageFactory as _
+from bika.lims.interfaces import IClient
 
 
 class PathBarViewlet(Base):
@@ -37,3 +39,24 @@ class PathBarViewlet(Base):
             skip = api.get_title(api.get_portal().clients)
             self.breadcrumbs = filter(lambda b: b.get("Title") not in skip,
                                       self.breadcrumbs)
+
+        # Objects from inside Client folder are always stored directly, w/o
+        # subfolders, making it difficult for user to know if what is looking at
+        # is a Sample, a Batch or a Contact. Append the name of the portal type
+        if IClient.providedBy(self.context.aq_parent):
+            title = self.get_portal_type_title()
+            if title:
+                last = self.breadcrumbs[-1]
+                last.update({
+                    "Title": "{} ({})".format(last.get("Title", ""), _(title))
+                })
+
+    def get_portal_type_title(self):
+        """Returns the title of the portal type of the current context
+        """
+        portal = api.get_portal()
+        portal_type = api.get_portal_type(self.context)
+        portal_type = portal.portal_types.getTypeInfo(portal_type)
+        if portal_type:
+            return portal_type.title
+        return None
