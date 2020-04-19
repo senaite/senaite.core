@@ -364,3 +364,8 @@ https://github.com/senaite/senaite.lims/pull/92 */
 #content > h1:first-of-type {
     margin-top: 0;
 }
+
+/* Do not display Clients top-folder in nav-bar when client */
+body.userrole-client div.navbar li.section-clients {
+  display:none;
+}
