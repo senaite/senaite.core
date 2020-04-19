@@ -51,6 +51,10 @@ def upgrade(tool):
     wf_tool = api.get_tool("portal_workflow")
     workflow = wf_tool.getWorkflowById("senaite_clients_workflow")
     workflow.updateRoleMappingsFor(portal.clients)
+    portal.clients.reindexObject()
+
+    # New link to My Organization
+    setup.runImportStepFromProfile(profile, "actions")
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True

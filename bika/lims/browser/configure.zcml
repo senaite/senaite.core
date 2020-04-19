@@ -61,6 +61,14 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
+  <!-- Redirect to user's org view -->
+  <browser:page
+      for="*"
+      name="my_organization"
+      class=".myorganization.MyOrganizationView"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS" />
+
   <browser:page
       for="*"
       name="at_validate_field"

@@ -33,6 +33,36 @@
     </object>
   </object>
 
+  <!-- User actions -->
+  <object name="user" meta_type="CMF Action Category">
+    <!-- Hide User Dashboard -->
+    <object name="dashboard" meta_type="CMF Action" i18n:domain="plone">
+      <property name="title" i18n:translate="">Dashboard</property>
+      <property name="description" i18n:translate=""></property>
+      <property name="url_expr">string:${portal_url}/dashboard</property>
+      <property name="link_target"></property>
+      <property name="icon_expr"></property>
+      <property name="available_expr">python:member is not None</property>
+      <property name="permissions">
+        <element value="Portlets: Manage own portlets"/>
+      </property>
+      <property name="visible">False</property>
+    </object>
+
+    <!-- My Organization link -->
+    <object name="my_organization" meta_type="CMF Action" i18n:domain="plone">
+      <property name="title" i18n:translate="">My Organization</property>
+      <property name="description"/>
+      <property name="url_expr">string:${portal_url}/my_organization</property>
+      <property name="link_target"/>
+      <property name="icon_expr"/>
+      <property name="available_expr">python:member and "Client" in member.getRoles()</property>
+      <property name="permissions"/>
+      <property name="visible">True</property>
+    </object>
+  </object>
+
+
   <!-- Folder Buttons -->
   <object name="folder_buttons">
     <object name="copy">
