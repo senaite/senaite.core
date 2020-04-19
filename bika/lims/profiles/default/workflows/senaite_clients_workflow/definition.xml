@@ -29,16 +29,47 @@
   <state state_id="active" title="Active" i18n:attributes="title">
     <exit-transition transition_id="" />
     <!-- PLONE Permissions -->
+    <!-- Only Lab Personnel can access to clients folder -->
     <permission-map name="Access contents information" acquired="False">
-      <permission-role>Authenticated</permission-role>
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+      <permission-role>Preserver</permission-role>
+      <permission-role>Publisher</permission-role>
+      <permission-role>RegulatoryInspector</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
+      <permission-role>Verifier</permission-role>
     </permission-map>
     <permission-map name="Delete objects" acquired="False" />
     <permission-map name="List folder contents" acquired="False">
-      <permission-role>Authenticated</permission-role>
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+      <permission-role>Preserver</permission-role>
+      <permission-role>Publisher</permission-role>
+      <permission-role>RegulatoryInspector</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
+      <permission-role>Verifier</permission-role>
     </permission-map>
     <permission-map name="Modify portal content" acquired="True"/>
     <permission-map name="View" acquired="False">
-      <permission-role>Authenticated</permission-role>
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Owner</permission-role>
+      <permission-role>Preserver</permission-role>
+      <permission-role>Publisher</permission-role>
+      <permission-role>RegulatoryInspector</permission-role>
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
+      <permission-role>Verifier</permission-role>
     </permission-map>
   </state>
 
