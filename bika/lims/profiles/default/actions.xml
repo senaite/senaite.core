@@ -50,8 +50,9 @@
     </object>
 
     <!-- My Organization link -->
-    <object name="my_organization" meta_type="CMF Action" i18n:domain="plone">
-      <property name="title" i18n:translate="">My Organization</property>
+    <object name="my_organization" meta_type="CMF Action" i18n:domain="plone"
+      insert-before="logout">
+      <property name="title" i18n:translate="">My organization</property>
       <property name="description"/>
       <property name="url_expr">string:${portal_url}/my_organization</property>
       <property name="link_target"/>
