@@ -4,6 +4,15 @@ Changelog
 1.3.4 (unreleased)
 ------------------
 
+**Added**
+
+- #1573 Append the type name of the current record in breadcrumbs (Client)
+- #1573 Add link "My Organization" under top-right user selection list
+
+**Changed**
+
+- #1573 Do not display top-level "Clients" folder to non-lab users
+
 **Fixed**
 
 - #1572 Fix Unable to get the previous status when duplicated in review history

@@ -26,7 +26,7 @@
           tal:condition="python:bottomLevel &lt;= 0 or level &lt;= bottomLevel">
 
         <tal:level define="item_class string:senaite-state-${node/normalized_review_state};
-                           item_type_class python:'senatite-contenttype-' + normalizeString(item_type);
+                           item_type_class python:'senaite-contenttype-' + normalizeString(item_type);
                            item_class python:is_current and item_class + ' active' or item_class;">
 
           <a tal:attributes="href python:use_remote_url and item_remote_url or item_url;

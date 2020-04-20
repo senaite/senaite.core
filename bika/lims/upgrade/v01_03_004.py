@@ -18,6 +18,7 @@
 # Copyright 2018-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from bika.lims import api
 from bika.lims import logger
 from bika.lims.config import PROJECTNAME as product
 from bika.lims.upgrade import upgradestep
@@ -43,5 +44,18 @@ def upgrade(tool):
 
     # -------- ADD YOUR STUFF BELOW --------
 
+    # Do not display clients folder to Clients. There is no need to do an
+    # update-role-mappings of clients, cause the permissions at client level
+    # have not changed, except that now they are acquire=1 for "active" status
+    setup.runImportStepFromProfile(profile, "workflow")
+    wf_tool = api.get_tool("portal_workflow")
+    workflow = wf_tool.getWorkflowById("senaite_clients_workflow")
+    workflow.updateRoleMappingsFor(portal.clients)
+    portal.clients.reindexObject()
+
+    # New link to My Organization
+    setup.runImportStepFromProfile(profile, "actions")
+
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
+
