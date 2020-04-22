@@ -17,6 +17,7 @@
 #
 # Copyright 2018-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
+
 from Products.CMFCore.permissions import View
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from plone.app.layout.viewlets.common import PathBarViewlet as Base
@@ -51,7 +52,7 @@ class PathBarViewlet(Base):
                 # Some objects (e.g. portal_registry) are not supported
                 hierarchy.append(current)
             current = current.aq_parent
-        hierarchy = sorted(hierarchy, reverse=True)
+        hierarchy = reversed(hierarchy)
         return map(self.to_breadcrumb, hierarchy)
 
     def to_breadcrumb(self, obj):
