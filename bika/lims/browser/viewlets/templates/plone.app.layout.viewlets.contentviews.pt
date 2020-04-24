@@ -1,21 +1,21 @@
-<div i18n:domain="plone"
-     tal:omit-tag=""
-     tal:define="ploneview context/@@plone;"
-     tal:condition="ploneview/showEditableBorder">
+<tal:contentviews tal:define="ploneview context/@@plone;"
+                  tal:condition="ploneview/showToolbar"
+                  i18n:domain="plone">
 
-  <tal:block define="view_actions view/prepareObjectTabs;">
-    <p class="hidden"
-       tal:condition="view_actions"
-       i18n:translate="heading_views">Views</p>
+  <!-- <tal:block define="actions view/tabSet1;"> -->
+  <!-- <div tal:replace="structure python: view.menu_template(actions=actions)" /> -->
+  <!-- </tal:block> -->
+  <!-- <tal:contentmenus> -->
+  <!-- <div tal:replace="structure provider:plone.contentmenu" /> -->
+  <!-- </tal:contentmenus> -->
 
-    <ul class="nav nav-tabs pull-left col-md-12"
-        id="edit-content-views"
-        i18n:domain="plone">
-
-      <tal:views repeat="action view_actions">
+  <tal:block define="tabset1 view/tabSet1;
+                     tabset2 view/tabSet2;">
+    <ul class="nav nav-pills col-md-12" i18n:domain="plone">
+      <tal:actions repeat="action tabset1">
         <li tal:define="selected action/selected|nothing;"
             tal:attributes="id string:contentview-${action/id};
-                            class python:selected and 'active' or 'plain'">
+                        class python:selected and 'active' or ''">
           <a href=""
              tal:content="action/title"
              tal:attributes="href action/url;
@@ -24,9 +24,21 @@
             View name
           </a>
         </li>
-      </tal:views>
-
+      </tal:actions>
+      <tal:actions repeat="action tabset2">
+        <li tal:define="selected action/selected|nothing;"
+            tal:attributes="id string:contentview-${action/id};
+                        class python:selected and 'active' or 'plain'">
+          <a href=""
+             tal:content="action/title"
+             tal:attributes="href action/url;
+                   target action/link_target|nothing;"
+             i18n:translate="">
+            View name
+          </a>
+        </li>
+      </tal:actions>
     </ul>
   </tal:block>
-  <div class="clearfix"></div>
-</div>
+
+</tal:contentviews>
