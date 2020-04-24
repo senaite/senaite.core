@@ -39,15 +39,6 @@
       layer="bika.lims.interfaces.IBikaLIMS"
       />
 
-  <!-- Personal bar -->
-  <browser:viewlet
-      name="plone.personal_bar"
-      manager="plone.app.layout.viewlets.interfaces.IPortalHeader"
-      class=".personal_bar.PersonalBarViewlet"
-      permission="zope2.View"
-      layer="bika.lims.interfaces.IBikaLIMS"
-      />
-
   <!-- AR Attachments Viewlet -->
   <browser:viewlet
       for="bika.lims.interfaces.IAnalysisRequest"

@@ -29,6 +29,5 @@ from footer import FooterViewlet  # noqa
 from instruments import InstrumentQCFailuresViewlet  # noqa
 from logo import LogoViewlet  # noqa
 from path_bar import PathBarViewlet  # noqa
-from personal_bar import PersonalBarViewlet  # noqa
 from sections import GlobalSectionsDropdownViewlet  # noqa
 from site_actions import SiteActionsViewlet  # noqa
