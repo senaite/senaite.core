@@ -15,8 +15,6 @@
 
   <five:registerPackage package="." initialize=".initialize" />
 
-  <include package="five.pt" />
-
   <include file="permissions.zcml" />
 
   <include package=".adapters" />
@@ -25,7 +23,8 @@
   <include package=".content" />
   <include package=".controlpanel" />
   <include package=".exportimport" />
-  <include package=".install" />
+  <!-- XXX P5: Fix installation screens -->
+  <!-- <include package=".install" /> -->
   <include package=".interfaces" />
   <include package=".jsonapi" />
   <include package=".locales" />
