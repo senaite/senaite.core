@@ -855,10 +855,10 @@ def get_catalogs_for(brain_or_object, default="portal_catalog"):
     :returns: List of supported catalogs
     :rtype: list
     """
-    archetype_tool = get_tool("archetype_tool", None)
-    if not archetype_tool:
+    archetype_tool = get_tool("archetype_tool", default=None)
+    if archetype_tool is None:
         # return the default catalog
-        return [get_tool(default)]
+        return [get_tool(default, default="portal_catalog")]
 
     catalogs = []
 
