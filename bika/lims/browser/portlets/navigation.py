@@ -17,13 +17,12 @@
 #
 # Copyright 2018-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
+
 from AccessControl import Unauthorized
+from bika.lims.api.security import check_permission
+from plone.app.portlets.portlets.navigation import Renderer as BaseRenderer
 from Products.CMFCore.permissions import View
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from plone.app.portlets.portlets.navigation import Renderer as BaseRenderer
-
-from bika.lims import api
-from bika.lims.api.security import check_permission
 
 
 class NavigationPortletRenderer(BaseRenderer):
@@ -39,14 +38,15 @@ class NavigationPortletRenderer(BaseRenderer):
         # "View" permission granted
         data = self.purge_nav_tree(data)
 
-        bottomLevel = self.data.bottomLevel or self.properties.getProperty('bottomLevel', 0)
+        bottomLevel = self.data.bottomLevel or 0
 
         if bottomLevel < 0:
             # Special case where navigation tree depth is negative
             # meaning that the admin does not want the listing to be displayed
             return self.recurse([], level=1, bottomLevel=bottomLevel)
         else:
-            return self.recurse(children=data.get('children', []), level=1, bottomLevel=bottomLevel)
+            return self.recurse(children=data.get('children', []),
+                                level=1, bottomLevel=bottomLevel)
 
     def purge_nav_tree(self, data):
         """Purges the items of the nav tree for which the current user does not
