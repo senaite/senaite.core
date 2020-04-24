@@ -1,0 +1,14 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:plone="http://namespaces.plone.org/plone"
+    xmlns:cmf="http://namespaces.zope.org/cmf"
+    i18n_domain="senaite.core">
+
+  <!-- Register static directory for STATIC files-->
+  <browser:resourceDirectory
+      name="senaite.core.static"
+      directory="static"
+      layer="bika.lims.interfaces.IBikaLIMS"/>
+
+</configure>

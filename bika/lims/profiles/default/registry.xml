@@ -361,4 +361,70 @@
       <value>False</value>
     </record>
 
+
+    <!-- Plone 5 Resources
+         https://docs.plone.org/adapt-and-extend/theming/resourceregistry.html#resource-registry
+    -->
+
+    <records prefix="plone.resources/senaite-lims-jquery"
+             interface="Products.CMFPlone.interfaces.IResourceRegistry">
+      <value key="js">++resource++senaite.core.static/jquery-2.2.4.min.js</value>
+    </records>
+
+    <records prefix="plone.resources/senaite-lims-jquery-migrate"
+             interface="Products.CMFPlone.interfaces.IResourceRegistry">
+      <value key="js">++resource++senaite.core.static/jquery-migrate-1.4.1.min.js</value>
+      <value key="deps">senaite-lims-jquery</value>
+    </records>
+
+    <records prefix="plone.resources/senaite-lims-bootstrap"
+             interface="Products.CMFPlone.interfaces.IResourceRegistry">
+      <value key="js">++resource++senaite.core.static/bootstrap/js/bootstrap.min.js</value>
+      <value key="deps">senaite-lims-jquery</value>
+      <value key="css">++resource++senaite.core.static/bootstrap/css/bootstrap.min.css</value>
+    </records>
+
+    <!-- Bundles -->
+    <records prefix="plone.bundles/senaite-lims-jquery"
+             interface="Products.CMFPlone.interfaces.IBundleRegistry">
+      <value key="resources">
+        <element>senaite-lims-jquery</element>
+      </value>
+      <value key="jscompilation">++resource++senaite.core.static/jquery/jquery-2.2.4.min.js</value>
+      <value key="csscompilation"></value>
+      <value key="enabled">True</value>
+      <value key="compile">False</value>
+      <value key="merge_with">default</value>
+      <value key="last_compilation">2019-10-28 00:00:00</value>
+    </records>
+
+    <records prefix="plone.bundles/senaite-lims-jquery-migrate"
+             interface="Products.CMFPlone.interfaces.IBundleRegistry">
+      <value key="resources">
+        <element>senaite-lims-jquery</element>
+      </value>
+      <value key="jscompilation">++resource++senaite.core.static/jquery/jquery-migrate-1.4.1.min.js</value>
+      <value key="csscompilation"></value>
+      <value key="enabled">True</value>
+      <value key="compile">False</value>
+      <value key="merge_with">default</value>
+      <value key="last_compilation">2019-10-28 00:00:00</value>
+    </records>
+
+    <records prefix="plone.bundles/senaite-lims-jquery-bootstrap"
+             interface="Products.CMFPlone.interfaces.IBundleRegistry">
+      <value key="resources">
+        <element>senaite-lims-bootstrap</element>
+      </value>
+      <value key="depends">senaite-lims-jquery</value>
+      <value key="depends">senaite-lims-jquery-migrate</value>
+      <value key="depends">senaite-lims-bootstrap</value>
+      <value key="jscompilation">++resource++senaite.core.static/bootstrap/js/bootstrap.min.js</value>
+      <value key="csscompilation">++resource++senaite.core.static/bootstrap/css/bootstrap.min.css</value>
+      <value key="enabled">True</value>
+      <value key="compile">False</value>
+      <value key="merge_with">default</value>
+      <value key="last_compilation">2019-10-28 00:00:00</value>
+    </records>
+
 </registry>
