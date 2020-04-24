@@ -19,6 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
+from bika.lims import logger
 from bika.lims.api.snapshot import has_snapshots
 from bika.lims.api.snapshot import supports_snapshots
 from bika.lims.api.snapshot import take_snapshot
@@ -40,14 +41,20 @@ def reindex_object(obj):
     `reindexObject()` is called. If you manipulate your content object in a
     handler for this event, you need to manually reindex new values.
     """
-    auditlog_catalog = api.get_tool("auditlog_catalog")
+    auditlog_catalog = api.get_tool("auditlog_catalog", default=None)
+    if auditlog_catalog is None:
+        logger.warn("Auditlog catalog not found. Skipping reindex.")
+        return
     auditlog_catalog.reindexObject(obj)
 
 
 def unindex_object(obj):
     """Unindex the object in the `auditlog_catalog` catalog
     """
-    auditlog_catalog = api.get_tool("auditlog_catalog")
+    auditlog_catalog = api.get_tool("auditlog_catalog", default=None)
+    if auditlog_catalog is None:
+        logger.warn("Auditlog catalog not found. Skipping unindex.")
+        return
     auditlog_catalog.unindexObject(obj)
 
 
