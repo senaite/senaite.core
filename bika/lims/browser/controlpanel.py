@@ -20,13 +20,14 @@
 
 import os
 
+from bika.lims import api
 from bika.lims.utils import t
-from plone.app.controlpanel.overview import OverviewControlPanel
 from plone.memoize.volatile import cache
 from plone.memoize.volatile import store_on_context
+from Products.CMFPlone.controlpanel.browser.overview import \
+    OverviewControlPanel as Base
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from bika.lims import api
 
 
 def modified_cache_key(method, self, brain_or_object):
@@ -35,7 +36,7 @@ def modified_cache_key(method, self, brain_or_object):
     return api.get_modification_date(brain_or_object).millis()
 
 
-class SenaiteOverviewControlPanel(OverviewControlPanel):
+class SenaiteOverviewControlPanel(Base):
     """Bootstrapped version of the standard Plone Control Panel
     """
     template = ViewPageTemplateFile(

@@ -5,7 +5,8 @@
     xmlns:cmf="http://namespaces.zope.org/cmf"
     i18n_domain="senaite.core">
 
-  <include package="plone.app.controlpanel" file="permissions.zcml" />
+  <include package="Products.CMFPlone.controlpanel" file="permissions.zcml" />
+
 
   <!-- Controlpanel View -->
   <browser:page
