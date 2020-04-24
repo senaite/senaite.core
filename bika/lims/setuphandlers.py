@@ -28,7 +28,6 @@ from bika.lims.catalog import getCatalogDefinitions
 from bika.lims.catalog import setup_catalogs
 from bika.lims.catalog.catalog_utilities import addZCTextIndex
 from plone import api as ploneapi
-from plone.app.controlpanel.filter import IFilterSchema
 
 
 PROFILE_ID = "profile-bika.lims:default"
@@ -296,7 +295,8 @@ def setup_handler(context):
     setup_catalog_mappings(portal)
     setup_core_catalogs(portal)
     add_dexterity_setup_items(portal)
-    setup_html_filter(portal)
+    # XXX P5: Fix HTML filtering
+    # setup_html_filter(portal)
 
     # Setting up all LIMS catalogs defined in catalog folder
     setup_catalogs(portal, getCatalogDefinitions())
@@ -318,7 +318,8 @@ def remove_default_content(portal):
     # Get the list of object ids for portal
     object_ids = portal.objectIds()
     delete_ids = filter(lambda id: id in object_ids, CONTENTS_TO_DELETE)
-    portal.manage_delObjects(ids=delete_ids)
+    if len(delete_ids) > 0:
+        portal.manage_delObjects(ids=list(delete_ids))
 
 
 def hide_navbar_items(portal):
@@ -542,6 +543,7 @@ def setup_html_filter(portal):
     """
     logger.info("*** Setup HTML Filter ***")
     # bypass the broken API from portal_transforms
+    from plone.app.controlpanel.filter import IFilterSchema
     adapter = IFilterSchema(portal)
     style_whitelist = adapter.style_whitelist
     for style in ALLOWED_STYLES:
