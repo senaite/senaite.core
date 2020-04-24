@@ -63,26 +63,6 @@
     </object>
   </object>
 
-
-  <!-- Folder Buttons -->
-  <object name="folder_buttons">
-    <object name="copy">
-      <property name="visible">False</property>
-    </object>
-    <object name="cut">
-      <property name="visible">False</property>
-    </object>
-    <object name="paste">
-      <property name="visible">False</property>
-    </object>
-    <object name="delete">
-      <property name="visible">False</property>
-    </object>
-    <object name="rename">
-      <property name="visible">False</property>
-    </object>
-  </object>
-
   <!-- Object Buttons -->
   <object name="object_buttons">
     <object name="copy">
