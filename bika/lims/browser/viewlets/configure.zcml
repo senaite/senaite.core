@@ -14,7 +14,7 @@
   <!-- Content Views Viewlet (Tabs) -->
   <browser:viewlet
       name="plone.contentviews"
-      manager="plone.app.layout.viewlets.interfaces.IContentViews"
+      manager="plone.app.layout.viewlets.interfaces.IAboveContent"
       class=".content_views.ContentViewsViewlet"
       permission="zope2.View"
       layer="bika.lims.interfaces.IBikaLIMS"
