@@ -21,16 +21,16 @@
 import collections
 import time
 
-from Products.Archetypes.config import UID_CATALOG
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
-from bika.lims.interfaces import IWorkflowActionAdapter, \
-    IWorkflowActionUIDsAdapter
+from bika.lims.interfaces import IWorkflowActionAdapter
+from bika.lims.interfaces import IWorkflowActionUIDsAdapter
 from bika.lims.workflow import ActionHandlerPool
 from bika.lims.workflow import doActionFor as do_action_for
+from Products.Archetypes.config import UID_CATALOG
 from zope.component import queryMultiAdapter
-from zope.component.interfaces import implements
+from zope.interface import implements
 
 
 class RequestContextAware(object):

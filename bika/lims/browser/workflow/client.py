@@ -25,7 +25,7 @@ from bika.lims import api
 from bika.lims.browser.workflow import RequestContextAware
 from bika.lims.interfaces import IWorkflowActionUIDsAdapter
 from bika.lims.workflow import doActionFor
-from zope.component.interfaces import implements
+from zope.interface import implements
 
 
 class WorkflowActionPublishSamplesAdapter(RequestContextAware):

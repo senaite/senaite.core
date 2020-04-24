@@ -35,7 +35,7 @@ from bika.lims.utils import encode_header
 from bika.lims.utils import t
 from DateTime import DateTime
 from Products.CMFPlone.utils import safe_unicode
-from zope.component.interfaces import implements
+from zope.interface import implements
 
 
 class WorkflowActionCopyToNewAdapter(RequestContextAware):
