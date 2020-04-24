@@ -21,12 +21,11 @@
         Configuration area for Plone and add-on Products.
       </p>
 
-      <dl class="portalMessage alert alert-warning"
-          tal:condition="view/upgrade_warning">
-        <dt i18n:translate="">
-          Warning
-        </dt>
-        <dd i18n:translate="">
+      <div class="portalMessage alert alert-warning"
+           role="status"
+           tal:condition="view/upgrade_warning">
+        <strong i18n:translate="">Warning</strong>
+        <span tal:omit-tag="" i18n:translate="">
           The site configuration is outdated and needs to be
           upgraded. Please
           <a href="#"
@@ -37,118 +36,134 @@
              i18n:translate="">
             continue with the upgrade
           </a>.
-        </dd>
-      </dl>
+        </span>
+      </div>
 
-      <dl class="portalMessage alert alert-warning"
-          tal:condition="view/mailhost_warning">
-        <dt i18n:translate="">
-          Warning
-        </dt>
-        <dd i18n:translate="text_no_mailhost_configured">
+      <div class="portalMessage alert alert-warning"
+           role="status"
+           tal:condition="view/mailhost_warning">
+        <strong i18n:translate="">Warning</strong>
+        <span tal:omit-tag="" i18n:translate="text_no_mailhost_configured">
           You have not configured a mail host or a site 'From'
           address, various features including contact forms, email
           notification and password reset will not work. Go to the
           <tal:link i18n:name="label_mail_control_panel_link">
             <a href=""
                i18n:translate="text_no_mailhost_configured_control_panel_link"
-               tal:attributes="href string:${portal_url}/@@mail-controlpanel"
-            >Mail control panel</a>
+               tal:attributes="href string:${portal_url}/@@mail-controlpanel">
+              Mail control panel</a>
           </tal:link>
           to fix this.
-        </dd>
-      </dl>
+        </span>
+      </div>
 
-      <dl class="portalMessage alert alrt-warning"
-          tal:condition="not:view/pil">
-        <dt i18n:translate="">
-          Warning
-        </dt>
-        <dd i18n:translate="text_no_pil_installed">
-          Warning: PIL is not installed properly, image scaling will not work.
-        </dd>
-      </dl>
+      <div class="portalMessage alert alert-warning"
+           role="status"
+           tal:condition="view/timezone_warning">
+        <strong i18n:translate="">Warning</strong>
+        <span tal:omit-tag="" i18n:translate="text_no_timezone_configured">
+
+          You have not set the portal timezone. Date/Time handling will not
+          work properly for timezone aware date/time values.
+          Go to the
+          <tal:link i18n:name="label_mail_event_settings_link">
+            <a href=""
+               i18n:translate="text_no_timezone_configured_control_panel_link"
+               tal:attributes="href string:${portal_url}/@@dateandtime-controlpanel">
+              Date and Time Settings control panel</a>
+          </tal:link>
+          to fix this.
+        </span>
+      </div>
+
+      <div class="portalMessage alert alert-warning"
+           role="status"
+           tal:condition="not:view/pil">
+        <strong i18n:translate="">Warning</strong>
+        <span tal:omit-tag="" i18n:translate="text_no_pil_installed">
+          PIL is not installed properly, image scaling will not work.
+        </span>
+      </div>
 
       <tal:category tal:repeat="category view/categories">
-        <div class="col-md-12">
-
-          <h2 tal:content="category/title"
-              i18n:translate="">Category</h2>
-
-          <div tal:define="sublists python:view.sublists(category.get('id'))">
-
-            <div tal:repeat="sublist sublists"
-                 tal:condition="sublists"
-                 class="col-md-3">
-
-              <ul class="configlets nav nav-stacked nav-pills"
-                  tal:condition="sublist">
-                <tal:actions tal:repeat="action sublist">
-                  <li tal:condition="action/visible">
-                    <a href=""
-                       tal:define="icon action/icon"
-                       tal:attributes="href action/url">
-                      <img src="" alt=""
-                           tal:condition="not:icon"
-                           tal:attributes="src string:${portal_url}/maintenance_icon.png" />
-                      <img src="" alt=""
-                           tal:condition="icon"
-                           tal:attributes="src icon;
-                                alt action/title;"
-                           i18n:attributes="alt" />
-                      <tal:title tal:content="action/title"
-                                 i18n:translate="">
-                        Title
-                      </tal:title>
-                    </a>
-                  </li>
-                </tal:actions>
-              </ul>
+        <tal:defs tal:define="sublist python:view.sublists(category.get('id'))">
+          <section class="portlet portletNavigationTree portletSiteSetup" tal:condition="sublist">
+            <strong class="portletHeader" tal:content="category/title"
+                    i18n:translate="">Category</strong>
+            <div class="row">
+              <nav class="portletContent" tal:condition="sublist">
+                <ul class="configlets nav nav-pills" tal:condition="sublist">
+                  <tal:actions tal:repeat="action sublist">
+                    <li class="col-xs-4 col-sm-3 col-md-2 item" tal:condition="action/visible">
+                      <a href=""
+                         tal:define="icon action/icon"
+                         tal:attributes="href action/url">
+                        <span tal:attributes="class python:'icon-controlpanel-' + action['id'].replace('.', '_')"></span>
+                        <tal:title tal:content="action/title"
+                                   i18n:translate="">
+                          Title
+                        </tal:title>
+                      </a>
+                    </li>
+                  </tal:actions>
+                </ul>
+              </nav>
             </div>
 
-            <div class="discreet help-block"
-                 tal:condition="not:sublists"
+            <div class="discreet"
+                 tal:condition="not:sublist"
                  i18n:translate="label_no_prefs_panels_available">
               No preference panels available.
             </div>
 
-          </div>
-
-        </div>
+          </section>
+        </tal:defs>
       </tal:category>
 
-      <div class="col-md-12">
-        <h2 i18n:translate="heading_version_overview">Version Overview</h2>
+      <div class="visualClear"><!-- --></div>
 
-        <ul tal:repeat="version view/version_overview">
+      <h2 i18n:translate="heading_version_overview">Version Overview</h2>
+      <ul>
+        <tal:list-versions repeat="version view/version_overview">
           <li tal:content="version">Version</li>
-        </ul>
+        </tal:list-versions>
+        <tal:server tal:define="server_info view/server_info;
+                                has_wsgi server_info/wsgi;">
+          <li>
+            <tal:i18n i18n:translate="">WSGI:</tal:i18n>
+            <span i18n:translate="" tal:condition="has_wsgi">On</span>
+            <span i18n:translate="" tal:condition="not:has_wsgi">Off</span>
+          </li>
+          <li>
+            <tal:i18n i18n:translate="">Server:</tal:i18n>
+            <span>${server_info/server_name}</span>
+            <span>${server_info/version}</span>
+          </li>
+        </tal:server>
+      </ul>
 
-        <!-- Production Mode -->
-        <p tal:condition="not:view/is_dev_mode"
-           class="discreet text-muted"
-           i18n:translate="description_production_mode">
-          You are running in "production mode". This is the preferred mode of
-          operation for a live Plone site, but means that some
-          configuration changes will not take effect until your server is
-          restarted or a product refreshed. If this is a development instance,
-          and you want to enable debug mode, stop the server, set 'debug-mode=on'
-          in your buildout.cfg, re-run bin/buildout and then restart the server
-          process.
-        </p>
+      <p tal:condition="not:view/is_dev_mode"
+         class="discreet"
+         i18n:translate="description_production_mode">
+        You are running in "production mode". This is the preferred mode of
+        operation for a live Plone site, but means that some
+        configuration changes will not take effect until your server is
+        restarted or a product refreshed. If this is a development instance,
+        and you want to enable debug mode, stop the server, set 'debug-mode=on'
+        in your buildout.cfg, re-run bin/buildout and then restart the server
+        process.
+      </p>
 
-        <!-- DEV Mode -->
-        <p tal:condition="view/is_dev_mode"
-           class="discreet text-muted"
-           i18n:translate="description_debug_mode">
-          You are running in "debug mode". This mode is intended for sites that
-          are under development. This allows many configuration changes to be
-          immediately visible, but will make your site run more slowly. To turn
-          off debug mode, stop the server, set 'debug-mode=off' in your
-          buildout.cfg, re-run bin/buildout and then restart the server
-          process.
-        </p>
-      </div>
+      <p tal:condition="view/is_dev_mode"
+         class="discreet"
+         i18n:translate="description_debug_mode">
+        You are running in "debug mode". This mode is intended for sites that
+        are under development. This allows many configuration changes to be
+        immediately visible, but will make your site run more slowly. To turn
+        off debug mode, stop the server, set 'debug-mode=off' in your
+        buildout.cfg, re-run bin/buildout and then restart the server
+        process.
+      </p>
 
     </div>
 
