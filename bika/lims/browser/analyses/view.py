@@ -985,8 +985,8 @@ class AnalysesView(BikaListingView):
                                        sciformat=int(self.scinot))
         if formatted:
             item["Uncertainty"] = formatted
-        else:
-            item["Uncertainty"] = obj.getUncertainty(result)
+            item["before"]["Uncertainty"] = "± "
+            item["after"]["Uncertainty"] = obj.getUnit()
 
         if self.is_uncertainty_edition_allowed(analysis_brain):
             item["allow_edit"].append("Uncertainty")
