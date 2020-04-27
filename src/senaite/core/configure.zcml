@@ -7,6 +7,9 @@
 
   <five:registerPackage package="." initialize=".initialize" />
 
+  <!-- file includes -->
+  <include file="static.zcml" />
+
   <genericsetup:registerProfile
       name="default"
       title="SENAITE CORE"
