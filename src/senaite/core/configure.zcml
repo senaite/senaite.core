@@ -6,5 +6,20 @@
     i18n_domain="senaite.core">
 
   <five:registerPackage package="." initialize=".initialize" />
+
+  <genericsetup:registerProfile
+      name="default"
+      title="SENAITE CORE"
+      directory="profiles/default"
+      description="SENAITE CORE Add-on"
+      pre_handler="senaite.core.setuphandlers.pre_install"
+      post_handler="senaite.core.setuphandlers.post_install"
+      provides="Products.GenericSetup.interfaces.EXTENSION"/>
+
+  <genericsetup:importStep
+      name="senaite.core.setuphandlers.install"
+      title="SENAITE CORE: Run Setup Handler"
+      description="Run install handler"
+      handler="senaite.core.setuphandlers.install"/>
   
 </configure>
