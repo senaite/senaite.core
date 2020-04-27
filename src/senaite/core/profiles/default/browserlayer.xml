@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<layers>
+  <layer name="senaite.core"
+         interface="senaite.core.interfaces.ISenaiteCore"/>
+</layers>

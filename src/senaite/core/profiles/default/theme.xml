@@ -1,0 +1,5 @@
+<theme purge="True">
+  <!-- Disable Barceloneta Theme -->
+  <name>barceloneta</name>
+  <enabled>false</enabled>
+</theme>
