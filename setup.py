@@ -18,9 +18,9 @@
 # Copyright 2018-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from setuptools import setup, find_packages
+from setuptools import setup
 
-version = "1.3.4"
+version = "2.0.0"
 
 setup(
     name="senaite.core",
