@@ -97,7 +97,7 @@
                     <span i18n:translate="">Last Login Time</span>
                   </td>
                   <td>
-                    <span tal:replace="python:context.toLocalizedTime(userprops['last_login_time'], long_format=1)"></span>
+                    <span tal:replace="python:plone_view.toLocalizedTime(userprops['last_login_time'], long_format=1)"></span>
                   </td>
                 </tr>
               </tbody>

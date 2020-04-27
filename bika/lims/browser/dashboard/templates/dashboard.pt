@@ -549,9 +549,9 @@
                 <h3 tal:content="python:panel.get('name', '')"></h3>
                 <div class='h2-legend'>
                     <span i18n:translate="">From</span>&nbsp;
-                    <span tal:content="python:here.toLocalizedTime(view.date_from)"></span>
+                    <span tal:content="python:plone_view.toLocalizedTime(view.date_from)"></span>
                     &nbsp;<span i18n:translate="">to</span>&nbsp;
-                    <span tal:content="python:here.toLocalizedTime(view.date_to)"></span>
+                    <span tal:content="python:plone_view.toLocalizedTime(view.date_to)"></span>
                     (<span i18n:translate="">updated every 2 hours</span>)
                 </div>
                 <ul class='dashboard-time-selector'>
