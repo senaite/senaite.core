@@ -25,3 +25,6 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 class LogoViewlet(Base):
     index = ViewPageTemplateFile(
         "templates/plone.app.layout.viewlets.logo.pt")
+
+    def update(self):
+        super(LogoViewlet, self).update()
