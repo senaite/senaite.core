@@ -1,8 +1,6 @@
 <configure
     xmlns="http://namespaces.zope.org/zope"
     xmlns:browser="http://namespaces.zope.org/browser"
-    xmlns:plone="http://namespaces.plone.org/plone"
-    xmlns:cmf="http://namespaces.zope.org/cmf"
     i18n_domain="senaite.core">
 
   <!-- Bootstrap Helper View -->
@@ -12,12 +10,6 @@
       class=".bootstrap.BootstrapView"
       allowed_interface=".bootstrap.IBootstrapView"
       permission="zope2.View"
-      layer="bika.lims.interfaces.IBikaLIMS"/>
-
-  <!-- Register static directory for STATIC files-->
-  <browser:resourceDirectory
-      name="senaite.core.bootstrap.static"
-      directory="static"
-      layer="bika.lims.interfaces.IBikaLIMS"/>
+      layer="senaite.core.interfaces.ISenaiteCore"/>
 
 </configure>

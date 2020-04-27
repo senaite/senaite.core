@@ -25,7 +25,6 @@
   <include file="instrumentlocation.zcml"/>
   <include file="instrumenttype.zcml"/>
   <include file="invoice.zcml"/>
-  <include file="main_template.zcml"/>
   <include file="manufacturer.zcml"/>
   <include file="methodfolder.zcml"/>
   <include file="pricelist.zcml"/>
@@ -39,7 +38,6 @@
 
   <include package=".analysisrequest"/>
   <include package=".batch"/>
-  <include package=".bootstrap"/>
   <include package=".client"/>
   <include package=".dashboard"/>
   <include package=".department"/>

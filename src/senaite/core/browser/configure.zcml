@@ -1,0 +1,10 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    i18n_domain="senaite.core">
+
+  <!-- package includes -->
+  <include package=".bootstrap"/>
+  <include package=".main_template"/>
+
+</configure>

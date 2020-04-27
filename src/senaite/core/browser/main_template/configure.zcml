@@ -10,6 +10,6 @@
       name="main_template"
       class=".main_template.MainTemplate"
       permission="zope.Public"
-      layer="bika.lims.interfaces.IBikaLIMS" />
+      layer="senaite.core.interfaces.ISenaiteCore" />
 
 </configure>

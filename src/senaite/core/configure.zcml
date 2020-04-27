@@ -7,6 +7,9 @@
 
   <five:registerPackage package="." initialize=".initialize" />
 
+  <!-- package includes -->
+  <include package=".browser" />
+
   <!-- file includes -->
   <include file="static.zcml" />
 

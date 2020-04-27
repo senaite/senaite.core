@@ -7,6 +7,8 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 class MainTemplate(Base):
     """SENAITE Main Template
     """
+    main_template_name = "templates/main_template.pt"
+
     def __init__(self, context, request):
         super(MainTemplate, self).__init__(context, request)
 
