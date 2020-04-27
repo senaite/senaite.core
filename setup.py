@@ -25,7 +25,7 @@ version = "2.0.0"
 setup(
     name="senaite.core",
     version=version,
-    description="SENAITE Core",
+    description="SENAITE LIMS CORE",
     long_description=open("README.rst").read() + "\n" +
     open("RELEASE_NOTES.rst").read() + "\n" +
     open("CHANGES.rst").read() + "\n",
