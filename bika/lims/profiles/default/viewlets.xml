@@ -18,6 +18,11 @@
     <viewlet name="plone.global_sections"/>
   </order>
 
+  <!-- Hidden vielets in plone.mainnavigation -->
+  <hidden manager="plone.mainnavigation" skinname="*" purge="True">
+    <viewlet name="plone.global_sections"/>
+  </hidden>
+
   <!-- Hidden vielets in plone.belowcontenttitle -->
   <hidden manager="plone.belowcontenttitle" skinname="*" purge="True">
     <viewlet name="plone.belowcontenttitle.documentbyline"/>
