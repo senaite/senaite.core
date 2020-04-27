@@ -33,4 +33,8 @@ var
 tags
 buildout-cache
 atlassian-*.xml
-src
+src/Products.ATExtensions/
+src/senaite.core.listing/
+src/senaite.core.supermodel/
+src/senaite.impress/
+src/senaite.lims/
