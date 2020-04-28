@@ -1,0 +1,108 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      lang="en"
+      i18n:domain="plone"
+      metal:use-macro="here/main_template/macros/master">
+  <body>
+
+    <metal:main fill-slot="main">
+      <metal:main-macro define-macro="main">
+
+        <div id="login-form" class="col-sm-offset-4 col-sm-4 well">
+
+          <div class="portalMessage error pat-cookietrigger alert alert-danger" style="display:none">
+            <strong i18n:translate="">
+              Error
+            </strong>
+            <span tal:omit-tag=""
+                  i18n:translate="enable_cookies_message_before_login">
+              Cookies are not enabled. You must enable cookies before you can log in.
+            </span>
+          </div>
+
+          <div class="col-sm-12">
+            <form action="." method="post"
+                  tal:attributes="action view/action; enctype view/enctype">
+
+              <tal:widgets repeat="widget view/widgets/values">
+
+                <tal:block tal:define="hidden python:widget.mode == 'hidden'">
+                  <div tal:condition="not:hidden">
+
+                    <div class="field form-group"
+                         tal:define="error widget/error"
+                         tal:attributes="class python:'field' + (error and ' error has-error' or '')">
+
+                      <label for=""
+                             class="control-label"
+                             tal:attributes="for widget/id"
+                             tal:condition="not:hidden">
+                        <span i18n:translate=""
+                              tal:content="widget/label">label</span>
+                        <span class="required horizontal" title="Required"
+                              tal:condition="python:widget.required and not hidden"
+                              i18n:attributes="title title_required;">&nbsp;</span>
+                      </label>
+
+                      <div class="formHelp form-text text-muted"
+                           tal:define="description widget/field/description"
+                           i18n:translate=""
+                           tal:content="description"
+                           tal:condition="description">
+                        field description
+                      </div>
+
+                      <div class="help-block"
+                           tal:condition="error"
+                           tal:content="structure error/render">
+                        Error
+                      </div>
+
+                      <div class="widget form-group input-group">
+                        <span class="input-group-addon">
+                          <i tal:attributes="class python:view.get_icon_class_for(widget)"></i>
+                        </span>
+                        <input type="text" tal:replace="structure python:widget.render()" />
+                      </div>
+
+                    </div>
+
+                  </div>
+
+                  <input type="hidden"
+                         tal:condition="hidden"
+                         tal:replace="structure widget/render" />
+                </tal:block>
+
+              </tal:widgets>
+              <span tal:replace="structure context/@@authenticator/authenticator"/>
+
+              <div class="formControls">
+                <tal:actions tal:repeat="action view/actions/values|nothing">
+                  <input type="submit" tal:replace="structure action/render" />
+                </tal:actions>
+              </div>
+            </form>
+          </div>
+
+          <div class="footer col-sm-12"
+               tal:define="portal_state context/@@plone_portal_state;
+                      portal_url portal_state/portal_url">
+            <p class="help-block">
+              <span i18n:translate="trouble_logging_in" tal:omit-tag="">Trouble logging in?</span>
+              <a href="@@login-help" tal:attributes="href string:${portal_url}/@@login-help" i18n:translate="footer_login_link_get_help">Get help</a>.
+            </p>
+            <p class="help-block"
+               tal:condition="python:view.self_registration_enabled()">
+              <span i18n:translate="need_an_account" tal:omit-tag="">Need an account?</span>
+              <a href="@@register" tal:attributes="href string:${portal_url}/@@register" class="emph" i18n:translate="footer_login_link_signup">Sign up here</a>.
+            </p>
+          </div>
+
+        </div>
+      </metal:main-macro>
+    </metal:main>
+  </body>
+</html>

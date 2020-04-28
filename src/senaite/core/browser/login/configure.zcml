@@ -1,0 +1,17 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+           xmlns:browser="http://namespaces.zope.org/browser"
+           xmlns:i18n="http://namespaces.zope.org/i18n"
+           xmlns:zcml="http://namespaces.zope.org/zcml"
+           i18n_domain="senaite.core">
+
+  <!-- Login Form -->
+  <browser:page
+      name="login"
+      for="plone.app.layout.navigation.interfaces.INavigationRoot"
+      permission="zope.Public"
+      class=".login.LoginForm"
+      template="templates/login.pt"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
+</configure>
