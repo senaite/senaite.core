@@ -20,15 +20,6 @@
       layer="bika.lims.interfaces.IBikaLIMS"
       />
 
-  <!-- Colophon Viewlet -->
-  <browser:viewlet
-      name="plone.colophon"
-      manager="plone.app.layout.viewlets.interfaces.IPortalFooter"
-      class=".colophon.ColophonViewlet"
-      permission="zope2.View"
-      layer="bika.lims.interfaces.IBikaLIMS"
-      />
-
   <!-- Language Selector -->
   <browser:viewlet
       name="plone.app.i18n.locales.languageselector"

@@ -22,7 +22,6 @@ from analysisrequest import *  # noqa
 from attachments import AttachmentsViewlet  # noqa
 from attachments import WorksheetAttachmentsViewlet  # noqa
 from authenticator import AuthenticatorViewlet  # noqa
-from colophon import ColophonViewlet  # noqa
 from content_views import ContentViewsViewlet  # noqa
 from document_actions import DocumentActionsViewlet  # noqa
 from instruments import InstrumentQCFailuresViewlet  # noqa
