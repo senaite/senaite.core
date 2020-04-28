@@ -11,6 +11,15 @@
       layer="senaite.core.interfaces.ISenaiteCore"
       />
 
+  <!-- The anontools (login, register) -->
+  <browser:viewlet
+      name="plone.anontools"
+      manager="plone.app.layout.viewlets.interfaces.IPortalHeader"
+      class=".personal_bar.PersonalBarViewlet"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
   <!-- Statusmessage Viewlet -->
   <browser:viewlet
       name="plone.globalstatusmessage"

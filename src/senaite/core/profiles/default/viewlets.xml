@@ -8,6 +8,7 @@
   <!-- Hidden viewlets in plone.portalheader -->
   <hidden manager="plone.portalheader" skinname="*" purge="True">
     <viewlet name="plone.searchbox"/>
+    <viewlet name="plone.anontools"/>
   </hidden>
 
   <!-- Hidden viewlets in plone.mainnavigation -->
