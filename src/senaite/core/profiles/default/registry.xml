@@ -3,7 +3,7 @@
 <!-- Operation Definitions -->
 <registry xmlns:i18n="http://xml.zope.org/namespaces/i18n" i18n:domain="senaite.core">
 
-  <!-- SENAITE bundle resources -->
+  <!-- SENAITE resources -->
   <records prefix="plone.resources/senaite-core-bootstrap-basic"
            interface="Products.CMFPlone.interfaces.IResourceRegistry">
     <value key="css">
