@@ -82,14 +82,6 @@ NAV_BAR_ITEMS_TO_HIDE = (
     "supplyorders",
 )
 
-
-CONTENTS_TO_DELETE = (
-    # List of items to delete
-    "Members",
-    "news",
-    "events",
-)
-
 CATALOG_MAPPINGS = (
     # portal_type, catalog_ids
     ("ARTemplate", ["bika_setup_catalog", "portal_catalog"]),
@@ -288,7 +280,6 @@ def setup_handler(context):
     portal = context.getSite()
 
     # Run Installers
-    remove_default_content(portal)
     hide_navbar_items(portal)
     reindex_content_structure(portal)
     setup_groups(portal)
@@ -308,18 +299,6 @@ def setup_handler(context):
     setup_form_controller_actions(portal)
 
     logger.info("SENAITE setup handler [DONE]")
-
-
-def remove_default_content(portal):
-    """Remove default Plone contents
-    """
-    logger.info("*** Delete Default Content ***")
-
-    # Get the list of object ids for portal
-    object_ids = portal.objectIds()
-    delete_ids = filter(lambda id: id in object_ids, CONTENTS_TO_DELETE)
-    if len(delete_ids) > 0:
-        portal.manage_delObjects(ids=list(delete_ids))
 
 
 def hide_navbar_items(portal):

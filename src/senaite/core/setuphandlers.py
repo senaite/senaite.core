@@ -4,6 +4,13 @@ from senaite.core import logger
 
 PROFILE_ID = "profile-senaite.core:default"
 
+CONTENTS_TO_DELETE = (
+    # List of items to delete
+    "Members",
+    "news",
+    "events",
+)
+
 
 def install(context):
     """Install handler
@@ -12,9 +19,24 @@ def install(context):
         return
 
     logger.info("SENAITE CORE install handler [BEGIN]")
-    portal = context.getSite()  # noqa
+    portal = context.getSite()
+
+    # Run Installers
+    remove_default_content(portal)
 
     logger.info("SENAITE CORE install handler [DONE]")
+
+
+def remove_default_content(portal):
+    """Remove default Plone contents
+    """
+    logger.info("*** Delete Default Content ***")
+
+    # Get the list of object ids for portal
+    object_ids = portal.objectIds()
+    delete_ids = filter(lambda id: id in object_ids, CONTENTS_TO_DELETE)
+    if len(delete_ids) > 0:
+        portal.manage_delObjects(ids=list(delete_ids))
 
 
 def pre_install(portal_setup):
