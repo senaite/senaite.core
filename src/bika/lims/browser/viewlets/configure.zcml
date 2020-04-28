@@ -142,15 +142,6 @@
       layer="bika.lims.interfaces.IBikaLIMS"
       />
 
-  <!-- Footer Viewlet -->
-  <browser:viewlet
-      name="plone.footer"
-      manager="plone.app.layout.viewlets.interfaces.IPortalFooter"
-      class=".footer.FooterViewlet"
-      permission="zope2.View"
-      layer="bika.lims.interfaces.IBikaLIMS"
-      />
-
   <!-- Authenticator Viewlet -->
   <browser:viewlet
       name="bika.lims.authenticator"
