@@ -11,6 +11,15 @@
       layer="senaite.core.interfaces.ISenaiteCore"
       />
 
+  <!-- Statusmessage Viewlet -->
+  <browser:viewlet
+      name="plone.globalstatusmessage"
+      manager="plone.app.layout.viewlets.interfaces.IGlobalStatusMessage"
+      class=".globalstatusmessage.GlobalStatusMessage"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
   <!-- Footer Viewlet -->
   <browser:viewlet
       name="plone.footer"

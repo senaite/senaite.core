@@ -10,6 +10,7 @@
       name="main_template"
       class=".main_template.MainTemplate"
       permission="zope.Public"
-      layer="senaite.core.interfaces.ISenaiteCore" />
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
 
 </configure>
