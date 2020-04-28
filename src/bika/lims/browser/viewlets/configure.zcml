@@ -70,38 +70,6 @@
       layer="bika.lims.interfaces.IBikaLIMS"
       />
 
-  <!-- Path Bar -->
-
-  <!-- Standard Breadcrumbs -->
-  <browser:viewlet
-      name="plone.path_bar"
-      manager="plone.app.layout.viewlets.interfaces.IAboveContent"
-      class=".path_bar.PathBarViewlet"
-      permission="zope2.View"
-      layer="bika.lims.interfaces.IBikaLIMS"
-      />
-
-  <!-- Hide BreadCrumbs for root view -->
-  <browser:viewlet
-      for="Products.CMFPlone.interfaces.IPloneSiteRoot"
-      name="plone.path_bar"
-      manager="plone.app.layout.viewlets.interfaces.IAboveContent"
-      template="templates/blank.pt"
-      permission="zope2.View"
-      layer="bika.lims.interfaces.IBikaLIMS"
-      />
-
-  <!-- Hide BreadCrumbs for contents providing the `IHaveNoBreadCrumbs` interface -->
-  <browser:viewlet
-      for="bika.lims.interfaces.IHaveNoBreadCrumbs"
-      name="plone.path_bar"
-      manager="plone.app.layout.viewlets.interfaces.IAboveContent"
-      template="templates/blank.pt"
-      permission="zope2.View"
-      layer="bika.lims.interfaces.IBikaLIMS"
-      />
-
-  <!-- /Path Bar -->
 
   <!-- Global Sections Dropdown -->
   <browser:viewlet

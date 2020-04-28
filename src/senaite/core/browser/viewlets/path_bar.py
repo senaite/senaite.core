@@ -18,14 +18,13 @@
 # Copyright 2018-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from Products.CMFCore.permissions import View
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from plone.app.layout.viewlets.common import PathBarViewlet as Base
-
 from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
 from bika.lims.api.security import check_permission
 from bika.lims.interfaces import IClient
+from plone.app.layout.viewlets.common import PathBarViewlet as Base
+from Products.CMFCore.permissions import View
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
 
 class PathBarViewlet(Base):

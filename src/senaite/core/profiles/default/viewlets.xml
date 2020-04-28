@@ -1,17 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <object>
 
-  <!-- Hidden vielets in plone.portalheader -->
+  <!-- Viewlets in plone.mainnavigation -->
+  <order manager="plone.mainnavigation" skinname="*" purge="True">
+  </order>
+
+  <!-- Hidden viewlets in plone.portalheader -->
   <hidden manager="plone.portalheader" skinname="*" purge="True">
     <viewlet name="plone.searchbox"/>
   </hidden>
 
-  <!-- Hidden vielets in plone.mainnavigation -->
+  <!-- Hidden viewlets in plone.mainnavigation -->
   <hidden manager="plone.mainnavigation" skinname="*" purge="True">
     <viewlet name="plone.global_sections"/>
   </hidden>
 
-  <!-- Hidden vielets in plone.portalfooter -->
+  <!-- Hidden viewlets in plone.belowcontenttitle -->
+  <hidden manager="plone.abovecontent" skinname="*" purge="True">
+  </hidden>
+
+  <!-- Hidden viewlets in plone.belowcontenttitle -->
+  <hidden manager="plone.belowcontenttitle" skinname="*" purge="True">
+    <viewlet name="plone.belowcontenttitle.documentbyline"/>
+  </hidden>
+
+  <!-- Hidden viewlets in plone.portalfooter -->
   <hidden manager="plone.portalfooter" skinname="*" purge="True">
     <viewlet name="plone.site_actions"/>
   </hidden>

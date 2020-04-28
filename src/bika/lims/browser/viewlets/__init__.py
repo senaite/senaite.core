@@ -25,6 +25,5 @@ from authenticator import AuthenticatorViewlet  # noqa
 from content_views import ContentViewsViewlet  # noqa
 from document_actions import DocumentActionsViewlet  # noqa
 from instruments import InstrumentQCFailuresViewlet  # noqa
-from path_bar import PathBarViewlet  # noqa
 from sections import GlobalSectionsDropdownViewlet  # noqa
 from site_actions import SiteActionsViewlet  # noqa
