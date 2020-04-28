@@ -9,6 +9,8 @@
    i18n:attributes="title">
   <img src="logo.png" alt=""
        tal:attributes="alt view/logo_title;
+                       width view/logo_width;
+                       height view/logo_height;
                        title view/logo_title;
                        src view/img_src" />
 </a>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<object>
+
+  <!-- Hidden vielets in plone.portalheader -->
+  <hidden manager="plone.portalheader" skinname="*" purge="True">
+    <viewlet name="plone.searchbox"/>
+  </hidden>
+
+  <!-- Hidden vielets in plone.mainnavigation -->
+  <hidden manager="plone.mainnavigation" skinname="*" purge="True">
+    <viewlet name="plone.global_sections"/>
+  </hidden>
+
+</object>
