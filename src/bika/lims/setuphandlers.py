@@ -27,54 +27,10 @@ from bika.lims.catalog import auditlog_catalog
 from bika.lims.catalog import getCatalogDefinitions
 from bika.lims.catalog import setup_catalogs
 from bika.lims.catalog.catalog_utilities import addZCTextIndex
-from plone import api as ploneapi
 
 
 PROFILE_ID = "profile-bika.lims:default"
 
-GROUPS = [
-    {
-        "id": "Analysts",
-        "title": "Analysts",
-        "roles": ["Analyst"],
-    }, {
-        "id": "Clients",
-        "title": "Clients",
-        "roles": ["Client"],
-    }, {
-        "id": "LabClerks",
-        "title": "Lab Clerks",
-        "roles": ["LabClerk"],
-    }, {
-        "id": "LabManagers",
-        "title": "Lab Managers",
-        "roles": ["LabManager"],
-    }, {
-        "id": "Preservers",
-        "title": "Preservers",
-        "roles": ["Preserver"],
-    }, {
-        "id": "Publishers",
-        "title": "Publishers",
-        "roles": ["Publisher"],
-    }, {
-        "id": "Verifiers",
-        "title": "Verifiers",
-        "roles": ["Verifier"],
-    }, {
-        "id": "Samplers",
-        "title": "Samplers",
-        "roles": ["Sampler"],
-    }, {
-        "id": "RegulatoryInspectors",
-        "title": "Regulatory Inspectors",
-        "roles": ["RegulatoryInspector"],
-    }, {
-        "id": "SamplingCoordinators",
-        "title": "Sampling Coordinator",
-        "roles": ["SamplingCoordinator"],
-    }
-]
 
 NAV_BAR_ITEMS_TO_HIDE = (
     # List of items to hide from navigation bar
@@ -282,7 +238,6 @@ def setup_handler(context):
     # Run Installers
     hide_navbar_items(portal)
     reindex_content_structure(portal)
-    setup_groups(portal)
     setup_catalog_mappings(portal)
     setup_core_catalogs(portal)
     add_dexterity_setup_items(portal)
@@ -334,30 +289,6 @@ def reindex_content_structure(portal):
     for obj in itertools.chain(setupitems, rootitems):
         logger.info("Reindexing {}".format(repr(obj)))
         reindex(obj)
-
-
-def setup_groups(portal):
-    """Setup roles and groups
-    """
-    logger.info("*** Setup Roles and Groups ***")
-
-    portal_groups = api.get_tool("portal_groups")
-
-    for gdata in GROUPS:
-        group_id = gdata["id"]
-        # create the group and grant the roles
-        if group_id not in portal_groups.listGroupIds():
-            logger.info("+++ Adding group {title} ({id})".format(**gdata))
-            portal_groups.addGroup(group_id,
-                                   title=gdata["title"],
-                                   roles=gdata["roles"])
-        # grant the roles to the existing group
-        else:
-            ploneapi.group.grant_roles(
-                groupname=gdata["id"],
-                roles=gdata["roles"],)
-            logger.info("+++ Granted group {title} ({id}) the roles {roles}"
-                        .format(**gdata))
 
 
 def setup_catalog_mappings(portal):

@@ -1,15 +1,11 @@
 # -*- coding: utf-8 -*-
 
+from bika.lims import api
+from plone import api as ploneapi
 from senaite.core import logger
-
-PROFILE_ID = "profile-senaite.core:default"
-
-CONTENTS_TO_DELETE = (
-    # List of items to delete
-    "Members",
-    "news",
-    "events",
-)
+from senaite.core.config import CONTENTS_TO_DELETE
+from senaite.core.config import GROUPS
+from senaite.core.config import PROFILE_ID
 
 
 def install(context):
@@ -23,6 +19,7 @@ def install(context):
 
     # Run Installers
     remove_default_content(portal)
+    setup_groups(portal)
 
     logger.info("SENAITE CORE install handler [DONE]")
 
@@ -37,6 +34,30 @@ def remove_default_content(portal):
     delete_ids = filter(lambda id: id in object_ids, CONTENTS_TO_DELETE)
     if len(delete_ids) > 0:
         portal.manage_delObjects(ids=list(delete_ids))
+
+
+def setup_groups(portal):
+    """Setup roles and groups
+    """
+    logger.info("*** Setup Roles and Groups ***")
+
+    portal_groups = api.get_tool("portal_groups")
+
+    for gdata in GROUPS:
+        group_id = gdata["id"]
+        # create the group and grant the roles
+        if group_id not in portal_groups.listGroupIds():
+            logger.info("+++ Adding group {title} ({id})".format(**gdata))
+            portal_groups.addGroup(group_id,
+                                   title=gdata["title"],
+                                   roles=gdata["roles"])
+        # grant the roles to the existing group
+        else:
+            ploneapi.group.grant_roles(
+                groupname=gdata["id"],
+                roles=gdata["roles"],)
+            logger.info("+++ Granted group {title} ({id}) the roles {roles}"
+                        .format(**gdata))
 
 
 def pre_install(portal_setup):
