@@ -5,8 +5,9 @@
 
   <!-- package includes -->
   <include package=".bootstrap"/>
-  <include package=".login"/>
+  <include package=".controlpanel"/>
   <include package=".install"/>
+  <include package=".login"/>
   <include package=".main_template"/>
   <include package=".viewlets"/>
 

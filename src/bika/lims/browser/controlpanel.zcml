@@ -7,15 +7,6 @@
 
   <include package="Products.CMFPlone.controlpanel" file="permissions.zcml" />
 
-
-  <!-- Controlpanel View -->
-  <browser:page
-      name="overview-controlpanel"
-      for="Products.CMFPlone.interfaces.IPloneSiteRoot"
-      class=".controlpanel.SenaiteOverviewControlPanel"
-      permission="plone.app.controlpanel.Overview"
-      layer="bika.lims.interfaces.IBikaLIMS"/>
-
   <!-- SENAITE Setup View -->
   <browser:page
       name="lims-setup"

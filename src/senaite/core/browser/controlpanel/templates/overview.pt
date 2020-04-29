@@ -7,24 +7,25 @@
       i18n:domain="plone">
 
   <body>
-
     <metal:override fill-slot="top_slot"
                     tal:define="disable_column_one python:request.set('disable_plone.leftcolumn',1);
-                               disable_column_two python:request.set('disable_plone.rightcolumn',1);"/>
+                                disable_column_two python:request.set('disable_plone.rightcolumn',1);"/>
 
     <div metal:fill-slot="prefs_configlet_main">
 
       <h1 class="documentFirstHeading"
           i18n:translate="">Site Setup</h1>
 
-      <p class="documentDescription" i18n:translate="description_control_panel">
+      <p class="documentDescription text-secondary" i18n:translate="description_control_panel">
         Configuration area for Plone and add-on Products.
       </p>
 
-      <div class="portalMessage alert alert-warning"
+      <div class="portalMessage warning alert alert-warning"
            role="status"
            tal:condition="view/upgrade_warning">
-        <strong i18n:translate="">Warning</strong>
+        <strong i18n:translate="">
+          Warning
+        </strong>
         <span tal:omit-tag="" i18n:translate="">
           The site configuration is outdated and needs to be
           upgraded. Please
@@ -39,10 +40,12 @@
         </span>
       </div>
 
-      <div class="portalMessage alert alert-warning"
+      <div class="portalMessage warning alert alert-warning"
            role="status"
            tal:condition="view/mailhost_warning">
-        <strong i18n:translate="">Warning</strong>
+        <strong i18n:translate="">
+          Warning
+        </strong>
         <span tal:omit-tag="" i18n:translate="text_no_mailhost_configured">
           You have not configured a mail host or a site 'From'
           address, various features including contact forms, email
@@ -50,17 +53,19 @@
           <tal:link i18n:name="label_mail_control_panel_link">
             <a href=""
                i18n:translate="text_no_mailhost_configured_control_panel_link"
-               tal:attributes="href string:${portal_url}/@@mail-controlpanel">
-              Mail control panel</a>
+               tal:attributes="href string:${portal_url}/@@mail-controlpanel"
+            >Mail control panel</a>
           </tal:link>
           to fix this.
         </span>
       </div>
 
-      <div class="portalMessage alert alert-warning"
+      <div class="portalMessage warning alert alert-warning"
            role="status"
            tal:condition="view/timezone_warning">
-        <strong i18n:translate="">Warning</strong>
+        <strong i18n:translate="">
+          Warning
+        </strong>
         <span tal:omit-tag="" i18n:translate="text_no_timezone_configured">
 
           You have not set the portal timezone. Date/Time handling will not
@@ -69,17 +74,19 @@
           <tal:link i18n:name="label_mail_event_settings_link">
             <a href=""
                i18n:translate="text_no_timezone_configured_control_panel_link"
-               tal:attributes="href string:${portal_url}/@@dateandtime-controlpanel">
-              Date and Time Settings control panel</a>
+               tal:attributes="href string:${portal_url}/@@dateandtime-controlpanel"
+            >Date and Time Settings control panel</a>
           </tal:link>
           to fix this.
         </span>
       </div>
 
-      <div class="portalMessage alert alert-warning"
+      <div class="portalMessage warning alert alert-warning"
            role="status"
            tal:condition="not:view/pil">
-        <strong i18n:translate="">Warning</strong>
+        <strong i18n:translate="">
+          Warning
+        </strong>
         <span tal:omit-tag="" i18n:translate="text_no_pil_installed">
           PIL is not installed properly, image scaling will not work.
         </span>
@@ -88,7 +95,7 @@
       <tal:category tal:repeat="category view/categories">
         <tal:defs tal:define="sublist python:view.sublists(category.get('id'))">
           <section class="portlet portletNavigationTree portletSiteSetup" tal:condition="sublist">
-            <strong class="portletHeader" tal:content="category/title"
+            <strong class="portletHeader text-secondary" tal:content="category/title"
                     i18n:translate="">Category</strong>
             <div class="row">
               <nav class="portletContent" tal:condition="sublist">
@@ -143,7 +150,7 @@
       </ul>
 
       <p tal:condition="not:view/is_dev_mode"
-         class="discreet"
+         class="discreet text-info"
          i18n:translate="description_production_mode">
         You are running in "production mode". This is the preferred mode of
         operation for a live Plone site, but means that some
@@ -155,7 +162,7 @@
       </p>
 
       <p tal:condition="view/is_dev_mode"
-         class="discreet"
+         class="discreet text-info"
          i18n:translate="description_debug_mode">
         You are running in "debug mode". This mode is intended for sites that
         are under development. This allows many configuration changes to be
