@@ -1,0 +1,36 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    i18n_domain="senaite.core">
+
+  <!-- App traverser to show the overview screen -->
+  <adapter
+      for="OFS.interfaces.IApplication
+           zope.publisher.interfaces.browser.IBrowserRequest"
+      factory=".adapters.SenaiteAppTraverser"/>
+
+  <browser:page
+      for="OFS.interfaces.IApplication"
+      name="senaite-overview"
+      class="Products.CMFPlone.browser.admin.Overview"
+      permission="zope.Public"
+      template="templates/senaite-overview.pt"
+      />
+
+  <browser:page
+      for="OFS.interfaces.IApplication"
+      name="senaite-addsite"
+      class=".view.AddSENAITESite"
+      permission="zope2.ViewManagementScreens"
+      template="templates/senaite-addsite.pt"
+      />
+
+  <browser:page
+      for="OFS.Folder.Folder"
+      name="senaite-addsite"
+      class=".view.AddSENAITESite"
+      permission="zope2.ViewManagementScreens"
+      template="templates/senaite-addsite.pt"
+      />
+
+</configure>
