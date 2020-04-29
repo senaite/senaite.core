@@ -4,23 +4,26 @@
 <registry xmlns:i18n="http://xml.zope.org/namespaces/i18n" i18n:domain="senaite.core">
 
   <!-- SENAITE resources -->
-  <records prefix="plone.resources/senaite-core-bootstrap-basic"
+
+  <!-- bootstrap -->
+  <records prefix="plone.resources/senaite-core-bootstrap"
            interface="Products.CMFPlone.interfaces.IResourceRegistry">
+    <value key="url">++plone++senaite/components/bootstrap</value>
     <value key="css">
-      <element>++plone++senaite/components/bootstrap/css/bootstrap.min.css</element>
+      <element>++plone++senaite/components/bootstrap/dist/css/bootstrap.min.css</element>
     </value>
   </records>
 
   <!-- SENAITE bundles -->
   <records prefix="plone.bundles/senaite"
             interface='Products.CMFPlone.interfaces.IBundleRegistry'>
-    <value key="depends">plone-base</value>
+    <value key="depends"></value>
     <value key="merge_with">default</value>
     <value key="resources">
-      <element>senaite-core-bootstrap-basic</element>
+      <element>senaite-core-bootstrap</element>
     </value>
     <value key="enabled">True</value>
-    <value key="jscompilation">++plone++senaite/senaite-base.js</value>
+    <value key="jscompilation"></value>
     <value key="csscompilation"></value>
     <value key="last_compilation"></value>
     <value key="load_async">False</value>

@@ -1,0 +1,11 @@
+{
+  "name": "senaite.core.static",
+  "version": "1.0.0",
+  "description": "GPLv2",
+  "homepage": "https://github.com/senaite/senaite.core",
+  "author": "RIDING BYTES & NARALABS",
+  "license": "GPL-2.0-only",
+  "dependencies": {
+    "bootstrap": "<4"
+  }
+}
