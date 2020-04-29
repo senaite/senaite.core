@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<object name="portal_skins" meta_type="Plone Skins Tool" allow_any="False"
+        cookie_persistence="False" default_skin="Plone Default"
+        request_varname="plone_skin">
+
+  <!-- senaite images -->
+  <object name="senaite_images" meta_type="Filesystem Directory View"
+          directory="senaite.core:skins/senaite_images"/>
+
+  <skin-path name="*">
+    <layer name="senaite_images" insert-after="custom"/>
+  </skin-path>
+
+</object>

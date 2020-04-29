@@ -2,6 +2,7 @@
     xmlns="http://namespaces.zope.org/zope"
     xmlns:five="http://namespaces.zope.org/five"
     xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:cmf="http://namespaces.zope.org/cmf"
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
     i18n_domain="senaite.core">
 
@@ -12,6 +13,13 @@
 
   <!-- file includes -->
   <include file="static.zcml" />
+
+  <!-- portal skins -->
+  <cmf:registerDirectory
+      name="skins"
+      directory="skins"
+      recursive="True"
+      />
 
   <genericsetup:registerProfile
       name="default"
