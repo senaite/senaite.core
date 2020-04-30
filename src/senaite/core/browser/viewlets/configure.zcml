@@ -2,6 +2,15 @@
            xmlns:browser="http://namespaces.zope.org/browser"
            i18n_domain="senaite.core">
 
+  <!-- Static Resources Viewlet -->
+  <browser:viewlet
+      name="senaite.core.static"
+      manager="plone.app.layout.viewlets.interfaces.IHtmlHead"
+      class=".resources.ResourcesViewlet"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
   <!-- Logo Viewlet -->
   <browser:viewlet
       name="plone.logo"
