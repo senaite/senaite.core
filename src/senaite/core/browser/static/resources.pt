@@ -1,1 +1,1 @@
-<!-- SENAITE CORE RESOURCES -->
+<script async tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/senaite.core-f933b60.js"></script>
