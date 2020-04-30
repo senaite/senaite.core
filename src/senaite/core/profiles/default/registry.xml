@@ -1,36 +1,3 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<!-- Operation Definitions -->
 <registry xmlns:i18n="http://xml.zope.org/namespaces/i18n" i18n:domain="senaite.core">
-
-  <!-- SENAITE resources -->
-
-  <!-- bootstrap -->
-  <records prefix="plone.resources/senaite-core-bootstrap"
-           interface="Products.CMFPlone.interfaces.IResourceRegistry">
-    <value key="url">++plone++senaite/components/bootstrap</value>
-    <value key="css">
-      <element>++plone++senaite/components/bootstrap/dist/css/bootstrap.min.css</element>
-    </value>
-  </records>
-
-  <!-- SENAITE bundles -->
-  <records prefix="plone.bundles/senaite"
-            interface='Products.CMFPlone.interfaces.IBundleRegistry'>
-    <value key="depends"></value>
-    <value key="merge_with">default</value>
-    <value key="resources">
-      <element>senaite-core-bootstrap</element>
-    </value>
-    <value key="enabled">True</value>
-    <value key="jscompilation"></value>
-    <value key="csscompilation"></value>
-    <value key="last_compilation"></value>
-    <value key="load_async">False</value>
-    <value key="load_defer">False</value>
-    <value key="stub_js_modules">
-      <element>jquery</element>
-    </value>
-  </records>
-
 </registry>
