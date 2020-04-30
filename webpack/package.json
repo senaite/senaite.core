@@ -1,0 +1,31 @@
+{
+  "name": "senaite",
+  "version": "2.0.0",
+  "main": "app/senaite.js",
+  "scripts": {
+    "build": "./node_modules/.bin/webpack -p",
+    "debug": "NODE_ENV=debug ./node_modules/.bin/webpack --watch",
+    "watch": "./node_modules/.bin/webpack -p --watch",
+    "test": "NODE_ENV=testing ./node_modules/.bin/karma start --single-run"
+  },
+  "babel": {
+    "presets": [
+      [
+        "env",
+        {
+          "targets": {
+            "browsers": [
+              "last 3 versions"
+            ]
+          }
+        }
+      ]
+    ]
+  },
+  "repository": {},
+  "license": "GPL-2.0",
+  "dependencies": {
+    "bootstrap": "^4.4.1",
+    "sc-recipe-staticresources": "simplesconsultoria/sc.recipe.staticresources"
+  }
+}

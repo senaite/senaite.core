@@ -7,6 +7,8 @@ from Products.CMFPlone.utils import getSiteLogo
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.component import getUtility
 
+LOGO_URL = "++plone++senaite.core.static/images/senaite-site-logo.png"
+
 
 class LogoViewlet(ViewletBase):
     index = ViewPageTemplateFile(
@@ -31,5 +33,4 @@ class LogoViewlet(ViewletBase):
             self.img_src = getSiteLogo()
         else:
             # Get the site logo from the static folder
-            self.img_src = "%s/++plone++senaite/images/senaite-site-logo.png" \
-                % self.site_url
+            self.img_src = "%s/%s" % (self.site_url, LOGO_URL)

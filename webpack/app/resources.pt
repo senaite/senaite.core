@@ -1,0 +1,3 @@
+<% for (let js in htmlWebpackPlugin.files.js) { %>
+<script async tal:attributes="src <%= 'string:${view/site_url}/' + htmlWebpackPlugin.files.js[js] %>"></script>
+<% } %>

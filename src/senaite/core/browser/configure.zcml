@@ -10,7 +10,7 @@
   <plone:static
       directory="static"
       type="plone"
-      name="senaite"
+      name="senaite.core.static"
       />
 
   <!-- Package includes -->
