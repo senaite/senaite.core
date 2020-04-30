@@ -46,7 +46,6 @@
             tal:define="viewportvalues bootstrapview/get_viewport_values"
             tal:attributes="content viewportvalues"
             content="width=device-width, initial-scale=0.6666, maximum-scale=1.0, minimum-scale=0.6666" />
-
     </head>
 
     <body tal:define="isRTL portal_state/is_rtl;
@@ -55,8 +54,8 @@
                       body_class python:plone_layout.bodyClass(template, view);
                       cls python:bootstrapview.get_columns_classes(view)"
           tal:attributes="class body_class;
-                      dir python:isRTL and 'rtl' or 'ltr';
-                      python:plone_view.patterns_settings()"
+                          dir python:isRTL and 'rtl' or 'ltr';
+                          python:plone_view.patterns_settings()"
           id="visual-portal-wrapper">
 
       <div class="container-fluid">

@@ -1,0 +1,1 @@
+# SENAITE Static Resouces

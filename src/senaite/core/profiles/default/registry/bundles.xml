@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<registry>
+
+  <!-- SENAITE bundle resources -->
+  <records prefix="plone.resources/senaite-core"
+           interface='Products.CMFPlone.interfaces.IResourceRegistry'>
+    <value key="js">++plone++senaite/core/senaite-core.js</value>
+    <value key="css">
+      <element>++plone++senaite/core/senaite-core.less</element>
+    </value>
+  </records>
+
+  <!-- SENAITE bundles -->
+  <records prefix="plone.bundles/senaite"
+            interface="Products.CMFPlone.interfaces.IBundleRegistry">
+    <value key="depends"></value>
+    <value key="merge_with">default</value>
+    <value key="resources">
+      <element>senaite-core</element>
+    </value>
+    <value key="enabled">True</value>
+    <value key="compile">True</value>
+    <value key="jscompilation"></value>
+    <value key="csscompilation"></value>
+    <value key="last_compilation"></value>
+    <value key="load_async">False</value>
+    <value key="load_defer">False</value>
+    <value key="stub_js_modules">
+      <element>jquery</element>
+    </value>
+  </records>
+
+</registry>
