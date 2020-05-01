@@ -43,7 +43,6 @@
   <include package=".department"/>
   <include package=".fields"/>
   <include package=".idserver"/>
-  <include package=".portlets"/>
   <include package=".publish"/>
   <include package=".reports"/>
   <include package=".resultsimport"/>
