@@ -1,0 +1,161 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    i18n_domain="senaite.core">
+
+<!--
+    All the available permissions are defined here. Each new line will be a
+    new permission. Each permission has two attributes: a short ID and a
+    long title. The ID will be used for zope3-like permissions such as ZCML
+    configuration files. The long title will be used for zope2-like
+    permissions such as sm.checkPermission.
+
+    In order to avoid typo errors, we will use pseudoconstants instead of
+    permission string values. these constants are defined in permissions.py
+
+    The two files (permissions.py and permissions.zcml) must be kept in sync.
+/-->
+
+  # Add Permissions
+  # ---------------
+  <permission id="senaite.core.permissions.AddAnalysis" title="senaite.core: Add Analysis"/>
+  <permission id="senaite.core.permissions.AddAnalysisCategory" title="senaite.core: Add AnalysisCategory"/>
+  <permission id="senaite.core.permissions.AddAnalysisProfile" title="senaite.core: Add AnalysisProfile"/>
+  <permission id="senaite.core.permissions.AddAnalysisRequest" title="senaite.core: Add AnalysisRequest"/>
+  <permission id="senaite.core.permissions.AddAnalysisService" title="senaite.core: Add AnalysisService"/>
+  <permission id="senaite.core.permissions.AddAnalysisSpec" title="senaite.core: Add AnalysisSpec"/>
+  <permission id="senaite.core.permissions.AddARTemplate" title="senaite.core: Add ARTemplate"/>
+  <permission id="senaite.core.permissions.AddAttachment" title="senaite.core: Add Attachment"/>
+  <permission id="senaite.core.permissions.AddAttachmentType" title="senaite.core: Add AttachmentType"/>
+  <permission id="senaite.core.permissions.AddBatch" title="senaite.core: Add Batch"/>
+  <permission id="senaite.core.permissions.AddBatchLabel" title="senaite.core: Add BatchLabel"/>
+  <permission id="senaite.core.permissions.AddCalculation" title="senaite.core: Add Calculation"/>
+  <permission id="senaite.core.permissions.AddClient" title="senaite.core: Add Client"/>
+  <permission id="senaite.core.permissions.AddContainer" title="senaite.core: Add Container"/>
+  <permission id="senaite.core.permissions.AddContainerType" title="senaite.core: Add ContainerType"/>
+  <permission id="senaite.core.permissions.AddDepartment" title="senaite.core: Add Department"/>
+  <permission id="senaite.core.permissions.AddIdentifierType" title="senaite.core: Add IdentifierType"/>
+  <permission id="senaite.core.permissions.AddInstrument" title="senaite.core: Add Instrument"/>
+  <permission id="senaite.core.permissions.AddInstrumentLocation" title="senaite.core: Add InstrumentLocation"/>
+  <permission id="senaite.core.permissions.AddInstrumentType" title="senaite.core: Add InstrumentType"/>
+  <permission id="senaite.core.permissions.AddInvoice" title="senaite.core: Add Invoice"/>
+  <permission id="senaite.core.permissions.AddLabContact" title="senaite.core: Add LabContact"/>
+  <permission id="senaite.core.permissions.AddLabProduct" title="senaite.core: Add LabProduct"/>
+  <permission id="senaite.core.permissions.AddManufacturer" title="senaite.core: Add Manufacturer"/>
+  <permission id="senaite.core.permissions.AddMethod" title="senaite.core: Add Method"/>
+  <permission id="senaite.core.permissions.AddMultifile" title="senaite.core: Add Multifile"/>
+  <permission id="senaite.core.permissions.AddPreservation" title="senaite.core: Add Preservation"/>
+  <permission id="senaite.core.permissions.AddPricelist" title="senaite.core: Add Pricelist"/>
+  <permission id="senaite.core.permissions.AddReferenceDefinition" title="senaite.core: Add ReferenceDefinition"/>
+  <permission id="senaite.core.permissions.AddReflexRule" title="senaite.core: Add ReflexRule"/>
+  <permission id="senaite.core.permissions.AddSampleCondition" title="senaite.core: Add SampleCondition"/>
+  <permission id="senaite.core.permissions.AddSampleMatrix" title="senaite.core: Add SampleMatrix"/>
+  <permission id="senaite.core.permissions.AddSamplePoint" title="senaite.core: Add SamplePoint"/>
+  <permission id="senaite.core.permissions.AddSampleType" title="senaite.core: Add SampleType"/>
+  <permission id="senaite.core.permissions.AddSamplingDeviation" title="senaite.core: Add SamplingDeviation"/>
+  <permission id="senaite.core.permissions.AddStorageLocation" title="senaite.core: Add StorageLocation"/>
+  <permission id="senaite.core.permissions.AddSubGroup" title="senaite.core: Add SubGroup"/>
+  <permission id="senaite.core.permissions.AddSupplier" title="senaite.core: Add Supplier"/>
+  <permission id="senaite.core.permissions.AddSupplyOrder" title="senaite.core: Add SupplyOrder"/>
+  <permission id="senaite.core.permissions.AddWorksheetTemplate" title="senaite.core: Add WorksheetTemplate"/>
+
+
+  # Transition Permissions
+  # ----------------------
+  <permission id="senaite.core.permissions.TransitionDeactivate" title="senaite.core: Transition: Deactivate"/>
+  <permission id="senaite.core.permissions.TransitionActivate" title="senaite.core: Transition: Activate"/>
+  <permission id="senaite.core.permissions.TransitionCancel" title="senaite.core: Transition: Cancel"/>
+  <permission id="senaite.core.permissions.TransitionReinstate" title="senaite.core: Transition: Reinstate"/>
+  <permission id="senaite.core.permissions.TransitionClose" title="senaite.core: Transition: Close"/>
+  <permission id="senaite.core.permissions.TransitionReopen" title="senaite.core: Transition: Reopen"/>
+
+  # Transition Permissions (Analysis and alike)
+  <permission id="senaite.core.permissions.TransitionRetract" title="senaite.core: Transition: Retract"/>
+  <permission id="senaite.core.permissions.TransitionVerify" title="senaite.core: Transition: Verify"/>
+  <permission id="senaite.core.permissions.TransitionAssignAnalysis" title="senaite.core: Transition: Assign Analysis"/>
+  <permission id="senaite.core.permissions.TransitionUnassignAnalysis" title="senaite.core: Transition: Unassign Analysis"/>
+
+  # Transition Permissions (Analysis Request)
+  <permission id="senaite.core.permissions.TransitionCancelAnalysisRequest" title="senaite.core: Transition: Cancel Analysis Request"/>
+  <permission id="senaite.core.permissions.TransitionDetachSamplePartition" title="senaite.core: Transition: Detach Sample Partition" />
+  <permission id="senaite.core.permissions.TransitionReinstateAnalysisRequest" title="senaite.core: Transition: Reinstate Analysis Request"/>
+  <permission id="senaite.core.permissions.TransitionInvalidate" title="senaite.core: Transition: Invalidate"/>
+  <permission id="senaite.core.permissions.TransitionPreserveSample" title="senaite.core: Transition: Preserve Sample"/>
+  <permission id="senaite.core.permissions.TransitionPublishResults" title="senaite.core: Transition: Publish Results"/>
+  <permission id="senaite.core.permissions.TransitionReceiveSample" title="senaite.core: Transition: Receive Sample"/>
+  <permission id="senaite.core.permissions.TransitionRejectSample" title="senaite.core: Transition: Reject Sample"/>
+  <permission id="senaite.core.permissions.TransitionSampleSample" title="senaite.core: Transition: Sample Sample"/>
+  <permission id="senaite.core.permissions.TransitionScheduleSampling" title="senaite.core: Transition: Schedule Sampling"/>
+
+  # Transition Permissions (Supply Order)
+  <permission id="senaite.core.permissions.TransitionDispatchOrder" title="senaite.core: Transition: Dispatch Order"/>
+
+  # Transition Permissions (Worksheet)
+  <permission id="senaite.core.permissions.TransitionRejectWorksheet" title="senaite.core: Transition: Reject Worksheet"/>
+  <permission id="senaite.core.permissions.TransitionRemoveWorksheet" title="senaite.core: Transition: Remove Worksheet"/>
+
+
+  # Field Permissions
+  # -----------------
+  # Field permissions (Analysis Request)
+  <permission id="senaite.core.permissions.FieldEditBatch" title="senaite.core: Field: Edit Batch"/>
+  <permission id="senaite.core.permissions.FieldEditClient" title="senaite.core: Field: Edit Client"/>
+  <permission id="senaite.core.permissions.FieldEditClientOrderNumber" title="senaite.core: Field: Edit Client Order Number"/>
+  <permission id="senaite.core.permissions.FieldEditClientReference" title="senaite.core: Field: Edit Client Reference"/>
+  <permission id="senaite.core.permissions.FieldEditClientSampleID" title="senaite.core: Field: Edit Client Sample ID"/>
+  <permission id="senaite.core.permissions.FieldEditComposite" title="senaite.core: Field: Edit Composite"/>
+  <permission id="senaite.core.permissions.FieldEditContact" title="senaite.core: Field: Edit Contact"/>
+  <permission id="senaite.core.permissions.FieldEditContainer" title="senaite.core: Field: Edit Container"/>
+  <permission id="senaite.core.permissions.FieldEditDatePreserved" title="senaite.core: Field: Edit Date Preserved"/>
+  <permission id="senaite.core.permissions.FieldEditDateReceived" title="senaite.core: Field: Edit Date Received"/>
+  <permission id="senaite.core.permissions.FieldEditDateSampled" title="senaite.core: Field: Edit Date Sampled"/>
+  <permission id="senaite.core.permissions.FieldEditEnvironmentalConditions" title="senaite.core: Field: Edit Environmental Conditions"/>
+  <permission id="senaite.core.permissions.FieldEditInternalUse" title="senaite.core: Field: Edit Internal Use"/>
+  <permission id="senaite.core.permissions.FieldEditInvoiceExclude" title="senaite.core: Field: Edit Invoice Exclude"/>
+  <permission id="senaite.core.permissions.FieldEditMemberDiscount" title="senaite.core: Field: Edit Member Discount"/>
+  <permission id="senaite.core.permissions.FieldEditPreservation" title="senaite.core: Field: Edit Preservation"/>
+  <permission id="senaite.core.permissions.FieldEditPreserver" title="senaite.core: Field: Edit Preserver"/>
+  <permission id="senaite.core.permissions.FieldEditPriority" title="senaite.core: Field: Edit Priority"/>
+  <permission id="senaite.core.permissions.FieldEditProfiles" title="senaite.core: Field: Edit Profiles"/>
+  <permission id="senaite.core.permissions.FieldEditRemarks" title="senaite.core: Field: Edit Remarks"/>
+  <permission id="senaite.core.permissions.FieldEditPublicationSpecifications" title="senaite.core: Field: Edit Publication Specification"/>
+  <permission id="senaite.core.permissions.FieldEditRejectionReasons" title="senaite.core: Field: Edit Rejection Reasons"/>
+  <permission id="senaite.core.permissions.FieldEditResultsInterpretation" title="senaite.core: Field: Edit Results Interpretation"/>
+  <permission id="senaite.core.permissions.FieldEditSampleCondition" title="senaite.core: Field: Edit Sample Condition"/>
+  <permission id="senaite.core.permissions.FieldEditSamplePoint" title="senaite.core: Field: Edit Sample Point"/>
+  <permission id="senaite.core.permissions.FieldEditSampleType" title="senaite.core: Field: Edit Sample Type"/>
+  <permission id="senaite.core.permissions.FieldEditSampler" title="senaite.core: Field: Edit Sampler"/>
+  <permission id="senaite.core.permissions.FieldEditSamplingDate" title="senaite.core: Field: Edit Sampling Date"/>
+  <permission id="senaite.core.permissions.FieldEditSamplingDeviation" title="senaite.core: Field: Edit Sampling Deviation"/>
+  <permission id="senaite.core.permissions.FieldEditScheduledSampler" title="senaite.core: Field: Edit Scheduled Sampler"/>
+  <permission id="senaite.core.permissions.FieldEditSpecification" title="senaite.core: Field: Edit Specification"/>
+  <permission id="senaite.core.permissions.FieldEditStorageLocation" title="senaite.core: Field: Edit Storage Location"/>
+  <permission id="senaite.core.permissions.FieldEditTemplate" title="senaite.core: Field: Edit Template"/>
+
+  # Field permissions (Analysis and alike)
+  <permission id="senaite.core.permissions.FieldEditAnalysisHidden" title="senaite.core: Field: Edit Analysis Hidden"/>
+  <permission id="senaite.core.permissions.FieldEditAnalysisResult" title="senaite.core: Field: Edit Analysis Result"/>
+  <permission id="senaite.core.permissions.FieldEditAnalysisRemarks" title="senaite.core: Field: Edit Analysis Remarks"/>
+
+
+  # Behavioral Permissions
+  # ----------------------
+  <permission id="senaite.core.permissions.AccessJSONAPI" title="senaite.core: Access JSON API"/>
+  <permission id="senaite.core.permissions.EditFieldResults" title="senaite.core: Edit Field Results"/>
+  <permission id="senaite.core.permissions.EditResults" title="senaite.core: Edit Results"/>
+  <permission id="senaite.core.permissions.EditWorksheet" title="senaite.core: Edit Worksheet"/>
+  <permission id="senaite.core.permissions.ManageBika" title="senaite.core: Manage Bika"/>
+  <permission id="senaite.core.permissions.ManageAnalysisRequests" title="senaite.core: Manage Analysis Requests"/>
+  <permission id="senaite.core.permissions.ManageInvoices" title="senaite.core: Manage Invoices"/>
+  <permission id="senaite.core.permissions.ManageLoginDetails" title="senaite.core: Manage Login Details"/>
+  <permission id="senaite.core.permissions.ManageReference" title="senaite.core: Manage Reference"/>
+  <permission id="senaite.core.permissions.ManageWorksheets" title="senaite.core: Manage Worksheets"/>
+  <permission id="senaite.core.permissions.ViewResults" title="senaite.core: View Results"/>
+
+
+  # View/Action Permissions
+  # -----------------------
+  <permission id="senaite.core.permissions.ImportInstrumentResults" title="senaite.core: Import Instrument Results"/>
+  <permission id="senaite.core.permissions.ViewRetractedAnalyses" title="senaite.core: View Retracted Analyses"/>
+  <permission id="senaite.core.permissions.ViewLogTab" title="senaite.core: View Log Tab"/>
+
+</configure>

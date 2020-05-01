@@ -1,0 +1,880 @@
+<?xml version="1.0"?>
+<rolemap>
+  <roles>
+    <!-- SENAITE ROLES -->
+    <role name="Analyst"/>
+    <role name="Client"/>
+    <role name="LabClerk"/>
+    <role name="LabManager"/>
+    <role name="Preserver"/>
+    <role name="Publisher"/>
+    <role name="RegulatoryInspector"/>
+    <role name="Sampler"/>
+    <role name="SamplingCoordinator"/>
+    <role name="Verifier"/>
+
+    <!-- PLONE ROLES -->
+    <role name="Anonymous"/>
+    <role name="Authenticated"/>
+    <role name="Contributor"/>
+    <role name="Editor"/>
+    <role name="Manager"/>
+    <role name="Member"/>
+    <role name="Owner"/>
+    <role name="Reader"/>
+    <role name="Reviewer"/>
+    <role name="Site Administrator"/>
+  </roles>
+
+  <permissions>
+
+    <!-- PLONE PERMISSIONS
+    NOTE: We make only *add* (acquire="True") our permissions here -->
+    <permission name="View" acquire="True">
+      <role name="Analyst"/>
+      <role name="Client"/>
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+      <role name="Preserver"/>
+      <role name="Publisher"/>
+      <role name="RegulatoryInspector"/>
+      <role name="Sampler"/>
+      <role name="SamplingCoordinator"/>
+      <role name="Verifier"/>
+    </permission>
+    <permission name="Access contents information" acquire="True">
+      <role name="Analyst"/>
+      <role name="Client"/>
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+      <role name="Preserver"/>
+      <role name="Publisher"/>
+      <role name="RegulatoryInspector"/>
+      <role name="Sampler"/>
+      <role name="SamplingCoordinator"/>
+      <role name="Verifier"/>
+    </permission>
+    <permission name="List folder contents" acquire="True">
+      <role name="Analyst"/>
+      <role name="Client"/>
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+      <role name="Preserver"/>
+      <role name="Publisher"/>
+      <role name="RegulatoryInspector"/>
+      <role name="Sampler"/>
+      <role name="SamplingCoordinator"/>
+      <role name="Verifier"/>
+    </permission>
+    <permission name="Modify portal content" acquire="True">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="Add portal content" acquire="True">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="Manage users" acquire="True">
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
+    <permission name="FTP access" acquire="True">
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
+    <!-- This only applies to Calculation type -->
+    <permission name="CMFEditions: Apply version control" acquire="True">
+      <role name="Analyst"/>
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+      <role name="Preserver"/>
+      <role name="Publisher"/>
+      <role name="RegulatoryInspector"/>
+      <role name="Sampler"/>
+      <role name="SamplingCoordinator"/>
+      <role name="Verifier"/>
+    </permission>
+    <!-- This only applies to Calculation type -->
+    <permission name="CMFEditions: Save new version" acquire="True">
+      <role name="Analyst"/>
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+      <role name="Preserver"/>
+      <role name="Publisher"/>
+      <role name="RegulatoryInspector"/>
+      <role name="Sampler"/>
+      <role name="SamplingCoordinator"/>
+      <role name="Verifier"/>
+    </permission>
+    <permission name="CMFEditions: Access previous versions" acquire="True">
+      <role name="Analyst"/>
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+      <role name="Preserver"/>
+      <role name="Publisher"/>
+      <role name="RegulatoryInspector"/>
+      <role name="Sampler"/>
+      <role name="SamplingCoordinator"/>
+      <role name="Verifier"/>
+    </permission>
+
+    <!-- SENAITE PERMISSIONS -->
+    <!-- Add Permissions -->
+    <permission name="senaite.core: Add Analysis" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="senaite.core: Add AnalysisCategory" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="senaite.core: Add AnalysisProfile" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="senaite.core: Add AnalysisRequest" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="senaite.core: Add AnalysisService" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="senaite.core: Add AnalysisSpec" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="senaite.core: Add ARTemplate" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="senaite.core: Add Attachment" acquire="False">
+      <role name="Analyst"/>
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="senaite.core: Add AttachmentType" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="senaite.core: Add Batch" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="senaite.core: Add BatchLabel" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="senaite.core: Add Calculation" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="senaite.core: Add Client" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
+    <permission name="senaite.core: Add Container" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="senaite.core: Add ContainerType" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="senaite.core: Add Department" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="senaite.core: Add Instrument" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="senaite.core: Add InstrumentLocation" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="senaite.core: Add InstrumentType" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="senaite.core: Add Invoice" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
+    <permission name="senaite.core: Add LabContact" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="senaite.core: Add LabProduct" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="senaite.core: Add Manufacturer" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="senaite.core: Add Method" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="senaite.core: Add Multifile" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="senaite.core: Add Pricelist" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
+    <permission name="senaite.core: Add ReferenceDefinition" acquire="False">
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="senaite.core: Add ReflexRule" acquire="False">
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="senaite.core: Add SampleCondition" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="senaite.core: Add SampleMatrix" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="senaite.core: Add SamplePoint" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="senaite.core: Add SampleType" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="senaite.core: Add SamplingDeviation" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="senaite.core: Add StorageLocation" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="senaite.core: Add SubGroup" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="senaite.core: Add Supplier" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="senaite.core: Add SupplyOrder" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="senaite.core: Add WorksheetTemplate" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+
+
+    <!-- Transition permissions -->
+    <permission name="senaite.core: Transition: Deactivate" acquire="False">
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="senaite.core: Transition: Activate" acquire="False">
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="senaite.core: Transition: Cancel" acquire="False">
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="senaite.core: Transition: Reinstate" acquire="False">
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="senaite.core: Transition: Close" acquire="False">
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="senaite.core: Transition: Reopen" acquire="False">
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+
+    <!-- Transition permissions (Analysis and alike) -->
+    <permission name="senaite.core: Transition: Retract" acquire="False">
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
+    <permission name="senaite.core: Transition: Verify" acquire="False">
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Verifier"/>
+    </permission>
+    <permission name="senaite.core: Transition: Assign Analysis" acquire="False">
+      <role name="Analyst"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Verifier"/>
+    </permission>
+    <permission name="senaite.core: Transition: Unassign Analysis" acquire="False">
+      <role name="Analyst"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Verifier"/>
+    </permission>
+
+    <!-- Transition permissions (Analysis Request) -->
+    <permission name="senaite.core: Transition: Cancel Analysis Request" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="senaite.core: Transition: Detach Sample Partition" acquire="False">
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="LabClerk"/>
+    </permission>
+    <permission name="senaite.core: Transition: Reinstate Analysis Request" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="senaite.core: Transition: Invalidate" acquire="False">
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
+    <permission name="senaite.core: Transition: Preserve Sample" acquire="False">
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Preserver"/>
+    </permission>
+    <permission name="senaite.core: Transition: Publish Results" acquire="False">
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Publisher"/>
+    </permission>
+    <permission name="senaite.core: Transition: Receive Sample" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="SamplingCoordinator"/>
+    </permission>
+    <permission name="senaite.core: Transition: Reject Sample" acquire="False">
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="LabClerk"/>
+    </permission>
+    <permission name="senaite.core: Transition: Sample Sample" acquire="False">
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Sampler"/>
+      <role name="SamplingCoordinator"/>
+      <!-- @xispa conflicts
+      WAS: "senaite.core: Sample Sample"
+      Usage in workflows:
+        - ar_workflow.xml: as guard_permission
+
+      Usage in views:
+        - NO USE
+
+      Usage in code:
+        - In AR listing's folderitem (editable/non-editable items)
+
+      Additional notes:
+        - Remove permission check in AR listing
+      -->
+    </permission>
+    <permission name="senaite.core: Transition: Schedule Sampling" acquire="False">
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="SamplingCoordinator"/>
+    </permission>
+
+    <!-- Transition permissions (Supply Order) -->
+    <permission name="senaite.core: Transition: Dispatch Order" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
+
+    <!-- Transition permissions (Worksheet) -->
+    <permission name="senaite.core: Transition: Reject Worksheet" acquire="False">
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
+    <permission name="senaite.core: Transition: Remove Worksheet" acquire="False">
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
+
+
+    <!-- Field permissions -->
+    <!-- Field permissions (Analysis Request) -->
+    <permission name="senaite.core: Field: Edit Batch" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Client"/>
+    </permission>
+    <permission name="senaite.core: Field: Edit Client" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
+    <permission name="senaite.core: Field: Edit Client Order Number" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Client"/>
+    </permission>
+    <permission name="senaite.core: Field: Edit Client Reference" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Client"/>
+    </permission>
+    <permission name="senaite.core: Field: Edit Client Sample ID" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Client"/>
+    </permission>
+    <permission name="senaite.core: Field: Edit Composite" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Client"/>
+    </permission>
+    <permission name="senaite.core: Field: Edit Contact" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Client"/>
+    </permission>
+    <permission name="senaite.core: Field: Edit Container" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Client"/>
+    </permission>
+    <permission name="senaite.core: Field: Edit Date Preserved" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Client"/>
+    </permission>
+    <permission name="senaite.core: Field: Edit Date Received" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
+    <permission name="senaite.core: Field: Edit Date Sampled" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Client"/>
+    </permission>
+    <permission name="senaite.core: Field: Edit Environmental Conditions" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Client"/>
+    </permission>
+    <permission name="senaite.core: Field: Edit Internal Use" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
+    <permission name="senaite.core: Field: Edit Invoice Exclude" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
+    <permission name="senaite.core: Field: Edit Member Discount" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
+    <permission name="senaite.core: Field: Edit Preservation" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Client"/>
+    </permission>
+    <permission name="senaite.core: Field: Edit Preserver" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
+    <permission name="senaite.core: Field: Edit Priority" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Client"/>
+    </permission>
+    <permission name="senaite.core: Field: Edit Profiles" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Client"/>
+    </permission>
+    <permission name="senaite.core: Field: Edit Publication Specification" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Publisher"/>
+    </permission>
+    <permission name="senaite.core: Field: Edit Rejection Reasons" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
+    <permission name="senaite.core: Field: Edit Remarks" acquire="False">
+      <role name="Analyst"/>
+      <role name="Client"/>
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Publisher"/>
+      <role name="Sampler"/>
+      <role name="SamplingCoordinator"/>
+      <role name="Verifier"/>
+    </permission>
+    <permission name="senaite.core: Field: Edit Results Interpretation" acquire="False">
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Verifier"/>
+    </permission>
+    <permission name="senaite.core: Field: Edit Sample Condition" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Client"/>
+    </permission>
+    <permission name="senaite.core: Field: Edit Sample Point" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Client"/>
+    </permission>
+    <permission name="senaite.core: Field: Edit Sample Type" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Client"/>
+    </permission>
+    <permission name="senaite.core: Field: Edit Sampler" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
+    <permission name="senaite.core: Field: Edit Sampling Date" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Client"/>
+    </permission>
+    <permission name="senaite.core: Field: Edit Sampling Deviation" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Client"/>
+    </permission>
+    <permission name="senaite.core: Field: Edit Specification" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Client"/>
+    </permission>
+    <permission name="senaite.core: Field: Edit Scheduled Sampler" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
+    <permission name="senaite.core: Field: Edit Storage Location" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
+    <permission name="senaite.core: Field: Edit Template" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Client"/>
+    </permission>
+
+    <!-- Field permissions (Analysis and alike) -->
+    <permission name="senaite.core: Field: Edit Analysis Hidden" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Publisher"/>
+    </permission>
+    <permission name="senaite.core: Field: Edit Analysis Result" acquire="False">
+      <role name="Analyst"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
+    <permission name="senaite.core: Field: Edit Analysis Remarks" acquire="False">
+      <role name="Analyst"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
+
+    <!-- Behavioral permissions -->
+    <permission name="senaite.core: Access JSON API" acquire="False">
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
+    <permission name="senaite.core: Edit Field Results" acquire="False">
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Sampler"/>
+      <!-- @xispa conflicts
+      Usage in workflows:
+        - ar_workflow.xml: NOT BOUND TO ANY TRANSITION - DISPENSABLE
+        - *analysis_workflow.xml (but explicitly set with acquire=False)
+        - reject_analysis_workflow.xml (see https://github.com/senaite/senaite.core/commit/dcbaf44d481f22b87a80d10e920937ec2ca733dd)
+
+      Usage in views:
+        - NOT USED ANYWHERE
+
+      Usage in code:
+        - Mimics "BIKA Edit Results" - DISPENSABLE
+
+      Additional notes:
+        - As long as this permission only grants results to be editable for a
+          subset of roles for analysis-specific statuses, this permission can
+          be entirely removed in favour of "Edit Results".
+          This permission has only effect at analysis level, so make the
+          **analysis submit** guard to deal with it (check if the current user
+          has "Edit Results" permission granted in AR for e.g., "sample_due"
+          status).
+
+      ar_workflow permissions:
+        - ** TODO Consider to remove this permission in favour of Edit Results
+      -->
+    </permission>
+    <permission name="senaite.core: Edit Results" acquire="False">
+      <role name="Analyst"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <!-- @xispa conflicts
+      Usage in workflow:
+        - ar_workflow.xml (permission guard for "submit")
+        - *analysis_workflow.xml (but explicitly set with acquire=False)
+        - reject_analysis_workflow.xml (see https://github.com/senaite/senaite.core/commit/dcbaf44d481f22b87a80d10e920937ec2ca733dd)
+
+      Usage in views:
+        - AnalysisRequest: Manage Results
+        - ?? Report: Edit
+        - ?? Attachment: Edit
+
+      Usage in code:
+        - Various checks to know if analyses are editable
+        - Check before redirection to AR's "Manage results" view
+
+      Additional notes:
+        - Consider comments regarding "senaite.core: Edit Field Results" above.
+
+      ar_workflow permissions:
+        - sample_received: -Sampler, -SamplingCoordinator
+        - to_be_preserved: -Sampler, -SamplingCoordinator
+        - cancelled:       -LabClerk, -Owner, -Sampler, -SamplingCoordinator
+      -->
+    </permission>
+    <permission name="senaite.core: Edit Worksheet" acquire="False">
+      <role name="Analyst"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
+    <permission name="senaite.core: Manage Bika" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
+    <permission name="senaite.core: Manage Analysis Requests" acquire="False">
+      <role name="Analyst"/>
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Owner"/>
+    </permission>
+    <permission name="senaite.core: Manage Invoices" acquire="False">
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
+    <permission name="senaite.core: Manage Login Details" acquire="False">
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
+    <permission name="senaite.core: Manage Reference" acquire="False">
+      <role name="Analyst"/>
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
+    <permission name="senaite.core: Manage Worksheets" acquire="False">
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
+    <permission name="senaite.core: View Results" acquire="False">
+      <role name="Analyst"/>
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Preserver"/>
+      <role name="Publisher"/>
+      <role name="RegulatoryInspector"/>
+      <role name="Sampler"/>
+      <role name="SamplingCoordinator"/>
+      <role name="Verifier"/>
+      <!-- @xispa conflicts
+      Usage in workflows:
+        - ar_workflow.xml: as regular permission
+        - analysis_workflow.xml: as regular permission
+        - referenceanalysis_workflow.xml: as regular permission
+        - duplicateanalysis_workflow.xml: as regular permission
+        - rejectanalysis_workflow.xml: as regualr permission
+
+      Usage in views:
+        - worksheet: View, ManageResults
+        - analysisrequest: Published Results
+
+      Usage in code:
+        - Analyses listing: folder_item (Result + Uncertainty + Attachments)
+
+      Additional notes:
+        - Does not make sense to have different permissions for WS Manage
+          Results and AR Manage Results
+        - Don't think View Results permission should be used in AR's
+          Published results view. A permission "View Results Reports" would fit
+          better imo.
+        - Consider to stick to field-specific permissions ("Field: View ?") in
+          analyses listing
+      -->
+    </permission>
+
+    <!-- View/Action permissions -->
+    <permission name="senaite.core: Import Instrument Results" acquire="False">
+      <role name="Analyst"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
+    <permission name="senaite.core: View Retracted Analyses" acquire="False">
+      <role name="Analyst"/>
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+      <role name="Publisher"/>
+      <role name="Verifier"/>
+    </permission>
+    <permission name="senaite.core: View Log Tab" acquire="False">
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
+    <permission name="senaite.core: Import Instrument Results" acquire="False">
+      <role name="Analyst"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
+  </permissions>
+
+</rolemap>
