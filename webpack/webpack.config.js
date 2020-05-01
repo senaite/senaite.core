@@ -1,8 +1,8 @@
 const path = require("path");
-const childProcess = require('child_process');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+const childProcess = require("child_process");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
 const webpack = require("webpack");
-const gitCmd = 'git rev-list -1 HEAD -- `pwd`';
+const gitCmd = "git rev-list -1 HEAD -- `pwd`";
 const compilePath = path.resolve(__dirname, "../src/senaite/core/browser/static");
 const publicPath = "++plone++senaite.core.static/"
 let gitHash = childProcess.execSync(gitCmd).toString().substring(0, 7);
