@@ -20,6 +20,15 @@
       layer="senaite.core.interfaces.ISenaiteCore"
       />
 
+  <!-- Sidebar Viewlet Manager-->
+  <browser:viewletManager
+      name="senaite.sidebar"
+      provides=".interfaces.ISidebar"
+      permission="zope2.View"
+      class=".sidebar.SidebarViewletManager"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
   <!-- Content views (tabs) -->
   <browser:viewlet
       name="plone.contentviews"

@@ -20,6 +20,7 @@
   <include package=".install"/>
   <include package=".login"/>
   <include package=".main_template"/>
+  <include package=".portlets"/>
   <include package=".viewlets"/>
 
 </configure>

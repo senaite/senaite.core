@@ -58,115 +58,126 @@
                           python:plone_view.patterns_settings()"
           id="visual-portal-wrapper">
 
+
       <!-- Toolbar -->
-      <div tal:replace="structure provider:plone.toolbar" />
+      <div class="container-fluid px-0 mb-2">
+        <div tal:replace="structure provider:plone.toolbar" />
+      </div>
 
-      <div class="container-fluid">
+      <div class="wrapper">
 
-        <div class="row">
-          <div class="col-sm-12">
-            <header id="portal-top" i18n:domain="plone">
-              <div tal:replace="structure provider:plone.portaltop" />
-            </header>
-          </div>
-        </div>
+        <!-- Sidebar -->
+        <div tal:replace="structure provider:senaite.sidebar" />
 
-        <div class="row">
-          <div class="col-sm-12">
-            <div id="portal-mainnavigation" tal:content="structure provider:plone.mainnavigation">
-              The main navigation
+        <!-- Content -->
+        <div class="container-fluid">
+
+          <div class="row">
+            <div class="col-sm-12">
+              <header id="portal-top" i18n:domain="plone">
+                <div tal:replace="structure provider:plone.portaltop" />
+              </header>
             </div>
           </div>
-        </div>
 
-        <div class="row">
-          <div class="col-sm-12">
-            <aside id="global_statusmessage">
-              <tal:message tal:content="structure provider:plone.globalstatusmessage"/>
-              <div metal:define-slot="global_statusmessage">
+          <div class="row">
+            <div class="col-sm-12">
+              <div id="portal-mainnavigation" tal:content="structure provider:plone.mainnavigation">
+                The main navigation
               </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-12">
+              <aside id="global_statusmessage">
+                <tal:message tal:content="structure provider:plone.globalstatusmessage"/>
+                <div metal:define-slot="global_statusmessage">
+                </div>
+              </aside>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-12">
+              <div id="viewlet-above-content" tal:content="structure provider:plone.abovecontent" />
+            </div>
+          </div>
+
+          <!-- Main content -->
+          <div class="row">
+            <article id="portal-column-content" tal:attributes="class cls/content">
+              <metal:block define-slot="content">
+                <div metal:define-macro="content">
+                  <metal:slot define-slot="body">
+                    <article id="content">
+                      <metal:bodytext define-slot="main">
+                        <header>
+                          <div id="viewlet-above-content-title" tal:content="structure provider:plone.abovecontenttitle" />
+                          <metal:title define-slot="content-title">
+                            <h1 tal:replace="structure context/@@title" />
+                          </metal:title>
+                          <div id="viewlet-below-content-title" tal:content="structure provider:plone.belowcontenttitle" />
+
+                          <metal:description define-slot="content-description">
+                            <p tal:replace="structure context/@@description" />
+                          </metal:description>
+                        </header>
+
+                        <div id="viewlet-above-content-body" tal:content="structure provider:plone.abovecontentbody" />
+                        <div id="content-core">
+                          <metal:text define-slot="content-core" tal:content="nothing">
+                            Page body text
+                          </metal:text>
+                        </div>
+                        <div id="viewlet-below-content-body" tal:content="structure provider:plone.belowcontentbody" />
+
+                      </metal:bodytext>
+                    </article>
+
+                  </metal:slot>
+
+                  <!--
+                       <metal:sub define-slot="sub" tal:content="nothing">
+                       This slot is here for backwards compatibility only.
+                       Don't use it in your custom templates.
+                       </metal:sub>
+                  -->
+                </div>
+
+              </metal:block>
+              <footer>
+                <div id="viewlet-below-content" tal:content="structure provider:plone.belowcontent" />
+              </footer>
+            </article>
+
+            <!-- Column 1 -->
+            <aside id="portal-column-one"
+                   metal:define-slot="column_one_slot"
+                   tal:condition="sl"
+                   tal:attributes="class cls/one">
+              <metal:portlets define-slot="portlets_one_slot">
+                <tal:block replace="structure provider:plone.leftcolumn" />
+              </metal:portlets>
             </aside>
+
+            <!-- Column 2 -->
+            <aside id="portal-column-two"
+                   metal:define-slot="column_two_slot"
+                   tal:condition="sr"
+                   tal:attributes="class cls/two">
+              <metal:portlets define-slot="portlets_two_slot">
+                <tal:block replace="structure provider:plone.rightcolumn" />
+              </metal:portlets>
+            </aside>
+
           </div>
-        </div>
 
-        <div class="row">
-          <div class="col-sm-12">
-            <div id="viewlet-above-content" tal:content="structure provider:plone.abovecontent" />
-          </div>
-        </div>
-
-        <!-- Main content -->
-        <div class="row">
-          <article id="portal-column-content" tal:attributes="class cls/content">
-            <metal:block define-slot="content">
-              <div metal:define-macro="content">
-                <metal:slot define-slot="body">
-                  <article id="content">
-                    <metal:bodytext define-slot="main">
-                      <header>
-                        <div id="viewlet-above-content-title" tal:content="structure provider:plone.abovecontenttitle" />
-                        <metal:title define-slot="content-title">
-                          <h1 tal:replace="structure context/@@title" />
-                        </metal:title>
-                        <div id="viewlet-below-content-title" tal:content="structure provider:plone.belowcontenttitle" />
-
-                        <metal:description define-slot="content-description">
-                          <p tal:replace="structure context/@@description" />
-                        </metal:description>
-                      </header>
-
-                      <div id="viewlet-above-content-body" tal:content="structure provider:plone.abovecontentbody" />
-                      <div id="content-core">
-                        <metal:text define-slot="content-core" tal:content="nothing">
-                          Page body text
-                        </metal:text>
-                      </div>
-                      <div id="viewlet-below-content-body" tal:content="structure provider:plone.belowcontentbody" />
-
-                    </metal:bodytext>
-                  </article>
-
-                </metal:slot>
-
-                <!--
-                     <metal:sub define-slot="sub" tal:content="nothing">
-                     This slot is here for backwards compatibility only.
-                     Don't use it in your custom templates.
-                     </metal:sub>
-                -->
-              </div>
-
-            </metal:block>
-            <footer>
-              <div id="viewlet-below-content" tal:content="structure provider:plone.belowcontent" />
-            </footer>
-          </article>
-
-          <!-- Column 1 -->
-          <aside id="portal-column-one"
-                 metal:define-slot="column_one_slot"
-                 tal:condition="sl"
-                 tal:attributes="class cls/one">
-            <metal:portlets define-slot="portlets_one_slot">
-              <tal:block replace="structure provider:plone.leftcolumn" />
-            </metal:portlets>
-          </aside>
-
-          <!-- Column 2 -->
-          <aside id="portal-column-two"
-                 metal:define-slot="column_two_slot"
-                 tal:condition="sr"
-                 tal:attributes="class cls/two">
-            <metal:portlets define-slot="portlets_two_slot">
-              <tal:block replace="structure provider:plone.rightcolumn" />
-            </metal:portlets>
-          </aside>
+          <footer id="portal-footer-wrapper" i18n:domain="plone">
+            <div tal:replace="structure provider:plone.portalfooter" />
+          </footer>
 
         </div>
-
-        <footer id="portal-footer-wrapper" i18n:domain="plone">
-          <div tal:replace="structure provider:plone.portalfooter" />
-        </footer>
 
       </div>
     </body>

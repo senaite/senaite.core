@@ -1,1 +1,1 @@
-<script async tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/senaite.core-1b89fec.js"></script>
+<script async tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/senaite.core-49863bc.js"></script>
