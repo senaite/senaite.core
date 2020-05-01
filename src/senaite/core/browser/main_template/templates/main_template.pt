@@ -97,9 +97,9 @@
 
         <!-- Main content -->
         <div class="row">
-          <article id="portal-column-content">
+          <article id="portal-column-content" tal:attributes="class cls/content">
             <metal:block define-slot="content">
-              <div tal:attributes="class cls/content" metal:define-macro="content">
+              <div metal:define-macro="content">
                 <metal:slot define-slot="body">
                   <article id="content">
                     <metal:bodytext define-slot="main">
