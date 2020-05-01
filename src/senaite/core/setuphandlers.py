@@ -20,6 +20,7 @@ def install(context):
     # Run Installers
     remove_default_content(portal)
     setup_groups(portal)
+    install_contenttypes_and_structure(portal)
 
     logger.info("SENAITE CORE install handler [DONE]")
 
@@ -58,6 +59,16 @@ def setup_groups(portal):
                 roles=gdata["roles"],)
             logger.info("+++ Granted group {title} ({id}) the roles {roles}"
                         .format(**gdata))
+
+
+def install_contenttypes_and_structure(portal):
+    """Install AT contenttypes
+    """
+    logger.info("*** Install Content Types and Structure ***")
+    profile = "profile-bika.lims:default"
+    setup = portal.portal_setup
+    setup.runImportStepFromProfile(profile, "content")
+    # setup.runImportStepFromProfile(profile, "structure")
 
 
 def pre_install(portal_setup):
