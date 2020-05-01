@@ -1,4 +1,8 @@
 <?xml version="1.0"?>
 <metadata>
   <version>2.0.0</version>
+  <dependencies>
+    <dependency>Products.ATContentTypes:base</dependency>
+    <dependency>profile-Products.ATExtensions:default</dependency>
+  </dependencies>
 </metadata>
