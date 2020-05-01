@@ -7,6 +7,9 @@ const compilePath = path.resolve(__dirname, "../src/senaite/core/browser/static"
 const publicPath = "++plone++senaite.core.static/"
 let gitHash = childProcess.execSync(gitCmd).toString().substring(0, 7);
 
+// Remove old static resources
+childProcess.execSync(`rm -f ${compilePath}/senaite.*`);
+
 module.exports = {
   entry: {
     core: path.resolve(__dirname, "./app/senaite.core.js")
