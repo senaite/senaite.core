@@ -8,8 +8,7 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 class GlobalStatusMessage(BaseViewlet):
     """Display messages to the current user
     """
-    index = ViewPageTemplateFile(
-        "templates/plone.app.layout.viewlets.globalstatusmessage.pt")
+    index = ViewPageTemplateFile("templates/globalstatusmessage.pt")
 
     def update(self):
         super(GlobalStatusMessage, self).update()

@@ -11,8 +11,7 @@ LOGO_URL = "++plone++senaite.core.static/images/senaite-site-logo.png"
 
 
 class LogoViewlet(ViewletBase):
-    index = ViewPageTemplateFile(
-        "templates/plone.app.layout.viewlets.logo.pt")
+    index = ViewPageTemplateFile("templates/logo.pt")
 
     def update(self):
         super(LogoViewlet, self).update()

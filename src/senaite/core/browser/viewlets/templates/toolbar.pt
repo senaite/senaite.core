@@ -1,0 +1,75 @@
+<nav class="navbar sticky-top navbar-expand-md navbar-light bg-light"
+     tal:define="context_state view/context_state;
+                 portal_state view/portal_state;
+                 personal_bar python:view.get_personal_bar()"
+     i18n:domain="senaite.core">
+
+  <!-- Navbar Brand Icon -->
+  <a class="navbar-brand" href="#" tal:attributes="href portal_state/portal_url">
+    <img alt="SENAITE" height="15px" tal:attributes="src view/get_toolbar_logo" />
+  </a>
+
+  <!-- Navbar Toggle Button -->
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#toolbarContent" aria-controls="toolbarContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <!-- Navbar Menu Items -->
+  <div class="collapse navbar-collapse" id="toolbarContent">
+
+    <!-- left -->
+    <ul class="navbar-nav mr-auto">
+      <!-- contentviews -->
+      <div tal:replace="structure view/base_render"></div>
+    </ul>
+
+    <!-- right -->
+    <ul class="navbar-nav ml-auto">
+      <!-- Personal Bar Menu -->
+      <li class="nav-item dropdown" tal:condition="personal_bar/user_name">
+        <a href="#"
+           class="nav-link dropdown-toggle ml-auto"
+           id="navbarUserDropdown"
+           role="button"
+           data-toggle="dropdown"
+           aria-haspopup="true"
+           aria-expanded="false"
+           tal:attributes="href personal_bar/homelink_url">
+          <span tal:replace="personal_bar/user_name" />
+        </a>
+        <!-- Personal Bar Dropdown Items -->
+        <div class="dropdown-menu" aria-labelledby="navbarUserDropdown">
+          <div class="dropdown-item"
+               tal:repeat="action personal_bar/user_actions">
+            <a href=""
+               tal:attributes="action; class string:nav-link">
+              <tal:actionname tal:content="action/title">
+                action title
+              </tal:actionname>
+              <tal:islogout condition="python:action['id'] == 'personaltools-logout'">
+                <span class="icon-logout"></span>
+              </tal:islogout>
+            </a>
+          </div>
+        </div>
+      </li>
+
+      <!-- Login/Register -->
+      <li class="nav-item" tal:condition="not:personal_bar/user_name">
+        <div tal:omit-tag="python:1" tal:repeat="action personal_bar/user_actions">
+          <a href="" tal:attributes="href action/href; class string:nav-link">
+            <tal:actionname tal:content="action/title">
+              action title
+            </tal:actionname>
+            <tal:islogout condition="python:action['id'] == 'personaltools-logout'">
+              <span class="icon-logout"></span>
+            </tal:islogout>
+          </a>
+        </div>
+      </li>
+    </ul>
+
+
+  </div>
+
+</nav>

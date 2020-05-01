@@ -15,6 +15,7 @@
 
   <!-- Package includes -->
   <include package=".bootstrap"/>
+  <include package=".contentmenu"/>
   <include package=".controlpanel"/>
   <include package=".install"/>
   <include package=".login"/>

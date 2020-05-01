@@ -11,6 +11,24 @@
       layer="senaite.core.interfaces.ISenaiteCore"
       />
 
+  <!-- Toolbar Viewlet Manager-->
+  <browser:viewletManager
+      name="plone.toolbar"
+      provides="plone.app.layout.viewlets.interfaces.IToolbar"
+      permission="zope2.View"
+      class=".toolbar.ToolbarViewletManager"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
+  <!-- Content views (tabs) -->
+  <browser:viewlet
+      name="plone.contentviews"
+      manager="plone.app.layout.viewlets.interfaces.IToolbar"
+      class=".contentviews.ContentViewsViewlet"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
   <!-- Logo Viewlet -->
   <browser:viewlet
       name="plone.logo"

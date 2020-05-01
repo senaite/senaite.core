@@ -5,10 +5,16 @@
   <order manager="plone.mainnavigation" skinname="*" purge="True">
   </order>
 
+  <!-- Viewlets in plone.toolbar -->
+  <order manager="plone.toolbar" skinname="*">
+    <viewlet name="plone.contentviews" />
+  </order>
+
   <!-- Hidden viewlets in plone.portalheader -->
   <hidden manager="plone.portalheader" skinname="*" purge="True">
     <viewlet name="plone.searchbox"/>
     <viewlet name="plone.anontools"/>
+    <viewlet name="plone.logo" />
   </hidden>
 
   <!-- Hidden viewlets in plone.mainnavigation -->

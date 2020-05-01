@@ -1,0 +1,17 @@
+<tal:contentviews tal:define="ploneview context/@@plone;"
+                  tal:condition="ploneview/showToolbar"
+                  i18n:domain="plone">
+
+  <tal:block define="actions view/tabSet1;">
+    <div tal:replace="structure python: view.menu_template(actions=actions)" />
+  </tal:block>
+
+  <tal:contentmenus>
+    <div tal:replace="structure provider:plone.contentmenu" />
+  </tal:contentmenus>
+
+  <tal:block define="actions view/tabSet2;">
+    <div tal:replace="structure python: view.menu_template(actions=actions)" />
+  </tal:block>
+
+</tal:contentviews>

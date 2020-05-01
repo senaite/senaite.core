@@ -23,5 +23,4 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
 
 class ColophonViewlet(ViewletBase):
-    index = ViewPageTemplateFile(
-        "templates/plone.app.layout.viewlets.colophon.pt")
+    index = ViewPageTemplateFile("templates/colophon.pt")

@@ -1,0 +1,17 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+           xmlns:browser="http://namespaces.zope.org/browser"
+           xmlns:five="http://namespaces.zope.org/five"
+           i18n_domain="plone">
+
+  <!-- A content provider showing the menu -->
+
+  <adapter
+      for="*
+           senaite.core.interfaces.ISenaiteCore
+           *"
+      factory=".view.ContentMenuProvider"
+      name="plone.contentmenu"
+      provides="zope.contentprovider.interfaces.IContentProvider"
+      />
+
+</configure>

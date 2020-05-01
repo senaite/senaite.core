@@ -58,10 +58,10 @@
                           python:plone_view.patterns_settings()"
           id="visual-portal-wrapper">
 
-      <div class="container-fluid">
+      <!-- Toolbar -->
+      <div tal:replace="structure provider:plone.toolbar" />
 
-        <!-- The sidebar with the actions -->
-        <div tal:replace="structure provider:plone.toolbar" />
+      <div class="container-fluid">
 
         <div class="row">
           <div class="col-sm-12">

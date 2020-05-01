@@ -5,5 +5,4 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
 
 class FooterViewlet(Base):
-    index = ViewPageTemplateFile(
-        "templates/plone.app.layout.viewlets.footer.pt")
+    index = ViewPageTemplateFile("templates/footer.pt")

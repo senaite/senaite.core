@@ -25,13 +25,16 @@
   "repository": {},
   "license": "GPL-2.0",
   "dependencies": {
-    "bootstrap": "^4.4.1"
+    "@popperjs/core": "^2.4.0",
+    "bootstrap": "^4.4.1",
+    "jquery": "<3"
   },
   "devDependencies": {
     "@babel/core": "^7.9.6",
     "babel-loader": "^8.1.0",
     "babel-preset-env": "^1.7.0",
     "coffee-loader": "^0.9.0",
+    "coffeescript": "^2.5.1",
     "css-loader": "^3.5.3",
     "html-webpack-plugin": "^4.2.1",
     "sass": "^1.26.5",

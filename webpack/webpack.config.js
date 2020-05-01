@@ -49,11 +49,18 @@ module.exports = {
       filename: "resources.pt",
       template: "app/resources.pt",
       publicPath: publicPath,
-    })
+    }),
+    new webpack.ProvidePlugin({
+      $: "jquery",
+      jQuery: "jquery"
+    }),
+    // new webpack.ProvidePlugin({
+    //   bootstrap: "bootstrap/dist/js/bootstrap.min.js"
+    // })
   ],
   externals: {
     // https://webpack.js.org/configuration/externals
     // use jQuery from the outer scope
-    jquery: "jQuery",
+    // jquery: "jQuery",
   }
 };

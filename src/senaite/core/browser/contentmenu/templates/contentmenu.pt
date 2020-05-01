@@ -1,0 +1,109 @@
+<tal:contentactionmenus
+  condition="view/available"
+  define="menu view/menu;"
+  i18n:domain="plone">
+
+  <tal:menus repeat="menuItem menu">
+
+    <li class="nav-item"
+        tal:attributes="id menuItem/extra/id;
+                        class python:has_dropdown and 'nav-item dropdown' or 'nav-item'"
+        tal:define="submenu menuItem/submenu;
+                    has_dropdown not:menuItem/extra/hideChildren | not:submenu | nothing;
+                    identifier menuItem/extra/id">
+
+      <!-- Menu Item -->
+      <a href="#"
+         i18n:attributes="title;"
+         tal:condition="not:has_dropdown"
+         tal:attributes="href menuItem/action;
+                         title menuItem/description;
+                         class string:label-${state_class} nav-link"
+         tal:define="state_class menuItem/extra/class | nothing;
+                     state_class python:state_class and state_class or ''"
+         tal:omit-tag="not:menuItem/action">
+
+        <span
+          aria-hidden="true"
+          class=""
+          tal:attributes="class string:icon-${identifier}"></span>
+
+        <span
+          class=""
+          i18n:translate=""
+          tal:content="menuItem/title">
+          Menu Title
+        </span>
+
+        <span
+          class="badge badge-secondary"
+          i18n:translate=""
+          tal:condition="menuItem/extra/stateTitle | nothing"
+          tal:content="menuItem/extra/stateTitle">
+          State title
+        </span>
+      </a>
+
+      <!-- dropdown menu -->
+      <div class="nav-item dropdown"
+           aria-hidden="true"
+           tal:condition="not:menuItem/extra/hideChildren | not:submenu | nothing">
+
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <!-- Icon -->
+            <span
+              aria-hidden="true"
+              class=""
+              tal:attributes="class string:icon-${identifier} toolbar-menu-icon"></span>
+            <span
+              class=""
+              i18n:translate=""
+              tal:condition="not:menuItem/extra/stateTitle | nothing"
+              tal:content="menuItem/title">
+              Menu Title
+            </span>
+            <!-- State Title -->
+            <span
+              class="badge badge-secondary"
+              i18n:translate=""
+              tal:condition="menuItem/extra/stateTitle | nothing"
+              tal:content="menuItem/extra/stateTitle">
+              State title
+            </span>
+          </a>
+
+          <div class="dropdown-menu">
+            <div tal:attributes="class string:${menuItem/extra/li_class | nothing} ${subMenuItem/extra/separator} dropdown-item"
+                 tal:repeat="subMenuItem submenu">
+            <a href="#"
+              aria-expanded="false"
+              i18n:attributes="title"
+              tal:attributes="href subMenuItem/action;
+                              title subMenuItem/description;
+                              id subMenuItem/extra/id | nothing;
+                              class string:${subMenuItem/extra/class|nothing} nav-link;
+                              data-pat-plone-modal subMenuItem/extra/modal | nothing;"
+                              tal:condition="subMenuItem/action">
+              <tal:title
+                content="structure subMenuItem/title"
+                i18n:translate="">
+                Title
+              </tal:title>
+            </a>
+            <span
+              tal:attributes="id subMenuItem/extra/id | nothing;
+                              class subMenuItem/extra/class | nothing"
+              tal:condition="not:subMenuItem/action">
+              <span
+                i18n:translate=""
+                tal:content="structure subMenuItem/title">
+                Title
+              </span>
+            </span>
+          </div>
+        </div>
+      </div>
+
+    </li>
+  </tal:menus>
+</tal:contentactionmenus>

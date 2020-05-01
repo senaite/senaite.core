@@ -1,3 +1,7 @@
 import "./senaite.core.scss";
+import "bootstrap";
 
-console.info("SENAITE JS LOADED");
+
+document.addEventListener("DOMContentLoaded", () => {
+  console.debug("*** SENAITE JS LOADED ***");
+});

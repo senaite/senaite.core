@@ -28,8 +28,7 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
 
 class PathBarViewlet(Base):
-    index = ViewPageTemplateFile(
-        "templates/plone.app.layout.viewlets.path_bar.pt")
+    index = ViewPageTemplateFile("templates/path_bar.pt")
 
     def update(self):
         super(PathBarViewlet, self).update()

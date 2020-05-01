@@ -1,0 +1,48 @@
+<tal:contentviews tal:define="ploneview context/@@plone;"
+                  tal:condition="ploneview/showToolbar"
+                  i18n:domain="plone">
+
+  <tal:actions tal:repeat="action options/actions">
+
+    <!-- Contentviews -->
+    <li tal:attributes="id string:contentview-${action/id};
+                        class python: action.get('selected') and 'active nav-item' or 'nav-item'"
+        tal:define="actionid action/id"
+        tal:condition="python:actionid != 'history'">
+
+      <tal:var define="selected action/selected|nothing;">
+        <a href="#"
+           tal:attributes="href action/url;
+                 target action/link_target|nothing;
+                 class string:${action/cssClass} nav-link;">
+          <span tal:attributes="class string:icon-${action/id}${action/cssClass|nothing} toolbar-menu-icon;"
+                class="icon-folderContents" aria-hidden="true">
+          </span>
+          <span tal:content="action/title" i18n:translate="">View name</span>
+        </a>
+      </tal:var>
+    </li>
+
+    <!-- Last Modification Date -->
+    <li tal:attributes="id string:contentview-${action/id};
+                        class python: action.get('selected') and 'active nav-item' or 'nav-item'"
+        tal:define="actionid action/id"
+        tal:condition="python:actionid == 'history'">
+      <tal:var define="selected action/selected|nothing;
+                       locked view/locked_icon">
+        <a href="#"
+           tal:attributes="href action/url;
+                           target action/link_target|nothing;
+                           class string:${action/cssClass} nav-link">
+          <span tal:attributes="class python:locked and 'icon-lock' or 'icon-history'"
+                class="icon-folderContents toolbar-menu-icon" aria-hidden="true">
+          </span>
+          <span class="pat-moment" data-pat-moment="format:relative;"
+                tal:content="context/ModificationDate">Modified</span>
+        </a>
+      </tal:var>
+    </li>
+
+  </tal:actions>
+
+</tal:contentviews>
