@@ -1,4 +1,4 @@
-<nav class="navbar sticky-top navbar-expand-md navbar-light bg-light"
+<nav class="navbar fixed-top navbar-expand-md navbar-light bg-light"
      tal:define="context_state view/context_state;
                  portal_state view/portal_state;
                  personal_bar python:view.get_personal_bar()"
@@ -25,10 +25,11 @@
 
     <!-- right -->
     <ul class="navbar-nav ml-auto">
+
       <!-- Personal Bar Menu -->
       <li class="nav-item dropdown" tal:condition="personal_bar/user_name">
         <a href="#"
-           class="nav-link dropdown-toggle ml-auto"
+           class="nav-link dropdown-toggle"
            id="navbarUserDropdown"
            role="button"
            data-toggle="dropdown"
@@ -67,9 +68,7 @@
           </a>
         </div>
       </li>
+
     </ul>
-
-
   </div>
-
 </nav>
