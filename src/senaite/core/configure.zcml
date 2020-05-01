@@ -11,6 +11,9 @@
   <!-- package includes -->
   <include package=".browser" />
 
+  <!-- file includes -->
+  <!-- <include file="permissions.zcml" /> -->
+
   <!-- portal skins -->
   <cmf:registerDirectory
       name="skins"
@@ -31,6 +34,7 @@
       name="senaite.core.setuphandlers.install"
       title="SENAITE CORE: Run Setup Handler"
       description="Run install handler"
-      handler="senaite.core.setuphandlers.install"/>
+      handler="senaite.core.setuphandlers.install">
+  </genericsetup:importStep>
   
 </configure>
