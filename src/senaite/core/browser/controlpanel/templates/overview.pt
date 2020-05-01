@@ -98,11 +98,13 @@
             <strong class="portletHeader text-secondary" tal:content="category/title"
                     i18n:translate="">Category</strong>
             <div class="row">
+              <div class="col-sm-12">
               <nav class="portletContent" tal:condition="sublist">
-                <ul class="configlets nav nav-pills" tal:condition="sublist">
+                <ul class="nav nav-pills" tal:condition="sublist">
                   <tal:actions tal:repeat="action sublist">
-                    <li class="col-xs-4 col-sm-3 col-md-2 item" tal:condition="action/visible">
-                      <a href=""
+                    <li class="nav-item col-sm-3" tal:condition="action/visible">
+                      <a href="#"
+                         class="nav-link"
                          tal:define="icon action/icon"
                          tal:attributes="href action/url">
                         <span tal:attributes="class python:'icon-controlpanel-' + action['id'].replace('.', '_')"></span>
@@ -115,6 +117,7 @@
                   </tal:actions>
                 </ul>
               </nav>
+              </div>
             </div>
 
             <div class="discreet"
@@ -150,7 +153,7 @@
       </ul>
 
       <p tal:condition="not:view/is_dev_mode"
-         class="discreet text-info"
+         class="discreet text-muted small"
          i18n:translate="description_production_mode">
         You are running in "production mode". This is the preferred mode of
         operation for a live Plone site, but means that some
@@ -162,7 +165,7 @@
       </p>
 
       <p tal:condition="view/is_dev_mode"
-         class="discreet text-info"
+         class="discreet text-muted small"
          i18n:translate="description_debug_mode">
         You are running in "debug mode". This mode is intended for sites that
         are under development. This allows many configuration changes to be
