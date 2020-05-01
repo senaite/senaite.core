@@ -23,12 +23,12 @@ import warnings
 
 import App
 from AccessControl import allow_module
-from bika.lims import permissions
+from zope.i18nmessageid import MessageFactory
 from Products.Archetypes.atapi import listTypes
 from Products.Archetypes.atapi import process_types
-from Products.CMFCore.utils import ContentInit
-from zope.i18nmessageid import MessageFactory
 from Products.CMFCore.permissions import AddPortalContent
+from Products.CMFCore.utils import ContentInit
+from bika.lims import permissions
 
 PROJECTNAME = "bika.lims"
 
@@ -59,118 +59,117 @@ if debug_mode:
 # Implicit module imports used by others
 # XXX Refactor these dependencies to explicit imports!
 from bika.lims.config import *  # noqa
-from bika.lims.permissions import *  # noqa
+# from bika.lims.permissions import *  # noqa
 from bika.lims.validators import *  # noqa
 from Products.Archetypes import PloneMessageFactory as PMF  # noqa
 
 
 def initialize(context):
+    logger.info("*** Initializing BIKA.LIMS ***")
+    from bika.lims.content.analysis import Analysis  # noqa
+    from bika.lims.content.analysiscategory import AnalysisCategory  # noqa
+    from bika.lims.content.analysisprofile import AnalysisProfile  # noqa
+    from bika.lims.content.analysisrequest import AnalysisRequest  # noqa
+    from bika.lims.content.analysisrequestsfolder import AnalysisRequestsFolder  # noqa
+    from bika.lims.content.analysisservice import AnalysisService  # noqa
+    from bika.lims.content.analysisspec import AnalysisSpec  # noqa
+    from bika.lims.content.arreport import ARReport  # noqa
+    from bika.lims.content.artemplate import ARTemplate  # noqa
+    from bika.lims.content.attachment import Attachment  # noqa
+    from bika.lims.content.attachmenttype import AttachmentType  # noqa
+    from bika.lims.content.autoimportlog import AutoImportLog  # noqa
+    from bika.lims.content.batch import Batch  # noqa
+    from bika.lims.content.batchfolder import BatchFolder  # noqa
+    from bika.lims.content.batchlabel import BatchLabel  # noqa
+    from bika.lims.content.bikaschema import BikaSchema  # noqa
+    from bika.lims.content.bikasetup import BikaSetup  # noqa
+    from bika.lims.content.calculation import Calculation  # noqa
+    from bika.lims.content.client import Client  # noqa
+    from bika.lims.content.clientfolder import ClientFolder  # noqa
+    from bika.lims.content.contact import Contact  # noqa
+    from bika.lims.content.container import Container  # noqa
+    from bika.lims.content.containertype import ContainerType  # noqa
+    from bika.lims.content.department import Department  # noqa
+    from bika.lims.content.duplicateanalysis import DuplicateAnalysis  # noqa
+    from bika.lims.content.identifiertype import IdentifierType  # noqa
+    from bika.lims.content.instrument import Instrument  # noqa
+    from bika.lims.content.instrumentcalibration import InstrumentCalibration  # noqa
+    from bika.lims.content.instrumentcertification import InstrumentCertification  # noqa
+    from bika.lims.content.instrumentlocation import InstrumentLocation  # noqa
+    from bika.lims.content.instrumentmaintenancetask import InstrumentMaintenanceTask  # noqa
+    from bika.lims.content.instrumentscheduledtask import InstrumentScheduledTask  # noqa
+    from bika.lims.content.instrumenttype import InstrumentType  # noqa
+    from bika.lims.content.instrumentvalidation import InstrumentValidation  # noqa
+    from bika.lims.content.invoice import Invoice  # noqa
+    from bika.lims.content.labcontact import LabContact  # noqa
+    from bika.lims.content.laboratory import Laboratory  # noqa
+    from bika.lims.content.labproduct import LabProduct  # noqa
+    from bika.lims.content.manufacturer import Manufacturer  # noqa
+    from bika.lims.content.method import Method  # noqa
+    from bika.lims.content.methods import Methods  # noqa
+    from bika.lims.content.multifile import Multifile  # noqa
+    from bika.lims.content.organisation import Organisation  # noqa
+    from bika.lims.content.person import Person  # noqa
+    from bika.lims.content.preservation import Preservation  # noqa
+    from bika.lims.content.pricelist import Pricelist  # noqa
+    from bika.lims.content.pricelistfolder import PricelistFolder  # noqa
+    from bika.lims.content.referenceanalysis import ReferenceAnalysis  # noqa
+    from bika.lims.content.referencedefinition import ReferenceDefinition  # noqa
+    from bika.lims.content.referencesample import ReferenceSample  # noqa
+    from bika.lims.content.referencesamplesfolder import ReferenceSamplesFolder  # noqa
+    from bika.lims.content.reflexrule import ReflexRule  # noqa
+    from bika.lims.content.rejectanalysis import RejectAnalysis  # noqa
+    from bika.lims.content.report import Report  # noqa
+    from bika.lims.content.reportfolder import ReportFolder  # noqa
+    from bika.lims.content.samplecondition import SampleCondition  # noqa
+    from bika.lims.content.samplematrix import SampleMatrix  # noqa
+    from bika.lims.content.samplepoint import SamplePoint  # noqa
+    from bika.lims.content.sampletype import SampleType  # noqa
+    from bika.lims.content.samplingdeviation import SamplingDeviation  # noqa
+    from bika.lims.content.storagelocation import StorageLocation  # noqa
+    from bika.lims.content.subgroup import SubGroup  # noqa
+    from bika.lims.content.supplier import Supplier  # noqa
+    from bika.lims.content.suppliercontact import SupplierContact  # noqa
+    from bika.lims.content.supplyorder import SupplyOrder  # noqa
+    from bika.lims.content.supplyorderfolder import SupplyOrderFolder  # noqa
+    from bika.lims.content.worksheet import Worksheet  # noqa
+    from bika.lims.content.worksheetfolder import WorksheetFolder  # noqa
+    from bika.lims.content.worksheettemplate import WorksheetTemplate  # noqa
 
-    from content.analysis import Analysis  # noqa
-    from content.analysiscategory import AnalysisCategory  # noqa
-    from content.analysisprofile import AnalysisProfile  # noqa
-    from content.analysisrequest import AnalysisRequest  # noqa
-    from content.analysisrequestsfolder import AnalysisRequestsFolder  # noqa
-    from content.analysisservice import AnalysisService  # noqa
-    from content.analysisspec import AnalysisSpec  # noqa
-    from content.arreport import ARReport  # noqa
-    from content.artemplate import ARTemplate  # noqa
-    from content.attachment import Attachment  # noqa
-    from content.attachmenttype import AttachmentType  # noqa
-    from content.autoimportlog import AutoImportLog  # noqa
-    from content.batch import Batch  # noqa
-    from content.batchfolder import BatchFolder  # noqa
-    from content.batchlabel import BatchLabel  # noqa
-    from content.bikaschema import BikaSchema  # noqa
-    from content.bikasetup import BikaSetup  # noqa
-    from content.calculation import Calculation  # noqa
-    from content.client import Client  # noqa
-    from content.clientfolder import ClientFolder  # noqa
-    from content.contact import Contact  # noqa
-    from content.container import Container  # noqa
-    from content.containertype import ContainerType  # noqa
-    from content.department import Department  # noqa
-    from content.duplicateanalysis import DuplicateAnalysis  # noqa
-    from content.identifiertype import IdentifierType  # noqa
-    from content.instrument import Instrument  # noqa
-    from content.instrumentcalibration import InstrumentCalibration  # noqa
-    from content.instrumentcertification import InstrumentCertification  # noqa
-    from content.instrumentlocation import InstrumentLocation  # noqa
-    from content.instrumentmaintenancetask import InstrumentMaintenanceTask  # noqa
-    from content.instrumentscheduledtask import InstrumentScheduledTask  # noqa
-    from content.instrumenttype import InstrumentType  # noqa
-    from content.instrumentvalidation import InstrumentValidation  # noqa
-    from content.invoice import Invoice  # noqa
-    from content.labcontact import LabContact  # noqa
-    from content.laboratory import Laboratory  # noqa
-    from content.labproduct import LabProduct  # noqa
-    from content.manufacturer import Manufacturer  # noqa
-    from content.method import Method  # noqa
-    from content.methods import Methods  # noqa
-    from content.multifile import Multifile  # noqa
-    from content.organisation import Organisation  # noqa
-    from content.person import Person  # noqa
-    from content.preservation import Preservation  # noqa
-    from content.pricelist import Pricelist  # noqa
-    from content.pricelistfolder import PricelistFolder  # noqa
-    from content.referenceanalysis import ReferenceAnalysis  # noqa
-    from content.referencedefinition import ReferenceDefinition  # noqa
-    from content.referencesample import ReferenceSample  # noqa
-    from content.referencesamplesfolder import ReferenceSamplesFolder  # noqa
-    from content.reflexrule import ReflexRule  # noqa
-    from content.rejectanalysis import RejectAnalysis  # noqa
-    from content.report import Report  # noqa
-    from content.reportfolder import ReportFolder  # noqa
-    from content.samplecondition import SampleCondition  # noqa
-    from content.samplematrix import SampleMatrix  # noqa
-    from content.samplepoint import SamplePoint  # noqa
-    from content.sampletype import SampleType  # noqa
-    from content.samplingdeviation import SamplingDeviation  # noqa
-    from content.storagelocation import StorageLocation  # noqa
-    from content.subgroup import SubGroup  # noqa
-    from content.supplier import Supplier  # noqa
-    from content.suppliercontact import SupplierContact  # noqa
-    from content.supplyorder import SupplyOrder  # noqa
-    from content.supplyorderfolder import SupplyOrderFolder  # noqa
-    from content.worksheet import Worksheet  # noqa
-    from content.worksheetfolder import WorksheetFolder  # noqa
-    from content.worksheettemplate import WorksheetTemplate  # noqa
-
-    from controlpanel.auditlog import AuditLog  # noqa
-    from controlpanel.bika_analysiscategories import AnalysisCategories  # noqa
-    from controlpanel.bika_analysisprofiles import AnalysisProfiles  # noqa
-    from controlpanel.bika_analysisservices import AnalysisServices  # noqa
-    from controlpanel.bika_analysisspecs import AnalysisSpecs  # noqa
-    from controlpanel.bika_artemplates import ARTemplates  # noqa
-    from controlpanel.bika_attachmenttypes import AttachmentTypes  # noqa
-    from controlpanel.bika_batchlabels import BatchLabels  # noqa
-    from controlpanel.bika_calculations import Calculations  # noqa
-    from controlpanel.bika_containers import Containers  # noqa
-    from controlpanel.bika_containertypes import ContainerTypes  # noqa
-    from controlpanel.bika_departments import Departments  # noqa
-    from controlpanel.bika_identifiertypes import IdentifierTypes  # noqa
-    from controlpanel.bika_instrumentlocations import InstrumentLocations  # noqa
-    from controlpanel.bika_instruments import Instruments  # noqa
-    from controlpanel.bika_instrumenttypes import InstrumentTypes  # noqa
-    from controlpanel.bika_labcontacts import LabContacts  # noqa
-    from controlpanel.bika_labproducts import LabProducts  # noqa
-    from controlpanel.bika_manufacturers import Manufacturers  # noqa
-    from controlpanel.bika_preservations import Preservations  # noqa
-    from controlpanel.bika_referencedefinitions import ReferenceDefinitions  # noqa
-    from controlpanel.bika_reflexrulefolder import ReflexRuleFolder  # noqa
-    from controlpanel.bika_sampleconditions import SampleConditions  # noqa
-    from controlpanel.bika_samplematrices import SampleMatrices  # noqa
-    from controlpanel.bika_samplepoints import SamplePoints  # noqa
-    from controlpanel.bika_sampletypes import SampleTypes  # noqa
-    from controlpanel.bika_samplingdeviations import SamplingDeviations  # noqa
-    from controlpanel.bika_storagelocations import StorageLocations  # noqa
-    from controlpanel.bika_subgroups import SubGroups  # noqa
-    from controlpanel.bika_suppliers import Suppliers  # noqa
-    from controlpanel.bika_worksheettemplates import WorksheetTemplates  # noqa
+    from bika.lims.controlpanel.auditlog import AuditLog  # noqa
+    from bika.lims.controlpanel.bika_analysiscategories import AnalysisCategories  # noqa
+    from bika.lims.controlpanel.bika_analysisprofiles import AnalysisProfiles  # noqa
+    from bika.lims.controlpanel.bika_analysisservices import AnalysisServices  # noqa
+    from bika.lims.controlpanel.bika_analysisspecs import AnalysisSpecs  # noqa
+    from bika.lims.controlpanel.bika_artemplates import ARTemplates  # noqa
+    from bika.lims.controlpanel.bika_attachmenttypes import AttachmentTypes  # noqa
+    from bika.lims.controlpanel.bika_batchlabels import BatchLabels  # noqa
+    from bika.lims.controlpanel.bika_calculations import Calculations  # noqa
+    from bika.lims.controlpanel.bika_containers import Containers  # noqa
+    from bika.lims.controlpanel.bika_containertypes import ContainerTypes  # noqa
+    from bika.lims.controlpanel.bika_departments import Departments  # noqa
+    from bika.lims.controlpanel.bika_identifiertypes import IdentifierTypes  # noqa
+    from bika.lims.controlpanel.bika_instrumentlocations import InstrumentLocations  # noqa
+    from bika.lims.controlpanel.bika_instruments import Instruments  # noqa
+    from bika.lims.controlpanel.bika_instrumenttypes import InstrumentTypes  # noqa
+    from bika.lims.controlpanel.bika_labcontacts import LabContacts  # noqa
+    from bika.lims.controlpanel.bika_labproducts import LabProducts  # noqa
+    from bika.lims.controlpanel.bika_manufacturers import Manufacturers  # noqa
+    from bika.lims.controlpanel.bika_preservations import Preservations  # noqa
+    from bika.lims.controlpanel.bika_referencedefinitions import ReferenceDefinitions  # noqa
+    from bika.lims.controlpanel.bika_reflexrulefolder import ReflexRuleFolder  # noqa
+    from bika.lims.controlpanel.bika_sampleconditions import SampleConditions  # noqa
+    from bika.lims.controlpanel.bika_samplematrices import SampleMatrices  # noqa
+    from bika.lims.controlpanel.bika_samplepoints import SamplePoints  # noqa
+    from bika.lims.controlpanel.bika_sampletypes import SampleTypes  # noqa
+    from bika.lims.controlpanel.bika_samplingdeviations import SamplingDeviations  # noqa
+    from bika.lims.controlpanel.bika_storagelocations import StorageLocations  # noqa
+    from bika.lims.controlpanel.bika_subgroups import SubGroups  # noqa
+    from bika.lims.controlpanel.bika_suppliers import Suppliers  # noqa
+    from bika.lims.controlpanel.bika_worksheettemplates import WorksheetTemplates  # noqa
 
     content_types, constructors, ftis = process_types(
-        listTypes(PROJECTNAME),
-        PROJECTNAME)
+        listTypes(PROJECTNAME), PROJECTNAME)
 
     # Register each type with it's own Add permission
     # use "Add portal content" as default

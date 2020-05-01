@@ -15,8 +15,6 @@
 
   <five:registerPackage package="." initialize=".initialize" />
 
-  <include file="permissions.zcml" />
-
   <include package=".adapters" />
   <include package=".browser" />
   <include package=".catalog" />
@@ -33,7 +31,7 @@
   <include package=".vocabularies" />
   <include package=".workflow" />
 
-  <!-- <include file="profiles.zcml" /> -->
+  <include file="profiles.zcml" />
   <include file="static.zcml" />
 
 

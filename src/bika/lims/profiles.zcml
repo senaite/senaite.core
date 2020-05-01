@@ -9,7 +9,7 @@
   <!-- Generic Setup *INSTALL* Profile -->
   <genericsetup:registerProfile
       name="default"
-      title="SENAITE Core"
+      title="SENAITE Core 1.x (do not install)"
       directory="profiles/default"
       description="Open Source Web based Laboratory Information Management System"
       pre_handler="bika.lims.setuphandlers.pre_install"
