@@ -1,0 +1,17 @@
+<tal:sidebar i18n:domain="plone">
+  <div tal:define="root view/navigation_root">
+
+    <button type="button" id="sidebarCollapse" class="btn btn-link">
+      <i class="fas fa-align-left"></i>
+    </button>
+
+    <div class="list-unstyled">
+      <ul class="nav navbar-nav">
+        <li tal:replace="structure view/createNavTree">
+          SUBTREE
+        </li>
+      </ul>
+    </div>
+
+  </div>
+</tal:sidebar>
