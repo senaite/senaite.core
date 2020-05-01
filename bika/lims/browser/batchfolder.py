@@ -96,18 +96,18 @@ class BatchFolderContentsView(BikaListingView):
                 "id": "default",
                 "contentFilter": {"review_state": "open"},
                 "title": _("Open"),
-                "transitions": [{"id": "close"}, {"id": "cancel"}],
+                "transitions": [],
                 "columns": self.columns.keys(),
             }, {
                 "id": "closed",
                 "contentFilter": {"review_state": "closed"},
                 "title": _("Closed"),
-                "transitions": [{"id": "open"}],
+                "transitions": [],
                 "columns": self.columns.keys(),
             }, {
                 "id": "cancelled",
                 "title": _("Cancelled"),
-                "transitions": [{"id": "reinstate"}],
+                "transitions": [],
                 "contentFilter": {"is_active": False},
                 "columns": self.columns.keys(),
             }, {
