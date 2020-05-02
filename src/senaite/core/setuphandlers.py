@@ -17,21 +17,17 @@ def install(context):
     logger.info("SENAITE CORE install handler [BEGIN]")
     portal = context.getSite()
 
+    # Run required import steps
+    _run_import_step(portal, "skins")
+
     # Run Installers
-    setup_first(portal)
+    setup_groups(portal)
     setup_content_types(portal)
     setup_core_catalogs(portal)
     setup_content_structure(portal)
     setup_catalog_mappings(portal)
 
     logger.info("SENAITE CORE install handler [DONE]")
-
-
-def setup_first(portal):
-    """Various import steps that can be run first
-    """
-    setup_groups(portal)
-    _run_import_step(portal, "skins")
 
 
 def setup_content_types(portal):
