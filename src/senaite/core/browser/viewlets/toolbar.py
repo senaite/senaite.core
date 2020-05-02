@@ -58,3 +58,7 @@ class ToolbarViewletManager(OrderedViewletManager):
         if not logo:
             logo = LOGO
         return portal_url + logo
+
+    def get_lims_setup_url(self):
+        portal_url = self.portal_state.portal().absolute_url()
+        return "/".join([portal_url, "@@lims-setup"])

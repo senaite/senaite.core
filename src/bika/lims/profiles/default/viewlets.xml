@@ -10,8 +10,6 @@
   <order manager="plone.portalheader" skinname="*" purge="True">
     <viewlet name="plone.skip_links"/>
     <viewlet name="plone.personal_bar"/>
-    <viewlet name="senaite.setupbutton"/>
-    <viewlet name="senaite.sections_dropdown"/>
     <viewlet name="plone.app.i18n.locales.languageselector"/>
     <viewlet name="plone.searchbox"/>
     <viewlet name="plone.logo"/>

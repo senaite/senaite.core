@@ -1,14 +1,6 @@
 @import "custom.scss";
-
-// Load bootstrap
 @import "~bootstrap/scss/bootstrap";
-
-// Load regular and solid icons only
-@import "~@fortawesome/fontawesome-free/scss/fontawesome";
-@import "~@fortawesome/fontawesome-free/scss/regular";
-@import "~@fortawesome/fontawesome-free/scss/solid";
-@import "~@fortawesome/fontawesome-free/scss/brands";
-
+@import "fontawesome.scss";
 @import "sidebar.scss";
 
 .wrapper {

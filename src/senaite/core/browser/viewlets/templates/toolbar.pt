@@ -26,6 +26,16 @@
     <!-- right -->
     <ul class="navbar-nav ml-auto">
 
+      <!-- LIMS Setup -->
+      <li class="nav-item" tal:condition="python:1">
+        <a class="btn btn-default" type="button"
+           tal:attributes="href view/get_lims_setup_url">
+          <span tal:omit-tag="" i18n:translate="">
+            <i class="fas fa-cog"></i>
+          </span>
+        </a>
+      </li>
+
       <!-- Personal Bar Menu -->
       <li class="nav-item dropdown" tal:condition="personal_bar/user_name">
         <a href="#"
