@@ -9,4 +9,33 @@
     <value key="enabled">False</value>
   </records>
 
+  <!-- Types to display in navigation -->
+  <record name="plone.displayed_types" interface="Products.CMFPlone.interfaces.controlpanel.INavigationSchema" field="displayed_types">
+    <field type="plone.registry.field.Tuple">
+      <default>
+        <element>WorksheetFolder</element>
+        <element>BatchFolder</element>
+        <element>ClientFolder</element>
+        <element>Methods</element>
+        <element>Folder</element>
+        <element>AnalysisRequestsFolder</element>
+      </default>
+      <description xmlns:ns0="http://xml.zope.org/namespaces/i18n" ns0:domain="plone" ns0:translate="">The content types that should be shown in the navigation and site map.</description>
+      <missing_value/>
+      <required>False</required>
+      <title xmlns:ns0="http://xml.zope.org/namespaces/i18n" ns0:domain="plone" ns0:translate="">Displayed content types</title>
+      <value_type type="plone.registry.field.Choice">
+        <vocabulary>plone.app.vocabularies.ReallyUserFriendlyTypes</vocabulary>
+      </value_type>
+    </field>
+    <value>
+      <element>WorksheetFolder</element>
+      <element>BatchFolder</element>
+      <element>ClientFolder</element>
+      <element>Methods</element>
+      <element>Folder</element>
+      <element>AnalysisRequestsFolder</element>
+    </value>
+  </record>
+
 </registry>
