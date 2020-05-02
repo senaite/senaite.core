@@ -1,9 +1,11 @@
 <tal:sidebar i18n:domain="plone">
   <div tal:define="root view/navigation_root">
 
-    <button type="button" id="sidebarCollapse" class="btn btn-link">
-      <i class="fas fa-align-left"></i>
-    </button>
+    <div id="sidebar-header" class="border-bottom">
+      <button type="button" id="sidebarCollapse" class="btn btn-link">
+        <i class="sidebar-toggle-icon"></i>
+      </button>
+    </div>
 
     <div class="list-unstyled">
       <ul class="nav navbar-nav">

@@ -1,9 +1,24 @@
 #sidebar {
-    min-width: 250px;
-    max-width: 250px;
+    min-width: 200px;
+    max-width: 200px;
     transition: all 0.3s;
     overflow: hidden;
     white-space: nowrap;
+}
+
+#sidebar #sidebar-header {
+    text-align: right;
+}
+#sidebar.active #sidebar-header {
+    text-align: center;
+}
+#sidebar .sidebar-toggle-icon {
+    @extend .fa;
+    @extend .fa-chevron-circle-left;
+}
+#sidebar.active .sidebar-toggle-icon {
+    @extend .fa;
+    @extend .fa-chevron-circle-right;
 }
 
 #sidebar a {
@@ -11,17 +26,19 @@
 }
 
 #sidebar.active {
-    min-width: 80px;
-    max-width: 80px;
+    min-width: 50px;
+    max-width: 50px;
 }
 
 #sidebar ul li a {
-    text-align: left;
 }
 
 #sidebar.active ul li a {
-    padding: 20px 10px;
-    font-size: 70%;
+    padding: 15px 0px;
+    text-align: center;
+}
+#sidebar.active ul li a span.node-title {
+    display: none;
 }
 
 #sidebar.active ul li a i {
@@ -34,7 +51,7 @@
 }
 
 #sidebar ul li a {
-    padding: 10px;
+    padding: 15px 10px;
     display: block;
 }
 
