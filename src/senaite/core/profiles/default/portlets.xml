@@ -3,4 +3,54 @@
   xmlns:i18n="http://xml.zope.org/namespaces/i18n"
   i18n:domain="plone">
 
+  <!-- remove navigation portlet -->
+  <assignment
+    name="navigation"
+    category="context"
+    key="/"
+    manager="plone.leftcolumn"
+    type="portlets.Navigation"
+    visible="True"
+    remove="True">
+    <property name="topLevel">0</property>
+    <property name="currentFolderOnly">False</property>
+    <property name="name">Navigation</property>
+    <property name="includeTop">False</property>
+    <property name="bottomLevel">0</property>
+    <property name="root"/>
+  </assignment>
+
+  <!-- remove events portlet -->
+  <assignment
+    name="events"
+    category="context"
+    key="/"
+    manager="plone.rightcolumn"
+    type="portlets.Events"
+    visible="True"
+    remove="True">
+    <property name="count">5</property>
+    <property name="no_thumbs">False</property>
+    <property name="search_base_uid"/>
+    <property name="state"/>
+    <property name="thumb_scale"/>
+  </assignment>
+
+  <!-- remove news portlet -->
+  <assignment
+    name="news"
+    category="context"
+    key="/"
+    manager="plone.rightcolumn"
+    type="portlets.News"
+    visible="True"
+    remove="True">
+    <property name="count">5</property>
+    <property name="no_thumbs">False</property>
+    <property name="state">
+      <element>published</element>
+    </property>
+    <property name="thumb_scale"/>
+  </assignment>
+
 </portlets>
