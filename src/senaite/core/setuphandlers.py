@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 
+from bika.lims.setuphandlers import add_dexterity_setup_items
 from bika.lims.setuphandlers import reindex_content_structure
+from bika.lims.setuphandlers import setup_auditlog_catalog
 from bika.lims.setuphandlers import setup_catalog_mappings
 from bika.lims.setuphandlers import setup_core_catalogs
-from bika.lims.setuphandlers import setup_auditlog_catalog
 from bika.lims.setuphandlers import setup_groups
 from senaite.core import logger
 from senaite.core.config import PROFILE_ID
@@ -39,6 +40,7 @@ def install(context):
     setup_core_catalogs(portal)
     setup_auditlog_catalog(portal)
     setup_content_structure(portal)
+    add_dexterity_setup_items(portal)
     setup_catalog_mappings(portal)
 
     logger.info("SENAITE CORE install handler [DONE]")
