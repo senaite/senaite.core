@@ -7,6 +7,13 @@ from bika.lims.setuphandlers import setup_groups
 from senaite.core import logger
 from senaite.core.config import PROFILE_ID
 
+CONTENTS_TO_DELETE = (
+    # List of items to delete
+    "Members",
+    "news",
+    "events",
+)
+
 
 def install(context):
     """Install handler
@@ -26,12 +33,25 @@ def install(context):
 
     # Run Installers
     setup_groups(portal)
+    remove_default_content(portal)
     setup_content_types(portal)
     setup_core_catalogs(portal)
     setup_content_structure(portal)
     setup_catalog_mappings(portal)
 
     logger.info("SENAITE CORE install handler [DONE]")
+
+
+def remove_default_content(portal):
+    """Remove default Plone contents
+    """
+    logger.info("*** Remove Default Content ***")
+
+    # Get the list of object ids for portal
+    object_ids = portal.objectIds()
+    delete_ids = filter(lambda id: id in object_ids, CONTENTS_TO_DELETE)
+    if delete_ids:
+        portal.manage_delObjects(ids=list(delete_ids))
 
 
 def setup_content_types(portal):
