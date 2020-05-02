@@ -19,6 +19,10 @@ def install(context):
 
     # Run required import steps
     _run_import_step(portal, "skins")
+    _run_import_step(portal, "browserlayer")
+    _run_import_step(portal, "rolemap")
+    _run_import_step(portal, "toolset")
+    _run_import_step(portal, "workflow")
 
     # Run Installers
     setup_groups(portal)
