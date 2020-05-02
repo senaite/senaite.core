@@ -33,7 +33,11 @@
                              title node/Description;
                              class string:$item_class${li_class}${li_extr_class}${li_folder_class} $item_type_class nav-link">
             <tal:root tal:condition="python: level==1">
+              <span
+                tal:attributes="title node/Title"
+                class="node-icon">
               <img tal:replace="structure item_icon"/>
+              </span>
               <span class="node-title" tal:content="node/Title">Selected Item Title</span>
             </tal:root>
             <tal:children tal:condition="python: level>1">
