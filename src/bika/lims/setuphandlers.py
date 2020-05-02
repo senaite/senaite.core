@@ -82,6 +82,14 @@ NAV_BAR_ITEMS_TO_HIDE = (
     "supplyorders",
 )
 
+
+CONTENTS_TO_DELETE = (
+    # List of items to delete
+    "Members",
+    "news",
+    "events",
+)
+
 CATALOG_MAPPINGS = (
     # portal_type, catalog_ids
     ("ARTemplate", ["bika_setup_catalog", "portal_catalog"]),
@@ -289,9 +297,6 @@ def setup_handler(context):
     # XXX P5: Fix HTML filtering
     # setup_html_filter(portal)
 
-    # Setting up all LIMS catalogs defined in catalog folder
-    setup_catalogs(portal, getCatalogDefinitions())
-
     # Run after all catalogs have been setup
     setup_auditlog_catalog(portal)
 
@@ -374,6 +379,9 @@ def setup_core_catalogs(portal):
     """Setup core catalogs
     """
     logger.info("*** Setup Core Catalogs ***")
+
+    # Setting up all LIMS catalogs defined in catalog folder
+    setup_catalogs(portal, getCatalogDefinitions())
 
     to_reindex = []
     for catalog, name, attribute, meta_type in INDEXES:

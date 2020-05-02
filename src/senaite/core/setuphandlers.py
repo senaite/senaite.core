@@ -3,6 +3,7 @@
 from bika.lims.setuphandlers import reindex_content_structure
 from bika.lims.setuphandlers import setup_catalog_mappings
 from bika.lims.setuphandlers import setup_core_catalogs
+from bika.lims.setuphandlers import setup_auditlog_catalog
 from bika.lims.setuphandlers import setup_groups
 from senaite.core import logger
 from senaite.core.config import PROFILE_ID
@@ -28,7 +29,7 @@ def install(context):
     _run_import_step(portal, "skins")
     _run_import_step(portal, "browserlayer")
     _run_import_step(portal, "rolemap")
-    _run_import_step(portal, "toolset")
+    _run_import_step(portal, "toolset")  # catalogs
     _run_import_step(portal, "workflow")
 
     # Run Installers
@@ -36,6 +37,7 @@ def install(context):
     remove_default_content(portal)
     setup_content_types(portal)
     setup_core_catalogs(portal)
+    setup_auditlog_catalog(portal)
     setup_content_structure(portal)
     setup_catalog_mappings(portal)
 
