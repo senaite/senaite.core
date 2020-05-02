@@ -1,5 +1,4 @@
 import "./senaite.core.scss";
-
 import "bootstrap";
 
 

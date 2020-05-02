@@ -56,6 +56,15 @@
       layer="senaite.core.interfaces.ISenaiteCore"
       />
 
+  <!-- Site Actions -->
+  <browser:viewlet
+      name="plone.site_actions"
+      manager="plone.app.layout.viewlets.interfaces.IPortalFooter"
+      class=".site_actions.SiteActionsViewlet"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
   <!-- Footer Viewlet -->
   <browser:viewlet
       name="plone.footer"

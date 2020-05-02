@@ -2,15 +2,6 @@
            xmlns:browser="http://namespaces.zope.org/browser"
            i18n_domain="senaite.core">
 
-  <!-- Content Views Viewlet (Tabs) -->
-  <browser:viewlet
-      name="plone.contentviews"
-      manager="plone.app.layout.viewlets.interfaces.IAboveContent"
-      class=".content_views.ContentViewsViewlet"
-      permission="zope2.View"
-      layer="bika.lims.interfaces.IBikaLIMS"
-      />
-
   <!-- Language Selector -->
   <browser:viewlet
       name="plone.app.i18n.locales.languageselector"
@@ -52,53 +43,15 @@
       layer="bika.lims.interfaces.IBikaLIMS"
       />
 
-  <!-- Site Actions -->
-  <browser:viewlet
-      name="plone.site_actions"
-      manager="plone.app.layout.viewlets.interfaces.IPortalFooter"
-      class=".site_actions.SiteActionsViewlet"
-      permission="zope2.View"
-      layer="bika.lims.interfaces.IBikaLIMS"
-      />
-
 
   <!-- Global Sections Dropdown -->
-  <browser:viewlet
-      name="senaite.sections_dropdown"
-      manager="plone.app.layout.viewlets.interfaces.IPortalHeader"
-      class=".sections.GlobalSectionsDropdownViewlet"
-      permission="zope2.View"
-      layer="bika.lims.interfaces.IBikaLIMS"
-      />
-
-  <!-- Global sections
-       NOTE: This viewlet only renders a horizontal line
-       All sections are located inside the sections dropdown
-  -->
-  <browser:viewlet
-      name="plone.global_sections"
-      manager="plone.app.layout.viewlets.interfaces.IPortalHeader"
-      class=".sections.GlobalSectionsViewlet"
-      permission="zope2.View"
-      layer="bika.lims.interfaces.IBikaLIMS"
-      />
-
-  <!-- Document actions -->
-  <browser:viewlet
-      name="plone.abovecontenttitle.documentactions"
-      manager="plone.app.layout.viewlets.interfaces.IAboveContentTitle"
-      class=".document_actions.DocumentActionsViewlet"
-      permission="zope2.View"
-      layer="bika.lims.interfaces.IBikaLIMS"
-      />
-
-  <!-- Authenticator Viewlet -->
-  <browser:viewlet
-      name="bika.lims.authenticator"
-      manager="plone.app.layout.viewlets.interfaces.IPortalFooter"
-      class="bika.lims.browser.viewlets.authenticator.AuthenticatorViewlet"
-      permission="zope2.View"
-      />
+  <!-- <browser:viewlet -->
+  <!--     name="senaite.sections_dropdown" -->
+  <!--     manager="plone.app.layout.viewlets.interfaces.IPortalHeader" -->
+  <!--     class=".sections.GlobalSectionsDropdownViewlet" -->
+  <!--     permission="zope2.View" -->
+  <!--     layer="bika.lims.interfaces.IBikaLIMS" -->
+  <!--     /> -->
 
   <!-- Invalid Analysis Request viewlet -->
   <browser:viewlet

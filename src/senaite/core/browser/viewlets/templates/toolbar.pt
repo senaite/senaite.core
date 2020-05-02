@@ -28,7 +28,7 @@
 
       <!-- LIMS Setup -->
       <li class="nav-item" tal:condition="python:1">
-        <a class="btn btn-default" type="button"
+        <a class="nav-link"
            tal:attributes="href view/get_lims_setup_url">
           <span tal:omit-tag="" i18n:translate="">
             <i class="fas fa-cog"></i>

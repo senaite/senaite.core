@@ -36,16 +36,3 @@ class GlobalSectionsDropdownViewlet(Base):
         self.navigation_root_url = portal_state.navigation_root_url()
         self.portal_title = escape(
             safe_unicode(portal_state.navigation_root_title()))
-
-
-class GlobalSectionsViewlet(Base):
-    index = ViewPageTemplateFile(
-        "templates/plone.app.layout.viewlets.sections.pt")
-
-    def update(self):
-        super(GlobalSectionsViewlet, self).update()
-        portal_state = getMultiAdapter((self.context, self.request),
-                                       name=u"plone_portal_state")
-        self.navigation_root_url = portal_state.navigation_root_url()
-        self.portal_title = escape(
-            safe_unicode(portal_state.navigation_root_title()))
