@@ -11,9 +11,6 @@
   <!-- package includes -->
   <include package=".browser" />
 
-  <!-- file includes -->
-  <!-- <include file="permissions.zcml" /> -->
-
   <!-- portal skins -->
   <cmf:registerDirectory
       name="skins"

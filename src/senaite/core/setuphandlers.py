@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
-from bika.lims import api
-from plone import api as ploneapi
+from bika.lims.setuphandlers import reindex_content_structure
+from bika.lims.setuphandlers import setup_catalog_mappings
+from bika.lims.setuphandlers import setup_core_catalogs
+from bika.lims.setuphandlers import setup_groups
 from senaite.core import logger
-from senaite.core.config import CONTENTS_TO_DELETE
-from senaite.core.config import GROUPS
 from senaite.core.config import PROFILE_ID
 
 
@@ -18,57 +18,45 @@ def install(context):
     portal = context.getSite()
 
     # Run Installers
-    remove_default_content(portal)
-    setup_groups(portal)
-    install_contenttypes_and_structure(portal)
+    setup_first(portal)
+    setup_content_types(portal)
+    setup_core_catalogs(portal)
+    setup_content_structure(portal)
+    setup_catalog_mappings(portal)
 
     logger.info("SENAITE CORE install handler [DONE]")
 
 
-def remove_default_content(portal):
-    """Remove default Plone contents
+def setup_first(portal):
+    """Various import steps that can be run first
     """
-    logger.info("*** Delete Default Content ***")
-
-    # Get the list of object ids for portal
-    object_ids = portal.objectIds()
-    delete_ids = filter(lambda id: id in object_ids, CONTENTS_TO_DELETE)
-    if len(delete_ids) > 0:
-        portal.manage_delObjects(ids=list(delete_ids))
+    setup_groups(portal)
+    _run_import_step(portal, "skins")
 
 
-def setup_groups(portal):
-    """Setup roles and groups
+def setup_content_types(portal):
+    """Install AT content type information
     """
-    logger.info("*** Setup Roles and Groups ***")
-
-    portal_groups = api.get_tool("portal_groups")
-
-    for gdata in GROUPS:
-        group_id = gdata["id"]
-        # create the group and grant the roles
-        if group_id not in portal_groups.listGroupIds():
-            logger.info("+++ Adding group {title} ({id})".format(**gdata))
-            portal_groups.addGroup(group_id,
-                                   title=gdata["title"],
-                                   roles=gdata["roles"])
-        # grant the roles to the existing group
-        else:
-            ploneapi.group.grant_roles(
-                groupname=gdata["id"],
-                roles=gdata["roles"],)
-            logger.info("+++ Granted group {title} ({id}) the roles {roles}"
-                        .format(**gdata))
+    logger.info("*** Install SENAITE Content Types ***")
+    _run_import_step(portal, "typeinfo")
+    _run_import_step(portal, "factorytool")
 
 
-def install_contenttypes_and_structure(portal):
-    """Install AT contenttypes
+def setup_content_structure(portal):
+    """Install the base content structure
     """
-    logger.info("*** Install Content Types and Structure ***")
-    profile = "profile-bika.lims:default"
+    logger.info("*** Install SENAITE Content Types ***")
+    _run_import_step(portal, "content")
+    reindex_content_structure(portal)
+
+
+def _run_import_step(portal, name, profile="profile-bika.lims:default"):
+    """Helper to install a GS import step from the given profile
+    """
+    logger.info("*** Running import step '{}' from profile '{}' ***"
+                .format(name, profile))
     setup = portal.portal_setup
-    setup.runImportStepFromProfile(profile, "content")
-    # setup.runImportStepFromProfile(profile, "structure")
+    setup.runImportStepFromProfile(profile, name)
 
 
 def pre_install(portal_setup):
