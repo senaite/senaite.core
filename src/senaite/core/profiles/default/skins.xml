@@ -7,8 +7,13 @@
   <object name="senaite_images" meta_type="Filesystem Directory View"
           directory="senaite.core:skins/senaite_images"/>
 
+  <!-- senaite templates -->
+  <object name="senaite_templates" meta_type="Filesystem Directory View"
+          directory="senaite.core:skins/senaite_templates"/>
+
   <skin-path name="*">
     <layer name="senaite_images" insert-after="custom"/>
+    <layer name="senaite_templates" insert-after="senaite_images"/>
   </skin-path>
 
 </object>

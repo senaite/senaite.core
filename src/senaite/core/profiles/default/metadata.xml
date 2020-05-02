@@ -4,5 +4,6 @@
   <dependencies>
     <dependency>Products.ATContentTypes:base</dependency>
     <dependency>profile-Products.ATExtensions:default</dependency>
+    <dependency>archetypes.referencebrowserwidget:default</dependency>
   </dependencies>
 </metadata>
