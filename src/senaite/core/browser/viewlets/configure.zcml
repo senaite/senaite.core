@@ -38,6 +38,15 @@
       layer="senaite.core.interfaces.ISenaiteCore"
       />
 
+  <!-- Document actions -->
+  <browser:viewlet
+      name="plone.abovecontenttitle.documentactions"
+      manager="plone.app.layout.viewlets.interfaces.IAboveContentTitle"
+      class=".document_actions.DocumentActionsViewlet"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
   <!-- Logo Viewlet -->
   <browser:viewlet
       name="plone.logo"
