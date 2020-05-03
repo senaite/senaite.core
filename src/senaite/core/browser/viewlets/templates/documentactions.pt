@@ -10,7 +10,7 @@
         Document Actions
       </p>
 
-      <ul class="nav nav-pills pull-right"
+      <ul class="nav nav-pills float-right"
           tal:define="normalizeString nocall: context/@@plone/normalizeString">
         <li tal:repeat="daction view/actions"
             tal:attributes="id python:'document-action-' + normalizeString(daction['id'])">
