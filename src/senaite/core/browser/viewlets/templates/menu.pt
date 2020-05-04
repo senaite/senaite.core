@@ -13,8 +13,8 @@
       <tal:var define="selected action/selected|nothing;">
         <a href="#"
            tal:attributes="href action/url;
-                 target action/link_target|nothing;
-                 class string:${action/cssClass} nav-link;">
+                           target action/link_target|nothing;
+                           class string:${action/cssClass} nav-link;">
           <span tal:attributes="class string:icon-${action/id}${action/cssClass|nothing} toolbar-menu-icon;"
                 class="icon-folderContents" aria-hidden="true">
           </span>
@@ -23,7 +23,7 @@
       </tal:var>
     </li>
 
-    <!-- Last Modification Date -->
+    <!-- Last Modification Date (history) -->
     <li tal:attributes="id string:contentview-${action/id};
                         class python: action.get('selected') and 'active nav-item' or 'nav-item'"
         tal:define="actionid action/id"

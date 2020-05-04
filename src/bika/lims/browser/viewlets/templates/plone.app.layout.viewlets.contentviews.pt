@@ -2,13 +2,6 @@
                   tal:condition="ploneview/showToolbar"
                   i18n:domain="plone">
 
-  <!-- <tal:block define="actions view/tabSet1;"> -->
-  <!-- <div tal:replace="structure python: view.menu_template(actions=actions)" /> -->
-  <!-- </tal:block> -->
-  <!-- <tal:contentmenus> -->
-  <!-- <div tal:replace="structure provider:plone.contentmenu" /> -->
-  <!-- </tal:contentmenus> -->
-
   <tal:block define="tabset1 view/tabSet1;
                      tabset2 view/tabSet2;">
     <ul class="nav nav-pills col-md-12" i18n:domain="plone">
