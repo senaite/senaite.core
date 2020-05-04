@@ -1,6 +1,11 @@
+/** Navigation Sidebar
+*/
+$sidebar-collapsed-width: 50px;
+$sidebar-expanded-width: 200px;
+
 #sidebar {
-    min-width: 200px;
-    max-width: 200px;
+    min-width: $sidebar-expanded-width;
+    max-width: $sidebar-expanded-width;
     transition: all 0.3s;
     overflow: hidden;
     white-space: nowrap;
@@ -9,6 +14,46 @@
 #sidebar #sidebar-header {
     text-align: right;
 }
+
+/* Sidebar minimized (active class) */
+#sidebar.active {
+    min-width: 50px;
+    max-width: 50px;
+}
+#sidebar.active .sidebar-toggle-icon {
+    @extend .fa;
+    @extend .fa-chevron-circle-right;
+}
+#sidebar.active ul li a {
+    padding: 15px 0px;
+    text-align: center;
+}
+#sidebar.active ul ul a {
+    padding: 10px 15px !important;
+}
+#sidebar.active ul li a i {
+    margin-right: 0;
+    margin-bottom: 5px;
+}
+#sidebar.active ul li a span.node-title,
+#sidebar.active ul li a span.child-title {
+    display: none;
+}
+#sidebar ul li.active {
+    bacground-color: $navbar-light-active-color;
+}
+#sidebar ul li.active>a {
+    color: $navbar-light-active-color;
+}
+#sidebar ul li.active {
+    background: $gray-400;
+}
+#sidebar.active ul.submenu li {
+    opacity: 0.4;
+    padding: 0;
+}
+
+/* Sidebar maximized */
 #sidebar.active #sidebar-header {
     text-align: center;
 }
@@ -16,70 +61,23 @@
     @extend .fa;
     @extend .fa-chevron-circle-left;
 }
-#sidebar.active .sidebar-toggle-icon {
-    @extend .fa;
-    @extend .fa-chevron-circle-right;
-}
-
 #sidebar a {
     color: $navbar-light-color;
 }
-
-#sidebar.active {
-    min-width: 50px;
-    max-width: 50px;
+#sidebar a:hover {
+    color: $navbar-light-hover-color;
 }
-
-#sidebar ul li a {
-}
-
-#sidebar.active ul li a {
-    padding: 15px 0px;
-    text-align: center;
-}
-#sidebar.active ul li a span.node-title {
-    display: none;
-}
-
-#sidebar.active ul li a i {
-    margin-right: 0;
-    margin-bottom: 5px;
-}
-
-#sidebar.active ul ul a {
-    padding: 10px 15px !important;
-}
-
 #sidebar ul li a {
     padding: 15px 10px;
     display: block;
 }
-
-#sidebar ul li a:hover {
+#sidebar ul.submenu li {
+    padding-left: 0.5em;
 }
 
-#sidebar ul li a i {
-    margin-right: 10px;
-}
-
-#sidebar ul li.active>a,
-a[aria-expanded="true"] {
-    color: #fff;
-}
-#sidebar ul li.active {
-    background: $gray-400;
-}
-
+/* Media Queries */
 @media (max-width: 768px) {
-    #sidebar {
-        min-width: 80px;
-        max-width: 80px;
-        margin-left: -80px !important;
-    }
     #sidebar-header {
         display: none;
-    }
-    #sidebar.active {
-        margin-left: 0 !important;
     }
 }

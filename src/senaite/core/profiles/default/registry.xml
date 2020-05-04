@@ -1,14 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <registry xmlns:i18n="http://xml.zope.org/namespaces/i18n" i18n:domain="senaite.core">
 
-  <!-- Deactivate 'plone-editor-tools' bundle from resource registry
-       Includes logic for the Plone toolbar which we override
-  -->
-  <records prefix="plone.bundles/plone-editor-tools"
-           interface="Products.CMFPlone.interfaces.IBundleRegistry">
-    <value key="enabled">False</value>
-  </records>
-
   <!-- Types to display in navigation -->
   <record name="plone.displayed_types" interface="Products.CMFPlone.interfaces.controlpanel.INavigationSchema" field="displayed_types">
     <field type="plone.registry.field.Tuple">
@@ -35,6 +27,9 @@
       <element>Methods</element>
       <element>Folder</element>
       <element>AnalysisRequestsFolder</element>
+      <element>AnalysisServices</element>
+      <element>Calculations</element>
+      <element>AnalysisProfiles</element>
     </value>
   </record>
 

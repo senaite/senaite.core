@@ -36,14 +36,18 @@
               <span
                 tal:attributes="title node/Title"
                 class="node-icon">
-              <img tal:replace="structure item_icon"/>
+                <img tal:replace="structure item_icon"/>
               </span>
               <span class="node-title" tal:content="node/Title">Selected Item Title</span>
             </tal:root>
             <tal:children tal:condition="python: level>1">
               <div style="white-space:nowrap;">
-                <i class="fas fa-chevron-right"></i>
-                <span tal:content="node/Title">Selected Item Title</span>
+                <span
+                  tal:attributes="title node/Title"
+                  class="child-icon">
+                  <img tal:replace="structure item_icon"/>
+                </span>
+                <span class="child-title" tal:content="node/Title">Selected Item Title</span>
               </div>
             </tal:children>
           </a>

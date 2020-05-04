@@ -1,7 +1,7 @@
 <tal:sidebar i18n:domain="plone">
   <div tal:define="root view/navigation_root">
 
-    <div id="sidebar-header" class="border-bottom">
+    <div id="sidebar-header" class="border-bottom active">
       <button type="button" id="sidebarCollapse" class="btn btn-link">
         <i class="sidebar-toggle-icon"></i>
       </button>
