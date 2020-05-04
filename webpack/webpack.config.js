@@ -63,10 +63,10 @@ module.exports = {
       template: "app/resources.pt",
       publicPath: publicPath,
     }),
-    new webpack.ProvidePlugin({
-      $: "jquery",
-      jQuery: "jquery"
-    }),
+    // new webpack.ProvidePlugin({
+    //   $: "jquery",
+    //   jQuery: "jquery"
+    // }),
     // new webpack.ProvidePlugin({
     //   bootstrap: "bootstrap/dist/js/bootstrap.min.js"
     // })
