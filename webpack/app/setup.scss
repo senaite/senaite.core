@@ -1,32 +1,30 @@
 /* CSS Styles for the SENAITE Setup View*/
-.vcenter {
+
+#setupview .vcenter {
     display: inline-block;
     vertical-align: middle;
     float: none;
 }
-.tile {
+
+#setupview .tile {
     width: 100%;
     height: 6em;
     box-sizing: border-box;
     display: inline-block;
-    background: #d9edf7;
     padding: 2em;
     margin: auto auto 1em auto;
     overflow: hidden;
+    border: 1px solid $border-color;
 }
-.tile .title {
+
+#setupview .tile .title {
     text-transform: uppercase;
-    font-weight: bold;
+    font-weight: normal;
     text-overflow: ellipsis;
     overflow: hidden;
+    padding-left: 15px;
 }
-.tile:hover {
-    background: #d9edff;
-    text-decoration: none;
-}
-.tile.setup {
-    background: #ddd;
-}
-.tile.setup:hover {
-    background: #aaa;
+
+#setupview .tile:hover {
+    background-color: $gray-200;
 }

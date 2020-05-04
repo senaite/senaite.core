@@ -6,18 +6,6 @@
       metal:use-macro="here/prefs_main_template/macros/master"
       i18n:domain="senaite.core">
 
-  <head>
-    <metal:block fill-slot="javascript_head_slot"
-                 tal:define="portal context/@@plone_portal_state/portal;">
-    </metal:block>
-
-    <metal:block fill-slot="style_slot"
-                 tal:define="portal context/@@plone_portal_state/portal;">
-      <!-- Link in the Setup CSS -->
-      <link href="++resource++bika.lims.css/setupview.css" rel="stylesheet">
-    </metal:block>
-
-  </head>
   <body>
 
     <metal:override fill-slot="top_slot"
@@ -26,7 +14,7 @@
 
     <div metal:fill-slot="prefs_configlet_main" id="lims-controlpanel">
 
-      <div class="row">
+      <div id="setupview" class="row">
 
         <!-- The setup item -->
         <tal:setup tal:define="setup python:view.setup">
