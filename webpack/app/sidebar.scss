@@ -1,11 +1,11 @@
 /** Navigation Sidebar
 */
-$sidebar-collapsed-width: 50px;
-$sidebar-expanded-width: 200px;
+$sidebar-minimized-width: 50px;
+$sidebar-maximized-width: 200px;
 
 #sidebar {
-    min-width: $sidebar-expanded-width;
-    max-width: $sidebar-expanded-width;
+    min-width: $sidebar-maximized-width;
+    max-width: $sidebar-maximized-width;
     transition: all 0.3s;
     overflow: hidden;
     white-space: nowrap;
@@ -17,8 +17,8 @@ $sidebar-expanded-width: 200px;
 
 /* Sidebar minimized (active class) */
 #sidebar.active {
-    min-width: 50px;
-    max-width: 50px;
+    min-width: $sidebar-minimized-width;
+    max-width: $sidebar-minimized-width;
 }
 #sidebar.active .sidebar-toggle-icon {
     @extend .fa;
@@ -70,6 +70,11 @@ $sidebar-expanded-width: 200px;
 #sidebar ul li a {
     padding: 15px 10px;
     display: block;
+}
+
+/* submenu */
+#sidebar ul.submenu {
+    max-width: $sidebar-maximized-width;
 }
 #sidebar ul.submenu li {
     padding-left: 0.5em;

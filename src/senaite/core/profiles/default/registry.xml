@@ -21,15 +21,46 @@
       </value_type>
     </field>
     <value>
-      <element>WorksheetFolder</element>
+      <!-- Work Items -->
+      <element>AnalysisRequestsFolder</element>
       <element>BatchFolder</element>
       <element>ClientFolder</element>
-      <element>Methods</element>
       <element>Folder</element>
-      <element>AnalysisRequestsFolder</element>
-      <element>AnalysisServices</element>
-      <element>Calculations</element>
+      <element>Methods</element>
+      <element>WorksheetFolder</element>
+      <!-- Setup Items -->
+      <element>AnalysisCategories</element>
       <element>AnalysisProfiles</element>
+      <element>AnalysisServices</element>
+      <element>AnalysisSpecifications</element>
+      <element>AnalysisTemplates</element>
+      <element>AttachmentTypes</element>
+      <element>Auditlog</element>
+      <element>BatchLabels</element>
+      <element>Calculations</element>
+      <element>ContainerTypes</element>
+      <element>Containers</element>
+      <element>DynamicAnalysisSpecs</element>
+      <element>InstrumentLocations</element>
+      <element>InstrumentTypes</element>
+      <element>Instruments</element>
+      <element>LabContacts</element>
+      <element>LabDepartments</element>
+      <element>LabProducts</element>
+      <element>Laboratory</element>
+      <element>Manufacturers</element>
+      <element>Preservations</element>
+      <element>ReferenceDefinitions</element>
+      <element>ReflexRuleFolder</element>
+      <element>SampleConditions</element>
+      <element>SampleMatrices</element>
+      <element>SamplePoints</element>
+      <element>SampleTypes</element>
+      <element>SamplingDeviations</element>
+      <element>StorageLocations</element>
+      <element>SubGroups</element>
+      <element>Suppliers</element>
+      <element>WorksheetTemplates</element>
     </value>
   </record>
 
