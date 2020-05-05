@@ -76,7 +76,6 @@ setup(
         "zopyx.txng3.ext==3.4.0",
         "senaite.core.supermodel",
         "senaite.core.listing",
-        "plonetheme.sunburst",
         # XXX P5: Fix senaite.jsonapi
         # "senaite.core.spotlight",
         "senaite.impress",

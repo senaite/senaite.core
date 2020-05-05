@@ -8,6 +8,39 @@ from bika.lims.setuphandlers import setup_core_catalogs
 from bika.lims.setuphandlers import setup_groups
 from senaite.core import logger
 from senaite.core.config import PROFILE_ID
+from zope.interface import implementer
+
+try:
+    from Products.CMFPlone.interfaces import INonInstallable
+except ImportError:
+    from zope.interface import Interface
+
+    class INonInstallable(Interface):
+        pass
+
+
+@implementer(INonInstallable)
+class HiddenProfiles(object):
+    def getNonInstallableProfiles(self):
+        """Hide all profiles from site-creation and quickinstaller (not ZMI)"""
+        return [
+            "bika.lims:default",
+            # hide install profiles that come with Plone
+            "Products.CMFPlacefulWorkflow:CMFPlacefulWorkflow",
+            "Products.CMFPlacefulWorkflow:base",
+            "Products.CMFPlacefulWorkflow:uninstall",
+            "Products.DataGridField:default",
+            "Products.DataGridField:example",
+            "Products.TextIndexNG3:default",
+            "archetypes.multilingual:default",
+            "plone.app.iterate:default",
+            "plone.app.iterate:plone.app.iterate",
+            "plone.app.iterate:test",
+            "plone.app.iterate:uninstall",
+            "plonetheme.barceloneta:default",
+            "archetypes.referencebrowserwidget:default"
+        ]
+
 
 CONTENTS_TO_DELETE = (
     # List of items to delete

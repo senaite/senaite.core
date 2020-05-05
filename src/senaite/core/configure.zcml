@@ -18,6 +18,7 @@
       recursive="True"
       />
 
+  <!-- Profile -->
   <genericsetup:registerProfile
       name="default"
       title="SENAITE CORE"
@@ -27,11 +28,18 @@
       post_handler="senaite.core.setuphandlers.post_install"
       provides="Products.GenericSetup.interfaces.EXTENSION"/>
 
+  <!-- Install Handler -->
   <genericsetup:importStep
       name="senaite.core.setuphandlers.install"
       title="SENAITE CORE: Run Setup Handler"
       description="Run install handler"
       handler="senaite.core.setuphandlers.install">
   </genericsetup:importStep>
+
+  <!-- Hidden Profiles -->
+  <utility
+      factory=".setuphandlers.HiddenProfiles"
+      name="senaite.core-hiddenprofiles"
+      />
   
 </configure>
