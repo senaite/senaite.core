@@ -21,5 +21,4 @@
 from analysisrequest import *  # noqa
 from attachments import AttachmentsViewlet  # noqa
 from attachments import WorksheetAttachmentsViewlet  # noqa
-from content_views import ContentViewsViewlet  # noqa
 from instruments import InstrumentQCFailuresViewlet  # noqa

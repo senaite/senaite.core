@@ -1,0 +1,28 @@
+<tal:sections
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  tal:define="portal_tabs view/portal_tabs"
+  tal:condition="portal_tabs"
+  i18n:domain="plone">
+
+  <nav class="dropdown">
+
+    <a class="nav-link dropdown-toggle"
+      type="button"
+      data-toggle="dropdown"
+      aria-haspopup="true"
+      aria-expanded="false">
+      <span tal:omit-tag="" i18n:translate="">
+        <i class="fas fa-th"></i>
+      </span>
+      <span class="caret"></span>
+    </a>
+
+    <ul class="dropdown-menu dropdown-menu-right"
+        tal:define="selected_tab python:view.selected_portal_tab">
+      <navtree tal:replace="structure view/render_globalnav" />
+    </ul>
+  </nav>
+
+</tal:sections>

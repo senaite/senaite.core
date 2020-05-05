@@ -2,16 +2,6 @@
            xmlns:browser="http://namespaces.zope.org/browser"
            i18n_domain="senaite.core">
 
-  <!-- Language Selector -->
-  <browser:viewlet
-      name="plone.app.i18n.locales.languageselector"
-      manager="plone.app.layout.viewlets.interfaces.IPortalHeader"
-      class="plone.app.i18n.locales.browser.selector.LanguageSelector"
-      permission="zope2.View"
-      template="templates/plone.app.i18n.locales.browser.languageselector.pt"
-      layer="bika.lims.interfaces.IBikaLIMS"
-      />
-
   <!-- AR Attachments Viewlet -->
   <browser:viewlet
       for="bika.lims.interfaces.IAnalysisRequest"
@@ -42,16 +32,6 @@
       permission="senaite.core.permissions.ManageBika"
       layer="bika.lims.interfaces.IBikaLIMS"
       />
-
-
-  <!-- Global Sections Dropdown -->
-  <!-- <browser:viewlet -->
-  <!--     name="senaite.sections_dropdown" -->
-  <!--     manager="plone.app.layout.viewlets.interfaces.IPortalHeader" -->
-  <!--     class=".sections.GlobalSectionsDropdownViewlet" -->
-  <!--     permission="zope2.View" -->
-  <!--     layer="bika.lims.interfaces.IBikaLIMS" -->
-  <!--     /> -->
 
   <!-- Invalid Analysis Request viewlet -->
   <browser:viewlet

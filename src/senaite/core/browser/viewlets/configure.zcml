@@ -29,6 +29,15 @@
       layer="senaite.core.interfaces.ISenaiteCore"
       />
 
+  <!-- The global sections -->
+  <browser:viewlet
+      name="plone.global_sections"
+      manager="plone.app.layout.viewlets.interfaces.IMainNavigation"
+      class=".sections.GlobalSectionsViewlet"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
   <!-- Content views (tabs) -->
   <browser:viewlet
       name="plone.contentviews"
@@ -44,6 +53,16 @@
       manager="plone.app.layout.viewlets.interfaces.IAboveContentTitle"
       class=".document_actions.DocumentActionsViewlet"
       permission="zope2.View"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
+  <!-- Language Selector -->
+  <browser:viewlet
+      name="plone.app.i18n.locales.languageselector"
+      manager="plone.app.layout.viewlets.interfaces.IPortalHeader"
+      class="plone.app.i18n.locales.browser.selector.LanguageSelector"
+      permission="zope2.View"
+      template="templates/languageselector.pt"
       layer="senaite.core.interfaces.ISenaiteCore"
       />
 
