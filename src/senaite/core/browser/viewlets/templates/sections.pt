@@ -7,16 +7,14 @@
   i18n:domain="plone">
 
   <nav class="dropdown">
-
-    <a class="nav-link dropdown-toggle"
-      type="button"
-      data-toggle="dropdown"
-      aria-haspopup="true"
-      aria-expanded="false">
+    <a href="#"
+       class="nav-link dropdown-toggle"
+       data-toggle="dropdown"
+       aria-haspopup="true"
+       aria-expanded="false">
       <span tal:omit-tag="" i18n:translate="">
         <i class="fas fa-th"></i>
       </span>
-      <span class="caret"></span>
     </a>
 
     <ul class="dropdown-menu dropdown-menu-right"

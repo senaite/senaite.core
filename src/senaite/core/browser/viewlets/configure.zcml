@@ -60,7 +60,7 @@
   <browser:viewlet
       name="plone.app.i18n.locales.languageselector"
       manager="plone.app.layout.viewlets.interfaces.IPortalHeader"
-      class="plone.app.i18n.locales.browser.selector.LanguageSelector"
+      class=".languageselector.LanguageSelector"
       permission="zope2.View"
       template="templates/languageselector.pt"
       layer="senaite.core.interfaces.ISenaiteCore"

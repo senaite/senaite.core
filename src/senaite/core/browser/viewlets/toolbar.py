@@ -9,6 +9,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.interfaces.controlpanel import ISiteSchema
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.core.browser.viewlets.sections import GlobalSectionsViewlet
+from senaite.core.browser.viewlets.languageselector import LanguageSelector
 from zope.component import getMultiAdapter
 from zope.component import getUtility
 
@@ -75,6 +76,15 @@ class ToolbarViewletManager(OrderedViewletManager):
 
     def get_global_sections(self):
         viewlet = GlobalSectionsViewlet(
+            self.context,
+            self.request,
+            self.__parent__, self
+        )
+        viewlet.update()
+        return viewlet
+
+    def get_language_selector(self):
+        viewlet = LanguageSelector(
             self.context,
             self.request,
             self.__parent__, self

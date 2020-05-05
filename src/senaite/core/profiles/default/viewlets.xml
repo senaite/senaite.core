@@ -15,6 +15,7 @@
     <viewlet name="plone.searchbox"/>
     <viewlet name="plone.anontools"/>
     <viewlet name="plone.logo" />
+    <viewlet name="plone.app.i18n.locales.languageselector" />
   </hidden>
 
   <!-- Hidden viewlets in plone.mainnavigation -->

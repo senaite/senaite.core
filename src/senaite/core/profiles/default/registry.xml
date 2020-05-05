@@ -64,4 +64,45 @@
     </value>
   </record>
 
+  <!-- Languages -->
+  <record name="plone.available_languages" interface="plone.i18n.interfaces.ILanguageSchema" field="available_languages">
+    <field type="plone.registry.field.List">
+      <default>
+        <element>en</element>
+      </default>
+      <description xmlns:ns0="http://xml.zope.org/namespaces/i18n" ns0:domain="plone" ns0:translate="description_available_languages">The languages in which the site should be translatable.</description>
+      <missing_value/>
+      <title xmlns:ns0="http://xml.zope.org/namespaces/i18n" ns0:domain="plone" ns0:translate="heading_available_languages">Available languages</title>
+      <value_type type="plone.registry.field.Choice">
+        <vocabulary>plone.app.vocabularies.AvailableContentLanguages</vocabulary>
+      </value_type>
+    </field>
+    <value>
+      <element>de</element>
+      <element>en</element>
+      <element>es</element>
+    </value>
+  </record>
+  <record name="plone.available_languages" interface="plone.i18n.interfaces.ILanguageSchema" field="available_languages">
+    <field type="plone.registry.field.List">
+      <default>
+        <element>en</element>
+      </default>
+      <description xmlns:ns0="http://xml.zope.org/namespaces/i18n" ns0:domain="plone" ns0:translate="description_available_languages">The languages in which the site should be translatable.</description>
+      <missing_value/>
+      <title xmlns:ns0="http://xml.zope.org/namespaces/i18n" ns0:domain="plone" ns0:translate="heading_available_languages">Available languages</title>
+      <value_type type="plone.registry.field.Choice">
+        <vocabulary>plone.app.vocabularies.AvailableContentLanguages</vocabulary>
+      </value_type>
+    </field>
+    <value>
+      <element>de</element>
+      <element>en</element>
+      <element>es</element>
+      <element>pl</element>
+      <element>th</element>
+      <element>zh</element>
+    </value>
+  </record>
+
 </registry>
