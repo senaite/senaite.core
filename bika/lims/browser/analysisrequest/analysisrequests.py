@@ -612,12 +612,10 @@ class AnalysisRequestsView(BikaListingView):
         item["getStorageLocation"] = obj.getStorageLocationTitle
 
         after_icons = ""
-        # Getting a dictionary with each workflow id and current state in it
-        states_dict = obj.getObjectWorkflowStates
         if obj.assigned_state == 'assigned':
             after_icons += get_image("worksheet.png",
                                      title=t(_("All analyses assigned")))
-        if states_dict.get('review_state', '') == 'invalid':
+        if item["review_state"] == 'invalid':
             after_icons += get_image("delete.png",
                                      title=t(_("Results have been withdrawn")))
 
@@ -674,7 +672,7 @@ class AnalysisRequestsView(BikaListingView):
                 sampler = self.member.id
                 item["class"]["getSampler"] = "provisional"
             # sampling workflow - inline edits for Sampler and Date Sampled
-            if states_dict.get('review_state', '') == 'to_be_sampled':
+            if item["review_state"] == 'to_be_sampled':
                 # We need to get the full object in order to check
                 # the permissions
                 full_object = obj.getObject()

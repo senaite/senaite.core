@@ -1303,21 +1303,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             return analyst_member.getProperty('fullname')
         return analyst
 
-    def getObjectWorkflowStates(self):
-        """
-        This method is used as a metacolumn.
-        Returns a dictionary with the workflow id as key and workflow state as
-        value.
-        :returns: {'review_state':'active',...}
-        :rtype: dict
-        """
-        workflow = getToolByName(self, 'portal_workflow')
-        states = {}
-        for w in workflow.getWorkflowsFor(self):
-            state = w._getWorkflowStateOf(self).id
-            states[w.state_var] = state
-        return states
-
     # TODO Workflow - Worksheet - Move to workflow.worksheet.events
     def workflow_script_reject(self):
         """Copy real analyses to RejectAnalysis, with link to real

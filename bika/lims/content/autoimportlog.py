@@ -71,20 +71,6 @@ class AutoImportLog(BaseContent):
             return self.getInstrument().absolute_url_path()
         return None
 
-    def getObjectWorkflowStates(self):
-        """
-        This method is used as a metacolumn.
-        Returns a dictionary with the workflow id as key and workflow state as
-        value.
-        :returns: {'review_state':'active',...}
-        """
-        workflow = getToolByName(self, 'portal_workflow')
-        states = {}
-        for w in workflow.getWorkflowsFor(self):
-            state = w._getWorkflowStateOf(self).id
-            states[w.state_var] = state
-        return states
-
 
 # Activating the content type in Archetypes' internal types registry
 atapi.registerType(AutoImportLog, config.PROJECTNAME)
