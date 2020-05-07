@@ -34,13 +34,12 @@
 
       <metal:topslot define-slot="top_slot" />
       <metal:headslot define-slot="head_slot" />
-      <!-- <metal:styleslot define-slot="style_slot" /> -->
 
-      <!-- Disable all Plone Scripts -->
+      <!-- Disable all Plone JS/CSS -->
       <!-- <div tal:replace="structure provider:plone.scripts" /> -->
       <!-- <metal:javascriptslot define-slot="javascript_head_slot" /> -->
-
-      <link tal:replace="structure provider:plone.htmlhead.links" />
+      <!-- <link tal:replace="structure provider:plone.htmlhead.links" /> -->
+      <!-- <metal:styleslot define-slot="style_slot" /> -->
 
       <meta name="generator" content="Plone - http://plone.com" />
       <meta name="viewport"

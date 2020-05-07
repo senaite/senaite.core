@@ -79,9 +79,7 @@ module.exports = {
       }
     ]
   },
-  plugins: [// e.g. https://webpack.js.org/plugins/provide-plugin/
-
-    // A webpack plugin to remove your build folder(s) before building
+  plugins: [
     // https://github.com/johnagan/clean-webpack-plugin
     new CleanWebpackPlugin(),
     // https://webpack.js.org/plugins/html-webpack-plugin/
@@ -100,17 +98,25 @@ module.exports = {
       { from: "../node_modules/jquery", to: path.resolve(staticPath, "lib/jquery") },
       { from: "../node_modules/jquery-migrate", to: path.resolve(staticPath, "lib/jquery-migrate") },
       { from: "../node_modules/bootstrap", to: path.resolve(staticPath, "lib/bootstrap") },
+      { from: "../node_modules/bootstrap-confirmation2", to: path.resolve(staticPath, "lib/bootstrap-confirmation2") },
+      { from: "../node_modules/popper.js", to: path.resolve(staticPath, "lib/popperjs") },
+      { from: "../node_modules/react", to: path.resolve(staticPath, "lib/react") },
+      { from: "../node_modules/react-dom", to: path.resolve(staticPath, "lib/react-dom") },
     ]),
     // https://webpack.js.org/plugins/provide-plugin/
     new webpack.ProvidePlugin({
       $: "jquery",
-      jQuery: "jquery"
+      jQuery: "jquery",
+      bootstrap: "bootstrap",
     }),
   ],
   externals: {
     // https://webpack.js.org/configuration/externals
     // use jQuery from the outer scope
+    react: "React",
+    "react-dom": "ReactDOM",
+    $: "jQuery",
     jquery: "jQuery",
-    // bootstrap: "bootstrap",
+    bootstrap: "bootstrap",
   }
 };

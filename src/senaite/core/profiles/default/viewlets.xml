@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <object>
 
+  <!-- Viewlets in plone.htmlhead -->
+  <order manager="plone.htmlhead" skinname="*">
+    <viewlet name="senaite.core.static" />
+    <viewlet name="senaite.core.listing.static" />
+  </order>
+
   <!-- Viewlets in plone.mainnavigation -->
   <order manager="plone.mainnavigation" skinname="*" purge="True">
   </order>

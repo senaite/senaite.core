@@ -1,7 +1,11 @@
 <!-- 3rd party libraries -->
 <script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/lib/jquery/dist/jquery.min.js"></script>
 <script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/lib/jquery-migrate/dist/jquery-migrate.min.js"></script>
+<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/lib/popperjs/dist/umd/popper.min.js"></script>
 <script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/lib/bootstrap-confirmation2/dist/bootstrap-confirmation.min.js"></script>
+<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/lib/react/umd/react.production.min.js"></script>
+<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/lib/react-dom/umd/react-dom.production.min.js"></script>
 
 <!-- JS -->
 <% for (let js in htmlWebpackPlugin.files.js) { %>
