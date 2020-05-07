@@ -34,11 +34,11 @@
 
       <metal:topslot define-slot="top_slot" />
       <metal:headslot define-slot="head_slot" />
-      <metal:styleslot define-slot="style_slot" />
+      <!-- <metal:styleslot define-slot="style_slot" /> -->
 
       <!-- Disable all Plone Scripts -->
       <!-- <div tal:replace="structure provider:plone.scripts" /> -->
-      <metal:javascriptslot define-slot="javascript_head_slot" />
+      <!-- <metal:javascriptslot define-slot="javascript_head_slot" /> -->
 
       <link tal:replace="structure provider:plone.htmlhead.links" />
 

@@ -1,0 +1,23 @@
+// Bootstrap overrides
+$body-bg: #fff;
+// $body-color: #111;
+$link-color:  #5fa8bf;
+$breadcrumb-divider: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPjxwYXRoIGQ9Ik0yLjUgMEwxIDEuNSAzLjUgNCAxIDYuNSAyLjUgOGw0LTQtNC00eiIgZmlsbD0iY3VycmVudENvbG9yIi8+PC9zdmc+);
+
+// Bootstrap
+@import "../../node_modules/bootstrap/scss/bootstrap.scss";
+
+// Fontawesome
+$fa-font-path: "../../node_modules/@fortawesome/fontawesome-free/webfonts" !default;
+@import "../../node_modules/@fortawesome/fontawesome-free/scss/fontawesome";
+// @import "../../node_modules/@fortawesome/fontawesome-free/scss/regular";
+@import "../../node_modules/@fortawesome/fontawesome-free/scss/solid";
+@import "../../node_modules/@fortawesome/fontawesome-free/scss/brands";
+
+// Sidebar (depends on Bootstrap variables)
+$sidebar-minimized-width: 50px;
+$sidebar-maximized-width: 200px;
+$sidebar-selected-bg: $gray-200;
+$sidebar-selected-color: $navbar-light-active-color;
+$sidebar-color: $navbar-light-color;
+$sidebar-hover-color: $navbar-light-hover-color;

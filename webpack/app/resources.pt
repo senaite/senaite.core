@@ -1,4 +1,13 @@
-<!-- SENAITE CORE RESOURCES -->
+<!-- 3rd party libraries -->
+<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/lib/jquery/dist/jquery.min.js"></script>
+<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/lib/jquery-migrate/dist/jquery-migrate.min.js"></script>
+<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+
+<!-- JS -->
 <% for (let js in htmlWebpackPlugin.files.js) { %>
-<script async tal:attributes="src <%= 'string:${view/site_url}/' + htmlWebpackPlugin.files.js[js] %>"></script>
+<script tal:attributes="src <%= 'string:${view/site_url}/' + htmlWebpackPlugin.files.js[js] %>"></script>
+<% } %>
+<!-- CSS -->
+<% for (let f in htmlWebpackPlugin.files.css) { %>
+<link href="#" rel="stylesheet" tal:attributes="href <%= 'string:${view/site_url}/' + htmlWebpackPlugin.files.css[f] %>" />
 <% } %>
