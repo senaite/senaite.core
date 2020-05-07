@@ -36,7 +36,8 @@
       <metal:headslot define-slot="head_slot" />
       <metal:styleslot define-slot="style_slot" />
 
-      <div tal:replace="structure provider:plone.scripts" />
+      <!-- Disable all Plone Scripts -->
+      <!-- <div tal:replace="structure provider:plone.scripts" /> -->
       <metal:javascriptslot define-slot="javascript_head_slot" />
 
       <link tal:replace="structure provider:plone.htmlhead.links" />

@@ -2,12 +2,6 @@
 <registry>
   <!-- https://docs.plone.org/adapt-and-extend/theming/resourceregistry.html -->
 
-  <!-- Deactivate 'plone-editor-tools' bundle from resource registry
-       Includes logic for the Plone toolbar which we override
-  -->
-  <records prefix="plone.bundles/plone-editor-tools"
-           interface="Products.CMFPlone.interfaces.IBundleRegistry">
-    <value key="enabled">False</value>
-  </records>
+  <!-- NOTE: We deactivated the `plone.scripts` viewlet manager in `main_template.pt`  -->
 
 </registry>
