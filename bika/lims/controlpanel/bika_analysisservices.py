@@ -28,6 +28,7 @@ from Products.CMFPlone.utils import _createObjectByType
 from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
@@ -342,7 +343,7 @@ class AnalysisServicesView(BikaListingView):
             the template
         :index: current index of the item
         """
-
+        obj = api.get_object(obj)
         cat = obj.getCategoryTitle()
         cat_order = self.an_cats_order.get(cat)
         if self.do_cats:
@@ -410,7 +411,7 @@ class AnalysisServicesView(BikaListingView):
 
         return item
 
-    def folderitems(self, full_objects=False, classic=True):
+    def folderitems(self):
         """Sort by Categories
         """
         bsc = getToolByName(self.context, "bika_setup_catalog")

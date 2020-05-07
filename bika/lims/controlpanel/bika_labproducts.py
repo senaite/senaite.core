@@ -20,6 +20,7 @@
 
 from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
@@ -27,6 +28,8 @@ from bika.lims.interfaces import ILabProducts
 from bika.lims.permissions import AddLabProduct
 from plone.app.folder.folder import ATFolder, ATFolderSchema
 from zope.interface.declarations import implements
+
+from bika.lims.utils import get_link
 
 
 class LabProductsView(BikaListingView):
@@ -103,20 +106,18 @@ class LabProductsView(BikaListingView):
         # Don't allow any context actions
         self.request.set("disable_border", 1)
 
-    def folderitems(self):
-        items = BikaListingView.folderitems(self)
-        for x in range(len(items)):
-            if not items[x].has_key('obj'): continue
-            obj = items[x]['obj']
-            items[x]['Volume'] = obj.getVolume()
-            items[x]['Unit'] = obj.getUnit()
-            items[x]['Price'] = obj.getPrice()
-            items[x]['VATAmount'] = obj.getVATAmount()
-            items[x]['TotalPrice'] = obj.getTotalPrice()
-            items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
-                 (items[x]['url'], items[x]['Title'])
+    def folderitem(self, obj, item, index):
+        obj = api.get_object(obj)
+        item.update({
+            "Volume": obj.getVolume(),
+            "Unit": obj.getUnit(),
+            "Price": obj.getPrice(),
+            "VATAmount": obj.getVATAmount(),
+            "TotalPrice": obj.getTotalPrice(),
+        })
+        item["replace"]["Title"] = get_link(item["url"], value=item["Title"])
+        return item
 
-        return items
 
 schema = ATFolderSchema.copy()
 class LabProducts(ATFolder):

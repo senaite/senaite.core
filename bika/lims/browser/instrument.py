@@ -134,6 +134,7 @@ class InstrumentMaintenanceView(BikaListingView):
     def folderitem(self, obj, item, index):
         """Augment folder listing item
         """
+        obj = api.get_object(obj)
         url = item.get("url")
         title = item.get("Title")
 
@@ -238,6 +239,7 @@ class InstrumentCalibrationsView(BikaListingView):
     def folderitem(self, obj, item, index):
         """Augment folder listing item
         """
+        obj = api.get_object(obj)
         url = item.get("url")
         title = item.get("Title")
         calibrator = obj.getCalibrator()
@@ -334,6 +336,7 @@ class InstrumentValidationsView(BikaListingView):
     def folderitem(self, obj, item, index):
         """Augment folder listing item
         """
+        obj = api.get_object(obj)
         url = item.get("url")
         title = item.get("Title")
 
@@ -446,6 +449,7 @@ class InstrumentScheduleView(BikaListingView):
     def folderitem(self, obj, item, index):
         """Augment folder listing item
         """
+        obj = api.get_object(obj)
         url = item.get("url")
         title = item.get("Title")
         creator = obj.Creator()
@@ -682,6 +686,7 @@ class InstrumentCertificationsView(BikaListingView):
     def folderitem(self, obj, item, index):
         """Augment folder listing item with additional data
         """
+        obj = api.get_object(obj)
         url = item.get("url")
         title = item.get("Title")
 
@@ -827,6 +832,7 @@ class InstrumentMultifileView(BikaListingView):
     def folderitem(self, obj, item, index):
         """Augment folder listing item with additional data
         """
+        obj = api.get_object(obj)
         url = item.get("url")
         title = item.get("DocumentID")
 

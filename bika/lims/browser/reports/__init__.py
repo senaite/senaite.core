@@ -182,8 +182,6 @@ class ReportHistoryView(BikaListingView):
         item['replace']['created'] = self.ulocalized_time(item['created'])
         return item
 
-    def folderitems(self):
-        return BikaListingView.folderitems(self, classic=False)
 
 class SubmitForm(BrowserView):
     """ Redirect to specific report

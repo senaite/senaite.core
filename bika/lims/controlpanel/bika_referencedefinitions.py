@@ -20,6 +20,7 @@
 
 import collections
 
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
@@ -114,7 +115,7 @@ class ReferenceDefinitionsView(BikaListingView):
         :return: the dict representation of the item
         :rtype: dict
         """
-
+        obj = api.get_object(obj)
         url = obj.absolute_url()
         title = obj.Title()
 

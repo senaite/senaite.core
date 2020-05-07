@@ -24,6 +24,7 @@ from Products.CMFCore.permissions import ModifyPortalContent
 from plone.app.content.browser.interfaces import IFolderContentsView
 from zope.interface import implements
 
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.permissions import AddClient
@@ -164,12 +165,13 @@ class ClientFolderContentsView(BikaListingView):
         :param obj: client to be rendered as a row in the list
         :param item: dict representation of the client, suitable for the list
         :param index: current position of the item within the list
-        :type obj: ATContentType/DexterityContentType
+        :type obj: CatalogBrain
         :type item: dict
         :type index: int
         :return: the dict representation of the item
         :rtype: dict
         """
+        obj = api.get_object(obj)
         # render a link to the defined start page
         link_url = "{}/{}".format(item["url"], self.landing_page)
         item["replace"]["title"] = get_link(link_url, item["title"])

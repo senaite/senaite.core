@@ -140,6 +140,7 @@ class ContactsView(BikaListingView):
         :index: current index of the item
         """
 
+        obj = api.get_object(obj)
         name = obj.getFullname()
         url = obj.absolute_url()
 

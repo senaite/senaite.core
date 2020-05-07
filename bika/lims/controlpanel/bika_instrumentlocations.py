@@ -20,14 +20,17 @@
 
 from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import IInstrumentLocations
 from bika.lims.permissions import AddInstrumentLocation
+from bika.lims.utils import get_link
 from plone.app.folder.folder import ATFolder
 from plone.app.folder.folder import ATFolderSchema
 from zope.interface import implements
+
 
 
 class InstrumentLocationsView(BikaListingView):
@@ -84,15 +87,11 @@ class InstrumentLocationsView(BikaListingView):
         # Don't allow any context actions
         self.request.set("disable_border", 1)
 
-    def folderitems(self):
-        items = BikaListingView.folderitems(self)
-        for item in items:
-            obj = item.get("obj", None)
-            if obj is None:
-                continue
-            item['Description'] = obj.Description()
-            item['replace']['Title'] = "<a href='{url}'>{Title}</a>".format(**item)
-        return items
+    def folderitem(self, obj, item, index):
+        obj = api.get_object(obj)
+        item["Description"] = obj.Description()
+        item["replace"]["title"] = get_link(item["url"], item["Title"])
+        return item
 
 
 schema = ATFolderSchema.copy()

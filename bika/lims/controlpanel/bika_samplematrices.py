@@ -23,6 +23,7 @@ from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import ISampleMatrices
 from bika.lims.permissions import AddSampleMatrix
+from bika.lims.utils import get_link
 from plone.app.folder.folder import ATFolder
 from plone.app.folder.folder import ATFolderSchema
 from Products.Archetypes import atapi
@@ -83,15 +84,9 @@ class SampleMatricesView(BikaListingView):
         # Don't allow any context actions
         self.request.set("disable_border", 1)
 
-    def folderitems(self):
-        items = BikaListingView.folderitems(self)
-        for x in range(len(items)):
-            if not items[x].has_key('obj'):
-                continue
-            items[x]['replace']['Title'] = \
-                "<a href='%s'>%s</a>" % (items[x]['url'], items[x]['Title'])
-
-        return items
+    def folderitem(self, obj, item, index):
+        item["replace"]["Title"] = get_link(item["url"], item["Title"])
+        return item
 
 
 schema = ATFolderSchema.copy()
