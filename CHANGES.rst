@@ -12,6 +12,7 @@ Changelog
 **Changed**
 
 - #1579 Remove classic mode in folderitems
+- #1577 Do not force available workflow transitions in batches listing
 - #1573 Do not display top-level "Clients" folder to non-lab users
 
 **Fixed**
