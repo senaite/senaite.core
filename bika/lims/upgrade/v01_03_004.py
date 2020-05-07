@@ -20,8 +20,16 @@
 
 from bika.lims import api
 from bika.lims import logger
+from bika.lims.catalog import BIKA_CATALOG
+from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
+from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
+from bika.lims.catalog import CATALOG_AUTOIMPORTLOGS_LISTING
+from bika.lims.catalog import CATALOG_REPORT_LISTING
+from bika.lims.catalog import CATALOG_WORKSHEET_LISTING
+from bika.lims.catalog import SETUP_CATALOG
 from bika.lims.config import PROJECTNAME as product
 from bika.lims.upgrade import upgradestep
+from bika.lims.upgrade.utils import del_metadata
 from bika.lims.upgrade.utils import UpgradeUtils
 
 version = "1.3.4"  # Remember version number in metadata.xml and setup.py
@@ -56,6 +64,28 @@ def upgrade(tool):
     # New link to My Organization
     setup.runImportStepFromProfile(profile, "actions")
 
+    # Remove getObjectWorkflowStates metadata
+    # https://github.com/senaite/senaite.core/pull/1579
+    remove_object_workflow_states_metadata(portal)
+
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
 
+
+def remove_object_workflow_states_metadata(portal):
+    """Removes the getObjectWorkflowStates metadata from catalogs
+    """
+    logger.info("Removing getObjectWorkflowStates metadata ...")
+    catalogs = [
+        BIKA_CATALOG,
+        CATALOG_ANALYSIS_LISTING,
+        CATALOG_ANALYSIS_REQUEST_LISTING,
+        CATALOG_AUTOIMPORTLOGS_LISTING,
+        CATALOG_REPORT_LISTING,
+        CATALOG_WORKSHEET_LISTING,
+        SETUP_CATALOG
+    ]
+    for catalog in catalogs:
+        del_metadata(catalog, "getObjectWorkflowStates")
+
+    logger.info("Removing getObjectWorkflowStates metadata [DONE]")
