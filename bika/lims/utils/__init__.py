@@ -139,12 +139,6 @@ def printfile(portal, from_addr, to_addrs, msg):
     pass
 
 
-def _cache_key_getUsers(method, context, roles=[], allow_empty=True):
-    key = time() // (60 * 60), roles, allow_empty
-    return key
-
-
-@ram.cache(_cache_key_getUsers)
 def getUsers(context, roles, allow_empty=True):
     """ Present a DisplayList containing users in the specified
         list of roles
