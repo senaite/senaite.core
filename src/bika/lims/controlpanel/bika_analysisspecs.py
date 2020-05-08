@@ -118,6 +118,7 @@ class AnalysisSpecsView(BikaListingView):
             the template
         :index: current index of the item
         """
+        obj = api.get_object(obj)
         title = obj.Title()
         url = obj.absolute_url()
 

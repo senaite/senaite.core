@@ -436,3 +436,14 @@ def commit_transaction():
     end = time.time()
     logger.info("Commit transaction ... Took {:.2f}s [DONE]"
                 .format(end - start))
+
+
+def del_metadata(catalog_id, column):
+    logger.info("Removing '{}' metadata from '{}' ..."
+                .format(column, catalog_id))
+    catalog = api.get_tool(catalog_id)
+    if column not in catalog.schema():
+        logger.info("Metadata '{}' not in catalog '{}' [SKIP]"
+                    .format(column, catalog_id))
+        return
+    catalog.delColumn(column)

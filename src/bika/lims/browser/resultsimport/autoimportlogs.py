@@ -72,11 +72,6 @@ class AutoImportLogsView(BikaListingView):
              },
         ]
 
-    def folderitems(self, full_objects=False, classic=False):
-        return BikaListingView.folderitems(self, full_objects=False,
-                                           classic=False)
-
     def folderitem(self, obj, item, index):
-        item['ImportTime'] = obj.getLogTime.strftime('%Y-%m-%d  \
-                                                            %H:%M:%S')
+        item['ImportTime'] = obj.getLogTime.strftime('%Y-%m-%d H:%M:%S')
         return item

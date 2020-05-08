@@ -20,11 +20,13 @@
 
 from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import IContainerTypes
 from bika.lims.permissions import AddContainerType
+from bika.lims.utils import get_link
 from plone.app.folder.folder import ATFolder, ATFolderSchema
 from zope.interface.declarations import implements
 
@@ -82,17 +84,11 @@ class ContainerTypesView(BikaListingView):
         # Don't allow any context actions
         self.request.set("disable_border", 1)
 
-    def folderitems(self):
-        items = BikaListingView.folderitems(self)
-        for x in range(len(items)):
-            if not items[x].has_key('obj'): continue
-            obj = items[x]['obj']
-            items[x]['Description'] = obj.Description()
-
-            items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
-                 (items[x]['url'], items[x]['Title'])
-
-        return items
+    def folderitem(self, obj, item, index):
+        obj = api.get_object(obj)
+        item["Description"] = obj.Description()
+        item["replace"]["Title"] = get_link(item["url"], item["Title"])
+        return item
 
 
 schema = ATFolderSchema.copy()

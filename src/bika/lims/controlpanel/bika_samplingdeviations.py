@@ -22,6 +22,7 @@ import collections
 
 from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
@@ -108,6 +109,7 @@ class SamplingDeviationsView(BikaListingView):
             the template
         :index: current index of the item
         """
+        obj = api.get_object(obj)
         title = obj.Title()
         description = obj.Description()
         url = obj.absolute_url()

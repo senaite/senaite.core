@@ -120,6 +120,7 @@ class WorksheetTemplatesView(BikaListingView):
             the template
         :index: current index of the item
         """
+        obj = api.get_object(obj)
         item["Description"] = obj.Description()
         item["replace"]["Title"] = get_link(item["url"], item["Title"])
 

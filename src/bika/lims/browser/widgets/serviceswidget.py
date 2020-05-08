@@ -120,8 +120,6 @@ class ServicesView(BikaListingView):
         return map(api.get_uid, self.get_assigned_services())
 
     def folderitems(self):
-        """TODO: Refactor to non-classic mode
-        """
         items = super(ServicesView, self).folderitems()
         self.categories.sort()
         return items

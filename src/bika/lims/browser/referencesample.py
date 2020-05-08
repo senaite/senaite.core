@@ -328,6 +328,7 @@ class ReferenceResultsView(BikaListingView):
         :index: current index of the item
         """
 
+        obj = api.get_object(obj)
         uid = api.get_uid(obj)
         url = api.get_url(obj)
         title = api.get_title(obj)
@@ -478,6 +479,8 @@ class ReferenceSamplesView(BikaListingView):
         :return: the dict representation of the item
         :rtype: dict
         """
+
+        obj = api.get_object(obj)
 
         # XXX Refactor expiration to a proper place
         # ---------------------------- 8< -------------------------------------

@@ -605,7 +605,7 @@ class AnalysesView(BikaListingView):
         self.before_render()
 
         # Gettin all the items
-        items = super(AnalysesView, self).folderitems(classic=False)
+        items = super(AnalysesView, self).folderitems()
 
         # the TAL requires values for all interim fields on all
         # items, so we set blank values in unused cells
@@ -985,8 +985,8 @@ class AnalysesView(BikaListingView):
                                        sciformat=int(self.scinot))
         if formatted:
             item["Uncertainty"] = formatted
-        else:
-            item["Uncertainty"] = obj.getUncertainty(result)
+            item["before"]["Uncertainty"] = "± "
+            item["after"]["Uncertainty"] = obj.getUnit()
 
         if self.is_uncertainty_edition_allowed(analysis_brain):
             item["allow_edit"].append("Uncertainty")

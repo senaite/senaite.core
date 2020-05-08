@@ -624,19 +624,14 @@ def checkPermissions(permissions=[], obj=None):
     return True
 
 
-def getFromString(obj, string):
-    attrobj = obj
+def getFromString(obj, string, default=None):
+    attr_obj = obj
     attrs = string.split('.')
     for attr in attrs:
-        if hasattr(attrobj, attr):
-            attrobj = getattr(attrobj, attr)
-            if isinstance(attrobj, types.MethodType) \
-               and callable(attrobj):
-                attrobj = attrobj()
-        else:
-            attrobj = None
+        attr_obj = api.safe_getattr(obj, attr, default=None)
+        if not attr_obj:
             break
-    return attrobj if attrobj else None
+    return attr_obj or default
 
 
 def user_fullname(obj, userid):

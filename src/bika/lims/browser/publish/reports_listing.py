@@ -148,6 +148,7 @@ class ReportsListingView(BikaListingView):
         """Augment folder listing item
         """
 
+        obj = api.get_object(obj)
         ar = obj.getAnalysisRequest()
         uid = api.get_uid(obj)
         review_state = api.get_workflow_status_of(ar)

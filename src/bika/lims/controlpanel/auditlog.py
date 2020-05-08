@@ -124,6 +124,7 @@ class AuditLogView(BikaListingView):
             the template
         :index: current index of the item
         """
+        obj = api.get_object(obj)
 
         # We are using the existing logic from the auditview
         logview = api.get_view("auditlog", context=obj, request=self.request)

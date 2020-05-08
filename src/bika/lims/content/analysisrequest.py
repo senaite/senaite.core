@@ -2139,20 +2139,6 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         """
         return user_email(self, self.Creator())
 
-    def getObjectWorkflowStates(self):
-        """
-        This method is used as a metacolumn.
-        Returns a dictionary with the workflow id as key and workflow state as
-        value.
-        :returns: {'review_state':'active',...}
-        """
-        workflow = getToolByName(self, 'portal_workflow')
-        states = {}
-        for w in workflow.getWorkflowsFor(self):
-            state = w._getWorkflowStateOf(self).id
-            states[w.state_var] = state
-        return states
-
     def getPriorityText(self):
         """
         This function looks up the priority text from priorities vocab

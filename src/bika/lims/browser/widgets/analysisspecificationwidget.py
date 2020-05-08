@@ -171,8 +171,6 @@ class AnalysisSpecificationView(BikaListingView):
         return self.dynamic_spec.get_by_keyword()
 
     def folderitems(self):
-        """TODO: Refactor to non-classic mode
-        """
         items = super(AnalysisSpecificationView, self).folderitems()
         self.categories.sort()
         return items

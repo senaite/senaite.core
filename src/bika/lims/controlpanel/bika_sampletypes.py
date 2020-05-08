@@ -148,6 +148,7 @@ class SampleTypesView(BikaListingView):
             the template
         :index: current index of the item
         """
+        obj = api.get_object(obj)
         item["replace"]["Title"] = get_link_for(obj)
         item["Description"] = obj.Description()
 

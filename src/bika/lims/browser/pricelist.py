@@ -20,6 +20,7 @@
 
 import collections
 
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.api.security import check_permission
 from bika.lims.browser import BrowserView
@@ -135,6 +136,7 @@ class PricelistsView(BikaListingView):
         :rtype: dict
         """
 
+        obj = api.get_object(obj)
         url = obj.absolute_url()
         title = obj.Title()
 

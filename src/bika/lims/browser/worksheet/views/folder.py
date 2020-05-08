@@ -279,11 +279,6 @@ class FolderView(BikaListingView):
         form_key = "{}_review_state".format(self.form_id)
         return self.request.get(form_key, "default")
 
-    def folderitems(self):
-        """Return folderitems as brains
-        """
-        return super(FolderView, self).folderitems(classic=False)
-
     def folderitem(self, obj, item, index):
         """Service triggered each time an item is iterated in folderitems.
 

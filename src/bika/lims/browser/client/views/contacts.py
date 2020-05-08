@@ -20,6 +20,7 @@
 
 from collections import OrderedDict
 
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.interfaces import IContacts
@@ -91,6 +92,7 @@ class ClientContactsView(BikaListingView):
         ]
 
     def folderitem(self, obj, item, index):
+        obj = api.get_object(obj)
         url = item.get("url")
         email = obj.getEmailAddress()
         fullname = obj.getFullname()
