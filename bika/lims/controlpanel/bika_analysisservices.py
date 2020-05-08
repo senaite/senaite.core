@@ -211,7 +211,7 @@ class AnalysisServicesView(BikaListingView):
             ("Title", {
                 "title": _("Service"),
                 "index": "sortable_title",
-                "replace_url": "absolute_url",
+                "replace_url": "getURL",
                 "sortable": self.can_sort}),
             ("Keyword", {
                 "title": _("Keyword"),
