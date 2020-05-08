@@ -628,7 +628,7 @@ def getFromString(obj, string, default=None):
     attr_obj = obj
     attrs = string.split('.')
     for attr in attrs:
-        attr_obj = api.safe_getattr(obj, attr, default=None)
+        attr_obj = api.safe_getattr(attr_obj, attr, default=None)
         if not attr_obj:
             break
     return attr_obj or default
