@@ -18,8 +18,8 @@
         <ul class="nav nav-pills">
           <li><a class="nav-link" href="https://www.senaite.com" title="Visit the Website" target="_blank"><i class="fas fa-globe"></i></a></li>
           <li><a class="nav-link" href="https://www.senaite.com/docs/quickstart.html" title="Browse the Docs" target="_blank"><i class="fas fa-book"></i></a></li>
-          <li><a class="nav-link" href="https://github.com/senaite/senaite.lims" title="Browse the code on GitHub" target="_blank"><i class="fab fa-github"></i></a></li>
-          <li><a class="nav-link" href="https://twitter.com/senaitelims" title="Spread the word on Twitter" target="_blank"><i class="fab fa-twitter"></i></a></li>
+          <li><a class="nav-link" href="https://github.com/senaite/senaite.lims" title="Browse the code on GitHub" target="_blank"><i class="fa fa-code-branch"></i></a></li>
+          <li><a class="nav-link" href="https://twitter.com/senaitelims" title="Spread the word on Twitter" target="_blank"><i class="fa fa-hashtag"></i></a></li>
           <li><a class="nav-link" href="https://gitter.im/senaite" title="Talk with us on Gitter" target="_blank"><i class="fas fa-comments"></i></a></li>
         </ul>
       </div>
