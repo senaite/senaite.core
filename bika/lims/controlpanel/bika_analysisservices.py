@@ -228,7 +228,6 @@ class AnalysisServicesView(BikaListingView):
             ("Department", {
                 "title": _("Department"),
                 "toggle": False,
-                "attr": "getDepartment.Title",
                 "sortable": self.can_sort}),
             ("Unit", {
                 "title": _("Unit"),
@@ -356,7 +355,7 @@ class AnalysisServicesView(BikaListingView):
         category = obj.getCategory()
         if category:
             title = category.Title()
-            url = category.absolute_url()
+            url = api.get_url(category)
             item["Category"] = title
             item["replace"]["Category"] = get_link(url, value=title)
 
@@ -364,7 +363,7 @@ class AnalysisServicesView(BikaListingView):
         calculation = obj.getCalculation()
         if calculation:
             title = calculation.Title()
-            url = calculation.absolute_url()
+            url = api.get_url(calculation)
             item["Calculation"] = title
             item["replace"]["Calculation"] = get_link(url, value=title)
 
@@ -383,6 +382,7 @@ class AnalysisServicesView(BikaListingView):
             item["MaxTimeAllowed"] = self.format_maxtime(maxtime)
 
         # Price
+        import pdb;pdb.set_trace()
         item["Price"] = self.format_price(obj.Price)
 
         # Duplicate Variation
@@ -390,6 +390,13 @@ class AnalysisServicesView(BikaListingView):
         if dup_variation:
             item["DuplicateVariation"] = self.format_duplication_variation(
                 dup_variation)
+
+        # Department
+        department = obj.getDepartment()
+        if department:
+            title = api.get_title(department)
+            url = api.get_url(department)
+            item["replace"]["Department"] = get_link(url, title)
 
         # Unit
         unit = obj.getUnit()
