@@ -136,13 +136,6 @@
                     </article>
 
                   </metal:slot>
-
-                  <!--
-                       <metal:sub define-slot="sub" tal:content="nothing">
-                       This slot is here for backwards compatibility only.
-                       Don't use it in your custom templates.
-                       </metal:sub>
-                  -->
                 </div>
 
               </metal:block>
