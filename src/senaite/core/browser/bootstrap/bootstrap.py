@@ -1,22 +1,6 @@
 # -*- coding: utf-8 -*-
-#
-# This file is part of SENAITE.CORE.
-#
-# SENAITE.CORE is free software: you can redistribute it and/or modify it under
-# the terms of the GNU General Public License as published by the Free Software
-# Foundation, version 2.
-#
-# This program is distributed in the hope that it will be useful, but WITHOUT
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
-# details.
-#
-# You should have received a copy of the GNU General Public License along with
-# this program; if not, write to the Free Software Foundation, Inc., 51
-# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-#
-# Copyright 2018-2020 by it's authors.
-# Some rights reserved, see README and LICENSE.
+
+import os
 
 from bika.lims import api
 from bika.lims import logger
@@ -25,6 +9,8 @@ from Products.Five import BrowserView
 from zope.component import getMultiAdapter
 from zope.interface import Interface
 from zope.interface import implementer
+
+SVG_ICON_BASE_URL = "++plone++senaite.core.static/assets/svg"
 
 
 class IBootstrapView(Interface):
@@ -64,6 +50,23 @@ class BootstrapView(BrowserView):
     def __init__(self, context, request):
         super(BrowserView, self).__init__(context, request)
 
+    def resource_exists(self, resource):
+        """Checks if a resouce exists
+        """
+        return self.context.restrictedTraverse(resource, None) is not None
+
+    def img_tag(self, title=None, icon=None, **kw):
+        """Generate an img tag
+        """
+        attributes = {"width": "16"}
+        attributes.update(kw)
+        attrs = " ".join(
+            map(lambda a: "{}='{}'".format(a[0], a[1]), attributes.items()))
+        portal_url = api.get_url(api.get_portal())
+        html_tag = "<img title='{}' src='{}/{}' {} />".format(
+            title, portal_url, icon, attrs)
+        return html_tag
+
     @cache(icon_cache_key)
     def get_icon_for(self, brain_or_object):
         """Get the navigation portlet icon for the brain or object
@@ -75,18 +78,20 @@ class BootstrapView(BrowserView):
         icon = fti.getIcon()
         if not icon:
             return ""
-        # Always try to get the big icon for high-res displays
-        icon_big = icon.replace(".png", "_big.png")
-        # fall back to a default icon if the looked up icon does not exist
-        if self.context.restrictedTraverse(icon_big, None) is None:
-            icon_big = None
-        portal_url = api.get_url(api.get_portal())
         title = api.get_title(brain_or_object)
-        html_tag = "<img title='{}' src='{}/{}' width='16' />".format(
-            title, portal_url, icon_big or icon)
-        logger.debug("Generated Icon Tag for {}: {}".format(
-            api.get_path(brain_or_object), html_tag))
-        return html_tag
+        # Always try to get the SVG icon for high-res displays
+        icon_basename = os.path.basename(icon)
+        svg = icon_basename.replace(".png", ".svg")
+
+        icon_big = icon.replace(".png", "_big.png")
+        icon_svg = "{}/{}".format(SVG_ICON_BASE_URL, svg)
+
+        if self.resource_exists(icon_svg):
+            return self.img_tag(title=title, icon=icon_svg)
+        # or try to get the big icon for high-res displays
+        elif self.resource_exists(icon_big):
+            return self.img_tag(title=title, icon=icon_big)
+        return self.img_tag(title=title, icon=icon)
 
     def get_viewport_values(self, view=None):
         """Determine the value of the viewport meta-tag

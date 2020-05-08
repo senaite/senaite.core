@@ -28,7 +28,7 @@ module.exports = {
   output: {
     filename: `[name]-${gitHash}.js`,
     path: path.resolve(staticPath, "bundles"),
-    publicPath: "++plone++senaite.core.static/bundles"
+    publicPath: "/++plone++senaite.core.static/bundles"
   },
   module: {
     rules: [
@@ -68,11 +68,12 @@ module.exports = {
         test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
         use: [
           {
+            // https://webpack.js.org/loaders/file-loader/
             loader: "file-loader",
             options: {
               name: "[name].[ext]",
               outputPath: "../fonts",
-              publicPath: "++plone++senaite.core.static/fonts"
+              publicPath: "/++plone++senaite.core.static/fonts",
             }
           }
         ]
