@@ -193,12 +193,6 @@ class AddAnalysesView(BikaListingView):
         """
         return self.context.plone_utils.addPortalMessage(message, level)
 
-    def folderitems(self):
-        """Return folderitems as brains
-        """
-        items = super(AddAnalysesView, self).folderitems(classic=False)
-        return items
-
     def folderitem(self, obj, item, index):
         """Service triggered each time an item is iterated in folderitems.
 

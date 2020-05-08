@@ -121,8 +121,6 @@ class ReferenceResultsView(BikaListingView):
         return columns
 
     def folderitems(self):
-        """TODO: Refactor to non-classic mode
-        """
         items = super(ReferenceResultsView, self).folderitems()
         self.categories.sort()
         return items

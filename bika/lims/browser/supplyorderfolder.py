@@ -96,6 +96,7 @@ class SupplyOrderFolderView(BikaListingView):
             the template
         :index: current index of the item
         """
+        obj = api.get_object(obj)
         item["OrderNumber"] = obj.getOrderNumber()
         item["OrderDate"] = self.ulocalized_time(obj.getOrderDate())
         item["DateDispatched"] = self.ulocalized_time(obj.getDateDispatched())

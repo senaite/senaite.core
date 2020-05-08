@@ -55,5 +55,4 @@ BASE_CATALOG_COLUMNS = [
     "allowedRolesAndUsers",
     "created",
     "Creator",
-    "getObjectWorkflowStates",
 ]

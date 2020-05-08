@@ -26,15 +26,20 @@ from Products.Archetypes import PloneMessageFactory as _p
 from Products.Archetypes import atapi
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser import BrowserView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
+from bika.lims.interfaces import IClient
 from bika.lims.interfaces import IStorageLocations
 from bika.lims.permissions import AddStorageLocation
+from bika.lims.utils import get_link
 from plone.app.folder.folder import ATFolder
 from plone.app.folder.folder import ATFolderSchema
 from zope.interface.declarations import implements
+
+from bika.lims.utils import get_link
 
 
 class StorageLocationsView(BikaListingView):
@@ -101,19 +106,17 @@ class StorageLocationsView(BikaListingView):
         # Don't allow any context actions
         self.request.set("disable_border", 1)
 
-    def folderitems(self):
-        items = BikaListingView.folderitems(self)
-        for x in range(len(items)):
-            if not items[x].has_key('obj'): continue
-            obj = items[x]['obj']
-            items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
-                 (items[x]['url'], items[x]['Title'])
-            items[x]['Description'] = obj.Description()
-            if obj.aq_parent.portal_type == 'Client':
-                items[x]['Owner'] = obj.aq_parent.Title()
-            else:
-                items[x]['Owner'] = self.context.bika_setup.laboratory.Title()
-        return items
+    def folderitem(self, obj, item, index):
+        obj = api.get_object(obj)
+        item["Description"] = obj.Description()
+        item["replace"]["Title"] = get_link(item["url"], item["Title"])
+
+        parent = api.get_parent(obj)
+        if IClient.providedBy(parent):
+            item["Owner"] = api.get_title(parent)
+        else:
+            item["Owner"] = self.context.bika_setup.laboratory.Title()
+        return item
 
 
 schema = ATFolderSchema.copy()

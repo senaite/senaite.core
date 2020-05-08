@@ -123,6 +123,7 @@ class DepartmentsView(BikaListingView):
             the template
         :index: current index of the item
         """
+        obj = api.get_object(obj)
         title = obj.Title()
         description = obj.Description()
         url = obj.absolute_url()

@@ -1014,20 +1014,6 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         return user and user.getProperty("fullname") or analyst
 
     @security.public
-    def getObjectWorkflowStates(self):
-        """This method is used to populate catalog values
-        Returns a dictionary with the workflow id as key and workflow state as
-        value.
-        :return: {'review_state':'active',...}
-        """
-        workflow = getToolByName(self, 'portal_workflow')
-        states = {}
-        for w in workflow.getWorkflowsFor(self):
-            state = api.get_workflow_status_of(self, w.state_var)
-            states[w.state_var] = state
-        return states
-
-    @security.public
     def getSubmittedBy(self):
         """
         Returns the identifier of the user who submitted the result if the

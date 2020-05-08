@@ -18,6 +18,7 @@
 # Copyright 2018-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.controlpanel.bika_labcontacts import LabContactsView
 
@@ -67,6 +68,7 @@ class LabContactsView(LabContactsView):
 
     def folderitem(self, obj, item, index):
         item = super(LabContactsView, self).folderitem(obj, item, index)
+        obj = api.get_object(obj)
         deps = [dep.UID() for dep in obj.getDepartments()]
         item['selected'] = self.context.UID() in deps
         return item

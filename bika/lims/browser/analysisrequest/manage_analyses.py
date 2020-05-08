@@ -185,8 +185,6 @@ class AnalysisRequestAnalysesView(BikaListingView):
         return columns
 
     def folderitems(self):
-        """XXX refactor if possible to non-classic mode
-        """
         items = super(AnalysisRequestAnalysesView, self).folderitems()
         self.categories.sort()
         return items

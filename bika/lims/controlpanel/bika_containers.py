@@ -20,11 +20,14 @@
 
 from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import IContainers
 from bika.lims.permissions import AddContainer
+from bika.lims.utils import get_link
+from bika.lims.utils import get_link_for
 from plone.app.folder.folder import ATFolder, ATFolderSchema
 from zope.interface.declarations import implements
 
@@ -98,26 +101,22 @@ class ContainersView(BikaListingView):
         # Don't allow any context actions
         self.request.set("disable_border", 1)
 
-    def folderitems(self):
-        items = BikaListingView.folderitems(self)
-        for x in range(len(items)):
-            if not items[x].has_key('obj'): continue
-            obj = items[x]['obj']
-            items[x]['Description'] = obj.Description()
-            items[x]['ContainerType'] = obj.getContainerType() and obj.getContainerType().Title() or ''
-            items[x]['Capacity'] = obj.getCapacity() and "%s" % \
-                (obj.getCapacity()) or ''
-            pre = obj.getPrePreserved()
-            pres = obj.getPreservation()
-            items[x]['Pre-preserved'] = ''
-            items[x]['after']['Pre-preserved'] = pre \
-                and "<a href='%s'>%s</a>" % (pres.absolute_url(), pres.Title()) \
-                or ''
+    def folderitem(self, obj, item, index):
+        obj = api.get_object(obj)
+        c_type = obj.getContainerType()
+        capacity = obj.getCapacity()
+        item.update({
+            "Description": obj.Description(),
+            "ContainerType": c_type and api.get_title(c_type) or "",
+            "Capacity": capacity and str(capacity) or "",
+            "Pre-preserved": "",
+        })
 
-            items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
-                 (items[x]['url'], items[x]['Title'])
+        if obj.getPrePreserved():
+            item["after"]["Pre-preserved"] = get_link_for(obj.getPreservation())
 
-        return items
+        item["replace"]["Title"] = get_link(item["url"], item["Title"])
+        return item
 
 
 schema = ATFolderSchema.copy()

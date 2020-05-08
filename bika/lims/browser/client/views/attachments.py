@@ -18,6 +18,7 @@
 # Copyright 2018-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from plone.app.layout.globals.interfaces import IViewView
@@ -73,7 +74,8 @@ class ClientAttachmentsView(BikaListingView):
             return name
 
     def folderitem(self, obj, item, index):
-        obj_url = obj.absolute_url()
+        obj = api.get_object(obj)
+        obj_url = api.get_url(obj)
         file = obj.getAttachmentFile()
         icon = file.icon
         item['AttachmentFile'] = file.filename()

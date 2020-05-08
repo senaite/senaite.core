@@ -202,14 +202,6 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
-    ComputedField(
-        "ObjectWorkflowStates",
-        expression="context.getObjectWorkflowStates()",
-        searchable=1,
-        widget=ComputedWidget(
-            visible=False
-        ),
-    ),
 ))
 
 
@@ -262,19 +254,6 @@ class Person(BaseFolder):
         """
         return self.portal_membership.getMemberById(
             self.getUsername()) is not None
-
-    def getObjectWorkflowStates(self):
-        """Returns a dictionary with the workflow id as key and workflow state
-        as value.
-
-        :returns: {'review_state':'active',...}
-        """
-        workflow = getToolByName(self, 'portal_workflow')
-        states = {}
-        for w in workflow.getWorkflowsFor(self):
-            state = w._getWorkflowStateOf(self).id
-            states[w.state_var] = state
-        return states
 
 
 registerType(Person, PROJECTNAME)

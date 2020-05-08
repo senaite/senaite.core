@@ -22,11 +22,14 @@ from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
 from Products.CMFCore import permissions
 from Products.CMFCore.utils import getToolByName
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import IReflexRuleFolder
 from bika.lims.permissions import ManageBika, AddReflexRule
+from bika.lims.utils import get_link
+from bika.lims.utils import get_link_for
 from plone.app.folder.folder import ATFolder
 from plone.app.folder.folder import ATFolderSchema
 from zope.interface.declarations import implements
@@ -102,20 +105,15 @@ class ReflexRuleFolderView(BikaListingView):
         # Don't allow any context actions
         self.request.set("disable_border", 1)
 
-    # TODO use folderitem in develop!
-    def folderitems(self):
-        items = BikaListingView.folderitems(self)
-        for x in range(len(items)):
-            if 'obj' not in items[x]:
-                continue
-            obj = items[x]['obj']
-            items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
-                (items[x]['url'], items[x]['Title'])
-            method = items[x]['obj'].getMethod()
-            items[x]['Method'] = method.title if method else ''
-            items[x]['replace']['Method'] = "<a href='%s'>%s</a>" % \
-                (method.absolute_url(), items[x]['Method']) if method else ''
-        return items
+    def folderitem(self, obj, item, index):
+        obj = api.get_object(obj)
+        method = obj.getMethod()
+        if method:
+            item["Method"] = api.get_title(method)
+            item["replace"]["Method"] = get_link_for(method)
+
+        item["replace"]["Title"] = get_link(item["url"], item["Title"])
+        return item
 
 
 schema = ATFolderSchema.copy()
