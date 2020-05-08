@@ -382,7 +382,6 @@ class AnalysisServicesView(BikaListingView):
             item["MaxTimeAllowed"] = self.format_maxtime(maxtime)
 
         # Price
-        import pdb;pdb.set_trace()
         item["Price"] = self.format_price(obj.Price)
 
         # Duplicate Variation
