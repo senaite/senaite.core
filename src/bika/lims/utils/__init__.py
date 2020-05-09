@@ -139,12 +139,6 @@ def printfile(portal, from_addr, to_addrs, msg):
     pass
 
 
-def _cache_key_getUsers(method, context, roles=[], allow_empty=True):
-    key = time() // (60 * 60), roles, allow_empty
-    return key
-
-
-@ram.cache(_cache_key_getUsers)
 def getUsers(context, roles, allow_empty=True):
     """ Present a DisplayList containing users in the specified
         list of roles
@@ -628,7 +622,7 @@ def getFromString(obj, string, default=None):
     attr_obj = obj
     attrs = string.split('.')
     for attr in attrs:
-        attr_obj = api.safe_getattr(obj, attr, default=None)
+        attr_obj = api.safe_getattr(attr_obj, attr, default=None)
         if not attr_obj:
             break
     return attr_obj or default
