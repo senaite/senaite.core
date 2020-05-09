@@ -64,6 +64,7 @@ def install(context):
     _run_import_step(portal, "browserlayer")
     _run_import_step(portal, "rolemap")
     _run_import_step(portal, "toolset")  # catalogs
+    _run_import_step(portal, "catalog")
     _run_import_step(portal, "workflow")
 
     # Run Installers
