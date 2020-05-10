@@ -88,16 +88,6 @@
       layer="bika.lims.interfaces.IBikaLIMS"
       />
 
-  <browser:resource
-      file="skins/bika/senaite-core-logo.png"
-      name="senaite-core-logo.png"
-      />
-
-  <browser:resource
-      file="skins/bika/senaite-hexagon-logo.png"
-      name="senaite-hexagon-logo.png"
-      />
-
   <utility
       provides="bika.lims.interfaces.INumberGenerator"
       factory=".numbergenerator.NumberGenerator"
