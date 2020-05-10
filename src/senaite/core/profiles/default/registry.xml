@@ -104,5 +104,15 @@
       <element>zh</element>
     </value>
   </record>
+  <!-- Use language cookie (required to display the language menu) -->
+  <record name="plone.use_cookie_negotiation" interface="plone.i18n.interfaces.ILanguageSchema" field="use_cookie_negotiation">
+    <field type="plone.registry.field.Bool">
+      <default>False</default>
+      <description xmlns:ns0="http://xml.zope.org/namespaces/i18n" ns0:domain="plone" ns0:translate="description_cookie_manual_override">Required for the language selector viewlet to be rendered.</description>
+      <required>False</required>
+      <title xmlns:ns0="http://xml.zope.org/namespaces/i18n" ns0:domain="plone" ns0:translate="heading_cookie_manual_override">Use cookie for manual override</title>
+    </field>
+    <value>True</value>
+  </record>
 
 </registry>
