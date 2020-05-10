@@ -15,28 +15,40 @@
                                      table_only python:hasattr(view, 'table_only') and view.table_only or view.request.get('table_only','') == form_id;"
                          tal:condition="python:not table_only">
       <h1>
-        <img tal:condition="view/icon | nothing"
-             tal:attributes="src view/icon"
-             style="height:32px;width:auto;"/>
-        <span tal:content="python:view.context.translate(view.title)"/>
-          <span tal:condition="python:checkPermission('senaite.core: Add AnalysisRequest', context)"
-                style="padding-left:0.5em;display:inline-block;">
-          <form method="GET" class="form-inline" action="ar_add">
-            <input type="number"
-                   name="ar_count"
-                   min="1"
-                   style="width:4em;vertical-align:middle;"
-                   class="form-control input-sm"
-                   tal:attributes="value view/getDefaultAddCount|1"/>
-            <button type="submit"
-                    class="btn btn-default btn-sm">
-              <img src="#"
-                   style="height:12px;width:auto;"
-                   tal:attributes="src string:${context/absolute_url}/++resource++bika.lims.images/add.png"/>
-              <span i18n:translate="">Add</span>
-            </button>
+
+        <img src="#"
+             class="d-inline-block align-middle"
+             width="32"
+             tal:attributes="src string:${context/absolute_url}/++plone++senaite.core.static/assets/svg/sample.svg"/>
+
+        <div class="d-inline-block align-middle"
+             tal:content="python:view.context.translate(view.title)">Samples</div>
+
+        <div tal:condition="python:checkPermission('senaite.core: Add AnalysisRequest', context)"
+              class="d-inline-block align-middle">
+          <form method="GET"
+                class="form-inline"
+                action="ar_add"
+                tal:attributes="action string:${context/absolute_url}/ar_add">
+            <div class="input-group">
+              <input type="number"
+                     name="ar_count"
+                     min="1"
+                     max="99"
+                     class="form-control form-control-sm"
+                     tal:attributes="value view/getDefaultAddCount|1"/>
+              <div class="input-group-append">
+                <button type="submit"
+                        class="btn btn-outline-secondary btn-sm">
+                  <img src="#"
+                       style="height:16px;"
+                       tal:attributes="src string:${context/absolute_url}/++plone++senaite.core.static/assets/svg/plus-circle.svg"/>
+                  <span i18n:translate="">Add</span>
+                </button>
+              </div>
+            </div>
           </form>
-        </span>
+        </div>
       </h1>
     </metal:content-title>
 
