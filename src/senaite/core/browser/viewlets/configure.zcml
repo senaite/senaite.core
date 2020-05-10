@@ -2,6 +2,51 @@
            xmlns:browser="http://namespaces.zope.org/browser"
            i18n_domain="senaite.core">
 
+  <!-- Listing Table Title Viewlet -->
+  <browser:viewlet
+      name="senaite.core.listingtabletitle"
+      manager=".interfaces.IListingTableTitle"
+      class=".listings.ListingTableTitleViewlet"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
+  <!-- Listing Title Viewlet Manager -->
+  <browser:viewletManager
+      name="senaite.listingtabletitle"
+      provides=".interfaces.IListingTableTitle"
+      permission="zope2.View"
+      class="plone.app.viewletmanager.manager.OrderedViewletManager"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
+  <!-- Listing Description Viewlet Manager -->
+  <browser:viewletManager
+      name="senaite.listingtabledescription"
+      provides=".interfaces.IListingTableDescription"
+      permission="zope2.View"
+      class="plone.app.viewletmanager.manager.OrderedViewletManager"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
+  <!-- Above Listing Viewlet Manager -->
+  <browser:viewletManager
+      name="senaite.abovelistingtable"
+      provides=".interfaces.IAboveListingTable"
+      permission="zope2.View"
+      class="plone.app.viewletmanager.manager.OrderedViewletManager"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
+  <!-- Below Listing Viewlet Manager -->
+  <browser:viewletManager
+      name="senaite.belowlistingtable"
+      provides=".interfaces.IBelowListingTable"
+      permission="zope2.View"
+      class="plone.app.viewletmanager.manager.OrderedViewletManager"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
   <!-- Static Resources Viewlet -->
   <browser:viewlet
       name="senaite.core.static"

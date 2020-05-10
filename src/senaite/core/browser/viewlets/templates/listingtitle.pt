@@ -1,0 +1,17 @@
+<div id="listing-actions">
+  <div class="d-inline-block align-middle">
+    <img tal:replace="structure view/icon"/>
+  </div>
+  <h1 class="d-inline-block align-middle" tal:content="view/title"></h1>
+  <tal:contextactions repeat="action python:view.get_context_actions()">
+    <div class="d-inline-block align-middle">
+    <a tal:attributes="href action/url;
+                       class python:'mx-2 btn btn-sm btn-light %s' % action.get('css_class', '')">
+      <img tal:define="icon action/icon|nothing"
+           tal:condition="icon"
+           tal:attributes="src icon"/>
+      <span tal:content="action/title"></span>
+    </a>
+    </div>
+  </tal:contextactions>
+</div>

@@ -29,7 +29,7 @@ class IBootstrapView(Interface):
         """
 
 
-def icon_cache_key(method, self, brain_or_object):
+def icon_cache_key(method, self, brain_or_object, **kw):
     """Generates a cache key for the icon lookup
 
     Includes the virtual URL to handle multiple HTTP/HTTPS domains
@@ -37,8 +37,9 @@ def icon_cache_key(method, self, brain_or_object):
     """
     url = api.get_url(brain_or_object)
     modified = api.get_modification_date(brain_or_object).millis()
-    key = "{}?modified={}".format(url, modified)
-    logger.debug("Generated Cache Key: {}".format(key))
+    attrs = "&".join(map(lambda a: "{}={}".format(*a), kw.items()))
+    key = "{}?modified={}{}".format(url, modified, attrs)
+    logger.info("Generated Cache Key: {}".format(key))
     return key
 
 
@@ -58,7 +59,11 @@ class BootstrapView(BrowserView):
     def img_tag(self, title=None, icon=None, **kw):
         """Generate an img tag
         """
-        attributes = {"width": "16"}
+        attributes = kw
+        if not kw:
+            attributes = {"width": "16"}
+        css = attributes.pop("css_class", "")
+        attributes["class"] = css
         attributes.update(kw)
         attrs = " ".join(
             map(lambda a: "{}='{}'".format(a[0], a[1]), attributes.items()))
@@ -68,7 +73,7 @@ class BootstrapView(BrowserView):
         return html_tag
 
     @cache(icon_cache_key)
-    def get_icon_for(self, brain_or_object):
+    def get_icon_for(self, brain_or_object, **kw):
         """Get the navigation portlet icon for the brain or object
 
         The cache key ensures that the lookup is done only once per domain name
@@ -87,11 +92,11 @@ class BootstrapView(BrowserView):
         icon_svg = "{}/{}".format(SVG_ICON_BASE_URL, svg)
 
         if self.resource_exists(icon_svg):
-            return self.img_tag(title=title, icon=icon_svg)
+            return self.img_tag(title=title, icon=icon_svg, **kw)
         # or try to get the big icon for high-res displays
         elif self.resource_exists(icon_big):
-            return self.img_tag(title=title, icon=icon_big)
-        return self.img_tag(title=title, icon=icon)
+            return self.img_tag(title=title, icon=icon_big, **kw)
+        return self.img_tag(title=title, icon=icon, **kw)
 
     def get_viewport_values(self, view=None):
         """Determine the value of the viewport meta-tag
