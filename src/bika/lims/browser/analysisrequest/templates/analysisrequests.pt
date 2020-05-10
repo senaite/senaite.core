@@ -15,7 +15,6 @@
                                      table_only python:hasattr(view, 'table_only') and view.table_only or view.request.get('table_only','') == form_id;"
                          tal:condition="python:not table_only">
       <h1>
-
         <img src="#"
              class="d-inline-block align-middle"
              width="32"
@@ -25,7 +24,7 @@
              tal:content="python:view.context.translate(view.title)">Samples</div>
 
         <div tal:condition="python:checkPermission('senaite.core: Add AnalysisRequest', context)"
-              class="d-inline-block align-middle">
+              class="d-inline-block align-middle ml-2">
           <form method="GET"
                 class="form-inline"
                 action="ar_add"
@@ -43,7 +42,7 @@
                   <img src="#"
                        style="height:16px;"
                        tal:attributes="src string:${context/absolute_url}/++plone++senaite.core.static/assets/svg/plus-circle.svg"/>
-                  <span i18n:translate="">Add</span>
+                  <span tal:omit-tag="python:1" i18n:translate="">Add</span>
                 </button>
               </div>
             </div>

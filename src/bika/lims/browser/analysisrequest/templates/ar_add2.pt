@@ -222,27 +222,40 @@
     <metal:title fill-slot="content-title">
 
       <h1 id="ar-header">
-        <img tal:condition="view/icon | nothing" tal:attributes="src view/icon"/>
-        <span i18n:translate="">Request new analyses</span>
-        <span style="padding-left:0.5em;display:inline-block;">
-          <form method="GET" class="form-inline">
+        <img src="#"
+             class="d-inline-block align-middle"
+             width="32"
+             tal:attributes="src string:${context/absolute_url}/++plone++senaite.core.static/assets/svg/sample.svg"/>
+
+        <div class="d-inline-block align-middle" i18n:translate="">Request new analyses</div>
+
+        <div tal:condition="python:checkPermission('senaite.core: Add AnalysisRequest', context)"
+              class="d-inline-block align-middle ml-2">
+          <form method="GET"
+                class="form-inline"
+                action="ar_add"
+                tal:attributes="action string:${context/absolute_url}/ar_add">
             <input type="hidden"
                    name="copy_from" tal:attributes="value request/copy_from|nothing"/>
-            <input type="number"
-                   name="ar_count"
-                   min="1"
-                   style="width:4em;vertical-align:middle;"
-                   class="form-control input-sm"
-                   tal:attributes="value view/ar_count|1"/>
-            <button type="submit"
-                    class="btn btn-link">
-              <img src="#"
-                   style="height:16px;width:auto;"
-                   tal:attributes="src string:${context/absolute_url}/++resource++bika.lims.images/add.png"/>
-              <span i18n:translate="">Add</span>
-            </button>
+            <div class="input-group">
+              <input type="number"
+                     name="ar_count"
+                     min="1"
+                     max="99"
+                     class="form-control form-control-sm"
+                     tal:attributes="value view/ar_count|1"/>
+              <div class="input-group-append">
+                <button type="submit"
+                        class="btn btn-outline-secondary btn-sm">
+                  <img src="#"
+                       height="16"
+                       tal:attributes="src string:${context/absolute_url}/++plone++senaite.core.static/assets/svg/plus-circle.svg"/>
+                  <div tal:omit-tag="python:1" i18n:translate="">Add</div>
+                </button>
+              </div>
+            </div>
           </form>
-        </span>
+        </div>
       </h1>
 
 
