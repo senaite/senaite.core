@@ -1,7 +1,11 @@
 jQuery( function($) {
   $(document).ready(function() {
 
-    var lang = jarn.i18n.currentLanguage;
+    try {
+      var lang = jarn.i18n.currentLanguage;
+    } catch(err) {
+      lang = "en";
+    }
     var config = $.datepicker.regional[lang] || $.datepicker.regional[''];
 
     $('[datepicker="1"]').datepicker(

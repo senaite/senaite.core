@@ -54,14 +54,16 @@
             <div class="multiValued-listing"
                  tal:condition="python:context.Schema()[fieldName].multiValued"
                  tal:attributes="id string:${fieldName}-listing;fieldName fieldName;"
-                 tal:define="values python:context.Schema()[fieldName].getAccessor(context)();">
+                 tal:define="portal_state python:context.restrictedTraverse('@@plone_portal_state');
+                             portal_url python:portal_state.portal_url();
+                             values python:context.Schema()[fieldName].getAccessor(context)();">
               <tal:repeat repeat="value values">
                 <div class="reference_multi_item"
                      tal:attributes="uid value/UID">
                   <img
                     class="deletebtn"
                     tal:attributes="
-                      src string:${portal/absolute_url}/++resource++bika.lims.images/delete.png;
+                      src string:${portal_url}/++plone++senaite.core.static/assets/svg/trashcan.svg;
                       fieldName fieldName;
                       uid value/UID"/>
                   <span tal:replace="python:str(value.Title())"/>

@@ -1,0 +1,15 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    i18n_domain="senaite.core">
+
+  <browser:page
+      for="*"
+      name="referencewidget_search"
+      class=".referencewidget.ajaxReferenceWidgetSearch"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
+</configure>

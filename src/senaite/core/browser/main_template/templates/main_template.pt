@@ -41,6 +41,9 @@
       <!-- <link tal:replace="structure provider:plone.htmlhead.links" /> -->
       <!-- <metal:styleslot define-slot="style_slot" /> -->
 
+      <!-- SENAITE legacy resouces -->
+      <metal:resources define-slot="senaite_legacy_resources" />
+
       <meta name="generator" content="Plone - http://plone.com" />
       <meta name="viewport"
             tal:define="viewportvalues bootstrapview/get_viewport_values"

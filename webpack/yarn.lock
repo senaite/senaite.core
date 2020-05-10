@@ -2679,10 +2679,20 @@ jquery-migrate@<2:
   resolved "https://registry.yarnpkg.com/jquery-migrate/-/jquery-migrate-1.4.1.tgz#85152f3ec99a95625f4f7d0bcf62e9b8638f5a76"
   integrity sha1-hRUvPsmalWJfT30Lz2LpuGOPWnY=
 
+jquery-ui-timepicker-addon@^1.6.3:
+  version "1.6.3"
+  resolved "https://registry.yarnpkg.com/jquery-ui-timepicker-addon/-/jquery-ui-timepicker-addon-1.6.3.tgz#8037c39b0b630282dd0b37dd8ad7fc5e1163377f"
+  integrity sha1-gDfDmwtjAoLdCzfditf8XhFjN38=
+
 jquery@<3:
   version "2.2.4"
   resolved "https://registry.yarnpkg.com/jquery/-/jquery-2.2.4.tgz#2c89d6889b5eac522a7eea32c14521559c6cbf02"
   integrity sha1-LInWiJterFIqfuoywUUhVZxsvwI=
+
+jqueryui@^1.11.1:
+  version "1.11.1"
+  resolved "https://registry.yarnpkg.com/jqueryui/-/jqueryui-1.11.1.tgz#8718550705f5568d1199196169094db73b2291bc"
+  integrity sha1-hxhVBwX1Vo0RmRlhaQlNtzsikbw=
 
 "js-tokens@^3.0.0 || ^4.0.0", js-tokens@^4.0.0:
   version "4.0.0"

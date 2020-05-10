@@ -55,7 +55,7 @@ function referencewidget_lookups(elements) {
   }
   for (var i = inputs.length - 1; i >= 0; i--) {
     var element = inputs[i];
-    var options = $.parseJSON($(element).attr("combogrid_options"));
+    var options = JSON.parse($(element).attr("combogrid_options"));
     if (!options) {
       continue;
     }
@@ -100,7 +100,7 @@ function referencewidget_lookups(elements) {
           $(this).attr("uid", existing_uids.join(","));
           $(uid_element).val(existing_uids.join(","));
           // insert item to listing
-          var del_btn_src = window.portal_url + "/++resource++bika.lims.images/delete.png";
+          var del_btn_src = window.portal_url + "/++plone++senaite.core.static/assets/svg/trashcan.svg";
           var del_btn = "<img class='deletebtn' data-contact-title='" + ui.item.Title + "' src='" + del_btn_src + "' fieldName='" + fieldName + "' uid='" + selected_uid + "'/>";
           var new_item = "<div class='reference_multi_item' uid='" + selected_uid + "'>" + del_btn + selected_value + "</div>";
           $(listing_div).append($(new_item));
@@ -140,11 +140,11 @@ function referencewidget_lookups(elements) {
     options.url = options.url + "&catalog_name=" + $(element).attr("catalog_name");
     options.url = options.url + "&base_query=" + $(element).attr("base_query");
     options.url = options.url + "&search_query=" + $(element).attr("search_query");
-    options.url = options.url + "&colModel=" + $.toJSON($.parseJSON($(element).attr("combogrid_options")).colModel);
-    options.url = options.url + "&search_fields=" + $.toJSON($.parseJSON($(element).attr("combogrid_options")).search_fields);
-    options.url = options.url + "&discard_empty=" + $.toJSON($.parseJSON($(element).attr("combogrid_options")).discard_empty);
-    options.url = options.url + "&force_all=" + $.toJSON($.parseJSON($(element).attr("combogrid_options")).force_all);
-    options.url = options.url + '&minLength=' + $.toJSON($.parseJSON($(element).attr('combogrid_options')).minLength);
+    options.url = options.url + "&colModel=" + JSON.stringify(JSON.parse($(element).attr("combogrid_options")).colModel);
+    options.url = options.url + "&search_fields=" + JSON.stringify(JSON.parse($(element).attr("combogrid_options")).search_fields);
+    options.url = options.url + "&discard_empty=" + JSON.stringify(JSON.parse($(element).attr("combogrid_options")).discard_empty);
+    options.url = options.url + "&force_all=" + JSON.stringify(JSON.parse($(element).attr("combogrid_options")).force_all);
+    options.url = options.url + '&minLength=' + JSON.stringify(JSON.parse($(element).attr('combogrid_options')).minLength);
     $(element).combogrid(options);
     $(element).addClass("has_combogrid_widget");
     $(element).attr("search_query", "{}");

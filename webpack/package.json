@@ -30,6 +30,8 @@
     "bootstrap-confirmation2": "^4.1.0",
     "jquery": "<3",
     "jquery-migrate": "<2",
+    "jquery-ui-timepicker-addon": "^1.6.3",
+    "jqueryui": "^1.11.1",
     "popper.js": "^1.16.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1"

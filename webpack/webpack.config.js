@@ -77,6 +77,20 @@ module.exports = {
             }
           }
         ]
+      },
+      {
+        test: /\.(png|jpg)(\?v=\d+\.\d+\.\d+)?$/,
+        use: [
+          {
+            // https://webpack.js.org/loaders/file-loader/
+            loader: "file-loader",
+            options: {
+              name: "[name].[ext]",
+              outputPath: "../assets/img",
+              publicPath: "/++plone++senaite.core.static/assets/img",
+            }
+          }
+        ]
       }
     ]
   },
@@ -98,6 +112,8 @@ module.exports = {
     new CopyPlugin([
       { from: "../node_modules/jquery", to: path.resolve(staticPath, "lib/jquery") },
       { from: "../node_modules/jquery-migrate", to: path.resolve(staticPath, "lib/jquery-migrate") },
+      { from: "../node_modules/jqueryui", to: path.resolve(staticPath, "lib/jqueryui") },
+      { from: "../node_modules/jquery-ui-timepicker-addon", to: path.resolve(staticPath, "lib/jquery-ui-timepicker-addon") },
       { from: "../node_modules/bootstrap", to: path.resolve(staticPath, "lib/bootstrap") },
       { from: "../node_modules/bootstrap-confirmation2", to: path.resolve(staticPath, "lib/bootstrap-confirmation2") },
       { from: "../node_modules/popper.js", to: path.resolve(staticPath, "lib/popperjs") },

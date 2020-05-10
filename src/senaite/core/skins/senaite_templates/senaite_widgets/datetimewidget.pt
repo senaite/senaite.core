@@ -21,7 +21,7 @@
 
     <metal:edit_macro define-macro="edit">
       <tal:static define="portal context/@@plone_portal_state/portal;
-                          static_path string:${portal/absolute_url}/bika_widgets">
+                          static_path string:${portal/absolute_url}/senaite_widgets">
         <link rel="stylesheet" type="text/css" media="all" href=""
               tal:attributes="href string:${static_path}/datetimewidget.css"/>
       </tal:static>
