@@ -17,14 +17,11 @@
                             id string:breadcrumbs-${repeat/crumb/number};">
           <a href="#"
              tal:omit-tag="not: url"
-             tal:condition="python:not is_last"
-             tal:attributes="href url"
+             tal:attributes="href url;
+                             class python:is_last and 'text-secondary'"
              tal:content="title">
             crumb
           </a>
-
-          <tal:last tal:content="title" tal:condition="is_last" />
-
         </li>
       </tal:item>
     </tal:crumb>
