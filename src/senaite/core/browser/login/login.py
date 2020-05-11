@@ -7,9 +7,9 @@ class LoginForm(BaseLoginForm):
 
     def get_icon_class_for(self, widget):
         if widget.name == "__ac_name":
-            return "glyphicon glyphicon-user"
+            return "fas fa-user-lock"
         if widget.name == "__ac_password":
-            return "glyphicon glyphicon-lock"
+            return "fas fa-key"
 
     def updateWidgets(self):
         super(LoginForm, self).updateWidgets()
