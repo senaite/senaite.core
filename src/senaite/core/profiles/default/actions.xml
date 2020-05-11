@@ -4,6 +4,64 @@
         meta_type="Plone Actions Tool"
         purge="True">
 
+  <!-- Object actions -->
+  <object name="object" meta_type="CMF Action Category" purge="True">
+    <!-- Audit Log -->
+    <object name="auditlog" meta_type="CMF Action" i18n:domain="senaite.core">
+      <property name="title" i18n:translate="">Audit Log</property>
+      <property name="description" i18n:translate=""></property>
+      <property name="url_expr">string:${object_url}/@@auditlog</property>
+      <property name="link_target"></property>
+      <property name="icon_expr"></property>
+      <property name="available_expr">object/@@has-auditlog|nothing</property>
+      <property name="permissions">
+        <element value="senaite.core: View Log Tab"/>
+      </property>
+      <property name="visible">True</property>
+    </object>
+  </object>
+
+  <!-- Document Actions -->
+  <object name="document_actions" meta_type="CMF Action Category">
+    <object name="rss" meta_type="CMF Action" i18n:domain="plone">
+      <property name="visible">False</property>
+    </object>
+    <object name="print" meta_type="CMF Action" i18n:domain="plone">
+      <property name="visible">False</property>
+    </object>
+    <object name="extedit" meta_type="CMF Action" i18n:domain="plone">
+      <property name="visible">False</property>
+    </object>
+  </object>
+
+  <!-- Object Buttons -->
+  <object name="object_buttons">
+    <object name="cut">
+      <property name="visible">False</property>
+    </object>
+    <object name="copy">
+      <property name="visible">False</property>
+    </object>
+    <object name="paste">
+      <property name="visible">False</property>
+    </object>
+    <object name="delete">
+      <property name="visible">False</property>
+    </object>
+    <object name="rename">
+      <property name="visible">False</property>
+    </object>
+    <object name="redirection">
+      <property name="visible">False</property>
+    </object>
+    <object name="ical_import_enable">
+      <property name="visible">False</property>
+    </object>
+    <object name="ical_import_disable">
+      <property name="visible">False</property>
+    </object>
+  </object>
+
   <!-- User actions -->
   <object name="user" meta_type="CMF Action Category">
     <!-- Hide User Dashboard -->
