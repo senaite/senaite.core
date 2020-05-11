@@ -8,3 +8,6 @@ class ContentMenuProvider(Base):
     """Content menu provider for the "view" tab: displays the menu
     """
     index = ViewPageTemplateFile('templates/contentmenu.pt')
+
+    def available(self):
+        return True

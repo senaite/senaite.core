@@ -14,4 +14,31 @@
       provides="zope.contentprovider.interfaces.IContentProvider"
       />
 
+  <!-- Display Menu -->
+  <adapter
+      for="*
+           senaite.core.interfaces.ISenaiteCore"
+      name="plone.contentmenu.display"
+      factory=".menu.DisplaySubMenuItem"
+      provides="plone.app.contentmenu.interfaces.IContentMenuItem"
+      />
+
+  <!-- Add Menu -->
+  <adapter
+      for="*
+           senaite.core.interfaces.ISenaiteCore"
+      name="plone.contentmenu.factories"
+      factory=".menu.FactoriesSubMenuItem"
+      provides="plone.app.contentmenu.interfaces.IContentMenuItem"
+      />
+
+  <!-- Manage Portlets Menu -->
+  <adapter
+      for="*
+           senaite.core.interfaces.ISenaiteCore"
+      name="plone.contentmenu.portletmanager"
+      factory=".menu.PortletManagerSubMenuItem"
+      provides="plone.app.contentmenu.interfaces.IContentMenuItem"
+      />
+
 </configure>
