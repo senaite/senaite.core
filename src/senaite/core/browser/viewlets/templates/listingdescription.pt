@@ -1,0 +1,8 @@
+<div class="row"
+     tal:define="description view/description"
+     tal:condition="description">
+  <div class="col-sm-12">
+    <div class="text-secondary small"
+         tal:content="structure description"></div>
+  </div>
+</div>

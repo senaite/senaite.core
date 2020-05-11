@@ -11,6 +11,15 @@
       layer="senaite.core.interfaces.ISenaiteCore"
       />
 
+  <!-- Listing Table Description Viewlet -->
+  <browser:viewlet
+      name="senaite.core.listingtabledescription"
+      manager=".interfaces.IListingTableDescription"
+      class=".listings.ListingTableDescriptionViewlet"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
   <!-- Listing Title Viewlet Manager -->
   <browser:viewletManager
       name="senaite.listingtabletitle"

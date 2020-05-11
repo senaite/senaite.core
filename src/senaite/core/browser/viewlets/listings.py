@@ -62,3 +62,12 @@ class ListingTableTitleViewlet(ViewletBase):
                 "icon": icon,
             })
             yield action
+
+
+class ListingTableDescriptionViewlet(ViewletBase):
+    """This viewlet inserts the title and context actions
+    """
+    index = ViewPageTemplateFile("templates/listingdescription.pt")
+
+    def description(self):
+        return self.view.description
