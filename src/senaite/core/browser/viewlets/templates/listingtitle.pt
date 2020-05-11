@@ -9,6 +9,7 @@
                        class python:'mx-2 btn btn-sm btn-light %s' % action.get('css_class', '')">
       <img tal:define="icon action/icon|nothing"
            tal:condition="icon"
+           height="16"
            tal:attributes="src icon"/>
       <span tal:content="action/title"></span>
     </a>
