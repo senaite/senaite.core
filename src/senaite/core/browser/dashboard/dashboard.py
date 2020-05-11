@@ -25,10 +25,6 @@ from calendar import monthrange
 from operator import itemgetter
 from time import time
 
-from DateTime import DateTime
-from Products.Archetypes.public import DisplayList
-from Products.CMFCore.utils import getToolByName
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.api import get_tool
@@ -39,11 +35,15 @@ from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.catalog import CATALOG_WORKSHEET_LISTING
 from bika.lims.utils import get_strings
 from bika.lims.utils import get_unicode
+from DateTime import DateTime
 from plone import api
 from plone import protect
 from plone.api.exc import InvalidParameterError
 from plone.memoize import ram
 from plone.memoize import view as viewcache
+from Products.Archetypes.public import DisplayList
+from Products.CMFCore.utils import getToolByName
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
 DASHBOARD_FILTER_COOKIE = 'dashboard_filter_cookie'
 
@@ -59,25 +59,25 @@ PERIODICITY_ALL = "a"
 
 def get_dashboard_registry_record():
     """
-    Return the 'bika.lims.dashboard_panels_visibility' values.
+    Return the 'senaite.core.dashboard_panels_visibility' values.
     :return: A dictionary or None
     """
     try:
         registry = api.portal.get_registry_record(
-            'bika.lims.dashboard_panels_visibility')
+            'senaite.core.dashboard_panels_visibility')
         return registry
     except InvalidParameterError:
         # No entry in the registry for dashboard panels roles.
         # Maybe upgradestep 1.1.8 was not run?
         logger.warn("Cannot find a record with name "
-                    "'bika.lims.dashboard_panels_visibility' in "
-                    "registry_record. Missed upgrade 1.1.8?")
+                    "'senaite.core.dashboard_panels_visibility' in "
+                    "registry_record. Missed upgrade 2.0.0?")
     return dict()
 
 
 def set_dashboard_registry_record(registry_info):
     """
-    Sets the 'bika.lims.dashboard_panels_visibility' values.
+    Sets the 'senaite.core.dashboard_panels_visibility' values.
 
     :param registry_info: A dictionary type object with all its values as
     *unicode* objects.
@@ -85,13 +85,13 @@ def set_dashboard_registry_record(registry_info):
     """
     try:
         api.portal.set_registry_record(
-            'bika.lims.dashboard_panels_visibility', registry_info)
+            'senaite.core.dashboard_panels_visibility', registry_info)
     except InvalidParameterError:
         # No entry in the registry for dashboard panels roles.
         # Maybe upgradestep 1.1.8 was not run?
         logger.warn("Cannot find a record with name "
-                    "'bika.lims.dashboard_panels_visibility' in "
-                    "registry_record. Missed upgrade 1.1.8?")
+                    "'senaite.core.dashboard_panels_visibility' in "
+                    "registry_record. Missed upgrade 2.0.0?")
 
 
 def setup_dashboard_panels_visibility_registry(section_name):
@@ -806,7 +806,7 @@ class DashboardView(BrowserView):
 
 class DashboardViewPermissionUpdate(BrowserView):
     """
-    Updates the values in 'bika.lims.dashboard_panels_visibility' registry.
+    Updates the values in 'senaite.core.dashboard_panels_visibility' registry.
     """
 
     def __call__(self):
