@@ -5,8 +5,6 @@
 
   <include package="plone.resource" file="meta.zcml"/>
 
-  <include file="senaite-frontpage.zcml"/>
-
   <include file="analysis.zcml"/>
   <include file="analysisprofile.zcml"/>
   <include file="analysisreport.zcml"/>
@@ -37,7 +35,6 @@
   <include package=".analysisrequest"/>
   <include package=".batch"/>
   <include package=".client"/>
-  <include package=".dashboard"/>
   <include package=".department"/>
   <include package=".fields"/>
   <include package=".idserver"/>

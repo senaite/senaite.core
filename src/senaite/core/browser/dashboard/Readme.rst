@@ -7,6 +7,7 @@ change according to the option selected: for example, if the user selects
 'Mine', the panel with the summary of worksheets and worksheets statuses will
 only take into account the worksheets to which the user is assigned.
 
+
 Panels visibility
 =================
 

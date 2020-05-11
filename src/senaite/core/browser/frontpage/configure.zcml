@@ -1,0 +1,25 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    i18n_domain="senaite.core">
+
+  <include package="plone.app.contentmenu" />
+
+  <browser:page
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+      name="senaite-frontpage"
+      class=".frontpage.FrontPageView"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
+  <browser:menuItem
+      for="Products.CMFCore.interfaces.ISiteRoot"
+      menu="plone_displayviews"
+      title="SENAITE front-page"
+      action="senaite-frontpage"
+      description="SENAITE LIMS front-page"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
+</configure>
