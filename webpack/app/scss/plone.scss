@@ -1,0 +1,60 @@
+/* Plone overrides */
+
+.overlay {
+    @extend .d-none;
+}
+.discreet {
+    @extend .text-secondary;
+    @extend .small;
+}
+table.listing {
+    @extend .table;
+    @extend .table-bordered;
+    @extend .table-hover;
+}
+aside section.portlet {
+    @extend .card;
+    @extend .overflow-hidden;
+    .portletHeader {
+        @extend .card-title;
+    }
+    .portletContent {
+        @extend .card-body;
+    }
+}
+aside section nav.portletContent {
+    @extend .bg-light;
+    ul {
+        @extend .nav;
+        @extend .d-flex;
+        @extend .flex-column;
+        li {
+            @extend .nav-item;
+            a {
+                @extend .nav-link;
+            }
+        }
+    }
+}
+section>ol.configlets,
+section>ul.configlets {
+    @extend .list-group;
+    li {
+        @extend .list-group-item;
+        input[type='submit'] {
+            @extend .btn;
+            @extend .btn-sm;
+            @extend .btn-outline-secondary;
+        }
+    }
+}
+nav.pagination ul {
+    @extend .pagination;
+    li {
+        @extend .page-item;
+        a {
+            @extend .page-link;
+        }
+    }
+
+}
