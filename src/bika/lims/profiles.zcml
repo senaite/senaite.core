@@ -4,7 +4,7 @@
     i18n_domain="senaite.core">
 
   <!-- Include Upgrade Steps -->
-  <include package=".upgrade"/>
+  <!-- <include package=".upgrade"/> -->
 
   <!-- Generic Setup *INSTALL* Profile -->
   <genericsetup:registerProfile
