@@ -1,0 +1,13 @@
+/* SENAITE toolbar styles */
+
+#senaite-toolbar .tb-state {
+    &:before {
+        @extend .fa;
+        @extend .fa-at;
+        padding-right: 2px;
+    }
+
+    &.state-active { color: $blue; }
+    &.state-inactive,
+    &.state-invalid { color: $red; }
+}

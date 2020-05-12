@@ -36,8 +36,9 @@
         </span>
 
         <span
-          class="badge badge-secondary"
+          class=""
           i18n:translate=""
+          tal:attributes="class string:${menuItem/extra/class} tb-state"
           tal:condition="menuItem/extra/stateTitle | nothing"
           tal:content="menuItem/extra/stateTitle">
           State title
@@ -64,8 +65,9 @@
             </span>
             <!-- State Title -->
             <span
-              class="badge badge-secondary"
+              class=""
               i18n:translate=""
+              tal:attributes="class string:${menuItem/extra/class} tb-state"
               tal:condition="menuItem/extra/stateTitle | nothing"
               tal:content="menuItem/extra/stateTitle">
               State title

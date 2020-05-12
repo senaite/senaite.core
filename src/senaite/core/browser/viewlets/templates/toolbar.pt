@@ -1,4 +1,5 @@
-<nav class="navbar static-top navbar-expand-md navbar-light bg-light"
+<nav id="senaite-toolbar"
+     class="navbar static-top navbar-expand-md navbar-light bg-light"
      tal:define="context_state view/context_state;
             portal_state view/portal_state;
             global_sections python:view.get_global_sections();
@@ -20,7 +21,7 @@
   <div class="collapse navbar-collapse" id="toolbarContent">
 
     <!-- left -->
-    <ul class="nav navbar-nav small mr-auto">
+    <ul class="nav navbar-nav mr-auto">
       <!-- contentviews -->
       <div tal:replace="structure view/base_render"></div>
     </ul>
