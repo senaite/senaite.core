@@ -56,14 +56,8 @@ class FolderView(BikaListingView):
 
         self.icon = "{}/{}".format(
             self.portal_url,
-            "++resource++bika.lims.images/worksheet_big.png"
+            "++plone++senaite.core.static/assets/svg/worksheet.svg"
         )
-
-        self.context_actions = {
-            _("Add"): {
-                "url": "createObject?type_name=InstrumentMaintenanceTask",
-                "icon": "++resource++bika.lims.images/add.png"}
-        }
 
         self.context_actions = {
             _("Add"): {

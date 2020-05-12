@@ -32,7 +32,7 @@
   <include package=".workflow" />
 
   <include file="profiles.zcml" />
-  <include file="static.zcml" />
+  <!-- <include file="static.zcml" /> -->
 
 
   <i18n:registerTranslations directory="locales" />
