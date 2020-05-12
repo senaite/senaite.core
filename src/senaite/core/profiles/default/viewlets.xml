@@ -38,6 +38,11 @@
     <viewlet name="plone.belowcontenttitle.documentbyline"/>
   </hidden>
 
+  <!-- Hidden viewlets in plone.belowcontentbody -->
+  <hidden manager="plone.belowcontentbody" skinname="*" purge="True">
+    <viewlet name="plone.abovecontenttitle.documentactions" />
+  </hidden>
+
   <!-- Hidden viewlets in plone.portalfooter -->
   <hidden manager="plone.portalfooter" skinname="*" purge="True">
     <viewlet name="plone.site_actions"/>
