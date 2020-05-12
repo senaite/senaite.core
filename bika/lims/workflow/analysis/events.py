@@ -58,6 +58,45 @@ def before_reject(analysis):
         doActionFor(dup, "unassign")
 
 
+def after_retest(analysis):
+    """Function triggered before 'retest' transition takes place. Creates a
+    copy of the current analysis
+    """
+    # Retest out dependents (analyses that depend on this analysis)
+    cascade_to_dependents(analysis, "retest")
+
+    # Retest our dependencies (analyses this analysis depends on)
+    promote_to_dependencies(analysis, "retest")
+
+    # Support multiple retests by prefixing keyword with *-0, *-1, etc.
+    parent = api.get_parent(analysis)
+    keyword = analysis.getKeyword()
+
+    # Get only those analyses with same keyword as original
+    analyses = parent.getAnalyses(full_objects=True)
+    analyses = filter(lambda an: an.getKeyword() == keyword, analyses)
+    new_id = '{}-{}'.format(keyword, len(analyses))
+
+    # Create a copy of the original analysis
+    an_uid = api.get_uid(analysis)
+    new_analysis = create_analysis(parent, analysis, id=new_id, RetestOf=an_uid)
+    new_analysis.setResult("")
+    new_analysis.setResultCaptureDate(None)
+    new_analysis.reindexObject()
+    logger.info("Retest for {} ({}) created: {}".format(
+        keyword, api.get_id(analysis), api.get_id(new_analysis)))
+
+    # Assign the new analysis to this same worksheet, if any
+    worksheet = analysis.getWorksheet()
+    if worksheet:
+        worksheet.addAnalysis(new_analysis)
+
+    # Try to rollback the Analysis Request
+    if IRequestAnalysis.providedBy(analysis):
+        doActionFor(analysis.getRequest(), "rollback_to_receive")
+        reindex_request(analysis)
+
+
 def after_unassign(analysis):
     """Function triggered after an 'unassign' transition for the analysis passed
     in is performed.

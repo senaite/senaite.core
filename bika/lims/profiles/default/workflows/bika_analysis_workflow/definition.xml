@@ -10,6 +10,7 @@
 
   <permission>senaite.core: Transition: Assign Analysis</permission>
   <permission>senaite.core: Transition: Unassign Analysis</permission>
+  <permission>senaite.core: Transition: Retest</permission>
   <permission>senaite.core: Transition: Retract</permission>
   <permission>senaite.core: Transition: Verify</permission>
   <permission>senaite.core: View Results</permission>
@@ -287,6 +288,7 @@
     <!-- TRANSITIONS -->
     <exit-transition transition_id="multi_verify" />
     <exit-transition transition_id="verify" />
+    <exit-transition transition_id="retest" />
     <exit-transition transition_id="retract" />
     <exit-transition transition_id="reject" />
     <!-- /TRANSITIONS -->
@@ -311,6 +313,8 @@
       <permission-role>RegulatoryInspector</permission-role>
       <permission-role>Verifier</permission-role>
     </permission-map>
+
+    <permission-map name="senaite.core: Transition: Retest" acquired="True" />
 
     <permission-map name="senaite.core: Transition: Retract" acquired="False">
       <permission-role>Analyst</permission-role>
@@ -617,6 +621,21 @@
       <guard-permission>senaite.core: Edit Results</guard-permission>
       <guard-permission>senaite.core: Edit Field Results</guard-permission>
       <guard-expression>python:here.guard_handler("submit")</guard-expression>
+    </guard>
+  </transition>
+
+  <!-- Transition: retest
+  Current analysis is transitioned to "verified" status and a new copy of the
+  same analysis is created. The initial state of the copy is "unassigned",
+  unless the original analysis was assigned to a worksheet. In such case, the
+  copy is transitioned to "assigned" state too. -->
+  <transition transition_id="retest" title="Retest" new_state="verified"
+              trigger="USER" before_script="" after_script=""
+              i18n:attributes="title">
+    <action url="" category="workflow" icon="">Retest</action>
+    <guard>
+      <guard-permission>senaite.core: Transition: Retest</guard-permission>
+      <guard-expression>python:here.guard_handler("retest")</guard-expression>
     </guard>
   </transition>
 

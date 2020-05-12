@@ -242,6 +242,24 @@ def guard_retract(analysis):
     return True
 
 
+def guard_retest(analysis):
+    """Return whether the transition "retest" can be performed or not
+    """
+    # Cannot retest if there are dependents that cannot be retested
+    if not is_transition_allowed(analysis.getDependents(), "retest"):
+        return False
+
+    dependencies = analysis.getDependencies()
+    if not dependencies:
+        return True
+
+    # Cannot retest if all dependencies have been verified
+    if all(map(lambda an: IVerified.providedBy(an), dependencies))
+        return False
+
+    return True
+
+
 def guard_reject(analysis):
     """Return whether the transition "reject" can be performed or not
     """

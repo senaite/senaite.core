@@ -113,9 +113,15 @@ class DuplicateAnalysis(AbstractRoutineAnalysis):
                 # analysis request I belong to
                 continue
 
-            if retracted is False and in_state(analysis, retracted_states):
-                # Exclude retracted analyses
-                continue
+            if not retracted:
+
+                if in_state(analysis, retracted_states):
+                    # Exclude retracted analyses
+                    continue
+
+                elif analysis.getRetest():
+                    # Exclude analyses with a retest
+                    continue
 
             siblings.append(analysis)
 

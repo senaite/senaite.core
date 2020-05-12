@@ -64,6 +64,9 @@ class Analysis(AbstractRoutineAnalysis):
                 if api.get_workflow_status_of(sibling) in retracted_states:
                     # Exclude retracted analyses
                     continue
+                elif sibling.getRetest():
+                    # Exclude analyses with a retest
+                    continue
 
             siblings.append(sibling)
 

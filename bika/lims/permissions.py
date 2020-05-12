@@ -97,6 +97,7 @@ TransitionClose = "senaite.core: Transition: Close"
 TransitionReopen = "senaite.core: Transition: Reopen"
 
 # Transition permissions (Analysis and alike)
+TransitionRetest = "senaite.core: Transition: Retest"
 TransitionRetract = "senaite.core: Transition: Retract"
 TransitionVerify = "senaite.core: Transition: Verify"
 TransitionAssignAnalysis = "senaite.core: Transition: Assign Analysis"
