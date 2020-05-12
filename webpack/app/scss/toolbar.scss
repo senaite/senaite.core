@@ -7,7 +7,10 @@
         padding-right: 2px;
     }
 
-    &.state-active { color: $blue; }
+    &.state-active,
+    &.state-open { color: $blue; }
     &.state-inactive,
-    &.state-invalid { color: $red; }
+    &.state-invalid,
+    &.state-closed,
+    &.state-cancelled { color: $red; }
 }
