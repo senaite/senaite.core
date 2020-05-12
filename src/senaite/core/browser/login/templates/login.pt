@@ -24,7 +24,9 @@
             </div>
 
             <div class="card-body">
-              <form action="." method="post"
+              <form action="."
+                    method="post"
+                    class="loginform"
                     tal:attributes="action view/action; enctype view/enctype">
 
                 <tal:widgets repeat="widget view/widgets/values">
