@@ -22,7 +22,7 @@
 
       <script type="text/javascript"
               src="bika.lims.analysisrequest.add.js"
-              tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.js/bika.lims.analysisrequest.add.js"></script>
+              tal:attributes="src string:${portal/absolute_url}/++plone++senaite.core.static/js/bika.lims.analysisrequest.add.js"></script>
       <link rel="stylesheet" type="text/css" media="all" href=""
             tal:attributes="href string:${portal/absolute_url}/++resource++bika.lims.css/bika.lims.analysisrequest.add.css"/>
 
