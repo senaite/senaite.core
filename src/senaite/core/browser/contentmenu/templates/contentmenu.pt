@@ -16,7 +16,7 @@
       <a href="#"
          i18n:attributes="title;"
          tal:condition="not:has_dropdown"
-         tal:attributes="href menuItem/action;
+         tal:attributes="href string:#${menuItem/extra/id};
                          title menuItem/description;
                          class string:label-${state_class} nav-link"
          tal:define="state_class menuItem/extra/class | nothing;
@@ -28,12 +28,12 @@
           class=""
           tal:attributes="class string:icon-${identifier}"></span>
 
-        <span
-          class=""
-          i18n:translate=""
-          tal:content="menuItem/title">
-          Menu Title
-        </span>
+        <!-- <span -->
+        <!--   class="" -->
+        <!--   i18n:translate="" -->
+        <!--   tal:content="menuItem/title"> -->
+        <!--   Menu Title -->
+        <!-- </span> -->
 
         <span
           class=""
