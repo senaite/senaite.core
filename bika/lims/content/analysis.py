@@ -40,12 +40,12 @@ class Analysis(AbstractRoutineAnalysis):
     schema = schema
 
     @security.public
-    def getSiblings(self, retracted=False):
+    def getSiblings(self, with_retests=False):
         """
         Returns the list of analyses of the Analysis Request to which this
         analysis belongs to, but with the current analysis excluded.
-        :param retracted: If false, retracted/rejected siblings are dismissed
-        :type retracted: bool
+        :param with_retests: If false, siblings with retests are dismissed
+        :type with_retests: bool
         :return: list of siblings for this analysis
         :rtype: list of IAnalysis
         """
@@ -60,7 +60,7 @@ class Analysis(AbstractRoutineAnalysis):
                 # Exclude me from the list
                 continue
 
-            if not retracted:
+            if not with_retests:
                 if api.get_workflow_status_of(sibling) in retracted_states:
                     # Exclude retracted analyses
                     continue

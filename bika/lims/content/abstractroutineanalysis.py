@@ -340,23 +340,23 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
         return results_range
 
     @security.public
-    def getSiblings(self, retracted=False):
+    def getSiblings(self, with_retests=False):
         """
         Return the siblings analyses, using the parent to which the current
         analysis belongs to as the source
-        :param retracted: If false, retracted/rejected siblings are dismissed
-        :type retracted: bool
+        :param with_retests: If false, siblings with retests are dismissed
+        :type with_retests: bool
         :return: list of siblings for this analysis
         :rtype: list of IAnalysis
         """
         raise NotImplementedError("getSiblings is not implemented.")
 
     @security.public
-    def getDependents(self, retracted=False):
+    def getDependents(self, with_retests=False):
         """
         Returns a list of siblings who depend on us to calculate their result.
-        :param retracted: If false, retracted/rejected dependents are dismissed
-        :type retracted: bool
+        :param with_retests: If false, dependents with retests are dismissed
+        :type with_retests: bool
         :return: Analyses the current analysis depends on
         :rtype: list of IAnalysis
         """
@@ -373,15 +373,15 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
             services = api.search(query, "bika_setup_catalog")
             return len(services) > 0
 
-        siblings = self.getSiblings(retracted=retracted)
+        siblings = self.getSiblings(with_retests=with_retests)
         return filter(lambda sib: is_dependent(sib), siblings)
 
     @security.public
-    def getDependencies(self, retracted=False):
+    def getDependencies(self, with_retests=False):
         """
         Return a list of siblings who we depend on to calculate our result.
-        :param retracted: If false retracted/rejected dependencies are dismissed
-        :type retracted: bool
+        :param with_retests: If false, dependencies with retests are dismissed
+        :type with_retests: bool
         :return: Analyses the current analysis depends on
         :rtype: list of IAnalysis
         """
@@ -396,10 +396,10 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
             return []
 
         dependencies = []
-        for sibling in self.getSiblings(retracted=retracted):
+        for sibling in self.getSiblings(with_retests=with_retests):
             # We get all analyses that depend on me, also if retracted (maybe
             # I am one of those that are retracted!)
-            deps = map(api.get_uid, sibling.getDependents(retracted=True))
+            deps = map(api.get_uid, sibling.getDependents(with_retests=True))
             if self.UID() in deps:
                 dependencies.append(sibling)
         return dependencies

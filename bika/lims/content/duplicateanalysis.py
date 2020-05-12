@@ -80,13 +80,13 @@ class DuplicateAnalysis(AbstractRoutineAnalysis):
         return self.aq_parent
 
     @security.public
-    def getSiblings(self, retracted=False):
+    def getSiblings(self, with_retests=False):
         """
         Return the list of duplicate analyses that share the same Request and
         are included in the same Worksheet as the current analysis. The current
         duplicate is excluded from the list.
-        :param retracted: If false, retracted/rejected siblings are dismissed
-        :type retracted: bool
+        :param with_retests: If false, siblings with retests are dismissed
+        :type with_retests: bool
         :return: list of siblings for this analysis
         :rtype: list of IAnalysis
         """
@@ -113,7 +113,7 @@ class DuplicateAnalysis(AbstractRoutineAnalysis):
                 # analysis request I belong to
                 continue
 
-            if not retracted:
+            if not with_retests:
 
                 if in_state(analysis, retracted_states):
                     # Exclude retracted analyses
