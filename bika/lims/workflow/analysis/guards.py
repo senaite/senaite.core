@@ -254,7 +254,7 @@ def guard_retest(analysis):
         return True
 
     # Cannot retest if all dependencies have been verified
-    if all(map(lambda an: IVerified.providedBy(an), dependencies))
+    if all(map(lambda an: IVerified.providedBy(an), dependencies)):
         return False
 
     return True
