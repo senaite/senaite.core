@@ -1,30 +1,41 @@
 <!-- external libraries -->
 <script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/lib/jquery/dist/jquery.min.js"></script>
 <script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/lib/jquery-migrate/dist/jquery-migrate.min.js"></script>
-<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/lib/jqueryui/jquery-ui.min.js"></script>
-<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/lib/jquery-ui-timepicker-addon/dist/jquery-ui-timepicker-addon.min.js"></script>
 <script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/lib/popperjs/dist/umd/popper.min.js"></script>
 <script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/lib/bootstrap/dist/js/bootstrap.min.js"></script>
 <script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/lib/bootstrap-confirmation2/dist/bootstrap-confirmation.min.js"></script>
 <script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/lib/react/umd/react.production.min.js"></script>
 <script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/lib/react-dom/umd/react-dom.production.min.js"></script>
 
-<!-- JS -->
+<!-- Core JS bundle -->
 <% for (let js in htmlWebpackPlugin.files.js) { %>
 <script tal:attributes="src <%= 'string:${view/site_url}/' + htmlWebpackPlugin.files.js[js] %>"></script>
 <% } %>
-<!-- CSS -->
+
+<!-- Core CSS bundle -->
 <% for (let f in htmlWebpackPlugin.files.css) { %>
 <link href="#" rel="stylesheet" tal:attributes="href <%= 'string:${view/site_url}/' + htmlWebpackPlugin.files.css[f] %>" />
 <% } %>
 
+<!-- Plone jQuery Tools -->
+<script tal:attributes="src string:${view/site_url}/++resource++plone.app.jquerytools.js"></script>
+<script tal:attributes="src string:${view/site_url}/++resource++plone.app.jquerytools.overlayhelpers.js"></script>
+<script tal:attributes="src string:${view/site_url}/++resource++plone.app.jquerytools.dateinput.js"></script>
+
+<!-- jQuery UI -->
+<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/thirdparty/jqueryui/jquery-ui-1.12.1.min.js"></script>
+<link href="#" rel="stylesheet" tal:attributes="href string:${view/site_url}/++plone++senaite.core.static/thirdparty/jqueryui/themes/base/jquery-ui.min.css" />
+<link href="#" rel="stylesheet" tal:attributes="href string:${view/site_url}/++plone++senaite.core.static/thirdparty/jqueryui/themes/base/theme.css" />
+<!-- JQuery UI - timepicker -->
+<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/thirdparty/timepicker/jquery-ui-timepicker-addon-1.6.3.min.js"></script>
+<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/thirdparty/timepicker/i18n/jquery-ui-timepicker-addon-i18n-1.6.3.min.js"></script>
+<!-- JQuery UI - combogrid -->
+<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/thirdparty/combogrid/jquery.ui.combogrid-1.6.4.js"></script>
+<link href="#" rel="stylesheet" tal:attributes="href string:${view/site_url}/++plone++senaite.core.static/thirdparty/combogrid/jquery.ui.combogrid-1.6.4.css" />
+
 <!-- thirdparty -->
-<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/thirdparty/jquery.ui.combogrid-1.6.3.js"></script>
 <script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/thirdparty/jquery-barcode-2.2.0.min.js"></script>
 <script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/thirdparty/jquery-qrcode-0.17.0.min.js"></script>
-<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/thirdparty/jquery-ui-timepicker-addon.min.js"></script>
-<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/thirdparty/jquery-ui-timepicker-addon-i18n.min.js"></script>
-<link href="#" rel="stylesheet" tal:attributes="href string:${view/site_url}/++plone++senaite.core.static/thirdparty/jquery.ui.combogrid.css" />
 
 <!-- legacy senaite.core JS -->
 <script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/js/bika.lims.site.js"></script>
@@ -37,4 +48,5 @@
 <script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/js/bika.lims.worksheet.js"></script>
 <script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/js/bika.lims.worksheet.print.js"></script>
 <script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/js/bika.lims.worksheettemplate.js"></script>
+<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/js/bika.lims.bikasetup.js"></script>
 <script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/js/bika.lims.loader.js"></script>

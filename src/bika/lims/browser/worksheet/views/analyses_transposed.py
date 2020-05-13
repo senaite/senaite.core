@@ -82,7 +82,7 @@ class AnalysesTransposedView(AnalysesView):
         item["before"]["Result"] = get_link(
             "analysisservice_info?service_uid={}&analysis_uid={}"
             .format(item["service_uid"], item["uid"]),
-            value="<span class='glyphicon glyphicon-info-sign'></span>",
+            value="<i class='fas fa-info-circle'></i>",
             css_class="service_info")
 
         # remember the column headers of the first row

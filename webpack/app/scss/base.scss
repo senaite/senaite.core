@@ -14,10 +14,6 @@ $fa-font-path: "../../node_modules/@fortawesome/fontawesome-free/webfonts" !defa
 @import "../../node_modules/@fortawesome/fontawesome-free/scss/solid";
 // @import "../../node_modules/@fortawesome/fontawesome-free/scss/brands";
 
-// JQuery UI
-@import "../../node_modules/jqueryui/jquery-ui.min.css";
-@import "../../node_modules/jquery-ui-timepicker-addon/dist/jquery-ui-timepicker-addon.css";
-
 // Sidebar (depends on Bootstrap variables)
 $sidebar-minimized-width: 50px;
 $sidebar-maximized-width: 200px;

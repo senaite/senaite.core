@@ -67,6 +67,7 @@ form[name='edit_form'] {
     }
     input[type='text'] {
         @extend .form-control;
+        @extend .form-control-sm;
     }
     input[type='checkbox'] {
     }

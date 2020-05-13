@@ -247,7 +247,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
         # see: bika.lims.site.coffee for the attached event handler
         item["before"]["Title"] = get_link(
             "analysisservice_info?service_uid={}".format(uid),
-            value="<span class='glyphicon glyphicon-info-sign'></span>",
+            value="<i class='fas fa-info-circle'></i>",
             css_class="service_info")
 
         # Icons

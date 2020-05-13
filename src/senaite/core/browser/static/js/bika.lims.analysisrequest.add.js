@@ -574,7 +574,7 @@
       mvl = $(".multiValued-listing", $parent);
       if (mvl.length > 0) {
         portal_url = this.get_portal_url();
-        src = portal_url + "/++resource++bika.lims.images/delete.png";
+        src = portal_url + "/++plone++senaite.core.static/assets/svg/trashcan.svg";
         img = $("<img class='deletebtn'/>");
         img.attr("src", src);
         img.attr("data-contact-title", title);
@@ -1398,7 +1398,7 @@
       }
       file_field.attr("name", newfieldname);
       file_field.attr("id", newfieldname);
-      del_btn_src = window.portal_url + "/++resource++bika.lims.images/delete.png";
+      del_btn_src = window.portal_url + "/++plone++senaite.core.static/assets/svg/trashcan.svg";
       del_btn = $("<img class='delbtn' style='cursor:pointer;' src='" + del_btn_src + "' />");
       del_btn.on("click", element, function(event) {
         return $(this).parent().remove();
