@@ -19,9 +19,6 @@
 
   <metal:content-core fill-slot="content-core">
     <style>
-     #edit-bar {
-       display:none;
-     }
      .dashboard-section {
        padding: 0 0 20px;
      }
@@ -80,11 +77,10 @@
      }
      .dashboard-info-panel-number {
        float: left;
-       font-size: 2.6em;
+       font-size: 2em;
        font-weight: normal;
-       height: 38px;
        line-height: 1em;
-       padding: 9px 4px 0 8px;
+       padding: 0px 4px 0 10px;
        text-align: left;
        color: #3b8686;
      }
@@ -109,7 +105,7 @@
      .dashboard-info-panel-description {
        background-color: #dfdfdf;
        clear: both;
-       font-size: 0.95em;
+       font-size: 0.85em;
        font-weight: normal;
        padding: 1em;
      }
@@ -118,10 +114,9 @@
        float: left;
        font-size: 0.85em;
        font-weight: normal;
-       padding: 8px 0 0 5px;
+       padding: 5px 0 0 10px;
        text-align: left;
        vertical-align: bottom;
-       width: 60px;
      }
      #content ul.dashboard-time-selector {
        list-style:none;
@@ -216,7 +211,7 @@
         content: " ▼";
         } */
      .dashboard-info-panel-vertbar {
-       height:38px;
+       height:2em;
        float:left;
      }
      .vertbar-remaining, .vertbar-done {
@@ -231,13 +226,11 @@
      }
     </style>
     <script>
-     (function( $ ) {
-       document.addEventListener("DOMContentLoaded", () => {
-         loadBarCharts();
-         dashboard_cookie_controller();
-         role_permission_input_controller();
-         load_roles_visibility_links();
-       });
+     document.addEventListener("DOMContentLoaded", () => {
+       loadBarCharts();
+       dashboard_cookie_controller();
+       role_permission_input_controller();
+       load_roles_visibility_links();
 
        function loadBarCharts() {
          $('.bar-chart').each(function(e){
@@ -256,12 +249,12 @@
            e.preventDefault();
            var barchartid = $(this).attr('target-id');
            if ($('#'+barchartid).is(":visible")) {
-             createCookie('visible.'+barchartid, 0);
+             bika.lims.SiteView.setCookie('visible.'+barchartid, 0);
              $('#'+barchartid+'-period').hide();
              $('#'+barchartid).hide();
              $('#'+barchartid).closest('div.dashboard-panels').find('.dashboard-info-panel-wrapper').show();
            } else {
-             createCookie('visible.'+barchartid, 1);
+             bika.lims.SiteView.setCookie('visible.'+barchartid, 1);
              $('#'+barchartid+'-period').show();
              $('#'+barchartid).show();
              $('#'+barchartid).closest('div.dashboard-panels').find('.dashboard-info-panel-wrapper').hide();
@@ -277,7 +270,7 @@
        function loadBarChart(id) {
          var container = $('#'+id);
          $(container).find('svg').remove();
-         var raw_data = $.parseJSON($(container).attr('data'));
+         var raw_data = JSON.parse($(container).attr('data'));
          var data = raw_data.data;
          if (data.length == 0 || Object.keys(data[0]).length < 2) {
            return;
@@ -294,7 +287,7 @@
 
          var x = d3.scale.ordinal().rangeRoundBands([0, width], .1);
          var y = d3.scale.linear().range([height, 0]);
-         colors = $.parseJSON($(container).attr('data-colors'));
+         colors = JSON.parse($(container).attr('data-colors'));
          var color = d3.scale.ordinal().range(colors);
          color.domain(states);
 
@@ -431,17 +424,10 @@
              cookie_data = render_cookie_data(bika.lims.SiteView.readCookie(cookie_id));
              cookie_data[section_id] = selected;
              cookie_data = build_cookie_data(cookie_data);
-             setCookie('dashboard_filter_cookie', cookie_data);
+             bika.lims.SiteView.setCookie('dashboard_filter_cookie', cookie_data);
              window.location.reload(true);
            });
          }
-       };
-       /*TODO: I can't call the function defined in bika.lims.site.setCookie*/
-       function setCookie(cname, cvalue) {
-         var d = new Date();
-         d.setTime(d.getTime() + (1 * 24 * 60 * 60 * 1000));
-         var expires = "expires="+d.toUTCString();
-         document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
        };
        function render_cookie_data(data){
          return JSON.parse(data);
@@ -475,7 +461,7 @@
            });
          }
        }
-     }(jQuery));
+     });
     </script>
 
     <tal:section repeat="section python:view.get_sections()">
@@ -565,7 +551,7 @@
 
           <!-- Simple panels -->
           <tal:simple_panels repeat="panel python:[p for p in section.get('panels',[]) if p.get('type','')=='simple-panel']">
-            <div style="min-width: 13em;"
+            <div style="min-width: 12em;"
                  tal:define="num panel/number;
                         numclass python:'' if num==0 else 'highlight';"
                  tal:attributes="class python:'card my-2 dashboard-info-panel-wrapper %s %s' % (panel.get('class', ''), numclass);">

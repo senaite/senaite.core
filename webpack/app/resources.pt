@@ -68,3 +68,6 @@
 <script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/js/bika.lims.worksheettemplate.js"></script>
 <!-- loader must be last -->
 <script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/js/bika.lims.loader.js"></script>
+
+<!-- legacy senaite.core CSS -->
+<link href="#" rel="stylesheet" tal:attributes="href string:${view/site_url}/++plone++senaite.core.static/css/bika.lims.graphics.css" />
