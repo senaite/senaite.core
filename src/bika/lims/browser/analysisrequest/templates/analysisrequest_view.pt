@@ -63,7 +63,7 @@
                  field python:context.Schema()['Remarks'];
                  errors python:{};">
           <h3>
-            <img i18n:attributes="title" title="Remarks" src="++resource++bika.lims.images/remarks.png"/>
+            <i class="fas fa-comment"></i>
             <span i18n:translate="">Remarks</span>
           </h3>
           <metal:widget use-macro="python:context.widget('Remarks', mode=mode)"/>
@@ -87,7 +87,7 @@
         <div class="row">
           <div class="col-sm-12">
             <h3>
-              <img i18n:attributes="title" title="Lab Analyses" src="++resource++bika.lims.images/analysisservice.png"/>
+              <img i18n:attributes="title" title="Lab Analyses" src="++plone++senaite.core.static/assets/svg/analysisservice.svg"/>
               <span i18n:translate="">Lab Analyses</span>
             </h3>
             <span tal:replace="structure python:view.render_analyses_table(table='lab')"/>
@@ -99,7 +99,7 @@
         <div class="row">
           <div class="col-sm-12">
             <h3>
-              <img i18n:attributes="title" title="QC Analyses" src="++resource++bika.lims.images/analysisservice.png"/>
+              <img i18n:attributes="title" title="QC Analyses" src="++plone++senaite.core.static/assets/svg/analysisservice.svg"/>
               <span i18n:translate="">QC Analyses</span>
             </h3>
             <span tal:replace="structure python:view.render_analyses_table(table='qc')"/>
