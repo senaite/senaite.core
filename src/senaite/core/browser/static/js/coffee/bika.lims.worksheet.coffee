@@ -831,7 +831,7 @@ class window.WorksheetManageResultsView
         closeOnEsc: yes
         onBeforeLoad: (event) ->
           overlay = this.getOverlay()
-          $("div.pb-ajax>div", overlay).addClass("container")
+          $("div.pb-ajax>div", overlay).addClass("container-fluid")
           # Remove editable elements
           $("h3", overlay).remove()
           $("textarea", overlay).remove()

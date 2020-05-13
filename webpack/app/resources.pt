@@ -17,11 +17,6 @@
 <link href="#" rel="stylesheet" tal:attributes="href <%= 'string:${view/site_url}/' + htmlWebpackPlugin.files.css[f] %>" />
 <% } %>
 
-<!-- Plone jQuery Tools -->
-<script tal:attributes="src string:${view/site_url}/++resource++plone.app.jquerytools.js"></script>
-<script tal:attributes="src string:${view/site_url}/++resource++plone.app.jquerytools.overlayhelpers.js"></script>
-<script tal:attributes="src string:${view/site_url}/++resource++plone.app.jquerytools.dateinput.js"></script>
-
 <!-- jQuery UI -->
 <script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/thirdparty/jqueryui/jquery-ui-1.12.1.min.js"></script>
 <link href="#" rel="stylesheet" tal:attributes="href string:${view/site_url}/++plone++senaite.core.static/thirdparty/jqueryui/themes/base/jquery-ui.min.css" />
@@ -32,6 +27,11 @@
 <!-- JQuery UI - combogrid -->
 <script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/thirdparty/combogrid/jquery.ui.combogrid-1.6.4.js"></script>
 <link href="#" rel="stylesheet" tal:attributes="href string:${view/site_url}/++plone++senaite.core.static/thirdparty/combogrid/jquery.ui.combogrid-1.6.4.css" />
+
+<!-- Plone jQuery Tools -->
+<script tal:attributes="src string:${view/site_url}/++resource++plone.app.jquerytools.js"></script>
+<script tal:attributes="src string:${view/site_url}/++resource++plone.app.jquerytools.overlayhelpers.js"></script>
+<link href="#" rel="stylesheet" tal:attributes="href string:${view/site_url}/++resource++plone.app.jquerytools.overlays.css" />
 
 <!-- thirdparty -->
 <script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/thirdparty/jquery-barcode-2.2.0.min.js"></script>

@@ -1,6 +1,18 @@
 /* Plone overrides */
 
-.overlay {
+div.overlaybg div.close,
+div.overlay div.close {
+    opacity: 1;
+}
+.pb-ajax {
+    overflow: visible;
+    border-radius: 3px;
+}
+.pb-ajax>div {
+    @extend .container-fluid;
+    width: 100%!important;
+}
+.hiddenStructure {
     @extend .d-none;
 }
 .discreet {

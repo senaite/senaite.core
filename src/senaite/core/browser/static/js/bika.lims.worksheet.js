@@ -891,7 +891,7 @@
           onBeforeLoad: function(event) {
             var overlay;
             overlay = this.getOverlay();
-            $("div.pb-ajax>div", overlay).addClass("container");
+            $("div.pb-ajax>div", overlay).addClass("container-fluid");
             $("h3", overlay).remove();
             $("textarea", overlay).remove();
             $("input", overlay).remove();
