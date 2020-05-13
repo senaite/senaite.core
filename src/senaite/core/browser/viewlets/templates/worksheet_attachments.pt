@@ -1,0 +1,103 @@
+<div id="ws-attachments"
+     class="attachments"
+     i18n:domain="senaite.core">
+
+  <p>
+    <button type="button"
+            class="btn btn-default"
+            data-toggle="collapse"
+            data-target="#ws-attachments-panel">
+      <i class="fa fa-paperclip" aria-hidden="true"></i>
+      <span i18n:translate="">Attachments</span>
+    </button>
+  </p>
+
+  <div id="ws-attachments-panel"
+       class="collapse panel panel-default"
+       tal:define="attachments_view python:view.get_attachments_view()">
+
+    <!-- Attachments Viewlet -->
+    <div class="panel-body">
+
+      <!-- Add Attachments -->
+      <div class="ws_attachments_add">
+
+        <!-- Add Form -->
+        <form action="attachments_view"
+              name="attachments_add_form"
+              enctype="multipart/form-data"
+              tal:attributes="action string:${context/absolute_url}/@@attachments_view/add_to_ws"
+              method="POST">
+
+          <input type="hidden" name="submitted" value="1"/>
+          <span tal:replace="structure context/@@authenticator/authenticator"/>
+
+          <table class="listing">
+            <tr>
+              <th i18n:translate="">Add new Attachment</th>
+              <th i18n:translate="">Type</th>
+              <th i18n:translate="">Analysis</th>
+              <th i18n:translate="">All Analyses of Service</th>
+              <th i18n:translate="">Keywords</th>
+            </tr>
+            <tr>
+              <td>
+                <!-- Attachment File Upload -->
+                <input type="file" name="AttachmentFile_file"
+                       onchange="string:document.getElementById('addARButton').disabled=false"/>
+              </td>
+              <td>
+                <select name="AttachmentType">
+                  <tal:item repeat="item attachments_view/get_attachment_types">
+                    <option tal:attributes="value item/UID;"
+                            tal:content="item/Title">
+                      Attachment Type
+                    </option>
+                  </tal:item>
+                </select>
+              </td>
+              <td>
+                <tal:analyses tal:condition="attachments_view/global_analysis_attachments_allowed">
+                  <!-- Please see
+                       bika.lims.browser.worksheet.ajax.AttachAnalyses on how these
+                       values get calculated
+                     -->
+                  <input id="Analysis" size="30" autocomplete="off"/>
+                  <input type="hidden" id="analysis_uid" name="analysis_uid"/>
+                </tal:analyses>
+              </td>
+              <td>
+                <tal:services
+                  tal:define="global last_uid python:None;
+                              services view/get_services" >
+                  <select name="Service" id="Service" condition="services">
+                    <option value='' selected></option>
+                    <tal:service tal:repeat="service services">
+                      <tal:nodups tal:condition="python:not service.UID() == last_uid">
+                        <option
+                          tal:define="global last_uid service/UID"
+                          tal:attributes="value service/UID;"
+                          tal:content="service/Title"></option>
+                      </tal:nodups>
+                    </tal:service>
+                  </select>
+                </tal:services>
+              </td>
+              <td>
+                <input name="AttachmentKeys"/>
+              </td>
+            </tr>
+          </table>
+          <!-- Add Attachment Button -->
+          <input disabled
+                 class="context"
+                 id="addARButton"
+                 type="submit"
+                 name="addWSAttachment"
+                 value="Add"
+                 i18n:attributes="value"/>
+        </form> <!-- /Add Attachment Form -->
+      </div>
+    </div>
+  </div> <!-- Collapsible content -->
+</div>

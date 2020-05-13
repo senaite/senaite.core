@@ -19,6 +19,4 @@
 # Some rights reserved, see README and LICENSE.
 
 from analysisrequest import *  # noqa
-from attachments import AttachmentsViewlet  # noqa
-from attachments import WorksheetAttachmentsViewlet  # noqa
 from instruments import InstrumentQCFailuresViewlet  # noqa

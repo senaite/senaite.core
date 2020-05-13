@@ -1,22 +1,4 @@
 # -*- coding: utf-8 -*-
-#
-# This file is part of SENAITE.CORE.
-#
-# SENAITE.CORE is free software: you can redistribute it and/or modify it under
-# the terms of the GNU General Public License as published by the Free Software
-# Foundation, version 2.
-#
-# This program is distributed in the hope that it will be useful, but WITHOUT
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
-# details.
-#
-# You should have received a copy of the GNU General Public License along with
-# this program; if not, write to the Free Software Foundation, Inc., 51
-# Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-#
-# Copyright 2018-2020 by it's authors.
-# Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
 from bika.lims import logger
@@ -478,9 +460,9 @@ class AttachmentsView(BrowserView):
         """Checks if the current logged in user is allowed to delete attachments
         """
         context = self.context
-        user = api.get_current_user()
         if not self.is_ar_editable():
             return False
+        user = api.user.get_user()
         return (self.user_can_add_attachments() and
                 not user.allowed(context, ["Client"])) or \
             self.user_can_update_attachments()

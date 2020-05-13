@@ -7,17 +7,17 @@
   <browser:page
       for="bika.lims.interfaces.IAnalysisRequest"
       name="attachments_view"
-      class="bika.lims.browser.attachment.AttachmentsView"
+      class=".attachment.AttachmentsView"
       permission="zope.Public"
-      layer="bika.lims.interfaces.IBikaLIMS"
+      layer="senaite.core.interfaces.ISenaiteCore"
       />
 
   <browser:page
       for="bika.lims.interfaces.IWorksheet"
       name="attachments_view"
-      class="bika.lims.browser.attachment.AttachmentsView"
+      class=".attachment.AttachmentsView"
       permission="zope.Public"
-      layer="bika.lims.interfaces.IBikaLIMS"
+      layer="senaite.core.interfaces.ISenaiteCore"
       />
 
   <!-- Ajax exposed Attachments Methods -->
@@ -25,17 +25,17 @@
   <browser:page
       for="bika.lims.interfaces.IAnalysisRequest"
       name="ajax_attachments_view"
-      class="bika.lims.browser.attachment.ajaxAttachmentsView"
+      class=".attachment.ajaxAttachmentsView"
       permission="zope.Public"
-      layer="bika.lims.interfaces.IBikaLIMS"
+      layer="senaite.core.interfaces.ISenaiteCore"
       />
 
   <browser:page
       for="bika.lims.interfaces.IWorksheet"
       name="ajax_attachments_view"
-      class="bika.lims.browser.attachment.ajaxAttachmentsView"
+      class=".attachment.ajaxAttachmentsView"
       permission="zope.Public"
-      layer="bika.lims.interfaces.IBikaLIMS"
+      layer="senaite.core.interfaces.ISenaiteCore"
       />
 
 </configure>

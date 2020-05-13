@@ -198,4 +198,25 @@
 
   <!-- /Path Bar -->
 
+  <!-- AR Attachments Viewlet -->
+  <browser:viewlet
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="sample_attachments"
+      class=".attachments.AttachmentsViewlet"
+      manager="plone.app.layout.viewlets.interfaces.IBelowContentTitle"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
+  <!-- Worksheet Attachments Viewlet -->
+  <browser:viewlet
+      for="bika.lims.interfaces.IWorksheet"
+      name="worksheet_attachments"
+      class=".attachments.WorksheetAttachmentsViewlet"
+      manager="plone.app.layout.viewlets.interfaces.IBelowContentTitle"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
+
 </configure>

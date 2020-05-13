@@ -10,7 +10,6 @@
   <include file="analysisreport.zcml"/>
   <include file="analysisservice.zcml"/>
   <include file="artemplate.zcml"/>
-  <include file="attachment.zcml"/>
   <include file="auditlog.zcml"/>
   <include file="batchfolder.zcml"/>
   <include file="calcs.zcml"/>
@@ -92,18 +91,6 @@
   <browser:resourceDirectory
       name="bika.lims.images"
       directory="images"
-      layer="bika.lims.interfaces.IBikaLIMS"
-      />
-
-  <browser:resourceDirectory
-      name="bika.lims.css"
-      directory="css"
-      layer="bika.lims.interfaces.IBikaLIMS"
-      />
-
-  <browser:resourceDirectory
-      name="bika.lims.js"
-      directory="js"
       layer="bika.lims.interfaces.IBikaLIMS"
       />
 
