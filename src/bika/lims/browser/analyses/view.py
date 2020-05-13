@@ -954,9 +954,11 @@ class AnalysesView(BikaListingView):
                 attachments_html.append('<br/></span>')
                 continue
 
-            img = '<img class="deleteAttachmentButton"' \
+            img = '<img data-toggle="confirmation"' \
+                  ' class="deleteAttachmentButton"' \
                   ' attachment_uid="{}" src="{}"/>'
-            img = img.format(uid, '++resource++bika.lims.images/delete.png')
+            img = img.format(
+                uid, '++plone++senaite.core.static/assets/svg/trashcan.svg')
             attachments_html.append(img)
             attachments_html.append('<br/></span>')
 

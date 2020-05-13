@@ -4,3 +4,9 @@
 @import "toolbar.scss";
 @import "forms.scss";
 @import "plone.scss";
+
+/* inline delete button for WS attachments */
+img.deleteAttachmentButton {
+    cursor: pointer;
+    width: 16px;
+}

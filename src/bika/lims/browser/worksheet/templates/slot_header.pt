@@ -2,14 +2,11 @@
      i18n:domain="senaite.core"
      tal:define="data options/data;">
 
-  <table class="table table-condensed table-borderless slot-header-table">
-    <colgroup>
-      <col class="col-sm-1"/>
-    </colgroup>
+  <table class="table  table-sm table-borderless slot-header-table">
     <tr>
       <td>
         <!-- Position -->
-        <span class="badge" tal:content="data/position"></span>
+        <span class="badge badge-secondary" tal:content="data/position"></span>
       </td>
       <td>
         <!-- Object Type Icon -->

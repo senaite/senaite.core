@@ -43,7 +43,7 @@
         var attachment_uid, options;
         attachment_uid = $(this).attr('attachment_uid');
         options = {
-          url: location.pathname + "/@@ajax_attachments_view/delete_analysis_attachment",
+          url: "@@ajax_attachments_view/delete_analysis_attachment",
           type: 'POST',
           success: function(responseText, statusText, xhr, $form) {
             if (responseText === 'success') {
