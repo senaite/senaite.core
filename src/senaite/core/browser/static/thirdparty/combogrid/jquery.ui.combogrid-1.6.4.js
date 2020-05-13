@@ -49,7 +49,7 @@ jQuery.fn.cg_zIndex = function (zIndex) {
 
 $.widget( "cg.combogrid", {
 	options: {
-		resetButton: true,
+		resetButton: false,
 		resetFields: null,
 		searchButton: false,
 		searchIcon:false,

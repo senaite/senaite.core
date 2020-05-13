@@ -56,7 +56,7 @@ class AddAnalysesView(BikaListingView):
 
         self.icon = "{}/{}".format(
             self.portal_url,
-            "++resource++bika.lims.images/worksheet_big.png"
+            "++plone++senaite.core.static/assets/svg/worksheet.svg"
         )
 
         self.title = self.context.translate(_("Add Analyses"))

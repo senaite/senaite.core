@@ -35,7 +35,7 @@ window.AttachmentsUtils = ->
     $('.deleteAttachmentButton').live 'click', ->
       attachment_uid = $(this).attr('attachment_uid')
       options =
-        url: '@@ajax_attachments_view/delete_analysis_attachment'
+        url: "#{location.pathname}/@@ajax_attachments_view/delete_analysis_attachment"
         type: 'POST'
         success: (responseText, statusText, xhr, $form) ->
           if responseText == 'success'
@@ -57,22 +57,22 @@ window.AttachmentsUtils = ->
         {
           'columnName': 'slot'
           'width': '10'
-          'label': _('Slot')
+          'label': _t('Slot')
         }
         {
           'columnName': 'service'
           'width': '35'
-          'label': _('Service')
+          'label': _t('Service')
         }
         {
           'columnName': 'parent'
           'width': '35'
-          'label': _('Parent')
+          'label': _t('Parent')
         }
         {
           'columnName': 'type'
           'width': '20'
-          'label': _('Type')
+          'label': _t('Type')
         }
       ]
       url: window.location.href.replace('/manage_results', '') + '/attachAnalyses?_authenticator=' + $('input[name="_authenticator"]').val()

@@ -32,16 +32,16 @@
 
       <div class="row">
         <div class="col-sm-12">
-          <table class="table table-condensed table-borderless manage_results_header">
+          <table class="bg-light table table-condensed table-borderless manage_results_header">
             <tr>
               <!-- Analyst -->
               <td>
-                <div class="form-group">
+                <div class="form-group form-inline">
                   <label class="required">
-                    <span class="required" i18n:translate="">Analyst</span>
+                    <span class="required mr-2" i18n:translate="">Analyst</span>
                   </label>
                   <span tal:condition="view/is_assignment_allowed">
-                    <select class="analyst input-sm"
+                    <select class="analyst form-control form-control-sm"
                             tal:define="alist view/get_analysts">
                       <tal:options repeat="option alist">
                         <option tal:attributes="value python:option;
@@ -58,12 +58,12 @@
               </td>
               <!-- Instrument -->
               <td tal:define="instrument python:context.getInstrument()">
-                <div class="form-group">
+                <div class="form-group form-inline">
                   <label class="required">
-                    <span i18n:translate="">Instrument</span>
+                    <span class="mr-2" i18n:translate="">Instrument</span>
                   </label>
                   <span tal:condition="view/is_assignment_allowed">
-                    <select class="instrument input-sm"
+                    <select class="instrument form-control form-control-sm"
                             tal:define="instrlist view/getInstruments">
                       <tal:options repeat="option instrlist">
                         <option tal:attributes="value python:option;
@@ -84,12 +84,13 @@
               <td>
                 <form id="resultslayout_form"
                       name="resultslayout_form"
+                      class="form-inline"
                       enctype="multipart/form-data"
                       method="post">
                   <label for="resultslayout">
-                    <span i18n:translate="">Layout</span>
+                    <span class="mr-2" i18n:translate="">Layout</span>
                   </label>
-                  <select id="resultslayout" name="resultslayout">
+                  <select id="resultslayout" class="form-control form-control-sm" name="resultslayout">
                     <tal:layoutoption repeat="option python:view.layout_displaylist.items()">
                       <option selected tal:condition="python: option[0] == context.getResultsLayout()"
                               tal:attributes="value python:option[0]"
@@ -100,14 +101,14 @@
                               tal:content="python:option[1]"></option>
                     </tal:layoutoption>
                   </select>
-                  <input class="btn btn-sm btn-default" type="submit" id="resultslayout_button" value="Apply"/>
+                  <input class="ml-2 btn btn-outline-secondary btn-sm" type="submit" id="resultslayout_button" value="Apply"/>
                 </form>
               </td>
               <!-- Print -->
               <td class="text-center">
                 <a tal:attributes="href python:context.absolute_url()+'/print';"
                   i18n:translate=""
-                  class="btn btn-default btn-sm print_button">
+                  class="btn btn-outline-secondary btn-sm print_button">
                   Print
                 </a>
               </td>
@@ -120,18 +121,18 @@
       <div class="row">
         <div class="col-sm-12">
           <tal:wideinterims define="wideinterims view/get_wide_interims;"
-                            condition="python: wideinterims">
+                            condition="python:wideinterims">
             <table tal:define="wideanselected python:wideinterims.keys()[0];
                                wideinterimselected python:wideinterims[wideanselected]['interims'].keys()[0]"
                   class="wideinterims_bar table table-condensed">
               <tr>
                 <!-- Autofill -->
                 <td>
-                  <div class="form-group">
+                  <div class="form-group form-inline">
                     <label>
                       <span i18n:translate="">Autofill</span>
                     </label>
-                    <select id="wideinterims_analyses" class="input-sm">
+                    <select id="wideinterims_analyses" class="form-control form-control-sm">
                       <tal:options repeat="option python:wideinterims.keys()">
                         <option tal:attributes="value python:option;
                                                 selected python:option==wideanselected;"
@@ -151,12 +152,12 @@
                 </td>
                 <!-- Field -->
                 <td>
-                  <div class="form-group"
+                  <div class="form-group form-inline"
                       tal:define="interims python:wideinterims[wideanselected]['interims'].keys()">
                     <label class="required">
                       <span i18n:translate="">Field</span>
                     </label>
-                    <select id="wideinterims_interims" class="input-sm">
+                    <select id="wideinterims_interims" class="form-control form-control-sm">
                       <tal:options repeat="interim interims">
                         <option tal:attributes="value python:interim;
                                                 selected python:interim==wideinterimselected;"
@@ -167,21 +168,21 @@
                 </td>
                 <!-- Field -->
                 <td>
-                  <div class="form-group">
+                  <div class="form-group form-inline">
                     <label>
                       <span i18n:translate="">Value</span>
                     </label>
                     <input id="wideinterims_value"
-                          class="input-sm"
+                          class="form-control form-control-sm"
                           type="text"
                           size="6"
                           tal:attributes="value python:wideinterims[wideanselected]['interims'][wideinterimselected]['value']" />
                     <input type='checkbox'
-                          id='wideinterims_empty'
-                          checked>
+                           id='wideinterims_empty'
+                           checked>
                     <span i18n:translate="">Only to empty or zero fields</span>
                     <button id="wideinterims_apply"
-                            class="btn btn-default btn-sm"
+                            class="btn btn-secondary-outline btn-sm"
                             i18n:translate="">Apply</button>
                   </div>
                 </td>

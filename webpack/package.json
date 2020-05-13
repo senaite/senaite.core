@@ -26,7 +26,7 @@
   "license": "GPL-2.0",
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.13.0",
-    "bootstrap": "^4.4.1",
+    "bootstrap": "^4.5.0",
     "bootstrap-confirmation2": "^4.1.0",
     "jquery": "<3",
     "jquery-migrate": "<2",

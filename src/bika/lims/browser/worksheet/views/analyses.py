@@ -55,7 +55,7 @@ class AnalysesView(BaseView):
 
         self.icon = "{}/{}".format(
             self.portal_url,
-            "++resource++bika.lims.images/worksheet_big.png"
+            "++plone++senaite.core.static/assets/svg/worksheet.svg"
         )
 
         self.allow_edit = True

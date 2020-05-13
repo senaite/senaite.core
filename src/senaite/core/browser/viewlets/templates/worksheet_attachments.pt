@@ -2,18 +2,16 @@
      class="attachments"
      i18n:domain="senaite.core">
 
-  <p>
-    <button type="button"
-            class="btn btn-default"
-            data-toggle="collapse"
-            data-target="#ws-attachments-panel">
-      <i class="fa fa-paperclip" aria-hidden="true"></i>
-      <span i18n:translate="">Attachments</span>
-    </button>
-  </p>
+  <button type="button"
+          class="btn btn-light dropdown-toggle mb-3"
+          data-toggle="collapse"
+          data-target="#ws-attachments-panel">
+    <i class="fas fa-paperclip" aria-hidden="true"></i>
+    <span i18n:translate="">Attachments</span>
+  </button>
 
   <div id="ws-attachments-panel"
-       class="collapse panel panel-default"
+       class="collapse card p-2 mb-3 bg-light"
        tal:define="attachments_view python:view.get_attachments_view()">
 
     <!-- Attachments Viewlet -->
@@ -47,7 +45,7 @@
                        onchange="string:document.getElementById('addARButton').disabled=false"/>
               </td>
               <td>
-                <select name="AttachmentType">
+                <select class="form-control" name="AttachmentType">
                   <tal:item repeat="item attachments_view/get_attachment_types">
                     <option tal:attributes="value item/UID;"
                             tal:content="item/Title">
@@ -58,19 +56,20 @@
               </td>
               <td>
                 <tal:analyses tal:condition="attachments_view/global_analysis_attachments_allowed">
-                  <!-- Please see
-                       bika.lims.browser.worksheet.ajax.AttachAnalyses on how these
-                       values get calculated
-                     -->
-                  <input id="Analysis" size="30" autocomplete="off"/>
-                  <input type="hidden" id="analysis_uid" name="analysis_uid"/>
-                </tal:analyses>
+                  <div class="form-group">
+                    <!-- Please see
+                        bika.lims.browser.worksheet.ajax.AttachAnalyses on how these
+                        values get calculated
+                      -->
+                    <input class="form-control" id="Analysis" size="30" autocomplete="off"/>
+                    <input type="hidden" id="analysis_uid" name="analysis_uid"/>
+                  </div>
               </td>
               <td>
                 <tal:services
                   tal:define="global last_uid python:None;
                               services view/get_services" >
-                  <select name="Service" id="Service" condition="services">
+                  <select class="form-control" name="Service" id="Service" condition="services">
                     <option value='' selected></option>
                     <tal:service tal:repeat="service services">
                       <tal:nodups tal:condition="python:not service.UID() == last_uid">
@@ -84,13 +83,13 @@
                 </tal:services>
               </td>
               <td>
-                <input name="AttachmentKeys"/>
+                <input class="form-control" name="AttachmentKeys"/>
               </td>
             </tr>
           </table>
           <!-- Add Attachment Button -->
           <input disabled
-                 class="context"
+                 class="context btn btn-secondary"
                  id="addARButton"
                  type="submit"
                  name="addWSAttachment"
