@@ -30,8 +30,7 @@ from archetypes.schemaextender.interfaces import IExtensionField
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.interfaces import IAnalysisService
-from bika.lims.interfaces import IRetest
-from bika.lims.interfaces import IRetested
+from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.utils import formatDecimalMark
 from bika.lims.utils import to_unicode
 
@@ -630,6 +629,9 @@ def get_method_instrument_constraints(context, uids):
 def create_retest(analysis):
     """Creates a retest of the given analysis
     """
+    if not IRequestAnalysis.providedBy(analysis):
+        raise ValueError("Type not supported: {}".format(repr(type(analysis))))
+
     # Support multiple retests by prefixing keyword with *-0, *-1, etc.
     parent = api.get_parent(analysis)
     keyword = analysis.getKeyword()
@@ -649,10 +651,6 @@ def create_retest(analysis):
     worksheet = analysis.getWorksheet()
     if worksheet:
         worksheet.addAnalysis(retest)
-
-    # Apply marker interfaces
-    IRetested.providedBy(analysis)
-    IRetest.providedBy(retest)
 
     retest.reindexObject()
     return retest

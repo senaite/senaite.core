@@ -896,16 +896,6 @@ class IWorkflowActionUIDsAdapter(IWorkflowActionAdapter):
     """
 
 
-class IRetested(Interface):
-    """Marker interface for retested objects
-    """
-
-
-class IRetest(Interface):
-    """Marker interface for retests
-    """
-
-
 class IVerified(Interface):
     """Marker interface for verified objects
     """

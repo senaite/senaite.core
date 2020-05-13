@@ -167,30 +167,8 @@ def after_retract(analysis):
     # Retract our dependencies (analyses this analysis depends on)
     promote_to_dependencies(analysis, "retract")
 
-    # Rename the analysis to make way for it's successor.
-    # Support multiple retractions by renaming to *-0, *-1, etc
-    parent = analysis.aq_parent
-    keyword = analysis.getKeyword()
-
-    # Get only those that are analyses and with same keyword as the original
-    analyses = parent.getAnalyses(full_objects=True)
-    analyses = filter(lambda an: an.getKeyword() == keyword, analyses)
-    # TODO This needs to get managed by Id server in a nearly future!
-    new_id = '{}-{}'.format(keyword, len(analyses))
-
-    # Create a copy of the retracted analysis
-    an_uid = api.get_uid(analysis)
-    new_analysis = create_analysis(parent, analysis, id=new_id, RetestOf=an_uid)
-    new_analysis.setResult("")
-    new_analysis.setResultCaptureDate(None)
-    new_analysis.reindexObject()
-    logger.info("Retest for {} ({}) created: {}".format(
-        keyword, api.get_id(analysis), api.get_id(new_analysis)))
-
-    # Assign the new analysis to this same worksheet, if any.
-    worksheet = analysis.getWorksheet()
-    if worksheet:
-        worksheet.addAnalysis(new_analysis)
+    # Create the retest
+    create_retest(analysis)
 
     # Try to rollback the Analysis Request
     if IRequestAnalysis.providedBy(analysis):
