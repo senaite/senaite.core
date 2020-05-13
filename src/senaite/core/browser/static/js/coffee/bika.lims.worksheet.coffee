@@ -45,7 +45,7 @@ class window.WorksheetFolderView
     console.debug "WorksheetFolderView::get_template_instruments"
     input = $("input.templateinstruments")
     value = input.val()
-    return $.parseJSON value
+    return JSON.parse value
 
 
   select_instrument: (instrument_uid) =>
@@ -338,9 +338,8 @@ class window.WorksheetManageResultsView
     console.debug "WorksheetManageResultsView::load"
 
     # load translations
-    jarn.i18n.loadCatalog "senaite.core"
-    @_ = window.jarn.i18n.MessageFactory("senaite.core")
-    @_pmf = window.jarn.i18n.MessageFactory('plone')
+    @_ = i18n.MessageFactory("senaite.core")
+    @_pmf = i18n.MessageFactory('plone')
 
     # bind the event handler to the elements
     @bind_eventhandler()
@@ -423,7 +422,7 @@ class window.WorksheetManageResultsView
       url: "#{@get_portal_url()}/get_method_instrument_constraints"
       data:
         _authenticator: @get_authenticator
-        uids: $.toJSON analysis_uids
+        uids: JSON.stringify analysis_uids
       dataType: "json"
     .done (data) ->
       @constraints = data
@@ -479,7 +478,9 @@ class window.WorksheetManageResultsView
      * Returns a list of analysis UIDs
     ###
     analysis_uids = []
-    data = $.parseJSON $("#item_data").val()
+    value = $("#item_data").val()
+    return [] unless value
+    data = JSON.parse value
     $.each data, (uid, value) ->
       analysis_uids.push uid
     return analysis_uids

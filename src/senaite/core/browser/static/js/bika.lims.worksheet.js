@@ -57,7 +57,7 @@
       console.debug("WorksheetFolderView::get_template_instruments");
       input = $("input.templateinstruments");
       value = input.val();
-      return $.parseJSON(value);
+      return JSON.parse(value);
     };
 
     WorksheetFolderView.prototype.select_instrument = function(instrument_uid) {
@@ -411,9 +411,8 @@
 
     WorksheetManageResultsView.prototype.load = function() {
       console.debug("WorksheetManageResultsView::load");
-      jarn.i18n.loadCatalog("senaite.core");
-      this._ = window.jarn.i18n.MessageFactory("senaite.core");
-      this._pmf = window.jarn.i18n.MessageFactory('plone');
+      this._ = i18n.MessageFactory("senaite.core");
+      this._pmf = i18n.MessageFactory('plone');
       this.bind_eventhandler();
       this.constraints = null;
       this.init_instruments_and_methods();
@@ -471,7 +470,7 @@
         url: (this.get_portal_url()) + "/get_method_instrument_constraints",
         data: {
           _authenticator: this.get_authenticator,
-          uids: $.toJSON(analysis_uids)
+          uids: JSON.stringify(analysis_uids)
         },
         dataType: "json"
       }).done(function(data) {
@@ -545,9 +544,13 @@
       /*
        * Returns a list of analysis UIDs
        */
-      var analysis_uids, data;
+      var analysis_uids, data, value;
       analysis_uids = [];
-      data = $.parseJSON($("#item_data").val());
+      value = $("#item_data").val();
+      if (!value) {
+        return [];
+      }
+      data = JSON.parse(value);
       $.each(data, function(uid, value) {
         return analysis_uids.push(uid);
       });
