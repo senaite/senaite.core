@@ -664,12 +664,12 @@ $.widget( "cg.combogrid", {
 		}
 		// Check if column is ordered or not to provide asc/desc icon
 			if(col.columnName==self.cssCol){
-				div.append('<div class="cg-colHeader" style="width:'+col.width+self.options.munit+';'+hide+' text-align:'+col.align+'"><label class="cg-colHeader-label" id="'+ col.columnName +'">'
-						+self._renderLabel(col.label)
+				div.append('<div class="cg-colHeader" style="width:'+col.width+self.options.munit+';'+hide+' text-align:'+col.align+'"><label class="cg-colHeader-label" id="'+ _t(col.columnName) +'">'
+						       +self._renderLabel(_(col.label))
 						+'</label><span class="cg-colHeader '+ self.options.sord +'"></span></div>');
 			} else {
-				div.append('<div class="cg-colHeader" style="width:'+col.width+self.options.munit+';'+hide+' text-align:'+col.align+'"><label class="cg-colHeader-label" id="'+ col.columnName +'">'
-						+self._renderLabel(col.label)
+				div.append('<div class="cg-colHeader" style="width:'+col.width+self.options.munit+';'+hide+' text-align:'+col.align+'"><label class="cg-colHeader-label" id="'+ _t(col.columnName) +'">'
+						       +self._renderLabel(_t(col.label))
 						+'</label></div>');
 			}
 		});
