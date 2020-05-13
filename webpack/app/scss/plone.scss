@@ -1,8 +1,7 @@
 /* Plone overrides */
 
-div.overlaybg div.close,
-div.overlay div.close {
-    opacity: 1;
+div.overlay {
+    height: fit-content;
 }
 .pb-ajax {
     overflow: visible;
@@ -11,6 +10,10 @@ div.overlay div.close {
 .pb-ajax>div {
     @extend .container-fluid;
     width: 100%!important;
+}
+div.overlaybg div.close,
+div.overlay div.close {
+    opacity: 1;
 }
 .hiddenStructure {
     @extend .d-none;

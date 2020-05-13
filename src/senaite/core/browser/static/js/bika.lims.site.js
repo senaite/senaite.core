@@ -511,7 +511,7 @@
       el = event.currentTarget;
       $(el).prepOverlay({
         subtype: "ajax",
-        width: '70%',
+        width: '80%',
         filter: '#content>*:not(div#portal-column-content)',
         config: {
           closeOnClick: true,

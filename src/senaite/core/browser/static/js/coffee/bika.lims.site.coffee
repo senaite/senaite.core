@@ -528,7 +528,7 @@ class window.SiteView
     # https://github.com/plone/plone.app.jquerytools/blob/master/plone/app/jquerytools/browser/overlayhelpers.js
     $(el).prepOverlay
       subtype: "ajax"
-      width: '70%'
+      width: '80%'
       filter: '#content>*:not(div#portal-column-content)'
       config:
         closeOnClick: yes

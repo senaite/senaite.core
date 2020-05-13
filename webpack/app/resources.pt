@@ -30,7 +30,7 @@
 
 <!-- Plone jQuery Tools -->
 <script tal:attributes="src string:${view/site_url}/++resource++plone.app.jquerytools.js"></script>
-<script tal:attributes="src string:${view/site_url}/++resource++plone.app.jquerytools.overlayhelpers.js"></script>
+<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/thirdparty/plone/overlayhelpers.js"></script>
 <link href="#" rel="stylesheet" tal:attributes="href string:${view/site_url}/++resource++plone.app.jquerytools.overlays.css" />
 
 <!-- thirdparty -->
