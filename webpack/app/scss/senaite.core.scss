@@ -10,3 +10,26 @@ img.deleteAttachmentButton {
     cursor: pointer;
     width: 16px;
 }
+
+#panel-notification {
+    top: 50%;
+    left: 50%;
+    position: fixed;
+    z-index: 1000;
+}
+#panel-notification {
+    .error-notification-item {
+        @extend .border;
+        @extend .border-warning;
+        @extend .card;
+        @extend .py-3;
+        @extend .px-4;
+    }
+    .succeed-notification-item {
+        @extend .border;
+        @extend .border-success;
+        @extend .card;
+        @extend .py-3;
+        @extend .px-4;
+    }
+}

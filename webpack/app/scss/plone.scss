@@ -1,20 +1,4 @@
 /* Plone overrides */
-
-div.overlay {
-    height: fit-content;
-}
-.pb-ajax {
-    overflow: visible;
-    border-radius: 3px;
-}
-.pb-ajax>div {
-    @extend .container-fluid;
-    width: 100%!important;
-}
-div.overlaybg div.close,
-div.overlay div.close {
-    opacity: 1;
-}
 .hiddenStructure {
     @extend .d-none;
 }
@@ -72,4 +56,16 @@ nav.pagination ul {
         }
     }
 
+}
+/* Overlay fixtures */
+.pb-ajax {
+    border-radius: 3px;
+}
+.pb-ajax>div {
+    @extend .container-fluid;
+    width: 100%!important;
+}
+div.overlaybg div.close,
+div.overlay div.close {
+    opacity: 1;
 }
