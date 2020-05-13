@@ -61,6 +61,8 @@
                           python:plone_view.patterns_settings()"
           id="visual-portal-wrapper">
 
+      <!-- Ajax Loader -->
+      <div id="loader" i18n-translate="">Loading...</div>
 
       <!-- Toolbar -->
       <div class="container-fluid px-0 mb-2">
