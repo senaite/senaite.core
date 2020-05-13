@@ -18,13 +18,18 @@
 # Copyright 2018-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from zope.interface import alsoProvides
+
 from bika.lims import api
 from bika.lims import logger
-from bika.lims.interfaces import IDuplicateAnalysis, IVerified, ISubmitted
+from bika.lims.interfaces import IDuplicateAnalysis
+from bika.lims.interfaces import ISubmitted
+from bika.lims.interfaces import IVerified
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.utils.analysis import create_analysis
-from bika.lims.workflow import doActionFor, push_reindex_to_actions_pool
-from zope.interface import alsoProvides
+from bika.lims.utils.analysis import create_retest
+from bika.lims.workflow import doActionFor
+from bika.lims.workflow import push_reindex_to_actions_pool
 
 
 def after_assign(analysis):
@@ -62,34 +67,31 @@ def after_retest(analysis):
     """Function triggered before 'retest' transition takes place. Creates a
     copy of the current analysis
     """
-    # Retest out dependents (analyses that depend on this analysis)
-    cascade_to_dependents(analysis, "retest")
+    def verify_and_retest(analysis):
+        if not ISubmitted.providedBy(analysis):
+            # Result not yet submitted, no need to create a retest
+            return
 
-    # Retest our dependencies (analyses this analysis depends on)
-    promote_to_dependencies(analysis, "retest")
+        # Create the retest and verify
+        create_retest(analysis)
+        doActionFor(analysis, "verify")
 
-    # Support multiple retests by prefixing keyword with *-0, *-1, etc.
-    parent = api.get_parent(analysis)
-    keyword = analysis.getKeyword()
+    # When an analysis is retested, it automatically transitions to verified,
+    # so we need to mark the analysis as such
+    alsoProvides(analysis, IVerified)
 
-    # Get only those analyses with same keyword as original
-    analyses = parent.getAnalyses(full_objects=True)
-    analyses = filter(lambda an: an.getKeyword() == keyword, analyses)
-    new_id = '{}-{}'.format(keyword, len(analyses))
+    # Auto-verify and retest dependents (analyses that depend on this analysis)
+    # Note we don't do the action "retest", cause retests for dependencies of
+    # each dependent might happen, so they don't have any result yet
+    map(verify_and_retest, analysis.getDependents())
 
-    # Create a copy of the original analysis
-    an_uid = api.get_uid(analysis)
-    new_analysis = create_analysis(parent, analysis, id=new_id, RetestOf=an_uid)
-    new_analysis.setResult("")
-    new_analysis.setResultCaptureDate(None)
-    new_analysis.reindexObject()
-    logger.info("Retest for {} ({}) created: {}".format(
-        keyword, api.get_id(analysis), api.get_id(new_analysis)))
+    # Auto-verify and retest dependencies (analysis this analysis depends on)
+    # Note we don't do the action "retest", cause retests for dependents of
+    # each dependency might happen, so they don't have any result yet
+    map(verify_and_retest, analysis.getDependencies())
 
-    # Assign the new analysis to this same worksheet, if any
-    worksheet = analysis.getWorksheet()
-    if worksheet:
-        worksheet.addAnalysis(new_analysis)
+    # Create the retest
+    create_retest(analysis)
 
     # Try to rollback the Analysis Request
     if IRequestAnalysis.providedBy(analysis):

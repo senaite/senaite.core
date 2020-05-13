@@ -242,19 +242,16 @@ def guard_retract(analysis):
     return True
 
 
-def guard_retest(analysis):
+def guard_retest(analysis, check_dependents=True):
     """Return whether the transition "retest" can be performed or not
     """
-    # Cannot retest if there are dependents that cannot be retested
-    if not is_transition_allowed(analysis.getDependents(), "retest"):
+    # Retest transition does an automatic verify transition, so the analysis
+    # should be verifiable first
+    if not is_transition_allowed(analysis, "verify"):
         return False
 
-    dependencies = analysis.getDependencies()
-    if not dependencies:
-        return True
-
-    # Cannot retest if all dependencies have been verified
-    if all(map(lambda an: IVerified.providedBy(an), dependencies)):
+    # Cannot retest if there are dependents that cannot be retested
+    if not is_transition_allowed(analysis.getDependents(), "retest"):
         return False
 
     return True

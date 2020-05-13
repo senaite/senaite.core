@@ -68,7 +68,7 @@ We need to create some basic objects for the test:
     >>> Cu = api.create(setup.bika_analysisservices, "AnalysisService", title="Copper", Keyword="Cu", Price="15", Category=category.UID(), Accredited=True)
     >>> Fe = api.create(setup.bika_analysisservices, "AnalysisService", title="Iron", Keyword="Fe", Price="10", Category=category.UID())
     >>> Au = api.create(setup.bika_analysisservices, "AnalysisService", title="Gold", Keyword="Au", Price="20", Category=category.UID())
-
+    >>> setup.setSelfVerificationEnabled(True)
 
 Retest transition and guard basic constraints
 ---------------------------------------------
