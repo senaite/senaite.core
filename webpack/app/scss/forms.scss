@@ -60,10 +60,8 @@ form[name='edit_form'] {
         @extend .custom-file;
     }
     field.ArchetypesReferenceBrowserWidget > input {
-        @extend .custom-file-input;
     }
     input[type='file'] {
-        @extend .custom-file-input;
     }
     input[type='text'] {
         @extend .form-control;

@@ -6,12 +6,15 @@
 @import "plone.scss";
 @import "loader.scss";
 
+
 /* inline delete button for WS attachments */
 img.deleteAttachmentButton {
     cursor: pointer;
     width: 16px;
 }
 
+/* Notification Panel
+   Currently only shown when changing the instrument in WSs */
 #panel-notification {
     top: 50%;
     left: 50%;
@@ -34,3 +37,32 @@ img.deleteAttachmentButton {
         @extend .px-4;
     }
 }
+
+/* Priority icons in listings */
+.priority-ico {
+    @extend .fa;
+    span {
+        @extend .d-none;
+    }
+    &.priority-1 {
+        @extend .fa-arrow-up;
+        @extend .text-success;
+    }
+    &.priority-2 {
+        @extend .fa-arrow-up;
+        @extend .text-info;
+    }
+    &.priority-3 {
+        @extend .fa-arrow-up;
+        @extend .text-secondary;
+    }
+    &.priority-4 {
+        @extend .fa-arrow-down;
+        @extend .text-warning;
+    }
+    &.priority-5 {
+        @extend .fa-arrow-down;
+        @extend .text-danger;
+    }
+}
+
