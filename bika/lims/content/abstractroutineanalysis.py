@@ -352,10 +352,11 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
         raise NotImplementedError("getSiblings is not implemented.")
 
     @security.public
-    def getDependents(self, with_retests=False):
+    def getDependents(self, with_retests=False, recursive=False):
         """
         Returns a list of siblings who depend on us to calculate their result.
         :param with_retests: If false, dependents with retests are dismissed
+        :param recursive: If true, returns all dependents recursively down
         :type with_retests: bool
         :return: Analyses the current analysis depends on
         :rtype: list of IAnalysis
@@ -374,13 +375,25 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
             return len(services) > 0
 
         siblings = self.getSiblings(with_retests=with_retests)
-        return filter(lambda sib: is_dependent(sib), siblings)
+        dependents = filter(lambda sib: is_dependent(sib), siblings)
+        if not recursive:
+            return dependents
+
+        # Return all dependents recursively
+        deps = dependents
+        for dep in dependents:
+            down_dependencies = dep.getDependents(with_retests=with_retests,
+                                                  recursive=True)
+            deps.extend(down_dependencies)
+        return deps
+
 
     @security.public
-    def getDependencies(self, with_retests=False):
+    def getDependencies(self, with_retests=False, recursive=False):
         """
         Return a list of siblings who we depend on to calculate our result.
-        :param with_retests: If false, dependencies with retests are dismissed
+        :param with_retests: If false, siblings with retests are dismissed
+        :param recursive: If true, looks for dependencies recursively up
         :type with_retests: bool
         :return: Analyses the current analysis depends on
         :rtype: list of IAnalysis
@@ -402,6 +415,12 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
             deps = map(api.get_uid, sibling.getDependents(with_retests=True))
             if self.UID() in deps:
                 dependencies.append(sibling)
+                if recursive:
+                    # Append the dependencies of this dependency
+                    up_deps = sibling.getDependencies(with_retests=with_retests,
+                                                      recursive=True)
+                    dependencies.extend(up_deps)
+
         return dependencies
 
     @security.public

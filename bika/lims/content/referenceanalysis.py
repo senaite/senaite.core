@@ -180,7 +180,7 @@ class ReferenceAnalysis(AbstractAnalysis):
         """
         return []
 
-    def getDependents(self, with_retests=False):
+    def getDependents(self, with_retests=False, recursive=False):
         """It doesn't make sense for a ReferenceAnalysis to use
         dependents, since them are only used in calculations for
         routine analyses

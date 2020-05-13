@@ -296,3 +296,169 @@ And the current state of the Analysis Request is `sample_received` now:
 
     >>> api.get_workflow_status_of(ar)
     'sample_received'
+
+
+Retest of an analysis with dependencies hierarchy (recursive up)
+----------------------------------------------------------------
+
+Retesting an analysis with dependencies should end-up with retests for all them,
+regardless of their position in the hierarchy of dependencies. The system works
+recursively up, finding out all dependencies.
+
+Prepare a calculation that depends on `Cu` and assign it to `Fe` analysis:
+
+    >>> calc_fe = api.create(setup.bika_calculations, 'Calculation', title='Calc for Fe')
+    >>> calc_fe.setFormula("[Cu]*10")
+    >>> Fe.setCalculation(calc_fe)
+
+Prepare a calculation that depends on `Fe` and assign it to `Au` analysis:
+
+    >>> calc_au = api.create(setup.bika_calculations, 'Calculation', title='Calc for Au')
+    >>> calc_au.setFormula("([Fe])/2")
+    >>> Au.setCalculation(calc_au)
+
+Create an Analysis Request:
+
+    >>> ar = new_ar([Cu, Fe, Au])
+    >>> analyses = ar.getAnalyses(full_objects=True)
+    >>> cu_analysis = filter(lambda an: an.getKeyword()=="Cu", analyses)[0]
+    >>> fe_analysis = filter(lambda an: an.getKeyword()=="Fe", analyses)[0]
+    >>> au_analysis = filter(lambda an: an.getKeyword()=="Au", analyses)[0]
+
+TODO This should not be like this, but the calculation is performed by
+`ajaxCalculateAnalysisEntry`. The calculation logic must be moved to
+'api.analysis.calculate`:
+
+    >>> cu_analysis.setResult(20)
+    >>> fe_analysis.setResult(12)
+    >>> au_analysis.setResult(10)
+
+Submit `Au` analysis and the rest will follow:
+
+    >>> try_transition(au_analysis, "submit", "to_be_verified")
+    True
+    >>> api.get_workflow_status_of(au_analysis)
+    'to_be_verified'
+    >>> api.get_workflow_status_of(fe_analysis)
+    'to_be_verified'
+    >>> api.get_workflow_status_of(cu_analysis)
+    'to_be_verified'
+    >>> api.get_workflow_status_of(ar)
+    'to_be_verified'
+
+If I retest `Au`, `Fe` analysis is transitioned to verified and retested too:
+
+    >>> try_transition(au_analysis, "retest", "verified")
+    True
+    >>> api.get_workflow_status_of(fe_analysis)
+    'verified'
+    >>> api.get_workflow_status_of(au_analysis)
+    'verified'
+
+As well as `Cu` analysis, that is a dependency of `Fe`:
+
+    >>> api.get_workflow_status_of(cu_analysis)
+    'verified'
+
+Hence, three new "retests" are generated in accordance:
+
+    >>> analyses = ar.getAnalyses(full_objects=True)
+    >>> len(analyses)
+    6
+    >>> au_analyses = filter(lambda an: an.getKeyword()=="Au", analyses)
+    >>> sorted(map(api.get_workflow_status_of, au_analyses))
+    ['unassigned', 'verified']
+    >>> fe_analyses = filter(lambda an: an.getKeyword()=="Fe", analyses)
+    >>> sorted(map(api.get_workflow_status_of, fe_analyses))
+    ['unassigned', 'verified']
+    >>> cu_analyses = filter(lambda an: an.getKeyword()=="Cu", analyses)
+    >>> sorted(map(api.get_workflow_status_of, cu_analyses))
+    ['unassigned', 'verified']
+
+And the current state of the Analysis Request is `sample_received` now:
+
+    >>> api.get_workflow_status_of(ar)
+    'sample_received'
+
+
+Retest of an analysis with dependents hierarchy (recursive down)
+----------------------------------------------------------------
+
+Retesting an analysis with dependents should end-up with retests for all them,
+regardless of their position in the hierarchy of dependents. The system works
+recursively down, finding out all dependents.
+
+Prepare a calculation that depends on `Cu` and assign it to `Fe` analysis:
+
+    >>> calc_fe = api.create(setup.bika_calculations, 'Calculation', title='Calc for Fe')
+    >>> calc_fe.setFormula("[Cu]*10")
+    >>> Fe.setCalculation(calc_fe)
+
+Prepare a calculation that depends on `Fe` and assign it to `Au` analysis:
+
+    >>> calc_au = api.create(setup.bika_calculations, 'Calculation', title='Calc for Au')
+    >>> calc_au.setFormula("([Fe])/2")
+    >>> Au.setCalculation(calc_au)
+
+Create an Analysis Request:
+
+    >>> ar = new_ar([Cu, Fe, Au])
+    >>> analyses = ar.getAnalyses(full_objects=True)
+    >>> cu_analysis = filter(lambda an: an.getKeyword()=="Cu", analyses)[0]
+    >>> fe_analysis = filter(lambda an: an.getKeyword()=="Fe", analyses)[0]
+    >>> au_analysis = filter(lambda an: an.getKeyword()=="Au", analyses)[0]
+
+TODO This should not be like this, but the calculation is performed by
+`ajaxCalculateAnalysisEntry`. The calculation logic must be moved to
+'api.analysis.calculate`:
+
+    >>> cu_analysis.setResult(20)
+    >>> fe_analysis.setResult(12)
+    >>> au_analysis.setResult(10)
+
+Submit `Au` analysis and the rest will follow:
+
+    >>> try_transition(au_analysis, "submit", "to_be_verified")
+    True
+    >>> api.get_workflow_status_of(au_analysis)
+    'to_be_verified'
+    >>> api.get_workflow_status_of(fe_analysis)
+    'to_be_verified'
+    >>> api.get_workflow_status_of(cu_analysis)
+    'to_be_verified'
+    >>> api.get_workflow_status_of(ar)
+    'to_be_verified'
+
+If I retest `Cu`, `Fe` analysis is transitioned to verified and retested too:
+
+    >>> try_transition(cu_analysis, "retest", "verified")
+    True
+    >>> api.get_workflow_status_of(cu_analysis)
+    'verified'
+    >>> api.get_workflow_status_of(fe_analysis)
+    'verified'
+
+As well as `Au` analysis, that is a dependent of `Fe`:
+
+    >>> api.get_workflow_status_of(au_analysis)
+    'verified'
+
+Hence, three new "retests" are generated in accordance:
+
+    >>> analyses = ar.getAnalyses(full_objects=True)
+    >>> len(analyses)
+    6
+    >>> au_analyses = filter(lambda an: an.getKeyword()=="Au", analyses)
+    >>> sorted(map(api.get_workflow_status_of, au_analyses))
+    ['unassigned', 'verified']
+    >>> fe_analyses = filter(lambda an: an.getKeyword()=="Fe", analyses)
+    >>> sorted(map(api.get_workflow_status_of, fe_analyses))
+    ['unassigned', 'verified']
+    >>> cu_analyses = filter(lambda an: an.getKeyword()=="Cu", analyses)
+    >>> sorted(map(api.get_workflow_status_of, cu_analyses))
+    ['unassigned', 'verified']
+
+And the current state of the Analysis Request is `sample_received` now:
+
+    >>> api.get_workflow_status_of(ar)
+    'sample_received'

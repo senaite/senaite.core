@@ -26,6 +26,7 @@ from bika.lims.interfaces import IDuplicateAnalysis
 from bika.lims.interfaces import ISubmitted
 from bika.lims.interfaces import IVerified
 from bika.lims.interfaces.analysis import IRequestAnalysis
+from bika.lims.utils import changeWorkflowState
 from bika.lims.utils.analysis import create_analysis
 from bika.lims.utils.analysis import create_retest
 from bika.lims.workflow import doActionFor
@@ -67,28 +68,25 @@ def after_retest(analysis):
     """Function triggered before 'retest' transition takes place. Creates a
     copy of the current analysis
     """
-    def verify_and_retest(analysis):
-        if not ISubmitted.providedBy(analysis):
-            # Result not yet submitted, no need to create a retest
-            return
-
-        # Create the retest and verify
-        create_retest(analysis)
-        doActionFor(analysis, "verify")
-
     # When an analysis is retested, it automatically transitions to verified,
     # so we need to mark the analysis as such
     alsoProvides(analysis, IVerified)
 
-    # Auto-verify and retest dependents (analyses that depend on this analysis)
-    # Note we don't do the action "retest", cause retests for dependencies of
-    # each dependent might happen, so they don't have any result yet
-    map(verify_and_retest, analysis.getDependents())
+    def verify_and_retest(relative):
+        if not ISubmitted.providedBy(relative):
+            # Result not yet submitted, no need to create a retest
+            return
 
-    # Auto-verify and retest dependencies (analysis this analysis depends on)
-    # Note we don't do the action "retest", cause retests for dependents of
-    # each dependency might happen, so they don't have any result yet
-    map(verify_and_retest, analysis.getDependencies())
+        # Apply the transition manually, but only if analysis can be verified
+        doActionFor(relative, "verify")
+
+        # Create the retest
+        create_retest(relative)
+
+    # Retest and auto-verify relatives, from bottom to top
+    relatives = list(reversed(analysis.getDependents(recursive=True)))
+    relatives.extend(analysis.getDependencies(recursive=True))
+    map(verify_and_retest, relatives)
 
     # Create the retest
     create_retest(analysis)
