@@ -36,17 +36,35 @@
 <!-- thirdparty -->
 <script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/thirdparty/jquery-barcode-2.2.0.min.js"></script>
 <script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/thirdparty/jquery-qrcode-0.17.0.min.js"></script>
+<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/thirdparty/d3.js"></script>
 
 <!-- legacy senaite.core JS -->
-<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/js/bika.lims.site.js"></script>
-<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/js/bika.lims.common.js"></script>
+<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/js/bika.lims.analysisprofile.js"></script>
 <script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/js/bika.lims.analysisrequest.js"></script>
 <script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/js/bika.lims.analysisrequest.manageresults.js"></script>
+<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/js/bika.lims.analysisservice.js"></script>
+<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/js/bika.lims.artemplate.js"></script>
+<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/js/bika.lims.batch.js"></script>
+<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/js/bika.lims.bikasetup.js"></script>
+<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/js/bika.lims.calculation.edit.js"></script>
+<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/js/bika.lims.client.js"></script>
+<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/js/bika.lims.common.js"></script>
+<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/js/bika.lims.department.js"></script>
+<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/js/bika.lims.graphics.controlchart.js"></script>
+<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/js/bika.lims.graphics.range.js"></script>
+<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/js/bika.lims.instrument.import.js"></script>
+<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/js/bika.lims.instrument.js"></script>
+<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/js/bika.lims.method.js"></script>
+<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/js/bika.lims.referencesample.js"></script>
+<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/js/bika.lims.reflexrule.js"></script>
 <script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/js/bika.lims.rejection.js"></script>
-<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/js/bika.lims.utils.barcode.js"></script>
+<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/js/bika.lims.reports.js"></script>
+<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/js/bika.lims.site.js"></script>
+<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/js/bika.lims.supplyorder.js"></script>
 <script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/js/bika.lims.utils.attachments.js"></script>
+<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/js/bika.lims.utils.barcode.js"></script>
 <script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/js/bika.lims.worksheet.js"></script>
 <script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/js/bika.lims.worksheet.print.js"></script>
 <script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/js/bika.lims.worksheettemplate.js"></script>
-<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/js/bika.lims.bikasetup.js"></script>
+<!-- loader must be last -->
 <script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/js/bika.lims.loader.js"></script>
