@@ -242,6 +242,21 @@ def guard_retract(analysis):
     return True
 
 
+def guard_retest(analysis, check_dependents=True):
+    """Return whether the transition "retest" can be performed or not
+    """
+    # Retest transition does an automatic verify transition, so the analysis
+    # should be verifiable first
+    if not is_transition_allowed(analysis, "verify"):
+        return False
+
+    # Cannot retest if there are dependents that cannot be retested
+    if not is_transition_allowed(analysis.getDependents(), "retest"):
+        return False
+
+    return True
+
+
 def guard_reject(analysis):
     """Return whether the transition "reject" can be performed or not
     """

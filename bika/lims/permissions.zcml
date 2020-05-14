@@ -69,6 +69,7 @@
   <permission id="senaite.core.permissions.TransitionReopen" title="senaite.core: Transition: Reopen"/>
 
   # Transition Permissions (Analysis and alike)
+  <permission id="senaite.core.permissions.TransitionRetest" title="senaite.core: Transition: Retest"/>
   <permission id="senaite.core.permissions.TransitionRetract" title="senaite.core: Transition: Retract"/>
   <permission id="senaite.core.permissions.TransitionVerify" title="senaite.core: Transition: Verify"/>
   <permission id="senaite.core.permissions.TransitionAssignAnalysis" title="senaite.core: Transition: Assign Analysis"/>
