@@ -230,11 +230,13 @@ class ARTemplateAnalysesView(BikaListingView):
         item["replace"]["Title"] = get_link(url, value=title)
         item["Price"] = self.format_price(obj.Price)
         item["allow_edit"] = self.get_editable_columns()
-        item["required"].append("Partition")
         item["choices"]["Partition"] = self.partition_choices
         item["Partition"] = partition
         item["Hidden"] = hidden
         item["selected"] = uid in self.configuration
+
+        # Make partition a required field
+        item.setdefault("required", []).append("Partition")
 
         # Add methods
         methods = obj.getMethods()

@@ -17,6 +17,7 @@ Changelog
 
 **Fixed**
 
+- #1583 Fix traceback in services listing in ARTemplate view
 - #1581 Fix Some values are not properly rendered in services listing
 - #1580 Fix Analysts are not displayed once created in worksheets listing
 - #1575 Fix Uncertainties are displayed although result is below Detection Limit
