@@ -33,6 +33,7 @@ before_install:
   - echo "[buildout]" > $TRAVIS_BUILD_DIR/default.cfg
   - echo "download-cache = $TRAVIS_BUILD_DIR/buildout-cache/downloads" >> $TRAVIS_BUILD_DIR/default.cfg
   - echo "eggs-directory = $TRAVIS_BUILD_DIR/buildout-cache/eggs" >> $TRAVIS_BUILD_DIR/default.cfg
+  - ssh-keygen
   - virtualenv .
   - bin/pip install -r requirements.txt
 install:
