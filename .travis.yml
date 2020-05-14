@@ -34,8 +34,7 @@ before_install:
   - echo "download-cache = $TRAVIS_BUILD_DIR/buildout-cache/downloads" >> $TRAVIS_BUILD_DIR/default.cfg
   - echo "eggs-directory = $TRAVIS_BUILD_DIR/buildout-cache/eggs" >> $TRAVIS_BUILD_DIR/default.cfg
   - virtualenv .
-  - python bootstrap.py
-  # - bin/pip install --upgrade pip setuptools zc.buildout
+  - bin/pip install -r requirements.txt
 install:
   - bin/buildout -n -t 3 -c travis.cfg
 script:
