@@ -395,6 +395,10 @@
     </permission>
 
     <!-- Transition permissions (Analysis and alike) -->
+    <permission name="senaite.core: Transition: Retest" acquire="False">
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
     <permission name="senaite.core: Transition: Retract" acquire="False">
       <role name="LabManager"/>
       <role name="Manager"/>

@@ -27,8 +27,10 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
 from archetypes.schemaextender.interfaces import IExtensionField
 
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.interfaces import IAnalysisService
+from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.utils import formatDecimalMark
 from bika.lims.utils import to_unicode
 
@@ -622,3 +624,33 @@ def get_method_instrument_constraints(context, uids):
             constraints[auid][muid] = targ
             cached_servs[cachedkey][suid][muid] = targ
     return constraints
+
+
+def create_retest(analysis):
+    """Creates a retest of the given analysis
+    """
+    if not IRequestAnalysis.providedBy(analysis):
+        raise ValueError("Type not supported: {}".format(repr(type(analysis))))
+
+    # Support multiple retests by prefixing keyword with *-0, *-1, etc.
+    parent = api.get_parent(analysis)
+    keyword = analysis.getKeyword()
+
+    # Get only those analyses with same keyword as original
+    analyses = parent.getAnalyses(full_objects=True)
+    analyses = filter(lambda an: an.getKeyword() == keyword, analyses)
+    new_id = '{}-{}'.format(keyword, len(analyses))
+
+    # Create a copy of the original analysis
+    an_uid = api.get_uid(analysis)
+    retest = create_analysis(parent, analysis, id=new_id, RetestOf=an_uid)
+    retest.setResult("")
+    retest.setResultCaptureDate(None)
+
+    # Add the retest to the same worksheet, if any
+    worksheet = analysis.getWorksheet()
+    if worksheet:
+        worksheet.addAnalysis(retest)
+
+    retest.reindexObject()
+    return retest

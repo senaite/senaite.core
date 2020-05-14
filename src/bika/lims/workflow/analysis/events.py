@@ -18,13 +18,19 @@
 # Copyright 2018-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from zope.interface import alsoProvides
+
 from bika.lims import api
 from bika.lims import logger
-from bika.lims.interfaces import IDuplicateAnalysis, IVerified, ISubmitted
+from bika.lims.interfaces import IDuplicateAnalysis
+from bika.lims.interfaces import ISubmitted
+from bika.lims.interfaces import IVerified
 from bika.lims.interfaces.analysis import IRequestAnalysis
+from bika.lims.utils import changeWorkflowState
 from bika.lims.utils.analysis import create_analysis
-from bika.lims.workflow import doActionFor, push_reindex_to_actions_pool
-from zope.interface import alsoProvides
+from bika.lims.utils.analysis import create_retest
+from bika.lims.workflow import doActionFor
+from bika.lims.workflow import push_reindex_to_actions_pool
 
 
 def after_assign(analysis):
@@ -56,6 +62,39 @@ def before_reject(analysis):
     # Rejection of a routine analysis causes the removal of their duplicates
     for dup in worksheet.get_duplicates_for(analysis):
         doActionFor(dup, "unassign")
+
+
+def after_retest(analysis):
+    """Function triggered before 'retest' transition takes place. Creates a
+    copy of the current analysis
+    """
+    # When an analysis is retested, it automatically transitions to verified,
+    # so we need to mark the analysis as such
+    alsoProvides(analysis, IVerified)
+
+    def verify_and_retest(relative):
+        if not ISubmitted.providedBy(relative):
+            # Result not yet submitted, no need to create a retest
+            return
+
+        # Apply the transition manually, but only if analysis can be verified
+        doActionFor(relative, "verify")
+
+        # Create the retest
+        create_retest(relative)
+
+    # Retest and auto-verify relatives, from bottom to top
+    relatives = list(reversed(analysis.getDependents(recursive=True)))
+    relatives.extend(analysis.getDependencies(recursive=True))
+    map(verify_and_retest, relatives)
+
+    # Create the retest
+    create_retest(analysis)
+
+    # Try to rollback the Analysis Request
+    if IRequestAnalysis.providedBy(analysis):
+        doActionFor(analysis.getRequest(), "rollback_to_receive")
+        reindex_request(analysis)
 
 
 def after_unassign(analysis):
@@ -128,30 +167,8 @@ def after_retract(analysis):
     # Retract our dependencies (analyses this analysis depends on)
     promote_to_dependencies(analysis, "retract")
 
-    # Rename the analysis to make way for it's successor.
-    # Support multiple retractions by renaming to *-0, *-1, etc
-    parent = analysis.aq_parent
-    keyword = analysis.getKeyword()
-
-    # Get only those that are analyses and with same keyword as the original
-    analyses = parent.getAnalyses(full_objects=True)
-    analyses = filter(lambda an: an.getKeyword() == keyword, analyses)
-    # TODO This needs to get managed by Id server in a nearly future!
-    new_id = '{}-{}'.format(keyword, len(analyses))
-
-    # Create a copy of the retracted analysis
-    an_uid = api.get_uid(analysis)
-    new_analysis = create_analysis(parent, analysis, id=new_id, RetestOf=an_uid)
-    new_analysis.setResult("")
-    new_analysis.setResultCaptureDate(None)
-    new_analysis.reindexObject()
-    logger.info("Retest for {} ({}) created: {}".format(
-        keyword, api.get_id(analysis), api.get_id(new_analysis)))
-
-    # Assign the new analysis to this same worksheet, if any.
-    worksheet = analysis.getWorksheet()
-    if worksheet:
-        worksheet.addAnalysis(new_analysis)
+    # Create the retest
+    create_retest(analysis)
 
     # Try to rollback the Analysis Request
     if IRequestAnalysis.providedBy(analysis):

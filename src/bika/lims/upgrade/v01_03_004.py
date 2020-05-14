@@ -68,6 +68,13 @@ def upgrade(tool):
     # https://github.com/senaite/senaite.core/pull/1579
     remove_object_workflow_states_metadata(portal)
 
+    # Added "senaite.core: Transition: Retest" permission for analyses
+    # Added transition "retest" in analysis workflow
+    # https://github.com/senaite/senaite.core/pull/1580
+    setup.runImportStepFromProfile(profile, "rolemap")
+    setup.runImportStepFromProfile(profile, "workflow")
+    update_workflow_mappings_for_to_be_verified(portal)
+
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
 
@@ -89,3 +96,22 @@ def remove_object_workflow_states_metadata(portal):
         del_metadata(catalog, "getObjectWorkflowStates")
 
     logger.info("Removing getObjectWorkflowStates metadata [DONE]")
+
+
+def update_workflow_mappings_for_to_be_verified(portal):
+    """Updates the role mappings for analyses that are in "to_be_verfied"
+    status, so the new transition "Retest" becomes available
+    """
+    logger.info("Updating role mappings for 'to_be_verified' analyses...")
+    wf_tool = api.get_tool("portal_workflow")
+    workflow = wf_tool.getWorkflowById("bika_analysis_workflow")
+    query = {"portal_type": "Analysis",
+             "review_state": "to_be_verified"}
+    brains = api.search(query, CATALOG_ANALYSIS_LISTING)
+    total = len(brains)
+    for num, brain in enumerate(brains):
+        if num and num % 100 == 0:
+            logger.info("Updating role mappings: {0}/{1}".format(num, total))
+        obj = api.get_object(brain)
+        workflow.updateRoleMappingsFor(obj)
+    logger.info("Updating role mappings for 'to_be_verified' analyses [DONE]")

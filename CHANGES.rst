@@ -6,6 +6,7 @@ Changelog
 
 **Added**
 
+- #1582 Allow to retest analyses without the need of retraction
 - #1573 Append the type name of the current record in breadcrumbs (Client)
 - #1573 Add link "My Organization" under top-right user selection list
 
@@ -17,6 +18,7 @@ Changelog
 
 **Fixed**
 
+- #1583 Fix traceback in services listing in ARTemplate view
 - #1581 Fix Some values are not properly rendered in services listing
 - #1580 Fix Analysts are not displayed once created in worksheets listing
 - #1575 Fix Uncertainties are displayed although result is below Detection Limit
