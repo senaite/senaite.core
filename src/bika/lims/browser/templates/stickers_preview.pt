@@ -1,83 +1,22 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<metal:block use-macro="context/global_defines/macros/defines" />
-
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:tal="http://xml.zope.org/namespaces/tal"
       xmlns:metal="http://xml.zope.org/namespaces/metal"
       xmlns:i18n="http://xml.zope.org/namespaces/i18n"
       tal:attributes="lang default_language|default;
-                      xml:lang default_language|default;"
+             xml:lang default_language|default;"
       i18n:domain="senaite.core"
       tal:define="portal_state context/@@plone_portal_state;
-                  portal_url portal_state/portal_url;
-                  plone_view context/@@plone;
-                  portal portal_state/portal;
-                  portal_type python:context.portal_type;
-                  anchor_self python:('Client','AnalysisRequest', 'AnalysisRequestsFolder', 'Batch');
-                  goback_url  python:context.absolute_url() if portal_type in anchor_self else context.aq_parent.absolute_url();">
+             portal_url portal_state/portal_url;
+             plone_view context/@@plone;
+             portal portal_state/portal;
+             portal_type python:context.portal_type;
+             anchor_self python:('Client','AnalysisRequest', 'AnalysisRequestsFolder', 'Batch');
+             goback_url  python:context.absolute_url() if portal_type in anchor_self else context.aq_parent.absolute_url();">
   <head>
-    <div tal:replace="structure provider:plone.resourceregistries.scripts" />
+    <div tal:replace="structure provider:plone.htmlhead" />
+
     <!-- Generic style -->
     <style type="text/css">
-     body {
-       background-color: #efefef;
-       margin: 0;
-       padding: 0;
-     }
-     #sticker-preview-header {
-       font-family:Helvetica, Arial;
-       font-size:0.9em;
-       background-color: #dcdcdc;
-       box-shadow: 1px 1px 1px #ccc;
-       margin: 0 0 40px;
-       padding: 10px;
-       text-align: center;
-     }
-     #sticker-preview-header .options-line {
-       padding:0 0 10px 0;
-     }
-     #sticker-preview-header select {
-       margin-left: 10px;
-       padding: 0 5px;
-     }
-     #sticker-preview-header #sticker-buttons input {
-       text-align:center;
-       width:30mm;
-       margin:0 2mm;
-       background-color: #aaa;
-       border-radius: 5px;
-       color: #fff;
-       font-family: Helvetica,Arial;
-       font-size: 9pt;
-       font-weight: bold;
-       padding: 4px 15px;
-       text-decoration: none;
-       text-shadow: 1px 1px 1px #999;
-       text-transform: uppercase;
-       border:none;
-       cursor:pointer;
-     }
-     #sticker-preview-header #sticker-buttons input:hover {
-       background-color: #bbb;
-       text-shadow: 1px 1px 1px #aaa;
-     }
-     #sticker-preview-header #sticker-copies input {
-       text-align:center;
-       width:15mm;
-       margin:0 0 10px 0;
-       background-color: #aaa;
-       border-radius: 5px;
-       color: #fff;
-       font-family: Helvetica,Arial;
-       font-size: 9pt;
-       font-weight: bold;
-       padding: 4px 2px;
-       text-decoration: none;
-       text-shadow: 1px 1px 1px #999;
-       text-transform: uppercase;
-       border:none;
-       cursor:pointer;
-     }
      #sticker-rule {
        color: rgb(51, 51, 51);
        height: 10mm;
@@ -114,6 +53,7 @@
        font-size: 10px;
      }
 
+     /* Print CSS */
      @media print {
        html, body {
          margin: 0 !important;
@@ -148,7 +88,7 @@
      }
     </style>
     <script type="text/javascript">
-     $(function(){
+     document.addEventListener("DOMContentLoaded", () => {
        $('#print-button').click(function(e) {
          e.preventDefault();
          printPdf();
@@ -227,13 +167,16 @@
      });
     </script>
   </head>
+
   <body tal:attributes="data-itemsurl python:view.getItemsURL(); data-filter_by_type python:view.filter_by_type or ''">
-    <div id='sticker-preview-wrapper'>
-      <div id="sticker-preview-header">
-        <div id='options-handler'>
-          <div class='options-line'>
-            <label for="template" i18n:translate="">Template</label>
-            <select id="template" name="template">
+    <div id="sticker-preview-wrapper" class="container-fluid p-0">
+      <div id="sticker-preview-header" class="row bg-light">
+        <div id="options-handler" class="col-sm-3 m-auto no-gutters py-3">
+
+          <!-- Template -->
+          <div id="sticker-template" class="mb-2">
+            <label for="template" class="mr-4" i18n:translate="">Template</label>
+            <select id="template" name="template" class="form-control">
               <tal:formats tal:repeat="tpl python:view.getAvailableTemplates()">
                 <option selected
                         tal:attributes="value tpl/id"
@@ -245,18 +188,35 @@
               </tal:formats>
             </select>
           </div>
-          <div id='sticker-copies'>
-            <label for="copies_count" i18n:translate="">Number of copies</label>
-            <input name="copies_count" id="copies_count"
+
+          <!-- Number of copies -->
+          <div id="sticker-copies" class="mb-2">
+            <label for="copies_count" class="mr-4" i18n:translate="">Number of copies</label>
+            <input name="copies_count"
+                   id="copies_count"
+                   class="form-control"
                    type="number"
                    min="1"
+                   step="1"
+                   i18n:attributes="value"
                    tal:attributes="value view/get_copies_count"/>
           </div>
-        </div>
-        <div id='sticker-buttons'>
-          <input type="button" id='cancel-button' value="Go back"
-                 tal:attributes="data-url goback_url;"/>
-          <input type="button" id='print-button' value="Print"/>
+          <!-- Buttons -->
+          <div id="sticker-buttons">
+            <!-- go back -->
+            <input type="button"
+                  id="cancel-button"
+                  value="Back"
+                  class="btn btn-secondary btn-sm"
+                  i18n:attributes="value"
+                  tal:attributes="data-url goback_url;" />
+            <!-- print -->
+            <input type="button"
+                  id="print-button"
+                  value="Print"
+                  class="btn btn-primary btn-sm"
+                  i18n:attributes="value" />
+          </div>
         </div>
       </div>
 
@@ -277,5 +237,6 @@
         </tal:stickers>
       </div>
     </div>
+
   </body>
 </html>
