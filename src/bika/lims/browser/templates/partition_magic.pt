@@ -246,7 +246,7 @@
                      i18n:attributes="value"
                      value="Create Partitions"/>
               <!-- Cancel -->
-              <input class="btn btn-default btn-sm"
+              <input class="btn btn-secondary btn-sm"
                      type="submit"
                      name="button_cancel"
                      i18n:attributes="value"
