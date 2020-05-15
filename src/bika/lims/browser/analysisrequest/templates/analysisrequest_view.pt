@@ -6,9 +6,6 @@
       i18n:domain="senaite.core">
   <head>
     <title></title>
-    <metal:block fill-slot="javascript_head_slot"
-                 tal:define="portal context/@@plone_portal_state/portal;">
-    </metal:block>
   </head>
 
   <body>
@@ -16,8 +13,8 @@
     <metal:content-title fill-slot="content-title">
       <h1>
         <!-- AR Icon -->
-        <img tal:condition="view/icon | nothing"
-             src="" tal:attributes="src view/icon"/>
+        <img i18n:attributes="title" title="Sample" src="#"
+             tal:attributes="src string:${view/portal_url}/${senaite_theme/icons/Sample}" />
         <!-- Title -->
         <span class="documentFirstHeading" tal:content="context/id"></span>
         <!-- Barcode -->
@@ -26,17 +23,17 @@
         <img tal:condition="python:view.is_hazardous()"
              title="Hazardous"
              i18n:attributes="value"
-             tal:attributes="src string:${view/portal_url}/++resource++bika.lims.images/hazardous_big.png"/>
+             tal:attributes="src string:${view/portal_url}/${senaite_theme/icons/hazardous}"/>
         <!-- Exclude Invoice Icon -->
         <img tal:condition="python:view.exclude_invoice()"
              title="Exclude from invoice"
              i18n:attributes="value"
-             tal:attributes="src string:${view/portal_url}/++resource++bika.lims.images/invoice_exclude_big.png"/>
+             tal:attributes="src string:${view/portal_url}/${senaite_theme/icons/invoice_exclude}"/>
         <!-- Retest Icon -->
         <img tal:condition="python:view.is_retest()"
              title="Results have been withdrawn"
              i18n:attributes="value"
-             tal:attributes="src string:${view/portal_url}/++resource++bika.lims.images/delete_big.png"/>
+             tal:attributes="src string:${view/portal_url}/${senaite_theme/icons/retest}"/>
       </h1>
     </metal:content-title>
 

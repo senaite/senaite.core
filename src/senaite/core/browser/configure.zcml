@@ -20,6 +20,7 @@
   <include package=".controlpanel"/>
   <include package=".dashboard"/>
   <include package=".frontpage"/>
+  <include package=".globals"/>
   <include package=".install"/>
   <include package=".login"/>
   <include package=".main_template"/>

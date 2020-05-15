@@ -5,7 +5,8 @@
         xmlns:tal="http://xml.zope.org/namespaces/tal"
         xmlns:metal="http://xml.zope.org/namespaces/metal"
         xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-        tal:define="portal_state python:context.restrictedTraverse('@@plone_portal_state');
+        tal:define="senaite_theme python:context.restrictedTraverse('@@senaite_theme');
+                    portal_state python:context.restrictedTraverse('@@plone_portal_state');
                     context_state python:context.restrictedTraverse('@@plone_context_state');
                     plone_view python:context.restrictedTraverse('@@plone');
                     plone_layout python:context.restrictedTraverse('@@plone_layout');

@@ -138,6 +138,7 @@ class AnalysisRequestViewView(BrowserView):
     def exclude_invoice(self):
         """True if the invoice should be excluded
         """
+        return self.context.getInvoiceExclude()
 
     def show_categories(self):
         """Check the setup if analysis services should be categorized
