@@ -92,14 +92,14 @@ class AnalysisRequestAddView(BrowserView):
     def __call__(self):
         self.portal = api.get_portal()
         self.portal_url = self.portal.absolute_url()
-        self.bika_setup = api.get_bika_setup()
-        self.request.set('disable_plone.rightcolumn', 1)
+        self.setup = api.get_setup()
+        self.request.set("disable_plone.rightcolumn", 1)
         self.came_from = "add"
         self.tmp_ar = self.get_ar()
         self.ar_count = self.get_ar_count()
         self.fieldvalues = self.generate_fieldvalues(self.ar_count)
         self.specifications = self.generate_specifications(self.ar_count)
-        self.ShowPrices = self.bika_setup.getShowPrices()
+        self.ShowPrices = self.setup.getShowPrices()
         self.icon = self.portal_url + \
             "/++resource++bika.lims.images/sample_big.png"
         logger.info("*** Prepared data for {} ARs ***".format(self.ar_count))
@@ -131,16 +131,16 @@ class AnalysisRequestAddView(BrowserView):
     def get_currency(self):
         """Returns the configured currency
         """
-        bika_setup = api.get_bika_setup()
-        currency = bika_setup.getCurrency()
+        setup = api.get_setup()
+        currency = setup.getCurrency()
         currencies = locales.getLocale('en').numbers.currencies
         return currencies[currency]
 
     def is_ar_specs_allowed(self):
         """Checks if AR Specs are allowed
         """
-        bika_setup = api.get_bika_setup()
-        return bika_setup.getEnableARSpecs()
+        setup = api.get_setup()
+        return setup.getEnableARSpecs()
 
     def get_ar_count(self):
         """Return the ar_count request paramteter
@@ -609,8 +609,8 @@ class AnalysisRequestManageView(BrowserView):
         return self.tmp_ar
 
     def get_annotation(self):
-        bika_setup = api.get_bika_setup()
-        return IAnnotations(bika_setup)
+        setup = api.get_setup()
+        return IAnnotations(setup)
 
     @property
     def storage(self):
@@ -1140,9 +1140,9 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
     def ajax_get_global_settings(self):
         """Returns the global Bika settings
         """
-        bika_setup = api.get_bika_setup()
+        setup = api.get_setup()
         settings = {
-            "show_prices": bika_setup.getShowPrices(),
+            "show_prices": setup.getShowPrices(),
         }
         return settings
 
@@ -1485,8 +1485,8 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         base_info["filter_queries"] = filter_queries
 
     def show_recalculate_prices(self):
-        bika_setup = api.get_bika_setup()
-        return bika_setup.getShowPrices()
+        setup = api.get_setup()
+        return setup.getShowPrices()
 
     def ajax_recalculate_prices(self):
         """Recalculate prices for all ARs
@@ -1500,9 +1500,9 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         records = self.get_records()
 
         client = self.get_client()
-        bika_setup = api.get_bika_setup()
+        setup = api.get_setup()
 
-        member_discount = float(bika_setup.getMemberDiscount())
+        member_discount = float(setup.getMemberDiscount())
         member_discount_applies = False
         if client:
             member_discount_applies = client.getMemberDiscountApplies()
@@ -1709,13 +1709,13 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
         self.context.plone_utils.addPortalMessage(message, level)
 
         # Automatic label printing
-        bika_setup = api.get_bika_setup()
-        auto_print = bika_setup.getAutoPrintStickers()
+        setup = api.get_setup()
+        auto_print = setup.getAutoPrintStickers()
         if 'register' in auto_print and ARs:
             return {
                 'success': message,
                 'stickers': ARs.values(),
-                'stickertemplate': bika_setup.getAutoStickerTemplate()
+                'stickertemplate': setup.getAutoStickerTemplate()
             }
         else:
             return {'success': message}
