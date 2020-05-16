@@ -58,8 +58,8 @@ function CommonUtils() {
         };
 
         window.bika.lims.portalMessage = function (message) {
-            var str = "<dl class='portalMessage error'>"+
-                "<dt>"+_("Error")+"</dt>"+
+            var str = "<dl class='portalMessage error alert alert-danger'>"+
+                "<dt>"+_t("Error")+"</dt>"+
                 "<dd><ul>" + message +
                 "</ul></dd></dl>";
             $(".portalMessage").remove();
