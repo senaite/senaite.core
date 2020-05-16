@@ -415,9 +415,7 @@
                     </td>
                     <td>
                       <button tal:attributes="data-category category_id"
-                              class="btn btn-default btn-xs service-category-toggle">
-                        &plus;
-                      </button>
+                              class="btn btn-default btn-xs service-category-toggle">+</button>
                     </td>
                     <!-- span over all sample columns -->
                     <td tal:attributes="colspan ar_count"></td>
