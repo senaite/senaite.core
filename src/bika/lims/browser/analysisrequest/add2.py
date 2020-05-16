@@ -586,6 +586,8 @@ class AnalysisRequestManageView(BrowserView):
     template = ViewPageTemplateFile("templates/ar_add_manage.pt")
 
     def __init__(self, context, request):
+        # disable CSRF protection
+        alsoProvides(request, IDisableCSRFProtection)
         self.context = context
         self.request = request
         self.tmp_ar = None
