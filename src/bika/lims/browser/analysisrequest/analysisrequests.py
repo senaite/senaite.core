@@ -73,6 +73,7 @@ class AnalysisRequestsView(BikaListingView):
         self.icon = "{}{}".format(self.portal_url, ar_image_path)
         self.title = self.context.translate(_("Samples"))
         self.description = ""
+        self.url = api.get_url(self.context)
 
         SamplingWorkflowEnabled = \
             self.context.bika_setup.getSamplingWorkflowEnabled()
@@ -497,23 +498,26 @@ class AnalysisRequestsView(BikaListingView):
         elif self.printwfenabled:
             # Print button to choose multiple ARs and print them.
             review_states = []
+            action = "print_sample"
+            url = "{}/workflow_action?action={}".format(self.url, action)
             for review_state in self.review_states:
                 review_state.get("custom_transitions", []).extend(
                     [{"id": "print_sample",
                       "title": _("Print"),
-                      "url": "workflow_action?action=print_sample"}, ])
+                      "url": url}, ])
                 review_states.append(review_state)
             self.review_states = review_states
 
-        # Only "senaite.core: ManageAnalysisRequests" may see the copy to new button.
-        # elsewhere it is hacked in where required.
+        # Only "senaite.core: ManageAnalysisRequests" may see the copy button.
         if self.copy_to_new_allowed:
             review_states = []
+            action = "copy_to_new"
+            url = "{}/workflow_action?action={}".format(self.url, action)
             for review_state in self.review_states:
                 review_state.get("custom_transitions", []).extend(
                     [{"id": "copy_to_new",
                       "title": _("Copy to new"),
-                      "url": "workflow_action?action=copy_to_new"}, ])
+                      "url": url}, ])
                 review_states.append(review_state)
             self.review_states = review_states
 
