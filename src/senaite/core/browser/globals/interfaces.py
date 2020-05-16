@@ -16,5 +16,9 @@ class ISenaiteTheme(Interface):
         """
 
     def icon(name):
-        """The the configured icon URL
+        """The the configured (relative) icon URL
+        """
+
+    def icon_url(name):
+        """The the configured (absolute) icon URL
         """

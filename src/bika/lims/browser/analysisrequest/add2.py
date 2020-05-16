@@ -101,7 +101,7 @@ class AnalysisRequestAddView(BrowserView):
         self.specifications = self.generate_specifications(self.ar_count)
         self.ShowPrices = self.setup.getShowPrices()
         self.theme = api.get_view("senaite_theme")
-        self.icon = "{}/{}".format(self.portal_url, self.theme.icon("Sample"))
+        self.icon = self.theme.icon_url("Sample")
         logger.info("*** Prepared data for {} ARs ***".format(self.ar_count))
         return self.template()
 

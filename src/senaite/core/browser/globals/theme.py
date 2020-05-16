@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 
+from bika.lims import api
 from plone.memoize.view import memoize
 from plone.memoize.view import memoize_contextless
 from Products.Five.browser import BrowserView
 from senaite.core.config import theme
 from zope.interface import implementer
 from zope.publisher.interfaces import IPublishTraverse
+from zope.component import getMultiAdapter
 
 from .interfaces import ISenaiteTheme
 
@@ -46,6 +48,21 @@ class SenaiteTheme(BrowserView):
             return self.handle_subpath()
         return super(SenaiteTheme, self).__call__()
 
+    @property
+    @memoize
+    def portal_state(self):
+        return getMultiAdapter(
+            (self.context, self.request),
+            name="plone_portal_state")
+
+    @memoize_contextless
+    def portal(self):
+        return self.portal_state.portal()
+
+    @memoize_contextless
+    def portal_url(self):
+        return self.portal_state.portal_url()
+
     @memoize_contextless
     def theme_config(self):
         return theme.CONFIG
@@ -59,3 +76,9 @@ class SenaiteTheme(BrowserView):
         config = self.theme_config()
         icons = config.get("icons")
         return icons.get(name, "")
+
+    @memoize_contextless
+    def icon_url(self, name):
+        portal_url = self.portal_url()
+        icon = self.icon(name)
+        return "{}/{}".format(portal_url, icon)
