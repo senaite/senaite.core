@@ -100,8 +100,8 @@ class AnalysisRequestAddView(BrowserView):
         self.fieldvalues = self.generate_fieldvalues(self.ar_count)
         self.specifications = self.generate_specifications(self.ar_count)
         self.ShowPrices = self.setup.getShowPrices()
-        self.icon = self.portal_url + \
-            "/++resource++bika.lims.images/sample_big.png"
+        self.theme = api.get_view("senaite_theme")
+        self.icon = "{}/{}".format(self.portal_url, self.theme.icon("Sample"))
         logger.info("*** Prepared data for {} ARs ***".format(self.ar_count))
         return self.template()
 
