@@ -7,18 +7,18 @@ class ISenaiteTheme(Interface):
     """A view that provides theme specific configuration
     """
 
-    def theme_config():
-        """The theme config object
+    def icons():
+        """Returns a dictionary of icon name -> (relative) icon url
         """
 
-    def theme_json_config():
-        """The theme config object as JSON
+    def icon(name, **kw):
+        """Returns the configured (relative) icon `src` URL
         """
 
-    def icon(name):
-        """The the configured (relative) icon URL
+    def icon_url(name, **kw):
+        """Returns the configured (absolute) icon `src` URL
         """
 
-    def icon_url(name):
-        """The the configured (absolute) icon URL
+    def icon_tag(name, **kw):
+        """Returns a generated html `<img/>` tag
         """

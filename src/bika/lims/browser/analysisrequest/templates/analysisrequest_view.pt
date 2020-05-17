@@ -14,7 +14,7 @@
       <h1>
         <!-- AR Icon -->
         <img i18n:attributes="title" title="Sample" src="#"
-             tal:attributes="src string:${view/portal_url}/${senaite_theme/icons/Sample}" />
+             tal:attributes="src string:${view/portal_url}/${senaite_theme/icons/sample}" />
         <!-- Title -->
         <span class="documentFirstHeading" tal:content="context/id"></span>
         <!-- Barcode -->

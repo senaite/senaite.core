@@ -1,18 +1,43 @@
 # -*- coding: utf-8 -*-
 
-from bika.lims import api
+import json
+import os
+from string import Template
+
 from plone.memoize.view import memoize
 from plone.memoize.view import memoize_contextless
+from plone.resource.interfaces import IResourceDirectory
 from Products.Five.browser import BrowserView
-from senaite.core.config import theme
+from zope.component import getMultiAdapter
+from zope.component import getUtility
 from zope.interface import implementer
 from zope.publisher.interfaces import IPublishTraverse
-from zope.component import getMultiAdapter
+from zope.traversing.interfaces import ITraversable
+from zope.traversing.interfaces import TraversalError
 
 from .interfaces import ISenaiteTheme
 
+IMG_TAG = Template("""<img src="$src" $attr />""")
+ICON_BASE_URL = "++plone++senaite.core.static/assets/svg"
 
-@implementer(ISenaiteTheme, IPublishTraverse)
+
+@implementer(ITraversable)
+class Traverser(object):
+
+    def __init__(self, func):
+        self.func = func
+
+    def traverse(self, name, furtherPath):
+        if furtherPath:
+            raise TraversalError("Do not know how to handle further path")
+        else:
+            if self.func:
+                return self.func(name)
+            else:
+                raise TraversalError(name)
+
+
+@implementer(ISenaiteTheme, ITraversable, IPublishTraverse)
 class SenaiteTheme(BrowserView):
     """Information about the state of the current context
     """
@@ -20,9 +45,29 @@ class SenaiteTheme(BrowserView):
     def __init__(self, context, request):
         super(SenaiteTheme, self).__init__(context, request)
         self.traverse_subpath = []
-        # Allow path traversal in page templates
-        self.config = self.theme_config()
-        self.icons = self.config.get("icons", {})
+
+    @property
+    @memoize_contextless
+    def icons(self):
+        """Returns a mapping of icons -> icon path
+        """
+        icons = {}
+        static_dir = getUtility(
+            IResourceDirectory, name=u"++plone++senaite.core.static")
+        icon_dir = static_dir["assets"]["svg"]
+        for icon in icon_dir.listDirectory():
+            name, ext = os.path.splitext(icon)
+            icons[name] = "{}/{}".format(ICON_BASE_URL, icon)
+            icons[icon] = "{}/{}".format(ICON_BASE_URL, icon)
+        return icons
+
+    def traverse(self, name, furtherPath):
+        attr = getattr(self, name, None)
+        if attr is None:
+            raise TraversalError(name)
+        if callable(attr) and furtherPath:
+            return Traverser(attr)
+        return attr
 
     def publishTraverse(self, request, name):
         """Called before __call__ for each path name and allows to dispatch
@@ -41,7 +86,8 @@ class SenaiteTheme(BrowserView):
         # Additional provided path segments after the function name are handled
         # as positional arguments
         args = self.traverse_subpath[1:]
-        return func(*args)
+        kwargs = self.request.form
+        return json.dumps(func(*args, **kwargs))
 
     def __call__(self):
         if len(self.traverse_subpath) > 0:
@@ -64,21 +110,38 @@ class SenaiteTheme(BrowserView):
         return self.portal_state.portal_url()
 
     @memoize_contextless
-    def theme_config(self):
-        return theme.CONFIG
+    def icon(self, name, **kw):
+        """Returns the relative url for the named icon
+
+        :param name: named icon from the theme config
+        :returns: absolute image URL
+        """
+        icons = self.icons
+        default = kw.get("default", "icon-not-found")
+        return icons.get(name, icons.get(default))
 
     @memoize_contextless
-    def theme_json_config(self):
-        return theme.CONFIG_JSON
+    def icon_url(self, name, **kw):
+        """Returns the absolute url for the named icon
 
-    @memoize_contextless
-    def icon(self, name):
-        config = self.theme_config()
-        icons = config.get("icons")
-        return icons.get(name, "")
-
-    @memoize_contextless
-    def icon_url(self, name):
+        :param name: name of the icon
+        :returns: absolute image URL
+        """
         portal_url = self.portal_url()
         icon = self.icon(name)
         return "{}/{}".format(portal_url, icon)
+
+    @memoize_contextless
+    def icon_tag(self, name, **kw):
+        """Returns a generated <img/> tag for the named icon
+
+        :param name: name of the icon
+        :returns: HTML <img/> tag
+        """
+        url = self.icon_url(name)
+        attr = list()
+        if kw:
+            attr = ['{}="{}"'.format(k, v) for k, v in kw.items()]
+        attr = " ".join(attr).replace("css_class", "class")
+        tag = IMG_TAG.safe_substitute(src=url, attr=attr)
+        return tag
