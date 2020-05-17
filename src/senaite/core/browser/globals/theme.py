@@ -60,6 +60,7 @@ class SenaiteTheme(BrowserView):
             name, ext = os.path.splitext(icon)
             icons[name] = "{}/{}".format(ICON_BASE_URL, icon)
             icons[icon] = "{}/{}".format(ICON_BASE_URL, icon)
+        # TODO lookup adapters here to allow icon overrides
         return icons
 
     def traverse(self, name, furtherPath):
