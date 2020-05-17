@@ -119,8 +119,10 @@ class SenaiteTheme(BrowserView):
         resource = self.context.restrictedTraverse(icon)
         mimetype = guess_type(icon)[0]
         with open(resource.path, "rb") as f:
-            response.setHeader("content-type", mimetype)
-            return self.request.response.write(f.read())
+            data = f.read()
+            response.setHeader("Content-Type", mimetype)
+            response.setHeader("Content-Length", len(data))
+            return self.request.response.write(data)
 
     @memoize_contextless
     def icon_path(self, name, **kw):
