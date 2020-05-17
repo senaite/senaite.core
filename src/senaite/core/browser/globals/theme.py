@@ -2,8 +2,8 @@
 
 import json
 import os
-from string import Template
 from mimetypes import guess_type
+from string import Template
 
 from plone.memoize.view import memoize
 from plone.memoize.view import memoize_contextless
