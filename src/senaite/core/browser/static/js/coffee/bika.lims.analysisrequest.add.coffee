@@ -572,8 +572,8 @@ class window.AnalysisRequestAdd
     mvl = $(".multiValued-listing", $parent)
     if mvl.length > 0
       portal_url = @get_portal_url()
-      src = "#{portal_url}/++plone++senaite.core.static/assets/svg/trashcan.svg"
-      img = $("<img class='deletebtn'/>")
+      src = "#{portal_url}/senaite_theme/icon/trashcan"
+      img = $("<img class='deletebtn' width='16' />")
       img.attr "src", src
       img.attr "data-contact-title", title
       img.attr "fieldname", fieldname
@@ -1390,8 +1390,8 @@ class window.AnalysisRequestAdd
       file_field.wrap "<div class='field'/>"
       file_field_div = file_field.parent()
       # Create and add an ADD Button on the fly
-      add_btn_src = "#{window.portal_url}/++plone++senaite.core.static/assets/svg/plus-circle.svg"
-      add_btn = $("<img class='addbtn' style='cursor:pointer;' src='#{add_btn_src}' />")
+      add_btn_src = "#{window.portal_url}/senaite_theme/icon/plus"
+      add_btn = $("<img class='addbtn' width='16' style='cursor:pointer;' src='#{add_btn_src}' />")
 
       # bind ADD event handler
       add_btn.on "click", element, (event) ->
@@ -1426,8 +1426,8 @@ class window.AnalysisRequestAdd
     file_field.attr("id", newfieldname)
 
     # Create and add an DELETE Button on the fly
-    del_btn_src = "#{window.portal_url}/++plone++senaite.core.static/assets/svg/trashcan.svg"
-    del_btn = $("<img class='delbtn' style='cursor:pointer;' src='#{del_btn_src}' />")
+    del_btn_src = "#{window.portal_url}/senaite_theme/icon/trashcan"
+    del_btn = $("<img class='delbtn' width='16' style='cursor:pointer;' src='#{del_btn_src}' />")
 
     # Bind an DELETE event handler
     del_btn.on "click", element, (event) ->

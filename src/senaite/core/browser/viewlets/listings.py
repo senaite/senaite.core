@@ -9,7 +9,7 @@ from zope.component import getMultiAdapter
 
 DEFAULT_PERM = "View"
 DEFAULT_ADD_PERM = "Add portal content"
-SVG_ADD_ICON = "++plone++senaite.core.static/assets/svg/plus-circle.svg"
+SVG_ADD_ICON = "senaite_theme/icon_url/plus"
 
 
 class ListingTableTitleViewlet(ViewletBase):

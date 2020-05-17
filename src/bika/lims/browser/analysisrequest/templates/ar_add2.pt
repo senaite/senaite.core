@@ -112,7 +112,7 @@
               <img title="Accredited Service"
                    i18n:attributes="title"
                    class="service-info-accredited-image"
-                   tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/accredited.png">
+                   tal:attributes="src senaite_theme/icon_url/accredited">
               {{/if}}
               {{title}}
             </td>
@@ -225,7 +225,7 @@
         <img src="#"
              class="d-inline-block align-middle"
              width="32"
-             tal:attributes="src string:${context/absolute_url}/++plone++senaite.core.static/assets/svg/sample.svg"/>
+             tal:attributes="src senaite_theme/icon_url/sample"/>
 
         <div class="d-inline-block align-middle" i18n:translate="">Request new analyses</div>
 
@@ -249,7 +249,7 @@
                         class="btn btn-outline-secondary btn-sm">
                   <img src="#"
                        height="16"
-                       tal:attributes="src string:${context/absolute_url}/++plone++senaite.core.static/assets/svg/plus-circle.svg"/>
+                       tal:attributes="src senaite_theme/icon_url/plus"/>
                   <div tal:omit-tag="python:1" i18n:translate="">Add</div>
                 </button>
               </div>
@@ -333,9 +333,10 @@
                 </td>
                 <td>
                   <!-- Copy Button -->
-                  <img class="copybutton btn btn-link"
+                  <img class="copybutton btn-link"
+                       width="16"
                        tal:condition="python:view.ar_count > 1"
-                       tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png;"/>
+                       tal:attributes="src senaite_theme/icon_url/copy;"/>
                 </td>
 
                 <tal:columns tal:repeat="arnum python:range(view.ar_count)">
@@ -438,9 +439,10 @@
                         </div>
                       </td>
                       <td>
-                        <img class="copybutton"
+                        <img class="copybutton btn-link"
+                             width="16"
                              tal:condition="python:view.ar_count > 1"
-                             tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png;"/>
+                             tal:attributes="src senaite_theme/icon_url/copy;"/>
                       </td>
 
                       <tal:columns tal:repeat="arnum python:range(ar_count)">

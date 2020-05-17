@@ -3,6 +3,7 @@
 import json
 import os
 from string import Template
+from mimetypes import guess_type
 
 from plone.memoize.view import memoize
 from plone.memoize.view import memoize_contextless
@@ -87,6 +88,7 @@ class SenaiteTheme(BrowserView):
         # as positional arguments
         args = self.traverse_subpath[1:]
         kwargs = self.request.form
+        return func(*args, **kwargs)
         return json.dumps(func(*args, **kwargs))
 
     def __call__(self):
@@ -111,6 +113,16 @@ class SenaiteTheme(BrowserView):
 
     @memoize_contextless
     def icon(self, name, **kw):
+        icon = self.icon_path(name, **kw)
+        response = self.request.response
+        resource = self.context.restrictedTraverse(icon)
+        mimetype = guess_type(icon)[0]
+        with open(resource.path, "rb") as f:
+            response.setHeader("content-type", mimetype)
+            return self.request.response.write(f.read())
+
+    @memoize_contextless
+    def icon_path(self, name, **kw):
         """Returns the relative url for the named icon
 
         :param name: named icon from the theme config
@@ -128,8 +140,8 @@ class SenaiteTheme(BrowserView):
         :returns: absolute image URL
         """
         portal_url = self.portal_url()
-        icon = self.icon(name)
-        return "{}/{}".format(portal_url, icon)
+        icon_path = self.icon_path(name)
+        return "{}/{}".format(portal_url, icon_path)
 
     @memoize_contextless
     def icon_tag(self, name, **kw):

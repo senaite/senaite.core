@@ -12,6 +12,10 @@ class ISenaiteTheme(Interface):
         """
 
     def icon(name, **kw):
+        """Returns the icon as data stream
+        """
+
+    def icon_path(name, **kw):
         """Returns the configured (relative) icon `src` URL
         """
 

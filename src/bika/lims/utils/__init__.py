@@ -745,7 +745,14 @@ def get_image(name, **kwargs):
     """
     if not name:
         return ""
-    portal_url = api.get_url(api.get_portal())
+    portal = api.get_portal()
+    theme = portal.restrictedTraverse("@@senaite_theme")
+    basename, ext = os.path.splitext(name)
+    if basename in theme.icons:
+        if "width" not in kwargs:
+            kwargs["width"] = "16"
+        return theme.icon_tag(basename, **kwargs)
+    portal_url = api.get_url(portal)
     attr = render_html_attributes(**kwargs)
     html = '<img src="{}/++resource++bika.lims.images/{}" {}/>'
     return html.format(portal_url, name, attr)

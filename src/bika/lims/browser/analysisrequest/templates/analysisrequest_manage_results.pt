@@ -28,7 +28,7 @@
         <img tal:condition="python:view.exclude_invoice()"
              title="Exclude from invoice"
              i18n:attributes="value"
-             tal:attributes="src senaite_theme/icon_url/invoice-exclude"/>
+             tal:attributes="src senaite_theme/icon_url/invoice_exclude"/>
         <!-- Retest Icon -->
         <img tal:condition="python:view.is_retest()"
              title="Results have been withdrawn"
@@ -47,7 +47,7 @@
           <div class="col-sm-12">
             <h3>
               <img i18n:attributes="title" title="Field Analyses" src="#"
-                   tal:attributes="src senaite_theme/icon_url_analysisservice" />
+                   tal:attributes="src senaite_theme/icon_url/analysisservice" />
               <span i18n:translate="">Field Analyses</span>
             </h3>
             <span tal:replace="structure python:view.render_analyses_table(table='field')"/>
@@ -60,7 +60,7 @@
           <div class="col-sm-12">
             <h3>
               <img i18n:attributes="title" title="Lab Analyses" src="#"
-                   tal:attributes="src string:${view/portal_url}/${senaite_theme/icons/analysisservice}" />
+                   tal:attributes="src senaite_theme/icon_url/analysisservice" />
               <span i18n:translate="">Lab Analyses</span>
             </h3>
             <span tal:replace="structure python:view.render_analyses_table(table='lab')"/>
