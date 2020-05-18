@@ -119,12 +119,14 @@ module.exports = {
       { from: "../node_modules/popper.js", to: path.resolve(staticPath, "lib/popperjs") },
       { from: "../node_modules/react", to: path.resolve(staticPath, "lib/react") },
       { from: "../node_modules/react-dom", to: path.resolve(staticPath, "lib/react-dom") },
+      { from: "../node_modules/tinymce", to: path.resolve(staticPath, "lib/tinymce") },
     ]),
     // https://webpack.js.org/plugins/provide-plugin/
     new webpack.ProvidePlugin({
       $: "jquery",
       jQuery: "jquery",
       bootstrap: "bootstrap",
+      tinyMCE: "tinymce",
     }),
   ],
   externals: {
@@ -135,5 +137,6 @@ module.exports = {
     $: "jQuery",
     jquery: "jQuery",
     bootstrap: "bootstrap",
+    tinyMCE: "tinymce",
   }
 };

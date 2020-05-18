@@ -30,6 +30,13 @@ document.addEventListener("DOMContentLoaded", () => {
   // global variables for backward compatibility
   window.portal_url = document.querySelector("body").dataset.portalUrl
 
+  // Initialize
+  tinymce.init({
+    selector: '.mce_editable',
+    // skin: false,
+    plugins: ["paste", "link", "autoresize", "fullscreen", "table"],
+  })
+
 
   $("#sidebar-header").on("click", function () {
     $("#sidebar").toggleClass("minimized");
