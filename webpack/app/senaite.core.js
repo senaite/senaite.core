@@ -1,15 +1,26 @@
 import $ from "jquery";
 import I18N from "./i18n.js";
 
+window.i18n = new I18N();
+
+// SENAITE message factory
 var _t = null;
 window._t = (msgid, keywords) => {
   if (_t === null) {
-    window.i18n = new I18N();
-    i18n.loadCatalog("plone")
     i18n.loadCatalog("senaite.core")
     _t = i18n.MessageFactory("senaite.core")
   }
   return _t(msgid, keywords);
+}
+
+// Plone message factory
+var _p = null;
+window._p = (msgid, keywords) => {
+  if (_p === null) {
+    i18n.loadCatalog("plone")
+    _p = i18n.MessageFactory("plone")
+  }
+  return _p(msgid, keywords);
 }
 
 

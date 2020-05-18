@@ -44,6 +44,10 @@
 
       <!-- SENAITE legacy resouces -->
       <metal:resources define-slot="senaite_legacy_resources" />
+      <!-- SENAITE legacy JS -->
+      <metal:resources define-slot="senaite_legacy_js" />
+      <!-- SENAITE legacy CSS -->
+      <metal:resources define-slot="senaite_legacy_css" />
 
       <meta name="generator" content="Plone - http://plone.com" />
       <meta name="viewport"
