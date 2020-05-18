@@ -57,11 +57,6 @@ form[name='edit_form'] {
             @extend .form-check-input;
         }
     }
-    field.ArchetypesReferenceBrowserWidget {
-        @extend .custom-file;
-    }
-    field.ArchetypesReferenceBrowserWidget > input {
-    }
     input[type='file'] {
     }
     input[type='text'] {

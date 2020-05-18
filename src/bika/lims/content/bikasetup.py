@@ -19,40 +19,20 @@
 # Some rights reserved, see README and LICENSE.
 
 from AccessControl import ClassSecurityInfo
-from Products.ATExtensions.ateapi import RecordsField
-from Products.Archetypes.Field import TextField
-from Products.Archetypes.Widget import RichWidget
-from Products.Archetypes.atapi import BooleanField
-from Products.Archetypes.atapi import BooleanWidget
-from Products.Archetypes.atapi import DecimalWidget
-from Products.Archetypes.atapi import FixedPointField
-from Products.Archetypes.atapi import IntegerField
-from Products.Archetypes.atapi import IntegerWidget
-from Products.Archetypes.atapi import LinesField
-from Products.Archetypes.atapi import MultiSelectionWidget
-from Products.Archetypes.atapi import InAndOutWidget
-from Products.Archetypes.atapi import ReferenceField
-from Products.Archetypes.atapi import Schema
-from Products.Archetypes.atapi import SelectionWidget
-from Products.Archetypes.atapi import StringField
-from Products.Archetypes.atapi import TextAreaWidget
-from Products.Archetypes.atapi import registerType
-from Products.Archetypes.utils import DisplayList
-from Products.Archetypes.utils import IntDisplayList
-from Products.CMFCore.utils import getToolByName
-from archetypes.referencebrowserwidget import ReferenceBrowserWidget
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import DurationField
+from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import DurationWidget
 from bika.lims.browser.widgets import RecordsWidget
+from bika.lims.browser.widgets import ReferenceWidget
 from bika.lims.browser.widgets import RejectionSetupWidget
 from bika.lims.config import ATTACHMENT_OPTIONS
 from bika.lims.config import CURRENCIES
-from bika.lims.config import WEEKDAYS
 from bika.lims.config import DECIMAL_MARKS
 from bika.lims.config import MULTI_VERIFICATION_TYPE
 from bika.lims.config import PROJECTNAME
 from bika.lims.config import SCINOTATION_OPTIONS
+from bika.lims.config import WEEKDAYS
 from bika.lims.config import WORKSHEET_LAYOUT_OPTIONS
 from bika.lims.content.bikaschema import BikaFolderSchema
 from bika.lims.interfaces import IBikaSetup
@@ -61,6 +41,25 @@ from bika.lims.locales import COUNTRIES
 from bika.lims.numbergenerator import INumberGenerator
 from bika.lims.vocabularies import getStickerTemplates as _getStickerTemplates
 from plone.app.folder import folder
+from Products.Archetypes.atapi import BooleanField
+from Products.Archetypes.atapi import BooleanWidget
+from Products.Archetypes.atapi import DecimalWidget
+from Products.Archetypes.atapi import FixedPointField
+from Products.Archetypes.atapi import InAndOutWidget
+from Products.Archetypes.atapi import IntegerField
+from Products.Archetypes.atapi import IntegerWidget
+from Products.Archetypes.atapi import LinesField
+from Products.Archetypes.atapi import Schema
+from Products.Archetypes.atapi import SelectionWidget
+from Products.Archetypes.atapi import StringField
+from Products.Archetypes.atapi import TextAreaWidget
+from Products.Archetypes.atapi import registerType
+from Products.Archetypes.Field import TextField
+from Products.Archetypes.utils import DisplayList
+from Products.Archetypes.utils import IntDisplayList
+from Products.Archetypes.Widget import RichWidget
+from Products.ATExtensions.ateapi import RecordsField
+from Products.CMFCore.utils import getToolByName
 from zope.component import getUtility
 from zope.interface import implements
 
@@ -462,23 +461,29 @@ schema = BikaFolderSchema.copy() + Schema((
             description=_("Select this to activate the dashboard as a default front page.")
         ),
     ),
-    ReferenceField(
-        'LandingPage',
+    UIDReferenceField(
+        "LandingPage",
         schemata="Appearance",
+        required=0,
+        allowed_types=(
+            "Document",
+            "Client",
+            "ClientFolder",
+            "AnalysisRequestsFolder",
+            "WorksheetFolder",
+        ),
+        mode="rw",
         multiValued=0,
-        allowed_types=('Document', ),
         relationship='SetupLandingPage',
-        widget=ReferenceBrowserWidget(
+        widget=ReferenceWidget(
             label=_("Landing Page"),
-            description=_("The selected landing page is displayed for non-authenticated users "
-                          "and if the Dashboard is not selected as the default front page. "
-                          "If no landing page is selected, the default Bika frontpage is displayed."),
-            allow_search=1,
-            allow_browse=1,
-            startup_directory='/',
-            force_close_on_insert=1,
-            default_search_index='SearchableText',
-            base_query={'review_state': 'published'},
+            description=_(
+                "The landing page is shown for non-authenticated users "
+                "if the Dashboard is not selected as the default front page. "
+                "If no landing page is selected, the default frontpage is displayed."),
+            catalog_name="portal_catalog",
+            base_query={"review_State": "published"},
+            showOn=True,
         ),
     ),
     BooleanField(

@@ -59,7 +59,6 @@ setup(
         # XXX P5: Do we need it? Fails during installation
         # "Products.TinyMCE",
         "Products.TextIndexNG3",
-        "archetypes.referencebrowserwidget",
         "collective.monkeypatcher",
         "plone.app.z3cform",
         "openpyxl==1.5.8",
