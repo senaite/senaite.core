@@ -114,30 +114,12 @@
    */
 
   window.AnalysisRequestViewView = function() {
-    var parse_CCClist, resultsinterpretation_move_below, that;
+    var parse_CCClist, that;
     that = this;
 
     /**
      * Entry-point method for AnalysisRequestView
      */
-    resultsinterpretation_move_below = function() {
-      $('a.department-tab').click(function(e) {
-        var uid;
-        e.preventDefault();
-        uid = $(this).attr('data-uid');
-        $('.department-area').not('[id="' + uid + '"]').hide();
-        $('.department-area[id="' + uid + '"]').show();
-        $('a.department-tab.selected').removeClass('selected');
-        $(this).addClass('selected');
-      });
-      $('a.department-tab[data-uid="ResultsInterpretationDepts-general"]').click();
-      setTimeout((function() {
-        $('div.arresultsinterpretation-container .fieldTextFormat').remove();
-        $('table.mceToolbar a.mce_image').remove();
-        $('table.mceToolbar a.mce_code').remove();
-        $('table.mceToolbar a.mce_save').hide();
-      }), 1500);
-    };
     parse_CCClist = function() {
 
       /**
@@ -155,9 +137,7 @@
       });
       return fieldvalue;
     };
-    that.load = function() {
-      resultsinterpretation_move_below();
-    };
+    that.load = function() {};
   };
 
 

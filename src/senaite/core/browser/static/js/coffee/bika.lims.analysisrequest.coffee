@@ -104,28 +104,6 @@ window.AnalysisRequestViewView = ->
   # Entry-point method for AnalysisRequestView
   ###
 
-  resultsinterpretation_move_below = ->
-    # By default show only the Results Interpretation for the whole AR, not Dept specific
-    $('a.department-tab').click (e) ->
-      e.preventDefault()
-      uid = $(this).attr('data-uid')
-      $('.department-area').not('[id="' + uid + '"]').hide()
-      $('.department-area[id="' + uid + '"]').show()
-      $('a.department-tab.selected').removeClass 'selected'
-      $(this).addClass 'selected'
-      return
-
-    $('a.department-tab[data-uid="ResultsInterpretationDepts-general"]').click()
-    #Remove buttons from TinyMCE
-    setTimeout (->
-      $('div.arresultsinterpretation-container .fieldTextFormat').remove()
-      $('table.mceToolbar a.mce_image').remove()
-      $('table.mceToolbar a.mce_code').remove()
-      $('table.mceToolbar a.mce_save').hide()
-      return
-    ), 1500
-    return
-
   parse_CCClist = ->
 
     ###*
@@ -143,7 +121,6 @@ window.AnalysisRequestViewView = ->
     fieldvalue
 
   that.load = ->
-    resultsinterpretation_move_below()
     return
 
   return
