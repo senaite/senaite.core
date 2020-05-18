@@ -2,6 +2,8 @@
 
 import json
 import os
+import time
+from email.utils import formatdate
 from mimetypes import guess_type
 from string import Template
 
@@ -40,7 +42,50 @@ class Traverser(object):
 
 @implementer(ISenaiteTheme, ITraversable, IPublishTraverse)
 class SenaiteTheme(BrowserView):
-    """Information about the state of the current context
+    """Theme specific configuration view
+
+    The ppurpose of this view is to deliver assets, e.g. icons or other
+    configuration entries, for page templates, view classes or JavaScripts,
+    so that these can be easily overridden.
+
+    For exmple, to render an icon in a page page, we can do now this:
+
+    ```
+    <img i18n:attributes="title" title="Sample" src="#"
+         tal:attributes="src senaite_theme/icon_url/sample" />
+    ```
+
+    Note: The `senaite_theme` view is hooked into the `main_template.pt`,
+          so that it is globally available in all page templates.
+
+    When the icon shall be included via a browser view, the icon url needs to
+    provide the icon directly:
+
+    ```
+    def __call__(self):
+         senaite_theme = self.context.restrictedTraverse("@@senaite_theme")
+         self.icon = senaite_theme.icon("plus")
+
+    <img tal:attributes="src view/icon"/>
+    ```
+
+    The same must be done in JavaScripts (here a coffee-script):
+
+    ```
+    add_btn_src = "#{window.portal_url}/senaite_theme/icon/plus"
+    add_btn = $("<img class='addbtn' src='#{add_btn_src}' />")
+    ```
+
+    Furthermore, the resources can be fetched by URL.
+
+        - Get the relative icon URL:
+        http://localhost:8080/senaite/senaite_theme/icon_path/sample
+
+        - Get the absolute icon URL:
+        http://localhost:8080/senaite/senaite_theme/icon_url/sample
+
+        - Get the icon tag with additional HTML attributes
+        http://localhost:8080/senaite/senaite_theme/icon_tag/sample?width=16&class=icon
     """
 
     def __init__(self, context, request):
@@ -112,16 +157,24 @@ class SenaiteTheme(BrowserView):
     def portal_url(self):
         return self.portal_state.portal_url()
 
-    @memoize_contextless
+    def _get_last_modified(self, path):
+        last_modified = float(os.path.getmtime(path))
+        if not last_modified:
+            last_modified = time.time()
+        return formatdate(last_modified, usegmt=True)
+
     def icon(self, name, **kw):
         icon = self.icon_path(name, **kw)
         response = self.request.response
         resource = self.context.restrictedTraverse(icon)
+        path = resource.path
+        last_modified = self._get_last_modified(path)
         mimetype = guess_type(icon)[0]
-        with open(resource.path, "rb") as f:
+        with open(path, "rb") as f:
             data = f.read()
             response.setHeader("Content-Type", mimetype)
             response.setHeader("Content-Length", len(data))
+            response.setHeader('Last-Modified', last_modified)
             return self.request.response.write(data)
 
     @memoize_contextless
