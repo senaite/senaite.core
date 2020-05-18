@@ -14,7 +14,7 @@
       <h1>
         <!-- AR Icon -->
         <img i18n:attributes="title" title="Sample" src="#"
-             tal:attributes="src string:${view/portal_url}/${senaite_theme/icons/sample}" />
+             tal:attributes="src senaite_theme/icon_url/sample" />
         <!-- Title -->
         <span class="documentFirstHeading" tal:content="context/id"></span>
         <!-- Barcode -->
@@ -23,17 +23,17 @@
         <img tal:condition="python:view.is_hazardous()"
              title="Hazardous"
              i18n:attributes="value"
-             tal:attributes="src string:${view/portal_url}/${senaite_theme/icons/hazardous}"/>
+             tal:attributes="src senaite_theme/icon_url/hazardous"/>
         <!-- Exclude Invoice Icon -->
         <img tal:condition="python:view.exclude_invoice()"
              title="Exclude from invoice"
              i18n:attributes="value"
-             tal:attributes="src string:${view/portal_url}/${senaite_theme/icons/invoice_exclude}"/>
+             tal:attributes="src senaite_theme/icon_url/invoice_exclude"/>
         <!-- Retest Icon -->
         <img tal:condition="python:view.is_retest()"
              title="Results have been withdrawn"
              i18n:attributes="value"
-             tal:attributes="src string:${view/portal_url}/${senaite_theme/icons/retest}"/>
+             tal:attributes="src senaite_theme/icon_url/retest"/>
       </h1>
     </metal:content-title>
 
@@ -60,7 +60,7 @@
                  field python:context.Schema()['Remarks'];
                  errors python:{};">
           <h3>
-            <i class="fas fa-comment"></i>
+            <img tal:replace="structure senaite_theme/icon_tag/remarks" />
             <span i18n:translate="">Remarks</span>
           </h3>
           <metal:widget use-macro="python:context.widget('Remarks', mode=mode)"/>
@@ -72,7 +72,7 @@
         <div class="row">
           <div class="col-sm-12">
             <h3>
-              <img i18n:attributes="title" title="Field Analyses" src="++resource++bika.lims.images/analysisservice.png"/>
+              <img i18n:attributes="title" title="Field Analyses" src="" tal:attributes="src senaite_theme/icon_url/analysisservice" />
               <span i18n:translate="">Field Analyses</span>
             </h3>
             <span tal:replace="structure python:view.render_analyses_table(table='field')"/>
@@ -84,7 +84,7 @@
         <div class="row">
           <div class="col-sm-12">
             <h3>
-              <img i18n:attributes="title" title="Lab Analyses" src="++plone++senaite.core.static/assets/svg/analysisservice.svg"/>
+              <img i18n:attributes="title" title="Lab Analyses" src="" tal:attributes="src senaite_theme/icon_url/analysisservice" />
               <span i18n:translate="">Lab Analyses</span>
             </h3>
             <span tal:replace="structure python:view.render_analyses_table(table='lab')"/>
@@ -96,7 +96,7 @@
         <div class="row">
           <div class="col-sm-12">
             <h3>
-              <img i18n:attributes="title" title="QC Analyses" src="++plone++senaite.core.static/assets/svg/analysisservice.svg"/>
+              <img i18n:attributes="title" title="QC Analyses" src="" tal:attributes="src senaite_theme/icon_url/analysisservice"/>
               <span i18n:translate="">QC Analyses</span>
             </h3>
             <span tal:replace="structure python:view.render_analyses_table(table='qc')"/>
@@ -108,7 +108,7 @@
       <div class="row">
         <div class="col-sm-12">
           <h3>
-            <img tal:attributes="src string:${view/portal_url}/++resource++bika.lims.images/referencesample.png"/>
+            <img tal:attributes="src senaite_theme/icon_url/resultsinterpretation"/>
             <span i18n:translate="">Results interpretation</span>
           </h3>
           <tal:parts replace="structure view/riview"/>
