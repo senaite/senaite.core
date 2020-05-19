@@ -95,7 +95,7 @@ class window.WorksheetFolderView
     instrument_uid = $el.val()
 
     if instrument_uid
-      message = _("Only the analyses for which the selected instrument is allowed will be added automatically.")
+      message = _t("Only the analyses for which the selected instrument is allowed will be added automatically.")
       # actually just a notification, but lacking a proper css class here
       bika.lims.SiteView.notify_in_panel message, "error"
 
@@ -673,7 +673,7 @@ class window.WorksheetManageResultsView
     .done (data) ->
       bika.lims.SiteView.notify_in_panel @_pmf("Changes saved."), "succeed"
     .fail () ->
-        bika.lims.SiteView.notify_in_panel @_("Could not set the selected analyst"), "error"
+        bika.lims.SiteView.notify_in_panel @_t("Could not set the selected analyst"), "error"
 
 
   on_layout_change: (event) =>
@@ -713,7 +713,7 @@ class window.WorksheetManageResultsView
       $("select.listing_select_entry[field='Instrument'] option[value='#{instrument_uid}']").parent().find("option[value='#{instrument_uid}']").prop "selected", no
       $("select.listing_select_entry[field='Instrument'] option[value='#{instrument_uid}']").prop "selected", yes
     .fail () ->
-        bika.lims.SiteView.notify_in_panel @_("Unable to apply the selected instrument"), "error"
+        bika.lims.SiteView.notify_in_panel @_t("Unable to apply the selected instrument"), "error"
 
 
   on_method_change: (event) =>

@@ -216,7 +216,7 @@ class window.RemarksWidgetView
     done = ->
       $(this).trigger "ajax:submit:end"
     fail = (request, status, error) ->
-      msg = _("Sorry, an error occured: #{status}")
+      msg = _t("Sorry, an error occured: #{status}")
       window.bika.lims.portalMessage msg
       window.scroll 0, 0
     return $.ajax(options).done(done).fail(fail)

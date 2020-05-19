@@ -977,7 +977,7 @@ class window.AnalysisServiceEditView
       option = "<option value='#{value}'>#{@_(name)}</option>"
     else
       # empty option (selected by default)
-      option = "<option selected='selected' value=''>#{@_("None")}</option>"
+      option = "<option selected='selected' value=''>#{@_t("None")}</option>"
     return $(select).append option
 
 

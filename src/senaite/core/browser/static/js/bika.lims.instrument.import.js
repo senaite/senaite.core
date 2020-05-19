@@ -73,7 +73,7 @@ function InstrumentImportView() {
                     $("#intermediate").empty();
                     if(responseText['log'].length > 0){
                         str = "<div class='logbox'>";
-                        str += "<h3>"+ _("Log trace") + "</h3><ul>";
+                        str += "<h3>"+ _t("Log trace") + "</h3><ul>";
                         $.each(responseText['log'], function(i,v){
                             str += "<li>" + v + "</li>";
                         });
@@ -82,7 +82,7 @@ function InstrumentImportView() {
                     }
                     if(responseText['errors'].length > 0){
                         str = "<div class='errorbox'>";
-                        str += "<h3>"+ _("Errors") + "</h3><ul>";
+                        str += "<h3>"+ _t("Errors") + "</h3><ul>";
                         $.each(responseText['errors'], function(i,v){
                             str += "<li>" + v + "</li>";
                         });
@@ -91,7 +91,7 @@ function InstrumentImportView() {
                     }
                     if(responseText['warns'].length > 0){
                         str = "<div class='warnbox'>";
-                        str += "<h3>"+ _("Warnings") + "</h3><ul>";
+                        str += "<h3>"+ _t("Warnings") + "</h3><ul>";
                         $.each(responseText['warns'], function(i,v){
                             str += "<li>" + v + "</li>";
                         });
@@ -102,7 +102,7 @@ function InstrumentImportView() {
                 error: function(jqXHR, textStatus, errorThrown) {
                     $("#intermediate").empty();
                     str = "<div class='errorbox'>";
-                    str += "<h3>"+ _("Errors found") + "</h3><ul>";
+                    str += "<h3>"+ _t("Errors found") + "</h3><ul>";
                     str += "<li>" + textStatus;
                     str += "<pre>" + errorThrown + "</pre></li></ul></div>";
                     $("#intermediate").append(str).toggle(true);

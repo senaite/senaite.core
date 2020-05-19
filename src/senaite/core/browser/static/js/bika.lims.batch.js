@@ -12,13 +12,13 @@ function BatchFolderView() {
          * Used on batch folder views
          */
         $(".portaltype-batchfolder").append("" +
-                "<div id='batch-cancel-dialog' title='"+_("Cancel batch/es?")+"'>" +
+                "<div id='batch-cancel-dialog' title='"+_t("Cancel batch/es?")+"'>" +
                 "    <p style='padding:10px'>" +
                 "        <span class='ui-icon ui-icon-alert' style=''float: left; margin: 0 7px 30px 0;'><br/></span>" +
-                "        "+_("All linked Samples will be cancelled too.") +
+                "        "+_t("All linked Samples will be cancelled too.") +
                 "    </p>" +
                 "    <p style='padding:0px 10px'>" +
-                "       "+_("Are you sure?") +
+                "       "+_t("Are you sure?") +
                 "    </p>" +
                 "</div>" +
                 "<input id='batch-cancel-resp' type='hidden' value='false'/>");

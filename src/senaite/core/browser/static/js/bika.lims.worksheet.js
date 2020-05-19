@@ -100,7 +100,7 @@
       $el = $(event.currentTarget);
       instrument_uid = $el.val();
       if (instrument_uid) {
-        message = _("Only the analyses for which the selected instrument is allowed will be added automatically.");
+        message = _t("Only the analyses for which the selected instrument is allowed will be added automatically.");
         return bika.lims.SiteView.notify_in_panel(message, "error");
       }
     };
@@ -734,7 +734,7 @@
       }).done(function(data) {
         return bika.lims.SiteView.notify_in_panel(this._pmf("Changes saved."), "succeed");
       }).fail(function() {
-        return bika.lims.SiteView.notify_in_panel(this._("Could not set the selected analyst"), "error");
+        return bika.lims.SiteView.notify_in_panel(this._t("Could not set the selected analyst"), "error");
       });
     };
 
@@ -774,7 +774,7 @@
         $("select.listing_select_entry[field='Instrument'] option[value='" + instrument_uid + "']").parent().find("option[value='" + instrument_uid + "']").prop("selected", false);
         return $("select.listing_select_entry[field='Instrument'] option[value='" + instrument_uid + "']").prop("selected", true);
       }).fail(function() {
-        return bika.lims.SiteView.notify_in_panel(this._("Unable to apply the selected instrument"), "error");
+        return bika.lims.SiteView.notify_in_panel(this._t("Unable to apply the selected instrument"), "error");
       });
     };
 

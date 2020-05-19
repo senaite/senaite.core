@@ -1024,7 +1024,7 @@
       if (value) {
         option = "<option value='" + value + "'>" + (this._(name)) + "</option>";
       } else {
-        option = "<option selected='selected' value=''>" + (this._("None")) + "</option>";
+        option = "<option selected='selected' value=''>" + (this._t("None")) + "</option>";
       }
       return $(select).append(option);
     };
