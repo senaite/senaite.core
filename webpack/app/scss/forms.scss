@@ -73,8 +73,5 @@ form[name='edit_form'] {
     textarea {
         @extend .form-control;
     }
-    select.custom-select {
-        background: none;
-    }
 }
 

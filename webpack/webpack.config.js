@@ -109,7 +109,8 @@ module.exports = {
       chunkFilename: devMode ? "[id].css" : "[id].[hash].css",
     }),
     // https://webpack.js.org/plugins/copy-webpack-plugin/
-    new CopyPlugin([
+    new CopyPlugin({
+      patterns: [
       { from: "../node_modules/jquery", to: path.resolve(staticPath, "lib/jquery") },
       { from: "../node_modules/jquery-migrate", to: path.resolve(staticPath, "lib/jquery-migrate") },
       { from: "../node_modules/jqueryui", to: path.resolve(staticPath, "lib/jqueryui") },
@@ -120,23 +121,24 @@ module.exports = {
       { from: "../node_modules/react", to: path.resolve(staticPath, "lib/react") },
       { from: "../node_modules/react-dom", to: path.resolve(staticPath, "lib/react-dom") },
       { from: "../node_modules/tinymce", to: path.resolve(staticPath, "lib/tinymce") },
-    ]),
+      { from: "../node_modules/@fortawesome", to: path.resolve(staticPath, "lib/@fortawesome") },
+      ]
+    }),
     // https://webpack.js.org/plugins/provide-plugin/
     new webpack.ProvidePlugin({
       $: "jquery",
       jQuery: "jquery",
       bootstrap: "bootstrap",
-      tinyMCE: "tinymce",
+      tinyMCE: "tinymce"
     }),
   ],
   externals: {
     // https://webpack.js.org/configuration/externals
-    // use jQuery from the outer scope
     react: "React",
     "react-dom": "ReactDOM",
     $: "jQuery",
     jquery: "jQuery",
     bootstrap: "bootstrap",
-    tinyMCE: "tinymce",
+    tinyMCE: "tinymce"
   }
 };

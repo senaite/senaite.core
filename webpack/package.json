@@ -1,29 +1,23 @@
 {
-  "name": "senaite",
+  "name": "senaite.core",
   "version": "2.0.0",
-  "main": "app/senaite.js",
+  "main": "app/senaite.core.js",
   "scripts": {
     "build": "webpack -p",
-    "debug": "NODE_ENV=debug webpack --watch",
     "watch": "webpack -p --watch",
-    "test": "NODE_ENV=testing karma start --single-run"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "babel": {
     "presets": [
-      [
-        "env",
-        {
-          "targets": {
-            "browsers": [
-              "last 3 versions"
-            ]
-          }
-        }
-      ]
+      "@babel/preset-env",
+      "@babel/preset-react"
+    ],
+    "plugins": [
+      "@babel/plugin-proposal-class-properties"
     ]
   },
-  "repository": {},
-  "license": "GPL-2.0",
+  "author": "RIDING BYTES & NARALABS",
+  "license": "GPL-2.0-only",
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.13.0",
     "bootstrap": "^4.5.0",
@@ -39,14 +33,15 @@
   },
   "devDependencies": {
     "@babel/core": "^7.9.6",
+    "@babel/plugin-proposal-class-properties": "^7.8.3",
+    "@babel/preset-env": "^7.9.6",
+    "@babel/preset-react": "^7.9.4",
     "babel-loader": "^8.1.0",
-    "babel-preset-env": "^1.7.0",
     "clean-webpack-plugin": "^3.0.0",
     "coffee-loader": "^0.9.0",
     "coffeescript": "^2.5.1",
-    "copy-webpack-plugin": "^5.1.1",
+    "copy-webpack-plugin": "^6.0.1",
     "css-loader": "^3.5.3",
-    "file-loader": "^6.0.0",
     "html-webpack-plugin": "^4.2.1",
     "mini-css-extract-plugin": "^0.9.0",
     "sass": "^1.26.5",
