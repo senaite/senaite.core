@@ -32,9 +32,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Initialize
   tinymce.init({
-    selector: '.mce_editable',
+    selector: "textarea.mce_editable,div.ArchetypesRichWidget textarea,textarea[name='form.widgets.IRichTextBehavior.text']",
     // skin: false,
-    plugins: ["paste", "link", "autoresize", "fullscreen", "table"],
+    plugins: ["paste", "link", "autoresize", "fullscreen", "table", "code"],
+    content_css : "/++plone++senaite.core.static/bundles/main.css",
   })
 
 
