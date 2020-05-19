@@ -9,6 +9,7 @@
 
 import $ from "jquery";
 
+
 var I18N = function() {
   var self = this;
   self.baseUrl = $('body').attr('data-i18ncatalogurl');
