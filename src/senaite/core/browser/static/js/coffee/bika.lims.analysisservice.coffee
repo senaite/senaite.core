@@ -8,10 +8,6 @@ class window.AnalysisServiceEditView
   load: =>
     console.debug "AnalysisServiceEditView::load"
 
-    # load translations
-    jarn.i18n.loadCatalog "bika"
-    @_ = window.jarn.i18n.MessageFactory "bika"
-
     # All available instruments by UID
     @all_instruments = {}
 
@@ -362,7 +358,7 @@ class window.AnalysisServiceEditView
       notification = $("<dl/>")
       $.each invalid_instruments, (index, instrument) ->
         notification.append "<dd>⚠ #{instrument.Title}</dd>"
-      title = @_ "Some of the selected instruments are out-of-date, with failed calibration tests or under maintenance"
+      title = _t "Some of the selected instruments are out-of-date, with failed calibration tests or under maintenance"
       @show_alert title: title, message: notification[0].outerHTML
     else
       @show_alert message: ""
@@ -974,10 +970,10 @@ class window.AnalysisServiceEditView
     ###
 
     if value
-      option = "<option value='#{value}'>#{@_(name)}</option>"
+      option = "<option value='#{value}'>#{_t(name)}</option>"
     else
       # empty option (selected by default)
-      option = "<option selected='selected' value=''>#{@_t("None")}</option>"
+      option = "<option selected='selected' value=''>#{_t("None")}</option>"
     return $(select).append option
 
 

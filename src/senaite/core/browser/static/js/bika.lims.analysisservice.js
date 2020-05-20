@@ -74,8 +74,6 @@
     AnalysisServiceEditView.prototype.load = function() {
       var d1, d2;
       console.debug("AnalysisServiceEditView::load");
-      jarn.i18n.loadCatalog("bika");
-      this._ = window.jarn.i18n.MessageFactory("bika");
       this.all_instruments = {};
       this.invalid_instruments = {};
       d1 = this.load_available_instruments().done(function(instruments) {
@@ -379,7 +377,7 @@
         $.each(invalid_instruments, function(index, instrument) {
           return notification.append("<dd>⚠ " + instrument.Title + "</dd>");
         });
-        title = this._("Some of the selected instruments are out-of-date, with failed calibration tests or under maintenance");
+        title = _t("Some of the selected instruments are out-of-date, with failed calibration tests or under maintenance");
         this.show_alert({
           title: title,
           message: notification[0].outerHTML
@@ -1022,9 +1020,9 @@
        */
       var option;
       if (value) {
-        option = "<option value='" + value + "'>" + (this._(name)) + "</option>";
+        option = "<option value='" + value + "'>" + (_t(name)) + "</option>";
       } else {
-        option = "<option selected='selected' value=''>" + (this._t("None")) + "</option>";
+        option = "<option selected='selected' value=''>" + (_t("None")) + "</option>";
       }
       return $(select).append(option);
     };
