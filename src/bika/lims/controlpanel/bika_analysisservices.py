@@ -255,7 +255,7 @@ class AnalysisServicesView(BikaListingView):
         copy_transition = {
             "id": "duplicate",
             "title": _("Duplicate"),
-            "url": "copy"
+            "url": "{}/copy".format(api.get_url(self.context))
         }
 
         self.review_states = [
