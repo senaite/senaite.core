@@ -1,4 +1,5 @@
-## Script (Python) "getDisplayView"
+## Script (Python) "getDisplayView" (original: ATExtensions)
+## TODO: This script is used in durationwidget.pt - refactor if possible!
 ##bind container=container
 ##bind context=context
 ##bind namespace=
