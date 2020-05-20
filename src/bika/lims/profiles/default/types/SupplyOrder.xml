@@ -6,7 +6,7 @@
         purge="True">
  <property name="title" i18n:translate="">Supply Order</property>
  <property name="description"></property>
- <property name="content_icon">++resource++bika.lims.images/supplyorder.png</property>
+ <property name="content_icon">senaite_theme/icon/supplyorder</property>
  <property name="content_meta_type">SupplyOrder</property>
  <property name="product">bika.lims</property>
  <property name="factory">addSupplyOrder</property>
@@ -51,7 +51,7 @@
          action_id="print"
          category="document_actions"
          condition_expr=""
-         icon_expr="string:${object_url}/++resource++bika.lims.images/print_32.png"
+         icon_expr="string:${portal_url}/senaite_theme/icon/print_32"
          link_target=""
          url_expr="string:${object_url}/print"
          i18n:attributes="title"

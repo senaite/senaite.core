@@ -6,7 +6,7 @@
         purge="True">
  <property name="title" i18n:translate="">Batch Labels</property>
  <property name="description"></property>
- <property name="content_icon">++resource++bika.lims.images/batchlabel.png</property>
+ <property name="content_icon">senaite_theme/icon/batchlabel</property>
  <property name="content_meta_type">BatchLabels</property>
  <property name="product">bika.lims</property>
  <property name="factory">addBatchLabels</property>

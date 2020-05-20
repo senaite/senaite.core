@@ -6,7 +6,7 @@
         purge="True">
  <property name="title" i18n:translate="">AR Template</property>
  <property name="description"></property>
- <property name="content_icon">++resource++bika.lims.images/artemplate.png</property>
+ <property name="content_icon">senaite_theme/icon/artemplate</property>
  <property name="content_meta_type">ARTemplate</property>
  <property name="product">bika.lims</property>
  <property name="factory">addARTemplate</property>

@@ -6,7 +6,7 @@
         purge="True">
  <property name="title" i18n:translate="">Departments</property>
  <property name="description"></property>
- <property name="content_icon">++resource++bika.lims.images/department.png</property>
+ <property name="content_icon">senaite_theme/icon/department</property>
  <property name="content_meta_type">Departments</property>
  <property name="product">bika.lims</property>
  <property name="factory">addDepartments</property>

@@ -6,7 +6,7 @@
         purge="True">
  <property name="title" i18n:translate="">Sample Type</property>
  <property name="description"></property>
- <property name="content_icon">++resource++bika.lims.images/sampletype.png</property>
+ <property name="content_icon">senaite_theme/icon/sampletype</property>
  <property name="content_meta_type">SampleType</property>
  <property name="product">bika.lims</property>
  <property name="factory">addSampleType</property>

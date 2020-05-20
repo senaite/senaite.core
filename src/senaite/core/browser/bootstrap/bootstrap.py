@@ -39,7 +39,6 @@ def icon_cache_key(method, self, brain_or_object, **kw):
     modified = api.get_modification_date(brain_or_object).millis()
     attrs = "&".join(map(lambda a: "{}={}".format(*a), kw.items()))
     key = "{}?modified={}{}".format(url, modified, attrs)
-    logger.info("Generated Cache Key: {}".format(key))
     return key
 
 

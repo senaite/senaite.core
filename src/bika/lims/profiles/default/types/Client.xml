@@ -7,7 +7,7 @@
 
   <property name="title" i18n:translate="">Client</property>
   <property name="description"></property>
-  <property name="content_icon">++resource++bika.lims.images/client.png</property>
+  <property name="content_icon">senaite_theme/icon/client</property>
   <property name="content_meta_type">Client</property>
   <property name="product">bika.lims</property>
   <property name="factory">addClient</property>

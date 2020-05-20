@@ -6,7 +6,7 @@
         purge="True">
  <property name="title">Calibration Certificate</property>
  <property name="description"></property>
- <property name="content_icon">++resource++bika.lims.images/instrumentcertification.png</property>
+ <property name="content_icon">senaite_theme/icon/instrumentcertification</property>
  <property name="content_meta_type">InstrumentCertification</property>
  <property name="product">bika.lims</property>
  <property name="factory">addInstrumentCertification</property>

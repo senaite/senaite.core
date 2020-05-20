@@ -6,7 +6,7 @@
         purge="True">
  <property name="title" i18n:translate="">Sample Matrices</property>
  <property name="description"></property>
- <property name="content_icon">++resource++bika.lims.images/samplematrix.png</property>
+ <property name="content_icon">senaite_theme/icon/samplematrix</property>
  <property name="content_meta_type">SampleMatrices</property>
  <property name="product">bika.lims</property>
  <property name="factory">addSampleMatrices</property>

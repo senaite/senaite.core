@@ -6,7 +6,7 @@
         purge="True">
  <property name="title" i18n:translate="">Calculations</property>
  <property name="description"></property>
- <property name="content_icon">++resource++bika.lims.images/calculation.png</property>
+ <property name="content_icon">senaite_theme/icon/calculation</property>
  <property name="content_meta_type">Calculations</property>
  <property name="product">bika.lims</property>
  <property name="factory">addCalculations</property>

@@ -7,7 +7,7 @@
 
   <property name="title" i18n:translate="">Instrument Locations</property>
   <property name="description"></property>
-  <property name="content_icon">++resource++bika.lims.images/instrumenttype.png</property>
+  <property name="content_icon">senaite_theme/icon/instrumentlocation</property>
   <property name="content_meta_type">InstrumentLocations</property>
   <property name="product">bika.lims</property>
   <property name="factory">addInstrumentLocations</property>

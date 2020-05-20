@@ -251,7 +251,7 @@
                     class="rw_deletebtn btn-link"
                     width="16"
                     tal:attributes="id string:delete-row-${repeat/idx/index};
-                                    src string:${portal/absolute_url}/senaite_theme/icon/trashcan"/>
+                                    src string:${portal/absolute_url}/senaite_theme/icon/delete"/>
 
                   <!-- Hidden fields -->
                   <tal:keys tal:repeat="key python:field.getSubfields()">

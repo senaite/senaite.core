@@ -6,7 +6,7 @@
         purge="True">
  <property name="title" i18n:translate="">Invoice</property>
  <property name="description"></property>
- <property name="content_icon">++resource++bika.lims.images/invoice.png</property>
+ <property name="content_icon">senaite_theme/icon/invoice</property>
  <property name="content_meta_type">Invoice</property>
  <property name="product">bika.lims</property>
  <property name="factory">addInvoice</property>

@@ -6,7 +6,7 @@
         purge="True">
  <property name="title" i18n:translate="">Sample Condition</property>
  <property name="description"></property>
- <property name="content_icon">++resource++bika.lims.images/samplecondition.png</property>
+ <property name="content_icon">senaite_theme/icon/samplecondition</property>
  <property name="content_meta_type">SampleCondition</property>
  <property name="product">bika.lims</property>
  <property name="factory">addSampleCondition</property>

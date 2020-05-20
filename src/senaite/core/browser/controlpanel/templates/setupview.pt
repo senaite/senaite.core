@@ -19,18 +19,13 @@
         <!-- The setup item -->
         <tal:setup tal:define="setup python:view.setup">
           <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
-            <a class="tile setup text-capitalized"
+            <a class="tile setup text-capitalized text-decoration-none"
                tal:attributes="href setup/absolute_url">
-
               <div class="row item">
-                <div class="col-xs-2 vcenter">
+                <div class="text-nowrap">
                   <img src="#"
-                       class="icon"
-                       tal:attributes="src python:view.get_icon_url(setup);
-                                       title setup/Title"/>
-                </div>
-                <div class="col-xs-9 vcenter">
-                  <div class="title"
+                       tal:replace="structure python:view.get_icon_for(setup, css_class='icon')"/>
+                  <div class="title vcenter text-truncate d-inline-block"
                        i18n:translate=""
                        tal:content="setup/Title">
                     Setup Item Title
@@ -44,18 +39,13 @@
         <!-- The other setup items -->
         <tal:tiles tal:repeat="brain view/setupitems">
           <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
-            <a class="tile text-capitalized"
+            <a class="tile text-capitalized text-decoration-none"
                tal:attributes="href brain/getURL">
-
               <div class="row item">
-                <div class="col-xs-2 vcenter">
+                <div class="text-nowrap">
                   <img src="#"
-                       class="icon"
-                       tal:attributes="src python:view.get_icon_url(brain);
-                                       title brain/Title"/>
-                </div>
-                <div class="col-xs-9 vcenter">
-                  <div class="title"
+                       tal:replace="structure python:view.get_icon_for(brain, css_class='icon')"/>
+                  <div class="title vcenter text-truncate text-nowrap d-inline-block"
                        i18n:translate=""
                        tal:content="brain/Title">
                     Setup Item Title

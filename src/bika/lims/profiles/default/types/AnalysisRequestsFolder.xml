@@ -6,7 +6,7 @@
         purge="True">
 <property name="title" i18n:translate="">Samples</property>
  <property name="description"></property>
- <property name="content_icon">++resource++bika.lims.images/sample.png</property>
+ <property name="content_icon">senaite_theme/icon/sample</property>
  <property name="content_meta_type">AnalysisRequestsFolder</property>
  <property name="product">bika.lims</property>
  <property name="factory">addAnalysisRequestsFolder</property>

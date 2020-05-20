@@ -7,7 +7,7 @@
 
   <property name="title" i18n:translate="">Pricelist</property>
   <property name="description"></property>
-  <property name="content_icon">++resource++bika.lims.images/pricelist.png</property>
+  <property name="content_icon">senaite_theme/icon/pricelist</property>
   <property name="content_meta_type">Pricelist</property>
   <property name="product">bika.lims</property>
   <property name="factory">addPricelist</property>

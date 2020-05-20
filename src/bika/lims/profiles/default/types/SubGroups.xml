@@ -5,7 +5,7 @@
        i18n:domain="plone">
  <property name="title" i18n:translate="">Sub-groups</property>
  <property name="description"></property>
- <property name="content_icon">++resource++bika.lims.images/batch.png</property>
+ <property name="content_icon">senaite_theme/icon/batch</property>
  <property name="content_meta_type">SubGroups</property>
  <property name="product">bika.lims</property>
  <property name="factory">addSubGroups</property>

@@ -7,7 +7,7 @@
 
   <property name="title" i18n:translate="">Supplier</property>
   <property name="description"></property>
-  <property name="content_icon">++resource++bika.lims.images/supplier.png</property>
+  <property name="content_icon">senaite_theme/icon/supplier</property>
   <property name="content_meta_type">Supplier</property>
   <property name="product">bika.lims</property>
   <property name="factory">addSupplier</property>

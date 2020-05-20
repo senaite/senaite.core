@@ -6,7 +6,7 @@
         purge="True">
  <property name="title" i18n:translate="">Sampling Deviations</property>
  <property name="description"></property>
- <property name="content_icon">++resource++bika.lims.images/samplingdeviation.png</property>
+ <property name="content_icon">senaite_theme/icon/samplingdeviation</property>
  <property name="content_meta_type">SamplingDeviations</property>
  <property name="product">bika.lims</property>
  <property name="factory">addSamplingDeviations</property>

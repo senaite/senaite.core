@@ -7,7 +7,7 @@
 
   <property name="title" i18n:translate="">Reference Sample</property>
   <property name="description"></property>
-  <property name="content_icon">++resource++bika.lims.images/referencesample.png</property>
+  <property name="content_icon">senaite_theme/icon/referencesample</property>
   <property name="content_meta_type">ReferenceSample</property>
   <property name="product">bika.lims</property>
   <property name="factory">addReferenceSample</property>
@@ -79,7 +79,7 @@
           action_id="sticker"
           category="document_actions"
           condition_expr=""
-          icon_expr="string:${object_url}/++resource++bika.lims.images/sticker_large.png"
+          icon_expr="senaite_theme/icon/sticker_large"
           link_target=""
           url_expr="string:${object_url}/sticker?autoprint=1&amp;filter_by_type=referencesample"
           i18n:attributes="title"
@@ -91,7 +91,7 @@
           action_id="sticker_preview"
           category="document_actions"
           condition_expr=""
-          icon_expr="string:${object_url}/++resource++bika.lims.images/sticker_preview.png"
+          icon_expr="senaite_theme/icon/sticker_preview"
           link_target="Stickers preview"
           url_expr="string:${object_url}/sticker?filter_by_type=referencesample"
           i18n:attributes="title"

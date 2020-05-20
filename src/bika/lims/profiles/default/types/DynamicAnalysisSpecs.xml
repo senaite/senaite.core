@@ -10,7 +10,7 @@
             i18n:translate=""></property>
 
   <!-- content-type icon -->
-  <property name="icon_expr">string:${portal_url}/++resource++bika.lims.images/analysisspec.png</property>
+  <property name="icon_expr">senaite_theme/icon/analysisspec</property>
 
   <!-- factory name; usually the same as type name -->
   <property name="factory">DynamicAnalysisSpecs</property>

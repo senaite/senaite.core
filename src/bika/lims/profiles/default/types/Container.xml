@@ -6,7 +6,7 @@
         purge="True">
  <property name="title" i18n:translate="">Container</property>
  <property name="description"></property>
- <property name="content_icon">++resource++bika.lims.images/container.png</property>
+ <property name="content_icon">senaite_theme/icon/container</property>
  <property name="content_meta_type">Container</property>
  <property name="product">bika.lims</property>
  <property name="factory">addContainer</property>

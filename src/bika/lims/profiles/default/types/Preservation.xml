@@ -6,7 +6,7 @@
         purge="True">
  <property name="title" i18n:translate="">Preservation</property>
  <property name="description"></property>
- <property name="content_icon">++resource++bika.lims.images/preservation.png</property>
+ <property name="content_icon">senaite_theme/icon/preservation</property>
  <property name="content_meta_type">Preservation</property>
  <property name="product">bika.lims</property>
  <property name="factory">addPreservation</property>

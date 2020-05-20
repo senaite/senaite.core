@@ -6,7 +6,7 @@
         purge="True">
  <property name="title">Instrument Validation</property>
  <property name="description"></property>
- <property name="content_icon">++resource++bika.lims.images/instrumentvalidation.png</property>
+ <property name="content_icon">senaite_theme/icon/instrumentvalidation</property>
  <property name="content_meta_type">InstrumentValidation</property>
  <property name="product">bika.lims</property>
  <property name="factory">addInstrumentValidation</property>

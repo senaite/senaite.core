@@ -1,19 +1,12 @@
 # -*- coding: utf-8 -*-
 
-import os
-
 from bika.lims import api
 from bika.lims.utils import t
-from plone.memoize.volatile import cache
-from plone.memoize.volatile import store_on_context
+from plone.memoize.instance import memoize
+from plone.memoize.view import memoize_contextless
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-
-
-def modified_cache_key(method, self, brain_or_object):
-    """A cache key that returns the millis of the last modification time
-    """
-    return api.get_modification_date(brain_or_object).millis()
+from zope.component import getMultiAdapter
 
 
 class SetupView(BrowserView):
@@ -30,6 +23,13 @@ class SetupView(BrowserView):
         return self.template()
 
     @property
+    @memoize
+    def bootstrap(self):
+        return getMultiAdapter(
+            (self.context, self.request),
+            name="bootstrapview")
+
+    @property
     def portal(self):
         """Returns the Portal Object
         """
@@ -41,26 +41,11 @@ class SetupView(BrowserView):
         """
         return api.get_setup()
 
-    @cache(modified_cache_key, store_on_context)
-    def get_icon_url(self, brain):
-        """Returns the (big) icon URL for the given catalog brain
+    @memoize_contextless
+    def get_icon_for(self, brain, **kw):
+        """Returns the icon URL for the given catalog brain
         """
-        icon_url = api.get_icon(brain, html_tag=False)
-        url, icon = icon_url.rsplit("/", 1)
-        relative_url = url.lstrip(self.portal.absolute_url())
-        name, ext = os.path.splitext(icon)
-
-        # big icons endwith _big
-        if not name.endswith("_big"):
-            icon = "{}_big{}".format(name, ext)
-
-        icon_big_url = "/".join([relative_url, icon])
-
-        # fall back to a default icon if the looked up icon does not exist
-        if self.context.restrictedTraverse(icon_big_url, None) is None:
-            icon_big_url = "++resource++bika.lims.images/gears.png"
-
-        return icon_big_url
+        return self.bootstrap.get_icon_for(brain, **kw)
 
     def setupitems(self):
         """Lookup available setup items

@@ -63,7 +63,7 @@
                   <img
                     class="deletebtn"
                     tal:attributes="
-                      src string:${portal_url}/++plone++senaite.core.static/assets/svg/trashcan.svg;
+                      src string:${portal_url}/++plone++senaite.core.static/assets/svg/delete.svg;
                       fieldName fieldName;
                       uid value/UID"/>
                   <span tal:replace="python:str(value.Title())"/>
