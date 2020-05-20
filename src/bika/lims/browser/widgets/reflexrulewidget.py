@@ -29,15 +29,16 @@ from bika.lims.browser.widgets import RecordsWidget
 from bika.lims.browser.widgets.reflexrulewidget_description import description
 from bika.lims.utils import getUsers
 
+
 class ReflexRuleWidget(RecordsWidget):
     _properties = RecordsWidget._properties.copy()
     _properties.update({
         'macro': "bika_widgets/reflexrulewidget",
         'helper_js': (
-            "bika_widgets/recordswidget.js",
+            "senaite_widgets/recordswidget.js",
             "bika_widgets/reflexrulewidget.js",),
         'helper_css': (
-            "bika_widgets/recordswidget.css",
+            "senaite_widgets/recordswidget.css",
             "bika_widgets/reflexrulewidget.css",),
         'label': '',
         'description': description,

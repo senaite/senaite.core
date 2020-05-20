@@ -11,9 +11,14 @@
   <object name="senaite_templates" meta_type="Filesystem Directory View"
           directory="senaite.core:skins/senaite_templates"/>
 
+  <!-- senaite scripts -->
+  <object name="senaite_scripts" meta_type="Filesystem Directory View"
+          directory="senaite.core:skins/senaite_scripts"/>
+
   <skin-path name="*">
     <layer name="senaite_images" insert-after="custom"/>
     <layer name="senaite_templates" insert-after="senaite_images"/>
+    <layer name="senaite_scripts" insert-after="senaite_templates"/>
   </skin-path>
 
 </object>

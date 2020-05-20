@@ -23,13 +23,14 @@ from bika.lims.browser.widgets.recordswidget import RecordsWidget
 from Products.Archetypes.Registry import registerWidget
 from Products.CMFCore.utils import getToolByName
 
+
 class PartitionSetupWidget(RecordsWidget):
     security = ClassSecurityInfo()
     _properties = RecordsWidget._properties.copy()
     _properties.update({
-        'macro': "bika_widgets/recordswidget",
-        'helper_js': ("bika_widgets/recordswidget.js",),
-        'helper_css': ("bika_widgets/recordswidget.css",),
+        'macro': "senaite_widgets/recordswidget",
+        'helper_js': ("senaite_widgets/recordswidget.js",),
+        'helper_css': ("senaite_widgets/recordswidget.css",),
         'allowDelete': True,
     })
 

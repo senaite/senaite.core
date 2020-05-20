@@ -26,7 +26,7 @@ from bika.lims.browser.widgets import RecordsWidget
 class ARTemplatePartitionsWidget(RecordsWidget):
     _properties = RecordsWidget._properties.copy()
     _properties.update({
-        'helper_js': ("bika_widgets/recordswidget.js",
+        'helper_js': ("senaite_widgets/recordswidget.js",
                       "bika_widgets/artemplatepartitionswidget.js",)
     })
 

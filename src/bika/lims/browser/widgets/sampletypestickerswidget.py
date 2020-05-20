@@ -30,7 +30,7 @@ class SampleTypeStickersWidget(RecordsWidget):
     _properties = RecordsWidget._properties.copy()
     _properties.update({
         'helper_js': (
-            "bika_widgets/recordswidget.js",
+            "senaite_widgets/recordswidget.js",
             "bika_widgets/sampletypestickerswidget.js",),
     })
 
