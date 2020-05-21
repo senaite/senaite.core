@@ -2,7 +2,7 @@
 
 BASE=${buildout:directory}
 I18N=$BASE/bin/i18ndude
-LOCALES=$BASE/bika/lims/locales
+LOCALES=$BASE/src/senaite/core/locales
 
 function die() {
     echo "ERROR: $1"
@@ -55,14 +55,14 @@ find $LOCALES -name "*.mo" -delete
 # Pull Transifex
 tx_pull
 
-# Generate the Bika Domain
+# Generate the senaite.core Domain
 DOMAIN=senaite.core
 echo "Processing Domain $DOMAIN"
 # Flush the english (transifex source language) po files
 # If we don't do this, new $DOMAIN-manual.pot translations won't be synced.
 echo -n "" > $LOCALES/en/LC_MESSAGES/senaite.core.po
 # Re-scan the source code for new strings and create a temporary $DOMAIN-tmp.pot
-$I18N rebuild-pot --pot $LOCALES/senaite.core-tmp.pot --exclude "build" --create $DOMAIN bika
+$I18N rebuild-pot --pot $LOCALES/senaite.core-tmp.pot --exclude "build" --create $DOMAIN src/senaite
 # Merge the manual translations of $DOMAIN-manual.pot into the temporary $DOMAIN-tmp.pot
 $I18N merge --pot $LOCALES/senaite.core-tmp.pot --merge $LOCALES/senaite.core-manual.pot
 # Overwrite the existing $DOMAIN.pot
@@ -78,7 +78,7 @@ echo "Processing Domain $DOMAIN"
 # If we don't do this, new $DOMAIN-manual.pot translations won't be synced.
 echo -n "" > $LOCALES/en/LC_MESSAGES/$DOMAIN.po
 # Re-scan the source code for new strings and create a temporary $DOMAIN-tmp.pot
-$I18N rebuild-pot --pot $LOCALES/$DOMAIN-tmp.pot --exclude "build" --create $DOMAIN bika/lims/profiles
+$I18N rebuild-pot --pot $LOCALES/$DOMAIN-tmp.pot --exclude "build" --create $DOMAIN src/senaite
 # Merge the manual translations of $DOMAIN-manual.pot into the temporary $DOMAIN-tmp.pot
 $I18N merge --pot $LOCALES/$DOMAIN-tmp.pot --merge $LOCALES/$DOMAIN-manual.pot
 # Overwrite the existing $DOMAIN.pot

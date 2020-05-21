@@ -9,8 +9,6 @@
     xmlns:plone="http://namespaces.plone.org/plone"
     i18n_domain="senaite.core">
 
-  <i18n:registerTranslations directory="locales" />
-
   <includeDependencies package="." />
 
   <five:registerPackage package="." initialize=".initialize" />
@@ -25,7 +23,6 @@
   <!-- <include package=".install" /> -->
   <include package=".interfaces" />
   <include package=".jsonapi" />
-  <include package=".locales" />
   <include package=".monkey" />
   <include package=".subscribers" />
   <include package=".vocabularies" />
@@ -33,9 +30,6 @@
 
   <include file="profiles.zcml" />
   <!-- <include file="static.zcml" /> -->
-
-
-  <i18n:registerTranslations directory="locales" />
 
   <cmf:registerDirectory name="skins" directory="skins" recursive="True" />
 

@@ -11,7 +11,7 @@ import subprocess
 import sys
 
 SRC = "${buildout:directory}"
-LOCALES = SRC + '/bika/lims/locales'
+LOCALES = SRC + '/src/senaite/core/locales'
 OUTFILE = SRC + '/CONTRIBUTORS.rst'
 
 # User names or emails to be replaced. If the value is None, the committer will
@@ -71,6 +71,7 @@ def resolve_contributor(contributor):
     email = REPLACEMENTS.get(email, email)
     return name, email
 
+
 def get_git_contributors_section():
     # Commits sorted from more recent to oldest, with committer name and email
     # The sorting by number of commits reverse will be done later, but we need
@@ -114,6 +115,7 @@ def get_git_contributors_section():
         line = "- {}, {}\n".format(name, email)
         lines.append(line)
     return lines
+
 
 def get_translators_section():
     parser = optparse.OptionParser()
@@ -185,7 +187,6 @@ def get_translators_section():
                 trans.append(line)
 
         return lang_iso, trans
-
 
     def callback(arg, dirname, names):
         # only read from files where the file extension match (.po per default)

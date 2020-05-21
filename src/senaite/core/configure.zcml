@@ -1,15 +1,18 @@
 <configure
     xmlns="http://namespaces.zope.org/zope"
-    xmlns:five="http://namespaces.zope.org/five"
     xmlns:browser="http://namespaces.zope.org/browser"
     xmlns:cmf="http://namespaces.zope.org/cmf"
+    xmlns:five="http://namespaces.zope.org/five"
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
     i18n_domain="senaite.core">
 
   <five:registerPackage package="." initialize=".initialize" />
+  <i18n:registerTranslations directory="locales" />
 
   <!-- package includes -->
   <include package=".browser" />
+  <include package=".locales" />
 
   <!-- portal skins -->
   <cmf:registerDirectory
@@ -26,7 +29,8 @@
       description="SENAITE CORE Add-on"
       pre_handler="senaite.core.setuphandlers.pre_install"
       post_handler="senaite.core.setuphandlers.post_install"
-      provides="Products.GenericSetup.interfaces.EXTENSION"/>
+      provides="Products.GenericSetup.interfaces.EXTENSION"
+      />
 
   <!-- Install Handler -->
   <genericsetup:importStep
