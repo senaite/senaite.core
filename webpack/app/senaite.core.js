@@ -26,4 +26,9 @@ document.addEventListener("DOMContentLoaded", () => {
     $("#sidebar").toggleClass("minimized");
   });
 
+  // Initialize tooltips
+  $(function () {
+    $("[data-toggle='tooltip']").tooltip()
+  })
+
 });
