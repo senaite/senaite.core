@@ -4,7 +4,7 @@
   <dependencies>
     <dependency>Products.ATContentTypes:base</dependency>
     <dependency>profile-Products.ATExtensions:default</dependency>
-    <dependency>archetypes.referencebrowserwidget:default</dependency>
     <dependency>profile-senaite.core.listing:default</dependency>
+    <dependency>profile-senaite.impress:default</dependency>
   </dependencies>
 </metadata>
