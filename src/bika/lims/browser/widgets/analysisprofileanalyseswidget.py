@@ -309,9 +309,13 @@ class AnalysisProfileAnalysesWidget(TypesWidget):
         table = api.get_view("table_analysis_profile_analyses",
                              context=instance,
                              request=self.REQUEST)
+
         # Call listing hooks
         table.update()
         table.before_render()
+
+        if allow_edit is False:
+            return table.ajax_contents_table_view()
         return table.ajax_contents_table()
 
 
