@@ -64,6 +64,7 @@
                     <input class="form-control" id="Analysis" size="30" autocomplete="off"/>
                     <input type="hidden" id="analysis_uid" name="analysis_uid"/>
                   </div>
+                </tal:analyses>
               </td>
               <td>
                 <tal:services

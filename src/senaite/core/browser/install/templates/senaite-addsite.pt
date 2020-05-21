@@ -63,8 +63,7 @@
             </div>
 
             <input type="text" name="title" size="30" value="Site"
-                   tal:attributes="value request/site_title|nothing"
-                   i18n:attributes="value text_default_site_title;" />
+                   tal:attributes="value request/site_title|nothing" />
           </div>
 
           <div class="field">
