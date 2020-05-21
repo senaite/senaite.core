@@ -17,13 +17,6 @@
   <!--     /> -->
 
   <monkey:patch
-      description="Forcibly remove some contentmenu items"
-      class="plone.app.contentmenu.menu.FactoriesSubMenuItem"
-      original="available"
-      replacement="bika.lims.monkey.contentmenu.contentmenu_factories_available"
-      />
-
-  <monkey:patch
       description="Modify isVisible to include more specific widget visibility rules"
       class="Products.Archetypes.Schema.Schemata"
       original="editableFields"
