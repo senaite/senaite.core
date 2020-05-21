@@ -1,10 +1,11 @@
+#
 # Translators:
 # Ramon Bartl <rb@ridingbytes.com>, 2018
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2020-05-21 11:01+0000\n"
+"POT-Creation-Date: 2020-05-21 11:14+0000\n"
 "PO-Revision-Date: 2018-06-01 18:44+0000\n"
 "Last-Translator: Ramon Bartl <rb@ridingbytes.com>, 2018\n"
 "Language-Team: Arabic (https://www.transifex.com/senaite/teams/87045/ar/)\n"
@@ -33,15 +34,15 @@ msgstr ""
 
 #: bika/lims/browser/templates/login_details.pt:32
 msgid "${contact_fullname} can log into the LIMS by using ${contact_username} as username. Contacts must change their own passwords. If a password is forgotten a contact can request a new password from the login form."
-msgstr ""
+msgstr "${contact_fullname} بالامكان الولوج للنظام باستخدام ${contact_username} كأسم مستخدم.  يجب تغيير كلمة السر للجميع  ، اذ نسيت كلمة المرور بالامكان طلبها من  نموذج الولوج"
 
 #: bika/lims/controlpanel/bika_analysisservices.py:148
 msgid "${items} were successfully created."
-msgstr ""
+msgstr "${items} تم الانشاء بنجاح"
 
 #: bika/lims/controlpanel/bika_analysisservices.py:153
 msgid "${item} was successfully created."
-msgstr ""
+msgstr "${items} تم الانشاء بنجاح"
 
 #: bika/lims/browser/reports/templates/productivity_samplereceivedvsreported.pt:36
 msgid "%"
@@ -50,20 +51,20 @@ msgstr ""
 #: bika/lims/browser/reports/templates/productivity_analysesperdepartment.pt:99
 #: bika/lims/browser/reports/templates/productivity_analysesperformedpertotal.pt:99
 msgid "% Performed"
-msgstr ""
+msgstr "% نفذ"
 
 #: bika/lims/browser/reports/templates/productivity_analysesperdepartment.pt:101
 #: bika/lims/browser/reports/templates/productivity_analysesperformedpertotal.pt:101
 msgid "% Published"
-msgstr ""
+msgstr "% نشر"
 
 #: bika/lims/utils/analysisrequest.py:581
 msgid "%s has been rejected"
-msgstr ""
+msgstr "تم رفضها"
 
 #: bika/lims/exportimport/setupdata/__init__.py:58
 msgid "%s has no '%s' column."
-msgstr ""
+msgstr "%sلايوجد%s عامود"
 
 #: bika/lims/browser/analysisrequest/templates/reject_samples.pt:26
 #: bika/lims/browser/templates/partition_magic.pt:29
@@ -96,11 +97,11 @@ msgstr "(مكرر)"
 
 #: bika/lims/content/referencesample.py:203
 msgid "(Hazardous)"
-msgstr ""
+msgstr "(مخاطر)"
 
 #: bika/lims/browser/templates/login_details.pt:223
 msgid "(Required)"
-msgstr ""
+msgstr "(مطلوب)"
 
 #: bika/lims/browser/publish/templates/email_template.pt:25
 msgid "*** This is an automatically generated email, please do not reply to this message. ***"
@@ -5693,7 +5694,7 @@ msgstr ""
 #: bika/lims/content/instrumentcertification.py:144
 #: bika/lims/content/instrumentmaintenancetask.py:76
 msgid "To"
-msgstr ""
+msgstr "إلى"
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:270
 msgid "To Be Preserved"
@@ -5735,7 +5736,7 @@ msgstr ""
 #: bika/lims/browser/analysisrequest/templates/invoice_content.pt:210
 #: bika/lims/browser/reports/productivity_analysesattachments.py:129
 msgid "Total"
-msgstr ""
+msgstr "الكلى"
 
 #: bika/lims/browser/reports/templates/productivity_dataentrydaybook.pt:91
 msgid "Total Lag"
@@ -5743,7 +5744,7 @@ msgstr ""
 
 #: bika/lims/controlpanel/bika_labproducts.py:67
 msgid "Total Price"
-msgstr ""
+msgstr "السعر الكلي"
 
 #: bika/lims/browser/reports/productivity_analysestats_overtime.py:128
 msgid "Total data points"
@@ -5752,7 +5753,7 @@ msgstr ""
 #: bika/lims/content/analysisprofile.py:148
 #: bika/lims/content/labproduct.py:67
 msgid "Total price"
-msgstr ""
+msgstr "السعر الكلي"
 
 #: bika/lims/browser/publish/emailview.py:192
 msgid "Total size of email exceeded {:.1f} MB ({:.2f} MB)"
@@ -5760,7 +5761,7 @@ msgstr ""
 
 #: bika/lims/browser/reports/templates/productivity_dailysamplesreceived.pt:72
 msgid "Total:"
-msgstr ""
+msgstr "المجموع:"
 
 #: bika/lims/browser/reports/templates/administration.pt:128
 msgid "Traceability"
@@ -5825,7 +5826,7 @@ msgstr ""
 #: bika/lims/browser/fields/interimfieldsfield.py:44
 #: bika/lims/browser/templates/analysisservice_info.pt:88
 msgid "Unit"
-msgstr ""
+msgstr "وحدة"
 
 #: bika/lims/validators.py:1128
 msgid "Unknown IBAN country %s"
@@ -5894,16 +5895,16 @@ msgstr ""
 #: bika/lims/browser/reports/selection_macros/select_user.pt:4
 #: bika/lims/browser/reports/templates/administration_usershistory.pt:72
 msgid "User"
-msgstr ""
+msgstr "مستخدم"
 
 #: bika/lims/browser/client/views/contacts.py:68
 #: bika/lims/browser/templates/login_details.pt:71
 msgid "User Name"
-msgstr ""
+msgstr "اسم المستخدم"
 
 #: bika/lims/browser/reports/templates/administration.pt:131
 msgid "User history"
-msgstr ""
+msgstr "تاريخ المستخدم"
 
 #: bika/lims/browser/contact.py:188
 msgid "User linked to this Contact"
@@ -5912,7 +5913,7 @@ msgstr ""
 #: bika/lims/browser/reports/administration_usershistory.py:201
 #: bika/lims/browser/reports/templates/administration_usershistory.pt:56
 msgid "Users history"
-msgstr ""
+msgstr "تواريخ المستخدم"
 
 #: bika/lims/content/bikasetup.py:294
 msgid "Using too few data points does not make statistical sense. Set an acceptable minimum number of results before QC statistics will be calculated and plotted"
@@ -6133,7 +6134,7 @@ msgstr ""
 #: bika/lims/content/calculation.py:138
 #: bika/lims/content/instrument.py:260
 msgid "Value"
-msgstr ""
+msgstr "القيمة"
 
 #: bika/lims/content/abstractanalysis.py:146
 #: bika/lims/content/analysisservice.py:388
@@ -6279,7 +6280,7 @@ msgstr "سنويناً"
 #: bika/lims/browser/header_table.py:125
 #: bika/lims/content/abstractbaseanalysis.py:897
 msgid "Yes"
-msgstr ""
+msgstr "نعم"
 
 #: senaite/core/browser/install/templates/senaite-overview.pt:113
 msgid "You can add another SENAITE site:"
@@ -6316,11 +6317,11 @@ msgstr ""
 
 #: bika/lims/browser/reports/administration_usershistory.py:133
 msgid "action"
-msgstr ""
+msgstr "اجراء"
 
 #: bika/lims/browser/templates/referencesample_view.pt:130
 msgid "activate"
-msgstr ""
+msgstr "فعل"
 
 #: bika/lims/content/instrumentcertification.py:261
 msgid "biannually"
@@ -6333,7 +6334,7 @@ msgstr ""
 
 #: bika/lims/browser/reports/administration_usershistory.py:160
 msgid "comment"
-msgstr ""
+msgstr "تعليق"
 
 #: bika/lims/content/instrumentcertification.py:257
 msgid "daily"
@@ -6373,7 +6374,7 @@ msgstr ""
 
 #: bika/lims/browser/templates/referencesample_view.pt:123
 msgid "deactivate"
-msgstr ""
+msgstr "الغى التفعيل"
 
 #. Default: "${copyright} 2017-${current_year} ${senaitelims}"
 #: senaite/core/browser/viewlets/templates/footer.pt:10
@@ -6479,11 +6480,11 @@ msgstr ""
 
 #: bika/lims/content/instrumentscheduledtask.py:133
 msgid "repeating every"
-msgstr ""
+msgstr "إعادة كل"
 
 #: bika/lims/content/instrumentscheduledtask.py:134
 msgid "repeatperiod"
-msgstr ""
+msgstr "وقت الاعادة"
 
 #. Default: "${I}:${M} ${p}"
 #. The variables used here are the same as used in the strftime formating.
@@ -6511,7 +6512,7 @@ msgstr ""
 #: bika/lims/browser/analysisrequest/templates/ar_add_manage.pt:80
 #: bika/lims/browser/templates/header_table.pt:46
 msgid "title_required"
-msgstr ""
+msgstr "العنوان_مطلوب"
 
 #: bika/lims/browser/reports/selection_macros/select_daterange.pt:28
 #: senaite/core/browser/dashboard/templates/dashboard.pt:529
@@ -6520,7 +6521,7 @@ msgstr "إلى"
 
 #: bika/lims/content/instrumentscheduledtask.py:136
 msgid "until"
-msgstr ""
+msgstr "حتى"
 
 #: senaite/core/browser/dashboard/templates/dashboard.pt:531
 msgid "updated every 2 hours"
@@ -6528,7 +6529,7 @@ msgstr ""
 
 #: bika/lims/browser/analyses/view.py:1108
 msgid "verification(s) pending"
-msgstr ""
+msgstr "التأكيد موقف مؤقتاً"
 
 #: bika/lims/content/instrumentcertification.py:258
 msgid "weekly"

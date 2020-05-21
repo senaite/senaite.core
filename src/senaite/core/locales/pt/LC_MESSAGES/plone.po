@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2020-05-21 11:01+0000\n"
+"POT-Creation-Date: 2020-05-21 11:14+0000\n"
 "PO-Revision-Date: 2018-06-01 18:46+0000\n"
 "Last-Translator: Ramon Bartl <rb@ridingbytes.com>, 2018\n"
 "Language-Team: Portuguese (https://www.transifex.com/senaite/teams/87045/pt/)\n"
@@ -174,7 +174,7 @@ msgstr ""
 #: bika/lims/browser/worksheet/views/add_analyses.py:62
 #: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Add Analyses"
-msgstr ""
+msgstr "Adicionar análises"
 
 #: bika/lims/browser/worksheet/views/add_blank.py:43
 #: bika/lims/profiles/default/types/Worksheet.xml
@@ -337,7 +337,7 @@ msgstr ""
 #: bika/lims/browser/reports/productivity_analysestats.py:134
 #: bika/lims/browser/worksheet/views/add_analyses.py:95
 msgid "Analysis"
-msgstr ""
+msgstr "Análise"
 
 #: bika/lims/content/bikasetup.py:410
 msgid "Analysis Attachment Option"
@@ -382,7 +382,7 @@ msgstr ""
 #: bika/lims/browser/fields/resultrangefield.py:34
 #: bika/lims/browser/referencesample.py:276
 msgid "Analysis Service"
-msgstr ""
+msgstr "Serviços de Análise"
 
 #: bika/lims/config.py:68
 #: bika/lims/controlpanel/bika_analysisservices.py:192
@@ -867,7 +867,7 @@ msgstr ""
 #: bika/lims/browser/batchfolder.py:77
 #: bika/lims/browser/reports/__init__.py:161
 msgid "Client"
-msgstr ""
+msgstr "Cliente"
 
 #: bika/lims/browser/batchfolder.py:83
 #: bika/lims/content/batch.py:98
@@ -993,7 +993,7 @@ msgstr ""
 #: bika/lims/browser/supplier.py:98
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Contacts"
-msgstr ""
+msgstr "Contatos"
 
 #: bika/lims/content/contact.py:54
 msgid "Contacts to CC"
@@ -2357,7 +2357,7 @@ msgstr ""
 #: bika/lims/content/laboratory.py:198
 #: bika/lims/profiles/default/types/Laboratory.xml
 msgid "Laboratory"
-msgstr ""
+msgstr "Laboratório"
 
 #: bika/lims/content/laboratory.py:103
 msgid "Laboratory Accredited"
@@ -2632,7 +2632,7 @@ msgstr ""
 #: bika/lims/browser/methodfolder.py:58
 #: bika/lims/browser/referencesample.py:159
 msgid "Method"
-msgstr ""
+msgstr "Método"
 
 #: bika/lims/content/method.py:82
 msgid "Method Document"
@@ -2646,7 +2646,7 @@ msgstr ""
 #: bika/lims/browser/widgets/analysisprofileanalyseswidget.py:79
 #: bika/lims/browser/widgets/analysisspecificationwidget.py:85
 msgid "Methods"
-msgstr ""
+msgstr "Métodos"
 
 #: bika/lims/content/person.py:60
 msgid "Middle initial"
@@ -5351,7 +5351,7 @@ msgstr ""
 #: bika/lims/browser/referencesample.py:155
 #: bika/lims/browser/worksheet/views/folder.py:93
 msgid "Worksheet"
-msgstr ""
+msgstr "Ficha de trabalho"
 
 #: bika/lims/content/worksheettemplate.py:66
 msgid "Worksheet Layout"

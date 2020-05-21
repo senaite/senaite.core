@@ -1,10 +1,11 @@
+#
 # Translators:
 # Ramon Bartl <rb@ridingbytes.com>, 2018
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2020-05-21 11:01+0000\n"
+"POT-Creation-Date: 2020-05-21 11:14+0000\n"
 "PO-Revision-Date: 2018-06-01 18:44+0000\n"
 "Last-Translator: Ramon Bartl <rb@ridingbytes.com>, 2018\n"
 "Language-Team: Indonesian (https://www.transifex.com/senaite/teams/87045/id/)\n"
@@ -37,7 +38,7 @@ msgstr ""
 
 #: bika/lims/controlpanel/bika_analysisservices.py:148
 msgid "${items} were successfully created."
-msgstr ""
+msgstr "${items} berhasil dibuat."
 
 #: bika/lims/controlpanel/bika_analysisservices.py:153
 msgid "${item} was successfully created."
@@ -59,7 +60,7 @@ msgstr ""
 
 #: bika/lims/utils/analysisrequest.py:581
 msgid "%s has been rejected"
-msgstr ""
+msgstr "%s telah ditolak"
 
 #: bika/lims/exportimport/setupdata/__init__.py:58
 msgid "%s has no '%s' column."
@@ -96,11 +97,11 @@ msgstr "(Duplikat)"
 
 #: bika/lims/content/referencesample.py:203
 msgid "(Hazardous)"
-msgstr ""
+msgstr "(Berbahaya)"
 
 #: bika/lims/browser/templates/login_details.pt:223
 msgid "(Required)"
-msgstr ""
+msgstr "(Dibutuhkan)"
 
 #: bika/lims/browser/publish/templates/email_template.pt:25
 msgid "*** This is an automatically generated email, please do not reply to this message. ***"
@@ -110,7 +111,7 @@ msgstr ""
 #: bika/lims/browser/referencesample.py:175
 #: bika/lims/browser/worksheet/views/analyses.py:104
 msgid "+-"
-msgstr ""
+msgstr "±"
 
 #: bika/lims/browser/fields/resultrangefield.py:41
 #: bika/lims/browser/widgets/analysisspecificationwidget.py:111

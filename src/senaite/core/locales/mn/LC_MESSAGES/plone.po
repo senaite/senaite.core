@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2020-05-21 11:01+0000\n"
+"POT-Creation-Date: 2020-05-21 11:14+0000\n"
 "PO-Revision-Date: 2018-06-01 18:46+0000\n"
 "Last-Translator: Ramon Bartl <rb@ridingbytes.com>, 2018\n"
 "Language-Team: Mongolian (https://www.transifex.com/senaite/teams/87045/mn/)\n"
@@ -174,12 +174,12 @@ msgstr ""
 #: bika/lims/browser/worksheet/views/add_analyses.py:62
 #: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Add Analyses"
-msgstr ""
+msgstr "Шинжилгээ нэмэх"
 
 #: bika/lims/browser/worksheet/views/add_blank.py:43
 #: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Add Blank Reference"
-msgstr ""
+msgstr "Банкны мэдээлэл нэмэх"
 
 #: bika/lims/browser/worksheet/views/add_control.py:42
 #: bika/lims/browser/worksheet/views/referencesamples.py:54
@@ -190,7 +190,7 @@ msgstr ""
 #: bika/lims/browser/worksheet/views/add_duplicate.py:54
 #: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Add Duplicate"
-msgstr ""
+msgstr "Хуулбар нэмэх"
 
 #: bika/lims/controlpanel/bika_reflexrulefolder.py:87
 msgid "Add Reflex rule"
@@ -337,7 +337,7 @@ msgstr ""
 #: bika/lims/browser/reports/productivity_analysestats.py:134
 #: bika/lims/browser/worksheet/views/add_analyses.py:95
 msgid "Analysis"
-msgstr ""
+msgstr "Шинжилгээ"
 
 #: bika/lims/content/bikasetup.py:410
 msgid "Analysis Attachment Option"
@@ -347,12 +347,12 @@ msgstr ""
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/AnalysisCategories.xml
 msgid "Analysis Categories"
-msgstr ""
+msgstr "Шинжилгээний төрлүүд"
 
 #: bika/lims/content/abstractbaseanalysis.py:436
 #: bika/lims/profiles/default/types/AnalysisCategory.xml
 msgid "Analysis Category"
-msgstr ""
+msgstr "Шинжилгээний төрөл"
 
 #: bika/lims/content/abstractbaseanalysis.py:252
 msgid "Analysis Keyword"
@@ -482,7 +482,7 @@ msgstr ""
 #: bika/lims/content/attachment.py:51
 #: bika/lims/content/samplepoint.py:123
 msgid "Attachment"
-msgstr ""
+msgstr "Хавсралт"
 
 #: bika/lims/content/attachment.py:82
 msgid "Attachment Keys"
@@ -496,13 +496,13 @@ msgstr ""
 #: bika/lims/content/attachment.py:61
 #: bika/lims/controlpanel/bika_attachmenttypes.py:72
 msgid "Attachment Type"
-msgstr ""
+msgstr "Хавсралтын төрөл"
 
 #: bika/lims/controlpanel/bika_attachmenttypes.py:60
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/AttachmentTypes.xml
 msgid "Attachment Types"
-msgstr ""
+msgstr "Хавсралтын төрлүүд"
 
 msgid "Attachment due"
 msgstr ""
@@ -527,7 +527,7 @@ msgstr ""
 #: bika/lims/browser/client/views/attachments.py:45
 #: bika/lims/browser/reports/productivity_analysesattachments.py:47
 msgid "Attachments"
-msgstr ""
+msgstr "Хавсралтууд"
 
 #: bika/lims/controlpanel/auditlog.py:55
 #: senaite/core/profiles/default/actions.xml
@@ -867,7 +867,7 @@ msgstr ""
 #: bika/lims/browser/batchfolder.py:77
 #: bika/lims/browser/reports/__init__.py:161
 msgid "Client"
-msgstr ""
+msgstr "Үйлчлүүлэгч"
 
 #: bika/lims/browser/batchfolder.py:83
 #: bika/lims/content/batch.py:98
@@ -909,7 +909,7 @@ msgstr ""
 #: bika/lims/browser/clientfolder.py:49
 #: bika/lims/profiles/default/types/ClientFolder.xml
 msgid "Clients"
-msgstr ""
+msgstr "Үйлчлүүлэгчид"
 
 msgid "Close"
 msgstr ""
@@ -1386,13 +1386,13 @@ msgstr ""
 #: bika/lims/content/abstractbaseanalysis.py:486
 #: bika/lims/content/analysiscategory.py:63
 msgid "Department"
-msgstr ""
+msgstr "Тасаг"
 
 #: bika/lims/content/labcontact.py:69
 #: bika/lims/controlpanel/bika_labcontacts.py:78
 #: bika/lims/profiles/default/types/Departments.xml
 msgid "Departments"
-msgstr ""
+msgstr "Тасгууд"
 
 #: bika/lims/content/calculation.py:79
 msgid "Dependent Analyses"
@@ -2137,7 +2137,7 @@ msgstr ""
 #: bika/lims/browser/methodfolder.py:67
 #: bika/lims/browser/referencesample.py:163
 msgid "Instrument"
-msgstr ""
+msgstr "Багаж"
 
 #: bika/lims/browser/instrument.py:190
 msgid "Instrument Calibrations"
@@ -2166,13 +2166,13 @@ msgstr ""
 
 #: bika/lims/profiles/default/types/InstrumentType.xml
 msgid "Instrument Type"
-msgstr ""
+msgstr "Багажны төрөл"
 
 #: bika/lims/controlpanel/bika_instrumenttypes.py:45
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/InstrumentTypes.xml
 msgid "Instrument Types"
-msgstr ""
+msgstr "Багажны төрлүүд"
 
 #: bika/lims/browser/instrument.py:287
 msgid "Instrument Validations"
@@ -2206,7 +2206,7 @@ msgstr ""
 #: bika/lims/content/method.py:94
 #: bika/lims/controlpanel/bika_instruments.py:59
 msgid "Instruments"
-msgstr ""
+msgstr "Багажнууд"
 
 #: bika/lims/browser/resultsimport/autoimportlogs.py:53
 msgid "Interface"
@@ -2357,7 +2357,7 @@ msgstr ""
 #: bika/lims/content/laboratory.py:198
 #: bika/lims/profiles/default/types/Laboratory.xml
 msgid "Laboratory"
-msgstr ""
+msgstr "Лаборатори"
 
 #: bika/lims/content/laboratory.py:103
 msgid "Laboratory Accredited"
@@ -2452,7 +2452,7 @@ msgstr ""
 #: bika/lims/profiles/default/types/Contact.xml
 #: bika/lims/profiles/default/types/LabContact.xml
 msgid "Login details"
-msgstr ""
+msgstr "Нэвтрэх мэдээлэлүүд"
 
 #: bika/lims/skins/bika/logged_in.cpy:25
 msgid "Login failed. Both email address and password are case sensitive, check that caps lock is not enabled."
@@ -2632,7 +2632,7 @@ msgstr ""
 #: bika/lims/browser/methodfolder.py:58
 #: bika/lims/browser/referencesample.py:159
 msgid "Method"
-msgstr ""
+msgstr "Арга зүй"
 
 #: bika/lims/content/method.py:82
 msgid "Method Document"
@@ -2646,7 +2646,7 @@ msgstr ""
 #: bika/lims/browser/widgets/analysisprofileanalyseswidget.py:79
 #: bika/lims/browser/widgets/analysisspecificationwidget.py:85
 msgid "Methods"
-msgstr ""
+msgstr "Арга зүйнүүд"
 
 #: bika/lims/content/person.py:60
 msgid "Middle initial"
@@ -3449,7 +3449,7 @@ msgstr ""
 #: bika/lims/profiles/default/types/ReferenceSamplesFolder.xml
 #: bika/lims/profiles/default/types/Supplier.xml
 msgid "Reference Samples"
-msgstr ""
+msgstr "Лавлагаа дээж"
 
 #: bika/lims/browser/referencesample.py:256
 #: bika/lims/content/referencedefinition.py:45
@@ -3771,7 +3771,7 @@ msgstr ""
 #: bika/lims/browser/worksheet/views/analyses.py:506
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 msgid "Sample"
-msgstr ""
+msgstr "Дээж"
 
 #: bika/lims/browser/analysisrequest/add2.py:1707
 msgid "Sample ${AR} was successfully created."
@@ -3846,7 +3846,7 @@ msgstr ""
 #: bika/lims/browser/batch/batchbook.py:70
 #: bika/lims/browser/reports/selection_macros/__init__.py:471
 msgid "Sample Type"
-msgstr ""
+msgstr "Дээжийн төрөл"
 
 #: bika/lims/content/sampletype.py:147
 msgid "Sample Type Prefix"
@@ -3856,7 +3856,7 @@ msgstr ""
 #: bika/lims/controlpanel/bika_samplepoints.py:95
 #: bika/lims/controlpanel/bika_sampletypes.py:71
 msgid "Sample Types"
-msgstr ""
+msgstr "Дээжийн төрлүүд"
 
 #: bika/lims/content/artemplate.py:114
 msgid "Sample collected by the laboratory"

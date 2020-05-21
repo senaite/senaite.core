@@ -1,10 +1,11 @@
+#
 # Translators:
 # Ramon Bartl <rb@ridingbytes.com>, 2018
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2020-05-21 11:01+0000\n"
+"POT-Creation-Date: 2020-05-21 11:14+0000\n"
 "PO-Revision-Date: 2018-06-01 18:44+0000\n"
 "Last-Translator: Ramon Bartl <rb@ridingbytes.com>, 2018\n"
 "Language-Team: English (United States) (https://www.transifex.com/senaite/teams/87045/en_US/)\n"
@@ -5936,7 +5937,7 @@ msgstr ""
 
 #: bika/lims/content/organisation.py:52
 msgid "VAT number"
-msgstr ""
+msgstr "Tax ID"
 
 #: bika/lims/browser/analyses/view.py:192
 msgid "Valid"

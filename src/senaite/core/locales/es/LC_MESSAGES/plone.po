@@ -4,13 +4,14 @@
 # Translators:
 # Jordi Puiggené <jpuiggene@naralabs.com>, 2019
 # Pau Soliva <psoliva@naralabs.com>, 2019
+# Leonardo J. Caballero G. <leonardocaballero@gmail.com>, 2020
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2020-05-21 11:01+0000\n"
+"POT-Creation-Date: 2020-05-21 11:14+0000\n"
 "PO-Revision-Date: 2018-06-01 18:46+0000\n"
-"Last-Translator: Pau Soliva <psoliva@naralabs.com>, 2019\n"
+"Last-Translator: Leonardo J. Caballero G. <leonardocaballero@gmail.com>, 2020\n"
 "Language-Team: Spanish (https://www.transifex.com/senaite/teams/87045/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -84,16 +85,16 @@ msgstr ""
 
 #: bika/lims/profiles/default/types/ARTemplate.xml
 msgid "AR Template"
-msgstr ""
+msgstr "Plantilla de solicitud de análisis"
 
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/ARTemplates.xml
 msgid "AR Templates"
-msgstr ""
+msgstr "Plantillas de solicitud de análisis"
 
 #: bika/lims/profiles/default/types/ARReport.xml
 msgid "ARReport"
-msgstr ""
+msgstr "Informe de solicitud de análisis"
 
 #: bika/lims/content/organisation.py:130
 msgid "Account Name"
@@ -175,23 +176,23 @@ msgstr ""
 #: bika/lims/browser/worksheet/views/add_analyses.py:62
 #: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Add Analyses"
-msgstr ""
+msgstr "Añadir análisis"
 
 #: bika/lims/browser/worksheet/views/add_blank.py:43
 #: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Add Blank Reference"
-msgstr ""
+msgstr "Añadir muestra blanco"
 
 #: bika/lims/browser/worksheet/views/add_control.py:42
 #: bika/lims/browser/worksheet/views/referencesamples.py:54
 #: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Add Control Reference"
-msgstr ""
+msgstr "Añadir muestra control"
 
 #: bika/lims/browser/worksheet/views/add_duplicate.py:54
 #: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Add Duplicate"
-msgstr ""
+msgstr "Añadir duplicado"
 
 #: bika/lims/controlpanel/bika_reflexrulefolder.py:87
 msgid "Add Reflex rule"
@@ -235,7 +236,7 @@ msgstr ""
 
 #: bika/lims/profiles/default/types/ReportFolder.xml
 msgid "Administration"
-msgstr ""
+msgstr "Administración"
 
 #: bika/lims/content/sampletype.py:208
 msgid "Admitted sticker templates"
@@ -338,7 +339,7 @@ msgstr ""
 #: bika/lims/browser/reports/productivity_analysestats.py:134
 #: bika/lims/browser/worksheet/views/add_analyses.py:95
 msgid "Analysis"
-msgstr ""
+msgstr "Análisis"
 
 #: bika/lims/content/bikasetup.py:410
 msgid "Analysis Attachment Option"
@@ -348,12 +349,12 @@ msgstr ""
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/AnalysisCategories.xml
 msgid "Analysis Categories"
-msgstr ""
+msgstr "Categorías de análisis"
 
 #: bika/lims/content/abstractbaseanalysis.py:436
 #: bika/lims/profiles/default/types/AnalysisCategory.xml
 msgid "Analysis Category"
-msgstr ""
+msgstr "Categoría de análisis"
 
 #: bika/lims/content/abstractbaseanalysis.py:252
 msgid "Analysis Keyword"
@@ -363,13 +364,13 @@ msgstr ""
 #: bika/lims/content/artemplate.py:249
 #: bika/lims/profiles/default/types/AnalysisProfile.xml
 msgid "Analysis Profile"
-msgstr ""
+msgstr "Perfil de muestra"
 
 #: bika/lims/browser/client/views/analysisprofiles.py:50
 #: bika/lims/content/analysisrequest.py:428
 #: bika/lims/controlpanel/bika_analysisprofiles.py:62
 msgid "Analysis Profiles"
-msgstr ""
+msgstr "Perfiles de muestra"
 
 #: bika/lims/browser/publish/reports_listing.py:53
 msgid "Analysis Reports"
@@ -383,25 +384,25 @@ msgstr ""
 #: bika/lims/browser/fields/resultrangefield.py:34
 #: bika/lims/browser/referencesample.py:276
 msgid "Analysis Service"
-msgstr ""
+msgstr "Servicio de análisis"
 
 #: bika/lims/config.py:68
 #: bika/lims/controlpanel/bika_analysisservices.py:192
 #: bika/lims/profiles/default/controlpanel.xml
 msgid "Analysis Services"
-msgstr ""
+msgstr "Servicios de análisis"
 
 #: bika/lims/content/analysisrequest.py:655
 #: bika/lims/controlpanel/bika_analysisspecs.py:75
 #: bika/lims/profiles/default/types/AnalysisSpec.xml
 msgid "Analysis Specification"
-msgstr ""
+msgstr "Especificación de análisis"
 
 #: bika/lims/controlpanel/bika_analysisspecs.py:63
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/AnalysisSpecs.xml
 msgid "Analysis Specifications"
-msgstr ""
+msgstr "Especificaciones de análisis"
 
 #: bika/lims/browser/reports/productivity_analysesperdepartment.py:59
 msgid "Analysis State"
@@ -483,7 +484,7 @@ msgstr "Adjuntar"
 #: bika/lims/content/attachment.py:51
 #: bika/lims/content/samplepoint.py:123
 msgid "Attachment"
-msgstr ""
+msgstr "Fichero adjunto"
 
 #: bika/lims/content/attachment.py:82
 msgid "Attachment Keys"
@@ -497,13 +498,13 @@ msgstr ""
 #: bika/lims/content/attachment.py:61
 #: bika/lims/controlpanel/bika_attachmenttypes.py:72
 msgid "Attachment Type"
-msgstr ""
+msgstr "Tipo de fichero adjunto"
 
 #: bika/lims/controlpanel/bika_attachmenttypes.py:60
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/AttachmentTypes.xml
 msgid "Attachment Types"
-msgstr ""
+msgstr "Tipos de ficheros adjuntos"
 
 msgid "Attachment due"
 msgstr "Adjunto pendiente"
@@ -528,12 +529,12 @@ msgstr ""
 #: bika/lims/browser/client/views/attachments.py:45
 #: bika/lims/browser/reports/productivity_analysesattachments.py:47
 msgid "Attachments"
-msgstr ""
+msgstr "Ficheros adjuntos"
 
 #: bika/lims/controlpanel/auditlog.py:55
 #: senaite/core/profiles/default/actions.xml
 msgid "Audit Log"
-msgstr ""
+msgstr "Registro de auditoría"
 
 #: bika/lims/browser/instrument.py:747
 msgid "Auto Import Logs of %s"
@@ -541,7 +542,7 @@ msgstr ""
 
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "Auto-Import Logs"
-msgstr ""
+msgstr "Registro de importaciones automáticas"
 
 #: bika/lims/content/artemplate.py:235
 msgid "Auto-partition on receive"
@@ -587,11 +588,11 @@ msgstr ""
 #: bika/lims/profiles/default/types/Batch.xml
 #: bika/lims/vocabularies/__init__.py:137
 msgid "Batch"
-msgstr ""
+msgstr "Lote"
 
 #: bika/lims/profiles/default/types/Batch.xml
 msgid "Batch Book"
-msgstr ""
+msgstr "Libro de lotes"
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:138
 #: bika/lims/browser/batchfolder.py:69
@@ -601,13 +602,13 @@ msgstr ""
 
 #: bika/lims/profiles/default/types/BatchLabel.xml
 msgid "Batch Label"
-msgstr ""
+msgstr "Etiqueta del lote"
 
 #: bika/lims/content/batch.py:115
 #: bika/lims/controlpanel/bika_batchlabels.py:45
 #: bika/lims/profiles/default/controlpanel.xml
 msgid "Batch Labels"
-msgstr ""
+msgstr "Etiquetas del lote"
 
 #: bika/lims/content/analysisrequest.py:345
 msgid "Batch Sub-group"
@@ -617,7 +618,7 @@ msgstr ""
 #: bika/lims/profiles/default/types/BatchFolder.xml
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Batches"
-msgstr ""
+msgstr "Lotes"
 
 #: bika/lims/browser/fields/coordinatefield.py:44
 msgid "Bearing"
@@ -693,7 +694,7 @@ msgstr ""
 #: bika/lims/browser/widgets/serviceswidget.py:86
 #: bika/lims/content/analysisservice.py:371
 msgid "Calculation"
-msgstr ""
+msgstr "Cálculo"
 
 #: bika/lims/content/calculation.py:119
 msgid "Calculation Formula"
@@ -712,7 +713,7 @@ msgstr ""
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/Calculations.xml
 msgid "Calculations"
-msgstr ""
+msgstr "Cálculos"
 
 #: bika/lims/content/instrumentscheduledtask.py:114
 msgid "Calibration"
@@ -721,7 +722,7 @@ msgstr ""
 #: bika/lims/browser/instrument.py:625
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "Calibration Certificates"
-msgstr ""
+msgstr "Certificados de Calibración"
 
 #: bika/lims/content/instrumentcalibration.py:80
 msgid "Calibration report date"
@@ -729,7 +730,7 @@ msgstr ""
 
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "Calibrations"
-msgstr ""
+msgstr "Calibraciones"
 
 #: bika/lims/browser/instrument.py:218
 #: bika/lims/content/instrumentcalibration.py:107
@@ -868,7 +869,7 @@ msgstr ""
 #: bika/lims/browser/batchfolder.py:77
 #: bika/lims/browser/reports/__init__.py:161
 msgid "Client"
-msgstr ""
+msgstr "Cliente"
 
 #: bika/lims/browser/batchfolder.py:83
 #: bika/lims/content/batch.py:98
@@ -910,7 +911,7 @@ msgstr ""
 #: bika/lims/browser/clientfolder.py:49
 #: bika/lims/profiles/default/types/ClientFolder.xml
 msgid "Clients"
-msgstr ""
+msgstr "Clientes"
 
 msgid "Close"
 msgstr "Cerrar"
@@ -988,13 +989,13 @@ msgstr ""
 #: bika/lims/content/analysisrequest.py:148
 #: bika/lims/profiles/default/types/Contact.xml
 msgid "Contact"
-msgstr ""
+msgstr "Contacto"
 
 #: bika/lims/browser/client/views/contacts.py:59
 #: bika/lims/browser/supplier.py:98
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Contacts"
-msgstr ""
+msgstr "Contactos"
 
 #: bika/lims/content/contact.py:54
 msgid "Contacts to CC"
@@ -1008,25 +1009,25 @@ msgstr ""
 #: bika/lims/content/analysisservice.py:135
 #: bika/lims/content/artemplate.py:141
 msgid "Container"
-msgstr ""
+msgstr "Recipiente"
 
 #: bika/lims/content/analysisservice.py:102
 #: bika/lims/content/container.py:48
 #: bika/lims/controlpanel/bika_containers.py:60
 msgid "Container Type"
-msgstr ""
+msgstr "Tipo de recipiente"
 
 #: bika/lims/controlpanel/bika_containertypes.py:45
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/ContainerTypes.xml
 msgid "Container Types"
-msgstr ""
+msgstr "Tipos de recipiente"
 
 #: bika/lims/controlpanel/bika_containers.py:46
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/Containers.xml
 msgid "Containers"
-msgstr ""
+msgstr "Recipientes"
 
 #: bika/lims/browser/client/views/attachments.py:52
 msgid "Content Type"
@@ -1073,7 +1074,7 @@ msgstr ""
 
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 msgid "Create Invoice PDF"
-msgstr ""
+msgstr "Crear Factura en PDF"
 
 #: bika/lims/content/artemplate.py:92
 msgid "Create a new sample of this type"
@@ -1387,13 +1388,13 @@ msgstr ""
 #: bika/lims/content/abstractbaseanalysis.py:486
 #: bika/lims/content/analysiscategory.py:63
 msgid "Department"
-msgstr ""
+msgstr "Departamento"
 
 #: bika/lims/content/labcontact.py:69
 #: bika/lims/controlpanel/bika_labcontacts.py:78
 #: bika/lims/profiles/default/types/Departments.xml
 msgid "Departments"
-msgstr ""
+msgstr "Departamentos"
 
 #: bika/lims/content/calculation.py:79
 msgid "Dependent Analyses"
@@ -1511,7 +1512,7 @@ msgstr ""
 
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "Documents"
-msgstr ""
+msgstr "Documentos"
 
 msgid "Dormant"
 msgstr "Inactivo"
@@ -1554,7 +1555,7 @@ msgstr ""
 
 #: bika/lims/profiles/default/types/DuplicateAnalysis.xml
 msgid "Duplicate Analysis"
-msgstr ""
+msgstr "Análisis duplicados"
 
 #: bika/lims/content/worksheettemplate.py:63
 msgid "Duplicate Of"
@@ -1574,7 +1575,7 @@ msgstr ""
 
 #: bika/lims/profiles/default/controlpanel.xml
 msgid "Dynamic Analysis Specifications"
-msgstr ""
+msgstr "Especificaciones de análisis dinámico"
 
 #: bika/lims/controlpanel/bika_analysisspecs.py:81
 msgid "Dynamic Specification"
@@ -1592,7 +1593,7 @@ msgstr ""
 #: bika/lims/profiles/default/types/AnalysisCategory.xml
 #: bika/lims/profiles/default/types/AnalysisProfile.xml
 msgid "Edit"
-msgstr ""
+msgstr "Editar"
 
 #: bika/lims/content/samplepoint.py:74
 msgid "Elevation"
@@ -1773,7 +1774,7 @@ msgstr ""
 
 #: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Export"
-msgstr ""
+msgstr "Exportar"
 
 #: bika/lims/browser/stickers.py:256
 msgid "Failed to load sticker"
@@ -1947,7 +1948,7 @@ msgstr ""
 
 #: bika/lims/profiles/default/types/ReportFolder.xml
 msgid "History"
-msgstr ""
+msgstr "Historial"
 
 #: senaite/core/browser/viewlets/templates/path_bar.pt:9
 msgid "Home"
@@ -2138,7 +2139,7 @@ msgstr ""
 #: bika/lims/browser/methodfolder.py:67
 #: bika/lims/browser/referencesample.py:163
 msgid "Instrument"
-msgstr ""
+msgstr "Equipo"
 
 #: bika/lims/browser/instrument.py:190
 msgid "Instrument Calibrations"
@@ -2155,7 +2156,7 @@ msgstr ""
 #: bika/lims/controlpanel/bika_instrumentlocations.py:51
 #: bika/lims/profiles/default/controlpanel.xml
 msgid "Instrument Locations"
-msgstr ""
+msgstr "Ubicaciones de equipos"
 
 #: bika/lims/browser/instrument.py:62
 msgid "Instrument Maintenance"
@@ -2167,13 +2168,13 @@ msgstr ""
 
 #: bika/lims/profiles/default/types/InstrumentType.xml
 msgid "Instrument Type"
-msgstr ""
+msgstr "Tipo de equipo"
 
 #: bika/lims/controlpanel/bika_instrumenttypes.py:45
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/InstrumentTypes.xml
 msgid "Instrument Types"
-msgstr ""
+msgstr "Tipos de equipo"
 
 #: bika/lims/browser/instrument.py:287
 msgid "Instrument Validations"
@@ -2207,7 +2208,7 @@ msgstr ""
 #: bika/lims/content/method.py:94
 #: bika/lims/controlpanel/bika_instruments.py:59
 msgid "Instruments"
-msgstr ""
+msgstr "Equipos"
 
 #: bika/lims/browser/resultsimport/autoimportlogs.py:53
 msgid "Interface"
@@ -2262,7 +2263,7 @@ msgstr "Invalidar"
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 #: bika/lims/profiles/default/types/Invoice.xml
 msgid "Invoice"
-msgstr ""
+msgstr "Factura"
 
 #: bika/lims/content/analysisrequest.py:945
 msgid "Invoice Exclude"
@@ -2324,18 +2325,18 @@ msgstr ""
 
 #: bika/lims/profiles/default/types/LabContact.xml
 msgid "Lab Contact"
-msgstr ""
+msgstr "Contacto del laboratorio"
 
 #: bika/lims/controlpanel/bika_labcontacts.py:60
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/Department.xml
 msgid "Lab Contacts"
-msgstr ""
+msgstr "Contactos del laboratorio"
 
 #: bika/lims/controlpanel/bika_departments.py:62
 #: bika/lims/profiles/default/controlpanel.xml
 msgid "Lab Departments"
-msgstr ""
+msgstr "Departamentos del laboratorio"
 
 #: bika/lims/config.py:64
 msgid "Lab Preservation"
@@ -2345,7 +2346,7 @@ msgstr ""
 #: bika/lims/controlpanel/bika_labproducts.py:46
 #: bika/lims/profiles/default/controlpanel.xml
 msgid "Lab Products"
-msgstr ""
+msgstr "Productos del laboratorio"
 
 #: bika/lims/content/laboratory.py:64
 msgid "Lab URL"
@@ -2358,7 +2359,7 @@ msgstr ""
 #: bika/lims/content/laboratory.py:198
 #: bika/lims/profiles/default/types/Laboratory.xml
 msgid "Laboratory"
-msgstr ""
+msgstr "Laboratorio"
 
 #: bika/lims/content/laboratory.py:103
 msgid "Laboratory Accredited"
@@ -2366,7 +2367,7 @@ msgstr ""
 
 #: bika/lims/profiles/default/controlpanel.xml
 msgid "Laboratory Information"
-msgstr ""
+msgstr "Información del laboratorio"
 
 #: bika/lims/content/bikasetup.py:565
 msgid "Laboratory Workdays"
@@ -2378,7 +2379,7 @@ msgstr ""
 
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 msgid "Large Sticker"
-msgstr ""
+msgstr "Etiqueta grande"
 
 #: bika/lims/content/bikasetup.py:717
 msgid "Large sticker"
@@ -2453,7 +2454,7 @@ msgstr ""
 #: bika/lims/profiles/default/types/Contact.xml
 #: bika/lims/profiles/default/types/LabContact.xml
 msgid "Login details"
-msgstr ""
+msgstr "Detalles de acceso"
 
 #: bika/lims/skins/bika/logged_in.cpy:25
 msgid "Login failed. Both email address and password are case sensitive, check that caps lock is not enabled."
@@ -2502,7 +2503,7 @@ msgstr ""
 
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "Maintenance"
-msgstr ""
+msgstr "Mantenimiento"
 
 #. Default: "Type"
 #: bika/lims/content/instrumentmaintenancetask.py:56
@@ -2515,12 +2516,12 @@ msgstr ""
 
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 msgid "Manage Analyses"
-msgstr ""
+msgstr "Administrar análisis"
 
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 #: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Manage Results"
-msgstr ""
+msgstr "Administrar resultados"
 
 #: bika/lims/content/department.py:44
 #: bika/lims/controlpanel/bika_departments.py:81
@@ -2559,13 +2560,13 @@ msgstr ""
 #: bika/lims/content/instrument.py:100
 #: bika/lims/content/referencesample.py:88
 msgid "Manufacturer"
-msgstr ""
+msgstr "Fabricante"
 
 #: bika/lims/controlpanel/bika_manufacturers.py:45
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/Manufacturers.xml
 msgid "Manufacturers"
-msgstr ""
+msgstr "Fabricantes"
 
 #: bika/lims/content/analysisrequest.py:1347
 msgid "Mark the sample for internal use only. This means it is only accessible to lab personnel and not to clients."
@@ -2633,7 +2634,7 @@ msgstr ""
 #: bika/lims/browser/methodfolder.py:58
 #: bika/lims/browser/referencesample.py:159
 msgid "Method"
-msgstr ""
+msgstr "Método"
 
 #: bika/lims/content/method.py:82
 msgid "Method Document"
@@ -2647,7 +2648,7 @@ msgstr ""
 #: bika/lims/browser/widgets/analysisprofileanalyseswidget.py:79
 #: bika/lims/browser/widgets/analysisspecificationwidget.py:85
 msgid "Methods"
-msgstr ""
+msgstr "Métodos"
 
 #: bika/lims/content/person.py:60
 msgid "Middle initial"
@@ -3016,7 +3017,7 @@ msgstr ""
 #: bika/lims/browser/supplyorderfolder.py:49
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Orders"
-msgstr ""
+msgstr "Pedidos"
 
 #: bika/lims/content/instrumentcertification.py:99
 msgid "Organization responsible of granting the calibration certificate"
@@ -3194,7 +3195,7 @@ msgstr "Prepublicar"
 #: bika/lims/content/analysisservice.py:134
 #: bika/lims/content/artemplate.py:142
 msgid "Preservation"
-msgstr ""
+msgstr "Método de preservación"
 
 #: bika/lims/content/preservation.py:43
 msgid "Preservation Category"
@@ -3207,7 +3208,7 @@ msgstr "Preservación requerida"
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/Preservations.xml
 msgid "Preservations"
-msgstr ""
+msgstr "Métodos de preservación"
 
 msgid "Preserve"
 msgstr "Preservar"
@@ -3243,7 +3244,7 @@ msgstr ""
 
 #: bika/lims/profiles/default/types/Pricelist.xml
 msgid "Pricelist"
-msgstr ""
+msgstr "Lista de precios"
 
 #: bika/lims/content/pricelist.py:51
 msgid "Pricelist for"
@@ -3252,7 +3253,7 @@ msgstr ""
 #: bika/lims/browser/pricelist.py:50
 #: bika/lims/profiles/default/types/PricelistFolder.xml
 msgid "Pricelists"
-msgstr ""
+msgstr "Listas de precios"
 
 #: bika/lims/browser/publish/reports_listing.py:96
 #: bika/lims/content/analysisrequest.py:267
@@ -3263,15 +3264,15 @@ msgstr ""
 #: bika/lims/profiles/default/types/Invoice.xml
 #: bika/lims/profiles/default/types/SupplyOrder.xml
 msgid "Print"
-msgstr ""
+msgstr "Imprimir"
 
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 msgid "Print Invoice"
-msgstr ""
+msgstr "Imprimir Factura"
 
 #: bika/lims/profiles/default/types/Pricelist.xml
 msgid "Print pricelist"
-msgstr ""
+msgstr "Imprimir la lista de precios"
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:234
 msgid "Print stickers"
@@ -3288,7 +3289,7 @@ msgstr ""
 
 #: bika/lims/profiles/default/types/ReportFolder.xml
 msgid "Productivity"
-msgstr ""
+msgstr "Productividad"
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:206
 #: bika/lims/controlpanel/bika_analysisprofiles.py:74
@@ -3351,7 +3352,7 @@ msgstr ""
 
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 msgid "Published results"
-msgstr ""
+msgstr "Resultados publicados"
 
 #: bika/lims/browser/workflow/client.py:56
 msgid "Published {}, "
@@ -3363,7 +3364,7 @@ msgstr ""
 
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "QC Results"
-msgstr ""
+msgstr "Resultados QC"
 
 #: bika/lims/browser/analyses/qc.py:55
 #: bika/lims/browser/instrument.py:550
@@ -3426,37 +3427,37 @@ msgstr ""
 
 #: bika/lims/profiles/default/types/ReferenceAnalysis.xml
 msgid "Reference Analysis"
-msgstr ""
+msgstr "Análisis de referencia"
 
 #: bika/lims/browser/referencesample.py:414
 #: bika/lims/content/referencesample.py:61
 #: bika/lims/profiles/default/types/ReferenceDefinition.xml
 msgid "Reference Definition"
-msgstr ""
+msgstr "Definición de referencia"
 
 #: bika/lims/controlpanel/bika_referencedefinitions.py:61
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/ReferenceDefinitions.xml
 msgid "Reference Definitions"
-msgstr ""
+msgstr "Definiciones de referencia"
 
 #: bika/lims/browser/instrument.py:554
 #: bika/lims/browser/worksheet/views/referencesamples.py:72
 #: bika/lims/profiles/default/types/ReferenceSample.xml
 msgid "Reference Sample"
-msgstr ""
+msgstr "Muestra de referencia"
 
 #: bika/lims/browser/referencesample.py:387
 #: bika/lims/profiles/default/types/ReferenceSamplesFolder.xml
 #: bika/lims/profiles/default/types/Supplier.xml
 msgid "Reference Samples"
-msgstr ""
+msgstr "Muestras de referencia"
 
 #: bika/lims/browser/referencesample.py:256
 #: bika/lims/content/referencedefinition.py:45
 #: bika/lims/profiles/default/types/ReferenceSample.xml
 msgid "Reference Values"
-msgstr ""
+msgstr "Valores de referencia"
 
 #: bika/lims/content/referencedefinition.py:63
 #: bika/lims/content/referencesample.py:69
@@ -3473,11 +3474,11 @@ msgstr ""
 
 #: bika/lims/profiles/default/controlpanel.xml
 msgid "Reflex Rules"
-msgstr ""
+msgstr "Reglas para pruebas confirmatorias"
 
 #: bika/lims/profiles/default/types/ReflexRuleFolder.xml
 msgid "Reflex Rules Folder"
-msgstr ""
+msgstr "Reglas para pruebas confirmatorias"
 
 #: bika/lims/controlpanel/bika_reflexrulefolder.py:55
 msgid "Reflex rules folder"
@@ -3485,7 +3486,7 @@ msgstr ""
 
 #: bika/lims/profiles/default/types/ReflexRule.xml
 msgid "ReflexRule"
-msgstr ""
+msgstr "Regla para prueba confirmatoria"
 
 #: bika/lims/content/bikasetup.py:146
 msgid "Register"
@@ -3502,7 +3503,7 @@ msgstr "Rechazar"
 
 #: bika/lims/profiles/default/types/RejectAnalysis.xml
 msgid "Reject Analysis"
-msgstr ""
+msgstr "Rechazar análisis"
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:371
 #: senaite/core/browser/dashboard/dashboard.py:586
@@ -3624,7 +3625,7 @@ msgstr ""
 #: bika/lims/browser/reports/__init__.py:117
 #: bika/lims/profiles/default/types/ReportFolder.xml
 msgid "Reports"
-msgstr ""
+msgstr "Informes"
 
 msgid "Republish"
 msgstr "Volver a publicar"
@@ -3772,7 +3773,7 @@ msgstr ""
 #: bika/lims/browser/worksheet/views/analyses.py:506
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 msgid "Sample"
-msgstr ""
+msgstr "Muestra"
 
 #: bika/lims/browser/analysisrequest/add2.py:1707
 msgid "Sample ${AR} was successfully created."
@@ -3785,13 +3786,13 @@ msgstr ""
 #: bika/lims/controlpanel/bika_sampleconditions.py:71
 #: bika/lims/profiles/default/types/SampleCondition.xml
 msgid "Sample Condition"
-msgstr ""
+msgstr "Condiciones de la muestra"
 
 #: bika/lims/controlpanel/bika_sampleconditions.py:59
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/SampleConditions.xml
 msgid "Sample Conditions"
-msgstr ""
+msgstr "Condiciones de la muestra"
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:92
 #: bika/lims/content/analysisrequest.py:284
@@ -3805,13 +3806,13 @@ msgstr "Importaciones de Muestras"
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/SampleMatrices.xml
 msgid "Sample Matrices"
-msgstr ""
+msgstr "Soportes de muestra"
 
 #: bika/lims/content/sampletype.py:140
 #: bika/lims/controlpanel/bika_samplematrices.py:56
 #: bika/lims/profiles/default/types/SampleMatrix.xml
 msgid "Sample Matrix"
-msgstr ""
+msgstr "Soporte de muestra"
 
 #: bika/lims/content/artemplate.py:166
 msgid "Sample Partitions"
@@ -3821,13 +3822,13 @@ msgstr ""
 #: bika/lims/browser/batch/batchbook.py:74
 #: bika/lims/content/analysisrequest.py:731
 msgid "Sample Point"
-msgstr ""
+msgstr "Punto de muestreo"
 
 #: bika/lims/controlpanel/bika_samplepoints.py:72
 #: bika/lims/controlpanel/bika_sampletypes.py:110
 #: bika/lims/profiles/default/controlpanel.xml
 msgid "Sample Points"
-msgstr ""
+msgstr "Puntos de muestreo"
 
 #: bika/lims/content/analysisrequest.py:635
 msgid "Sample Rejection"
@@ -3841,13 +3842,13 @@ msgstr ""
 #: bika/lims/controlpanel/bika_artemplates.py:62
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Sample Templates"
-msgstr ""
+msgstr "Plantillas de Muestras"
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:180
 #: bika/lims/browser/batch/batchbook.py:70
 #: bika/lims/browser/reports/selection_macros/__init__.py:471
 msgid "Sample Type"
-msgstr ""
+msgstr "Tipo de muestra"
 
 #: bika/lims/content/sampletype.py:147
 msgid "Sample Type Prefix"
@@ -3857,7 +3858,7 @@ msgstr ""
 #: bika/lims/controlpanel/bika_samplepoints.py:95
 #: bika/lims/controlpanel/bika_sampletypes.py:71
 msgid "Sample Types"
-msgstr ""
+msgstr "Tipos de muestras"
 
 #: bika/lims/content/artemplate.py:114
 msgid "Sample collected by the laboratory"
@@ -3975,7 +3976,7 @@ msgstr ""
 #: bika/lims/content/analysisrequest.py:827
 #: bika/lims/profiles/default/types/SamplingDeviation.xml
 msgid "Sampling Deviation"
-msgstr ""
+msgstr "Desviación en el muestreo"
 
 #: bika/lims/controlpanel/bika_samplingdeviations.py:67
 msgid "Sampling Deviationn"
@@ -3985,7 +3986,7 @@ msgstr ""
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/SamplingDeviations.xml
 msgid "Sampling Deviations"
-msgstr ""
+msgstr "Desviaciones en el muestreo"
 
 #: bika/lims/content/samplepoint.py:83
 msgid "Sampling Frequency"
@@ -4015,7 +4016,7 @@ msgstr ""
 
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "Schedule"
-msgstr ""
+msgstr "Tarea programada"
 
 msgid "Schedule sampling"
 msgstr "Programar muestreo"
@@ -4034,7 +4035,7 @@ msgstr ""
 
 #: senaite/core/profiles/default/actions.xml
 msgid "Search"
-msgstr ""
+msgstr "Buscar"
 
 #: bika/lims/browser/fields/coordinatefield.py:43
 msgid "Seconds"
@@ -4236,7 +4237,7 @@ msgstr ""
 
 #: bika/lims/profiles/default/types/BikaSetup.xml
 msgid "Setup"
-msgstr ""
+msgstr "Configuración"
 
 #: bika/lims/content/storagelocation.py:82
 msgid "Shelf Code"
@@ -4298,7 +4299,7 @@ msgstr ""
 
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 msgid "Small Sticker"
-msgstr ""
+msgstr "Etiqueta pequeña"
 
 #: bika/lims/content/bikasetup.py:706
 msgid "Small sticker"
@@ -4364,7 +4365,7 @@ msgstr ""
 #: bika/lims/profiles/default/types/ReferenceSample.xml
 #: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Sticker"
-msgstr ""
+msgstr "Etiqueta"
 
 #: bika/lims/content/bikasetup.py:695
 msgid "Sticker templates"
@@ -4374,19 +4375,19 @@ msgstr ""
 #: bika/lims/profiles/default/types/Batch.xml
 #: bika/lims/profiles/default/types/ReferenceSample.xml
 msgid "Stickers preview"
-msgstr ""
+msgstr "Previsualización de etiquetas"
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:189
 #: bika/lims/content/analysisrequest.py:754
 #: bika/lims/controlpanel/bika_storagelocations.py:65
 msgid "Storage Location"
-msgstr ""
+msgstr "Ubicación de almacenamiento"
 
 #: bika/lims/controlpanel/bika_storagelocations.py:56
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/StorageLocations.xml
 msgid "Storage Locations"
-msgstr ""
+msgstr "Ubicaciones de almacenamiento"
 
 #: bika/lims/content/abstractbaseanalysis.py:610
 msgid "String result"
@@ -4395,13 +4396,13 @@ msgstr ""
 #: bika/lims/controlpanel/bika_subgroups.py:60
 #: bika/lims/profiles/default/types/SubGroup.xml
 msgid "Sub-group"
-msgstr ""
+msgstr "Subgrupo"
 
 #: bika/lims/controlpanel/bika_subgroups.py:52
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/SubGroups.xml
 msgid "Sub-groups"
-msgstr ""
+msgstr "Subgrupos"
 
 #: bika/lims/content/subgroup.py:34
 msgid "Subgroups are sorted with this key in group views"
@@ -4438,22 +4439,22 @@ msgstr ""
 #: bika/lims/browser/worksheet/views/analyses.py:497
 #: bika/lims/content/instrument.py:117
 msgid "Supplier"
-msgstr ""
+msgstr "Proveedor"
 
 #: bika/lims/controlpanel/bika_suppliers.py:60
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/Suppliers.xml
 msgid "Suppliers"
-msgstr ""
+msgstr "Proveedores"
 
 #: bika/lims/browser/supplyorder.py:37
 #: bika/lims/profiles/default/types/SupplyOrder.xml
 msgid "Supply Order"
-msgstr ""
+msgstr "Pedido de cliente"
 
 #: bika/lims/profiles/default/types/SupplyOrderFolder.xml
 msgid "Supply Orders"
-msgstr ""
+msgstr "Pedidos de clientes"
 
 #: bika/lims/browser/worksheet/views/referencesamples.py:75
 msgid "Supported Services"
@@ -5255,7 +5256,7 @@ msgstr ""
 
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "Validations"
-msgstr ""
+msgstr "Validaciones"
 
 #: bika/lims/browser/instrument.py:315
 #: bika/lims/content/instrumentvalidation.py:88
@@ -5290,7 +5291,7 @@ msgstr ""
 #: bika/lims/profiles/default/types/ARTemplate.xml
 #: bika/lims/profiles/default/types/AnalysisCategory.xml
 msgid "View"
-msgstr ""
+msgstr "Detalle"
 
 #: bika/lims/browser/widgets/reflexrulewidget.py:457
 msgid "Visibility (default)"
@@ -5352,7 +5353,7 @@ msgstr ""
 #: bika/lims/browser/referencesample.py:155
 #: bika/lims/browser/worksheet/views/folder.py:93
 msgid "Worksheet"
-msgstr ""
+msgstr "Hoja de trabajo"
 
 #: bika/lims/content/worksheettemplate.py:66
 msgid "Worksheet Layout"
@@ -5360,13 +5361,13 @@ msgstr ""
 
 #: bika/lims/profiles/default/types/WorksheetTemplate.xml
 msgid "Worksheet Template"
-msgstr ""
+msgstr "Plantilla para hoja de trabajo"
 
 #: bika/lims/controlpanel/bika_worksheettemplates.py:61
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/WorksheetTemplates.xml
 msgid "Worksheet Templates"
-msgstr ""
+msgstr "Plantillas para hojas de trabajo"
 
 #: bika/lims/browser/worksheet/views/folder.py:54
 #: bika/lims/profiles/default/types/WorksheetFolder.xml
@@ -5551,10 +5552,10 @@ msgid "label_schema_Analyses"
 msgstr "Análisis"
 
 msgid "label_schema_Analysis Templates"
-msgstr ""
+msgstr "Plantillas de análisis"
 
 msgid "label_schema_Appearance"
-msgstr ""
+msgstr "Apariencia"
 
 msgid "label_schema_Bank details"
 msgstr "Datos bancarios"
@@ -5590,7 +5591,7 @@ msgid "label_schema_Method"
 msgstr "Método"
 
 msgid "label_schema_Notifications"
-msgstr ""
+msgstr "Notificaciones"
 
 msgid "label_schema_Preferences"
 msgstr "Preferencias"
@@ -5602,7 +5603,7 @@ msgid "label_schema_Reference Values"
 msgstr "Valores de referencia"
 
 msgid "label_schema_Reflex Rule Folder"
-msgstr ""
+msgstr "Carpeta de Reglas para pruebas Reflejo"
 
 msgid "label_schema_Result Options"
 msgstr "Opciones para resultados"
@@ -5620,14 +5621,14 @@ msgid "label_schema_Sample Templates"
 msgstr "label_schema_Sample Templates"
 
 msgid "label_schema_Sampling"
-msgstr ""
+msgstr "Muestreo"
 
 # Setup Schemata
 msgid "label_schema_Security"
 msgstr "Seguridad"
 
 msgid "label_schema_Sticker"
-msgstr ""
+msgstr "Etiqueta"
 
 msgid "label_schema_Uncertainties"
 msgstr "Incertidumbres"
