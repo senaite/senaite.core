@@ -315,7 +315,7 @@ class AnalysisProfileAnalysesWidget(TypesWidget):
         table.before_render()
 
         if allow_edit is False:
-            return table.ajax_contents_table_view()
+            return table.contents_table_view()
         return table.ajax_contents_table()
 
 

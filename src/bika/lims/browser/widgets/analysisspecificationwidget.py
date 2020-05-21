@@ -383,9 +383,13 @@ class AnalysisSpecificationWidget(TypesWidget):
         table = api.get_view("table_analysis_specifications",
                              context=instance,
                              request=self.REQUEST)
+
         # Call listing hooks
         table.update()
         table.before_render()
+
+        if allow_edit is False:
+            return table.contents_table_view()
         return table.ajax_contents_table()
 
 
