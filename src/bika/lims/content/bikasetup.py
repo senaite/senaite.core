@@ -37,7 +37,6 @@ from bika.lims.config import WORKSHEET_LAYOUT_OPTIONS
 from bika.lims.content.bikaschema import BikaFolderSchema
 from bika.lims.interfaces import IBikaSetup
 from bika.lims.interfaces import IHaveNoBreadCrumbs
-from bika.lims.locales import COUNTRIES
 from bika.lims.numbergenerator import INumberGenerator
 from bika.lims.vocabularies import getStickerTemplates as _getStickerTemplates
 from plone.app.folder import folder
@@ -60,6 +59,7 @@ from Products.Archetypes.utils import IntDisplayList
 from Products.Archetypes.Widget import RichWidget
 from Products.ATExtensions.ateapi import RecordsField
 from Products.CMFCore.utils import getToolByName
+from senaite.core.locales import COUNTRIES
 from zope.component import getUtility
 from zope.interface import implements
 
