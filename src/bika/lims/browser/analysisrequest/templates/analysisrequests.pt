@@ -20,23 +20,23 @@
              width="32"
              tal:attributes="src senaite_theme/icon_url/sample"/>
 
-        <div class="d-inline-block align-middle"
-             tal:content="python:view.context.translate(view.title)">Samples</div>
+        <span class="d-inline-block align-middle"
+              tal:content="python:view.context.translate(view.title)">Samples</span>
 
-        <div tal:condition="python:checkPermission('senaite.core: Add AnalysisRequest', context)"
+        <span tal:condition="python:checkPermission('senaite.core: Add AnalysisRequest', context)"
               class="d-inline-block align-middle ml-2">
           <form method="GET"
                 class="form-inline"
                 action="ar_add"
                 tal:attributes="action string:${context/absolute_url}/ar_add">
-            <div class="input-group">
+            <span class="input-group">
               <input type="number"
                      name="ar_count"
                      min="1"
                      max="99"
                      class="form-control form-control-sm"
                      tal:attributes="value view/getDefaultAddCount|1"/>
-              <div class="input-group-append">
+              <span class="input-group-append">
                 <button type="submit"
                         class="btn btn-outline-secondary btn-sm">
                   <img src="#"
@@ -44,10 +44,10 @@
                        tal:attributes="src senaite_theme/icon_url/plus"/>
                   <span tal:omit-tag="python:1" i18n:translate="">Add</span>
                 </button>
-              </div>
-            </div>
+              </span>
+            </span>
           </form>
-        </div>
+        </span>
       </h1>
     </metal:content-title>
 
