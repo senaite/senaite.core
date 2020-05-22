@@ -1,5 +1,26 @@
 /* SENAITE toolbar styles */
 
+#senaite-toolbar  {
+    background-color: $senaite-color-dark;
+    .dropdown-menu {
+        a {
+            color: $senaite-color-darkgrey;
+            &:hover {
+                color:  $senaite-color-dark;
+            }
+            &.active {
+                background-color: $senaite-color-lightgrey;
+            }
+        }
+    }
+    a {
+        color: $senaite-color-grey;
+        &:hover {
+            color: $senaite-color-lightgrey;
+        }
+    }
+}
+
 #senaite-toolbar .tb-state {
     &:before {
         @extend .fa;
@@ -8,9 +29,14 @@
     }
 
     &.state-active,
-    &.state-open { color: $blue; }
+    &.state-open { color: $state-active-color; }
+
     &.state-inactive,
     &.state-invalid,
     &.state-closed,
-    &.state-cancelled { color: $red; }
+    &.state-cancelled { color: $state-inactive-color; }
+
+    &.state-to_be_verified { color: $state-to_be_verified-color; }
+    &.state-verified { color: $state-verified-color; }
+    &.state-published { color: $state-published-color; }
 }

@@ -1,8 +1,18 @@
+// SENAITE colors
+$senaite-color-dark: #293333;
+$senaite-color-gold: #927f54;
+$senaite-color-muted: #ababab;
+$senaite-color-lightgrey: #f7f7f7;
+$senaite-color-grey: #d7dbdc;
+$senaite-color-darkgrey: #495057;
+$senaite-color-black: #000;
+
 // Bootstrap overrides
 $body-bg: #fff;
 // $body-color: #111;
 $link-color:  #5fa8bf;
 // $breadcrumb-divider: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPjxwYXRoIGQ9Ik0yLjUgMEwxIDEuNSAzLjUgNCAxIDYuNSAyLjUgOGw0LTQtNC00eiIgZmlsbD0iY3VycmVudENvbG9yIi8+PC9zdmc+);
+$breadcrumb-bg: $senaite-color-lightgrey;
 
 // Bootstrap
 @import "../../node_modules/bootstrap/scss/bootstrap.scss";
@@ -19,5 +29,58 @@ $sidebar-minimized-width: 50px;
 $sidebar-maximized-width: 200px;
 $sidebar-selected-bg: $gray-200;
 $sidebar-selected-color: $navbar-light-active-color;
-$sidebar-color: $navbar-light-color;
+$sidebar-color: $senaite-color-lightgrey;
 $sidebar-hover-color: $navbar-light-hover-color;
+
+
+/* State colors taken from https://mdbootstrap.com/css/colors/
+
+   TODO: Consolidate colors with senaite.core.listing CSS */
+
+/* state active */
+$state-active-color: #007bff;
+$state-active-active-color: rgba(0, 100, 243, 0.2);
+
+/* state inactive */
+$state-inactive-color: #dc3545;
+$state-inactive-active-color: rgba(255, 50, 80, 0.2);
+
+/* state sample_due */
+$state-sample_due-color: #ffff8d;
+$state-sample_due-active-color: rgba(255, 235, 59, 0.1);;
+
+/* state sample_received */
+$state-sample_received-color: #a1887f;
+$state-sample_received-active-color: rgba(121, 85, 72, 0.1);
+
+/* state to_be_verified */
+$state-to_be_verified-color: #18ffff;
+$state-to_be_verified-active-color: rgba(0, 188, 212, 0.1);
+
+/* state verified */
+$state-verified-color: #0091ea;
+$state-verified-active-color: rgba(3, 169, 244, 0.2);
+
+/* state published */
+$state-published-color: #00c853;
+$state-published-active-color: rgba(76, 175, 80, 0.2);
+
+/* state invalid */
+$state-invalid-color: #e65100;
+$state-invalid-active-color: rgba(244, 67, 54, 0.2);
+
+/* state rejected */
+$state-rejected-color: #6c757d;
+$state-rejected-active-color: #343a40;
+
+/* state unassigned */
+$state-unassigned-color: #f8f9fa;
+$state-unassigned-active-color: #ced4da;
+
+/* state retracted */
+$state-retracted-color: #ff6f00;
+$state-retracted-active-color: rgba(255, 152, 0, 0.1);
+
+/* state cancelled */
+$state-cancelled-color: #000000;
+$state-cancelled-active-color: rgba(0, 0, 0, 0.1);

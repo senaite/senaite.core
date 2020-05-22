@@ -1,5 +1,5 @@
 <nav id="senaite-toolbar"
-     class="navbar static-top navbar-expand-md navbar-light bg-light"
+     class="navbar static-top navbar-expand-md"
      tal:define="context_state view/context_state;
             portal_state view/portal_state;
             global_sections python:view.get_global_sections();
