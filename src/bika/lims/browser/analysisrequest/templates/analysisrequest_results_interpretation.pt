@@ -3,38 +3,33 @@
   tal:define="fieldName string:ResultsInterpretationDepts"
   tal:condition="python:not view.is_edit_allowed()">
 
-  <div class="arresultsinterpretation-container"
+  <div class="resultsinterpretations"
        tal:define="departments python:context.getDepartments()">
 
-    <!-- Tabs for departments -->
-    <ul class="nav nav-tabs">
-      <li class="active">
-        <a class="department-tab"
-            href="#"
-            tal:attributes="data-uid python:fieldName+'-general';"
-            i18n:translate="">General</a>
-      </li>
-      <tal:depts repeat="dep departments">
-        <li>
-          <a class="department-tab"
-              href="#"
-              tal:attributes="data-uid python:fieldName+'-'+dep.UID();"
-              tal:content="dep/Title"></a>
-        </li>
-      </tal:depts>
-    </ul>
+    <!-- General Department Results Interpreation -->
+    <tal:general>
+      <table class="table-borderless w-100"
+             tal:define="text python:view.get_text(None, 'raw')">
+        <tr>
+          <th i18n:translate="">General Department</th>
+        </tr>
+        <tr>
+          <td tal:content="structure python:text or default">-</td>
+        </tr>
+      </table>
+    </tal:general>
 
-    <div class="department-area"
-         tal:attributes="id python:fieldName+'-general';">
-      <div tal:content="structure python:view.get_text(None, 'raw')"/>
-    </div>
 
     <tal:department repeat="dept departments">
-      <div class="department-area"
-           tal:define="uid dept/UID"
-           tal:attributes="id python:fieldName+'-'+uid;">
-        <div tal:content="structure python:view.get_text(dept, 'raw')"></div>
-      </div>
+      <table class="table-borderless w-100"
+             tal:define="text python:view.get_text(dept, 'raw')">
+        <tr>
+          <th tal:content="dept/Title">Department</th>
+        </tr>
+        <tr>
+          <td tal:content="structure python:text or default">-</td>
+        </tr>
+      </table>
     </tal:department>
 
   </div>
