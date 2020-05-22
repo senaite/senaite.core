@@ -92,6 +92,7 @@ setup(
         "soupsieve<2.0.0",
         # dependency for jsonapi
         "simplejson",
+        "plone.app.jquerytools",
     ],
     extras_require={
         "test": [
