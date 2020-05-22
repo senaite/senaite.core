@@ -36,6 +36,8 @@
     &.state-closed,
     &.state-cancelled { color: $state-inactive-color; }
 
+    &.state-sample_due {color: $state-sample_due-color; }
+    &.state-sample_received {color: $state-sample_received-color; }
     &.state-to_be_verified { color: $state-to_be_verified-color; }
     &.state-verified { color: $state-verified-color; }
     &.state-published { color: $state-published-color; }

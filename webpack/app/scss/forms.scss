@@ -26,13 +26,21 @@
     }
 }
 
-.form,
 ul.configlets>li>form,
 form.rowlike,
 form.loginform,
 form[name='analysisrequest_add_form'],
 form[action*='-controlpanel'],
+form[name='header_form'],
+form[name='listing_form'],
 form[name='edit_form'] {
+    input, select {
+        width: auto!important;
+    }
+    select {
+        @extend .form-control;
+        @extend .form-control-sm;
+    }
     .required {
         &:before {
             color: $red;

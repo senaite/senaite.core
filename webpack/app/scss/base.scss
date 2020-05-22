@@ -9,7 +9,7 @@ $senaite-color-black: #000;
 
 // Bootstrap overrides
 $body-bg: #fff;
-// $body-color: #111;
+$body-color: $senaite-color-dark;
 $link-color:  #5fa8bf;
 // $breadcrumb-divider: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPjxwYXRoIGQ9Ik0yLjUgMEwxIDEuNSAzLjUgNCAxIDYuNSAyLjUgOGw0LTQtNC00eiIgZmlsbD0iY3VycmVudENvbG9yIi8+PC9zdmc+);
 $breadcrumb-bg: $senaite-color-lightgrey;
@@ -29,7 +29,7 @@ $sidebar-minimized-width: 50px;
 $sidebar-maximized-width: 200px;
 $sidebar-selected-bg: $gray-200;
 $sidebar-selected-color: $navbar-light-active-color;
-$sidebar-color: $senaite-color-lightgrey;
+$sidebar-color: $senaite-color-dark;
 $sidebar-hover-color: $navbar-light-hover-color;
 
 
