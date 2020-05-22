@@ -8,7 +8,6 @@ from mimetypes import guess_type
 from string import Template
 
 from plone.memoize.view import memoize
-from plone.memoize.view import memoize_contextless
 from plone.resource.interfaces import IResourceDirectory
 from Products.Five.browser import BrowserView
 from zope.component import getMultiAdapter
@@ -21,6 +20,7 @@ from zope.traversing.interfaces import TraversalError
 from .interfaces import ISenaiteTheme
 
 IMG_TAG = Template("""<img src="$src" $attr />""")
+
 ICON_BASE_URL = "++plone++senaite.core.static/assets/svg"
 
 
@@ -93,7 +93,7 @@ class SenaiteTheme(BrowserView):
         self.traverse_subpath = []
 
     @property
-    @memoize_contextless
+    @memoize
     def icons(self):
         """Returns a mapping of icons -> icon path
         """
@@ -149,11 +149,11 @@ class SenaiteTheme(BrowserView):
             (self.context, self.request),
             name="plone_portal_state")
 
-    @memoize_contextless
+    @memoize
     def portal(self):
         return self.portal_state.portal()
 
-    @memoize_contextless
+    @memoize
     def portal_url(self):
         return self.portal_state.portal_url()
 
@@ -164,7 +164,7 @@ class SenaiteTheme(BrowserView):
         return formatdate(last_modified, usegmt=True)
 
     def icon_data(self, name, **kw):
-        """Return the raw filedata of the icons
+        """Return the raw filedata of the icon
         """
         icon = self.icon_path(name, **kw)
         resource = self.context.restrictedTraverse(icon)
@@ -187,7 +187,7 @@ class SenaiteTheme(BrowserView):
             response.setHeader('Last-Modified', last_modified)
             return self.request.response.write(data)
 
-    @memoize_contextless
+    @memoize
     def icon_path(self, name, **kw):
         """Returns the relative url for the named icon
 
@@ -198,7 +198,7 @@ class SenaiteTheme(BrowserView):
         default = kw.get("default", "icon-not-found")
         return icons.get(name, icons.get(default))
 
-    # @memoize_contextless
+    @memoize
     def icon_url(self, name, **kw):
         """Returns the absolute url for the named icon
 
@@ -209,7 +209,7 @@ class SenaiteTheme(BrowserView):
         icon_path = self.icon_path(name)
         return "{}/{}".format(portal_url, icon_path)
 
-    @memoize_contextless
+    @memoize
     def icon_tag(self, name, **kw):
         """Returns a generated <img/> tag for the named icon
 
