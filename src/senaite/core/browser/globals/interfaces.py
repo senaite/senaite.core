@@ -11,6 +11,10 @@ class ISenaiteTheme(Interface):
         """Returns a dictionary of icon name -> (relative) icon url
         """
 
+    def icon_data(name, **kw):
+        """Returns the raw icon data
+        """
+
     def icon(name, **kw):
         """Returns the icon as data stream
         """

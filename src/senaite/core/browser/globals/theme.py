@@ -163,6 +163,16 @@ class SenaiteTheme(BrowserView):
             last_modified = time.time()
         return formatdate(last_modified, usegmt=True)
 
+    def icon_data(self, name, **kw):
+        """Return the raw filedata of the icons
+        """
+        icon = self.icon_path(name, **kw)
+        resource = self.context.restrictedTraverse(icon)
+        path = resource.path
+        with open(path, "rb") as f:
+            data = f.read()
+            return data
+
     def icon(self, name, **kw):
         icon = self.icon_path(name, **kw)
         response = self.request.response
@@ -188,7 +198,7 @@ class SenaiteTheme(BrowserView):
         default = kw.get("default", "icon-not-found")
         return icons.get(name, icons.get(default))
 
-    @memoize_contextless
+    # @memoize_contextless
     def icon_url(self, name, **kw):
         """Returns the absolute url for the named icon
 
