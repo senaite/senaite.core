@@ -60,7 +60,7 @@ class ToolbarViewletManager(OrderedViewletManager):
     def get_toolbar_logo(self):
         registry = getUtility(IRegistry)
         settings = registry.forInterface(
-            ISiteSchema, prefix='senaite', check=False)
+            ISiteSchema, prefix="senaite", check=False)
         portal_url = self.portal_state.portal_url()
         try:
             logo = settings.toolbar_logo

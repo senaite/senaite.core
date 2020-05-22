@@ -62,17 +62,19 @@
           <span tal:replace="personal_bar/user_name" />
         </a>
         <!-- Personal Bar Dropdown Items -->
-        <ul class="dropdown-menu dropdown-menu-right">
-          <li class="dropdown-item"
+        <ul class="dropdown-menu dropdown-menu-right"
+            tal:define="url view/context_state/current_page_url">
+          <li class="nav-item"
               tal:repeat="action personal_bar/user_actions">
             <a href=""
-               tal:attributes="action; class string:nav-link">
+               tal:define="selected python:action['href'] == url"
+               tal:attributes="action; class python:selected and 'active nav-link' or 'nav-link'">
+              <tal:islogout condition="python:action['id'] == 'personaltools-logout'">
+                <i class="fas fa-sign-out-alt"></i>
+              </tal:islogout>
               <tal:actionname tal:content="action/title">
                 action title
               </tal:actionname>
-              <tal:islogout condition="python:action['id'] == 'personaltools-logout'">
-                <span class="icon-logout"></span>
-              </tal:islogout>
             </a>
           </li>
         </ul>

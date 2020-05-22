@@ -2,14 +2,15 @@
 
 #senaite-toolbar  {
     background-color: $senaite-color-dark;
+    li.active a, a.active {
+        font-weight: bold;
+        color: white;
+    }
     .dropdown-menu {
         a {
-            color: $senaite-color-darkgrey;
+            color: $senaite-color-dark;
             &:hover {
-                color:  $senaite-color-dark;
-            }
-            &.active {
-                background-color: $senaite-color-lightgrey;
+                color: $link-color;
             }
         }
     }

@@ -5,16 +5,17 @@
   <tal:actions tal:repeat="action options/actions">
 
     <!-- Contentviews -->
-    <li tal:attributes="id string:contentview-${action/id};
-                        class python: action.get('selected') and 'active nav-item font-weight-bold' or 'nav-item'"
-        tal:define="actionid action/id"
-        tal:condition="python:1">
+    <li tal:define="actionid action/id;
+                    selected python:view.is_action_selected(action);"
+        tal:attributes="id string:contentview-${action/id};
+                        class python:selected and 'active nav-item' or 'nav-item'">
 
-      <tal:var define="selected action/selected|nothing;">
+      <tal:var>
         <a href="#"
            tal:attributes="href action/url;
                            target action/link_target|nothing;
                            class string:${action/cssClass} nav-link;">
+          <i tal:condition="selected" class="fas fa-chevron-circle-right"></i>
           <span tal:content="action/title" i18n:translate="">View name</span>
         </a>
       </tal:var>

@@ -19,7 +19,19 @@
 
     <ul class="dropdown-menu dropdown-menu-right"
         tal:define="selected_tab python:view.selected_portal_tab">
-      <navtree tal:replace="structure view/render_globalnav" />
+
+      <tal:block tal:repeat="action view/portal_tabs">
+        <li class="nav-item"
+            tal:define="selected python:action['id'] == selected_tab"
+            tal:condition="action/available|nothing">
+          <a href="#" class="nav-link"
+             tal:attributes="href action/url;
+                             class python:selected and 'active nav-link' or 'nav-link';
+                             title action/description|action/title">
+            <span tal:content="action/title"></span>
+          </a>
+        </li>
+      </tal:block>
     </ul>
   </nav>
 
