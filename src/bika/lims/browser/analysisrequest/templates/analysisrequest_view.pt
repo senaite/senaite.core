@@ -108,7 +108,7 @@
       <div class="row">
         <div class="col-sm-12">
           <h3>
-            <img tal:attributes="src senaite_theme/icon_url/resultsinterpretation"/>
+            <svg tal:replace="structure senaite_theme/icon_data/resultsinterpretation"/>
             <span i18n:translate="">Results interpretation</span>
           </h3>
           <tal:parts replace="structure view/riview"/>
