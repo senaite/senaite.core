@@ -22,12 +22,6 @@ import json
 from collections import OrderedDict
 from copy import copy
 
-from DateTime import DateTime
-from Products.Archetypes.config import REFERENCE_CATALOG
-from Products.CMFPlone.utils import safe_unicode
-from plone.memoize import view as viewcache
-from zope.component import getAdapters
-
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
@@ -48,13 +42,19 @@ from bika.lims.permissions import TransitionVerify
 from bika.lims.permissions import ViewResults
 from bika.lims.permissions import ViewRetractedAnalyses
 from bika.lims.utils import check_permission
-from bika.lims.utils import formatDecimalMark
 from bika.lims.utils import format_supsub
-from bika.lims.utils import getUsers
+from bika.lims.utils import formatDecimalMark
 from bika.lims.utils import get_image
 from bika.lims.utils import get_link
+from bika.lims.utils import getUsers
 from bika.lims.utils import t
 from bika.lims.utils.analysis import format_uncertainty
+from DateTime import DateTime
+from plone.memoize import view as viewcache
+from Products.Archetypes.config import REFERENCE_CATALOG
+from Products.CMFPlone.utils import safe_unicode
+from zope.component import getAdapters
+from zope.component import getMultiAdapter
 
 
 class AnalysesView(BikaListingView):
@@ -238,6 +238,13 @@ class AnalysesView(BikaListingView):
         """
         super(AnalysesView, self).before_render()
         self.request.set("disable_plone.rightcolumn", 1)
+
+    @property
+    @viewcache.memoize
+    def senaite_theme(self):
+        return getMultiAdapter(
+            (self.context, self.request),
+            name="senaite_theme")
 
     @property
     @viewcache.memoize
@@ -938,12 +945,9 @@ class AnalysesView(BikaListingView):
             attachments_html.append(html)
 
             at_file = attachment.getAttachmentFile()
-            icon = at_file.icon
-            if callable(icon):
-                icon = icon()
-            if icon:
-                html = '<img src="{}/{}">'.format(self.portal_url, icon)
-                attachments_html.append(html)
+
+            icon = self.senaite_theme.icon_tag("attachment", width="16")
+            attachments_html.append(icon)
 
             url = '{}/at_download/AttachmentFile'
             url = url.format(attachment.absolute_url())
@@ -958,7 +962,7 @@ class AnalysesView(BikaListingView):
                   ' class="deleteAttachmentButton"' \
                   ' attachment_uid="{}" src="{}"/>'
             img = img.format(
-                uid, '++plone++senaite.core.static/assets/svg/trashcan.svg')
+                uid, '++plone++senaite.core.static/assets/svg/delete.svg')
             attachments_html.append(img)
             attachments_html.append('<br/></span>')
 

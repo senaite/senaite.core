@@ -55,7 +55,7 @@ class AnalysesView(BaseView):
 
         self.icon = "{}/{}".format(
             self.portal_url,
-            "++plone++senaite.core.static/assets/svg/worksheet.svg"
+            "senaite_theme/icon/worksheet"
         )
 
         self.allow_edit = True
