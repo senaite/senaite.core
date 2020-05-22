@@ -44,7 +44,7 @@ class Traverser(object):
 class SenaiteTheme(BrowserView):
     """Theme specific configuration view
 
-    The ppurpose of this view is to deliver assets, e.g. icons or other
+    The purpose of this view is to deliver assets, e.g. icons or other
     configuration entries, for page templates, view classes or JavaScripts,
     so that these can be easily overridden.
 
