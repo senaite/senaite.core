@@ -6,6 +6,9 @@
 @import "plone.scss";
 @import "loader.scss";
 
+/* SVG icon styles */
+i.hazardous-icon svg { fill: $danger; }
+
 
 /* inline delete button for WS attachments */
 img.deleteAttachmentButton {
