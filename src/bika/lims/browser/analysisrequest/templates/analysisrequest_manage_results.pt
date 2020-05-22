@@ -12,28 +12,27 @@
   <body>
     <metal:content-title fill-slot="content-title">
       <h1>
-        <!-- Sample Icon -->
-        <img i18n:attributes="title" title="Sample" src="#"
-             tal:attributes="src senaite_theme/icon_url/sample" />
+        <!-- Sample icon -->
+        <i class="sample-icon" title="Sample" i18n:attributes="title">
+          <svg tal:replace="structure senaite_theme/icon_data/sample" />
+        </i>
         <!-- Title -->
         <span class="documentFirstHeading" tal:content="context/id"></span>
-        <!-- Barcode -->
-        <span class="barcode" tal:attributes="value context/id"></span>
-        <!-- Hazardous Icon -->
-        <img tal:condition="python:view.is_hazardous()"
-             title="Hazardous"
-             i18n:attributes="value"
-             tal:attributes="src senaite_theme/icon_url/hazardous"/>
+        <!-- Hazardous icon -->
+        <i class="hazardous-icon" title="Hazdardous" i18n:attributes="title"
+           tal:condition="python:view.is_hazardous()">
+          <svg tal:replace="structure senaite_theme/icon_data/hazardous" />
+        </i>
         <!-- Exclude Invoice Icon -->
-        <img tal:condition="python:view.exclude_invoice()"
-             title="Exclude from invoice"
-             i18n:attributes="value"
-             tal:attributes="src senaite_theme/icon_url/invoice_exclude"/>
+        <i class="exclude-from-invoice-icon" title="Exclude from invoice" i18n:attributes="title"
+           tal:condition="python:view.exclude_invoice()">
+          <svg tal:replace="structure senaite_theme/icon_data/invoice_exclude" />
+        </i>
         <!-- Retest Icon -->
-        <img tal:condition="python:view.is_retest()"
-             title="Results have been withdrawn"
-             i18n:attributes="value"
-             tal:attributes="src senaite_theme/icon_url/retest"/>
+        <i class="retest-icon" title="Results have been withdrawn" i18n:attributes="title"
+           tal:condition="python:view.is_retest()">
+          <svg tal:replace="structure senaite_theme/icon_data/retest" />
+        </i>
       </h1>
     </metal:content-title>
 
@@ -46,8 +45,9 @@
         <div class="row">
           <div class="col-sm-12">
             <h3>
-              <img i18n:attributes="title" title="Field Analyses" src="#"
-                   tal:attributes="src senaite_theme/icon_url/analysisservice" />
+              <i class="fieldanalyses-icon" title="Field Analyses" i18n:attributes="title">
+                <svg tal:replace="structure senaite_theme/icon_data/analysisservice" />
+              </i>
               <span i18n:translate="">Field Analyses</span>
             </h3>
             <span tal:replace="structure python:view.render_analyses_table(table='field')"/>
@@ -59,8 +59,9 @@
         <div class="row">
           <div class="col-sm-12">
             <h3>
-              <img i18n:attributes="title" title="Lab Analyses" src="#"
-                   tal:attributes="src senaite_theme/icon_url/analysisservice" />
+              <i class="labanalyses-icon" title="Lab Analyses" i18n:attributes="title">
+                <svg tal:replace="structure senaite_theme/icon_data/analysisservice" />
+              </i>
               <span i18n:translate="">Lab Analyses</span>
             </h3>
             <span tal:replace="structure python:view.render_analyses_table(table='lab')"/>
@@ -78,7 +79,10 @@
                  field python:context.Schema()['Remarks'];
                  errors python:{};">
           <h3>
-            <i class="fas fa-comment"></i>
+            <!-- Remarks icon -->
+            <i class="remarks-icon" title="Remarks" i18n:attributes="title">
+              <svg tal:replace="structure senaite_theme/icon_data/remarks" />
+            </i>
             <span i18n:translate="">Remarks</span>
           </h3>
           <metal:widget use-macro="python:context.widget('Remarks', mode=mode)"/>
