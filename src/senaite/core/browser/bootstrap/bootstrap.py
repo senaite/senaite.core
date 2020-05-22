@@ -3,8 +3,8 @@
 import os
 
 from bika.lims import api
-from bika.lims import logger
 from plone.memoize.ram import cache
+from plone.memoize.view import memoize
 from Products.Five import BrowserView
 from zope.component import getMultiAdapter
 from zope.interface import Interface
@@ -49,6 +49,13 @@ class BootstrapView(BrowserView):
 
     def __init__(self, context, request):
         super(BrowserView, self).__init__(context, request)
+
+    @property
+    @memoize
+    def senaite_theme(self):
+        return getMultiAdapter(
+            (self.context, self.request),
+            name="senaite_theme")
 
     def resource_exists(self, resource):
         """Checks if a resouce exists
