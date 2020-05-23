@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<object name="portal_controlpanel" meta_type="Plone Control Panel Tool">
+
+
+  <!-- Actions -->
+  <configlet title="Actions" action_id="ActionSettings" appId="Plone"
+             category="plone-general" condition_expr="" icon_expr=""
+             url_expr="string:${portal_url}/@@actions-controlpanel" visible="True">
+    <permission>Manage portal</permission>
+  </configlet>
+
+  <!-- Cotent Rules -->
+  <configlet title="Content Rules" action_id="ContentRules" appId="Plone"
+             category="plone-content" condition_expr=""
+             icon_expr="string:$portal_url/contentrules_icon.png"
+             url_expr="string:${portal_url}/@@rules-controlpanel" visible="True">
+    <permission>Content rules: Manage rules</permission>
+  </configlet>
+
+  <!-- Date and Time -->
+  <configlet title="Date and Time" action_id="DateAndTime" appId="DateAndTime"
+             category="plone-general" condition_expr=""
+             icon_expr="string:$portal_url/event_icon.png"
+             url_expr="string:${portal_url}/@@dateandtime-controlpanel" visible="True">
+    <permission>Plone Site Setup: Site</permission>
+  </configlet>
+
+  <!-- HTML Filtering -->
+  <configlet title="HTML Filtering" action_id="FilterSettings"
+             appId="FilterSettings" category="plone-security" condition_expr=""
+             icon_expr="string:$portal_url/htmlfilter_icon.png"
+             url_expr="string:${portal_url}/@@filter-controlpanel" visible="True">
+    <permission>Plone Site Setup: Filtering</permission>
+  </configlet>
+
+  <!-- Language -->
+  <configlet title="Language" action_id="LanguageSettings" appId="Plone"
+             category="plone-general" condition_expr=""
+             icon_expr="string:$portal_url/flag-plone.png"
+             url_expr="string:${portal_url}/@@language-controlpanel" visible="True">
+    <permission>Plone Site Setup: Language</permission>
+  </configlet>
+
+  <!-- Mail -->
+  <configlet title="Mail" action_id="MailHost" appId="MailHost"
+             category="plone-general" condition_expr=""
+             icon_expr="string:$portal_url/mail_icon.png"
+             url_expr="string:${portal_url}/@@mail-controlpanel" visible="True">
+    <permission>Plone Site Setup: Mail</permission>
+  </configlet>
+
+  <!-- Maintenance -->
+  <configlet title="Maintenance" action_id="Maintenance" appId="Plone"
+             category="plone-advanced" condition_expr=""
+             icon_expr="string:$portal_url/maintenance_icon.png"
+             url_expr="string:${portal_url}/@@maintenance-controlpanel" visible="True">
+    <permission>Manage portal</permission>
+  </configlet>
+
+  <!-- Markup -->
+  <configlet title="Markup" action_id="MarkupSettings" appId="MarkupSettings"
+             category="plone-content" condition_expr=""
+             icon_expr="string:$portal_url/edit.png"
+             url_expr="string:${portal_url}/@@markup-controlpanel" visible="True">
+    <permission>Plone Site Setup: Markup</permission>
+  </configlet>
+
+  <!-- Password -->
+  <configlet title="Change Password" action_id="MemberPassword" appId="Plone"
+             category="plone-general" condition_expr=""
+             icon_expr="string:$portal_url/lock_icon.png"
+             url_expr="string:${portal_url}/password_form" visible="True">
+    <permission>Set own password</permission>
+  </configlet>
+
+  <!-- Add-ons -->
+  <configlet title="Add-ons" action_id="QuickInstaller" appId="QuickInstaller"
+             category="plone-general" condition_expr=""
+             icon_expr="string:$portal_url/product_icon.png"
+             url_expr="string:${portal_url}/prefs_install_products_form"
+             visible="True">
+    <permission>Manage portal</permission>
+  </configlet>
+
+  <!-- Security -->
+  <configlet title="Security" action_id="SecuritySettings"
+             appId="SecuritySettings" category="plone-security" condition_expr=""
+             icon_expr="string:$portal_url/lock_icon.png"
+             url_expr="string:${portal_url}/@@security-controlpanel" visible="True">
+    <permission>Plone Site Setup: Security</permission>
+  </configlet>
+
+  <!-- Users and Groups -->
+  <configlet title="Users and Groups" action_id="UsersGroups"
+             appId="UsersGroups" category="plone-users" condition_expr=""
+             icon_expr="string:$portal_url/group.png"
+             url_expr="string:${portal_url}/@@usergroup-userprefs" visible="True">
+    <permission>Plone Site Setup: Users and Groups</permission>
+  </configlet>
+
+  <!-- Management Interface -->
+  <configlet title="Management Interface" action_id="ZMI" appId="ZMI"
+             category="plone-advanced" condition_expr=""
+             icon_expr="string:$portal_url/zope_icon.png"
+             url_expr="string:${portal_url}/manage_main" visible="True">
+    <permission>Manage portal</permission>
+  </configlet>
+
+  <!-- Errors -->
+  <configlet title="Errors" action_id="errorLog" appId="ErrorLog"
+             category="plone-security" condition_expr=""
+             icon_expr="string:$portal_url/error_log_icon.png"
+             url_expr="string:${portal_url}/prefs_error_log_form" visible="True">
+    <permission>Manage portal</permission>
+  </configlet>
+
+  <!-- Configuration Registry -->
+  <configlet title="Configuration Registry" action_id="plone.app.registry"
+             appId="plone.app.registry" category="plone-advanced" condition_expr=""
+             icon_expr="string:$portal_url/++resource++plone.app.registry/icon.png"
+             url_expr="string:${portal_url}/portal_registry" visible="True">
+    <permission>Manage portal</permission>
+  </configlet>
+
+</object>
