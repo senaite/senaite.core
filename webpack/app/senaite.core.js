@@ -25,6 +25,12 @@ document.addEventListener("DOMContentLoaded", () => {
   $("#sidebar-header").on("click", function () {
     $("#sidebar").toggleClass("minimized");
   });
+  $("#sidebar").on("mouseenter", function () {
+    $("#sidebar").removeClass("minimized");
+  });
+  $("#sidebar").on("mouseleave", function () {
+    $("#sidebar").addClass("minimized");
+  });
 
   // Initialize tooltips
   $(function () {
