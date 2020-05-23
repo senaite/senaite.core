@@ -18,13 +18,16 @@
 # Copyright 2018-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from Products.CMFCore.utils import getToolByName
-from bika.lims.browser import BrowserView
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from bika.lims import api
 from bika.lims import bikaMessageFactory as _
+from bika.lims.browser import BrowserView
+from bika.lims.utils import formatDateParms
+from bika.lims.utils import formatDateQuery
+from bika.lims.utils import logged_in_client
 from bika.lims.utils import t
-from bika.lims.utils import formatDateQuery, formatDateParms, logged_in_client
 from plone.app.layout.globals.interfaces import IViewView
+from Products.CMFCore.utils import getToolByName
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.interface import implements
 
 
@@ -93,7 +96,7 @@ class Report(BrowserView):
         for a_proxy in attachments:
             attachment = a_proxy.getObject()
             attachment_file = attachment.getAttachmentFile()
-            icon = attachment_file.icon
+            icon = api.get_icon(attachment, False)
             filename = attachment_file.filename
             filesize = attachment_file.get_size()
             filesize = filesize / 1024

@@ -2,15 +2,12 @@
 
 <div class="field" tal:attributes="style view/style|nothing" i18n:domain="senaite.core">
 
-    <label i18n:translate="">Reference Sample</label>
-    <br/>
+  <label for="SampleUID" i18n:translate="">Reference Sample</label>
 
-    <select name="SampleUID:ignore_empty"
-            id="SampleUID"
-            tal:attributes="style string:font-family:${here/base_properties/fontFamily};;font-size:100%;">
-
-        <option value=""></option>
-
-    </select>
+  <select name="SampleUID:ignore_empty"
+          id="SampleUID"
+          class="form-control form-control-sm">
+    <option value=""></option>
+  </select>
 
 </div>

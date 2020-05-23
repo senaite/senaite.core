@@ -1,11 +1,6 @@
-/* <dtml-with bika_reports>
-<dtml-call "REQUEST.set('portal_url', portal_url())">
-*/
-
-/* General Bika Report Table
-*/
 @page {
     size: A4;
+    font: 8pt sans-serif;
     margin: 1cm;
     @bottom-right {
         content: "Page " counter(page) " of " counter(pages);
@@ -14,10 +9,7 @@
 }
 
 body {
-    font-family: &dtml-fontFamily;;
-    background-color: &dtml-backgroundColor;;
-    color: &dtml-fontColor;;
-    font-size:65%;
+    font: 8pt sans-serif;
 }
 
 /* Header styles
@@ -41,7 +33,6 @@ h3 {
 .category_heading {
     font-size: 110%;
     font-weight:bold;
-    border: &dtml-borderWidth; &dtml-borderStyle; &dtml-borderColor;;
     background-color:#efefef;
     margin-bottom:10px;
 }
@@ -53,7 +44,6 @@ h3 {
     font-size: 120%;
     font-weight:bold;
     background-color:#efefef;
-    /*border: &dtml-borderWidth; &dtml-borderStyle; &dtml-borderColor;;*/
 }
 
 .bika-report-parms {
@@ -75,7 +65,6 @@ h3 {
 
 .bika-report-table {
     width: 100%;
-    font-size: &dtml-fontBaseSize;;
     margin-bottom: 15px !important;
 }
 table.bika-report-table {
@@ -97,7 +86,6 @@ table.bika-report-table {
 }
 
 .bika-report-table th {
-    color: &dtml-tableHeaderTextColor;;
     padding:0 4px;
     font-size: 75% !important;
     text-align:left;
@@ -106,7 +94,6 @@ table.bika-report-table {
 }
 
 .bika-report-table td {
-    font-size: &dtml-fontBaseSize; !important;
     font-size: 65% !important;
     vertical-align: middle !important;
     text-align:left;
@@ -127,6 +114,3 @@ table.bika-report-table {
 	font-weight:bold;
 	text-align:right;
 }
-
-/* </dtml-with> */
-

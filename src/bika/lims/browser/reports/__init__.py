@@ -296,8 +296,8 @@ class SubmitForm(BrowserView):
 
         if result:
             # Create new report object
-            reportid = self.aq_parent.generateUniqueId('Report')
-            report = _createObjectByType("Report", self.aq_parent, reportid)
+            reportid = self.context.generateUniqueId('Report')
+            report = _createObjectByType("Report", self.context, reportid)
             report.edit(Client=clientuid)
             report.processForm()
 
