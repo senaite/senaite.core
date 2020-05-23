@@ -18,19 +18,21 @@
 # Copyright 2018-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-"""Bika's browser views are based on this one, for a nice set of utilities.
-"""
 import traceback
 from datetime import datetime
 from time import strptime
 
+import six
+
 from AccessControl import ClassSecurityInfo
-from DateTime.DateTime import DateTime, safelocaltime
+from bika.lims import api
+from bika.lims import logger
+from DateTime.DateTime import DateTime
+from DateTime.DateTime import safelocaltime
 from Products.ATContentTypes.utils import dt2DT
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.i18nl10n import ulocalized_time as _ut
 from Products.Five.browser import BrowserView as BaseBrowserView
-from bika.lims import logger
 from zope.cachedescriptors.property import Lazy as lazy_property
 from zope.i18n import translate
 
@@ -44,7 +46,7 @@ def get_date(context, value):
         return value
     if isinstance(value, datetime):
         return dt2DT(value)
-    if not isinstance(value, basestring):
+    if not isinstance(value, six.stringtypes):
         return None
 
     def try_parse(date_string, format):
@@ -121,7 +123,6 @@ def ulocalized_time(time, long_format=None, time_only=None, context=None,
             .format(time, context))
         time_str = ''
     return time_str
-
 
 
 class BrowserView(BaseBrowserView):
@@ -231,15 +232,12 @@ class BrowserView(BaseBrowserView):
                               (self.request.get('LANGUAGE'), msgid))
             # msg catalog was not able to translate this msgids
             # use default setting
-            properties = getToolByName(self.context,
-                                       'portal_properties').site_properties
             if long_format:
-                format = properties.localLongTimeFormat
+                key = "Products.CMFPlone.i18nl10n.override_dateformat.date_format_long"
+                format = api.get_registry_record(key)
             else:
-                if time_only:
-                    format = properties.localTimeOnlyFormat
-                else:
-                    format = properties.localTimeFormat
+                key = "Products.CMFPlone.i18nl10n.override_dateformat.time_format"
+                format = api.get_registry_record(key)
             return format
         return formatstring.replace(r"${", '%').replace('}', '')
 
