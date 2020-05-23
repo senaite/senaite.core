@@ -463,8 +463,6 @@ class ReferenceSamplesView(BikaListingView):
         """Before template render hook
         """
         super(ReferenceSamplesView, self).before_render()
-        # Don't allow any context actions on the Methods folder
-        self.request.set("disable_border", 1)
 
     def folderitem(self, obj, item, index):
         """Applies new properties to the item (Client) that is currently being
