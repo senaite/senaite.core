@@ -737,7 +737,6 @@ class InstrumentAutoImportLogsView(AutoImportLogsView):
             "portal_type": "AutoImportLog",
             "path": {
                 "query": api.get_path(context),
-                "depth": 1  # searching just inside the specified folder
             },
             "sort_on": "created",
             "sort_order": "descending",
