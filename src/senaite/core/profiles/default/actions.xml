@@ -22,66 +22,93 @@
   </object>
 
   <!-- Document Actions -->
-  <object name="document_actions" meta_type="CMF Action Category">
-    <object name="rss" meta_type="CMF Action" i18n:domain="plone">
-      <property name="visible">False</property>
-    </object>
-    <object name="print" meta_type="CMF Action" i18n:domain="plone">
-      <property name="visible">False</property>
-    </object>
-    <object name="extedit" meta_type="CMF Action" i18n:domain="plone">
-      <property name="visible">False</property>
-    </object>
+  <object name="document_actions" meta_type="CMF Action Category" purge="True">
   </object>
 
   <!-- Object Buttons -->
-  <object name="object_buttons">
-    <object name="cut">
-      <property name="visible">False</property>
-    </object>
-    <object name="copy">
-      <property name="visible">False</property>
-    </object>
-    <object name="paste">
-      <property name="visible">False</property>
-    </object>
-    <object name="delete">
-      <property name="visible">False</property>
-    </object>
-    <object name="rename">
-      <property name="visible">False</property>
-    </object>
-    <object name="redirection">
-      <property name="visible">False</property>
-    </object>
-    <object name="ical_import_enable">
-      <property name="visible">False</property>
-    </object>
-    <object name="ical_import_disable">
-      <property name="visible">False</property>
-    </object>
+  <object name="object_buttons" meta_type="CMF Action Category" purge="True">
   </object>
 
-  <!-- User actions -->
-  <object name="user" meta_type="CMF Action Category">
-    <!-- Hide User Dashboard -->
-    <object name="dashboard" meta_type="CMF Action" i18n:domain="plone">
-      <property name="visible">False</property>
-    </object>
+  <!-- Site Actions -->
+ <object name="site_actions" meta_type="CMF Action Category" purge="True">
+ </object>
 
-    <!-- My Organization link -->
-    <object name="my_organization" meta_type="CMF Action" i18n:domain="plone"
-      insert-before="logout">
-      <property name="title" i18n:translate="">My organization</property>
-      <property name="description"/>
-      <property name="url_expr">string:${portal_url}/my_organization</property>
-      <property name="link_target"/>
-      <property name="icon_expr"/>
-      <property name="available_expr">python:member and "Client" in member.getRoles()</property>
-      <property name="permissions"/>
-      <property name="visible">True</property>
-    </object>
-  </object>
+ <!-- User actions -->
+ <object name="user" meta_type="CMF Action Category" purge="True">
+   <!-- Site Setup -->
+   <object name="plone_setup" meta_type="CMF Action" i18n:domain="plone">
+     <property name="title" i18n:translate="">Site Setup</property>
+     <property name="description" i18n:translate=""></property>
+     <property
+       name="url_expr">string:${portal_url}/@@overview-controlpanel</property>
+     <property name="link_target"></property>
+     <property name="icon_expr"></property>
+     <property name="available_expr"></property>
+     <property name="permissions">
+       <element value="Plone Site Setup: Overview"/>
+     </property>
+     <property name="visible">True</property>
+   </object>
+   <!-- Log in -->
+   <object name="login" meta_type="CMF Action" i18n:domain="plone">
+     <property name="title" i18n:translate="">Log in</property>
+     <property name="description" i18n:translate=""></property>
+     <property
+       name="url_expr">string:${globals_view/navigationRootUrl}/login</property>
+     <property name="link_target"></property>
+     <property name="icon_expr"></property>
+     <property name="available_expr">python:member is None</property>
+     <property name="permissions">
+       <element value="View"/>
+     </property>
+     <property name="visible">True</property>
+     <property name="modal"
+               type="text">{&quot;prependContent&quot;: &quot;.portalMessage&quot;, &quot;title&quot;: &quot;Log in&quot;, &quot;width&quot;: &quot;26em&quot;, &quot;actionOptions&quot;: {&quot;redirectOnResponse&quot;: true}}</property>
+   </object>
+   <!-- Log out -->
+   <object name="logout" meta_type="CMF Action" i18n:domain="plone">
+     <property name="title" i18n:translate="">Log out</property>
+     <property name="description" i18n:translate=""></property>
+     <property
+       name="url_expr">string:${globals_view/navigationRootUrl}/logout</property>
+     <property name="link_target"></property>
+     <property name="icon_expr"></property>
+     <property name="available_expr">python:member is not None</property>
+     <property name="permissions">
+       <element value="View"/>
+     </property>
+     <property name="visible">True</property>
+   </object>
+
+   <!-- Join -->
+   <object name="join" meta_type="CMF Action" i18n:domain="plone">
+     <property name="title" i18n:translate="">Register</property>
+     <property name="description" i18n:translate=""></property>
+     <property
+       name="url_expr">string:${globals_view/navigationRootUrl}/@@register</property>
+     <property name="link_target"></property>
+     <property name="icon_expr"></property>
+     <property name="available_expr">python:member is None</property>
+     <property name="permissions">
+       <element value="Add portal member"/>
+     </property>
+     <property name="visible">True</property>
+     <property name="modal"
+               type="text">{&quot;prependContent&quot;: &quot;.portalMessage&quot;}</property>
+   </object>
+   <!-- My Organization link -->
+   <object name="my_organization" meta_type="CMF Action" i18n:domain="plone"
+           insert-before="logout">
+     <property name="title" i18n:translate="">My organization</property>
+     <property name="description"/>
+     <property name="url_expr">string:${portal_url}/my_organization</property>
+     <property name="link_target"/>
+     <property name="icon_expr"/>
+     <property name="available_expr">python:member and "Client" in member.getRoles()</property>
+     <property name="permissions"/>
+     <property name="visible">True</property>
+   </object>
+ </object>
 
   <!-- Portal Tabs (Located in the upper right button) -->
   <object name="portal_tabs" meta_type="CMF Action Category" purge="True">
