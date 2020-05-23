@@ -10,32 +10,32 @@
   <include package=".setupdata"/>
 
   <browser:page
-    for="Products.CMFPlone.interfaces.IPloneSiteRoot"
-    name="import"
-    class="bika.lims.exportimport.dataimport.ImportView"
-    permission="senaite.core.permissions.ImportInstrumentResults"
-    layer="bika.lims.interfaces.IBikaLIMS"
-  />
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+      name="import"
+      class="bika.lims.exportimport.dataimport.ImportView"
+      permission="senaite.core.permissions.ImportInstrumentResults"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
 
   <browser:page
-    for="*"
-    name="getImportTemplate"
-    class="bika.lims.exportimport.dataimport.ajaxGetImportTemplate"
-    permission="zope.Public"
-    layer="bika.lims.interfaces.IBikaLIMS"
-  />
+      for="*"
+      name="getImportTemplate"
+      class="bika.lims.exportimport.dataimport.ajaxGetImportTemplate"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
 
   <browser:page
-    for="*"
-    name="getImportInterfaces"
-    class="bika.lims.exportimport.dataimport.ajaxGetImportInterfaces"
-    permission="zope.Public"
-    layer="bika.lims.interfaces.IBikaLIMS"
-  />
+      for="*"
+      name="getImportInterfaces"
+      class="bika.lims.exportimport.dataimport.ajaxGetImportInterfaces"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
 
   <adapter
-    for="Products.CMFPlone.interfaces.IPloneSiteRoot"
-    factory="bika.lims.exportimport.dataimport.SetupDataSetList"
-    provides="bika.lims.interfaces.ISetupDataSetList"/>
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+      factory="bika.lims.exportimport.dataimport.SetupDataSetList"
+      provides="bika.lims.interfaces.ISetupDataSetList"/>
 
 </configure>
