@@ -2,6 +2,15 @@
            xmlns:browser="http://namespaces.zope.org/browser"
            i18n_domain="senaite.core">
 
+  <!-- Favicon Viewlet -->
+  <browser:viewlet
+      name="plone.links.favicon"
+      manager="plone.app.layout.viewlets.interfaces.IHtmlHead"
+      class=".favicon.FaviconViewlet"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
   <!-- Listing Table Title Viewlet -->
   <browser:viewlet
       name="senaite.core.listingtabletitle"

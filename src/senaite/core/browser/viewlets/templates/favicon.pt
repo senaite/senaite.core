@@ -1,0 +1,4 @@
+<tal:favicon define="portal_url view/site_url">
+    <link rel="shortcut icon" type="image/x-icon" tal:attributes="href string:$portal_url/++plone++senaite.core.static/images/favicon.ico" />
+    <link rel="apple-touch-icon" tal:attributes="href string:$portal_url/++plone++senaite.core.static/images/favicon.ico" />
+</tal:favicon>
