@@ -37,7 +37,6 @@
     SiteView.prototype.load = function() {
       console.debug("SiteView::load");
       this.init_datepickers();
-      this.init_referencedefinition();
       this.bind_eventhandler();
       return this.allowed_keys = [8, 9, 13, 35, 36, 37, 39, 46, 44, 60, 62, 45, 69, 101, 61];
     };

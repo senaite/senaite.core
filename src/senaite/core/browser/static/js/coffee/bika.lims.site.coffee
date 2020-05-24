@@ -12,7 +12,7 @@ class window.SiteView
     @init_datepickers()
 
     # initialze reference definition selection
-    @init_referencedefinition()
+    # @init_referencedefinition()
 
     # bind the event handler to the elements
     @bind_eventhandler()
