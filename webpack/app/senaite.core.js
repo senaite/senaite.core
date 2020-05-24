@@ -22,14 +22,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
   // Initialize sidebar toggle
+  var tid = null;
   $("#sidebar-header").on("click", function () {
     $("#sidebar").toggleClass("minimized");
   });
   $("#sidebar").on("mouseenter", function () {
-    $("#sidebar").removeClass("minimized");
+    // delay sidebar expand 500ms
+    tid = setTimeout(function(){
+      $("#sidebar").removeClass("minimized");
+    }, 500);
+    // console.debug("Setting sidebar timeout", tid);
   });
   $("#sidebar").on("mouseleave", function () {
     $("#sidebar").addClass("minimized");
+    console.debug("Clearing sidebar timeout", tid);
+    // clearTimeout(tid)
   });
 
   // Initialize tooltips
