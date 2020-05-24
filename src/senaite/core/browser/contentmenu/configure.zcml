@@ -41,4 +41,13 @@
       provides="plone.app.contentmenu.interfaces.IContentMenuItem"
       />
 
+  <!-- Workflow Menu -->
+  <adapter
+      for="*
+           senaite.core.interfaces.ISenaiteCore"
+      name="plone.contentmenu.workflow"
+      factory=".menu.WorkflowSubMenuItem"
+      provides="plone.app.contentmenu.interfaces.IContentMenuItem"
+      />
+
 </configure>

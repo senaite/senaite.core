@@ -7,6 +7,8 @@ from plone.app.contentmenu.menu import \
     FactoriesSubMenuItem as BaseFactoriesSubMenuItem
 from plone.app.contentmenu.menu import \
     PortletManagerSubMenuItem as BasePortletManagerSubMenuItem
+from plone.app.contentmenu.menu import \
+    WorkflowSubMenuItem as BaseWorkflowSubMenuItem
 from plone.memoize.instance import memoize
 from plone.portlets.interfaces import ILocalPortletAssignable
 from senaite.core.interfaces import IShowDisplayMenu
@@ -43,3 +45,11 @@ class PortletManagerSubMenuItem(BasePortletManagerSubMenuItem):
             return False
         else:
             return ILocalPortletAssignable.providedBy(self.context)
+
+
+class WorkflowSubMenuItem(BaseWorkflowSubMenuItem):
+    """The Workflow Menu
+    """
+
+    def available(self):
+        return super(WorkflowSubMenuItem, self).available()
