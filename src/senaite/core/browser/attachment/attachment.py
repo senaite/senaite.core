@@ -315,7 +315,7 @@ class AttachmentsView(BrowserView):
             client.manage_delObjects([attachment.getId(), ])
 
     def global_attachments_allowed(self):
-        """Checks Bika Setup if Attachments are allowed
+        """Checks Setup if Attachments are allowed
         """
         bika_setup = api.get_bika_setup()
         return bika_setup.getAttachmentsPermitted()
@@ -327,7 +327,7 @@ class AttachmentsView(BrowserView):
         return bika_setup.getARAttachmentsPermitted()
 
     def global_analysis_attachments_allowed(self):
-        """Checks Bika Setup if Attachments for Analyses are allowed
+        """Checks Setup if Attachments for Analyses are allowed
         """
         bika_setup = api.get_bika_setup()
         return bika_setup.getAnalysisAttachmentsPermitted()
@@ -352,16 +352,11 @@ class AttachmentsView(BrowserView):
         attachment_uid = api.get_uid(attachment)
         attachment_file = attachment.getAttachmentFile()
         attachment_type = attachment.getAttachmentType()
-        attachment_icon = attachment_file.icon
-
-        if callable(attachment_icon):
-            attachment_icon = attachment_icon()
 
         return {
             'keywords': attachment.getAttachmentKeys(),
             'size': self.get_attachment_size(attachment),
             'name': attachment_file.filename,
-            'Icon': attachment_icon,
             'type': api.get_uid(attachment_type) if attachment_type else '',
             'absolute_url': attachment.absolute_url(),
             'UID': attachment_uid,
