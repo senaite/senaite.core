@@ -46,7 +46,7 @@ def get_date(context, value):
         return value
     if isinstance(value, datetime):
         return dt2DT(value)
-    if not isinstance(value, six.stringtypes):
+    if not isinstance(value, six.string_types):
         return None
 
     def try_parse(date_string, format):
