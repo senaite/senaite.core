@@ -25,7 +25,7 @@ class ContentMenuProvider(Base):
             # remove the "Advanced ..." submenu
             submenu = filter(
                 lambda m: m.get("title") != "label_advanced",
-                item.get("submenu", []))
+                item.get("submenu", []) or [])
             item["submenu"] = submenu
         return item
 
