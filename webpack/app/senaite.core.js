@@ -35,8 +35,8 @@ document.addEventListener("DOMContentLoaded", () => {
   });
   $("#sidebar").on("mouseleave", function () {
     $("#sidebar").addClass("minimized");
-    console.debug("Clearing sidebar timeout", tid);
-    // clearTimeout(tid)
+    // console.debug("Clearing sidebar timeout", tid);
+    clearTimeout(tid)
   });
 
   // Initialize tooltips
