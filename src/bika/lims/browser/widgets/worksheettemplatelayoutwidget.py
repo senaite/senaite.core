@@ -27,12 +27,13 @@ class WorksheetTemplateLayoutWidget(RecordsWidget):
     security = ClassSecurityInfo()
     _properties = RecordsWidget._properties.copy()
     _properties.update({
-        'macro': "bika_widgets/worksheettemplatelayoutwidget",
-        'helper_js': ("bika_widgets/worksheettemplatelayoutwidget.js",),
-        'helper_css': ("bika_widgets/worksheettemplatelayoutwidget.css",),
+        "macro": "bika_widgets/worksheettemplatelayoutwidget",
+        "helper_js": ("bika_widgets/worksheettemplatelayoutwidget.js",),
+        "helper_css": ("bika_widgets/worksheettemplatelayoutwidget.css",),
     })
 
-    security.declarePublic('get_template_rows')
+    security.declarePublic("get_template_rows")
+
     def get_template_rows(self, num_positions, current_field_value):
         try:
             num_pos = int(num_positions)
@@ -50,15 +51,15 @@ class WorksheetTemplateLayoutWidget(RecordsWidget):
                 i = i + 1
         for i in range(i, (num_pos + 1)):
             row = {
-                'pos': i,
-                'type': 'a',
-                'sub': 1}
+                "pos": i,
+                "type": "a",
+                "sub": 1}
             rows.append(row)
         return rows
 
 
 registerWidget(
     WorksheetTemplateLayoutWidget,
-    title='WS Template Analyses Layout',
-    description=('Worksheet analyses layout.'),
+    title="WS Template Analyses Layout",
+    description=("Worksheet analyses layout."),
 )
