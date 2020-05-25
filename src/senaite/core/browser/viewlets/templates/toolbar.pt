@@ -39,6 +39,16 @@
         <div tal:replace="structure language_selector/template"></div>
       </li>
 
+      <!-- Search trigger -->
+      <li class="nav-item">
+        <a class="nav-link"
+           title="Press Ctrl+Space to trigger the Spotlight search"
+           i18n:attributes="title"
+           tal:attributes="href string:${portal_state/portal_url}/spotlight">
+          <i class="fas fa-search"></i>
+        </a>
+      </li>
+
       <!-- LIMS Setup -->
       <li class="nav-item" tal:condition="view/is_manager">
         <a class="nav-link"

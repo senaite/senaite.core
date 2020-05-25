@@ -71,8 +71,7 @@ setup(
         "zopyx.txng3.ext==3.4.0",
         "senaite.core.supermodel",
         "senaite.core.listing",
-        # XXX P5: Fix senaite.jsonapi
-        # "senaite.core.spotlight",
+        "senaite.core.spotlight",
         "senaite.impress",
         # tinycss2 >= 1.0.0 does not support Python 2.x anymore
         "tinycss2<1.0.0",
