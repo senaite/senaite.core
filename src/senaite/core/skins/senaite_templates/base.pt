@@ -19,7 +19,7 @@
 
       <metal:body_macro metal:define-macro="body">
 
-        <table class="table table-hover table-sm table-bordered my-3">
+        <table class="table table-hover table-sm my-3 table-borderless">
           <colgroup>
             <col />
             <col style="width:100%" />

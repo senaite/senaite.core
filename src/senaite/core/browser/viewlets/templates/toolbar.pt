@@ -13,8 +13,8 @@
   </a>
 
   <!-- Navbar Toggle Button -->
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#toolbarContent" aria-controls="toolbarContent" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
+  <button class="navbar-toggler btn btn-outline-light" type="button" data-toggle="collapse" data-target="#toolbarContent" aria-controls="toolbarContent" aria-expanded="false" aria-label="Toggle navigation">
+    <i class="fas fa-bars"></i>
   </button>
 
   <!-- Navbar Menu Items -->

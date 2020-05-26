@@ -28,7 +28,7 @@
         <tal:if_perm
           condition="python:'view' in widget.modes and 'r' in field.mode and field.checkPermission('r',here)">
           <tal:if_use_label condition="use_label | nothing">
-            <td class="field-label">
+            <td class="field-label text-nowrap">
               <metal:use_label use-macro="label_macro" />
             </td>
           </tal:if_use_label>
