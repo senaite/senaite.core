@@ -5,19 +5,20 @@
         xmlns:tal="http://xml.zope.org/namespaces/tal"
         xmlns:metal="http://xml.zope.org/namespaces/metal"
         xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-        tal:define="portal_state python:context.restrictedTraverse('@@plone_portal_state');
-               context_state python:context.restrictedTraverse('@@plone_context_state');
-               plone_view python:context.restrictedTraverse('@@plone');
-               plone_layout python:context.restrictedTraverse('@@plone_layout');
-               bootstrapview python:context.restrictedTraverse('@@bootstrapview');
-               lang python:portal_state.language();
-               view nocall:view | nocall: plone_view;
-               dummy python: plone_layout.mark_view(view);
-               portal_url python:portal_state.portal_url();
-               checkPermission python:context.restrictedTraverse('portal_membership').checkPermission;
-               site_properties python:context.restrictedTraverse('portal_properties').site_properties;
-               ajax_include_head python:request.get('ajax_include_head', False);
-               ajax_load python:False;"
+        tal:define="senaite_theme python:context.restrictedTraverse('@@senaite_theme');
+                    portal_state python:context.restrictedTraverse('@@plone_portal_state');
+                    context_state python:context.restrictedTraverse('@@plone_context_state');
+                    plone_view python:context.restrictedTraverse('@@plone');
+                    plone_layout python:context.restrictedTraverse('@@plone_layout');
+                    bootstrapview python:context.restrictedTraverse('@@bootstrapview');
+                    lang python:portal_state.language();
+                    view nocall:view | nocall: plone_view;
+                    dummy python: plone_layout.mark_view(view);
+                    portal_url python:portal_state.portal_url();
+                    checkPermission python:context.restrictedTraverse('portal_membership').checkPermission;
+                    site_properties python:context.restrictedTraverse('portal_properties').site_properties;
+                    ajax_include_head python:request.get('ajax_include_head', False);
+                    ajax_load python:False;"
         i18n:domain="plone"
         tal:attributes="lang lang;">
 
