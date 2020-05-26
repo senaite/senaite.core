@@ -2,6 +2,7 @@
 <object name="Multifiles"
         meta_type="Factory-based Type Information with dynamic views"
         i18n:domain="bika.lims" xmlns:i18n="http://xml.zope.org/namespaces/i18n">
+
     <property name="title" i18n:translate="">Multifile</property>
     <property name="description"
               i18n:translate="">A contenttype to update files</property>
@@ -15,16 +16,14 @@
     <property name="default_view_fallback">False</property>
 
     <alias from="(Default)" to="base_view" />
-    <alias from="edit" to="base_edit" />
     <alias from="view" to="base_view" />
+    <alias from="edit" to="base_edit" />
 
-    <!-- The <action> elements register type-specific actions for the content-type. The object category makes the
-    render as tabs in the Plone UI. -->
     <action title="View"
             action_id="view"
             category="object"
             condition_expr=""
-            url_expr="string:${object_url}/base_view"
+            url_expr="string:${object_url}"
             visible="True">
         <permission value="View" />
     </action>
@@ -33,7 +32,7 @@
             action_id="edit"
             category="object"
             condition_expr=""
-            url_expr="string:${object_url}/base_edit"
+            url_expr="string:${object_url}/edit"
             visible="True">
         <permission value="Modify portal content" />
     </action>

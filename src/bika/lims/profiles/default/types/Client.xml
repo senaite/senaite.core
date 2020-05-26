@@ -41,7 +41,7 @@
   <action title="Edit"
           action_id="edit"
           category="object"
-          url_expr="string:${object_url}/base_edit"
+          url_expr="string:${object_url}/edit"
           i18n:attributes="title"
           i18n:domain="plone"
           visible="True">

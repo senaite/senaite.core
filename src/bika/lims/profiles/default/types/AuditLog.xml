@@ -4,6 +4,7 @@
         xmlns:i18n="http://xml.zope.org/namespaces/i18n"
         i18n:domain="senaite.core"
         purge="True">
+
  <property name="title" i18n:translate="">Audit Log</property>
  <property name="description"></property>
  <property name="content_icon">senaite_theme/icon/auditlog</property>

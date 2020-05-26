@@ -4,6 +4,7 @@
         xmlns:i18n="http://xml.zope.org/namespaces/i18n"
         i18n:domain="plone"
         purge="True">
+
  <property name="title" i18n:translate="">Laboratory</property>
  <property name="description"></property>
  <property name="content_icon">senaite_theme/icon/laboratory</property>
@@ -21,23 +22,19 @@
  <property name="allowed_content_types">
  </property>
 
- <!--
-  Always redirect the user to base_edit, where only users with "Modify portal
-  content" permission granted have access.
-  -->
- <alias from="(Default)" to="base_edit"/>
- <alias from="base_view" to="base_edit"/>
+ <alias from="(Default)" to="base_view"/>
+ <alias from="base_view" to="base_view"/>
+ <alias from="view" to="base_view"/>
  <alias from="edit" to="base_edit"/>
- <alias from="view" to="base_edit"/>
 
  <action title="View"
          action_id="view"
          category="object"
          condition_expr=""
-         url_expr="string:${object_url}/view"
+         url_expr="string:${object_url}"
          i18n:attributes="title"
          i18n:domain="plone"
-         visible="False">
+         visible="True">
    <permission value="View"/>
  </action>
 
@@ -48,7 +45,7 @@
          url_expr="string:${object_url}/edit"
          i18n:attributes="title"
          i18n:domain="plone"
-         visible="False">
+         visible="True">
    <permission value="Modify portal content"/>
  </action>
 

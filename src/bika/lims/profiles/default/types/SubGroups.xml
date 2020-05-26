@@ -3,6 +3,7 @@
         meta_type="Factory-based Type Information with dynamic views"
         xmlns:i18n="http://xml.zope.org/namespaces/i18n"
        i18n:domain="plone">
+
  <property name="title" i18n:translate="">Sub-groups</property>
  <property name="description"></property>
  <property name="content_icon">senaite_theme/icon/batch</property>

@@ -3,9 +3,10 @@
         meta_type="Factory-based Type Information with dynamic views"
         xmlns:i18n="http://xml.zope.org/namespaces/i18n"
         i18n:domain="plone">
+
  <property name="title" i18n:translate="">Reject Analysis</property>
  <property name="description"></property>
- <property name="content_icon">senaite_theme/icon/worksheet</property>
+ <property name="content_icon">senaite_theme/icon/analysis</property>
  <property name="content_meta_type">RejectAnalysis</property>
  <property name="product">bika.lims</property>
  <property name="factory">addRejectAnalysis</property>
@@ -16,4 +17,5 @@
  <property name="allowed_content_types"/>
  <property name="allow_discussion">False</property>
  <property name="default_view_fallback">False</property>
+
 </object>

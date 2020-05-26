@@ -4,6 +4,7 @@
         xmlns:i18n="http://xml.zope.org/namespaces/i18n"
         i18n:domain="plone"
         purge="True">
+
  <property name="title" i18n:translate="">Reference Definition</property>
  <property name="description"></property>
  <property name="content_icon">senaite_theme/icon/referencedefinition</property>
@@ -18,9 +19,8 @@
  <property name="allow_discussion">False</property>
  <property name="default_view_fallback">False</property>
 
- <alias from="(Default)" to="base_edit"/>
- <alias from="base_view" to="base_edit"/>
- <alias from="view" to="base_edit"/>
+ <alias from="(Default)" to="base_view"/>
+ <alias from="view" to="base_view"/>
  <alias from="edit" to="base_edit"/>
 
  <action title="View"
@@ -32,7 +32,7 @@
          url_expr="string:${object_url}"
          i18n:attributes="title"
          i18n:domain="plone"
-         visible="False">
+         visible="True">
      <permission value="View"/>
  </action>
 
@@ -42,10 +42,10 @@
          condition_expr=""
          icon_expr=""
          link_target=""
-         url_expr="string:${object_url}/base_edit"
+         url_expr="string:${object_url}/edit"
          i18n:attributes="title"
          i18n:domain="plone"
-         visible="False">
+         visible="True">
      <permission value="senaite.core: Manage Bika"/>
  </action>
 

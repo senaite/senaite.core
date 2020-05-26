@@ -4,6 +4,7 @@
         xmlns:i18n="http://xml.zope.org/namespaces/i18n"
         i18n:domain="plone"
         purge="True">
+
  <property name="title" i18n:translate="">Duplicate Analysis</property>
  <property name="description"></property>
  <property name="content_icon">senaite_theme/icon/worksheet</property>
@@ -17,4 +18,5 @@
  <property name="allowed_content_types"/>
  <property name="allow_discussion">False</property>
  <property name="default_view_fallback">False</property>
+
 </object>

@@ -4,6 +4,7 @@
         xmlns:i18n="http://xml.zope.org/namespaces/i18n"
         i18n:domain="plone"
         purge="True">
+
  <property name="title" i18n:translate="">Container</property>
  <property name="description"></property>
  <property name="content_icon">senaite_theme/icon/container</property>
@@ -26,7 +27,7 @@
          action_id="view"
          category="object"
          condition_expr=""
-         url_expr="string:${object_url}/view"
+         url_expr="string:${object_url}"
          i18n:attributes="title"
          i18n:domain="plone"
          visible="True">

@@ -4,6 +4,7 @@
         xmlns:i18n="http://xml.zope.org/namespaces/i18n"
         i18n:domain="plone"
         purge="True">
+
  <property name="title" i18n:translate="">Clients</property>
  <property name="description"></property>
  <property name="content_icon">senaite_theme/icon/clientfolder</property>
@@ -22,5 +23,28 @@
 
  <alias from="(Default)" to="base_view"/>
  <alias from="view" to="base_view"/>
+ <alias from="edit" to="base_view"/>
+
+ <action title="View"
+         action_id="view"
+         category="object"
+         condition_expr=""
+         url_expr="string:${object_url}"
+         i18n:attributes="title"
+         i18n:domain="plone"
+         visible="False">
+   <permission value="View"/>
+ </action>
+
+ <action title="Edit"
+         action_id="edit"
+         category="object"
+         condition_expr=""
+         url_expr="string:${object_url}/base_view"
+         i18n:attributes="title"
+         i18n:domain="plone"
+         visible="False">
+   <permission value="Modify portal content"/>
+ </action>
 
 </object>
