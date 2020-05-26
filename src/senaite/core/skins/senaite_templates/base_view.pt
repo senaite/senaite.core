@@ -1,0 +1,92 @@
+<!-- SENAITE customized base_view.pt
+
+   - Use senaite_legacy_js and senaite_legacy_css slots to register helper css/js
+
+-->
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xml:lang="en"
+      lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      metal:use-macro="context/main_template/macros/master"
+      i18n:domain="plone">
+
+  <head><title></title></head>
+
+  <metal:javascript_head fill-slot="senaite_legacy_js">
+    <tal:block define="macro context/archetypes_custom_js/macros/javascript_head | nothing"
+               condition="macro">
+      <metal:block use-macro="macro" />
+    </tal:block>
+    <tal:comment replace="nothing">
+      Many of the following defines duplicated from the tal:defines in the
+      main slot. With base_edit, edit_macros could be reused as it was defined
+      for the entire document. base_view uses main_template and thus must
+      create additional defines for each slot it fills.
+    </tal:comment>
+    <tal:js define="fields python:context.Schema().viewableFields(here);
+                    portal context/portal_url/getPortalObject;
+                    js python:context.getUniqueWidgetAttr(fields, 'helper_js')"
+            condition="js"
+            repeat="item js">
+      <script type="text/javascript"
+              charset="iso-8859-1"
+              tal:condition="python:exists('portal/%s' % item)"
+              tal:attributes="src string:$portal_url/$item">
+      </script>
+    </tal:js>
+    <tal:block define="portal_type python:context.getPortalTypeName().lower().replace(' ', '_');
+                       view_template python:'%s_view' % portal_type;
+                       view_macros python:path('context/%s/macros|nothing' % view_template);
+                       macro view_macros/js | nothing"
+               condition="macro">
+      <metal:block use-macro="macro" />
+    </tal:block>
+  </metal:javascript_head>
+
+  <metal:css fill-slot="senaite_legacy_css">
+    <tal:comment replace="nothing">
+      Many of the following defines duplicated from the tal:defines in the
+      main slot. With base_edit, edit_macros could be reused as it was defined
+      for the entire document. base_view uses main_template and thus must
+      create additional defines for each slot it fills.
+    </tal:comment>
+    <tal:css define="fields python:context.Schema().viewableFields(here);
+                     css python:context.getUniqueWidgetAttr(fields, 'helper_css');
+                     portal context/portal_url/getPortalObject;"
+             condition="css"
+             repeat="item css">
+      <style type="text/css"
+             media="all"
+             tal:condition="python:exists('portal/%s' % item)"
+             tal:content="structure string:&lt;!-- @import url($portal_url/$item); --&gt;">
+      </style>
+    </tal:css>
+    <tal:block define="portal_type python:context.getPortalTypeName().lower().replace(' ', '_');
+                       view_template python:'%s_view' % portal_type;
+                       view_macros python:path('context/%s/macros|nothing' % view_template);
+                       macro view_macros/css | nothing"
+               condition="macro">
+      <metal:block use-macro="macro" />
+    </tal:block>
+  </metal:css>
+
+  <body>
+    <metal:fill fill-slot="content-core">
+      <metal:main_macro define-macro="content-core"
+                        tal:define="portal_type python:context.getPortalTypeName().lower().replace(' ', '_');
+                                    base_macros context/base/macros;
+                                    view_template python:'%s_view' % portal_type;
+                                    view_macros python:path('context/%s/macros|nothing' % view_template);
+                                    body_macro view_macros/body | body_macro | base_macros/body;
+                                    folderlisting_macro view_macros/folderlisting | folderlisting | base_macros/folderlisting;
+                                    errors python:request.get('errors', {})">
+
+        <metal:use_body use-macro="body_macro" />
+        <metal:use_body use-macro="folderlisting_macro" />
+
+      </metal:main_macro>
+    </metal:fill>
+  </body>
+</html>

@@ -1,0 +1,160 @@
+<!-- SENAITE customized base.pt
+
+   - Use HTML table structure to render the widgets
+
+-->
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xml:lang="en"
+      lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      i18n:domain="plone">
+  <head><title></title></head>
+  <body>
+
+    <!-- Base Field Widgets -->
+    <metal:base_view_macro
+      define-macro="base_view"
+      tal:define="widget_view python:context.widget(field.getName(), mode=mode, use_label=1);
+                  field_macros context/widgets/field/macros;
+                  label_macro view_macros/label | label_macro | field_macros/label;
+                  data_macro view_macros/data | data_macro | field_macros/data;
+                  visState python:widget.isVisible(here, mode);
+                  portal python:context.portal_url.getPortalObject();
+                  visCondition python:field.widget.testCondition(context.aq_inner.getParentNode(), portal, context);">
+      <tal:condition
+        condition="python:visState == 'visible' and visCondition">
+        <tal:if_perm
+          condition="python:'view' in widget.modes and 'r' in field.mode and field.checkPermission('r',here)">
+          <tal:if_use_label condition="use_label | nothing">
+            <td class="field-label">
+              <metal:use_label use-macro="label_macro" />
+            </td>
+          </tal:if_use_label>
+          <td class="field-value">
+            <metal:use_data use-macro="data_macro|default" />
+          </td>
+        </tal:if_perm>
+      </tal:condition>
+    </metal:base_view_macro>
+
+    <metal:label_macro define-macro="label">
+      <label class="formQuestion"><span i18n:translate="" tal:content="python:widget.Label(here)">Field</span>:</label>
+      <span tal:condition="field/workflowable | nothing"
+            tal:omit-tag="">
+        (
+        <a href="#"
+           tal:define="wf_tool context/portal_workflow;
+                 obj python:accessor();
+                 review_state python:wf_tool.getInfoFor(obj, 'review_state', '')"
+           tal:attributes="href string:${obj/absolute_url}/content_status_history;
+                 class python:test(review_state, review_state, 'private')"
+           tal:content="review_state">
+          review_state
+        </a>
+        )
+      </span>
+      <br />
+    </metal:label_macro>
+
+    <metal:data_macro define-macro="data">
+      <metal:block use-macro="widget_view" />
+    </metal:data_macro>
+
+    <div metal:define-macro="view" tal:define="fieldName fieldName|field/getName;
+                             fieldtypename python:field.getType().split('.')[-1];
+                             uid context/UID|nothing"
+         tal:attributes="class string:field ArchetypesField-${fieldtypename};
+                             id string:archetypes-fieldname-${fieldName}-${uid}">
+      <!-- senaite_widgets -->
+      <metal:use_base_view use-macro="context/senaite_widgets/field/macros/base_view" />
+    </div>
+
+    <metal:define
+      define-macro="edit"
+      tal:define="visState python:widget.isVisible(here, mode);
+                  edit_accessor python:field.getEditAccessor(here);
+                  getMethod python:(widget.populate and (edit_accessor or accessor)) or None;
+                  value python:getMethod and getMethod();
+                  value python:request.get(fieldName, value) if widget.postback else value;
+                  portal python:context.portal_url.getPortalObject();
+                  visCondition python:field.widget.testCondition(context.aq_inner.getParentNode(), portal, context);
+                  error_id python:errors.get(fieldName)">
+      <tal:condition
+        condition="python:visState == 'visible' and visCondition">
+        <div class="field"
+             tal:define="kssClassesView context/@@kss_field_decorator_view;
+                         getKssClasses nocall:kssClassesView/getKssClasses;
+                         kss_class python:getKssClasses(fieldName);"
+             tal:condition="python:('edit' in widget.modes and 'w' in field.mode and field.checkPermission('w',here))
+                            or (mode=='search' and field.checkPermission('r',here))"
+             tal:attributes="class python: test(error_id, 'field error ' + 'Archetypes' + widget.getName(), 'field ' + 'Archetypes' + widget.getName()) + ' ' + kss_class;
+                             id python: 'archetypes-fieldname-' + fieldName;
+                             data-uid context/UID|nothing;
+                             data-fieldname fieldName;">
+          <span metal:define-slot="widget_body_label_prefix"></span>
+          <tal:comment tal:condition="nothing">
+            Label insertion for the selection and multi-selection widgets is deferred to the widget, as they must
+            consider their format (checkbox, radio, select box ...) to correctly format the label to meet
+            accessibility standards.
+          </tal:comment>
+          <tal:ifLabel tal:condition="not: widget/render_own_label | nothing">
+            <label class="formQuestion"
+                   tal:attributes="for python:fieldName">
+              <span tal:replace="python:widget.Label(here)" 
+                    i18n:translate="" />
+              <span class="required"
+                    tal:condition="field/required"
+                    title="Required"
+                    i18n:attributes="title title_required;">&nbsp;</span>
+              <span class="formHelp"
+                    tal:define="description python:widget.Description(here)"
+                    tal:content="structure description"
+                    tal:attributes="id string:${fieldName}_help"
+                    i18n:translate="">
+                Help
+              </span>
+            </label>
+          </tal:ifLabel>
+          <span tal:condition="field/workflowable | nothing"
+                tal:omit-tag="">
+            State:
+            <a href="#"
+               tal:define="wf_tool context/portal_workflow;
+                     obj python:accessor();
+                     review_state python:wf_tool.getInfoFor(obj, 'review_state', '')"
+               tal:attributes="href string:${obj/absolute_url}/content_status_history;
+                     class python:test(review_state, review_state, 'private')"
+               tal:content="review_state">
+              review_state
+            </a>
+          </span>
+          <div class="fieldErrorBox"
+               tal:content="error_id" i18n:translate="">Validation Error</div>
+          <div metal:define-slot="widget_body"></div>
+        </div>
+      </tal:condition>
+
+      <tal:condition condition="python: visState == 'hidden'">
+        <metal:hiddenmacro
+          tal:define="widget_macro python:path('context/%s/macros' % widget.macro);
+                      default_hidden_macro context/widgets/field/macros/hidden;
+                      hidden_macro widget_macro/hidden | default_hidden_macro;
+                      ">
+          <metal:use use-macro="hidden_macro" />
+        </metal:hiddenmacro>
+      </tal:condition>
+
+    </metal:define>
+
+    <metal:hidden_macro define-macro="hidden">
+      <input type="hidden"
+             name=""
+             value=""
+             tal:attributes="name fieldName;
+                   value value;" />
+    </metal:hidden_macro>
+
+  </body>
+</html>

@@ -1,6 +1,6 @@
-<!-- SENAITE bootstrapped edit_macros.pt
+<!-- SENAITE customized edit_macros.pt
 
-   - Use senaite_legacy_resources slot to register helper css/js
+   - Use senaite_legacy_js and senaite_legacy_css slots to register helper css/js
 
 -->
 <tal:block metal:define-macro="master"
