@@ -25,17 +25,21 @@ document.addEventListener("DOMContentLoaded", () => {
   var tid = null;
   $("#sidebar-header").on("click", function () {
     $("#sidebar").toggleClass("minimized");
+    clearTimeout(tid)
   });
   $("#sidebar").on("mouseenter", function () {
     // delay sidebar expand 500ms
     tid = setTimeout(function(){
       $("#sidebar").removeClass("minimized");
-    }, 500);
+    }, 1000);
     // console.debug("Setting sidebar timeout", tid);
   });
   $("#sidebar").on("mouseleave", function () {
     $("#sidebar").addClass("minimized");
     // console.debug("Clearing sidebar timeout", tid);
+    clearTimeout(tid)
+  });
+  $("#sidebar ul li a").on("click", function () {
     clearTimeout(tid)
   });
 
