@@ -25,7 +25,7 @@ function WorksheetTemplateEdit() {
             url: window.portal_url + "/ajaxgetworksheettemplateinstruments",
             type: 'POST',
             data: {'_authenticator': $('input[name="_authenticator"]').val(),
-                   'method_uid': $.toJSON(method) },
+                   'method_uid': JSON.stringify(method) },
             dataType: 'json'
         }).done(function(data) {
             var instrument, i;
@@ -58,7 +58,7 @@ function WorksheetTemplateEdit() {
             url: window.portal_url + "/ajaxgetetworksheettemplateserviceswidget",
             type: 'POST',
             data: {'_authenticator': $('input[name="_authenticator"]').val(),
-                   'method_uid': $.toJSON(method) },
+                   'method_uid': JSON.stringify(method) },
             dataType: 'json'
         }).done(function(data) {
             if (data !== null){
