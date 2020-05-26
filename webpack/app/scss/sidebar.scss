@@ -11,14 +11,17 @@
     overflow: hidden;
     white-space: nowrap;
 }
-
 #sidebar #sidebar-header {
     text-align: right;
     button:focus {
         box-shadow: none;
     }
 }
-
+#sidebar:not(.minimized) ul li:hover {
+    color: #000;
+    transition: all 0.1s;
+    opacity: 1;
+}
 #sidebar.minimized {
     min-width: $sidebar-minimized-width;
     max-width: $sidebar-minimized-width;
@@ -32,7 +35,7 @@
     text-align: center;
 }
 #sidebar.minimized ul ul a {
-    padding: 10px 17px !important;
+    padding: 15px 17px !important;
 }
 #sidebar.minimized ul li a i {
     margin-right: 0;
@@ -89,6 +92,7 @@
     opacity: 0.4;
     padding: 0;
     width: $sidebar-minimized-width;
+    font-size: 80%;
     &.active {
         background: $link-color;
     }
