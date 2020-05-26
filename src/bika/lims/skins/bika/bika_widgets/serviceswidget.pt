@@ -3,25 +3,23 @@
       xmlns:metal="http://xml.zope.org/namespaces/metal"
       xmlns:i18n="http://xml.zope.org/namespaces/i18n"
       i18n:domain="plone">
-<head><title></title></head>
-<body>
+  <head><title></title></head>
+  <body>
 
-<metal:view_macro define-macro="view">
-   <span id="serviceswidget">
-        <span tal:content="structure python:widget.Services(field, show_select_column=False)"/>
-    </span>
-</metal:view_macro>
+    <metal:view_macro define-macro="view">
+      <span id="serviceswidget">
+        <span tal:content="structure python:widget.Services(field)"/>
+      </span>
+    </metal:view_macro>
 
-<metal:edit_macro define-macro="edit">
-<metal:use use-macro="field_macro | context/widgets/field/macros/edit">
-    <metal:body_macro fill-slot="widget_body">
+    <metal:edit_macro define-macro="edit">
+      <metal:use use-macro="field_macro | context/widgets/field/macros/edit">
+        <metal:body_macro fill-slot="widget_body">
+          <div id="folderlisting-main-table"
+               tal:content="structure python:widget.Services(field, allow_edit=True)"/>
+        </metal:body_macro>
+      </metal:use>
+    </metal:edit_macro>
 
-	<div id="folderlisting-main-table"
-		tal:content="structure python:widget.Services(field)"/>
-
-    </metal:body_macro>
-</metal:use>
-</metal:edit_macro>
-
-</body>
+  </body>
 </html>

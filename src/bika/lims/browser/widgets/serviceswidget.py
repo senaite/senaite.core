@@ -19,6 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 import collections
+import itertools
 
 from AccessControl import ClassSecurityInfo
 from bika.lims import api
@@ -201,15 +202,26 @@ class ServicesWidget(TypesWidget):
     security.declarePublic("process_form")
 
     def process_form(self, instance, field, form, empty_marker=None,
-                     emptyReturnsMarker=False, validating=True):
+                     emptyReturnsMarker=False):
         """Return UIDs of the selected services
         """
+        # selected services
         service_uids = form.get("uids", [])
-        return service_uids, {}
+        # get the service objects
+        services = map(api.get_object_by_uid, service_uids)
+        # get dependencies
+        dependencies = map(lambda s: s.getServiceDependencies(), services)
+        dependencies = list(itertools.chain.from_iterable(dependencies))
+        # Merge dependencies and services
+        services = set(services + dependencies)
+        # set the services settings
+        # instance.setService(services)
+
+        return map(api.get_uid, services), {}
 
     security.declarePublic("Services")
 
-    def Services(self, field, show_select_column=True):
+    def Services(self, field, allow_edit=False):
         """Render Analyses Services Listing Table
         """
 
@@ -220,6 +232,9 @@ class ServicesWidget(TypesWidget):
         # Call listing hooks
         table.update()
         table.before_render()
+
+        if allow_edit is False:
+            return table.contents_table_view()
         return table.ajax_contents_table()
 
 
