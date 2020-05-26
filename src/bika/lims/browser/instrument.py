@@ -833,7 +833,7 @@ class InstrumentMultifileView(BikaListingView):
         """
         obj = api.get_object(obj)
         url = item.get("url")
-        title = item.get("DocumentID")
+        title = obj.getDocumentID()
 
         item["replace"]["DocumentID"] = get_link(url, title)
 
