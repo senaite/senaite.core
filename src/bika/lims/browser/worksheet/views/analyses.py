@@ -564,4 +564,4 @@ class AnalysesView(BaseView):
             "href": "{}/base_view".format(url),
         }
 
-        return get_image("remarks_ico.png", **attrs)
+        return get_image("remarks.png", **attrs)
