@@ -101,12 +101,6 @@ class CalculationsView(BikaListingView):
             }
         ]
 
-    def before_render(self):
-        """Before template render hook
-        """
-        # Don't allow any context actions
-        self.request.set("disable_border", 1)
-
     def folderitem(self, obj, item, index):
         """Service triggered each time an item is iterated in folderitems.
         The use of this service prevents the extra-loops in child objects.

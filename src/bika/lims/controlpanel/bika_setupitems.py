@@ -67,9 +67,3 @@ class BikaSetupItemsView(BikaListingView):
              'contentFilter': {},
              'columns': ['Title', 'Description']},
         ]
-
-    def before_render(self):
-        """Before template render hook
-        """
-        # Don't allow any context actions
-        self.request.set("disable_border", 1)

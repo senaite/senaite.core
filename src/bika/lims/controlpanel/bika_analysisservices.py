@@ -284,12 +284,6 @@ class AnalysisServicesView(BikaListingView):
             for i in range(len(self.review_states)):
                 self.review_states[i]["columns"].remove("Price")
 
-    def before_render(self):
-        """Before template render hook
-        """
-        # Don't allow any context actions
-        self.request.set("disable_border", 1)
-
     def get_decimal_mark(self):
         """Returns the decimal mark
         """

@@ -118,12 +118,6 @@ class SamplePointsView(BikaListingView):
             }
         ]
 
-    def before_render(self):
-        """Before template render hook
-        """
-        # Don't allow any context actions
-        self.request.set("disable_border", 1)
-
     def folderitem(self, obj, item, index):
         """Service triggered each time an item is iterated in folderitems.
 
