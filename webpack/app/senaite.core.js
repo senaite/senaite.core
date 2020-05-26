@@ -11,21 +11,22 @@ document.addEventListener("DOMContentLoaded", () => {
   window._p = _p;
 
   // BBB: set global `portal_url` variable
-  window.portal_url = document.querySelector("body").dataset.portalUrl
+  window.portal_url = document.body.dataset.portalUrl
 
-  // Initialize TinyMCE
+  // TinyMCE
   tinymce.init({
     selector: "textarea.mce_editable,div.ArchetypesRichWidget textarea,textarea[name='form.widgets.IRichTextBehavior.text']",
     plugins: ["paste", "link", "autoresize", "fullscreen", "table", "code"],
     content_css : "/++plone++senaite.core.static/bundles/main.css",
   })
+  // /TinyMCE
 
 
-  // Initialize sidebar toggle
+  // Sidebar
   var tid = null;
   $("#sidebar-header").on("click", function () {
-    $("#sidebar").toggleClass("minimized");
     clearTimeout(tid)
+    $("#sidebar").toggleClass("minimized");
   });
   $("#sidebar").on("mouseenter", function () {
     // delay sidebar expand 500ms
@@ -35,17 +36,20 @@ document.addEventListener("DOMContentLoaded", () => {
     // console.debug("Setting sidebar timeout", tid);
   });
   $("#sidebar").on("mouseleave", function () {
+    clearTimeout(tid)
     $("#sidebar").addClass("minimized");
     // console.debug("Clearing sidebar timeout", tid);
-    clearTimeout(tid)
   });
   $("#sidebar ul li a").on("click", function () {
     clearTimeout(tid)
   });
+  // /Sidebar
 
-  // Initialize tooltips
+
+  // Tooltips
   $(function () {
     $("[data-toggle='tooltip']").tooltip()
   })
+  // /Tooltips
 
 });
