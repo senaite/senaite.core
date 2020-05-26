@@ -8,8 +8,10 @@
   <body>
     <metal:content-title fill-slot="content-title">
       <h1>
-        <img tal:condition="view/icon | nothing"
-             src="" tal:attributes="src view/icon"/>
+        <!-- Icon -->
+        <i class="referencesample-icon" title="Reference Sample" i18n:attributes="title">
+          <svg tal:replace="structure senaite_theme/icon_data/referencesample" />
+        </i>
         <span class="documentFirstHeading"
               tal:content="context/title"></span>
       </h1>
