@@ -3,9 +3,6 @@
  */
 function ARTemplateEditView() {
 
-    window.jarn.i18n.loadCatalog("senaite.core");
-    var _ = window.jarn.i18n.MessageFactory("senaite.core");
-
     var that = this;
     var samplepoint = $('#archetypes-fieldname-SamplePoint #SamplePoint');
     var sampletype = $('#archetypes-fieldname-SampleType #SampleType');
@@ -53,7 +50,7 @@ function ARTemplateEditView() {
             }
             var obj = data.objects[0];
             var puid = obj.UID;
-            $(samplepoint).attr("search_query", $.toJSON({"getClientUID": obj.UID}));
+            $(samplepoint).attr("search_query", JSON.stringify({"getClientUID": obj.UID}));
             referencewidget_lookups([$(samplepoint)]);
         });
     }
@@ -62,7 +59,7 @@ function ARTemplateEditView() {
     function filterSampleTypesBySamplePointsCombo() {
         $(samplepoint).bind("selected blur change", function() {
             var samplepointuid = $(samplepoint).val() ? $(samplepoint).attr('uid'): '';
-            $(sampletype).attr("search_query", $.toJSON({"getRawSamplePoints": samplepointuid}));
+            $(sampletype).attr("search_query", JSON.stringify({"getRawSamplePoints": samplepointuid}));
             referencewidget_lookups([$(sampletype)]);
         });
     }
@@ -71,7 +68,7 @@ function ARTemplateEditView() {
     function filterSamplePointsBySampleTypesCombo() {
         $(sampletype).bind("selected blur change", function() {
             var sampletypeid = $(sampletype).val() ? $(sampletype).attr('uid'): '';
-            $(samplepoint).attr("search_query", $.toJSON({"getRawSampleTypes": sampletypeid}));
+            $(samplepoint).attr("search_query", JSON.stringify({"getRawSampleTypes": sampletypeid}));
             referencewidget_lookups([$(samplepoint)]);
         });
     }
