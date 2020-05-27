@@ -41,10 +41,17 @@ form[name='edit_form'] {
         @extend .form-control;
         @extend .form-control-sm;
     }
-    .required {
+    .fieldRequired {
+        &:after {
+            color: $red;
+            content: "·";
+        }
+    }
+    span.required {
         &:before {
             color: $red;
             content: "·";
+            padding-right: 0.25em;
         }
     }
     .fieldErrorBox {
