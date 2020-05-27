@@ -31,7 +31,9 @@
     </div>
     <div class='lab-logo'>
       <a tal:attributes="href laboratory/url">
-        <img tal:attributes="src laboratory/logo"/>
+        <img class="logo"
+             height="25"
+             tal:attributes="src string:++plone++senaite.core.static/images/senaite.svg"/>
       </a>
     </div>
     <h1>

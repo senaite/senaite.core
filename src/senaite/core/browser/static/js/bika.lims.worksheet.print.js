@@ -14,9 +14,9 @@ function WorksheetPrintView() {
         // Store referrer in cookie in case it is lost due to a page reload
         var backurl = document.referrer;
         if (backurl) {
-            createCookie("ws.print.urlback", backurl);
+            bika.lims.SiteView.setCookie("ws.print.urlback", backurl);
         } else {
-            backurl = readCookie("ws.print.urlback");
+            backurl = bika.lims.SiteView.readCookie("ws.print.urlback");
             if (!backurl) {
                 backurl = portal_url;
             }
