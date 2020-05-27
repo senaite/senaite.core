@@ -1,17 +1,18 @@
+<tal:doctype tal:replace="structure string:&lt;!DOCTYPE html&gt;" />
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:tal="http://xml.zope.org/namespaces/tal"
       xmlns:metal="http://xml.zope.org/namespaces/metal"
       xmlns:i18n="http://xml.zope.org/namespaces/i18n"
       tal:attributes="lang default_language|default;
-             xml:lang default_language|default;"
+                      xml:lang default_language|default;"
       i18n:domain="senaite.core"
       tal:define="portal_state context/@@plone_portal_state;
-             portal_url portal_state/portal_url;
-             plone_view context/@@plone;
-             portal portal_state/portal;
-             portal_type python:context.portal_type;
-             anchor_self python:('Client','AnalysisRequest', 'AnalysisRequestsFolder', 'Batch');
-             goback_url  python:context.absolute_url() if portal_type in anchor_self else context.aq_parent.absolute_url();">
+                  portal_url portal_state/portal_url;
+                  plone_view context/@@plone;
+                  portal portal_state/portal;
+                  portal_type python:context.portal_type;
+                  anchor_self python:('Client','AnalysisRequest', 'AnalysisRequestsFolder', 'Batch');
+                  goback_url  python:context.absolute_url() if portal_type in anchor_self else context.aq_parent.absolute_url();">
   <head>
     <div tal:replace="structure provider:plone.htmlhead" />
 
