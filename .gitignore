@@ -15,11 +15,12 @@
 .installed.cfg
 .settings
 *.egg-info
+*.pyc
+*.pth
 bin
 build
 develop-eggs
 dist
-eggs
 include
 lib
 local
@@ -33,7 +34,7 @@ var
 tags
 buildout-cache
 atlassian-*.xml
-
+eggs/
 src/Products.ATExtensions/
 src/senaite.core.listing/
 src/senaite.core.supermodel/
