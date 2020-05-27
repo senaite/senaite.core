@@ -1,0 +1,37 @@
+<metal:page define-macro="master" i18n:domain="plone">
+  <tal:block metal:use-macro="context/@@main_template/macros/master">
+
+    <metal:block fill-slot="top_slot">
+      <metal:override define-slot="top_slot">
+        <tal:defines tal:define="dummy python:request.set('disable_border',1);
+                                 controlPanel python:modules['Products.CMFCore.utils'].getToolByName(here, 'portal_controlpanel');
+                                 show_leftcolumn controlPanel/maySeeSomeConfiglets;
+                                 disable_column_one python:request.set('disable_plone.leftcolumn', 1);
+                                 disable_column_two python:request.set('disable_plone.rightcolumn', 1);"/>
+      </metal:override>
+    </metal:block>
+
+    <metal:override fill-slot="portlets_two_slot">
+      <metal:override define-slot="column_two_slot">
+        <metal:prefs use-macro="here/portlet_prefs/macros/portlet" />
+      </metal:override>
+    </metal:override>
+
+    <metal:override fill-slot="content">
+      <metal:slot define-slot="prefs_configlet_wrapper">
+        <metal:slot define-slot="prefs_configlet_content">
+
+          <metal:block metal:use-macro="context/@@main_template/macros/content">
+            <metal:override metal:fill-slot="main">
+              <metal:slot metal:define-slot="prefs_configlet_main" tal:content="nothing">
+                Page body text
+              </metal:slot>
+            </metal:override>
+          </metal:block>
+
+        </metal:slot>
+      </metal:slot>
+    </metal:override>
+
+  </tal:block>
+</metal:page>

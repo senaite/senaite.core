@@ -6,10 +6,27 @@
     @extend .text-secondary;
     @extend .small;
 }
+a#setup-link {
+    @extend .btn;
+    @extend .btn-outline-secondary;
+    &:before {
+        @extend .fas;
+        @extend .fa-arrow-circle-left;
+        @extend .mr-1;
+    }
+}
 table.listing {
     @extend .table;
     @extend .table-bordered;
     @extend .table-hover;
+    @extend .table-responsive;
+    @extend .table-sm;
+}
+div.autotoc-nav {
+    @extend .nav;
+    @extend .nav-tabs;
+    a { @extend .nav-link; }
+    a.active { margin-bottom: -1px; }
 }
 aside section.portlet {
     @extend .card;
@@ -35,6 +52,13 @@ aside section nav.portletContent {
         }
     }
 }
+.portalMessage {
+    @extend .alert;
+    &.info { @extend .alert-info; }
+    &.warning { @extend .alert-warning; }
+    &.error { @extend .alert-danger; }
+}
+
 section>ol.configlets,
 section>ul.configlets {
     @extend .list-group;
