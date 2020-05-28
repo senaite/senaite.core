@@ -1,15 +1,14 @@
 # -*- coding: utf-8 -*-
 
-from Acquisition import aq_inner
+from bika.lims.api.security import check_permission
 from plone.app.layout.viewlets.common import PersonalBarViewlet
 from plone.app.viewletmanager.manager import OrderedViewletManager
 from plone.memoize.instance import memoize
 from plone.registry.interfaces import IRegistry
-from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.interfaces.controlpanel import ISiteSchema
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from senaite.core.browser.viewlets.sections import GlobalSectionsViewlet
 from senaite.core.browser.viewlets.languageselector import LanguageSelector
+from senaite.core.browser.viewlets.sections import GlobalSectionsViewlet
 from zope.component import getMultiAdapter
 from zope.component import getUtility
 
@@ -43,10 +42,7 @@ class ToolbarViewletManager(OrderedViewletManager):
 
     @memoize
     def is_manager(self):
-        tool = getToolByName(self.context, "portal_membership")
-        return bool(tool.checkPermission(
-            "senaite.core.permissions.ManageBika", aq_inner(self.context)
-        ))
+        return check_permission("senaite.core: Manage Bika", self.context)
 
     def get_personal_bar(self):
         viewlet = PersonalBarViewlet(
