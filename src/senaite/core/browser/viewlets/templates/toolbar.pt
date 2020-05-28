@@ -30,7 +30,7 @@
     <ul class="navbar-nav ml-auto">
 
       <!-- Global Sections -->
-      <li class="nav-item">
+      <li class="nav-item" tal:condition="personal_bar/user_name">
         <div tal:replace="structure global_sections/render"></div>
       </li>
 
@@ -40,7 +40,7 @@
       </li>
 
       <!-- Search trigger -->
-      <li class="nav-item">
+      <li class="nav-item" tal:condition="personal_bar/user_name">
         <a class="nav-link"
            title="Press Ctrl+Space to trigger the Spotlight search"
            i18n:attributes="title"
