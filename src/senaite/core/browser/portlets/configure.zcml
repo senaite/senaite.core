@@ -1,6 +1,7 @@
 <configure
     xmlns="http://namespaces.zope.org/zope"
     xmlns:plone="http://namespaces.plone.org/plone"
+    xmlns:browser="http://namespaces.zope.org/browser"
     i18n_domain="senaite.core">
 
   <!-- Navigation Portlet -->
@@ -9,6 +10,28 @@
   <plone:portletRenderer
       portlet="plone.app.portlets.portlets.navigation.INavigationPortlet"
       class=".navigation.NavigationPortletRenderer"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
+  <browser:pages
+      for="plone.portlets.interfaces.ILocalPortletAssignable"
+      class="plone.app.portlets.browser.manage.ManageContextualPortlets"
+      permission="plone.app.portlets.ManagePortlets"
+      layer="senaite.core.interfaces.ISenaiteCore">
+
+    <browser:page
+        name="manage-portlets"
+        template="templates/manage-contextual.pt"
+        />
+
+  </browser:pages>
+
+  <browser:page
+      for="*"
+      name="manage-portlets-macros"
+      class="plone.app.portlets.browser.manage.ManageContextualPortlets"
+      template="templates/edit-manager-macros.pt"
+      permission="plone.app.portlets.ManageOwnPortlets"
       layer="senaite.core.interfaces.ISenaiteCore"
       />
 

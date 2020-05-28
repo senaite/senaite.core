@@ -53,4 +53,40 @@
     <property name="thumb_scale"/>
   </assignment>
 
+  <!-- remove footerportlets -->
+  <assignment
+    manager="plone.footerportlets"
+    category="context"
+    key="/"
+    type="portlets.Classic"
+    name="footer"
+    remove="True">
+    <property name="template">@@footer</property>
+    <property name="macro"></property>
+  </assignment>
+
+  <assignment
+    manager="plone.footerportlets"
+    category="context"
+    key="/"
+    type="portlets.Actions"
+    name="actions"
+    remove="True">
+    <property name="ptitle">site_actions</property>
+    <property name="show_title">False</property>
+    <property name="category">site_actions</property>
+    <property name="show_icons">False</property>
+  </assignment>
+
+  <assignment
+    manager="plone.footerportlets"
+    category="context"
+    key="/"
+    type="portlets.Classic"
+    name="colophon"
+    remove="True">
+    <property name="template">colophon</property>
+    <property name="macro"></property>
+  </assignment>
+
 </portlets>

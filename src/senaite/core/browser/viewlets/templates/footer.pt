@@ -1,8 +1,11 @@
 <footer i18n:domain="senaite.core"
         id="senaite-footer">
+
   <div class="row">
     <div class="col-md-12">
       <hr/>
+      <!-- footer portlets -->
+      <div tal:on-error="nothing" tal:replace="structure view/render_footer_portlets" />
       <div class="float-left">
         <span i18n:translate="description_copyright" tal:omit-tag="">
           <abbr title="Copyright" i18n:name="copyright" i18n:attributes="title title_copyright;">&copy;</abbr>
