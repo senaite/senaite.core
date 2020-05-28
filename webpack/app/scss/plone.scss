@@ -28,16 +28,32 @@ div.autotoc-nav {
     a { @extend .nav-link; }
     a.active { margin-bottom: -1px; }
 }
-aside section.portlet {
+.portlet {
     @extend .card;
     @extend .overflow-hidden;
+    @extend .mb-3;
     .portletHeader {
-        @extend .card-title;
+        @extend .card-header;
+        @extend .text-center;
     }
     .portletContent {
         @extend .card-body;
     }
+    .portletFooter {
+        @extend .card-footer;
+    }
+    input:not([name='submit']) {
+        @extend .form-control;
+        @extend .form-control-sm;
+    }
+    input[name='submit'] {
+        @extend .mt-2;
+        @extend .btn;
+        @extend .btn-sm;
+        @extend .btn-primary;
+    }
 }
+
 aside section nav.portletContent {
     @extend .bg-light;
     ul {
