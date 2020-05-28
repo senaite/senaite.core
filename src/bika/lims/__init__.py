@@ -28,7 +28,6 @@ from Products.Archetypes.atapi import listTypes
 from Products.Archetypes.atapi import process_types
 from Products.CMFCore.permissions import AddPortalContent
 from Products.CMFCore.utils import ContentInit
-from bika.lims import permissions
 
 PROJECTNAME = "bika.lims"
 
@@ -167,6 +166,8 @@ def initialize(context):
     from bika.lims.controlpanel.bika_subgroups import SubGroups  # noqa
     from bika.lims.controlpanel.bika_suppliers import Suppliers  # noqa
     from bika.lims.controlpanel.bika_worksheettemplates import WorksheetTemplates  # noqa
+
+    from bika.lims import permissions
 
     content_types, constructors, ftis = process_types(
         listTypes(PROJECTNAME), PROJECTNAME)
