@@ -1,6 +1,6 @@
 <nav id="sidebar"
      tal:define="navigation python:view.render_navigation_portlet()"
-     tal:condition="navigation"
+     tal:condition="python:view.available() and navigation"
      class="minimized bg-light"
      i18n:domain="senaite.core">
 

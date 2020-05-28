@@ -1,10 +1,10 @@
 <nav id="senaite-toolbar"
      class="navbar static-top navbar-expand-md"
      tal:define="context_state view/context_state;
-            portal_state view/portal_state;
-            global_sections python:view.get_global_sections();
-            language_selector python:view.get_language_selector();
-            personal_bar python:view.get_personal_bar()"
+                 portal_state view/portal_state;
+                 global_sections python:view.get_global_sections();
+                 language_selector python:view.get_language_selector();
+                 personal_bar python:view.get_personal_bar()"
      i18n:domain="senaite.core">
 
   <!-- Navbar Brand Icon -->

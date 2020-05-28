@@ -19,6 +19,10 @@ class SidebarViewletManager(OrderedViewletManager):
     def render(self):
         return self.custom_template()
 
+    def available(self):
+        is_anonymous = self.portal_state.anonymous()
+        return not is_anonymous
+
     @property
     @memoize
     def context_state(self):
