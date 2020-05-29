@@ -28,7 +28,7 @@ div.autotoc-nav {
     a { @extend .nav-link; }
     a.active { margin-bottom: -1px; }
 }
-.portlet {
+.portlet:not(.portletNavigationTree) {
     @extend .card;
     @extend .overflow-hidden;
     @extend .mb-3;
