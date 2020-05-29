@@ -53,11 +53,10 @@ setup(
         "plone.api",
         "plone.subrequest",
         "plone.jsonapi.core",
+        # TODO: integrate needed code parts completely in core
         "Products.ATExtensions",
         "Products.CMFEditions",
         "Products.DataGridField",
-        # XXX P5: Do we need it? Fails during installation
-        # "Products.TinyMCE",
         "Products.TextIndexNG3",
         "collective.monkeypatcher",
         "plone.app.z3cform",
@@ -77,9 +76,6 @@ setup(
         "tinycss2<1.0.0",
         # Python 2/3 compatibility library: https://six.readthedocs.io/
         "six",
-        # Needed for `IPortalCatalogQueueProcessor`, which will be included in
-        # `Products.CMFCore` in Plone 5. Remove after we are on Plone 5!
-        # "collective.indexing",
         # Fix Scrutinizer (remove after we migrated to Python 3)
         # https://github.com/python-pillow/Pillow/blob/master/CHANGES.rst#622-2020-01-02
         "Pillow<7.0.0",
@@ -89,9 +85,9 @@ setup(
         "cssselect2<0.3.0",
         # beautifulsoup4 4.9.0 requires "soupsieve<2.0"
         "soupsieve<2.0.0",
-        # dependency for jsonapi
-        "simplejson",
+        # TODO: better integrate just the JS files w/o this package
         "plone.app.jquerytools",
+        "archetypes.schemaextender",
     ],
     extras_require={
         "test": [
