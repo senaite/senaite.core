@@ -45,3 +45,5 @@ src/senaite.jsonapi
 /src/senaite/core/listing
 /src/senaite/core/spotlight
 /src/senaite/core/supermodel
+/src/senaite.panic
+/src/senaite.health
