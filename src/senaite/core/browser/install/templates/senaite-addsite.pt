@@ -10,205 +10,217 @@
   <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <title i18n:translate="">Create a SENAITE site</title>
+    <title i18n:translate="">Install SENAITE LIMS</title>
     <link rel="stylesheet" type="text/css"
-          tal:attributes="href string:${context/absolute_url}/++resource++plone-admin-ui.css"
-          href="/++resource++plone-admin-ui.css" />
+          tal:attributes="href string:${context/absolute_url}/++plone++senaite.core.static/lib/bootstrap/dist/css/bootstrap.min.css"
+          href="bootstrap.min.css" />
+    <link href="favicon.ico" rel="icon" type="image/x-icon"
+          tal:attributes="href string:${context/absolute_url}/++plone++senaite.core.static/images/favicon.ico"/>
+    <!-- required to get the correct timezone selected -->
     <script type="text/javascript" tal:attributes="src string:${context/absolute_url}/++resource++jstz-1.0.4.min.js"></script>
     <script type="text/javascript" tal:attributes="src string:${context/absolute_url}/++resource++plone-admin-ui.js"></script>
   </head>
 
   <body>
 
-    <div id="box">
-      <header><h1><img src="/++resource++plone-logo.png" width="108" height="28"
-                       tal:attributes="src string:${context/absolute_url}/++resource++plone-logo.png"
-                       alt="Plone logo" i18n:attributes="alt"/></h1>
-      </header>
-      <article>
-        <div class="circle running">
-          <img alt="" src="data:image/png;base64,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" />
-        </div>
-        <h1 i18n:translate="">Create a SENAITE site</h1>
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-6 offset-sm-3">
+          <h1>
+            <img src="senaite-logo.png"
+                 height="30"
+                 tal:attributes="src string:${context/absolute_url}/++plone++senaite.core.static/images/senaite.svg" />
+            <small class="lead">Site Installation</small>
+          </h1>
+          <hr/>
 
-        <form action="#"
-              method="post"
-              tal:attributes="action string:${context/absolute_url}/@@plone-addsite"
-              tal:define="profiles view/profiles;
-                      base_profiles profiles/base;
-                      default_profile profiles/default;
-                      extension_profiles profiles/extensions;
-                      advanced request/advanced|nothing;">
+          <div class="row">
+            <div class="col-sm-12">
+              <form action="#"
+                    method="post"
+                    tal:attributes="action string:${context/absolute_url}/@@senaite-addsite"
+                    tal:define="profiles view/profiles;
+                            base_profiles profiles/base;
+                            default_profile profiles/default;
+                            extension_profiles profiles/extensions;
+                            advanced request/advanced|nothing;">
 
-          <div class="field">
-            <label for="site_id" i18n:translate="">
-              Path identifier
-            </label>
-
-            <div class="formHelp" i18n:translate="">
-              The ID of the site. This ends up as part of the URL.<br />
-              No special characters or spaces are allowed.
-            </div>
-
-            <input type="text" name="site_id" size="20" id="site_id"
-                   tal:attributes="value request/site_id|nothing" />
-          </div>
-
-          <div class="field">
-            <label for="title" i18n:translate="label_title">Title</label>
-
-            <div class="formHelp" i18n:translate="">
-              A short title for the site. This will be shown in the title of the
-              browser window on each page.
-            </div>
-
-            <input type="text" name="title" size="30" value="Site"
-                   tal:attributes="value request/site_title|nothing" />
-          </div>
-
-          <div class="field">
-            <label for="default_language" i18n:translate="">Language</label>
-
-            <div class="formHelp" i18n:translate="">
-              The main language of the site.
-            </div>
-
-            <select name="default_language"
-                    tal:define="browser_language view/browser_language;
-                          grouped_languages python:view.grouped_languages(browser_language)">
-              <optgroup tal:repeat="group grouped_languages" tal:attributes="label group/label">
-
-                <option value="en"
-                        tal:repeat="lang group/languages"
-                        tal:attributes="value python:lang['langcode'];
-                               selected python:lang['langcode'] == browser_language"
-                        tal:content="python: lang['label']">
-                  English
-                </option>
-
-              </optgroup>
-            </select>
-          </div>
-
-          <div class="field">
-            <label for="portal_timezone" i18n:translate="">
-              Default timezone
-            </label>
-
-            <div class="formHelp" i18n:translate="">
-              The default timezone setting of the portal. Users will be able to set
-              their own timezone, if available timezones are defined in the date and
-              time settings.
-            </div>
-
-            <select id="portal_timezone"
-                    name="portal_timezone"
-                    tal:define="tz_list view/timezones">
-              <optgroup tal:repeat="group tz_list" tal:attributes="label group">
-                <option value="UTC"
-                        tal:repeat="tz python:tz_list[group]"
-                        tal:attributes="value tz/value"
-                        tal:content="tz/label">
-                  UTC
-                </option>
-              </optgroup>
-            </select>
-          </div>
-
-          <div class="field" tal:condition="advanced">
-            <label><input type="checkbox" name="setup_content:boolean" /> <tal:block i18n:translate="">Example content</tal:block></label>
-            <div class="formHelp" i18n:translate="">
-              Should the default example content be added to the site?
-            </div>
-          </div>
-
-          <tal:content tal:condition="not:advanced">
-            <input type="hidden" name="setup_content:boolean" value="true" />
-          </tal:content>
-
-
-
-          <tal:baseprofile condition="python: len(base_profiles) > 1">
-            <div class="field">
-              <label for="profile_id" i18n:translate="">
-                Base configuration
-              </label>
-
-              <div class="formHelp" i18n:translate="">
-                You normally don't need to change anything here unless you have
-                specific reasons and know what you are doing.
-              </div>
-
-              <tal:bases tal:repeat="info base_profiles">
-                <label>
-                  <input type="radio"
-                         name="profile_id:string"
-                         value="profile"
-                         tal:attributes="id info/id;
-                               value info/id;
-                               checked python: default_profile==info['id'] and 'checked' or nothing"
-                  />
-                  <tal tal:attributes="for info/id"
-                       tal:content="info/title"> Profile title </tal>
-                </label>
-                <div class="formHelp" tal:content="info/description">
-                  Profile description
+                <!-- Site ID -->
+                <div class="form-group">
+                  <label for="site_id" i18n:translate="">Path identifier</label>
+                  <input type="text" name="site_id" size="20" id="site_id"
+                         class="form-control"
+                         tal:attributes="value request/site_id|nothing" />
+                  <div class="form-text small text-muted" i18n:translate="">
+                    The ID of the site. This ends up as part of the URL.<br />
+                    No special characters or spaces are allowed.
+                  </div>
                 </div>
-              </tal:bases>
-            </div>
-          </tal:baseprofile>
 
-          <tal:extensionprofiles condition="python: extension_profiles">
-            <fieldset id="add-on-list" tal:omit-tag="python: not advanced">
-              <legend i18n:translate="" tal:condition="python: advanced">
-                Add-ons
-              </legend>
+                <!-- Site Title -->
+                <div class="form-group">
+                  <label for="title" i18n:translate="label_title">Title</label>
+                  <input type="text" name="title" size="30" value="Site"
+                         class="form-control"
+                         tal:attributes="value request/site_title|nothing" />
+                  <div class="form-text small text-muted" i18n:translate="">
+                    A short title for the site. This will be shown in the title of the
+                    browser window on each page.
+                  </div>
+                </div>
 
-              <div class="formHelp" i18n:translate="" tal:condition="python: advanced">
-                Select any add-ons you want to activate immediately. You can
-                also activate add-ons after the site has been created using the
-                Add-ons control panel.
-              </div>
+                <!-- Language -->
+                <div class="form-group">
+                  <label for="default_language" i18n:translate="">Language</label>
+                  <select name="default_language"
+                          class="form-control"
+                          tal:define="browser_language view/browser_language;
+                                grouped_languages python:view.grouped_languages(browser_language)">
+                    <optgroup tal:repeat="group grouped_languages" tal:attributes="label group/label">
 
-              <tal:addons tal:repeat="info extension_profiles">
-                <div class="addons-group">
-                  <tal:info tal:define="selected info/selected|nothing">
-                    <tal:normal tal:condition="python: not selected or advanced">
-                      <div tal:condition="python: advanced">
-                        <label>
-                          <input type="checkbox" name="extension_ids:list" value=""
-                                 tal:attributes="value info/id;
-                                       id info/id;
-                                       checked info/selected|nothing;" />
-                          <span
-                            tal:attributes="for info/id"
-                            tal:content="info/title">profile title</span>
-                        </label>
+                      <option value="en"
+                              tal:repeat="lang group/languages"
+                              tal:attributes="value python:lang['langcode'];
+                                     selected python:lang['langcode'] == browser_language"
+                              tal:content="python: lang['label']">
+                        English
+                      </option>
+                    </optgroup>
+                  </select>
+                  <div class="form-text small text-muted" i18n:translate="">
+                    The main language of the site.
+                  </div>
+                </div>
+
+                <!-- Timezone -->
+                <div class="field">
+                  <label for="portal_timezone" i18n:translate="">
+                    Default timezone
+                  </label>
+                  <select id="portal_timezone"
+                          class="form-control"
+                          name="portal_timezone"
+                          tal:define="tz_list view/timezones">
+                    <optgroup tal:repeat="group tz_list" tal:attributes="label group">
+                      <option value="UTC"
+                              tal:repeat="tz python:tz_list[group]"
+                              tal:attributes="value tz/value"
+                              tal:content="tz/label">
+                        UTC
+                      </option>
+                    </optgroup>
+                  </select>
+                  <div class="form-text small text-muted" i18n:translate="">
+                    The default timezone setting of the portal. Users will be able to set
+                    their own timezone, if available timezones are defined in the date and
+                    time settings.
+                  </div>
+
+                </div>
+
+                <!-- Advanced -->
+                <div class="field" tal:condition="advanced">
+                  <label>
+                    <input type="checkbox" name="setup_content:boolean" />
+                    <tal:block i18n:translate="">Example content</tal:block>
+                  </label>
+                  <div class="form-text small text-muted" i18n:translate="">
+                    Should the default example content be added to the site?
+                  </div>
+                </div>
+
+                <tal:content tal:condition="not:advanced">
+                  <input type="hidden" name="setup_content:boolean" value="true" />
+                </tal:content>
+
+                <tal:baseprofile condition="python: len(base_profiles) > 1">
+                  <div class="field">
+                    <label for="profile_id" i18n:translate="">
+                      Base configuration
+                    </label>
+
+                    <tal:bases tal:repeat="info base_profiles">
+                      <label>
+                        <input type="radio"
+                               name="profile_id:string"
+                               value="profile"
+                               tal:attributes="id info/id;
+                                     value info/id;
+                                     checked python: default_profile==info['id'] and 'checked' or nothing"
+                        />
+                        <tal tal:attributes="for info/id"
+                             tal:content="info/title"> Profile title </tal>
+                      </label>
+                      <div class="form-text small text-muted" tal:content="info/description">
+                        Profile description
                       </div>
-                      <p class="formHelp" tal:content="info/description" tal:condition="python: advanced">
-                        profile description
-                      </p>
-                    </tal:normal>
-                    <tal:hidden tal:condition="python: selected and not advanced">
-                      <input type="hidden" name="extension_ids:list" value=""
-                             tal:attributes="value info/id;
-                                   checked info/selected|nothing;" />
-                    </tal:hidden>
-                  </tal:info>
+                    </tal:bases>
+
+                    <div class="form-text small text-muted" i18n:translate="">
+                      You normally don't need to change anything here unless you have
+                      specific reasons and know what you are doing.
+                    </div>
+
+                  </div>
+                </tal:baseprofile>
+
+                <tal:extensionprofiles condition="python: extension_profiles">
+                  <fieldset id="add-on-list" tal:omit-tag="python: not advanced">
+                    <legend i18n:translate="" tal:condition="python: advanced">
+                      Add-ons
+                    </legend>
+
+                    <tal:addons tal:repeat="info extension_profiles">
+                      <div class="addons-group">
+                        <tal:info tal:define="selected info/selected|nothing">
+                          <tal:normal tal:condition="python: not selected or advanced">
+                            <div tal:condition="python: advanced">
+                              <label>
+                                <input type="checkbox" name="extension_ids:list" value=""
+                                       tal:attributes="value info/id;
+                                             id info/id;
+                                             checked info/selected|nothing;" />
+                                <span
+                                  tal:attributes="for info/id"
+                                  tal:content="info/title">profile title</span>
+                              </label>
+                            </div>
+                            <p class="form-text text-muted small" tal:content="info/description" tal:condition="python: advanced">
+                              profile description
+                            </p>
+                          </tal:normal>
+                          <tal:hidden tal:condition="python: selected and not advanced">
+                            <input type="hidden"
+                                   class="form-check-input"
+                                   name="extension_ids:list" value=""
+                                   tal:attributes="value info/id;
+                                         checked info/selected|nothing;" />
+                          </tal:hidden>
+                        </tal:info>
+                      </div>
+                    </tal:addons>
+
+                    <div class="form-text text-muted" i18n:translate="" tal:condition="python: advanced">
+                      Select any add-ons you want to activate immediately. You can
+                      also activate add-ons after the site has been created using the
+                      Add-ons control panel.
+                    </div>
+
+                  </fieldset>
+                </tal:extensionprofiles>
+
+                <div class="formControls mt-2">
+                  <input type="hidden" name="form.submitted:boolean" value="True" />
+                  <input type="submit" name="submit" value="Create SENAITE Site"
+                         class="btn btn-primary"
+                         i18n:attributes="value;" />
                 </div>
-              </tal:addons>
 
-            </fieldset>
-          </tal:extensionprofiles>
-
-          <div class="formControls">
-            <input type="hidden" name="form.submitted:boolean" value="True" />
-            <input type="submit" name="submit" value="Create SENAITE Site"
-                   i18n:attributes="value;" />
+              </form>
+            </div>
           </div>
-
-        </form>
-      </article>
+        </div>
+      </div>
     </div>
   </body>
 </html>

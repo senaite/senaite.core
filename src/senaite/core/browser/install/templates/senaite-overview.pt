@@ -1,5 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
           "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
       xmlns:tal="http://xml.zope.org/namespaces/tal"
       xmlns:metal="http://xml.zope.org/namespaces/metal"
@@ -10,153 +11,162 @@
   <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <title>SENAITE</title>
- 
+    <title i18n:translate="">Welcome to SENAITE</title>
     <link rel="stylesheet" type="text/css"
-          href="/++resource++plone-admin-ui.css"
-          tal:attributes="href string:${context/absolute_url}/++resource++plone-admin-ui.css" />
+          tal:attributes="href string:${context/absolute_url}/++plone++senaite.core.static/lib/bootstrap/dist/css/bootstrap.min.css"
+          href="bootstrap.min.css" />
+    <link href="favicon.ico" rel="icon" type="image/x-icon"
+          tal:attributes="href string:${context/absolute_url}/++plone++senaite.core.static/images/favicon.ico"/>
   </head>
 
-
   <body tal:define="sites view/sites">
-    <div id="box">
-      <header><h1><img src="/++resource++plone-logo.png" width="108" height="28"
-                       tal:attributes="src string:${context/absolute_url}/++resource++plone-logo.png"
-                       alt="Plone"/></h1>
-      </header>
-      <article>
-        <div id="text">
-          <div class="circle running">
-            <img alt="" src="data:image/png;base64,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" />
-          </div>
-          <h1 i18n:translate="">
-            Server is up and running.
-          </h1>
-          <ul>
-            <tal:block tal:condition="sites">
-              <tal:one tal:condition="python:len(sites) == 1">
-                <tal tal:repeat="site sites">
-                  <span class="prominent">
-                    <!--<img tal:attributes="src string:${site/absolute_url}/logoIcon.png"
-                         height="16" width="16"/>-->
-                    <a href="#" class="plone-btn"
-                       tal:attributes="href site/absolute_url"
-                       title="Go to your instance"
-                       i18n:attributes="title;"
-                       i18n:translate="">View your SENAITE site</a>
-                  </span>
-                  <div class="upgrade-warning"
-                       tal:condition="python:view.outdated(site)">
-                    <span i18n:translate="">
-                      This site configuration is outdated and needs to be
-                      upgraded:</span>
-                    <form action=""
-                          style="display: inline;"
-                          method="get"
-                          tal:attributes="action python:view.upgrade_url(site)">
-                      <input tal:condition="not:view/can_manage"
-                             type="hidden" name="came_from"
-                             tal:attributes="value python:view.upgrade_url(site, can_manage=True)"/>
-                      <input type="submit"
-                             class="plone-btn-secondary"
-                             value="Upgrade&hellip;"
-                             i18n:attributes="value label_upgrade_hellip" />
-                    </form>
-                  </div>
-                </tal>
-              </tal:one>
-              <tal:many tal:condition="python:len(sites) &gt; 1">
-                <h2 id="multiple-sites" i18n:translate=""> You have multiple Plone sites:</h2>
-                <ul class="sites">
-                  <li tal:repeat="site sites">
-                    <span class="prominent">
 
-                      <a href="#"
-                         tal:attributes="href site/absolute_url;
-                               title site/Title;"
-                         tal:content="site/Title">
-                        Site title
-                      </a>
-                      <span class="discreet"
-                            tal:content="string:– ${site/getId}"/>
-                      <img tal:attributes="src string:${site/absolute_url}/logoIcon.png"
-                           height="16" width="16"/>
-                    </span>
-                    <div class="upgrade-warning"
-                         tal:condition="python:view.outdated(site)">
-                      <span i18n:translate="">
-                        This site configuration is outdated and
-                        needs to be upgraded:
+    <div class="container">
+
+      <div class="row">
+        <div class="col-sm-6 offset-sm-3">
+
+          <div id="text">
+            <h1>
+              <img src="senaite-logo.png"
+                   height="30"
+                   tal:attributes="src string:${context/absolute_url}/++plone++senaite.core.static/images/senaite.svg" />
+              <small class="lead">Enterprise Open Source Laboratory System</small>
+            </h1>
+            <hr/>
+
+            <ul class="list-group">
+              <tal:block tal:condition="sites">
+                <tal:one tal:condition="python:len(sites) == 1">
+                  <tal tal:repeat="site sites">
+                    <li class="list-group-item">
+                      <span class="prominent">
+                        <img class="img"
+                            height="16"
+                            style="vertical-align:middle;"
+                            tal:attributes="src string:${site/absolute_url}/++plone++senaite.core.static/images/favicon.ico"/>
+                        <a href="#"
+                          class="btn btn-outline-secondary btn-sm"
+                          tal:attributes="href site/absolute_url"
+                          title="Go to your instance"
+                          i18n:attributes="title;"
+                          i18n:translate="">View your SENAITE site</a>
                       </span>
-                      <form action=""
-                            style="display: inline;"
-                            method="get"
-                            tal:attributes="action python:view.upgrade_url(site)">
-                        <input tal:condition="not:view/can_manage"
-                               type="hidden" name="came_from"
-                               tal:attributes="value python:view.upgrade_url(site, can_manage=True)"/>
-                        <input type="submit"
-                               class="plone-btn-secondary"
-                               value="Upgrade&hellip;"
-                               i18n:attributes="value label_upgrade_hellip" />
-                      </form>
+                      <div class="upgrade-warning"
+                          tal:condition="python:view.outdated(site)">
+                        <span i18n:translate="">
+                          This site configuration is outdated and needs to be
+                          upgraded:</span>
+                        <form action=""
+                              style="display: inline;"
+                              method="get"
+                              tal:attributes="action python:view.upgrade_url(site)">
+                          <input tal:condition="not:view/can_manage"
+                                type="hidden" name="came_from"
+                                tal:attributes="value python:view.upgrade_url(site, can_manage=True)"/>
+                          <input type="submit"
+                                class="plone-btn-secondary"
+                                value="Upgrade&hellip;"
+                                i18n:attributes="value label_upgrade_hellip" />
+                        </form>
+                      </div>
+                    </li>
+                  </tal>
+                </tal:one>
 
-                    </div>
-                  </li>
-                </ul>
-              </tal:many>
-            </tal:block>
-            <li>
-              <span i18n:translate="" tal:condition="not:sites">
-                Your SENAITE site has not been added yet:
-              </span>
-              <span i18n:translate="" tal:condition="sites">
-                You can add another SENAITE site:
-              </span>
-              <form id="add-plone-site"
-                    method="get"
-                    action="#"
-                    tal:define="site_number python: '' if not sites else len(sites) + 1"
-                    tal:attributes="action string:${context/absolute_url}/@@senaite-addsite">
-                <input type="hidden" name="site_id" value="senaite${site_number}" />
-                <input type="hidden" name="site_title" value="SENAITE LIMS" />
-                <input type="submit"
-                       i18n:attributes="value;"
-                       value="Create a new SENAITE site" />
-                <a class="discreet"
-                   i18n:translate=""
-                   tal:attributes="href string:${context/absolute_url}/@@senaite-addsite?site_id=senaite${site_number}&site_title=SENAITE LIMS&amp;advanced=1">
-                  Advanced
-                </a>
-              </form>
-            </li>
+                <tal:many tal:condition="python:len(sites) &gt; 1">
+                  <h2 id="multiple-sites" i18n:translate=""> You have multiple Plone sites:</h2>
+                  <ul class="list-group">
+                    <li class="list-group-item" tal:repeat="site sites">
+                      <span class="prominent">
 
-          </ul>
+                        <a href="#"
+                           tal:attributes="href site/absolute_url;
+                                 title site/Title;"
+                           tal:content="site/Title">
+                          Site title
+                        </a>
+                        <span class="discreet"
+                              tal:content="string:– ${site/getId}"/>
+                        <img tal:attributes="src string:${site/absolute_url}/logoIcon.png"
+                             height="16" width="16"/>
+                      </span>
+                      <div class="upgrade-warning"
+                           tal:condition="python:view.outdated(site)">
+                        <span i18n:translate="">
+                          This site configuration is outdated and
+                          needs to be upgraded:
+                        </span>
+                        <form action=""
+                              style="display: inline;"
+                              method="get"
+                              tal:attributes="action python:view.upgrade_url(site)">
+                          <input tal:condition="not:view/can_manage"
+                                 type="hidden" name="came_from"
+                                 tal:attributes="value python:view.upgrade_url(site, can_manage=True)"/>
+                          <input type="submit"
+                                 class="plone-btn-secondary"
+                                 value="Upgrade&hellip;"
+                                 i18n:attributes="value label_upgrade_hellip" />
+                        </form>
+
+                      </div>
+                    </li>
+                  </ul>
+                </tal:many>
+
+              </tal:block>
+
+              <li class="list-group-item">
+                <!-- No SENAITE site added yet -->
+                <span i18n:translate="" tal:condition="not:sites">
+                  Your SENAITE site has not been added yet:
+                </span>
+                <span i18n:translate="" tal:condition="sites">
+                  You can add another SENAITE site:
+                </span>
+                <form id="add-plone-site"
+                      method="get"
+                      action="#"
+                      tal:define="site_number python: '' if not sites else len(sites) + 1"
+                      tal:attributes="action string:${context/absolute_url}/@@senaite-addsite">
+                  <input type="hidden" name="site_id" value="senaite${site_number}" />
+                  <input type="hidden" name="site_title" value="SENAITE LIMS" />
+                  <input type="submit"
+                         class="btn btn-success"
+                         i18n:attributes="value;"
+                         value="Create a new SENAITE site" />
+                  <a class="btn btn-outline-secondary"
+                     i18n:translate=""
+                     tal:attributes="href string:${context/absolute_url}/@@senaite-addsite?site_id=senaite${site_number}&site_title=SENAITE LIMS&amp;advanced=1">
+                    Advanced
+                  </a>
+                </form>
+              </li>
+
+            </ul>
+          </div>
+
+          <!-- Community Links -->
+          <div class="row">
+            <div class="col-sm-12">
+              <hr/>
+              <div i18n:translate="" class="lead">
+                Meet the community, browse the code and get support on
+              </div>
+              <ul class="list-inline flex-column flex-sm-row">
+                <li class="list-inline-item"><a class="btn btn-outline-secondary" href="https://www.senaite.com" title="Website" target="_blank">Website</a></li>
+                <li class="list-inline-item"><a class="btn btn-outline-secondary" href="https://community.senaite.com" title="SENAITE community" target="_blank">Community Site</a></li>
+                <li class="list-inline-item"><a class="btn btn-outline-secondary" href="https://gitter.im/senaite/Lobby" title="Gitter Chat" target="_blank">Gitter Chat</a></li>
+                <li class="list-inline-item"><a class="btn btn-outline-secondary" href="https://github.com/senaite" title="GitHub" target="_blank">GitHub</a></li>
+                <li class="list-inline-item"><a class="btn btn-outline-secondary" href="https://twitter.com/senaitelims" title="Twitter" target="_blank">Twitter</a></li>
+              </ul>
+            </div>
+          </div>
+
         </div>
-      </article>
-      <footer>
-        <p>
-          <a href="#"
-             tal:attributes="href string:${context/absolute_url}/manage_main"
-             title="Go to the ZMI"
-             i18n:attributes="title;"
-             i18n:translate="label_zmi_link">Management Interface</a>
-          <span i18n:translate="label_zmi_link_description"> &#151; low-level technical configuration.</span>
-        </p>
-        <p>
-          <span i18n:translate="label_plone_com_description"> For an introduction to Plone, success stories, demos, providers, visit</span>
-          <a href="http://plone.com"
-             title="Plone.com"
-             target="_blank"
-             i18n:attributes="title label_plone_com_title;">plone.com</a>.
-        </p>
-        <p>
-          <span i18n:translate="label_plone_org_description"> For documentation, add-ons, support, community, visit</span>
-          <a href="http://plone.org"
-             title="Plone Community Home"
-             i18n:attributes="title label_plone_org_title;">plone.org</a>.
-        </p>
-      </footer>
+      </div>
+
     </div>
   </body>
 </html>
