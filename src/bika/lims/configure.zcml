@@ -27,7 +27,6 @@
   <include package=".workflow" />
 
   <include file="profiles.zcml" />
-  <!-- <include file="static.zcml" /> -->
 
   <cmf:registerDirectory name="skins" directory="skins" recursive="True" />
 
