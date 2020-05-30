@@ -41,16 +41,16 @@
                   <tal tal:repeat="site sites">
                     <li class="list-group-item">
                       <span class="prominent">
-                        <img class="img"
-                            height="16"
-                            style="vertical-align:middle;"
-                            tal:attributes="src string:${site/absolute_url}/++plone++senaite.core.static/images/favicon.ico"/>
                         <a href="#"
                           class="btn btn-outline-secondary btn-sm"
                           tal:attributes="href site/absolute_url"
                           title="Go to your instance"
-                          i18n:attributes="title;"
-                          i18n:translate="">View your SENAITE site</a>
+                          i18n:attributes="title;">
+                          <img src="favicon.ico"
+                              height="16"
+                              tal:attributes="src string:${context/absolute_url}/++plone++senaite.core.static/images/favicon.ico" />
+                          <span i18n:translate="">View your SENAITE site></span>
+                        </a>
                       </span>
                       <div class="upgrade-warning"
                           tal:condition="python:view.outdated(site)">
@@ -75,21 +75,20 @@
                 </tal:one>
 
                 <tal:many tal:condition="python:len(sites) &gt; 1">
-                  <h2 id="multiple-sites" i18n:translate=""> You have multiple Plone sites:</h2>
+                  <h2 id="multiple-sites" i18n:translate=""> You have multiple SENAITE sites:</h2>
                   <ul class="list-group">
                     <li class="list-group-item" tal:repeat="site sites">
                       <span class="prominent">
-
                         <a href="#"
                            tal:attributes="href site/absolute_url;
                                  title site/Title;"
-                           tal:content="site/Title">
-                          Site title
+                           class="btn btn-outline-secondary btn-sm">
+                          <img src="favicon.ico"
+                               height="16"
+                               tal:attributes="src string:${context/absolute_url}/++plone++senaite.core.static/images/favicon.ico" />
+                          <span tal:content="site/Title"></span>
+                          <span class="small" tal:content="string: (${site/getId})"></span>
                         </a>
-                        <span class="discreet"
-                              tal:content="string:– ${site/getId}"/>
-                        <img tal:attributes="src string:${site/absolute_url}/logoIcon.png"
-                             height="16" width="16"/>
                       </span>
                       <div class="upgrade-warning"
                            tal:condition="python:view.outdated(site)">
@@ -105,7 +104,7 @@
                                  type="hidden" name="came_from"
                                  tal:attributes="value python:view.upgrade_url(site, can_manage=True)"/>
                           <input type="submit"
-                                 class="plone-btn-secondary"
+                                 class="btn btn-secondary"
                                  value="Upgrade&hellip;"
                                  i18n:attributes="value label_upgrade_hellip" />
                         </form>
