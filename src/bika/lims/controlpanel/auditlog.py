@@ -46,6 +46,7 @@ class AuditLogView(BikaListingView):
         self.catalog = "auditlog_catalog"
 
         self.contentFilter = {
+            "path": "/",
             "sort_on": "snapshot_created",
             "sort_order": "descending",
         }
