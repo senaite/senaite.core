@@ -30,7 +30,7 @@
                            item_class python:is_current and item_class + ' active' or item_class;">
 
           <a tal:attributes="href python:use_remote_url and item_remote_url or item_url;
-                             title node/Description;
+                             title node/Title;
                              class string:$item_class${li_class}${li_extr_class}${li_folder_class} $item_type_class nav-link">
             <tal:root tal:condition="python: level==1">
               <span
@@ -43,7 +43,6 @@
             <tal:children tal:condition="python: level>1">
               <div class="text-truncate">
                 <span
-                  tal:attributes="title node/Title"
                   class="child-icon">
                   <img tal:replace="structure item_icon"/>
                 </span>
