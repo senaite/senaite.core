@@ -41,7 +41,7 @@
               <span class="node-title" tal:content="node/Title">Selected Item Title</span>
             </tal:root>
             <tal:children tal:condition="python: level>1">
-              <div style="white-space:nowrap;">
+              <div class="text-truncate">
                 <span
                   tal:attributes="title node/Title"
                   class="child-icon">
