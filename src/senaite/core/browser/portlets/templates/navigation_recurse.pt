@@ -31,21 +31,21 @@
 
           <a tal:attributes="href python:use_remote_url and item_remote_url or item_url;
                              title node/Title;
-                             class string:$item_class${li_class}${li_extr_class}${li_folder_class} $item_type_class nav-link">
+                             class string:$item_class${li_class}${li_extr_class}${li_folder_class} $item_type_class nav-link"
+             i18n:attributes="title">
             <tal:root tal:condition="python: level==1">
-              <span
-                tal:attributes="title node/Title"
-                class="node-icon">
+              <span class="node-icon">
                 <img tal:replace="structure item_icon"/>
               </span>
               <span class="node-title"
                     i18n:translate=""
-                    tal:content="node/Title">Selected Item Title</span>
+                    tal:content="node/Title">
+                Selected Item Title
+              </span>
             </tal:root>
             <tal:children tal:condition="python: level>1">
               <div class="text-truncate">
-                <span
-                  class="child-icon">
+                <span class="child-icon">
                   <img tal:replace="structure item_icon"/>
                 </span>
                 <span class="child-title"

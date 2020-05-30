@@ -21,7 +21,8 @@
           <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
             <a class="tile setup text-capitalized text-decoration-none"
                tal:attributes="href setup/absolute_url;
-                               title setup/Title">
+                               title setup/Title"
+               i18n:attributes="title">
               <div class="row item">
                 <div class="text-nowrap">
                   <img src="#"
@@ -42,7 +43,8 @@
           <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3">
             <a class="tile text-capitalized text-decoration-none"
                tal:attributes="href brain/getURL;
-                               title brain/Title">
+                               title brain/Title"
+               i18n:attributes="title">
               <div class="item text-truncate">
                 <img src="#"
                      class="icon"
