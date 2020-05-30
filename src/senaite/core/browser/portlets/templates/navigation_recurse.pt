@@ -2,7 +2,7 @@
                     children options/children | nothing;
                     bottomLevel options/bottomLevel | nothing;
                     bootstrapview nocall:context/@@bootstrapview"
-            i18n:domain="plone">
+            i18n:domain="senaite.core">
 
   <metal:main define-macro="nav_main">
 
@@ -38,7 +38,9 @@
                 class="node-icon">
                 <img tal:replace="structure item_icon"/>
               </span>
-              <span class="node-title" tal:content="node/Title">Selected Item Title</span>
+              <span class="node-title"
+                    i18n:translate=""
+                    tal:content="node/Title">Selected Item Title</span>
             </tal:root>
             <tal:children tal:condition="python: level>1">
               <div class="text-truncate">
@@ -46,7 +48,9 @@
                   class="child-icon">
                   <img tal:replace="structure item_icon"/>
                 </span>
-                <span class="child-title" tal:content="node/Title">Selected Item Title</span>
+                <span class="child-title"
+                      i18n:translate=""
+                      tal:content="node/Title">Selected Item Title</span>
               </div>
             </tal:children>
           </a>
