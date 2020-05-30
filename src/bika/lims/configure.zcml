@@ -19,8 +19,6 @@
   <include package=".content" />
   <include package=".controlpanel" />
   <include package=".exportimport" />
-  <!-- XXX P5: Fix installation screens -->
-  <!-- <include package=".install" /> -->
   <include package=".interfaces" />
   <include package=".jsonapi" />
   <include package=".monkey" />
