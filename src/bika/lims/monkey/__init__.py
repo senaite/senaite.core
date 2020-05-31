@@ -17,6 +17,3 @@
 #
 # Copyright 2018-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
-
-# XXX P5: Fix ZMI installation button
-# import add_senaite_site  # noqa
