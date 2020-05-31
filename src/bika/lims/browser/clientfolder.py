@@ -60,14 +60,12 @@ class ClientFolderContentsView(BikaListingView):
             "sort_order": "ascending"
         }
 
-
         self.show_select_row = False
         self.show_select_all_checkbox = False
         self.show_select_column = False
         self.pagesize = 25
         self.icon = "{}/{}".format(
             self.portal_url, "++resource++bika.lims.images/client_big.png")
-        request.set("disable_border", 1)
 
         self.columns = collections.OrderedDict((
             ("title", {
