@@ -1,0 +1,24 @@
+{
+    "name": "jqueryui",
+    "version": "1.11.1",
+    "description": "A curated set of user interface interactions, effects, widgets, and themes built on top of the jQuery JavaScript Library.",
+    "main": "jquery-ui.js",
+    "homepage": "http://jqueryui.com",
+    "author": {
+        "name": "jQuery Foundation and other contributors",
+        "url": "https://github.com/jquery/jquery-ui/blob/master/AUTHORS.txt"
+    },
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/sethmcl/jquery-ui.git"
+    },
+    "author": "",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/sethmcl/jquery-ui/issues"
+    },
+    "homepage": "https://github.com/sethmcl/jquery-ui#readme"
+}
