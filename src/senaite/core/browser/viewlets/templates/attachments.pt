@@ -92,6 +92,7 @@
                 <td class="attachment-type">
                   <!-- Attachment Type -->
                   <select name="AttachmentType"
+                          class="form-control"
                           tal:attributes="name string:attachments.AttachmentType:records;
                                           data-attachment-uid string:${attachment/UID};">
                     <tal:item repeat="item attachments_view/get_attachment_types">
