@@ -34,6 +34,7 @@ from bika.lims.api.security import get_user
 from bika.lims.api.security import get_user_id
 from bika.lims.api.snapshot import take_snapshot
 from bika.lims.decorators import returns_json
+from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.utils import to_utf8
 from DateTime import DateTime
 from plone.memoize import view
@@ -358,8 +359,11 @@ class EmailView(BrowserView):
     def exit_url(self):
         """Exit URL for redirect
         """
+        endpoint = "reports_listing"
+        if IAnalysisRequest.providedBy(self.context):
+            endpoint = "published_results"
         return "{}/{}".format(
-            api.get_url(self.context), "reports_listing")
+            api.get_url(self.context), endpoint)
 
     @property
     def total_size(self):
