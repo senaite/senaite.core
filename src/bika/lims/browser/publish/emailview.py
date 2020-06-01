@@ -20,9 +20,10 @@
 
 import inspect
 import itertools
-import re
 from collections import OrderedDict
 from string import Template
+
+import six
 
 import transaction
 from bika.lims import _
@@ -230,7 +231,7 @@ class EmailView(BrowserView):
         # Create a mapping of source ARs for copy
         uids = self.request.form.get("uids", [])
         # handle 'uids' GET parameter coming from a redirect
-        if isinstance(uids, basestring):
+        if isinstance(uids, six.string_types):
             uids = uids.split(",")
         uids = filter(api.is_uid, uids)
         unique_uids = OrderedDict().fromkeys(uids).keys()
@@ -249,15 +250,15 @@ class EmailView(BrowserView):
         """Sender email is either the lab email or portal email "from" address
         """
         lab_email = self.laboratory.getEmailAddress()
-        portal_email = self.portal.email_from_address
-        return lab_email or portal_email
+        portal_email = api.get_registry_record("plone.email_from_address")
+        return lab_email or portal_email or ""
 
     @property
     def email_sender_name(self):
         """Sender name is either the lab name or the portal email "from" name
         """
         lab_from_name = self.laboratory.getName()
-        portal_from_name = self.portal.email_from_name
+        portal_from_name = api.get_registry_record("plone.email_from_name")
         return lab_from_name or portal_from_name
 
     @property

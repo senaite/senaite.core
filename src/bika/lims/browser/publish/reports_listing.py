@@ -72,7 +72,7 @@ class ReportsListingView(BikaListingView):
             "id": "send_email",
             "title": _("Email"),
             "url": "email",
-            "css_class": "btn-primary",
+            "css_class": "btn btn-outline-secondary",
             "help": help_email_text,
         }
 
@@ -84,7 +84,7 @@ class ReportsListingView(BikaListingView):
             "title": _("Publish"),
             # see senaite.core.browser.workflow
             "url": "workflow_action?action=publish_samples",
-            "css_class": "btn-success",
+            "css_class": "btn-outline-success",
             "help": help_publish_text,
         }
 
