@@ -49,7 +49,7 @@
                           <img src="favicon.ico"
                               height="16"
                               tal:attributes="src string:${context/absolute_url}/++plone++senaite.core.static/images/favicon.ico" />
-                          <span i18n:translate="">View your SENAITE site></span>
+                          <span i18n:translate="">View your SENAITE site</span>
                         </a>
                       </span>
                       <div class="upgrade-warning"
