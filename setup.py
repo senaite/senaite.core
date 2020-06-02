@@ -88,6 +88,7 @@ setup(
         # TODO: better integrate just the JS files w/o this package
         "plone.app.jquerytools",
         "archetypes.schemaextender",
+        "collective.js.jqueryui",
     ],
     extras_require={
         "test": [
