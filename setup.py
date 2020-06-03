@@ -67,6 +67,7 @@ setup(
         "plone.app.relationfield",
         "plone.app.referenceablebehavior",
         "plone.resource",
+        #  Requirement of zopyx.txng3.core: zopyx.txng3.ext<3.4.99999
         "zopyx.txng3.ext==3.4.0",
         "senaite.core.supermodel",
         "senaite.core.listing",
