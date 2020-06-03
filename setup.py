@@ -67,10 +67,6 @@ setup(
         "plone.resource",
         #  Requirement of zopyx.txng3.core: zopyx.txng3.ext<3.4.99999
         "zopyx.txng3.ext==3.4.0",
-        "senaite.core.supermodel",
-        "senaite.core.listing",
-        "senaite.core.spotlight",
-        "senaite.impress",
         # tinycss2 >= 1.0.0 does not support Python 2.x anymore
         "tinycss2<1.0.0",
         # Python 2/3 compatibility library: https://six.readthedocs.io/
@@ -88,6 +84,12 @@ setup(
         "plone.app.jquerytools",
         "archetypes.schemaextender",
         "collective.js.jqueryui",
+        # SENAITE
+        "senaite.core.listing",
+        "senaite.core.spotlight",
+        "senaite.core.supermodel",
+        "senaite.impress",
+        "senaite.lims",
     ],
     extras_require={
         "test": [

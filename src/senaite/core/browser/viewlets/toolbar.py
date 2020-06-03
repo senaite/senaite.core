@@ -34,6 +34,11 @@ class ToolbarViewletManager(OrderedViewletManager):
 
     @property
     @memoize
+    def portal(self):
+        return self.portal_state.portal()
+
+    @property
+    @memoize
     def portal_state(self):
         return getMultiAdapter(
             (self.context, self.request),
@@ -42,7 +47,7 @@ class ToolbarViewletManager(OrderedViewletManager):
 
     @memoize
     def is_manager(self):
-        return check_permission("senaite.core: Manage Bika", self.context)
+        return check_permission("senaite.core: Manage Bika", self.portal)
 
     def get_personal_bar(self):
         viewlet = PersonalBarViewlet(
