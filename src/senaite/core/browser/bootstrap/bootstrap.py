@@ -109,7 +109,7 @@ class BootstrapView(BrowserView):
         """
         values = {
             "width": "device-width",
-            "initial-scale": "1.0",
+            "initial-scale": "0.7",
         }
 
         return ",".join("%s=%s" % (k, v) for k, v in values.items())

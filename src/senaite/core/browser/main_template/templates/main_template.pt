@@ -61,7 +61,7 @@
                       sr python:plone_layout.have_portlets('plone.rightcolumn', view);
                       body_class python:plone_layout.bodyClass(template, view);
                       cls python:bootstrapview.get_columns_classes(view)"
-          tal:attributes="class body_class;
+          tal:attributes="class string:${body_class} senaite-body;
                           dir python:isRTL and 'rtl' or 'ltr';
                           python:plone_view.patterns_settings()"
           id="visual-portal-wrapper">
@@ -70,7 +70,7 @@
       <div id="loader" i18n-translate="">Loading...</div>
 
       <!-- Toolbar -->
-      <div class="container-fluid px-0 mb-2">
+      <div class="mb-2">
         <div tal:replace="structure provider:plone.toolbar" />
       </div>
 

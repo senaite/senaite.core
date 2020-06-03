@@ -1,7 +1,10 @@
 /* CSS Styles for the SENAITE Sidebar */
 .wrapper {
     display: flex;
-    align-items: stretch;
+    min-height: calc(100% - 64px);  // subtract toolbar
+    div.container-fluid {
+        width: calc(100% - 50px);  // subtract sidebar
+    }
 }
 
 #sidebar {

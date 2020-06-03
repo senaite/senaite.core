@@ -6,6 +6,8 @@
 @import "plone.scss";
 @import "loader.scss";
 
+html, body  { height: 100%; }
+
 /* SVG icon styles */
 i.hazardous-icon svg { fill: $danger; }
 
@@ -24,6 +26,7 @@ img.deleteAttachmentButton {
     position: fixed;
     z-index: 1000;
 }
+
 #panel-notification {
     .error-notification-item {
         @extend .border;
