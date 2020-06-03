@@ -23,15 +23,13 @@
                tal:attributes="href setup/absolute_url;
                                title setup/Title"
                i18n:attributes="title">
-              <div class="row item">
-                <div class="text-nowrap">
-                  <img src="#"
-                       tal:replace="structure python:view.get_icon_for(setup, css_class='icon')"/>
-                  <div class="title vcenter text-truncate d-inline-block"
-                       i18n:translate=""
-                       tal:content="setup/Title">
-                    Setup Item Title
-                  </div>
+              <div class="item text-truncate">
+                <img src="#"
+                     tal:replace="structure python:view.get_icon_for(setup, css_class='icon')"/>
+                <div class="title vcenter text-truncate d-inline-block"
+                     i18n:translate=""
+                     tal:content="setup/Title">
+                  Setup Item Title
                 </div>
               </div>
             </a>
