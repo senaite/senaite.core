@@ -574,5 +574,6 @@
         </div>
       </div>
     </tal:section>
+    <input tal:replace="structure context/@@authenticator/authenticator"/>
   </metal:content-core>
 </html>
