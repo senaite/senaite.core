@@ -43,12 +43,11 @@ from Products.Archetypes.atapi import TextAreaWidget
 from Products.Archetypes.atapi import TextField
 from Products.Archetypes.atapi import registerType
 from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
-from Products.ATExtensions.field import RecordsField
 from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFPlone.utils import safe_unicode
+from senaite.core.browser.fields.records import RecordsField
 from zope.interface import implements
-
 
 schema = BikaSchema.copy() + Schema((
 

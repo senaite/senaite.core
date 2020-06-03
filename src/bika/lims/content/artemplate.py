@@ -21,7 +21,17 @@
 import sys
 
 from AccessControl import ClassSecurityInfo
-from Products.ATExtensions.field.records import RecordsField
+from bika.lims import api
+from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.widgets import ARTemplateAnalysesWidget
+from bika.lims.browser.widgets import ARTemplatePartitionsWidget
+from bika.lims.browser.widgets import ReferenceWidget
+from bika.lims.config import PROJECTNAME
+from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.content.clientawaremixin import ClientAwareMixin
+from bika.lims.content.sampletype import SampleTypeAwareMixin
+from bika.lims.interfaces import IARTemplate
+from bika.lims.interfaces import IDeactivable
 from Products.Archetypes.public import BaseContent
 from Products.Archetypes.public import BooleanField
 from Products.Archetypes.public import BooleanWidget
@@ -35,19 +45,8 @@ from Products.Archetypes.public import TextField
 from Products.Archetypes.public import registerType
 from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.utils import getToolByName
+from senaite.core.browser.fields.records import RecordsField
 from zope.interface import implements
-
-from bika.lims import api
-from bika.lims import bikaMessageFactory as _
-from bika.lims.browser.widgets import ARTemplateAnalysesWidget
-from bika.lims.browser.widgets import ARTemplatePartitionsWidget
-from bika.lims.browser.widgets import ReferenceWidget
-from bika.lims.config import PROJECTNAME
-from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.content.clientawaremixin import ClientAwareMixin
-from bika.lims.content.sampletype import SampleTypeAwareMixin
-from bika.lims.interfaces import IARTemplate
-from bika.lims.interfaces import IDeactivable
 
 schema = BikaSchema.copy() + Schema((
     ReferenceField(

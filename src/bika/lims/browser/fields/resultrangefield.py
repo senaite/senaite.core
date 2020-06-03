@@ -20,14 +20,12 @@
 
 from operator import itemgetter
 
-from Products.ATExtensions.field import RecordField
-from Products.Archetypes.Registry import registerField
-from Products.Archetypes.interfaces import IFieldDefaultProvider
-from zope.interface import implements
-
 from bika.lims import bikaMessageFactory as _
 from bika.lims.interfaces.analysis import IRequestAnalysis
-
+from Products.Archetypes.interfaces import IFieldDefaultProvider
+from Products.Archetypes.Registry import registerField
+from senaite.core.browser.fields.record import RecordField
+from zope.interface import implements
 
 # A tuple of (subfield_id, subfield_label,)
 SUB_FIELDS = (

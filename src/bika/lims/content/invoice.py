@@ -31,9 +31,9 @@ from Products.Archetypes.public import FileWidget
 from Products.Archetypes.public import ReferenceField
 from Products.Archetypes.public import Schema
 from Products.Archetypes.public import registerType
-from Products.ATExtensions.ateapi import DateTimeField
-from Products.ATExtensions.ateapi import DateTimeWidget
 from Products.CMFPlone.utils import safe_unicode
+from senaite.core.browser.fields.datetime import DateTimeField
+from senaite.core.browser.widgets.datetimewidget import DateTimeWidget
 from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((

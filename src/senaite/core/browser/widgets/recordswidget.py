@@ -3,13 +3,17 @@
 import json
 
 from AccessControl import ClassSecurityInfo
+from App.class_init import InitializeClass
 from Products.Archetypes.Registry import registerWidget
-from Products.ATExtensions.widget import RecordsWidget as ATRecordsWidget
+from senaite.core.browser.widgets.recordwidget import RecordWidget
 
 
-class RecordsWidget(ATRecordsWidget):
+class RecordsWidget(RecordWidget):
+    """Ported from Products.ATExtensions
+    """
+
     security = ClassSecurityInfo()
-    _properties = ATRecordsWidget._properties.copy()
+    _properties = RecordWidget._properties.copy()
     _properties.update({
         "macro": "senaite_widgets/recordswidget",
         "helper_js": ("senaite_widgets/recordswidget.js",),
@@ -18,6 +22,8 @@ class RecordsWidget(ATRecordsWidget):
         "readOnly": False,
         "combogrid_options": "",
     })
+
+    security.declarePublic("process_form")
 
     def process_form(self, instance, field, form, empty_marker=None,
                      emptyReturnsMarker=False):
@@ -64,6 +70,9 @@ class RecordsWidget(ATRecordsWidget):
 
     def jsondumps(self, val):
         return json.dumps(val)
+
+
+InitializeClass(RecordsWidget)
 
 
 registerWidget(RecordsWidget, title="RecordsWidget", description="")

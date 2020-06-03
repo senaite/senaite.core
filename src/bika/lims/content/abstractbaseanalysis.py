@@ -19,26 +19,6 @@
 # Some rights reserved, see README and LICENSE.
 
 from AccessControl import ClassSecurityInfo
-from Products.ATExtensions.ateapi import RecordsField
-from Products.Archetypes.BaseContent import BaseContent
-from Products.Archetypes.Field import BooleanField
-from Products.Archetypes.Field import FixedPointField
-from Products.Archetypes.Field import FloatField
-from Products.Archetypes.Field import IntegerField
-from Products.Archetypes.Field import StringField
-from Products.Archetypes.Field import TextField
-from Products.Archetypes.Schema import Schema
-from Products.Archetypes.Widget import BooleanWidget
-from Products.Archetypes.Widget import DecimalWidget
-from Products.Archetypes.Widget import IntegerWidget
-from Products.Archetypes.Widget import SelectionWidget
-from Products.Archetypes.Widget import StringWidget
-from Products.Archetypes.utils import DisplayList
-from Products.Archetypes.utils import IntDisplayList
-from Products.CMFCore.permissions import View
-from Products.CMFCore.utils import getToolByName
-from zope.interface import implements
-
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import DurationField
@@ -58,6 +38,25 @@ from bika.lims.permissions import FieldEditAnalysisHidden
 from bika.lims.permissions import FieldEditAnalysisRemarks
 from bika.lims.permissions import FieldEditAnalysisResult
 from bika.lims.utils import to_utf8 as _c
+from Products.Archetypes.BaseContent import BaseContent
+from Products.Archetypes.Field import BooleanField
+from Products.Archetypes.Field import FixedPointField
+from Products.Archetypes.Field import FloatField
+from Products.Archetypes.Field import IntegerField
+from Products.Archetypes.Field import StringField
+from Products.Archetypes.Field import TextField
+from Products.Archetypes.Schema import Schema
+from Products.Archetypes.utils import DisplayList
+from Products.Archetypes.utils import IntDisplayList
+from Products.Archetypes.Widget import BooleanWidget
+from Products.Archetypes.Widget import DecimalWidget
+from Products.Archetypes.Widget import IntegerWidget
+from Products.Archetypes.Widget import SelectionWidget
+from Products.Archetypes.Widget import StringWidget
+from Products.CMFCore.permissions import View
+from Products.CMFCore.utils import getToolByName
+from senaite.core.browser.fields.records import RecordsField
+from zope.interface import implements
 
 # Anywhere that there just isn't space for unpredictably long names,
 # this value will be used instead.  It's set on the AnalysisService,

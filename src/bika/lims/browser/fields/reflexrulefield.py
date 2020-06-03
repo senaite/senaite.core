@@ -19,32 +19,27 @@
 # Some rights reserved, see README and LICENSE.
 
 from AccessControl import ClassSecurityInfo
-from Products.ATExtensions.ateapi import RecordsField
-from Products.Archetypes.Registry import registerField
-from Products.Archetypes.interfaces import IVocabulary
-from Products.Archetypes.public import DisplayList
-from Products.CMFCore.utils import getToolByName
-from zope.interface import implements
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
-from bika.lims.browser.widgets import ReflexRuleWidget
 from bika.lims import logger
+from bika.lims.browser.widgets import ReflexRuleWidget
 from bika.lims.utils import isnumber
+from Products.CMFCore.utils import getToolByName
+from senaite.core.browser.fields.records import RecordsField
 
 
 class ReflexRuleField(RecordsField):
-
-    """The field to manage reflex rule's data """
+    """The field to manage reflex rule's data
+    """
     _properties = RecordsField._properties.copy()
     _properties.update({
-        'fixedSize': 0,
-        'minimalSize': 0,
-        'maximalSize': 9999,
-        'type': 'ReflexRule',
-        'subfields': ('rulesset',),
-        'subfield_labels': {'rulesset': _('Define the sets of actions'), },
-        'widget': ReflexRuleWidget,
-        'subfield_validators': {'rulesset': 'reflexrulevalidator', },
+        "fixedSize": 0,
+        "minimalSize": 0,
+        "maximalSize": 9999,
+        "type": "ReflexRule",
+        "subfields": ("rulesset",),
+        "subfield_labels": {"rulesset": _("Define the sets of actions"), },
+        "widget": ReflexRuleWidget,
+        "subfield_validators": {"rulesset": "reflexrulevalidator", },
         })
     security = ClassSecurityInfo()
 
@@ -61,7 +56,7 @@ class ReflexRuleField(RecordsField):
                        'setresulton': 'original',
                        'setresultvalue': '',
                        'worksheettemplate': ''}],
-          'conditions': [{'analysisservice': '52853cf7d5114b5aa8c159afad2f3da1',
+          'conditions': [{'analysisservice': '52853cf7d5114b5aa8c159afad2f3da',
                           'and_or': 'no',
                           'cond_row_idx': 0,
                           'discreteresult': '',
@@ -87,7 +82,7 @@ class ReflexRuleField(RecordsField):
                        'setresultdiscrete': '',
                        'setresulton': 'original',
                        'setresultvalue': '',
-                       'worksheettemplate': '70d48adfb34c4231a145f76a858e94cf'},
+                       'worksheettemplate': '70d48adfb34c4231a145f76a858e94c'},
                       {'act_row_idx': 2,
                        'action': 'repeat',
                        'an_result_id': 'rep-5',
@@ -278,10 +273,10 @@ def _check_actions(instance, actions):
     for action in actions:
         act_row_idx = action.get('act_row_idx', '0')
         action_name = action.get('action', '')
-        an_result_id = action.get('an_result_id', '')
-        analyst = action.get('analyst', '')
+        # an_result_id = action.get('an_result_id', '')
+        # analyst = action.get('analyst', '')
         otherWS = action.get('otherWS', 'current')
-        setresultdiscrete = action.get('setresultdiscrete', '')
+        # setresultdiscrete = action.get('setresultdiscrete', '')
         setresulton = action.get('setresulton', '')
         setresultvalue = action.get('setresultvalue', '')
         worksheettemplate = action.get('worksheettemplate', '')
@@ -290,7 +285,8 @@ def _check_actions(instance, actions):
             logger.warn('The act_row_idx must be a number. Now its value is: '
                         '%s' % (act_row_idx))
             return False
-        if action_name not in ['repeat', 'duplicate', 'setresult','setvisibility']:
+        if action_name not in [
+                'repeat', 'duplicate', 'setresult', 'setvisibility']:
             logger.warn(
                 'Not correct action_name value')
             return False

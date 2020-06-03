@@ -2,7 +2,7 @@
 
 from AccessControl import ClassSecurityInfo
 from Products.Archetypes.Registry import registerWidget
-from Products.ATExtensions.widget import RecordWidget
+from senaite.core.browser.widgets.recordwidget import RecordWidget
 
 
 class DurationWidget(RecordWidget):

@@ -227,8 +227,8 @@ def set_fields_from_request(obj, request):
                 value = False
             else:
                 value = True
-        elif fieldtype in ['Products.ATExtensions.field.records.RecordsField',
-                           'Products.ATExtensions.field.records.RecordField']:
+        elif fieldtype in ['senaite.core.browser.fields.records.RecordsField',
+                           'senaite.core.browser.fields.record.RecordField']:
             try:
                 value = eval(value)
             except:

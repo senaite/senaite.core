@@ -21,55 +21,49 @@
 from datetime import date
 
 from AccessControl import ClassSecurityInfo
-
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import safe_unicode
-from Products.Archetypes.atapi import DisplayList, PicklistWidget
-from Products.Archetypes.atapi import registerType
+from bika.lims import api
+from bika.lims import bikaMessageFactory as _
+from bika.lims import logger
 from bika.lims.api.analysis import is_out_of_range
-from bika.lims.catalog.analysis_catalog import CATALOG_ANALYSIS_LISTING
-
-from zope.interface import implements
-from plone.app.folder.folder import ATFolder
-
-# Schema and Fields
-from Products.Archetypes.atapi import Schema
-from Products.ATContentTypes.content import schemata
-from Products.Archetypes.atapi import ReferenceField
-from Products.Archetypes.atapi import ComputedField
-from Products.Archetypes.atapi import DateTimeField
-from Products.Archetypes.atapi import StringField
-from Products.Archetypes.atapi import TextField
-from Products.Archetypes.atapi import ImageField
-from Products.Archetypes.atapi import BooleanField
-from Products.ATExtensions.ateapi import RecordsField
-from plone.app.blob.field import FileField as BlobFileField
 from bika.lims.browser.fields import UIDReferenceField
-
-# Widgets
-from Products.Archetypes.atapi import ComputedWidget
-from Products.Archetypes.atapi import StringWidget
-from Products.Archetypes.atapi import TextAreaWidget
-from Products.Archetypes.atapi import FileWidget
-from Products.Archetypes.atapi import ImageWidget
-from Products.Archetypes.atapi import BooleanWidget
-from Products.Archetypes.atapi import SelectionWidget
-from Products.Archetypes.atapi import MultiSelectionWidget
 from bika.lims.browser.widgets import DateTimeWidget
 from bika.lims.browser.widgets import RecordsWidget
 from bika.lims.browser.widgets import ReferenceWidget
-
-# bika.lims imports
-from bika.lims import api
-from bika.lims import logger
+from bika.lims.catalog.analysis_catalog import CATALOG_ANALYSIS_LISTING
+from bika.lims.config import PROJECTNAME
+from bika.lims.content.bikaschema import BikaFolderSchema
+from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.exportimport import instruments
+from bika.lims.interfaces import IDeactivable
+from bika.lims.interfaces import IInstrument
 from bika.lims.utils import t
 from bika.lims.utils import to_utf8
-from bika.lims.config import PROJECTNAME
-from bika.lims.exportimport import instruments
-from bika.lims.interfaces import IInstrument, IDeactivable
-from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.content.bikaschema import BikaFolderSchema
-from bika.lims import bikaMessageFactory as _
+from plone.app.blob.field import FileField as BlobFileField
+from plone.app.folder.folder import ATFolder
+from Products.Archetypes.atapi import BooleanField
+from Products.Archetypes.atapi import BooleanWidget
+from Products.Archetypes.atapi import ComputedField
+from Products.Archetypes.atapi import ComputedWidget
+from Products.Archetypes.atapi import DateTimeField
+from Products.Archetypes.atapi import DisplayList
+from Products.Archetypes.atapi import FileWidget
+from Products.Archetypes.atapi import ImageField
+from Products.Archetypes.atapi import ImageWidget
+from Products.Archetypes.atapi import MultiSelectionWidget
+from Products.Archetypes.atapi import PicklistWidget
+from Products.Archetypes.atapi import ReferenceField
+from Products.Archetypes.atapi import Schema
+from Products.Archetypes.atapi import SelectionWidget
+from Products.Archetypes.atapi import StringField
+from Products.Archetypes.atapi import StringWidget
+from Products.Archetypes.atapi import TextAreaWidget
+from Products.Archetypes.atapi import TextField
+from Products.Archetypes.atapi import registerType
+from Products.ATContentTypes.content import schemata
+from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import safe_unicode
+from senaite.core.browser.fields.records import RecordsField
+from zope.interface import implements
 
 schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
 

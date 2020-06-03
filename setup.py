@@ -53,8 +53,6 @@ setup(
         "plone.api",
         "plone.subrequest",
         "plone.jsonapi.core",
-        # TODO: integrate needed code parts completely in core
-        "Products.ATExtensions",
         "Products.CMFEditions",
         "Products.DataGridField",
         "Products.TextIndexNG3",

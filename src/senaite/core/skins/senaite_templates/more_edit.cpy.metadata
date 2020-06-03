@@ -1,0 +1,13 @@
+[default]
+title = More Edit
+
+[validators]
+validators..more = 
+validators = validate_base
+
+[actions]
+action.success..more = traverse_to_action:string:edit
+action.success = traverse_to:string:validate_integrity
+action.success_add_reference = redirect_to_action:string:edit
+action.failure = traverse_to_action:string:edit
+action.next_schemata = traverse_to_action:string:edit

@@ -24,7 +24,6 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims import deprecated
 from bika.lims.browser.fields.remarksfield import RemarksField
 from bika.lims.browser.widgets import DateTimeWidget
-from bika.lims.browser.widgets import RecordsWidget as bikaRecordsWidget
 from bika.lims.browser.widgets import ReferenceWidget
 from bika.lims.browser.widgets import RemarksWidget
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
@@ -45,10 +44,7 @@ from Products.Archetypes.public import Schema
 from Products.Archetypes.public import StringField
 from Products.Archetypes.public import StringWidget
 from Products.Archetypes.public import registerType
-from Products.Archetypes.references import HoldingReference
-from Products.ATExtensions.ateapi import RecordsField
 from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import safe_unicode
 from zope.interface import implements
 
 

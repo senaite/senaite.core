@@ -20,7 +20,7 @@
 
 from AccessControl import ClassSecurityInfo
 from Products.Archetypes.Registry import registerWidget
-from Products.ATExtensions.widget.records import RecordsWidget
+from senaite.core.browser.fields.records import RecordsWidget
 
 
 class WorksheetTemplateLayoutWidget(RecordsWidget):

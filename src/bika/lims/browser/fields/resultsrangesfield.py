@@ -20,13 +20,12 @@
 
 from operator import itemgetter
 
-from Products.ATExtensions.field import RecordsField
-from Products.Archetypes.Registry import registerField
-
 from bika.lims import api
 from bika.lims.browser.fields.resultrangefield import SUB_FIELDS
 from bika.lims.browser.widgets import AnalysisSpecificationWidget
 from bika.lims.catalog import SETUP_CATALOG
+from Products.Archetypes.Registry import registerField
+from senaite.core.browser.fields.records import RecordsField
 
 
 class ResultsRangesField(RecordsField):

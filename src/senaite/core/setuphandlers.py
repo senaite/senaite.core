@@ -82,6 +82,7 @@ def install(context):
 
     # Set CMF Form actions
     setup_form_controller_actions(portal)
+    setup_form_controller_more_action(portal)
 
     logger.info("SENAITE CORE install handler [DONE]")
 
@@ -112,6 +113,23 @@ def setup_content_structure(portal):
     logger.info("*** Install SENAITE Content Types ***")
     _run_import_step(portal, "content")
     reindex_content_structure(portal)
+
+
+def setup_form_controller_more_action(portal):
+    """Install form controller actions for ported record widgets
+
+    Code taken from Products.ATExtensions
+    """
+    logger.info("*** Install SENAITE Form Controller Actions ***")
+    pfc = portal.portal_form_controller
+    pfc.addFormValidators(
+        "base_edit", "", "more", "")
+    pfc.addFormAction(
+        "base_edit", "success", "", "more", "traverse_to", "string:more_edit")
+    pfc.addFormValidators(
+        "atct_edit", "", "more", "",)
+    pfc.addFormAction(
+        "atct_edit", "success", "", "more", "traverse_to", "string:more_edit")
 
 
 def _run_import_step(portal, name, profile="profile-bika.lims:default"):

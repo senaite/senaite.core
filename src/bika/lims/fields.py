@@ -18,18 +18,14 @@
 # Copyright 2018-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-"""Generic field extensions
-"""
-from Acquisition import aq_inner
-from Acquisition import aq_parent
-from Acquisition import Implicit
-from Acquisition import ImplicitAcquisitionWrapper
 from archetypes.schemaextender.interfaces import IExtensionField
 from Products.Archetypes.public import *
-from Products.ATExtensions.ateapi import DateTimeField
-from Products.ATExtensions.ateapi import RecordField, RecordsField
+from senaite.core.browser.fields.datetime import DateTimeField
+from senaite.core.browser.fields.record import RecordField
+from senaite.core.browser.fields.records import RecordsField
 from zope.interface import implements
 from zope.site.hooks import getSite
+
 
 class ExtensionField(object):
 

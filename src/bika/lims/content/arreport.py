@@ -34,8 +34,8 @@ from Products.Archetypes.public import BaseFolder
 from Products.Archetypes.public import Schema
 from Products.Archetypes.public import TextField
 from Products.Archetypes.references import HoldingReference
-from Products.ATExtensions.ateapi import RecordField
-from Products.ATExtensions.ateapi import RecordsField
+from senaite.core.browser.fields.record import RecordField
+from senaite.core.browser.fields.records import RecordsField
 from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((

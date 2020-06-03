@@ -19,15 +19,6 @@
 # Some rights reserved, see README and LICENSE.
 
 from AccessControl import ClassSecurityInfo
-from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
-from Products.ATExtensions.ateapi import RecordsField
-from Products.Archetypes.public import *
-from Products.Archetypes.references import HoldingReference
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import safe_unicode
-from magnitude import mg
-from zope.interface import implements
-
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
@@ -40,6 +31,14 @@ from bika.lims.interfaces import IDeactivable
 from bika.lims.interfaces import ISampleType
 from bika.lims.interfaces import ISampleTypeAwareMixin
 from bika.lims.vocabularies import getStickerTemplates
+from magnitude import mg
+from Products.Archetypes.public import *
+from Products.Archetypes.references import HoldingReference
+from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
+from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import safe_unicode
+from senaite.core.browser.fields.records import RecordsField
+from zope.interface import implements
 
 SMALL_DEFAULT_STICKER = 'small_default'
 LARGE_DEFAULT_STICKER = 'large_default'

@@ -19,19 +19,25 @@
 # Some rights reserved, see README and LICENSE.
 
 from AccessControl import ClassSecurityInfo
-from Products.ATExtensions.ateapi import RecordsField
-from Products.Archetypes import atapi
-from Products.Archetypes.public import (BaseFolder, ComputedField,
-                                        ComputedWidget, DisplayList,
-                                        ReferenceField, ReferenceWidget,
-                                        Schema, StringField, StringWidget,
-                                        TextAreaWidget, TextField)
-from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.widgets import ScheduleInputWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import ICancellable
+from Products.Archetypes import atapi
+from Products.Archetypes.public import BaseFolder
+from Products.Archetypes.public import ComputedField
+from Products.Archetypes.public import ComputedWidget
+from Products.Archetypes.public import DisplayList
+from Products.Archetypes.public import ReferenceField
+from Products.Archetypes.public import ReferenceWidget
+from Products.Archetypes.public import Schema
+from Products.Archetypes.public import StringField
+from Products.Archetypes.public import StringWidget
+from Products.Archetypes.public import TextAreaWidget
+from Products.Archetypes.public import TextField
+from Products.CMFPlone.utils import safe_unicode
+from senaite.core.browser.fields.records import RecordsField
 from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((

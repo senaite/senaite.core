@@ -18,13 +18,15 @@
 # Copyright 2018-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-"""
-    AnalysisRequests often use the same configurations.
-    AnalysisProfile is used to save these common configurations (templates).
-"""
-
 from AccessControl import ClassSecurityInfo
-from Products.ATExtensions.field import RecordsField
+from bika.lims import api
+from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.widgets import AnalysisProfileAnalysesWidget
+from bika.lims.config import PROJECTNAME
+from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.content.clientawaremixin import ClientAwareMixin
+from bika.lims.interfaces import IAnalysisProfile
+from bika.lims.interfaces import IDeactivable
 from Products.Archetypes.public import BaseContent
 from Products.Archetypes.public import BooleanField
 from Products.Archetypes.public import BooleanWidget
@@ -40,16 +42,8 @@ from Products.Archetypes.public import TextAreaWidget
 from Products.Archetypes.public import TextField
 from Products.Archetypes.public import registerType
 from Products.CMFCore.utils import getToolByName
+from senaite.core.browser.fields.records import RecordsField
 from zope.interface import implements
-
-from bika.lims import api
-from bika.lims import bikaMessageFactory as _
-from bika.lims.browser.widgets import AnalysisProfileAnalysesWidget
-from bika.lims.config import PROJECTNAME
-from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.content.clientawaremixin import ClientAwareMixin
-from bika.lims.interfaces import IAnalysisProfile
-from bika.lims.interfaces import IDeactivable
 
 schema = BikaSchema.copy() + Schema((
     StringField('ProfileKey',

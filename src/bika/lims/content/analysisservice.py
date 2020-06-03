@@ -42,8 +42,8 @@ from Products.Archetypes.public import Schema
 from Products.Archetypes.public import SelectionWidget
 from Products.Archetypes.public import registerType
 from Products.Archetypes.Registry import registerField
-from Products.ATExtensions.ateapi import RecordsField
 from Products.CMFCore.utils import getToolByName
+from senaite.core.browser.fields.records import RecordsField
 from zope.interface import implements
 
 

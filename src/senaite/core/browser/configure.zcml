@@ -19,6 +19,7 @@
   <include package=".contentmenu"/>
   <include package=".controlpanel"/>
   <include package=".dashboard"/>
+  <include package=".fields"/>
   <include package=".frontpage"/>
   <include package=".globals"/>
   <include package=".install"/>
