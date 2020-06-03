@@ -155,11 +155,6 @@ def pre_install(portal_setup):
     context = portal_setup._getImportContext(profile_id)
     portal = context.getSite()  # noqa
 
-    # Only install the core once!
-    # qi = portal.portal_quickinstaller
-    # if not qi.isProductInstalled("bika.lims"):
-    #     portal_setup.runAllImportStepsFromProfile("profile-bika.lims:default")
-
     logger.info("SENAITE CORE pre-install handler [DONE]")
 
 
