@@ -1,0 +1,3 @@
+Solution Label,Batch Label,Customer Id,Customer Label,Type,Element,Flags,Soln Conc,Units,Corr Con,Units,Int,Internal Std,Date,Time,SD,RSD,IntSD,IntRSD,Act Wgt,Act Vol,DF,NumReps,Replicates,,,
+H2O-0001,,,,Blk,Ca,,0,mg/L,0,mg/L,41.504,-,08/02/2016,14:11:28,0,0,2.94942,7.10635,1,1,1,2,43.5896,,39.4185,
+H2O-0001,,,,Blk,Mg,,2,mg/L,0,mg/L,59.2505,-,08/02/2016,14:11:28,0,0,0.21174,0.357365,1,1,1,2,59.4002,,59.1008,

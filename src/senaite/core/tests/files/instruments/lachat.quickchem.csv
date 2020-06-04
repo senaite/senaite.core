@@ -1,0 +1,82 @@
+Cup Number,Sample ID,Sample Type,Replicate Number,Analyte Name,Peak Concentration,Concentration Units
+S1,H2O-0001,Calibration Standard,1,Ca,0,mg N/L
+S1,H2O-0001,Calibration Standard,1,Mg,2,mgN/L
+S1,CalStd A,Calibration Standard,1,o-phosphate,20,mg P/L
+S2,CalStd  B,Calibration Standard,1,Nitrate/Nitrite,25,mg N/L
+S2,CalStd  B,Calibration Standard,1,ammonia,15,mgN/L
+S2,CalStd  B,Calibration Standard,1,o-phosphate,10,mg P/L
+S3,CalStd C,Calibration Standard,1,Nitrate/Nitrite,12.5,mg N/L
+S3,CalStd C,Calibration Standard,1,ammonia,7.5,mgN/L
+S3,CalStd C,Calibration Standard,1,o-phosphate,5,mg P/L
+S4,CalStd D,Calibration Standard,1,Nitrate/Nitrite,5,mg N/L
+S4,CalStd D,Calibration Standard,1,ammonia,3,mgN/L
+S4,CalStd D,Calibration Standard,1,o-phosphate,2,mg P/L
+S5,CalStd E,Calibration Standard,1,Nitrate/Nitrite,1,mg N/L
+S5,CalStd E,Calibration Standard,1,ammonia,0.3,mgN/L
+S5,CalStd E,Calibration Standard,1,o-phosphate,1,mg P/L
+S6,BLANK,Calibration Standard,1,Nitrate/Nitrite,0,mg N/L
+S6,BLANK,Calibration Standard,1,ammonia,0,mgN/L
+S6,BLANK,Calibration Standard,1,o-phosphate,0,mg P/L
+S6,BLANK,Unknown,1,Nitrate/Nitrite,0.5,mg N/L
+S6,BLANK,Unknown,1,ammonia,0.0935,mgN/L
+S6,BLANK,Unknown,1,o-phosphate,0.33,mg P/L
+S7,QC -NH3-PO4-NO3 ACE,Check Standard,1,Nitrate/Nitrite,15.27,mg N/L
+S7,QC -NH3-PO4-NO3 ACE,Check Standard,1,ammonia,7.48,mgN/L
+S7,QC -NH3-PO4-NO3 ACE,Check Standard,1,o-phosphate,4.2,mg P/L
+S7,QC -NH3-PO4-NO3 ACE,Check Standard,2,Nitrate/Nitrite,14.63,mg N/L
+S7,QC -NH3-PO4-NO3 ACE,Check Standard,2,ammonia,7.75,mgN/L
+S7,QC -NH3-PO4-NO3 ACE,Check Standard,2,o-phosphate,4.65,mg P/L
+19,[A00036896008] RW011B,Unknown,1,Nitrate/Nitrite,11.58,mg N/L
+19,[A00036896008] RW011B,Unknown,1,ammonia,1.68,mgN/L
+19,[A00036896008] RW011B,Unknown,1,o-phosphate,0.32,mg P/L
+20,[A00036896009] WP093,Unknown,1,Nitrate/Nitrite,59.19,mg N/L
+20,[A00036896009] WP093,Unknown,1,ammonia,0.53,mgN/L
+20,[A00036896009] WP093,Unknown,1,o-phosphate,0.25,mg P/L
+21,[A00036896010] WP097A,Unknown,1,Nitrate/Nitrite,-1.46,mg N/L
+21,[A00036896010] WP097A,Unknown,1,ammonia,3.03,mgN/L
+21,[A00036896010] WP097A,Unknown,1,o-phosphate,0.41,mg P/L
+22,[A00036897001] WP011,Unknown,1,Nitrate/Nitrite,0.32,mg N/L
+22,[A00036897001] WP011,Unknown,1,ammonia,0.37,mgN/L
+22,[A00036897001] WP011,Unknown,1,o-phosphate,0.34,mg P/L
+23,[A00036897002] WP029,Unknown,1,Nitrate/Nitrite,7.88,mg N/L
+23,[A00036897002] WP029,Unknown,1,ammonia,5.11,mgN/L
+23,[A00036897002] WP029,Unknown,1,o-phosphate,0.35,mg P/L
+24,[A00036897003] DAM 1,Unknown,1,Nitrate/Nitrite,11.56,mg N/L
+24,[A00036897003] DAM 1,Unknown,1,ammonia,0.59,mgN/L
+24,[A00036897003] DAM 1,Unknown,1,o-phosphate,0.34,mg P/L
+25,[A00036897004]  FINAL O/fF 1,Unknown,1,Nitrate/Nitrite,-0.71,mg N/L
+25,[A00036897004]  FINAL O/fF 1,Unknown,1,ammonia,0.17,mgN/L
+25,[A00036897004]  FINAL O/fF 1,Unknown,1,o-phosphate,0.27,mg P/L
+26,[A00036884001] B1108,Unknown,1,Nitrate/Nitrite,1.19,mg N/L
+26,[A00036884001] B1108,Unknown,1,ammonia,0.4,mgN/L
+26,[A00036884001] B1108,Unknown,1,o-phosphate,0.36,mg P/L
+27,[A00036884002] B1680,Unknown,1,Nitrate/Nitrite,201,mg N/L
+27,[A00036884002] B1680,Unknown,1,ammonia,9.17,mgN/L
+27,[A00036884002] B1680,Unknown,1,o-phosphate,1.34,mg P/L
+27,[A00036884002] B1680,Unknown,1,Nitrate/Nitrite,169,mg N/L
+27,[A00036884002] B1680,Unknown,1,ammonia,9.19,mgN/L
+27,[A00036884002] B1680,Unknown,1,o-phosphate,1.66,mg P/L
+S7,QC -NH3-PO4-NO3 ACE,Check Standard,1,Nitrate/Nitrite,12.43,mg N/L
+S7,QC -NH3-PO4-NO3 ACE,Check Standard,1,ammonia,7.74,mgN/L
+S7,QC -NH3-PO4-NO3 ACE,Check Standard,1,o-phosphate,4.86,mg P/L
+S7,QC -NH3-PO4-NO3 ACE,Check Standard,2,Nitrate/Nitrite,13.47,mg N/L
+S7,QC -NH3-PO4-NO3 ACE,Check Standard,2,ammonia,7.47,mgN/L
+S7,QC -NH3-PO4-NO3 ACE,Check Standard,2,o-phosphate,4.57,mg P/L
+28,[A00036884003] B1681,Unknown,1,Nitrate/Nitrite,120,mg N/L
+28,[A00036884003] B1681,Unknown,1,ammonia,1.28,mgN/L
+28,[A00036884003] B1681,Unknown,1,o-phosphate,0.0949,mg P/L
+29,[A00036884004] B1682,Unknown,1,Nitrate/Nitrite,117,mg N/L
+29,[A00036884004] B1682,Unknown,1,ammonia,33.14,mgN/L
+29,[A00036884004] B1682,Unknown,1,o-phosphate,1.06,mg P/L
+30,[A00036884005] B1683,Unknown,1,Nitrate/Nitrite,-2.11,mg N/L
+30,[A00036884005] B1683,Unknown,1,ammonia,44.57,mgN/L
+30,[A00036884005] B1683,Unknown,1,o-phosphate,2.52,mg P/L
+31,[A00036884006] B1685,Unknown,1,Nitrate/Nitrite,24.26,mg N/L
+31,[A00036884006] B1685,Unknown,1,ammonia,11.61,mgN/L
+31,[A00036884006] B1685,Unknown,1,o-phosphate,0.35,mg P/L
+S7,QC -NH3-PO4-NO3 ACE,Check Standard,1,Nitrate/Nitrite,13.32,mg N/L
+S7,QC -NH3-PO4-NO3 ACE,Check Standard,1,ammonia,7.71,mgN/L
+S7,QC -NH3-PO4-NO3 ACE,Check Standard,1,o-phosphate,4.42,mg P/L
+S7,QC -NH3-PO4-NO3 ACE,Check Standard,2,Nitrate/Nitrite,13.01,mg N/L
+S7,QC -NH3-PO4-NO3 ACE,Check Standard,2,ammonia,7.85,mgN/L
+S7,QC -NH3-PO4-NO3 ACE,Check Standard,2,o-phosphate,4.65,mg P/L
