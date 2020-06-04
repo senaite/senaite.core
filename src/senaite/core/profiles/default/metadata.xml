@@ -3,6 +3,7 @@
   <version>2.0.0</version>
   <dependencies>
     <dependency>profile-Products.ATContentTypes:base</dependency>
+    <dependency>profile-Products.CMFEditions:CMFEditions</dependency>
     <dependency>profile-senaite.core.listing:default</dependency>
     <dependency>profile-senaite.impress:default</dependency>
     <dependency>profile-senaite.core.spotlight:default</dependency>
