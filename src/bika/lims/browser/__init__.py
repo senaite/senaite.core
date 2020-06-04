@@ -60,8 +60,7 @@ def get_date(context, value):
         return None
 
     def get_locale_format(key, context):
-        format = translate(
-            key, domain="senaite.core", mapping={}, context=context)
+        format = translate(key, domain="senaite.core", mapping={})
         # TODO: Is this replacement below strictly necessary?
         return format.replace(r"${", '%').replace('}', '')
 
