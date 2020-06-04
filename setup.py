@@ -19,6 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 from setuptools import setup
+from setuptools import find_packages
 
 version = "2.0.0"
 
@@ -44,7 +45,8 @@ setup(
     url="https://github.com/senaite/senaite.core",
     license="GPLv2",
     package_dir={"": "src"},
-    packages=["bika", "bika.lims", "senaite", "senaite.core"],
+    # packages=["bika", "bika.lims", "senaite", "senaite.core"],
+    packages=find_packages(where="src", include=("senaite*", "bika*")),
     namespace_packages=["bika", "senaite"],
     include_package_data=True,
     zip_safe=False,
