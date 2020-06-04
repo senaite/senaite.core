@@ -219,12 +219,11 @@ class Contact(Person):
                                  map(lambda x: x.Title(), contact))))
 
         # XXX: Does it make sense to "remember" the UID as a User property?
-        tool = user.getTool()
         try:
             user.getProperty(KEY)
         except ValueError:
             logger.info("Adding User property {}".format(KEY))
-            tool.manage_addProperty(KEY, "", "string")
+            user._tool.manage_addProperty(KEY, "", "string")
 
         # Set the UID as a User Property
         uid = self.UID()
