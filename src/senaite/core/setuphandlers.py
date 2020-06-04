@@ -64,6 +64,8 @@ def install(context):
     _run_import_step(portal, "skins")
     _run_import_step(portal, "browserlayer")
     _run_import_step(portal, "rolemap")
+    _run_import_step(portal, "typeinfo")
+    _run_import_step(portal, "factorytool")
     _run_import_step(portal, "toolset")  # catalogs
     _run_import_step(portal, "catalog")
     _run_import_step(portal, "workflow")
@@ -71,7 +73,6 @@ def install(context):
     # Run Installers
     setup_groups(portal)
     remove_default_content(portal)
-    setup_content_types(portal)
     setup_core_catalogs(portal)
     setup_content_structure(portal)
     add_dexterity_setup_items(portal)
@@ -97,14 +98,6 @@ def remove_default_content(portal):
     delete_ids = filter(lambda id: id in object_ids, CONTENTS_TO_DELETE)
     if delete_ids:
         portal.manage_delObjects(ids=list(delete_ids))
-
-
-def setup_content_types(portal):
-    """Install AT content type information
-    """
-    logger.info("*** Install SENAITE Content Types ***")
-    _run_import_step(portal, "typeinfo")
-    _run_import_step(portal, "factorytool")
 
 
 def setup_content_structure(portal):

@@ -3,6 +3,8 @@
     xmlns:browser="http://namespaces.zope.org/browser"
     xmlns:zcml="http://namespaces.zope.org/zcml">
 
+  <include package="bika.lims" file="permissions.zcml" />
+
   <!-- Control Panel Overview -->
   <browser:page
       name="overview-controlpanel"

@@ -2,5 +2,5 @@
 <site>
   <property name="title">SENAITE LIMS</property>
   <property name="description"></property>
-  <property name="default_page" type="string">senaite-frontpage</property>
+  <property name="default_page" type="string">senaite-dashboard</property>
 </site>
