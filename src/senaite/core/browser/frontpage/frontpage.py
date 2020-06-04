@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 
+from bika.lims import api
 from bika.lims.browser import BrowserView
 from bika.lims.interfaces import IFrontPageAdapter
 from plone import api as ploneapi
+from plone.protect.utils import addTokenToUrl
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.component import getAdapters
-from bika.lims import api
 
 
 class FrontPageView(BrowserView):
@@ -57,11 +58,14 @@ class FrontPageView(BrowserView):
             roles = self.get_user_roles()
             allowed = ["Manager", "LabManager", "LabClerk"]
             if set(roles).intersection(allowed):
-                return self.request.response.redirect(
-                    self.portal_url + "/senaite-dashboard")
+                url = addTokenToUrl("{}/{}".format(
+                    self.portal_url, "senaite-dashboard"))
+                return self.request.response.redirect(url)
             if "Sampler" in roles or "SampleCoordinator" in roles:
-                return self.request.response.redirect(
-                    self.portal_url + "/samples?samples_review_state=to_be_sampled")
+                url = addTokenToUrl("{}/{}".format(
+                    self.portal_url,
+                    "samples?samples_review_state=to_be_sampled"))
+                return self.request.response.redirect(url)
 
         # Third precedence: Custom Landing Page
         if landingpage:
