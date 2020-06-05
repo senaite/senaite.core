@@ -18,6 +18,7 @@ Changelog
 
 **Fixed**
 
+- #1585 Fix wrong label and description for `ShowPartitions` setting from setup
 - #1583 Fix traceback in services listing in ARTemplate view
 - #1581 Fix Some values are not properly rendered in services listing
 - #1580 Fix Analysts are not displayed once created in worksheets listing
