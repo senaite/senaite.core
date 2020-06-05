@@ -73,8 +73,8 @@ def guard_assign(analysis):
     if analysis.getWorksheet():
         return False
 
-    # Cannot assign if user does not have permissions to manage worksheets
-    return user_can_manage_worksheets()
+    # Cannot assign if user does not have permissions to assign
+    return api.security.check_permission(TransitionAssignAnalysis, analysis)
 
 
 def guard_unassign(analysis):
@@ -88,8 +88,8 @@ def guard_unassign(analysis):
     if not analysis.getWorksheet():
         return False
 
-    # Cannot unassign if user does not have permissions to manage worksheets
-    return user_can_manage_worksheets()
+    # Cannot unassign if user does not have permissions to unassign
+    return api.security.check_permission(TransitionUnassignAnalysis, analysis)
 
 
 def guard_cancel(analysis):
