@@ -18,8 +18,6 @@
 # Copyright 2018-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from plone.memoize.request import cache
-
 from bika.lims import api
 from bika.lims import logger
 from bika.lims import workflow as wf
@@ -28,6 +26,9 @@ from bika.lims.interfaces import ISubmitted
 from bika.lims.interfaces import IVerified
 from bika.lims.interfaces import IWorksheet
 from bika.lims.interfaces.analysis import IRequestAnalysis
+from bika.lims.permissions import TransitionAssignAnalysis
+from bika.lims.permissions import TransitionUnassignAnalysis
+from plone.memoize.request import cache
 
 
 def is_worksheet_context():
