@@ -6,18 +6,18 @@
   <browser:page
       for="*"
       name="ng"
-      class="bika.lims.browser.idserver.view.IDServerView"
+      class=".view.IDServerView"
       permission="cmf.ManagePortal"
-      layer="bika.lims.interfaces.IBikaLIMS"
+      layer="senaite.core.interfaces.ISenaiteCore"
       />
 
   <browser:page
       for="*"
       name="ng_seed"
-      class="bika.lims.browser.idserver.view.IDServerView"
+      class=".view.IDServerView"
       attribute="seed"
       permission="cmf.ManagePortal"
-      layer="bika.lims.interfaces.IBikaLIMS"
+      layer="senaite.core.interfaces.ISenaiteCore"
       />
 
 </configure>

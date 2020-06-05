@@ -22,6 +22,7 @@
   <include package=".fields"/>
   <include package=".frontpage"/>
   <include package=".globals"/>
+  <include package=".idserver"/>
   <include package=".install"/>
   <include package=".login"/>
   <include package=".main_template"/>

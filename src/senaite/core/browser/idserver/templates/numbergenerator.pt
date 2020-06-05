@@ -28,7 +28,7 @@
         <span tal:replace="structure context/@@authenticator/authenticator"/>
 
         <tal:numbers repeat="key view/storage">
-          <div class="field form-group field"
+          <div class="field form-group"
                tal:define="value python:view.storage[key]">
 
             <label for="number">
@@ -36,15 +36,17 @@
               <span class="text-primary" tal:content="key"/>
             </label>
 
-            <div class="input-group col-sm-6">
-              <span class="input-group-addon">seq:</span>
+            <div class="input-group">
+              <span class="input-group-prepend">
+                <span class="input-group-text">seq:</span>
+              </span>
               <input type="number"
                      class="form-control"
                      tal:attributes="name string:seeds.${key}:record;
                                      value value"/>
             </div>
 
-            <div class="help-block">
+            <div class="form-text text-muted">
               <span i18n:translate="">ID Template</span>:
               <code tal:content="python:view.get_id_template_for(key)"/>
             </div>
@@ -53,7 +55,7 @@
           </div>
         </tal:numbers>
 
-        <input class="btn btn-primary btn-sm allowMultiSubmit"
+        <input class="btn btn-primary btn-sm"
                type="submit"
                name="seed"
                i18n:attributes="value"

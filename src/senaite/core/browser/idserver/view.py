@@ -22,7 +22,6 @@ from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.idserver import get_config
 from bika.lims.numbergenerator import INumberGenerator
-from plone import protect
 from Products.Five import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.component import getUtility
@@ -47,11 +46,9 @@ class IDServerView(BrowserView):
         self.request = request
 
     def __call__(self):
-        protect.CheckAuthenticator(self.request.form)
-
         self.portal = api.get_portal()
-        self.request.set('disable_plone.rightcolumn', 1)
-        self.request.set('disable_border', 1)
+        self.request.set("disable_plone.rightcolumn", 1)
+        self.request.set("disable_border", 1)
 
         # Handle form submit
         form = self.request.form
@@ -107,18 +104,19 @@ class IDServerView(BrowserView):
         """ Reset the number from which the next generated sequence start.
             If you seed at 100, next seed will be 101
         """
+        import pdb; pdb.set_trace()
         form = self.request.form
-        prefix = form.get('prefix', None)
+        prefix = form.get("prefix", None)
         if prefix is None:
-            return 'No prefix provided'
-        seed = form.get('seed', None)
+            return "No prefix provided"
+        seed = form.get("seed", None)
         if seed is None:
-            return 'No seed provided'
+            return "No seed provided"
         if not seed.isdigit():
-            return 'Seed must be a digit'
+            return "Seed must be a digit"
         seed = int(seed)
         if seed < 0:
-            return 'Seed cannot be negative'
+            return "Seed cannot be negative"
 
         new_seq = self.set_seed(prefix, seed)
         return 'IDServerView: "%s" seeded to %s' % (prefix, new_seq)
