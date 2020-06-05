@@ -15,6 +15,6 @@ before_install:
   - bin/pip install -r requirements.txt
   - bin/buildout -N -t 3 annotate
 install:
-  - bin/buildout -N -t 3 -c travis.cfg
+  - bin/buildout -N -t 3
 script:
   - bin/test -m senaite.core
