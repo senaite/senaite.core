@@ -26,8 +26,6 @@ from bika.lims.interfaces import ISubmitted
 from bika.lims.interfaces import IVerified
 from bika.lims.interfaces import IWorksheet
 from bika.lims.interfaces.analysis import IRequestAnalysis
-from bika.lims.permissions import TransitionAssignAnalysis
-from bika.lims.permissions import TransitionUnassignAnalysis
 from plone.memoize.request import cache
 
 
@@ -73,8 +71,7 @@ def guard_assign(analysis):
     if analysis.getWorksheet():
         return False
 
-    # Cannot assign if user does not have permissions to assign
-    return api.security.check_permission(TransitionAssignAnalysis, analysis)
+    return True
 
 
 def guard_unassign(analysis):
@@ -88,8 +85,7 @@ def guard_unassign(analysis):
     if not analysis.getWorksheet():
         return False
 
-    # Cannot unassign if user does not have permissions to unassign
-    return api.security.check_permission(TransitionUnassignAnalysis, analysis)
+    return True
 
 
 def guard_cancel(analysis):
