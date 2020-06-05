@@ -32,7 +32,6 @@ from Products.Archetypes.public import StringField
 from Products.Archetypes.public import StringWidget
 from Products.Archetypes.public import registerType
 from Products.CMFCore import permissions as CMFCorePermissions
-from Products.CMFCore.utils import getToolByName
 
 
 schema = BikaSchema.copy() + Schema((

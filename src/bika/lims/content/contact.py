@@ -270,10 +270,10 @@ class Contact(Person):
                     .format(user.getProperty(KEY, "")))
 
         # Unset the Username
-        self.setUsername(None)
+        self.setUsername("")
 
         # Unset the Email
-        self.setEmailAddress(None)
+        self.setEmailAddress("")
 
         # somehow the `getUsername` index gets out of sync
         self.reindexObject()

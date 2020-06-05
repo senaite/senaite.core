@@ -41,7 +41,7 @@ Test Setup
     ...     browser.open(portal_url + "/login_form")
     ...     browser.getControl(name='__ac_name').value = user
     ...     browser.getControl(name='__ac_password').value = password
-    ...     browser.getControl(name='submit').click()
+    ...     browser.getControl(name='buttons.login').click()
     ...     assert("__ac_password" not in browser.contents)
     ...     return ploneapi.user.get_current()
 
@@ -127,7 +127,7 @@ Linking the user to a client contact grants access to this client::
 Linking a user adds this user to the `Clients` group::
 
     >>> clients_group = ploneapi.group.get("Clients")
-    >>> user1 in clients_group.getAllGroupMembers()
+    >>> user1.getId() in clients_group.getAllGroupMemberIds()
     True
 
 This gives the user the global `Client` role::
@@ -230,10 +230,7 @@ Search for linkable users:
 
 Both users should be now in the search results:
 
-    >>> linkable_users = login_details_view.linkable_users()
-    >>> linkable_user_ids = map(lambda x: x.get("id"), linkable_users)
-
-    >>> user1.id in linkable_user_ids
+    >>> user1.getId() in linkable_user_ids
     True
 
     >>> user2.id in linkable_user_ids
