@@ -19,9 +19,9 @@ Needed imports:
     >>> from Products.CMFCore.utils import getToolByName
     >>> from bika.lims import api
     >>> from bika.lims.utils.analysisrequest import create_analysisrequest
-    >>> from bika.lims.exportimport import instruments
-    >>> from bika.lims.exportimport.instruments.abbott.m2000rt.m2000rt import Abbottm2000rtTSVParser
-    >>> from bika.lims.exportimport.instruments.abbott.m2000rt.m2000rt import Abbottm2000rtImporter
+    >>> from senaite.core.exportimport import instruments
+    >>> from senaite.core.exportimport.instruments.abbott.m2000rt.m2000rt import Abbottm2000rtTSVParser
+    >>> from senaite.core.exportimport.instruments.abbott.m2000rt.m2000rt import Abbottm2000rtImporter
     >>> from bika.lims.browser.resultsimport.resultsimport import ConvertToUploadFile
 
 Functional helpers:

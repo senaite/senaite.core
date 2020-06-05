@@ -21,10 +21,10 @@
 import csv
 from DateTime.DateTime import DateTime
 from bika.lims.browser import BrowserView
-from bika.lims.exportimport.instruments import get_automatic_parser
+from senaite.core.exportimport.instruments import get_automatic_parser
 from bika.lims.utils import tmpID
 from Products.CMFCore.utils import getToolByName
-from bika.lims.exportimport.instruments.resultsimport import \
+from senaite.core.exportimport.instruments.resultsimport import \
     AnalysisResultsImporter
 import traceback
 from os import listdir

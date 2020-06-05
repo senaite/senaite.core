@@ -10,7 +10,7 @@ We are going to test all instruments import interfaces on this one doctest
    `tests/files/instruments/varian.vistapro.icp.csv`
    The reason for the above filenaming is so that we can do
    `interface = varian.vistapro.icp`
-   `exec('from bika.lims.exportimport.instruments.{} import Import'.format(inteface))`
+   `exec('from senaite.core.exportimport.instruments.{} import Import'.format(inteface))`
    LINE:225
 3. All the files would have the same SampleID/AR-ID
    `H2O-0001`
@@ -38,8 +38,8 @@ Needed imports::
     >>> from DateTime import DateTime
 
     >>> import codecs
-    >>> from bika.lims.exportimport import instruments
-    >>> from bika.lims.exportimport.instruments.abbott.m2000rt.m2000rt \
+    >>> from senaite.core.exportimport import instruments
+    >>> from senaite.core.exportimport.instruments.abbott.m2000rt.m2000rt \
     ...      import Abbottm2000rtTSVParser, Abbottm2000rtImporter
     >>> from bika.lims.browser.resultsimport.resultsimport import ConvertToUploadFile
     >>> from zope.publisher.browser import FileUpload, TestRequest
@@ -222,7 +222,7 @@ Create an `Instrument` and assign to it the tested Import Interface::
     ...         self.fail('Instrument Import Data Interface did not get set')
     
     >>> for inter in importer_filename:
-    ...     exec('from bika.lims.exportimport.instruments.{} import Import'.format(inter[0]))
+    ...     exec('from senaite.core.exportimport.instruments.{} import Import'.format(inter[0]))
     ...     filename = os.path.join(files_path, inter[1])
     ...     data = open(filename, 'r').read()
     ...     import_file = FileUpload(TestFile(cStringIO.StringIO(data), inter[1]))

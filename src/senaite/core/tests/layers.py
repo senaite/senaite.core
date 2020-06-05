@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import transaction
-from bika.lims.exportimport.load_setup_data import LoadSetupData
+from senaite.core.exportimport.load_setup_data import LoadSetupData
 from plone.app.testing import PLONE_FIXTURE
 from plone.app.testing import SITE_OWNER_NAME
 from plone.app.testing import FunctionalTesting

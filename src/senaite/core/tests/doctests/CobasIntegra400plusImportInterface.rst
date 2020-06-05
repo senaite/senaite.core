@@ -18,9 +18,9 @@ Needed imports::
     >>> from DateTime import DateTime
 
     >>> import codecs
-    >>> from bika.lims.exportimport import instruments
-    >>> from bika.lims.exportimport.instruments.cobasintegra.model_400_plus.model_400_plus import CobasIntegra400plus2Importer
-    >>> from bika.lims.exportimport.instruments.cobasintegra.model_400_plus.model_400_plus import CobasIntegra400plus2CSVParser
+    >>> from senaite.core.exportimport import instruments
+    >>> from senaite.core.exportimport.instruments.cobasintegra.model_400_plus.model_400_plus import CobasIntegra400plus2Importer
+    >>> from senaite.core.exportimport.instruments.cobasintegra.model_400_plus.model_400_plus import CobasIntegra400plus2CSVParser
     >>> from bika.lims.browser.resultsimport.resultsimport import ConvertToUploadFile
 
 Functional helpers::

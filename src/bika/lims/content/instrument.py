@@ -33,7 +33,7 @@ from bika.lims.catalog.analysis_catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaFolderSchema
 from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.exportimport import instruments
+from senaite.core.exportimport import instruments
 from bika.lims.interfaces import IDeactivable
 from bika.lims.interfaces import IInstrument
 from bika.lims.utils import t

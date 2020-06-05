@@ -18,9 +18,9 @@ Needed imports::
     >>> from DateTime import DateTime
 
     >>> import codecs
-    >>> from bika.lims.exportimport import instruments
-    >>> from bika.lims.exportimport.instruments.sysmex.xt import SysmexXTImporter
-    >>> from bika.lims.exportimport.instruments.sysmex.xt.i1800 import TX1800iParser
+    >>> from senaite.core.exportimport import instruments
+    >>> from senaite.core.exportimport.instruments.sysmex.xt import SysmexXTImporter
+    >>> from senaite.core.exportimport.instruments.sysmex.xt.i1800 import TX1800iParser
     >>> from bika.lims.browser.resultsimport.resultsimport import ConvertToUploadFile
 
 Functional helpers::

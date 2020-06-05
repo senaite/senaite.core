@@ -20,7 +20,7 @@
 
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser import BrowserView
-from bika.lims.exportimport import instruments
+from senaite.core.exportimport import instruments
 
 
 class ExportView(BrowserView):
