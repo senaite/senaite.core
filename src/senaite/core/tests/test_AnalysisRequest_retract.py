@@ -18,19 +18,15 @@
 # Copyright 2018-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import unittest2 as unittest
 from bika.lims import api
-from bika.lims.tests.base import DataTestCase
 from bika.lims.utils.analysisrequest import create_analysisrequest as crar
 from DateTime import DateTime
 from plone.app.testing import TEST_USER_ID
 from plone.app.testing import TEST_USER_NAME
 from plone.app.testing import login
 from plone.app.testing import setRoles
-
-try:
-    import unittest2 as unittest
-except ImportError:  # Python 2.7
-    import unittest
+from senaite.core.tests.base import DataTestCase
 
 
 class TestAnalysisRequestRetract(DataTestCase):

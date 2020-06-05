@@ -20,9 +20,12 @@
 
 import unittest
 
-from bika.lims.tests.base import DataTestCase
-from plone.app.testing import TEST_USER_ID, TEST_USER_NAME, login, setRoles
+from plone.app.testing import TEST_USER_ID
+from plone.app.testing import TEST_USER_NAME
+from plone.app.testing import login
+from plone.app.testing import setRoles
 from Products.validation import validation as validationService
+from senaite.core.tests.base import DataTestCase
 
 
 class Tests(DataTestCase):

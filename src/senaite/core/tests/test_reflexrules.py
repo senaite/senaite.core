@@ -18,17 +18,16 @@
 # Copyright 2018-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import unittest2 as unittest
 from bika.lims.idserver import renameAfterCreation
-from bika.lims.tests.base import DataTestCase
 from bika.lims.utils import tmpID
 from bika.lims.utils.analysisrequest import create_analysisrequest
 from bika.lims.workflow import doActionFor
-from plone.app.testing import TEST_USER_ID, TEST_USER_NAME, login, setRoles
-
-try:
-    import unittest2 as unittest
-except ImportError:  # Python 2.7
-    import unittest
+from plone.app.testing import TEST_USER_ID
+from plone.app.testing import TEST_USER_NAME
+from plone.app.testing import login
+from plone.app.testing import setRoles
+from senaite.core.tests.base import DataTestCase
 
 
 # Tests related with reflex testing

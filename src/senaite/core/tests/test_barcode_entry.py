@@ -21,19 +21,19 @@
 import json
 
 import transaction
+import unittest2 as unittest
 from bika.lims.barcode import barcode_entry
-from bika.lims.tests.base import BaseTestCase
-from bika.lims.utils import changeWorkflowState, tmpID
+from bika.lims.utils import changeWorkflowState
+from bika.lims.utils import tmpID
 from bika.lims.workflow import doActionFor
 from DateTime import DateTime
-from plone.app.testing import TEST_USER_ID, TEST_USER_NAME, login, setRoles
+from plone.app.testing import TEST_USER_ID
+from plone.app.testing import TEST_USER_NAME
+from plone.app.testing import login
+from plone.app.testing import setRoles
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
-
-try:
-    import unittest2 as unittest
-except ImportError:  # Python 2.7
-    import unittest
+from senaite.core.tests.base import BaseTestCase
 
 
 class TestBarcodeEntry(BaseTestCase):

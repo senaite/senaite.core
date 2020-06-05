@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from senaite.core.tests.base import BaseTestCase
 from Products.CMFPlone.utils import get_installer
+from senaite.core.tests.base import BaseTestCase
 
 
 class TestSetup(BaseTestCase):
