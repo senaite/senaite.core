@@ -48,11 +48,20 @@ class SetupDataSetList:
 
     def __call__(self, projectname="bika.lims"):
         datasets = []
+        mapping = {
+            "bika.lims": "SENAITE LIMS",
+            "bika.health": "SENAITE HEALTH",
+        }
         for f in resource_listdir(projectname, 'setupdata'):
             fn = f + ".xlsx"
             try:
                 if fn in resource_listdir(projectname, 'setupdata/%s' % f):
-                    datasets.append({"projectname": projectname, "dataset": f})
+                    data = {
+                        "projectname": projectname,
+                        "dataset": f,
+                        "displayname": mapping.get(projectname, projectname),
+                    }
+                    datasets.append(data)
             except OSError:
                 pass
         return datasets
