@@ -91,7 +91,6 @@ class TestBarcodeEntry(BaseTestCase):
     def test_ar_states_without_batch(self):
         wf = getToolByName(self.portal, 'portal_workflow')
         self.portal.REQUEST['entry'] = self.ar1.id
-        self.portal.REQUEST['_authenticator'] = self.getAuthenticator()
 
         value = json.loads(barcode_entry(self.portal, self.portal.REQUEST)())
         if value.get('failure', False):
@@ -122,7 +121,6 @@ class TestBarcodeEntry(BaseTestCase):
 
     def test_batchbook_view(self):
         self.portal.REQUEST['entry'] = self.ar2.id
-        self.portal.REQUEST['_authenticator'] = self.getAuthenticator()
         value = json.loads(barcode_entry(self.portal, self.portal.REQUEST)())
         expected = self.ar2.getBatch().absolute_url() + "/batchbook"
         err_msg = value['error'] if hasattr(value, 'error') else 'No error'
@@ -133,7 +131,6 @@ class TestBarcodeEntry(BaseTestCase):
 
     def test_sample_with_multiple_ars_redirects_to_self(self):
         self.portal.REQUEST['entry'] = self.ar1.id
-        self.portal.REQUEST['_authenticator'] = self.getAuthenticator()
         value = json.loads(barcode_entry(self.portal, self.portal.REQUEST)())
         expected = self.ar1.absolute_url() + "/manage_results"
         self.assertEqual(value['url'], expected,
@@ -143,7 +140,6 @@ class TestBarcodeEntry(BaseTestCase):
 
 def test_sample_with_single_ar_redirects_to_AR(self):
     self.portal.REQUEST['entry'] = self.sample2.id
-    self.portal.REQUEST['_authenticator'] = self.getAuthenticator()
     value = json.loads(barcode_entry(self.portal, self.portal.REQUEST)())
     expected = self.ar3.absolute_url()
     self.assertEqual(value['url'], expected,
