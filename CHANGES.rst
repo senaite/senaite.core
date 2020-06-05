@@ -6,6 +6,7 @@ Changelog
 
 **Added**
 
+- #1586 Allow to configure the variables for IDServer with an Adapter
 - #1584 Date (yymmdd) support in IDs generation
 - #1582 Allow to retest analyses without the need of retraction
 - #1573 Append the type name of the current record in breadcrumbs (Client)
