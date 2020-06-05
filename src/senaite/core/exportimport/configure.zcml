@@ -1,0 +1,42 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:five="http://namespaces.zope.org/five"
+    xmlns:cmf="http://namespaces.zope.org/cmf"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    i18n_domain="senaite.core">
+
+  <include package=".genericsetup"/>
+  <include package=".setupdata"/>
+
+  <browser:page
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+      name="import"
+      class="senaite.core.exportimport.dataimport.ImportView"
+      permission="senaite.core.permissions.ImportInstrumentResults"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
+  <browser:page
+      for="*"
+      name="getImportTemplate"
+      class="senaite.core.exportimport.dataimport.ajaxGetImportTemplate"
+      permission="zope.Public"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
+  <browser:page
+      for="*"
+      name="getImportInterfaces"
+      class="senaite.core.exportimport.dataimport.ajaxGetImportInterfaces"
+      permission="zope.Public"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
+  <adapter
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+      factory="senaite.core.exportimport.dataimport.SetupDataSetList"
+      provides="bika.lims.interfaces.ISetupDataSetList"
+      />
+
+</configure>
