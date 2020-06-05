@@ -17,4 +17,4 @@ before_install:
 install:
   - bin/buildout -N -t 3
 script:
-  - bin/test -m senaite.core
+  - bin/test -s senaite.core.tests
