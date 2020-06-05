@@ -814,6 +814,7 @@ schema = BikaFolderSchema.copy() + Schema((
                 "</tr>"
                 "<tr><td>Client</td><td>{client}</td></tr>"
                 "<tr><td>Year</td><td>{year}</td></tr>"
+                "<tr><td>Date</td><td>{yymmdd}</td></tr>"
                 "<tr><td>Sample ID</td><td>{sampleId}</td></tr>"
                 "<tr><td>Sample Type</td><td>{sampleType}</td></tr>"
                 "<tr><td>Sampling Date</td><td>{samplingDate}</td></tr>"
