@@ -580,6 +580,15 @@ class IIdServer(Interface):
         """
 
 
+class IIdServerVariables(Interface):
+    """Marker interfaces for variables generator for ID Server
+    """
+
+    def get_variables(self, **kw):
+        """Returns a dict with variables
+        """
+
+
 class IReferenceWidgetVocabulary(Interface):
     """Return values for reference widgets in AR contexts
     """
