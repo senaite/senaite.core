@@ -104,7 +104,6 @@ class IDServerView(BrowserView):
         """ Reset the number from which the next generated sequence start.
             If you seed at 100, next seed will be 101
         """
-        import pdb; pdb.set_trace()
         form = self.request.form
         prefix = form.get("prefix", None)
         if prefix is None:

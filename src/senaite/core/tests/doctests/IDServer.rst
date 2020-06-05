@@ -224,9 +224,11 @@ Change ID formats and create new `AnalysisRequest`:
 
 Re-seed and create a new `Batch`:
 
-    >>> ploneapi.user.grant_roles(user=current_user,roles = ['Manager'])
-    >>> transaction.commit()
-    >>> browser.open(portal_url + '/ng_seed?prefix=batch-BA&seed=10')
+    >>> from zope.component import getUtility
+    >>> from bika.lims.numbergenerator import INumberGenerator
+    >>> ng = getUtility(INumberGenerator)
+    >>> seed = ng.set_number("batch-BA", 10)
+
     >>> batch = api.create(batches, "Batch", ClientID="RB")
     >>> batch.getId() == "BA-{}-0011".format(year)
     True
