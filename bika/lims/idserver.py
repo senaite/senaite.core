@@ -33,12 +33,15 @@ from bika.lims.interfaces import IAnalysisRequestPartition
 from bika.lims.interfaces import IAnalysisRequestRetest
 from bika.lims.interfaces import IAnalysisRequestSecondary
 from bika.lims.interfaces import IIdServer
+from bika.lims.interfaces import IIdServerVariables
 from bika.lims.numbergenerator import INumberGenerator
 from DateTime import DateTime
 from datetime import datetime
 from Products.ATContentTypes.utils import DT2dt
 from zope.component import getAdapters
 from zope.component import getUtility
+from zope.component import queryAdapter
+
 
 AR_TYPES = [
     "AnalysisRequest",
@@ -279,6 +282,12 @@ def get_variables(context, **kw):
         variables.update({
             "clientId": context.aq_parent.getClientID(),
         })
+
+    # Look for a variables adapter
+    adapter = queryAdapter(context, IIdServerVariables)
+    if adapter:
+        vars = adapter.get_variables(**kw)
+        variables.update(vars)
 
     return variables
 
