@@ -22,8 +22,6 @@
       title="SENAITE: Run Setup Handler"
       description="Run various configuration actions"
       handler="bika.lims.setuphandlers.setup_handler">
-    <depends name="content" />
-    <depends name="rolemap"/>
   </genericsetup:importStep>
 
 </configure>
