@@ -102,7 +102,7 @@ class SenaiteTheme(BrowserView):
         super(SenaiteTheme, self).__init__(context, request)
         self.traverse_subpath = []
 
-    # @cache(icon_cache_key)
+    @cache(icon_cache_key)
     def icons(self):
         """Returns a mapping of icons -> icon path
         """
