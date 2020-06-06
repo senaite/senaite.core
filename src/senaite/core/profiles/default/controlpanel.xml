@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<object name="portal_controlpanel" meta_type="Plone Control Panel Tool" purge="True">
+<object name="portal_controlpanel" meta_type="Plone Control Panel Tool">
 
   <!-- Actions -->
   <configlet title="Actions" action_id="ActionSettings" appId="Plone"
              category="plone-general" condition_expr="" icon_expr=""
              url_expr="string:${portal_url}/@@actions-controlpanel" visible="True">
     <permission>Manage portal</permission>
+  </configlet>
+
+  <!-- Calendar (hidden) -->
+  <configlet title="Calendar" action_id="CalendarSettings" appId=""
+             category="object" condition_expr="" icon_expr="" url_expr=""
+             visible="False">
   </configlet>
 
   <!-- Cotent Rules -->
@@ -24,12 +30,28 @@
     <permission>Plone Site Setup: Site</permission>
   </configlet>
 
+  <!-- Editing (hidden) -->
+  <configlet title="Editing" action_id="EditingSettings" appId="Plone"
+             category="plone-content" condition_expr=""
+             icon_expr="string:$portal_url/cut_icon.png"
+             url_expr="string:${portal_url}/@@editing-controlpanel" visible="False">
+    <permission>Plone Site Setup: Editing</permission>
+  </configlet>
+
   <!-- HTML Filtering -->
   <configlet title="HTML Filtering" action_id="FilterSettings"
              appId="FilterSettings" category="plone-security" condition_expr=""
              icon_expr="string:$portal_url/htmlfilter_icon.png"
              url_expr="string:${portal_url}/@@filter-controlpanel" visible="True">
     <permission>Plone Site Setup: Filtering</permission>
+  </configlet>
+
+  <!-- Image Handling (Hidden) -->
+  <configlet title="Image Handling" action_id="ImagingSettings"
+             appId="ImagingSettings" category="plone-content" condition_expr=""
+             icon_expr="string:$portal_url/image_icon.png"
+             url_expr="string:${portal_url}/@@imaging-controlpanel" visible="False">
+    <permission>Plone Site Setup: Imaging</permission>
   </configlet>
 
   <!-- Language -->
@@ -72,6 +94,38 @@
     <permission>Set own password</permission>
   </configlet>
 
+  <!-- Personal Preferences (hidden) -->
+  <configlet title="Personal Preferences" action_id="MemberPrefs" appId="Plone"
+             category="Member" condition_expr=""
+             icon_expr="string:$portal_url/user.png"
+             url_expr="string:${portal_url}/@@personal-preferences" visible="False">
+    <permission>Set own properties</permission>
+  </configlet>
+
+  <!-- Navigation (hidden) -->
+  <configlet title="Navigation" action_id="NavigationSettings" appId="Plone"
+             category="plone-general" condition_expr=""
+             icon_expr="string:$portal_url/navigation_icon.png"
+             url_expr="string:${portal_url}/@@navigation-controlpanel" visible="False">
+    <permission>Plone Site Setup: Navigation</permission>
+  </configlet>
+
+  <!-- Site Config (hidden) -->
+  <configlet title="Site" action_id="PloneReconfig" appId="Plone"
+             category="plone-general" condition_expr=""
+             icon_expr="string:$portal_url/logoIcon.png"
+             url_expr="string:${portal_url}/@@site-controlpanel" visible="False">
+    <permission>Plone Site Setup: Site</permission>
+  </configlet>
+
+  <!-- Themes (hidden) -->
+  <configlet title="Themes" action_id="PortalSkin" appId="PortalSkin"
+             category="Plone" condition_expr=""
+             icon_expr="string:$portal_url/skins_icon.png"
+             url_expr="string:${portal_url}/@@skins-controlpanel" visible="False">
+    <permission>Plone Site Setup: Themes</permission>
+  </configlet>
+
   <!-- Add-ons -->
   <configlet title="Add-ons" action_id="QuickInstaller" appId="QuickInstaller"
              category="plone-general" condition_expr=""
@@ -79,6 +133,22 @@
              url_expr="string:${portal_url}/prefs_install_products_form"
              visible="True">
     <permission>Manage portal</permission>
+  </configlet>
+
+  <!-- URL Management (hidden) -->
+  <configlet title="URL Management" action_id="RedirectionTool" appId="Plone"
+             category="plone-general" condition_expr=""
+             icon_expr="string:$portal_url/action_icon.png"
+             url_expr="string:${portal_url}/@@redirection-controlpanel" visible="False">
+    <permission>Manage Portal Aliases</permission>
+  </configlet>
+
+  <!-- Search (hidden) -->
+  <configlet title="Search" action_id="SearchSettings" appId="Plone"
+             category="plone-general" condition_expr=""
+             icon_expr="string:$portal_url/search_icon.png"
+             url_expr="string:${portal_url}/@@search-controlpanel" visible="False">
+    <permission>Plone Site Setup: Search</permission>
   </configlet>
 
   <!-- Security -->
@@ -89,6 +159,14 @@
     <permission>Plone Site Setup: Security</permission>
   </configlet>
 
+  <!-- Content Settings (hidden) -->
+  <configlet title="Content Settings" action_id="TypesSettings"
+             appId="TypesSettings" category="plone-content" condition_expr=""
+             icon_expr="string:$portal_url/document_icon.png"
+             url_expr="string:${portal_url}/@@content-controlpanel" visible="False">
+    <permission>Plone Site Setup: Types</permission>
+  </configlet>
+
   <!-- Users and Groups -->
   <configlet title="Users and Groups" action_id="UsersGroups"
              appId="UsersGroups" category="plone-users" condition_expr=""
@@ -97,11 +175,35 @@
     <permission>Plone Site Setup: Users and Groups</permission>
   </configlet>
 
+  <!-- Users and Groups 2 (hidden) -->
+  <configlet title="Users and Groups" action_id="UsersGroups2"
+             appId="UsersGroups" category="plone-users" condition_expr=""
+             icon_expr="string:$portal_url/group.png"
+             url_expr="string:${portal_url}/@@usergroup-groupprefs" visible="False">
+    <permission>Plone Site Setup: Users and Groups</permission>
+  </configlet>
+
   <!-- Management Interface -->
   <configlet title="Management Interface" action_id="ZMI" appId="ZMI"
              category="plone-advanced" condition_expr=""
              icon_expr="string:$portal_url/zope_icon.png"
              url_expr="string:${portal_url}/manage_main" visible="True">
+    <permission>Manage portal</permission>
+  </configlet>
+
+  <!-- Dexterity Content Types (hidden) -->
+  <configlet title="Dexterity Content Types" action_id="dexterity-types"
+             appId="Plone" category="plone-content" condition_expr=""
+             icon_expr="string:$portal_url/document_icon.png"
+             url_expr="string:${portal_url}/@@dexterity-types" visible="False">
+    <permission>Manage portal</permission>
+  </configlet>
+
+  <!-- Discussion (hidden) -->
+  <configlet title="Discussion" action_id="discussion"
+             appId="plone.app.discussion" category="plone-general" condition_expr=""
+             icon_expr="string:${portal_url}/discussionitem_icon.png"
+             url_expr="string:${portal_url}/@@discussion-controlpanel" visible="False">
     <permission>Manage portal</permission>
   </configlet>
 
@@ -119,6 +221,45 @@
              icon_expr="string:$portal_url/++resource++plone.app.registry/icon.png"
              url_expr="string:${portal_url}/portal_registry" visible="True">
     <permission>Manage portal</permission>
+  </configlet>
+
+  <!-- Theming (hidden) -->
+  <configlet title="Theming" action_id="plone.app.theming"
+             appId="plone.app.theming" category="plone-general" condition_expr=""
+             icon_expr="string:${portal_url}/++resource++plone.app.theming.gif"
+             url_expr="string:${portal_url}/@@theming-controlpanel" visible="False">
+    <permission>Plone Site Setup: Themes</permission>
+  </configlet>
+
+  <!-- Resource Registries (hidden) -->
+  <configlet title="Resource Registries" action_id="resourceregistries"
+             appId="Plone" category="plone-advanced" condition_expr="" icon_expr=""
+             url_expr="string:${portal_url}/@@resourceregistry-controlpanel"
+             visible="False">
+    <permission>Plone Site Setup: Site</permission>
+  </configlet>
+
+  <!-- Social Media (hidden) -->
+  <configlet title="Social Media" action_id="socialmedia" appId="Plone"
+             category="plone-general" condition_expr="" icon_expr=""
+             url_expr="string:${portal_url}/@@social-controlpanel" visible="False">
+    <permission>Plone Site Setup: Site</permission>
+  </configlet>
+
+  <!-- Syndication (hidden) -->
+  <configlet title="Syndication" action_id="syndication" appId="Plone"
+             category="plone-general" condition_expr=""
+             icon_expr="string:$portal_url/rss.png"
+             url_expr="string:${portal_url}/@@syndication-controlpanel" visible="False">
+    <permission>Plone Site Setup: Site</permission>
+  </configlet>
+
+  <!-- TinyMCE -->
+  <configlet title="TinyMCE" action_id="tinymce" appId="Plone"
+             category="plone-general" condition_expr=""
+             icon_expr="string:$portal_url/tinymce.png"
+             url_expr="string:${portal_url}/@@tinymce-controlpanel" visible="False">
+    <permission>Plone Site Setup: TinyMCE</permission>
   </configlet>
 
 </object>

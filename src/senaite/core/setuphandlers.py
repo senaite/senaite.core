@@ -163,4 +163,7 @@ def post_install(portal_setup):
     context = portal_setup._getImportContext(profile_id)
     portal = context.getSite()  # noqa
 
+    # always apply the skins profile last to ensure our layers are first
+    _run_import_step(portal, "skins", profile=profile_id)
+
     logger.info("SENAITE CORE post install handler [DONE]")
