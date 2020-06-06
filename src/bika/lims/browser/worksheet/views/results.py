@@ -45,7 +45,7 @@ class ManageResultsView(BrowserView):
         super(ManageResultsView, self).__init__(context, request)
         self.icon = "{}/{}".format(
             self.portal_url,
-            "/++plone++senaite.core.static/assets/svg/worksheet.svg"
+            "/++plone++senaite.core.static/assets/icons/worksheet.svg"
         )
 
         self.layout_displaylist = WORKSHEET_LAYOUT_OPTIONS

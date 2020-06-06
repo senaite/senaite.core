@@ -56,7 +56,7 @@ class FolderView(BikaListingView):
 
         self.icon = "{}/{}".format(
             self.portal_url,
-            "++plone++senaite.core.static/assets/svg/worksheet.svg"
+            "++plone++senaite.core.static/assets/icons/worksheet.svg"
         )
 
         self.context_actions = {
