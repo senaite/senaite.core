@@ -10,7 +10,7 @@ from zope.component import getMultiAdapter
 from zope.interface import Interface
 from zope.interface import implementer
 
-SVG_ICON_BASE_URL = "++plone++senaite.core.static/assets/svg"
+SVG_ICON_BASE_URL = "++plone++senaite.core.static/assets/icons"
 
 
 class IBootstrapView(Interface):
@@ -92,6 +92,7 @@ class BootstrapView(BrowserView):
         title = api.get_title(brain_or_object)
         # Always try to get the SVG icon for high-res displays
         icon_basename = os.path.basename(icon)
+        # XXX use senaite_theme view to fetch the icon from the icons() dict
         svg = icon_basename.replace(".png", ".svg")
 
         icon_big = icon.replace(".png", "_big.png")

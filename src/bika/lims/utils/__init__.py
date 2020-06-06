@@ -748,7 +748,7 @@ def get_image(name, **kwargs):
     portal = api.get_portal()
     theme = portal.restrictedTraverse("@@senaite_theme")
     basename, ext = os.path.splitext(name)
-    if basename in theme.icons:
+    if basename in theme.icons():
         if "width" not in kwargs:
             kwargs["width"] = "16"
         return theme.icon_tag(basename, **kwargs)

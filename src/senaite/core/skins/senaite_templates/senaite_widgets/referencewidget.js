@@ -100,7 +100,7 @@ function referencewidget_lookups(elements) {
           $(this).attr("uid", existing_uids.join(","));
           $(uid_element).val(existing_uids.join(","));
           // insert item to listing
-          var del_btn_src = window.portal_url + "/++plone++senaite.core.static/assets/svg/delete.svg";
+          var del_btn_src = window.portal_url + "/++plone++senaite.core.static/assets/icons/delete.svg";
           var del_btn = "<img class='deletebtn' data-contact-title='" + ui.item.Title + "' src='" + del_btn_src + "' fieldName='" + fieldName + "' uid='" + selected_uid + "'/>";
           var new_item = "<div class='reference_multi_item' uid='" + selected_uid + "'>" + del_btn + selected_value + "</div>";
           $(listing_div).append($(new_item));

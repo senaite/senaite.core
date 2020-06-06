@@ -30,3 +30,12 @@ class ISenaiteTheme(Interface):
     def icon_tag(name, **kw):
         """Returns a generated html `<img/>` tag
         """
+
+
+class IIconProvider(Interface):
+    """Subsription Adapter to provide custom icons
+    """
+
+    def icons():
+        """Returns a dictionary of icon name -> file path
+        """

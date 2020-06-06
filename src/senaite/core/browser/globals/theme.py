@@ -7,21 +7,31 @@ from email.utils import formatdate
 from mimetypes import guess_type
 from string import Template
 
+from bika.lims import api
+from plone.memoize.ram import cache
 from plone.memoize.view import memoize
 from plone.resource.interfaces import IResourceDirectory
 from Products.Five.browser import BrowserView
+from senaite.core import logger
 from zope.component import getMultiAdapter
 from zope.component import getUtility
+from zope.component import subscribers
 from zope.interface import implementer
 from zope.publisher.interfaces import IPublishTraverse
 from zope.traversing.interfaces import ITraversable
 from zope.traversing.interfaces import TraversalError
 
+from .interfaces import IIconProvider
 from .interfaces import ISenaiteTheme
 
 IMG_TAG = Template("""<img src="$src" $attr />""")
 
-ICON_BASE_URL = "++plone++senaite.core.static/assets/svg"
+ICON_BASE_URL = "++plone++senaite.core.static/assets/icons"
+ICON_CACHE_TIME = time.time() // 86400  # 1 day
+
+
+def icon_cache_key(method, instance):
+    return ICON_CACHE_TIME
 
 
 @implementer(ITraversable)
@@ -92,20 +102,25 @@ class SenaiteTheme(BrowserView):
         super(SenaiteTheme, self).__init__(context, request)
         self.traverse_subpath = []
 
-    @property
-    @memoize
+    # @cache(icon_cache_key)
     def icons(self):
         """Returns a mapping of icons -> icon path
         """
         icons = {}
         static_dir = getUtility(
             IResourceDirectory, name=u"++plone++senaite.core.static")
-        icon_dir = static_dir["assets"]["svg"]
+        icon_dir = static_dir["assets"]["icons"]
         for icon in icon_dir.listDirectory():
             name, ext = os.path.splitext(icon)
             icons[name] = "{}/{}".format(ICON_BASE_URL, icon)
             icons[icon] = "{}/{}".format(ICON_BASE_URL, icon)
-        # TODO lookup adapters here to allow icon overrides
+        # call icon providers
+        adapters = subscribers((self, self.context), IIconProvider)
+        for adapter in sorted(
+                adapters, key=lambda a: api.to_float(
+                    getattr(a, "priority_order", 1000))):
+            icons.update(adapter.icons())
+        logger.info("+++ Found {} icons +++".format(len(icons)))
         return icons
 
     def traverse(self, name, furtherPath):
@@ -194,7 +209,7 @@ class SenaiteTheme(BrowserView):
         :param name: named icon from the theme config
         :returns: absolute image URL
         """
-        icons = self.icons
+        icons = self.icons()
         default = kw.get("default", "icon-not-found")
         return icons.get(name, icons.get(default))
 
