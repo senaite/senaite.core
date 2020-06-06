@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<object name="portal_catalog" meta_type="Plone Catalog Tool">
+  <index name="path" meta_type="ExtendedPathIndex">
+    <indexed_attr value="getPhysicalPath"/>
+  </index>
+  <index name="title" meta_type="FieldIndex">
+    <indexed_attr value="title"/>
+  </index>
+  <index name="getUsername" meta_type="FieldIndex">
+    <indexed_attr value="getUsername"/>
+  </index>
+  <index name="getFullname" meta_type="FieldIndex">
+    <indexed_attr value="getFullname"/>
+  </index>
+  <index name="getParentUID" meta_type="FieldIndex">
+    <indexed_attr value="getParentUID"/>
+  </index>
+  <index name="getName" meta_type="FieldIndex">
+    <indexed_attr value="getName"/>
+  </index>
+  <index name="review_state" meta_type="FieldIndex">
+    <indexed_attr value="review_state"/>
+  </index>
+  <index name="is_active" meta_type="BooleanIndex">
+    <indexed_attr value="is_active"/>
+  </index>
+  <index name="analysisRequestTemplates" meta_type="FieldIndex">
+    <indexed_attr value="analysisRequestTemplates"/>
+  </index>
+  <column value="analysisRequestTemplates"/>
+  <column value="review_state"/>
+  <column value="getClientID"/>
+</object>

@@ -36,9 +36,7 @@ BASE_CATALOG_INDEXES = {
     # advancedqueries in this catalog.
     "allowedRolesAndUsers": "KeywordIndex",
     "review_state": "FieldIndex",
-    # Necessary to avoid reindexing whole catalog when we need to
-    # reindex only one object. ExtendedPathIndex also could be used.
-    "path": "PathIndex",
+    "path": "ExtendedPathIndex",
     "is_active": "BooleanIndex",
 }
 

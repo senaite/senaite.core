@@ -43,7 +43,7 @@ _indexes = {
     "listing_searchable_text": "TextIndexNG3",
     "snapshot_created": "DateIndex",
     "snapshot_version": "FieldIndex",
-    "path": "PathIndex",
+    "path": "ExtendedPathIndex",
 }
 # Defining the columns for this catalog
 _columns = []
