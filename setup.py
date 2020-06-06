@@ -87,8 +87,8 @@ setup(
         "soupsieve<2.0.0",
         # TODO: better integrate just the JS files w/o this package
         "plone.app.jquerytools",
+        # "collective.js.jqueryui",
         "archetypes.schemaextender",
-        "collective.js.jqueryui",
         # SENAITE
         "senaite.core.listing",
         "senaite.core.spotlight",
