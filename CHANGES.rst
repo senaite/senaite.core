@@ -6,6 +6,8 @@ Changelog
 
 **Added**
 
+- #1586 Allow to configure the variables for IDServer with an Adapter
+- #1584 Date (yymmdd) support in IDs generation
 - #1582 Allow to retest analyses without the need of retraction
 - #1573 Append the type name of the current record in breadcrumbs (Client)
 - #1573 Add link "My Organization" under top-right user selection list
@@ -18,6 +20,7 @@ Changelog
 
 **Fixed**
 
+- #1585 Fix wrong label and description for `ShowPartitions` setting from setup
 - #1583 Fix traceback in services listing in ARTemplate view
 - #1581 Fix Some values are not properly rendered in services listing
 - #1580 Fix Analysts are not displayed once created in worksheets listing

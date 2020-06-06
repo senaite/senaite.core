@@ -33,11 +33,15 @@ from bika.lims.interfaces import IAnalysisRequestPartition
 from bika.lims.interfaces import IAnalysisRequestRetest
 from bika.lims.interfaces import IAnalysisRequestSecondary
 from bika.lims.interfaces import IIdServer
+from bika.lims.interfaces import IIdServerVariables
 from bika.lims.numbergenerator import INumberGenerator
 from DateTime import DateTime
+from datetime import datetime
 from Products.ATContentTypes.utils import DT2dt
 from zope.component import getAdapters
 from zope.component import getUtility
+from zope.component import queryAdapter
+
 
 AR_TYPES = [
     "AnalysisRequest",
@@ -206,6 +210,7 @@ def get_variables(context, **kw):
         "id": api.get_id(context),
         "portal_type": portal_type,
         "year": get_current_year(),
+        "yymmdd": get_yymmdd(),
         "parent": api.get_parent(context),
         "seq": 0,
         "alpha": Alphanumber(0),
@@ -278,6 +283,12 @@ def get_variables(context, **kw):
             "clientId": context.aq_parent.getClientID(),
         })
 
+    # Look for a variables adapter
+    adapter = queryAdapter(context, IIdServerVariables)
+    if adapter:
+        vars = adapter.get_variables(**kw)
+        variables.update(vars)
+
     return variables
 
 
@@ -341,6 +352,10 @@ def get_current_year():
     """
     return DateTime().strftime("%Y")[2:]
 
+def get_yymmdd():
+    """Returns the current date in yymmdd format
+    """
+    return datetime.now().strftime("%y%m%d")
 
 def make_storage_key(portal_type, prefix=None):
     """Make a storage (dict-) key for the number generator
