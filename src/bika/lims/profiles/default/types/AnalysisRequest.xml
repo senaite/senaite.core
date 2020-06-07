@@ -52,18 +52,6 @@
      <permission value="senaite.core: Add Analysis"/>
  </action>
 
- <action title="Manage Results"
-         action_id="manage_results"
-         category="object"
-         condition_expr=""
-         icon_expr=""
-         link_target=""
-         url_expr="string:${object_url}/manage_results"
-         i18n:attributes="title"
-         visible="True">
-     <permission value="senaite.core: Edit Results"/>
- </action>
-
  <action title="Published results"
          action_id="published_results"
          category="object"
