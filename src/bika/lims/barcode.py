@@ -59,13 +59,20 @@ class barcode_entry(BrowserView):
         if IAnalysisRequest.providedBy(instance):
             wf.doActionFor(instance, "receive")
 
-        # Redirect the user to the instance's view
-        url = api.get_url(instance)
-
         return self.return_json({
             'success': True,
             'failure': False,
-            'url': url})
+            'url': self.get_redirect_url(instance)})
+
+    def get_redirect_url(self, instance):
+        """Returns the url to be redirected to
+        """
+        if IAnalysisRequest.providedBy(instance):
+            batch = instance.getBatch()
+            if batch:
+                return "{}/batchbook".format(api.get_url(batch))
+
+        return api.get_url(instance)
 
     def get_entry(self):
         entry = self.request.get('entry', '')
