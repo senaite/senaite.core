@@ -21,11 +21,6 @@
 from bika.lims import api
 from bika.lims.browser import BrowserView
 from bika.lims.browser.header_table import HeaderTableView
-from bika.lims.interfaces import IReceived
-from bika.lims.interfaces import IVerified
-from bika.lims.permissions import EditFieldResults
-from bika.lims.permissions import EditResults
-from bika.lims.utils import check_permission
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from resultsinterpretation import ARResultsInterpretationView
 
@@ -85,31 +80,6 @@ class AnalysisRequestViewView(BrowserView):
         # Negative performance impact - add a Metadata column
         analyses = self.context.getQCAnalyses()
         return len(analyses) > 0
-
-    def can_edit_results(self):
-        """Checks if the current user has the permission "EditResults"
-        """
-        return check_permission(EditResults, self.context)
-
-    def can_edit_field_results(self):
-        """Checks if the current user has the permission "EditFieldResults"
-        """
-        return check_permission(EditFieldResults, self.context)
-
-    def is_received(self):
-        """Checks if the AR is received
-        """
-        return IReceived.providedBy(self.context)
-
-    def is_verified(self):
-        """Checks if the AR is verified
-        """
-        return IVerified.providedBy(self.context)
-
-    def is_cancelled(self):
-        """Checks if the AR is cancelled
-        """
-        return api.get_review_status(self.context) == "cancelled"
 
     def is_hazardous(self):
         """Checks if the AR is hazardous
