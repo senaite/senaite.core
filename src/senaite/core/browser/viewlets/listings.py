@@ -31,7 +31,7 @@ class ListingTableTitleViewlet(ViewletBase):
     @property
     @memoize
     def icon(self):
-        return self.boootstrap_view.get_icon_for(self.context, height="32")
+        return self.boootstrap_view.get_icon_for(self.context, height="24")
 
     def title(self):
         return self.view.title or self.context.Title()

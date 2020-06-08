@@ -8,6 +8,14 @@
 
 html, body  { height: 100%; }
 
+h1, .h1 {
+    font-size: 2rem;
+    font-weight: 300;
+}
+
+/* Remove dotted outline */
+a { outline: 0; }
+
 /* SVG icon styles */
 i.hazardous-icon svg { fill: $danger; }
 
@@ -16,6 +24,25 @@ i.hazardous-icon svg { fill: $danger; }
 img.deleteAttachmentButton {
     cursor: pointer;
     width: 16px;
+}
+
+/* Main content */
+div.container-fluid {
+  padding-left:30px;
+}
+
+/* Some spacing for the view title */
+#viewlet-listing-table-title {
+  margin-bottom:10px;
+  h1 {
+    margin:0 10px 0;
+  }
+}
+
+/* Remove bootstrap's default transition for buttons */
+.btn, .btn:hover {
+  /*text-decoration: none;
+  transition: none;*/
 }
 
 /* Notification Panel

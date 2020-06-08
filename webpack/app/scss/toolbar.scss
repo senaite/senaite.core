@@ -2,9 +2,22 @@
 
 #senaite-toolbar  {
     background-color: $senaite-color-dark;
+
+    /* Content views */
+    .content-views li a {
+        padding-left:1rem;
+        padding-right:1rem;
+    }
+
+    /* Workflow actions menu */
+    #plone-contentmenu-workflow {
+        margin-left: 1em;
+    }
+
     li.active a, a.active {
-        font-weight: bold;
-        color: white;
+        color: $senaite-color-lightgrey;
+        background-color: $senaite-color-darkgrey;
+        border-radius: .2rem;
     }
     .dropdown-menu {
         a {
@@ -25,8 +38,8 @@
 #senaite-toolbar .tb-state {
     &:before {
         @extend .fa;
-        @extend .fa-at;
-        padding-right: 2px;
+        @extend .fa-bolt;
+        padding-right: 0.4rem;
     }
 
     &.state-active,

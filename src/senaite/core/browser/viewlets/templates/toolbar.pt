@@ -21,7 +21,7 @@
   <div class="collapse navbar-collapse" id="toolbarContent">
 
     <!-- left -->
-    <ul class="nav navbar-nav mr-auto">
+    <ul class="nav navbar-nav mr-auto content-views">
       <!-- contentviews -->
       <div tal:replace="structure view/base_render"></div>
     </ul>

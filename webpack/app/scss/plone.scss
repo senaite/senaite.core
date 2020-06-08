@@ -6,6 +6,11 @@
     @extend .text-secondary;
     @extend .small;
 }
+.breadcrumb {
+    border-radius: 0;
+    background-color: $breadcrumb-bg;
+    padding: .5rem 1rem;
+}
 a#setup-link {
     @extend .btn;
     @extend .btn-outline-secondary;

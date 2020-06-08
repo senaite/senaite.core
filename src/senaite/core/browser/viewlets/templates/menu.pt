@@ -15,7 +15,6 @@
            tal:attributes="href action/url;
                            target action/link_target|nothing;
                            class string:${action/cssClass} nav-link;">
-          <i tal:condition="selected" class="fas fa-chevron-circle-right"></i>
           <span tal:content="action/title" i18n:translate="">View name</span>
         </a>
       </tal:var>

@@ -13,6 +13,7 @@
     transition: all 0.3s;
     overflow: hidden;
     white-space: nowrap;
+    background-color: $senaite-bg-lightgrey !important;
 }
 #sidebar #sidebar-header {
     text-align: right;
@@ -53,12 +54,9 @@
 }
 #sidebar ul li.active,
 #sidebar ul li.expanded {
-    background: $link-color;
-    &:hover {
-        background: $link-hover-color;
-    }
-    ul.submenu {
-        background-color: $sidebar-selected-bg;
+    background: $sidebar-selected-bg;
+    ul li {
+        background-color: lighten($sidebar-selected-bg, 45%);
     }
 }
 
@@ -86,21 +84,26 @@
     max-width: $sidebar-maximized-width;
 }
 #sidebar ul.submenu li {
-    opacity: 0.4;
-    padding: 0;
-    font-size: 80%;
     width: $sidebar-maximized-width;
 }
 #sidebar.minimized ul.submenu li {
-    opacity: 0.4;
     padding: 0;
     width: $sidebar-minimized-width;
-    font-size: 80%;
-    &.active {
-        background: $link-color;
-    }
+}
+#sidebar ul.nav-level-1 li.active,
+#sidebar ul.nav-level-1 li.expanded,
+#sidebar.minimized ul.nav-level-1 li.active,
+#sidebar.minimized ul.nav-level-1 li.expanded {
+    background-color: lighten($sidebar-selected-bg, 15%);
     &:hover {
-        background: $link-hover-color;
+        background-color: lighten($sidebar-selected-bg, 15%);
+    }
+}
+#sidebar ul.nav-level-2 li.active,
+#sidebar.minimized ul.nav-level-2 li.active {
+    background-color: lighten($sidebar-selected-bg, 30%);
+    &:hover {
+        background-color: lighten($sidebar-selected-bg, 30%);
     }
 }
 
