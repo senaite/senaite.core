@@ -17,7 +17,7 @@
       <h1>
         <img src="#"
              class="d-inline-block align-middle"
-             width="32"
+             width="24"
              tal:attributes="src senaite_theme/icon_url/sample"/>
 
         <span class="d-inline-block align-middle"
