@@ -27,7 +27,7 @@ from Products.CMFCore import permissions
 from Products.CMFCore.utils import getToolByName
 from bika.lims.config import PROJECTNAME
 from AccessControl import ClassSecurityInfo
-from bika.lims.interfaces import IAnalysisRequestsFolder, IHaveNoBreadCrumbs
+from bika.lims.interfaces import IAnalysisRequestsFolder
 from plone.app.folder import folder
 from zope.interface import implements
 from bika.lims import bikaMessageFactory as _
@@ -36,7 +36,7 @@ from bika.lims.utils import t
 schema = folder.ATFolderSchema.copy()
 
 class AnalysisRequestsFolder(folder.ATFolder):
-    implements(IAnalysisRequestsFolder, IHaveNoBreadCrumbs)
+    implements(IAnalysisRequestsFolder)
     schema = schema
     displayContentsTab = False
     security = ClassSecurityInfo()

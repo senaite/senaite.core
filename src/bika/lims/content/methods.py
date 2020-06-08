@@ -19,7 +19,6 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims.config import PROJECTNAME
-from bika.lims.interfaces import IHaveNoBreadCrumbs
 from bika.lims.interfaces import IMethods
 from plone.app.folder.folder import ATFolder
 from plone.app.folder.folder import ATFolderSchema
@@ -33,7 +32,7 @@ schema = ATFolderSchema.copy()
 class Methods(ATFolder):
     """Root folder for Reference Samples
     """
-    implements(IMethods, IHaveNoBreadCrumbs)
+    implements(IMethods)
 
     displayContentsTab = False
     schema = schema

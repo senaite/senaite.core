@@ -23,14 +23,14 @@ from Products.Archetypes.public import *
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
 from bika.lims.config import PROJECTNAME
-from bika.lims.interfaces import IReportFolder, IHaveNoBreadCrumbs
+from bika.lims.interfaces import IReportFolder
 from plone.app.folder.folder import ATFolder, ATFolderSchema
 from zope.interface import implements
 
 schema = ATFolderSchema.copy()
 
 class ReportFolder(ATFolder):
-    implements(IReportFolder, IHaveNoBreadCrumbs)
+    implements(IReportFolder)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema

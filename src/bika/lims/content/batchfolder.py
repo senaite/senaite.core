@@ -24,7 +24,7 @@ from AccessControl import ClassSecurityInfo
 from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
 from bika.lims.config import PROJECTNAME
-from bika.lims.interfaces import IBatchFolder, IHaveNoBreadCrumbs
+from bika.lims.interfaces import IBatchFolder
 from plone.app.folder import folder
 from zope.interface import implements
 
@@ -32,7 +32,7 @@ schema = folder.ATFolderSchema.copy()
 
 
 class BatchFolder(folder.ATFolder):
-    implements(IBatchFolder, IHaveNoBreadCrumbs)
+    implements(IBatchFolder)
     schema = schema
     displayContentsTab = False
     security = ClassSecurityInfo()

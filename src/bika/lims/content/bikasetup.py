@@ -36,7 +36,6 @@ from bika.lims.config import WEEKDAYS
 from bika.lims.config import WORKSHEET_LAYOUT_OPTIONS
 from bika.lims.content.bikaschema import BikaFolderSchema
 from bika.lims.interfaces import IBikaSetup
-from bika.lims.interfaces import IHaveNoBreadCrumbs
 from bika.lims.numbergenerator import INumberGenerator
 from bika.lims.vocabularies import getStickerTemplates as _getStickerTemplates
 from plone.app.folder import folder
@@ -887,7 +886,7 @@ schema['title']._validationLayer()
 class BikaSetup(folder.ATFolder):
     """LIMS Setup
     """
-    implements(IBikaSetup, IHaveNoBreadCrumbs)
+    implements(IBikaSetup)
 
     schema = schema
     security = ClassSecurityInfo()

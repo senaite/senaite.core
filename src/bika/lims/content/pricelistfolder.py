@@ -20,7 +20,6 @@
 
 from AccessControl import ClassSecurityInfo
 from bika.lims import PROJECTNAME
-from bika.lims.interfaces import IHaveNoBreadCrumbs
 from bika.lims.interfaces import IPricelistFolder
 from plone.app.folder.folder import ATFolder
 from plone.app.folder.folder import ATFolderSchema
@@ -34,7 +33,7 @@ schema = ATFolderSchema.copy()
 class PricelistFolder(ATFolder):
     """Root folder for Pricelists
     """
-    implements(IPricelistFolder, IHaveNoBreadCrumbs)
+    implements(IPricelistFolder)
 
     schema = schema
     displayContentsTab = False

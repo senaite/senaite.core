@@ -25,7 +25,7 @@ from Products.Archetypes import atapi
 from Products.CMFCore import permissions
 from Products.CMFCore.utils import getToolByName
 from bika.lims.config import PROJECTNAME
-from bika.lims.interfaces import IWorksheetFolder, IHaveNoBreadCrumbs
+from bika.lims.interfaces import IWorksheetFolder
 from plone.app.folder import folder
 from AccessControl import ClassSecurityInfo
 from zope.interface import implements
@@ -37,7 +37,7 @@ schema['id'].widget.visible = {'edit':'hidden', 'view': 'invisible'}
 schema['title'].widget.visible = {'edit':'hidden', 'view': 'invisible'}
 
 class WorksheetFolder(folder.ATFolder):
-    implements(IWorksheetFolder, IHaveNoBreadCrumbs)
+    implements(IWorksheetFolder)
     displayContentsTab = False
     schema = schema
     security = ClassSecurityInfo()
