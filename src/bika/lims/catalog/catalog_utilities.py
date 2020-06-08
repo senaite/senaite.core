@@ -122,20 +122,20 @@ def setup_catalogs(
     # This variable will be used to clean reindex the catalog. Saves the
     # catalogs ids
     archetype_tool = getToolByName(portal, 'archetype_tool')
-    clean_and_rebuild = _map_content_types(archetype_tool, definition)
+    clean_and_rebuild = set(_map_content_types(archetype_tool, definition))
 
     # Indexing
     for cat_id in definition.keys():
-        reindex = False
         reindex = _setup_catalog(
             portal, cat_id, definition.get(cat_id, {}))
         if (reindex or force_reindex) and (cat_id not in clean_and_rebuild):
             # add the catalog if it has not been added before
-            clean_and_rebuild.append(cat_id)
+            clean_and_rebuild.add(cat_id)
+
     # Reindex the catalogs which needs it
     if not force_no_reindex:
         _cleanAndRebuildIfNeeded(portal, clean_and_rebuild)
-    return clean_and_rebuild
+    return list(clean_and_rebuild)
 
 
 def _merge_catalog_definitions(dict1, dict2):
