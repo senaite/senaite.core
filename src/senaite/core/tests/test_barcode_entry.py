@@ -102,7 +102,7 @@ class TestBarcodeEntry(BaseTestCase):
         value = json.loads(barcode_entry(self.portal, self.portal.REQUEST)())
         if value.get('failure', False):
             self.fail('failure code in json return: ' + value['error'])
-        expected = self.ar1.absolute_url() + "/manage_results"
+        expected = self.ar1.absolute_url()
         self.assertEqual(value['url'], expected,
                          "AR redirect should be  %s but it's %s" % (
                              expected, value['url']))
@@ -132,7 +132,7 @@ class TestBarcodeEntry(BaseTestCase):
     def test_sample_with_multiple_ars_redirects_to_self(self):
         self.portal.REQUEST['entry'] = self.ar1.id
         value = json.loads(barcode_entry(self.portal, self.portal.REQUEST)())
-        expected = self.ar1.absolute_url() + "/manage_results"
+        expected = self.ar1.absolute_url()
         self.assertEqual(value['url'], expected,
                          "ar1 redirect should be self:%s but it's %s" % (
                              expected, value['url']))

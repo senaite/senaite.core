@@ -21,12 +21,12 @@
 import json
 
 import plone.protect
-from Products.CMFCore.WorkflowCore import WorkflowException
-from Products.CMFCore.utils import getToolByName
-
+from bika.lims import api
+from bika.lims import workflow as wf
 from bika.lims.browser import BrowserView
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
-from bika.lims.permissions import EditResults
+from bika.lims.interfaces import IAnalysisRequest
+from Products.CMFCore.utils import getToolByName
 
 
 class barcode_entry(BrowserView):
@@ -55,14 +55,24 @@ class barcode_entry(BrowserView):
                 'failure': True,
                 'error': 'Cannot resolve ID or Title: %s' % entry})
 
-        url = getattr(self, 'handle_' + instance.portal_type)(instance) \
-            if hasattr(self, 'handle_' + instance.portal_type) \
-            else instance.absolute_url()
+        # If the instance is a Sample in sample_due, try to receive
+        if IAnalysisRequest.providedBy(instance):
+            wf.doActionFor(instance, "receive")
 
         return self.return_json({
             'success': True,
             'failure': False,
-            'url': url})
+            'url': self.get_redirect_url(instance)})
+
+    def get_redirect_url(self, instance):
+        """Returns the url to be redirected to
+        """
+        if IAnalysisRequest.providedBy(instance):
+            batch = instance.getBatch()
+            if batch:
+                return "{}/batchbook".format(api.get_url(batch))
+
+        return api.get_url(instance)
 
     def get_entry(self):
         entry = self.request.get('entry', '')
@@ -91,39 +101,3 @@ class barcode_entry(BrowserView):
         self.request.RESPONSE.setHeader('Content-Type', 'application/json')
         self.request.RESPONSE.write(json.dumps(output))
         return output
-
-    def handle_AnalysisRequest(self, instance):
-        """Possible redirects for an AR.
-        - If AR is sample_due: receive it before proceeding.
-        - If AR belongs to Batch, redirect to the BatchBook view.
-        - If AR does not belong to Batch:
-            - if permission/workflow permit: go to AR manage_results.
-        - For other ARs, just redirect to the view screen.
-        """
-        # - If AR is sample_due: receive it before proceeding.
-        wf = getToolByName(self.context, 'portal_workflow')
-        if wf.getInfoFor(instance, 'review_state') == 'sample_due':
-            try:
-                wf.doActionFor(instance, 'receive')
-            except WorkflowException:
-                pass
-        # - If AR belongs to Batch, redirect to the BatchBook view.
-        batch = instance.getBatch()
-        if batch:
-            return batch.absolute_url() + "/batchbook"
-        #  - if permission/workflow permit: go to AR manage_results.
-        mtool = getToolByName(self.context, 'portal_membership')
-        if mtool.checkPermission(EditResults, instance):
-            return instance.absolute_url() + '/manage_results'
-        # - For other ARs, just redirect to the view screen.
-        return instance.absolute_url()
-
-    def handle_Sample(self, instance):
-        """If this sample has a single AR, go there.
-        If the sample has 0 or >1 ARs, go to the sample's view URL.
-        """
-        ars = instance.getAnalysisRequests()
-        if len(ars) == 1:
-            return self.handle_AnalysisRequest(ars[0])
-        else:
-            return instance.absolute_url()
