@@ -38,6 +38,11 @@
     <viewlet name="plone.belowcontenttitle.documentbyline"/>
   </hidden>
 
+  <!-- Hidden viewlets in plone.belowcontent -->
+  <hidden manager="plone.belowcontent" skinname="*" purge="True">
+    <viewlet name="plone.manage_portlets_fallback" />
+  </hidden>
+
   <!-- Hidden viewlets in plone.belowcontentbody -->
   <hidden manager="plone.belowcontentbody" skinname="*" purge="True">
     <viewlet name="plone.abovecontenttitle.documentactions" />
