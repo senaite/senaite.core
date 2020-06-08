@@ -86,7 +86,7 @@ class BootstrapView(BrowserView):
         """
         portal_types = api.get_tool("portal_types")
         fti = portal_types.getTypeInfo(api.get_portal_type(brain_or_object))
-        icon = fti.getIcon()
+        icon = fti and fti.getIcon()  # handle non-type fti for bbb
         if not icon:
             return ""
         title = api.get_title(brain_or_object)
