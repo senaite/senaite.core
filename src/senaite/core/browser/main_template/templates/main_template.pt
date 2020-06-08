@@ -63,7 +63,7 @@
                       cls python:bootstrapview.get_columns_classes(view)"
           tal:attributes="class string:${body_class} senaite-body;
                           dir python:isRTL and 'rtl' or 'ltr';
-                          python:plone_view.patterns_settings()"
+                          python:bootstrapview.get_data_settings()"
           id="visual-portal-wrapper">
 
       <!-- Ajax Loader -->

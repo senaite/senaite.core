@@ -52,4 +52,14 @@ document.addEventListener("DOMContentLoaded", () => {
   })
   // /Tooltips
 
+  // Auto LogOff
+  var logoff = document.body.dataset.autoLogoff || 0;
+  if (logoff > 0) {
+    var logoff_ms = logoff * 60 * 1000;
+    setTimeout(function() {
+      location.href = window.portal_url + "/logout";
+    }, logoff_ms);
+  }
+  // /Auto LogOff
+
 });
