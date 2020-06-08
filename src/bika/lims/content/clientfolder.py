@@ -24,7 +24,7 @@ from AccessControl import ClassSecurityInfo
 from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
 from bika.lims.config import PROJECTNAME
-from bika.lims.interfaces import IClientFolder, IHaveNoBreadCrumbs
+from bika.lims.interfaces import IClientFolder
 from plone.app.folder import folder
 from zope.interface import implements
 
@@ -34,7 +34,7 @@ schema['title'].widget.visible = {'edit': 'hidden', 'view': 'invisible'}
 
 
 class ClientFolder(folder.ATFolder):
-    implements(IClientFolder, IHaveNoBreadCrumbs)
+    implements(IClientFolder)
     displayContentsTab = False
     schema = schema
     security = ClassSecurityInfo()

@@ -20,7 +20,6 @@
 
 from AccessControl import ClassSecurityInfo
 from bika.lims.config import PROJECTNAME
-from bika.lims.interfaces import IHaveNoBreadCrumbs
 from bika.lims.interfaces import IReferenceSamplesFolder
 from plone.app.folder import folder
 from plone.app.folder.folder import ATFolder
@@ -35,7 +34,7 @@ schema = folder.ATFolderSchema.copy()
 class ReferenceSamplesFolder(ATFolder):
     """Root folder for Reference Samples
     """
-    implements(IReferenceSamplesFolder, IHaveNoBreadCrumbs)
+    implements(IReferenceSamplesFolder)
 
     schema = schema
     displayContentsTab = False

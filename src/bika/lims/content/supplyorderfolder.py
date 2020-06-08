@@ -20,7 +20,6 @@
 
 from AccessControl import ClassSecurityInfo
 from bika.lims.config import PROJECTNAME
-from bika.lims.interfaces import IHaveNoBreadCrumbs
 from bika.lims.interfaces import ISupplyOrderFolder
 from plone.app.folder import folder
 from plone.app.folder.folder import ATFolder
@@ -35,7 +34,7 @@ schema = folder.ATFolderSchema.copy()
 class SupplyOrderFolder(ATFolder):
     """Root folder for Supply Orders
     """
-    implements(ISupplyOrderFolder, IHaveNoBreadCrumbs)
+    implements(ISupplyOrderFolder)
 
     schema = schema
     displayContentsTab = False
