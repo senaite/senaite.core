@@ -42,7 +42,6 @@
 <!-- legacy senaite.core JS -->
 <script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/js/bika.lims.analysisprofile.js"></script>
 <script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/js/bika.lims.analysisrequest.js"></script>
-<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/js/bika.lims.analysisrequest.manageresults.js"></script>
 <script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/js/bika.lims.analysisservice.js"></script>
 <script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/js/bika.lims.artemplate.js"></script>
 <script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/js/bika.lims.batch.js"></script>
