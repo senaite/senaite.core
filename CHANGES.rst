@@ -6,6 +6,7 @@ Changelog
 
 **Added**
 
+- #1588 Dynamic Analysis Specs: Cache range lookups
 - #1586 Allow to configure the variables for IDServer with an Adapter
 - #1584 Date (yymmdd) support in IDs generation
 - #1582 Allow to retest analyses without the need of retraction
@@ -14,6 +15,7 @@ Changelog
 
 **Changed**
 
+- #1588 Dynamic Analysis Specs: Hide compliance viewlets
 - #1579 Remove classic mode in folderitems
 - #1577 Do not force available workflow transitions in batches listing
 - #1573 Do not display top-level "Clients" folder to non-lab users
