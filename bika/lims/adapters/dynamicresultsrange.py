@@ -41,11 +41,14 @@ DEFAULT_RANGE_KEYS = [
 
 
 def analysis_cache_key(method, instance):
+    """We cache by UID to maintain the specs even when the dynamic spec or the
+    analysis changed.
+    """
     return instance.analysis.UID()
 
 
 def store_on_analysis(method, instance, *args, **kwargs):
-    """Volatile cache storage on the portal object
+    """Volatile cache storage on the analysis object
     """
     analysis = instance.analysis
     return analysis.__dict__.setdefault(ATTR, CONTAINER_FACTORY())
