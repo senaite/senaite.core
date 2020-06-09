@@ -90,3 +90,12 @@ form[name='edit_form'] {
     }
 }
 
+/* Sample's header form */
+.portaltype-analysisrequest form[name='header_form'] {
+  td.label {
+    background-color: #f8f9fa;
+  }
+  .field {
+    margin-bottom: 0;
+  }
+}

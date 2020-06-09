@@ -33,7 +33,7 @@
                            widget python:field.widget;
                            accessor python:field.getAccessor(context);
                            errors python:{};">
-            <td class="active">
+            <td class="active label">
               <span tal:replace="python:widget.label"/>
               <!-- Display a notification icon if the field is primary bound
                    (if changes propagate to partitions) -->
@@ -78,7 +78,7 @@
                                widget python:field.widget;
                                accessor python:field.getAccessor(context);
                                errors python:{};">
-                <td tal:attributes="class python:row_nr%2 and 'key odd active' or 'key even active'">
+                <td tal:attributes="class python:row_nr%2 and 'key odd active label' or 'key even active label'">
                   <span tal:replace="python:widget.label"/>
                   <!-- Display a notification icon if the field is primary bound
                        (if changes propagate to partitions) -->
