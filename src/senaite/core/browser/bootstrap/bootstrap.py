@@ -57,6 +57,20 @@ class BootstrapView(BrowserView):
             (self.context, self.request),
             name="senaite_theme")
 
+    @property
+    @memoize
+    def portal_state(self):
+        return getMultiAdapter(
+            (self.context, self.request),
+            name=u"plone_portal_state")
+
+    @property
+    @memoize
+    def context_state(self):
+        return getMultiAdapter(
+            (self.context, self.request),
+            name="plone_context_state")
+
     def resource_exists(self, resource):
         """Checks if a resouce exists
         """
@@ -104,6 +118,22 @@ class BootstrapView(BrowserView):
         elif self.resource_exists(icon_big):
             return self.img_tag(title=title, icon=icon_big, **kw)
         return self.img_tag(title=title, icon=icon, **kw)
+
+    def get_data_settings(self):
+        """Returns data attributes for a DOM node
+        """
+        # do not use getSite because it's possible it could be different
+        # than the actual portal url
+        portal_url = self.portal_state.portal_url()
+        setup = api.get_setup()
+        data = {
+            "data-base-url": self.context.absolute_url(),
+            "data-view-url": self.context_state.view_url(),
+            "data-portal-url": portal_url,
+            "data-i18ncatalogurl": portal_url + "/plonejsi18n",
+            "data-auto-logoff": setup.getAutoLogOff(),
+        }
+        return data
 
     def get_viewport_values(self, view=None):
         """Determine the value of the viewport meta-tag

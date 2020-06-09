@@ -5,8 +5,8 @@
 
     /* Content views */
     .content-views li a {
-        padding-left:1rem;
-        padding-right:1rem;
+        padding-left: 1rem;
+        padding-right: 1rem;
     }
 
     /* Workflow actions menu */
@@ -36,6 +36,7 @@
 }
 
 #senaite-toolbar .tb-state {
+    padding: 0;
     &:before {
         @extend .fa;
         @extend .fa-bolt;
