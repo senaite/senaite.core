@@ -55,9 +55,6 @@
 #sidebar ul li.active,
 #sidebar ul li.expanded {
     background: $sidebar-selected-bg;
-    ul li {
-        background-color: lighten($sidebar-selected-bg, 45%);
-    }
 }
 
 /* Sidebar maximized */
@@ -94,16 +91,16 @@
 #sidebar ul.nav-level-1 li.expanded,
 #sidebar.minimized ul.nav-level-1 li.active,
 #sidebar.minimized ul.nav-level-1 li.expanded {
-    background-color: lighten($sidebar-selected-bg, 15%);
+    background-: $sidebar-selected-bg-1;
     &:hover {
-        background-color: lighten($sidebar-selected-bg, 15%);
+        background: $sidebar-selected-bg-1;
     }
 }
 #sidebar ul.nav-level-2 li.active,
 #sidebar.minimized ul.nav-level-2 li.active {
-    background-color: lighten($sidebar-selected-bg, 30%);
+    background: $sidebar-selected-bg-2;
     &:hover {
-        background-color: lighten($sidebar-selected-bg, 30%);
+        background: $sidebar-selected-bg-2;
     }
 }
 
