@@ -97,6 +97,13 @@ class ResultsRangesOutOfDateViewlet(ViewletBase):
     specification ranges will be used instead of the new ones.
     """
 
+    def available(self):
+        spec = self.context.getSpecification()
+        if spec:
+            dynamic_spec = spec.getDynamicAnalysisSpec()
+            return not dynamic_spec
+        return True
+
     def is_specification_editable(self):
         """Returns whether the Specification field is editable or not
         """
@@ -135,6 +142,13 @@ class SpecificationNotCompliantViewlet(ViewletBase):
     existing ones via "Manage analyses" view. And results range for those
     analyses are different from the Specification initially set.
     """
+
+    def available(self):
+        spec = self.context.getSpecification()
+        if spec:
+            dynamic_spec = spec.getDynamicAnalysisSpec()
+            return not dynamic_spec
+        return True
 
     def is_specification_editable(self):
         """Returns whether the Specification field is editable or not
