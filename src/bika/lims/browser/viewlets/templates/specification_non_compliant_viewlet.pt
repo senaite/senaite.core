@@ -4,7 +4,7 @@
 
   <div id="portal-alert"
        tal:define="sample python:view.context;
-                   non_compliant python:view.get_non_compliant_analyses()
+                   non_compliant python:view.get_non_compliant_analyses();
                    editable python:view.is_specification_editable();
                    alert_class python: editable and 'alert-warning' or 'alert-info';
                    alert_class python: 'portlet-alert-item alert {} alert-dismissible'.format(alert_class)"
