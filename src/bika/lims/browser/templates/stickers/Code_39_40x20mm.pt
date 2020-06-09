@@ -20,7 +20,7 @@
         <td colspan="2">
           <span class="hazardous">
             <img tal:condition="hazardous"
-                 tal:attributes="src string:${portal_url}/++resource++bika.lims.images/hazardous_big.png"/>
+                 tal:attributes="src string:${portal_url}/senaite_theme/icon/hazardous"/>
           </span>
           <strong tal:content="item_id">Item ID</strong>
         </td>

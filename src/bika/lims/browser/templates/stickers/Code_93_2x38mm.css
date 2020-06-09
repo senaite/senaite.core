@@ -14,7 +14,7 @@ Sticker margins: (1mm, 1mm) x 2
     font-size: 7pt;
     text-align: center;
     overflow: hidden;
-    background-color: #dcdcdc;
+    background-color: transparent;
 }
 
 .sticker .error {
@@ -33,7 +33,7 @@ Sticker margins: (1mm, 1mm) x 2
 .sticker table.stickers-row {
     width: 100%;
     border-collapse: separate;
-    background-color: #dcdcdc;
+    background-color: transparent;
 }
 
 /** Each sticker is rendered inside a sticker-cell */
@@ -50,7 +50,7 @@ Sticker margins: (1mm, 1mm) x 2
     width: 0.5mm;
     min-width: 0.5mm;
     max-width: 0.5mm;
-    background-color: #dcdcdc;
+    background-color: transparent;
 }
 
 .sticker .sample-info table,

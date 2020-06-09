@@ -37,7 +37,8 @@
                 <tr>
                   <td>
                     <img tal:condition="hazardous | nothing"
-                         tal:attributes="src string:${portal_url}/++resource++bika.lims.images/hazardous.png"/>
+                         height="16"
+                         tal:attributes="src string:${portal_url}/senaite_theme/icon/hazardous"/>
                     <strong tal:content="sample_id">Sample ID</strong>
                   </td>
                 </tr>
