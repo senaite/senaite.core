@@ -11,7 +11,8 @@ $senaite-bg-lightgrey: #f8f9fa;
 // Bootstrap overrides
 $body-bg: #fff;
 $body-color: $senaite-color-dark;
-$link-color: #428AAF;
+$link-color: rgba(66, 138, 175, 1); //#428AAF;
+
 // $breadcrumb-divider: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPjxwYXRoIGQ9Ik0yLjUgMEwxIDEuNSAzLjUgNCAxIDYuNSAyLjUgOGw0LTQtNC00eiIgZmlsbD0iY3VycmVudENvbG9yIi8+PC9zdmc+);
 
 // Bootstrap
@@ -29,9 +30,16 @@ $sidebar-minimized-width: 50px;
 $sidebar-maximized-width: 200px;
 $sidebar-color: $senaite-color-dark;
 $sidebar-bg: $senaite-bg-lightgrey;
-$sidebar-selected-bg: lighten($link-color, 10%);
 $sidebar-selected-color: $navbar-light-active-color;
 $sidebar-hover-color: $navbar-light-hover-color;
+
+// This should be better done with lighten($link-color, $amount), but seems
+// that id does not work properly in some browsers?
+// Note the "base_color" is $link-color
+// Also: https://sass-lang.com/documentation/modules/color#lighten
+$sidebar-selected-bg: rgba(66, 138, 175, .25);
+$sidebar-selected-bg-1: rgba(66, 138, 175, .40); // nav-level-1
+$sidebar-selected-bg-2: rgba(66, 138, 175, .55); // nav-level-2
 
 // Breadcrumbs bar
 $breadcrumb-bg: $senaite-bg-lightgrey;
