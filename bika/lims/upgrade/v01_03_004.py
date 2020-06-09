@@ -75,6 +75,10 @@ def upgrade(tool):
     setup.runImportStepFromProfile(profile, "workflow")
     update_workflow_mappings_for_to_be_verified(portal)
 
+    # Unset/set specifications with dynamic results ranges assigned
+    # https://github.com/senaite/senaite.core/pull/1588
+    update_dynamic_analysisspecs(portal)
+
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
 
@@ -115,3 +119,40 @@ def update_workflow_mappings_for_to_be_verified(portal):
         obj = api.get_object(brain)
         workflow.updateRoleMappingsFor(obj)
     logger.info("Updating role mappings for 'to_be_verified' analyses [DONE]")
+
+
+def update_dynamic_analysisspecs(portal):
+    """Unset/set specifications that have dynamic result ranges assigned
+    """
+
+    # Skip update when there are no dynamic specs registered in the system
+    setup = api.get_setup()
+    dynamic_specs = getattr(setup, "dynamic_analysisspecs", None)
+    if dynamic_specs is None:
+        return
+    if not dynamic_specs.objectIds():
+        return
+
+    logger.info("Updating specifications with dynamic results ranges...")
+    catalog = api.get_tool(CATALOG_ANALYSIS_REQUEST_LISTING)
+    samples = catalog({"portal_type": "AnalysisRequest"})
+    total = len(samples)
+
+    logger.info("Checking dynamic specifications of {} samples".format(total))
+    for num, sample in enumerate(samples):
+        if num and num % 100 == 0:
+            logger.info("Checked {}/{} samples".format(num, total))
+        obj = api.get_object(sample)
+        spec = obj.getSpecification()
+        if spec is None:
+            continue
+        if not spec.getDynamicAnalysisSpec():
+            continue
+
+        # Unset/set the specification
+        logger.info("Updating specification '{}' of smaple '{}'".format(
+            spec.Title(), sample.getId()))
+        sample.setAnalysisSpec(None)
+        sample.setAnalysisSpec(spec)
+
+    logger.info("Updating specifications with dynamic results ranges [DONE]")
