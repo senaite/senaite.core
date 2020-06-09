@@ -20,8 +20,9 @@
         border-radius: .2rem;
     }
     .dropdown-menu {
-        a {
+        a, a.active {
             color: $senaite-color-dark;
+            background-color: transparent;
             &:hover {
                 color: $link-color;
             }
