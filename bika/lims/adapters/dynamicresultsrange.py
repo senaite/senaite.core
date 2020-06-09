@@ -20,6 +20,9 @@
 
 from bika.lims import api
 from bika.lims.interfaces import IDynamicResultsRange
+from plone.memoize.volatile import ATTR
+from plone.memoize.volatile import CONTAINER_FACTORY
+from plone.memoize.volatile import cache
 from zope.interface import implementer
 
 marker = object()
@@ -35,6 +38,17 @@ DEFAULT_RANGE_KEYS = [
     "maxpanic",
     "error",
 ]
+
+
+def analysis_cache_key(method, instance):
+    return instance.analysis.UID()
+
+
+def store_on_analysis(method, instance, *args, **kwargs):
+    """Volatile cache storage on the portal object
+    """
+    analysis = instance.analysis
+    return analysis.__dict__.setdefault(ATTR, CONTAINER_FACTORY())
 
 
 @implementer(IDynamicResultsRange)
@@ -152,5 +166,6 @@ class DynamicResultsRange(object):
 
         return rr
 
+    @cache(analysis_cache_key, get_cache=store_on_analysis)
     def __call__(self):
         return self.get_results_range()
