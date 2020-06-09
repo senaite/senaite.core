@@ -6,7 +6,7 @@ Changelog
 
 **Added**
 
-- #1588 Dynamic Analysis Specs: Cache range lookups
+- #1588 Dynamic Analysis Specs: Lookup dynamic spec only when the specification is set
 - #1586 Allow to configure the variables for IDServer with an Adapter
 - #1584 Date (yymmdd) support in IDs generation
 - #1582 Allow to retest analyses without the need of retraction
