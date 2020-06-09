@@ -35,13 +35,14 @@
         <!--   Menu Title -->
         <!-- </span> -->
 
-        <div
+        <span
+          class=""
           i18n:translate=""
-          tal:attributes="class string:${menuItem/extra/class} tb-state nav-link"
+          tal:attributes="class string:${menuItem/extra/class} tb-state"
           tal:condition="menuItem/extra/stateTitle | nothing"
           tal:content="menuItem/extra/stateTitle">
           State title
-        </div>
+        </span>
       </a>
 
       <!-- dropdown menu -->
