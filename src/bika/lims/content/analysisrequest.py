@@ -59,6 +59,7 @@ from bika.lims.interfaces import IAnalysisRequestWithPartitions
 from bika.lims.interfaces import IBatch
 from bika.lims.interfaces import ICancellable
 from bika.lims.interfaces import IClient
+from bika.lims.interfaces import IDynamicResultsRange
 from bika.lims.interfaces import ISubmitted
 from bika.lims.permissions import FieldEditBatch
 from bika.lims.permissions import FieldEditClient
@@ -1449,6 +1450,11 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
             if not ISubmitted.providedBy(analysis):
                 service_uid = analysis.getRawAnalysisService()
                 result_range = field.get(self, search_by=service_uid)
+                # check if we have an dynamic results range adapter
+                adapter = IDynamicResultsRange(analysis, None)
+                if adapter:
+                    # update the result range with the dynamic values
+                    result_range.update(adapter())
                 analysis.setResultsRange(result_range)
                 analysis.reindexObject()
 
