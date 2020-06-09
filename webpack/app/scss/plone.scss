@@ -114,3 +114,12 @@ div.overlaybg div.close,
 div.overlay div.close {
     opacity: 1;
 }
+
+/* Site setup */
+.portlet.portletNavigationTree.portletSiteSetup {
+    margin: 1.5rem 0;
+
+    ul.nav-pills li.nav-item {
+        padding-left: 0;
+    }
+}
