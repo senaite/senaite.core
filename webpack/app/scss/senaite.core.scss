@@ -82,11 +82,11 @@ div.container-fluid {
     }
     &.priority-1 {
         @extend .fa-arrow-up;
-        @extend .text-success;
+        @extend .text-danger;
     }
     &.priority-2 {
         @extend .fa-arrow-up;
-        @extend .text-info;
+        @extend .text-warning;
     }
     &.priority-3 {
         @extend .fa-arrow-up;
@@ -94,11 +94,11 @@ div.container-fluid {
     }
     &.priority-4 {
         @extend .fa-arrow-down;
-        @extend .text-warning;
+        @extend .text-info;
     }
     &.priority-5 {
         @extend .fa-arrow-down;
-        @extend .text-danger;
+        @extend .text-success;
     }
 }
 
