@@ -25,33 +25,6 @@ from decimal import Decimal
 from urlparse import urljoin
 
 from AccessControl import ClassSecurityInfo
-from DateTime import DateTime
-from Products.ATExtensions.field import RecordsField
-from Products.Archetypes.Widget import RichWidget
-from Products.Archetypes.atapi import BaseFolder
-from Products.Archetypes.atapi import BooleanField
-from Products.Archetypes.atapi import BooleanWidget
-from Products.Archetypes.atapi import ComputedField
-from Products.Archetypes.atapi import ComputedWidget
-from Products.Archetypes.atapi import FileField
-from Products.Archetypes.atapi import FileWidget
-from Products.Archetypes.atapi import FixedPointField
-from Products.Archetypes.atapi import ReferenceField
-from Products.Archetypes.atapi import StringField
-from Products.Archetypes.atapi import StringWidget
-from Products.Archetypes.atapi import TextField
-from Products.Archetypes.atapi import registerType
-from Products.Archetypes.public import Schema
-from Products.Archetypes.references import HoldingReference
-from Products.CMFCore.permissions import ModifyPortalContent
-from Products.CMFCore.permissions import View
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import _createObjectByType
-from Products.CMFPlone.utils import safe_unicode
-from zope.interface import alsoProvides
-from zope.interface import implements
-from zope.interface import noLongerProvides
-
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import deprecated
@@ -60,9 +33,9 @@ from bika.lims.api.security import check_permission
 from bika.lims.browser.fields import ARAnalysesField
 from bika.lims.browser.fields import DateTimeField
 from bika.lims.browser.fields import DurationField
+from bika.lims.browser.fields import EmailsField
 from bika.lims.browser.fields import ResultsRangesField
 from bika.lims.browser.fields import UIDReferenceField
-from bika.lims.browser.fields import EmailsField
 from bika.lims.browser.fields.remarksfield import RemarksField
 from bika.lims.browser.widgets import DateTimeWidget
 from bika.lims.browser.widgets import DecimalWidget
@@ -86,6 +59,7 @@ from bika.lims.interfaces import IAnalysisRequestWithPartitions
 from bika.lims.interfaces import IBatch
 from bika.lims.interfaces import ICancellable
 from bika.lims.interfaces import IClient
+from bika.lims.interfaces import IDynamicResultsRange
 from bika.lims.interfaces import ISubmitted
 from bika.lims.permissions import FieldEditBatch
 from bika.lims.permissions import FieldEditClient
@@ -112,8 +86,8 @@ from bika.lims.permissions import FieldEditRemarks
 from bika.lims.permissions import FieldEditResultsInterpretation
 from bika.lims.permissions import FieldEditSampleCondition
 from bika.lims.permissions import FieldEditSamplePoint
-from bika.lims.permissions import FieldEditSampleType
 from bika.lims.permissions import FieldEditSampler
+from bika.lims.permissions import FieldEditSampleType
 from bika.lims.permissions import FieldEditSamplingDate
 from bika.lims.permissions import FieldEditSamplingDeviation
 from bika.lims.permissions import FieldEditScheduledSampler
@@ -127,6 +101,32 @@ from bika.lims.utils import user_email
 from bika.lims.utils import user_fullname
 from bika.lims.workflow import getTransitionDate
 from bika.lims.workflow import getTransitionUsers
+from DateTime import DateTime
+from Products.Archetypes.atapi import BaseFolder
+from Products.Archetypes.atapi import BooleanField
+from Products.Archetypes.atapi import BooleanWidget
+from Products.Archetypes.atapi import ComputedField
+from Products.Archetypes.atapi import ComputedWidget
+from Products.Archetypes.atapi import FileField
+from Products.Archetypes.atapi import FileWidget
+from Products.Archetypes.atapi import FixedPointField
+from Products.Archetypes.atapi import ReferenceField
+from Products.Archetypes.atapi import StringField
+from Products.Archetypes.atapi import StringWidget
+from Products.Archetypes.atapi import TextField
+from Products.Archetypes.atapi import registerType
+from Products.Archetypes.public import Schema
+from Products.Archetypes.references import HoldingReference
+from Products.Archetypes.Widget import RichWidget
+from Products.ATExtensions.field import RecordsField
+from Products.CMFCore.permissions import ModifyPortalContent
+from Products.CMFCore.permissions import View
+from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import _createObjectByType
+from Products.CMFPlone.utils import safe_unicode
+from zope.interface import alsoProvides
+from zope.interface import implements
+from zope.interface import noLongerProvides
 
 IMG_SRC_RX = re.compile(r'<img.*?src="(.*?)"')
 IMG_DATA_SRC_RX = re.compile(r'<img.*?src="(data:image/.*?;base64,)(.*?)"')
@@ -1449,7 +1449,13 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
         for analysis in self.objectValues("Analysis"):
             if not ISubmitted.providedBy(analysis):
                 service_uid = analysis.getRawAnalysisService()
+                # get the default results range from the spec
                 result_range = field.get(self, search_by=service_uid)
+                # check if we have an dynamic results range adapter
+                adapter = IDynamicResultsRange(analysis, None)
+                if adapter:
+                    # update the result range with the dynamic values
+                    result_range.update(adapter())
                 analysis.setResultsRange(result_range)
                 analysis.reindexObject()
 
