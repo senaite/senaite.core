@@ -168,6 +168,12 @@ Now we hook in our Dynamic Analysis Specification to the standard Specification:
 
     >>> specification.setDynamicAnalysisSpec(ds)
 
+
+The specification need to get unset/set again, so that the dynamic values get looked up:
+
+    >>> sample.setSpecification(None)
+    >>> sample.setSpecification(specification)
+
 The specification of the `Ca` Analysis with the Method `Method A`:
 
     >>> ca_spec = ca.getResultsRange()
@@ -177,6 +183,11 @@ The specification of the `Ca` Analysis with the Method `Method A`:
 Now let's change the `Ca` Analysis Method to `Method B`:
 
     >>> ca.setMethod(method_b)
+
+Unset and set the specification again:
+
+    >>> sample.setSpecification(None)
+    >>> sample.setSpecification(specification)
 
 And get the results range again:
 
@@ -191,6 +202,11 @@ The same now with the `Mg` Analysis in one run:
     (5, 6)
 
     >>> mg.setMethod(method_b)
+
+Unset and set the specification again:
+
+    >>> sample.setSpecification(None)
+    >>> sample.setSpecification(specification)
 
     >>> mg_spec = mg.getResultsRange()
     >>> mg_spec["min"], mg_spec["max"]
