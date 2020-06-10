@@ -51,7 +51,6 @@
       <element>Manufacturers</element>
       <element>Preservations</element>
       <element>ReferenceDefinitions</element>
-      <element>ReflexRuleFolder</element>
       <element>SampleConditions</element>
       <element>SampleMatrices</element>
       <element>SamplePoints</element>
