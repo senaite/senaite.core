@@ -19,18 +19,18 @@
 # Some rights reserved, see README and LICENSE.
 
 from AccessControl import ClassSecurityInfo
-from Products.Archetypes.public import *
-from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
 from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import IReportFolder
-from plone.app.folder.folder import ATFolder, ATFolderSchema
+from plone.app.folder.folder import ATFolder
+from plone.app.folder.folder import ATFolderSchema
+from Products.Archetypes.public import *
+from senaite.core.interfaces import IHideActionsMenu
 from zope.interface import implements
 
 schema = ATFolderSchema.copy()
 
 class ReportFolder(ATFolder):
-    implements(IReportFolder)
+    implements(IReportFolder, IHideActionsMenu)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
