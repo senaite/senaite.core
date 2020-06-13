@@ -596,33 +596,31 @@ validation.register(CoordinateValidator())
 
 
 class ResultOptionsValueValidator(object):
-    """Validator for Analysis' Result Options Value. Applied as a subfield
-    validator but validates all records from the field. Note this validator
-    only validates the subfield "ResultValue"
+    """Validator for the subfield "ResultValue" of ResultOptions field
     """
 
     implements(IValidator)
     name = "result_options_value_validator"
 
     def __call__(self, value, *args, **kwargs):
+        # Result Value must be floatable
+        if not api.is_floatable(value):
+            return _t(_("Result Value must be a number"))
+
         # Get all records
         instance = kwargs['instance']
         field_name = kwargs['field'].getName()
         request = instance.REQUEST
         records = request.form.get(field_name)
-        if not records:
-            return True
 
-        # Result values must be floatable
-        original_values = map(lambda ro: ro.get("ResultValue"), records)
-        values = filter(api.is_floatable, original_values)
-        if len(values) != len(original_values):
-            return _t(_("Validation failed: result values must be numbers"))
-
-        # Result values must be different
-        values = list(set(map(api.to_float, values)))
-        if len(values) != len(original_values):
-            return _t(_("Validation failed: result values must be different"))
+        # Result values must be unique
+        value = api.to_float(value)
+        values = map(lambda ro: ro.get("ResultValue"), records)
+        values = filter(api.is_floatable, values)
+        values = map(api.to_float, values)
+        duplicates = filter(lambda val: val == value, values)
+        if len(duplicates) > 1:
+            return _t(_("Result Value must be unique"))
 
         return True
 
@@ -631,33 +629,28 @@ validation.register(ResultOptionsValueValidator())
 
 
 class ResultOptionsTextValidator(object):
-    """Validator for Analysis' Result Options Text. Applied as a subfield
-    validator but validates all records from the field. Note this validator
-    only validates the subfield "ResultText"
+    """Validator for the subfield "ResultText" of ResultsOption field
     """
 
     implements(IValidator)
     name = "result_options_text_validator"
 
     def __call__(self, value, *args, **kwargs):
+        # Result Text is required
+        if not value or not value.strip():
+            return _t(_("Display Value is required"))
+
         # Get all records
         instance = kwargs['instance']
         field_name = kwargs['field'].getName()
         request = instance.REQUEST
         records = request.form.get(field_name)
-        if not records:
-            return True
 
-        # Result Text is mandatory for all records
+        # Result Text must be unique
         original_texts = map(lambda ro: ro.get("ResultText"), records)
-        texts = filter(None, original_texts)
-        if len(texts) != len(original_texts):
-            return _t(_("Result text is required"))
-
-        # Result Texts must be different
-        texts = list(set(texts))
-        if len(texts) != len(original_texts):
-            return _t(_("Result text must be different"))
+        duplicates = filter(lambda text: text == value, original_texts)
+        if len(duplicates) > 1:
+            return _t(_("Display Value must be unique"))
 
         return True
 
