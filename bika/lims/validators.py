@@ -595,13 +595,14 @@ class CoordinateValidator:
 validation.register(CoordinateValidator())
 
 
-class ResultOptionsValidator(object):
-    """Validator for Analysis Result Options. Applied as a subfield validator,
-    but validates all records from the field
+class ResultOptionsValueValidator(object):
+    """Validator for Analysis' Result Options Value. Applied as a subfield
+    validator but validates all records from the field. Note this validator
+    only validates the subfield "ResultValue"
     """
 
     implements(IValidator)
-    name = "resultoptionsvalidator"
+    name = "result_options_value_validator"
 
     def __call__(self, value, *args, **kwargs):
         # Get all records
@@ -611,17 +612,6 @@ class ResultOptionsValidator(object):
         records = request.form.get(field_name)
         if not records:
             return True
-
-        # Result Text is mandatory for all records
-        original_texts = map(lambda ro: ro.get("ResultText"), records)
-        texts = filter(None, original_texts)
-        if len(texts) != len(original_texts):
-            return _t(_("Validation failed: result text is required"))
-
-        # Result Texts must be different
-        texts = list(set(texts))
-        if len(texts) != len(original_texts):
-            return _t(_("Validation failed: result text must be different"))
 
         # Result values must be floatable
         original_values = map(lambda ro: ro.get("ResultValue"), records)
@@ -637,7 +627,42 @@ class ResultOptionsValidator(object):
         return True
 
 
-validation.register(ResultOptionsValidator())
+validation.register(ResultOptionsValueValidator())
+
+
+class ResultOptionsTextValidator(object):
+    """Validator for Analysis' Result Options Text. Applied as a subfield
+    validator but validates all records from the field. Note this validator
+    only validates the subfield "ResultText"
+    """
+
+    implements(IValidator)
+    name = "result_options_text_validator"
+
+    def __call__(self, value, *args, **kwargs):
+        # Get all records
+        instance = kwargs['instance']
+        field_name = kwargs['field'].getName()
+        request = instance.REQUEST
+        records = request.form.get(field_name)
+        if not records:
+            return True
+
+        # Result Text is mandatory for all records
+        original_texts = map(lambda ro: ro.get("ResultText"), records)
+        texts = filter(None, original_texts)
+        if len(texts) != len(original_texts):
+            return _t(_("Result text is required"))
+
+        # Result Texts must be different
+        texts = list(set(texts))
+        if len(texts) != len(original_texts):
+            return _t(_("Result text must be different"))
+
+        return True
+
+
+validation.register(ResultOptionsTextValidator())
 
 
 class RestrictedCategoriesValidator:
