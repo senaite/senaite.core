@@ -38,6 +38,7 @@
   <permission>senaite.core: Manage Invoices</permission>
   <permission>senaite.core: View Results</permission>
   <permission>Access contents information</permission>
+  <permission>Add portal content</permission>
   <permission>Modify portal content</permission>
   <permission>View</permission>
 
@@ -665,6 +666,10 @@
     <permission-map name="senaite.core: Manage Invoices" acquired="True"/>
     <permission-map name="senaite.core: View Results" acquired="True"/>
     <permission-map name="Access contents information" acquired="True"/>
+    <permission-map name="Add portal content" acquired="True">
+      <!-- Publisher role must be able to add ARReports -->
+      <permission-role>Publisher</permission-role>
+    </permission-map>
     <permission-map name="Modify portal content" acquired="True"/>
     <permission-map name="View" acquired="True"/>
     <!-- Field Permissions -->
@@ -835,6 +840,10 @@
     <permission-map name="senaite.core: Manage Invoices" acquired="True"/>
     <permission-map name="senaite.core: View Results" acquired="True"/>
     <permission-map name="Access contents information" acquired="True"/>
+    <permission-map name="Add portal content" acquired="True">
+      <!-- Publisher role must be able to add ARReports -->
+      <permission-role>Publisher</permission-role>
+    </permission-map>
     <permission-map name="Modify portal content" acquired="True"/>
     <permission-map name="View" acquired="True"/>
     <!-- Field Permissions (all readonly) -->

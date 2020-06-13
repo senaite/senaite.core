@@ -1042,6 +1042,11 @@ class AnalysesView(BikaListingView):
     def _folder_item_out_of_range(self, analysis_brain, item):
         """Displays an icon if result is out of range
         """
+        if not self.has_permission(ViewResults, analysis_brain):
+            # Users without permissions to see the result should not be able
+            # to see if the result is out of range naither
+            return
+
         analysis = self.get_object(analysis_brain)
         out_range, out_shoulders = is_out_of_range(analysis)
         if out_range:

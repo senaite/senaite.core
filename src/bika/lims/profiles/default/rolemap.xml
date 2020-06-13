@@ -798,6 +798,7 @@
       <role name="LabClerk"/>
       <role name="LabManager"/>
       <role name="Manager"/>
+      <role name="Publisher"/>
       <role name="Owner"/>
     </permission>
     <permission name="senaite.core: Manage Invoices" acquire="False">
