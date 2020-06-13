@@ -23,6 +23,7 @@ Changelog
 **Fixed**
 
 - #1593 Fix Out-of-range alert icon is shown to users w/o "View Results" privileges
+- #1592 Fix Publisher user cannot publish samples
 - #1591 Fix User can assign a contact from another client while creating a Sample
 - #1585 Fix wrong label and description for `ShowPartitions` setting from setup
 - #1583 Fix traceback in services listing in ARTemplate view
