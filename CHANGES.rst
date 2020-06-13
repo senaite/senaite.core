@@ -6,7 +6,7 @@ Changelog
 
 **Added**
 
-- #1596 Allow to hide actions menu by using new marker interface IHaveNoActionsMenu
+- #1596 Allow to hide actions menu by using new marker interface IHideActionsMenu
 - #1588 Dynamic Analysis Specs: Lookup dynamic spec only when the specification is set
 - #1586 Allow to configure the variables for IDServer with an Adapter
 - #1584 Date (yymmdd) support in IDs generation

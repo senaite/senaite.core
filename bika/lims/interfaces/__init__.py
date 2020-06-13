@@ -1095,6 +1095,7 @@ class ISamplingRoundTemplate(Interface):
     """
 
 
-class IHaveNoActionsMenu(Interface):
-    """Marker interface for content types for which actions menu must be hidden
+class IHideActionsMenu(Interface):
+    """Marker interface that can be applied for conttents that should not
+    display the content actions menu
     """

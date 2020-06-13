@@ -26,13 +26,13 @@ from zope.interface import implements
 
 from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import IHaveNoBreadCrumbs
-from bika.lims.interfaces import IHaveNoActionsMenu
+from bika.lims.interfaces import IHideActionsMenu
 from bika.lims.interfaces import IReportFolder
 
 schema = ATFolderSchema.copy()
 
 class ReportFolder(ATFolder):
-    implements(IReportFolder, IHaveNoBreadCrumbs, IHaveNoActionsMenu)
+    implements(IReportFolder, IHaveNoBreadCrumbs, IHideActionsMenu)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
