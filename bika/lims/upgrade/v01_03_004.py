@@ -79,6 +79,11 @@ def upgrade(tool):
     # https://github.com/senaite/senaite.core/pull/1588
     update_dynamic_analysisspecs(portal)
 
+    # Users with Publisher role cannot publish samples
+    update_workflow_mappings_contacts(portal)
+    update_workflow_mappings_labcontacts(portal)
+    update_workflow_mappings_samples(portal)
+
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
 
@@ -119,6 +124,55 @@ def update_workflow_mappings_for_to_be_verified(portal):
         obj = api.get_object(brain)
         workflow.updateRoleMappingsFor(obj)
     logger.info("Updating role mappings for 'to_be_verified' analyses [DONE]")
+
+
+def update_workflow_mappings_contacts(portal):
+    """Updates the role mappings for clients contacts so users with Publisher
+    role can publish samples
+    """
+    logger.info("Updating role mappings for Contacts ...")
+    wf_id = "senaite_clientcontact_workflow"
+    query = {"portal_type": "Contact"}
+    brains = api.search(query, "portal_catalog")
+    update_workflow_mappings_for(portal, wf_id, brains)
+    logger.info("Updating role mappings for Contacts [DONE]")
+
+
+def update_workflow_mappings_labcontacts(portal):
+    """Updates the role mappings for lab contacts so users with Publisher
+    role can publish samples
+    """
+    logger.info("Updating role mappings for Lab Contacts ...")
+    wf_id = "senaite_labcontact_workflow"
+    query = {"portal_type": "LabContact"}
+    brains = api.search(query, "portal_catalog")
+    update_workflow_mappings_for(portal, wf_id, brains)
+    logger.info("Updating role mappings for Lab Contacts [DONE]")
+
+
+def update_workflow_mappings_samples(portal):
+    """Updates the role mappings for lab contacts so users with Publisher
+    role can publish samples
+    """
+    logger.info("Updating role mappings for Samples ...")
+    wf_id = "bika_ar_workflow"
+    query = {"portal_type": "AnalysisRequest",
+             "review_state": ["to_be_verified", "verified"]}
+    brains = api.search(query, CATALOG_ANALYSIS_REQUEST_LISTING)
+    update_workflow_mappings_for(portal, wf_id, brains)
+    logger.info("Updating role mappings for Samples [DONE]")
+
+
+def update_workflow_mappings_for(portal, wf_id, brains):
+    wf_tool = api.get_tool("portal_workflow")
+    workflow = wf_tool.getWorkflowById(wf_id)
+    total = len(brains)
+    for num, brain in enumerate(brains):
+        if num and num % 100 == 0:
+            logger.info("Updating role mappings: {0}/{1}".format(num, total))
+        obj = api.get_object(brain)
+        workflow.updateRoleMappingsFor(obj)
+        obj.reindexObject(idxs=["allowedRolesAndUsers"])
 
 
 def update_dynamic_analysisspecs(portal):
