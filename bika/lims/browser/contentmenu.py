@@ -21,6 +21,7 @@
 from plone.app.contentmenu.menu import WorkflowMenu as BaseClass
 from plone.app.contentmenu.view import ContentMenuProvider
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from bika.lims.interfaces import IHaveNoActionsMenu
 from zope.component import getUtility
 from zope.browsermenu.interfaces import IBrowserMenu
 
@@ -37,6 +38,8 @@ class SenaiteContentMenuProvider(ContentMenuProvider):
     # From IContentMenuView
 
     def available(self):
+        if IHaveNoActionsMenu.providedBy(self.context):
+            return False
         return True
 
     def menu(self):

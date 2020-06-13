@@ -1093,3 +1093,8 @@ class ISamplingRoundTemplate(Interface):
     """Marker interface for a Sampling Round Template
     TODO: Legacy type. Remove after 1.3.3
     """
+
+
+class IHaveNoActionsMenu(Interface):
+    """Marker interface for content types for which actions menu must be hidden
+    """
