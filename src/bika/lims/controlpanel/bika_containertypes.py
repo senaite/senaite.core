@@ -28,6 +28,7 @@ from bika.lims.interfaces import IContainerTypes
 from bika.lims.permissions import AddContainerType
 from bika.lims.utils import get_link
 from plone.app.folder.folder import ATFolder, ATFolderSchema
+from senaite.core.interfaces import IHideActionsMenu
 from zope.interface.declarations import implements
 
 
@@ -89,7 +90,7 @@ schema = ATFolderSchema.copy()
 
 
 class ContainerTypes(ATFolder):
-    implements(IContainerTypes)
+    implements(IContainerTypes, IHideActionsMenu)
     displayContentsTab = False
     schema = schema
 

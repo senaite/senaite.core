@@ -33,6 +33,7 @@ from Products.Archetypes.public import TextField
 from Products.Archetypes.public import registerType
 from Products.CMFCore.utils import UniqueObject
 from Products.CMFPlone.utils import safe_unicode
+from senaite.core.interfaces import IHideActionsMenu
 from zope.interface import implements
 
 from bika.lims import bikaMessageFactory as _
@@ -187,7 +188,7 @@ schema["Name"]._validationLayer()
 class Laboratory(UniqueObject, Organisation):
     """Laboratory content
     """
-    implements(ILaboratory)
+    implements(ILaboratory, IHideActionsMenu)
 
     security = ClassSecurityInfo()
     displayContentsTab = False

@@ -58,6 +58,7 @@ from Products.Archetypes.utils import IntDisplayList
 from Products.Archetypes.Widget import RichWidget
 from Products.CMFCore.utils import getToolByName
 from senaite.core.browser.fields.records import RecordsField
+from senaite.core.interfaces import IHideActionsMenu
 from senaite.core.locales import COUNTRIES
 from zope.component import getUtility
 from zope.interface import implements
@@ -886,7 +887,7 @@ schema['title']._validationLayer()
 class BikaSetup(folder.ATFolder):
     """LIMS Setup
     """
-    implements(IBikaSetup)
+    implements(IBikaSetup, IHideActionsMenu)
 
     schema = schema
     security = ClassSecurityInfo()

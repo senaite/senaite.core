@@ -18,3 +18,9 @@ class IShowFactoriesMenu(Interface):
     """Marker interface that can be applied for contents that should display
     the "Add" menu
     """
+
+
+class IHideActionsMenu(Interface):
+    """Marker interface that can be applied for conttents that should not
+    display the content actions menu
+    """

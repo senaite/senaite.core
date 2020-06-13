@@ -2,6 +2,7 @@
 
 from plone.app.contentmenu.view import ContentMenuProvider as Base
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from senaite.core.interfaces import IHideActionsMenu
 from zope.browsermenu.interfaces import IBrowserMenu
 from zope.component import getUtility
 
@@ -12,6 +13,8 @@ class ContentMenuProvider(Base):
     index = ViewPageTemplateFile('templates/contentmenu.pt')
 
     def available(self):
+        if IHideActionsMenu.providedBy(self.context):
+            return False
         return True
 
     def fiddle_menu_item(self, item):

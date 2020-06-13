@@ -30,6 +30,7 @@ from bika.lims.interfaces import ISamplingDeviations
 from bika.lims.permissions import AddSamplingDeviation
 from bika.lims.utils import get_link
 from plone.app.folder.folder import ATFolder, ATFolderSchema
+from senaite.core.interfaces import IHideActionsMenu
 from zope.interface.declarations import implements
 
 
@@ -118,7 +119,7 @@ schema = ATFolderSchema.copy()
 
 
 class SamplingDeviations(ATFolder):
-    implements(ISamplingDeviations)
+    implements(ISamplingDeviations, IHideActionsMenu)
     displayContentsTab = False
     schema = schema
 

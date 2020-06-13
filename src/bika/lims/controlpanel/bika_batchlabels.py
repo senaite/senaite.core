@@ -28,6 +28,7 @@ from bika.lims.interfaces import IBatchLabels
 from bika.lims.permissions import AddBatchLabel
 from bika.lims.utils import get_link
 from plone.app.folder.folder import ATFolder, ATFolderSchema
+from senaite.core.interfaces import IHideActionsMenu
 from zope.interface.declarations import implements
 
 
@@ -78,7 +79,7 @@ class BatchLabelsView(BikaListingView):
 
 schema = ATFolderSchema.copy()
 class BatchLabels(ATFolder):
-    implements(IBatchLabels)
+    implements(IBatchLabels, IHideActionsMenu)
     displayContentsTab = False
     schema = schema
 

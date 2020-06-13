@@ -29,6 +29,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from plone.app.folder.folder import ATFolder
 from plone.app.folder.folder import ATFolderSchema
+from senaite.core.interfaces import IHideActionsMenu
 from zope.interface.declarations import implements
 
 from bika.lims import api
@@ -229,7 +230,7 @@ schema = ATFolderSchema.copy()
 
 
 class SamplePoints(ATFolder):
-    implements(ISamplePoints)
+    implements(ISamplePoints, IHideActionsMenu)
     displayContentsTab = False
     schema = schema
 

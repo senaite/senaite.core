@@ -31,6 +31,7 @@ from plone.app.folder.folder import ATFolder
 from plone.app.folder.folder import ATFolderSchema
 from Products.Archetypes import atapi
 from Products.ATContentTypes.content import schemata
+from senaite.core.interfaces import IHideActionsMenu
 from zope.interface.declarations import implements
 
 
@@ -125,7 +126,7 @@ schema = ATFolderSchema.copy()
 
 
 class Calculations(ATFolder):
-    implements(ICalculations)
+    implements(ICalculations, IHideActionsMenu)
     displayContentsTab = False
     schema = schema
 

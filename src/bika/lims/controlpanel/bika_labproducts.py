@@ -27,6 +27,7 @@ from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import ILabProducts
 from bika.lims.permissions import AddLabProduct
 from plone.app.folder.folder import ATFolder, ATFolderSchema
+from senaite.core.interfaces import IHideActionsMenu
 from zope.interface.declarations import implements
 
 from bika.lims.utils import get_link
@@ -115,7 +116,7 @@ class LabProductsView(BikaListingView):
 
 schema = ATFolderSchema.copy()
 class LabProducts(ATFolder):
-    implements(ILabProducts)
+    implements(ILabProducts, IHideActionsMenu)
     displayContentsTab = False
     schema = schema
 

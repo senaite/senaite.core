@@ -28,6 +28,7 @@ from bika.lims.interfaces import IPreservations
 from bika.lims.permissions import AddPreservation
 from bika.lims.utils import get_link
 from plone.app.folder.folder import ATFolder, ATFolderSchema
+from senaite.core.interfaces import IHideActionsMenu
 from zope.interface.declarations import implements
 
 
@@ -89,7 +90,7 @@ schema = ATFolderSchema.copy()
 
 
 class Preservations(ATFolder):
-    implements(IPreservations)
+    implements(IPreservations, IHideActionsMenu)
     displayContentsTab = False
     schema = schema
 

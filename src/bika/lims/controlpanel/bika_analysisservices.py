@@ -19,6 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 import collections
+from senaite.core.interfaces import IHideActionsMenu
 from transaction import savepoint
 
 from Products.ATContentTypes.content.schemata import finalizeATCTSchema
@@ -435,7 +436,7 @@ finalizeATCTSchema(schema, folderish=True, moveDiscussion=False)
 
 
 class AnalysisServices(ATFolder):
-    implements(IAnalysisServices)
+    implements(IAnalysisServices, IHideActionsMenu)
     displayContentsTab = False
     schema = schema
 

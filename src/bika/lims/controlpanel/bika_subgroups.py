@@ -30,6 +30,7 @@ from bika.lims.permissions import AddSubGroup
 from bika.lims.utils import get_link
 from plone.app.folder.folder import ATFolder
 from plone.app.folder.folder import ATFolderSchema
+from senaite.core.interfaces import IHideActionsMenu
 from zope.interface.declarations import implements
 
 
@@ -93,7 +94,7 @@ schema = ATFolderSchema.copy()
 
 
 class SubGroups(ATFolder):
-    implements(ISubGroups)
+    implements(ISubGroups, IHideActionsMenu)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema

@@ -33,6 +33,7 @@ from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder
 from plone.app.folder.folder import ATFolderSchema
 from plone.app.layout.globals.interfaces import IViewView
+from senaite.core.interfaces import IHideActionsMenu
 from zope.interface.declarations import implements
 
 
@@ -129,7 +130,7 @@ schema = ATFolderSchema.copy()
 
 
 class AnalysisProfiles(ATFolder):
-    implements(IAnalysisProfiles)
+    implements(IAnalysisProfiles, IHideActionsMenu)
     displayContentsTab = False
     schema = schema
 

@@ -31,6 +31,7 @@ from bika.lims.permissions import AddAttachmentType
 from bika.lims.utils import get_link
 from plone.app.folder.folder import ATFolder
 from plone.app.folder.folder import ATFolderSchema
+from senaite.core.interfaces import IHideActionsMenu
 from zope.interface.declarations import implements
 
 
@@ -122,7 +123,7 @@ schema = ATFolderSchema.copy()
 
 
 class AttachmentTypes(ATFolder):
-    implements(IAttachmentTypes)
+    implements(IAttachmentTypes, IHideActionsMenu)
     displayContentsTab = False
     schema = schema
 

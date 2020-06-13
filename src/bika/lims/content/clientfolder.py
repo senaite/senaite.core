@@ -26,6 +26,7 @@ from Products.Archetypes import atapi
 from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import IClientFolder
 from plone.app.folder import folder
+from senaite.core.interfaces import IHideActionsMenu
 from zope.interface import implements
 
 schema = folder.ATFolderSchema.copy()
@@ -34,7 +35,7 @@ schema['title'].widget.visible = {'edit': 'hidden', 'view': 'invisible'}
 
 
 class ClientFolder(folder.ATFolder):
-    implements(IClientFolder)
+    implements(IClientFolder, IHideActionsMenu)
     displayContentsTab = False
     schema = schema
     security = ClassSecurityInfo()

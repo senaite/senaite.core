@@ -33,6 +33,7 @@ from bika.lims.utils import get_email_link
 from bika.lims.utils import get_link
 from plone.app.folder.folder import ATFolder
 from plone.app.folder.folder import ATFolderSchema
+from senaite.core.interfaces import IHideActionsMenu
 from zope.interface.declarations import implements
 
 
@@ -149,7 +150,7 @@ schema = ATFolderSchema.copy()
 
 
 class Departments(ATFolder):
-    implements(IDepartments)
+    implements(IDepartments, IHideActionsMenu)
     displayContentsTab = False
     schema = schema
 

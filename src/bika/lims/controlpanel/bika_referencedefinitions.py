@@ -33,6 +33,7 @@ from plone.app.folder.folder import ATFolder
 from plone.app.folder.folder import ATFolderSchema
 from Products.ATContentTypes.content import schemata
 from Products.Archetypes.public import registerType
+from senaite.core.interfaces import IHideActionsMenu
 from zope.interface.declarations import implements
 
 
@@ -136,7 +137,7 @@ schema = ATFolderSchema.copy()
 class ReferenceDefinitions(ATFolder):
     """Reference definition content
     """
-    implements(IReferenceDefinitions)
+    implements(IReferenceDefinitions, IHideActionsMenu)
 
     displayContentsTab = False
     schema = schema

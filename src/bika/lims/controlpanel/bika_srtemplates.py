@@ -22,6 +22,7 @@ from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
 from plone.app.folder.folder import ATFolder
 from plone.app.folder.folder import ATFolderSchema
+from senaite.core.interfaces import IHideActionsMenu
 from zope.interface.declarations import implements
 
 from bika.lims.config import PROJECTNAME
@@ -32,7 +33,7 @@ schema = ATFolderSchema.copy()
 
 # TODO: Legacy type. Remove after 1.3.3
 class SRTemplates(ATFolder):
-    implements(ISamplingRoundTemplates)
+    implements(ISamplingRoundTemplates, IHideActionsMenu)
     displayContentsTab = False
     schema = schema
 

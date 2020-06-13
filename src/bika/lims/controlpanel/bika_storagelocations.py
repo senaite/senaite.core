@@ -37,6 +37,7 @@ from bika.lims.permissions import AddStorageLocation
 from bika.lims.utils import get_link
 from plone.app.folder.folder import ATFolder
 from plone.app.folder.folder import ATFolderSchema
+from senaite.core.interfaces import IHideActionsMenu
 from zope.interface.declarations import implements
 
 from bika.lims.utils import get_link
@@ -117,7 +118,7 @@ schema = ATFolderSchema.copy()
 
 
 class StorageLocations(ATFolder):
-    implements(IStorageLocations)
+    implements(IStorageLocations, IHideActionsMenu)
     displayContentsTab = False
     schema = schema
 

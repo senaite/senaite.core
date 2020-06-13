@@ -31,6 +31,7 @@ from bika.lims.permissions import AddInstrument
 from bika.lims.utils import get_link
 from plone.app.folder.folder import ATFolder
 from plone.app.folder.folder import ATFolderSchema
+from senaite.core.interfaces import IHideActionsMenu
 from zope.interface.declarations import implements
 
 
@@ -193,7 +194,7 @@ schema = ATFolderSchema.copy()
 class Instruments(ATFolder):
     """Instruments Folder
     """
-    implements(IInstruments)
+    implements(IInstruments, IHideActionsMenu)
     displayContentsTab = False
     schema = schema
 
