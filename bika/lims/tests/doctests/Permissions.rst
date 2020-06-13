@@ -257,7 +257,7 @@ Exactly these roles have should have a `View` permission::
     ['Authenticated']
 
     >>> get_roles_for_permission("View", labcontact)
-    ['LabClerk', 'LabManager', 'Manager']
+    ['LabClerk', 'LabManager', 'Manager', 'Publisher']
 
 Exactly these roles have should have the `Access contents information` permission::
 
@@ -388,7 +388,7 @@ Client they belong to:
 Exactly these roles should have a `View` permission for client contact object:
 
     >>> get_roles_for_permission("View", contact)
-    ['LabClerk', 'LabManager', 'Manager', 'Owner']
+    ['LabClerk', 'LabManager', 'Manager', 'Owner', 'Publisher']
 
 Exactly these roles have should have the `Access contents information` permission::
 
