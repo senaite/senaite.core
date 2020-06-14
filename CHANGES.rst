@@ -6,6 +6,7 @@ Changelog
 
 **Added**
 
+- #1596 Allow to hide actions menu by using new marker interface IHideActionsMenu
 - #1588 Dynamic Analysis Specs: Lookup dynamic spec only when the specification is set
 - #1586 Allow to configure the variables for IDServer with an Adapter
 - #1584 Date (yymmdd) support in IDs generation
@@ -23,6 +24,8 @@ Changelog
 **Fixed**
 
 - #1594 Fix System does not validate values from Results Options to be different
+- #1596 Fix Reports page shows the Display/State/Add menu
+- #1595 Fix Wrong url in client's analyses profiles listing
 - #1593 Fix Out-of-range alert icon is shown to users w/o "View Results" privileges
 - #1592 Fix Publisher user cannot publish samples
 - #1591 Fix User can assign a contact from another client while creating a Sample

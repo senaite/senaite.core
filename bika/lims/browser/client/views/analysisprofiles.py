@@ -53,7 +53,7 @@ class ClientAnalysisProfilesView(BikaListingView):
         self.columns = {
             'title': {'title': _('Title'),
                       'index': 'sortable_title',
-                      'replace_url': 'absolute_url'},
+                      'replace_url': 'getURL'},
             'Description': {'title': _('Description'),
                             'index': 'description'},
             'getProfileKey': {'title': _('Profile Key')},
