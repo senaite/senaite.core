@@ -556,6 +556,10 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         # Calculate
         formula = calc.getMinifiedFormula()
         formula = formula.replace('[', '%(').replace(']', ')f')
+
+        # Add the UID of current object (analysis) into the mapping
+        mapping.update({"UID": api.get_uid(self)})
+        formula = formula.replace('%(UID)f', '"%(UID)s"')
         try:
             formula = eval("'%s'%%mapping" % formula,
                            {"__builtins__": None,

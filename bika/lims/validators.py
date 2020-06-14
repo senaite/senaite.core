@@ -460,6 +460,10 @@ class FormulaValidator:
             [f['keyword'] for f in interim_fields] or []
         keywords = re.compile(r"\[([^\.^\]]+)\]").findall(value)
 
+        # Exclude reserved keywords (they are always handled)
+        reserved = ("UID",)
+        keywords = filter(lambda key: key not in reserved, keywords)
+
         for keyword in keywords:
             # Check if the service keyword exists and is active.
             dep_service = bsc(getKeyword=keyword, is_active=True)
