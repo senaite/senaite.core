@@ -23,6 +23,7 @@ Changelog
 
 **Fixed**
 
+- #1594 Fix System does not validate values from Results Options to be different
 - #1596 Fix Reports page shows the Display/State/Add menu
 - #1595 Fix Wrong url in client's analyses profiles listing
 - #1593 Fix Out-of-range alert icon is shown to users w/o "View Results" privileges
