@@ -22,6 +22,7 @@ Changelog
 
 **Fixed**
 
+- #1595 Fix Wrong url in client's analyses profiles listing
 - #1593 Fix Out-of-range alert icon is shown to users w/o "View Results" privileges
 - #1592 Fix Publisher user cannot publish samples
 - #1591 Fix User can assign a contact from another client while creating a Sample
