@@ -19,18 +19,20 @@
 # Some rights reserved, see README and LICENSE.
 
 from AccessControl import ClassSecurityInfo
+from plone.app.folder.folder import ATFolder
+from plone.app.folder.folder import ATFolderSchema
 from Products.Archetypes.public import *
-from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
-from bika.lims.config import PROJECTNAME
-from bika.lims.interfaces import IReportFolder, IHaveNoBreadCrumbs
-from plone.app.folder.folder import ATFolder, ATFolderSchema
 from zope.interface import implements
+
+from bika.lims.config import PROJECTNAME
+from bika.lims.interfaces import IHaveNoBreadCrumbs
+from bika.lims.interfaces import IHideActionsMenu
+from bika.lims.interfaces import IReportFolder
 
 schema = ATFolderSchema.copy()
 
 class ReportFolder(ATFolder):
-    implements(IReportFolder, IHaveNoBreadCrumbs)
+    implements(IReportFolder, IHaveNoBreadCrumbs, IHideActionsMenu)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
