@@ -27,6 +27,7 @@ from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.api import APIError
+from bika.lims.utils import t as _t
 from bika.lims.utils import to_utf8
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
@@ -594,46 +595,67 @@ class CoordinateValidator:
 validation.register(CoordinateValidator())
 
 
-class ResultOptionsValidator:
-    """Validating AnalysisService ResultOptions field.
-        XXX Applied as a subfield validator but validates
-        for x in range(len(interim_fields)):
-            row = interim_fields[x]
-            keys = row.keys()
-            if 'title' not in keys:entire field.
+class ResultOptionsValueValidator(object):
+    """Validator for the subfield "ResultValue" of ResultOptions field
     """
 
     implements(IValidator)
-    name = "resultoptionsvalidator"
+    name = "result_options_value_validator"
 
     def __call__(self, value, *args, **kwargs):
+        # Result Value must be floatable
+        if not api.is_floatable(value):
+            return _t(_("Result Value must be a number"))
+
+        # Get all records
         instance = kwargs['instance']
-        fieldname = kwargs['field'].getName()
-        request = kwargs.get('REQUEST', {})
-        form = request.form
-        form_value = form.get(fieldname)
+        field_name = kwargs['field'].getName()
+        request = instance.REQUEST
+        records = request.form.get(field_name)
 
-        translate = getToolByName(instance, 'translation_service').translate
-        # bsc = getToolByName(instance, 'bika_setup_catalog')
-
-        # ResultValue must always be a number
-        for field in form_value:
-            try:
-                float(field['ResultValue'])
-            except:
-                return to_utf8(
-                    translate(
-                        _("Validation failed: "
-                          "Result Values must be numbers")))
-            if 'ResultText' not in field:
-                return to_utf8(
-                    translate(
-                        _("Validation failed: Result Text cannot be blank")))
+        # Result values must be unique
+        value = api.to_float(value)
+        values = map(lambda ro: ro.get("ResultValue"), records)
+        values = filter(api.is_floatable, values)
+        values = map(api.to_float, values)
+        duplicates = filter(lambda val: val == value, values)
+        if len(duplicates) > 1:
+            return _t(_("Result Value must be unique"))
 
         return True
 
 
-validation.register(ResultOptionsValidator())
+validation.register(ResultOptionsValueValidator())
+
+
+class ResultOptionsTextValidator(object):
+    """Validator for the subfield "ResultText" of ResultsOption field
+    """
+
+    implements(IValidator)
+    name = "result_options_text_validator"
+
+    def __call__(self, value, *args, **kwargs):
+        # Result Text is required
+        if not value or not value.strip():
+            return _t(_("Display Value is required"))
+
+        # Get all records
+        instance = kwargs['instance']
+        field_name = kwargs['field'].getName()
+        request = instance.REQUEST
+        records = request.form.get(field_name)
+
+        # Result Text must be unique
+        original_texts = map(lambda ro: ro.get("ResultText"), records)
+        duplicates = filter(lambda text: text == value, original_texts)
+        if len(duplicates) > 1:
+            return _t(_("Display Value must be unique"))
+
+        return True
+
+
+validation.register(ResultOptionsTextValidator())
 
 
 class RestrictedCategoriesValidator:
