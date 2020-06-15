@@ -35,11 +35,11 @@ tags
 buildout-cache
 atlassian-*.xml
 eggs/
-src/Products.ATExtensions/
-src/senaite.core.listing/
-src/senaite.core.supermodel/
-src/senaite.impress/
-src/senaite.lims/
+src/Products.ATExtensions
+src/senaite.core.listing
+src/senaite.core.supermodel
+src/senaite.impress
+src/senaite.lims
 src/senaite.core.spotlight
 src/senaite.jsonapi
 /src/senaite/core/listing
