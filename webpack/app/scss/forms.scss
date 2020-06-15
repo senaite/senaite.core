@@ -58,7 +58,8 @@ form[name='edit_form'] {
         @extend .text-danger;
         @extend .small;
     }
-    .field.error input {
+    .field.error input,
+    .field.error select {
         @extend .is-invalid;
     }
     .field {
