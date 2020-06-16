@@ -128,10 +128,12 @@ class AuditLogView(BikaListingView):
     def get_widget_for(self, fieldname):
         """Lookup the widget
         """
-        field = self.context.getField(fieldname)
-        if not field:
+        fields = api.get_fields(self.context)
+        field = fields.get(fieldname)
+        if field is None:
             return None
-        return field.widget
+        # FIXME: Properly lookup widget for DX types
+        return getattr(field, "widget", None)
 
     def get_widget_label_for(self, fieldname, default=None):
         """Lookup the widget of the field and return the label
