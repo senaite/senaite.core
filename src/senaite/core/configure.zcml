@@ -14,6 +14,7 @@
   <include package=".browser" />
   <include package=".exportimport" />
   <include package=".locales" />
+  <include package=".upgrade" />
 
   <!-- portal skins -->
   <cmf:registerDirectory

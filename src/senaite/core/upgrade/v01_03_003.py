@@ -37,10 +37,10 @@ from bika.lims.interfaces import IVerified
 from bika.lims.setuphandlers import add_dexterity_setup_items
 from bika.lims.setuphandlers import setup_form_controller_actions
 from bika.lims.setuphandlers import setup_html_filter
-from bika.lims.upgrade import upgradestep
-from bika.lims.upgrade.utils import UpgradeUtils
 from Products.Archetypes.config import UID_CATALOG
 from Products.ZCatalog.ProgressHandler import ZLogHandler
+from senaite.core.upgrade import upgradestep
+from senaite.core.upgrade.utils import UpgradeUtils
 from zope.interface import alsoProvides
 
 version = "1.3.3"  # Remember version number in metadata.xml and setup.py
@@ -1050,4 +1050,3 @@ def remove_skin_layers(portal):
             portal_skins.manage_delObjects(layer)
 
     logger.info("Removing skin layers [DONE]")
-

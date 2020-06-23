@@ -25,8 +25,8 @@ from bika.lims.catalog.analysisrequest_catalog import \
     CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.catalog.bika_catalog import BIKA_CATALOG
 from bika.lims.config import PROJECTNAME as product
-from bika.lims.upgrade import upgradestep
-from bika.lims.upgrade.utils import UpgradeUtils
+from senaite.core.upgrade import upgradestep
+from senaite.core.upgrade.utils import UpgradeUtils
 
 version = "1.3.2"  # Remember version number in metadata.xml and setup.py
 profile = "profile-{0}:default".format(product)

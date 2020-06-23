@@ -21,8 +21,6 @@
 import time
 
 import transaction
-from Acquisition import aq_base
-from Products.Archetypes.config import UID_CATALOG
 from bika.lims import api
 from bika.lims import logger
 from bika.lims.catalog.analysis_catalog import CATALOG_ANALYSIS_LISTING
@@ -38,20 +36,21 @@ from bika.lims.interfaces import IReferenceAnalysis
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.permissions import TransitionVerify
 from bika.lims.setuphandlers import hide_navbar_items
-from bika.lims.upgrade import upgradestep
-from bika.lims.upgrade.utils import UpgradeUtils
-from bika.lims.workflow import ActionHandlerPool, getAllowedTransitions
+from bika.lims.workflow import ActionHandlerPool
 from bika.lims.workflow import changeWorkflowState
 from bika.lims.workflow import doActionFor as do_action_for
 from bika.lims.workflow import isTransitionAllowed
 from bika.lims.workflow.analysis.events import reindex_request
 from bika.lims.workflow.analysis.events import remove_analysis_from_worksheet
+from Products.Archetypes.config import UID_CATALOG
+from Products.CMFCore.interfaces import ICatalogTool
 from Products.DCWorkflow.Guard import Guard
+from Products.ZCatalog.interfaces import IZCatalog
 from Products.ZCatalog.ProgressHandler import ZLogHandler
+from senaite.core.upgrade import upgradestep
+from senaite.core.upgrade.utils import UpgradeUtils
 from zope.component import getUtility
 from zope.interface import alsoProvides
-from Products.ZCatalog.interfaces import IZCatalog
-from Products.CMFCore.interfaces import ICatalogTool
 
 version = '1.3.0'  # Remember version number in metadata.xml and setup.py
 profile = 'profile-{0}:default'.format(product)

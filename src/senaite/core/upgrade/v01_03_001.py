@@ -19,8 +19,8 @@
 # Some rights reserved, see README and LICENSE.
 
 import time
-
 import traceback
+
 import transaction
 from bika.lims import api
 from bika.lims import logger
@@ -39,12 +39,12 @@ from bika.lims.interfaces import ISubmitted
 from bika.lims.interfaces import IVerified
 from bika.lims.setuphandlers import setup_auditlog_catalog
 from bika.lims.subscribers.setup import update_worksheet_manage_permissions
-from bika.lims.upgrade import upgradestep
-from bika.lims.upgrade.utils import UpgradeUtils
 from bika.lims.workflow import get_review_history_statuses
 from DateTime import DateTime
-from zope.interface import alsoProvides
 from Products.ZCatalog.ProgressHandler import ZLogHandler
+from senaite.core.upgrade import upgradestep
+from senaite.core.upgrade.utils import UpgradeUtils
+from zope.interface import alsoProvides
 
 version = "1.3.1"  # Remember version number in metadata.xml and setup.py
 profile = "profile-{0}:default".format(product)

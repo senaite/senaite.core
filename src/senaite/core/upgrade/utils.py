@@ -24,7 +24,6 @@ import time
 import transaction
 from Acquisition import aq_base
 from bika.lims import api
-from bika.lims import logger
 from bika.lims.catalog.catalog_utilities import addZCTextIndex
 from plone.app.blob.field import BlobWrapper
 from plone.app.blob.interfaces import IBlobField
@@ -34,6 +33,7 @@ from Products.contentmigration.common import HAS_LINGUA_PLONE
 from Products.contentmigration.migrator import BaseInlineMigrator
 from Products.contentmigration.walker import CustomQueryWalker
 from Products.ZCatalog.ProgressHandler import ZLogHandler
+from senaite.core import logger
 from transaction import savepoint
 
 # Interesting page for logging indexing process and others:

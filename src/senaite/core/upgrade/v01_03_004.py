@@ -28,9 +28,9 @@ from bika.lims.catalog import CATALOG_REPORT_LISTING
 from bika.lims.catalog import CATALOG_WORKSHEET_LISTING
 from bika.lims.catalog import SETUP_CATALOG
 from bika.lims.config import PROJECTNAME as product
-from bika.lims.upgrade import upgradestep
-from bika.lims.upgrade.utils import del_metadata
-from bika.lims.upgrade.utils import UpgradeUtils
+from senaite.core.upgrade import upgradestep
+from senaite.core.upgrade.utils import UpgradeUtils
+from senaite.core.upgrade.utils import del_metadata
 
 version = "1.3.4"  # Remember version number in metadata.xml and setup.py
 profile = "profile-{0}:default".format(product)
@@ -213,9 +213,10 @@ def update_dynamic_analysisspecs(portal):
 
         # Unset/set the specification
         logger.info("Updating specification '{}' of smaple '{}'".format(
-            spec.Title(), sample.getId()))
-        sample.setAnalysisSpec(None)
-        sample.setAnalysisSpec(spec)
+            spec.Title(), obj.getId()))
+
+        obj.setSpecification(None)
+        obj.setSpecification(spec)
 
     logger.info("Updating specifications with dynamic results ranges [DONE]")
 
