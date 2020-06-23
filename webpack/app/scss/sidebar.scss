@@ -76,6 +76,12 @@
     display: block;
 }
 
+/* hide deactivated items from sidebar */
+#sidebar li a.senaite-state-inactive,
+#sidebar.minimized li a.senaite-state-inactive {
+    display: none;
+}
+
 /* submenu */
 #sidebar ul.submenu {
     max-width: $sidebar-maximized-width;
