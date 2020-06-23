@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.2.2 (2020-04-23)
+ * Version: 5.3.2 (2020-06-10)
  */
 (function (domGlobals) {
     'use strict';
@@ -17,13 +17,9 @@
       var set = function (v) {
         value = v;
       };
-      var clone = function () {
-        return Cell(get());
-      };
       return {
         get: get,
-        set: set,
-        clone: clone
+        set: set
       };
     };
 
@@ -36,7 +32,6 @@
         }
       };
     };
-    var Api = { get: get };
 
     var noop = function () {
     };
@@ -71,7 +66,7 @@
         return n;
       };
       var me = {
-        fold: function (n, s) {
+        fold: function (n, _s) {
           return n();
         },
         is: never,
@@ -99,9 +94,6 @@
         },
         toString: constant('none()')
       };
-      if (Object.freeze) {
-        Object.freeze(me);
-      }
       return me;
     }();
     var some = function (a) {
@@ -216,30 +208,33 @@
     };
 
     var typeOf = function (x) {
+      var t = typeof x;
       if (x === null) {
         return 'null';
-      }
-      var t = typeof x;
-      if (t === 'object' && (Array.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'Array')) {
+      } else if (t === 'object' && (Array.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'Array')) {
         return 'array';
-      }
-      if (t === 'object' && (String.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'String')) {
+      } else if (t === 'object' && (String.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'String')) {
         return 'string';
+      } else {
+        return t;
       }
-      return t;
     };
     var isType = function (type) {
       return function (value) {
         return typeOf(value) === type;
       };
     };
+    var isSimpleType = function (type) {
+      return function (value) {
+        return typeof value === type;
+      };
+    };
     var isString = isType('string');
     var isArray = isType('array');
-    var isBoolean = isType('boolean');
-    var isFunction = isType('function');
-    var isNumber = isType('number');
+    var isBoolean = isSimpleType('boolean');
+    var isFunction = isSimpleType('function');
+    var isNumber = isSimpleType('number');
 
-    var nativeSlice = Array.prototype.slice;
     var nativePush = Array.prototype.push;
     var map = function (xs, f) {
       var len = xs.length;
@@ -266,15 +261,6 @@
       }
       return r;
     };
-    var find = function (xs, pred) {
-      for (var i = 0, len = xs.length; i < len; i++) {
-        var x = xs[i];
-        if (pred(x, i)) {
-          return Option.some(x);
-        }
-      }
-      return Option.none();
-    };
     var flatten = function (xs) {
       var r = [];
       for (var i = 0, len = xs.length; i < len; ++i) {
@@ -288,9 +274,6 @@
     var bind = function (xs, f) {
       return flatten(map(xs, f));
     };
-    var from$1 = isFunction(Array.from) ? Array.from : function (x) {
-      return nativeSlice.call(x);
-    };
 
     var keys = Object.keys;
     var each$1 = function (obj, f) {
@@ -300,10 +283,6 @@
         var x = obj[i];
         f(x, i);
       }
-    };
-
-    var contains = function (str, substr) {
-      return str.indexOf(substr) !== -1;
     };
 
     var isSupported = function (dom) {
@@ -348,20 +327,11 @@
       fromPoint: fromPoint
     };
 
-    var ATTRIBUTE = domGlobals.Node.ATTRIBUTE_NODE;
-    var CDATA_SECTION = domGlobals.Node.CDATA_SECTION_NODE;
-    var COMMENT = domGlobals.Node.COMMENT_NODE;
-    var DOCUMENT = domGlobals.Node.DOCUMENT_NODE;
-    var DOCUMENT_TYPE = domGlobals.Node.DOCUMENT_TYPE_NODE;
-    var DOCUMENT_FRAGMENT = domGlobals.Node.DOCUMENT_FRAGMENT_NODE;
-    var ELEMENT = domGlobals.Node.ELEMENT_NODE;
-    var TEXT = domGlobals.Node.TEXT_NODE;
-    var PROCESSING_INSTRUCTION = domGlobals.Node.PROCESSING_INSTRUCTION_NODE;
-    var ENTITY_REFERENCE = domGlobals.Node.ENTITY_REFERENCE_NODE;
-    var ENTITY = domGlobals.Node.ENTITY_NODE;
-    var NOTATION = domGlobals.Node.NOTATION_NODE;
-
     var Global = typeof domGlobals.window !== 'undefined' ? domGlobals.window : Function('return this;')();
+
+    var DOCUMENT = 9;
+    var ELEMENT = 1;
+    var TEXT = 3;
 
     var type = function (element) {
       return element.dom().nodeType;
@@ -416,8 +386,7 @@
       var dom = element.dom();
       var styles = domGlobals.window.getComputedStyle(dom);
       var r = styles.getPropertyValue(property);
-      var v = r === '' && !inBody(element) ? getUnsafeProperty(dom, property) : r;
-      return v === null ? undefined : v;
+      return r === '' && !inBody(element) ? getUnsafeProperty(dom, property) : r;
     };
     var getUnsafeProperty = function (dom, property) {
       return isSupported(dom) ? dom.style.getPropertyValue(property) : '';
@@ -437,366 +406,13 @@
     var fromRawEvent = function (rawEvent) {
       var target = Element.fromDom(rawEvent.target);
       var stop = function () {
-        rawEvent.stopPropagation();
+        return rawEvent.stopPropagation();
       };
       var prevent = function () {
-        rawEvent.preventDefault();
+        return rawEvent.preventDefault();
       };
       var kill = compose(prevent, stop);
       return mkEvent(target, rawEvent.clientX, rawEvent.clientY, stop, prevent, kill, rawEvent);
-    };
-
-    var firstMatch = function (regexes, s) {
-      for (var i = 0; i < regexes.length; i++) {
-        var x = regexes[i];
-        if (x.test(s)) {
-          return x;
-        }
-      }
-      return undefined;
-    };
-    var find$1 = function (regexes, agent) {
-      var r = firstMatch(regexes, agent);
-      if (!r) {
-        return {
-          major: 0,
-          minor: 0
-        };
-      }
-      var group = function (i) {
-        return Number(agent.replace(r, '$' + i));
-      };
-      return nu(group(1), group(2));
-    };
-    var detect = function (versionRegexes, agent) {
-      var cleanedAgent = String(agent).toLowerCase();
-      if (versionRegexes.length === 0) {
-        return unknown();
-      }
-      return find$1(versionRegexes, cleanedAgent);
-    };
-    var unknown = function () {
-      return nu(0, 0);
-    };
-    var nu = function (major, minor) {
-      return {
-        major: major,
-        minor: minor
-      };
-    };
-    var Version = {
-      nu: nu,
-      detect: detect,
-      unknown: unknown
-    };
-
-    var edge = 'Edge';
-    var chrome = 'Chrome';
-    var ie = 'IE';
-    var opera = 'Opera';
-    var firefox = 'Firefox';
-    var safari = 'Safari';
-    var isBrowser = function (name, current) {
-      return function () {
-        return current === name;
-      };
-    };
-    var unknown$1 = function () {
-      return nu$1({
-        current: undefined,
-        version: Version.unknown()
-      });
-    };
-    var nu$1 = function (info) {
-      var current = info.current;
-      var version = info.version;
-      return {
-        current: current,
-        version: version,
-        isEdge: isBrowser(edge, current),
-        isChrome: isBrowser(chrome, current),
-        isIE: isBrowser(ie, current),
-        isOpera: isBrowser(opera, current),
-        isFirefox: isBrowser(firefox, current),
-        isSafari: isBrowser(safari, current)
-      };
-    };
-    var Browser = {
-      unknown: unknown$1,
-      nu: nu$1,
-      edge: constant(edge),
-      chrome: constant(chrome),
-      ie: constant(ie),
-      opera: constant(opera),
-      firefox: constant(firefox),
-      safari: constant(safari)
-    };
-
-    var windows = 'Windows';
-    var ios = 'iOS';
-    var android = 'Android';
-    var linux = 'Linux';
-    var osx = 'OSX';
-    var solaris = 'Solaris';
-    var freebsd = 'FreeBSD';
-    var chromeos = 'ChromeOS';
-    var isOS = function (name, current) {
-      return function () {
-        return current === name;
-      };
-    };
-    var unknown$2 = function () {
-      return nu$2({
-        current: undefined,
-        version: Version.unknown()
-      });
-    };
-    var nu$2 = function (info) {
-      var current = info.current;
-      var version = info.version;
-      return {
-        current: current,
-        version: version,
-        isWindows: isOS(windows, current),
-        isiOS: isOS(ios, current),
-        isAndroid: isOS(android, current),
-        isOSX: isOS(osx, current),
-        isLinux: isOS(linux, current),
-        isSolaris: isOS(solaris, current),
-        isFreeBSD: isOS(freebsd, current),
-        isChromeOS: isOS(chromeos, current)
-      };
-    };
-    var OperatingSystem = {
-      unknown: unknown$2,
-      nu: nu$2,
-      windows: constant(windows),
-      ios: constant(ios),
-      android: constant(android),
-      linux: constant(linux),
-      osx: constant(osx),
-      solaris: constant(solaris),
-      freebsd: constant(freebsd),
-      chromeos: constant(chromeos)
-    };
-
-    var DeviceType = function (os, browser, userAgent, mediaMatch) {
-      var isiPad = os.isiOS() && /ipad/i.test(userAgent) === true;
-      var isiPhone = os.isiOS() && !isiPad;
-      var isMobile = os.isiOS() || os.isAndroid();
-      var isTouch = isMobile || mediaMatch('(pointer:coarse)');
-      var isTablet = isiPad || !isiPhone && isMobile && mediaMatch('(min-device-width:768px)');
-      var isPhone = isiPhone || isMobile && !isTablet;
-      var iOSwebview = browser.isSafari() && os.isiOS() && /safari/i.test(userAgent) === false;
-      var isDesktop = !isPhone && !isTablet && !iOSwebview;
-      return {
-        isiPad: constant(isiPad),
-        isiPhone: constant(isiPhone),
-        isTablet: constant(isTablet),
-        isPhone: constant(isPhone),
-        isTouch: constant(isTouch),
-        isAndroid: os.isAndroid,
-        isiOS: os.isiOS,
-        isWebView: constant(iOSwebview),
-        isDesktop: constant(isDesktop)
-      };
-    };
-
-    var detect$1 = function (candidates, userAgent) {
-      var agent = String(userAgent).toLowerCase();
-      return find(candidates, function (candidate) {
-        return candidate.search(agent);
-      });
-    };
-    var detectBrowser = function (browsers, userAgent) {
-      return detect$1(browsers, userAgent).map(function (browser) {
-        var version = Version.detect(browser.versionRegexes, userAgent);
-        return {
-          current: browser.name,
-          version: version
-        };
-      });
-    };
-    var detectOs = function (oses, userAgent) {
-      return detect$1(oses, userAgent).map(function (os) {
-        var version = Version.detect(os.versionRegexes, userAgent);
-        return {
-          current: os.name,
-          version: version
-        };
-      });
-    };
-    var UaString = {
-      detectBrowser: detectBrowser,
-      detectOs: detectOs
-    };
-
-    var normalVersionRegex = /.*?version\/\ ?([0-9]+)\.([0-9]+).*/;
-    var checkContains = function (target) {
-      return function (uastring) {
-        return contains(uastring, target);
-      };
-    };
-    var browsers = [
-      {
-        name: 'Edge',
-        versionRegexes: [/.*?edge\/ ?([0-9]+)\.([0-9]+)$/],
-        search: function (uastring) {
-          return contains(uastring, 'edge/') && contains(uastring, 'chrome') && contains(uastring, 'safari') && contains(uastring, 'applewebkit');
-        }
-      },
-      {
-        name: 'Chrome',
-        versionRegexes: [
-          /.*?chrome\/([0-9]+)\.([0-9]+).*/,
-          normalVersionRegex
-        ],
-        search: function (uastring) {
-          return contains(uastring, 'chrome') && !contains(uastring, 'chromeframe');
-        }
-      },
-      {
-        name: 'IE',
-        versionRegexes: [
-          /.*?msie\ ?([0-9]+)\.([0-9]+).*/,
-          /.*?rv:([0-9]+)\.([0-9]+).*/
-        ],
-        search: function (uastring) {
-          return contains(uastring, 'msie') || contains(uastring, 'trident');
-        }
-      },
-      {
-        name: 'Opera',
-        versionRegexes: [
-          normalVersionRegex,
-          /.*?opera\/([0-9]+)\.([0-9]+).*/
-        ],
-        search: checkContains('opera')
-      },
-      {
-        name: 'Firefox',
-        versionRegexes: [/.*?firefox\/\ ?([0-9]+)\.([0-9]+).*/],
-        search: checkContains('firefox')
-      },
-      {
-        name: 'Safari',
-        versionRegexes: [
-          normalVersionRegex,
-          /.*?cpu os ([0-9]+)_([0-9]+).*/
-        ],
-        search: function (uastring) {
-          return (contains(uastring, 'safari') || contains(uastring, 'mobile/')) && contains(uastring, 'applewebkit');
-        }
-      }
-    ];
-    var oses = [
-      {
-        name: 'Windows',
-        search: checkContains('win'),
-        versionRegexes: [/.*?windows\ nt\ ?([0-9]+)\.([0-9]+).*/]
-      },
-      {
-        name: 'iOS',
-        search: function (uastring) {
-          return contains(uastring, 'iphone') || contains(uastring, 'ipad');
-        },
-        versionRegexes: [
-          /.*?version\/\ ?([0-9]+)\.([0-9]+).*/,
-          /.*cpu os ([0-9]+)_([0-9]+).*/,
-          /.*cpu iphone os ([0-9]+)_([0-9]+).*/
-        ]
-      },
-      {
-        name: 'Android',
-        search: checkContains('android'),
-        versionRegexes: [/.*?android\ ?([0-9]+)\.([0-9]+).*/]
-      },
-      {
-        name: 'OSX',
-        search: checkContains('mac os x'),
-        versionRegexes: [/.*?mac\ os\ x\ ?([0-9]+)_([0-9]+).*/]
-      },
-      {
-        name: 'Linux',
-        search: checkContains('linux'),
-        versionRegexes: []
-      },
-      {
-        name: 'Solaris',
-        search: checkContains('sunos'),
-        versionRegexes: []
-      },
-      {
-        name: 'FreeBSD',
-        search: checkContains('freebsd'),
-        versionRegexes: []
-      },
-      {
-        name: 'ChromeOS',
-        search: checkContains('cros'),
-        versionRegexes: [/.*?chrome\/([0-9]+)\.([0-9]+).*/]
-      }
-    ];
-    var PlatformInfo = {
-      browsers: constant(browsers),
-      oses: constant(oses)
-    };
-
-    var detect$2 = function (userAgent, mediaMatch) {
-      var browsers = PlatformInfo.browsers();
-      var oses = PlatformInfo.oses();
-      var browser = UaString.detectBrowser(browsers, userAgent).fold(Browser.unknown, Browser.nu);
-      var os = UaString.detectOs(oses, userAgent).fold(OperatingSystem.unknown, OperatingSystem.nu);
-      var deviceType = DeviceType(os, browser, userAgent, mediaMatch);
-      return {
-        browser: browser,
-        os: os,
-        deviceType: deviceType
-      };
-    };
-    var PlatformDetection = { detect: detect$2 };
-
-    var mediaMatch = function (query) {
-      return domGlobals.window.matchMedia(query).matches;
-    };
-    var platform = Cell(PlatformDetection.detect(domGlobals.navigator.userAgent, mediaMatch));
-    var detect$3 = function () {
-      return platform.get();
-    };
-
-    var Immutable = function () {
-      var fields = [];
-      for (var _i = 0; _i < arguments.length; _i++) {
-        fields[_i] = arguments[_i];
-      }
-      return function () {
-        var values = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-          values[_i] = arguments[_i];
-        }
-        if (fields.length !== values.length) {
-          throw new Error('Wrong number of arguments to struct. Expected "[' + fields.length + ']", got ' + values.length + ' arguments');
-        }
-        var struct = {};
-        each(fields, function (name, i) {
-          struct[name] = constant(values[i]);
-        });
-        return struct;
-      };
-    };
-
-    var compareDocumentPosition = function (a, b, match) {
-      return (a.compareDocumentPosition(b) & match) !== 0;
-    };
-    var documentPositionPreceding = function (a, b) {
-      return compareDocumentPosition(a, b, domGlobals.Node.DOCUMENT_POSITION_PRECEDING);
-    };
-    var documentPositionContainedBy = function (a, b) {
-      return compareDocumentPosition(a, b, domGlobals.Node.DOCUMENT_POSITION_CONTAINED_BY);
-    };
-    var Node = {
-      documentPositionPreceding: documentPositionPreceding,
-      documentPositionContainedBy: documentPositionContainedBy
     };
 
     var ELEMENT$1 = ELEMENT;
@@ -831,16 +447,6 @@
     var eq = function (e1, e2) {
       return e1.dom() === e2.dom();
     };
-    var regularContains = function (e1, e2) {
-      var d1 = e1.dom();
-      var d2 = e2.dom();
-      return d1 === d2 ? false : d1.contains(d2);
-    };
-    var ieContains = function (e1, e2) {
-      return Node.documentPositionContainedBy(e1.dom(), e2.dom());
-    };
-    var browser = detect$3().browser;
-    var contains$1 = browser.isIE() ? ieContains : regularContains;
 
     var parent = function (element) {
       return Option.from(element.dom().parentNode).map(Element.fromDom);
@@ -872,7 +478,6 @@
     var children = function (element) {
       return map(element.dom().childNodes, Element.fromDom);
     };
-    var spot = Immutable('element', 'offset');
 
     var r = function (left, top) {
       var translate = function (x, y) {
@@ -886,7 +491,6 @@
     };
     var Position = r;
 
-    var isSafari = detect$3().browser.isSafari();
     var get$3 = function (_DOC) {
       var doc = _DOC !== undefined ? _DOC.dom() : domGlobals.document;
       var x = doc.body.scrollLeft || doc.documentElement.scrollLeft;
@@ -900,12 +504,12 @@
     };
     var bounds = function (x, y, width, height) {
       return {
-        x: constant(x),
-        y: constant(y),
-        width: constant(width),
-        height: constant(height),
-        right: constant(x + width),
-        bottom: constant(y + height)
+        x: x,
+        y: y,
+        width: width,
+        height: height,
+        right: x + width,
+        bottom: y + height
       };
     };
     var getBounds = function (_win) {
@@ -946,7 +550,6 @@
     var fireFullscreenStateChanged = function (editor, state) {
       editor.fire('FullscreenStateChanged', { state: state });
     };
-    var Events = { fireFullscreenStateChanged: fireFullscreenStateChanged };
 
     var ancestors = function (scope, predicate, isRoot) {
       return filter(parents(scope, isRoot), predicate);
@@ -1015,17 +618,13 @@
         remove(element, attr);
       });
     };
-    var Thor = {
-      clobberStyles: clobberStyles,
-      restoreStyles: restoreStyles
-    };
 
     var DOM = global$1.DOM;
     var getScrollPos = function () {
       var vp = getBounds(domGlobals.window);
       return {
-        x: vp.x(),
-        y: vp.y()
+        x: vp.x,
+        y: vp.y
       };
     };
     var setScrollPos = function (pos) {
@@ -1102,7 +701,7 @@
           iframeHeight: iframeStyle.height
         };
         if (isTouch) {
-          Thor.clobberStyles(editor.dom, editorContainerS, editorBody);
+          clobberStyles(editor.dom, editorContainerS, editorBody);
         }
         iframeStyle.width = iframeStyle.height = '100%';
         editorContainerStyle.width = editorContainerStyle.height = '';
@@ -1112,7 +711,7 @@
         viewportUpdate.bind(editorContainerS);
         editor.on('remove', viewportUpdate.unbind);
         fullscreenState.set(newFullScreenInfo);
-        Events.fireFullscreenStateChanged(editor, true);
+        fireFullscreenStateChanged(editor, true);
       } else {
         iframeStyle.width = fullscreenInfo.iframeWidth;
         iframeStyle.height = fullscreenInfo.iframeHeight;
@@ -1121,26 +720,24 @@
         editorContainerStyle.top = fullscreenInfo.containerTop;
         editorContainerStyle.left = fullscreenInfo.containerLeft;
         if (isTouch) {
-          Thor.restoreStyles(editor.dom);
+          restoreStyles(editor.dom);
         }
         DOM.removeClass(body, 'tox-fullscreen');
         DOM.removeClass(documentElement, 'tox-fullscreen');
         DOM.removeClass(editorContainer, 'tox-fullscreen');
         setScrollPos(fullscreenInfo.scrollPos);
         fullscreenState.set(null);
-        Events.fireFullscreenStateChanged(editor, false);
+        fireFullscreenStateChanged(editor, false);
         viewportUpdate.unbind();
         editor.off('remove', viewportUpdate.unbind);
       }
     };
-    var Actions = { toggleFullscreen: toggleFullscreen };
 
     var register = function (editor, fullscreenState) {
       editor.addCommand('mceFullScreen', function () {
-        Actions.toggleFullscreen(editor, fullscreenState);
+        toggleFullscreen(editor, fullscreenState);
       });
     };
-    var Commands = { register: register };
 
     var makeSetupHandler = function (editor, fullscreenState) {
       return function (api) {
@@ -1157,6 +754,7 @@
     var register$1 = function (editor, fullscreenState) {
       editor.ui.registry.addToggleMenuItem('fullscreen', {
         text: 'Fullscreen',
+        icon: 'fullscreen',
         shortcut: 'Meta+Shift+F',
         onAction: function () {
           return editor.execCommand('mceFullScreen');
@@ -1172,18 +770,17 @@
         onSetup: makeSetupHandler(editor, fullscreenState)
       });
     };
-    var Buttons = { register: register$1 };
 
     function Plugin () {
       global.add('fullscreen', function (editor) {
         var fullscreenState = Cell(null);
         if (editor.settings.inline) {
-          return Api.get(fullscreenState);
+          return get(fullscreenState);
         }
-        Commands.register(editor, fullscreenState);
-        Buttons.register(editor, fullscreenState);
+        register(editor, fullscreenState);
+        register$1(editor, fullscreenState);
         editor.addShortcut('Meta+Shift+F', '', 'mceFullScreen');
-        return Api.get(fullscreenState);
+        return get(fullscreenState);
       });
     }
 

@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.2.2 (2020-04-23)
+ * Version: 5.3.2 (2020-06-10)
  */
 (function () {
     'use strict';
@@ -13,23 +13,11 @@
 
     var global$1 = tinymce.util.Tools.resolve('tinymce.util.Tools');
 
-    var getPreviewDialogWidth = function (editor) {
-      return parseInt(editor.getParam('plugin_preview_width', '650'), 10);
-    };
-    var getPreviewDialogHeight = function (editor) {
-      return parseInt(editor.getParam('plugin_preview_height', '500'), 10);
-    };
     var getContentStyle = function (editor) {
       return editor.getParam('content_style', '');
     };
     var shouldUseContentCssCors = function (editor) {
       return editor.getParam('content_css_cors', false, 'boolean');
-    };
-    var Settings = {
-      getPreviewDialogWidth: getPreviewDialogWidth,
-      getPreviewDialogHeight: getPreviewDialogHeight,
-      getContentStyle: getContentStyle,
-      shouldUseContentCssCors: shouldUseContentCssCors
     };
 
     var global$2 = tinymce.util.Tools.resolve('tinymce.Env');
@@ -37,12 +25,12 @@
     var getPreviewHtml = function (editor) {
       var headHtml = '';
       var encode = editor.dom.encode;
-      var contentStyle = Settings.getContentStyle(editor);
+      var contentStyle = getContentStyle(editor);
       headHtml += '<base href="' + encode(editor.documentBaseURI.getURI()) + '">';
       if (contentStyle) {
         headHtml += '<style type="text/css">' + contentStyle + '</style>';
       }
-      var cors = Settings.shouldUseContentCssCors(editor) ? ' crossorigin="anonymous"' : '';
+      var cors = shouldUseContentCssCors(editor) ? ' crossorigin="anonymous"' : '';
       global$1.each(editor.contentCSS, function (url) {
         headHtml += '<link type="text/css" rel="stylesheet" href="' + encode(editor.documentBaseURI.toAbsolute(url)) + '"' + cors + '>';
       });
@@ -63,10 +51,9 @@
       var previewHtml = '<!DOCTYPE html>' + '<html>' + '<head>' + headHtml + '</head>' + '<body id="' + encode(bodyId) + '" class="mce-content-body ' + encode(bodyClass) + '"' + dirAttr + '>' + editor.getContent() + preventClicksOnLinksScript + '</body>' + '</html>';
       return previewHtml;
     };
-    var IframeContent = { getPreviewHtml: getPreviewHtml };
 
     var open = function (editor) {
-      var content = IframeContent.getPreviewHtml(editor);
+      var content = getPreviewHtml(editor);
       var dataApi = editor.windowManager.open({
         title: 'Preview',
         size: 'large',
@@ -94,7 +81,6 @@
         open(editor);
       });
     };
-    var Commands = { register: register };
 
     var register$1 = function (editor) {
       editor.ui.registry.addButton('preview', {
@@ -112,12 +98,11 @@
         }
       });
     };
-    var Buttons = { register: register$1 };
 
     function Plugin () {
       global.add('preview', function (editor) {
-        Commands.register(editor);
-        Buttons.register(editor);
+        register(editor);
+        register$1(editor);
       });
     }
 

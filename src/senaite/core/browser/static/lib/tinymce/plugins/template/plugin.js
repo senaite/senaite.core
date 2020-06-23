@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.2.2 (2020-04-23)
+ * Version: 5.3.2 (2020-06-10)
  */
 (function () {
     'use strict';
@@ -63,16 +63,6 @@
     var getMdateFormat = function (editor) {
       return editor.getParam('template_mdate_format', editor.translate('%Y-%m-%d'));
     };
-    var Settings = {
-      getCreationDateClasses: getCreationDateClasses,
-      getModificationDateClasses: getModificationDateClasses,
-      getSelectedContentClasses: getSelectedContentClasses,
-      getPreviewReplaceValues: getPreviewReplaceValues,
-      getTemplateReplaceValues: getTemplateReplaceValues,
-      getTemplates: getTemplates,
-      getCdateFormat: getCdateFormat,
-      getMdateFormat: getMdateFormat
-    };
 
     var addZeros = function (value, len) {
       value = '' + value;
@@ -107,11 +97,10 @@
       fmt = fmt.replace('%%', '%');
       return fmt;
     };
-    var DateTimeHelper = { getDateTime: getDateTime };
 
     var createTemplateList = function (editorSettings, callback) {
       return function () {
-        var templateList = Settings.getTemplates(editorSettings);
+        var templateList = getTemplates(editorSettings);
         if (typeof templateList === 'function') {
           templateList(callback);
           return;
@@ -138,7 +127,7 @@
       return html;
     };
     var replaceVals = function (editor, e) {
-      var dom = editor.dom, vl = Settings.getTemplateReplaceValues(editor);
+      var dom = editor.dom, vl = getTemplateReplaceValues(editor);
       global$1.each(dom.select('*', e), function (e) {
         global$1.each(vl, function (v, k) {
           if (dom.hasClass(e, k)) {
@@ -157,7 +146,7 @@
       var n;
       var dom = editor.dom;
       var sel = editor.selection.getContent();
-      html = replaceTemplateValues(html, Settings.getTemplateReplaceValues(editor));
+      html = replaceTemplateValues(html, getTemplateReplaceValues(editor));
       el = dom.create('div', null, html);
       n = dom.select('.mceTmpl', el);
       if (n && n.length > 0) {
@@ -165,13 +154,13 @@
         el.appendChild(n[0].cloneNode(true));
       }
       global$1.each(dom.select('*', el), function (n) {
-        if (hasClass(n, Settings.getCreationDateClasses(editor).replace(/\s+/g, '|'))) {
-          n.innerHTML = DateTimeHelper.getDateTime(editor, Settings.getCdateFormat(editor));
+        if (hasClass(n, getCreationDateClasses(editor).replace(/\s+/g, '|'))) {
+          n.innerHTML = getDateTime(editor, getCdateFormat(editor));
         }
-        if (hasClass(n, Settings.getModificationDateClasses(editor).replace(/\s+/g, '|'))) {
-          n.innerHTML = DateTimeHelper.getDateTime(editor, Settings.getMdateFormat(editor));
+        if (hasClass(n, getModificationDateClasses(editor).replace(/\s+/g, '|'))) {
+          n.innerHTML = getDateTime(editor, getMdateFormat(editor));
         }
-        if (hasClass(n, Settings.getSelectedContentClasses(editor).replace(/\s+/g, '|'))) {
+        if (hasClass(n, getSelectedContentClasses(editor).replace(/\s+/g, '|'))) {
           n.innerHTML = sel;
         }
       });
@@ -179,34 +168,26 @@
       editor.execCommand('mceInsertContent', false, el.innerHTML);
       editor.addVisual();
     };
-    var Templates = {
-      createTemplateList: createTemplateList,
-      replaceTemplateValues: replaceTemplateValues,
-      replaceVals: replaceVals,
-      insertTemplate: insertTemplate
-    };
 
     var register = function (editor) {
-      editor.addCommand('mceInsertTemplate', curry(Templates.insertTemplate, editor));
+      editor.addCommand('mceInsertTemplate', curry(insertTemplate, editor));
     };
-    var Commands = { register: register };
 
     var setup = function (editor) {
       editor.on('PreProcess', function (o) {
-        var dom = editor.dom, dateFormat = Settings.getMdateFormat(editor);
+        var dom = editor.dom, dateFormat = getMdateFormat(editor);
         global$1.each(dom.select('div', o.node), function (e) {
           if (dom.hasClass(e, 'mceTmpl')) {
             global$1.each(dom.select('*', e), function (e) {
               if (dom.hasClass(e, editor.getParam('template_mdate_classes', 'mdate').replace(/\s+/g, '|'))) {
-                e.innerHTML = DateTimeHelper.getDateTime(editor, dateFormat);
+                e.innerHTML = getDateTime(editor, dateFormat);
               }
             });
-            Templates.replaceVals(editor, e);
+            replaceVals(editor, e);
           }
         });
       });
     };
-    var FilterContent = { setup: setup };
 
     var none = function () {
       return NONE;
@@ -222,7 +203,7 @@
         return n;
       };
       var me = {
-        fold: function (n, s) {
+        fold: function (n, _s) {
           return n();
         },
         is: never,
@@ -250,9 +231,6 @@
         },
         toString: constant('none()')
       };
-      if (Object.freeze) {
-        Object.freeze(me);
-      }
       return me;
     }();
     var some = function (a) {
@@ -317,27 +295,6 @@
       from: from
     };
 
-    var typeOf = function (x) {
-      if (x === null) {
-        return 'null';
-      }
-      var t = typeof x;
-      if (t === 'object' && (Array.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'Array')) {
-        return 'array';
-      }
-      if (t === 'object' && (String.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'String')) {
-        return 'string';
-      }
-      return t;
-    };
-    var isType = function (type) {
-      return function (value) {
-        return typeOf(value) === type;
-      };
-    };
-    var isFunction = isType('function');
-
-    var nativeSlice = Array.prototype.slice;
     var map = function (xs, f) {
       var len = xs.length;
       var r = new Array(len);
@@ -347,17 +304,19 @@
       }
       return r;
     };
-    var find = function (xs, pred) {
+    var findUntil = function (xs, pred, until) {
       for (var i = 0, len = xs.length; i < len; i++) {
         var x = xs[i];
         if (pred(x, i)) {
           return Option.some(x);
+        } else if (until(x, i)) {
+          break;
         }
       }
       return Option.none();
     };
-    var from$1 = isFunction(Array.from) ? Array.from : function (x) {
-      return nativeSlice.call(x);
+    var find = function (xs, pred) {
+      return findUntil(xs, pred, never);
     };
 
     var global$3 = tinymce.util.Tools.resolve('tinymce.util.Promise');
@@ -399,7 +358,7 @@
         var dirAttr = directionality ? ' dir="' + encode(directionality) + '"' : '';
         html = '<!DOCTYPE html>' + '<html>' + '<head>' + contentCssLinks_1 + '</head>' + '<body class="' + encode(bodyClass) + '"' + dirAttr + '>' + html + '</body>' + '</html>';
       }
-      return Templates.replaceTemplateValues(html, Settings.getPreviewReplaceValues(editor));
+      return replaceTemplateValues(html, getPreviewReplaceValues(editor));
     };
     var open = function (editor, templateList) {
       var createTemplates = function () {
@@ -483,7 +442,7 @@
           var data = api.getData();
           findTemplate(templates, data.template).each(function (t) {
             getTemplateContent(t).then(function (previewHtml) {
-              Templates.insertTemplate(editor, false, previewHtml);
+              insertTemplate(editor, false, previewHtml);
               api.close();
             }).catch(function () {
               api.disable('save');
@@ -564,32 +523,30 @@
       var optTemplates = createTemplates();
       optTemplates.each(openDialog);
     };
-    var Dialog = { open: open };
 
     var showDialog = function (editor) {
       return function (templates) {
-        Dialog.open(editor, templates);
+        open(editor, templates);
       };
     };
     var register$1 = function (editor) {
       editor.ui.registry.addButton('template', {
         icon: 'template',
         tooltip: 'Insert template',
-        onAction: Templates.createTemplateList(editor.settings, showDialog(editor))
+        onAction: createTemplateList(editor.settings, showDialog(editor))
       });
       editor.ui.registry.addMenuItem('template', {
         icon: 'template',
         text: 'Insert template...',
-        onAction: Templates.createTemplateList(editor.settings, showDialog(editor))
+        onAction: createTemplateList(editor.settings, showDialog(editor))
       });
     };
-    var Buttons = { register: register$1 };
 
     function Plugin () {
       global.add('template', function (editor) {
-        Buttons.register(editor);
-        Commands.register(editor);
-        FilterContent.setup(editor);
+        register$1(editor);
+        register(editor);
+        setup(editor);
       });
     }
 

@@ -559,8 +559,9 @@ button::-moz-focus-inner {
   background-color: #c8cbcf;
   color: #222f3e;
 }
-.tox .tox-collection--grid .tox-collection__item--active {
+.tox .tox-collection--grid .tox-collection__item--active:not(.tox-collection__item--state-disabled) {
   background-color: #dee0e2;
+  color: #222f3e;
 }
 .tox .tox-collection--list .tox-collection__item--active:not(.tox-collection__item--state-disabled) {
   color: #222f3e;
@@ -568,22 +569,21 @@ button::-moz-focus-inner {
 .tox .tox-collection--toolbar .tox-collection__item--active:not(.tox-collection__item--state-disabled) {
   color: #222f3e;
 }
-.tox .tox-collection--grid .tox-collection__item--active:not(.tox-collection__item--state-disabled) {
-  color: #222f3e;
-}
 .tox .tox-collection__item--state-disabled {
   background-color: transparent;
   color: rgba(34, 47, 62, 0.5);
   cursor: not-allowed;
 }
-.tox .tox-collection__item-icon {
+.tox .tox-collection__item-icon,
+.tox .tox-collection__item-checkmark {
   align-items: center;
   display: flex;
   height: 24px;
   justify-content: center;
   width: 24px;
 }
-.tox .tox-collection__item-icon svg {
+.tox .tox-collection__item-icon svg,
+.tox .tox-collection__item-checkmark svg {
   fill: currentColor;
 }
 .tox .tox-collection--toolbar-lg .tox-collection__item-icon {
@@ -623,7 +623,10 @@ button::-moz-focus-inner {
 .tox .tox-collection__item-caret svg {
   fill: #222f3e;
 }
-.tox .tox-collection__item[role="menuitemcheckbox"]:not(.tox-collection__item--enabled) .tox-collection__item-checkmark svg {
+.tox .tox-collection--list .tox-collection__item:not(.tox-collection__item--enabled) .tox-collection__item-checkmark svg {
+  display: none;
+}
+.tox .tox-collection--list .tox-collection__item:not(.tox-collection__item--enabled) .tox-collection__item-accessory + .tox-collection__item-checkmark {
   display: none;
 }
 .tox .tox-collection--horizontal {
@@ -1548,14 +1551,15 @@ body.tox-dialog__disable-scroll {
   border-width: 1px;
   box-shadow: none;
   box-sizing: border-box;
-  cursor: pointer;
   height: 24px;
   position: absolute;
   top: 6px;
   width: 24px;
 }
-.tox .tox-color-input span:focus {
+.tox .tox-color-input span:hover:not([aria-disabled=true]),
+.tox .tox-color-input span:focus:not([aria-disabled=true]) {
   border-color: #207ab7;
+  cursor: pointer;
 }
 .tox .tox-color-input span::before {
   background-image: linear-gradient(45deg, rgba(0, 0, 0, 0.25) 25%, transparent 25%), linear-gradient(-45deg, rgba(0, 0, 0, 0.25) 25%, transparent 25%), linear-gradient(45deg, transparent 75%, rgba(0, 0, 0, 0.25) 75%), linear-gradient(-45deg, transparent 75%, rgba(0, 0, 0, 0.25) 75%);
@@ -1572,11 +1576,20 @@ body.tox-dialog__disable-scroll {
   width: 24px;
   z-index: -1;
 }
+.tox .tox-color-input span[aria-disabled=true] {
+  cursor: not-allowed;
+}
+.tox:not([dir=rtl]) .tox-color-input {
+  /* stylelint-disable-next-line no-descending-specificity */
+}
 .tox:not([dir=rtl]) .tox-color-input .tox-textfield {
   padding-left: 36px;
 }
 .tox:not([dir=rtl]) .tox-color-input span {
   left: 6px;
+}
+.tox[dir="rtl"] .tox-color-input {
+  /* stylelint-disable-next-line no-descending-specificity */
 }
 .tox[dir="rtl"] .tox-color-input .tox-textfield {
   padding-right: 36px;
@@ -1899,15 +1912,15 @@ body.tox-dialog__disable-scroll {
 .tox .tox-insert-table-picker {
   display: flex;
   flex-wrap: wrap;
-  width: 169px;
+  width: 170px;
 }
 .tox .tox-insert-table-picker > div {
   border-color: #cccccc;
   border-style: solid;
   border-width: 0 1px 1px 0;
-  box-sizing: content-box;
-  height: 16px;
-  width: 16px;
+  box-sizing: border-box;
+  height: 17px;
+  width: 17px;
 }
 .tox .tox-collection--list .tox-collection__group .tox-insert-table-picker {
   margin: -4px 0;
@@ -2460,12 +2473,12 @@ body.tox-dialog__disable-scroll {
   color: rgba(34, 47, 62, 0.7);
   text-decoration: none;
 }
-.tox .tox-statusbar a:hover,
-.tox .tox-statusbar__path-item:hover,
-.tox .tox-statusbar__wordcount:hover,
-.tox .tox-statusbar a:focus,
-.tox .tox-statusbar__path-item:focus,
-.tox .tox-statusbar__wordcount:focus {
+.tox .tox-statusbar a:hover:not(:disabled):not([aria-disabled=true]),
+.tox .tox-statusbar__path-item:hover:not(:disabled):not([aria-disabled=true]),
+.tox .tox-statusbar__wordcount:hover:not(:disabled):not([aria-disabled=true]),
+.tox .tox-statusbar a:focus:not(:disabled):not([aria-disabled=true]),
+.tox .tox-statusbar__path-item:focus:not(:disabled):not([aria-disabled=true]),
+.tox .tox-statusbar__wordcount:focus:not(:disabled):not([aria-disabled=true]) {
   cursor: pointer;
   text-decoration: underline;
 }

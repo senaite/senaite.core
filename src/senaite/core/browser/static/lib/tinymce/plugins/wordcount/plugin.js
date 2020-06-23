@@ -4,25 +4,16 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.2.2 (2020-04-23)
+ * Version: 5.3.2 (2020-06-10)
  */
 (function () {
     'use strict';
 
     var global = tinymce.util.Tools.resolve('tinymce.PluginManager');
 
-    var noop = function () {
-    };
-    var constant = function (value) {
-      return function () {
-        return value;
-      };
-    };
     var identity = function (x) {
       return x;
     };
-    var never = constant(false);
-    var always = constant(true);
 
     var __assign = function () {
       __assign = Object.assign || function __assign(t) {
@@ -88,75 +79,6 @@
     var PUNCTUATION = new RegExp('^' + regExps.punctuation + '$');
     var WHITESPACE = /^\s+$/;
 
-    var none = function () {
-      return NONE;
-    };
-    var NONE = function () {
-      var eq = function (o) {
-        return o.isNone();
-      };
-      var call = function (thunk) {
-        return thunk();
-      };
-      var id = function (n) {
-        return n;
-      };
-      var me = {
-        fold: function (n, s) {
-          return n();
-        },
-        is: never,
-        isSome: never,
-        isNone: always,
-        getOr: id,
-        getOrThunk: call,
-        getOrDie: function (msg) {
-          throw new Error(msg || 'error: getOrDie called on none.');
-        },
-        getOrNull: constant(null),
-        getOrUndefined: constant(undefined),
-        or: id,
-        orThunk: call,
-        map: none,
-        each: noop,
-        bind: none,
-        exists: never,
-        forall: always,
-        filter: none,
-        equals: eq,
-        equals_: eq,
-        toArray: function () {
-          return [];
-        },
-        toString: constant('none()')
-      };
-      if (Object.freeze) {
-        Object.freeze(me);
-      }
-      return me;
-    }();
-
-    var typeOf = function (x) {
-      if (x === null) {
-        return 'null';
-      }
-      var t = typeof x;
-      if (t === 'object' && (Array.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'Array')) {
-        return 'array';
-      }
-      if (t === 'object' && (String.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'String')) {
-        return 'string';
-      }
-      return t;
-    };
-    var isType = function (type) {
-      return function (value) {
-        return typeOf(value) === type;
-      };
-    };
-    var isFunction = isType('function');
-
-    var nativeSlice = Array.prototype.slice;
     var map = function (xs, f) {
       var len = xs.length;
       var r = new Array(len);
@@ -165,9 +87,6 @@
         r[i] = f(x, i);
       }
       return r;
-    };
-    var from = isFunction(Array.from) ? Array.from : function (x) {
-      return nativeSlice.call(x);
     };
 
     var SETS$1 = SETS;
@@ -257,6 +176,9 @@
     };
 
     var zeroWidth = '\uFEFF';
+    var removeZwsp = function (s) {
+      return s.replace(/\uFEFF/g, '');
+    };
 
     var EMPTY_STRING$1 = EMPTY_STRING;
     var WHITESPACE$1 = WHITESPACE;
@@ -338,7 +260,7 @@
       var treeWalker = new global$1(node, node);
       while (node = treeWalker.next()) {
         if (node.nodeType === 3) {
-          txt += node.data;
+          txt += removeZwsp(node.data);
         } else if (isNewline(node) && txt.length) {
           textBlocks.push(txt);
           txt = '';

@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.2.2 (2020-04-23)
+ * Version: 5.3.2 (2020-06-10)
  */
 (function () {
     'use strict';
@@ -21,11 +21,6 @@
     };
     var getDefaultLinkProtocol = function (editor) {
       return editor.getParam('link_default_protocol', 'http', 'string');
-    };
-    var Settings = {
-      getAutoLinkPattern: getAutoLinkPattern,
-      getDefaultLinkTarget: getDefaultLinkTarget,
-      getDefaultLinkProtocol: getDefaultLinkProtocol
     };
 
     var rangeEqualsDelimiterOrSpace = function (rangeString, delimiter) {
@@ -68,8 +63,8 @@
     };
     var parseCurrentLine = function (editor, endOffset, delimiter) {
       var rng, end, start, endContainer, bookmark, text, matches, prev, len, rngText;
-      var autoLinkPattern = Settings.getAutoLinkPattern(editor);
-      var defaultLinkTarget = Settings.getDefaultLinkTarget(editor);
+      var autoLinkPattern = getAutoLinkPattern(editor);
+      var defaultLinkTarget = getDefaultLinkTarget(editor);
       if (editor.selection.getNode().tagName === 'A') {
         return;
       }
@@ -131,7 +126,7 @@
       }
       text = rng.toString().trim();
       matches = text.match(autoLinkPattern);
-      var protocol = Settings.getDefaultLinkProtocol(editor);
+      var protocol = getDefaultLinkProtocol(editor);
       if (matches) {
         if (matches[1] === 'www.') {
           matches[1] = protocol + '://www.';
@@ -178,11 +173,10 @@
         }
       });
     };
-    var Keys = { setup: setup };
 
     function Plugin () {
       global.add('autolink', function (editor) {
-        Keys.setup(editor);
+        setup(editor);
       });
     }
 
