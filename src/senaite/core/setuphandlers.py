@@ -25,7 +25,9 @@ class HiddenProfiles(object):
     def getNonInstallableProfiles(self):
         """Hide all profiles from site-creation and quickinstaller (not ZMI)"""
         return [
-            "bika.lims:default",
+            # Leave visible to allow upgrade via the Plone Add-on controlpanel
+            # "bika.lims:default",
+
             # hide install profiles that come with Plone
             "Products.CMFPlacefulWorkflow:CMFPlacefulWorkflow",
             "Products.CMFPlacefulWorkflow:base",
@@ -34,12 +36,14 @@ class HiddenProfiles(object):
             "Products.DataGridField:example",
             "Products.TextIndexNG3:default",
             "archetypes.multilingual:default",
+            "archetypes.referencebrowserwidget:default",
+            "collective.js.jqueryui:default"
             "plone.app.iterate:default",
             "plone.app.iterate:plone.app.iterate",
             "plone.app.iterate:test",
             "plone.app.iterate:uninstall",
+            "plone.app.jquery:default",
             "plonetheme.barceloneta:default",
-            "archetypes.referencebrowserwidget:default"
         ]
 
 
