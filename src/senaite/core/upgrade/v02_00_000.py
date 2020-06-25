@@ -74,4 +74,4 @@ def install_senaite_core(portal):
             continue
         logger.info("Installing '{}' ...".format(p))
         qi.installProduct(p)
-    logger.info("Uninstalling default Plone 5 Addons [DONE]")
+    logger.info("Installing SENAITE CORE 2.x [DONE]")
