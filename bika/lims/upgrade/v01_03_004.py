@@ -213,9 +213,10 @@ def update_dynamic_analysisspecs(portal):
 
         # Unset/set the specification
         logger.info("Updating specification '{}' of smaple '{}'".format(
-            spec.Title(), sample.getId()))
-        sample.setAnalysisSpec(None)
-        sample.setAnalysisSpec(spec)
+            spec.Title(), obj.getId()))
+
+        obj.setSpecification(None)
+        obj.setSpecification(spec)
 
     logger.info("Updating specifications with dynamic results ranges [DONE]")
 
