@@ -5,16 +5,9 @@
   <!-- Catalog Indexes -->
   <include package=".indexers" />
 
-  <!-- N.B. `IPortalCatalogQueueProcessor` will be included in
-            `Products.CMFCore` in Plone 5 and can be removed then -->
-  <include
-      zcml:condition="installed collective.indexing"
-      package="collective.indexing" />
-
   <utility
-      zcml:condition="installed collective.indexing"
       factory=".catalog_multiplex_processor.CatalogMultiplexProcessor"
-      provides="collective.indexing.indexer.IPortalCatalogQueueProcessor"
+      provides="Products.CMFCore.interfaces.IPortalCatalogQueueProcessor"
       name="catalogmultiplex"
       />
 

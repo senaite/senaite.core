@@ -28,6 +28,7 @@ from openpyxl.shared.exc import InvalidFileException
 from plone.dexterity.content import Item
 from plone.namedfile import field as namedfile
 from plone.supermodel import model
+from z3c.form.interfaces import NOT_CHANGED
 from zope.interface import Invalid
 from zope.interface import implementer
 from zope.interface import invariant
@@ -52,6 +53,9 @@ class IDynamicAnalysisSpec(model.Schema):
     def validate_sepecs_file(data):
         """Checks the Excel file contains the required header columns
         """
+        # return immediately if not changed
+        if data.specs_file == NOT_CHANGED:
+            return True
         fd = StringIO(data.specs_file.data)
         try:
             xls = load_workbook(fd)

@@ -21,23 +21,19 @@
 from Acquisition import aq_base
 from bika.lims import api
 from bika.lims import logger
-from bika.lims.config import USE_COLLECTIVE_INDEXING
 from bika.lims.interfaces import IMultiCatalogBehavior
-from zope.interface import implements
-
-if USE_COLLECTIVE_INDEXING:
-    from collective.indexing.interfaces import IIndexQueueProcessor
+from Products.CMFCore.interfaces import IPortalCatalogQueueProcessor
+from zope.interface import implementer
 
 REQUIRED_CATALOGS = [
     "auditlog_catalog",
 ]
 
 
+@implementer(IPortalCatalogQueueProcessor)
 class CatalogMultiplexProcessor(object):
     """A catalog multiplex processor
     """
-    if USE_COLLECTIVE_INDEXING:
-        implements(IIndexQueueProcessor)
 
     def get_catalogs_for(self, obj):
         catalogs = getattr(obj, "_catalogs", [])
@@ -77,7 +73,8 @@ class CatalogMultiplexProcessor(object):
             # recatalog the object
             catalog.catalog_object(obj, url, idxs=list(indexes))
 
-    def reindex(self, obj, attributes=None):
+    def reindex(self, obj, attributes=None, update_metadata=1):
+        # XXX: Do we need the additional `update_metadata` parameter?
         self.index(obj, attributes)
 
     def unindex(self, obj):
