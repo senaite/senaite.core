@@ -24,6 +24,7 @@ Changelog
 
 **Fixed**
 
+- #1602 Fix Report "Analysis per Service" is always creating the same PDF file
 - #1601 Fix Wrong url in client's sample templates listing
 - #1594 Fix System does not validate values from Results Options to be different
 - #1596 Fix Reports page shows the Display/State/Add menu
