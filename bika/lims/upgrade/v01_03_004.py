@@ -35,6 +35,11 @@ from bika.lims.upgrade.utils import UpgradeUtils
 version = "1.3.4"  # Remember version number in metadata.xml and setup.py
 profile = "profile-{0}:default".format(product)
 
+INDEXES_TO_ADD = [
+    # List of tuples (catalog_name, index_name, index meta type)
+    (CATALOG_ANALYSIS_REQUEST_LISTING, "modified", "DateIndex"),
+]
+
 
 @upgradestep(product, version)
 def upgrade(tool):
@@ -83,6 +88,9 @@ def upgrade(tool):
     update_workflow_mappings_contacts(portal)
     update_workflow_mappings_labcontacts(portal)
     update_workflow_mappings_samples(portal)
+
+    # Add new indexes
+    add_new_indexes(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
@@ -205,8 +213,28 @@ def update_dynamic_analysisspecs(portal):
 
         # Unset/set the specification
         logger.info("Updating specification '{}' of smaple '{}'".format(
-            spec.Title(), sample.getId()))
-        sample.setAnalysisSpec(None)
-        sample.setAnalysisSpec(spec)
+            spec.Title(), obj.getId()))
+
+        obj.setSpecification(None)
+        obj.setSpecification(spec)
 
     logger.info("Updating specifications with dynamic results ranges [DONE]")
+
+
+def add_new_indexes(portal):
+    logger.info("Adding new indexes ...")
+    for catalog_id, index_name, index_metatype in INDEXES_TO_ADD:
+        add_index(catalog_id, index_name, index_metatype)
+    logger.info("Adding new indexes ... [DONE]")
+
+
+def add_index(catalog_id, index_name, index_metatype):
+    logger.info("Adding '{}' index to '{}' ...".format(index_name, catalog_id))
+    catalog = api.get_tool(catalog_id)
+    if index_name in catalog.indexes():
+        logger.info("Index '{}' already in catalog '{}' [SKIP]"
+                    .format(index_name, catalog_id))
+        return
+    catalog.addIndex(index_name, index_metatype)
+    logger.info("Indexing new index '{}' ...".format(index_name))
+    catalog.manage_reindexIndex(index_name)

@@ -6,6 +6,7 @@ Changelog
 
 **Added**
 
+- #1598 Added "modified" index in Sample's (AnalysisRequest) catalog
 - #1596 Allow to hide actions menu by using new marker interface IHideActionsMenu
 - #1588 Dynamic Analysis Specs: Lookup dynamic spec only when the specification is set
 - #1586 Allow to configure the variables for IDServer with an Adapter
@@ -24,6 +25,7 @@ Changelog
 **Fixed**
 
 - #1602 Fix Report "Analysis per Service" is always creating the same PDF file
+- #1601 Fix Wrong url in client's sample templates listing
 - #1594 Fix System does not validate values from Results Options to be different
 - #1596 Fix Reports page shows the Display/State/Add menu
 - #1595 Fix Wrong url in client's analyses profiles listing
