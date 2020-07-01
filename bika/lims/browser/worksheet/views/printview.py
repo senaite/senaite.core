@@ -22,6 +22,7 @@ import os
 import glob
 import traceback
 
+from operator import itemgetter
 from DateTime import DateTime
 from bika.lims.api.analysis import is_out_of_range
 from bika.lims.interfaces import IReferenceSample, IReferenceAnalysis
@@ -94,17 +95,16 @@ class PrintView(BrowserView):
         else:
             return self.template()
 
-    def get_analysis_data_by_title(self, ar_data, title):
+    def get_analyses_data_by_title(self, ar_data, title):
         """A template helper to pick an Analysis identified by the name of the
         current Analysis Service.
 
         ar_data is the dictionary structure which is returned by _ws_data
         """
         analyses = ar_data.get("analyses", [])
-        for analysis in analyses:
-            if analysis.get("title") == title:
-                return analysis
-        return None
+        analyses = filter(lambda an: an.get("title") == title, analyses)
+        # Sort by creation date (so retests are always displayed at the bottom)
+        return sorted(analyses, key=itemgetter("created"))
 
     def getWSTemplates(self):
         """ Returns a DisplayList with the available templates found in
@@ -338,6 +338,8 @@ class PrintView(BrowserView):
                 andict['reftype'] = 'd'
             else:
                 andict = self._analysis_data(an)
+
+            andict["created"] = api.get_creation_date(an)
 
             # Analysis position
             pos = uid_to_pos_mapping.get(an.UID(), 0)
