@@ -24,6 +24,10 @@ Changelog
 
 **Fixed**
 
+- #1605 Fix Retests are not displayed in Worksheet's print view
+- #1604 Fix Analyses from partitions do not show up when using Worksheet Template
+- #1602 Fix Report "Analysis per Service" is always creating the same PDF file
+- #1601 Fix Wrong url in client's sample templates listing
 - #1594 Fix System does not validate values from Results Options to be different
 - #1596 Fix Reports page shows the Display/State/Add menu
 - #1595 Fix Wrong url in client's analyses profiles listing

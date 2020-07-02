@@ -123,18 +123,28 @@
           <th tal:content="antitle"></th>
           <!-- (Partial) Result -->
           <tal:results tal:repeat="ar ars">
-            <tal:analysis define="analysis python:view.get_analysis_data_by_title(ar, antitle)">
-              <td tal:condition="analysis"
-                  tal:attributes="class string:${analysis/review_state} result">
-                <tal:result condition="analysis/formatted_result">
-                  <span tal:content="string:${analysis/formatted_result}">100</span>
-                  <span tal:content="string:${analysis/unit}">ml</span>
-                </tal:result>
+            <tal:analyses define="analyses python:view.get_analyses_data_by_title(ar, antitle)">
+              <td tal:condition="analyses">
+                <tal:analysis repeat="analysis analyses">
+                  <div tal:define="clazz string:${analysis/review_state};
+                                   is_first repeat/analysis/start;
+                                   clazz python: is_first and clazz or '{} repeat'.format(clazz);
+                                   clazz python: '{} result'.format(clazz);"
+                       tal:attributes="class clazz">
+                    <tal:result condition="analysis/formatted_result">
+                      <span tal:content="string:${analysis/formatted_result}">100</span>
+                      <span tal:content="string:${analysis/unit}">ml</span>
+                    </tal:result>
+                    <tal:empty_result condition="not:analysis/formatted_result">
+                      <span>&nbsp;</span>
+                    </tal:empty_result>
+                  </div>
+                </tal:analysis>
               </td>
-              <td tal:condition="not:analysis" class='no-result'>
+              <td tal:condition="not:analyses" class='no-result'>
                 <div>&nbsp;</div>
               </td>
-            </tal:analysis>
+            </tal:analyses>
           </tal:results>
         </tr>
       </tbody>
