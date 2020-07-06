@@ -22,7 +22,6 @@ build
 develop-eggs
 dist
 include
-lib
 local
 log.html
 output.xml
