@@ -226,6 +226,8 @@ class InstrumentCSVResultsFileParser(InstrumentResultsFileParser):
                 f = open(infile.name, 'rU')
         except AttributeError:
             f = infile
+        except IOError:
+            f = infile.file
         for line in f.readlines():
             self._numline += 1
             if jump == -1:

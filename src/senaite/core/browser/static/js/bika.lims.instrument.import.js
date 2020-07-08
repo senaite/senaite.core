@@ -72,7 +72,7 @@ function InstrumentImportView() {
                 success: function(responseText, statusText, xhr, $form){
                     $("#intermediate").empty();
                     if(responseText['log'].length > 0){
-                        str = "<div class='logbox'>";
+                        str = "<div class='alert alert-info'>";
                         str += "<h3>"+ _t("Log trace") + "</h3><ul>";
                         $.each(responseText['log'], function(i,v){
                             str += "<li>" + v + "</li>";
@@ -81,16 +81,16 @@ function InstrumentImportView() {
                         $("#intermediate").append(str).toggle(true);
                     }
                     if(responseText['errors'].length > 0){
-                        str = "<div class='errorbox'>";
+                        str = "<div class='alert alert-danger'>";
                         str += "<h3>"+ _t("Errors") + "</h3><ul>";
                         $.each(responseText['errors'], function(i,v){
-                            str += "<li>" + v + "</li>";
+                            str += "<li><code>" + v + "</code></li>";
                         });
                         str += "</ul></div>";
                         $("#intermediate").append(str).toggle(true);
                     }
                     if(responseText['warns'].length > 0){
-                        str = "<div class='warnbox'>";
+                        str = "<div class='alert alert-warning'>";
                         str += "<h3>"+ _t("Warnings") + "</h3><ul>";
                         $.each(responseText['warns'], function(i,v){
                             str += "<li>" + v + "</li>";
@@ -101,7 +101,7 @@ function InstrumentImportView() {
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
                     $("#intermediate").empty();
-                    str = "<div class='errorbox'>";
+                    str = "<div class='alert alert-danger'>";
                     str += "<h3>"+ _t("Errors found") + "</h3><ul>";
                     str += "<li>" + textStatus;
                     str += "<pre>" + errorThrown + "</pre></li></ul></div>";
@@ -116,7 +116,7 @@ function InstrumentImportView() {
     }
 
     function portalMessage(messages){
-        str = "<dl class='portalMessage error'>"+
+        str = "<dl class='portalMessage error alert alert-danger'>"+
             "<dt>"+_('error')+"</dt>"+
             "<dd>";
         $.each(messages, function(i,v){
