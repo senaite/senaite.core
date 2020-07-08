@@ -112,6 +112,7 @@ module.exports = {
     new CopyPlugin({
       patterns: [
       { from: "../node_modules/jquery", to: path.resolve(staticPath, "lib/jquery") },
+      { from: "../node_modules/jquery-form", to: path.resolve(staticPath, "lib/jquery-form") },
       { from: "../node_modules/jquery-migrate", to: path.resolve(staticPath, "lib/jquery-migrate") },
       { from: "../node_modules/jqueryui", to: path.resolve(staticPath, "lib/jqueryui") },
       { from: "../node_modules/jquery-ui-timepicker-addon", to: path.resolve(staticPath, "lib/jquery-ui-timepicker-addon") },

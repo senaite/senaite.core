@@ -1,5 +1,6 @@
 <!-- external libraries -->
 <script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/lib/jquery/dist/jquery.min.js"></script>
+<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/lib/jquery-form/dist/jquery.form.min.js"></script>
 <script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/lib/jquery-migrate/dist/jquery-migrate.min.js"></script>
 <script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/lib/popperjs/dist/umd/popper.min.js"></script>
 <script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/lib/bootstrap/dist/js/bootstrap.min.js"></script>
