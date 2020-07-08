@@ -11,6 +11,7 @@
   <i18n:registerTranslations directory="locales" />
 
   <!-- package includes -->
+  <include package=".adapters" />
   <include package=".browser" />
   <include package=".exportimport" />
   <include package=".locales" />

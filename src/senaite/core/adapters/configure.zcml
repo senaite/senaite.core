@@ -1,0 +1,14 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+           i18n_domain="senaite.core">
+
+  <class class="ZPublisher.HTTPRequest.FileUpload">
+    <implements interface=".interfaces.ISenaiteFileUpload" />
+  </class>
+
+  <!-- Fix AssertionError:
+       Fileupload Adapter fails for ZPublisher.HTTPRequest.FileUpload objects
+
+       https://github.com/plone/plone.app.blob/issues/54 -->
+  <adapter factory=".fileupload.BlobbableFileUpload" />
+
+</configure>
