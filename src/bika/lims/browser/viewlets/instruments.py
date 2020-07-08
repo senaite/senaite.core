@@ -92,7 +92,7 @@ class InstrumentQCFailuresViewlet(ViewletBase):
         """Control availability of the viewlet
         """
         context_state = api.get_view("plone_context_state")
-        url = context_state.current_page_url()
+        url = context_state.current_base_url()
         portal_url = api.get_url(api.get_portal())
         # render on the portal root
         if url.endswith(portal_url):
@@ -100,8 +100,8 @@ class InstrumentQCFailuresViewlet(ViewletBase):
         # render on the front-page
         if url.endswith("/front-page"):
             return True
-        # render for manage_results
-        if url.endswith("/manage_results"):
+        # render for dashboard
+        if url.endswith("/senaite-dashboard"):
             return True
         return False
 
