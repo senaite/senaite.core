@@ -21,6 +21,7 @@
 
 <!-- jQuery UI -->
 <script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/thirdparty/jqueryui/jquery-ui-1.12.1.min.js"></script>
+<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/thirdparty/jqueryui/jquery-ui-i18n.min.js"></script>
 <link href="#" rel="stylesheet" tal:attributes="href string:${view/site_url}/++plone++senaite.core.static/thirdparty/jqueryui/themes/base/jquery-ui.min.css" />
 <link href="#" rel="stylesheet" tal:attributes="href string:${view/site_url}/++plone++senaite.core.static/thirdparty/jqueryui/themes/base/theme.css" />
 <!-- JQuery UI - timepicker -->

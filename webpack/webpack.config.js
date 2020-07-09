@@ -114,8 +114,6 @@ module.exports = {
       { from: "../node_modules/jquery", to: path.resolve(staticPath, "lib/jquery") },
       { from: "../node_modules/jquery-form", to: path.resolve(staticPath, "lib/jquery-form") },
       { from: "../node_modules/jquery-migrate", to: path.resolve(staticPath, "lib/jquery-migrate") },
-      { from: "../node_modules/jqueryui", to: path.resolve(staticPath, "lib/jqueryui") },
-      { from: "../node_modules/jquery-ui-timepicker-addon", to: path.resolve(staticPath, "lib/jquery-ui-timepicker-addon") },
       { from: "../node_modules/bootstrap", to: path.resolve(staticPath, "lib/bootstrap") },
       { from: "../node_modules/bootstrap-confirmation2", to: path.resolve(staticPath, "lib/bootstrap-confirmation2") },
       { from: "../node_modules/popper.js", to: path.resolve(staticPath, "lib/popperjs") },
