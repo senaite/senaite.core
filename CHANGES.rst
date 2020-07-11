@@ -17,6 +17,7 @@ Changelog
 
 **Changed**
 
+- #1607 Allow to set instruments from method edit view
 - #1588 Dynamic Analysis Specs: Hide compliance viewlets
 - #1579 Remove classic mode in folderitems
 - #1577 Do not force available workflow transitions in batches listing
