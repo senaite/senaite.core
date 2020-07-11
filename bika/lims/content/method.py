@@ -232,5 +232,10 @@ class Method(BaseFolder):
         items = [(i.UID, i.Title) for i in bsc(query)]
         return DisplayList(list(items))
 
+    def isManualEntryOfResults(self):
+        """BBB
+        """
+        return self.getManualEntryOfResults()
+
 
 registerType(Method, PROJECTNAME)
