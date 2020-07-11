@@ -75,7 +75,7 @@ class DynamicAnalysisSpecsView(ListingView):
         self.columns = collections.OrderedDict((
             ("Title", {
                 "title": _("Title"),
-                "replace_url": "absolute_url",
+                "replace_url": "getURL",
                 "index": "sortable_title"}),
             ("Description", {
                 "title": _("Description"),
