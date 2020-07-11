@@ -27,7 +27,6 @@ from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IDeactivable
 from bika.lims.interfaces import IHaveInstrument
 from bika.lims.interfaces import IMethod
-from bika.lims.utils import t
 from plone.app.blob.field import FileField as BlobFileField
 from Products.Archetypes.public import BaseFolder
 from Products.Archetypes.public import BooleanField
@@ -37,11 +36,11 @@ from Products.Archetypes.public import FileWidget
 from Products.Archetypes.public import LinesField
 from Products.Archetypes.public import MultiSelectionWidget
 from Products.Archetypes.public import Schema
-from Products.Archetypes.public import SelectionWidget
 from Products.Archetypes.public import StringField
 from Products.Archetypes.public import StringWidget
 from Products.Archetypes.public import TextAreaWidget
 from Products.Archetypes.public import TextField
+from bika.lims.browser.widgets import ReferenceWidget
 from Products.Archetypes.public import registerType
 from Products.Archetypes.utils import DisplayList
 from Products.CMFCore.utils import getToolByName
@@ -140,10 +139,8 @@ schema = BikaSchema.copy() + Schema((
     # with this method assigned will use the calculation selected here.
     UIDReferenceField(
         "Calculation",
-        vocabulary="_getCalculations",
-        allowed_types=("Calculation",),
-        accessor="getCalculationUID",
-        widget=SelectionWidget(
+        allowed_types=("Calculation", ),
+        widget=ReferenceWidget(
             visible={"edit": "visible", "view": "visible"},
             format="select",
             checkbox_bound=0,
@@ -152,8 +149,13 @@ schema = BikaSchema.copy() + Schema((
                 "If required, select a calculation for the The analysis "
                 "services linked to this method. Calculations can be "
                 "configured under the calculations item in the LIMS set-up"),
+            showOn=True,
             catalog_name="bika_setup_catalog",
-            base_query={"is_active": True},
+            base_query={
+                "sort_on": "sortable_title",
+                "is_active": True,
+                "sort_limit": 50,
+            },
         )
     ),
     BooleanField(
@@ -188,29 +190,6 @@ class Method(BaseFolder):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
 
-    @security.public
-    def getCalculation(self):
-        """Returns the assigned calculation
-
-        :returns: Calculation object
-        """
-        return self.getField("Calculation").get(self)
-
-    @security.public
-    def getCalculationUID(self):
-        """Returns the UID of the assigned calculation
-
-        NOTE: This is the default accessor of the `Calculation` schema field
-        and needed for the selection widget to render the selected value
-        properly in _view_ mode.
-
-        :returns: Calculation UID
-        """
-        calculation = self.getCalculation()
-        if not calculation:
-            return None
-        return api.get_uid(calculation)
-
     def isManualEntryOfResults(self):
         """Indicates if manual entry of results is allowed.
 
@@ -220,17 +199,6 @@ class Method(BaseFolder):
         """
         instruments = self.getInstruments()
         return len(instruments) == 0 or self.getManualEntryOfResults()
-
-    def _getCalculations(self):
-        """Available Calculations registered in Setup
-        """
-        bsc = getToolByName(self, "bika_setup_catalog")
-        items = [(c.UID, c.Title)
-                 for c in bsc(portal_type="Calculation",
-                              is_active=True)]
-        items.sort(lambda x, y: cmp(x[1], y[1]))
-        items.insert(0, ("", t(_("None"))))
-        return DisplayList(items)
 
     def getInstrument(self):
         """Instruments capable to perform this method.
