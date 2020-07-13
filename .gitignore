@@ -34,3 +34,5 @@ tags
 buildout-cache
 atlassian-*.xml
 src
+.Python
+pyvenv.cfg
