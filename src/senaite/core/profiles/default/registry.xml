@@ -11,6 +11,17 @@
     <value>SENAITE LIMS</value>
   </record>
 
+  <!-- Toolbar Logo -->
+  <record name="senaite.toolbar_logo" interface="Products.CMFPlone.interfaces.controlpanel.ISiteSchema" field="toolbar_logo">
+    <field type="plone.registry.field.TextLine">
+      <default>/++plone++senaite.core.static/images/senaite.svg</default>
+      <description xmlns:ns0="http://xml.zope.org/namespaces/i18n" ns0:domain="plone" ns0:translate="">This must be a URL relative to the site root.</description>
+      <required>False</required>
+      <title xmlns:ns0="http://xml.zope.org/namespaces/i18n" ns0:domain="plone" ns0:translate="">Relative URL for the SENAITE toolbar logo</title>
+    </field>
+    <value>/++plone++senaite.core.static/images/senaite.svg</value>
+  </record>
+
   <!-- Types to display in navigation -->
   <record name="plone.displayed_types" interface="Products.CMFPlone.interfaces.controlpanel.INavigationSchema" field="displayed_types">
     <field type="plone.registry.field.Tuple">
