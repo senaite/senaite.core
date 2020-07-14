@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <registry xmlns:i18n="http://xml.zope.org/namespaces/i18n" i18n:domain="senaite.core">
 
+  <!-- Site Title -->
+  <record name="plone.site_title" interface="Products.CMFPlone.interfaces.controlpanel.ISiteSchema" field="site_title">
+    <field type="plone.registry.field.TextLine">
+      <default>SENAITE LIMS</default>
+      <description xmlns:ns0="http://xml.zope.org/namespaces/i18n" ns0:domain="plone" ns0:translate="">This shows up in the title bar of browsers and in syndication feeds.</description>
+      <title xmlns:ns0="http://xml.zope.org/namespaces/i18n" ns0:domain="plone" ns0:translate="">Site title</title>
+    </field>
+    <value>SENAITE LIMS</value>
+  </record>
+
   <!-- Types to display in navigation -->
   <record name="plone.displayed_types" interface="Products.CMFPlone.interfaces.controlpanel.INavigationSchema" field="displayed_types">
     <field type="plone.registry.field.Tuple">
