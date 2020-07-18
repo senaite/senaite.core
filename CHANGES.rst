@@ -24,6 +24,7 @@ Changelog
 
 **Fixed**
 
+- #1606 Fix Traceback on Dynamic Analysis Specs Edit
 - #1605 Fix Retests are not displayed in Worksheet's print view
 - #1604 Fix Analyses from partitions do not show up when using Worksheet Template
 - #1602 Fix Report "Analysis per Service" is always creating the same PDF file
