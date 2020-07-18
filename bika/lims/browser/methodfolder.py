@@ -147,7 +147,7 @@ class MethodFolderContentsView(BikaListingView):
         else:
             item["Calculation"] = ""
 
-        manual_entry_of_results_allowed = obj.isManualEntryOfResults()
+        manual_entry_of_results_allowed = obj.getManualEntryOfResults()
         item["ManualEntry"] = manual_entry_of_results_allowed
         item["replace"]["ManualEntry"] = " "
         if manual_entry_of_results_allowed:
