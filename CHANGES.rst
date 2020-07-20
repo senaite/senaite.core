@@ -17,6 +17,7 @@ Changelog
 
 **Changed**
 
+- #1607 Allow to set instruments from method edit view
 - #1588 Dynamic Analysis Specs: Hide compliance viewlets
 - #1579 Remove classic mode in folderitems
 - #1577 Do not force available workflow transitions in batches listing
@@ -24,6 +25,7 @@ Changelog
 
 **Fixed**
 
+- #1606 Fix Traceback on Dynamic Analysis Specs Edit
 - #1605 Fix Retests are not displayed in Worksheet's print view
 - #1604 Fix Analyses from partitions do not show up when using Worksheet Template
 - #1602 Fix Report "Analysis per Service" is always creating the same PDF file

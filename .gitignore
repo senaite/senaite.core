@@ -33,7 +33,6 @@ var
 tags
 buildout-cache
 atlassian-*.xml
-eggs/
 src/Products.ATExtensions
 src/senaite.core.listing
 src/senaite.core.supermodel
@@ -47,3 +46,6 @@ src/senaite.jsonapi
 /src/senaite.panic
 /src/senaite.health
 /eggs
+src
+.Python
+pyvenv.cfg
