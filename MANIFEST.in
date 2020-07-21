@@ -2,5 +2,9 @@ include LICENSE
 include *.rst
 include *.md
 recursive-exclude docs *
-recursive-include bika *
-recursive-exclude bika *.pyc
+recursive-include src/bika *
+recursive-include src/senaite *
+recursive-exclude src/senaite/core/listing *
+recursive-exclude src/senaite/core/spotlight *
+recursive-exclude src/senaite/core/supermodel *
+recursive-exclude src *.pyc
