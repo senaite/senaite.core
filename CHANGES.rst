@@ -1,6 +1,18 @@
 Changelog
 =========
 
+2.0.0rc1 (2020-07-21)
+---------------------
+
+- Compatibility with `Plone 5.x` on `Python 2.x`
+- User Interface updated to `Bootstrap 4.x`
+- Integrated `Webpack` for resource management
+- Added `senaite.core` namespace package
+- Added global `SenaiteTheme` view
+- Integrated SVG icons
+- New install screens
+
+
 1.3.4 (unreleased)
 ------------------
 
@@ -79,7 +91,7 @@ Changelog
 - #1506 Warn icon in analyses when range is not compliant with Specification
 - #1492 Dynamic Analysis Specifications
 - #1507 Support for semi-colon character separator in CCEmails field
-- #1499 Moved navigation portlet into core 
+- #1499 Moved navigation portlet into core
 - #1498 Moved all viewlets from senaite.lims to senaite.core
 - #1505 Display partition link in analyses listing
 - #1491 Enable Audit-logging for Dexterity Contents
