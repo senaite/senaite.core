@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.3.2 (2020-06-10)
+ * Version: 5.4.1 (2020-07-08)
  */
 (function (domGlobals) {
     'use strict';
@@ -26,7 +26,7 @@
     var global = tinymce.util.Tools.resolve('tinymce.PluginManager');
 
     var hasProPlugin = function (editor) {
-      if (/(^|[ ,])powerpaste([, ]|$)/.test(editor.settings.plugins) && global.get('powerpaste')) {
+      if (/(^|[ ,])powerpaste([, ]|$)/.test(editor.getParam('plugins')) && global.get('powerpaste')) {
         if (typeof domGlobals.window.console !== 'undefined' && domGlobals.window.console.log) {
           domGlobals.window.console.log('PowerPaste is incompatible with Paste plugin! Remove \'paste\' from the \'plugins\' option.');
         }
@@ -339,6 +339,8 @@
 
     var global$8 = tinymce.util.Tools.resolve('tinymce.html.Serializer');
 
+    var nbsp = '\xA0';
+
     var global$9 = tinymce.util.Tools.resolve('tinymce.html.Node');
 
     var global$a = tinymce.util.Tools.resolve('tinymce.html.Schema');
@@ -386,8 +388,27 @@
     var shouldUseDefaultFilters = function (editor) {
       return editor.getParam('paste_enable_default_filters', true);
     };
-
-    var nbsp = '\xA0';
+    var getValidate = function (editor) {
+      return editor.getParam('validate');
+    };
+    var getAllowHtmlDataUrls = function (editor) {
+      return editor.getParam('allow_html_data_urls', false, 'boolean');
+    };
+    var getPasteDataImages = function (editor) {
+      return editor.getParam('paste_data_images', false, 'boolean');
+    };
+    var getImagesDataImgFilter = function (editor) {
+      return editor.getParam('images_dataimg_filter');
+    };
+    var getImagesReuseFilename = function (editor) {
+      return editor.getParam('images_reuse_filename');
+    };
+    var getForcedRootBlock = function (editor) {
+      return editor.getParam('forced_root_block');
+    };
+    var getForcedRootBlockAttrs = function (editor) {
+      return editor.getParam('forced_root_block_attrs');
+    };
 
     function filter$1(content, items) {
       global$4.each(items, function (v) {
@@ -476,8 +497,8 @@
       return /<font face="Times New Roman"|class="?Mso|style="[^"]*\bmso-|style='[^'']*\bmso-|w:WordDocument/i.test(content) || /class="OutlineElement/.test(content) || /id="?docs\-internal\-guid\-/.test(content);
     }
     function isNumericList(text) {
-      var found, patterns;
-      patterns = [
+      var found;
+      var patterns = [
         /^[IVXLMCD]{1,2}\.[ \u00a0]/,
         /^[ivxlmcd]{1,2}\.[ \u00a0]/,
         /^[a-z]{1,2}[\.\)][ \u00a0]/,
@@ -678,8 +699,8 @@
       return null;
     }
     var filterWordContent = function (editor, content) {
-      var retainStyleProperties, validStyles;
-      retainStyleProperties = getRetainStyleProps(editor);
+      var validStyles;
+      var retainStyleProperties = getRetainStyleProps(editor);
       if (retainStyleProperties) {
         validStyles = global$4.makeMap(retainStyleProperties.split(/[, ]/));
       }
@@ -780,7 +801,7 @@
       if (shouldConvertWordFakeLists(editor)) {
         convertFakeListsToProperLists(rootNode);
       }
-      content = global$8({ validate: editor.settings.validate }, schema).serialize(rootNode);
+      content = global$8({ validate: getValidate(editor) }, schema).serialize(rootNode);
       return content;
     };
     var preProcess = function (editor, content) {
@@ -798,7 +819,7 @@
         forced_root_block: false,
         isRootContent: true
       });
-      return global$8({ validate: editor.settings.validate }, editor.schema).serialize(fragment);
+      return global$8({ validate: getValidate(editor) }, editor.schema).serialize(fragment);
     };
     var processResult = function (content, cancelled) {
       return {
@@ -927,7 +948,7 @@
     var pasteText = function (editor, text) {
       var encodedText = editor.dom.encode(text).replace(/\r\n/g, '\n');
       var normalizedText = normalizeWhitespace(encodedText);
-      var html = convert(normalizedText, editor.settings.forced_root_block, editor.settings.forced_root_block_attrs);
+      var html = convert(normalizedText, getForcedRootBlock(editor), getForcedRootBlockAttrs(editor));
       doPaste(editor, html, false, true);
     };
     var getDataTransferItems = function (dataTransfer) {
@@ -979,8 +1000,9 @@
         };
       }
     };
-    var isValidDataUriImage = function (settings, imgElm) {
-      return settings.images_dataimg_filter ? settings.images_dataimg_filter(imgElm) : true;
+    var isValidDataUriImage = function (editor, imgElm) {
+      var filter = getImagesDataImgFilter(editor);
+      return filter ? filter(imgElm) : true;
     };
     var extractFilename = function (editor, str) {
       var m = str.match(/([\s\S]+?)\.(?:jpeg|jpg|png|gif)$/i);
@@ -990,10 +1012,10 @@
     var pasteImage = function (editor, imageItem) {
       var _a = parseDataUri(imageItem.uri), base64 = _a.data, type = _a.type;
       var id = uniqueId();
-      var name = editor.settings.images_reuse_filename && imageItem.blob.name ? extractFilename(editor, imageItem.blob.name) : id;
+      var name = getImagesReuseFilename(editor) && imageItem.blob.name ? extractFilename(editor, imageItem.blob.name) : id;
       var img = new domGlobals.Image();
       img.src = imageItem.uri;
-      if (isValidDataUriImage(editor.settings, img)) {
+      if (isValidDataUriImage(editor, img)) {
         var blobCache = editor.editorUpload.blobCache;
         var blobInfo = void 0;
         var existingBlobInfo = blobCache.getByData(base64, type);
@@ -1038,7 +1060,7 @@
     };
     var pasteImageData = function (editor, e, rng) {
       var dataTransfer = isClipboardEvent(e) ? e.clipboardData : e.dataTransfer;
-      if (editor.settings.paste_data_images && dataTransfer) {
+      if (getPasteDataImages(editor) && dataTransfer) {
         var images = getImagesFromDataTransfer(dataTransfer);
         if (images.length > 0) {
           e.preventDefault();
@@ -1095,7 +1117,7 @@
         }
       });
       function insertClipboardContent(clipboardContent, isKeyBoardPaste, plainTextMode, internal) {
-        var content, isPlainTextHtml, isImage;
+        var content;
         if (hasContentType(clipboardContent, 'text/html')) {
           content = clipboardContent['text/html'];
         } else {
@@ -1107,8 +1129,8 @@
         }
         content = trimHtml(content);
         pasteBin.remove();
-        isPlainTextHtml = internal === false && isPlainText(content);
-        isImage = isImageUrl(content);
+        var isPlainTextHtml = internal === false && isPlainText(content);
+        var isImage = isImageUrl(content);
         if (!content.length || isPlainTextHtml && !isImage) {
           plainTextMode = true;
         }
@@ -1190,7 +1212,7 @@
         var isDataUri = function (src) {
           return src.indexOf('data:') === 0;
         };
-        if (!editor.settings.paste_data_images && isPasteInsert(args)) {
+        if (!getPasteDataImages(editor) && isPasteInsert(args)) {
           var i = nodes.length;
           while (i--) {
             src = nodes[i].attr('src');
@@ -1199,7 +1221,7 @@
             }
             if (isWebKitFakeUrl(src)) {
               remove(nodes[i]);
-            } else if (!editor.settings.allow_html_data_urls && isDataUri(src)) {
+            } else if (!getAllowHtmlDataUrls(editor) && isDataUri(src)) {
               remove(nodes[i]);
             }
           }
@@ -1224,9 +1246,8 @@
     };
     var create = function (editor, lastRngCell, pasteBinDefaultContent) {
       var dom = editor.dom, body = editor.getBody();
-      var pasteBinElm;
       lastRngCell.set(editor.selection.getRng());
-      pasteBinElm = editor.dom.add(getPasteBinParent(editor), 'div', {
+      var pasteBinElm = editor.dom.add(getPasteBinParent(editor), 'div', {
         'id': 'mcepastebin',
         'class': 'mce-pastebin',
         'contentEditable': true,
@@ -1261,21 +1282,20 @@
       return editor.dom.get('mcepastebin');
     };
     var getHtml = function (editor) {
-      var pasteBinElm, pasteBinClones, i, dirtyWrappers, cleanWrapper;
       var copyAndRemove = function (toElm, fromElm) {
         toElm.appendChild(fromElm);
         editor.dom.remove(fromElm, true);
       };
-      pasteBinClones = global$4.grep(getPasteBinParent(editor).childNodes, function (elm) {
+      var pasteBinClones = global$4.grep(getPasteBinParent(editor).childNodes, function (elm) {
         return elm.id === 'mcepastebin';
       });
-      pasteBinElm = pasteBinClones.shift();
+      var pasteBinElm = pasteBinClones.shift();
       global$4.each(pasteBinClones, function (pasteBinClone) {
         copyAndRemove(pasteBinElm, pasteBinClone);
       });
-      dirtyWrappers = editor.dom.select('div[id=mcepastebin]', pasteBinElm);
-      for (i = dirtyWrappers.length - 1; i >= 0; i--) {
-        cleanWrapper = editor.dom.create('div');
+      var dirtyWrappers = editor.dom.select('div[id=mcepastebin]', pasteBinElm);
+      for (var i = dirtyWrappers.length - 1; i >= 0; i--) {
+        var cleanWrapper = editor.dom.create('div');
         pasteBinElm.insertBefore(cleanWrapper, dirtyWrappers[i]);
         copyAndRemove(cleanWrapper, dirtyWrappers[i]);
       }
@@ -1470,12 +1490,11 @@
         });
       }
       editor.on('drop', function (e) {
-        var dropContent, rng;
-        rng = getCaretRangeFromEvent(editor, e);
+        var rng = getCaretRangeFromEvent(editor, e);
         if (e.isDefaultPrevented() || draggingInternallyState.get()) {
           return;
         }
-        dropContent = clipboard.getDataTransferItems(e.dataTransfer);
+        var dropContent = clipboard.getDataTransferItems(e.dataTransfer);
         var internal = clipboard.hasContentType(dropContent, internalHtmlMime());
         if ((!clipboard.hasHtmlOrText(dropContent) || isPlainTextFileUrl(dropContent)) && clipboard.pasteImageData(e, rng)) {
           return;

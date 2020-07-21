@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.3.2 (2020-06-10)
+ * Version: 5.4.1 (2020-07-08)
  */
 (function (domGlobals) {
     'use strict';
@@ -51,6 +51,11 @@
           args[_i] = arguments[_i];
         }
         return fa(fb.apply(null, args));
+      };
+    };
+    var compose1 = function (fbc, fab) {
+      return function (a) {
+        return fbc(fab(a));
       };
     };
     var constant = function (value) {
@@ -471,6 +476,12 @@
     var isObject = isType('object');
     var isArray = isType('array');
     var isBoolean = isSimpleType('boolean');
+    var isNullable = function (a) {
+      return a === null || a === undefined;
+    };
+    var isNonNullable = function (a) {
+      return !isNullable(a);
+    };
     var isFunction = isSimpleType('function');
     var isNumber = isSimpleType('number');
 
@@ -597,6 +608,9 @@
       var copy = nativeSlice.call(xs, 0);
       copy.sort(comparator);
       return copy;
+    };
+    var head = function (xs) {
+      return xs.length === 0 ? Option.none() : Option.some(xs[0]);
     };
     var findMap = function (arr, f) {
       for (var i = 0; i < arr.length; i++) {
@@ -893,6 +907,7 @@
     var Global = typeof domGlobals.window !== 'undefined' ? domGlobals.window : Function('return this;')();
 
     var DOCUMENT = 9;
+    var DOCUMENT_FRAGMENT = 11;
     var ELEMENT = 1;
     var TEXT = 3;
 
@@ -910,27 +925,12 @@
     };
     var isElement = isType$1(ELEMENT);
     var isText = isType$1(TEXT);
+    var isDocument = isType$1(DOCUMENT);
+    var isDocumentFragment = isType$1(DOCUMENT_FRAGMENT);
 
-    var inBody = function (element) {
-      var dom = isText(element) ? element.dom().parentNode : element.dom();
-      return dom !== undefined && dom !== null && dom.ownerDocument.body.contains(dom);
-    };
-    var body = function () {
-      return getBody(Element.fromDom(domGlobals.document));
-    };
-    var getBody = function (doc) {
-      var b = doc.dom().body;
-      if (b === null || b === undefined) {
-        throw new Error('Body is not available yet');
-      }
-      return Element.fromDom(b);
-    };
-
-    var ELEMENT$1 = ELEMENT;
-    var DOCUMENT$1 = DOCUMENT;
     var is = function (element, selector) {
       var dom = element.dom();
-      if (dom.nodeType !== ELEMENT$1) {
+      if (dom.nodeType !== ELEMENT) {
         return false;
       } else {
         var elem = dom;
@@ -948,7 +948,7 @@
       }
     };
     var bypassSelector = function (dom) {
-      return dom.nodeType !== ELEMENT$1 && dom.nodeType !== DOCUMENT$1 || dom.childElementCount === 0;
+      return dom.nodeType !== ELEMENT && dom.nodeType !== DOCUMENT && dom.nodeType !== DOCUMENT_FRAGMENT || dom.childElementCount === 0;
     };
     var all = function (selector, scope) {
       var base = scope === undefined ? domGlobals.document : scope.dom();
@@ -965,6 +965,9 @@
 
     var owner = function (element) {
       return Element.fromDom(element.dom().ownerDocument);
+    };
+    var documentOrOwner = function (dos) {
+      return isDocument(dos) ? dos : owner(dos);
     };
     var defaultView = function (element) {
       return Element.fromDom(element.dom().ownerDocument.defaultView);
@@ -1008,6 +1011,60 @@
     };
     var firstChild = function (element) {
       return child(element, 0);
+    };
+
+    var isShadowRoot = function (dos) {
+      return isDocumentFragment(dos);
+    };
+    var supported = isFunction(domGlobals.Element.prototype.attachShadow) && isFunction(domGlobals.Node.prototype.getRootNode);
+    var isSupported = constant(supported);
+    var getRootNode = supported ? function (e) {
+      return Element.fromDom(e.dom().getRootNode());
+    } : documentOrOwner;
+    var getShadowRoot = function (e) {
+      var r = getRootNode(e);
+      return isShadowRoot(r) ? Option.some(r) : Option.none();
+    };
+    var getShadowHost = function (e) {
+      return Element.fromDom(e.dom().host);
+    };
+    var getOriginalEventTarget = function (event) {
+      if (isSupported() && isNonNullable(event.target)) {
+        var el = Element.fromDom(event.target);
+        if (isElement(el) && isOpenShadowHost(Element.fromDom(event.target))) {
+          var eventAny = event;
+          if (eventAny.composed && eventAny.composedPath) {
+            var composedPath = eventAny.composedPath();
+            if (composedPath) {
+              return head(composedPath);
+            }
+          }
+        }
+      }
+      return Option.from(event.target);
+    };
+    var isOpenShadowHost = function (element) {
+      return isNonNullable(element.dom().shadowRoot);
+    };
+
+    var inBody = function (element) {
+      var dom = isText(element) ? element.dom().parentNode : element.dom();
+      if (dom === undefined || dom === null || dom.ownerDocument === null) {
+        return false;
+      }
+      return getShadowRoot(Element.fromDom(dom)).fold(function () {
+        return dom.ownerDocument.body.contains(dom);
+      }, compose1(inBody, getShadowHost));
+    };
+    var body = function () {
+      return getBody(Element.fromDom(domGlobals.document));
+    };
+    var getBody = function (doc) {
+      var b = doc.dom().body;
+      if (b === null || b === undefined) {
+        throw new Error('Body is not available yet');
+      }
+      return Element.fromDom(b);
     };
 
     var before = function (marker, element) {
@@ -1258,6 +1315,94 @@
       fromOption: fromOption
     };
 
+    var SimpleResultType;
+    (function (SimpleResultType) {
+      SimpleResultType[SimpleResultType['Error'] = 0] = 'Error';
+      SimpleResultType[SimpleResultType['Value'] = 1] = 'Value';
+    }(SimpleResultType || (SimpleResultType = {})));
+    var fold = function (res, onError, onValue) {
+      return res.stype === SimpleResultType.Error ? onError(res.serror) : onValue(res.svalue);
+    };
+    var partition = function (results) {
+      var values = [];
+      var errors = [];
+      each$1(results, function (obj) {
+        fold(obj, function (err) {
+          return errors.push(err);
+        }, function (val) {
+          return values.push(val);
+        });
+      });
+      return {
+        values: values,
+        errors: errors
+      };
+    };
+    var mapError = function (res, f) {
+      if (res.stype === SimpleResultType.Error) {
+        return {
+          stype: SimpleResultType.Error,
+          serror: f(res.serror)
+        };
+      } else {
+        return res;
+      }
+    };
+    var map$2 = function (res, f) {
+      if (res.stype === SimpleResultType.Value) {
+        return {
+          stype: SimpleResultType.Value,
+          svalue: f(res.svalue)
+        };
+      } else {
+        return res;
+      }
+    };
+    var bind$1 = function (res, f) {
+      if (res.stype === SimpleResultType.Value) {
+        return f(res.svalue);
+      } else {
+        return res;
+      }
+    };
+    var bindError = function (res, f) {
+      if (res.stype === SimpleResultType.Error) {
+        return f(res.serror);
+      } else {
+        return res;
+      }
+    };
+    var svalue = function (v) {
+      return {
+        stype: SimpleResultType.Value,
+        svalue: v
+      };
+    };
+    var serror = function (e) {
+      return {
+        stype: SimpleResultType.Error,
+        serror: e
+      };
+    };
+    var toResult = function (res) {
+      return fold(res, Result.error, Result.value);
+    };
+    var fromResult = function (res) {
+      return res.fold(serror, svalue);
+    };
+    var SimpleResult = {
+      fromResult: fromResult,
+      toResult: toResult,
+      svalue: svalue,
+      partition: partition,
+      serror: serror,
+      bind: bind$1,
+      bindError: bindError,
+      map: map$2,
+      mapError: mapError,
+      fold: fold
+    };
+
     var generate = function (cases) {
       if (!isArray(cases)) {
         throw new Error('cases must be an array');
@@ -1358,94 +1503,6 @@
     };
     var deepMerge = baseMerge(deep);
     var merge = baseMerge(shallow);
-
-    var SimpleResultType;
-    (function (SimpleResultType) {
-      SimpleResultType[SimpleResultType['Error'] = 0] = 'Error';
-      SimpleResultType[SimpleResultType['Value'] = 1] = 'Value';
-    }(SimpleResultType || (SimpleResultType = {})));
-    var fold = function (res, onError, onValue) {
-      return res.stype === SimpleResultType.Error ? onError(res.serror) : onValue(res.svalue);
-    };
-    var partition = function (results) {
-      var values = [];
-      var errors = [];
-      each$1(results, function (obj) {
-        fold(obj, function (err) {
-          return errors.push(err);
-        }, function (val) {
-          return values.push(val);
-        });
-      });
-      return {
-        values: values,
-        errors: errors
-      };
-    };
-    var mapError = function (res, f) {
-      if (res.stype === SimpleResultType.Error) {
-        return {
-          stype: SimpleResultType.Error,
-          serror: f(res.serror)
-        };
-      } else {
-        return res;
-      }
-    };
-    var map$2 = function (res, f) {
-      if (res.stype === SimpleResultType.Value) {
-        return {
-          stype: SimpleResultType.Value,
-          svalue: f(res.svalue)
-        };
-      } else {
-        return res;
-      }
-    };
-    var bind$1 = function (res, f) {
-      if (res.stype === SimpleResultType.Value) {
-        return f(res.svalue);
-      } else {
-        return res;
-      }
-    };
-    var bindError = function (res, f) {
-      if (res.stype === SimpleResultType.Error) {
-        return f(res.serror);
-      } else {
-        return res;
-      }
-    };
-    var svalue = function (v) {
-      return {
-        stype: SimpleResultType.Value,
-        svalue: v
-      };
-    };
-    var serror = function (e) {
-      return {
-        stype: SimpleResultType.Error,
-        serror: e
-      };
-    };
-    var toResult = function (res) {
-      return fold(res, Result.error, Result.value);
-    };
-    var fromResult = function (res) {
-      return res.fold(serror, svalue);
-    };
-    var SimpleResult = {
-      fromResult: fromResult,
-      toResult: toResult,
-      svalue: svalue,
-      partition: partition,
-      serror: serror,
-      bind: bind$1,
-      bindError: bindError,
-      map: map$2,
-      mapError: mapError,
-      fold: fold
-    };
 
     var adt = Adt.generate([
       { strict: [] },
@@ -2437,45 +2494,8 @@
       };
     };
 
-    function ClosestOrAncestor (is, ancestor, scope, a, isRoot) {
-      return is(scope, a) ? Option.some(scope) : isFunction(isRoot) && isRoot(scope) ? Option.none() : ancestor(scope, a, isRoot);
-    }
-
-    var ancestor$1 = function (scope, predicate, isRoot) {
-      var element = scope.dom();
-      var stop = isFunction(isRoot) ? isRoot : constant(false);
-      while (element.parentNode) {
-        element = element.parentNode;
-        var el = Element.fromDom(element);
-        if (predicate(el)) {
-          return Option.some(el);
-        } else if (stop(el)) {
-          break;
-        }
-      }
-      return Option.none();
-    };
-    var closest$1 = function (scope, predicate, isRoot) {
-      var is = function (s, test) {
-        return test(s);
-      };
-      return ClosestOrAncestor(is, ancestor$1, scope, predicate, isRoot);
-    };
-    var descendant = function (scope, predicate) {
-      var descend = function (node) {
-        for (var i = 0; i < node.childNodes.length; i++) {
-          var child_1 = Element.fromDom(node.childNodes[i]);
-          if (predicate(child_1)) {
-            return Option.some(child_1);
-          }
-          var res = descend(node.childNodes[i]);
-          if (res.isSome()) {
-            return res;
-          }
-        }
-        return Option.none();
-      };
-      return descend(scope.dom());
+    var getDocument = function () {
+      return Element.fromDom(domGlobals.document);
     };
 
     var focus$1 = function (element) {
@@ -2485,15 +2505,17 @@
       return element.dom().blur();
     };
     var hasFocus = function (element) {
-      var doc = owner(element).dom();
-      return element.dom() === doc.activeElement;
+      var root = getRootNode(element).dom();
+      return element.dom() === root.activeElement;
     };
-    var active = function (_doc) {
-      var doc = _doc !== undefined ? _doc.dom() : domGlobals.document;
-      return Option.from(doc.activeElement).map(Element.fromDom);
+    var active = function (root) {
+      if (root === void 0) {
+        root = getDocument();
+      }
+      return Option.from(root.dom().activeElement).map(Element.fromDom);
     };
     var search = function (element) {
-      return active(owner(element)).filter(function (e) {
+      return active(getRootNode(element)).filter(function (e) {
         return element.dom().contains(e.dom());
       });
     };
@@ -2514,11 +2536,147 @@
       domGlobals.document.body.removeChild(link);
     };
 
+    var DefaultStyleFormats = [
+      {
+        title: 'Headings',
+        items: [
+          {
+            title: 'Heading 1',
+            format: 'h1'
+          },
+          {
+            title: 'Heading 2',
+            format: 'h2'
+          },
+          {
+            title: 'Heading 3',
+            format: 'h3'
+          },
+          {
+            title: 'Heading 4',
+            format: 'h4'
+          },
+          {
+            title: 'Heading 5',
+            format: 'h5'
+          },
+          {
+            title: 'Heading 6',
+            format: 'h6'
+          }
+        ]
+      },
+      {
+        title: 'Inline',
+        items: [
+          {
+            title: 'Bold',
+            icon: 'bold',
+            format: 'bold'
+          },
+          {
+            title: 'Italic',
+            icon: 'italic',
+            format: 'italic'
+          },
+          {
+            title: 'Underline',
+            icon: 'underline',
+            format: 'underline'
+          },
+          {
+            title: 'Strikethrough',
+            icon: 'strikethrough',
+            format: 'strikethrough'
+          },
+          {
+            title: 'Superscript',
+            icon: 'superscript',
+            format: 'superscript'
+          },
+          {
+            title: 'Subscript',
+            icon: 'subscript',
+            format: 'subscript'
+          },
+          {
+            title: 'Code',
+            icon: 'code',
+            format: 'code'
+          }
+        ]
+      },
+      {
+        title: 'Blocks',
+        items: [
+          {
+            title: 'Paragraph',
+            format: 'p'
+          },
+          {
+            title: 'Blockquote',
+            format: 'blockquote'
+          },
+          {
+            title: 'Div',
+            format: 'div'
+          },
+          {
+            title: 'Pre',
+            format: 'pre'
+          }
+        ]
+      },
+      {
+        title: 'Alignment',
+        items: [
+          {
+            title: 'Left',
+            icon: 'alignleft',
+            format: 'alignleft'
+          },
+          {
+            title: 'Center',
+            icon: 'aligncenter',
+            format: 'aligncenter'
+          },
+          {
+            title: 'Right',
+            icon: 'alignright',
+            format: 'alignright'
+          },
+          {
+            title: 'Justify',
+            icon: 'alignjustify',
+            format: 'alignjustify'
+          }
+        ]
+      }
+    ];
+
+    var defaults = [
+      'undo',
+      'bold',
+      'italic',
+      'link',
+      'image',
+      'bullist',
+      'styleselect'
+    ];
     var isSkinDisabled = function (editor) {
-      return editor.settings.skin === false;
+      return editor.getParam('skin') === false;
     };
     var readOnlyOnInit = function (_editor) {
       return false;
+    };
+    var getToolbar = function (editor) {
+      return editor.getParam('toolbar', defaults, 'array');
+    };
+    var getStyleFormats = function (editor) {
+      return editor.getParam('style_formats', DefaultStyleFormats, 'array');
+    };
+    var getSkinUrl = function (editor) {
+      return editor.getParam('skin_url');
     };
 
     var formatChanged = 'formatChanged';
@@ -3019,7 +3177,7 @@
       apis: FocusApis
     });
 
-    var isSupported = function (dom) {
+    var isSupported$1 = function (dom) {
       return dom.style !== undefined && isFunction(dom.style.getPropertyValue);
     };
 
@@ -3028,12 +3186,12 @@
         domGlobals.console.error('Invalid call to CSS.set. Property ', property, ':: Value ', value, ':: Element ', dom);
         throw new Error('CSS value must be a string: ' + value);
       }
-      if (isSupported(dom)) {
+      if (isSupported$1(dom)) {
         dom.style.setProperty(property, value);
       }
     };
     var internalRemove = function (dom, property) {
-      if (isSupported(dom)) {
+      if (isSupported$1(dom)) {
         dom.style.removeProperty(property);
       }
     };
@@ -3054,7 +3212,7 @@
       return r === '' && !inBody(element) ? getUnsafeProperty(dom, property) : r;
     };
     var getUnsafeProperty = function (dom, property) {
-      return isSupported(dom) ? dom.style.getPropertyValue(property) : '';
+      return isSupported$1(dom) ? dom.style.getPropertyValue(property) : '';
     };
     var getRaw = function (element, property) {
       var dom = element.dom();
@@ -3080,7 +3238,7 @@
           throw new Error(name + '.set accepts only positive integer values. Value was ' + h);
         }
         var dom = element.dom();
-        if (isSupported(dom)) {
+        if (isSupported$1(dom)) {
           dom.style[name] = h + 'px';
         }
       };
@@ -3144,6 +3302,47 @@
     };
     var descendants = function (scope, selector) {
       return all(selector, scope);
+    };
+
+    function ClosestOrAncestor (is, ancestor, scope, a, isRoot) {
+      return is(scope, a) ? Option.some(scope) : isFunction(isRoot) && isRoot(scope) ? Option.none() : ancestor(scope, a, isRoot);
+    }
+
+    var ancestor$1 = function (scope, predicate, isRoot) {
+      var element = scope.dom();
+      var stop = isFunction(isRoot) ? isRoot : constant(false);
+      while (element.parentNode) {
+        element = element.parentNode;
+        var el = Element.fromDom(element);
+        if (predicate(el)) {
+          return Option.some(el);
+        } else if (stop(el)) {
+          break;
+        }
+      }
+      return Option.none();
+    };
+    var closest$1 = function (scope, predicate, isRoot) {
+      var is = function (s, test) {
+        return test(s);
+      };
+      return ClosestOrAncestor(is, ancestor$1, scope, predicate, isRoot);
+    };
+    var descendant = function (scope, predicate) {
+      var descend = function (node) {
+        for (var i = 0; i < node.childNodes.length; i++) {
+          var child_1 = Element.fromDom(node.childNodes[i]);
+          if (predicate(child_1)) {
+            return Option.some(child_1);
+          }
+          var res = descend(node.childNodes[i]);
+          if (res.isSome()) {
+            return res;
+          }
+        }
+        return Option.none();
+      };
+      return descend(scope.dom());
     };
 
     var first = function (selector) {
@@ -6931,7 +7130,7 @@
     });
 
     var exhibit$4 = function (base, disableConfig) {
-      return nu$5({ classes: disableConfig.disabled ? disableConfig.disableClass.map(pure).getOr([]) : [] });
+      return nu$5({ classes: disableConfig.disabled() ? disableConfig.disableClass.toArray() : [] });
     };
     var events$7 = function (disableConfig, disableState) {
       return derive([
@@ -7342,124 +7541,6 @@
         });
       });
     };
-
-    var DefaultStyleFormats = [
-      {
-        title: 'Headings',
-        items: [
-          {
-            title: 'Heading 1',
-            format: 'h1'
-          },
-          {
-            title: 'Heading 2',
-            format: 'h2'
-          },
-          {
-            title: 'Heading 3',
-            format: 'h3'
-          },
-          {
-            title: 'Heading 4',
-            format: 'h4'
-          },
-          {
-            title: 'Heading 5',
-            format: 'h5'
-          },
-          {
-            title: 'Heading 6',
-            format: 'h6'
-          }
-        ]
-      },
-      {
-        title: 'Inline',
-        items: [
-          {
-            title: 'Bold',
-            icon: 'bold',
-            format: 'bold'
-          },
-          {
-            title: 'Italic',
-            icon: 'italic',
-            format: 'italic'
-          },
-          {
-            title: 'Underline',
-            icon: 'underline',
-            format: 'underline'
-          },
-          {
-            title: 'Strikethrough',
-            icon: 'strikethrough',
-            format: 'strikethrough'
-          },
-          {
-            title: 'Superscript',
-            icon: 'superscript',
-            format: 'superscript'
-          },
-          {
-            title: 'Subscript',
-            icon: 'subscript',
-            format: 'subscript'
-          },
-          {
-            title: 'Code',
-            icon: 'code',
-            format: 'code'
-          }
-        ]
-      },
-      {
-        title: 'Blocks',
-        items: [
-          {
-            title: 'Paragraph',
-            format: 'p'
-          },
-          {
-            title: 'Blockquote',
-            format: 'blockquote'
-          },
-          {
-            title: 'Div',
-            format: 'div'
-          },
-          {
-            title: 'Pre',
-            format: 'pre'
-          }
-        ]
-      },
-      {
-        title: 'Alignment',
-        items: [
-          {
-            title: 'Left',
-            icon: 'alignleft',
-            format: 'alignleft'
-          },
-          {
-            title: 'Center',
-            icon: 'aligncenter',
-            format: 'aligncenter'
-          },
-          {
-            title: 'Right',
-            icon: 'alignright',
-            format: 'alignright'
-          },
-          {
-            title: 'Justify',
-            icon: 'alignjustify',
-            format: 'alignjustify'
-          }
-        ]
-      }
-    ];
 
     var isRecursive = function (component, originator, target) {
       return eq(originator, component.element()) && !eq(originator, target);
@@ -8541,9 +8622,8 @@
       var buildMenus = function (container, primaryName, menus) {
         return map(menus, function (spec, name) {
           var makeSketch = function () {
-            return Menu.sketch(__assign(__assign({ dom: spec.dom }, spec), {
+            return Menu.sketch(__assign(__assign({}, spec), {
               value: name,
-              items: spec.items,
               markers: detail.markers,
               fakeFocus: detail.fakeFocus,
               onHighlight: detail.onHighlight,
@@ -9326,7 +9406,7 @@
       });
     };
 
-    var register$1 = function (editor, settings) {
+    var register$1 = function (editor) {
       var isSelectedFor = function (format) {
         return function () {
           return editor.formatter.match(format);
@@ -9359,7 +9439,6 @@
         editor.formatter.register(formatName, newItem);
         return newItem;
       };
-      var formats = get(settings, 'style_formats').getOr(DefaultStyleFormats);
       var doEnrich = function (items) {
         return map$1(items, function (item) {
           if (hasNonNullableKey(item, 'items')) {
@@ -9372,7 +9451,7 @@
           }
         });
       };
-      return doEnrich(formats);
+      return doEnrich(getStyleFormats(editor));
     };
     var prune = function (editor, formats) {
       var doPrune = function (items) {
@@ -9406,15 +9485,6 @@
       });
     };
 
-    var defaults = [
-      'undo',
-      'bold',
-      'italic',
-      'link',
-      'image',
-      'bullist',
-      'styleselect'
-    ];
     var extract$1 = function (rawToolbar) {
       var toolbar = rawToolbar.replace(/\|/g, ' ').trim();
       return toolbar.length > 0 ? toolbar.split(/\s+/) : [];
@@ -9424,8 +9494,8 @@
         return isArray(item) ? identifyFromArray(item) : extract$1(item);
       });
     };
-    var identify = function (settings) {
-      var toolbar = settings.toolbar !== undefined ? settings.toolbar : defaults;
+    var identify = function (editor) {
+      var toolbar = getToolbar(editor);
       return isArray(toolbar) ? identifyFromArray(toolbar) : extract$1(toolbar);
     };
     var setup = function (realm, editor) {
@@ -9471,7 +9541,7 @@
       var forecolor = function () {
         return sketch$1(realm, editor);
       };
-      var styleFormats = register$1(editor, editor.settings);
+      var styleFormats = register$1(editor);
       var styleFormatsMenu = function () {
         return ui(editor, styleFormats, function () {
           editor.fire('scrollIntoView');
@@ -9523,8 +9593,8 @@
         styleselect: feature(Option.none(), styleselect)
       };
     };
-    var detect$4 = function (settings, features) {
-      var itemNames = identify(settings);
+    var detect$4 = function (editor, features) {
+      var itemNames = identify(editor);
       var present = {};
       return bind(itemNames, function (iName) {
         var r = !hasNonNullableKey(present, iName) && hasNonNullableKey(features, iName) && features[iName].isSupported() ? [features[iName].sketch()] : [];
@@ -9545,7 +9615,7 @@
       };
     };
     var fromRawEvent = function (rawEvent) {
-      var target = Element.fromDom(rawEvent.target);
+      var target = Element.fromDom(getOriginalEventTarget(rawEvent).getOr(rawEvent.target));
       var stop = function () {
         return rawEvent.stopPropagation();
       };
@@ -12464,9 +12534,11 @@
         }
       };
       var set = function (x) {
-        data = Option.some(x);
-        run(callbacks);
-        callbacks = [];
+        if (!isReady()) {
+          data = Option.some(x);
+          run(callbacks);
+          callbacks = [];
+        }
       };
       var isReady = function () {
         return data.isSome();
@@ -13280,7 +13352,7 @@
     var global$5 = tinymce.util.Tools.resolve('tinymce.EditorManager');
 
     var derive$3 = function (editor) {
-      var base = get(editor.settings, 'skin_url').fold(function () {
+      var base = Option.from(getSkinUrl(editor)).fold(function () {
         return global$5.baseURL + '/skins/ui/oxide';
       }, function (url) {
         return url;
@@ -13474,7 +13546,7 @@
             items: []
           };
           var features = setup(realm, editor);
-          var items = detect$4(editor.settings, features);
+          var items = detect$4(editor, features);
           var actionGroup = {
             label: 'the action group',
             scrollable: true,

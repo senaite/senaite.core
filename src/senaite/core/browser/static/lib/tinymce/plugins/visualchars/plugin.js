@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.3.2 (2020-06-10)
+ * Version: 5.4.1 (2020-07-08)
  */
 (function (domGlobals) {
     'use strict';
@@ -447,10 +447,9 @@
     var toggleVisualChars = function (editor, toggleState) {
       var body = editor.getBody();
       var selection = editor.selection;
-      var bookmark;
       toggleState.set(!toggleState.get());
       fireVisualChars(editor, toggleState.get());
-      bookmark = selection.getBookmark();
+      var bookmark = selection.getBookmark();
       if (toggleState.get() === true) {
         show(editor, body);
       } else {
@@ -467,21 +466,24 @@
 
     var global$1 = tinymce.util.Tools.resolve('tinymce.util.Delay');
 
+    var isEnabledByDefault = function (editor) {
+      return editor.getParam('visualchars_default_state', false);
+    };
+    var hasForcedRootBlock = function (editor) {
+      return editor.getParam('forced_root_block') !== false;
+    };
+
     var setup = function (editor, toggleState) {
       var debouncedToggle = global$1.debounce(function () {
         toggle(editor);
       }, 300);
-      if (editor.settings.forced_root_block !== false) {
+      if (hasForcedRootBlock(editor)) {
         editor.on('keydown', function (e) {
           if (toggleState.get() === true) {
             e.keyCode === 13 ? toggle(editor) : debouncedToggle();
           }
         });
       }
-    };
-
-    var isEnabledByDefault = function (editor) {
-      return editor.getParam('visualchars_default_state', false);
     };
 
     var setup$1 = function (editor, toggleState) {

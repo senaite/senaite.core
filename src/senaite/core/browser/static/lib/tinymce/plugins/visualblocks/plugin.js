@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.3.2 (2020-06-10)
+ * Version: 5.4.1 (2020-07-08)
  */
 (function () {
     'use strict';
@@ -56,9 +56,6 @@
         if (isEnabledByDefault(editor)) {
           toggleVisualBlocks(editor, pluginUrl, enabledState);
         }
-      });
-      editor.on('remove', function () {
-        editor.dom.removeClass(editor.getBody(), 'mce-visualblocks');
       });
     };
 

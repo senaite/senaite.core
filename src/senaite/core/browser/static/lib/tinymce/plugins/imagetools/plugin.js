@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.3.2 (2020-06-10)
+ * Version: 5.4.1 (2020-07-08)
  */
 (function (domGlobals) {
     'use strict';
@@ -574,6 +574,13 @@
       return fromCanvas(canvas, type);
     }
 
+    var isSimpleType = function (type) {
+      return function (value) {
+        return typeof value === type;
+      };
+    };
+    var isFunction = isSimpleType('function');
+
     var findUntil = function (xs, pred, until) {
       for (var i = 0, len = xs.length; i < len; i++) {
         var x = xs[i];
@@ -598,6 +605,84 @@
 
     var blobToImageResult = function (blob) {
       return fromBlob(blob);
+    };
+
+    var fromHtml = function (html, scope) {
+      var doc = scope || domGlobals.document;
+      var div = doc.createElement('div');
+      div.innerHTML = html;
+      if (!div.hasChildNodes() || div.childNodes.length > 1) {
+        domGlobals.console.error('HTML does not have a single root node', html);
+        throw new Error('HTML must have a single root node');
+      }
+      return fromDom(div.childNodes[0]);
+    };
+    var fromTag = function (tag, scope) {
+      var doc = scope || domGlobals.document;
+      var node = doc.createElement(tag);
+      return fromDom(node);
+    };
+    var fromText = function (text, scope) {
+      var doc = scope || domGlobals.document;
+      var node = doc.createTextNode(text);
+      return fromDom(node);
+    };
+    var fromDom = function (node) {
+      if (node === null || node === undefined) {
+        throw new Error('Node cannot be null or undefined');
+      }
+      return { dom: constant(node) };
+    };
+    var fromPoint = function (docElm, x, y) {
+      var doc = docElm.dom();
+      return Option.from(doc.elementFromPoint(x, y)).map(fromDom);
+    };
+    var Element = {
+      fromHtml: fromHtml,
+      fromTag: fromTag,
+      fromText: fromText,
+      fromDom: fromDom,
+      fromPoint: fromPoint
+    };
+
+    var ELEMENT = 1;
+
+    var is = function (element, selector) {
+      var dom = element.dom();
+      if (dom.nodeType !== ELEMENT) {
+        return false;
+      } else {
+        var elem = dom;
+        if (elem.matches !== undefined) {
+          return elem.matches(selector);
+        } else if (elem.msMatchesSelector !== undefined) {
+          return elem.msMatchesSelector(selector);
+        } else if (elem.webkitMatchesSelector !== undefined) {
+          return elem.webkitMatchesSelector(selector);
+        } else if (elem.mozMatchesSelector !== undefined) {
+          return elem.mozMatchesSelector(selector);
+        } else {
+          throw new Error('Browser lacks native selectors');
+        }
+      }
+    };
+
+    var Global = typeof domGlobals.window !== 'undefined' ? domGlobals.window : Function('return this;')();
+
+    var supported = isFunction(domGlobals.Element.prototype.attachShadow) && isFunction(domGlobals.Node.prototype.getRootNode);
+
+    var child = function (scope, predicate) {
+      var pred = function (node) {
+        return predicate(Element.fromDom(node));
+      };
+      var result = find(scope.dom().childNodes, pred);
+      return result.map(Element.fromDom);
+    };
+
+    var child$1 = function (scope, selector) {
+      return child(scope, function (e) {
+        return is(e, selector);
+      });
     };
 
     var global$2 = tinymce.util.Tools.resolve('tinymce.util.Delay');
@@ -686,16 +771,14 @@
       return obj !== null && obj !== undefined;
     };
     var traverse = function (json, path) {
-      var value;
-      value = path.reduce(function (result, key) {
+      var value = path.reduce(function (result, key) {
         return isValue(result) ? result[key] : undefined;
       }, json);
       return isValue(value) ? value : null;
     };
     var requestUrlAsBlob = function (url, headers, withCredentials) {
       return new global$3(function (resolve) {
-        var xhr;
-        xhr = new domGlobals.XMLHttpRequest();
+        var xhr = new domGlobals.XMLHttpRequest();
         xhr.onreadystatechange = function () {
           if (xhr.readyState === 4) {
             resolve({
@@ -827,83 +910,6 @@
       return apiKey ? requestServiceBlob(url, apiKey) : requestBlob(url, withCredentials);
     };
 
-    var fromHtml = function (html, scope) {
-      var doc = scope || domGlobals.document;
-      var div = doc.createElement('div');
-      div.innerHTML = html;
-      if (!div.hasChildNodes() || div.childNodes.length > 1) {
-        domGlobals.console.error('HTML does not have a single root node', html);
-        throw new Error('HTML must have a single root node');
-      }
-      return fromDom(div.childNodes[0]);
-    };
-    var fromTag = function (tag, scope) {
-      var doc = scope || domGlobals.document;
-      var node = doc.createElement(tag);
-      return fromDom(node);
-    };
-    var fromText = function (text, scope) {
-      var doc = scope || domGlobals.document;
-      var node = doc.createTextNode(text);
-      return fromDom(node);
-    };
-    var fromDom = function (node) {
-      if (node === null || node === undefined) {
-        throw new Error('Node cannot be null or undefined');
-      }
-      return { dom: constant(node) };
-    };
-    var fromPoint = function (docElm, x, y) {
-      var doc = docElm.dom();
-      return Option.from(doc.elementFromPoint(x, y)).map(fromDom);
-    };
-    var Element = {
-      fromHtml: fromHtml,
-      fromTag: fromTag,
-      fromText: fromText,
-      fromDom: fromDom,
-      fromPoint: fromPoint
-    };
-
-    var ELEMENT = 1;
-
-    var ELEMENT$1 = ELEMENT;
-    var is = function (element, selector) {
-      var dom = element.dom();
-      if (dom.nodeType !== ELEMENT$1) {
-        return false;
-      } else {
-        var elem = dom;
-        if (elem.matches !== undefined) {
-          return elem.matches(selector);
-        } else if (elem.msMatchesSelector !== undefined) {
-          return elem.msMatchesSelector(selector);
-        } else if (elem.webkitMatchesSelector !== undefined) {
-          return elem.webkitMatchesSelector(selector);
-        } else if (elem.mozMatchesSelector !== undefined) {
-          return elem.mozMatchesSelector(selector);
-        } else {
-          throw new Error('Browser lacks native selectors');
-        }
-      }
-    };
-
-    var Global = typeof domGlobals.window !== 'undefined' ? domGlobals.window : Function('return this;')();
-
-    var child = function (scope, predicate) {
-      var pred = function (node) {
-        return predicate(Element.fromDom(node));
-      };
-      var result = find(scope.dom().childNodes, pred);
-      return result.map(Element.fromDom);
-    };
-
-    var child$1 = function (scope, selector) {
-      return child(scope, function (e) {
-        return is(e, selector);
-      });
-    };
-
     var count = 0;
     var getFigureImg = function (elem) {
       return child$1(Element.fromDom(elem), 'img');
@@ -916,7 +922,7 @@
         return editor.dom.is(imgNode, 'img:not([data-mce-object],[data-mce-placeholder])');
       };
       var isEditable = function (imgNode) {
-        return isImage(imgNode) && (isLocalImage(editor, imgNode) || isCorsImage(editor, imgNode) || editor.settings.imagetools_proxy);
+        return isImage(imgNode) && (isLocalImage(editor, imgNode) || isCorsImage(editor, imgNode) || getProxyUrl(editor));
       };
       if (isFigure(editor, elem)) {
         var imgOpt = getFigureImg(elem);
@@ -981,8 +987,7 @@
       });
     };
     var findBlob = function (editor, img) {
-      var blobInfo;
-      blobInfo = editor.editorUpload.blobCache.getByUri(img.src);
+      var blobInfo = editor.editorUpload.blobCache.getByUri(img.src);
       if (blobInfo) {
         return global$3.resolve(blobInfo.blob());
       }
@@ -999,8 +1004,8 @@
     };
     var updateSelectedImage = function (editor, ir, uploadImmediately, imageUploadTimerState, selectedImage, size) {
       return ir.toBlob().then(function (blob) {
-        var uri, name, blobCache, blobInfo;
-        blobCache = editor.editorUpload.blobCache;
+        var uri, name, blobInfo;
+        var blobCache = editor.editorUpload.blobCache;
         uri = selectedImage.src;
         if (shouldReuseFilename(editor)) {
           blobInfo = blobCache.getByUri(uri);

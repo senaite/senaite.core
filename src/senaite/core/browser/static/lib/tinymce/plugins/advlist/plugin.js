@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.3.2 (2020-06-10)
+ * Version: 5.4.1 (2020-07-08)
  */
 (function () {
     'use strict';
@@ -253,7 +253,7 @@
       });
     };
     var addControl = function (editor, id, tooltip, cmd, nodeName, styles) {
-      if (styles.length > 0) {
+      if (styles.length > 1) {
         addSplitButton(editor, id, tooltip, cmd, nodeName, styles);
       } else {
         addButton(editor, id, tooltip, cmd, nodeName);
@@ -267,8 +267,7 @@
     function Plugin () {
       global.add('advlist', function (editor) {
         var hasPlugin = function (editor, plugin) {
-          var plugins = editor.settings.plugins ? editor.settings.plugins : '';
-          return global$1.inArray(plugins.split(/[ ,]/), plugin) !== -1;
+          return global$1.inArray(editor.getParam('plugins', '', 'string').split(/[ ,]/), plugin) !== -1;
         };
         if (hasPlugin(editor, 'lists')) {
           register$1(editor);

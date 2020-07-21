@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.3.2 (2020-06-10)
+ * Version: 5.4.1 (2020-07-08)
  */
 (function (domGlobals) {
     'use strict';
@@ -26,7 +26,7 @@
     var global = tinymce.util.Tools.resolve('tinymce.PluginManager');
 
     var hasProPlugin = function (editor) {
-      if (/(^|[ ,])tinymcespellchecker([, ]|$)/.test(editor.settings.plugins) && global.get('tinymcespellchecker')) {
+      if (/(^|[ ,])tinymcespellchecker([, ]|$)/.test(editor.getParam('plugins')) && global.get('tinymcespellchecker')) {
         if (typeof domGlobals.window.console !== 'undefined' && domGlobals.window.console.log) {
           domGlobals.window.console.log('Spell Checker Pro is incompatible with Spell Checker plugin! ' + 'Remove \'spellchecker\' from the \'plugins\' option.');
         }
@@ -34,6 +34,16 @@
       } else {
         return false;
       }
+    };
+
+    var hasOwnProperty = Object.hasOwnProperty;
+    var isEmpty = function (r) {
+      for (var x in r) {
+        if (hasOwnProperty.call(r, x)) {
+          return false;
+        }
+      }
+      return true;
     };
 
     var global$1 = tinymce.util.Tools.resolve('tinymce.util.Tools');
@@ -72,12 +82,11 @@
       return node && node.nodeType === 1 && node.contentEditable === 'false';
     }
     var DomTextMatcher = function (node, editor) {
-      var m, matches = [], text;
+      var m, matches = [];
       var dom = editor.dom;
-      var blockElementsMap, hiddenTextElementsMap, shortEndedElementsMap;
-      blockElementsMap = editor.schema.getBlockElements();
-      hiddenTextElementsMap = editor.schema.getWhiteSpaceElements();
-      shortEndedElementsMap = editor.schema.getShortEndedElements();
+      var blockElementsMap = editor.schema.getBlockElements();
+      var hiddenTextElementsMap = editor.schema.getWhiteSpaceElements();
+      var shortEndedElementsMap = editor.schema.getShortEndedElements();
       function createMatch(m, data) {
         if (!m[0]) {
           throw new Error('findAndReplaceDOMText cannot handle zero-length matches');
@@ -341,7 +350,7 @@
         unwrap();
         return this;
       }
-      text = getText(node);
+      var text = getText(node);
       return {
         text: text,
         matches: matches,
@@ -358,16 +367,6 @@
         rangeFromMatch: rangeFromMatch,
         indexOf: indexOf
       };
-    };
-
-    var hasOwnProperty = Object.hasOwnProperty;
-    var isEmpty = function (r) {
-      for (var x in r) {
-        if (hasOwnProperty.call(r, x)) {
-          return false;
-        }
-      }
-      return true;
     };
 
     var getTextMatcher = function (editor, textMatcherState) {
@@ -489,9 +488,8 @@
       return value;
     };
     var findSpansByIndex = function (editor, index) {
-      var nodes;
       var spans = [];
-      nodes = global$1.toArray(editor.getBody().getElementsByTagName('span'));
+      var nodes = global$1.toArray(editor.getBody().getElementsByTagName('span'));
       if (nodes.length) {
         for (var i = 0; i < nodes.length; i++) {
           var nodeIndex = getElmIndex(nodes[i]);

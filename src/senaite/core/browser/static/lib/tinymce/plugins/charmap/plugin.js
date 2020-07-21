@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.3.2 (2020-06-10)
+ * Version: 5.4.1 (2020-07-08)
  */
 (function (domGlobals) {
     'use strict';
@@ -23,10 +23,10 @@
     var global$1 = tinymce.util.Tools.resolve('tinymce.util.Tools');
 
     var getCharMap = function (editor) {
-      return editor.settings.charmap;
+      return editor.getParam('charmap');
     };
     var getCharMapAppend = function (editor) {
-      return editor.settings.charmap_append;
+      return editor.getParam('charmap_append');
     };
 
     var noop = function () {

@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.3.2 (2020-06-10)
+ * Version: 5.4.1 (2020-07-08)
  */
 (function (domGlobals) {
     'use strict';
@@ -23,6 +23,11 @@
           args[_i] = arguments[_i];
         }
         return fa(fb.apply(null, args));
+      };
+    };
+    var compose1 = function (fbc, fab) {
+      return function (a) {
+        return fbc(fab(a));
       };
     };
     var constant = function (value) {
@@ -201,114 +206,6 @@
       from: from
     };
 
-    var value = function (o) {
-      var is = function (v) {
-        return o === v;
-      };
-      var or = function (_opt) {
-        return value(o);
-      };
-      var orThunk = function (_f) {
-        return value(o);
-      };
-      var map = function (f) {
-        return value(f(o));
-      };
-      var mapError = function (_f) {
-        return value(o);
-      };
-      var each = function (f) {
-        f(o);
-      };
-      var bind = function (f) {
-        return f(o);
-      };
-      var fold = function (_, onValue) {
-        return onValue(o);
-      };
-      var exists = function (f) {
-        return f(o);
-      };
-      var forall = function (f) {
-        return f(o);
-      };
-      var toOption = function () {
-        return Option.some(o);
-      };
-      return {
-        is: is,
-        isValue: always,
-        isError: never,
-        getOr: constant(o),
-        getOrThunk: constant(o),
-        getOrDie: constant(o),
-        or: or,
-        orThunk: orThunk,
-        fold: fold,
-        map: map,
-        mapError: mapError,
-        each: each,
-        bind: bind,
-        exists: exists,
-        forall: forall,
-        toOption: toOption
-      };
-    };
-    var error = function (message) {
-      var getOrThunk = function (f) {
-        return f();
-      };
-      var getOrDie = function () {
-        return die(String(message))();
-      };
-      var or = function (opt) {
-        return opt;
-      };
-      var orThunk = function (f) {
-        return f();
-      };
-      var map = function (_f) {
-        return error(message);
-      };
-      var mapError = function (f) {
-        return error(f(message));
-      };
-      var bind = function (_f) {
-        return error(message);
-      };
-      var fold = function (onError, _) {
-        return onError(message);
-      };
-      return {
-        is: never,
-        isValue: never,
-        isError: always,
-        getOr: identity,
-        getOrThunk: getOrThunk,
-        getOrDie: getOrDie,
-        or: or,
-        orThunk: orThunk,
-        fold: fold,
-        map: map,
-        mapError: mapError,
-        each: noop,
-        bind: bind,
-        exists: never,
-        forall: always,
-        toOption: Option.none
-      };
-    };
-    var fromOption = function (opt, err) {
-      return opt.fold(function () {
-        return error(err);
-      }, value);
-    };
-    var Result = {
-      value: value,
-      error: error,
-      fromOption: fromOption
-    };
-
     var typeOf = function (x) {
       var t = typeof x;
       if (x === null) {
@@ -341,6 +238,12 @@
     var isArray = isType('array');
     var isBoolean = isSimpleType('boolean');
     var isUndefined = eq(undefined);
+    var isNullable = function (a) {
+      return a === null || a === undefined;
+    };
+    var isNonNullable = function (a) {
+      return !isNullable(a);
+    };
     var isFunction = isSimpleType('function');
     var isNumber = isSimpleType('number');
     var isArrayOf = function (value, pred) {
@@ -511,9 +414,6 @@
       }
       return r;
     };
-    var pure = function (x) {
-      return [x];
-    };
     var sort = function (xs, comparator) {
       var copy = nativeSlice.call(xs, 0);
       copy.sort(comparator);
@@ -538,6 +438,202 @@
       return Option.none();
     };
 
+    var value = function (o) {
+      var is = function (v) {
+        return o === v;
+      };
+      var or = function (_opt) {
+        return value(o);
+      };
+      var orThunk = function (_f) {
+        return value(o);
+      };
+      var map = function (f) {
+        return value(f(o));
+      };
+      var mapError = function (_f) {
+        return value(o);
+      };
+      var each = function (f) {
+        f(o);
+      };
+      var bind = function (f) {
+        return f(o);
+      };
+      var fold = function (_, onValue) {
+        return onValue(o);
+      };
+      var exists = function (f) {
+        return f(o);
+      };
+      var forall = function (f) {
+        return f(o);
+      };
+      var toOption = function () {
+        return Option.some(o);
+      };
+      return {
+        is: is,
+        isValue: always,
+        isError: never,
+        getOr: constant(o),
+        getOrThunk: constant(o),
+        getOrDie: constant(o),
+        or: or,
+        orThunk: orThunk,
+        fold: fold,
+        map: map,
+        mapError: mapError,
+        each: each,
+        bind: bind,
+        exists: exists,
+        forall: forall,
+        toOption: toOption
+      };
+    };
+    var error = function (message) {
+      var getOrThunk = function (f) {
+        return f();
+      };
+      var getOrDie = function () {
+        return die(String(message))();
+      };
+      var or = function (opt) {
+        return opt;
+      };
+      var orThunk = function (f) {
+        return f();
+      };
+      var map = function (_f) {
+        return error(message);
+      };
+      var mapError = function (f) {
+        return error(f(message));
+      };
+      var bind = function (_f) {
+        return error(message);
+      };
+      var fold = function (onError, _) {
+        return onError(message);
+      };
+      return {
+        is: never,
+        isValue: never,
+        isError: always,
+        getOr: identity,
+        getOrThunk: getOrThunk,
+        getOrDie: getOrDie,
+        or: or,
+        orThunk: orThunk,
+        fold: fold,
+        map: map,
+        mapError: mapError,
+        each: noop,
+        bind: bind,
+        exists: never,
+        forall: always,
+        toOption: Option.none
+      };
+    };
+    var fromOption = function (opt, err) {
+      return opt.fold(function () {
+        return error(err);
+      }, value);
+    };
+    var Result = {
+      value: value,
+      error: error,
+      fromOption: fromOption
+    };
+
+    var SimpleResultType;
+    (function (SimpleResultType) {
+      SimpleResultType[SimpleResultType['Error'] = 0] = 'Error';
+      SimpleResultType[SimpleResultType['Value'] = 1] = 'Value';
+    }(SimpleResultType || (SimpleResultType = {})));
+    var fold = function (res, onError, onValue) {
+      return res.stype === SimpleResultType.Error ? onError(res.serror) : onValue(res.svalue);
+    };
+    var partition$1 = function (results) {
+      var values = [];
+      var errors = [];
+      each(results, function (obj) {
+        fold(obj, function (err) {
+          return errors.push(err);
+        }, function (val) {
+          return values.push(val);
+        });
+      });
+      return {
+        values: values,
+        errors: errors
+      };
+    };
+    var mapError = function (res, f) {
+      if (res.stype === SimpleResultType.Error) {
+        return {
+          stype: SimpleResultType.Error,
+          serror: f(res.serror)
+        };
+      } else {
+        return res;
+      }
+    };
+    var map$1 = function (res, f) {
+      if (res.stype === SimpleResultType.Value) {
+        return {
+          stype: SimpleResultType.Value,
+          svalue: f(res.svalue)
+        };
+      } else {
+        return res;
+      }
+    };
+    var bind$1 = function (res, f) {
+      if (res.stype === SimpleResultType.Value) {
+        return f(res.svalue);
+      } else {
+        return res;
+      }
+    };
+    var bindError = function (res, f) {
+      if (res.stype === SimpleResultType.Error) {
+        return f(res.serror);
+      } else {
+        return res;
+      }
+    };
+    var svalue = function (v) {
+      return {
+        stype: SimpleResultType.Value,
+        svalue: v
+      };
+    };
+    var serror = function (e) {
+      return {
+        stype: SimpleResultType.Error,
+        serror: e
+      };
+    };
+    var toResult = function (res) {
+      return fold(res, Result.error, Result.value);
+    };
+    var fromResult = function (res) {
+      return res.fold(serror, svalue);
+    };
+    var SimpleResult = {
+      fromResult: fromResult,
+      toResult: toResult,
+      svalue: svalue,
+      partition: partition$1,
+      serror: serror,
+      bind: bind$1,
+      bindError: bindError,
+      map: map$1,
+      mapError: mapError,
+      fold: fold
+    };
+
     var keys = Object.keys;
     var hasOwnProperty = Object.hasOwnProperty;
     var each$1 = function (obj, f) {
@@ -548,7 +644,7 @@
         f(x, i);
       }
     };
-    var map$1 = function (obj, f) {
+    var map$2 = function (obj, f) {
       return tupleMap(obj, function (x, i) {
         return {
           k: i,
@@ -729,94 +825,6 @@
         }
         return r;
       };
-    };
-
-    var SimpleResultType;
-    (function (SimpleResultType) {
-      SimpleResultType[SimpleResultType['Error'] = 0] = 'Error';
-      SimpleResultType[SimpleResultType['Value'] = 1] = 'Value';
-    }(SimpleResultType || (SimpleResultType = {})));
-    var fold = function (res, onError, onValue) {
-      return res.stype === SimpleResultType.Error ? onError(res.serror) : onValue(res.svalue);
-    };
-    var partition$1 = function (results) {
-      var values = [];
-      var errors = [];
-      each(results, function (obj) {
-        fold(obj, function (err) {
-          return errors.push(err);
-        }, function (val) {
-          return values.push(val);
-        });
-      });
-      return {
-        values: values,
-        errors: errors
-      };
-    };
-    var mapError = function (res, f) {
-      if (res.stype === SimpleResultType.Error) {
-        return {
-          stype: SimpleResultType.Error,
-          serror: f(res.serror)
-        };
-      } else {
-        return res;
-      }
-    };
-    var map$2 = function (res, f) {
-      if (res.stype === SimpleResultType.Value) {
-        return {
-          stype: SimpleResultType.Value,
-          svalue: f(res.svalue)
-        };
-      } else {
-        return res;
-      }
-    };
-    var bind$1 = function (res, f) {
-      if (res.stype === SimpleResultType.Value) {
-        return f(res.svalue);
-      } else {
-        return res;
-      }
-    };
-    var bindError = function (res, f) {
-      if (res.stype === SimpleResultType.Error) {
-        return f(res.serror);
-      } else {
-        return res;
-      }
-    };
-    var svalue = function (v) {
-      return {
-        stype: SimpleResultType.Value,
-        svalue: v
-      };
-    };
-    var serror = function (e) {
-      return {
-        stype: SimpleResultType.Error,
-        serror: e
-      };
-    };
-    var toResult = function (res) {
-      return fold(res, Result.error, Result.value);
-    };
-    var fromResult = function (res) {
-      return res.fold(serror, svalue);
-    };
-    var SimpleResult = {
-      fromResult: fromResult,
-      toResult: toResult,
-      svalue: svalue,
-      partition: partition$1,
-      serror: serror,
-      bind: bind$1,
-      bindError: bindError,
-      map: map$2,
-      mapError: mapError,
-      fold: fold
     };
 
     var adt = Adt.generate([
@@ -1276,7 +1284,7 @@
       return choose(key, branches);
     };
     var choose$1 = function (key, branches) {
-      return choose(key, map$1(branches, objOf));
+      return choose(key, map$2(branches, objOf));
     };
     var anyValue$1 = constant(_anyValue);
     var typedValue = function (validator, expectedType) {
@@ -1826,14 +1834,13 @@
     };
 
     var DOCUMENT = 9;
+    var DOCUMENT_FRAGMENT = 11;
     var ELEMENT = 1;
     var TEXT = 3;
 
-    var ELEMENT$1 = ELEMENT;
-    var DOCUMENT$1 = DOCUMENT;
     var is = function (element, selector) {
       var dom = element.dom();
-      if (dom.nodeType !== ELEMENT$1) {
+      if (dom.nodeType !== ELEMENT) {
         return false;
       } else {
         var elem = dom;
@@ -1851,7 +1858,7 @@
       }
     };
     var bypassSelector = function (dom) {
-      return dom.nodeType !== ELEMENT$1 && dom.nodeType !== DOCUMENT$1 || dom.childElementCount === 0;
+      return dom.nodeType !== ELEMENT && dom.nodeType !== DOCUMENT && dom.nodeType !== DOCUMENT_FRAGMENT || dom.childElementCount === 0;
     };
     var all = function (selector, scope) {
       var base = scope === undefined ? domGlobals.document : scope.dom();
@@ -2029,7 +2036,7 @@
     };
     var dispatchWith = function (component, target, event, properties) {
       var data = __assign({ target: target }, properties);
-      component.getSystem().triggerEvent(event, target, map$1(data, constant));
+      component.getSystem().triggerEvent(event, target, map$2(data, constant));
     };
     var dispatchEvent = function (component, target, event, simulatedEvent) {
       component.getSystem().triggerEvent(event, target, simulatedEvent.event());
@@ -2141,8 +2148,30 @@
     var runOnInit = runOnSourceName(systemInit());
     var runOnExecute = runOnName(execute());
 
+    var Global = typeof domGlobals.window !== 'undefined' ? domGlobals.window : Function('return this;')();
+
+    var name = function (element) {
+      var r = element.dom().nodeName;
+      return r.toLowerCase();
+    };
+    var type = function (element) {
+      return element.dom().nodeType;
+    };
+    var isType$1 = function (t) {
+      return function (element) {
+        return type(element) === t;
+      };
+    };
+    var isElement = isType$1(ELEMENT);
+    var isText = isType$1(TEXT);
+    var isDocument = isType$1(DOCUMENT);
+    var isDocumentFragment = isType$1(DOCUMENT_FRAGMENT);
+
     var owner = function (element) {
       return Element.fromDom(element.dom().ownerDocument);
+    };
+    var documentOrOwner = function (dos) {
+      return isDocument(dos) ? dos : owner(dos);
     };
     var documentElement = function (element) {
       return Element.fromDom(element.dom().ownerDocument.documentElement);
@@ -2262,23 +2291,6 @@
       append(container, clone);
       return get$1(container);
     };
-
-    var Global = typeof domGlobals.window !== 'undefined' ? domGlobals.window : Function('return this;')();
-
-    var name = function (element) {
-      var r = element.dom().nodeName;
-      return r.toLowerCase();
-    };
-    var type = function (element) {
-      return element.dom().nodeType;
-    };
-    var isType$1 = function (t) {
-      return function (element) {
-        return type(element) === t;
-      };
-    };
-    var isElement = isType$1(ELEMENT);
-    var isText = isType$1(TEXT);
 
     var rawSet = function (dom, key, value) {
       if (isString(value) || isBoolean(value) || isNumber(value)) {
@@ -2500,7 +2512,7 @@
       });
       return {
         list: all,
-        data: map$1(validated, function (optBlobThunk) {
+        data: map$2(validated, function (optBlobThunk) {
           var output = optBlobThunk.map(function (blob) {
             return {
               config: blob.config,
@@ -2853,9 +2865,51 @@
       return dom.style !== undefined && isFunction(dom.style.getPropertyValue);
     };
 
+    var isShadowRoot = function (dos) {
+      return isDocumentFragment(dos);
+    };
+    var supported = isFunction(domGlobals.Element.prototype.attachShadow) && isFunction(domGlobals.Node.prototype.getRootNode);
+    var isSupported$1 = constant(supported);
+    var getRootNode = supported ? function (e) {
+      return Element.fromDom(e.dom().getRootNode());
+    } : documentOrOwner;
+    var getContentContainer = function (dos) {
+      return isShadowRoot(dos) ? dos : Element.fromDom(documentOrOwner(dos).dom().body);
+    };
+    var getShadowRoot = function (e) {
+      var r = getRootNode(e);
+      return isShadowRoot(r) ? Option.some(r) : Option.none();
+    };
+    var getShadowHost = function (e) {
+      return Element.fromDom(e.dom().host);
+    };
+    var getOriginalEventTarget = function (event) {
+      if (isSupported$1() && isNonNullable(event.target)) {
+        var el = Element.fromDom(event.target);
+        if (isElement(el) && isOpenShadowHost(Element.fromDom(event.target))) {
+          var eventAny = event;
+          if (eventAny.composed && eventAny.composedPath) {
+            var composedPath = eventAny.composedPath();
+            if (composedPath) {
+              return head(composedPath);
+            }
+          }
+        }
+      }
+      return Option.from(event.target);
+    };
+    var isOpenShadowHost = function (element) {
+      return isNonNullable(element.dom().shadowRoot);
+    };
+
     var inBody = function (element) {
       var dom = isText(element) ? element.dom().parentNode : element.dom();
-      return dom !== undefined && dom !== null && dom.ownerDocument.body.contains(dom);
+      if (dom === undefined || dom === null || dom.ownerDocument === null) {
+        return false;
+      }
+      return getShadowRoot(Element.fromDom(dom)).fold(function () {
+        return dom.ownerDocument.body.contains(dom);
+      }, compose1(inBody, getShadowHost));
     };
     var body = function () {
       return getBody(Element.fromDom(domGlobals.document));
@@ -3282,7 +3336,7 @@
       };
     };
     var fromRawEvent = function (rawEvent) {
-      var target = Element.fromDom(rawEvent.target);
+      var target = Element.fromDom(getOriginalEventTarget(rawEvent).getOr(rawEvent.target));
       var stop = function () {
         return rawEvent.stopPropagation();
       };
@@ -3982,10 +4036,10 @@
       var getConfig = function (info) {
         return hasNonNullableKey(info, name) ? info[name]() : Option.none();
       };
-      var wrappedApis = map$1(apis, function (apiF, apiName) {
+      var wrappedApis = map$2(apis, function (apiF, apiName) {
         return wrapApi(name, apiF, apiName);
       });
-      var wrappedExtra = map$1(extra, function (extraF, extraName) {
+      var wrappedExtra = map$2(extra, function (extraF, extraName) {
         return markAsExtraApi(extraF, extraName);
       });
       var me = __assign(__assign(__assign({}, wrappedExtra), wrappedApis), {
@@ -4108,6 +4162,10 @@
         exhibit: exhibit
     });
 
+    var getDocument = function () {
+      return Element.fromDom(domGlobals.document);
+    };
+
     var focus$1 = function (element) {
       return element.dom().focus();
     };
@@ -4115,15 +4173,17 @@
       return element.dom().blur();
     };
     var hasFocus = function (element) {
-      var doc = owner(element).dom();
-      return element.dom() === doc.activeElement;
+      var root = getRootNode(element).dom();
+      return element.dom() === root.activeElement;
     };
-    var active = function (_doc) {
-      var doc = _doc !== undefined ? _doc.dom() : domGlobals.document;
-      return Option.from(doc.activeElement).map(Element.fromDom);
+    var active = function (root) {
+      if (root === void 0) {
+        root = getDocument();
+      }
+      return Option.from(root.dom().activeElement).map(Element.fromDom);
     };
     var search = function (element) {
-      return active(owner(element)).filter(function (e) {
+      return active(getRootNode(element)).filter(function (e) {
         return element.dom().contains(e.dom());
       });
     };
@@ -5987,7 +6047,7 @@
       };
     };
     var substitutePlaces = function (owner, detail, components, placeholders) {
-      var ps = map$1(placeholders, function (ph, name) {
+      var ps = map$2(placeholders, function (ph, name) {
         return oneReplace(name, ph);
       });
       var outcome = substituteAll(owner, detail, components, ps);
@@ -6186,7 +6246,7 @@
     };
     var getAllParts = function (component, detail) {
       var system = component.getSystem();
-      return map$1(detail.partUids, function (pUid, _k) {
+      return map$2(detail.partUids, function (pUid, _k) {
         return constant(system.getByUid(pUid));
       });
     };
@@ -6294,8 +6354,8 @@
       var sketch = function (spec) {
         return single$1(config.name, config.configFields, config.factory, spec);
       };
-      var apis = map$1(config.apis, makeApi);
-      var extraApis = map$1(config.extraApis, function (f, k) {
+      var apis = map$2(config.apis, makeApi);
+      var extraApis = map$2(config.extraApis, function (f, k) {
         return markAsExtraApi(f, k);
       });
       return __assign(__assign({
@@ -6310,8 +6370,8 @@
         return composite(config.name, config.configFields, config.partFields, config.factory, spec);
       };
       var parts = generate$4(config.name, config.partFields);
-      var apis = map$1(config.apis, makeApi);
-      var extraApis = map$1(config.extraApis, function (f, k) {
+      var apis = map$2(config.apis, makeApi);
+      var extraApis = map$2(config.extraApis, function (f, k) {
         return markAsExtraApi(f, k);
       });
       return __assign(__assign({
@@ -8047,10 +8107,10 @@
       });
       var byItem = expansions;
       var byMenu = transpose(expansions);
-      var menuPaths = map$1(byMenu, function (_triggerItem, submenu) {
+      var menuPaths = map$2(byMenu, function (_triggerItem, submenu) {
         return [submenu].concat(trace(items, byItem, byMenu, submenu));
       });
-      return map$1(items, function (menu) {
+      return map$2(items, function (menu) {
         return get(menuPaths, menu).getOr([menu]);
       });
     };
@@ -8179,11 +8239,10 @@
     var make$2 = function (detail, _rawUiSpec) {
       var submenuParentItems = Cell(Option.none());
       var buildMenus = function (container, primaryName, menus) {
-        return map$1(menus, function (spec, name) {
+        return map$2(menus, function (spec, name) {
           var makeSketch = function () {
-            return Menu.sketch(__assign(__assign({ dom: spec.dom }, spec), {
+            return Menu.sketch(__assign(__assign({}, spec), {
               value: name,
-              items: spec.items,
               markers: detail.markers,
               fakeFocus: detail.fakeFocus,
               onHighlight: detail.onHighlight,
@@ -8221,7 +8280,7 @@
         });
       };
       var toDirectory = function (_container) {
-        return map$1(detail.data.menus, function (data, _menuName) {
+        return map$2(detail.data.menus, function (data, _menuName) {
           return bind(data.items, function (item) {
             return item.type === 'separator' ? [] : [item.data.value];
           });
@@ -8921,18 +8980,18 @@
       return Option.from(icons()['temporary-placeholder']).getOr('!not found!');
     };
     var get$d = function (name, icons) {
-      return Option.from(icons()[name]).getOrThunk(function () {
+      return Option.from(icons()[name.toLowerCase()]).getOrThunk(function () {
         return defaultIcon(icons);
       });
     };
     var getOr = function (name, icons, fallback) {
-      return Option.from(icons()[name]).or(fallback).getOrThunk(function () {
+      return Option.from(icons()[name.toLowerCase()]).or(fallback).getOrThunk(function () {
         return defaultIcon(icons);
       });
     };
     var getFirst$1 = function (names, icons) {
       return findMap(names, function (name) {
-        return Option.from(icons()[name]);
+        return Option.from(icons()[name.toLowerCase()]);
       }).getOrThunk(function () {
         return defaultIcon(icons);
       });
@@ -9594,7 +9653,7 @@
 
     var register = function (editor) {
       var popups = editor.ui.registry.getAll().popups;
-      var dataset = map$1(popups, function (popup) {
+      var dataset = map$2(popups, function (popup) {
         return createAutocompleter(popup).fold(function (err) {
           throw new Error(formatError(err));
         }, function (x) {
@@ -9617,6 +9676,286 @@
       };
     };
 
+    var ItemResponse;
+    (function (ItemResponse) {
+      ItemResponse[ItemResponse['CLOSE_ON_EXECUTE'] = 0] = 'CLOSE_ON_EXECUTE';
+      ItemResponse[ItemResponse['BUBBLE_TO_SANDBOX'] = 1] = 'BUBBLE_TO_SANDBOX';
+    }(ItemResponse || (ItemResponse = {})));
+    var ItemResponse$1 = ItemResponse;
+
+    var navClass = 'tox-menu-nav__js';
+    var selectableClass = 'tox-collection__item';
+    var colorClass = 'tox-swatch';
+    var presetClasses = {
+      normal: navClass,
+      color: colorClass
+    };
+    var tickedClass = 'tox-collection__item--enabled';
+    var groupHeadingClass = 'tox-collection__group-heading';
+    var iconClass = 'tox-collection__item-icon';
+    var textClass = 'tox-collection__item-label';
+    var accessoryClass = 'tox-collection__item-accessory';
+    var caretClass = 'tox-collection__item-caret';
+    var checkmarkClass = 'tox-collection__item-checkmark';
+    var activeClass = 'tox-collection__item--active';
+    var iconClassRtl = 'tox-collection__item-icon-rtl';
+    var classForPreset = function (presets) {
+      return get(presetClasses, presets).getOr(navClass);
+    };
+
+    var forMenu = function (presets) {
+      if (presets === 'color') {
+        return 'tox-swatches';
+      } else {
+        return 'tox-menu';
+      }
+    };
+    var classes = function (presets) {
+      return {
+        backgroundMenu: 'tox-background-menu',
+        selectedMenu: 'tox-selected-menu',
+        selectedItem: 'tox-collection__item--active',
+        hasIcons: 'tox-menu--has-icons',
+        menu: forMenu(presets),
+        tieredMenu: 'tox-tiered-menu'
+      };
+    };
+
+    var markers$1 = function (presets) {
+      var menuClasses = classes(presets);
+      return {
+        backgroundMenu: menuClasses.backgroundMenu,
+        selectedMenu: menuClasses.selectedMenu,
+        menu: menuClasses.menu,
+        selectedItem: menuClasses.selectedItem,
+        item: classForPreset(presets)
+      };
+    };
+    var dom$1 = function (hasIcons, columns, presets) {
+      var menuClasses = classes(presets);
+      return {
+        tag: 'div',
+        classes: flatten([
+          [
+            menuClasses.menu,
+            'tox-menu-' + columns + '-column'
+          ],
+          hasIcons ? [menuClasses.hasIcons] : []
+        ])
+      };
+    };
+    var components$1 = [Menu.parts().items({})];
+    var part = function (hasIcons, columns, presets) {
+      var menuClasses = classes(presets);
+      var d = {
+        tag: 'div',
+        classes: flatten([[menuClasses.tieredMenu]])
+      };
+      return {
+        dom: d,
+        markers: markers$1(presets)
+      };
+    };
+
+    var chunk$1 = function (rowDom, numColumns) {
+      return function (items) {
+        var chunks = chunk(items, numColumns);
+        return map(chunks, function (c) {
+          return {
+            dom: rowDom,
+            components: c
+          };
+        });
+      };
+    };
+    var forSwatch = function (columns) {
+      return {
+        dom: {
+          tag: 'div',
+          classes: [
+            'tox-menu',
+            'tox-swatches-menu'
+          ]
+        },
+        components: [{
+            dom: {
+              tag: 'div',
+              classes: ['tox-swatches']
+            },
+            components: [Menu.parts().items({
+                preprocess: columns !== 'auto' ? chunk$1({
+                  tag: 'div',
+                  classes: ['tox-swatches__row']
+                }, columns) : identity
+              })]
+          }]
+      };
+    };
+    var forToolbar = function (columns) {
+      return {
+        dom: {
+          tag: 'div',
+          classes: [
+            'tox-menu',
+            'tox-collection',
+            'tox-collection--toolbar',
+            'tox-collection--toolbar-lg'
+          ]
+        },
+        components: [Menu.parts().items({
+            preprocess: chunk$1({
+              tag: 'div',
+              classes: ['tox-collection__group']
+            }, columns)
+          })]
+      };
+    };
+    var preprocessCollection = function (items, isSeparator) {
+      var allSplits = [];
+      var currentSplit = [];
+      each(items, function (item, i) {
+        if (isSeparator(item, i)) {
+          if (currentSplit.length > 0) {
+            allSplits.push(currentSplit);
+          }
+          currentSplit = [];
+          if (has(item.dom, 'innerHtml')) {
+            currentSplit.push(item);
+          }
+        } else {
+          currentSplit.push(item);
+        }
+      });
+      if (currentSplit.length > 0) {
+        allSplits.push(currentSplit);
+      }
+      return map(allSplits, function (s) {
+        return {
+          dom: {
+            tag: 'div',
+            classes: ['tox-collection__group']
+          },
+          components: s
+        };
+      });
+    };
+    var forCollection = function (columns, initItems, _hasIcons) {
+      return {
+        dom: {
+          tag: 'div',
+          classes: [
+            'tox-menu',
+            'tox-collection'
+          ].concat(columns === 1 ? ['tox-collection--list'] : ['tox-collection--grid'])
+        },
+        components: [Menu.parts().items({
+            preprocess: function (items) {
+              if (columns !== 'auto' && columns > 1) {
+                return chunk$1({
+                  tag: 'div',
+                  classes: ['tox-collection__group']
+                }, columns)(items);
+              } else {
+                return preprocessCollection(items, function (_item, i) {
+                  return initItems[i].type === 'separator';
+                });
+              }
+            }
+          })]
+      };
+    };
+    var forHorizontalCollection = function (initItems, _hasIcons) {
+      return {
+        dom: {
+          tag: 'div',
+          classes: [
+            'tox-collection',
+            'tox-collection--horizontal'
+          ]
+        },
+        components: [Menu.parts().items({
+            preprocess: function (items) {
+              return preprocessCollection(items, function (_item, i) {
+                return initItems[i].type === 'separator';
+              });
+            }
+          })]
+      };
+    };
+
+    var menuHasIcons = function (xs) {
+      return exists(xs, function (item) {
+        return 'icon' in item && item.icon !== undefined;
+      });
+    };
+    var handleError = function (error) {
+      domGlobals.console.error(formatError(error));
+      domGlobals.console.log(error);
+      return Option.none();
+    };
+    var createHorizontalPartialMenuWithAlloyItems = function (value, _hasIcons, items, _columns, _presets) {
+      var structure = forHorizontalCollection(items);
+      return {
+        value: value,
+        dom: structure.dom,
+        components: structure.components,
+        items: items
+      };
+    };
+    var createPartialMenuWithAlloyItems = function (value, hasIcons, items, columns, presets) {
+      if (presets === 'color') {
+        var structure = forSwatch(columns);
+        return {
+          value: value,
+          dom: structure.dom,
+          components: structure.components,
+          items: items
+        };
+      }
+      if (presets === 'normal' && columns === 'auto') {
+        var structure = forCollection(columns, items);
+        return {
+          value: value,
+          dom: structure.dom,
+          components: structure.components,
+          items: items
+        };
+      }
+      if (presets === 'normal' && columns === 1) {
+        var structure = forCollection(1, items);
+        return {
+          value: value,
+          dom: structure.dom,
+          components: structure.components,
+          items: items
+        };
+      }
+      if (presets === 'normal') {
+        var structure = forCollection(columns, items);
+        return {
+          value: value,
+          dom: structure.dom,
+          components: structure.components,
+          items: items
+        };
+      }
+      if (presets === 'listpreview' && columns !== 'auto') {
+        var structure = forToolbar(columns);
+        return {
+          value: value,
+          dom: structure.dom,
+          components: structure.components,
+          items: items
+        };
+      }
+      return {
+        value: value,
+        dom: dom$1(hasIcons, columns, presets),
+        components: components$1,
+        items: items
+      };
+    };
+
     var commonMenuItemFields = [
       defaultedBoolean('disabled', false),
       optionString('text'),
@@ -9626,6 +9965,28 @@
       }), anyValue$1()),
       defaulted$1('meta', {})
     ];
+
+    var choiceMenuItemSchema = objOf([
+      strictString('type'),
+      defaultedBoolean('active', false),
+      optionString('icon')
+    ].concat(commonMenuItemFields));
+    var createChoiceMenuItem = function (spec) {
+      return asRaw('choicemenuitem', choiceMenuItemSchema, spec);
+    };
+
+    var fancyTypes = [
+      'inserttable',
+      'colorswatch'
+    ];
+    var fancyMenuItemSchema = objOf([
+      strictString('type'),
+      strictStringEnum('fancytype', fancyTypes),
+      defaultedFunction('onAction', noop)
+    ]);
+    var createFancyMenuItem = function (spec) {
+      return asRaw('fancymenuitem', fancyMenuItemSchema, spec);
+    };
 
     var menuItemSchema = objOf([
       strictString('type'),
@@ -9662,28 +10023,6 @@
     ].concat(commonMenuItemFields));
     var createToggleMenuItem = function (spec) {
       return asRaw('togglemenuitem', toggleMenuItemSchema, spec);
-    };
-
-    var choiceMenuItemSchema = objOf([
-      strictString('type'),
-      defaultedBoolean('active', false),
-      optionString('icon')
-    ].concat(commonMenuItemFields));
-    var createChoiceMenuItem = function (spec) {
-      return asRaw('choicemenuitem', choiceMenuItemSchema, spec);
-    };
-
-    var fancyTypes = [
-      'inserttable',
-      'colorswatch'
-    ];
-    var fancyMenuItemSchema = objOf([
-      strictString('type'),
-      strictStringEnum('fancytype', fancyTypes),
-      defaultedFunction('onAction', noop)
-    ]);
-    var createFancyMenuItem = function (spec) {
-      return asRaw('fancymenuitem', fancyMenuItemSchema, spec);
     };
 
     var detectSize = function (comp, margin, selectorClass) {
@@ -9907,236 +10246,9 @@
       apis: TooltippingApis
     });
 
-    var global$5 = tinymce.util.Tools.resolve('tinymce.util.I18n');
+    var global$5 = tinymce.util.Tools.resolve('tinymce.dom.DOMUtils');
 
-    var navClass = 'tox-menu-nav__js';
-    var selectableClass = 'tox-collection__item';
-    var colorClass = 'tox-swatch';
-    var presetClasses = {
-      normal: navClass,
-      color: colorClass
-    };
-    var tickedClass = 'tox-collection__item--enabled';
-    var groupHeadingClass = 'tox-collection__group-heading';
-    var iconClass = 'tox-collection__item-icon';
-    var textClass = 'tox-collection__item-label';
-    var accessoryClass = 'tox-collection__item-accessory';
-    var caretClass = 'tox-collection__item-caret';
-    var checkmarkClass = 'tox-collection__item-checkmark';
-    var activeClass = 'tox-collection__item--active';
-    var iconClassRtl = 'tox-collection__item-icon-rtl';
-    var classForPreset = function (presets) {
-      return get(presetClasses, presets).getOr(navClass);
-    };
-
-    var global$6 = tinymce.util.Tools.resolve('tinymce.Env');
-
-    var convertText = function (source) {
-      var mac = {
-        alt: '&#x2325;',
-        ctrl: '&#x2303;',
-        shift: '&#x21E7;',
-        meta: '&#x2318;',
-        access: '&#x2303;&#x2325;'
-      };
-      var other = {
-        meta: 'Ctrl',
-        access: 'Shift+Alt'
-      };
-      var replace = global$6.mac ? mac : other;
-      var shortcut = source.split('+');
-      var updated = map(shortcut, function (segment) {
-        var search = segment.toLowerCase().trim();
-        return has(replace, search) ? replace[search] : segment;
-      });
-      return global$6.mac ? updated.join('') : updated.join('+');
-    };
-
-    var renderIcon = function (iconHtml) {
-      return {
-        dom: {
-          tag: 'div',
-          classes: [iconClass],
-          innerHtml: iconHtml
-        }
-      };
-    };
-    var renderText = function (text$1) {
-      return {
-        dom: {
-          tag: 'div',
-          classes: [textClass]
-        },
-        components: [text(global$5.translate(text$1))]
-      };
-    };
-    var renderHtml = function (html) {
-      return {
-        dom: {
-          tag: 'div',
-          classes: [textClass],
-          innerHtml: html
-        }
-      };
-    };
-    var renderStyledText = function (style, text$1) {
-      return {
-        dom: {
-          tag: 'div',
-          classes: [textClass]
-        },
-        components: [{
-            dom: {
-              tag: style.tag,
-              styles: style.styles
-            },
-            components: [text(global$5.translate(text$1))]
-          }]
-      };
-    };
-    var renderShortcut = function (shortcut) {
-      return {
-        dom: {
-          tag: 'div',
-          classes: [accessoryClass],
-          innerHtml: convertText(shortcut)
-        }
-      };
-    };
-    var renderCheckmark = function (icons) {
-      return {
-        dom: {
-          tag: 'div',
-          classes: [checkmarkClass],
-          innerHtml: get$d('checkmark', icons)
-        }
-      };
-    };
-    var renderSubmenuCaret = function (icons) {
-      return {
-        dom: {
-          tag: 'div',
-          classes: [caretClass],
-          innerHtml: get$d('chevron-right', icons)
-        }
-      };
-    };
-    var renderDownwardsCaret = function (icons) {
-      return {
-        dom: {
-          tag: 'div',
-          classes: [caretClass],
-          innerHtml: get$d('chevron-down', icons)
-        }
-      };
-    };
-
-    var renderColorStructure = function (itemText, itemValue, iconSvg, providerBackstage) {
-      var colorPickerCommand = 'custom';
-      var removeColorCommand = 'remove';
-      var getDom = function () {
-        var common = colorClass;
-        var icon = iconSvg.getOr('');
-        var attributes = itemText.map(function (text) {
-          return { title: providerBackstage.translate(text) };
-        }).getOr({});
-        var baseDom = {
-          tag: 'div',
-          attributes: attributes,
-          classes: [common]
-        };
-        if (itemValue === colorPickerCommand) {
-          return __assign(__assign({}, baseDom), {
-            tag: 'button',
-            classes: __spreadArrays(baseDom.classes, ['tox-swatches__picker-btn']),
-            innerHtml: icon
-          });
-        } else if (itemValue === removeColorCommand) {
-          return __assign(__assign({}, baseDom), {
-            classes: __spreadArrays(baseDom.classes, ['tox-swatch--remove']),
-            innerHtml: icon
-          });
-        } else {
-          return __assign(__assign({}, baseDom), {
-            attributes: __assign(__assign({}, baseDom.attributes), { 'data-mce-color': itemValue }),
-            styles: { 'background-color': itemValue }
-          });
-        }
-      };
-      return {
-        dom: getDom(),
-        optComponents: []
-      };
-    };
-    var renderNormalItemStructure = function (info, icon, renderIcons, textRender, rtlClass) {
-      var leftIcon = renderIcons ? icon.or(Option.some('')).map(renderIcon) : Option.none();
-      var checkmark = info.checkMark;
-      var domTitle = info.ariaLabel.map(function (label) {
-        return { attributes: { title: global$5.translate(label) } };
-      }).getOr({});
-      var dom = __assign({
-        tag: 'div',
-        classes: [
-          navClass,
-          selectableClass
-        ].concat(rtlClass ? [iconClassRtl] : [])
-      }, domTitle);
-      var content = info.htmlContent.fold(function () {
-        return info.textContent.map(textRender);
-      }, function (html) {
-        return Option.some(renderHtml(html));
-      });
-      var menuItem = {
-        dom: dom,
-        optComponents: [
-          leftIcon,
-          content,
-          info.shortcutContent.map(renderShortcut),
-          checkmark,
-          info.caret
-        ]
-      };
-      return menuItem;
-    };
-    var rtlIcon = [
-      'list-num-default',
-      'list-num-lower-alpha',
-      'list-num-lower-greek',
-      'list-num-lower-roman',
-      'list-num-upper-alpha',
-      'list-num-upper-roman'
-    ];
-    var rtlTransform = [
-      'list-bull-circle',
-      'list-bull-default',
-      'list-bull-square'
-    ];
-    var renderItemStructure = function (info, providersBackstage, renderIcons, fallbackIcon) {
-      if (fallbackIcon === void 0) {
-        fallbackIcon = Option.none();
-      }
-      var getIconName = function (iconName) {
-        return iconName.map(function (name) {
-          return global$5.isRtl() && contains(rtlIcon, name) ? name + '-rtl' : name;
-        });
-      };
-      var needRtlClass = global$5.isRtl() && info.iconContent.exists(function (name) {
-        return contains(rtlTransform, name);
-      });
-      var icon = getIconName(info.iconContent).map(function (iconName) {
-        return getOr(iconName, providersBackstage.icons, fallbackIcon);
-      });
-      var textRender = Option.from(info.meta).fold(function () {
-        return renderText;
-      }, function (meta) {
-        return has(meta, 'style') ? curry(renderStyledText, meta.style) : renderText;
-      });
-      if (info.presets === 'color') {
-        return renderColorStructure(info.ariaLabel, info.value, icon, providersBackstage);
-      } else {
-        return renderNormalItemStructure(info, icon, renderIcons, textRender, needRtlClass);
-      }
-    };
+    var global$6 = tinymce.util.Tools.resolve('tinymce.util.I18n');
 
     var nativeDisabled = [
       'input',
@@ -10203,7 +10315,7 @@
     });
 
     var exhibit$3 = function (base, disableConfig) {
-      return nu$6({ classes: disableConfig.disabled ? disableConfig.disableClass.map(pure).getOr([]) : [] });
+      return nu$6({ classes: disableConfig.disabled() ? disableConfig.disableClass.toArray() : [] });
     };
     var events$9 = function (disableConfig, disableState) {
       return derive([
@@ -10235,20 +10347,17 @@
       apis: DisableApis
     });
 
-    var global$7 = tinymce.util.Tools.resolve('tinymce.dom.DOMUtils');
-
-    var global$8 = tinymce.util.Tools.resolve('tinymce.EditorManager');
+    var global$7 = tinymce.util.Tools.resolve('tinymce.EditorManager');
 
     var getSkinUrl = function (editor) {
-      var settings = editor.settings;
-      var skin = settings.skin;
-      var skinUrl = settings.skin_url;
+      var skin = editor.getParam('skin');
+      var skinUrl = editor.getParam('skin_url');
       if (skin !== false) {
         var skinName = skin ? skin : 'oxide';
         if (skinUrl) {
           skinUrl = editor.documentBaseURI.toAbsolute(skinUrl);
         } else {
-          skinUrl = global$8.baseURL + '/skins/ui/' + skinName;
+          skinUrl = global$7.baseURL + '/skins/ui/' + skinName;
         }
       }
       return skinUrl;
@@ -10263,13 +10372,13 @@
       return editor.getParam('height', Math.max(editor.getElement().offsetHeight, 200));
     };
     var getWidthSetting = function (editor) {
-      return editor.getParam('width', global$7.DOM.getStyle(editor.getElement(), 'width'));
+      return editor.getParam('width', global$5.DOM.getStyle(editor.getElement(), 'width'));
     };
     var getMinWidthSetting = function (editor) {
-      return Option.from(editor.settings.min_width).filter(isNumber);
+      return Option.from(editor.getParam('min_width')).filter(isNumber);
     };
     var getMinHeightSetting = function (editor) {
-      return Option.from(editor.settings.min_height).filter(isNumber);
+      return Option.from(editor.getParam('min_height')).filter(isNumber);
     };
     var getMaxWidthSetting = function (editor) {
       return Option.from(editor.getParam('max_width')).filter(isNumber);
@@ -10297,12 +10406,8 @@
       return !isMultipleToolbars(editor) && (isToolbarObjectArray || isToolbarString || isToolbarTrue);
     };
     var getMultipleToolbarsSetting = function (editor) {
-      var keys$1 = keys(editor.settings);
-      var toolbarKeys = filter(keys$1, function (key) {
-        return /^toolbar([1-9])$/.test(key);
-      });
-      var toolbars = map(toolbarKeys, function (key) {
-        return editor.getParam(key, false, 'string');
+      var toolbars = range(9, function (num) {
+        return editor.getParam('toolbar' + (num + 1), false, 'string');
       });
       var toolbarArray = filter(toolbars, function (toolbar) {
         return typeof toolbar === 'string';
@@ -10365,6 +10470,48 @@
     };
     var isDraggableModal = function (editor) {
       return editor.getParam('draggable_modal', false, 'boolean');
+    };
+    var getMenus = function (editor) {
+      var menu = editor.getParam('menu');
+      if (menu) {
+        return map$2(menu, function (menu) {
+          return __assign(__assign({}, menu), { items: menu.items });
+        });
+      } else {
+        return {};
+      }
+    };
+    var getMenubar = function (editor) {
+      return editor.getParam('menubar');
+    };
+    var getToolbar = function (editor) {
+      return editor.getParam('toolbar', true);
+    };
+    var getFilePickerCallback = function (editor) {
+      return editor.getParam('file_picker_callback');
+    };
+    var getFilePickerTypes = function (editor) {
+      return editor.getParam('file_picker_types');
+    };
+    var getFileBrowserCallbackTypes = function (editor) {
+      return editor.getParam('file_browser_callback_types');
+    };
+    var noTypeaheadUrls = function (editor) {
+      return editor.getParam('typeahead_urls') === false;
+    };
+    var getAnchorTop = function (editor) {
+      return editor.getParam('anchor_top', '#top', 'string');
+    };
+    var getAnchorBottom = function (editor) {
+      return editor.getParam('anchor_bottom', '#bottom', 'string');
+    };
+    var getFilePickerValidatorHandler = function (editor) {
+      var handler = editor.getParam('file_picker_validator_handler', undefined, 'function');
+      if (handler === undefined) {
+        return editor.getParam('filepicker_validator_handler', undefined, 'function');
+      } else {
+        return handler;
+      }
     };
 
     var ReadOnlyChannel = 'silver.readonly';
@@ -10456,13 +10603,6 @@
       });
     };
 
-    var ItemResponse;
-    (function (ItemResponse) {
-      ItemResponse[ItemResponse['CLOSE_ON_EXECUTE'] = 0] = 'CLOSE_ON_EXECUTE';
-      ItemResponse[ItemResponse['BUBBLE_TO_SANDBOX'] = 1] = 'BUBBLE_TO_SANDBOX';
-    }(ItemResponse || (ItemResponse = {})));
-    var ItemResponse$1 = ItemResponse;
-
     var onMenuItemExecute = function (info, itemResponse) {
       return runOnExecute(function (comp, simulatedEvent) {
         runWithApi(info, comp)(info.onAction);
@@ -10516,6 +10656,215 @@
       };
     };
 
+    var global$8 = tinymce.util.Tools.resolve('tinymce.Env');
+
+    var convertText = function (source) {
+      var mac = {
+        alt: '&#x2325;',
+        ctrl: '&#x2303;',
+        shift: '&#x21E7;',
+        meta: '&#x2318;',
+        access: '&#x2303;&#x2325;'
+      };
+      var other = {
+        meta: 'Ctrl',
+        access: 'Shift+Alt'
+      };
+      var replace = global$8.mac ? mac : other;
+      var shortcut = source.split('+');
+      var updated = map(shortcut, function (segment) {
+        var search = segment.toLowerCase().trim();
+        return has(replace, search) ? replace[search] : segment;
+      });
+      return global$8.mac ? updated.join('') : updated.join('+');
+    };
+
+    var renderIcon = function (iconHtml) {
+      return {
+        dom: {
+          tag: 'div',
+          classes: [iconClass],
+          innerHtml: iconHtml
+        }
+      };
+    };
+    var renderText = function (text$1) {
+      return {
+        dom: {
+          tag: 'div',
+          classes: [textClass]
+        },
+        components: [text(global$6.translate(text$1))]
+      };
+    };
+    var renderHtml = function (html) {
+      return {
+        dom: {
+          tag: 'div',
+          classes: [textClass],
+          innerHtml: html
+        }
+      };
+    };
+    var renderStyledText = function (style, text$1) {
+      return {
+        dom: {
+          tag: 'div',
+          classes: [textClass]
+        },
+        components: [{
+            dom: {
+              tag: style.tag,
+              styles: style.styles
+            },
+            components: [text(global$6.translate(text$1))]
+          }]
+      };
+    };
+    var renderShortcut = function (shortcut) {
+      return {
+        dom: {
+          tag: 'div',
+          classes: [accessoryClass],
+          innerHtml: convertText(shortcut)
+        }
+      };
+    };
+    var renderCheckmark = function (icons) {
+      return {
+        dom: {
+          tag: 'div',
+          classes: [checkmarkClass],
+          innerHtml: get$d('checkmark', icons)
+        }
+      };
+    };
+    var renderSubmenuCaret = function (icons) {
+      return {
+        dom: {
+          tag: 'div',
+          classes: [caretClass],
+          innerHtml: get$d('chevron-right', icons)
+        }
+      };
+    };
+    var renderDownwardsCaret = function (icons) {
+      return {
+        dom: {
+          tag: 'div',
+          classes: [caretClass],
+          innerHtml: get$d('chevron-down', icons)
+        }
+      };
+    };
+
+    var renderColorStructure = function (itemText, itemValue, iconSvg, providerBackstage) {
+      var colorPickerCommand = 'custom';
+      var removeColorCommand = 'remove';
+      var getDom = function () {
+        var common = colorClass;
+        var icon = iconSvg.getOr('');
+        var attributes = itemText.map(function (text) {
+          return { title: providerBackstage.translate(text) };
+        }).getOr({});
+        var baseDom = {
+          tag: 'div',
+          attributes: attributes,
+          classes: [common]
+        };
+        if (itemValue === colorPickerCommand) {
+          return __assign(__assign({}, baseDom), {
+            tag: 'button',
+            classes: __spreadArrays(baseDom.classes, ['tox-swatches__picker-btn']),
+            innerHtml: icon
+          });
+        } else if (itemValue === removeColorCommand) {
+          return __assign(__assign({}, baseDom), {
+            classes: __spreadArrays(baseDom.classes, ['tox-swatch--remove']),
+            innerHtml: icon
+          });
+        } else {
+          return __assign(__assign({}, baseDom), {
+            attributes: __assign(__assign({}, baseDom.attributes), { 'data-mce-color': itemValue }),
+            styles: { 'background-color': itemValue }
+          });
+        }
+      };
+      return {
+        dom: getDom(),
+        optComponents: []
+      };
+    };
+    var renderNormalItemStructure = function (info, icon, renderIcons, textRender, rtlClass) {
+      var leftIcon = renderIcons ? icon.or(Option.some('')).map(renderIcon) : Option.none();
+      var checkmark = info.checkMark;
+      var domTitle = info.ariaLabel.map(function (label) {
+        return { attributes: { title: global$6.translate(label) } };
+      }).getOr({});
+      var dom = __assign({
+        tag: 'div',
+        classes: [
+          navClass,
+          selectableClass
+        ].concat(rtlClass ? [iconClassRtl] : [])
+      }, domTitle);
+      var content = info.htmlContent.fold(function () {
+        return info.textContent.map(textRender);
+      }, function (html) {
+        return Option.some(renderHtml(html));
+      });
+      var menuItem = {
+        dom: dom,
+        optComponents: [
+          leftIcon,
+          content,
+          info.shortcutContent.map(renderShortcut),
+          checkmark,
+          info.caret
+        ]
+      };
+      return menuItem;
+    };
+    var rtlIcon = [
+      'list-num-default',
+      'list-num-lower-alpha',
+      'list-num-lower-greek',
+      'list-num-lower-roman',
+      'list-num-upper-alpha',
+      'list-num-upper-roman'
+    ];
+    var rtlTransform = [
+      'list-bull-circle',
+      'list-bull-default',
+      'list-bull-square'
+    ];
+    var renderItemStructure = function (info, providersBackstage, renderIcons, fallbackIcon) {
+      if (fallbackIcon === void 0) {
+        fallbackIcon = Option.none();
+      }
+      var getIconName = function (iconName) {
+        return iconName.map(function (name) {
+          return global$6.isRtl() && contains(rtlIcon, name) ? name + '-rtl' : name;
+        });
+      };
+      var needRtlClass = global$6.isRtl() && info.iconContent.exists(function (name) {
+        return contains(rtlTransform, name);
+      });
+      var icon = getIconName(info.iconContent).map(function (iconName) {
+        return getOr(iconName, providersBackstage.icons, fallbackIcon);
+      });
+      var textRender = Option.from(info.meta).fold(function () {
+        return renderText;
+      }, function (meta) {
+        return has(meta, 'style') ? curry(renderStyledText, meta.style) : renderText;
+      });
+      if (info.presets === 'color') {
+        return renderColorStructure(info.ariaLabel, info.value, icon, providersBackstage);
+      } else {
+        return renderNormalItemStructure(info, icon, renderIcons, textRender, needRtlClass);
+      }
+    };
+
     var tooltipBehaviour = function (meta, sharedBackstage) {
       return get(meta, 'tooltipWorker').map(function (tooltipWorker) {
         return [Tooltipping.config({
@@ -10545,10 +10894,10 @@
       return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     };
     var encodeText = function (text) {
-      return global$7.DOM.encode(text);
+      return global$5.DOM.encode(text);
     };
     var replaceText = function (text, matchText) {
-      var translated = global$5.translate(text);
+      var translated = global$6.translate(text);
       var encoded = encodeText(translated);
       if (matchText.length > 0) {
         var escapedMatchRegex = new RegExp(escapeRegExp(matchText), 'gi');
@@ -10912,6 +11261,25 @@
     };
     var red = rgbaColour(255, 0, 0, 1);
 
+    var fireSkinLoaded = function (editor) {
+      return editor.fire('SkinLoaded');
+    };
+    var fireSkinLoadError = function (editor, error) {
+      return editor.fire('SkinLoadError', error);
+    };
+    var fireResizeEditor = function (editor) {
+      return editor.fire('ResizeEditor');
+    };
+    var fireResizeContent = function (editor, e) {
+      return editor.fire('ResizeContent', e);
+    };
+    var fireScrollContent = function (editor, e) {
+      return editor.fire('ScrollContent', e);
+    };
+    var fireTextColorChange = function (editor, data) {
+      return editor.fire('TextColorChange', data);
+    };
+
     var global$9 = tinymce.util.Tools.resolve('tinymce.util.LocalStorage');
 
     var storageName = 'tinymce-custom-colors';
@@ -11117,25 +11485,6 @@
     };
     var addColor = function (color) {
       colorCache.add(color);
-    };
-
-    var fireSkinLoaded = function (editor) {
-      return editor.fire('SkinLoaded');
-    };
-    var fireSkinLoadError = function (editor, error) {
-      return editor.fire('SkinLoadError', error);
-    };
-    var fireResizeEditor = function (editor) {
-      return editor.fire('ResizeEditor');
-    };
-    var fireResizeContent = function (editor, e) {
-      return editor.fire('ResizeContent', e);
-    };
-    var fireScrollContent = function (editor, e) {
-      return editor.fire('ScrollContent', e);
-    };
-    var fireTextColorChange = function (editor, data) {
-      return editor.fire('TextColorChange', data);
     };
 
     var getCurrentColor = function (editor, format) {
@@ -11356,259 +11705,6 @@
       registerTextColorButton(editor, 'backcolor', 'hilitecolor', 'Background color', lastBackColor);
       registerTextColorMenuItem(editor, 'forecolor', 'forecolor', 'Text color');
       registerTextColorMenuItem(editor, 'backcolor', 'hilitecolor', 'Background color');
-    };
-
-    var forMenu = function (presets) {
-      if (presets === 'color') {
-        return 'tox-swatches';
-      } else {
-        return 'tox-menu';
-      }
-    };
-    var classes = function (presets) {
-      return {
-        backgroundMenu: 'tox-background-menu',
-        selectedMenu: 'tox-selected-menu',
-        selectedItem: 'tox-collection__item--active',
-        hasIcons: 'tox-menu--has-icons',
-        menu: forMenu(presets),
-        tieredMenu: 'tox-tiered-menu'
-      };
-    };
-
-    var markers$1 = function (presets) {
-      var menuClasses = classes(presets);
-      return {
-        backgroundMenu: menuClasses.backgroundMenu,
-        selectedMenu: menuClasses.selectedMenu,
-        menu: menuClasses.menu,
-        selectedItem: menuClasses.selectedItem,
-        item: classForPreset(presets)
-      };
-    };
-    var dom$1 = function (hasIcons, columns, presets) {
-      var menuClasses = classes(presets);
-      return {
-        tag: 'div',
-        classes: flatten([
-          [
-            menuClasses.menu,
-            'tox-menu-' + columns + '-column'
-          ],
-          hasIcons ? [menuClasses.hasIcons] : []
-        ])
-      };
-    };
-    var components$1 = [Menu.parts().items({})];
-    var part = function (hasIcons, columns, presets) {
-      var menuClasses = classes(presets);
-      var d = {
-        tag: 'div',
-        classes: flatten([[menuClasses.tieredMenu]])
-      };
-      return {
-        dom: d,
-        markers: markers$1(presets)
-      };
-    };
-
-    var chunk$1 = function (rowDom, numColumns) {
-      return function (items) {
-        var chunks = chunk(items, numColumns);
-        return map(chunks, function (c) {
-          return {
-            dom: rowDom,
-            components: c
-          };
-        });
-      };
-    };
-    var forSwatch = function (columns) {
-      return {
-        dom: {
-          tag: 'div',
-          classes: [
-            'tox-menu',
-            'tox-swatches-menu'
-          ]
-        },
-        components: [{
-            dom: {
-              tag: 'div',
-              classes: ['tox-swatches']
-            },
-            components: [Menu.parts().items({
-                preprocess: columns !== 'auto' ? chunk$1({
-                  tag: 'div',
-                  classes: ['tox-swatches__row']
-                }, columns) : identity
-              })]
-          }]
-      };
-    };
-    var forToolbar = function (columns) {
-      return {
-        dom: {
-          tag: 'div',
-          classes: [
-            'tox-menu',
-            'tox-collection',
-            'tox-collection--toolbar',
-            'tox-collection--toolbar-lg'
-          ]
-        },
-        components: [Menu.parts().items({
-            preprocess: chunk$1({
-              tag: 'div',
-              classes: ['tox-collection__group']
-            }, columns)
-          })]
-      };
-    };
-    var preprocessCollection = function (items, isSeparator) {
-      var allSplits = [];
-      var currentSplit = [];
-      each(items, function (item, i) {
-        if (isSeparator(item, i)) {
-          if (currentSplit.length > 0) {
-            allSplits.push(currentSplit);
-          }
-          currentSplit = [];
-          if (has(item.dom, 'innerHtml')) {
-            currentSplit.push(item);
-          }
-        } else {
-          currentSplit.push(item);
-        }
-      });
-      if (currentSplit.length > 0) {
-        allSplits.push(currentSplit);
-      }
-      return map(allSplits, function (s) {
-        return {
-          dom: {
-            tag: 'div',
-            classes: ['tox-collection__group']
-          },
-          components: s
-        };
-      });
-    };
-    var forCollection = function (columns, initItems, _hasIcons) {
-      return {
-        dom: {
-          tag: 'div',
-          classes: [
-            'tox-menu',
-            'tox-collection'
-          ].concat(columns === 1 ? ['tox-collection--list'] : ['tox-collection--grid'])
-        },
-        components: [Menu.parts().items({
-            preprocess: function (items) {
-              if (columns !== 'auto' && columns > 1) {
-                return chunk$1({
-                  tag: 'div',
-                  classes: ['tox-collection__group']
-                }, columns)(items);
-              } else {
-                return preprocessCollection(items, function (_item, i) {
-                  return initItems[i].type === 'separator';
-                });
-              }
-            }
-          })]
-      };
-    };
-    var forHorizontalCollection = function (initItems, _hasIcons) {
-      return {
-        dom: {
-          tag: 'div',
-          classes: [
-            'tox-collection',
-            'tox-collection--horizontal'
-          ]
-        },
-        components: [Menu.parts().items({
-            preprocess: function (items) {
-              return preprocessCollection(items, function (_item, i) {
-                return initItems[i].type === 'separator';
-              });
-            }
-          })]
-      };
-    };
-
-    var menuHasIcons = function (xs) {
-      return exists(xs, function (item) {
-        return 'icon' in item && item.icon !== undefined;
-      });
-    };
-    var handleError = function (error) {
-      domGlobals.console.error(formatError(error));
-      domGlobals.console.log(error);
-      return Option.none();
-    };
-    var createHorizontalPartialMenuWithAlloyItems = function (value, _hasIcons, items, _columns, _presets) {
-      var structure = forHorizontalCollection(items);
-      return {
-        value: value,
-        dom: structure.dom,
-        components: structure.components,
-        items: items
-      };
-    };
-    var createPartialMenuWithAlloyItems = function (value, hasIcons, items, columns, presets) {
-      if (presets === 'color') {
-        var structure = forSwatch(columns);
-        return {
-          value: value,
-          dom: structure.dom,
-          components: structure.components,
-          items: items
-        };
-      }
-      if (presets === 'normal' && columns === 'auto') {
-        var structure = forCollection(columns, items);
-        return {
-          value: value,
-          dom: structure.dom,
-          components: structure.components,
-          items: items
-        };
-      }
-      if (presets === 'normal' && columns === 1) {
-        var structure = forCollection(1, items);
-        return {
-          value: value,
-          dom: structure.dom,
-          components: structure.components,
-          items: items
-        };
-      }
-      if (presets === 'normal') {
-        var structure = forCollection(columns, items);
-        return {
-          value: value,
-          dom: structure.dom,
-          components: structure.components,
-          items: items
-        };
-      }
-      if (presets === 'listpreview' && columns !== 'auto') {
-        var structure = forToolbar(columns);
-        return {
-          value: value,
-          dom: structure.dom,
-          components: structure.components,
-          items: items
-        };
-      }
-      return {
-        value: value,
-        dom: dom$1(hasIcons, columns, presets),
-        components: components$1,
-        items: items
-      };
     };
 
     var createPartialChoiceMenu = function (value, items, onItemValueHandler, columns, presets, itemResponse, select, providersBackstage) {
@@ -12744,63 +12840,6 @@
       };
     };
 
-    var formChangeEvent = generate$1('form-component-change');
-    var formCloseEvent = generate$1('form-close');
-    var formCancelEvent = generate$1('form-cancel');
-    var formActionEvent = generate$1('form-action');
-    var formSubmitEvent = generate$1('form-submit');
-    var formBlockEvent = generate$1('form-block');
-    var formUnblockEvent = generate$1('form-unblock');
-    var formTabChangeEvent = generate$1('form-tabchange');
-    var formResizeEvent = generate$1('form-resize');
-
-    var renderAlertBanner = function (spec, providersBackstage) {
-      return Container.sketch({
-        dom: {
-          tag: 'div',
-          attributes: { role: 'alert' },
-          classes: [
-            'tox-notification',
-            'tox-notification--in',
-            'tox-notification--' + spec.level
-          ]
-        },
-        components: [
-          {
-            dom: {
-              tag: 'div',
-              classes: ['tox-notification__icon']
-            },
-            components: [Button.sketch({
-                dom: {
-                  tag: 'button',
-                  classes: [
-                    'tox-button',
-                    'tox-button--naked',
-                    'tox-button--icon'
-                  ],
-                  innerHtml: get$d(spec.icon, providersBackstage.icons),
-                  attributes: { title: providersBackstage.translate(spec.iconTooltip) }
-                },
-                action: function (comp) {
-                  emitWith(comp, formActionEvent, {
-                    name: 'alert-banner',
-                    value: spec.url
-                  });
-                }
-              })]
-          },
-          {
-            dom: {
-              tag: 'div',
-              classes: ['tox-notification__body'],
-              innerHtml: providersBackstage.translate(spec.text)
-            }
-          }
-        ]
-      });
-    };
-
     var renderBar = function (spec, backstage) {
       return {
         dom: {
@@ -12926,6 +12965,203 @@
         }
       }
     });
+
+    var exhibit$4 = function (base, tabConfig) {
+      return nu$6({
+        attributes: wrapAll$1([{
+            key: tabConfig.tabAttr,
+            value: 'true'
+          }])
+      });
+    };
+
+    var ActiveTabstopping = /*#__PURE__*/Object.freeze({
+        __proto__: null,
+        exhibit: exhibit$4
+    });
+
+    var TabstopSchema = [defaulted$1('tabAttr', 'data-alloy-tabstop')];
+
+    var Tabstopping = create$1({
+      fields: TabstopSchema,
+      name: 'tabstopping',
+      active: ActiveTabstopping
+    });
+
+    var renderFormFieldWith = function (pLabel, pField, extraClasses, extraBehaviours) {
+      var spec = renderFormFieldSpecWith(pLabel, pField, extraClasses, extraBehaviours);
+      return FormField.sketch(spec);
+    };
+    var renderFormField = function (pLabel, pField) {
+      return renderFormFieldWith(pLabel, pField, [], []);
+    };
+    var renderFormFieldSpecWith = function (pLabel, pField, extraClasses, extraBehaviours) {
+      return {
+        dom: renderFormFieldDomWith(extraClasses),
+        components: pLabel.toArray().concat([pField]),
+        fieldBehaviours: derive$1(extraBehaviours)
+      };
+    };
+    var renderFormFieldDom = function () {
+      return renderFormFieldDomWith([]);
+    };
+    var renderFormFieldDomWith = function (extraClasses) {
+      return {
+        tag: 'div',
+        classes: ['tox-form__group'].concat(extraClasses)
+      };
+    };
+    var renderLabel = function (label, providersBackstage) {
+      return FormField.parts().label({
+        dom: {
+          tag: 'label',
+          classes: ['tox-label'],
+          innerHtml: providersBackstage.translate(label)
+        }
+      });
+    };
+
+    var formChangeEvent = generate$1('form-component-change');
+    var formCloseEvent = generate$1('form-close');
+    var formCancelEvent = generate$1('form-cancel');
+    var formActionEvent = generate$1('form-action');
+    var formSubmitEvent = generate$1('form-submit');
+    var formBlockEvent = generate$1('form-block');
+    var formUnblockEvent = generate$1('form-unblock');
+    var formTabChangeEvent = generate$1('form-tabchange');
+    var formResizeEvent = generate$1('form-resize');
+
+    var renderCollection = function (spec, providersBackstage) {
+      var pLabel = spec.label.map(function (label) {
+        return renderLabel(label, providersBackstage);
+      });
+      var runOnItem = function (f) {
+        return function (comp, se) {
+          closest$3(se.event().target(), '[data-collection-item-value]').each(function (target) {
+            f(comp, se, target, get$2(target, 'data-collection-item-value'));
+          });
+        };
+      };
+      var escapeAttribute = function (ch) {
+        if (ch === '"') {
+          return '&quot;';
+        }
+        return ch;
+      };
+      var setContents = function (comp, items) {
+        var htmlLines = map(items, function (item) {
+          var itemText = global$6.translate(item.text);
+          var textContent = spec.columns === 1 ? '<div class="tox-collection__item-label">' + itemText + '</div>' : '';
+          var iconContent = '<div class="tox-collection__item-icon">' + item.icon + '</div>';
+          var mapItemName = {
+            '_': ' ',
+            ' - ': ' ',
+            '-': ' '
+          };
+          var ariaLabel = itemText.replace(/\_| \- |\-/g, function (match) {
+            return mapItemName[match];
+          });
+          var readonlyClass = providersBackstage.isReadOnly() ? ' tox-collection__item--state-disabled' : '';
+          return '<div class="tox-collection__item' + readonlyClass + '" tabindex="-1" data-collection-item-value="' + escapeAttribute(item.value) + '" title="' + ariaLabel + '" aria-label="' + ariaLabel + '">' + iconContent + textContent + '</div>';
+        });
+        var chunks = spec.columns > 1 && spec.columns !== 'auto' ? chunk(htmlLines, spec.columns) : [htmlLines];
+        var html = map(chunks, function (ch) {
+          return '<div class="tox-collection__group">' + ch.join('') + '</div>';
+        });
+        set(comp.element(), html.join(''));
+      };
+      var onClick = runOnItem(function (comp, se, tgt, itemValue) {
+        se.stop();
+        if (!providersBackstage.isReadOnly()) {
+          emitWith(comp, formActionEvent, {
+            name: spec.name,
+            value: itemValue
+          });
+        }
+      });
+      var collectionEvents = [
+        run(mouseover(), runOnItem(function (comp, se, tgt) {
+          focus$1(tgt);
+        })),
+        run(click(), onClick),
+        run(tap(), onClick),
+        run(focusin(), runOnItem(function (comp, se, tgt) {
+          descendant$1(comp.element(), '.' + activeClass).each(function (currentActive) {
+            remove$4(currentActive, activeClass);
+          });
+          add$2(tgt, activeClass);
+        })),
+        run(focusout(), runOnItem(function (comp) {
+          descendant$1(comp.element(), '.' + activeClass).each(function (currentActive) {
+            remove$4(currentActive, activeClass);
+          });
+        })),
+        runOnExecute(runOnItem(function (comp, se, tgt, itemValue) {
+          emitWith(comp, formActionEvent, {
+            name: spec.name,
+            value: itemValue
+          });
+        }))
+      ];
+      var iterCollectionItems = function (comp, applyAttributes) {
+        return map(descendants(comp.element(), '.tox-collection__item'), applyAttributes);
+      };
+      var pField = FormField.parts().field({
+        dom: {
+          tag: 'div',
+          classes: ['tox-collection'].concat(spec.columns !== 1 ? ['tox-collection--grid'] : ['tox-collection--list'])
+        },
+        components: [],
+        factory: { sketch: identity },
+        behaviours: derive$1([
+          Disabling.config({
+            disabled: providersBackstage.isReadOnly,
+            onDisabled: function (comp) {
+              iterCollectionItems(comp, function (childElm) {
+                add$2(childElm, 'tox-collection__item--state-disabled');
+                set$1(childElm, 'aria-disabled', true);
+              });
+            },
+            onEnabled: function (comp) {
+              iterCollectionItems(comp, function (childElm) {
+                remove$4(childElm, 'tox-collection__item--state-disabled');
+                remove$1(childElm, 'aria-disabled');
+              });
+            }
+          }),
+          receivingConfig(),
+          Replacing.config({}),
+          Representing.config({
+            store: {
+              mode: 'memory',
+              initialValue: []
+            },
+            onSetValue: function (comp, items) {
+              setContents(comp, items);
+              if (spec.columns === 'auto') {
+                detectSize(comp, 5, 'tox-collection__item').each(function (_a) {
+                  var numRows = _a.numRows, numColumns = _a.numColumns;
+                  Keying.setGridSize(comp, numRows, numColumns);
+                });
+              }
+              emit(comp, formResizeEvent);
+            }
+          }),
+          Tabstopping.config({}),
+          Keying.config(deriveCollectionMovement(spec.columns, 'normal')),
+          config('collection-events', collectionEvents)
+        ]),
+        eventOrder: {
+          'alloy.execute': [
+            'disabling',
+            'alloy.base.behaviour',
+            'collection-events'
+          ]
+        }
+      });
+      var extraClasses = ['tox-form__group--collection'];
+      return renderFormFieldWith(pLabel, pField, extraClasses, []);
+    };
 
     var schema$f = constant([
       option('data'),
@@ -13508,9 +13744,11 @@
         }
       };
       var set = function (x) {
-        data = Option.some(x);
-        run(callbacks);
-        callbacks = [];
+        if (!isReady()) {
+          data = Option.some(x);
+          run(callbacks);
+          callbacks = [];
+        }
       };
       var isReady = function () {
         return data.isSome();
@@ -13532,14 +13770,14 @@
         isReady: isReady
       };
     };
-    var pure$1 = function (a) {
+    var pure = function (a) {
       return nu$a(function (callback) {
         callback(a);
       });
     };
     var LazyValue = {
       nu: nu$a,
-      pure: pure$1
+      pure: pure
     };
 
     var errorReporter = function (err) {
@@ -13598,14 +13836,14 @@
         return new Promise(baseFn);
       });
     };
-    var pure$2 = function (a) {
+    var pure$1 = function (a) {
       return make$3(function () {
         return Promise.resolve(a);
       });
     };
     var Future = {
       nu: nu$b,
-      pure: pure$2
+      pure: pure$1
     };
 
     var ariaElements = [
@@ -13728,61 +13966,6 @@
         }
       }
     });
-
-    var exhibit$4 = function (base, tabConfig) {
-      return nu$6({
-        attributes: wrapAll$1([{
-            key: tabConfig.tabAttr,
-            value: 'true'
-          }])
-      });
-    };
-
-    var ActiveTabstopping = /*#__PURE__*/Object.freeze({
-        __proto__: null,
-        exhibit: exhibit$4
-    });
-
-    var TabstopSchema = [defaulted$1('tabAttr', 'data-alloy-tabstop')];
-
-    var Tabstopping = create$1({
-      fields: TabstopSchema,
-      name: 'tabstopping',
-      active: ActiveTabstopping
-    });
-
-    var renderFormFieldWith = function (pLabel, pField, extraClasses, extraBehaviours) {
-      var spec = renderFormFieldSpecWith(pLabel, pField, extraClasses, extraBehaviours);
-      return FormField.sketch(spec);
-    };
-    var renderFormField = function (pLabel, pField) {
-      return renderFormFieldWith(pLabel, pField, [], []);
-    };
-    var renderFormFieldSpecWith = function (pLabel, pField, extraClasses, extraBehaviours) {
-      return {
-        dom: renderFormFieldDomWith(extraClasses),
-        components: pLabel.toArray().concat([pField]),
-        fieldBehaviours: derive$1(extraBehaviours)
-      };
-    };
-    var renderFormFieldDom = function () {
-      return renderFormFieldDomWith([]);
-    };
-    var renderFormFieldDomWith = function (extraClasses) {
-      return {
-        tag: 'div',
-        classes: ['tox-form__group'].concat(extraClasses)
-      };
-    };
-    var renderLabel = function (label, providersBackstage) {
-      return FormField.parts().label({
-        dom: {
-          tag: 'label',
-          classes: ['tox-label'],
-          innerHtml: providersBackstage.translate(label)
-        }
-      });
-    };
 
     var getCoupled = function (component, coupleConfig, coupleState, name) {
       return coupleState.getOrCreate(component, coupleConfig, name);
@@ -15421,7 +15604,7 @@
               mode: 'manual',
               getValue: function (form) {
                 var resPs = getAllParts(form, detail);
-                return map$1(resPs, function (resPThunk, pName) {
+                return map$2(resPs, function (resPThunk, pName) {
                   return resPThunk().bind(function (v) {
                     var opt = Composing.getCurrent(v);
                     return toResult$1(opt, new Error('Cannot find a current component to extract the value from for form part \'' + pName + '\': ' + element(v.element())));
@@ -17475,7 +17658,7 @@
         return Option.none();
       }
       var mainMenu = createPartialMenu(primary, data.items, itemResponse, backstage, isHorizontalMenu);
-      var submenus = map$1(data.menus, function (menuItems, menuName) {
+      var submenus = map$2(data.menus, function (menuItems, menuName) {
         return createPartialMenu(menuName, menuItems, itemResponse, backstage, false);
       });
       var menus = deepMerge(submenus, wrap$1(primary, mainMenu));
@@ -18517,17 +18700,15 @@
     var global$f = tinymce.util.Tools.resolve('tinymce.util.VK');
 
     function getDocumentSize(doc) {
-      var documentElement, body, scrollWidth, clientWidth;
-      var offsetWidth, scrollHeight, clientHeight, offsetHeight;
       var max = Math.max;
-      documentElement = doc.documentElement;
-      body = doc.body;
-      scrollWidth = max(documentElement.scrollWidth, body.scrollWidth);
-      clientWidth = max(documentElement.clientWidth, body.clientWidth);
-      offsetWidth = max(documentElement.offsetWidth, body.offsetWidth);
-      scrollHeight = max(documentElement.scrollHeight, body.scrollHeight);
-      clientHeight = max(documentElement.clientHeight, body.clientHeight);
-      offsetHeight = max(documentElement.offsetHeight, body.offsetHeight);
+      var documentElement = doc.documentElement;
+      var body = doc.body;
+      var scrollWidth = max(documentElement.scrollWidth, body.scrollWidth);
+      var clientWidth = max(documentElement.clientWidth, body.clientWidth);
+      var offsetWidth = max(documentElement.offsetWidth, body.offsetWidth);
+      var scrollHeight = max(documentElement.scrollHeight, body.scrollHeight);
+      var clientHeight = max(documentElement.clientHeight, body.clientHeight);
+      var offsetHeight = max(documentElement.offsetHeight, body.offsetHeight);
       return {
         width: scrollWidth < offsetWidth ? clientWidth : scrollWidth,
         height: scrollHeight < offsetHeight ? clientHeight : scrollHeight
@@ -18546,16 +18727,16 @@
       var $eventOverlay;
       var doc = settings.document || domGlobals.document;
       var downButton;
-      var start, stop, drag, startX, startY;
+      var startX, startY;
       settings = settings || {};
       var handleElement = doc.getElementById(settings.handle || id);
-      start = function (e) {
+      var start = function (e) {
         var docSize = getDocumentSize(doc);
-        var handleElm, cursor;
+        var cursor;
         updateWithTouchData(e);
         e.preventDefault();
         downButton = e.button;
-        handleElm = handleElement;
+        var handleElm = handleElement;
         startX = e.screenX;
         startY = e.screenY;
         if (domGlobals.window.getComputedStyle) {
@@ -18576,7 +18757,7 @@
         global$b(doc).on('mousemove touchmove', drag).on('mouseup touchend', stop);
         settings.start(e);
       };
-      drag = function (e) {
+      var drag = function (e) {
         updateWithTouchData(e);
         if (e.button !== downButton) {
           return stop(e);
@@ -18586,7 +18767,7 @@
         e.preventDefault();
         settings.drag(e);
       };
-      stop = function (e) {
+      var stop = function (e) {
         updateWithTouchData(e);
         global$b(doc).off('mousemove touchmove', drag).off('mouseup touchend', stop);
         $eventOverlay.remove();
@@ -18602,9 +18783,7 @@
 
     var count = 0;
     var create$7 = function (currentRect, viewPortRect, clampRect, containerElm, action) {
-      var instance;
       var dragHelpers;
-      var blockers;
       var prefix = 'tox-';
       var id = prefix + 'crid-' + count++;
       var handles = [
@@ -18659,7 +18838,7 @@
           label: 'Bottom Right Crop Handle'
         }
       ];
-      blockers = [
+      var blockers = [
         'top',
         'right',
         'bottom',
@@ -18771,8 +18950,7 @@
         });
       }
       function toggleVisibility(state) {
-        var selectors;
-        selectors = global$e.map(handles, function (handle) {
+        var selectors = global$e.map(handles, function (handle) {
           return '#' + id + '-' + handle.name;
         }).concat(global$e.map(blockers, function (blocker) {
           return '#' + id + '-' + blocker;
@@ -18852,7 +19030,7 @@
         dragHelpers = [];
       }
       render();
-      instance = global$e.extend({
+      var instance = global$e.extend({
         toggleVisibility: toggleVisibility,
         setClampRect: setClampRect,
         setRect: setRect,
@@ -19143,8 +19321,7 @@
       var data = [];
       var index = -1;
       function add(state) {
-        var removed;
-        removed = data.splice(++index);
+        var removed = data.splice(++index);
         data.push(state);
         return {
           state: state,
@@ -19443,6 +19620,40 @@
       };
     };
 
+    var renderLabel$2 = function (spec, backstageShared) {
+      var label = {
+        dom: {
+          tag: 'label',
+          innerHtml: backstageShared.providers.translate(spec.label),
+          classes: ['tox-label']
+        }
+      };
+      var comps = map(spec.items, backstageShared.interpreter);
+      return {
+        dom: {
+          tag: 'div',
+          classes: ['tox-form__group']
+        },
+        components: [label].concat(comps),
+        behaviours: derive$1([
+          ComposingConfigs.self(),
+          Replacing.config({}),
+          RepresentingConfigs.domHtml(Option.none()),
+          Keying.config({ mode: 'acyclic' })
+        ])
+      };
+    };
+
+    var renderPanel = function (spec, backstage) {
+      return {
+        dom: {
+          tag: 'div',
+          classes: spec.classes
+        },
+        components: map(spec.items, backstage.shared.interpreter)
+      };
+    };
+
     var factory$8 = function (detail, _spec) {
       var options = map(detail.options, function (option) {
         return {
@@ -19568,6 +19779,60 @@
           receivingConfig()
         ])
       });
+    };
+
+    var renderTable = function (spec, providersBackstage) {
+      var renderTh = function (text) {
+        return {
+          dom: {
+            tag: 'th',
+            innerHtml: providersBackstage.translate(text)
+          }
+        };
+      };
+      var renderHeader = function (header) {
+        return {
+          dom: { tag: 'thead' },
+          components: [{
+              dom: { tag: 'tr' },
+              components: map(header, renderTh)
+            }]
+        };
+      };
+      var renderTd = function (text) {
+        return {
+          dom: {
+            tag: 'td',
+            innerHtml: providersBackstage.translate(text)
+          }
+        };
+      };
+      var renderTr = function (row) {
+        return {
+          dom: { tag: 'tr' },
+          components: map(row, renderTd)
+        };
+      };
+      var renderRows = function (rows) {
+        return {
+          dom: { tag: 'tbody' },
+          components: map(rows, renderTr)
+        };
+      };
+      return {
+        dom: {
+          tag: 'table',
+          classes: ['tox-dialog__table']
+        },
+        components: [
+          renderHeader(spec.header),
+          renderRows(spec.cells)
+        ],
+        behaviours: derive$1([
+          Tabstopping.config({}),
+          Focusing.config({})
+        ])
+      };
     };
 
     var renderTextField = function (spec, providersBackstage) {
@@ -20490,6 +20755,53 @@
       });
     };
 
+    var renderAlertBanner = function (spec, providersBackstage) {
+      return Container.sketch({
+        dom: {
+          tag: 'div',
+          attributes: { role: 'alert' },
+          classes: [
+            'tox-notification',
+            'tox-notification--in',
+            'tox-notification--' + spec.level
+          ]
+        },
+        components: [
+          {
+            dom: {
+              tag: 'div',
+              classes: ['tox-notification__icon']
+            },
+            components: [Button.sketch({
+                dom: {
+                  tag: 'button',
+                  classes: [
+                    'tox-button',
+                    'tox-button--naked',
+                    'tox-button--icon'
+                  ],
+                  innerHtml: get$d(spec.icon, providersBackstage.icons),
+                  attributes: { title: providersBackstage.translate(spec.iconTooltip) }
+                },
+                action: function (comp) {
+                  emitWith(comp, formActionEvent, {
+                    name: 'alert-banner',
+                    value: spec.url
+                  });
+                }
+              })]
+          },
+          {
+            dom: {
+              tag: 'div',
+              classes: ['tox-notification__body'],
+              innerHtml: providersBackstage.translate(spec.text)
+            }
+          }
+        ]
+      });
+    };
+
     var renderCheckbox = function (spec, providerBackstage) {
       var repBehaviour = Representing.config({
         store: {
@@ -20618,226 +20930,6 @@
           ])
         });
       }
-    };
-
-    var renderLabel$2 = function (spec, backstageShared) {
-      var label = {
-        dom: {
-          tag: 'label',
-          innerHtml: backstageShared.providers.translate(spec.label),
-          classes: ['tox-label']
-        }
-      };
-      var comps = map(spec.items, backstageShared.interpreter);
-      return {
-        dom: {
-          tag: 'div',
-          classes: ['tox-form__group']
-        },
-        components: [label].concat(comps),
-        behaviours: derive$1([
-          ComposingConfigs.self(),
-          Replacing.config({}),
-          RepresentingConfigs.domHtml(Option.none()),
-          Keying.config({ mode: 'acyclic' })
-        ])
-      };
-    };
-
-    var renderCollection = function (spec, providersBackstage) {
-      var pLabel = spec.label.map(function (label) {
-        return renderLabel(label, providersBackstage);
-      });
-      var runOnItem = function (f) {
-        return function (comp, se) {
-          closest$3(se.event().target(), '[data-collection-item-value]').each(function (target) {
-            f(comp, se, target, get$2(target, 'data-collection-item-value'));
-          });
-        };
-      };
-      var escapeAttribute = function (ch) {
-        if (ch === '"') {
-          return '&quot;';
-        }
-        return ch;
-      };
-      var setContents = function (comp, items) {
-        var htmlLines = map(items, function (item) {
-          var itemText = global$5.translate(item.text);
-          var textContent = spec.columns === 1 ? '<div class="tox-collection__item-label">' + itemText + '</div>' : '';
-          var iconContent = '<div class="tox-collection__item-icon">' + item.icon + '</div>';
-          var mapItemName = {
-            '_': ' ',
-            ' - ': ' ',
-            '-': ' '
-          };
-          var ariaLabel = itemText.replace(/\_| \- |\-/g, function (match) {
-            return mapItemName[match];
-          });
-          var readonlyClass = providersBackstage.isReadOnly() ? ' tox-collection__item--state-disabled' : '';
-          return '<div class="tox-collection__item' + readonlyClass + '" tabindex="-1" data-collection-item-value="' + escapeAttribute(item.value) + '" title="' + ariaLabel + '" aria-label="' + ariaLabel + '">' + iconContent + textContent + '</div>';
-        });
-        var chunks = spec.columns > 1 && spec.columns !== 'auto' ? chunk(htmlLines, spec.columns) : [htmlLines];
-        var html = map(chunks, function (ch) {
-          return '<div class="tox-collection__group">' + ch.join('') + '</div>';
-        });
-        set(comp.element(), html.join(''));
-      };
-      var onClick = runOnItem(function (comp, se, tgt, itemValue) {
-        se.stop();
-        if (!providersBackstage.isReadOnly()) {
-          emitWith(comp, formActionEvent, {
-            name: spec.name,
-            value: itemValue
-          });
-        }
-      });
-      var collectionEvents = [
-        run(mouseover(), runOnItem(function (comp, se, tgt) {
-          focus$1(tgt);
-        })),
-        run(click(), onClick),
-        run(tap(), onClick),
-        run(focusin(), runOnItem(function (comp, se, tgt) {
-          descendant$1(comp.element(), '.' + activeClass).each(function (currentActive) {
-            remove$4(currentActive, activeClass);
-          });
-          add$2(tgt, activeClass);
-        })),
-        run(focusout(), runOnItem(function (comp) {
-          descendant$1(comp.element(), '.' + activeClass).each(function (currentActive) {
-            remove$4(currentActive, activeClass);
-          });
-        })),
-        runOnExecute(runOnItem(function (comp, se, tgt, itemValue) {
-          emitWith(comp, formActionEvent, {
-            name: spec.name,
-            value: itemValue
-          });
-        }))
-      ];
-      var iterCollectionItems = function (comp, applyAttributes) {
-        return map(descendants(comp.element(), '.tox-collection__item'), applyAttributes);
-      };
-      var pField = FormField.parts().field({
-        dom: {
-          tag: 'div',
-          classes: ['tox-collection'].concat(spec.columns !== 1 ? ['tox-collection--grid'] : ['tox-collection--list'])
-        },
-        components: [],
-        factory: { sketch: identity },
-        behaviours: derive$1([
-          Disabling.config({
-            disabled: providersBackstage.isReadOnly,
-            onDisabled: function (comp) {
-              iterCollectionItems(comp, function (childElm) {
-                add$2(childElm, 'tox-collection__item--state-disabled');
-                set$1(childElm, 'aria-disabled', true);
-              });
-            },
-            onEnabled: function (comp) {
-              iterCollectionItems(comp, function (childElm) {
-                remove$4(childElm, 'tox-collection__item--state-disabled');
-                remove$1(childElm, 'aria-disabled');
-              });
-            }
-          }),
-          receivingConfig(),
-          Replacing.config({}),
-          Representing.config({
-            store: {
-              mode: 'memory',
-              initialValue: []
-            },
-            onSetValue: function (comp, items) {
-              setContents(comp, items);
-              if (spec.columns === 'auto') {
-                detectSize(comp, 5, 'tox-collection__item').each(function (_a) {
-                  var numRows = _a.numRows, numColumns = _a.numColumns;
-                  Keying.setGridSize(comp, numRows, numColumns);
-                });
-              }
-              emit(comp, formResizeEvent);
-            }
-          }),
-          Tabstopping.config({}),
-          Keying.config(deriveCollectionMovement(spec.columns, 'normal')),
-          config('collection-events', collectionEvents)
-        ]),
-        eventOrder: {
-          'alloy.execute': [
-            'disabling',
-            'alloy.base.behaviour',
-            'collection-events'
-          ]
-        }
-      });
-      var extraClasses = ['tox-form__group--collection'];
-      return renderFormFieldWith(pLabel, pField, extraClasses, []);
-    };
-
-    var renderTable = function (spec, providersBackstage) {
-      var renderTh = function (text) {
-        return {
-          dom: {
-            tag: 'th',
-            innerHtml: providersBackstage.translate(text)
-          }
-        };
-      };
-      var renderHeader = function (header) {
-        return {
-          dom: { tag: 'thead' },
-          components: [{
-              dom: { tag: 'tr' },
-              components: map(header, renderTh)
-            }]
-        };
-      };
-      var renderTd = function (text) {
-        return {
-          dom: {
-            tag: 'td',
-            innerHtml: providersBackstage.translate(text)
-          }
-        };
-      };
-      var renderTr = function (row) {
-        return {
-          dom: { tag: 'tr' },
-          components: map(row, renderTd)
-        };
-      };
-      var renderRows = function (rows) {
-        return {
-          dom: { tag: 'tbody' },
-          components: map(rows, renderTr)
-        };
-      };
-      return {
-        dom: {
-          tag: 'table',
-          classes: ['tox-dialog__table']
-        },
-        components: [
-          renderHeader(spec.header),
-          renderRows(spec.cells)
-        ],
-        behaviours: derive$1([
-          Tabstopping.config({}),
-          Focusing.config({})
-        ])
-      };
-    };
-
-    var renderPanel = function (spec, backstage) {
-      return {
-        dom: {
-          tag: 'div',
-          classes: spec.classes
-        },
-        components: map(spec.items, backstage.shared.interpreter)
-      };
     };
 
     var make$6 = function (render) {
@@ -21544,28 +21636,20 @@
       setAllHistory(history);
     };
 
-    var hasOwnProperty$2 = Object.prototype.hasOwnProperty;
     var isTruthy = function (value) {
       return !!value;
     };
     var makeMap = function (value) {
-      return map$1(global$e.makeMap(value, /[, ]/), isTruthy);
+      return map$2(global$e.makeMap(value, /[, ]/), isTruthy);
     };
-    var getOpt$1 = function (obj, key) {
-      return hasOwnProperty$2.call(obj, key) ? Option.some(obj[key]) : Option.none();
+    var getPicker = function (editor) {
+      return Option.from(getFilePickerCallback(editor)).filter(isFunction);
     };
-    var getTextSetting = function (settings, name, defaultValue) {
-      var value = getOpt$1(settings, name).getOr(defaultValue);
-      return isString(value) ? Option.some(value) : Option.none();
-    };
-    var getPicker = function (settings) {
-      return Option.some(settings.file_picker_callback).filter(isFunction);
-    };
-    var getPickerTypes = function (settings) {
-      var optFileTypes = Option.some(settings.file_picker_types).filter(isTruthy);
-      var optLegacyTypes = Option.some(settings.file_browser_callback_types).filter(isTruthy);
+    var getPickerTypes = function (editor) {
+      var optFileTypes = Option.some(getFilePickerTypes(editor)).filter(isTruthy);
+      var optLegacyTypes = Option.some(getFileBrowserCallbackTypes(editor)).filter(isTruthy);
       var optTypes = optFileTypes.or(optLegacyTypes).map(makeMap);
-      return getPicker(settings).fold(function () {
+      return getPicker(editor).fold(function () {
         return false;
       }, function (_picker) {
         return optTypes.fold(function () {
@@ -21575,16 +21659,16 @@
         });
       });
     };
-    var getPickerSetting = function (settings, filetype) {
-      var pickerTypes = getPickerTypes(settings);
+    var getPickerSetting = function (editor, filetype) {
+      var pickerTypes = getPickerTypes(editor);
       if (isBoolean(pickerTypes)) {
-        return pickerTypes ? getPicker(settings) : Option.none();
+        return pickerTypes ? getPicker(editor) : Option.none();
       } else {
-        return pickerTypes[filetype] ? getPicker(settings) : Option.none();
+        return pickerTypes[filetype] ? getPicker(editor) : Option.none();
       }
     };
     var getUrlPicker = function (editor, filetype) {
-      return getPickerSetting(editor.settings, filetype).map(function (picker) {
+      return getPickerSetting(editor, filetype).map(function (picker) {
         return function (entry) {
           return Future.nu(function (completer) {
             var handler = function (value, meta) {
@@ -21610,20 +21694,17 @@
       });
     };
     var getLinkInformation = function (editor) {
-      if (editor.settings.typeahead_urls === false) {
+      if (noTypeaheadUrls(editor)) {
         return Option.none();
       }
       return Option.some({
         targets: LinkTargets.find(editor.getBody()),
-        anchorTop: getTextSetting(editor.settings, 'anchor_top', '#top').getOrUndefined(),
-        anchorBottom: getTextSetting(editor.settings, 'anchor_bottom', '#bottom').getOrUndefined()
+        anchorTop: getAnchorTop(editor),
+        anchorBottom: getAnchorBottom(editor)
       });
     };
     var getValidationHandler = function (editor) {
-      var optValidator = Option.from(editor.settings.file_picker_validator_handler).filter(isFunction);
-      return optValidator.orThunk(function () {
-        return Option.from(editor.settings.filepicker_validator_handler).filter(isFunction);
-      });
+      return Option.from(getFilePickerValidatorHandler(editor));
     };
     var UrlInputBackstage = function (editor) {
       return {
@@ -21653,7 +21734,7 @@
             menuItems: function () {
               return editor.ui.registry.getAll().menuItems;
             },
-            translate: global$5.translate,
+            translate: global$6.translate,
             isReadOnly: function () {
               return editor.mode.isReadOnly();
             }
@@ -23208,9 +23289,9 @@
     var renderCommonStructure = function (icon, text, tooltip, receiver, behaviours, providersBackstage) {
       var _d;
       var getIconName = function (iconName) {
-        return global$5.isRtl() && contains(rtlIcon$1, iconName) ? iconName + '-rtl' : iconName;
+        return global$6.isRtl() && contains(rtlIcon$1, iconName) ? iconName + '-rtl' : iconName;
       };
-      var needsRtlClass = global$5.isRtl() && icon.exists(function (name) {
+      var needsRtlClass = global$6.isRtl() && icon.exists(function (name) {
         return contains(rtlTransform$1, name);
       });
       return {
@@ -24041,7 +24122,7 @@
       }
     };
     var buildBasicSettingsDataset = function (editor, settingName, defaults, delimiter) {
-      var rawFormats = get(editor.settings, settingName).getOr(defaults);
+      var rawFormats = editor.getParam(settingName, defaults, 'string');
       var data = process(split(rawFormats, delimiter));
       return {
         type: 'basic',
@@ -25949,7 +26030,7 @@
         apis: apis
       };
     };
-    var slotApis = map$1({
+    var slotApis = map$2({
       getSlotNames: function (apis, c) {
         return apis.getSlotNames(c);
       },
@@ -26620,7 +26701,7 @@
         editor.contentCSS.push(skinUrl + (isInline ? '/content.inline' : '/content') + '.min.css');
       }
       if (isSkinDisabled(editor) === false && skinUiCss) {
-        global$7.DOM.styleSheetLoader.load(skinUiCss, fireSkinLoaded$1(editor), fireSkinLoadError$1(editor, 'Skin could not be loaded'));
+        editor.ui.styleSheetLoader.load(skinUiCss, fireSkinLoaded$1(editor), fireSkinLoadError$1(editor, 'Skin could not be loaded'));
       } else {
         fireSkinLoaded$1(editor)();
       }
@@ -26647,7 +26728,7 @@
       }
     };
 
-    var DOM = global$7.DOM;
+    var DOM = global$5.DOM;
     var detection = detect$3();
     var isiOS12 = detection.os.isiOS() && detection.os.version.major <= 12;
     var setupEvents = function (editor) {
@@ -26686,8 +26767,10 @@
     var render = function (editor, uiComponents, rawUiConfig, backstage, args) {
       var lastToolbarWidth = Cell(0);
       iframe(editor);
-      attachSystemAfter(Element.fromDom(args.targetNode), uiComponents.mothership);
-      attachSystem(body(), uiComponents.uiMothership);
+      var eTargetNode = Element.fromDom(args.targetNode);
+      var uiRoot = getContentContainer(getRootNode(eTargetNode));
+      attachSystemAfter(eTargetNode, uiComponents.mothership);
+      attachSystem(uiRoot, uiComponents.uiMothership);
       editor.on('PostRender', function () {
         setToolbar(editor, uiComponents, rawUiConfig, backstage);
         lastToolbarWidth.set(editor.getWin().innerWidth);
@@ -26834,7 +26917,7 @@
 
     var InlineHeader = function (editor, targetElm, uiComponents, backstage, floatContainer) {
       var uiMothership = uiComponents.uiMothership, outerContainer = uiComponents.outerContainer;
-      var DOM = global$7.DOM;
+      var DOM = global$5.DOM;
       var useFixedToolbarContainer = useFixedContainer(editor);
       var isSticky = isStickyToolbar(editor);
       var editorMaxWidthOpt = getMaxWidthSetting(editor).or(getWidth$1(editor));
@@ -27536,7 +27619,7 @@
       }
     };
     var transposeContentAreaContainer = function (element, pos) {
-      var containerPos = global$7.DOM.getPos(element);
+      var containerPos = global$5.DOM.getPos(element);
       return transpose$1(pos, containerPos.x, containerPos.y);
     };
     var getPointAnchor = function (editor, e) {
@@ -27727,11 +27810,11 @@
       return typeof config === 'string' ? config.split(/[ ,]/) : config;
     };
     var shouldNeverUseNative = function (editor) {
-      return editor.settings.contextmenu_never_use_native || false;
+      return editor.getParam('contextmenu_never_use_native', false, 'boolean');
     };
     var getMenuItems = function (editor, name, defaultItems) {
       var contextMenus = editor.ui.registry.getAll().contextMenus;
-      return get(editor.settings, name).map(patchPipeConfig).getOrThunk(function () {
+      return Option.from(editor.getParam(name)).map(patchPipeConfig).getOrThunk(function () {
         return filter(patchPipeConfig(defaultItems), function (item) {
           return has(contextMenus, item);
         });
@@ -28862,7 +28945,7 @@
         };
       };
       var renderBranding = function () {
-        var label = global$5.translate([
+        var label = global$6.translate([
           'Powered by {0}',
           'Tiny'
         ]);
@@ -28876,7 +28959,7 @@
         };
       };
       var getResizeType = function (editor) {
-        var fallback = !contains$1(editor.settings.plugins, 'autoresize');
+        var fallback = !contains$1(editor.getParam('plugins', '', 'string'), 'autoresize');
         var resize = editor.getParam('resize', fallback);
         if (resize === false) {
           return ResizeTypes.None;
@@ -28891,7 +28974,7 @@
         if (editor.getParam('elementpath', true, 'boolean')) {
           components.push(renderElementPath(editor, {}, providersBackstage));
         }
-        if (contains$1(editor.settings.plugins, 'wordcount')) {
+        if (contains$1(editor.getParam('plugins', '', 'string'), 'wordcount')) {
           components.push(renderWordCount(editor, providersBackstage));
         }
         if (editor.getParam('branding', true, 'boolean')) {
@@ -28938,7 +29021,7 @@
       var touchPlatformClass = 'tox-platform-touch';
       var deviceClasses = isTouch ? [touchPlatformClass] : [];
       var isToolbarBottom = isToolbarLocationBottom(editor);
-      var dirAttributes = global$5.isRtl() ? { attributes: { dir: 'rtl' } } : {};
+      var dirAttributes = global$6.isRtl() ? { attributes: { dir: 'rtl' } } : {};
       var verticalDirAttributes = { attributes: (_a = {}, _a[Attribute] = isToolbarBottom ? AttributeValue.BottomToTop : AttributeValue.TopToBottom, _a) };
       var lazyHeader = function () {
         return lazyOuterContainer.bind(OuterContainer.getHeader);
@@ -29098,7 +29181,7 @@
         [partThrobber]
       ]);
       var isHidden = isDistractionFree(editor);
-      var attributes = __assign(__assign({ role: 'application' }, global$5.isRtl() ? { dir: 'rtl' } : {}), isHidden ? { 'aria-hidden': 'true' } : {});
+      var attributes = __assign(__assign({ role: 'application' }, global$6.isRtl() ? { dir: 'rtl' } : {}), isHidden ? { 'aria-hidden': 'true' } : {});
       var outerContainer = build$1(OuterContainer.sketch({
         dom: {
           tag: 'div',
@@ -29158,19 +29241,17 @@
         setup$9(editor, lazySink, backstage);
         setup$6(editor);
         setup$7(editor, lazyThrobber, backstage.shared);
-        map$1(getToolbarGroups(editor), function (toolbarGroupButtonConfig, name) {
+        map$2(getToolbarGroups(editor), function (toolbarGroupButtonConfig, name) {
           editor.ui.registry.addGroupToolbarButton(name, toolbarGroupButtonConfig);
         });
         var _a = editor.ui.registry.getAll(), buttons = _a.buttons, menuItems = _a.menuItems, contextToolbars = _a.contextToolbars, sidebars = _a.sidebars;
         var toolbarOpt = getMultipleToolbarsSetting(editor);
         var rawUiConfig = {
           menuItems: menuItems,
-          menus: !editor.settings.menu ? {} : map$1(editor.settings.menu, function (menu) {
-            return __assign(__assign({}, menu), { items: menu.items });
-          }),
-          menubar: editor.settings.menubar,
+          menus: getMenus(editor),
+          menubar: getMenubar(editor),
           toolbar: toolbarOpt.getOrThunk(function () {
-            return editor.getParam('toolbar', true);
+            return getToolbar(editor);
           }),
           allowToolbarGroups: toolbarMode === ToolbarMode.floating,
           buttons: buttons,
@@ -29427,6 +29508,44 @@
       }
     });
 
+    var dialogToggleMenuItemSchema = objOf([
+      strictString('type'),
+      strictString('name')
+    ].concat(commonMenuItemFields));
+    var dialogToggleMenuItemDataProcessor = boolean;
+
+    var baseButtonFields = [
+      field('name', 'name', defaultedThunk(function () {
+        return generate$1('button-name');
+      }), string),
+      optionString('icon'),
+      defaultedStringEnum('align', 'end', [
+        'start',
+        'end'
+      ]),
+      defaultedBoolean('primary', false),
+      defaultedBoolean('disabled', false)
+    ];
+    var dialogButtonFields = __spreadArrays(baseButtonFields, [strictString('text')]);
+    var normalButtonFields = __spreadArrays([strictStringEnum('type', [
+        'submit',
+        'cancel',
+        'custom'
+      ])], dialogButtonFields);
+    var menuButtonFields = __spreadArrays([
+      strictStringEnum('type', ['menu']),
+      optionString('text'),
+      optionString('tooltip'),
+      optionString('icon'),
+      strictArrayOf('items', dialogToggleMenuItemSchema)
+    ], baseButtonFields);
+    var dialogButtonSchema = choose$1('type', {
+      submit: normalButtonFields,
+      cancel: normalButtonFields,
+      custom: normalButtonFields,
+      menu: menuButtonFields
+    });
+
     var alertBannerFields = [
       strictString('type'),
       strictString('text'),
@@ -29661,44 +29780,6 @@
       strictArrayOfObj('tabs', tabFields)
     ];
     var tabPanelSchema = objOf(tabPanelFields);
-
-    var dialogToggleMenuItemSchema = objOf([
-      strictString('type'),
-      strictString('name')
-    ].concat(commonMenuItemFields));
-    var dialogToggleMenuItemDataProcessor = boolean;
-
-    var baseButtonFields = [
-      field('name', 'name', defaultedThunk(function () {
-        return generate$1('button-name');
-      }), string),
-      optionString('icon'),
-      defaultedStringEnum('align', 'end', [
-        'start',
-        'end'
-      ]),
-      defaultedBoolean('primary', false),
-      defaultedBoolean('disabled', false)
-    ];
-    var dialogButtonFields = __spreadArrays(baseButtonFields, [strictString('text')]);
-    var normalButtonFields = __spreadArrays([strictStringEnum('type', [
-        'submit',
-        'cancel',
-        'custom'
-      ])], dialogButtonFields);
-    var menuButtonFields = __spreadArrays([
-      strictStringEnum('type', ['menu']),
-      optionString('text'),
-      optionString('tooltip'),
-      optionString('icon'),
-      strictArrayOf('items', dialogToggleMenuItemSchema)
-    ], baseButtonFields);
-    var dialogButtonSchema = choose$1('type', {
-      submit: normalButtonFields,
-      cancel: normalButtonFields,
-      custom: normalButtonFields,
-      menu: menuButtonFields
-    });
 
     var dialogButtonFields$1 = dialogButtonFields;
     var dialogButtonSchema$1 = dialogButtonSchema;
@@ -30477,7 +30558,7 @@
       return ModalDialog.parts().body(bodySpec);
     };
 
-    var isTouch = global$6.deviceType.isTouch();
+    var isTouch = global$8.deviceType.isTouch();
     var hiddenHeader = function (title, close) {
       return {
         dom: {
@@ -31017,7 +31098,7 @@
         var root = access.getRoot();
         var valueComp = root.getSystem().isConnected() ? access.getFormWrapper() : root;
         var representedValues = Representing.getValue(valueComp);
-        var menuItemCurrentState = map$1(menuItemStates, function (cell) {
+        var menuItemCurrentState = map$2(menuItemStates, function (cell) {
           return cell.get();
         });
         return __assign(__assign({}, representedValues), menuItemCurrentState);

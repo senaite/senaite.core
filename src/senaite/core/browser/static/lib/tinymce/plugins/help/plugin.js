@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.3.2 (2020-06-10)
+ * Version: 5.4.1 (2020-07-08)
  */
 (function () {
     'use strict';
@@ -244,6 +244,9 @@
 
     var getHelpTabs = function (editor) {
       return Option.from(editor.getParam('help_tabs'));
+    };
+    var getForcedPlugins = function (editor) {
+      return editor.getParam('forced_plugins');
     };
 
     var shortcuts = [
@@ -583,7 +586,8 @@
       },
       {
         key: 'tinydrive',
-        name: 'Tiny Drive*'
+        name: 'Tiny Drive*',
+        slug: 'drive'
       },
       {
         key: 'tinymcespellchecker',
@@ -623,7 +627,8 @@
       },
       {
         key: 'tinycomments',
-        name: 'Tiny Comments*'
+        name: 'Tiny Comments*',
+        slug: 'comments'
       },
       {
         key: 'advtable',
@@ -670,16 +675,18 @@
           var getMetadata = editor.plugins[key].getMetadata;
           return typeof getMetadata === 'function' ? makeLink(getMetadata()) : key;
         }, function (x) {
+          var urlSlug = x.slug || x.key;
           return makeLink({
             name: x.name,
-            url: 'https://www.tiny.cloud/docs/plugins/' + x.key
+            url: 'https://www.tiny.cloud/docs/plugins/' + urlSlug
           });
         });
       };
       var getPluginKeys = function (editor) {
         var keys$1 = keys(editor.plugins);
-        return editor.settings.forced_plugins === undefined ? keys$1 : filter(keys$1, function (k) {
-          return !contains(editor.settings.forced_plugins, k);
+        var forced_plugins = getForcedPlugins(editor);
+        return forced_plugins === undefined ? keys$1 : filter(keys$1, function (k) {
+          return !contains(forced_plugins, k);
         });
       };
       var pluginLister = function (editor) {

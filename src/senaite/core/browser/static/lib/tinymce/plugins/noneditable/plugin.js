@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.3.2 (2020-06-10)
+ * Version: 5.4.1 (2020-07-08)
  */
 (function () {
     'use strict';
@@ -63,10 +63,9 @@
       e.content = content;
     };
     var setup = function (editor) {
-      var editClass, nonEditClass;
       var contentEditableAttrName = 'contenteditable';
-      editClass = ' ' + global$1.trim(getEditableClass(editor)) + ' ';
-      nonEditClass = ' ' + global$1.trim(getNonEditableClass(editor)) + ' ';
+      var editClass = ' ' + global$1.trim(getEditableClass(editor)) + ' ';
+      var nonEditClass = ' ' + global$1.trim(getNonEditableClass(editor)) + ' ';
       var hasEditClass = hasClass(editClass);
       var hasNonEditClass = hasClass(nonEditClass);
       var nonEditableRegExps = getNonEditableRegExps(editor);

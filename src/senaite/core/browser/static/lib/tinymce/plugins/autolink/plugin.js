@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.3.2 (2020-06-10)
+ * Version: 5.4.1 (2020-07-08)
  */
 (function () {
     'use strict';
@@ -14,7 +14,7 @@
     var global$1 = tinymce.util.Tools.resolve('tinymce.Env');
 
     var getAutoLinkPattern = function (editor) {
-      return editor.getParam('autolink_pattern', /^(https?:\/\/|ssh:\/\/|ftp:\/\/|file:\/|www\.|(?:mailto:)?[A-Z0-9._%+\-]+@)(.+)$/i);
+      return editor.getParam('autolink_pattern', /^(https?:\/\/|ssh:\/\/|ftp:\/\/|file:\/|www\.|(?:mailto:)?[A-Z0-9._%+\-]+@(?!.*@))(.+)$/i);
     };
     var getDefaultLinkTarget = function (editor) {
       return editor.getParam('default_link_target', false);
@@ -62,13 +62,13 @@
       }
     };
     var parseCurrentLine = function (editor, endOffset, delimiter) {
-      var rng, end, start, endContainer, bookmark, text, matches, prev, len, rngText;
+      var end, endContainer, bookmark, text, prev, len, rngText;
       var autoLinkPattern = getAutoLinkPattern(editor);
       var defaultLinkTarget = getDefaultLinkTarget(editor);
       if (editor.selection.getNode().tagName === 'A') {
         return;
       }
-      rng = editor.selection.getRng(true).cloneRange();
+      var rng = editor.selection.getRng().cloneRange();
       if (rng.startOffset < 5) {
         prev = rng.endContainer.previousSibling;
         if (!prev) {
@@ -102,7 +102,7 @@
           end = rng.endOffset - 1 - endOffset;
         }
       }
-      start = end;
+      var start = end;
       do {
         setStart(rng, endContainer, end >= 2 ? end - 2 : 0);
         setEnd(rng, endContainer, end >= 1 ? end - 1 : 0);
@@ -125,7 +125,7 @@
         setEnd(rng, endContainer, start - 1);
       }
       text = rng.toString().trim();
-      matches = text.match(autoLinkPattern);
+      var matches = text.match(autoLinkPattern);
       var protocol = getDefaultLinkProtocol(editor);
       if (matches) {
         if (matches[1] === 'www.') {

@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.3.2 (2020-06-10)
+ * Version: 5.4.1 (2020-07-08)
  */
 (function (domGlobals) {
     'use strict';
@@ -69,6 +69,9 @@
     };
     var getDefaultDocType = function (editor) {
       return editor.getParam('fullpage_default_doctype', '<!DOCTYPE html>');
+    };
+    var getProtect = function (editor) {
+      return editor.getParam('protect');
     };
 
     var parseHeader = function (head) {
@@ -137,7 +140,7 @@
       return data;
     };
     var dataToHtml = function (editor, data, head) {
-      var headerFragment, headElement, html, elm, value;
+      var headElement, elm, value;
       var dom = editor.dom;
       function setAttr(elm, name, value) {
         elm.attr(name, value ? value : undefined);
@@ -149,7 +152,7 @@
           headElement.append(node);
         }
       }
-      headerFragment = parseHeader(head);
+      var headerFragment = parseHeader(head);
       headElement = headerFragment.getAll('head')[0];
       if (!headElement) {
         elm = headerFragment.getAll('html')[0];
@@ -285,7 +288,7 @@
       if (!headElement.firstChild) {
         headElement.remove();
       }
-      html = global$4({
+      var html = global$4({
         validate: false,
         indent: true,
         indent_before: 'head,html,body,meta,title,script,link,style',
@@ -393,12 +396,12 @@
       });
     };
     var handleSetContent = function (editor, headState, footState, evt) {
-      var startPos, endPos, content, headerFragment, styles = '';
+      var startPos, endPos, content, styles = '';
       var dom = editor.dom;
       if (evt.selection) {
         return;
       }
-      content = protectHtml(editor.settings.protect, evt.content);
+      content = protectHtml(getProtect(editor), evt.content);
       if (evt.format === 'raw' && headState.get()) {
         return;
       }
@@ -423,7 +426,7 @@
         headState.set(getDefaultHeader(editor));
         footState.set('\n</body>\n</html>');
       }
-      headerFragment = parseHeader(headState.get());
+      var headerFragment = parseHeader(headState.get());
       each(headerFragment.getAll('style'), function (node) {
         if (node.firstChild) {
           styles += node.firstChild.value;

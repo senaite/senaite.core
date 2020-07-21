@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.3.2 (2020-06-10)
+ * Version: 5.4.1 (2020-07-08)
  */
 (function (domGlobals) {
     'use strict';
@@ -276,9 +276,6 @@
 
     var keys = Object.keys;
     var hasOwnProperty = Object.hasOwnProperty;
-    var get = function (obj, key) {
-      return has(obj, key) ? Option.from(obj[key]) : Option.none();
-    };
     var has = function (obj, key) {
       return hasOwnProperty.call(obj, key);
     };
@@ -656,7 +653,7 @@
       };
     };
 
-    var get$1 = function (patternsState) {
+    var get = function (patternsState) {
       var setPatterns = function (newPatterns) {
         var normalized = partition(map(newPatterns, normalizePattern));
         if (normalized.errors.length > 0) {
@@ -738,8 +735,8 @@
         cmd: 'InsertUnorderedList'
       }
     ];
-    var getPatternSet = function (editorSettings) {
-      var patterns = get(editorSettings, 'textpattern_patterns').getOr(defaultPatterns);
+    var getPatternSet = function (editor) {
+      var patterns = editor.getParam('textpattern_patterns', defaultPatterns, 'array');
       if (!isArray(patterns)) {
         error$1('The setting textpattern_patterns should be an array');
         return {
@@ -1384,9 +1381,9 @@
 
     function Plugin () {
       global.add('textpattern', function (editor) {
-        var patternsState = Cell(getPatternSet(editor.settings));
+        var patternsState = Cell(getPatternSet(editor));
         setup(editor, patternsState);
-        return get$1(patternsState);
+        return get(patternsState);
       });
     }
 

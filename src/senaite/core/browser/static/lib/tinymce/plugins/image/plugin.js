@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.3.2 (2020-06-10)
+ * Version: 5.4.1 (2020-07-08)
  */
 (function (domGlobals) {
     'use strict';
@@ -881,8 +881,7 @@
     };
     function Uploader (settings) {
       var defaultHandler = function (blobInfo, success, failure, progress) {
-        var xhr, formData;
-        xhr = new domGlobals.XMLHttpRequest();
+        var xhr = new domGlobals.XMLHttpRequest();
         xhr.open('POST', settings.url);
         xhr.withCredentials = settings.credentials;
         xhr.upload.onprogress = function (e) {
@@ -892,19 +891,18 @@
           failure('Image upload failed due to a XHR Transport error. Code: ' + xhr.status);
         };
         xhr.onload = function () {
-          var json;
           if (xhr.status < 200 || xhr.status >= 300) {
             failure('HTTP Error: ' + xhr.status);
             return;
           }
-          json = JSON.parse(xhr.responseText);
+          var json = JSON.parse(xhr.responseText);
           if (!json || typeof json.location !== 'string') {
             failure('Invalid JSON: ' + xhr.responseText);
             return;
           }
           success(pathJoin(settings.basePath, json.location));
         };
-        formData = new domGlobals.FormData();
+        var formData = new domGlobals.FormData();
         formData.append('file', blobInfo.blob(), blobInfo.filename());
         xhr.send(formData);
       };

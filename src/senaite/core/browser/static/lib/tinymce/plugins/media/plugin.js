@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.3.2 (2020-06-10)
+ * Version: 5.4.1 (2020-07-08)
  */
 (function () {
     'use strict';
@@ -1043,9 +1043,8 @@
     };
 
     var createPlaceholderNode = function (editor, node) {
-      var placeHolder;
       var name = node.name;
-      placeHolder = new global$7('img', 1);
+      var placeHolder = new global$7('img', 1);
       placeHolder.shortEnded = true;
       retainAttributesAndInnerHtml(editor, node, placeHolder);
       placeHolder.attr({
@@ -1059,11 +1058,8 @@
       return placeHolder;
     };
     var createPreviewIframeNode = function (editor, node) {
-      var previewWrapper;
-      var previewNode;
-      var shimNode;
       var name = node.name;
-      previewWrapper = new global$7('span', 1);
+      var previewWrapper = new global$7('span', 1);
       previewWrapper.attr({
         'contentEditable': 'false',
         'style': node.attr('style'),
@@ -1071,7 +1067,7 @@
         'class': 'mce-preview-object mce-object-' + name
       });
       retainAttributesAndInnerHtml(editor, node, previewWrapper);
-      previewNode = new global$7(name, 1);
+      var previewNode = new global$7(name, 1);
       previewNode.attr({
         src: node.attr('src'),
         allowfullscreen: node.attr('allowfullscreen'),
@@ -1081,7 +1077,7 @@
         height: node.attr('height'),
         frameborder: '0'
       });
-      shimNode = new global$7('span', 1);
+      var shimNode = new global$7('span', 1);
       shimNode.attr('class', 'mce-shim');
       previewWrapper.append(previewNode);
       previewWrapper.append(shimNode);
@@ -1090,10 +1086,8 @@
     var retainAttributesAndInnerHtml = function (editor, sourceNode, targetNode) {
       var attrName;
       var attrValue;
-      var attribs;
       var ai;
-      var innerHtml;
-      attribs = sourceNode.attributes;
+      var attribs = sourceNode.attributes;
       ai = attribs.length;
       while (ai--) {
         attrName = attribs[ai].name;
@@ -1105,7 +1099,7 @@
           targetNode.attr('data-mce-p-' + attrName, attrValue);
         }
       }
-      innerHtml = sourceNode.firstChild && sourceNode.firstChild.value;
+      var innerHtml = sourceNode.firstChild && sourceNode.firstChild.value;
       if (innerHtml) {
         targetNode.attr('data-mce-html', escape(sanitize(editor, innerHtml)));
         targetNode.firstChild = null;

@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.3.2 (2020-06-10)
+ * Version: 5.4.1 (2020-07-08)
  */
 (function (domGlobals) {
     'use strict';
@@ -48,16 +48,31 @@
       return editor.getParam('autosave_restore_when_empty', false);
     };
     var getAutoSaveInterval = function (editor) {
-      return parse(editor.settings.autosave_interval, '30s');
+      return parse(editor.getParam('autosave_interval'), '30s');
     };
     var getAutoSaveRetention = function (editor) {
-      return parse(editor.settings.autosave_retention, '20m');
+      return parse(editor.getParam('autosave_retention'), '20m');
     };
 
+    var eq = function (t) {
+      return function (a) {
+        return t === a;
+      };
+    };
+    var isUndefined = eq(undefined);
+
     var isEmpty = function (editor, html) {
-      var forcedRootBlockName = editor.settings.forced_root_block;
-      html = global$3.trim(typeof html === 'undefined' ? editor.getBody().innerHTML : html);
-      return html === '' || new RegExp('^<' + forcedRootBlockName + '[^>]*>((\xA0|&nbsp;|[ \t]|<br[^>]*>)+?|)</' + forcedRootBlockName + '>|<br>$', 'i').test(html);
+      if (isUndefined(html)) {
+        return editor.dom.isEmpty(editor.getBody());
+      } else {
+        var trimmedHtml = global$3.trim(html);
+        if (trimmedHtml === '') {
+          return true;
+        } else {
+          var fragment = new domGlobals.DOMParser().parseFromString(trimmedHtml, 'text/html');
+          return editor.dom.isEmpty(fragment);
+        }
+      }
     };
     var hasDraft = function (editor) {
       var time = parseInt(global$2.getItem(getAutoSavePrefix(editor) + 'time'), 10) || 0;

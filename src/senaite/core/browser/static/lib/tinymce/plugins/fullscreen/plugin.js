@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.3.2 (2020-06-10)
+ * Version: 5.4.1 (2020-07-08)
  */
 (function (domGlobals) {
     'use strict';
@@ -42,6 +42,11 @@
           args[_i] = arguments[_i];
         }
         return fa(fb.apply(null, args));
+      };
+    };
+    var compose1 = function (fbc, fab) {
+      return function (a) {
+        return fbc(fab(a));
       };
     };
     var constant = function (value) {
@@ -232,6 +237,12 @@
     var isString = isType('string');
     var isArray = isType('array');
     var isBoolean = isSimpleType('boolean');
+    var isNullable = function (a) {
+      return a === null || a === undefined;
+    };
+    var isNonNullable = function (a) {
+      return !isNullable(a);
+    };
     var isFunction = isSimpleType('function');
     var isNumber = isSimpleType('number');
 
@@ -273,6 +284,9 @@
     };
     var bind = function (xs, f) {
       return flatten(map(xs, f));
+    };
+    var head = function (xs) {
+      return xs.length === 0 ? Option.none() : Option.some(xs[0]);
     };
 
     var keys = Object.keys;
@@ -330,6 +344,7 @@
     var Global = typeof domGlobals.window !== 'undefined' ? domGlobals.window : Function('return this;')();
 
     var DOCUMENT = 9;
+    var DOCUMENT_FRAGMENT = 11;
     var ELEMENT = 1;
     var TEXT = 3;
 
@@ -341,11 +356,121 @@
         return type(element) === t;
       };
     };
+    var isElement = isType$1(ELEMENT);
     var isText = isType$1(TEXT);
+    var isDocument = isType$1(DOCUMENT);
+    var isDocumentFragment = isType$1(DOCUMENT_FRAGMENT);
+
+    var is = function (element, selector) {
+      var dom = element.dom();
+      if (dom.nodeType !== ELEMENT) {
+        return false;
+      } else {
+        var elem = dom;
+        if (elem.matches !== undefined) {
+          return elem.matches(selector);
+        } else if (elem.msMatchesSelector !== undefined) {
+          return elem.msMatchesSelector(selector);
+        } else if (elem.webkitMatchesSelector !== undefined) {
+          return elem.webkitMatchesSelector(selector);
+        } else if (elem.mozMatchesSelector !== undefined) {
+          return elem.mozMatchesSelector(selector);
+        } else {
+          throw new Error('Browser lacks native selectors');
+        }
+      }
+    };
+    var bypassSelector = function (dom) {
+      return dom.nodeType !== ELEMENT && dom.nodeType !== DOCUMENT && dom.nodeType !== DOCUMENT_FRAGMENT || dom.childElementCount === 0;
+    };
+    var all = function (selector, scope) {
+      var base = scope === undefined ? domGlobals.document : scope.dom();
+      return bypassSelector(base) ? [] : map(base.querySelectorAll(selector), Element.fromDom);
+    };
+
+    var eq = function (e1, e2) {
+      return e1.dom() === e2.dom();
+    };
+
+    var owner = function (element) {
+      return Element.fromDom(element.dom().ownerDocument);
+    };
+    var documentOrOwner = function (dos) {
+      return isDocument(dos) ? dos : owner(dos);
+    };
+    var parent = function (element) {
+      return Option.from(element.dom().parentNode).map(Element.fromDom);
+    };
+    var parents = function (element, isRoot) {
+      var stop = isFunction(isRoot) ? isRoot : never;
+      var dom = element.dom();
+      var ret = [];
+      while (dom.parentNode !== null && dom.parentNode !== undefined) {
+        var rawParent = dom.parentNode;
+        var p = Element.fromDom(rawParent);
+        ret.push(p);
+        if (stop(p) === true) {
+          break;
+        } else {
+          dom = rawParent;
+        }
+      }
+      return ret;
+    };
+    var siblings = function (element) {
+      var filterSelf = function (elements) {
+        return filter(elements, function (x) {
+          return !eq(element, x);
+        });
+      };
+      return parent(element).map(children).map(filterSelf).getOr([]);
+    };
+    var children = function (element) {
+      return map(element.dom().childNodes, Element.fromDom);
+    };
+
+    var isShadowRoot = function (dos) {
+      return isDocumentFragment(dos);
+    };
+    var supported = isFunction(domGlobals.Element.prototype.attachShadow) && isFunction(domGlobals.Node.prototype.getRootNode);
+    var isSupported$1 = constant(supported);
+    var getRootNode = supported ? function (e) {
+      return Element.fromDom(e.dom().getRootNode());
+    } : documentOrOwner;
+    var getShadowRoot = function (e) {
+      var r = getRootNode(e);
+      return isShadowRoot(r) ? Option.some(r) : Option.none();
+    };
+    var getShadowHost = function (e) {
+      return Element.fromDom(e.dom().host);
+    };
+    var getOriginalEventTarget = function (event) {
+      if (isSupported$1() && isNonNullable(event.target)) {
+        var el = Element.fromDom(event.target);
+        if (isElement(el) && isOpenShadowHost(Element.fromDom(event.target))) {
+          var eventAny = event;
+          if (eventAny.composed && eventAny.composedPath) {
+            var composedPath = eventAny.composedPath();
+            if (composedPath) {
+              return head(composedPath);
+            }
+          }
+        }
+      }
+      return Option.from(event.target);
+    };
+    var isOpenShadowHost = function (element) {
+      return isNonNullable(element.dom().shadowRoot);
+    };
 
     var inBody = function (element) {
       var dom = isText(element) ? element.dom().parentNode : element.dom();
-      return dom !== undefined && dom !== null && dom.ownerDocument.body.contains(dom);
+      if (dom === undefined || dom === null || dom.ownerDocument === null) {
+        return false;
+      }
+      return getShadowRoot(Element.fromDom(dom)).fold(function () {
+        return dom.ownerDocument.body.contains(dom);
+      }, compose1(inBody, getShadowHost));
     };
 
     var rawSet = function (dom, key, value) {
@@ -404,7 +529,7 @@
       };
     };
     var fromRawEvent = function (rawEvent) {
-      var target = Element.fromDom(rawEvent.target);
+      var target = Element.fromDom(getOriginalEventTarget(rawEvent).getOr(rawEvent.target));
       var stop = function () {
         return rawEvent.stopPropagation();
       };
@@ -413,70 +538,6 @@
       };
       var kill = compose(prevent, stop);
       return mkEvent(target, rawEvent.clientX, rawEvent.clientY, stop, prevent, kill, rawEvent);
-    };
-
-    var ELEMENT$1 = ELEMENT;
-    var DOCUMENT$1 = DOCUMENT;
-    var is = function (element, selector) {
-      var dom = element.dom();
-      if (dom.nodeType !== ELEMENT$1) {
-        return false;
-      } else {
-        var elem = dom;
-        if (elem.matches !== undefined) {
-          return elem.matches(selector);
-        } else if (elem.msMatchesSelector !== undefined) {
-          return elem.msMatchesSelector(selector);
-        } else if (elem.webkitMatchesSelector !== undefined) {
-          return elem.webkitMatchesSelector(selector);
-        } else if (elem.mozMatchesSelector !== undefined) {
-          return elem.mozMatchesSelector(selector);
-        } else {
-          throw new Error('Browser lacks native selectors');
-        }
-      }
-    };
-    var bypassSelector = function (dom) {
-      return dom.nodeType !== ELEMENT$1 && dom.nodeType !== DOCUMENT$1 || dom.childElementCount === 0;
-    };
-    var all = function (selector, scope) {
-      var base = scope === undefined ? domGlobals.document : scope.dom();
-      return bypassSelector(base) ? [] : map(base.querySelectorAll(selector), Element.fromDom);
-    };
-
-    var eq = function (e1, e2) {
-      return e1.dom() === e2.dom();
-    };
-
-    var parent = function (element) {
-      return Option.from(element.dom().parentNode).map(Element.fromDom);
-    };
-    var parents = function (element, isRoot) {
-      var stop = isFunction(isRoot) ? isRoot : never;
-      var dom = element.dom();
-      var ret = [];
-      while (dom.parentNode !== null && dom.parentNode !== undefined) {
-        var rawParent = dom.parentNode;
-        var p = Element.fromDom(rawParent);
-        ret.push(p);
-        if (stop(p) === true) {
-          break;
-        } else {
-          dom = rawParent;
-        }
-      }
-      return ret;
-    };
-    var siblings = function (element) {
-      var filterSelf = function (elements) {
-        return filter(elements, function (x) {
-          return !eq(element, x);
-        });
-      };
-      return parent(element).map(children).map(filterSelf).getOr([]);
-    };
-    var children = function (element) {
-      return map(element.dom().childNodes, Element.fromDom);
     };
 
     var r = function (left, top) {
@@ -680,16 +741,23 @@
     var toggleFullscreen = function (editor, fullscreenState) {
       var body = domGlobals.document.body;
       var documentElement = domGlobals.document.documentElement;
-      var editorContainerStyle;
-      var editorContainer, iframe, iframeStyle;
-      editorContainer = editor.getContainer();
+      var editorContainer = editor.getContainer();
       var editorContainerS = Element.fromDom(editorContainer);
       var fullscreenInfo = fullscreenState.get();
       var editorBody = Element.fromDom(editor.getBody());
       var isTouch = global$2.deviceType.isTouch();
-      editorContainerStyle = editorContainer.style;
-      iframe = editor.getContentAreaContainer().firstChild;
-      iframeStyle = iframe.style;
+      var editorContainerStyle = editorContainer.style;
+      var iframe = editor.iframeElement;
+      var iframeStyle = iframe.style;
+      var cleanup = function () {
+        if (isTouch) {
+          restoreStyles(editor.dom);
+        }
+        DOM.removeClass(body, 'tox-fullscreen');
+        DOM.removeClass(documentElement, 'tox-fullscreen');
+        DOM.removeClass(editorContainer, 'tox-fullscreen');
+        viewportUpdate.unbind();
+      };
       if (!fullscreenInfo) {
         var newFullScreenInfo = {
           scrollPos: getScrollPos(),
@@ -709,7 +777,7 @@
         DOM.addClass(documentElement, 'tox-fullscreen');
         DOM.addClass(editorContainer, 'tox-fullscreen');
         viewportUpdate.bind(editorContainerS);
-        editor.on('remove', viewportUpdate.unbind);
+        editor.on('remove', cleanup);
         fullscreenState.set(newFullScreenInfo);
         fireFullscreenStateChanged(editor, true);
       } else {
@@ -719,17 +787,11 @@
         editorContainerStyle.height = fullscreenInfo.containerHeight;
         editorContainerStyle.top = fullscreenInfo.containerTop;
         editorContainerStyle.left = fullscreenInfo.containerLeft;
-        if (isTouch) {
-          restoreStyles(editor.dom);
-        }
-        DOM.removeClass(body, 'tox-fullscreen');
-        DOM.removeClass(documentElement, 'tox-fullscreen');
-        DOM.removeClass(editorContainer, 'tox-fullscreen');
         setScrollPos(fullscreenInfo.scrollPos);
         fullscreenState.set(null);
         fireFullscreenStateChanged(editor, false);
-        viewportUpdate.unbind();
-        editor.off('remove', viewportUpdate.unbind);
+        cleanup();
+        editor.off('remove', cleanup);
       }
     };
 
@@ -774,7 +836,7 @@
     function Plugin () {
       global.add('fullscreen', function (editor) {
         var fullscreenState = Cell(null);
-        if (editor.settings.inline) {
+        if (editor.inline) {
           return get(fullscreenState);
         }
         register(editor, fullscreenState);

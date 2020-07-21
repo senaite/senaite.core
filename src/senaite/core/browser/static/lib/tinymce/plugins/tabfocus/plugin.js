@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.3.2 (2020-06-10)
+ * Version: 5.4.1 (2020-07-08)
  */
 (function (domGlobals) {
     'use strict';
@@ -38,7 +38,7 @@
     };
     var setup = function (editor) {
       function tabHandler(e) {
-        var x, el, v, i;
+        var x, el, i;
         if (e.keyCode !== global$6.TAB || e.ctrlKey || e.altKey || e.metaKey || e.isDefaultPrevented()) {
           return;
         }
@@ -71,7 +71,7 @@
           }
           return null;
         }
-        v = global$5.explode(getTabFocus(editor));
+        var v = global$5.explode(getTabFocus(editor));
         if (v.length === 1) {
           v[1] = v[0];
           v[0] = ':prev';

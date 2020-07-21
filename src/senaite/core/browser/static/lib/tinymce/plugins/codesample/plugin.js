@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.3.2 (2020-06-10)
+ * Version: 5.4.1 (2020-07-08)
  */
 (function (domGlobals) {
     'use strict';
@@ -125,6 +125,10 @@
       some: some,
       none: none,
       from: from
+    };
+
+    var head = function (xs) {
+      return xs.length === 0 ? Option.none() : Option.some(xs[0]);
     };
 
     var global$1 = tinymce.util.Tools.resolve('tinymce.dom.DOMUtils');
@@ -1567,10 +1571,6 @@
         var matches = n.className.match(/language-(\w+)/);
         return matches ? matches[1] : fallback;
       });
-    };
-
-    var head = function (xs) {
-      return xs.length === 0 ? Option.none() : Option.some(xs[0]);
     };
 
     var open = function (editor) {
