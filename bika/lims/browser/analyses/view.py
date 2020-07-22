@@ -630,6 +630,7 @@ class AnalysesView(BikaListingView):
                     "ajax": True,
                 }
 
+
         if self.allow_edit:
             new_states = []
             for state in self.review_states:
@@ -831,6 +832,23 @@ class AnalysesView(BikaListingView):
             if not interim_hidden:
                 interim_title = interim_field.get('title')
                 self.interim_columns[interim_keyword] = interim_title
+
+            # Does a results list needs to be rendered?
+            interim_choices = interim_field.get("choices")
+            if interim_choices:
+                headers = ["ResultValue", "ResultText"]
+                choices = interim_choices.split("|") or []
+                choices = dict(map(lambda it: it.split(":"), choices))
+                dlist = map(lambda it: dict(zip(headers, it)), choices.items())
+                if dlist:
+                    item["choices"] = {}
+                    item["choices"][interim_keyword] = dlist
+
+                    # Display the text instead of the value
+                    val = choices.get(interim_value)
+                    if val:
+                        interim_field['value'] = val
+                        item[interim_keyword]=interim_field
 
         item['interimfields'] = interim_fields
         self.interim_fields[analysis_brain.UID] = interim_fields
