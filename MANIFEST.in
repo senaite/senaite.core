@@ -8,3 +8,4 @@ recursive-exclude src/senaite/core/listing *
 recursive-exclude src/senaite/core/spotlight *
 recursive-exclude src/senaite/core/supermodel *
 recursive-exclude src *.pyc
+recursive-exclude webpack *

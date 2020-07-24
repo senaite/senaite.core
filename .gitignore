@@ -49,3 +49,4 @@ src/senaite.jsonapi
 src
 .Python
 pyvenv.cfg
+/lib/
