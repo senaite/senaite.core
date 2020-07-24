@@ -1,0 +1,14 @@
+#!/bin/bash
+
+BASE=${buildout:directory}
+SRC=$BASE/src
+
+cd $SRC
+
+for d in `find $SRC -mindepth 1 -maxdepth 1 -type d`
+do
+    cd $d
+    echo -e "Current branch of repository $(basename $d): $(git rev-parse --abbrev-ref HEAD)"
+    git pull
+    cd ..
+done
