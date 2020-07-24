@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.0.0rc1 (2020-07-21)
+2.0.0rc1 (2020-07-24)
 ---------------------
 
 - Compatibility with `Plone 5.x` on `Python 2.x`
