@@ -6,6 +6,7 @@ Changelog
 
 **Added**
 
+- #1609 Support result options entry for interim values
 - #1598 Added "modified" index in Sample's (AnalysisRequest) catalog
 - #1596 Allow to hide actions menu by using new marker interface IHideActionsMenu
 - #1588 Dynamic Analysis Specs: Lookup dynamic spec only when the specification is set
