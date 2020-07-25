@@ -66,6 +66,7 @@ class InterimFieldsField(RecordsField):
             'title': 'interimfieldsvalidator',
             'value': 'interimfieldsvalidator',
             'unit': 'interimfieldsvalidator',
+            'choices': 'interimfieldsvalidator'
         },
     })
     security = ClassSecurityInfo()
