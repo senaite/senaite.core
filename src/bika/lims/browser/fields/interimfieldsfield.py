@@ -39,16 +39,18 @@ class InterimFieldsField(RecordsField):
             "keyword",
             "title",
             "value",
+            "choices",
             "unit",
             "report",
             "hidden",
-            "wide",
+            "wide"
         ),
         "required_subfields": ("keyword", "title"),
         "subfield_labels": {
             "keyword": _("Keyword"),
             "title": _("Field Title"),
             "value": _("Default value"),
+            "choices": _("Choices"),
             "unit": _("Unit"),
             "report": _("Report"),
             "hidden": _("Hidden Field"),
@@ -57,6 +59,7 @@ class InterimFieldsField(RecordsField):
         "subfield_types": {
             "hidden": "boolean",
             "value": "float",
+            "choices": "string",
             "wide": "boolean",
             "report": "boolean",
         },
@@ -64,6 +67,7 @@ class InterimFieldsField(RecordsField):
             "keyword": 20,
             "title": 20,
             "value": 10,
+            "choices": 30,
             "unit": 10,
         },
         "subfield_validators": {
@@ -71,6 +75,7 @@ class InterimFieldsField(RecordsField):
             "title": "interimfieldsvalidator",
             "value": "interimfieldsvalidator",
             "unit": "interimfieldsvalidator",
+            "choices": "interimfieldsvalidator"
         },
     })
     security = ClassSecurityInfo()

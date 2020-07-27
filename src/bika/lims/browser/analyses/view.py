@@ -151,7 +151,7 @@ class AnalysesView(BikaListingView):
                 "ajax": True,
                 "sortable": False}),
             ("retested", {
-                "title": _("Retested"),
+                "title": _("Retest"),
                 "type": "boolean",
                 "sortable": False}),
             ("Attachments", {
@@ -838,6 +838,24 @@ class AnalysesView(BikaListingView):
             if not interim_hidden:
                 interim_title = interim_field.get('title')
                 self.interim_columns[interim_keyword] = interim_title
+
+            # Does interim's results list needs to be rendered?
+            choices = interim_field.get("choices")
+            if choices:
+                # Get the {value:text} dict
+                choices = choices.split("|")
+                choices = dict(map(lambda ch: ch.strip().split(":"), choices))
+
+                # Generate the display list
+                # [{"ResultValue": value, "ResultText": text},]
+                headers = ["ResultValue", "ResultText"]
+                d_list = map(lambda it: dict(zip(headers, it)), choices.items())
+                item.setdefault("choices", {})[interim_keyword] = d_list
+
+                # Display the text instead of the value
+                val = choices.get(interim_value, "")
+                interim_field["value"] = val
+                item[interim_keyword] = interim_field
 
         item['interimfields'] = interim_fields
         self.interim_fields[analysis_brain.UID] = interim_fields
