@@ -151,7 +151,7 @@ class AnalysesView(BikaListingView):
                 "ajax": True,
                 "sortable": False}),
             ("retested", {
-                "title": _("Retest"),
+                "title": _("Retested"),
                 "type": "boolean",
                 "sortable": False}),
             ("Attachments", {
