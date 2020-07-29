@@ -1043,7 +1043,7 @@ msgstr "Miasto"
 msgid "Classic"
 msgstr "Klasyczny"
 
-# senaite.core.listing: ButtonBar
+# senaite.app.listing: ButtonBar
 msgid "Clear selection"
 msgstr "Wyczyść zaznaczenie"
 
@@ -1055,7 +1055,7 @@ msgstr "Kliknij na Kategorie Analiz AC (zacienione tło) dla wyświetlenia wszys
 msgid "Click to expand this category"
 msgstr "Kliknij, aby rozwinąć tę kategorię"
 
-# senaite.core.listing: TableColumnConfig
+# senaite.app.listing: TableColumnConfig
 msgid "Click to toggle the visibility or drag&drop to change the order"
 msgstr "Kliknij by przełączyć widoczność lub przeciągnij i upuść by zmienić kolejność"
 
@@ -1170,7 +1170,7 @@ msgstr "Próbka złożona"
 msgid "Confidence Level %"
 msgstr "Poziom ufności %"
 
-# senaite.core.listing: TableColumnConfig
+# senaite.app.listing: TableColumnConfig
 msgid "Configure Table Columns"
 msgstr ""
 

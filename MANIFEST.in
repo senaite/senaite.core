@@ -4,8 +4,8 @@ include *.md
 recursive-exclude docs *
 recursive-include src/bika *
 recursive-include src/senaite *
-recursive-exclude src/senaite/core/listing *
-recursive-exclude src/senaite/core/spotlight *
-recursive-exclude src/senaite/core/supermodel *
+recursive-exclude src/senaite/app/listing *
+recursive-exclude src/senaite/app/spotlight *
+recursive-exclude src/senaite/app/supermodel *
 recursive-exclude src *.pyc
 recursive-exclude webpack *

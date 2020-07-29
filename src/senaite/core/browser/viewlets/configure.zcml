@@ -13,7 +13,7 @@
 
   <!-- Listing Table Title Viewlet -->
   <browser:viewlet
-      name="senaite.core.listingtabletitle"
+      name="senaite.app.listingtabletitle"
       manager=".interfaces.IListingTableTitle"
       class=".listings.ListingTableTitleViewlet"
       permission="zope2.View"
@@ -22,7 +22,7 @@
 
   <!-- Listing Table Description Viewlet -->
   <browser:viewlet
-      name="senaite.core.listingtabledescription"
+      name="senaite.app.listingtabledescription"
       manager=".interfaces.IListingTableDescription"
       class=".listings.ListingTableDescriptionViewlet"
       permission="zope2.View"

@@ -1049,7 +1049,7 @@ msgstr "Stadt"
 msgid "Classic"
 msgstr "Klassisch"
 
-# senaite.core.listing: ButtonBar
+# senaite.app.listing: ButtonBar
 msgid "Clear selection"
 msgstr "Auswahl aufheben"
 
@@ -1061,7 +1061,7 @@ msgstr "Klicken Sie auf Analysenkategorien (auf dem schattierten Hintergrund) um
 msgid "Click to expand this category"
 msgstr "Klicken um diese Kategorie zu erweitern"
 
-# senaite.core.listing: TableColumnConfig
+# senaite.app.listing: TableColumnConfig
 msgid "Click to toggle the visibility or drag&drop to change the order"
 msgstr "Klicken um die Sichtbarkeit zu wechseln oder Drag&Drop um die Reihenfolge zu ändern"
 
@@ -1176,7 +1176,7 @@ msgstr "Zusammengesetzte Probe"
 msgid "Confidence Level %"
 msgstr "Vertrauensniveau %"
 
-# senaite.core.listing: TableColumnConfig
+# senaite.app.listing: TableColumnConfig
 msgid "Configure Table Columns"
 msgstr "Tabellenspalten konfigurieren"
 

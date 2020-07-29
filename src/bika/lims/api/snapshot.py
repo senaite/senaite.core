@@ -30,7 +30,7 @@ from bika.lims.interfaces import IDoNotSupportSnapshots
 from DateTime import DateTime
 from persistent.list import PersistentList
 from plone.memoize.ram import cache
-from senaite.core.supermodel import SuperModel
+from senaite.app.supermodel import SuperModel
 from zope.annotation.interfaces import IAnnotatable
 from zope.annotation.interfaces import IAnnotations
 from zope.interface import alsoProvides

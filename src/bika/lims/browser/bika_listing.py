@@ -18,12 +18,12 @@
 # Copyright 2018-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from senaite.core.listing import ListingView
+from senaite.app.listing import ListingView
 
 
 class BikaListingView(ListingView):
     """BBB: Base View for Table Listings
 
-    Please use `senaite.core.listing.ListingView` instead
+    Please use `senaite.app.listing.ListingView` instead
     https://github.com/senaite/senaite.core/pull/1226
     """

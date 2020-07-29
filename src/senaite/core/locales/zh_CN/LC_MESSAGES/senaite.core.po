@@ -1046,7 +1046,7 @@ msgstr "城市"
 msgid "Classic"
 msgstr "典型的"
 
-# senaite.core.listing: ButtonBar
+# senaite.app.listing: ButtonBar
 msgid "Clear selection"
 msgstr "清除选择"
 
@@ -1058,7 +1058,7 @@ msgstr "点击分析类别（阴影的背景）以查看每个类别的分析服
 msgid "Click to expand this category"
 msgstr "单击以展开此类别"
 
-# senaite.core.listing: TableColumnConfig
+# senaite.app.listing: TableColumnConfig
 msgid "Click to toggle the visibility or drag&drop to change the order"
 msgstr "用单击操作切换可见性或者用拖放操作改变顺序"
 
@@ -1173,7 +1173,7 @@ msgstr "混合样品"
 msgid "Confidence Level %"
 msgstr "混合物等级%"
 
-# senaite.core.listing: TableColumnConfig
+# senaite.app.listing: TableColumnConfig
 msgid "Configure Table Columns"
 msgstr "配置表列"
 

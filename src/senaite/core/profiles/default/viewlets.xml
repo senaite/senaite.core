@@ -4,7 +4,7 @@
   <!-- Viewlets in plone.htmlhead -->
   <order manager="plone.htmlhead" skinname="*">
     <viewlet name="senaite.core.static" />
-    <viewlet name="senaite.core.listing.static" />
+    <viewlet name="senaite.app.listing.static" />
   </order>
 
   <!-- Viewlets in plone.mainnavigation -->

@@ -22,7 +22,7 @@ import collections
 
 from bika.lims import _
 from bika.lims import api
-from senaite.core.listing.view import ListingView
+from senaite.app.listing.view import ListingView
 
 
 class DynamicAnalysisSpecView(ListingView):

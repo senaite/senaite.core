@@ -22,7 +22,7 @@ from collections import OrderedDict
 
 from bika.lims import bikaMessageFactory as _
 from bika.lims.catalog import CATALOG_AUTOIMPORTLOGS_LISTING
-from senaite.core.listing import ListingView
+from senaite.app.listing import ListingView
 
 
 class AutoImportLogsView(ListingView):

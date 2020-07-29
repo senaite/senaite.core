@@ -1041,7 +1041,7 @@ msgstr "Città"
 msgid "Classic"
 msgstr "Classico"
 
-# senaite.core.listing: ButtonBar
+# senaite.app.listing: ButtonBar
 msgid "Clear selection"
 msgstr ""
 
@@ -1053,7 +1053,7 @@ msgstr "Cliccare nelle Categorie Analisi (sfondo ombreggiato) per vedere i Servi
 msgid "Click to expand this category"
 msgstr ""
 
-# senaite.core.listing: TableColumnConfig
+# senaite.app.listing: TableColumnConfig
 msgid "Click to toggle the visibility or drag&drop to change the order"
 msgstr ""
 
@@ -1168,7 +1168,7 @@ msgstr ""
 msgid "Confidence Level %"
 msgstr "Livello di Fiducia %"
 
-# senaite.core.listing: TableColumnConfig
+# senaite.app.listing: TableColumnConfig
 msgid "Configure Table Columns"
 msgstr ""
 

@@ -1041,7 +1041,7 @@ msgstr "City"
 msgid "Classic"
 msgstr "Classic"
 
-# senaite.core.listing: ButtonBar
+# senaite.app.listing: ButtonBar
 msgid "Clear selection"
 msgstr "Clear selection"
 
@@ -1053,7 +1053,7 @@ msgstr "คลิกที่หมวดการวิเคราะห์ (�
 msgid "Click to expand this category"
 msgstr "Click to expand this category"
 
-# senaite.core.listing: TableColumnConfig
+# senaite.app.listing: TableColumnConfig
 msgid "Click to toggle the visibility or drag&drop to change the order"
 msgstr "Click to toggle the visibility or drag&drop to change the order"
 
@@ -1168,7 +1168,7 @@ msgstr "Composite sample"
 msgid "Confidence Level %"
 msgstr "Confidence Level %"
 
-# senaite.core.listing: TableColumnConfig
+# senaite.app.listing: TableColumnConfig
 msgid "Configure Table Columns"
 msgstr "Configure Table Columns"
 

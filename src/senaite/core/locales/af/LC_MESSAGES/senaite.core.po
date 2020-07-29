@@ -1042,7 +1042,7 @@ msgstr "Stad"
 msgid "Classic"
 msgstr "Klassiek"
 
-# senaite.core.listing: ButtonBar
+# senaite.app.listing: ButtonBar
 msgid "Clear selection"
 msgstr ""
 
@@ -1054,7 +1054,7 @@ msgstr "Kliek op ontledingskategorieë (teen geskakeerde agtergrond) om Ontledin
 msgid "Click to expand this category"
 msgstr ""
 
-# senaite.core.listing: TableColumnConfig
+# senaite.app.listing: TableColumnConfig
 msgid "Click to toggle the visibility or drag&drop to change the order"
 msgstr ""
 
@@ -1169,7 +1169,7 @@ msgstr "Saamgestelde Monster"
 msgid "Confidence Level %"
 msgstr "Sekerheidsvlak  %"
 
-# senaite.core.listing: TableColumnConfig
+# senaite.app.listing: TableColumnConfig
 msgid "Configure Table Columns"
 msgstr ""
 

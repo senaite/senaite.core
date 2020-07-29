@@ -1042,7 +1042,7 @@ msgstr "Ciutat"
 msgid "Classic"
 msgstr "Clàssic"
 
-# senaite.core.listing: ButtonBar
+# senaite.app.listing: ButtonBar
 msgid "Clear selection"
 msgstr ""
 
@@ -1054,7 +1054,7 @@ msgstr "Feu clic sobre les capçaleres de les categories d'anàlisi (amb fons gr
 msgid "Click to expand this category"
 msgstr ""
 
-# senaite.core.listing: TableColumnConfig
+# senaite.app.listing: TableColumnConfig
 msgid "Click to toggle the visibility or drag&drop to change the order"
 msgstr ""
 
@@ -1169,7 +1169,7 @@ msgstr ""
 msgid "Confidence Level %"
 msgstr "% Nivell de confiança"
 
-# senaite.core.listing: TableColumnConfig
+# senaite.app.listing: TableColumnConfig
 msgid "Configure Table Columns"
 msgstr ""
 

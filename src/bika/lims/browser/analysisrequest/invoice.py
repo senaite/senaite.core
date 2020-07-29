@@ -28,7 +28,7 @@ from bika.lims.utils import createPdf
 from plone.memoize import view
 from Products.CMFPlone.i18nl10n import ulocalized_time
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from senaite.core.supermodel.model import SuperModel
+from senaite.app.supermodel.model import SuperModel
 from zope.i18n.locales import locales
 from zope.interface import implements
 

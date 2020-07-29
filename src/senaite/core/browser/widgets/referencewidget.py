@@ -30,7 +30,7 @@ from bika.lims.utils import to_unicode as _u
 from plone import protect
 from Products.Archetypes.Registry import registerWidget
 from Products.Archetypes.Widget import StringWidget
-from senaite.core.supermodel.model import SuperModel
+from senaite.app.supermodel.model import SuperModel
 from zope.component import getAdapters
 
 

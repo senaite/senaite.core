@@ -34,7 +34,7 @@ from bika.lims.vocabularies import getStickerTemplates
 from plone.resource.utils import queryResourceDirectory
 from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from senaite.core.supermodel import SuperModel
+from senaite.app.supermodel import SuperModel
 from zope.component import getAdapters
 from zope.component.interfaces import ComponentLookupError
 

@@ -90,9 +90,9 @@ setup(
         # "collective.js.jqueryui",
         "archetypes.schemaextender",
         # SENAITE
-        "senaite.core.listing",
-        "senaite.core.spotlight",
-        "senaite.core.supermodel",
+        "senaite.app.listing",
+        "senaite.app.spotlight",
+        "senaite.app.supermodel",
         "senaite.impress",
         "senaite.lims",
     ],

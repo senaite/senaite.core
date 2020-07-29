@@ -28,7 +28,7 @@ from bika.lims.utils import get_link
 from plone.dexterity.content import Container
 from plone.supermodel import model
 from senaite.core.interfaces import IHideActionsMenu
-from senaite.core.listing import ListingView
+from senaite.app.listing import ListingView
 from zope import schema
 from zope.interface import implements
 
