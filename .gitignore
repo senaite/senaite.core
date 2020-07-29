@@ -46,7 +46,6 @@ src/senaite.jsonapi
 /src/senaite.panic
 /src/senaite.health
 /eggs
-src
 .Python
 pyvenv.cfg
 /lib/
