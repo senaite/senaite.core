@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2020-02-16 19:07+0000\n"
+"POT-Creation-Date: 2020-08-02 11:38+0000\n"
 "PO-Revision-Date: 2018-06-01 18:46+0000\n"
 "Last-Translator: Jordi Puiggené <jpuiggene@naralabs.com>, 2019\n"
 "Language-Team: Chinese (Taiwan) (https://www.transifex.com/senaite/teams/87045/zh_TW/)\n"
@@ -28,7 +28,6 @@ msgstr ""
 
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/ARTemplates.xml
-#: bika/lims/profiles/default/types/SRTemplate.xml
 msgid "AR Templates"
 msgstr "分析请求模板"
 
@@ -241,6 +240,10 @@ msgstr ""
 msgid "Current"
 msgstr ""
 
+#: bika/lims/profiles/default/actions.xml
+msgid "Dashboard"
+msgstr ""
+
 msgid "Deactivate"
 msgstr ""
 
@@ -409,6 +412,10 @@ msgstr "方法"
 #: bika/lims/profiles/default/types/Methods.xml
 msgid "Methods"
 msgstr "多个方法"
+
+#: bika/lims/profiles/default/actions.xml
+msgid "My organization"
+msgstr ""
 
 msgid "No preservation required"
 msgstr ""
@@ -645,19 +652,7 @@ msgstr "取樣偏差"
 msgid "Sampling Deviations"
 msgstr "取樣偏差"
 
-#: bika/lims/profiles/default/types/SRTemplate.xml
-msgid "Sampling Round Template"
-msgstr ""
-
-#: bika/lims/profiles/default/controlpanel.xml
-#: bika/lims/profiles/default/types/Client.xml
-#: bika/lims/profiles/default/types/SRTemplates.xml
 msgid "Sampling Round Templates"
-msgstr ""
-
-#: bika/lims/profiles/default/controlpanel.xml
-#: bika/lims/profiles/default/types/Client.xml
-msgid "Sampling Rounds"
 msgstr ""
 
 msgid "Sampling workflow"
