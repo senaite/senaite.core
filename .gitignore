@@ -45,6 +45,9 @@ src/senaite.jsonapi
 /src/senaite/core/supermodel
 /src/senaite.panic
 /src/senaite.health
+/src/senaite.app.listing
+/src/senaite.app.spotlight
+/src/senaite.app.supermodel
 /eggs
 .Python
 pyvenv.cfg
