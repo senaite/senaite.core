@@ -35,16 +35,7 @@ class InterimFieldsField(RecordsField):
         "minimalSize": 0,
         "maximalSize": 9999,
         "type": "InterimFields",
-        "subfields": (
-            "keyword",
-            "title",
-            "value",
-            "choices",
-            "unit",
-            "report",
-            "hidden",
-            "wide"
-        ),
+        "subfields": ("keyword", "title", "value", "choices", "unit", "report", "hidden", "wide"),
         "required_subfields": ("keyword", "title"),
         "subfield_labels": {
             "keyword": _("Keyword"),

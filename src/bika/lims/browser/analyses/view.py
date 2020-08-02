@@ -637,6 +637,7 @@ class AnalysesView(BikaListingView):
                     "ajax": True,
                 }
 
+
         if self.allow_edit:
             new_states = []
             for state in self.review_states:
@@ -814,6 +815,9 @@ class AnalysesView(BikaListingView):
         # Set interim fields. Note we add the key 'formatted_value' to the list
         # of interims the analysis has already assigned.
         interim_fields = analysis_brain.getInterimFields or list()
+
+        # Copy to prevent to avoid persistent changes
+        interim_fields = copy(interim_fields)
 
         for interim_field in interim_fields:
             interim_keyword = interim_field.get('keyword', '')
