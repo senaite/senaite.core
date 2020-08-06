@@ -90,10 +90,6 @@ setup(
         # "collective.js.jqueryui",
         "archetypes.schemaextender",
         # SENAITE
-        "senaite.app.listing",
-        "senaite.app.spotlight",
-        "senaite.app.supermodel",
-        "senaite.impress",
         "senaite.lims",
     ],
     extras_require={
