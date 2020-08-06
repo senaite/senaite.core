@@ -11,6 +11,9 @@
 
   <includeDependencies package="." />
 
+  <!-- Include permissions -->
+  <include file="permissions.zcml" />
+
   <five:registerPackage package="." initialize=".initialize" />
 
   <include package=".adapters" />
