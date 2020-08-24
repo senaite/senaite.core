@@ -110,7 +110,7 @@
                      tal:content="python:view.getTranslatedSchemaLabel(fieldset)"
                      tal:attributes="id string:${id}-tab;
                                      href string:#${id};
-                                     class python:repeat['fieldset'].start() and 'nav-link active' or 'nav-link'"
+                                     class python:repeat['fieldset'].start and 'nav-link active' or 'nav-link'"
                      i18n:translate="">
                   </a>
                 </li>
@@ -120,7 +120,7 @@
               <tal:fieldsets repeat="fieldset fieldsets">
                 <div tal:define="id python:view.normalizeString(fieldset)"
                      tal:attributes="id string:${id};
-                                     class python:repeat['fieldset'].start() and 'tab-pane fade show active' or 'tab-pane fade'"
+                                     class python:repeat['fieldset'].start and 'tab-pane fade show active' or 'tab-pane fade'"
                      role="tabpanel">
                   <tal:fields repeat="field python:schematas[fieldset].editableFields(here, visible_only=True)">
                     <metal:fieldMacro use-macro="python:context.widget(field.getName(), mode='edit')" />
