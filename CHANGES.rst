@@ -1,6 +1,12 @@
 Changelog
 =========
 
+2.0.0rc2 (unreleased)
+---------------------
+
+- #1613 Fix permission error when accessing `get_data_settings` for Plone 5.2.2
+
+
 2.0.0rc1 (2020-07-24)
 ---------------------
 
