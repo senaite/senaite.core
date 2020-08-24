@@ -46,6 +46,10 @@ class IBootstrapView(Interface):
         """Determine the value of the viewport meta-tag
         """
 
+    def get_data_settings():
+        """Helper method to inject data attributes in a DOM node
+        """
+
 
 def icon_cache_key(method, self, brain_or_object, **kw):
     """Generates a cache key for the icon lookup
