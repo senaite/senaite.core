@@ -243,7 +243,7 @@
                      min="1"
                      max="99"
                      class="form-control form-control-sm"
-                     tal:attributes="value view/ar_count|1"/>
+                     tal:attributes="value python:view.ar_count or 1"/>
               <span class="input-group-append">
                 <button type="submit"
                         class="btn btn-outline-secondary btn-sm">

@@ -21,6 +21,18 @@
 from zope.interface import Interface
 
 
+class ISenaiteView(Interface):
+    """A view that provides global utilities
+    """
+
+    def test(*args):
+        """A special function, 'test', that supports if-then expressions.
+
+        This code is taken from `RestrictedPython.Utilities`.
+        https://community.plone.org/t/plone-5-2-1-5-2-2-page-template-issues
+        """
+
+
 class ISenaiteTheme(Interface):
     """A view that provides theme specific configuration
     """

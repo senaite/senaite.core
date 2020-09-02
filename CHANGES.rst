@@ -1,6 +1,12 @@
 Changelog
 =========
 
+2.0.0rc2 (unreleased)
+---------------------
+
+- #1613 Compatibility with Plone 5.2.2
+
+
 2.0.0rc1 (2020-07-24)
 ---------------------
 
@@ -13,7 +19,7 @@ Changelog
 - New install screens
 
 
-1.3.4 (unreleased)
+1.3.4 (2020-08-11)
 ------------------
 
 **Added**
