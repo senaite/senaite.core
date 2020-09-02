@@ -6,6 +6,8 @@
         xmlns:metal="http://xml.zope.org/namespaces/metal"
         xmlns:i18n="http://xml.zope.org/namespaces/i18n"
         tal:define="senaite_theme python:context.restrictedTraverse('@@senaite_theme');
+                    senaite_view python:context.restrictedTraverse('@@senaite_view');
+                    test nocall:senaite_view/test;
                     portal_state python:context.restrictedTraverse('@@plone_portal_state');
                     context_state python:context.restrictedTraverse('@@plone_context_state');
                     plone_view python:context.restrictedTraverse('@@plone');

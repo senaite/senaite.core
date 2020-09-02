@@ -12,7 +12,9 @@
   </head>
 
   <body
-    tal:define="root_sample python:view.is_primary_with_partitions();
+    tal:define="senaite_view python:context.restrictedTraverse('@@senaite_view');
+                test nocall:senaite_view/test;
+                root_sample python:view.is_primary_with_partitions();
                 dummy python:view.get_fields_grouped_by_location();
                 prominent python:dummy[0];
                 sublists python:dummy[1]"
