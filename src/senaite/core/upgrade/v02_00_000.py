@@ -19,8 +19,9 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
-from bika.lims.config import PROJECTNAME as product
+from bika.lims.catalog import SETUP_CATALOG
 from senaite.core import logger
+from senaite.core.config import PROJECTNAME as product
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
 
@@ -57,6 +58,9 @@ def upgrade(tool):
 
     # -------- ADD YOUR STUFF BELOW --------
 
+    # Remove duplicate methods from analysis services
+    remove_duplicate_methods_in_services(portal)
+
     # Uninstall default Plone 5 Addons
     uninstall_default_plone_addons(portal)
 
@@ -65,6 +69,28 @@ def upgrade(tool):
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
+
+
+def remove_duplicate_methods_in_services(portal):
+    """A bug caused duplicate methods stored in services which need to be fixed
+    """
+    logger.info("Remove duplicate methods from services...")
+
+    cat = api.get_tool(SETUP_CATALOG)
+    services = cat({"portal_type": "AnalysisService"})
+    total = len(services)
+
+    for num, service in enumerate(services):
+        if num and num % 10 == 0:
+            logger.info("Processed {}/{} Services".format(num, total))
+        obj = api.get_object(service)
+        methods = list(set(obj.getRawMethods()))
+        if not methods:
+            continue
+        obj.setMethods(methods)
+        obj.reindexObject()
+
+    logger.info("Remove duplicate methods from services [DONE]")
 
 
 def uninstall_default_plone_addons(portal):
