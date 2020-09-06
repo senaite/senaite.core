@@ -496,7 +496,8 @@ class AnalysisService(AbstractBaseAnalysis):
         Returns the UIDs of the available methods. it is used as a
         vocabulary to fill the selection list of 'Methods' field.
         """
-        method_uids = self.getRawMethods()
+        # N.B. we return a copy of the list to avoid accidental writes
+        method_uids = map(lambda x: x, self.getRawMethods())
         if self.getInstrumentEntryOfResults():
             for instrument in self.getInstruments():
                 method_uids.extend(instrument.getRawMethods())
