@@ -1,6 +1,14 @@
 Changelog
 =========
 
+1.3.5 (unreleased)
+------------------
+
+**Fixed**
+
+- Fix writing methods on read when reindexing services
+
+
 1.3.4 (2020-08-11)
 ------------------
 
