@@ -20,16 +20,10 @@
 
 from bika.lims import api
 from bika.lims import logger
-from bika.lims.catalog import BIKA_CATALOG
-from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
-from bika.lims.catalog import CATALOG_AUTOIMPORTLOGS_LISTING
-from bika.lims.catalog import CATALOG_REPORT_LISTING
-from bika.lims.catalog import CATALOG_WORKSHEET_LISTING
 from bika.lims.catalog import SETUP_CATALOG
 from bika.lims.config import PROJECTNAME as product
 from bika.lims.upgrade import upgradestep
-from bika.lims.upgrade.utils import del_metadata
 from bika.lims.upgrade.utils import UpgradeUtils
 
 version = "1.3.5"  # Remember version number in metadata.xml and setup.py
@@ -57,7 +51,8 @@ def upgrade(tool):
 
     # -------- ADD YOUR STUFF BELOW --------
 
-    # Remove duplicate methods from analysis services
+    # Fix writing methods on read when reindexing services
+    # https://github.com/senaite/senaite.core/pull/1617
     remove_duplicate_methods_in_services(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
