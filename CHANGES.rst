@@ -4,6 +4,7 @@ Changelog
 2.0.0rc2 (unreleased)
 ---------------------
 
+- #1616 Fix writing instrument methods on read when reindexing services
 - #1613 Compatibility with Plone 5.2.2
 
 
