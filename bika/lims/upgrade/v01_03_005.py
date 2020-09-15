@@ -29,11 +29,6 @@ from bika.lims.upgrade.utils import UpgradeUtils
 version = "1.3.5"  # Remember version number in metadata.xml and setup.py
 profile = "profile-{0}:default".format(product)
 
-INDEXES_TO_ADD = [
-    # List of tuples (catalog_name, index_name, index meta type)
-    (CATALOG_ANALYSIS_REQUEST_LISTING, "modified", "DateIndex"),
-]
-
 
 @upgradestep(product, version)
 def upgrade(tool):
