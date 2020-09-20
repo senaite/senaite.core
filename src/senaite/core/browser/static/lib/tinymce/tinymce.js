@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.4.1 (2020-07-08)
+ * Version: 5.4.2 (2020-08-17)
  */
 (function (domGlobals) {
     'use strict';
@@ -1767,6 +1767,21 @@
       }, {});
     };
 
+    var internalSet = function (dom, property, value) {
+      if (!isString(value)) {
+        domGlobals.console.error('Invalid call to CSS.set. Property ', property, ':: Value ', value, ':: Element ', dom);
+        throw new Error('CSS value must be a string: ' + value);
+      }
+      if (isSupported(dom)) {
+        dom.style.setProperty(property, value);
+      }
+    };
+    var setAll$1 = function (element, css) {
+      var dom = element.dom();
+      each$1(css, function (v, k) {
+        internalSet(dom, k, v);
+      });
+    };
     var get$4 = function (element, property) {
       var dom = element.dom();
       var styles = domGlobals.window.getComputedStyle(dom);
@@ -2010,6 +2025,11 @@
     var isTableCell = lazyLookup(tableCells);
     var isWsPreserveElement = lazyLookup(wsElements);
 
+    var whiteSpaceRegExp$1 = /^[ \t\r\n]*$/;
+    var isWhitespaceText = function (text) {
+      return whiteSpaceRegExp$1.test(text);
+    };
+
     var surroundedBySpans = function (node) {
       var previousIsSpan = node.previousSibling && node.previousSibling.nodeName === 'SPAN';
       var nextIsSpan = node.nextSibling && node.nextSibling.nodeName === 'SPAN';
@@ -2028,11 +2048,11 @@
       }
       if (isDocument$1(node) === false) {
         if (isText$1(node) && node.nodeValue.length > 0) {
-          var trimmedLength = Tools.trim(node.nodeValue).length;
-          if (dom.isBlock(node.parentNode) || trimmedLength > 0) {
+          var isEmpty = isWhitespaceText(node.nodeValue);
+          if (dom.isBlock(node.parentNode) || !isEmpty) {
             return;
           }
-          if (trimmedLength === 0 && surroundedBySpans(node)) {
+          if (surroundedBySpans(node)) {
             return;
           }
         } else if (isElement$1(node)) {
@@ -4531,9 +4551,9 @@
       }
       return -1;
     };
-    var whiteSpaceRegExp$1 = /^\s*|\s*$/g;
+    var whiteSpaceRegExp$2 = /^\s*|\s*$/g;
     var trim$2 = function (str) {
-      return str === null || str === undefined ? '' : ('' + str).replace(whiteSpaceRegExp$1, '');
+      return str === null || str === undefined ? '' : ('' + str).replace(whiteSpaceRegExp$2, '');
     };
     var each$4 = function (obj, callback) {
       var length, key, i, value;
@@ -6600,7 +6620,6 @@
     var grep$1 = Tools.grep;
     var isIE = Env.ie;
     var simpleSelectorRe = /^([a-z0-9],?)+$/i;
-    var whiteSpaceRegExp$2 = /^[ \t\r\n]*$/;
     var setupAttrHooks = function (styles, settings, getContext) {
       var keepValues = settings.keep_values;
       var keepUrlHook = {
@@ -7247,10 +7266,10 @@
             if (type === 8) {
               return false;
             }
-            if (type === 3 && !whiteSpaceRegExp$2.test(node.nodeValue)) {
+            if (type === 3 && !isWhitespaceText(node.nodeValue)) {
               return false;
             }
-            if (type === 3 && node.parentNode && whitespace[node.parentNode.nodeName] && whiteSpaceRegExp$2.test(node.nodeValue)) {
+            if (type === 3 && node.parentNode && whitespace[node.parentNode.nodeName] && isWhitespaceText(node.nodeValue)) {
               return false;
             }
             node = walker.next();
@@ -7262,23 +7281,26 @@
         return doc.createRange();
       };
       var split = function (parentElm, splitElm, replacementElm) {
-        var r = createRng(), bef, aft, pa;
+        var range = createRng();
+        var beforeFragment;
+        var afterFragment;
+        var parentNode;
         if (parentElm && splitElm) {
-          r.setStart(parentElm.parentNode, findNodeIndex(parentElm));
-          r.setEnd(splitElm.parentNode, findNodeIndex(splitElm));
-          bef = r.extractContents();
-          r = createRng();
-          r.setStart(splitElm.parentNode, findNodeIndex(splitElm) + 1);
-          r.setEnd(parentElm.parentNode, findNodeIndex(parentElm) + 1);
-          aft = r.extractContents();
-          pa = parentElm.parentNode;
-          pa.insertBefore(trimNode(self, bef), parentElm);
+          range.setStart(parentElm.parentNode, findNodeIndex(parentElm));
+          range.setEnd(splitElm.parentNode, findNodeIndex(splitElm));
+          beforeFragment = range.extractContents();
+          range = createRng();
+          range.setStart(splitElm.parentNode, findNodeIndex(splitElm) + 1);
+          range.setEnd(parentElm.parentNode, findNodeIndex(parentElm) + 1);
+          afterFragment = range.extractContents();
+          parentNode = parentElm.parentNode;
+          parentNode.insertBefore(trimNode(self, beforeFragment), parentElm);
           if (replacementElm) {
-            pa.insertBefore(replacementElm, parentElm);
+            parentNode.insertBefore(replacementElm, parentElm);
           } else {
-            pa.insertBefore(splitElm, parentElm);
+            parentNode.insertBefore(splitElm, parentElm);
           }
-          pa.insertBefore(trimNode(self, aft), parentElm);
+          parentNode.insertBefore(trimNode(self, afterFragment), parentElm);
           remove(parentElm);
           return replacementElm || splitElm;
         }
@@ -11155,7 +11177,6 @@
       };
     };
 
-    var whiteSpaceRegExp$3 = /^[ \t\r\n]*$/;
     var typeLookup = {
       '#text': 3,
       '#comment': 8,
@@ -11184,7 +11205,7 @@
       }
     };
     var isEmptyTextNode$1 = function (node) {
-      if (!whiteSpaceRegExp$3.test(node.value)) {
+      if (!isWhitespaceText(node.value)) {
         return false;
       }
       var parentNode = node.parent;
@@ -11428,7 +11449,7 @@
             if (node.type === 3 && !isEmptyTextNode$1(node)) {
               return false;
             }
-            if (node.type === 3 && node.parent && whitespace[node.parent.name] && whiteSpaceRegExp$3.test(node.value)) {
+            if (node.type === 3 && node.parent && whitespace[node.parent.name] && isWhitespaceText(node.value)) {
               return false;
             }
             if (predicate && predicate(node)) {
@@ -12224,7 +12245,7 @@
       return ancestor$2(startNode, 'pre,code', curry(eq$2, rootElement));
     };
     var isWhitespace = function (rootNode, node) {
-      return isText$1(node) && /^[ \t\r\n]*$/.test(node.data) && hasWhitespacePreserveParent(rootNode, node) === false;
+      return isText$1(node) && isWhitespaceText(node.data) && hasWhitespacePreserveParent(rootNode, node) === false;
     };
     var isNamedAnchor = function (node) {
       return isElement$1(node) && node.nodeName === 'A' && node.hasAttribute('name');
@@ -13233,6 +13254,9 @@
       return Element.fromDom(domGlobals.document);
     };
 
+    var focus = function (element) {
+      return element.dom().focus();
+    };
     var hasFocus = function (element) {
       var root = getRootNode(element).dom();
       return element.dom() === root.activeElement;
@@ -13638,7 +13662,7 @@
     var activateEditor = function (editor) {
       return editor.editorManager.setActive(editor);
     };
-    var focus = function (editor, skipFocus) {
+    var focus$1 = function (editor, skipFocus) {
       if (editor.removed) {
         return;
       }
@@ -14090,7 +14114,7 @@
       var formatter = editor.formatter;
       var dom = editor.dom;
       var validFormats = filter(keys(formatter.get()), function (formatName) {
-        return formatName !== 'removeformat' && formatName !== name;
+        return formatName !== name && !contains$1(formatName, 'removeformat');
       });
       var matchedFormats = matchAllOnNode(editor, formatNode, validFormats);
       var uniqueFormats = filter(matchedFormats, function (fmtName) {
@@ -14249,8 +14273,100 @@
       }
     });
 
-    var MCE_ATTR_RE = /^(src|href|style)$/;
     var each$9 = Tools.each;
+    var isElementNode = function (node) {
+      return isElement$1(node) && !isBookmarkNode$1(node) && !isCaretNode(node) && !isBogus(node);
+    };
+    var findElementSibling = function (node, siblingName) {
+      var sibling;
+      for (sibling = node; sibling; sibling = sibling[siblingName]) {
+        if (isText$1(sibling) && sibling.nodeValue.length !== 0) {
+          return node;
+        }
+        if (isElement$1(sibling) && !isBookmarkNode$1(sibling)) {
+          return sibling;
+        }
+      }
+      return node;
+    };
+    var mergeSiblingsNodes = function (dom, prev, next) {
+      var sibling, tmpSibling;
+      var elementUtils = new ElementUtils(dom);
+      if (prev && next) {
+        prev = findElementSibling(prev, 'previousSibling');
+        next = findElementSibling(next, 'nextSibling');
+        if (elementUtils.compare(prev, next)) {
+          for (sibling = prev.nextSibling; sibling && sibling !== next;) {
+            tmpSibling = sibling;
+            sibling = sibling.nextSibling;
+            prev.appendChild(tmpSibling);
+          }
+          dom.remove(next);
+          Tools.each(Tools.grep(next.childNodes), function (node) {
+            prev.appendChild(node);
+          });
+          return prev;
+        }
+      }
+      return next;
+    };
+    var mergeSiblings = function (dom, format, vars, node) {
+      if (node && format.merge_siblings !== false) {
+        var newNode = mergeSiblingsNodes(dom, getNonWhiteSpaceSibling(node), node);
+        mergeSiblingsNodes(dom, newNode, getNonWhiteSpaceSibling(newNode, true));
+      }
+    };
+    var clearChildStyles = function (dom, format, node) {
+      if (format.clear_child_styles) {
+        var selector = format.links ? '*:not(a)' : '*';
+        each$9(dom.select(selector, node), function (node) {
+          if (isElementNode(node)) {
+            each$9(format.styles, function (value, name) {
+              dom.setStyle(node, name, '');
+            });
+          }
+        });
+      }
+    };
+    var processChildElements = function (node, filter, process) {
+      each$9(node.childNodes, function (node) {
+        if (isElementNode(node)) {
+          if (filter(node)) {
+            process(node);
+          }
+          if (node.hasChildNodes()) {
+            processChildElements(node, filter, process);
+          }
+        }
+      });
+    };
+    var unwrapEmptySpan = function (dom, node) {
+      if (node.nodeName === 'SPAN' && dom.getAttribs(node).length === 0) {
+        dom.remove(node, true);
+      }
+    };
+    var hasStyle = function (dom, name) {
+      return function (node) {
+        return !!(node && getStyle(dom, node, name));
+      };
+    };
+    var applyStyle = function (dom, name, value) {
+      return function (node) {
+        dom.setStyle(node, name, value);
+        if (node.getAttribute('style') === '') {
+          node.removeAttribute('style');
+        }
+        unwrapEmptySpan(dom, node);
+      };
+    };
+
+    var removeResult = Adt.generate([
+      { keep: [] },
+      { rename: ['name'] },
+      { removed: [] }
+    ]);
+    var MCE_ATTR_RE = /^(src|href|style)$/;
+    var each$a = Tools.each;
     var isEq$2 = isEq;
     var isTableCellOrRow = function (node) {
       return /^(TR|TH|TD)$/.test(node.nodeName);
@@ -14365,11 +14481,11 @@
       }
       dom.remove(node, true);
     };
-    var removeFormat = function (ed, format, vars, node, compareNode) {
+    var removeFormatInternal = function (ed, format, vars, node, compareNode) {
       var stylesModified;
       var dom = ed.dom;
       if (!matchName$1(dom, node, format) && !isColorFormatAndAnchor(node, format)) {
-        return false;
+        return removeResult.keep();
       }
       var elm = node;
       if (format.inline && format.remove === 'all' && isArray(format.preserve_attributes)) {
@@ -14381,12 +14497,11 @@
           return dom.setAttrib(elm, attr.name, attr.value);
         });
         if (attrsToPreserve.length > 0) {
-          ed.dom.rename(node, 'span');
-          return true;
+          return removeResult.rename('span');
         }
       }
       if (format.remove !== 'all') {
-        each$9(format.styles, function (value, name) {
+        each$a(format.styles, function (value, name) {
           value = normalizeStyleValue(dom, replaceVars(value, vars), name);
           if (typeof name === 'number') {
             name = value;
@@ -14401,7 +14516,7 @@
           elm.removeAttribute('style');
           elm.removeAttribute('data-mce-style');
         }
-        each$9(format.attributes, function (value, name) {
+        each$a(format.attributes, function (value, name) {
           var valueOut;
           value = replaceVars(value, vars);
           if (typeof name === 'number') {
@@ -14433,7 +14548,7 @@
             elm.removeAttribute(name);
           }
         });
-        each$9(format.classes, function (value) {
+        each$a(format.classes, function (value) {
           value = replaceVars(value, vars);
           if (!compareNode || dom.hasClass(compareNode, value)) {
             dom.removeClass(elm, value);
@@ -14443,14 +14558,21 @@
         for (var i = 0; i < attrs.length; i++) {
           var attrName = attrs[i].nodeName;
           if (attrName.indexOf('_') !== 0 && attrName.indexOf('data-') !== 0) {
-            return false;
+            return removeResult.keep();
           }
         }
       }
       if (format.remove !== 'none') {
         removeNode$1(ed, elm, format);
-        return true;
+        return removeResult.removed();
       }
+      return removeResult.keep();
+    };
+    var removeFormat = function (ed, format, vars, node, compareNode) {
+      return removeFormatInternal(ed, format, vars, node, compareNode).fold(never, function (newName) {
+        ed.dom.rename(node, newName);
+        return true;
+      }, always);
     };
     var findFormatRoot = function (editor, container, name, vars, similar) {
       var formatRoot;
@@ -14464,6 +14586,13 @@
       });
       return formatRoot;
     };
+    var removeFormatFromClone = function (editor, format, vars, clone) {
+      return removeFormatInternal(editor, format, vars, clone, clone).fold(constant(clone), function (newName) {
+        var fragment = editor.dom.createFragment();
+        fragment.appendChild(clone);
+        return editor.dom.rename(clone, newName);
+      }, constant(null));
+    };
     var wrapAndSplit = function (editor, formatList, formatRoot, container, target, split, format, vars) {
       var clone, lastClone, firstClone;
       var dom = editor.dom;
@@ -14472,8 +14601,8 @@
         for (var parent_1 = container.parentNode; parent_1 && parent_1 !== formatRootParent; parent_1 = parent_1.parentNode) {
           clone = dom.clone(parent_1, false);
           for (var i = 0; i < formatList.length; i++) {
-            if (removeFormat(editor, formatList[i], vars, clone, clone)) {
-              clone = 0;
+            clone = removeFormatFromClone(editor, formatList[i], vars, clone);
+            if (clone === null) {
               break;
             }
           }
@@ -14493,6 +14622,9 @@
         if (lastClone) {
           target.parentNode.insertBefore(lastClone, target);
           firstClone.appendChild(target);
+          if (format.inline) {
+            mergeSiblings(dom, format, vars, lastClone);
+          }
         }
       }
       return container;
@@ -14662,74 +14794,7 @@
       }
     };
 
-    var each$a = Tools.each;
-    var isElementNode = function (node) {
-      return isElement$1(node) && !isBookmarkNode$1(node) && !isCaretNode(node) && !isBogus(node);
-    };
-    var findElementSibling = function (node, siblingName) {
-      var sibling;
-      for (sibling = node; sibling; sibling = sibling[siblingName]) {
-        if (isText$1(sibling) && sibling.nodeValue.length !== 0) {
-          return node;
-        }
-        if (isElement$1(sibling) && !isBookmarkNode$1(sibling)) {
-          return sibling;
-        }
-      }
-      return node;
-    };
-    var mergeSiblingsNodes = function (dom, prev, next) {
-      var sibling, tmpSibling;
-      var elementUtils = new ElementUtils(dom);
-      if (prev && next) {
-        prev = findElementSibling(prev, 'previousSibling');
-        next = findElementSibling(next, 'nextSibling');
-        if (elementUtils.compare(prev, next)) {
-          for (sibling = prev.nextSibling; sibling && sibling !== next;) {
-            tmpSibling = sibling;
-            sibling = sibling.nextSibling;
-            prev.appendChild(tmpSibling);
-          }
-          dom.remove(next);
-          Tools.each(Tools.grep(next.childNodes), function (node) {
-            prev.appendChild(node);
-          });
-          return prev;
-        }
-      }
-      return next;
-    };
-    var processChildElements = function (node, filter, process) {
-      each$a(node.childNodes, function (node) {
-        if (isElementNode(node)) {
-          if (filter(node)) {
-            process(node);
-          }
-          if (node.hasChildNodes()) {
-            processChildElements(node, filter, process);
-          }
-        }
-      });
-    };
-    var hasStyle = function (dom, name) {
-      return function (node) {
-        return !!(node && getStyle(dom, node, name));
-      };
-    };
-    var applyStyle = function (dom, name, value) {
-      return function (node) {
-        dom.setStyle(node, name, value);
-        if (node.getAttribute('style') === '') {
-          node.removeAttribute('style');
-        }
-        unwrapEmptySpan(dom, node);
-      };
-    };
-    var unwrapEmptySpan = function (dom, node) {
-      if (node.nodeName === 'SPAN' && dom.getAttribs(node).length === 0) {
-        dom.remove(node, true);
-      }
-    };
+    var each$b = Tools.each;
     var mergeTextDecorationsAndColor = function (dom, format, vars, node) {
       var processTextDecorationsAndColor = function (n) {
         if (n.nodeType === 1 && n.parentNode && n.parentNode.nodeType === 1) {
@@ -14757,27 +14822,9 @@
         dom.remove(dom.select(format.inline === 'sup' ? 'sub' : 'sup', node), true);
       }
     };
-    var mergeSiblings = function (dom, format, vars, node) {
-      if (node && format.merge_siblings !== false) {
-        node = mergeSiblingsNodes(dom, getNonWhiteSpaceSibling(node), node);
-        node = mergeSiblingsNodes(dom, node, getNonWhiteSpaceSibling(node, true));
-      }
-    };
-    var clearChildStyles = function (dom, format, node) {
-      if (format.clear_child_styles) {
-        var selector = format.links ? '*:not(a)' : '*';
-        each$a(dom.select(selector, node), function (node) {
-          if (isElementNode(node)) {
-            each$a(format.styles, function (value, name) {
-              dom.setStyle(node, name, '');
-            });
-          }
-        });
-      }
-    };
     var mergeWithChildren = function (editor, formatList, vars, node) {
-      each$a(formatList, function (format) {
-        each$a(editor.dom.select(format.inline, node), function (child) {
+      each$b(formatList, function (format) {
+        each$b(editor.dom.select(format.inline, node), function (child) {
           if (!isElementNode(child)) {
             return;
           }
@@ -14802,7 +14849,7 @@
       }
     };
 
-    var each$b = Tools.each;
+    var each$c = Tools.each;
     var isElementNode$1 = function (node) {
       return node && node.nodeType === 1 && !isBookmarkNode$1(node) && !isCaretNode(node) && !isBogus(node);
     };
@@ -14818,7 +14865,7 @@
           if (fmt.onformat) {
             fmt.onformat(elm, fmt, vars, node);
           }
-          each$b(fmt.styles, function (value, name) {
+          each$c(fmt.styles, function (value, name) {
             dom.setStyle(elm, name, replaceVars(value, vars));
           });
           if (fmt.styles) {
@@ -14827,10 +14874,10 @@
               dom.setAttrib(elm, 'data-mce-style', styleVal);
             }
           }
-          each$b(fmt.attributes, function (value, name) {
+          each$c(fmt.attributes, function (value, name) {
             dom.setAttrib(elm, name, replaceVars(value, vars));
           });
-          each$b(fmt.classes, function (value) {
+          each$c(fmt.classes, function (value) {
             value = replaceVars(value, vars);
             if (!dom.hasClass(elm, value)) {
               dom.addClass(elm, value);
@@ -14843,7 +14890,7 @@
         if (!format.selector) {
           return false;
         }
-        each$b(formatList, function (format) {
+        each$c(formatList, function (format) {
           if ('collapsed' in format && format.collapsed !== isCollapsed) {
             return;
           }
@@ -14907,30 +14954,30 @@
               currentWrapElm.appendChild(node);
             } else {
               currentWrapElm = 0;
-              each$b(Tools.grep(node.childNodes), process);
+              each$c(Tools.grep(node.childNodes), process);
               if (hasContentEditableState) {
                 contentEditable = lastContentEditable;
               }
               currentWrapElm = 0;
             }
           };
-          each$b(nodes, process);
+          each$c(nodes, process);
         });
         if (format.links === true) {
-          each$b(newWrappers, function (node) {
+          each$c(newWrappers, function (node) {
             var process = function (node) {
               if (node.nodeName === 'A') {
                 setElementFormat(node, format);
               }
-              each$b(Tools.grep(node.childNodes), process);
+              each$c(Tools.grep(node.childNodes), process);
             };
             process(node);
           });
         }
-        each$b(newWrappers, function (node) {
+        each$c(newWrappers, function (node) {
           var getChildCount = function (node) {
             var count = 0;
-            each$b(node.childNodes, function (node) {
+            each$c(node.childNodes, function (node) {
               if (!isEmptyTextNode(node) && !isBookmarkNode$1(node)) {
                 count++;
               }
@@ -14939,7 +14986,7 @@
           };
           var getChildElementNode = function (root) {
             var child = false;
-            each$b(root.childNodes, function (node) {
+            each$c(root.childNodes, function (node) {
               if (isElementNode$1(node)) {
                 child = node;
                 return false;
@@ -15177,9 +15224,14 @@
         return name(elm) === 'li' && hasAllContentsSelected(elm, rng);
       }).fold(constant([]), function (_li) {
         return findParentListContainer(parents).map(function (listCont) {
+          var listElm = Element.fromTag(name(listCont));
+          var listStyles = filter$1(getAllRaw(listCont), function (_style, name) {
+            return startsWith(name, 'list-style');
+          });
+          setAll$1(listElm, listStyles);
           return [
             Element.fromTag('li'),
-            Element.fromTag(name(listCont))
+            listElm
           ];
         }).getOr([]);
       });
@@ -16425,6 +16477,11 @@
           var notification = getImplementation().open(spec, function () {
             closeNotification(notification);
             reposition();
+            getTopNotification().fold(function () {
+              return editor.focus();
+            }, function (top) {
+              return focus(Element.fromDom(top.getEl()));
+            });
           });
           addNotification(notification);
           reposition();
@@ -18602,7 +18659,7 @@
       registerBase64ImageFilter(parser, settings);
     };
 
-    var makeMap$4 = Tools.makeMap, each$c = Tools.each, explode$2 = Tools.explode, extend$2 = Tools.extend;
+    var makeMap$4 = Tools.makeMap, each$d = Tools.each, explode$2 = Tools.explode, extend$2 = Tools.extend;
     var DomParser = function (settings, schema) {
       if (schema === void 0) {
         schema = Schema();
@@ -18726,7 +18783,7 @@
         return node;
       };
       var addNodeFilter = function (name, callback) {
-        each$c(explode$2(name), function (name) {
+        each$d(explode$2(name), function (name) {
           var list = nodeFilters[name];
           if (!list) {
             nodeFilters[name] = list = [];
@@ -18747,7 +18804,7 @@
         return out;
       };
       var addAttributeFilter = function (name, callback) {
-        each$c(explode$2(name), function (name) {
+        each$d(explode$2(name), function (name) {
           var i;
           for (i = 0; i < attributeFilters.length; i++) {
             if (attributeFilters[i].name === name) {
@@ -20138,10 +20195,10 @@
           remove: 'all',
           split: true,
           deep: true,
-          onmatch: function () {
-            return true;
+          onmatch: function (node, _fmt, _itemName) {
+            return isElement$1(node) && node.hasAttribute('href');
           },
-          onformat: function (elm, fmt, vars) {
+          onformat: function (elm, _fmt, vars) {
             Tools.each(vars, function (value, key) {
               dom.setAttrib(elm, key, value);
             });
@@ -20244,7 +20301,7 @@
       };
     }
 
-    var each$d = Tools.each;
+    var each$e = Tools.each;
     var dom = DOMUtils$1.DOM;
     var parsedSelectorToHtml = function (ancestry, editor) {
       var elm, item, fragment;
@@ -20405,19 +20462,19 @@
         previewFrag = parsedSelectorToHtml([name], editor);
       }
       var previewElm = dom.select(name, previewFrag)[0] || previewFrag.firstChild;
-      each$d(format.styles, function (value, name) {
+      each$e(format.styles, function (value, name) {
         value = removeVars(value);
         if (value) {
           dom.setStyle(previewElm, name, value);
         }
       });
-      each$d(format.attributes, function (value, name) {
+      each$e(format.attributes, function (value, name) {
         value = removeVars(value);
         if (value) {
           dom.setAttrib(previewElm, name, value);
         }
       });
-      each$d(format.classes, function (value) {
+      each$e(format.classes, function (value) {
         value = removeVars(value);
         if (!dom.hasClass(previewElm, value)) {
           dom.addClass(previewElm, value);
@@ -20431,7 +20488,7 @@
       editor.getBody().appendChild(previewFrag);
       parentFontSize = dom.getStyle(editor.getBody(), 'fontSize', true);
       parentFontSize = /px$/.test(parentFontSize) ? parseInt(parentFontSize, 10) : 0;
-      each$d(previewStyles.split(' '), function (name) {
+      each$e(previewStyles.split(' '), function (name) {
         var value = dom.getStyle(previewElm, name, true);
         if (name === 'background-color' && /transparent|rgba\s*\([^)]+,\s*0\)/.test(value)) {
           value = dom.getStyle(editor.getBody(), name, true);
@@ -23464,7 +23521,7 @@
                 return false;
               }
             }
-          } else if (isText$1(node) && !/^[ \t\r\n]*$/.test(node.nodeValue)) {
+          } else if (isText$1(node) && !isWhitespaceText(node.nodeValue)) {
             return false;
           }
           if (start) {
@@ -26301,7 +26358,7 @@
       }
     };
 
-    var each$e = Tools.each;
+    var each$f = Tools.each;
     var map$3 = Tools.map, inArray$2 = Tools.inArray;
     var EditorCommands = function () {
       function EditorCommands(editor) {
@@ -26342,7 +26399,7 @@
           });
           return true;
         }
-        each$e(this.editor.plugins, function (p) {
+        each$f(this.editor.plugins, function (p) {
           if (p.execCommand && p.execCommand(command, ui, value)) {
             self.editor.fire('ExecCommand', {
               command: command,
@@ -26410,8 +26467,8 @@
       EditorCommands.prototype.addCommands = function (commandList, type) {
         var self = this;
         type = type || 'exec';
-        each$e(commandList, function (callback, command) {
-          each$e(command.toLowerCase().split(','), function (command) {
+        each$f(commandList, function (callback, command) {
+          each$f(command.toLowerCase().split(','), function (command) {
             self.commands[type][command] = callback;
           });
         });
@@ -26519,7 +26576,7 @@
             if (align === 'full') {
               align = 'justify';
             }
-            each$e('left,center,right,justify'.split(','), function (name) {
+            each$f('left,center,right,justify'.split(','), function (name) {
               if (align !== name) {
                 editor.formatter.remove('align' + name);
               }
@@ -27201,7 +27258,7 @@
       };
     };
 
-    var each$f = Tools.each, explode$3 = Tools.explode;
+    var each$g = Tools.each, explode$3 = Tools.explode;
     var keyCodeLookup = {
       f1: 112,
       f2: 113,
@@ -27225,7 +27282,7 @@
         var self = this;
         editor.on('keyup keypress keydown', function (e) {
           if ((self.hasModifier(e) || self.isFunctionKey(e)) && !e.isDefaultPrevented()) {
-            each$f(self.shortcuts, function (shortcut) {
+            each$g(self.shortcuts, function (shortcut) {
               if (self.matchShortcut(e, shortcut)) {
                 self.pendingPatterns = shortcut.subpatterns.slice(0);
                 if (e.type === 'keydown') {
@@ -27257,7 +27314,7 @@
             self.editor.execCommand(cmd[0], cmd[1], cmd[2]);
           };
         }
-        each$f(explode$3(Tools.trim(pattern)), function (pattern) {
+        each$g(explode$3(Tools.trim(pattern)), function (pattern) {
           var shortcut = self.createShortcut(pattern, desc, cmdFunc, scope);
           self.shortcuts[shortcut.id] = shortcut;
         });
@@ -27274,7 +27331,7 @@
       Shortcuts.prototype.parseShortcut = function (pattern) {
         var key;
         var shortcut = {};
-        each$f(explode$3(pattern.toLowerCase(), '+'), function (value) {
+        each$g(explode$3(pattern.toLowerCase(), '+'), function (value) {
           if (value in modifierNames) {
             shortcut[value] = true;
           } else {
@@ -27418,7 +27475,7 @@
       };
     };
 
-    var each$g = Tools.each, trim$4 = Tools.trim;
+    var each$h = Tools.each, trim$4 = Tools.trim;
     var queryParts = 'source protocol authority userInfo user password host port relative path directory file query anchor'.split(' ');
     var DEFAULT_PORTS = {
       ftp: 21,
@@ -27451,7 +27508,7 @@
         }
         url = url.replace(/@@/g, '(mce_at)');
         var urlMatch = /^(?:(?![^:@]+:[^:@\/]*@)([^:\/?#.]+):)?(?:\/\/)?((?:(([^:@\/]*):?([^:@\/]*))?@)?([^:\/?#]*)(?::(\d*))?)(((\/(?:[^?#](?![^?#\/]*\.[^?#\/.]+(?:[?#]|$)))*\/?)?([^?#\/]*))(?:\?([^#]*))?(?:#(.*))?)/.exec(url);
-        each$g(queryParts, function (v, i) {
+        each$h(queryParts, function (v, i) {
           var part = urlMatch[i];
           if (part) {
             part = part.replace(/\(mce_at\)/g, '@@');
@@ -27590,7 +27647,7 @@
         var tr = /\/$/.test(path) ? '/' : '';
         var normalizedBase = base.split('/');
         var normalizedPath = path.split('/');
-        each$g(normalizedBase, function (k) {
+        each$h(normalizedBase, function (k) {
           if (k) {
             o.push(k);
           }
@@ -27664,7 +27721,7 @@
     }();
 
     var DOM$9 = DOMUtils$1.DOM;
-    var extend$3 = Tools.extend, each$h = Tools.each;
+    var extend$3 = Tools.extend, each$i = Tools.each;
     var resolve$3 = Tools.resolve;
     var ie$1 = Env.ie;
     var Editor = function () {
@@ -27724,7 +27781,7 @@
         render(this);
       };
       Editor.prototype.focus = function (skipFocus) {
-        focus(this, skipFocus);
+        focus$1(this, skipFocus);
       };
       Editor.prototype.hasFocus = function () {
         return hasFocus$1(this);
@@ -27872,7 +27929,7 @@
             elm.innerHTML = html;
           }
           if (form = DOM$9.getParent(self.id, 'form')) {
-            each$h(form.elements, function (elm) {
+            each$i(form.elements, function (elm) {
               if (elm.name === self.id) {
                 elm.value = html;
                 return false;
@@ -27985,7 +28042,7 @@
         if (self.hasVisual === undefined) {
           self.hasVisual = settings.visual;
         }
-        each$h(dom.select('table,a', elm), function (elm) {
+        each$i(dom.select('table,a', elm), function (elm) {
           var value;
           switch (elm.nodeName) {
           case 'TABLE':
@@ -28043,7 +28100,7 @@
     }();
 
     var DOM$a = DOMUtils$1.DOM;
-    var explode$4 = Tools.explode, each$i = Tools.each, extend$4 = Tools.extend;
+    var explode$4 = Tools.explode, each$j = Tools.each, extend$4 = Tools.extend;
     var instanceCounter = 0, boundGlobalEvents = false;
     var beforeUnloadDelegate;
     var legacyEditors = [];
@@ -28053,7 +28110,7 @@
     };
     var globalEventDelegate = function (e) {
       var type = e.type;
-      each$i(EditorManager.get(), function (editor) {
+      each$j(EditorManager.get(), function (editor) {
         switch (type) {
         case 'scroll':
           editor.fire('ScrollWindow', e);
@@ -28113,8 +28170,8 @@
       suffix: null,
       $: DomQuery,
       majorVersion: '5',
-      minorVersion: '4.1',
-      releaseDate: '2020-07-08',
+      minorVersion: '4.2',
+      releaseDate: '2020-08-17',
       editors: legacyEditors,
       i18n: I18n,
       activeEditor: null,
@@ -28218,7 +28275,7 @@
             return [];
           }
           if (settings.types) {
-            each$i(settings.types, function (type) {
+            each$j(settings.types, function (type) {
               targets = targets.concat(DOM$a.select(type.selector));
             });
             return targets;
@@ -28231,13 +28288,13 @@
           case 'exact':
             var l = settings.elements || '';
             if (l.length > 0) {
-              each$i(explode$4(l), function (id) {
+              each$j(explode$4(l), function (id) {
                 var elm = DOM$a.get(id);
                 if (elm) {
                   targets.push(elm);
                 } else {
-                  each$i(domGlobals.document.forms, function (f) {
-                    each$i(f.elements, function (e) {
+                  each$j(domGlobals.document.forms, function (f) {
+                    each$j(f.elements, function (e) {
                       if (e.name === id) {
                         id = 'mce_editor_' + instanceCounter++;
                         DOM$a.setAttrib(e, 'id', id);
@@ -28251,7 +28308,7 @@
             break;
           case 'textareas':
           case 'specific_textareas':
-            each$i(DOM$a.select('textarea'), function (elm) {
+            each$j(DOM$a.select('textarea'), function (elm) {
               if (settings.editor_deselector && hasClass(elm, settings.editor_deselector)) {
                 return;
               }
@@ -28285,7 +28342,7 @@
           execCallback('onpageload');
           targets = DomQuery.unique(findTargets(settings));
           if (settings.types) {
-            each$i(settings.types, function (type) {
+            each$j(settings.types, function (type) {
               Tools.each(targets, function (elm) {
                 if (DOM$a.is(elm, type.selector)) {
                   createEditor(createId(elm), extend$4({}, settings, type), elm);
@@ -28305,7 +28362,7 @@
           if (targets.length === 0) {
             provideResults([]);
           } else {
-            each$i(targets, function (elm) {
+            each$j(targets, function (elm) {
               if (isInvalidInlineTarget(settings, elm)) {
                 initError('Could not initialize inline editor on invalid inline target element', elm);
               } else {
@@ -28381,7 +28438,7 @@
           return;
         }
         if (isString(selector)) {
-          each$i(DOM$a.select(selector), function (elm) {
+          each$j(DOM$a.select(selector), function (elm) {
             editor = self.get(elm.id);
             if (editor) {
               self.remove(editor);
@@ -28434,7 +28491,7 @@
         return false;
       },
       triggerSave: function () {
-        each$i(editors, function (editor) {
+        each$j(editors, function (editor) {
           editor.save();
         });
       },
@@ -28666,7 +28723,7 @@
       fromClientRect: fromClientRect
     };
 
-    var each$j = Tools.each, extend$5 = Tools.extend;
+    var each$k = Tools.each, extend$5 = Tools.extend;
     var extendClass, initializing;
     var Class = function () {
     };
@@ -28709,7 +28766,7 @@
       var prototype = new self();
       initializing = false;
       if (prop.Mixins) {
-        each$j(prop.Mixins, function (mixin) {
+        each$k(prop.Mixins, function (mixin) {
           for (var name_1 in mixin) {
             if (name_1 !== 'init') {
               prop[name_1] = mixin[name_1];
@@ -28721,12 +28778,12 @@
         }
       }
       if (prop.Methods) {
-        each$j(prop.Methods.split(','), function (name) {
+        each$k(prop.Methods.split(','), function (name) {
           prop[name] = dummy;
         });
       }
       if (prop.Properties) {
-        each$j(prop.Properties.split(','), function (name) {
+        each$k(prop.Properties.split(','), function (name) {
           var fieldName = '_' + name;
           prop[name] = function (value) {
             var self = this;
@@ -28739,7 +28796,7 @@
         });
       }
       if (prop.Statics) {
-        each$j(prop.Statics, function (func, name) {
+        each$k(prop.Statics, function (func, name) {
           Class[name] = func;
         });
       }

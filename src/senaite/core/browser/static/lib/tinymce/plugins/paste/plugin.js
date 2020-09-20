@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.4.1 (2020-07-08)
+ * Version: 5.4.2 (2020-08-17)
  */
 (function (domGlobals) {
     'use strict';
@@ -276,74 +276,7 @@
 
     var global$3 = tinymce.util.Tools.resolve('tinymce.util.Promise');
 
-    var global$4 = tinymce.util.Tools.resolve('tinymce.util.Tools');
-
-    var global$5 = tinymce.util.Tools.resolve('tinymce.util.VK');
-
-    var internalMimeType = 'x-tinymce/html';
-    var internalMark = '<!-- ' + internalMimeType + ' -->';
-    var mark = function (html) {
-      return internalMark + html;
-    };
-    var unmark = function (html) {
-      return html.replace(internalMark, '');
-    };
-    var isMarked = function (html) {
-      return html.indexOf(internalMark) !== -1;
-    };
-    var internalHtmlMime = function () {
-      return internalMimeType;
-    };
-
-    var global$6 = tinymce.util.Tools.resolve('tinymce.html.Entities');
-
-    var isPlainText = function (text) {
-      return !/<(?:\/?(?!(?:div|p|br|span)>)\w+|(?:(?!(?:span style="white-space:\s?pre;?">)|br\s?\/>))\w+\s[^>]+)>/i.test(text);
-    };
-    var toBRs = function (text) {
-      return text.replace(/\r?\n/g, '<br>');
-    };
-    var openContainer = function (rootTag, rootAttrs) {
-      var key;
-      var attrs = [];
-      var tag = '<' + rootTag;
-      if (typeof rootAttrs === 'object') {
-        for (key in rootAttrs) {
-          if (rootAttrs.hasOwnProperty(key)) {
-            attrs.push(key + '="' + global$6.encodeAllRaw(rootAttrs[key]) + '"');
-          }
-        }
-        if (attrs.length) {
-          tag += ' ' + attrs.join(' ');
-        }
-      }
-      return tag + '>';
-    };
-    var toBlockElements = function (text, rootTag, rootAttrs) {
-      var blocks = text.split(/\n\n/);
-      var tagOpen = openContainer(rootTag, rootAttrs);
-      var tagClose = '</' + rootTag + '>';
-      var paragraphs = global$4.map(blocks, function (p) {
-        return p.split(/\n/).join('<br />');
-      });
-      var stitch = function (p) {
-        return tagOpen + p + tagClose;
-      };
-      return paragraphs.length === 1 ? paragraphs[0] : global$4.map(paragraphs, stitch).join('');
-    };
-    var convert = function (text, rootTag, rootAttrs) {
-      return rootTag ? toBlockElements(text, rootTag === true ? 'p' : rootTag, rootAttrs) : toBRs(text);
-    };
-
-    var global$7 = tinymce.util.Tools.resolve('tinymce.html.DomParser');
-
-    var global$8 = tinymce.util.Tools.resolve('tinymce.html.Serializer');
-
-    var nbsp = '\xA0';
-
-    var global$9 = tinymce.util.Tools.resolve('tinymce.html.Node');
-
-    var global$a = tinymce.util.Tools.resolve('tinymce.html.Schema');
+    var global$4 = tinymce.util.Tools.resolve('tinymce.util.VK');
 
     var shouldBlockDrop = function (editor) {
       return editor.getParam('paste_block_drop', false);
@@ -409,9 +342,79 @@
     var getForcedRootBlockAttrs = function (editor) {
       return editor.getParam('forced_root_block_attrs');
     };
+    var getTabSpaces = function (editor) {
+      return editor.getParam('paste_tab_spaces', 4, 'number');
+    };
+
+    var internalMimeType = 'x-tinymce/html';
+    var internalMark = '<!-- ' + internalMimeType + ' -->';
+    var mark = function (html) {
+      return internalMark + html;
+    };
+    var unmark = function (html) {
+      return html.replace(internalMark, '');
+    };
+    var isMarked = function (html) {
+      return html.indexOf(internalMark) !== -1;
+    };
+    var internalHtmlMime = function () {
+      return internalMimeType;
+    };
+
+    var global$5 = tinymce.util.Tools.resolve('tinymce.util.Tools');
+
+    var global$6 = tinymce.util.Tools.resolve('tinymce.html.Entities');
+
+    var isPlainText = function (text) {
+      return !/<(?:\/?(?!(?:div|p|br|span)>)\w+|(?:(?!(?:span style="white-space:\s?pre;?">)|br\s?\/>))\w+\s[^>]+)>/i.test(text);
+    };
+    var toBRs = function (text) {
+      return text.replace(/\r?\n/g, '<br>');
+    };
+    var openContainer = function (rootTag, rootAttrs) {
+      var key;
+      var attrs = [];
+      var tag = '<' + rootTag;
+      if (typeof rootAttrs === 'object') {
+        for (key in rootAttrs) {
+          if (rootAttrs.hasOwnProperty(key)) {
+            attrs.push(key + '="' + global$6.encodeAllRaw(rootAttrs[key]) + '"');
+          }
+        }
+        if (attrs.length) {
+          tag += ' ' + attrs.join(' ');
+        }
+      }
+      return tag + '>';
+    };
+    var toBlockElements = function (text, rootTag, rootAttrs) {
+      var blocks = text.split(/\n\n/);
+      var tagOpen = openContainer(rootTag, rootAttrs);
+      var tagClose = '</' + rootTag + '>';
+      var paragraphs = global$5.map(blocks, function (p) {
+        return p.split(/\n/).join('<br />');
+      });
+      var stitch = function (p) {
+        return tagOpen + p + tagClose;
+      };
+      return paragraphs.length === 1 ? paragraphs[0] : global$5.map(paragraphs, stitch).join('');
+    };
+    var convert = function (text, rootTag, rootAttrs) {
+      return rootTag ? toBlockElements(text, rootTag === true ? 'p' : rootTag, rootAttrs) : toBRs(text);
+    };
+
+    var global$7 = tinymce.util.Tools.resolve('tinymce.html.DomParser');
+
+    var global$8 = tinymce.util.Tools.resolve('tinymce.html.Serializer');
+
+    var nbsp = '\xA0';
+
+    var global$9 = tinymce.util.Tools.resolve('tinymce.html.Node');
+
+    var global$a = tinymce.util.Tools.resolve('tinymce.html.Schema');
 
     function filter$1(content, items) {
-      global$4.each(items, function (v) {
+      global$5.each(items, function (v) {
         if (v.constructor === RegExp) {
           content = content.replace(v, '');
         } else {
@@ -425,7 +428,7 @@
       var domParser = global$7({}, schema);
       var text = '';
       var shortEndedElements = schema.getShortEndedElements();
-      var ignoreElements = global$4.makeMap('script noscript style textarea video audio iframe object', ' ');
+      var ignoreElements = global$5.makeMap('script noscript style textarea video audio iframe object', ' ');
       var blockElements = schema.getBlockElements();
       function walk(node) {
         var name = node.name, currentNode = node;
@@ -489,9 +492,6 @@
         return prefix + count++;
       };
     }
-    var isMsEdge = function () {
-      return domGlobals.navigator.userAgent.indexOf(' Edge/') !== -1;
-    };
 
     function isWordContent(content) {
       return /<font face="Times New Roman"|class="?Mso|style="[^"]*\bmso-|style='[^'']*\bmso-|w:WordDocument/i.test(content) || /class="OutlineElement/.test(content) || /id="?docs\-internal\-guid\-/.test(content);
@@ -508,7 +508,7 @@
         /^[\u58f1\u5f10\u53c2\u56db\u4f0d\u516d\u4e03\u516b\u4e5d\u62fe]+\.[ \u00a0]/
       ];
       text = text.replace(/^[\u00a0 ]+/, '');
-      global$4.each(patterns, function (pattern) {
+      global$5.each(patterns, function (pattern) {
         if (pattern.test(text)) {
           found = true;
           return false;
@@ -634,7 +634,7 @@
     function filterStyles(editor, validStyles, node, styleValue) {
       var outputStyles = {}, matches;
       var styles = editor.dom.parseStyle(styleValue);
-      global$4.each(styles, function (value, name) {
+      global$5.each(styles, function (value, name) {
         switch (name) {
         case 'mso-list':
           matches = /\w+ \w+([0-9]+)/i.exec(styleValue);
@@ -702,7 +702,7 @@
       var validStyles;
       var retainStyleProperties = getRetainStyleProps(editor);
       if (retainStyleProperties) {
-        validStyles = global$4.makeMap(retainStyleProperties.split(/[, ]/));
+        validStyles = global$5.makeMap(retainStyleProperties.split(/[, ]/));
       }
       content = filter$1(content, [
         /<br class="?Apple-interchange-newline"?>/gi,
@@ -729,7 +729,7 @@
         valid_elements: validElements,
         valid_children: '-li[p]'
       });
-      global$4.each(schema.elements, function (rule) {
+      global$5.each(schema.elements, function (rule) {
         if (!rule.attributes.class) {
           rule.attributes.class = {};
           rule.attributesOrder.push('class');
@@ -811,7 +811,7 @@
     var preProcess$1 = function (editor, html) {
       var parser = global$7({}, editor.schema);
       parser.addNodeFilter('meta', function (nodes) {
-        global$4.each(nodes, function (node) {
+        global$5.each(nodes, function (node) {
           return node.remove();
         });
       });
@@ -883,7 +883,7 @@
       return isImageUrl(html) ? createImage(editor, html, pasteHtmlFn) : false;
     };
     var smartInsertContent = function (editor, html) {
-      global$4.each([
+      global$5.each([
         linkSelection,
         insertImage,
         pasteHtml
@@ -899,6 +899,10 @@
       }
     };
 
+    var repeat = function (s, count) {
+      return count <= 0 ? '' : new Array(count + 1).join(s);
+    };
+
     var isCollapsibleWhitespace = function (c) {
       return ' \f\t\x0B'.indexOf(c) !== -1;
     };
@@ -908,10 +912,12 @@
     var isNewline = function (text, idx) {
       return idx < text.length && idx >= 0 ? isNewLineChar(text[idx]) : false;
     };
-    var normalizeWhitespace = function (text) {
-      var result = foldl(text, function (acc, c) {
+    var normalizeWhitespace = function (editor, text) {
+      var tabSpace = repeat(' ', getTabSpaces(editor));
+      var normalizedText = text.replace(/\t/g, tabSpace);
+      var result = foldl(normalizedText, function (acc, c) {
         if (isCollapsibleWhitespace(c) || c === nbsp) {
-          if (acc.pcIsSpace || acc.str === '' || acc.str.length === text.length - 1 || isNewline(text, acc.str.length + 1)) {
+          if (acc.pcIsSpace || acc.str === '' || acc.str.length === normalizedText.length - 1 || isNewline(normalizedText, acc.str.length + 1)) {
             return {
               pcIsSpace: false,
               str: acc.str + nbsp
@@ -947,7 +953,7 @@
     };
     var pasteText = function (editor, text) {
       var encodedText = editor.dom.encode(text).replace(/\r\n/g, '\n');
-      var normalizedText = normalizeWhitespace(encodedText);
+      var normalizedText = normalizeWhitespace(editor, encodedText);
       var html = convert(normalizedText, getForcedRootBlock(editor), getForcedRootBlockAttrs(editor));
       doPaste(editor, html, false, true);
     };
@@ -977,8 +983,7 @@
       return items;
     };
     var getClipboardContent = function (editor, clipboardEvent) {
-      var content = getDataTransferItems(clipboardEvent.clipboardData || editor.getDoc().dataTransfer);
-      return isMsEdge() ? global$4.extend(content, { 'text/html': '' }) : content;
+      return getDataTransferItems(clipboardEvent.clipboardData || editor.getDoc().dataTransfer);
     };
     var hasContentType = function (clipboardContent, mimeType) {
       return mimeType in clipboardContent && clipboardContent[mimeType].length > 0;
@@ -1082,7 +1087,7 @@
       return domGlobals.navigator.userAgent.indexOf('Android') !== -1 && clipboardData && clipboardData.items && clipboardData.items.length === 0;
     };
     var isKeyboardPasteEvent = function (e) {
-      return global$5.metaKeyPressed(e) && e.keyCode === 86 || e.shiftKey && e.keyCode === 45;
+      return global$4.metaKeyPressed(e) && e.keyCode === 86 || e.shiftKey && e.keyCode === 45;
     };
     var registerEventHandlers = function (editor, pasteBin, pasteFormat) {
       var keyboardPasteEvent = value();
@@ -1286,11 +1291,11 @@
         toElm.appendChild(fromElm);
         editor.dom.remove(fromElm, true);
       };
-      var pasteBinClones = global$4.grep(getPasteBinParent(editor).childNodes, function (elm) {
+      var pasteBinClones = global$5.grep(getPasteBinParent(editor).childNodes, function (elm) {
         return elm.id === 'mcepastebin';
       });
       var pasteBinElm = pasteBinClones.shift();
-      global$4.each(pasteBinClones, function (pasteBinClone) {
+      global$5.each(pasteBinClones, function (pasteBinClone) {
         copyAndRemove(pasteBinElm, pasteBinClone);
       });
       var dirtyWrappers = editor.dom.select('div[id=mcepastebin]', pasteBinElm);
@@ -1365,7 +1370,7 @@
     };
 
     var hasWorkingClipboardApi = function (clipboardData) {
-      return global$1.iOS === false && clipboardData !== undefined && typeof clipboardData.setData === 'function' && isMsEdge() !== true;
+      return global$1.iOS === false && typeof (clipboardData === null || clipboardData === void 0 ? void 0 : clipboardData.setData) === 'function';
     };
     var setHtml5Clipboard = function (clipboardData, html, text) {
       if (hasWorkingClipboardApi(clipboardData)) {
@@ -1565,7 +1570,7 @@
         return html;
       }
       var blockElements = [];
-      global$4.each(editor.schema.getBlockElements(), function (block, blockName) {
+      global$5.each(editor.schema.getBlockElements(), function (block, blockName) {
         blockElements.push(blockName);
       });
       var explorerBlocksRegExp = new RegExp('(?:<br>&nbsp;[\\s\\r\\n]+|<br>)*(<\\/?(' + blockElements.join('|') + ')[^>]*>)(?:<br>&nbsp;[\\s\\r\\n]+|<br>)*', 'g');

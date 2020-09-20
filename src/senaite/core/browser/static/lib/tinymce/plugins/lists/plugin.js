@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.4.1 (2020-07-08)
+ * Version: 5.4.2 (2020-08-17)
  */
 (function (domGlobals) {
     'use strict';
@@ -1517,17 +1517,17 @@
       return /\btox\-/.test(list.className);
     };
     var listState = function (editor, listName, activate) {
+      var nodeChangeHandler = function (e) {
+        var inList = findUntil(e.parents, isListNode, isTableCellNode).filter(function (list) {
+          return list.nodeName === listName && !isCustomList(list);
+        }).isSome();
+        activate(inList);
+      };
+      var parents = editor.dom.getParents(editor.selection.getNode());
+      nodeChangeHandler({ parents: parents });
+      editor.on('NodeChange', nodeChangeHandler);
       return function () {
-        var nodeChangeHandler = function (e) {
-          var inList = findUntil(e.parents, isListNode, isTableCellNode).filter(function (list) {
-            return list.nodeName === listName && !isCustomList(list);
-          }).isSome();
-          activate(inList);
-        };
-        editor.on('NodeChange', nodeChangeHandler);
-        return function () {
-          return editor.off('NodeChange', nodeChangeHandler);
-        };
+        return editor.off('NodeChange', nodeChangeHandler);
       };
     };
 
