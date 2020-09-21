@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.4.1 (2020-07-08)
+ * Version: 5.4.2 (2020-08-17)
  */
 (function (domGlobals) {
     'use strict';
@@ -589,7 +589,7 @@
     var bind$1 = function (name, callback, _win) {
       return get$4(_win).map(function (visualViewport) {
         var handler = function (e) {
-          return fromRawEvent(e);
+          return callback(fromRawEvent(e));
         };
         visualViewport.addEventListener(name, handler);
         return {
@@ -723,8 +723,8 @@
       var bind = function (element) {
         editorContainer.set(element);
         update();
-        resizeBinder.set(bind$1('resize'));
-        scrollBinder.set(bind$1('scroll'));
+        resizeBinder.set(bind$1('resize', update));
+        scrollBinder.set(bind$1('scroll', update));
       };
       var unbind = function () {
         editorContainer.on(function () {

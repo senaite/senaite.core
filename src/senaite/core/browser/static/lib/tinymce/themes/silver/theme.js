@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.4.1 (2020-07-08)
+ * Version: 5.4.2 (2020-08-17)
  */
 (function (domGlobals) {
     'use strict';
@@ -9084,6 +9084,45 @@
           return Option.from(notificationIconMap[level]);
         }).toArray()
       ]);
+      var memButton = record(Button.sketch({
+        dom: {
+          tag: 'button',
+          classes: [
+            'tox-notification__dismiss',
+            'tox-button',
+            'tox-button--naked',
+            'tox-button--icon'
+          ]
+        },
+        components: [{
+            dom: {
+              tag: 'div',
+              classes: ['tox-icon'],
+              innerHtml: get$d('close', detail.iconProvider),
+              attributes: { 'aria-label': detail.translationProvider('Close') }
+            }
+          }],
+        action: function (comp) {
+          detail.onAction(comp);
+        }
+      }));
+      var components = [
+        {
+          dom: {
+            tag: 'div',
+            classes: ['tox-notification__icon'],
+            innerHtml: getFirst$1(iconChoices, detail.iconProvider)
+          }
+        },
+        {
+          dom: {
+            tag: 'div',
+            classes: ['tox-notification__body']
+          },
+          components: [memBannerText.asSpec()],
+          behaviours: derive$1([Replacing.config({})])
+        }
+      ];
       return {
         uid: detail.uid,
         dom: {
@@ -9100,44 +9139,13 @@
             'tox-notification--in'
           ])
         },
-        components: [
-          {
-            dom: {
-              tag: 'div',
-              classes: ['tox-notification__icon'],
-              innerHtml: getFirst$1(iconChoices, detail.iconProvider)
-            }
-          },
-          {
-            dom: {
-              tag: 'div',
-              classes: ['tox-notification__body']
-            },
-            components: [memBannerText.asSpec()],
-            behaviours: derive$1([Replacing.config({})])
-          }
-        ].concat(detail.progress ? [memBannerProgress.asSpec()] : []).concat(!detail.closeButton ? [] : [Button.sketch({
-            dom: {
-              tag: 'button',
-              classes: [
-                'tox-notification__dismiss',
-                'tox-button',
-                'tox-button--naked',
-                'tox-button--icon'
-              ]
-            },
-            components: [{
-                dom: {
-                  tag: 'div',
-                  classes: ['tox-icon'],
-                  innerHtml: get$d('close', detail.iconProvider),
-                  attributes: { 'aria-label': detail.translationProvider('Close') }
-                }
-              }],
-            action: function (comp) {
-              detail.onAction(comp);
-            }
-          })]),
+        behaviours: derive$1([
+          Focusing.config({}),
+          config('notification-events', [run(focusin(), function (comp) {
+              memButton.getOpt(comp).each(Focusing.focus);
+            })])
+        ]),
+        components: components.concat(detail.progress ? [memBannerProgress.asSpec()] : []).concat(!detail.closeButton ? [] : [memButton.asSpec()]),
         apis: apis
       };
     };
@@ -10500,10 +10508,10 @@
       return editor.getParam('typeahead_urls') === false;
     };
     var getAnchorTop = function (editor) {
-      return editor.getParam('anchor_top', '#top', 'string');
+      return editor.getParam('anchor_top', '#top');
     };
     var getAnchorBottom = function (editor) {
-      return editor.getParam('anchor_bottom', '#bottom', 'string');
+      return editor.getParam('anchor_bottom', '#bottom');
     };
     var getFilePickerValidatorHandler = function (editor) {
       var handler = editor.getParam('file_picker_validator_handler', undefined, 'function');
@@ -21693,14 +21701,17 @@
         };
       });
     };
+    var getTextSetting = function (value) {
+      return Option.from(value).filter(isString).getOrUndefined();
+    };
     var getLinkInformation = function (editor) {
       if (noTypeaheadUrls(editor)) {
         return Option.none();
       }
       return Option.some({
         targets: LinkTargets.find(editor.getBody()),
-        anchorTop: getAnchorTop(editor),
-        anchorBottom: getAnchorBottom(editor)
+        anchorTop: getTextSetting(getAnchorTop(editor)),
+        anchorBottom: getTextSetting(getAnchorBottom(editor))
       });
     };
     var getValidationHandler = function (editor) {
@@ -24970,7 +24981,9 @@
         return Math.max(aTop, bTop) <= Math.min(aBottom, bBottom);
       };
       var getLastElementVerticalBound = function () {
-        var nodeBounds = lastElement.get().map(function (ele) {
+        var nodeBounds = lastElement.get().filter(function (ele) {
+          return inBody(Element.fromDom(ele));
+        }).map(function (ele) {
           return ele.getBoundingClientRect();
         }).getOrThunk(function () {
           return editor.selection.getRng().getBoundingClientRect();
@@ -26731,24 +26744,24 @@
     var DOM = global$5.DOM;
     var detection = detect$3();
     var isiOS12 = detection.os.isiOS() && detection.os.version.major <= 12;
-    var setupEvents = function (editor) {
+    var setupEvents = function (editor, uiComponents) {
       var contentWindow = editor.getWin();
       var initialDocEle = editor.getDoc().documentElement;
       var lastWindowDimensions = Cell(Position(contentWindow.innerWidth, contentWindow.innerHeight));
       var lastDocumentDimensions = Cell(Position(initialDocEle.offsetWidth, initialDocEle.offsetHeight));
-      var resizeWindow = function (e) {
+      var resizeWindow = function () {
         var outer = lastWindowDimensions.get();
         if (outer.left() !== contentWindow.innerWidth || outer.top() !== contentWindow.innerHeight) {
           lastWindowDimensions.set(Position(contentWindow.innerWidth, contentWindow.innerHeight));
-          fireResizeContent(editor, e);
+          fireResizeContent(editor);
         }
       };
-      var resizeDocument = function (e) {
+      var resizeDocument = function () {
         var docEle = editor.getDoc().documentElement;
         var inner = lastDocumentDimensions.get();
         if (inner.left() !== docEle.offsetWidth || inner.top() !== docEle.offsetHeight) {
           lastDocumentDimensions.set(Position(docEle.offsetWidth, docEle.offsetHeight));
-          fireResizeContent(editor, e);
+          fireResizeContent(editor);
         }
       };
       var scroll = function (e) {
@@ -26757,6 +26770,13 @@
       DOM.bind(contentWindow, 'resize', resizeWindow);
       DOM.bind(contentWindow, 'scroll', scroll);
       var elementLoad = capture$1(Element.fromDom(editor.getBody()), 'load', resizeDocument);
+      var mothership = uiComponents.uiMothership.element();
+      editor.on('hide', function () {
+        set$2(mothership, 'display', 'none');
+      });
+      editor.on('show', function () {
+        remove$6(mothership, 'display');
+      });
       editor.on('NodeChange', resizeDocument);
       editor.on('remove', function () {
         elementLoad.unbind();
@@ -26776,10 +26796,10 @@
         lastToolbarWidth.set(editor.getWin().innerWidth);
         OuterContainer.setMenubar(uiComponents.outerContainer, identifyMenus(editor, rawUiConfig));
         OuterContainer.setSidebar(uiComponents.outerContainer, rawUiConfig.sidebar);
-        setupEvents(editor);
+        setupEvents(editor, uiComponents);
       });
       var socket = OuterContainer.getSocket(uiComponents.outerContainer).getOrDie('Could not find expected socket element');
-      if (isiOS12 === true) {
+      if (isiOS12) {
         setAll$1(socket.element(), {
           'overflow': 'scroll',
           '-webkit-overflow-scrolling': 'touch'
@@ -26790,7 +26810,7 @@
         bind$3(socket.element(), 'scroll', limit.throttle);
       }
       setupReadonlyModeSwitch(editor, uiComponents);
-      editor.addCommand('ToggleSidebar', function (ui, value) {
+      editor.addCommand('ToggleSidebar', function (_ui, value) {
         OuterContainer.toggleSidebar(uiComponents.outerContainer, value);
         editor.fire('ToggleSidebar');
       });
@@ -27127,7 +27147,7 @@
         setupEvents$1(editor, targetElm, ui);
         editor.nodeChanged();
       };
-      editor.on('focus', render);
+      editor.on('focus show', render);
       editor.on('blur hide', ui.hide);
       editor.on('init', function () {
         if (editor.hasFocus()) {

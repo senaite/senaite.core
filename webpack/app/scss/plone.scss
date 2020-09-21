@@ -6,6 +6,15 @@
     @extend .text-secondary;
     @extend .small;
 }
+/* field error for DX forms */
+div.field.error>div.error {
+    @extend .text-danger;
+    &:before {
+        @extend .fas;
+        @extend .fa-exclamation-circle;
+        @extend .mr-1;
+    }
+}
 .breadcrumb {
     border-radius: 0;
     background-color: $breadcrumb-bg;

@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.4.1 (2020-07-08)
+ * Version: 5.4.2 (2020-08-17)
  */
 (function () {
     'use strict';
@@ -76,7 +76,6 @@
       return isNaN(value) ? 0 : value;
     };
     var resize = function (editor, oldSize) {
-      var deltaSize, resizeHeight, contentHeight;
       var dom = editor.dom;
       var doc = editor.getDoc();
       if (!doc) {
@@ -88,10 +87,10 @@
       }
       var docEle = doc.documentElement;
       var resizeBottomMargin = getAutoResizeBottomMargin(editor);
-      resizeHeight = getAutoResizeMinHeight(editor);
+      var resizeHeight = getAutoResizeMinHeight(editor);
       var marginTop = parseCssValueToInt(dom, docEle, 'margin-top', true);
       var marginBottom = parseCssValueToInt(dom, docEle, 'margin-bottom', true);
-      contentHeight = docEle.offsetHeight + marginTop + marginBottom + resizeBottomMargin;
+      var contentHeight = docEle.offsetHeight + marginTop + marginBottom + resizeBottomMargin;
       if (contentHeight < 0) {
         contentHeight = 0;
       }
@@ -109,7 +108,7 @@
         toggleScrolling(editor, false);
       }
       if (resizeHeight !== oldSize.get()) {
-        deltaSize = resizeHeight - oldSize.get();
+        var deltaSize = resizeHeight - oldSize.get();
         dom.setStyle(editor.getContainer(), 'height', resizeHeight + 'px');
         oldSize.set(resizeHeight);
         fireResizeEditor(editor);
