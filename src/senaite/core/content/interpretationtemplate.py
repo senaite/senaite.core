@@ -30,7 +30,7 @@ from zope.interface import implementer
 from zope import schema
 
 
-class IInterpretationTemplates(model.Schema):
+class IFolder(model.Schema):
     """Results Interpretation Templates folder interface
     """
     title = schema.TextLine(
@@ -38,7 +38,7 @@ class IInterpretationTemplates(model.Schema):
         required=True)
 
 
-class IInterpretationTemplate(model.Schema):
+class IContent(model.Schema):
     """Results Interpretation Template content interface
     """
     # The behavior IRichTextBehavior applies to this content type, so it
@@ -46,15 +46,15 @@ class IInterpretationTemplate(model.Schema):
     pass
 
 
-@implementer(IInterpretationTemplates)
-class InterpretationTemplates(Container):
+@implementer(IFolder)
+class Folder(Container):
     """Results Interpretation Templates folder
     """
     pass
 
 
-@implementer(IInterpretationTemplate)
-class InterpretationTemplate(Item):
+@implementer(IContent)
+class Content(Item):
     """Results Interpretation Template content
     """
     # Catalogs where this type will be catalogued
