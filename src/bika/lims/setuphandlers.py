@@ -510,6 +510,10 @@ def add_dexterity_setup_items(portal):
         ("dynamic_analysisspecs",  # ID
          "Dynamic Analysis Specifications",  # Title
          "DynamicAnalysisSpecs"),  # FTI
+
+        ("interpretation_templates",
+         "Intepretation Templates",
+         "InterpretationTemplates")
     ]
 
     for id, title, fti in items:

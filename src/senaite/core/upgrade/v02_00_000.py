@@ -20,6 +20,7 @@
 
 from bika.lims import api
 from bika.lims.catalog import SETUP_CATALOG
+from bika.lims.setuphandlers import add_dexterity_setup_items
 from senaite.core import logger
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.upgrade import upgradestep
@@ -66,6 +67,11 @@ def upgrade(tool):
 
     # Install the new SENAITE CORE package
     install_senaite_core(portal)
+
+    # Add Interpretation Template(s) content type
+    setup.runImportStepFromProfile(profile, "typeinfo")
+    setup.runImportStepFromProfile(profile, "workflow")
+    add_dexterity_setup_items(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True

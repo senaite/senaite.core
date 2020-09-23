@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<object name="portal_workflow" meta_type="Plone Workflow Tool">
+  <property name="title">Workflow definitions for senaite</property>
+
+  <bindings>
+    <!-- Bind senaite_one_state by default if type not known -->
+    <default>
+      <bound-workflow workflow_id="senaite_one_state_workflow"/>
+    </default>
+
+    <!-- Bindings to "senaite_deactivable_type_workflow" -->
+    <type type_id="InterpretationTemplate">
+      <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
+    </type>
+
+  </bindings>
+</object>

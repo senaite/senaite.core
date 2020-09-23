@@ -17,16 +17,3 @@
 #
 # Copyright 2018-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
-
-import logging
-import zope.i18nmessageid
-
-logger = logging.getLogger("senaite.core")
-
-# Message factory for generic texts (e.g. "Title" for schema fields, etc.)
-PloneMessageFactory = zope.i18nmessageid.MessageFactory('plone')
-
-
-def initialize(context):
-    """Initializer called when used as a Zope 2 product."""
-    logger.info("*** Initializing SENAITE.CORE ***")
