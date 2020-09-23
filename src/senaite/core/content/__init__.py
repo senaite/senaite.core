@@ -17,6 +17,3 @@
 #
 # Copyright 2018-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
-
-from .interpretationtemplate import Folder as InterpretationTemplates
-from .interpretationtemplate import Content as InterpretationTemplate

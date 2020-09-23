@@ -27,12 +27,12 @@ from bika.lims.utils import get_link_for
 from senaite.app.listing import ListingView
 
 
-class View(ListingView):
+class InterpretationTemplatesView(ListingView):
     """Results Interpretation Templates listing view
     """
 
     def __init__(self, context, request):
-        super(View, self).__init__(context, request)
+        super(InterpretationTemplatesView, self).__init__(context, request)
 
         self.catalog = SETUP_CATALOG
 
@@ -83,12 +83,12 @@ class View(ListingView):
     def update(self):
         """Update hook
         """
-        super(View, self).update()
+        super(InterpretationTemplatesView, self).update()
 
     def before_render(self):
         """Before template render hook
         """
-        super(View, self).before_render()
+        super(InterpretationTemplatesView, self).before_render()
         # Don't allow any context actions
         self.request.set("disable_border", 1)
 
