@@ -512,7 +512,7 @@ def add_dexterity_setup_items(portal):
          "DynamicAnalysisSpecs"),  # FTI
 
         ("interpretation_templates",
-         "Intepretation Templates",
+         "Interpretation Templates",
          "InterpretationTemplates")
     ]
 
