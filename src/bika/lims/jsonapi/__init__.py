@@ -18,8 +18,11 @@
 # Copyright 2018-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from plone.app.textfield import RichTextValue
 from Products.Archetypes.config import TOOL_NAME
 from Products.CMFCore.utils import getToolByName
+
+from bika.lims import api
 from bika.lims.utils import to_utf8
 from bika.lims import logger
 
@@ -81,11 +84,11 @@ def load_brain_metadata(proxy, include_fields):
 def load_field_values(instance, include_fields):
     """Load values from an AT object schema fields into a list of dictionaries
     """
+    # TODO AT/Dexterity support. Refactor all this
     ret = {}
-    schema = instance.Schema()
     val = None
-    for field in schema.fields():
-        fieldname = field.getName()
+    fields = api.get_fields(instance)
+    for fieldname, field in fields.items():
         if include_fields and fieldname not in include_fields:
             continue
         try:
@@ -97,7 +100,10 @@ def load_field_values(instance, include_fields):
             print "Unreachable object. Maybe the object comes from an Add-on"
             print traceback.format_exc()
 
-        if val:
+        if isinstance(val, RichTextValue):
+            val = val.raw
+
+        if val and not api.is_dexterity_content(instance):
             field_type = field.type
             # If it a proxy field, we should know to the type of the proxied
             # field
@@ -113,11 +119,12 @@ def load_field_values(instance, include_fields):
                     val = [to_utf8(v.Title()) for v in val]
                 else:
                     ret[fieldname + "_uid"] = val.UID()
-                    val = to_utf8(val.Title())
+                    val = val.Title()
             elif field_type == 'boolean':
                 val = True if val else False
-            elif field_type == 'text':
-                val = to_utf8(val)
+
+        if val and isinstance(val, six.string_types):
+            val = to_utf8(val)
 
         try:
             json.dumps(val)

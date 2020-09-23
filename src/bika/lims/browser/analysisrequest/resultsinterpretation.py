@@ -22,6 +22,7 @@ from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.browser import BrowserView
+from bika.lims.catalog import SETUP_CATALOG
 from bika.lims.permissions import FieldEditResultsInterpretation
 from plone import protect
 from plone.app.textfield import RichTextValue
@@ -80,3 +81,18 @@ class ARResultsInterpretationView(BrowserView):
         if mode == "output":
             return rt.output
         return rt.raw
+
+    def get_interpretation_templates(self):
+        """Return a list of datainfo dicts representing interpretation templates
+        """
+        query = {"portal_type": "InterpretationTemplate",
+                 "review_state": "active"}
+
+        def get_data_info(item):
+            return {
+                "uid": api.get_uid(item),
+                "title": api.get_title(item)
+            }
+
+        brains = api.search(query, SETUP_CATALOG)
+        return map(get_data_info, brains)

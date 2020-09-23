@@ -84,11 +84,43 @@ window.AnalysisRequestView = ->
       return
     return
 
+  insert_interpretation_template = ->
+    $('#interpretationtemplate-insert').click (event) ->
+      event.preventDefault()
+
+      # Get the template uid
+      template_uid = $('#interpretationtemplate').val()
+      if not template_uid
+        return
+
+      # Retrieve the result interpretation field that is currently active
+      container = $('div[id^="ResultsInterpretationDepts-"].active  textarea[id^="ResultsInterpretationDepts-richtext-"]')
+      if container.length != 1
+        return
+
+      container_id = container.attr("id")
+
+      # Get the text content from the selected template
+      request_data =
+        catalog_name: 'uid_catalog'
+        UID: template_uid
+        include_fields: ['text']
+      window.bika.lims.jsonapi_read request_data, (data) ->
+        if data.objects.length != 1
+          return
+        else
+          # Get the tinymce component and insert content
+          text = data.objects[0].text
+          tinymce.get(container_id).insertContent(text)
+      return
+    return
+
   that.load = ->
     # fires for all AR workflow transitions fired using the plone contentmenu workflow actions
     $('a[id^=\'workflow-transition\']').not('#workflow-transition-schedule_sampling').not('#workflow-transition-sample').click transition_with_publication_spec
     # fires AR workflow transitions when using the schedule samplign transition
     transition_schedule_sampling()
+    insert_interpretation_template()
     return
 
   return
