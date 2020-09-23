@@ -20,22 +20,10 @@
 
 from bika.lims.catalog import SETUP_CATALOG
 
-from plone.dexterity.content import Container
 from plone.dexterity.content import Item
 from plone.supermodel import model
 
-from senaite.core import PloneMessageFactory as _PMF
-
 from zope.interface import implementer
-from zope import schema
-
-
-class IInterpretationTemplates(model.Schema):
-    """Results Interpretation Templates folder interface
-    """
-    title = schema.TextLine(
-        title=_PMF(u'label_title', default=u'Title'),
-        required=True)
 
 
 class IInterpretationTemplate(model.Schema):
@@ -43,13 +31,6 @@ class IInterpretationTemplate(model.Schema):
     """
     # The behavior IRichTextBehavior applies to this content type, so it
     # already provides the "text" field that renders the TinyMCE's Wsiwyg
-    pass
-
-
-@implementer(IInterpretationTemplates)
-class InterpretationTemplates(Container):
-    """Results Interpretation Templates folder
-    """
     pass
 
 

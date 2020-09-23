@@ -43,8 +43,8 @@
   <property name="add_permission">cmf.AddPortalContent</property>
 
   <!-- Python class for content items of this sort -->
-  <property name="schema">senaite.core.content.interpretation_template.IInterpretationTemplates</property>
-  <property name="klass">senaite.core.content.interpretation_template.InterpretationTemplates</property>
+  <property name="schema">senaite.core.content.interpretationtemplates.IInterpretationTemplates</property>
+  <property name="klass">senaite.core.content.interpretationtemplates.InterpretationTemplates</property>
 
   <!-- Dexterity behaviours for this type -->
   <property name="behaviors">
