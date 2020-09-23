@@ -106,9 +106,7 @@ window.AnalysisRequestView = ->
         UID: template_uid
         include_fields: ['text']
       window.bika.lims.jsonapi_read request_data, (data) ->
-        if data.objects.length != 1
-          return
-        else
+        if data.objects.length == 1
           # Get the tinymce component and insert content
           text = data.objects[0].text
           tinymce.get(container_id).insertContent(text)

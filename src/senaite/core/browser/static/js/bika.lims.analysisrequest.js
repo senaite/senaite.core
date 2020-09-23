@@ -122,9 +122,7 @@
         };
         window.bika.lims.jsonapi_read(request_data, function(data) {
           var text;
-          if (data.objects.length !== 1) {
-
-          } else {
+          if (data.objects.length === 1) {
             text = data.objects[0].text;
             return tinymce.get(container_id).insertContent(text);
           }
