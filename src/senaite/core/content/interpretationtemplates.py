@@ -21,19 +21,16 @@
 from plone.dexterity.content import Container
 from plone.supermodel import model
 
-from senaite.core import PloneMessageFactory as _PMF
 from senaite.core.interfaces import IHideActionsMenu
 
-from zope import schema
 from zope.interface import implementer
 
 
 class IInterpretationTemplates(model.Schema):
     """Results Interpretation Templates folder interface
     """
-    title = schema.TextLine(
-        title=_PMF(u'label_title', default=u'Title'),
-        required=True)
+    # Implements IBasic behavior (title + description)
+    pass
 
 
 @implementer(IInterpretationTemplates, IHideActionsMenu)
