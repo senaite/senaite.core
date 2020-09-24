@@ -73,7 +73,7 @@
               <button id="interpretationtemplate-insert"
                       name="interpretationtemplate-insert"
                       type="submit"
-                      class="btn allowMultiSubmit btn-outline-primary btn-sm"
+                      class="btn btn-outline-primary btn-sm"
                       i18n:translate="">Insert</button>
           </div>
         </div>
