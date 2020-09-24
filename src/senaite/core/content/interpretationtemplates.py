@@ -22,6 +22,7 @@ from plone.dexterity.content import Container
 from plone.supermodel import model
 
 from senaite.core import PloneMessageFactory as _PMF
+from senaite.core.interfaces import IHideActionsMenu
 
 from zope import schema
 from zope.interface import implementer
@@ -35,7 +36,7 @@ class IInterpretationTemplates(model.Schema):
         required=True)
 
 
-@implementer(IInterpretationTemplates)
+@implementer(IInterpretationTemplates, IHideActionsMenu)
 class InterpretationTemplates(Container):
     """Results Interpretation Templates folder
     """

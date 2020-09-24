@@ -89,8 +89,6 @@ class InterpretationTemplatesView(ListingView):
         """Before template render hook
         """
         super(InterpretationTemplatesView, self).before_render()
-        # Don't allow any context actions
-        self.request.set("disable_border", 1)
 
     def folderitem(self, obj, item, index):
         """Service triggered each time an item is iterated in folderitems.
