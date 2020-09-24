@@ -18,15 +18,23 @@
 # Copyright 2018-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-import logging
-import zope.i18nmessageid
+from plone.dexterity.content import Container
+from plone.supermodel import model
 
-logger = logging.getLogger("senaite.core")
+from senaite.core.interfaces import IHideActionsMenu
 
-# Message factory for generic texts (e.g. "Title" for schema fields, etc.)
-PloneMessageFactory = zope.i18nmessageid.MessageFactory('plone')
+from zope.interface import implementer
 
 
-def initialize(context):
-    """Initializer called when used as a Zope 2 product."""
-    logger.info("*** Initializing SENAITE.CORE ***")
+class IInterpretationTemplates(model.Schema):
+    """Results Interpretation Templates folder interface
+    """
+    # Implements IBasic behavior (title + description)
+    pass
+
+
+@implementer(IInterpretationTemplates, IHideActionsMenu)
+class InterpretationTemplates(Container):
+    """Results Interpretation Templates folder
+    """
+    pass

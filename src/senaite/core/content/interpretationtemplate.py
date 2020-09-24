@@ -18,15 +18,25 @@
 # Copyright 2018-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-import logging
-import zope.i18nmessageid
+from bika.lims.catalog import SETUP_CATALOG
 
-logger = logging.getLogger("senaite.core")
+from plone.dexterity.content import Item
+from plone.supermodel import model
 
-# Message factory for generic texts (e.g. "Title" for schema fields, etc.)
-PloneMessageFactory = zope.i18nmessageid.MessageFactory('plone')
+from zope.interface import implementer
 
 
-def initialize(context):
-    """Initializer called when used as a Zope 2 product."""
-    logger.info("*** Initializing SENAITE.CORE ***")
+class IInterpretationTemplate(model.Schema):
+    """Results Interpretation Template content interface
+    """
+    # The behavior IRichTextBehavior applies to this content type, so it
+    # already provides the "text" field that renders the TinyMCE's Wsiwyg
+    pass
+
+
+@implementer(IInterpretationTemplate)
+class InterpretationTemplate(Item):
+    """Results Interpretation Template content
+    """
+    # Catalogs where this type will be catalogued
+    _catalogs = [SETUP_CATALOG]

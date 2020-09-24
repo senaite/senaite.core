@@ -10,7 +10,7 @@
 
 (function() {
   window.AnalysisRequestView = function() {
-    var that, transition_schedule_sampling, transition_with_publication_spec, workflow_transition_sample;
+    var insert_interpretation_template, that, transition_schedule_sampling, transition_with_publication_spec, workflow_transition_sample;
     that = this;
 
     /**
@@ -102,9 +102,37 @@
         }
       });
     };
+    insert_interpretation_template = function() {
+      $('#interpretationtemplate-insert').click(function(event) {
+        var container, container_id, request_data, template_uid;
+        event.preventDefault();
+        template_uid = $('#interpretationtemplate').val();
+        if (!template_uid) {
+          return;
+        }
+        container = $('div[id^="ResultsInterpretationDepts-"].active  textarea[id^="ResultsInterpretationDepts-richtext-"]');
+        if (container.length !== 1) {
+          return;
+        }
+        container_id = container.attr("id");
+        request_data = {
+          catalog_name: 'uid_catalog',
+          UID: template_uid,
+          include_fields: ['text']
+        };
+        window.bika.lims.jsonapi_read(request_data, function(data) {
+          var text;
+          if (data.objects.length === 1) {
+            text = data.objects[0].text;
+            return tinymce.get(container_id).insertContent(text);
+          }
+        });
+      });
+    };
     that.load = function() {
       $('a[id^=\'workflow-transition\']').not('#workflow-transition-schedule_sampling').not('#workflow-transition-sample').click(transition_with_publication_spec);
       transition_schedule_sampling();
+      insert_interpretation_template();
     };
   };
 
@@ -139,6 +167,7 @@
     };
     that.load = function() {};
   };
+
 
   /**
    * Controller class for Analysis Request Analyses view

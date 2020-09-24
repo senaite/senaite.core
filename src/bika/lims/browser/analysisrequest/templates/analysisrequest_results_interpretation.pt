@@ -51,7 +51,36 @@
     <input type="hidden" name="submitted" value="1"/>
     <input tal:replace="structure context/@@authenticator/authenticator"/>
 
-    <div class="arresultsinterpretation-container"
+    <!-- Interpretation templates selector -->
+    <div class="row">
+      <div class="col-sm-12 mb-2">
+        <div class="form form-inline">
+          <div class="form-group arinterpretationtemplates-selector">
+              <label class="field mr-2"
+                     for="interpretationtemplate"
+                     i18n:translate="">Templates</label>
+
+              <select id="interpretationtemplate"
+                      name="interpretationtemplate"
+                      class="field form-control mr-2">
+                <option value="" i18n:translate="">Select template</option>
+                <tal:itemplates repeat="template view/get_interpretation_templates">
+                  <option tal:attributes="value template/uid"
+                          tal:content="template/title"/>
+                </tal:itemplates>
+              </select>
+
+              <button id="interpretationtemplate-insert"
+                      name="interpretationtemplate-insert"
+                      type="submit"
+                      class="btn btn-outline-primary btn-sm"
+                      i18n:translate="">Insert</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="arresultsinterpretation-container mb-2"
          tal:define="departments python:context.getDepartments()">
       <!-- Tabs for departments -->
       <ul class="nav nav-tabs" roles="tablist">
@@ -113,6 +142,6 @@
         </tal:department>
       </div>
     </div>
-    <button type="submit" class="btn btn-outline-primary btn-sm" i18n:translate="">Save</button>
+    <button type="submit" class="btn btn-primary btn-sm" i18n:translate="">Save</button>
   </form>
 </tal:edit>
