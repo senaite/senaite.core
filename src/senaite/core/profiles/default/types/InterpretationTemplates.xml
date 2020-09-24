@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<object name="DynamicAnalysisSpecs" meta_type="Dexterity FTI"
+<object name="InterpretationTemplates" meta_type="Dexterity FTI"
         i18n:domain="senaite.core"
         xmlns:i18n="http://xml.zope.org/namespaces/i18n">
 
