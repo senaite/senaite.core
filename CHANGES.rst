@@ -5,6 +5,7 @@ Changelog
 ---------------------
 
 - #1620 Add Results Interpretation Templates
+- #1621 Fix instrument import for analyses with result options
 - #1618 Better style for DX form based field errors
 - #1616 Fix writing instrument methods on read when reindexing services
 - #1613 Compatibility with Plone 5.2.2
