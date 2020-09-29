@@ -838,7 +838,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         if not service_uids:
             # No service uids assigned to this Worksheet Template, skip
             logger.warn("Worksheet Template {} has no services assigned"
-                        .format(_api.get_path(wst)))
+                        .format(api.get_path(wst)))
             return
 
         # Search for unassigned analyses
