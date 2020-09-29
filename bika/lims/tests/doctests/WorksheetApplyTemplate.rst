@@ -609,3 +609,38 @@ Slots follows the natural order of the samples:
 
     >>> map(lambda s: worksheet.get_slot_position(s), samples)
     [1, 2, 4]
+
+
+Assignment of a WorksheetTemplate with no services
+==================================================
+
+Create a Worksheet Template without services assigned:
+
+    >>> service_uids = []
+    >>> layout = [
+    ...     {'pos': '1', 'type': 'a',
+    ...      'blank_ref': '',
+    ...      'control_ref': '',
+    ...      'dup': ''},
+    ...     {'pos': '2', 'type': 'a',
+    ...      'blank_ref': '',
+    ...      'control_ref': '',
+    ...      'dup': ''},
+    ... ]
+    >>> empty_template = api.create(bikasetup.bika_worksheettemplates, "WorksheetTemplate", title="WS Template Empty Test", Layout=layout, Service=service_uids)
+
+Create and receive 2 samples:
+
+    >>> service_uids = [Cu]
+    >>> samples = map(lambda i: create_analysisrequest(client, request, values, service_uids), range(2))
+    >>> success = map(lambda s: doActionFor(s, "receive"), samples)
+
+Create a Worksheet and assign the template:
+
+    >>> worksheet = api.create(portal.worksheets, "Worksheet")
+    >>> worksheet.applyWorksheetTemplate(empty_template)
+
+Worksheet remains empty:
+
+    >>> worksheet.getAnalyses()
+    []
