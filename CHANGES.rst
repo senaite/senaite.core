@@ -6,6 +6,7 @@ Changelog
 
 **Fixed**
 
+- #1625 Fix assignment of analyses via worksheet template when Worksheet is full
 - #1617 Fix writing methods on read when reindexing services
 
 
