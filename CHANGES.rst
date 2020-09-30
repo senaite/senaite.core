@@ -4,6 +4,7 @@ Changelog
 2.0.0rc2 (unreleased)
 ---------------------
 
+- #1626 Fix assignment of analyses via worksheet template when Worksheet is full
 - #1620 Add Results Interpretation Templates
 - #1621 Fix instrument import for analyses with result options
 - #1618 Better style for DX form based field errors
