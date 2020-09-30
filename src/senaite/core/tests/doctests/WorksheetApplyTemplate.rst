@@ -459,3 +459,188 @@ as the rest of the slots:
     >>> ref9_uids = [ref.UID() for ref in ref9]
     >>> [ref for ref in ref9_uids if ref not in refs_uids]
     []
+
+Reject any remaining analyses awaiting for assignment:
+
+    >>> query = {"portal_type": "Analysis", "review_state": "unassigned"}
+    >>> objs = map(api.get_object, api.search(query, "bika_analysis_catalog"))
+    >>> sucess = map(lambda obj: doActionFor(obj, "reject"), objs)
+
+
+WorksheetTemplate assignment to a non-empty Worksheet
+=====================================================
+
+Worksheet Template can also be used when the worksheet is not empty.
+The template has slots available for routine analyses in positions 1, 2 and 4:
+
+    >>> layout = template.getLayout()
+    >>> slots = filter(lambda p: p["type"] == "a", layout)
+    >>> sorted(map(lambda p: int(p.get("pos")), slots))
+    [1, 2, 4]
+
+Create 3 samples with 'Cu' analyses:
+
+    >>> service_uids = [Cu]
+    >>> samples = map(lambda i: create_analysisrequest(client, request, values, service_uids), range(3))
+    >>> success = map(lambda s: doActionFor(s, "receive"), samples)
+
+Create a worksheet and apply the template:
+
+    >>> worksheet = api.create(portal.worksheets, "Worksheet")
+    >>> worksheet.applyWorksheetTemplate(template)
+
+The Sample from first slot contains 1 analysis only (Cu):
+
+    >>> first = worksheet.get_container_at(1)
+    >>> first_analyses = worksheet.get_analyses_at(1)
+    >>> len(first_analyses)
+    1
+
+    >>> first_analyses[0].getKeyword()
+    'Cu'
+
+    >>> first_analyses[0].getRequest() == first
+    True
+
+Add "Fe" analysis to the sample from first slot and re-assign the worksheet:
+
+    >>> cu = first.getAnalyses(full_objects=True)[0]
+    >>> first.setAnalyses([cu, Fe])
+    >>> worksheet.applyWorksheetTemplate(template)
+
+The first slot, booked for the first Sample, contains now 'Fe':
+
+    >>> first_analyses = worksheet.get_analyses_at(1)
+    >>> len(first_analyses)
+    2
+
+    >>> map(lambda a: a.getKeyword(), first_analyses)
+    ['Cu', 'Fe']
+
+    >>> map(lambda a: a.getRequest() == first, first_analyses)
+    [True, True]
+
+Add "Fe" analysis to the third Sample (slot #4) and re-assign the worksheet:
+
+    >>> third = worksheet.get_container_at(4)
+    >>> cu = third.getAnalyses(full_objects=True)[0]
+    >>> third.setAnalyses([cu, Fe])
+    >>> worksheet.applyWorksheetTemplate(template)
+
+The fourth slot contains now 'Fe' too:
+
+    >>> third_analyses = worksheet.get_analyses_at(4)
+    >>> len(third_analyses)
+    2
+
+    >>> map(lambda a: a.getKeyword(), third_analyses)
+    ['Cu', 'Fe']
+
+    >>> map(lambda a: a.getRequest() == third, third_analyses)
+    [True, True]
+
+Create now 5 more samples:
+
+    >>> service_uids = [Cu]
+    >>> samples = map(lambda i: create_analysisrequest(client, request, values, service_uids), range(3))
+    >>> success = map(lambda s: doActionFor(s, "receive"), samples)
+
+And reassign the template to the worksheet:
+
+    >>> worksheet.applyWorksheetTemplate(template)
+
+None of these new samples have been added:
+
+    >>> new_samp_uids = map(api.get_uid, samples)
+    >>> container_uids = map(lambda l: l["container_uid"], worksheet.getLayout())
+    >>> [u for u in new_samp_uids if u in container_uids]
+    []
+
+Add "Fe" analysis to the second Sample and re-assign the worksheet:
+
+    >>> second = worksheet.get_container_at(2)
+    >>> cu = second.getAnalyses(full_objects=True)[0]
+    >>> second.setAnalyses([cu, Fe])
+    >>> worksheet.applyWorksheetTemplate(template)
+
+The second slot contains now 'Fe' too:
+
+    >>> second_analyses = worksheet.get_analyses_at(2)
+    >>> len(second_analyses)
+    2
+
+    >>> map(lambda a: a.getKeyword(), second_analyses)
+    ['Cu', 'Fe']
+
+    >>> map(lambda a: a.getRequest() == second, second_analyses)
+    [True, True]
+
+While none of the analyses from new samples have been added:
+
+    >>> container_uids = map(lambda l: l["container_uid"], worksheet.getLayout())
+    >>> [u for u in new_samp_uids if u in container_uids]
+    []
+
+Reject any remaining analyses awaiting for assignment:
+
+    >>> query = {"portal_type": "Analysis", "review_state": "unassigned"}
+    >>> objs = map(api.get_object, api.search(query, "bika_analysis_catalog"))
+    >>> sucess = map(lambda obj: doActionFor(obj, "reject"), objs)
+
+
+WorksheetTemplate assignment keeps Sample natural order
+=======================================================
+
+Analyses are grabbed by using their priority sort key, but samples are sorted
+in natural order in the slots.
+
+Create and receive 3 samples:
+
+    >>> service_uids = [Cu]
+    >>> samples = map(lambda i: create_analysisrequest(client, request, values, service_uids), range(3))
+    >>> success = map(lambda s: doActionFor(s, "receive"), samples)
+
+Create a worksheet and apply the template:
+
+    >>> worksheet = api.create(portal.worksheets, "Worksheet")
+    >>> worksheet.applyWorksheetTemplate(template)
+
+Slots follows the natural order of the samples:
+
+    >>> map(lambda s: worksheet.get_slot_position(s), samples)
+    [1, 2, 4]
+
+
+Assignment of a WorksheetTemplate with no services
+==================================================
+
+Create a Worksheet Template without services assigned:
+
+    >>> service_uids = []
+    >>> layout = [
+    ...     {'pos': '1', 'type': 'a',
+    ...      'blank_ref': '',
+    ...      'control_ref': '',
+    ...      'dup': ''},
+    ...     {'pos': '2', 'type': 'a',
+    ...      'blank_ref': '',
+    ...      'control_ref': '',
+    ...      'dup': ''},
+    ... ]
+    >>> empty_template = api.create(bikasetup.bika_worksheettemplates, "WorksheetTemplate", title="WS Template Empty Test", Layout=layout, Service=service_uids)
+
+Create and receive 2 samples:
+
+    >>> service_uids = [Cu]
+    >>> samples = map(lambda i: create_analysisrequest(client, request, values, service_uids), range(2))
+    >>> success = map(lambda s: doActionFor(s, "receive"), samples)
+
+Create a Worksheet and assign the template:
+
+    >>> worksheet = api.create(portal.worksheets, "Worksheet")
+    >>> worksheet.applyWorksheetTemplate(empty_template)
+
+Worksheet remains empty:
+
+    >>> worksheet.getAnalyses()
+    []
