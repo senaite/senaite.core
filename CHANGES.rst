@@ -6,6 +6,7 @@ Changelog
 
 **Fixed**
 
+- #1629 Fix Published results tab is not displayed to Client contacts
 - #1628 Fix instrument import for analyses with result options
 - #1625 Fix assignment of analyses via worksheet template when Worksheet is full
 - #1617 Fix writing methods on read when reindexing services
