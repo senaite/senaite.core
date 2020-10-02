@@ -15,6 +15,7 @@ Changelog
 
 **Added**
 
+- #1612 Add Client sample ID to worksheet template printview
 - #1609 Support result options entry for interim values
 - #1598 Added "modified" index in Sample's (AnalysisRequest) catalog
 - #1596 Allow to hide actions menu by using new marker interface IHideActionsMenu
