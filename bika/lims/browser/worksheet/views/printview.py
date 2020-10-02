@@ -472,6 +472,7 @@ class PrintView(BrowserView):
                         sample.getDateSampled(), long_format=True),
                     'date_received': self.ulocalized_time(
                         sample.getDateReceived(), long_format=0),
+                    'client_sampleid': sample.getClientSampleID(),
                     }
 
             if sample.portal_type == "ReferenceSample":
