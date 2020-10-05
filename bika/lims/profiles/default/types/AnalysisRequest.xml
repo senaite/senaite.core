@@ -71,7 +71,7 @@
          url_expr="string:${object_url}/published_results"
          i18n:attributes="title"
          visible="True">
-     <permission value="senaite.core: View Results"/>
+     <permission value="View"/>
  </action>
 
  <action title="Invoice"

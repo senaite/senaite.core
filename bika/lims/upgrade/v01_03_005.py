@@ -50,6 +50,10 @@ def upgrade(tool):
     # https://github.com/senaite/senaite.core/pull/1617
     remove_duplicate_methods_in_services(portal)
 
+    # Published results tab is not displayed to client contacts
+    # https://github.com/senaite/senaite.core/pull/1629
+    fix_published_results_permission(portal)
+
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
 
@@ -74,3 +78,14 @@ def remove_duplicate_methods_in_services(portal):
         obj.reindexObject()
 
     logger.info("Remove duplicate methods from services [DONE]")
+
+
+def fix_published_results_permission(portal):
+    """Resets the permissions for action 'published_results' from
+    AnalysisRequest portal type to 'View'
+    """
+    ti = portal.portal_types.getTypeInfo("AnalysisRequest")
+    for action in ti.listActions():
+        if action.id == "published_results":
+            action.permissions = ("View", )
+            break
