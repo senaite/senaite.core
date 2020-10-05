@@ -1,13 +1,14 @@
 <!-- external libraries -->
-<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/lib/jquery/dist/jquery.min.js"></script>
-<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/lib/jquery-form/dist/jquery.form.min.js"></script>
-<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/lib/jquery-migrate/dist/jquery-migrate.min.js"></script>
-<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/lib/popperjs/dist/umd/popper.min.js"></script>
-<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/lib/bootstrap/dist/js/bootstrap.min.js"></script>
-<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/lib/bootstrap-confirmation2/dist/bootstrap-confirmation.min.js"></script>
-<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/lib/react/umd/react.production.min.js"></script>
-<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/lib/react-dom/umd/react-dom.production.min.js"></script>
-<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/lib/tinymce/tinymce.min.js"></script>
+<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/modules/jquery/jquery.min.js"></script>
+<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/modules/jquery-form/jquery.form.min.js"></script>
+<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/modules/jquery-migrate/jquery-migrate.min.js"></script>
+<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/modules/bootstrap/js/bootstrap.min.js"></script>
+<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/modules/popperjs/popper.min.js"></script>
+<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/modules/bootstrap-confirmation2/bootstrap-confirmation.min.js"></script>
+<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/modules/react/react.production.min.js"></script>
+<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/modules/react-dom/react-dom.production.min.js"></script>
+<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/modules/tinymce/tinymce.min.js"></script>
+
 
 <!-- Core JS bundle -->
 <% for (let js in htmlWebpackPlugin.files.js) { %>

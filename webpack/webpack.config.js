@@ -111,16 +111,16 @@ module.exports = {
     // https://webpack.js.org/plugins/copy-webpack-plugin/
     new CopyPlugin({
       patterns: [
-      { from: "../node_modules/jquery", to: path.resolve(staticPath, "lib/jquery") },
-      { from: "../node_modules/jquery-form", to: path.resolve(staticPath, "lib/jquery-form") },
-      { from: "../node_modules/jquery-migrate", to: path.resolve(staticPath, "lib/jquery-migrate") },
-      { from: "../node_modules/bootstrap", to: path.resolve(staticPath, "lib/bootstrap") },
-      { from: "../node_modules/bootstrap-confirmation2", to: path.resolve(staticPath, "lib/bootstrap-confirmation2") },
-      { from: "../node_modules/popper.js", to: path.resolve(staticPath, "lib/popperjs") },
-      { from: "../node_modules/react", to: path.resolve(staticPath, "lib/react") },
-      { from: "../node_modules/react-dom", to: path.resolve(staticPath, "lib/react-dom") },
-      { from: "../node_modules/tinymce", to: path.resolve(staticPath, "lib/tinymce") },
-      { from: "../node_modules/@fortawesome", to: path.resolve(staticPath, "lib/@fortawesome") },
+        { from: "../node_modules/jquery/dist", to: path.resolve(staticPath, "modules/jquery") },
+        { from: "../node_modules/jquery-form/dist", to: path.resolve(staticPath, "modules/jquery-form") },
+        { from: "../node_modules/jquery-migrate/dist", to: path.resolve(staticPath, "modules/jquery-migrate") },
+        { from: "../node_modules/bootstrap/dist", to: path.resolve(staticPath, "modules/bootstrap") },
+        { from: "../node_modules/popper.js/dist/umd", to: path.resolve(staticPath, "modules/popperjs") },
+        { from: "../node_modules/bootstrap-confirmation2/dist", to: path.resolve(staticPath, "modules/bootstrap-confirmation2") },
+        { from: "../node_modules/react/umd", to: path.resolve(staticPath, "modules/react") },
+        { from: "../node_modules/react-dom/umd", to: path.resolve(staticPath, "modules/react-dom") },
+        { from: "../node_modules/tinymce", to: path.resolve(staticPath, "modules/tinymce") },
+        // { from: "../node_modules/@fortawesome/fontawesome-free", to: path.resolve(staticPath, "modules/fontawesome-free") },
       ]
     }),
     // https://webpack.js.org/plugins/provide-plugin/
