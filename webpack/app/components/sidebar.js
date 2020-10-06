@@ -1,11 +1,10 @@
-/* Sidebar
+/* SENAITE Sidebar
  *
+ * The sidebar shows when the mouse enters and hides when the mouse leaves the
+ * HTML element.
+ *
+ * It keeps open when the toggle button was clicked.
  */
-
-import $ from "jquery";
-
-'use strict';
-
 
 class Sidebar{
 
