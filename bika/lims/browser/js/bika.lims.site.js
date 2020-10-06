@@ -85,9 +85,10 @@
        *
        * XXX Where are these event handlers used?
        */
-      var curDate, dateFormat, limitString, y;
+      var curDate, dateFormat, lang, limitString, y;
       console.debug("SiteView::init_datepickers");
       curDate = new Date;
+      lang = jarn.i18n.currentLanguage;
       y = curDate.getFullYear();
       limitString = '1900:' + y;
       dateFormat = this._('date_format_short_datepicker');
@@ -136,8 +137,10 @@
         }).focus();
       });
       $('input.datepicker_2months').on('click', function() {
-        console.warn("SiteView::datetimepicker_2months.click: Refactor this event handler!");
-        $(this).datepicker({
+        var config;
+        console.warn('SiteView::datetimepicker_2months.click: Refactor this event handler!');
+        config = $.datepicker.regional[lang] || $.datepicker.regional[''];
+        $(this).datepicker(Object.assign(config, {
           showOn: 'focus',
           showAnim: '',
           changeMonth: true,
@@ -146,7 +149,7 @@
           numberOfMonths: 2,
           dateFormat: dateFormat,
           yearRange: limitString
-        }).click(function() {
+        })).click(function() {
           $(this).attr('value', '');
         }).focus();
       });

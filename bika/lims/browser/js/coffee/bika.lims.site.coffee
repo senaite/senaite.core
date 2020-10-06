@@ -94,6 +94,7 @@ class window.SiteView
     console.debug "SiteView::init_datepickers"
 
     curDate = new Date
+    lang = jarn.i18n.currentLanguage
     y = curDate.getFullYear()
     limitString = '1900:' + y
     dateFormat = @_('date_format_short_datepicker')
@@ -146,9 +147,9 @@ class window.SiteView
       return
 
     $('input.datepicker_2months').on 'click', ->
-      console.warn "SiteView::datetimepicker_2months.click: Refactor this event handler!"
-
-      $(this).datepicker(
+      console.warn 'SiteView::datetimepicker_2months.click: Refactor this event handler!'
+      config = $.datepicker.regional[lang] or $.datepicker.regional['']
+      $(this).datepicker(Object.assign(config,
         showOn: 'focus'
         showAnim: ''
         changeMonth: true
@@ -156,7 +157,7 @@ class window.SiteView
         maxDate: '+0d'
         numberOfMonths: 2
         dateFormat: dateFormat
-        yearRange: limitString).click(->
+        yearRange: limitString)).click(->
         $(this).attr 'value', ''
         return
       ).focus()
