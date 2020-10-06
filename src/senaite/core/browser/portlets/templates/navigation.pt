@@ -2,7 +2,9 @@
   <div tal:define="root view/navigation_root">
 
     <div id="sidebar-header" class="border-bottom active">
-      <button type="button" id="sidebarCollapse" class="btn btn-link">
+      <button type="button" id="sidebarCollapse" class="btn btn-link"
+              title="Toggle sidebar visibility"
+              i18n:attributes="title">
         <i class="sidebar-toggle-icon"></i>
       </button>
     </div>

@@ -32,7 +32,11 @@
 }
 #sidebar.minimized .sidebar-toggle-icon {
     @extend .fa;
-    @extend .fa-chevron-circle-right;
+    @extend .fa-toggle-off;
+}
+#sidebar.toggled .sidebar-toggle-icon {
+    @extend .fa;
+    @extend .fa-toggle-on;
 }
 #sidebar.minimized ul li a {
     padding: 15px 0px;
@@ -63,7 +67,7 @@
 }
 #sidebar .sidebar-toggle-icon {
     @extend .fa;
-    @extend .fa-chevron-circle-left;
+    @extend .fa-toggle-off;
 }
 #sidebar a {
     color: $sidebar-color;
