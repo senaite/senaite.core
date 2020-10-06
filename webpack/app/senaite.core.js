@@ -1,5 +1,6 @@
 import $ from "jquery";
 import {i18n, _t, _p} from "./i18n-wrapper.js"
+import Sidebar from "./components/sidebar.js"
 
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -23,28 +24,10 @@ document.addEventListener("DOMContentLoaded", () => {
   // /TinyMCE
 
 
-  // Sidebar
-  var tid = null;
-  $("#sidebar-header").on("click", function () {
-    clearTimeout(tid)
-    $("#sidebar").toggleClass("minimized");
+  // Initialize Sidebar
+  window.sidebar = new Sidebar({
+    "el": "sidebar",
   });
-  $("#sidebar").on("mouseenter", function () {
-    // delay sidebar expand 500ms
-    tid = setTimeout(function(){
-      $("#sidebar").removeClass("minimized");
-    }, 1000);
-    // console.debug("Setting sidebar timeout", tid);
-  });
-  $("#sidebar").on("mouseleave", function () {
-    clearTimeout(tid)
-    $("#sidebar").addClass("minimized");
-    // console.debug("Clearing sidebar timeout", tid);
-  });
-  $("#sidebar ul li a").on("click", function () {
-    clearTimeout(tid)
-  });
-  // /Sidebar
 
 
   // Tooltips
