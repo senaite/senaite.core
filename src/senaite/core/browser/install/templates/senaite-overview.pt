@@ -13,7 +13,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <title i18n:translate="">Welcome to SENAITE</title>
     <link rel="stylesheet" type="text/css"
-          tal:attributes="href string:${context/absolute_url}/++plone++senaite.core.static/lib/bootstrap/dist/css/bootstrap.min.css"
+          tal:attributes="href string:${context/absolute_url}/++plone++senaite.core.static/modules/bootstrap/css/bootstrap.min.css"
           href="bootstrap.min.css" />
     <link href="favicon.ico" rel="icon" type="image/x-icon"
           tal:attributes="href string:${context/absolute_url}/++plone++senaite.core.static/images/favicon.ico"/>
