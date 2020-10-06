@@ -60,18 +60,18 @@ class Sidebar{
     }
   }
 
-  on_click(event) {
-    console.debug("Sidebar::on_click:event=", event)
-    clearTimeout(this.tid);
-    this.toggle(!this.is_toggled());
-  }
-
   minimize() {
     this.el.classList.add("minimized");
   }
 
   maximize() {
     this.el.classList.remove("minimized");
+  }
+
+  on_click(event) {
+    // console.debug("Sidebar::on_click:event=", event)
+    clearTimeout(this.tid);
+    this.toggle(!this.is_toggled());
   }
 
   on_mouseenter(event) {
