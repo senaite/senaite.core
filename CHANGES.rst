@@ -4,6 +4,7 @@ Changelog
 2.0.0rc2 (unreleased)
 ---------------------
 
+- #1637 Fix "Page not Found" Error for migrated SENAITE Contents with File/Image Fields
 - #1635 Sidebar toggle
 - #1632 Reorganize JS/CSS modules
 - #1626 Fix assignment of analyses via worksheet template when Worksheet is full

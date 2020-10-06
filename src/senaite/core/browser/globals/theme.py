@@ -217,7 +217,7 @@ class SenaiteTheme(BrowserView):
             data = f.read()
             response.setHeader("Content-Type", mimetype)
             response.setHeader("Content-Length", len(data))
-            response.setHeader('Last-Modified', last_modified)
+            response.setHeader("Last-Modified", last_modified)
             return self.request.response.write(data)
 
     @memoize
@@ -256,3 +256,10 @@ class SenaiteTheme(BrowserView):
         attr = " ".join(attr).replace("css_class", "class")
         tag = IMG_TAG.safe_substitute(src=url, attr=attr)
         return tag
+
+    def __bobo_traverse__(self, REQUEST, name):
+        """Helper to access icons the old way during `unrestrictedTraverse` calls
+        """
+        if isinstance(REQUEST, dict):
+            return self.publishTraverse(REQUEST, name)
+        return self
