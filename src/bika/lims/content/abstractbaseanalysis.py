@@ -600,6 +600,21 @@ ResultOptions = RecordsField(
     )
 )
 
+# Allow/disallow the capture of multiple choices for this analysis
+MultiChoice = BooleanField(
+    "MultiChoice",
+    schemata="Result Options",
+    default=False,
+    widget=BooleanWidget(
+        label=_("Multiple choice"),
+        description=_(
+            "Enable this option to allow the capture of multiple result "
+            "options for this analysis. A multi-choices component will be "
+            "displayed in results entry"
+        )
+    )
+)
+
 # Allow/disallow the capture of text as the result of the analysis
 StringResult = BooleanField(
     "StringResult",
@@ -732,6 +747,7 @@ schema = BikaSchema.copy() + Schema((
     PrecisionFromUncertainty,
     AllowManualUncertainty,
     ResultOptions,
+    MultiChoice,
     Hidden,
     SelfVerification,
     NumberOfRequiredVerifications,

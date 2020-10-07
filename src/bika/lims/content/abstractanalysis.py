@@ -879,11 +879,29 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
         choices = self.getResultOptions()
 
-        # 2. Print ResultText of matching ResulOptions
-        match = [x['ResultText'] for x in choices
-                 if str(x['ResultValue']) == str(result)]
-        if match:
-            return match[0]
+        # 2. Print ResultText of matching ResultOptions
+        if choices and not self.getMultiChoice():
+            # Result contains a single result option
+            match = [x['ResultText'] for x in choices
+                     if str(x['ResultValue']) == str(result)]
+            if match:
+                return match[0]
+
+        elif choices:
+            # Result is a string with multiple options e.g. "['2', '1']"
+            raw_result = []
+            try:
+                raw_result = eval(result)
+            except:
+                # Nothing to catch here
+                pass
+
+            values_texts = dict(map(
+                lambda c: (c["ResultValue"], c["ResultText"]), choices
+            ))
+            texts = map(lambda r: values_texts.get(r), raw_result)
+            texts = filter(None, texts)
+            return "<br/>".join(texts)
 
         # 3. If the result is not floatable, return it without being formatted
         try:

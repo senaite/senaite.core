@@ -73,7 +73,7 @@ class ReferenceSamplesView(BikaListingView):
                 "sortable": False}),
             ("SupportedServices", {
                 "title": _("Supported Services"),
-                "type": "multiselect",
+                "type": "multichoice",
                 "sortable": False}),
             ("Position", {
                 "title": _("Position"),
