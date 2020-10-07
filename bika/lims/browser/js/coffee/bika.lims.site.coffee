@@ -12,9 +12,6 @@ class window.SiteView
     jarn.i18n.loadCatalog 'senaite.core'
     @_ = window.jarn.i18n.MessageFactory("senaite.core")
 
-    # initialze datepickers
-    @init_datepickers()
-
     # initialze reference definition selection
     @init_referencedefinition()
 
@@ -83,46 +80,6 @@ class window.SiteView
       ajaxError: ->
         $("body").removeClass "loading"
         return
-
-
-  init_datepickers: =>
-    ###
-     * Initialize date pickers
-     *
-     * XXX Where are these event handlers used?
-    ###
-    console.debug "SiteView::init_datepickers"
-
-    curDate = new Date
-    lang = jarn.i18n.currentLanguage
-    y = curDate.getFullYear()
-    limitString = '1900:' + y
-    dateFormat = @_('date_format_short_datepicker')
-
-    if dateFormat == 'date_format_short_datepicker'
-      dateFormat = 'yy-mm-dd'
-
-    # Initialize default settings for datepicker
-    # See https://github.com/senaite/senaite.core/pull/1634
-    config = $.datepicker.regional[lang] or $.datepicker.regional['']
-    $("input[class*='datepicker']").datepicker(
-      Object.assign(config, {
-        showOn: 'focus',
-        showAnim: '',
-        changeMonth: true,
-        changeYear: true,
-        dateFormat: dateFormat,
-        maxDate: '+0d',
-        numberOfMonths: 1,
-        yearRange: limitString
-        }
-      )
-    )
-
-    $('input.datepicker_2months').datepicker("option", "numberOfMonths", 2)
-
-    return
-
 
   init_referencedefinition: =>
     ###
