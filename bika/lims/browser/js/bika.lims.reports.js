@@ -9,7 +9,6 @@
   window.ReportFolderView = (function() {
     function ReportFolderView() {
       this.on_toggle_change = bind(this.on_toggle_change, this);
-      this.init_datepickers = bind(this.init_datepickers, this);
       this.bind_eventhandler = bind(this.bind_eventhandler, this);
       this.load = bind(this.load, this);
     }
@@ -18,7 +17,6 @@
       console.debug("ReportFolderView::load");
       jarn.i18n.loadCatalog('senaite.core');
       this._ = window.jarn.i18n.MessageFactory("senaite.core");
-      this.init_datepickers();
       return this.bind_eventhandler();
     };
 
@@ -32,35 +30,6 @@
        */
       console.debug("ReportFolderView::bind_eventhandler");
       return $("body").on("click", "a[id$='_selector']", this.on_toggle_change);
-    };
-
-    ReportFolderView.prototype.init_datepickers = function() {
-
-      /*
-       * Initialize date pickers
-       */
-      var config, curDate, dateFormat, lang, limitString, y;
-      console.debug("ReportFolderView::init_datepickers");
-      curDate = new Date;
-      lang = jarn.i18n.currentLanguage;
-      y = curDate.getFullYear();
-      limitString = '1900:' + y;
-      dateFormat = this._('date_format_short_datepicker');
-      if (dateFormat === 'date_format_short_datepicker') {
-        dateFormat = 'yy-mm-dd';
-      }
-      config = $.datepicker.regional[lang] || $.datepicker.regional[''];
-      $("input[class*='datepicker']").datepicker(Object.assign(config, {
-        showOn: 'focus',
-        showAnim: '',
-        changeMonth: true,
-        changeYear: true,
-        dateFormat: dateFormat,
-        maxDate: '+0d',
-        numberOfMonths: 1,
-        yearRange: limitString
-      }));
-      return $('input.datepicker_2months').datepicker("option", "numberOfMonths", 2);
     };
 
     ReportFolderView.prototype.on_toggle_change = function(event) {

@@ -12,6 +12,9 @@ class window.SiteView
     jarn.i18n.loadCatalog 'senaite.core'
     @_ = window.jarn.i18n.MessageFactory("senaite.core")
 
+    # initialize datepickers
+    @init_datepickers()
+
     # initialze reference definition selection
     @init_referencedefinition()
 
@@ -63,10 +66,6 @@ class window.SiteView
     # XXX Where is this used?
     $("body").on "keydown", "input.autocomplete", @on_autocomplete_keydown
 
-    # Date Range Filtering
-    $("body").on "change", ".date_range_start", @on_date_range_start_change
-    $("body").on "change", ".date_range_end", @on_date_range_end_change
-
     $("body").on "click", "a.service_info", @on_service_info_click
 
     # Show loader on Ajax events
@@ -80,6 +79,52 @@ class window.SiteView
       ajaxError: ->
         $("body").removeClass "loading"
         return
+
+
+  init_datepickers: =>
+    ###
+     * Initialize date pickers
+     *
+     * This is used for date pickers not bound to a DateTime widget
+    ###
+    console.debug "SiteView::init_datepickers"
+
+    curDate = new Date
+    y = curDate.getFullYear()
+    limitString = '1900:' + y
+    dateFormat = @_('date_format_short_datepicker')
+
+    if dateFormat == 'date_format_short_datepicker'
+      dateFormat = 'yy-mm-dd'
+
+    # Initialize default settings for datepicker
+    # See https://github.com/senaite/senaite.core/pull/1634
+    lang = jarn.i18n.currentLanguage
+    config = $.datepicker.regional[lang] or $.datepicker.regional['']
+    $("input[class*='datepicker']").datepicker(
+      Object.assign(config, {
+        showOn: 'focus',
+        showAnim: '',
+        changeMonth: true,
+        changeYear: true,
+        dateFormat: dateFormat,
+        numberOfMonths: 1,
+        yearRange: limitString
+        }
+      )
+    )
+
+    # Date picker that displays two months
+    $('input.datepicker_2months').datepicker("option", "numberOfMonths", 2)
+    $('input.datepicker_2months').datepicker("option", "maxDate", "+0d")
+
+    # Date picker with no future date selection available
+    $('input.datepicker_nofuture').datepicker("option", "maxDate", curDate)
+
+    # Date time picker with no future date time selection available
+    $('input.datetimepicker_nofuture').datepicker("option", "maxDate", curDate)
+    $('input.datetimepicker_nofuture').datepicker("option", "timeFormat", "HH:mm")
+
 
   init_referencedefinition: =>
     ###
@@ -217,42 +262,6 @@ class window.SiteView
 
 
   ### EVENT HANDLER ###
-
-  on_date_range_start_change: (event) =>
-    ###
-     * Eventhandler for Date Range Filtering
-     *
-     * 1. Go to Setup and enable advanced filter bar
-     * 2. Set the start date of adv. filter bar, e.g. in AR listing
-    ###
-    console.debug "°°° SiteView::on_date_range_start_change °°°"
-
-    el = event.currentTarget
-    $el = $(el)
-
-    # Set the min selectable end date to the start date
-    date_element = $el.datepicker('getDate')
-    brother = $el.siblings('.date_range_end')
-    $(brother).datepicker 'option', 'minDate', date_element
-
-
-  on_date_range_end_change: (event) =>
-    ###
-     * Eventhandler for Date Range Filtering
-     *
-     * 1. Go to Setup and enable advanced filter bar
-     * 2. Set the start date of adv. filter bar, e.g. in AR listing
-    ###
-    console.debug "°°° SiteView::on_date_range_end_change °°°"
-
-    el = event.currentTarget
-    $el = $(el)
-
-    # Set the max selectable start date to the end date
-    date_element = $el.datepicker('getDate')
-    brother = $el.siblings('.date_range_start')
-    $(brother).datepicker 'option', 'maxDate', date_element
-
 
   on_autocomplete_keydown: (event) =>
     ###
