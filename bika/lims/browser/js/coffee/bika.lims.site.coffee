@@ -105,19 +105,21 @@ class window.SiteView
     # Initialize default settings for datepicker
     # See https://github.com/senaite/senaite.core/pull/1634
     config = $.datepicker.regional[lang] or $.datepicker.regional['']
-    $("input[class*='datapicker']").datepicker(
-      Object.assign(config,
-        showOn: 'focus'
-        showAnim: ''
-        changeMonth: true
-        changeYear: true
-        dateFormat: dateFormat
-        maxDate: '+0d'
-        numberOfMonths: 1
-        yearRange: limitString))
+    $("input[class*='datepicker']").datepicker(
+      Object.assign(config, {
+        showOn: 'focus',
+        showAnim: '',
+        changeMonth: true,
+        changeYear: true,
+        dateFormat: dateFormat,
+        maxDate: '+0d',
+        numberOfMonths: 1,
+        yearRange: limitString
+        }
+      )
+    )
 
-    $('input.datepicker_2months').datepicker
-        numberOfMonths: 2
+    $('input.datepicker_2months').datepicker("option", "numberOfMonths", 2)
 
     return
 

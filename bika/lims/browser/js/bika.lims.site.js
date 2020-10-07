@@ -96,7 +96,7 @@
         dateFormat = 'yy-mm-dd';
       }
       config = $.datepicker.regional[lang] || $.datepicker.regional[''];
-      $("input[class*='datapicker']").datepicker(Object.assign(config, {
+      $("input[class*='datepicker']").datepicker(Object.assign(config, {
         showOn: 'focus',
         showAnim: '',
         changeMonth: true,
@@ -106,9 +106,7 @@
         numberOfMonths: 1,
         yearRange: limitString
       }));
-      $('input.datepicker_2months').datepicker({
-        numberOfMonths: 2
-      });
+      $('input.datepicker_2months').datepicker("option", "numberOfMonths", 2);
     };
 
     SiteView.prototype.init_referencedefinition = function() {
