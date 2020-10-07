@@ -61,7 +61,6 @@
     };
 
     SetupViewController.prototype.filter_items = function(value) {
-      console.log("SetupViewController::filter_items:value=", value);
       this.first = null;
       if (!value) {
         return this.show_all();

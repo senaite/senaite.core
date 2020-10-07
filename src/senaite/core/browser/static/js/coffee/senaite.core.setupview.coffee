@@ -44,7 +44,7 @@ class SetupViewController
       @show_tile tile
 
   filter_items: (value) ->
-    console.log "SetupViewController::filter_items:value=", value
+    # console.debug "SetupViewController::filter_items:value=", value
     @first = null
     if not value
       return @show_all()
