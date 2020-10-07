@@ -78,4 +78,3 @@ class SetupViewController
     code = event.keyCode
     return unless code is 13
     @navigate()
-
