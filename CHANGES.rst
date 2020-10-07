@@ -4,6 +4,7 @@ Changelog
 2.0.0rc2 (unreleased)
 ---------------------
 
+- #1642 Allow multi-choice in results entry
 - #1640 Fix AttributeError on Worksheet Template assignment
 - #1638 Fix "Published results" tab is not displayed to Client contacts
 - #1637 Fix "Page not Found" Error for migrated SENAITE Contents with File/Image Fields

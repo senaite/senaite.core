@@ -768,6 +768,10 @@ class AnalysesView(BikaListingView):
         item["CaptureDate"] = capture_date_str
         item["result_captured"] = capture_date_str
         item["string_result"] = False
+        item["multichoice_result"] = False
+
+        # Get the analysis object
+        obj = self.get_object(analysis_brain)
 
         # Edit mode enabled of this Analysis
         if self.is_analysis_edition_allowed(analysis_brain):
@@ -783,9 +787,14 @@ class AnalysesView(BikaListingView):
             if choices:
                 # N.B.we copy here the list to avoid persistent changes
                 choices = copy(choices)
-                # By default set empty as the default selected choice
-                choices.insert(0, dict(ResultValue="", ResultText=""))
+                if obj.getMultiChoice():
+                    # Render this field as a multi-choice
+                    item["multichoice_result"] = True
+                else:
+                    # By default set empty as the default selected choice
+                    choices.insert(0, dict(ResultValue="", ResultText=""))
                 item["choices"]["Result"] = choices
+
             else:
                 # If not choices, set whether the result must be floatable
                 obj = self.get_object(analysis_brain)
@@ -794,7 +803,6 @@ class AnalysesView(BikaListingView):
         if not result:
             return
 
-        obj = self.get_object(analysis_brain)
         formatted_result = obj.getFormattedResult(
             sciformat=int(self.scinot), decimalmark=self.dmk)
         item["formatted_result"] = formatted_result
