@@ -73,6 +73,10 @@ def upgrade(tool):
     setup.runImportStepFromProfile(profile, "workflow")
     add_dexterity_setup_items(portal)
 
+    # Published results tab is not displayed to client contacts
+    # https://github.com/senaite/senaite.core/pull/1638
+    fix_published_results_permission(portal)
+
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
 
@@ -125,3 +129,14 @@ def install_senaite_core(portal):
         logger.info("Installing '{}' ...".format(p))
         qi.installProduct(p)
     logger.info("Installing SENAITE CORE 2.x [DONE]")
+
+
+def fix_published_results_permission(portal):
+    """Resets the permissions for action 'published_results' from
+    AnalysisRequest portal type to 'View'
+    """
+    ti = portal.portal_types.getTypeInfo("AnalysisRequest")
+    for action in ti.listActions():
+        if action.id == "published_results":
+            action.permissions = ("View", )
+            break
