@@ -102,90 +102,24 @@ class window.SiteView
     if dateFormat == 'date_format_short_datepicker'
       dateFormat = 'yy-mm-dd'
 
-    $('input.datepicker_range').datepicker
-      ###*
-      This function defines a datepicker for a date range. Both input
-      elements should be siblings and have the class 'date_range_start' and
-      'date_range_end'.
-      ###
-      showOn: 'focus'
-      showAnim: ''
-      changeMonth: true
-      changeYear: true
-      dateFormat: dateFormat
-      yearRange: limitString
-
-    $('input.datepicker').on 'click', ->
-      console.warn "SiteView::datepicker.click: Refactor this event handler!"
-
-      $(this).datepicker(
+    # Initialize default settings for datepicker
+    # See https://github.com/senaite/senaite.core/pull/1634
+    config = $.datepicker.regional[lang] or $.datepicker.regional['']
+    $("input[class*='datapicker']").datepicker(
+      Object.assign(config,
         showOn: 'focus'
         showAnim: ''
         changeMonth: true
         changeYear: true
         dateFormat: dateFormat
-        yearRange: limitString).click(->
-        $(this).attr 'value', ''
-        return
-      ).focus()
-      return
-
-    $('input.datepicker_nofuture').on 'click', ->
-      console.warn "SiteView::datetimepicker_nofuture.click: Refactor this event handler!"
-
-      $(this).datepicker(
-        showOn: 'focus'
-        showAnim: ''
-        changeMonth: true
-        changeYear: true
-        maxDate: curDate
-        dateFormat: dateFormat
-        yearRange: limitString).click(->
-        $(this).attr 'value', ''
-        return
-      ).focus()
-      return
-
-    $('input.datepicker_2months').on 'click', ->
-      console.warn 'SiteView::datetimepicker_2months.click: Refactor this event handler!'
-      config = $.datepicker.regional[lang] or $.datepicker.regional['']
-      $(this).datepicker(Object.assign(config,
-        showOn: 'focus'
-        showAnim: ''
-        changeMonth: true
-        changeYear: true
         maxDate: '+0d'
+        numberOfMonths: 1
+        yearRange: limitString))
+
+    $('input.datepicker_2months').datepicker
         numberOfMonths: 2
-        dateFormat: dateFormat
-        yearRange: limitString)).click(->
-        $(this).attr 'value', ''
-        return
-      ).focus()
-      return
 
-    $('input.datetimepicker_nofuture').on 'click', ->
-      console.warn "SiteView::datetimepicker_nofuture.click: Refactor this event handler!"
-
-      $(this).datetimepicker(
-        showOn: 'focus'
-        showAnim: ''
-        changeMonth: true
-        changeYear: true
-        maxDate: curDate
-        dateFormat: dateFormat
-        yearRange: limitString
-        timeFormat: 'HH:mm'
-        beforeShow: ->
-          setTimeout (->
-            $('.ui-datepicker').css 'z-index', 99999999999999
-            return
-          ), 0
-          return
-      ).click(->
-        $(this).attr 'value', ''
-        return
-      ).focus()
-      return
+    return
 
 
   init_referencedefinition: =>

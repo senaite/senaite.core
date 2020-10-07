@@ -85,7 +85,7 @@
        *
        * XXX Where are these event handlers used?
        */
-      var curDate, dateFormat, lang, limitString, y;
+      var config, curDate, dateFormat, lang, limitString, y;
       console.debug("SiteView::init_datepickers");
       curDate = new Date;
       lang = jarn.i18n.currentLanguage;
@@ -95,83 +95,19 @@
       if (dateFormat === 'date_format_short_datepicker') {
         dateFormat = 'yy-mm-dd';
       }
-      $('input.datepicker_range').datepicker({
-
-        /**
-        This function defines a datepicker for a date range. Both input
-        elements should be siblings and have the class 'date_range_start' and
-        'date_range_end'.
-         */
+      config = $.datepicker.regional[lang] || $.datepicker.regional[''];
+      $("input[class*='datapicker']").datepicker(Object.assign(config, {
         showOn: 'focus',
         showAnim: '',
         changeMonth: true,
         changeYear: true,
         dateFormat: dateFormat,
+        maxDate: '+0d',
+        numberOfMonths: 1,
         yearRange: limitString
-      });
-      $('input.datepicker').on('click', function() {
-        console.warn("SiteView::datepicker.click: Refactor this event handler!");
-        $(this).datepicker({
-          showOn: 'focus',
-          showAnim: '',
-          changeMonth: true,
-          changeYear: true,
-          dateFormat: dateFormat,
-          yearRange: limitString
-        }).click(function() {
-          $(this).attr('value', '');
-        }).focus();
-      });
-      $('input.datepicker_nofuture').on('click', function() {
-        console.warn("SiteView::datetimepicker_nofuture.click: Refactor this event handler!");
-        $(this).datepicker({
-          showOn: 'focus',
-          showAnim: '',
-          changeMonth: true,
-          changeYear: true,
-          maxDate: curDate,
-          dateFormat: dateFormat,
-          yearRange: limitString
-        }).click(function() {
-          $(this).attr('value', '');
-        }).focus();
-      });
-      $('input.datepicker_2months').on('click', function() {
-        var config;
-        console.warn('SiteView::datetimepicker_2months.click: Refactor this event handler!');
-        config = $.datepicker.regional[lang] || $.datepicker.regional[''];
-        $(this).datepicker(Object.assign(config, {
-          showOn: 'focus',
-          showAnim: '',
-          changeMonth: true,
-          changeYear: true,
-          maxDate: '+0d',
-          numberOfMonths: 2,
-          dateFormat: dateFormat,
-          yearRange: limitString
-        })).click(function() {
-          $(this).attr('value', '');
-        }).focus();
-      });
-      return $('input.datetimepicker_nofuture').on('click', function() {
-        console.warn("SiteView::datetimepicker_nofuture.click: Refactor this event handler!");
-        $(this).datetimepicker({
-          showOn: 'focus',
-          showAnim: '',
-          changeMonth: true,
-          changeYear: true,
-          maxDate: curDate,
-          dateFormat: dateFormat,
-          yearRange: limitString,
-          timeFormat: 'HH:mm',
-          beforeShow: function() {
-            setTimeout((function() {
-              $('.ui-datepicker').css('z-index', 99999999999999);
-            }), 0);
-          }
-        }).click(function() {
-          $(this).attr('value', '');
-        }).focus();
+      }));
+      $('input.datepicker_2months').datepicker({
+        numberOfMonths: 2
       });
     };
 
