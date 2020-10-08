@@ -8,10 +8,6 @@ class window.ReportFolderView
   load: =>
     console.debug "ReportFolderView::load"
 
-    # load translations
-    jarn.i18n.loadCatalog 'senaite.core'
-    @_ = window.jarn.i18n.MessageFactory("senaite.core")
-
     # initialize toggle anchors
     @bind_eventhandler()
 

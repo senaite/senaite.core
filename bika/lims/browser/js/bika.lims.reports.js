@@ -15,8 +15,6 @@
 
     ReportFolderView.prototype.load = function() {
       console.debug("ReportFolderView::load");
-      jarn.i18n.loadCatalog('senaite.core');
-      this._ = window.jarn.i18n.MessageFactory("senaite.core");
       return this.bind_eventhandler();
     };
 
