@@ -56,7 +56,7 @@ class PathBarViewlet(Base):
     def to_breadcrumb(self, obj):
         """Converts the object to a breadcrumb for the template consumption
         """
-        return {"Title": self.get_obj_title(obj),
+        return {"Title": _(self.get_obj_title(obj)),
                 "absolute_url": self.get_obj_url(obj)}
 
     def get_obj_title(self, obj):

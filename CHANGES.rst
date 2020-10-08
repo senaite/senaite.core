@@ -5,6 +5,7 @@ Changelog
 ---------------------
 
 - #1646 Allow multi-select in results entry
+- #1645 Allow translation of path bar items
 - #1643 Setup View Filter
 - #1642 Allow multi-choice in results entry
 - #1640 Fix AttributeError on Worksheet Template assignment
