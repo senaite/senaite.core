@@ -692,11 +692,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         :return: True if the assignment of the passed in instrument is allowed
         :rtype: bool
         """
-        if isinstance(instrument, str):
-            uid = instrument
-        else:
-            uid = instrument.UID()
-
+        uid = api.get_uid(instrument)
         return uid in self.getAllowedInstrumentUIDs()
 
     @security.public
@@ -710,11 +706,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         :return: True if the analysis can follow the method specified
         :rtype: bool
         """
-        if isinstance(method, str):
-            uid = method
-        else:
-            uid = method.UID()
-
+        uid = api.get_uid(method)
         return uid in self.getAllowedMethodUIDs()
 
     @security.public
