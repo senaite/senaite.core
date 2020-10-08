@@ -320,7 +320,7 @@ msgstr "Agencija"
 #: bika/lims/browser/analyses/view.py:219
 #: bika/lims/browser/analysisrequest/analysisrequests.py:361
 msgid "All"
-msgstr ""
+msgstr "Sve"
 
 #: bika/lims/browser/accreditation.py:75
 msgid "All Accredited analysis services are listed here."
@@ -336,7 +336,7 @@ msgstr "Sve dodjeljene analize"
 
 #: bika/lims/content/abstractbaseanalysis.py:220
 msgid "Allow Manual Detection Limit input"
-msgstr ""
+msgstr "Dozvoli ručno postavljeni limit detekcije"
 
 #: bika/lims/content/bikasetup.py:180
 msgid "Allow access to worksheets only to assigned analysts"
@@ -396,11 +396,11 @@ msgstr ""
 #: bika/lims/browser/reports/productivity_analysespersampletype.py:49
 #: bika/lims/browser/reports/templates/productivity.pt:203
 msgid "Analyses per sample type"
-msgstr ""
+msgstr "Analize po vrsti uzorka"
 
 #: bika/lims/browser/reports/templates/productivity.pt:165
 msgid "Analyses per service"
-msgstr ""
+msgstr "Analize po usluzi"
 
 #: bika/lims/browser/reports/templates/productivity.pt:387
 #: bika/lims/browser/reports/templates/productivity_analysesperformedpertotal.pt:77
@@ -414,7 +414,7 @@ msgstr ""
 #: bika/lims/browser/reports/templates/administration.pt:91
 #: bika/lims/browser/reports/templates/productivity.pt:160
 msgid "Analyses related reports"
-msgstr ""
+msgstr "Izvještaji za analize"
 
 #: bika/lims/browser/analysisrequest/templates/analysisrequest_retract_pdf.pt:115
 msgid "Analyses requested"
@@ -446,7 +446,7 @@ msgstr "Kategorija analize"
 
 #: bika/lims/content/abstractbaseanalysis.py:252
 msgid "Analysis Keyword"
-msgstr ""
+msgstr "Ključna riječ analize"
 
 #: bika/lims/content/analysisrequest.py:404
 #: bika/lims/content/artemplate.py:249
@@ -457,7 +457,7 @@ msgstr "Profil analize"
 #: bika/lims/browser/client/views/analysisprofiles.py:50
 #: bika/lims/content/analysisrequest.py:428
 msgid "Analysis Profiles"
-msgstr ""
+msgstr "Profili analiza"
 
 #: bika/lims/browser/templates/analysisreport_info.pt:22
 msgid "Analysis Report"
@@ -476,12 +476,12 @@ msgstr "Rezultati analize za {}"
 #: bika/lims/browser/fields/resultrangefield.py:34
 #: bika/lims/browser/referencesample.py:276
 msgid "Analysis Service"
-msgstr ""
+msgstr "Usluga analize"
 
 #: bika/lims/config.py:68
 #: bika/lims/controlpanel/bika_analysisservices.py:192
 msgid "Analysis Services"
-msgstr ""
+msgstr "Usluge analiza"
 
 #: bika/lims/content/analysisrequest.py:655
 #: bika/lims/controlpanel/bika_analysisspecs.py:75
@@ -499,11 +499,11 @@ msgstr "Stanje analize"
 #: bika/lims/content/worksheettemplate.py:60
 #: bika/lims/skins/bika/bika_widgets/worksheettemplatelayoutwidget.pt:66
 msgid "Analysis Type"
-msgstr ""
+msgstr "Vrsta analize"
 
 #: bika/lims/browser/reports/selection_macros/select_analysiscategory.pt:2
 msgid "Analysis category"
-msgstr ""
+msgstr "Kategorija analize"
 
 #: bika/lims/content/analysisrequest.py:405
 msgid "Analysis profiles apply a certain set of analyses"
@@ -550,7 +550,7 @@ msgstr ""
 
 #: bika/lims/browser/worksheet/templates/results.pt:183
 msgid "Apply"
-msgstr ""
+msgstr "Primjeni"
 
 #: bika/lims/browser/worksheet/templates/add_analyses.pt:43
 msgid "Apply template"
@@ -593,7 +593,7 @@ msgstr ""
 #: bika/lims/profiles/default/workflows/bika_ar_workflow/definition.xml
 #: bika/lims/profiles/default/workflows/bika_worksheet_workflow/definition.xml
 msgid "Attach"
-msgstr ""
+msgstr "Dodaj"
 
 #: bika/lims/browser/viewlets/templates/attachments.pt:238
 msgid "Attach to Analysis Request"
@@ -718,7 +718,7 @@ msgstr ""
 
 #: bika/lims/content/organisation.py:146
 msgid "Bank name"
-msgstr ""
+msgstr "Ime banke"
 
 #: bika/lims/browser/templates/instrument_referenceanalyses.pt:36
 #: bika/lims/browser/templates/referencesample_analyses.pt:33
@@ -773,7 +773,7 @@ msgstr ""
 #: bika/lims/config.py:99
 #: bika/lims/content/organisation.py:109
 msgid "Billing address"
-msgstr ""
+msgstr "Adresa za račun"
 
 #: bika/lims/browser/referencesample.py:519
 #: bika/lims/browser/templates/referencesample_view.pt:21
@@ -857,12 +857,12 @@ msgstr ""
 
 #: bika/lims/content/instrumentscheduledtask.py:114
 msgid "Calibration"
-msgstr ""
+msgstr "Kalibracija"
 
 #: bika/lims/browser/instrument.py:625
 #: bika/lims/browser/templates/instrument_certifications.pt:40
 msgid "Calibration Certificates"
-msgstr ""
+msgstr "Certifikati kalibracije"
 
 #: bika/lims/content/instrumentcalibration.py:80
 msgid "Calibration report date"
@@ -885,13 +885,13 @@ msgstr ""
 #: bika/lims/browser/publish/templates/email.pt:205
 #: bika/lims/browser/templates/partition_magic.pt:249
 msgid "Cancel"
-msgstr ""
+msgstr "Otkaži"
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:341
 #: bika/lims/browser/batchfolder.py:109
 #: bika/lims/browser/instrument.py:104
 msgid "Cancelled"
-msgstr ""
+msgstr "Otkazano"
 
 #: bika/lims/content/calculation.py:449
 msgid "Cannot activate calculation, because the following service dependencies are inactive: ${inactive_services}"
@@ -945,7 +945,7 @@ msgstr ""
 #: bika/lims/browser/templates/analysisservice_info.pt:59
 #: bika/lims/browser/worksheet/views/add_analyses.py:92
 msgid "Category"
-msgstr ""
+msgstr "Kategorija"
 
 #: bika/lims/content/analysiscategory.py:114
 msgid "Category cannot be deactivated because it contains Analysis Services"
@@ -1016,7 +1016,7 @@ msgstr ""
 
 #: bika/lims/skins/bika/bika_widgets/addresswidget.pt:111
 msgid "City"
-msgstr ""
+msgstr "Grad"
 
 #: bika/lims/config.py:141
 msgid "Classic"
@@ -1042,7 +1042,7 @@ msgstr ""
 #: bika/lims/browser/analysisrequest/templates/analysisrequest_retract_pdf.pt:76
 #: bika/lims/browser/batchfolder.py:77
 msgid "Client"
-msgstr ""
+msgstr "Klijent"
 
 #: bika/lims/browser/batchfolder.py:83
 #: bika/lims/content/batch.py:98
@@ -1171,7 +1171,7 @@ msgstr ""
 #: bika/lims/browser/reports/selection_macros/select_contact.pt:4
 #: bika/lims/browser/templates/supplyorder_content.pt:11
 msgid "Contact"
-msgstr ""
+msgstr "Kontakt"
 
 #: bika/lims/browser/analysisrequest/add2.py:1637
 msgid "Contact does not belong to the selected client"
@@ -1184,7 +1184,7 @@ msgstr ""
 #: bika/lims/browser/client/views/contacts.py:59
 #: bika/lims/browser/supplier.py:98
 msgid "Contacts"
-msgstr ""
+msgstr "Kontakti"
 
 #: bika/lims/content/contact.py:54
 msgid "Contacts to CC"
@@ -1238,7 +1238,7 @@ msgstr ""
 
 #: bika/lims/controlpanel/templates/analysisservice_copy.pt:56
 msgid "Copy"
-msgstr ""
+msgstr "Kopiraj"
 
 #: bika/lims/controlpanel/templates/analysisservice_copy.pt:11
 msgid "Copy analysis services"
@@ -1623,7 +1623,7 @@ msgstr ""
 
 #: bika/lims/browser/fields/coordinatefield.py:41
 msgid "Degrees"
-msgstr ""
+msgstr "Stepeni"
 
 #: bika/lims/browser/department/labcontacts.py:51
 #: bika/lims/browser/reports/templates/productivity_analysesperdepartment.pt:96
@@ -1779,7 +1779,7 @@ msgstr ""
 
 #: bika/lims/browser/publish/reports_listing.py:101
 msgid "Download PDF"
-msgstr ""
+msgstr "Preuzmi PDF"
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:289
 msgid "Due"
@@ -1856,7 +1856,7 @@ msgstr ""
 #: bika/lims/browser/clientfolder.py:79
 #: bika/lims/browser/department/labcontacts.py:54
 msgid "Email Address"
-msgstr ""
+msgstr "Email adresa"
 
 #: bika/lims/browser/templates/analysisreport_info.pt:96
 msgid "Email Log"

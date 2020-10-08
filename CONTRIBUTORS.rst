@@ -36,6 +36,7 @@ contributions descending.
 - Siyamalan, 20146320+siyamalan@users.noreply.github.com
 - Aleksandr Melnikov, aleksandr.melnikov@limelyte.com
 - Henrique Chehad, hchehad@gmail.com
+- lawrence02, 49902328+lawrence02@users.noreply.github.com
 - goelakash, goelakash93@gmail.com
 - Manav Batra, manavbatra@outlook.com
 - mimishons, shoniwam@nmrl.org.zw

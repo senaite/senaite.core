@@ -242,7 +242,7 @@ msgstr "Stávající"
 
 #: bika/lims/profiles/default/actions.xml
 msgid "Dashboard"
-msgstr ""
+msgstr "Ovládací panel"
 
 msgid "Deactivate"
 msgstr "Deaktivovat"
@@ -415,7 +415,7 @@ msgstr "Metody"
 
 #: bika/lims/profiles/default/actions.xml
 msgid "My organization"
-msgstr ""
+msgstr "Moje organizace"
 
 msgid "No preservation required"
 msgstr "Nevyžadováno uchování"

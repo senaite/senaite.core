@@ -2,16 +2,16 @@
 # SOME DESCRIPTIVE TITLE.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # Translators:
-# Jordi Puiggené <jpuiggene@naralabs.com>, 2019
 # Pau Soliva <psoliva@naralabs.com>, 2019
 # Leonardo J. Caballero G. <leonardocaballero@gmail.com>, 2020
+# Jordi Puiggené <jpuiggene@naralabs.com>, 2020
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "POT-Creation-Date: 2020-08-02 11:38+0000\n"
 "PO-Revision-Date: 2018-06-01 18:46+0000\n"
-"Last-Translator: Leonardo J. Caballero G. <leonardocaballero@gmail.com>, 2020\n"
+"Last-Translator: Jordi Puiggené <jpuiggene@naralabs.com>, 2020\n"
 "Language-Team: Spanish (https://www.transifex.com/senaite/teams/87045/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -243,7 +243,7 @@ msgstr "Vigente"
 
 #: bika/lims/profiles/default/actions.xml
 msgid "Dashboard"
-msgstr ""
+msgstr "Tablero de control"
 
 msgid "Deactivate"
 msgstr "Desactivar"
@@ -416,7 +416,7 @@ msgstr "Métodos"
 
 #: bika/lims/profiles/default/actions.xml
 msgid "My organization"
-msgstr ""
+msgstr "Mi organización"
 
 msgid "No preservation required"
 msgstr "No requiere preservación"
