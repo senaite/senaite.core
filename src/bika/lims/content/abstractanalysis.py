@@ -877,31 +877,27 @@ class AbstractAnalysis(AbstractBaseAnalysis):
                     "but not floatable: %s" % (self.id, result))
                 return formatDecimalMark(result, decimalmark=decimalmark)
 
-        choices = self.getResultOptions()
-
         # 2. Print ResultText of matching ResultOptions
-        if choices and not self.getMultiChoice():
-            # Result contains a single result option
-            match = [x['ResultText'] for x in choices
-                     if str(x['ResultValue']) == str(result)]
-            if match:
-                return match[0]
+        choices = self.getResultOptions()
+        if choices:
+            # Create a dict for easy mapping of result options
+            values_texts = dict(map(
+                lambda c: (str(c["ResultValue"]), c["ResultText"]), choices
+            ))
 
-        elif choices:
-            # Result is a string with multiple options e.g. "['2', '1']"
-            raw_result = []
+            # Result might contain a single result option
+            match = values_texts.get(str(result))
+            if match:
+                return match
+
+            # Result might be a string with multiple options e.g. "['2', '1']"
             try:
                 raw_result = eval(result)
+                texts = map(lambda r: values_texts.get(str(r)), raw_result)
+                texts = filter(None, texts)
+                return "<br/>".join(texts)
             except:
-                # Nothing to catch here
                 pass
-
-            values_texts = dict(map(
-                lambda c: (c["ResultValue"], c["ResultText"]), choices
-            ))
-            texts = map(lambda r: values_texts.get(r), raw_result)
-            texts = filter(None, texts)
-            return "<br/>".join(texts)
 
         # 3. If the result is not floatable, return it without being formatted
         try:
