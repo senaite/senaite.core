@@ -603,6 +603,7 @@ ResultOptions = RecordsField(
 RESULT_OPTIONS_TYPES = (
     ("select", _("Selection list")),
     ("multiselect", _("Multiple selection")),
+    ("multiselect_duplicates", _("Multiple selection (with duplicates)")),
     ("multichoice", _("Multiple choices")),
 )
 
