@@ -888,7 +888,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             # Result might contain a single result option
             match = values_texts.get(str(result))
             if match:
-                return match[0]
+                return match
 
             # Result might be a string with multiple options e.g. "['2', '1']"
             try:
