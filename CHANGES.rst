@@ -4,6 +4,7 @@ Changelog
 2.0.0rc2 (unreleased)
 ---------------------
 
+- #1650 Fix Error when invalidating a sample with contained retests
 - #1646 Allow multi-select in results entry
 - #1645 Allow translation of path bar items
 - #1643 Setup View Filter
