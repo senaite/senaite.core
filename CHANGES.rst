@@ -6,6 +6,7 @@ Changelog
 
 **Fixed**
 
+- #1651 Fix Error when invalidating a sample with contained retests
 - #1633 Fix report section displays date pickers in Chinese
 - #1639 Fix very rare AttributeError on Worksheet Template assignment
 - #1629 Fix Published results tab is not displayed to Client contacts
