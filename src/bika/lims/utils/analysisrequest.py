@@ -300,6 +300,9 @@ def create_retest(ar):
     # Copy the analyses from the source
     intermediate_states = ['retracted', 'reflexed']
     for an in ar.getAnalyses(full_objects=True):
+        # skip retests
+        if an.isRetest():
+            continue
         if (api.get_workflow_status_of(an) in intermediate_states):
             # Exclude intermediate analyses
             continue
