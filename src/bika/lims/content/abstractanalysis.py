@@ -19,19 +19,11 @@
 # Some rights reserved, see README and LICENSE.
 
 import cgi
+import json
 import math
 from decimal import Decimal
 
 from AccessControl import ClassSecurityInfo
-from DateTime import DateTime
-from Products.Archetypes.Field import DateTimeField
-from Products.Archetypes.Field import FixedPointField
-from Products.Archetypes.Field import IntegerField
-from Products.Archetypes.Field import StringField
-from Products.Archetypes.Schema import Schema
-from Products.Archetypes.references import HoldingReference
-from Products.CMFCore.permissions import View
-from Products.CMFCore.utils import getToolByName
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims import deprecated
@@ -39,8 +31,8 @@ from bika.lims import logger
 from bika.lims import workflow as wf
 from bika.lims.browser.fields import HistoryAwareReferenceField
 from bika.lims.browser.fields import InterimFieldsField
-from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.fields import ResultRangeField
+from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.fields.uidreferencefield import get_backreferences
 from bika.lims.browser.widgets import RecordsWidget
 from bika.lims.config import LDL
@@ -55,6 +47,14 @@ from bika.lims.utils.analysis import format_numeric_result
 from bika.lims.utils.analysis import get_significant_digits
 from bika.lims.workflow import getTransitionActor
 from bika.lims.workflow import getTransitionDate
+from DateTime import DateTime
+from Products.Archetypes.Field import DateTimeField
+from Products.Archetypes.Field import FixedPointField
+from Products.Archetypes.Field import IntegerField
+from Products.Archetypes.Field import StringField
+from Products.Archetypes.references import HoldingReference
+from Products.Archetypes.Schema import Schema
+from Products.CMFCore.permissions import View
 
 # A link directly to the AnalysisService object used to create the analysis
 AnalysisService = UIDReferenceField(
