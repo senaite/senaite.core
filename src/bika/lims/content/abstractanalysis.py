@@ -455,6 +455,10 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         # Always update ResultCapture date when this field is modified
         self.setResultCaptureDate(DateTime())
 
+        # Handle list results
+        if isinstance(value, (list, tuple)):
+            value = json.dumps(value)
+
         # Ensure result integrity regards to None, empty and 0 values
         val = str("" if not value and value != 0 else value).strip()
 
@@ -892,11 +896,11 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
             # Result might be a string with multiple options e.g. "['2', '1']"
             try:
-                raw_result = eval(result)
+                raw_result = json.loads(result)
                 texts = map(lambda r: values_texts.get(str(r)), raw_result)
                 texts = filter(None, texts)
                 return "<br/>".join(texts)
-            except:
+            except (ValueError, TypeError):
                 pass
 
         # 3. If the result is not floatable, return it without being formatted
