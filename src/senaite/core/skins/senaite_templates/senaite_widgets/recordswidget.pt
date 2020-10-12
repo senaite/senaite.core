@@ -100,7 +100,7 @@
                                 id string:${fieldName}-${key}-${repeat/idx/index};
                                 value python:field.getSubfieldValue(values, idx, key);
                                 size python:field.getSubfieldSize(key);
-                                maxlength maxlength|Nothing;
+                                maxlength maxlength|nothing;
                                 readonly python:hasattr(field, 'subfield_readonly') and field.subfield_readonly.get(key, False) or False;
                                 tabindex tabindex/next|nothing;
                                 combogrid_options python: widget.jsondumps(combogrid_options.get(key, ''))"/>
@@ -188,7 +188,7 @@
                                 id string:${fieldName}-${key}-${repeat/idx/index};
                                 value python:field.getSubfieldValue(values, idx, key);
                                 size python:field.getSubfieldSize(key);
-                                maxlength maxlength|Nothing;
+                                maxlength maxlength|nothing;
                                 readonly python:hasattr(field, 'subfield_readonly') and field.subfield_readonly.get(key, False) or False;
                                 tabindex tabindex/next|nothing;"/>
                       </tal:string>
@@ -207,7 +207,7 @@
                                 id string:${fieldName}-${key}-${repeat/idx/index};
                                 value python:field.getSubfieldValue(values, idx, key);
                                 size python:field.getSubfieldSize(key);
-                                maxlength maxlength|Nothing;
+                                maxlength maxlength|nothing;
                                 readonly python:hasattr(field, 'subfield_readonly') and field.subfield_readonly.get(key, False) or False;
                                 tabindex tabindex/next|nothing;"/>
                       </tal:string>
@@ -222,7 +222,7 @@
                                  id string:${fieldName}-${key}-${repeat/idx/index};
                                  value python:field.getSubfieldValue(values, idx, key);
                                  size python:field.getSubfieldSize(key);
-                                 maxlength maxlength|Nothing;
+                                 maxlength maxlength|nothing;
                                  tabindex tabindex/next|nothing;"/>
                       </tal:number>
 
@@ -236,7 +236,7 @@
                                  id string:${fieldName}-${key}-${repeat/idx/index};
                                  value python:field.getSubfieldValue(values, idx, key);
                                  size python:field.getSubfieldSize(key);
-                                 maxlength maxlength|Nothing;
+                                 maxlength maxlength|nothing;
                                  tabindex tabindex/next|nothing;"/>
                       </tal:number>
 
