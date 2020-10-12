@@ -591,12 +591,11 @@ ResultOptions = RecordsField(
     subfield_maxlength={'ResultValue': 5,
                         'ResultText': 255,},
     widget=RecordsWidget(
-        label=_("Result Options"),
+        label=_("Predefined results"),
         description=_(
-            "Please list all options for the analysis result if you want to "
-            "restrict it to specific options only, e.g. 'Positive', "
-            "'Negative' and 'Indeterminable'.  The option's result value must "
-            "be a number"),
+            "List of possible final results. When set, no custom result is "
+            "allowed on results entry and user has to choose from these values"
+        ),
     )
 )
 
@@ -613,10 +612,10 @@ ResultOptionsType = StringField(
     default="select",
     vocabulary=DisplayList(RESULT_OPTIONS_TYPES),
     widget=SelectionWidget(
-        label=_("Result options type"),
+        label=_("Control type"),
         description=_(
-            "Type of control to be displayed on result entry when result "
-            "options are set"
+            "Type of control to be displayed on result entry when predefined "
+            "results are set"
         ),
         format="select",
     )

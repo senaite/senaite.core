@@ -382,12 +382,14 @@ Calculation = UIDReferenceField(
 # before the calculation is performed.
 InterimFields = InterimFieldsField(
     'InterimFields',
-    schemata='Method',
+    schemata="Result Options",
     widget=RecordsWidget(
-        label=_("Additional Values"),
+        label=_("Result variables"),
         description=_(
-            "Values can be entered here which will override the defaults "
-            "specified in the Calculation Interim Fields."),
+            "Variables are displayed as additional input fields on results "
+            "entry, next to 'Result' field. If the analysis has a Calculation "
+            "assigned, the values set here override those from the Calculation "
+        ),
     )
 )
 
