@@ -6,7 +6,7 @@ Changelog
 
 **Fixed**
 
-- #1655 Fix Maximum length of Choices subfield (interim) is set to 40
+- #1656 Fix Maximum length of Choices subfield (interim) is set to 40
 - #1651 Fix Error when invalidating a sample with contained retests
 - #1633 Fix report section displays date pickers in Chinese
 - #1639 Fix very rare AttributeError on Worksheet Template assignment
