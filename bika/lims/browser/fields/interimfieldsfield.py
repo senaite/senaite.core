@@ -58,8 +58,11 @@ class InterimFieldsField(RecordsField):
             'keyword': 20,
             'title': 20,
             'value': 10,
-            'choices': 30,
+            'choices': 50,
             'unit': 10,
+        },
+        "subfield_maxlength": {
+            "choices": -1,
         },
         'subfield_validators': {
             'keyword': 'interimfieldsvalidator',
