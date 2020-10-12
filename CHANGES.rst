@@ -4,6 +4,8 @@ Changelog
 2.0.0rc2 (unreleased)
 ---------------------
 
+- #1655 Rename service's "Result Options" and "Additional Values"
+- #1655 Move service's "Additional values" to "Result Options" tab
 - #1654 Fix Text of interim choices is not displayed correctly on readonly mode
 - #1653 Fix Maximum length for Choices field from Interim fields is set to 40
 - #1650 Fix Error when invalidating a sample with contained retests
