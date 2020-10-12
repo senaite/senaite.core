@@ -242,8 +242,7 @@
     <permission-map name="senaite.core: Field: Edit Preservation" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Preserver" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Priority" acquired="True"/>
-    <!-- Make the field 'Profiles' readonly -->
-    <permission-map name="senaite.core: Field: Edit Profiles" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Profiles" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Publication Specification" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Rejection Reasons" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Remarks" acquired="True"/>
@@ -340,8 +339,7 @@
     <permission-map name="senaite.core: Field: Edit Preservation" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Preserver" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Priority" acquired="True"/>
-    <!-- Make the field 'Profiles' readonly -->
-    <permission-map name="senaite.core: Field: Edit Profiles" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Profiles" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Publication Specification" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Rejection Reasons" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Remarks" acquired="True"/>
@@ -428,8 +426,7 @@
     <permission-map name="senaite.core: Field: Edit Preservation" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Preserver" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Priority" acquired="True"/>
-    <!-- Make the field 'Profiles' readonly -->
-    <permission-map name="senaite.core: Field: Edit Profiles" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Profiles" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Publication Specification" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Rejection Reasons" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Remarks" acquired="True"/>
@@ -515,8 +512,7 @@
     <permission-map name="senaite.core: Field: Edit Preservation" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Preserver" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Priority" acquired="True"/>
-    <!-- Make the field 'Profiles' readonly -->
-    <permission-map name="senaite.core: Field: Edit Profiles" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Profiles" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Publication Specification" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Rejection Reasons" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Remarks" acquired="True"/>
@@ -598,8 +594,7 @@
     <permission-map name="senaite.core: Field: Edit Preservation" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Preserver" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Priority" acquired="True"/>
-    <!-- Make the field 'Profiles' readonly -->
-    <permission-map name="senaite.core: Field: Edit Profiles" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Profiles" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Publication Specification" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Rejection Reasons" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Remarks" acquired="True"/>
@@ -691,8 +686,7 @@
     <permission-map name="senaite.core: Field: Edit Preservation" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Preserver" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Priority" acquired="True"/>
-    <!-- Make the field 'Profiles' readonly -->
-    <permission-map name="senaite.core: Field: Edit Profiles" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Profiles" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Publication Specification" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Rejection Reasons" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Remarks" acquired="True"/>
@@ -776,8 +770,7 @@
     <permission-map name="senaite.core: Field: Edit Preservation" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Preserver" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Priority" acquired="True"/>
-    <!-- Make the field 'Profiles' readonly -->
-    <permission-map name="senaite.core: Field: Edit Profiles" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Profiles" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Publication Specification" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Rejection Reasons" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Remarks" acquired="True"/>
