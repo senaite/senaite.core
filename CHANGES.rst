@@ -4,6 +4,7 @@ Changelog
 2.0.0rc2 (unreleased)
 ---------------------
 
+- #1657 Allow to edit Profiles in Samples for pre verified/published states
 - #1655 Rename service's "Result Options" and "Additional Values"
 - #1655 Move service's "Additional values" to "Result Options" tab
 - #1654 Fix Text of interim choices is not displayed correctly on readonly mode
