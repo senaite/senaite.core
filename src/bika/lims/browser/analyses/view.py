@@ -862,9 +862,14 @@ class AnalysesView(BikaListingView):
                 d_list = map(lambda it: dict(zip(headers, it)), choices.items())
                 item.setdefault("choices", {})[interim_keyword] = d_list
 
-                # Display the text instead of the value
-                val = choices.get(interim_value, "")
-                interim_field["value"] = val
+                # Set the text as the formatted value
+                text = choices.get(interim_value, "")
+                interim_field["formatted_value"] = text
+
+                if not is_editable:
+                    # Display the text instead of the value
+                    interim_field["value"] = text
+
                 item[interim_keyword] = interim_field
 
         item['interimfields'] = interim_fields
