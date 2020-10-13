@@ -70,9 +70,10 @@ def upgrade(tool):
     # Install the new SENAITE CORE package
     install_senaite_core(portal)
 
+    # run import steps located in senaite.core profiles
     setup.runImportStepFromProfile(profile, "typeinfo")
-    # N.B.: We use `_run_import_step` to run profiles which are still located
-    # in the `bika.lims` profile!
+    setup.runImportStepFromProfile(profile, "workflow")
+    # run import steps located in bika.lims profiles
     _run_import_step(portal, "typeinfo", profile="profile-bika.lims:default")
     _run_import_step(portal, "workflow", profile="profile-bika.lims:default")
 
