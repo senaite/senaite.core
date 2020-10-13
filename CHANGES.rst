@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.0.0rc2 (unreleased)
+2.0.0rc2 (2020-10-13)
 ---------------------
 
 - #1657 Allow to edit Profiles in Samples for pre verified/published states
