@@ -175,6 +175,8 @@ Assigning Profiles in "to_be_verified" status
 Setting the profile works up to this state:
 
     >>> ar4.setProfiles(profile1.UID())
+    >>> api.get_workflow_status_of(ar4)
+    'sample_received'
 
     >>> services = get_services(ar3)
     >>> set(map(api.get_uid, services)).issuperset(service_uids1 + [Au.UID()])
