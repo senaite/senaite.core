@@ -88,7 +88,7 @@ Assign Profile(s)
 
 Assigning Analysis Profiles adds the Analyses of the profile to the sample.
 
-    >>> setup.setSelfVerificationEnabled()
+    >>> setup.setSelfVerificationEnabled(True)
 
     >>> values = {
     ...     'Client': client.UID(),
