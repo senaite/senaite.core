@@ -951,6 +951,7 @@ class AnalysisResultsImporter(Logger):
             # handle non-floating values in result options
             result_options = analysis.getResultOptions()
             if result_options:
+                # Get result values as strings
                 result_values = map(
                     lambda r: str(r.get("ResultValue")), result_options)
                 # Check whether the result is a string and transform it to number
@@ -959,7 +960,7 @@ class AnalysisResultsImporter(Logger):
                         res = float(res)
                     else:
                         res = int(res)
-                # If result is a float
+                # If result is floatable, only uses the int part
                 if "{:.0f}".format(res) in result_values:
                     res = int(res)
 
