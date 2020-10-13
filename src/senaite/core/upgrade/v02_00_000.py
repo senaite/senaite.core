@@ -163,7 +163,7 @@ def update_workflow_mappings_samples(portal):
                  "to_be_sampled",
                  "sample_received",
                  "attachment_due",
-                 "to_be_verified"
+                 "to_be_verified",
                  "to_be_preserved",
              ]}
     brains = api.search(query, CATALOG_ANALYSIS_REQUEST_LISTING)
