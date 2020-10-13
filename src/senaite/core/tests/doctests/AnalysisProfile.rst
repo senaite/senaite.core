@@ -109,7 +109,7 @@ Apply the profile object. Note the custom `setProfiles` (plural) setter:
 All analyses from the profile should be added to the sample:
 
    >>> services = get_services(ar1)
-   >>> set(map(api.get_uid, services)) == set(service_uids1)
+   >>> set(map(api.get_uid, services)).issuperset(service_uids1)
    True
 
 The profile is applied to the sample:
@@ -124,7 +124,7 @@ Apply the profile UID:
 All analyses from the profile should be added to the sample:
 
    >>> services = get_services(ar2)
-   >>> set(map(api.get_uid, services)) == set(service_uids2)
+   >>> set(map(api.get_uid, services)).issuperset(service_uids2)
    True
 
 The profile is applied to the sample:
@@ -140,7 +140,7 @@ Apply multiple profiles:
 All analyses from the profiles should be added to the sample:
 
    >>> services = get_services(ar3)
-   >>> set(map(api.get_uid, services)) == set(service_uids1 + service_uids2 + service_uids3)
+   >>> set(map(api.get_uid, services)).issuperset(service_uids1 + service_uids2 + service_uids3)
    True
 
 
@@ -149,12 +149,12 @@ Remove Profile(s)
 
 Removing an analyis Sample retains the assigned analyses:
 
-    >>> analyses = ar1.getAnalyses()
+    >>> analyses = ar1.getAnalyses(full_objects=True)
     >>> ar1.setProfiles([])
     >>> ar1.getProfiles()
     []
 
-   >>> ar1.getAnalyses() == analyses
+   >>> set(ar1.getAnalyses(full_objects=True)) == set(analyses)
    True
 
 
@@ -177,5 +177,5 @@ Setting the profile works up to this state:
     >>> ar4.setProfiles(profile1.UID())
 
     >>> services = get_services(ar3)
-    >>> set(map(api.get_uid, services)) == set(service_uids1 + [Au.UID()])
+    >>> set(map(api.get_uid, services)).issuperset(service_uids1 + [Au.UID()])
     True
