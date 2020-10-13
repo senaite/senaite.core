@@ -19,10 +19,12 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
+from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.catalog import SETUP_CATALOG
 from bika.lims.setuphandlers import add_dexterity_setup_items
 from senaite.core import logger
 from senaite.core.config import PROJECTNAME as product
+from senaite.core.setuphandlers import _run_import_step
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
 
@@ -68,14 +70,21 @@ def upgrade(tool):
     # Install the new SENAITE CORE package
     install_senaite_core(portal)
 
-    # Add Interpretation Template(s) content type
+    # run import steps located in senaite.core profiles
     setup.runImportStepFromProfile(profile, "typeinfo")
     setup.runImportStepFromProfile(profile, "workflow")
+    # run import steps located in bika.lims profiles
+    _run_import_step(portal, "typeinfo", profile="profile-bika.lims:default")
+    _run_import_step(portal, "workflow", profile="profile-bika.lims:default")
+
     add_dexterity_setup_items(portal)
 
     # Published results tab is not displayed to client contacts
     # https://github.com/senaite/senaite.core/pull/1638
     fix_published_results_permission(portal)
+
+    # Update workflow mappings for samples to allow profile editing
+    update_workflow_mappings_samples(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
@@ -140,3 +149,36 @@ def fix_published_results_permission(portal):
         if action.id == "published_results":
             action.permissions = ("View", )
             break
+
+
+def update_workflow_mappings_samples(portal):
+    """Allow to edit analysis profiles
+    """
+    logger.info("Updating role mappings for Samples ...")
+    wf_id = "bika_ar_workflow"
+    query = {"portal_type": "AnalysisRequest",
+             "review_state": [
+                 "sample_due",
+                 "sample_registered",
+                 "scheduled_sampling",
+                 "to_be_sampled",
+                 "sample_received",
+                 "attachment_due",
+                 "to_be_verified",
+                 "to_be_preserved",
+             ]}
+    brains = api.search(query, CATALOG_ANALYSIS_REQUEST_LISTING)
+    update_workflow_mappings_for(portal, wf_id, brains)
+    logger.info("Updating role mappings for Samples [DONE]")
+
+
+def update_workflow_mappings_for(portal, wf_id, brains):
+    wf_tool = api.get_tool("portal_workflow")
+    workflow = wf_tool.getWorkflowById(wf_id)
+    total = len(brains)
+    for num, brain in enumerate(brains):
+        if num and num % 100 == 0:
+            logger.info("Updating role mappings: {0}/{1}".format(num, total))
+        obj = api.get_object(brain)
+        workflow.updateRoleMappingsFor(obj)
+        obj.reindexObject(idxs=["allowedRolesAndUsers"])

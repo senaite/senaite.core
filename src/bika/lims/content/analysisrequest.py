@@ -1465,6 +1465,34 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
                 if check_permission(permission, descendant):
                     descendant.setResultsRange(value)
 
+    def setProfiles(self, value):
+        """Set Analysis Profiles to the Sample
+        """
+        if not isinstance(value, (list, tuple)):
+            value = [value]
+        # filter out empties
+        value = filter(None, value)
+        # ensure we have UIDs
+        uids = map(api.get_uid, value)
+        # get the current set profiles
+        current_profiles = self.getRawProfiles()
+        # return immediately if nothing changed
+        if current_profiles == uids:
+            return
+        # get the profiles
+        profiles = map(api.get_object_by_uid, uids)
+        # get the current set of analyses/services
+        analyses = self.getAnalyses(full_objects=True)
+        services = map(lambda an: an.getAnalysisService(), analyses)
+        # determine all the services to add
+        services_to_add = set(services)
+        for profile in profiles:
+            services_to_add.update(profile.getService())
+        # set all analyses
+        self.setAnalyses(list(services_to_add))
+        # set the profiles value
+        self.getField("Profiles").set(self, value)
+
     def getClient(self):
         """Returns the client this object is bound to. We override getClient
         from ClientAwareMixin because the "Client" schema field is only used to
