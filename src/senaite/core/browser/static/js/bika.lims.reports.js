@@ -1,60 +1,50 @@
-/**
- * Controller class for Bika LIMS Reports
+
+/* Please use this command to compile this file into the parent `js` directory:
+    coffee --no-header -w -o ../ -c bika.lims.reports.coffee
  */
-function ReportFolderView() {
 
-    var that = this;
+(function() {
+  var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
-    /**
-     * Entry-point method for AnalysisServiceEditView
-     */
-    that.load = function() {
-
-        $("a[id$='_selector']").click(function(event){
-            $(".criteria").toggle(false);
-            event.preventDefault();
-            var div_id = $(this).attr("id").split("_selector")[0];
-            $("[id='"+div_id+"']").toggle(true);
-        });
-
-        // AJAX: Set ReferenceSamples dropdown when Supplier is selected
-        $("#SupplierUID").change(function(){
-            var val = $(this).val();
-            $.getJSON("referenceanalysisqc_samples",
-                    {"SupplierUID":val,
-                    "_authenticator": $("input[name='_authenticator']").val()},
-                    function(data){
-                        $("#SampleUID").empty().append("<option value=''></option>");
-                        if(data){
-                            for(var i=0;i<data.length;i++){
-                                var sample = data[i];
-                                $("#SampleUID").append("<option value='"+sample[0]+"'>"+sample[1]+"</option>");
-                            }
-                        }
-                    }
-            );
-        });
-
-        // AJAX: Set ReferenceServices dropdown when ReferenceSample is selected
-        $("#SampleUID").change(function(){
-            var val = $(this).val();
-            $.getJSON("referenceanalysisqc_services",
-                    {"SampleUID":val,
-                    "_authenticator": $("input[name='_authenticator']").val()},
-                    function(data){
-                        $("#ReferenceServiceUID").empty().append("<option value=''></option>");
-                        if(data){
-                            for(var i=0;i<data.length;i++){
-                                var service = data[i];
-                                $("#ReferenceServiceUID").append("<option value='"+service[0]+"'>"+service[1]+"</option>");
-                            }
-                        }
-                    }
-            );
-        });
-
-        // Reference QC: reset the dropdowns on page reload
-        $("#SupplierUID").val("");
-
+  window.ReportFolderView = (function() {
+    function ReportFolderView() {
+      this.on_toggle_change = bind(this.on_toggle_change, this);
+      this.bind_eventhandler = bind(this.bind_eventhandler, this);
+      this.load = bind(this.load, this);
     }
-}
+
+    ReportFolderView.prototype.load = function() {
+      console.debug("ReportFolderView::load");
+      return this.bind_eventhandler();
+    };
+
+
+    /* INITIALIZERS */
+
+    ReportFolderView.prototype.bind_eventhandler = function() {
+
+      /*
+       * Binds callbacks on elements
+       */
+      console.debug("ReportFolderView::bind_eventhandler");
+      return $("body").on("click", "a[id$='_selector']", this.on_toggle_change);
+    };
+
+    ReportFolderView.prototype.on_toggle_change = function(event) {
+
+      /**
+       * Event handler when the toggle anchor is clicked
+       */
+      var div_id;
+      console.debug("°°° ReportFolderView::on_toggle_change °°°");
+      event.preventDefault();
+      $(".criteria").toggle(false);
+      div_id = event.currentTarget.id.split("_selector")[0];
+      return $("[id='" + div_id + "']").toggle(true);
+    };
+
+    return ReportFolderView;
+
+  })();
+
+}).call(this);
