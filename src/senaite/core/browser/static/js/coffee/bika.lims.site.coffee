@@ -58,14 +58,6 @@ class window.SiteView
     $("body").on "keyup", "input[name*='\\:int\'], .ArchetypesIntegerWidget input", @on_at_integer_field_keyup
     $("body").on "keyup","input[name*='\\:float\'], .ArchetypesDecimalWidget input", @on_at_float_field_keyup
 
-    # Autocomplete events
-    # XXX Where is this used?
-    $("body").on "keydown", "input.autocomplete", @on_autocomplete_keydown
-
-    # Date Range Filtering
-    $("body").on "change", ".date_range_start", @on_date_range_start_change
-    $("body").on "change", ".date_range_end", @on_date_range_end_change
-
     $("body").on "click", "a.service_info", @on_service_info_click
 
     # Show loader on Ajax events
@@ -84,104 +76,71 @@ class window.SiteView
   init_datepickers: =>
     ###
      * Initialize date pickers
-     *
-     * XXX Where are these event handlers used?
     ###
     console.debug "SiteView::init_datepickers"
 
-    curDate = new Date
+    # max past year to show
+    curDate = new Date()
     y = curDate.getFullYear()
-    limitString = '1900:' + y
-    dateFormat = _t('date_format_short_datepicker')
+    yearRange = "1900:" + y
 
-    if dateFormat == 'date_format_short_datepicker'
-      dateFormat = 'yy-mm-dd'
+    # get a translated config object
+    lang = i18n?.currentLanguage or "en"
+    lang_config = $.datepicker.regional[lang] or $.datepicker.regional[""]
 
-    $('input.datepicker_range').datepicker
-      ###*
-      This function defines a datepicker for a date range. Both input
-      elements should be siblings and have the class 'date_range_start' and
-      'date_range_end'.
-      ###
-      showOn: 'focus'
-      showAnim: ''
-      changeMonth: true
-      changeYear: true
+    # translated date format
+    dateFormat = _t("date_format_short_datepicker")
+    if dateFormat == "date_format_short_datepicker"
+      dateFormat = "yy-mm-dd"
+
+    # https://api.jqueryui.com/datepicker
+    config = Object.assign lang_config,
       dateFormat: dateFormat
-      yearRange: limitString
+      timeFormat: "HH:mm"
+      showOn: "focus"
+      showAnim: "fadeIn"
+      changeMonth: yes
+      changeYear: yes
+      showWeek: yes
+      yearRange: yearRange
+      numberOfMonths: 1
+      autoSize: yes
 
-    $('input.datepicker').on 'click', ->
-      console.warn "SiteView::datepicker.click: Refactor this event handler!"
 
-      $(this).datepicker(
-        showOn: 'focus'
-        showAnim: ''
-        changeMonth: true
-        changeYear: true
-        dateFormat: dateFormat
-        yearRange: limitString).click(->
-        $(this).attr 'value', ''
-        return
-      ).focus()
-      return
+    # returns a customizable datepicker config
+    make_datepicker_config = (options) ->
+      if options is undefined
+        options = {}
+      # create a copy of the default config
+      default_config = Object.assign {}, config
+      # update the config with the custom options
+      return Object.assign default_config, options
 
-    $('input.datepicker_nofuture').on 'click', ->
-      console.warn "SiteView::datetimepicker_nofuture.click: Refactor this event handler!"
-
-      $(this).datepicker(
-        showOn: 'focus'
-        showAnim: ''
-        changeMonth: true
-        changeYear: true
+    # date picker w/o future date
+    $("input.datepicker_nofuture").datepicker(
+      make_datepicker_config(
         maxDate: curDate
-        dateFormat: dateFormat
-        yearRange: limitString).click(->
-        $(this).attr 'value', ''
-        return
-      ).focus()
-      return
+      )
+    )
 
-    $('input.datepicker_2months').on 'click', ->
-      console.warn "SiteView::datetimepicker_2months.click: Refactor this event handler!"
+    $("input.datepicker").datepicker(
+      make_datepicker_config()
+    )
 
-      $(this).datepicker(
-        showOn: 'focus'
-        showAnim: ''
-        changeMonth: true
-        changeYear: true
-        maxDate: '+0d'
+    # date picker that shows two months side by side
+    $("input.datepicker_2months").datepicker(
+      make_datepicker_config(
+        maxDate: curDate
         numberOfMonths: 2
-        dateFormat: dateFormat
-        yearRange: limitString).click(->
-        $(this).attr 'value', ''
-        return
-      ).focus()
-      return
+      )
+    )
 
-    $('input.datetimepicker_nofuture').on 'click', ->
-      console.warn "SiteView::datetimepicker_nofuture.click: Refactor this event handler!"
-
-      $(this).datetimepicker(
-        showOn: 'focus'
-        showAnim: ''
-        changeMonth: true
-        changeYear: true
+    # date and time picker w/o future date
+    $("input.datetimepicker_nofuture").datetimepicker(
+      make_datepicker_config(
         maxDate: curDate
-        dateFormat: dateFormat
-        yearRange: limitString
-        timeFormat: 'HH:mm'
-        beforeShow: ->
-          setTimeout (->
-            $('.ui-datepicker').css 'z-index', 99999999999999
-            return
-          ), 0
-          return
-      ).click(->
-        $(this).attr 'value', ''
-        return
-      ).focus()
-      return
-
+      )
+    )
 
   init_referencedefinition: =>
     ###
@@ -319,86 +278,6 @@ class window.SiteView
 
 
   ### EVENT HANDLER ###
-
-  on_date_range_start_change: (event) =>
-    ###
-     * Eventhandler for Date Range Filtering
-     *
-     * 1. Go to Setup and enable advanced filter bar
-     * 2. Set the start date of adv. filter bar, e.g. in AR listing
-    ###
-    console.debug "°°° SiteView::on_date_range_start_change °°°"
-
-    el = event.currentTarget
-    $el = $(el)
-
-    # Set the min selectable end date to the start date
-    date_element = $el.datepicker('getDate')
-    brother = $el.siblings('.date_range_end')
-    $(brother).datepicker 'option', 'minDate', date_element
-
-
-  on_date_range_end_change: (event) =>
-    ###
-     * Eventhandler for Date Range Filtering
-     *
-     * 1. Go to Setup and enable advanced filter bar
-     * 2. Set the start date of adv. filter bar, e.g. in AR listing
-    ###
-    console.debug "°°° SiteView::on_date_range_end_change °°°"
-
-    el = event.currentTarget
-    $el = $(el)
-
-    # Set the max selectable start date to the end date
-    date_element = $el.datepicker('getDate')
-    brother = $el.siblings('.date_range_start')
-    $(brother).datepicker 'option', 'maxDate', date_element
-
-
-  on_autocomplete_keydown: (event) =>
-    ###
-     * Eventhandler for Autocomplete fields
-     *
-     * XXX: Refactor if it is clear where this code is used!
-    ###
-    console.debug "°°° SiteView::on_autocomplete_keydown °°°"
-
-    el = event.currentTarget
-    $el = $(el)
-
-    availableTags = $.parseJSON($('input.autocomplete').attr('voc'))
-
-    split = (val) ->
-      val.split /,\s*/
-
-    extractLast = (term) ->
-      split(term).pop()
-
-    if event.keyCode == $.ui.keyCode.TAB and $el.autocomplete('instance').menu.active
-      event.preventDefault()
-    return
-
-    $el.autocomplete
-      minLength: 0
-      source: (request, response) ->
-        # delegate back to autocomplete, but extract the last term
-        response $.ui.autocomplete.filter(availableTags, extractLast(request.term))
-        return
-      focus: ->
-        # prevent value inserted on focus
-        return false
-      select: (event, ui) ->
-        terms = split($el.val())
-        # remove the current input
-        terms.pop()
-        # add the selected item
-        terms.push ui.item.value
-        # add placeholder to get the comma-and-space at the end
-        terms.push ''
-        @el.val terms.join(', ')
-        return false
-
 
   on_at_integer_field_keyup: (event) =>
     ###

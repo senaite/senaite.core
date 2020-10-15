@@ -4,7 +4,7 @@ Changelog
 2.0.0rc3 (unreleased)
 ---------------------
 
-- no changes yet
+- #1659 Fix language in datepicker widgets
 
 
 2.0.0rc2 (2020-10-13)
