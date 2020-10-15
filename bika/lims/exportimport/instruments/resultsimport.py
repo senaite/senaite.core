@@ -954,14 +954,12 @@ class AnalysisResultsImporter(Logger):
                 # Get result values as strings
                 result_values = map(
                     lambda r: str(r.get("ResultValue")), result_options)
-                # Check whether the result is a string and transform it to number
-                if isinstance(res, str):
-                    if api.is_floatable(res):
-                        res = float(res)
-                    else:
-                        res = int(res)
+
                 # If result is floatable, only uses the int part
-                if "{:.0f}".format(res) in result_values:
+                if api.is_floatable(res):
+                    res = "{:.0f}".format(api.to_float(res))
+
+                if res in result_values:
                     res = int(res)
 
             analysis.setResult(res)
