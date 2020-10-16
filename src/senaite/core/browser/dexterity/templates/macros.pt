@@ -1,0 +1,199 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      i18n:domain="plone">
+  <body>
+
+    <div class="form" metal:define-macro="form">
+
+      <metal:title-slot define-slot="title">
+        <h3 tal:condition="view/label | nothing" tal:content="view/label" />
+      </metal:title-slot>
+
+      <metal:define define-macro="titlelessform">
+
+        <!-- Status Message -->
+        <tal:status define="status view/status;
+                            has_error python:view.widgets.errors or status == getattr(view, 'formErrorsMessage', None)" condition="status">
+          <dl class="portalMessage alert error" tal:condition="has_error" role="alert">
+            <dt i18n:translate="" i18n:domain="plone">
+              Error
+            </dt>
+            <dd tal:content="status" />
+          </dl>
+          <dl class="portalMessage info" tal:condition="not:has_error" role="status">
+            <dt i18n:translate="" i18n:domain="plone">
+              Info
+            </dt>
+            <dd tal:content="status" />
+          </dl>
+        </tal:status>
+
+        <!-- Field errors -->
+        <tal:errors define="errors view/widgets/errors" condition="errors">
+          <tal:error repeat="error errors">
+            <div class="field error alert alert-warning"
+                 tal:condition="not:nocall:error/widget"
+                 tal:content="structure error/render">
+              Error
+            </div>
+          </tal:error>
+        </tal:errors>
+
+        <!-- Description -->
+        <metal:description-slot define-slot="description">
+          <p class="discreet text-secondary"
+             tal:define="description view/description | nothing"
+             tal:condition="description"
+             tal:content="structure description|default">
+            Description
+          </p>
+        </metal:description-slot>
+
+        <!-- Form -->
+        <form data-pat-autotoc="levels: legend; section: fieldset; className: autotabs"
+              class="rowlike enableUnloadProtection" action="." method="post"
+              tal:define="groups view/groups | nothing;
+                          form_name view/form_name | nothing;
+                          form_class view/css_class | string:;
+                          default_fieldset_label view/default_fieldset_label | form_name;
+                          enable_form_tabbing view/enable_form_tabbing | python:True;
+                          enable_unload_protection view/enable_unload_protection|python:True;
+                          unload_protection python:enable_unload_protection and 'pat-formunloadalert';
+                          has_groups python:bool(groups);
+                          form_tabbing python:(has_groups and enable_form_tabbing) and 'enableFormTabbing pat-autotoc' or '';
+                          show_default_label python:has_groups and default_fieldset_label and len(view.widgets);
+                          form_view_name_raw python:view.__name__ or request.getURL().split('/')[-1];
+                          form_view_name python:'-'.join(['view', 'name'] + [x for x in form_view_name_raw.split('++') if x]);
+                          "
+              tal:attributes="action view/action|request/getURL;
+                              enctype view/enctype;
+                              class python:'rowlike {0} {1} {2} kssattr-formname-{3} {4}'.format(unload_protection, form_tabbing, form_class, form_view_name_raw, form_view_name);
+                              id view/id;
+                              method view/method|string:post">
+
+          <metal:block define-slot="formtop" />
+
+          <!-- navigation tabs -->
+          <ul class="nav nav-tabs" role="tablist">
+            <!-- primary tab -->
+            <li class="nav-item" role="presentation">
+              <a tal:content="default_fieldset_label"
+                 id="default-tab"
+                 href="#default"
+                 class="nav-link active"
+                 data-toggle="tab"
+                 role="tab">
+                Label
+              </a>
+            </li>
+
+            <!-- secondary tabs -->
+            <li tal:repeat="group groups" tal:condition="has_groups" class="nav-item" role="presentation">
+              <a tal:define="normalizeString nocall:context/@@plone/normalizeString;
+                             fieldset_label group/label;
+                             fieldset_name python:getattr(group, '__name__', False) or getattr(group.label, 'default', False) or fieldset_label;
+                             fieldset_name python:normalizeString(fieldset_name);
+                             has_errors group/widgets/errors|nothing"
+                 tal:attributes="id string:${fieldset_name}-tab;
+                                 href string:#${fieldset_name};
+                                 class python:has_errors and 'nav-link text-danger' or 'nav-link'"
+                 tal:content="fieldset_label"
+                 data-toggle="tab"
+                 role="tab">
+                Label
+              </a>
+            </li>
+          </ul>
+
+          <metal:fields-slot define-slot="fields">
+
+            <input type="hidden"
+                   name="fieldset"
+                   tal:define="current_fieldset request/fieldset | python:None"
+                   tal:condition="python:has_groups and enable_form_tabbing and current_fieldset is not None"
+                   tal:attributes="value current_fieldset" />
+
+            <!-- Default fieldset -->
+            <metal:define
+              define-macro="fields"
+              tal:define="show_default_label show_default_label|nothing;
+                          has_groups has_groups|nothing">
+
+              <!-- tab content -->
+              <div class="tab-content">
+
+                <!-- Primary fieldsets -->
+                <div class="tab-pane active" id="default" role="tabpanel">
+                  <metal:define define-macro="widget_rendering">
+                    <tal:widgets repeat="widget view/widgets/values">
+                      <metal:field-slot define-slot="field">
+                        <metal:field define-macro="field">
+                          <tal:widget tal:replace="structure widget/@@ploneform-render-widget"/>
+                        </metal:field>
+                      </metal:field-slot>
+                    </tal:widgets>
+                  </metal:define>
+                </div>
+
+                <!-- Secondary fieldsets -->
+                <tal:block tal:repeat="group groups" condition="has_groups">
+                  <div class="tab-pane"
+                       role="tabpanel"
+                       tal:define="normalizeString nocall:context/@@plone/normalizeString;
+                                   fieldset_label group/label;
+                                   fieldset_name python:getattr(group, '__name__', False) or getattr(group.label, 'default', False) or fieldset_label;
+                                   fieldset_name python:normalizeString(fieldset_name);"
+                       tal:attributes="id string:${fieldset_name};
+                                       data-fieldset fieldset_name">
+
+                    <p i18n:translate=""
+                      tal:define="group_description group/description|nothing"
+                      tal:condition="group_description"
+                      tal:content="structure group_description">
+                      Description
+                    </p>
+
+                    <!-- Error -->
+                    <tal:block tal:define="errors group/widgets/errors"
+                               tal:condition="errors"
+                               tal:repeat="error errors">
+                      <div class="field error fieldErrorBox"
+                           tal:condition="not:nocall:error/widget"
+                           tal:content="structure error/render"/>
+                    </tal:block>
+
+                    <!-- Widget -->
+                    <tal:block define="view nocall:group;">
+                      <metal:block use-macro="context/@@ploneform-macros/widget_rendering" />
+                    </tal:block>
+
+                  </div>
+                </tal:block>
+              </div>
+
+            </metal:define>
+          </metal:fields-slot>
+
+          <metal:block define-slot="belowfields" />
+
+          <metal:actions-slot define-slot="actions">
+            <metal:define define-macro="actions">
+              <div class="formControls" tal:condition="view/actions/values|nothing">
+                <tal:block repeat="action view/actions/values">
+                  <input type="submit" tal:replace="structure action/render" />
+                </tal:block>
+              </div>
+            </metal:define>
+          </metal:actions-slot>
+
+          <tal:block tal:condition="view/enableCSRFProtection|nothing"
+                     tal:replace="structure context/@@authenticator/authenticator" />
+          <metal:block define-slot="formbottom" />
+
+        </form>
+      </metal:define>
+    </div>
+  </body>
+</html>

@@ -73,6 +73,7 @@ def upgrade(tool):
     # run import steps located in senaite.core profiles
     setup.runImportStepFromProfile(profile, "typeinfo")
     setup.runImportStepFromProfile(profile, "workflow")
+    setup.runImportStepFromProfile(profile, "browserlayer")
     # run import steps located in bika.lims profiles
     _run_import_step(portal, "typeinfo", profile="profile-bika.lims:default")
     _run_import_step(portal, "workflow", profile="profile-bika.lims:default")
