@@ -46,7 +46,6 @@ class HasAuditLog(BrowserView):
 class AuditLogView(BikaListingView):
     """Audit View
     """
-    template = ViewPageTemplateFile("templates/auditlog.pt")
     diff_template = ViewPageTemplateFile("templates/auditlog_diff.pt")
 
     def __init__(self, context, request):
@@ -67,10 +66,9 @@ class AuditLogView(BikaListingView):
         self.show_search = False
         self.pagesize = 5
 
-        self.icon = "{}/{}/{}".format(
+        self.icon = "{}/{}".format(
             self.portal_url,
-            "++resource++bika.lims.images",
-            "%s_big.png" % context.portal_type.lower())
+            "senaite_theme/icon/auditlog")
 
         self.title = "Audit Log for {}".format(api.get_title(context))
 
