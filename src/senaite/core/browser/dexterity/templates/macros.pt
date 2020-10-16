@@ -30,16 +30,27 @@
           </dl>
         </tal:status>
 
-        <!-- Field errors -->
+        <!-- Primary Field Errors -->
         <tal:errors define="errors view/widgets/errors" condition="errors">
           <tal:error repeat="error errors">
-            <div class="field error alert alert-warning"
+            <div class="alert alert-warning"
                  tal:condition="not:nocall:error/widget"
                  tal:content="structure error/render">
               Error
             </div>
           </tal:error>
         </tal:errors>
+
+        <!-- Secondary Field Errors -->
+        <tal:groups repeat="group view/groups">
+          <tal:block tal:define="errors group/widgets/errors"
+                    tal:condition="errors"
+                    tal:repeat="error errors">
+            <div class="alert alert-warning"
+                tal:condition="not:nocall:error/widget"
+                tal:content="structure error/render"/>
+          </tal:block>
+        </tal:groups>
 
         <!-- Description -->
         <metal:description-slot define-slot="description">
@@ -77,12 +88,14 @@
 
           <!-- navigation tabs -->
           <ul class="nav nav-tabs" role="tablist">
+
             <!-- primary tab -->
-            <li class="nav-item" role="presentation">
+            <li class="nav-item" role="presentation"
+                tal:define="has_errors view/widgets/errors">
               <a tal:content="default_fieldset_label"
+                 tal:attributes="class python:has_errors and 'nav-link active text-danger' or 'nav-link active'"
                  id="default-tab"
                  href="#default"
-                 class="nav-link active"
                  data-toggle="tab"
                  role="tab">
                 Label
@@ -157,7 +170,7 @@
 
                     <!-- Error -->
                     <tal:block tal:define="errors group/widgets/errors"
-                               tal:condition="errors"
+                               tal:condition="python:False"
                                tal:repeat="error errors">
                       <div class="field error fieldErrorBox"
                            tal:condition="not:nocall:error/widget"
