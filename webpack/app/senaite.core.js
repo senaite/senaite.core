@@ -1,5 +1,6 @@
 import $ from "jquery";
 import {i18n, _t, _p} from "./i18n-wrapper.js"
+import Site from "./components/site.js"
 import Sidebar from "./components/sidebar.js"
 
 
@@ -23,6 +24,8 @@ document.addEventListener("DOMContentLoaded", () => {
   })
   // /TinyMCE
 
+  // Initialize Site
+  window.site = new Site();
 
   // Initialize Sidebar
   window.sidebar = new Sidebar({
