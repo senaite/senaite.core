@@ -33,7 +33,7 @@
         <!-- Primary Field Errors -->
         <tal:errors define="errors view/widgets/errors" condition="errors">
           <tal:error repeat="error errors">
-            <div class="alert alert-warning"
+            <div class="field error alert alert-warning"
                  tal:condition="not:nocall:error/widget"
                  tal:content="structure error/render">
               Error
@@ -46,7 +46,7 @@
           <tal:block tal:define="errors group/widgets/errors"
                     tal:condition="errors"
                     tal:repeat="error errors">
-            <div class="alert alert-warning"
+            <div class="field error alert alert-warning"
                 tal:condition="not:nocall:error/widget"
                 tal:content="structure error/render"/>
           </tal:block>
