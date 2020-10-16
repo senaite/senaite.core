@@ -45,11 +45,11 @@ class Sidebar{
   }
 
   is_toggled() {
-    return bika.lims.SiteView.read_cookie(this.config.cookie_key) == "true";
+    return window.site.read_cookie(this.config.cookie_key) == "true";
   }
 
   toggle(toggle=false) {
-    bika.lims.SiteView.set_cookie(this.config.cookie_key, toggle)
+    window.site.set_cookie(this.config.cookie_key, toggle)
     if (toggle) {
       this.el.classList.add("toggled")
       this.maximize();

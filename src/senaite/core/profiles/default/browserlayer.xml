@@ -2,4 +2,7 @@
 <layers>
   <layer name="senaite.core"
          interface="senaite.core.interfaces.ISenaiteCore"/>
+
+  <layer name="senaite.core.forms"
+         interface="senaite.core.interfaces.ISenaiteFormLayer"/>
 </layers>

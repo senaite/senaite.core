@@ -18,8 +18,11 @@
 # Copyright 2018-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import os
+
 from bika.lims import api
 from bika.lims.api.security import check_permission
+from bika.lims.utils import get_image
 from plone.app.layout.viewlets import ViewletBase
 from plone.memoize.instance import memoize
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
@@ -28,6 +31,7 @@ from zope.component import getMultiAdapter
 DEFAULT_PERM = "View"
 DEFAULT_ADD_PERM = "Add portal content"
 SVG_ADD_ICON = "senaite_theme/icon/plus"
+IMG_STYLE = "width:24px; height:24px;"
 
 
 class ListingTableTitleViewlet(ViewletBase):
@@ -48,13 +52,42 @@ class ListingTableTitleViewlet(ViewletBase):
 
     @property
     @memoize
+    def theme_view(self):
+        return getMultiAdapter(
+            (self.context, self.request),
+            name="senaite_theme"
+        )
+
+    @property
+    @memoize
     def icon(self):
-        return self.boootstrap_view.get_icon_for(self.context, height="24")
+        icon = self.get_view_icon(style=IMG_STYLE)
+        if not icon:
+            # use the content icon
+            icon = self.boootstrap_view.get_icon_for(
+                self.context, style=IMG_STYLE)
+        return icon
 
     def title(self):
         return self.view.title or self.context.Title()
 
-    def get_context_actions(self):
+    def get_view_icon(self, **kw):
+        """Try to get the icon from the listing view
+        """
+        icon_url = getattr(self.view, "icon", None)
+        if not icon_url:
+            return None
+        # parse the icon filename
+        last = icon_url.split("/")[-1]
+        name, ext = os.path.splitext(last)
+        # BBB: handle old `_big.png` icons
+        icon = name.replace("_big", "")
+        # fall back and use the image URL as it is
+        if icon not in self.theme_view.icons():
+            return get_image(last, **kw)
+        return self.theme_view.icon_tag(icon, **kw)
+
+    def get_context_actions(self, **kw):
         """Get the defined ccontex actions of the listing view
         """
         actions = getattr(self.view, "context_actions", {})
