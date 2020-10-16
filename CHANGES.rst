@@ -4,6 +4,7 @@ Changelog
 2.0.0rc3 (unreleased)
 ---------------------
 
+- #1664 Display correct icons in listings
 - #1660 Cleanup unused ajax endpoints for reports and js
 - #1659 Fix language in datepicker widgets
 
