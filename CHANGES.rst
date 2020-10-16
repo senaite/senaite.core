@@ -4,6 +4,7 @@ Changelog
 2.0.0rc3 (unreleased)
 ---------------------
 
+- #1666 Added adapter to extend listing_searchable_text index
 - #1665 Display Auditlog listing icon
 - #1664 Display correct icons in listings
 - #1662 Custom view/edit forms for dexterity types
