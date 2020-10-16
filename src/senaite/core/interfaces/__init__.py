@@ -18,11 +18,17 @@
 # Copyright 2018-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from plone.app.z3cform.interfaces import IPloneFormLayer
 from zope.interface import Interface
 
 
 class ISenaiteCore(Interface):
     """Marker interface that defines a Zope 3 browser layer.
+    """
+
+
+class ISenaiteFormLayer(IPloneFormLayer):
+    """Used to override plone.app.z3cform forms
     """
 
 
