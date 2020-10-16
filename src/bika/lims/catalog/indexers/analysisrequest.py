@@ -18,13 +18,16 @@
 # Copyright 2018-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from plone.indexer import indexer
+import six
 
 from bika.lims import api
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.catalog.indexers import get_metadata_for
-from bika.lims.interfaces import IAnalysisRequest, \
-    IBikaCatalogAnalysisRequestListing
+from bika.lims.interfaces import IAnalysisRequest
+from bika.lims.interfaces import IBikaCatalogAnalysisRequestListing
+from bika.lims.interfaces import IListingSearchableTextProvider
+from plone.indexer import indexer
+from zope.component import getAdapters
 
 
 @indexer(IAnalysisRequest)
@@ -61,6 +64,15 @@ def listing_searchable_text(instance):
     # add metadata of all descendants
     for descendant in instance.getDescendants():
         entries.add(listing_searchable_text(descendant)())
+
+    # extend metadata entries with pluggable text providers
+    for name, adapter in getAdapters((instance, catalog),
+                                     IListingSearchableTextProvider):
+        value = adapter()
+        if isinstance(value, (list, tuple)):
+            entries.update(value)
+        elif isinstance(value, six.string_types):
+            entries.add(value)
 
     # Concatenate all strings to one text blob
     return " ".join(entries)
