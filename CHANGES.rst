@@ -4,6 +4,7 @@ Changelog
 2.0.0rc3 (unreleased)
 ---------------------
 
+- #1665 Display Auditlog listing icon
 - #1664 Display correct icons in listings
 - #1662 Custom view/edit forms for dexterity types
 - #1660 Cleanup unused ajax endpoints for reports and js
