@@ -94,7 +94,8 @@
         changeYear: true,
         showWeek: true,
         yearRange: yearRange,
-        numberOfMonths: 1
+        numberOfMonths: 1,
+        autoSize: true
       });
       make_datepicker_config = function(options) {
         var default_config;
@@ -146,7 +147,8 @@
       /*
        * Get the authenticator value
        */
-      return $("input[name='_authenticator']").val();
+      console.warn("SiteView::get_authenticator: Please use site.authenticator instead");
+      return window.site.authenticator();
     };
 
     SiteView.prototype.portalAlert = function(html) {
@@ -188,8 +190,8 @@
       /*
        * BBB: Use read_cookie
        */
-      console.warn("SiteView::readCookie: Please use read_cookie method instead.");
-      return this.read_cookie(cname);
+      console.warn("SiteView::readCookie: Please use site.read_cookie instead");
+      return window.site.read_cookie(cname);
     };
 
     SiteView.prototype.read_cookie = function(cname) {
@@ -197,22 +199,8 @@
       /*
        * Read cookie value
        */
-      var c, ca, i, name;
-      console.debug("SiteView::read_cookie:" + cname);
-      name = cname + '=';
-      ca = document.cookie.split(';');
-      i = 0;
-      while (i < ca.length) {
-        c = ca[i];
-        while (c.charAt(0) === ' ') {
-          c = c.substring(1);
-        }
-        if (c.indexOf(name) === 0) {
-          return c.substring(name.length, c.length);
-        }
-        i++;
-      }
-      return null;
+      console.warn("SiteView::read_cookie. Please use site.read_cookie instead");
+      return window.site.read_cookie(cname);
     };
 
     SiteView.prototype.setCookie = function(cname, cvalue) {
@@ -220,8 +208,8 @@
       /*
        * BBB: Use set_cookie
        */
-      console.warn("SiteView::setCookie: Please use set_cookie method instead.");
-      return this.set_cookie(cname, cvalue);
+      console.warn("SiteView::setCookie. Please use site.set_cookie instead");
+      return window.site.set_cookie(cname, cvalue);
     };
 
     SiteView.prototype.set_cookie = function(cname, cvalue) {
@@ -229,12 +217,8 @@
       /*
        * Read cookie value
        */
-      var d, expires;
-      console.debug("SiteView::set_cookie:cname=" + cname + ", cvalue=" + cvalue);
-      d = new Date;
-      d.setTime(d.getTime() + 1 * 24 * 60 * 60 * 1000);
-      expires = 'expires=' + d.toUTCString();
-      document.cookie = cname + '=' + cvalue + ';' + expires + ';path=/';
+      console.warn("SiteView::set_cookie. Please use site.set_cookie instead");
+      window.site.set_cookie(cname, cvalue);
     };
 
     SiteView.prototype.notificationPanel = function(data, mode) {
