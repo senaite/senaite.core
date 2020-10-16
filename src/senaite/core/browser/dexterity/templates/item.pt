@@ -1,0 +1,31 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      lang="en"
+      metal:use-macro="context/@@main_template/macros/master"
+      i18n:domain="plone">
+  <body>
+
+    <metal:main fill-slot="content-core">
+      <metal:content-core define-macro="content-core">
+
+        <tal:block repeat="widget view/widgets/values|nothing">
+          <tal:block tal:condition="python:widget.__name__ not in ('IBasic.title', 'IBasic.description', 'title', 'description',)">
+            <tal:widget tal:replace="structure widget/@@ploneform-render-widget"/>
+          </tal:block>
+        </tal:block>
+
+        <div tal:repeat="group view/groups|nothing"
+             tal:attributes="id python:''.join((group.prefix, 'groups.', group.__name__)).replace('.', '-')">
+          <legend class="mt-2 border-top border-bottom" tal:content="group/label" />
+          <tal:block tal:repeat="widget group/widgets/values|nothing">
+            <tal:widget tal:replace="structure widget/@@ploneform-render-widget"/>
+          </tal:block>
+        </div>
+
+      </metal:content-core>
+    </metal:main>
+
+  </body>
+</html>

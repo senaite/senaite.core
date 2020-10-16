@@ -5,6 +5,7 @@ Changelog
 ---------------------
 
 - #1664 Display correct icons in listings
+- #1662 Custom view/edit forms for dexterity types
 - #1660 Cleanup unused ajax endpoints for reports and js
 - #1659 Fix language in datepicker widgets
 

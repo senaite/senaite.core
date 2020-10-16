@@ -1,0 +1,43 @@
+<div metal:define-macro="widget-wrapper"
+     i18n:domain="plone"
+     tal:define="widget nocall:context;
+                 hidden python:widget.mode == 'hidden';
+                 error widget/error;
+                 error_class python:error and ' error' or '';
+                 empty_values python: (None, '', [], ('', '', '', '00', '00', ''), ('', '', ''));
+                 empty_class python: (widget.value in empty_values) and ' empty' or '';
+	               wrapper_css_class  widget/wrapper_css_class|nothing;
+                 fieldname_class string:kssattr-fieldname-${widget/name};"
+     data-pat-inlinevalidation='{"type":"z3c.form"}'
+     tal:attributes="class string:field pat-inlinevalidation ${fieldname_class}${error_class}${empty_class} ${wrapper_css_class};
+                     data-fieldname widget/name;
+                     id string:formfield-${widget/id};">
+
+  <div for=""
+         class="horizontal font-weight-bold"
+         tal:attributes="for widget/id"
+         tal:condition="python: not hidden and widget.label">
+    <span i18n:translate="" tal:replace="widget/label">label</span>
+
+    <span class="required horizontal" title="Required"
+          tal:condition="python:widget.required and widget.mode == 'input'"
+          i18n:attributes="title title_required;">&nbsp;</span>
+  </div>
+
+  <div class="fieldErrorBox"
+       tal:content="structure error/render|nothing">
+    Error
+  </div>
+
+  <span class="formHelp text-secondary text-muted"
+        tal:define="description python: getattr(widget, 'description', widget.field.description)"
+        i18n:translate=""
+        tal:content="structure description"
+        tal:condition="python:description and not hidden">
+    field description
+  </span>
+
+  <input type="text"
+         tal:replace="structure widget/render"
+         metal:define-slot="widget" />
+</div>

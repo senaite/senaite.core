@@ -1,0 +1,49 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:zcml="http://namespaces.zope.org/zcml"
+    i18n_domain="plone">
+
+  <!-- Override form/field/widget macros for edit mode -->
+  <browser:page
+      name="ploneform-macros"
+      for="*"
+      class=".views.SenaiteMacros"
+      template="templates/macros.pt"
+      allowed_interface="zope.interface.common.mapping.IItemMapping"
+      permission="zope.Public"
+      layer="senaite.core.interfaces.ISenaiteFormLayer"
+      />
+
+  <!-- Override widget rendering -->
+  <browser:page
+      name="ploneform-render-widget"
+      for="z3c.form.interfaces.IWidget"
+      class=".views.SenaiteRenderWidget"
+      permission="zope.Public"
+      layer="senaite.core.interfaces.ISenaiteFormLayer"
+      />
+
+  <!-- Default view for Dexterity Items -->
+  <browser:page
+      for="plone.dexterity.interfaces.IDexterityItem"
+      name="view"
+      class=".views.SenaiteDefaultView"
+      template="templates/item.pt"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
+  <!-- Defaut edit view for Dexterity Items -->
+  <browser:page
+      for="plone.dexterity.interfaces.IDexterityContent"
+      name="edit"
+      class=".views.SenaiteDefaultEditView"
+      permission="cmf.ModifyPortalContent"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
+  <!-- Override the form for the standard full-page form rendering -->
+  <adapter factory=".views.form_factory" />
+
+</configure>
