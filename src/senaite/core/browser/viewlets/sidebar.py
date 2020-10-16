@@ -67,3 +67,6 @@ class SidebarViewletManager(OrderedViewletManager):
             (self.context, self.request, view, manager, assignment),
             IPortletRenderer)
         return renderer.render()
+
+    def is_navbar_toggled(self):
+        return self.request.cookies.get("sidebar-toggle", None) == "true"

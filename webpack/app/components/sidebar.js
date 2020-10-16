@@ -13,7 +13,7 @@ class Sidebar{
     this.config = Object.assign({
       "el": "sidebar",
       "toggle_el": "sidebar-header",
-      "storage_key": "sidebar-toggle",
+      "cookie_key": "sidebar-toggle",
       "timeout": 1000,
     }, config);
 
@@ -45,11 +45,11 @@ class Sidebar{
   }
 
   is_toggled() {
-    return window.localStorage.getItem(this.config.storage_key) == "true";
+    return bika.lims.SiteView.read_cookie(this.config.cookie_key) == "true";
   }
 
   toggle(toggle=false) {
-    window.localStorage.setItem(this.config.storage_key, toggle);
+    bika.lims.SiteView.set_cookie(this.config.cookie_key, toggle)
     if (toggle) {
       this.el.classList.add("toggled")
       this.maximize();

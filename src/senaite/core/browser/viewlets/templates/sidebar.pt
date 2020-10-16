@@ -1,7 +1,8 @@
 <nav id="sidebar"
-     tal:define="navigation python:view.render_navigation_portlet()"
+     tal:define="navigation python:view.render_navigation_portlet();
+                 clazz python:view.is_navbar_toggled() and 'toggled' or 'minimized';"
      tal:condition="python:view.available() and navigation"
-     class="minimized bg-light"
+     tal:attributes="class string:${clazz} bg-light"
      i18n:domain="senaite.core">
 
   <!-- Navigation portlet -->
