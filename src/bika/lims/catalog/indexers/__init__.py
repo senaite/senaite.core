@@ -18,15 +18,19 @@
 # Copyright 2018-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import six
+
 from bika.lims import api
 from bika.lims import logger
 from bika.lims.catalog.bika_catalog import BIKA_CATALOG
 from bika.lims.interfaces import IBikaCatalog
+from bika.lims.interfaces import IListingSearchableTextProvider
 from plone.indexer import indexer
 from Products.CMFCore.interfaces import IContentish
 from Products.CMFPlone.CatalogTool import \
     sortable_title as plone_sortable_title
 from Products.CMFPlone.utils import safe_callable
+from zope.component import getAdapters
 
 
 @indexer(IContentish)
@@ -67,7 +71,8 @@ def listing_searchable_text(instance):
     wildcard searches
     :return: all metadata values joined in a string
     """
-    return generic_listing_searchable_text(instance, BIKA_CATALOG)
+    tokens = get_searchable_text_tokens(instance, BIKA_CATALOG)
+    return u" ".join(tokens)
 
 
 def get_metadata_for(instance, catalog):
@@ -82,15 +87,17 @@ def get_metadata_for(instance, catalog):
         return {}
 
 
-def generic_listing_searchable_text(instance, catalog_name,
-                                    exclude_field_names=None,
-                                    include_field_names=None):
+def get_searchable_text_tokens(instance, catalog_name,
+                               exclude_field_names=None,
+                               include_field_names=None):
     """Retrieves all the values of metadata columns in the catalog for
     wildcard searches
+
     :param instance: the object to retrieve metadata/values from
     :param catalog_name: the catalog to retrieve metadata from
     :param exclude_field_names: field names to exclude from the metadata
     :param include_field_names: field names to include, even if no metadata
+    :returns: list of unified searchable text tokes
     """
     entries = set()
 
@@ -118,8 +125,17 @@ def generic_listing_searchable_text(instance, catalog_name,
         field_value = api.to_searchable_text_metadata(field_value)
         entries.add(field_value)
 
+    # Extend metadata entries with pluggable text providers
+    for name, adapter in getAdapters((instance, catalog),
+                                     IListingSearchableTextProvider):
+        value = adapter()
+        if isinstance(value, (list, tuple)):
+            entries.update(value)
+        elif isinstance(value, six.string_types):
+            entries.add(value)
+
     # Remove empties
     entries = filter(None, entries)
 
-    # Concatenate all strings to one text blob
-    return " ".join(entries)
+    # return a list of searchable text tokes
+    return list(entries)
