@@ -94,7 +94,8 @@
         changeYear: true,
         showWeek: true,
         yearRange: yearRange,
-        numberOfMonths: 1
+        numberOfMonths: 1,
+        autoSize: true
       });
       make_datepicker_config = function(options) {
         var default_config;
