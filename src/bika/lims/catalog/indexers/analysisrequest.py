@@ -18,13 +18,17 @@
 # Copyright 2018-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from plone.indexer import indexer
+import six
 
 from bika.lims import api
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.catalog.indexers import get_metadata_for
-from bika.lims.interfaces import IAnalysisRequest, \
-    IBikaCatalogAnalysisRequestListing
+from bika.lims.interfaces import IAnalysisRequest
+from bika.lims.catalog.indexers import get_searchable_text_tokens
+from bika.lims.interfaces import IBikaCatalogAnalysisRequestListing
+from bika.lims.interfaces import IListingSearchableTextProvider
+from plone.indexer import indexer
+from zope.component import getAdapters
 
 
 @indexer(IAnalysisRequest)
@@ -46,24 +50,23 @@ def assigned_state(instance):
 
 @indexer(IAnalysisRequest, IBikaCatalogAnalysisRequestListing)
 def listing_searchable_text(instance):
-    """ Retrieves all the values of metadata columns in the catalog for
+    """Retrieves all the values of metadata columns in the catalog for
     wildcard searches
     :return: all metadata values joined in a string
     """
     entries = set()
-    catalog = api.get_tool(CATALOG_ANALYSIS_REQUEST_LISTING)
-    metadata = get_metadata_for(instance, catalog)
-    for key, brain_value in metadata.items():
-        instance_value = api.safe_getattr(instance, key, None)
-        parsed = api.to_searchable_text_metadata(brain_value or instance_value)
-        entries.add(parsed)
+    catalog = CATALOG_ANALYSIS_REQUEST_LISTING
 
-    # add metadata of all descendants
+    # add searchable text tokens for the root sample
+    tokens = get_searchable_text_tokens(instance, catalog)
+    entries.update(tokens)
+
+    # add searchable text tokens for descendant samples
     for descendant in instance.getDescendants():
-        entries.add(listing_searchable_text(descendant)())
+        tokens = get_searchable_text_tokens(descendant, catalog)
+        entries.update(tokens)
 
-    # Concatenate all strings to one text blob
-    return " ".join(entries)
+    return u" ".join(tokens)
 
 
 @indexer(IAnalysisRequest)

@@ -24,6 +24,8 @@ from datetime import datetime
 from datetime import timedelta
 
 import Missing
+import six
+
 from AccessControl.PermissionRole import rolesForPermissionOn
 from Acquisition import aq_base
 from bika.lims import logger
@@ -1341,7 +1343,7 @@ def to_searchable_text_metadata(value):
         return value.strftime("%Y-%m-%d")
     if is_at_content(value):
         return to_searchable_text_metadata(get_title(value))
-    if not isinstance(value, basestring):
+    if not isinstance(value, six.string_types):
         value = str(value)
     return safe_unicode(value)
 

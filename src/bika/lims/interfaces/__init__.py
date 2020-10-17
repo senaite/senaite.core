@@ -1093,3 +1093,10 @@ class ISamplingRoundTemplate(Interface):
     """Marker interface for a Sampling Round Template
     TODO: Legacy type. Remove after 1.3.3
     """
+
+
+class IListingSearchableTextProvider(Interface):
+    """Adapter to add additional search values for the listing searchable text
+    catalog index
+    """
+    pass

@@ -20,7 +20,7 @@
 
 from bika.lims import api
 from bika.lims.catalog.bikasetup_catalog import SETUP_CATALOG
-from bika.lims.catalog.indexers import generic_listing_searchable_text
+from bika.lims.catalog.indexers import get_searchable_text_tokens
 from bika.lims.interfaces import IAnalysisService
 from bika.lims.interfaces import IBikaSetupCatalog
 from bika.lims.interfaces import IHaveAnalysisCategory
@@ -146,9 +146,10 @@ def listing_searchable_text(instance):
                "getSupplier",
                "getManufacturer", ]
 
-    return generic_listing_searchable_text(instance, SETUP_CATALOG,
-                                           exclude_field_names=exclude,
-                                           include_field_names=include)
+    tokens = get_searchable_text_tokens(instance, SETUP_CATALOG,
+                                        exclude_field_names=exclude,
+                                        include_field_names=include)
+    return u" ".join(tokens)
 
 
 @indexer(IHaveAnalysisCategory, IBikaSetupCatalog)
