@@ -75,7 +75,7 @@ def listing_searchable_text(instance):
             entries.add(value)
 
     # Concatenate all strings to one text blob
-    return " ".join(entries)
+    return u" ".join(entries)
 
 
 @indexer(IAnalysisRequest)
