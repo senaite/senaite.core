@@ -130,8 +130,10 @@ def get_searchable_text_tokens(instance, catalog_name,
                                      IListingSearchableTextProvider):
         value = adapter()
         if isinstance(value, (list, tuple)):
-            entries.update(value)
-        elif isinstance(value, six.string_types):
+            values = map(api.to_searchable_text_metadata, value)
+            entries.update(values)
+        else:
+            value = api.to_searchable_text_metadata(value)
             entries.add(value)
 
     # Remove empties
