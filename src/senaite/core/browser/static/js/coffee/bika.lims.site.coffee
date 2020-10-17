@@ -104,8 +104,6 @@ class window.SiteView
       showWeek: yes
       yearRange: yearRange
       numberOfMonths: 1
-      autoSize: yes
-
 
     # returns a customizable datepicker config
     make_datepicker_config = (options) ->
