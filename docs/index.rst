@@ -2,7 +2,7 @@
 senaite.core
 ============
 
-**Development manual**
+**Documentation for developers**
 
 `senaite.core`_ is an add-on for `Plone CMS`_ that provides the main logic,
 contents, behavior and user interface for `SENAITE LIMS`_.
