@@ -1,5 +1,5 @@
 API Security
-============
+------------
 
 The security API provides a simple interface to control access in SENAITE
 
@@ -9,7 +9,7 @@ Running this test from the buildout directory::
 
 
 Test Setup
-----------
+..........
 
 Needed Imports:
 
@@ -49,7 +49,7 @@ Functional Helpers:
 
 
 Environment Setup
------------------
+.................
 
 Setup the testing environment:
 
@@ -63,7 +63,7 @@ Setup the testing environment:
 
 
 LIMS Setup
-----------
+..........
 
 Setup the Lab for testing:
 
@@ -77,7 +77,7 @@ Setup the Lab for testing:
 
 
 Content Setup
--------------
+.............
 
 Create some Analysis Services with unique Keywords:
 
@@ -99,7 +99,7 @@ Get the contained `Cu` Analysis:
 
 
 Get a security manager for the current thread
----------------------------------------------
+.............................................
 
 A security manager provides methods for checking access and managing executable
 context and policies:
@@ -109,7 +109,7 @@ context and policies:
 
 
 Get the possible permissions of an object
------------------------------------------
+.........................................
 
 The possible permissions include the permissions on the object and the inherited
 permissions:
@@ -120,7 +120,7 @@ permissions:
 
 
 Get the mapped permissions of an object
----------------------------------------
+.......................................
 
 While the possible permissions return *all* possible permissions of the object,
 only few of them are mapped to the object.
@@ -138,7 +138,7 @@ The mapped permissions are therefore a subset of the possible transitions:
 
 
 Get the granted permissions
----------------------------
+...........................
 
 This function returns the allowed permissions on an object for a user:
 
@@ -151,7 +151,7 @@ The allowed permissions is a subset of the mapped permissions:
 
 
 Get the non-granted permissions
--------------------------------
+...............................
 
 This function returns the disallowed permissions on an object for a user:
 
@@ -174,7 +174,7 @@ The allowed and disallowed permissions are exactly the mapped permissions:
 
 
 Check if a user has a permission granted
-----------------------------------------
+........................................
 
 This function checks if the user has a permission granted on an object:
 
@@ -191,7 +191,7 @@ Non existing permissions are returned as False:
 
 
 Get the granted permissions of a role
--------------------------------------
+.....................................
 
 This function returns the permissions that are granted to a role:
 
@@ -200,7 +200,7 @@ This function returns the permissions that are granted to a role:
 
 
 Get the mapped roles of a permission
-------------------------------------
+....................................
 
 This function is the opposite of `get_permissions_for_role` and returns
 the roles for a given permission:
@@ -210,7 +210,7 @@ the roles for a given permission:
 
 
 Get the roles of a user
------------------------
+.......................
 
 This function returns the global roles the user has:
 
@@ -229,7 +229,7 @@ The optional `user` parameter allows to get the roles of another user:
 
 
 Get the local roles of a user
------------------------------
+.............................
 
 This function returns the local granted roles the user has for the given object:
 
@@ -243,7 +243,7 @@ The optional `user` parameter allows to get the local roles of another user:
 
 
 Granting local roles
---------------------
+....................
 
 This function allows to grant local roles on an object:
 
@@ -258,7 +258,7 @@ This function allows to grant local roles on an object:
 
 
 Revoking local roles
---------------------
+....................
 
 This function allows to revoke local roles on an object:
 
@@ -273,7 +273,7 @@ This function allows to revoke local roles on an object:
 
 
 Getting all valid roles
------------------------
+.......................
 
 This function lists all valid roles for an object:
 
@@ -282,7 +282,7 @@ This function lists all valid roles for an object:
 
 
 Granting a permission to a role
--------------------------------
+...............................
 
 This function allows to grant a permission to one or more roles:
 
@@ -296,7 +296,7 @@ This function allows to grant a permission to one or more roles:
 
 
 Revoking a permission from a role
----------------------------------
+.................................
 
 This function allows to revoke a permission of one or more roles:
 
@@ -307,7 +307,7 @@ This function allows to revoke a permission of one or more roles:
 
 
 Manage permissions
-------------------
+..................
 
 This function allows to set a permission explicitly  to the given roles (drop other roles):
 

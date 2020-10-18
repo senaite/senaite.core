@@ -1,5 +1,5 @@
 Reference Analysis (Control) multi-verification guard and event
-===============================================================
+---------------------------------------------------------------
 
 Running this test from the buildout directory:
 
@@ -7,7 +7,7 @@ Running this test from the buildout directory:
 
 
 Test Setup
-----------
+..........
 
 Needed Imports:
 
@@ -103,7 +103,7 @@ We need to create some basic objects for the test:
     ...                      ReferenceResults=control_refs)
 
 Multiverify not allowed if multi-verification is not enabled
-------------------------------------------------------------
+............................................................
 
 Enable self verification:
 
@@ -170,7 +170,7 @@ To ensure consistency amongst tests, we disable self-verification:
 
 
 Multiverify transition with multi-verification enabled
-------------------------------------------------------
+......................................................
 
 The system allows to set multiple verifiers, both at Setup or Analysis Service
 level. If set, the control will transition to verified when the total number
@@ -352,7 +352,7 @@ To ensure consistency amongst tests, we disable self-verification:
 
 
 Check permissions for Multi verify transition
----------------------------------------------
+.............................................
 
 Enable self verification of results:
 

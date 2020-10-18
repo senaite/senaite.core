@@ -1,5 +1,5 @@
 Analysis verification guard and event
-=====================================
+-------------------------------------
 
 Running this test from the buildout directory:
 
@@ -7,7 +7,7 @@ Running this test from the buildout directory:
 
 
 Test Setup
-----------
+..........
 
 Needed Imports:
 
@@ -85,7 +85,7 @@ We need to create some basic objects for the test:
 
 
 Verify transition and guard basic constraints
----------------------------------------------
+.............................................
 
 Create an Analysis Request and submit results:
 
@@ -165,7 +165,7 @@ To ensure consistency amongst tests, we disable self-verification:
 
 
 Auto verification of Worksheets when all its analyses are verified
-------------------------------------------------------------------
+..................................................................
 
 The same behavior as for Analysis Requests applies to the worksheet when all its
 analyses are verified.
@@ -272,7 +272,7 @@ Unless we verify the analysis `Au`:
 
 
 Verification of results for analyses with dependencies
-------------------------------------------------------
+......................................................
 
 If an analysis is associated to a calculation that uses the result of other
 analyses (dependents), then the verification of a dependency will auto-verify
@@ -345,7 +345,7 @@ To ensure consistency amongst tests, we disable self-verification:
 
 
 Check permissions for Verify transition
----------------------------------------
+.......................................
 
 Enable self verification of results:
 

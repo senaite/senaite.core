@@ -1,5 +1,5 @@
 Calculations
-============
+------------
 
 Bika LIMS can dynamically calculate a value based on the results of several
 Analyses with a formula.
@@ -10,7 +10,7 @@ Running this test from the buildout directory::
 
 
 Test Setup
-----------
+..........
 
 Needed Imports::
 
@@ -49,7 +49,7 @@ so here we will assume the role of Lab Manager.
 
 
 Calculation
------------
+...........
 
 Calculations are created in the `bika_setup/bika_calculations` folder. They
 offer a `Formula` field, where keywords from Analyses can be used to calculate a

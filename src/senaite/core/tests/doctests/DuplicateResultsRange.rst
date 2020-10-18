@@ -1,5 +1,5 @@
 Duplicate results range
-=======================
+-----------------------
 
 The valid result range for a duplicate analysis is calculated by applying a
 duplicate variation percentage to the result from the original analysis. If the
@@ -11,7 +11,7 @@ Running this test from the buildout directory:
     bin/test test_textual_doctests -t DuplicateResultsRange
 
 Test Setup
-----------
+..........
 
 Needed imports:
 
@@ -67,7 +67,7 @@ Create some basic objects for the test:
 
 
 Duplicate of an analysis with numeric result
---------------------------------------------
+............................................
 
 Set the duplicate variation in percentage for `Cu`:
 
@@ -160,7 +160,7 @@ result range because the original analysis has no result yet:
 
 
 Duplicate of an analysis with result options
---------------------------------------------
+............................................
 
 Let's add some results options to service `Fe`:
 
@@ -233,7 +233,7 @@ rather expects an exact result:
 
 
 Duplicate of an analysis with string results enabled
-----------------------------------------------------
+....................................................
 
 Let's add make the analysis `Au` to accept string results:
 

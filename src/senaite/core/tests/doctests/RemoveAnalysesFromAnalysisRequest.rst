@@ -1,5 +1,5 @@
 Removal of Analyses from an Analysis Request
-============================================
+--------------------------------------------
 
 Running this test from the buildout directory:
 
@@ -7,7 +7,7 @@ Running this test from the buildout directory:
 
 
 Test Setup
-----------
+..........
 
 Needed Imports:
 
@@ -72,7 +72,7 @@ And set some settings:
 
 
 Remove Analyses from an Analysis Request not yet received
----------------------------------------------------------
+.........................................................
 
 Create a new Analysis Request:
 
@@ -91,7 +91,7 @@ And the Analysis Request remains in the same state
 
 
 Remove Analyses from an Analysis Request with submitted and verified results
-----------------------------------------------------------------------------
+............................................................................
 
 Create a new Analysis Request and receive:
 
@@ -179,7 +179,7 @@ And if we remove analysis `Fe`, the Analysis Request will follow `Au` analysis
 
 
 Remove Analyses from an Analysis Request with all remaining tests verified
---------------------------------------------------------------------------
+..........................................................................
 
 Create a new Analysis Request and receive:
 

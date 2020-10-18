@@ -1,5 +1,5 @@
 Dynamic Analysis Specifications
-===============================
+-------------------------------
 
 A *Dynamic Analysis Specification* can be assigned to *Analysis Specifications*.
 
@@ -7,18 +7,18 @@ When retrieving the result ranges (specification) for an Analysis, a lookup is
 done on the *Dynamic Analysis Specification*.
 
 Example
--------
+.......
 
 Given is an Excel with the following minimal set of columns:
 
-======= ======== === ===
+------- -------- --- ---
 Keyword Method   min max
-======= ======== === ===
+------- -------- --- ---
 Ca      Method A 1   2
 Ca      Method B 3   4
 Mg      Method A 5   6
 Mg      Method B 7   8
-======= ======== === ===
+------- -------- --- ---
 
 This Excel is uploaded to an *Dynamic Analysis Specification* object, which is
 linked to an Analysis Specification for the Sample Type "Water".
@@ -32,7 +32,7 @@ Running this test from the buildout directory:
     bin/test test_textual_doctests -t DynamicAnalysisSpec.rst
 
 Test Setup
-----------
+..........
 
 Needed imports:
 
@@ -75,7 +75,7 @@ Privileges:
 
 
 Creating a Dynamic Analysis Specification
------------------------------------------
+.........................................
 
 Dynamic Analysis Specifications are actually only small wrappers around an Excel
 file, where result ranges are defined per row.
@@ -123,7 +123,7 @@ We can also get the specs by Keyword:
 
 
 Hooking in a Dynamic Analysis Specification
--------------------------------------------
+...........................................
 
 Dynamic Analysis Specifications can only be assigned to a default Analysis Specification.
 

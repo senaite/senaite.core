@@ -1,5 +1,5 @@
 Reference Analysis (Blanks) verification guard and event
-========================================================
+--------------------------------------------------------
 
 Running this test from the buildout directory:
 
@@ -7,7 +7,7 @@ Running this test from the buildout directory:
 
 
 Test Setup
-----------
+..........
 
 Needed Imports:
 
@@ -102,7 +102,7 @@ We need to create some basic objects for the test:
     ...                    ReferenceResults=blank_refs)
 
 Blank verification basic constraints
-------------------------------------
+....................................
 
 Create a Worksheet and submit regular analyses:
 
@@ -163,7 +163,7 @@ To ensure consistency amongst tests, we disable self-verification:
 
 
 Check permissions for Verify transition
----------------------------------------
+.......................................
 
 Enable self verification of results:
 

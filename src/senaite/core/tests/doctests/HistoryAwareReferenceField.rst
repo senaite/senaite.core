@@ -1,5 +1,5 @@
 History Aware Reference Field
-=============================
+-----------------------------
 
 This field behaves almost the same like the standard AT ReferenceField, but
 stores the version of the reference object on `set` and keeps that version.
@@ -14,7 +14,7 @@ Running this test from the buildout directory::
 
 
 Test Setup
-----------
+..........
 
 Needed Imports:
 
@@ -51,7 +51,7 @@ Functional Helpers:
 
 
 Environment Setup
------------------
+.................
 
 Setup the testing environment:
 
@@ -65,7 +65,7 @@ Setup the testing environment:
 
 
 LIMS Setup
-----------
+..........
 
 Setup the Lab for testing:
 
@@ -80,7 +80,7 @@ Setup the Lab for testing:
 
 
 Content Setup
--------------
+.............
 
 Create some Analysis Services with unique Keywords:
 

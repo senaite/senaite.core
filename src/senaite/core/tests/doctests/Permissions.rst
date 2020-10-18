@@ -1,13 +1,12 @@
-===========
 Permissions
-===========
+-----------
 
 All objects in Bika LIMS are permission aware.
 Therefore, only users with the right **roles** can view or edit contents.
 Each role may contain one or more **permissions**.
 
 Test Setup
-==========
+----------
 
     >>> import os
     >>> import transaction
@@ -65,20 +64,20 @@ Test Setup
 
 
 Test Workflows and Permissions
-==============================
+------------------------------
 
 Workflows control the allowed roles for specific permissions.
 A role is a container for several permissions.
 
 
 Bika Setup
-----------
+..........
 
 Bika Setup is a folderish object, which handles the labs' configuration items, like
 Laboratory information, Instruments, Analysis Services etc.
 
 Test Workflow
-.............
+~~~~~~~~~~~~~
 
 A `bika_setup` lives in the root of a bika installation, or more precisely, the
 portal object::
@@ -95,7 +94,7 @@ The `setup` folder follows the `senaite_setup_workflow` and is initially in the
     'active'
 
 Test Permissions
-................
+~~~~~~~~~~~~~~~~
 
 Exactly these roles have should have a `View` permission::
 
@@ -123,7 +122,7 @@ Exactly these roles (nobody) should have the `Delete objects` permission::
     []
 
 Anonymous Browser Test
-......................
+~~~~~~~~~~~~~~~~~~~~~~
 
 Ensure we are logged out::
 
@@ -145,13 +144,13 @@ Anonymous should not be able to edit the `bika_setup` folder::
 
 
 Laboratory
-----------
+..........
 
 The Laboratory object holds all needed information about the lab itself.
 It lives inside the `bika_setup` folder.
 
 Test Workflow
-.............
+~~~~~~~~~~~~~
 
 A `laboratory` lives in the root of a bika installation, or more precisely, the
 portal object::
@@ -168,7 +167,7 @@ initially in the `active` state::
     'active'
 
 Test Permissions
-................
+~~~~~~~~~~~~~~~~
 
 Exactly these roles have should have a `View` permission::
 
@@ -196,13 +195,13 @@ Exactly these roles (nobody) should have the `Delete objects` permission::
     []
 
 Anonymous Browser Test
-......................
+~~~~~~~~~~~~~~~~~~~~~~
 
 Ensure we are logged out::
 
     >>> logout()
 
-..
+~~
    TODO: Fails with LocationError: (<UnauthorizedBinding: context>, 'main_template')
    Anonymous should not be able to view the `laboratory` folder::
 
@@ -220,12 +219,12 @@ Anonymous should not be able to edit the `laboratory` folder::
 
 
 Lab Contact(s)
---------------
+..............
 
 Lab Contacts are the employees of the lab.
 
 Test Workflow
-.............
+~~~~~~~~~~~~~
 
 A `labcontact` lives in the `bika_setup/bika_labcontacts` folder::
 
@@ -251,7 +250,7 @@ A `labcontact` follows the `senaite_deactivable_type_workflow` and has an initia
     'active'
 
 Test Permissions
-................
+~~~~~~~~~~~~~~~~
 
 Exactly these roles have should have a `View` permission::
 
@@ -294,13 +293,13 @@ Exactly these roles have should have the `Delete objects` permission::
     []
 
 Anonymous Browser Test
-......................
+~~~~~~~~~~~~~~~~~~~~~~
 
 Ensure we are logged out::
 
     >>> logout()
 
-..
+~~
    TODO: Fails with LocationError: (<UnauthorizedBinding: context>, 'main_template')
    Anonymous should not be able to view the `bika_labcontacts` folder::
 
@@ -309,7 +308,7 @@ Ensure we are logged out::
        ...
        Unauthorized: ...
 
-..
+~~
    TODO: Fails with LocationError: (<UnauthorizedBinding: context>, 'main_template')
    Anonymous should not be able to view a `labcontact`::
 
@@ -334,13 +333,13 @@ Anonymous should not be able to edit a `labcontact`::
 
 
 Clients and Contacts
---------------------
+....................
 
 Clients are the customers of the lab. A client represents another company, which
 has one or more natural persons as contacts.
 
 Test Workflow
-.............
+~~~~~~~~~~~~~
 
 A `client` lives in the `/clients` folder::
 
@@ -376,7 +375,7 @@ state of `active`::
     'active'
 
 Test Permissions
-................
+~~~~~~~~~~~~~~~~
 
 Exactly these roles have should have a `View` permission for clients folder::
 
@@ -435,7 +434,7 @@ Exactly these roles have should have the `Delete objects` permission::
     []
 
 Anonymous Browser Test
-......................
+~~~~~~~~~~~~~~~~~~~~~~
 
 Ensure we are logged out::
 
@@ -470,7 +469,7 @@ Anonymous should not be able to edit a `client`::
     Unauthorized: ...
 
 Client Contacts Browser Test
-............................
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Create a new user for the contact::
 
@@ -515,7 +514,7 @@ It also grants local `Owner` role on the client object::
     >>> sorted(user.getRolesInContext(client))
     ['Authenticated', 'Member', 'Owner']
 
-..
+~~
    TODO: Fails with LocationError: (<UnauthorizedBinding: context>, 'main_template')
    The user is able to modify the client properties::
 
@@ -523,7 +522,7 @@ It also grants local `Owner` role on the client object::
        "edit_form" in browser.contents
        True
 
-..
+~~
    TODO: Fails with LocationError: (<UnauthorizedBinding: context>, 'main_template')
    As well as the own contact properties::
 
@@ -570,12 +569,12 @@ The user can not access the client anymore::
 
 
 Instrument(s)
--------------
+.............
 
 Instruments represent the measuring hardware of the lab.
 
 Test Workflow
-.............
+~~~~~~~~~~~~~
 
 A `instrument` lives in the `bika_setup/bika_instruments` folder::
 
@@ -601,7 +600,7 @@ initial state of `active`::
     'active'
 
 Test Permissions
-................
+~~~~~~~~~~~~~~~~
 
 Exactly these roles have should have a `View` permission::
 
@@ -644,7 +643,7 @@ Exactly these roles have should have the `Delete objects` permission::
     []
 
 Anonymous Browser Test
-......................
+~~~~~~~~~~~~~~~~~~~~~~
 
 Ensure we are logged out::
 
@@ -657,7 +656,7 @@ Anonymous should not be able to view the `bika_instruments` folder::
     ...
     Unauthorized: ...
 
-..
+~~
    TODO: Fails with LocationError: (<UnauthorizedBinding: context>, 'main_template')
    Anonymous should not be able to view a `instrument`::
 
@@ -682,7 +681,7 @@ Anonymous should not be able to edit a `instrument`::
 
 
 Method(s)
----------
+.........
 
 Methods describe the sampling methods of the lab.
 
@@ -690,7 +689,7 @@ Methods should be viewable by unauthenticated users for information purpose.
 
 
 Test Workflow
-.............
+~~~~~~~~~~~~~
 
 A `method` lives in the `methods` folder::
 
@@ -716,7 +715,7 @@ state of `active`::
     'active'
 
 Test Permissions
-................
+~~~~~~~~~~~~~~~~
 
 Exactly these roles have should have a `View` permission::
 
@@ -759,7 +758,7 @@ Exactly these roles have should have the `Delete objects` permission::
     []
 
 Anonymous Browser Test
-......................
+~~~~~~~~~~~~~~~~~~~~~~
 
 Ensure we are logged out::
 
@@ -772,7 +771,7 @@ Anonymous should not be able to view the `methods` folder::
     ...
     Unauthorized: ...
 
-..
+~~
    TODO: Fails with LocationError: (<UnauthorizedBinding: context>, 'main_template')
    Anonymous should not be able to view a `method`::
 
@@ -797,12 +796,12 @@ Anonymous should not be able to edit a `method`::
 
 
 Analysis Service(s)
--------------------
+...................
 
 Analysis services describe which "products" the lab offers.
 
 Test Workflow
-.............
+~~~~~~~~~~~~~
 
 A `analysisservice` lives in the `bika_setup/bika_analysisservices` folder::
 
@@ -828,7 +827,7 @@ initial state of `active`::
     'active'
 
 Test Permissions
-................
+~~~~~~~~~~~~~~~~
 
 Exactly these roles have should have a `View` permission::
 
@@ -871,7 +870,7 @@ Exactly these roles have should have the `Delete objects` permission::
     []
 
 Anonymous Browser Test
-......................
+~~~~~~~~~~~~~~~~~~~~~~
 
 Ensure we are logged out::
 
@@ -884,7 +883,7 @@ Anonymous should not be able to view the `bika_analysisservices` folder::
     ...
     Unauthorized: ...
 
-..
+~~
    TODO: Fails with LocationError: (<UnauthorizedBinding: context>, 'main_template')
    Anonymous are **not** allowed to view an `analysisservice`::
 

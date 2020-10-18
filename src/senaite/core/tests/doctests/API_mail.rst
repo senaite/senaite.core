@@ -1,5 +1,5 @@
 API for sending emails
-======================
+----------------------
 
 The mail API provides a simple interface to send emails in SENAITE.
 
@@ -12,7 +12,7 @@ Running this test from the buildout directory::
 
 
 Test Setup
-----------
+..........
 
 Imports:
 
@@ -29,7 +29,7 @@ Variables:
     
 
 Email Address
--------------
+.............
 
 This function converts an email address and name pair to a string value suitable
 for an RFC 2822 `From`, `To` or `Cc` header:
@@ -44,7 +44,7 @@ for an RFC 2822 `From`, `To` or `Cc` header:
 
 
 Email Subject
--------------
+.............
 
 This function converts a string to a compliant RFC 2822 subject header:
 
@@ -59,7 +59,7 @@ This function converts a string to a compliant RFC 2822 subject header:
 
 
 Email Body Text
----------------
+...............
 
 This function coverts a given text to a text/plain MIME document:
 
@@ -79,7 +79,7 @@ This function coverts a given text to a text/plain MIME document:
 
 
 Email Attachment
-----------------
+................
 
 This function converts a filename with given filedata to a MIME attachment:
 
@@ -126,7 +126,7 @@ Providing an attachment works as well:
 
 
 Email Address Validation
-------------------------
+........................
 
 This function checks if the given email address is valid:
 
@@ -153,7 +153,7 @@ This function checks if the given email address is valid:
 
 
 Parse Email Address
--------------------
+...................
 
 This function parses an email address string into a (name, email) tuple:
 
@@ -168,7 +168,7 @@ This function parses an email address string into a (name, email) tuple:
 
 
 Compose Email
--------------
+.............
 
 This function composes a new MIME message:
 

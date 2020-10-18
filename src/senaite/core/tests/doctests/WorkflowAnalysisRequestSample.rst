@@ -1,12 +1,12 @@
 Analysis Request sample guard and event
-=======================================
+---------------------------------------
 
 Running this test from the buildout directory:
 
     bin/test test_textual_doctests -t WorkflowAnalysisRequestSample
 
 Test Setup
-----------
+..........
 
 Needed Imports:
 
@@ -103,7 +103,7 @@ We need to create some basic objects for the test:
 
 
 Sample transition and guard basic constraints
----------------------------------------------
+.............................................
 
 Create an Analysis Request:
 
@@ -157,7 +157,7 @@ And the values for DateSampled and Sampler are kept:
 
 
 Check permissions for sample transition
----------------------------------------
+.......................................
 
 Declare the roles allowed and not allowed to perform the "sample" transition:
 

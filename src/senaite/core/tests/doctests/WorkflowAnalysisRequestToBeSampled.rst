@@ -1,12 +1,12 @@
 Analysis Request to_be_sampled guard and event
-==============================================
+----------------------------------------------
 
 Running this test from the buildout directory:
 
     bin/test test_textual_doctests -t WorkflowAnalysisRequestToBeSampled
 
 Test Setup
-----------
+..........
 
 Needed Imports:
 
@@ -65,7 +65,7 @@ We need to create some basic objects for the test:
     >>> ar_template = api.create(bikasetup.bika_artemplates, "ARTemplate", title="Test Template", SampleType=sampletype)
 
 To_be_sampled transition and guard basic constraints
-----------------------------------------------------
+....................................................
 
 Create an Analysis Request:
 

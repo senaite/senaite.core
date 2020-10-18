@@ -1,6 +1,5 @@
-================================================
 Analysis Service - Activations and Inactivations
-================================================
+------------------------------------------------
 
 The inactivation and activation of Analysis Services relies on `senaite_deactivable_type_workflow`.
 To prevent inconsistencies that could have undesired effects, an Analysis Service
@@ -14,7 +13,7 @@ calculate its result) are active .
 
 
 Test Setup
-==========
+----------
 
 Running this test from the buildout directory:
 
@@ -59,7 +58,7 @@ We need to create some basic objects for the test:
     >>> Au = api.create(bika_analysisservices, "AnalysisService", title="Gold", Keyword="Au", Price="20", Category=category.UID())
 
 Deactivation of Analysis Service
---------------------------------
+................................
 
 All services can be deactivated:
 
@@ -107,7 +106,7 @@ Then we will be able to deactivate both `Ca` and `Mg`:
 
 
 Activation of Analysis Service
-------------------------------
+..............................
 
 Deactivate the Analysis Service `Ca`:
 

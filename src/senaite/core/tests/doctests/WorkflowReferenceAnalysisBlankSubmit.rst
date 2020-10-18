@@ -1,5 +1,5 @@
 Reference Analysis (Blanks) submission guard and event
-======================================================
+------------------------------------------------------
 
 Running this test from the buildout directory:
 
@@ -7,7 +7,7 @@ Running this test from the buildout directory:
 
 
 Test Setup
-----------
+..........
 
 Needed Imports:
 
@@ -111,7 +111,7 @@ We need to create some basic objects for the test:
     ...                      ReferenceResults=control_refs)
 
 Blank submission basic constraints
-----------------------------------
+..................................
 
 Create a Worksheet and submit regular analyses:
 
@@ -157,7 +157,7 @@ And we cannot re-submit a blank that have been submitted already:
 
 
 Auto submission of a Worksheets when all its analyses are submitted
--------------------------------------------------------------------
+...................................................................
 
 Create a Worksheet:
 
@@ -202,7 +202,7 @@ The worksheet will automatically be submitted too:
 
 
 Submission of blanks with interim fields set
---------------------------------------------
+............................................
 
 Set interims to the analysis `Au`:
 
@@ -296,7 +296,7 @@ Still, the result is required:
 
 
 Submission of blank analysis with interim calculation
------------------------------------------------------
+.....................................................
 
 If a blank analysis have a calculation assigned, the result will be calculated
 automatically based on the calculation. If the calculation have interims set,
@@ -360,7 +360,7 @@ Since interims IT1 and IT2 have default values set, the analysis will submit:
 
 
 Submission of blanks with dependencies
---------------------------------------
+......................................
 
 Blanks with dependencies are not allowed. Blanks can only be created
 from analyses without dependents.
@@ -420,7 +420,7 @@ and the blank of `Cu` cannot be used as a dependent:
 
 
 Check permissions for Submit transition
----------------------------------------
+.......................................
 
 Create a Worksheet and submit regular analyses:
 

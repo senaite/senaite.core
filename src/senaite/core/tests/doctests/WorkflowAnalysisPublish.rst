@@ -1,5 +1,5 @@
 Analysis publication guard and event
-====================================
+------------------------------------
 
 Running this test from the buildout directory:
 
@@ -7,7 +7,7 @@ Running this test from the buildout directory:
 
 
 Test Setup
-----------
+..........
 
 Needed Imports:
 
@@ -90,7 +90,7 @@ We need to create some basic objects for the test:
     >>> bikasetup.setSelfVerificationEnabled(True)
 
 Publish transition and guard basic constraints
-----------------------------------------------
+..............................................
 
 Create an Analysis Request, submit results and verify:
 
@@ -128,7 +128,7 @@ But if we publish the Analysis Request, analyses will follow:
 
 
 Check permissions for Published state
--------------------------------------
+.....................................
 
 In published state, exactly these roles can view results:
 

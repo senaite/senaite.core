@@ -1,5 +1,5 @@
 Duplicate Analysis submission guard and event
-=============================================
+---------------------------------------------
 
 Running this test from the buildout directory:
 
@@ -7,7 +7,7 @@ Running this test from the buildout directory:
 
 
 Test Setup
-----------
+..........
 
 Needed Imports:
 
@@ -91,7 +91,7 @@ We need to create some basic objects for the test:
 
 
 Duplicate submission basic constraints
---------------------------------------
+......................................
 
 Create a Worksheet and submit regular analyses:
 
@@ -134,7 +134,7 @@ And we cannot re-submit a duplicate that have been submitted already:
 
 
 Auto submission of a Worksheets when all its analyses are submitted
--------------------------------------------------------------------
+...................................................................
 
 Create an Analysis Request:
 
@@ -191,7 +191,7 @@ The worksheet will automatically be submitted too:
 
 
 Submission of duplicates with interim fields set
-------------------------------------------------
+................................................
 
 Set interims to the analysis `Au`:
 
@@ -285,7 +285,7 @@ Still, the result is required:
 
 
 Submission of duplicates with interim calculation
--------------------------------------------------
+.................................................
 
 If a duplicate have a calculation assigned, the result will be calculated
 automatically based on the calculation. If the calculation have interims set,
@@ -349,7 +349,7 @@ Since interims IT1 and IT2 have default values set, the analysis will submit:
 
 
 Submission of duplicates with dependencies
-------------------------------------------
+..........................................
 
 Duplicates with dependencies are not allowed. Duplicates can only be created
 from analyses without dependents.
@@ -409,7 +409,7 @@ and the duplicate of `Cu` cannot be used as a dependent:
 
 
 Check permissions for Submit transition
----------------------------------------
+.......................................
 
 Create a Worksheet and submit regular analyses:
 

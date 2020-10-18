@@ -1,5 +1,5 @@
 Analysis Requests
-=================
+-----------------
 
 Analysis Requests in Bika LIMS describe an Analysis Order from a Client to the
 Laboratory. Each Analysis Request manages a Sample, which holds the data of the
@@ -13,7 +13,7 @@ Running this test from the buildout directory::
 
 
 Test Setup
-----------
+..........
 
 Needed Imports::
 
@@ -63,7 +63,7 @@ so here we will assume the role of Lab Manager.
 
 
 Analysis Requests (AR)
-----------------------
+......................
 
 An `AnalysisRequest` can only be created inside a `Client`::
 
@@ -125,7 +125,7 @@ Finally, the `AnalysisRequest` can be created::
 
 
 DateReceived field should be editable in Received state
--------------------------------------------------------
+.......................................................
 
 For this we need an AR with more than one Analysis:
 

@@ -1,5 +1,5 @@
 Analysis submission guard and event
-===================================
+-----------------------------------
 
 Running this test from the buildout directory:
 
@@ -7,7 +7,7 @@ Running this test from the buildout directory:
 
 
 Test Setup
-----------
+..........
 
 Needed Imports:
 
@@ -74,7 +74,7 @@ We need to create some basic objects for the test:
 
 
 Basic constraints for Analysis submission
------------------------------------------
+.........................................
 
 Create an Analysis Request:
 
@@ -125,7 +125,7 @@ And I cannot resubmit the analysis:
 
 
 Basic constraints for "field" Analysis submission
--------------------------------------------------
+.................................................
 
 Set analysis `Cu` with Point of Capture "field":
 
@@ -215,7 +215,7 @@ Deactivate the workflow sampling and rest `Cu` as a lab analysis:
 
 
 Auto submission of Analysis Requests when all its analyses are submitted
-------------------------------------------------------------------------
+........................................................................
 
 Create an Analysis Request:
 
@@ -306,7 +306,7 @@ And we cannot re-submit analyses that have been already submitted:
 
 
 Auto submission of a Worksheets when all its analyses are submitted
--------------------------------------------------------------------
+...................................................................
 
 The same behavior as for Analysis Requests applies to the worksheet when all its
 analyses are submitted.
@@ -415,7 +415,7 @@ Unless we submit a result for `Au` analysis:
 
 
 Submission of results for analyses with interim fields set
-----------------------------------------------------------
+..........................................................
 
 For an analysis to be submitted successfully, it must have a result set, but if
 the analysis have interim fields, they are mandatory too:
@@ -540,7 +540,7 @@ And again, the Analysis Request will follow:
 
 
 Submission of results for analyses with interim calculation
------------------------------------------------------------
+...........................................................
 
 If an analysis have a calculation assigned, the result will be calculated
 automatically based on the calculation. If the calculation have interims set,
@@ -617,7 +617,7 @@ Since interims IT1 and IT2 have default values set, the analysis will submit:
 
 
 Submission of results for analyses with dependencies
-----------------------------------------------------
+....................................................
 
 If an analysis is associated to a calculation that uses the result of other
 analyses (dependents), then the analysis cannot be submitted unless all its
@@ -723,7 +723,7 @@ As well as the Analysis Request:
 
 
 Check permissions for Submit transition
----------------------------------------
+.......................................
 
 Create an Analysis Request:
 

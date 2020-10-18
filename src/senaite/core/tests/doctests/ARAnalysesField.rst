@@ -1,5 +1,5 @@
 AR Analyses Field
-=================
+-----------------
 
 This field manages Analyses for Analysis Requests.
 
@@ -17,7 +17,7 @@ Running this test from the buildout directory::
 
 
 Test Setup
-----------
+..........
 
 Imports:
 
@@ -76,7 +76,7 @@ Test User:
 
 
 Prepare Test Environment
-------------------------
+........................
 
 Create Client:
 
@@ -194,7 +194,7 @@ Create an Analysis Request:
 
 
 ARAnalysesField
----------------
+...............
 
 This field maintains `Analyses` within `AnalysesRequests`:
 
@@ -208,7 +208,7 @@ This field maintains `Analyses` within `AnalysesRequests`:
 
 
 Getting Analyses
-................
+~~~~~~~~~~~~~~~~
 
 The `get` method returns a list of assined analyses brains:
 
@@ -227,7 +227,7 @@ The analysis `PH` is now contained in the AR:
 
 
 Setting Analyses
-................
+~~~~~~~~~~~~~~~~
 
 The `set` method returns a list of new created analyses.
 
@@ -315,7 +315,7 @@ Finally, we test it with an `Analysis` object:
 
 
 Setting Analysis Specifications
-...............................
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Specifications are defined on the `ResultsRange` field of an Analysis Request.
 It is a dictionary with the following keys and values:
@@ -400,7 +400,7 @@ And the specification should be according to the values we have set
 
 
 Setting Analyses Prices
-.......................
+~~~~~~~~~~~~~~~~~~~~~~~
 
 Prices are primarily defined on Analyses Services:
 
@@ -466,7 +466,7 @@ The Services should retain the old prices:
 
 
 Calculations and Interim Fields
-...............................
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 When an Analysis is assigned to an AR, it inherits its Calculation and Interim Fields.
 
@@ -560,7 +560,7 @@ Service, together with the interim from the associated Calculation:
 
 
 Worksheets
-..........
+~~~~~~~~~~
 
 If the an Analysis is assigned to a worksheet, it should be detached before it
 is removed from an Analysis Request.
@@ -609,7 +609,7 @@ Removing the analysis from the AR also unassignes it from the worksheet:
 
 
 Dependencies
-............
+~~~~~~~~~~~~
 
 The Analysis Service `Total Hardness` uses the `Total Hardness` Calculation:
 
@@ -635,7 +635,7 @@ We expect that dependent services get automatically set:
 
 
 Attachments
------------
+...........
 
 Attachments can be assigned to the Analysis Request or to individual Analyses.
 
@@ -741,7 +741,7 @@ The attachments of *Magnesium* should be still there:
 
 
 Attachments linked to multiple ARs/ANs
-......................................
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 When an AR is invalidated, a copy of it get created for retesting. This copy
 holds also the Attachments as references.

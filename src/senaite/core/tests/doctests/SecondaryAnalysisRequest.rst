@@ -1,5 +1,5 @@
 Secondary Analysis Request
-==========================
+--------------------------
 
 Running this test from the buildout directory:
 
@@ -7,7 +7,7 @@ Running this test from the buildout directory:
 
 
 Test Setup
-----------
+..........
 
 Needed Imports:
 
@@ -41,7 +41,7 @@ Some basic objects for the test:
 
 
 Create Secondary Analysis Request
----------------------------------
+.................................
 
 To create a Secondary Analysis Request we need first a primary (or source
 Analysis Request) to which the secondary analysis request will refer to:
@@ -174,7 +174,7 @@ Dates for secondaries are updated in accordance:
 
 
 Secondary Analysis Requests and partitions
-------------------------------------------
+..........................................
 
 When partitions are created from a secondary Analysis Request, the partitions
 themselves are not considered secondaries from the primary AR, but partitions

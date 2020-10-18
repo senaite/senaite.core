@@ -1,5 +1,5 @@
 QC Analyses With Interim Fields On A Worksheet
-==============================================
+----------------------------------------------
 
 Creating analysis that has interims fields so that we can test for
 Reference Analyses(Blank and Control) that have interim fields.
@@ -10,7 +10,7 @@ Running this test from the buildout directory::
 
 
 Test Setup
-----------
+..........
 
 Needed Imports:
 

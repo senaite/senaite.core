@@ -1,5 +1,5 @@
 API Analysis Service
-====================
+--------------------
 
 The `api_analysisservice` modue provides single functions for single purposes
 especifically related with analyses services.
@@ -9,7 +9,7 @@ Running this test from the buildout directory::
     bin/test test_textual_doctests -t API_AnalysisService
 
 Test Setup
-----------
+..........
 
 Needed Imports::
 
@@ -36,7 +36,7 @@ so here we will assume the role of Lab Manager.
 
 
 Calculation Dependencies
-------------------------
+........................
 
 Calculations can reference analysis services by *Keyword* in their *Formula*.
 
@@ -100,7 +100,7 @@ The `Test2` service depends now on the `Test1` service:
 
 
 Calculation Dependants
-----------------------
+......................
 
 To get all Analysis Services which depend on a specific Analysis Service, the
 API provides the function `get_calculation_dependants_for`.
@@ -137,7 +137,7 @@ Therefore, `Test2` is a dependant of `Test1`:
 
 
 Checking edge cases
--------------------
+...................
 
 The assigned calculation of `Test2` doubles the value of `Test1`:
 

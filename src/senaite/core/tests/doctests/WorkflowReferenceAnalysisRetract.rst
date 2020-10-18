@@ -1,5 +1,5 @@
 Reference Analysis retract guard and event
-==========================================
+------------------------------------------
 
 Running this test from the buildout directory:
 
@@ -7,7 +7,7 @@ Running this test from the buildout directory:
 
 
 Test Setup
-----------
+..........
 
 Needed Imports:
 
@@ -109,7 +109,7 @@ We need to create some basic objects for the test:
 
 
 Retract transition and guard basic constraints
-----------------------------------------------
+..............................................
 
 Create an Analysis Request and submit regular analyses:
 
@@ -206,7 +206,7 @@ And the Worksheet has been transitioned to `open`:
     'open'
 
 Retract transition when reference analyses from same Reference Sample are added
-===============================================================================
+-------------------------------------------------------------------------------
 
 When analyses from same Reference Sample are added in a worksheet, the
 worksheet allocates different slots for them, although each of the slots keeps

@@ -1,5 +1,5 @@
 Analysis retract guard and event
-================================
+--------------------------------
 
 Running this test from the buildout directory:
 
@@ -7,7 +7,7 @@ Running this test from the buildout directory:
 
 
 Test Setup
-----------
+..........
 
 Needed Imports:
 
@@ -98,7 +98,7 @@ We need to create some basic objects for the test:
 
 
 Reject transition and guard basic constraints
----------------------------------------------
+.............................................
 
 Create an Analysis Request:
 
@@ -171,7 +171,7 @@ I cannot 'reject' a verified analysis:
 
 
 Rejection of an analysis causes the duplicates to be removed
-------------------------------------------------------------
+............................................................
 
 When the analysis a duplicate comes from is rejected, the duplicate is rejected
 too, regardless of its state.
@@ -243,7 +243,7 @@ Submit and verify the result for duplicate `Fe` and reject `Fe` analysis:
 
 
 Rejection of analyses with dependents
--------------------------------------
+.....................................
 
 When rejecting an analysis other analyses depends on (dependents), then the
 rejection of a dependency causes the auto-rejection of its dependents.
@@ -308,7 +308,7 @@ Reset calculations:
 
 
 Effects of rejection of analysis to Analysis Request
-----------------------------------------------------
+....................................................
 
 Rejection of analyses have implications in the Analysis Request workflow, cause
 they will not be considered anymore in regular transitions of Analysis Request
@@ -351,7 +351,7 @@ Reset self-verification:
 
 
 Rejection of retests
---------------------
+....................
 
 Create an Analysis Request, receive and submit all results:
 
@@ -396,7 +396,7 @@ Verify remaining analyses:
 
 
 Check permissions for Reject transition
----------------------------------------
+.......................................
 
 Create an Analysis Request:
 
@@ -407,7 +407,7 @@ Create an Analysis Request:
     ...                      'RegulatoryInspector', 'Sampler', 'Verifier']
 
 In unassigned state
-...................
+~~~~~~~~~~~~~~~~~~~
 
 In `unassigned` state, exactly these roles can reject:
 
@@ -439,7 +439,7 @@ Reset the roles for current user:
 
 
 In assigned state
-.................
+~~~~~~~~~~~~~~~~~
 
 In `assigned` state, exactly these roles can reject:
 
@@ -475,7 +475,7 @@ Reset the roles for current user:
 
 
 In to_be_verified state
-.......................
+~~~~~~~~~~~~~~~~~~~~~~~
 
 In `to_be_verified` state, exactly these roles can reject:
 
@@ -511,7 +511,7 @@ Reset the roles for current user:
 
 
 In retracted state
-..................
+~~~~~~~~~~~~~~~~~~
 
 In `retracted` state, the analysis cannot be rejected:
 
@@ -525,7 +525,7 @@ In `retracted` state, the analysis cannot be rejected:
 
 
 In verified state
-.................
+~~~~~~~~~~~~~~~~~
 
 In `verified` state, the analysis cannot be rejected:
 
@@ -543,7 +543,7 @@ In `verified` state, the analysis cannot be rejected:
 
 
 In published state
-..................
+~~~~~~~~~~~~~~~~~~
 
 In `published` state, the analysis cannot be rejected:
 
@@ -557,7 +557,7 @@ In `published` state, the analysis cannot be rejected:
     False
 
 In cancelled state
-..................
+~~~~~~~~~~~~~~~~~~
 
 In `cancelled` state, the analysis cannot be rejected:
 
@@ -577,7 +577,7 @@ Disable self-verification:
 
 
 Check permissions for Rejected state
-------------------------------------
+....................................
 
 In rejected state, exactly these roles can view results:
 

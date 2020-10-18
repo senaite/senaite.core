@@ -1,6 +1,5 @@
-===================
 Action Handler Pool
-===================
+-------------------
 
 The `ActionHandlerPool` is a singleton instance to increase performance by
 postponing reindexing operations for objects.
@@ -10,7 +9,7 @@ Running this test from the buildout directory::
     bin/test test_textual_doctests -t ActionHandlerPool
 
 Test Setup
-==========
+----------
 
 Needed Imports:
 
@@ -18,7 +17,7 @@ Needed Imports:
 
 
 Testing
-=======
+-------
 
 Getting an instance of the action handler pool:
 

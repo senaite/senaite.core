@@ -1,5 +1,5 @@
 Show or Hide Prices
-===================
+-------------------
 
 There's a setting in BikaSetup called 'Include and display pricing information'.
 If this setting is disabled, then no mention of pricing or invoicing should
@@ -14,7 +14,7 @@ Running this test from the buildout directory:
 
 
 Test Setup
-----------
+..........
 
 Needed Imports:
 
@@ -79,7 +79,7 @@ And start a browser:
     >>> browser = self.getBrowser()
 
 Analysis Request Add form
--------------------------
+.........................
 
 Verify that the price and invoice fields are present when ShowPrices is enabled:
 
@@ -128,7 +128,7 @@ Disable MemberDiscountApplies, and verify that it always vanishes from AR add:
     True
 
 Analysis Request View
----------------------
+.....................
 
 Test show/hide prices when viewing an AR.  First, create an AR:
 
@@ -140,7 +140,7 @@ Test show/hide prices when viewing an AR.  First, create an AR:
     >>> service_uids = [Cu.UID(), Fe.UID()]
     >>> ar = create_analysisrequest(client, request, values, service_uids)
 
-..
+~~
    TODO: Fails because barceloeanata theme loaded?!
    With ShowPrices enabled, the Invoice tab should be rendered:
 
@@ -157,7 +157,7 @@ Test show/hide prices when viewing an AR.  First, create an AR:
        True
 
 Client discount fields show/hide
---------------------------------
+................................
 
     >>> enableShowPrices()
     >>> browser.open(client.absolute_url() + "/edit")

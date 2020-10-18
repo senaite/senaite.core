@@ -1,6 +1,5 @@
-==================================
 Clients, Contacts and linked Users
-==================================
+----------------------------------
 
 Clients are the customers of the lab. A client represents another company, which
 has one or more natural persons as contacts.
@@ -15,7 +14,7 @@ Running this test from the buildout directory:
     bin/test -t ContactUser
 
 Test Setup
-==========
+----------
 
     >>> import transaction
     >>> from plone import api as ploneapi
@@ -74,7 +73,7 @@ Test Setup
 
 
 Client
-======
+------
 
 A `client` lives in the `/clients` folder::
 
@@ -84,7 +83,7 @@ A `client` lives in the `/clients` folder::
 
 
 Contact
-=======
+-------
 
 A `contact` lives inside a `client`::
 
@@ -93,7 +92,7 @@ A `contact` lives inside a `client`::
 
 
 User
-====
+----
 
 A `user` is able to login to the system.
 
@@ -105,7 +104,7 @@ Create a new user for the contact::
 
 
 Client Browser Test
--------------------
+...................
 
 Login with the first user::
 
@@ -183,23 +182,23 @@ The user has no local owner role anymore on the client::
     Unauthorized: ...
 
 LabContact users
-================
+----------------
 
 All non-client lab users should be created as Lab Contacts in site-setup:
 
-.. code ::
+~~ code ::
 
     >>> labcontact = create(portal.bika_setup.bika_labcontacts, "LabContact")
 
 And a new user for the labcontact:
 
-.. code ::
+~~ code ::
 
     >>> user3 = ploneapi.user.create(email="labmanager@example.com", username="labmanager1", password="secret", properties=dict(fullname="Lab Manager 1"))
 
 Link the user to the labcontact:
 
-.. code ::
+~~ code ::
 
     >>> labcontact.setUser(user3)
     True
@@ -211,7 +210,7 @@ Linking a user to a LabContact does not give any client group membership:
 
 
 Login Details View
-------------------
+..................
 
 The login details view manages to link/unlink users to contacts.
 
