@@ -9,4 +9,4 @@ in listings, new types of reports, trap events, etc.
 
 In this chapter, the most commonly used adapters for SENAITE are discussed.
 
-.. include:: listing_searchable_text_index
+.. include:: listing_searchable_text_index.rst
