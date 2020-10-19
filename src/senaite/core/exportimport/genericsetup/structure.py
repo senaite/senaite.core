@@ -487,7 +487,7 @@ def import_xml(context):
     portal = context.getSite()
 
     qi = api.get_tool("portal_quickinstaller")
-    installed = qi.isProductInstalled("bika.lims")
+    installed = qi.isProductInstalled("senaite.core")
 
     if not installed:
         logger.debug("Nothing to import.")
