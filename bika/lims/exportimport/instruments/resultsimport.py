@@ -951,9 +951,15 @@ class AnalysisResultsImporter(Logger):
             # handle non-floating values in result options
             result_options = analysis.getResultOptions()
             if result_options:
+                # Get result values as strings
                 result_values = map(
-                    lambda r: r.get("ResultValue"), result_options)
-                if "{:.0f}".format(res) in result_values:
+                    lambda r: str(r.get("ResultValue")), result_options)
+
+                # If result is floatable, only uses the int part
+                if api.is_floatable(res):
+                    res = "{:.0f}".format(api.to_float(res))
+
+                if res in result_values:
                     res = int(res)
 
             analysis.setResult(res)
