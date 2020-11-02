@@ -4,6 +4,7 @@ Changelog
 2.0.0rc3 (unreleased)
 ---------------------
 
+- #1672 Fix error when adding blank/reference samples to worksheets
 - #1669 Fix Generic Setup Content Importer
 - #1666 Added adapter to extend listing_searchable_text index
 - #1665 Display Auditlog listing icon
