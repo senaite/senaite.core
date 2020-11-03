@@ -121,20 +121,22 @@ class ReferenceSamplesView(BikaListingView):
         """Handle form submission
         """
         form = self.request.form
-        # Selected service UIDs
+        # Selected reference/blank sample UIDs
         uids = form.get("uids")
-        # reference sample -> selected services mapping
-        supported_services = form.get("SupportedServices")
         # service -> position mapping
         positions = form.get("Position")[0]
         for uid in uids:
+            referencesample = api.get_object_by_uid(uid)
             position = positions.get(uid)
             if position == "new":
                 position = None
-            service_uids = supported_services.get(uid)
-            referencesample = api.get_object_by_uid(uid)
+            # get selected services of the reference sample
+            key = "{}.{}".format("SupportedServices", uid)
+            selected_services = form.get(key)
+            if not selected_services:
+                continue
             self.context.addReferenceAnalyses(
-                referencesample, service_uids, slot=position)
+                referencesample, selected_services, slot=position)
         redirect_url = "{}/{}".format(
             api.get_url(self.context), "manage_results")
         self.request.response.redirect(redirect_url)
