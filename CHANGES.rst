@@ -6,6 +6,7 @@ Changelog
 
 **Fixed**
 
+- #1673 Fix Samples not sorted in natural order when Worksheet Template is used
 - #1656 Fix Maximum length of Choices subfield (interim) is set to 40
 - #1651 Fix Error when invalidating a sample with contained retests
 - #1633 Fix report section displays date pickers in Chinese
