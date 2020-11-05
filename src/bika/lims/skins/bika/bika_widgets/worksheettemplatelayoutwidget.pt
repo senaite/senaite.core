@@ -125,7 +125,7 @@
 	            </td>
 	            <!-- Dropdown for Duplicate Analysis -->
 	            <td>
-		            <div id="" tal:define="num_rows repeat/row/length">
+		            <div id="" tal:define="num_rows python:repeat['row'].number()">
 			            <select name="Layout.dup:records:ignore_empty"
                           tal:attributes="style python: selected_type == 'd' and 'display:inline;;' or 'display:none;;';
                                           class string:duplicate_analysis_dropdown;
