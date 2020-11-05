@@ -1,5 +1,5 @@
 Reference Analysis (Controls) submission guard and event
-========================================================
+--------------------------------------------------------
 
 Running this test from the buildout directory:
 
@@ -7,7 +7,7 @@ Running this test from the buildout directory:
 
 
 Test Setup
-----------
+..........
 
 Needed Imports:
 
@@ -104,7 +104,7 @@ We need to create some basic objects for the test:
     ...                      ReferenceResults=control_refs)
 
 control submission basic constraints
-------------------------------------
+....................................
 
 Create a Worksheet and submit regular analyses:
 
@@ -150,7 +150,7 @@ And we cannot re-submit a control that have been submitted already:
 
 
 Auto submission of a Worksheets when all its analyses are submitted
--------------------------------------------------------------------
+...................................................................
 
 Create a Worksheet:
 
@@ -195,7 +195,7 @@ The worksheet will automatically be submitted too:
 
 
 Submission of controls with interim fields set
-----------------------------------------------
+..............................................
 
 Set interims to the analysis `Au`:
 
@@ -289,7 +289,7 @@ Still, the result is required:
 
 
 Submission of control analysis with interim calculation
--------------------------------------------------------
+.......................................................
 
 If a control analysis have a calculation assigned, the result will be calculated
 automatically based on the calculation. If the calculation have interims set,
@@ -353,7 +353,7 @@ Since interims IT1 and IT2 have default values set, the analysis will submit:
 
 
 Submission of controls with dependencies
-----------------------------------------
+........................................
 
 controls with dependencies are not allowed. controls can only be created
 from analyses without dependents.
@@ -413,7 +413,7 @@ and the control of `Cu` cannot be used as a dependent:
 
 
 Check permissions for Submit transition
----------------------------------------
+.......................................
 
 Create a Worksheet and submit regular analyses:
 

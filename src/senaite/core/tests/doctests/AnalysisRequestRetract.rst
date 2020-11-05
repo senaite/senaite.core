@@ -1,5 +1,5 @@
 Analysis Request retract
-========================
+------------------------
 
 Running this test from the buildout directory::
 
@@ -7,7 +7,7 @@ Running this test from the buildout directory::
 
 
 Test Setup
-----------
+..........
 
 Needed Imports::
 
@@ -59,7 +59,7 @@ so here we will assume the role of Lab Manager.
 
 
 Create Analysis Requests (AR)
------------------------------
+.............................
 
 An `AnalysisRequest` can only be created inside a `Client`::
 
@@ -123,7 +123,7 @@ see why later::
 
 
 Submit Analyses results for the current Analysis Request
---------------------------------------------------------
+........................................................
 
 First transition the Analysis Request to received::
 
@@ -155,7 +155,7 @@ to 'to_be_verified'::
 
 
 Retract the Analysis Request
-----------------------------
+............................
 When an Analysis Request is retracted two things should happen:
 
     1- The Analysis Request is transitioned to 'sample_received'. Since

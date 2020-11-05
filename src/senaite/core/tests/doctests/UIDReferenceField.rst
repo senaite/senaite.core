@@ -1,5 +1,5 @@
 UIDReferenceField
-=================
+-----------------
 
 UIDReferenceField is a drop-in replacement for Plone's ReferenceField which
 uses a StringField to store a UID or a list of UIDs.

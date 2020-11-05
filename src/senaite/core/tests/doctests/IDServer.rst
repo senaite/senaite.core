@@ -1,5 +1,5 @@
 ID Server
-=========
+---------
 
 The ID Server in SENAITE LIMS provides IDs for content items base of the given
 format specification. The format string is constructed in the same way as a
@@ -31,7 +31,7 @@ Running this test from the buildout directory::
 
 
 Test Setup
-----------
+..........
 
 Needed Imports:
 
@@ -89,7 +89,7 @@ so here we will assume the role of Lab Manager.
 
 
 Analysis Requests (AR)
-----------------------
+......................
 
 An `AnalysisRequest` can only be created inside a `Client`:
 
@@ -132,7 +132,7 @@ An `AnalysisService` defines a analysis service offered by the laboratory:
 
 
 ID generation
--------------
+.............
 
 IDs can contain *alphanumeric* or *numeric* numbers, depending on the provided
 ID Server configuration.
@@ -299,7 +299,7 @@ TODO: Test the case when numbers are exhausted in a sequence!
 
 
 IDs with Suffix
----------------
+...............
 
 In SENAITE < 1.3.0 it was differentiated between an *Analysis Request* and a
 *Sample*. The *Analysis Request* acted as a "holder" of a *Sample* and the ID
@@ -414,7 +414,7 @@ but an incremented suffix:
 
 
 ID Slicing
-----------
+..........
 
 The ID slicing machinery that comes with ID Server takes into consideration both
 wildcards (e.g "{SampleType}") and separators (by default "-"):
@@ -486,7 +486,7 @@ Try now with a simpler and quite common ID:
     'WS'
 
 Number generator storage behavior for IDs with/without separators
------------------------------------------------------------------
+.................................................................
 
 Number generator machinery keeps track of the last IDs generated to:
 

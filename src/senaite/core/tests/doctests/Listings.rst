@@ -1,5 +1,5 @@
 Listings
-========
+--------
 
 Running this test from the buildout directory::
 
@@ -7,7 +7,7 @@ Running this test from the buildout directory::
 
 
 Test Setup
-----------
+..........
 
 Imports:
 
@@ -49,7 +49,7 @@ Test User:
 
 
 Prepare Test Environment
-------------------------
+........................
 
 Setupitems:
 
@@ -111,7 +111,7 @@ Create some Analysis Requests:
 
 
 Listing View
-------------
+............
 
 
     >>> from bika.lims.browser.bika_listing import BikaListingView

@@ -1,5 +1,5 @@
 Analysis Request invalidate
-===========================
+---------------------------
 
 Running this test from the buildout directory:
 
@@ -7,7 +7,7 @@ Running this test from the buildout directory:
 
 
 Test Setup
-----------
+..........
 
 Needed Imports:
 
@@ -59,7 +59,7 @@ so here we will assume the role of Lab Manager.
 
 
 Create Analysis Requests (AR)
------------------------------
+.............................
 
 An `AnalysisRequest` can only be created inside a `Client`:
 
@@ -123,7 +123,7 @@ see why later:
 
 
 Submit Analyses results for the current Analysis Request
---------------------------------------------------------
+........................................................
 
 First transition the Analysis Request to received:
 
@@ -155,7 +155,7 @@ to 'to_be_verified':
 
 
 Verify Analyses results for the current Analysis Request
---------------------------------------------------------
+........................................................
 
 Same user cannot verify by default:
 
@@ -182,7 +182,7 @@ Check that both the Analysis Request analyses have been transitioned to
 
 
 Invalidate the Analysis Request
--------------------------------
+...............................
 
 When an Analysis Request is invalidated two things should happen:
 
@@ -222,7 +222,7 @@ the invalidated:
 
 
 Invalidate the retest
----------------------
+.....................
 
 We can even invalidate the retest generated previously. As a result, a new
 retest will be created.

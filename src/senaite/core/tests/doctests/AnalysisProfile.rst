@@ -1,5 +1,5 @@
 Analysis Profile
-================
+----------------
 
 Running this test from the buildout directory::
 
@@ -84,7 +84,7 @@ We need to create some basic objects for the test:
 
 
 Assign Profile(s)
------------------
+.................
 
 Assigning Analysis Profiles adds the Analyses of the profile to the sample.
 
@@ -145,7 +145,7 @@ All analyses from the profiles should be added to the sample:
 
 
 Remove Profile(s)
------------------
+.................
 
 Removing an analyis Sample retains the assigned analyses:
 
@@ -159,7 +159,7 @@ Removing an analyis Sample retains the assigned analyses:
 
 
 Assigning Profiles in "to_be_verified" status
----------------------------------------------
+.............................................
 
     >>> ar4 = create_analysisrequest(client, request, values, [Au.UID()])
 

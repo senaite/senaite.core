@@ -1,5 +1,5 @@
 Alphanumber
-===========
+-----------
 
 Tests the Alphanumber object, useful for alphanumeric IDs generation
 
@@ -9,7 +9,7 @@ Running this test from the buildout directory::
 
 
 Test Setup
-----------
+..........
 
 Needed Imports:
 

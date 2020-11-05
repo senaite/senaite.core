@@ -1,5 +1,5 @@
 Infinite recursion when fetching dependencies from Service
-==========================================================
+----------------------------------------------------------
 
 This test checks that no infinite recursion error arises when fetching the
 dependencies of a Service (via Calculation) that itself contains a keyword in
@@ -11,7 +11,7 @@ Running this test from the buildout directory:
     bin/test test_textual_doctests -t ServicesCalculationRecursion.rst
 
 Test Setup
-----------
+..........
 
 Needed imports:
 
@@ -35,7 +35,7 @@ Create some basic objects for the test:
 
 
 Creation of Service with a Calculation that refers to itself
-------------------------------------------------------------
+............................................................
 
 The most common case is when the Calculation is assigned to the same Analysis
 that is referred in the Calculation's formula:

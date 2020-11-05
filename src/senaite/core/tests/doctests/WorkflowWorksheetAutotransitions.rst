@@ -1,5 +1,5 @@
 Worksheet auto-transitions
-==========================
+--------------------------
 
 Running this test from the buildout directory:
 
@@ -7,7 +7,7 @@ Running this test from the buildout directory:
 
 
 Test Setup
-----------
+..........
 
 Needed Imports:
 
@@ -60,7 +60,7 @@ We need to create some basic objects for the test:
 
 
 Retract transition and guard basic constraints
-----------------------------------------------
+..............................................
 
 Create a Worksheet:
 

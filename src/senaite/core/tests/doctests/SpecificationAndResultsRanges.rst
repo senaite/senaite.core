@@ -1,5 +1,5 @@
 Specification and Results Ranges with Samples and analyses
-==========================================================
+----------------------------------------------------------
 
 Specification is an object containing a list of results ranges, each one refers
 to the min/max/min_warn/max_warn values to apply for a given analysis service.
@@ -11,7 +11,7 @@ Running this test from the buildout directory:
     bin/test test_textual_doctests -t SpecificationAndResultsRanges.rst
 
 Test Setup
-----------
+..........
 
 Needed imports:
 
@@ -93,7 +93,7 @@ Create an Analysis Specification for `Water`:
 
 
 Creation of a Sample with Specification
----------------------------------------
+.......................................
 
 A given Specification can be assigned to the Sample during the creation process.
 The results ranges of the mentioned Specification will be stored in ResultsRange
@@ -194,7 +194,7 @@ As well as the analyses the sample contains:
     (15, 25)
 
 Removal of Analyses from a Sample with Specifications
------------------------------------------------------
+.....................................................
 
 User can remove analyses from the Sample. If the user removes one of the
 analyses, the Specification assigned to the Sample will remain intact, as well
@@ -213,7 +213,7 @@ as Sample's Results Range:
 
 
 Addition of Analyses to a Sample with Specifications
-----------------------------------------------------
+....................................................
 
 User can add new analyses to the Sample as well. If the Sample has an
 Specification set and the specification had a results range registered for
@@ -269,7 +269,7 @@ Sample, are reestablished:
 
 
 Sample with Specifications and Partitions
------------------------------------------
+.........................................
 
 When a sample has partitions, the Specification set to the root Sample is
 populated to all its descendants:

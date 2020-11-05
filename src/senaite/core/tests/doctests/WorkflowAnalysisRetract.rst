@@ -1,5 +1,5 @@
 Analysis retract guard and event
-================================
+--------------------------------
 
 Running this test from the buildout directory:
 
@@ -7,7 +7,7 @@ Running this test from the buildout directory:
 
 
 Test Setup
-----------
+..........
 
 Needed Imports:
 
@@ -85,7 +85,7 @@ We need to create some basic objects for the test:
 
 
 Retract transition and guard basic constraints
-----------------------------------------------
+..............................................
 
 Create an Analysis Request and submit results:
 
@@ -172,7 +172,7 @@ And again, the Analysis Request has been transitioned to `sample_received`:
     'sample_received'
 
 Auto-rollback of Worksheet on analysis retraction
--------------------------------------------------
+.................................................
 
 When retracting an analysis from a Worksheet that is in "to_be_verified" state
 causes the rollback of the worksheet to "open" state.
@@ -226,7 +226,7 @@ The state of this additional analysis, the retest, is "assigned":
 
 
 Retraction of results for analyses with dependents
---------------------------------------------------
+..................................................
 
 When retracting an analysis other analyses depends on (dependents), then the
 retraction of a dependency causes the auto-retraction of its dependents.

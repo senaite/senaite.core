@@ -1,5 +1,5 @@
 API Analysis
-============
+------------
 
 The api_analysis provides single functions for single purposes especifically
 related with analyses.
@@ -10,7 +10,7 @@ Running this test from the buildout directory::
 
 
 Test Setup
-----------
+..........
 
 Needed Imports:
 
@@ -130,7 +130,7 @@ Add a blank and a control:
 
 
 Check if results are out of range
----------------------------------
+.................................
 
 First, get the analyses from slot 1 and sort them asc:
 
@@ -192,7 +192,7 @@ Results in shoulders?:
 
 
 Check if results for duplicates are out of range
-------------------------------------------------
+................................................
 
 Get the first duplicate analysis that comes from `Au`:
 
@@ -303,7 +303,7 @@ valid range for the duplicate must be `Au +-0.5%`:
 
 
 Check if results for Reference Analyses (blanks + controls) are out of range
-----------------------------------------------------------------------------
+............................................................................
 
 Reference Analyses (controls and blanks) do not use the result ranges defined in
 the specifications, rather they use the result range defined in the Reference
@@ -314,7 +314,7 @@ reference analyses don't expect a valid range, rather a discrete value, so
 shoulders are built based on % error.
 
 Blank Analyses
-..............
+~~~~~~~~~~~~~~
 
 The first blank analysis corresponds to `Au`:
 
@@ -350,7 +350,7 @@ when out of range.
     (True, True)
 
 Control Analyses
-................
+~~~~~~~~~~~~~~~~
 
 The first control analysis corresponds to `Au`:
 
@@ -501,7 +501,7 @@ Now, check for out-of-range results:
 
 
 Check if results are out of range when open interval is used
-------------------------------------------------------------
+............................................................
 
 Set open interval for min and max from water specification
 
@@ -534,7 +534,7 @@ Set results for analysis `Au` (min: -5, max: 5, warn_min: -5.5, warn_max: 5.5):
 
 
 Check if results are out of range when left-open interval is used
------------------------------------------------------------------
+.................................................................
 
 Set left-open interval for min and max from water specification
 
@@ -567,7 +567,7 @@ Set results for analysis `Au` (min: -5, max: 5, warn_min: -5.5, warn_max: 5.5):
 
 
 Check if results are out of range when right-open interval is used
-------------------------------------------------------------------
+..................................................................
 
 Set right-open interval for min and max from water specification
 
@@ -600,7 +600,7 @@ Set results for analysis `Au` (min: -5, max: 5, warn_min: -5.5, warn_max: 5.5):
 
 
 Check if formatted interval is rendered properly
-------------------------------------------------
+................................................
 
 Set closed interval for min and max from water specification
 

@@ -1,6 +1,5 @@
-================
 SENAITE LIMS API
-================
+----------------
 
 The SENAITE LIMS API provides single functions for single purposes.
 This Test builds completely on the API without any further imports needed.
@@ -10,7 +9,7 @@ Running this test from the buildout directory::
     bin/test test_textual_doctests -t API
 
 API
-===
+---
 
 The purpose of this API is to help coders to follow the DRY principle (Don't
 Repeat Yourself). It also ensures that the most effective and efficient method is
@@ -22,7 +21,7 @@ Import it first::
 
 
 Setup the test user
--------------------
+...................
 
 We need certain permissions to create and access objects used in this test,
 so here we will assume the role of Lab Manager.
@@ -33,7 +32,7 @@ so here we will assume the role of Lab Manager.
 
 
 Getting the Portal
-------------------
+..................
 
 The Portal is the SENAITE LIMS root object::
 
@@ -43,7 +42,7 @@ The Portal is the SENAITE LIMS root object::
 
 
 Getting the SENAITE Setup object
---------------------------------
+................................
 
 The Setup object gives access to all of the SENAITE configuration settings::
 
@@ -60,7 +59,7 @@ The Setup object gives access to all of the SENAITE configuration settings::
 
 
 Creating new Content
---------------------
+....................
 
 Creating new contents in SENAITE LIMS requires some special knowledge.
 This function helps to do it right and creates a content for you.
@@ -76,7 +75,7 @@ Here we create a new `Client` in the `plone/clients` folder::
 
 
 Getting a Tool
---------------
+..............
 
 There are many ways to get a tool in SENAITE LIMS / Plone. This function
 centralizes this functionality and makes it painless::
@@ -100,7 +99,7 @@ This error can also be used for custom methods with the `fail` function::
 
 
 Getting an Object
------------------
+.................
 
 Getting the object from a catalog brain is a common task.
 
@@ -178,7 +177,7 @@ Portal object, we can use the `is_object` function::
 
 
 Checking if an Object is the Portal
------------------------------------
+...................................
 
 Sometimes it can be handy to check if the current object is the portal::
 
@@ -193,7 +192,7 @@ Sometimes it can be handy to check if the current object is the portal::
 
 
 Checking if an Object is a Catalog Brain
-----------------------------------------
+........................................
 
 Knowing if we have an object or a brain can be handy. This function checks this for you::
 
@@ -208,7 +207,7 @@ Knowing if we have an object or a brain can be handy. This function checks this 
 
 
 Checking if an Object is a Dexterity Content
---------------------------------------------
+............................................
 
 This function checks if an object is a `Dexterity` content type::
 
@@ -222,7 +221,7 @@ We currently have no `Dexterity` contents, so testing this comes later...
 
 
 Checking if an Object is an AT Content
---------------------------------------
+......................................
 
 This function checks if an object is an `Archetypes` content type::
 
@@ -237,7 +236,7 @@ This function checks if an object is an `Archetypes` content type::
 
 
 Getting the Schema of a Content
--------------------------------
+...............................
 
 The schema contains the fields of a content object. Getting the schema is a
 common task, but differs between `ATContentType` based objects and `Dexterity`
@@ -254,7 +253,7 @@ Catalog brains are also supported::
 
 
 Getting the Fields of a Content
--------------------------------
+...............................
 
 The fields contain all the values that an object holds and are therefore
 responsible for getting and setting the information.
@@ -272,7 +271,7 @@ Catalog brains are also supported::
 
 
 Getting the ID of a Content
----------------------------
+...........................
 
 Getting the ID is a common task in SENAITE LIMS.
 This function takes care that catalog brains are not woken up for this task::
@@ -288,7 +287,7 @@ This function takes care that catalog brains are not woken up for this task::
 
 
 Getting the Title of a Content
-------------------------------
+..............................
 
 Getting the Title is a common task in SENAITE LIMS.
 This function takes care that catalog brains are not woken up for this task::
@@ -304,7 +303,7 @@ This function takes care that catalog brains are not woken up for this task::
 
 
 Getting the Description of a Content
-------------------------------------
+....................................
 
 Getting the Description is a common task in SENAITE LIMS.
 This function takes care that catalog brains are not woken up for this task::
@@ -320,7 +319,7 @@ This function takes care that catalog brains are not woken up for this task::
 
 
 Getting the UID of a Content
-----------------------------
+............................
 
 Getting the UID is a common task in SENAITE LIMS.
 This function takes care that catalog brains are not woken up for this task.
@@ -343,7 +342,7 @@ If a UID is passed to the function, it will return the value unchanged:
 
 
 Getting the URL of a Content
-----------------------------
+............................
 
 Getting the URL is a common task in SENAITE LIMS.
 This function takes care that catalog brains are not woken up for this task::
@@ -359,7 +358,7 @@ This function takes care that catalog brains are not woken up for this task::
 
 
 Getting the Icon of a Content
------------------------------
+.............................
 
     >>> api.get_icon(client)
     '<img width="16" height="16" src="http://nohost/plone/senaite_theme/icon/client" title="Test Client" />'
@@ -375,7 +374,7 @@ Getting the Icon of a Content
 
 
 Getting a catalog brain by UID
-------------------------------
+..............................
 
 This function finds a catalog brain by its uinique ID (UID)::
 
@@ -384,7 +383,7 @@ This function finds a catalog brain by its uinique ID (UID)::
 
 
 Getting an object by UID
-------------------------
+........................
 
 This function finds an object by its uinique ID (UID).
 The portal object with the defined UId of '0' is also supported::
@@ -409,7 +408,7 @@ or error will result in the default value being returned::
 
 
 Getting an object by Path
--------------------------
+.........................
 
 This function finds an object by its physical path::
 
@@ -436,7 +435,7 @@ Any exception returns default value::
 
 
 Getting the Physical Path of an Object
---------------------------------------
+......................................
 
 The physical path describes exactly where an object is located inside the portal.
 This function unifies the different approaches to get the physical path and does
@@ -458,7 +457,7 @@ so in the most efficient way::
 
 
 Getting the Physical Parent Path of an Object
----------------------------------------------
+.............................................
 
 This function returns the physical path of the parent object::
 
@@ -482,7 +481,7 @@ Like with the other functions, only portal objects are supported::
 
 
 Getting the Parent Object
--------------------------
+.........................
 
 This function returns the parent object::
 
@@ -517,7 +516,7 @@ Like with the other functions, only portal objects are supported::
 
 
 Searching Objects
------------------
+.................
 
 Searching in SENAITE LIMS requires knowledge in which catalog the object is indexed.
 This function unifies all SENAITE LIMS catalog to a single search interface::
@@ -611,7 +610,7 @@ Or provide a correct query::
 
 
 Getting the registered Catalogs
--------------------------------
+...............................
 
 SENAITE LIMS uses multiple catalogs registered via the Archetype Tool. This
 function returns a list of registered catalogs for a brain or object::
@@ -627,7 +626,7 @@ function returns a list of registered catalogs for a brain or object::
 
 
 Getting an Attribute of an Object
----------------------------------
+.................................
 
 This function handles attributes and methods the same and returns their value.
 It also handles security and is able to return a default value instead of
@@ -651,7 +650,7 @@ raising an `Unauthorized` error::
     ''
 
 Getting the Portal Catalog
---------------------------
+..........................
 
 This tool is needed so often, that this function just returns it::
 
@@ -660,7 +659,7 @@ This tool is needed so often, that this function just returns it::
 
 
 Getting the Review History of an Object
----------------------------------------
+.......................................
 
 The review history gives information about the objects' workflow changes::
 
@@ -670,7 +669,7 @@ The review history gives information about the objects' workflow changes::
 
 
 Getting the Revision History of an Object
------------------------------------------
+.........................................
 
 The review history gives information about the objects' workflow changes::
 
@@ -682,7 +681,7 @@ The review history gives information about the objects' workflow changes::
 
 
 Getting the assigned Workflows of an Object
--------------------------------------------
+...........................................
 
 This function returns all assigned workflows for a given object::
 
@@ -699,7 +698,7 @@ This function also supports the portal_type as parameter::
 
 
 Getting the Workflow Status of an Object
-----------------------------------------
+........................................
 
 This function returns the state of a given object::
 
@@ -734,7 +733,7 @@ Reactivate the client::
 
 
 Getting the available transitions for an object
------------------------------------------------
+...............................................
 
 This function returns all possible transitions from all workflows in the
 object's workflow chain.
@@ -758,7 +757,7 @@ checking that the two expected transitions are present in the return value::
 
 
 Getting the creation date of an object
---------------------------------------
+......................................
 
 This function returns the creation date of a given object::
 
@@ -768,7 +767,7 @@ This function returns the creation date of a given object::
 
 
 Getting the modification date of an object
-------------------------------------------
+..........................................
 
 This function returns the modification date of a given object::
 
@@ -778,7 +777,7 @@ This function returns the modification date of a given object::
 
 
 Getting the review state of an object
--------------------------------------
+.....................................
 
 This function returns the review state of a given object::
 
@@ -797,7 +796,7 @@ It should also work for catalog brains::
 
 
 Getting the registered Catalogs of an Object
---------------------------------------------
+............................................
 
 This function returns a list of all registered catalogs within the
 `archetype_tool` for a given portal_type or object::
@@ -812,7 +811,7 @@ It also supports the `portal_type` as a parameter::
 
 
 Transitioning an Object
------------------------
+.......................
 
 This function performs a workflow transition and returns the object::
 
@@ -826,7 +825,7 @@ This function performs a workflow transition and returns the object::
 
 
 Getting inactive/cancellation state of different workflows
-----------------------------------------------------------
+..........................................................
 
 There are two workflows allowing an object to be set inactive.  We provide
 the is_active function to return False if an item is set inactive with either
@@ -865,7 +864,7 @@ But there are custom workflows that can also provide `cancel` transition, like
 
 
 Getting the granted Roles for a certain Permission on an Object
----------------------------------------------------------------
+...............................................................
 
 This function returns a list of Roles, which are granted the given Permission
 for the passed in object::
@@ -879,7 +878,7 @@ for the passed in object::
 
 
 Checking if an Object is Versionable
-------------------------------------
+....................................
 
 Some contents in SENAITE LIMS support versioning. This function checks this for you.
 
@@ -900,7 +899,7 @@ Analysisservices are versionable::
 
 
 Getting the Version of an Object
---------------------------------
+................................
 
 This function returns the version as an integer::
 
@@ -915,7 +914,7 @@ Calling `processForm` bumps the version::
 
 
 Getting a Browser View
-----------------------
+......................
 
 Getting a browser view is a common task in SENAITE LIMS::
 
@@ -928,7 +927,7 @@ Getting a browser view is a common task in SENAITE LIMS::
 
 
 Getting the Request
--------------------
+...................
 
 This function will return the global request object::
 
@@ -937,7 +936,7 @@ This function will return the global request object::
 
 
 Getting a Group
----------------
+...............
 
 Users in SENAITE LIMS are managed in groups. A common group is the `Clients` group,
 where all users of client contacts are grouped.
@@ -956,7 +955,7 @@ Non-existing groups are not found::
 
 
 Getting a User
---------------
+..............
 
 Users can be fetched by their user id. The function is idempotent and handles
 user objects as well::
@@ -975,7 +974,7 @@ Non-existing users are not found::
 
 
 Getting User Properties
------------------------
+.......................
 
 User properties, like the email or full name, are stored as user properties.
 This means that they are not on the user object. This function retrieves these
@@ -998,7 +997,7 @@ An empty property dict is returned if no user could be found::
 
 
 Getting Users by their Roles
-----------------------------
+............................
 
     >>> from operator import methodcaller
 
@@ -1036,7 +1035,7 @@ A single value can also be passed into this function::
 
 
 Getting the Current User
-------------------------
+........................
 
 Getting the current logged in user::
 
@@ -1045,7 +1044,7 @@ Getting the current logged in user::
 
 
 Getting the Contact associated to a Plone user
-----------------------------------------------
+..............................................
 
 Getting a Plone user previously registered with no contact assigned:
 
@@ -1079,7 +1078,7 @@ But fails if we specify only `Contact` type:
 
 
 Getting the Contact Client
---------------------------
+..........................
 
 Getting the current client the current user belongs to::
 
@@ -1109,7 +1108,7 @@ Try now with a valid contact::
 
 
 Creating a Cache Key
---------------------
+....................
 
 This function creates a good cache key for a generic object or brain::
 
@@ -1138,7 +1137,7 @@ The key should change when the object get modified::
     >>> key3 != key1
     True
 
-.. important:: Workflow changes do not change the modification date!
+~~ important:: Workflow changes do not change the modification date!
 A custom event subscriber will update it therefore.
 
 A workflow transition should also change the cache key::
@@ -1152,7 +1151,7 @@ A workflow transition should also change the cache key::
 
 
 SENAITE Cache Key decorator
----------------------------
+...........................
 
 This decorator can be used for `plone.memoize` cache decorators in classes.
 The decorator expects that the first argument is the class instance (`self`) and
@@ -1188,7 +1187,7 @@ The decorator can also handle brains::
 
 
 ID Normalizer
--------------
+.............
 
 Normalizes a string to be usable as a system ID:
 
@@ -1205,7 +1204,7 @@ Normalizes a string to be usable as a system ID:
 
 
 File Normalizer
----------------
+...............
 
 Normalizes a string to be usable as a file name:
 
@@ -1222,7 +1221,7 @@ Normalizes a string to be usable as a file name:
 
 
 Check if an UID is valid
-------------------------
+........................
 
 Checks if an UID is a valid 23 alphanumeric uid:
 
@@ -1269,7 +1268,7 @@ Checks if an UID is a valid 23 alphanumeric uid and with a brain:
 
 
 Check if a Date is valid
-------------------------
+........................
 
 Do some imports first:
 
@@ -1298,7 +1297,7 @@ Checks if a DateTime is valid:
 
 
 Try conversions to Date
------------------------
+.......................
 
 Try to convert to DateTime:
 
@@ -1395,7 +1394,7 @@ Use a non-conversionable value as fallback:
 
 
 Check if floatable
-------------------
+..................
 
     >>> api.is_floatable(None)
     False
@@ -1417,7 +1416,7 @@ Check if floatable
 
 
 Convert to a float number
--------------------------
+.........................
 
     >>> api.to_float("2")
     2.0
@@ -1450,7 +1449,7 @@ With default fallback:
 
 
 Convert to an int number
-------------------------
+........................
 
     >>> api.to_int(2)
     2
@@ -1489,7 +1488,7 @@ With default fallback:
 
 
 Convert to minutes
-------------------
+..................
 
     >>> api.to_minutes(hours=1)
     60
@@ -1520,7 +1519,7 @@ Convert to minutes
 
 
 Convert to dhm format
----------------------
+.....................
 
     >>> api.to_dhm_format(hours=1)
     '1h'
@@ -1554,7 +1553,7 @@ Convert to dhm format
 
 
 Get a registry record
----------------------
+.....................
 
 Fetch a value of a registry record::
 
@@ -1570,7 +1569,7 @@ If the record is not found, the default is returned::
 
 
 Create a display list
----------------------
+.....................
 
 Static display lists, can look up on either side of the dict, and get them in
 sorted order. They are used in selection widgets.
@@ -1603,7 +1602,7 @@ It can be sorted either by key or by value:
 
 
 Converting a text to HTML
--------------------------
+.........................
 
 This function converts newline (`\n`) escape sequences in plain text to `<br/>`
 tags for HTML rendering.

@@ -1,5 +1,5 @@
 Internal Use of Samples and Analyses
-====================================
+------------------------------------
 
 Running this test from the buildout directory:
 
@@ -7,7 +7,7 @@ Running this test from the buildout directory:
 
 
 Test Setup
-----------
+..........
 
 Needed Imports:
 
@@ -77,7 +77,7 @@ We need to create some basic objects for the test:
 
 
 Set a Sample for internal use
------------------------------
+.............................
 
 Create a Sample for non internal use:
 
@@ -145,7 +145,7 @@ Even if we submit results and sample is transitioned thereafter:
 
 
 Creation of a Sample for internal use
--------------------------------------
+.....................................
 
 Create a Sample for internal use:
 
@@ -171,7 +171,7 @@ Client contact does not have access to this Sample:
 
 
 Creation of a Partition for internal use
-----------------------------------------
+........................................
 
 Create a Sample for non internal use:
 

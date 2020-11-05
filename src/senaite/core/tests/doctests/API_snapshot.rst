@@ -1,5 +1,5 @@
 API Snapshot
-============
+------------
 
 The snapshot API provides a simple interface to manage object snaphots.
 
@@ -9,7 +9,7 @@ Running this test from the buildout directory::
 
 
 Test Setup
-----------
+..........
 
 Needed Imports:
 
@@ -49,7 +49,7 @@ Functional Helpers:
 
 
 Environment Setup
------------------
+.................
 
 Setup the testing environment:
 
@@ -63,7 +63,7 @@ Setup the testing environment:
 
 
 LIMS Setup
-----------
+..........
 
 Setup the Lab for testing:
 
@@ -77,7 +77,7 @@ Setup the Lab for testing:
 
 
 Content Setup
--------------
+.............
 
 Create some Analysis Services with unique Keywords:
 
@@ -101,7 +101,7 @@ Get the contained `Cu` Analysis:
 
 
 Check if an object supports snapshots
--------------------------------------
+.....................................
 
 We can use the `support_snapshots` function to check if the object supports
 snapshots:
@@ -114,7 +114,7 @@ snapshots:
 
 
 Get the snapshot storage
-------------------------
+........................
 
 The snapshot storage holds all the raw snapshots in JSON format:
 
@@ -124,7 +124,7 @@ The snapshot storage holds all the raw snapshots in JSON format:
 
 
 Get all snapshots
------------------
+.................
 
 To get the data snapshots of an object, we can call `get_snapshots`:
 
@@ -134,7 +134,7 @@ To get the data snapshots of an object, we can call `get_snapshots`:
 
 
 Check if an object has snapshots
---------------------------------
+................................
 
 To check if an object has snapshots, we can call `has_snapshots`:
 
@@ -155,7 +155,7 @@ To check if an object has snapshots, we can call `has_snapshots`:
 
 
 Get the number of snapshots
----------------------------
+...........................
 
 To check the number of snapshots (versions) an object has, we can call
 `get_snapshot_count`:
@@ -168,7 +168,7 @@ To check the number of snapshots (versions) an object has, we can call
 
 
 Get the version of an object
-----------------------------
+............................
 
 If an object has a snapshot, it is considered as version 0:
 
@@ -182,7 +182,7 @@ If the object does not have any snapshots yet, this function returns -1:
 
 
 Get a snapshot by version
--------------------------
+.........................
 
 Snapshots can be retrieved by their index in the snapshot storage (version):
 
@@ -199,7 +199,7 @@ Non existing versions return `None`:
 
 
 Get the version of a snapshot
------------------------------
+.............................
 
 The index (version) of each snapshot can be retrieved:
 
@@ -213,7 +213,7 @@ The index (version) of each snapshot can be retrieved:
 
 
 Get the last snapshot taken
----------------------------
+...........................
 
 To get the latest snapshot, we can call `get_last_snapshot`:
 
@@ -223,7 +223,7 @@ To get the latest snapshot, we can call `get_last_snapshot`:
 
 
 Get the metadata of a snapshot
-------------------------------
+..............................
 
 Each snapshot contains metadata which can be retrieved:
 
@@ -241,7 +241,7 @@ The metadata holds the information about the performing user etc.:
 
 
 Take a new Snapshot
--------------------
+...................
 
 Snapshots can be taken programatically with the function `take_snapshot`:
 
@@ -266,7 +266,7 @@ The new snapshot should be the most recent snapshot now:
 
 
 Comparing Snapshots
--------------------
+...................
 
 The changes of two snapshots can be compared with `compare_snapshots`:
 

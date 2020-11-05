@@ -1,5 +1,5 @@
 Instrument Calibration, Certification and Validation
-====================================================
+----------------------------------------------------
 
 Instruments represent the physical gadgets of the lab.
 
@@ -19,7 +19,7 @@ Running this test from the buildout directory::
     bin/test -t InstrumentCalibrationCertificationAndValidation
 
 Test Setup
-==========
+----------
 
     >>> import transaction
     >>> from DateTime import DateTime
@@ -65,7 +65,7 @@ Test Setup
 
 
 Instruments
-===========
+-----------
 
 All instruments live in the `/bika_setup/bika_instruments` folder::
 
@@ -82,7 +82,7 @@ Instruments provide the `IInstrument` interface::
 
 
 Calibrations
-============
+------------
 
 Instrument calibrations live inside an instrument::
 
@@ -174,7 +174,7 @@ Instruments w/o any calibration should return no valid calibrations::
 
 
 Calibration Certificates
-========================
+------------------------
 
 Certification live inside an instrument::
 
@@ -284,7 +284,7 @@ Instruments w/o any certifications should also return no valid certifications::
 
 
 Certification Expiration Intervals
-==================================
+----------------------------------
 
 Besides the `ValidFrom` and `ValidTo` date range, users might also specify an `ExpirationInterval`,
 which calculates the expiration date automatically on save.
@@ -314,7 +314,7 @@ the `edit` form in Plone::
 
 
 Validation
-==========
+----------
 
 Validations live inside an instrument::
 

@@ -1,11 +1,11 @@
 Rolemap
-=======
+-------
 
 Bika LIMS defines several roles for the lab context
 
 
 How to run this test
---------------------
+....................
 
 Please execute the following command in the `buildout` directory::
 
@@ -13,7 +13,7 @@ Please execute the following command in the `buildout` directory::
 
 
 Test Setup
-----------
+..........
 
 Needed Imports::
 
@@ -26,7 +26,7 @@ Test Variables::
 
 
 Check Bika LIMS Roles
----------------------
+.....................
 
 Ensure the "Analyst" role exists::
 

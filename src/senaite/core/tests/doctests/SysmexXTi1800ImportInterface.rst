@@ -1,5 +1,5 @@
 Sysmex xt i1800 import interface
-================================
+--------------------------------
 
 Running this test from the buildout directory::
 
@@ -7,7 +7,7 @@ Running this test from the buildout directory::
 
 
 Test Setup
-----------
+..........
 Needed imports::
 
     >>> import os
@@ -48,7 +48,7 @@ so here we will assume the role of Lab Manager::
     >>> setRoles(portal, TEST_USER_ID, ['Manager',])
 
 Availability of instrument interface
-------------------------------------
+....................................
 Check that the instrument interface is available::
 
     >>> exims = []
@@ -58,7 +58,7 @@ Check that the instrument interface is available::
     True
 
 Assigning the Import Interface to an Instrument
------------------------------------------------
+...............................................
 Create an `Instrument` and assign to it the tested Import Interface::
 
     >>> instrument = api.create(bika_instruments, "Instrument", title="Instrument-1")
@@ -69,10 +69,10 @@ Create an `Instrument` and assign to it the tested Import Interface::
     ['sysmex.xt.i1800']
 
 Import test
------------
+...........
 
 Required steps: Create and receive Analysis Request for import test
-...................................................................
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 An `AnalysisRequest` can only be created inside a `Client`, and it also requires a `Contact` and
 a `SampleType`::
@@ -149,7 +149,7 @@ Create an `AnalysisRequest` with this `AnalysisService` and receive it::
     'test_user_1_'
 
 Import test
-...........
+~~~~~~~~~~~
 Load results test file and import the results::
 
     >>> dir_path = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'files'))

@@ -1,5 +1,5 @@
 Abbott's m2000 Real Time import interface
-=========================================
+-----------------------------------------
 
 Running this test from the buildout directory::
 
@@ -7,10 +7,10 @@ Running this test from the buildout directory::
 
 
 Test Setup
-----------
+..........
 Needed imports:
 
-.. code::
+~~ code::
 
     >>> import codecs
     >>> import os
@@ -26,14 +26,14 @@ Needed imports:
 
 Functional helpers:
 
-.. code::
+~~ code::
 
     >>> def timestamp(format="%Y-%m-%d"):
     ...     return DateTime().strftime(format)
 
 Variables:
 
-.. code::
+~~ code::
 
     >>> date_now = timestamp()
     >>> portal = self.portal
@@ -49,17 +49,17 @@ Variables:
 We need certain permissions to create and access objects used in this test,
 so here we will assume the role of Lab Manager:
 
-.. code::
+~~ code::
 
     >>> from plone.app.testing import TEST_USER_ID
     >>> from plone.app.testing import setRoles
     >>> setRoles(portal, TEST_USER_ID, ['Manager',])
 
 Availability of instrument interface
-------------------------------------
+....................................
 Check that the instrument interface is available:
 
-.. code::
+~~ code::
 
     >>> exims = []
     >>> for exim_id in instruments.__all__:
@@ -68,10 +68,10 @@ Check that the instrument interface is available:
     True
 
 Assigning the Import Interface to an Instrument
------------------------------------------------
+...............................................
 Create an `Instrument` and assign to it the tested Import Interface:
 
-.. code::
+~~ code::
 
     >>> instrument = api.create(bika_instruments, "Instrument", title="Instrument-1")
     >>> instrument
@@ -81,15 +81,15 @@ Create an `Instrument` and assign to it the tested Import Interface:
     ['abbott.m2000rt.m2000rt']
 
 Import test
------------
+...........
 
 Required steps: Create and receive Analysis Request for import test
-...................................................................
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 An `AnalysisRequest` can only be created inside a `Client`, and it also requires a `Contact` and
 a `SampleType`:
 
-.. code::
+~~ code::
 
     >>> clients = self.portal.clients
     >>> client = api.create(clients, "Client", Name="NARALABS", ClientID="NLABS")
@@ -105,7 +105,7 @@ a `SampleType`:
 Create an `AnalysisCategory` (which categorizes different `AnalysisServices`), and add to it an `AnalysisService`.
 This service matches the service specified in the file from which the import will be performed:
 
-.. code::
+~~ code::
 
     >>> analysiscategory = api.create(bika_analysiscategories, "AnalysisCategory", title="Water")
     >>> analysiscategory
@@ -135,7 +135,7 @@ This service matches the service specified in the file from which the import wil
 Set some interim fields present in the results test file intoto the created
 AnalysisService, so not on the second server:
 
-.. code::
+~~ code::
 
     >>> service_interim_fields = [{'keyword': 'ASRExpDate',
     ...                            'title': 'ASRExpDate',
@@ -168,7 +168,7 @@ AnalysisService, so not on the second server:
 
 Create an `AnalysisRequest` with this `AnalysisService` and receive it:
 
-.. code::
+~~ code::
 
     >>> values = {
     ...           'Client': client.UID(),
@@ -189,10 +189,10 @@ Create an `AnalysisRequest` with this `AnalysisService` and receive it:
     'test_user_1_'
 
 Import test
-...........
+~~~~~~~~~~~
 Load results test file and import the results:
 
-.. code::
+~~ code::
 
     >>> dir_path = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'files'))
     >>> temp_file = codecs.open(dir_path + '/AbbottM2000.log.123',
@@ -209,21 +209,21 @@ Load results test file and import the results:
 Check from the importer logs that the file from where the results have been imported is indeed
 the specified file:
 
-.. code::
+~~ code::
 
     >>> '/AbbottM2000.log.123' in importer.logs[0]
     True
 
 Check the rest of the importer logs to verify that the values were correctly imported:
 
-.. code::
+~~ code::
 
     >>> importer.logs[1:]
     ['End of file reached successfully: 24 objects, 1 analyses, 24 results', 'Allowed Sample states: sample_received, attachment_due, to_be_verified', 'Allowed analysis states: unassigned, assigned, to_be_verified', "H2O-0001 result for 'HIV06ml:ASRExpDate': '20141211'", "H2O-0001 result for 'HIV06ml:ASRLotNumber': '0123456'", "H2O-0001 result for 'HIV06ml:AssayCalibrationTime': '20150423 16:37:05'", "H2O-0001 result for 'HIV06ml:FinalResult': '18'", "H2O-0001 result for 'HIV06ml:Location': 'A12'", "H2O-0001: calculated result for 'TTR': '1800.0'", "H2O-0001: [u'Analysis HIV06ml'] imported sucessfully", 'Import finished successfully: 1 Samples and 1 results updated']
 
 And finally check if indeed the analysis has the imported results:
 
-.. code::
+~~ code::
 
     >>> analyses = ar.getAnalyses()
     >>> an = [analysis.getObject() for analysis in analyses if analysis.Title == 'HIV06ml'][0]

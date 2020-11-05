@@ -1,5 +1,5 @@
 Instruments import interface
-============================
+----------------------------
 We are going to test all instruments import interfaces on this one doctest
 1. These files can only be added on `tests/files/instruments/`
 2. The filenames(files to be imported) have to have the same name as their
@@ -26,7 +26,7 @@ Running this test from the buildout directory::
 
 
 Test Setup
-----------
+..........
 Needed imports::
 
     >>> import os
@@ -77,10 +77,10 @@ so here we will assume the role of Lab Manager::
 
 
 Import test
------------
+...........
 
 Required steps: Create and receive Analysis Request for import test
-...................................................................
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 An `AnalysisRequest` can only be created inside a `Client`, and it also requires a `Contact` and
 a `SampleType`::
@@ -178,7 +178,7 @@ Create an `AnalysisRequest` with this `AnalysisService` and receive it::
 
 
 Instruments files path
-----------------------
+......................
 Where testing files live::
 
     >>> files_path = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', 'files/instruments'))
@@ -201,7 +201,7 @@ Where testing files live::
     ...             self.fail('File {} found does match any import interface'.format(fl))
 
 Availability of instrument interface
-------------------------------------
+....................................
 Check that the instrument interface is available::
 
     >>> exims = []
@@ -211,7 +211,7 @@ Check that the instrument interface is available::
     []
 
 Assigning the Import Interface to an Instrument
------------------------------------------------
+...............................................
 Create an `Instrument` and assign to it the tested Import Interface::
 
     >>> for inter in interfaces:

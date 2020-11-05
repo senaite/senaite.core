@@ -1,5 +1,5 @@
 Analysis Turnaround Time
-========================
+------------------------
 
 Running this test from the buildout directory::
 
@@ -7,7 +7,7 @@ Running this test from the buildout directory::
 
 
 Test Setup
-----------
+..........
 
 Needed Imports:
 
@@ -127,7 +127,7 @@ Get the Analyses for further use:
 
 
 Test basic functions related with TAT
--------------------------------------
+.....................................
 
 Since we haven't received the Analysis Request yet, the duration (time in
 minutes taken for analyses must be zero):
@@ -173,7 +173,7 @@ Also, the Analysis Request is not late because none of its analyses is late:
 
 
 Test TAT with analyses received 2d ago
---------------------------------------
+......................................
 
 We manually force a receive date 2d before so we can test:
 

@@ -1,5 +1,5 @@
 Sysmex xt i4000 import interface
-================================
+--------------------------------
 
 Running this test from the buildout directory::
 
@@ -7,13 +7,13 @@ Running this test from the buildout directory::
 
 
 Notes
------
+.....
 Since the Sysmex xt i4000 uses the same parser and importer than the Sysmex xt i1800 this test only
 tests that the import interface of the i4000 can be assigned to an instrument. The functional tests
 for the parser and importer can be found in the tests for the Sysmex xt i1800.
 
 Test Setup
-----------
+..........
 Needed imports::
 
     >>> import os
@@ -54,7 +54,7 @@ so here we will assume the role of Lab Manager::
     >>> setRoles(portal, TEST_USER_ID, ['Manager',])
 
 Availability of instrument interface
-------------------------------------
+....................................
 Check that the instrument interface is available::
 
     >>> exims = []
@@ -64,7 +64,7 @@ Check that the instrument interface is available::
     True
 
 Assigning the Import Interface to an Instrument
------------------------------------------------
+...............................................
 Create an `Instrument` and assign to it the tested Import Interface::
 
     >>> instrument = api.create(bika_instruments, "Instrument", title="Instrument-1")

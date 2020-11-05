@@ -1,5 +1,5 @@
 Analysis publication guard and event
-====================================
+------------------------------------
 
 Running this test from the buildout directory:
 
@@ -7,7 +7,7 @@ Running this test from the buildout directory:
 
 
 Test Setup
-----------
+..........
 
 Needed Imports:
 
@@ -25,7 +25,7 @@ Variables and basic objects for the test:
 
 
 Batch creation and Client assignment
-------------------------------------
+....................................
 
 Create a new Batch:
 

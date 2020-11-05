@@ -1,5 +1,5 @@
 Analysis unassign guard and event
-=================================
+---------------------------------
 
 Running this test from the buildout directory:
 
@@ -7,7 +7,7 @@ Running this test from the buildout directory:
 
 
 Test Setup
-----------
+..........
 
 Needed Imports:
 
@@ -88,7 +88,7 @@ We need to create some basic objects for the test:
 
 
 Unassign transition and guard basic constraints
------------------------------------------------
+...............................................
 
 Create an Analysis Request:
 
@@ -177,7 +177,7 @@ And the Analysis Request' assigned state index is updated as well:
 
 
 Unassign of an analysis causes the duplicates to be removed
------------------------------------------------------------
+...........................................................
 
 When the analysis a duplicate comes from is unassigned, the duplicate is
 removed from the worksheet too.

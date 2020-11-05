@@ -1,5 +1,5 @@
 Versioning
-==========
+----------
 
 Some Bika LIMS contents support versioning.
 
@@ -8,7 +8,7 @@ Each edit & save process creates a new version, which is triggered by the
 
 
 Test Setup
-----------
+..........
 
     >>> from Acquisition import aq_base
     >>> from plone import api as ploneapi
@@ -29,7 +29,7 @@ Test Setup
 
 
 Versionable Types
------------------
+.................
 
 The following types support versioning::
 
@@ -37,7 +37,7 @@ The following types support versioning::
 
 
 Analysis Services
------------------
+.................
 
 Create a analysis service for testing::
 
@@ -67,7 +67,7 @@ method, as this is also called after the content has been edited::
 
 
 Calculations
-------------
+............
 
 Create a calculation for testing::
 
@@ -97,13 +97,13 @@ method, as this is also called after the content has been edited::
 
 
 Non Versionable Types
----------------------
+.....................
 
 The following types used to be versionable in Bika LIMS in the past.
 
 
 Methods
-.......
+~~~~~~~
 
 Create a method for testing::
 
@@ -122,7 +122,7 @@ Methods shouldn't be versionable::
 
 
 Sample Points
-.............
+~~~~~~~~~~~~~
 
 Create a sample point for testing::
 
@@ -141,7 +141,7 @@ Calcuations should be versionable::
 
 
 Sample Types
-............
+~~~~~~~~~~~~
 
 Create a sample type for testing::
 
@@ -160,7 +160,7 @@ Calcuations should be versionable::
 
 
 Storage Locations
-.................
+~~~~~~~~~~~~~~~~~
 
 Create a sample type for testing::
 

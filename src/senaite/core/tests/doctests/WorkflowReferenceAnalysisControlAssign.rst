@@ -1,5 +1,5 @@
 Reference Analysis (Controls) assign guard and event
-====================================================
+----------------------------------------------------
 
 Running this test from the buildout directory:
 
@@ -7,7 +7,7 @@ Running this test from the buildout directory:
 
 
 Test Setup
-----------
+..........
 
 Needed Imports:
 
@@ -88,7 +88,7 @@ We need to create some basic objects for the test:
     ...                    ReferenceResults=ref_refs)
 
 Assign transition and guard basic constraints
----------------------------------------------
+.............................................
 
 Create an Analysis Request:
 
@@ -228,7 +228,7 @@ And now, I cannot add controls anymore:
 
 
 Check permissions for Assign transition
----------------------------------------
+.......................................
 
 Create an Analysis Request:
 

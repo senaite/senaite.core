@@ -1,5 +1,5 @@
 AR Analyses Field when using Partitions
-=======================================
+---------------------------------------
 
 The setter of the ARAnalysesField takes descendants (partitions) and ancestors
 from the current instance into account to prevent inconsistencies: In a Sample
@@ -12,7 +12,7 @@ Running this test from the buildout directory:
     bin/test test_textual_doctests -t ARAnalysesFieldWithPartitions
 
 Test Setup
-----------
+..........
 
 Needed imports:
 
@@ -70,7 +70,7 @@ Create some basic objects for the test:
 
 
 Creation of a Sample with a Partition
--------------------------------------
+.....................................
 
 Create a Sample and receive:
 
@@ -97,14 +97,14 @@ Although is also returned by the primary:
 
 
 Analyses retrieval
-------------------
+..................
 
 Get the ARAnalysesField to play with:
 
     >>> field = sample.getField("Analyses")
 
 get_from_instance
-.................
+~~~~~~~~~~~~~~~~~
 
 When asked for `Fe` when the primary is given, it returns the analysis, cause
 it lives in the primary:
@@ -132,7 +132,7 @@ ancestor:
     []
 
 get_from_ancestor
-.................
+~~~~~~~~~~~~~~~~~
 
 When asked for `Fe` to primary, it returns empty because there is no ancestor
 containing `Fe`:
@@ -156,7 +156,7 @@ If I ask for `Cu`, that lives in the partition, it will return empty for both:
     []
 
 get_from_descendant
-...................
+~~~~~~~~~~~~~~~~~~~
 
 When asked for `Fe` to primary, it returns None because there is no descendant
 containing `Fe`:
@@ -181,7 +181,7 @@ But returns None if I ask to the partition:
     []
 
 get_analyses_from_descendants
-.............................
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 It returns the analyses contained by the descendants:
 
@@ -193,10 +193,10 @@ It returns the analyses contained by the descendants:
 
 
 Resolution of analyses from the Sample lineage
-----------------------------------------------
+..............................................
 
 resolve_analyses
-................
+~~~~~~~~~~~~~~~~
 
 Resolves the analysis from the sample lineage if exists:
 
@@ -223,10 +223,10 @@ moves the analysis into the partition:
 
 
 Addition of analyses
---------------------
+....................
 
 add_analysis
-............
+~~~~~~~~~~~~
 
 If we try to add now an analysis that already exists, either in the partition or
 in the primary, the analysis won't be added:
@@ -262,7 +262,7 @@ while the function returns None:
 
 
 Set analyses
-------------
+............
 
 If we try to set same analyses as before to the root sample, nothing happens
 because the analyses are already there:

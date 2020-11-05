@@ -1,5 +1,5 @@
 Analysis assign guard and event
-===============================
+-------------------------------
 
 Running this test from the buildout directory:
 
@@ -7,7 +7,7 @@ Running this test from the buildout directory:
 
 
 Test Setup
-----------
+..........
 
 Needed Imports:
 
@@ -79,7 +79,7 @@ We need to create some basic objects for the test:
 
 
 Assign transition and guard basic constraints
----------------------------------------------
+.............................................
 
 Create an Analysis Request:
 
@@ -247,7 +247,7 @@ State of the analyses and worksheet is `to_be_verified`:
 
 
 Check permissions for Assign transition
----------------------------------------
+.......................................
 
 Create an Analysis Request:
 

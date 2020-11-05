@@ -1,5 +1,5 @@
 Analysis Request invalidate guard and event
-===========================================
+-------------------------------------------
 
 Running this test from the buildout directory:
 
@@ -7,7 +7,7 @@ Running this test from the buildout directory:
 
 
 Test Setup
-----------
+..........
 
 Needed Imports:
 
@@ -59,7 +59,7 @@ We need to create some basic objects for the test:
 
 
 Invalidate transition and guard basic constraints
--------------------------------------------------
+.................................................
 
 Create an Analysis Request:
 
@@ -135,7 +135,7 @@ From the retest, I can go back to the invalidated Analysis Request:
 
 
 Check permissions for Invalidate transition
--------------------------------------------
+...........................................
 
 Create an Analysis Request, receive, submit results and verify them:
 

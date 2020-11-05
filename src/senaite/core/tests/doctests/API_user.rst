@@ -1,5 +1,5 @@
 API User
-========
+--------
 
 The user API provides a simple interface to control users and groups in SENAITE
 
@@ -9,7 +9,7 @@ Running this test from the buildout directory::
 
 
 Test Setup
-----------
+..........
 
 Needed Imports:
 
@@ -21,7 +21,7 @@ Needed Imports:
 
 
 Environment Setup
------------------
+.................
 
 Setup the testing environment:
 
@@ -30,7 +30,7 @@ Setup the testing environment:
 
 
 Get user
---------
+........
 
 Get the user object (not the memberdata wrapped user):
 
@@ -66,7 +66,7 @@ It returns `None` if the user was not found:
 
 
 Get user ID
------------
+...........
 
 The user ID can be retrieved by the same objects as the `get_user`
 function:
@@ -93,7 +93,7 @@ If the user was not found, it returns `None`:
 
 
 Get user groups
----------------
+...............
 
 This function returns the groups the user belongs to:
 
@@ -107,7 +107,7 @@ It takes also the optional `user` argument:
 
 
 Get group
----------
+.........
 
 This function returns a group object:
 
@@ -126,7 +126,7 @@ If the group is `None`, all groups are returned:
 
 
 Add group
----------
+.........
 
 This function adds users to group(s):
 
@@ -147,7 +147,7 @@ Also adding a user to multiple groups are allowed:
 
 
 Delete group
-------------
+............
 
 This function removes users from group(s):
 
