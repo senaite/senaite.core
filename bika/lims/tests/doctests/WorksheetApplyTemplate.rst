@@ -600,6 +600,14 @@ Create and receive 3 samples:
     >>> samples = map(lambda i: create_analysisrequest(client, request, values, service_uids), range(3))
     >>> success = map(lambda s: doActionFor(s, "receive"), samples)
 
+Change the priority of Samples, so PrioritySortKey sorts their analyses in
+reversed order:
+
+    >>> for priority, sample in enumerate(reversed(samples)):
+    ...     sample.setPriority(priority)
+    ...     sample.reindexObject()
+    ...     ans = map(lambda a: a.reindexObject(), sample.getAnalyses(full_objects=True))
+
 Create a worksheet and apply the template:
 
     >>> worksheet = api.create(portal.worksheets, "Worksheet")
