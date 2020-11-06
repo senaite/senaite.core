@@ -142,6 +142,8 @@ class mailto_link_from_ccemails(object):
 
     def __call__(self, field):
         ccemails = field.get(self.context)
+        if not ccemails:
+            return ""
         addresses = ccemails.split(",")
         ret = []
         for address in addresses:
