@@ -4,6 +4,7 @@ Changelog
 2.0.0rc3 (unreleased)
 ---------------------
 
+- #1675 Fix error when setting WS template layout
 - #1674 Fix error in sample view when ccemails is None
 - #1672 Fix error when adding blank/reference samples to worksheets
 - #1669 Fix Generic Setup Content Importer
