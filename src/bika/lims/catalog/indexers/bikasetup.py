@@ -121,6 +121,14 @@ def department_title(instance):
     return to_keywords_list(department, api.get_title)
 
 
+@indexer(IHaveDepartment, IBikaSetupCatalog)
+def department_id(instance):
+    """Returns the ID of the Department the instance is assigned to
+    """
+    department = instance.getDepartment()
+    return to_keywords_list(department, lambda dep: dep.getDepartmentID())
+
+
 @indexer(IAnalysisService, IBikaSetupCatalog)
 def point_of_capture(instance):
     """Returns the point of capture of the instance

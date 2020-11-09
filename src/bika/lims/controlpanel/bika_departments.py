@@ -22,7 +22,6 @@ import collections
 
 from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
-from Products.Archetypes.utils import DisplayList
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
@@ -74,6 +73,10 @@ class DepartmentsView(BikaListingView):
             ("Title", {
                 "title": _("Department"),
                 "index": "sortable_title"}),
+            ("DepartmentID", {
+                "title": _("Department ID"),
+                "index": "department_id",
+                "toggle": False}),
             ("Description", {
                 "title": _("Description"),
                 "index": "Description",
@@ -123,8 +126,14 @@ class DepartmentsView(BikaListingView):
         description = obj.Description()
         url = obj.absolute_url()
 
+        # Department Title
         item["replace"]["Title"] = get_link(url, value=title)
         item["Description"] = description
+
+        # Department ID
+        department_id = obj.getDepartmentID()
+        item["DepartmentID"] = department_id
+        item["replace"]["DepartmentID"] = get_link(url, value=department_id)
 
         item["Manager"] = ""
         item["ManagerPhone"] = ""

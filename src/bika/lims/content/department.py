@@ -19,13 +19,6 @@
 # Some rights reserved, see README and LICENSE.
 
 from AccessControl import ClassSecurityInfo
-from Products.Archetypes.public import BaseContent
-from Products.Archetypes.public import ReferenceField
-from Products.Archetypes.public import Schema
-from Products.Archetypes.public import registerType
-from Products.Archetypes.references import HoldingReference
-from zope.interface import implements
-
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.widgets import ReferenceWidget
 from bika.lims.catalog.bikasetup_catalog import SETUP_CATALOG
@@ -33,11 +26,31 @@ from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IDeactivable
 from bika.lims.interfaces import IDepartment
+from bika.lims.interfaces import IHaveDepartment
+from Products.Archetypes.public import BaseContent
+from Products.Archetypes.public import ReferenceField
+from Products.Archetypes.public import Schema
+from Products.Archetypes.public import StringField
+from Products.Archetypes.public import StringWidget
+from Products.Archetypes.public import registerType
+from Products.Archetypes.references import HoldingReference
+from zope.interface import implements
+
+DeapartmentID = StringField(
+    "DepartmentID",
+    required=1,
+    searchable=True,
+    validators=("uniquefieldvalidator", "standard_id_validator"),
+    widget=StringWidget(
+        label=_("Department ID"),
+        description=_("Unique Department ID that identifies the department"),
+    ),
+)
 
 Manager = ReferenceField(
-    'Manager',
+    "Manager",
     required=1,
-    allowed_types=('LabContact',),
+    allowed_types=("LabContact", ),
     referenceClass=HoldingReference,
     relationship="DepartmentLabContact",
     widget=ReferenceWidget(
@@ -57,16 +70,18 @@ Manager = ReferenceField(
     ),
 )
 
+
 schema = BikaSchema.copy() + Schema((
+    DeapartmentID,
     Manager,
 ))
 
-schema['description'].widget.visible = True
-schema['description'].schemata = 'default'
+schema["description"].widget.visible = True
+schema["description"].schemata = "default"
 
 
 class Department(BaseContent):
-    implements(IDepartment, IDeactivable)
+    implements(IDepartment, IHaveDepartment, IDeactivable)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
@@ -76,6 +91,13 @@ class Department(BaseContent):
     def _renameAfterCreation(self, check_auto_id=False):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
+
+    def getDepartment(self):
+        """Used in catalog indexer
+
+        see: bika.lims.catalog.indexers.bikasetup.py
+        """
+        return self
 
 
 registerType(Department, PROJECTNAME)
