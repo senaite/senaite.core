@@ -26,6 +26,7 @@ from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IDeactivable
 from bika.lims.interfaces import IDepartment
+from bika.lims.interfaces import IHaveDepartment
 from Products.Archetypes.public import BaseContent
 from Products.Archetypes.public import ReferenceField
 from Products.Archetypes.public import Schema
@@ -80,7 +81,7 @@ schema["description"].schemata = "default"
 
 
 class Department(BaseContent):
-    implements(IDepartment, IDeactivable)
+    implements(IDepartment, IHaveDepartment, IDeactivable)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
@@ -90,6 +91,13 @@ class Department(BaseContent):
     def _renameAfterCreation(self, check_auto_id=False):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
+
+    def getDepartment(self):
+        """Used in catalog indexer
+
+        see: bika.lims.catalog.indexers.bikasetup.py
+        """
+        return self
 
 
 registerType(Department, PROJECTNAME)

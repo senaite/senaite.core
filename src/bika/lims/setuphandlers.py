@@ -169,6 +169,7 @@ INDEXES = (
     ("bika_setup_catalog", "created", "", "DateIndex"),
     ("bika_setup_catalog", "department_title", "", "KeywordIndex"),
     ("bika_setup_catalog", "department_uid", "", "KeywordIndex"),
+    ("bika_setup_catalog", "department_id", "", "KeywordIndex"),
     ("bika_setup_catalog", "getClientUID", "", "FieldIndex"),
     ("bika_setup_catalog", "getId", "", "FieldIndex"),
     ("bika_setup_catalog", "getKeyword", "", "FieldIndex"),

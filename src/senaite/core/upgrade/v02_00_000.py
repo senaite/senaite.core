@@ -44,6 +44,11 @@ UNINSTALL_PRODUCTS = [
     "plonetheme.barceloneta",
 ]
 
+INDEXES_TO_ADD = [
+    # List of tuples (catalog_name, index_name, index meta type)
+    (SETUP_CATALOG, "department_id", "KeywordIndex"),
+]
+
 
 @upgradestep(product, version)
 def upgrade(tool):
@@ -90,6 +95,9 @@ def upgrade(tool):
     # Initialize new department ID field
     # https://github.com/senaite/senaite.core/pull/1676
     initialize_department_id_field(portal)
+
+    # Add new indexes
+    add_new_indexes(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
@@ -194,7 +202,7 @@ def initialize_department_id_field(portal):
     """
     logger.info("Initialize department ID field ...")
     query = {"portal_type": "Department"}
-    brains = api.search(query, "portal_catalog")
+    brains = api.search(query, SETUP_CATALOG)
     objs = map(api.get_object, brains)
     department_ids = filter(None, map(lambda obj: obj.getDepartmentID(), objs))
     for obj in objs:
@@ -214,3 +222,22 @@ def initialize_department_id_field(portal):
             new_id = "".join(map(lambda p: p[0:idx], parts))
         department_ids.append(new_id)
         obj.setDepartmentID(new_id)
+
+
+def add_new_indexes(portal):
+    logger.info("Adding new indexes ...")
+    for catalog_id, index_name, index_metatype in INDEXES_TO_ADD:
+        add_index(catalog_id, index_name, index_metatype)
+    logger.info("Adding new indexes ... [DONE]")
+
+
+def add_index(catalog_id, index_name, index_metatype):
+    logger.info("Adding '{}' index to '{}' ...".format(index_name, catalog_id))
+    catalog = api.get_tool(catalog_id)
+    if index_name in catalog.indexes():
+        logger.info("Index '{}' already in catalog '{}' [SKIP]"
+                    .format(index_name, catalog_id))
+        return
+    catalog.addIndex(index_name, index_metatype)
+    logger.info("Indexing new index '{}' ...".format(index_name))
+    catalog.manage_reindexIndex(index_name)
