@@ -87,6 +87,10 @@ def upgrade(tool):
     # Update workflow mappings for samples to allow profile editing
     update_workflow_mappings_samples(portal)
 
+    # Initialize new department ID field
+    # https://github.com/senaite/senaite.core/pull/1676
+    initialize_department_id_field(portal)
+
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
 
@@ -183,3 +187,30 @@ def update_workflow_mappings_for(portal, wf_id, brains):
         obj = api.get_object(brain)
         workflow.updateRoleMappingsFor(obj)
         obj.reindexObject(idxs=["allowedRolesAndUsers"])
+
+
+def initialize_department_id_field(portal):
+    """Initialize the new department ID field
+    """
+    logger.info("Initialize department ID field ...")
+    query = {"portal_type": "Department"}
+    brains = api.search(query, "portal_catalog")
+    objs = map(api.get_object, brains)
+    department_ids = filter(None, map(lambda obj: obj.getDepartmentID(), objs))
+    for obj in objs:
+        department_id = obj.getDepartmentID()
+        if department_id:
+            continue
+        # generate a sane department id
+        title = api.get_title(obj)
+        parts = title.split()
+        idx = 1
+
+        # Generate a new unique department ID with the first characters of the
+        # department title.
+        new_id = "".join(map(lambda p: p[0:idx], parts))
+        while new_id in department_ids:
+            idx += 1
+            new_id = "".join(map(lambda p: p[0:idx], parts))
+        department_ids.append(new_id)
+        obj.setDepartmentID(new_id)
