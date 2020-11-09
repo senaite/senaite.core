@@ -37,7 +37,7 @@ from zope.interface import implements
 
 DeapartmentID = StringField(
     "DepartmentID",
-    required=0,
+    required=1,
     searchable=True,
     validators=("uniquefieldvalidator", "standard_id_validator"),
     widget=StringWidget(
