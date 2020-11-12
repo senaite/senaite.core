@@ -56,6 +56,8 @@ SKIP_TYPES = [
 
 
 class SenaiteSiteXMLAdapter(XMLAdapterBase, ObjectManagerHelpers):
+    """Adapter for the SENAITE root object (portal)
+    """
     adapts(ISenaiteSiteRoot, ISetupEnviron)
 
     def __init__(self, context, environ):
