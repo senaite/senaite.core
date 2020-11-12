@@ -36,6 +36,7 @@ from Products.GenericSetup.interfaces import ISetupEnviron
 from Products.GenericSetup.utils import I18NURI
 from Products.GenericSetup.utils import ObjectManagerHelpers
 from Products.GenericSetup.utils import XMLAdapterBase
+from senaite.core.p3compat import cmp
 from zope.component import adapts
 from zope.component import queryMultiAdapter
 from zope.interface import alsoProvides
