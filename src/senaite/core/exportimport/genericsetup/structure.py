@@ -33,6 +33,7 @@ from Products.CMFPlone.utils import safe_unicode
 from Products.GenericSetup.interfaces import IBody
 from Products.GenericSetup.interfaces import INode
 from Products.GenericSetup.interfaces import ISetupEnviron
+from Products.GenericSetup.utils import I18NURI
 from Products.GenericSetup.utils import ObjectManagerHelpers
 from Products.GenericSetup.utils import XMLAdapterBase
 from zope.component import adapts
@@ -218,6 +219,18 @@ class ContentXMLAdapter(SenaiteSiteXMLAdapter):
 
     def __init__(self, context, environ):
         super(ContentXMLAdapter, self).__init__(context, environ)
+
+    def _getObjectNode(self, name, i18n=True):
+        node = self._doc.createElement(name)
+        # Attach the UID of the object as well
+        node.setAttribute("uid", api.get_uid(self.context))
+        node.setAttribute("name", self.context.getId())
+        node.setAttribute("meta_type", self.context.meta_type)
+        i18n_domain = getattr(self.context, "i18n_domain", None)
+        if i18n and i18n_domain:
+            node.setAttributeNS(I18NURI, "i18n:domain", i18n_domain)
+            self._i18n_props = ("title", "description")
+        return node
 
     def _exportNode(self):
         """Export the object as a DOM node.
