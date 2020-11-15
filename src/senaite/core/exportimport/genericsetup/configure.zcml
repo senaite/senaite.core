@@ -10,7 +10,8 @@
             Products.CMFCore.exportimport.properties.exportSiteProperties
       <adapter factory=".structure.SenaiteSiteXMLAdapter"/>
   -->
-  <adapter factory=".structure.ContentXMLAdapter"/>
+  <adapter factory=".structure.ATContentXMLAdapter"/>
+  <adapter factory=".structure.DXContentXMLAdapter"/>
 
   <!-- Field Adapters
        Know how to Import/Export field values

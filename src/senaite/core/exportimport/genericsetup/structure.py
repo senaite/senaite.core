@@ -40,6 +40,7 @@ from senaite.core.p3compat import cmp
 from zope.component import adapts
 from zope.component import queryMultiAdapter
 from zope.interface import alsoProvides
+from plone.dexterity.interfaces import IDexterityContent
 
 from .config import SITE_ID
 
@@ -217,13 +218,13 @@ class SenaiteSiteXMLAdapter(XMLAdapterBase, ObjectManagerHelpers):
         return fragment
 
 
-class ContentXMLAdapter(SenaiteSiteXMLAdapter):
-    """Content XML Importer/Exporter
+class ATContentXMLAdapter(SenaiteSiteXMLAdapter):
+    """AT Content XML Importer/Exporter
     """
     adapts(IBaseObject, ISetupEnviron)
 
     def __init__(self, context, environ):
-        super(ContentXMLAdapter, self).__init__(context, environ)
+        super(ATContentXMLAdapter, self).__init__(context, environ)
 
     def _getObjectNode(self, name, i18n=True):
         node = self._doc.createElement(name)
@@ -349,6 +350,15 @@ class ContentXMLAdapter(SenaiteSiteXMLAdapter):
             if node is not None:
                 fragment.appendChild(node)
         return fragment
+
+
+class DXContentXMLAdapter(ATContentXMLAdapter):
+    """DX Content XML Importer/Exporter
+    """
+    adapts(IDexterityContent, ISetupEnviron)
+
+    def __init__(self, context, environ):
+        super(DXContentXMLAdapter, self).__init__(context, environ)
 
 
 def create_content_slugs(parent, parent_path, context):
@@ -492,7 +502,7 @@ def exportObjects(obj, parent_path, context):
     else:
         exporter = queryMultiAdapter((obj, context), IBody)
 
-    path = "%s%s" % (parent_path, api.get_uid(obj))
+    path = "%s%s" % (parent_path, get_id(obj))
     if exporter:
         if exporter.name:
             path = "%s%s" % (parent_path, exporter.name)
@@ -500,6 +510,8 @@ def exportObjects(obj, parent_path, context):
         body = exporter.body
         if body is not None:
             context.writeDataFile(filename, body, exporter.mime_type)
+    else:
+        raise ValueError("No exporter found for object: %r" % obj)
 
     if getattr(obj, "objectValues", False):
         for sub in obj.objectValues():
