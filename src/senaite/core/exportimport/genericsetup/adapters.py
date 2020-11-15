@@ -19,13 +19,16 @@
 # Some rights reserved, see README and LICENSE.
 
 import json
+from datetime import datetime
+from mimetypes import guess_type
 
 from bika.lims import api
 from bika.lims import logger
 from bika.lims.interfaces.field import IUIDReferenceField
-from datetime import datetime
 from DateTime import DateTime
 from plone.app.blob.interfaces import IBlobField
+from plone.dexterity.interfaces import IDexterityContent
+from plone.namedfile.interfaces import INamedField
 from Products.Archetypes.interfaces import IBaseObject
 from Products.Archetypes.interfaces import IDateTimeField
 from Products.Archetypes.interfaces import IField
@@ -35,8 +38,6 @@ from Products.Archetypes.interfaces import ITextField
 from Products.CMFPlone.utils import safe_unicode
 from Products.GenericSetup.interfaces import ISetupEnviron
 from Products.GenericSetup.utils import NodeAdapterBase
-from plone.dexterity.interfaces import IDexterityContent
-from plone.namedfile.interfaces import INamedField
 from zope.component import adapts
 from zope.interface import implements
 from zope.schema.interfaces import IDatetime
@@ -208,6 +209,24 @@ class DXNamedFileFieldNodeAdapter(ATBlobFileFieldNodeAdapter):
         """Returns the content type of the object
         """
         return getattr(content, "contentType", default)
+
+    def set_node_value(self, node):
+        filename = node.nodeValue
+        filepath = "/".join([self.get_archive_path(), filename])
+        data = self.get_file_data(filepath)
+        mime_type, encoding = guess_type(filename)
+        self.set_field_value(data, filename=filename, content_type=mime_type)
+
+    def set_field_value(self, value, **kw):
+        """Set the field value
+        """
+        # logger.info("Set: {} -> {}".format(self.field.getName(), value))
+        filename = kw.get("filename", "")
+        contentType = kw.get("mimetype") or kw.get("content_type")
+        value = self.field._type(data=value,
+                                 contentType=contentType,
+                                 filename=filename)
+        self.field.set(self.context, value)
 
 
 class ATDateTimeFieldNodeAdapter(ATFieldNodeAdapter):
