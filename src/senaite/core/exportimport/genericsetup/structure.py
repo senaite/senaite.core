@@ -470,10 +470,13 @@ def create_or_get(parent, id, uid, portal_type):
     else:
         # Create DX Content Slug
         factory = getUtility(IFactory, fti.factory)
-        obj = factory(uid)
+        tmp_id = str(uid)
+        obj = factory(tmp_id)
         if hasattr(obj, "_setPortalTypeName"):
             obj._setPortalTypeName(fti.getId())
         notify(ObjectCreatedEvent(obj))
+        parent._setObject(tmp_id, obj)
+        obj = parent._getOb(api.get_id(obj))
 
     return obj
 
