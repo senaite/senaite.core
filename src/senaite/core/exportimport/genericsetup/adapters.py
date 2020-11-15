@@ -221,11 +221,14 @@ class DXNamedFileFieldNodeAdapter(ATBlobFileFieldNodeAdapter):
         """Set the field value
         """
         # logger.info("Set: {} -> {}".format(self.field.getName(), value))
+        data = value
+        if not data:
+            logger.error("Can not set empty file contents")
+            return
         filename = kw.get("filename", "")
         contentType = kw.get("mimetype") or kw.get("content_type")
-        value = self.field._type(data=value,
-                                 contentType=contentType,
-                                 filename=filename)
+        value = self.field._type(
+            data=data, contentType=contentType, filename=filename)
         self.field.set(self.context, value)
 
 

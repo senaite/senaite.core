@@ -474,6 +474,8 @@ def create_or_get(parent, id, uid, portal_type):
         obj = factory(tmp_id)
         if hasattr(obj, "_setPortalTypeName"):
             obj._setPortalTypeName(fti.getId())
+        # set the old UID to maintain references
+        setattr(obj, "_plone.uuid", uid)
         notify(ObjectCreatedEvent(obj))
         parent._setObject(tmp_id, obj)
         obj = parent._getOb(api.get_id(obj))
