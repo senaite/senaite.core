@@ -27,6 +27,8 @@ from bika.lims.interfaces import IAuditable
 from bika.lims.interfaces import ISenaiteSiteRoot
 from DateTime import DateTime
 from OFS.interfaces import IOrderedContainer
+from plone.dexterity.interfaces import IDexterityContainer
+from plone.dexterity.interfaces import IDexterityItem
 from Products.Archetypes.interfaces import IBaseObject
 from Products.CMFPlone.utils import _createObjectByType
 from Products.CMFPlone.utils import safe_unicode
@@ -38,9 +40,12 @@ from Products.GenericSetup.utils import ObjectManagerHelpers
 from Products.GenericSetup.utils import XMLAdapterBase
 from senaite.core.p3compat import cmp
 from zope.component import adapts
+from zope.component import getUtility
 from zope.component import queryMultiAdapter
+from zope.component.interfaces import IFactory
+from zope.event import notify
 from zope.interface import alsoProvides
-from plone.dexterity.interfaces import IDexterityContent
+from zope.lifecycleevent import ObjectCreatedEvent
 
 from .config import SITE_ID
 
@@ -352,13 +357,22 @@ class ATContentXMLAdapter(SenaiteSiteXMLAdapter):
         return fragment
 
 
-class DXContentXMLAdapter(ATContentXMLAdapter):
-    """DX Content XML Importer/Exporter
+class DXContainerXMLAdapter(ATContentXMLAdapter):
+    """DX Container XML Importer/Exporter
     """
-    adapts(IDexterityContent, ISetupEnviron)
+    adapts(IDexterityContainer, ISetupEnviron)
 
     def __init__(self, context, environ):
-        super(DXContentXMLAdapter, self).__init__(context, environ)
+        super(DXContainerXMLAdapter, self).__init__(context, environ)
+
+
+class DXItemXMLAdapter(ATContentXMLAdapter):
+    """DX Item XML Importer/Exporter
+    """
+    adapts(IDexterityItem, ISetupEnviron)
+
+    def __init__(self, context, environ):
+        super(DXItemXMLAdapter, self).__init__(context, environ)
 
 
 def create_content_slugs(parent, parent_path, context):
@@ -454,8 +468,11 @@ def create_or_get(parent, id, uid, portal_type):
         obj.processForm()
     else:
         # Create DX Content Slug
-        return None
-        raise NotImplementedError("Can not create DX contents yet")
+        factory = getUtility(IFactory, fti.factory)
+        obj = factory(uid)
+        if hasattr(obj, "_setPortalTypeName"):
+            obj._setPortalTypeName(fti.getId())
+        notify(ObjectCreatedEvent(obj))
 
     return obj
 

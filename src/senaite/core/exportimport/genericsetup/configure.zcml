@@ -11,7 +11,8 @@
       <adapter factory=".structure.SenaiteSiteXMLAdapter"/>
   -->
   <adapter factory=".structure.ATContentXMLAdapter"/>
-  <adapter factory=".structure.DXContentXMLAdapter"/>
+  <adapter factory=".structure.DXContainerXMLAdapter"/>
+  <adapter factory=".structure.DXItemXMLAdapter"/>
 
   <!-- AT Field Adapters
        Know how to Import/Export field values
