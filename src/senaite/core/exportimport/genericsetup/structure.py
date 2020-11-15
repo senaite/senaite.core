@@ -234,10 +234,11 @@ class ATContentXMLAdapter(SenaiteSiteXMLAdapter):
     def _getObjectNode(self, name, i18n=True):
         node = self._doc.createElement(name)
         # Attach the UID of the object as well
-        node.setAttribute("uid", api.get_uid(self.context))
         node.setAttribute("id", api.get_id(self.context))
+        node.setAttribute("uid", api.get_uid(self.context))
         node.setAttribute("name", api.get_id(self.context))
         node.setAttribute("meta_type", self.context.meta_type)
+        node.setAttribute("portal_type", api.get_portal_type(self.context))
         i18n_domain = getattr(self.context, "i18n_domain", None)
         if i18n and i18n_domain:
             node.setAttributeNS(I18NURI, "i18n:domain", i18n_domain)
@@ -414,7 +415,7 @@ def create_content_slugs(parent, parent_path, context):
         # extract node attributes (see `_exportNode` method)
         child_id = child.getAttribute("name")
         child_uid = child.getAttribute("uid")
-        portal_type = child.getAttribute("meta_type")
+        portal_type = child.getAttribute("portal_type")
         # get or create object
         obj = create_or_get(parent, child_id, child_uid, portal_type)
         # handle vanished objects
