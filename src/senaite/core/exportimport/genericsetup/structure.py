@@ -43,16 +43,18 @@ from zope.interface import alsoProvides
 
 from .config import SITE_ID
 
-# Global UID mapping for reference fiedls
-UID_MAP = {}
-
-SKIP_TYPES = [
+# Skip user created contents
+SKIP_EXPORT_TYPES = [
     "ARReport",
     "AnalysisRequest",
     "Attachment",
     "Batch",
+    "ReferenceSample",
+    "SupplyOrder",
     "Worksheet",
 ]
+
+ID_MAP = {}
 
 
 class SenaiteSiteXMLAdapter(XMLAdapterBase, ObjectManagerHelpers):
@@ -227,7 +229,8 @@ class ContentXMLAdapter(SenaiteSiteXMLAdapter):
         node = self._doc.createElement(name)
         # Attach the UID of the object as well
         node.setAttribute("uid", api.get_uid(self.context))
-        node.setAttribute("name", self.context.getId())
+        node.setAttribute("id", api.get_id(self.context))
+        node.setAttribute("name", api.get_id(self.context))
         node.setAttribute("meta_type", self.context.meta_type)
         i18n_domain = getattr(self.context, "i18n_domain", None)
         if i18n and i18n_domain:
@@ -241,7 +244,7 @@ class ContentXMLAdapter(SenaiteSiteXMLAdapter):
         node = self._getObjectNode("object")
 
         # remember the UID of the item for reference fields
-        node.setAttribute("uid", self.context.UID())
+        node.setAttribute("uid", api.get_uid(self.context))
 
         # remember the WF Status
         # TODO: Export the complete Review History
@@ -353,36 +356,26 @@ def create_content_slugs(parent, parent_path, context):
     """
     logger.info("create_content_slugs: parent={} parent_path={}".format(
         repr(parent), parent_path))
+
     path = "%s%s" % (parent_path, get_id(parent))
     filename = "%s.xml" % (path)
-    items = dict(parent.objectItems())
-
     xml = context.readDataFile(filename)
 
     if xml is None:
-        logger.warn("File not exists: '{}'".format(filename))
+        logger.error("File not found: '{}'".format(filename))
         return
 
+    # parse the XML data
     node = parseString(xml)
 
     if node.nodeName == "#document":
         node = node.firstChild
 
+    # read the node attributes
     name = node.getAttribute("name")
     uid = node.getAttribute("uid")
-    logger.info("Processing ID '{}' (UID {}) in path '{}'"
+    logger.info("::: Processing '{}' (UID {}) in path '{}' :::"
                 .format(name, uid, path))
-
-    # remember the UID mapping
-    UID_MAP[uid] = api.get_uid(parent)
-
-    # set the UID
-    if uid and api.is_at_content(parent):
-        parent._setUID(uid)
-        # avoid renaming after edit
-        parent.unmarkCreationFlag()
-    elif uid and api.is_dexterity_content(parent):
-        logger.warn("Set UID for Dexterity contents is not implemented")
 
     def is_object_node(n):
         return getattr(n, "nodeName", "") == "object"
@@ -391,23 +384,70 @@ def create_content_slugs(parent, parent_path, context):
         return getattr(n, "childNodes", [])
 
     for child in get_child_nodes(node):
+        # only process `<object ../>` nodes
         if not is_object_node(child):
             continue
-
+        # extract node attributes (see `_exportNode` method)
         child_id = child.getAttribute("name")
+        child_uid = child.getAttribute("uid")
         portal_type = child.getAttribute("meta_type")
-        obj = items.get(child_id)
-
-        if not obj:
-            # get the fti
-            types_tool = api.get_tool("portal_types")
-            fti = types_tool.getTypeInfo(portal_type)
-            if fti and fti.product:
-                obj = _createObjectByType(portal_type, parent, child_id)
-            else:
-                continue
-
+        # get or create object
+        obj = create_or_get(parent, child_id, child_uid, portal_type)
+        # handle vanished objects
+        if obj is None:
+            logger.warn("Skipping object creation for '{}'".format(path))
+            continue
+        # get the id of the new object
+        obj_id = api.get_id(obj)
+        # track new ID -> old ID
+        ID_MAP[obj_id] = child_id
+        # recursively create contents
         create_content_slugs(obj, path + "/", context)
+
+
+def create_or_get(parent, id, uid, portal_type):
+    """Create or get the object
+    """
+    # return first level objects directly
+    if api.is_portal(parent):
+        return parent.get(id)
+    elif api.get_setup() == parent:
+        return parent.get(id)
+
+    # query object by UID
+    query = {
+        "UID": uid,
+        "portal_type": portal_type,
+        "path": {
+            "query": api.get_path(parent),
+        }
+    }
+    results = api.search(query, "uid_catalog")
+    if results:
+        return api.get_object(results[0])
+
+    # create object slug
+    obj = None
+    # get the fti
+    types_tool = api.get_tool("portal_types")
+    fti = types_tool.getTypeInfo(portal_type)
+    # removed
+    if not fti:
+        return None
+    # old style factory
+    if fti.product:
+        # Create AT Content Slug (we take the UID as ID to avoid clashes)
+        obj = _createObjectByType(portal_type, parent, uid)
+        # set the old UID to maintain references
+        obj._setUID(uid)
+        # IMPORTANT: this will generate a new ID by the ID Server config
+        obj.processForm()
+    else:
+        # Create DX Content Slug
+        return None
+        raise NotImplementedError("Can not create DX contents yet")
+
+    return obj
 
 
 def can_export(obj):
@@ -415,7 +455,7 @@ def can_export(obj):
     """
     if not api.is_object(obj):
         return False
-    if api.get_portal_type(obj) in SKIP_TYPES:
+    if api.get_portal_type(obj) in SKIP_EXPORT_TYPES:
         return False
     return True
 
@@ -431,7 +471,10 @@ def can_import(obj):
 def get_id(obj):
     if api.is_portal(obj):
         return SITE_ID
-    return obj.getId().replace(" ", "_")
+    oid = api.get_id(obj)
+    # resolve id from mapping
+    rid = ID_MAP.get(oid, oid)
+    return rid.replace(" ", "_")
 
 
 def exportObjects(obj, parent_path, context):
@@ -449,7 +492,7 @@ def exportObjects(obj, parent_path, context):
     else:
         exporter = queryMultiAdapter((obj, context), IBody)
 
-    path = "%s%s" % (parent_path, get_id(obj))
+    path = "%s%s" % (parent_path, api.get_uid(obj))
     if exporter:
         if exporter.name:
             path = "%s%s" % (parent_path, exporter.name)
