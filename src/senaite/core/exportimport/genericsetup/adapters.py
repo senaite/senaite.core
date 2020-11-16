@@ -27,6 +27,7 @@ from bika.lims import logger
 from bika.lims.interfaces.field import IUIDReferenceField
 from DateTime import DateTime
 from plone.app.blob.interfaces import IBlobField
+from plone.app.textfield.interfaces import IRichText
 from plone.dexterity.interfaces import IDexterityContent
 from plone.namedfile.interfaces import INamedField
 from Products.Archetypes.interfaces import IBaseObject
@@ -84,10 +85,9 @@ class ATFieldNodeAdapter(NodeAdapterBase):
             # Always handle the value as unicode
             return json.dumps(safe_unicode(value))
         except TypeError:
-            logger.warning(
-                "ParseError: '{}.{} ('{}') -> {}' is not JSON serializable!"
-                .format(self.context.getId(), self.field.getName(),
-                        self.field.type, repr(value)))
+            logger.error(
+                "ParseError: '{}.{} ('{}')' is not JSON serializable!".format(
+                    self.context.getId(), self.field.getName(), repr(value)))
             return ""
 
     def parse_json_value(self, value):
@@ -299,3 +299,25 @@ class ATRecordFieldNodeAdapter(ATFieldNodeAdapter):
     """Import/Export Records Fields
     """
     adapts(IBaseObject, IRecordField, ISetupEnviron)
+
+
+class ATRichTextFieldNodeAdapter(ATFieldNodeAdapter):
+    """Node im- and exporter for AT RichText fields.
+    """
+    implements(IFieldNode)
+    adapts(IBaseObject, IRichText, ISetupEnviron)
+
+    def get_field_value(self):
+        """Get the field value
+        """
+        value = self.field.get(self.context)
+        if not value:
+            return ""
+        return value.raw
+
+
+class DXRichTextFieldNodeAdapter(ATRichTextFieldNodeAdapter):
+    """Node im- and exporter for AT RichText fields.
+    """
+    implements(IFieldNode)
+    adapts(IDexterityContent, IRichText, ISetupEnviron)
