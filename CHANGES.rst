@@ -4,6 +4,7 @@ Changelog
 2.0.0rc3 (unreleased)
 ---------------------
 
+- #1678 Improved Generic Setup Content Structure Export/Import
 - #1676 New Field "Department ID" added to Departments
 - #1675 Fix error when setting WS template layout
 - #1674 Fix error in sample view when ccemails is None

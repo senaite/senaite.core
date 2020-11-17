@@ -10,19 +10,30 @@
             Products.CMFCore.exportimport.properties.exportSiteProperties
       <adapter factory=".structure.SenaiteSiteXMLAdapter"/>
   -->
-  <adapter factory=".structure.ContentXMLAdapter"/>
+  <adapter factory=".structure.ATContentXMLAdapter"/>
+  <adapter factory=".structure.DXContainerXMLAdapter"/>
+  <adapter factory=".structure.DXItemXMLAdapter"/>
 
-  <!-- Field Adapters
+  <!-- AT Field Adapters
        Know how to Import/Export field values
   -->
   <adapter provides=".interfaces.IFieldNode" factory=".adapters.ATFieldNodeAdapter"/>
   <adapter provides=".interfaces.IFieldNode" factory=".adapters.ATTextFieldNodeAdapter"/>
   <adapter provides=".interfaces.IFieldNode" factory=".adapters.ATFileFieldNodeAdapter"/>
-  <adapter provides=".interfaces.IFieldNode" factory=".adapters.BlobFileFieldNodeAdapter"/>
+  <adapter provides=".interfaces.IFieldNode" factory=".adapters.ATBlobFileFieldNodeAdapter"/>
   <adapter provides=".interfaces.IFieldNode" factory=".adapters.ATDateTimeFieldNodeAdapter"/>
   <adapter provides=".interfaces.IFieldNode" factory=".adapters.ATReferenceFieldNodeAdapter"/>
   <adapter provides=".interfaces.IFieldNode" factory=".adapters.ATUIDReferenceFieldNodeAdapter"/>
   <adapter provides=".interfaces.IFieldNode" factory=".adapters.ATRecordFieldNodeAdapter"/>
+  <adapter provides=".interfaces.IFieldNode" factory=".adapters.ATRichTextFieldNodeAdapter"/>
+
+  <!-- DX Field Adapters
+       Know how to Import/Export field values
+  -->
+  <adapter provides=".interfaces.IFieldNode" factory=".adapters.DXFieldNodeAdapter"/>
+  <adapter provides=".interfaces.IFieldNode" factory=".adapters.DXNamedFileFieldNodeAdapter"/>
+  <adapter provides=".interfaces.IFieldNode" factory=".adapters.DXDateTimeFieldNodeAdapter"/>
+  <adapter provides=".interfaces.IFieldNode" factory=".adapters.DXRichTextFieldNodeAdapter"/>
 
   <class class="senaite.core.browser.fields.record.RecordField">
     <implements interface=".interfaces.IRecordField" />

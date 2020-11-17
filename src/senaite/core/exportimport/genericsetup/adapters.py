@@ -19,12 +19,17 @@
 # Some rights reserved, see README and LICENSE.
 
 import json
+from datetime import datetime
+from mimetypes import guess_type
 
 from bika.lims import api
 from bika.lims import logger
 from bika.lims.interfaces.field import IUIDReferenceField
 from DateTime import DateTime
 from plone.app.blob.interfaces import IBlobField
+from plone.app.textfield.interfaces import IRichText
+from plone.dexterity.interfaces import IDexterityContent
+from plone.namedfile.interfaces import INamedField
 from Products.Archetypes.interfaces import IBaseObject
 from Products.Archetypes.interfaces import IDateTimeField
 from Products.Archetypes.interfaces import IField
@@ -36,6 +41,8 @@ from Products.GenericSetup.interfaces import ISetupEnviron
 from Products.GenericSetup.utils import NodeAdapterBase
 from zope.component import adapts
 from zope.interface import implements
+from zope.schema.interfaces import IDatetime
+from zope.schema.interfaces import IField as ISchemaField
 
 from .config import SITE_ID
 from .interfaces import IFieldNode
@@ -48,7 +55,7 @@ SKIP_FIELDS = [
 
 
 class ATFieldNodeAdapter(NodeAdapterBase):
-    """Node im- and exporter for Fields.
+    """Node im- and exporter for AT Fields.
     """
     implements(IFieldNode)
     adapts(IBaseObject, IField, ISetupEnviron)
@@ -78,10 +85,9 @@ class ATFieldNodeAdapter(NodeAdapterBase):
             # Always handle the value as unicode
             return json.dumps(safe_unicode(value))
         except TypeError:
-            logger.warning(
-                "ParseError: '{}.{} ('{}') -> {}' is not JSON serializable!"
-                .format(self.context.getId(), self.field.getName(),
-                        self.field.type, repr(value)))
+            logger.error(
+                "ParseError: '{}.{} ('{}')' is not JSON serializable!".format(
+                    self.context.getId(), self.field.getName(), repr(value)))
             return ""
 
     def parse_json_value(self, value):
@@ -125,6 +131,17 @@ class ATFieldNodeAdapter(NodeAdapterBase):
     node = property(_exportNode, _importNode)
 
 
+class DXFieldNodeAdapter(ATFieldNodeAdapter):
+    """Node im- and exporter for DX Fields.
+    """
+    implements(IFieldNode)
+    adapts(IDexterityContent, ISchemaField, ISetupEnviron)
+
+    def __init__(self, context, field, environ):
+        super(DXFieldNodeAdapter, self).__init__(context, field, environ)
+        self.field = field
+
+
 class ATTextFieldNodeAdapter(ATFieldNodeAdapter):
     """Import/Export Text
     """
@@ -155,6 +172,11 @@ class ATFileFieldNodeAdapter(ATFieldNodeAdapter):
         """
         return self.environ.readDataFile(path)
 
+    def get_content_type(self, content, default="application/octet-stream"):
+        """Returns the content type of the object
+        """
+        return getattr(content, "content_type", default)
+
     def get_json_value(self):
         """Returns the filename
         """
@@ -167,15 +189,47 @@ class ATFileFieldNodeAdapter(ATFieldNodeAdapter):
         data = value.data
         if filename and data:
             path = self.get_archive_path()
-            content_type = value.content_type
+            content_type = self.get_content_type(value)
             self.environ.writeDataFile(filename, str(data), content_type, path)
         return filename
 
 
-class BlobFileFieldNodeAdapter(ATFileFieldNodeAdapter):
-    """Import/Export Files/Images
+class ATBlobFileFieldNodeAdapter(ATFileFieldNodeAdapter):
+    """Import/Export AT Files/Images
     """
     adapts(IBaseObject, IBlobField, ISetupEnviron)
+
+
+class DXNamedFileFieldNodeAdapter(ATBlobFileFieldNodeAdapter):
+    """Import/Export DX Files/Images
+    """
+    adapts(IDexterityContent, INamedField, ISetupEnviron)
+
+    def get_content_type(self, content, default="application/octet-stream"):
+        """Returns the content type of the object
+        """
+        return getattr(content, "contentType", default)
+
+    def set_node_value(self, node):
+        filename = node.nodeValue
+        filepath = "/".join([self.get_archive_path(), filename])
+        data = self.get_file_data(filepath)
+        mime_type, encoding = guess_type(filename)
+        self.set_field_value(data, filename=filename, content_type=mime_type)
+
+    def set_field_value(self, value, **kw):
+        """Set the field value
+        """
+        # logger.info("Set: {} -> {}".format(self.field.getName(), value))
+        data = value
+        if not data:
+            logger.error("Can not set empty file contents")
+            return
+        filename = kw.get("filename", "")
+        contentType = kw.get("mimetype") or kw.get("content_type")
+        value = self.field._type(
+            data=data, contentType=contentType, filename=filename)
+        self.field.set(self.context, value)
 
 
 class ATDateTimeFieldNodeAdapter(ATFieldNodeAdapter):
@@ -195,6 +249,26 @@ class ATDateTimeFieldNodeAdapter(ATFieldNodeAdapter):
         if not value:
             return None
         return DateTime(value)
+
+
+class DXDateTimeFieldNodeAdapter(ATFieldNodeAdapter):
+    """Import/Export Date Fields
+    """
+    adapts(IDexterityContent, IDatetime, ISetupEnviron)
+
+    def get_json_value(self):
+        """Returns the date as ISO string
+        """
+        value = self.field.get(self.context)
+        if not isinstance(value, datetime):
+            return ""
+        return value.isoformat()
+
+    def parse_json_value(self, value):
+        if not value:
+            return None
+        dt = api.to_date(value)
+        return dt.asdatetime()
 
 
 class ATReferenceFieldNodeAdapter(ATFieldNodeAdapter):
@@ -225,3 +299,25 @@ class ATRecordFieldNodeAdapter(ATFieldNodeAdapter):
     """Import/Export Records Fields
     """
     adapts(IBaseObject, IRecordField, ISetupEnviron)
+
+
+class ATRichTextFieldNodeAdapter(ATFieldNodeAdapter):
+    """Node im- and exporter for AT RichText fields.
+    """
+    implements(IFieldNode)
+    adapts(IBaseObject, IRichText, ISetupEnviron)
+
+    def get_field_value(self):
+        """Get the field value
+        """
+        value = self.field.get(self.context)
+        if not value:
+            return ""
+        return value.raw
+
+
+class DXRichTextFieldNodeAdapter(ATRichTextFieldNodeAdapter):
+    """Node im- and exporter for AT RichText fields.
+    """
+    implements(IFieldNode)
+    adapts(IDexterityContent, IRichText, ISetupEnviron)
