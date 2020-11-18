@@ -767,9 +767,8 @@
         },
         dataType: "json"
       }).done(function(data) {
-        bika.lims.SiteView.notify_in_panel(this._pmf("Changes saved."), "succeed");
-        $("select.listing_select_entry[field='Instrument'] option[value='" + instrument_uid + "']").parent().find("option[value='" + instrument_uid + "']").prop("selected", false);
-        return $("select.listing_select_entry[field='Instrument'] option[value='" + instrument_uid + "']").prop("selected", true);
+        $("select.form-control[title='Instrument'] option[value='" + instrument_uid + "']").prop("selected", true);
+        return bika.lims.SiteView.notify_in_panel(this._pmf("Changes saved."), "succeed");
       }).fail(function() {
         return bika.lims.SiteView.notify_in_panel(this._("Unable to apply the selected instrument"), "error");
       });

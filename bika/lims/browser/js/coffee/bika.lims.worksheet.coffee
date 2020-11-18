@@ -705,12 +705,11 @@ class window.WorksheetManageResultsView
         _authenticator: @get_authenticator()
       dataType: "json"
     .done (data) ->
-      bika.lims.SiteView.notify_in_panel @_pmf("Changes saved."), "succeed"
       # Set the selected instrument to all the analyses which that can be done
       # using that instrument. The rest of of the instrument picklist will not
       # be changed
-      $("select.listing_select_entry[field='Instrument'] option[value='#{instrument_uid}']").parent().find("option[value='#{instrument_uid}']").prop "selected", no
-      $("select.listing_select_entry[field='Instrument'] option[value='#{instrument_uid}']").prop "selected", yes
+      $("select.form-control[title='Instrument'] option[value='#{instrument_uid}']").prop "selected", yes
+      bika.lims.SiteView.notify_in_panel @_pmf("Changes saved."), "succeed"
     .fail () ->
         bika.lims.SiteView.notify_in_panel @_("Unable to apply the selected instrument"), "error"
 

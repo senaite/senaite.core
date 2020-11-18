@@ -26,6 +26,8 @@ import plone.protect
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFCore.utils import getToolByName
 
+from bika.lims import bikaMessageFactory as _
+from bika.lims.api import get_url
 from bika.lims.workflow import getCurrentState
 
 
@@ -132,4 +134,4 @@ class SetInstrument():
         instrument = rc.lookupObject(value)
         if not instrument:
             raise Exception("Unable to lookup instrument")
-        self.context.setInstrument(instrument)
+        self.context.setInstrument(instrument, override_analyses=True)
