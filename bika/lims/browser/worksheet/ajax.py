@@ -26,8 +26,6 @@ import plone.protect
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFCore.utils import getToolByName
 
-from bika.lims import bikaMessageFactory as _
-from bika.lims.api import get_url
 from bika.lims.workflow import getCurrentState
 
 
