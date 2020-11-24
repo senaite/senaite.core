@@ -4,6 +4,7 @@ Changelog
 2.0.0rc3 (unreleased)
 ---------------------
 
+- #1681 Allow input of date ranges between +- 150 years
 - #1678 Improved Generic Setup Content Structure Export/Import
 - #1676 New Field "Department ID" added to Departments
 - #1675 Fix error when setting WS template layout
