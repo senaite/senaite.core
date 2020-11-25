@@ -26,10 +26,12 @@ from bika.lims.interfaces import IAnalysisProfile
 from bika.lims.interfaces import IInvoiceView
 from bika.lims.utils import createPdf
 from plone.memoize import view
+from plone.protect.interfaces import IDisableCSRFProtection
 from Products.CMFPlone.i18nl10n import ulocalized_time
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from senaite.app.supermodel.model import SuperModel
 from zope.i18n.locales import locales
+from zope.interface import alsoProvides
 from zope.interface import implements
 
 
@@ -171,12 +173,19 @@ class InvoiceCreate(InvoicePrintView):
     """
 
     def __call__(self):
+        # disable CSRF protection to allow write on read
+        alsoProvides(self.request, IDisableCSRFProtection)
         # Create the invoice object and link it to the current AR.
-        pdf = self.create_pdf()
-        invoice = self.context.createInvoice(pdf)
+        sample = self.context
+        # create first the invoice so that we have a unique invoice ID
+        invoice = sample.createInvoice(None)
+        # check if an invoice PDF was already created
+        if invoice.getInvoicePDF() is None:
+            # create then the PDF with the new invoice ID
+            pdf = self.create_pdf()
+            # set it to the invoice object
+            invoice.setInvoicePDF(pdf)
         self.add_status_message(_("Invoice {} created").format(
             api.get_id(invoice)))
-
-        # Reload the page to see the the new fields
         self.request.response.redirect(
-            "%s/invoice" % self.aq_parent.absolute_url())
+            "%s/invoice" % sample.absolute_url())
