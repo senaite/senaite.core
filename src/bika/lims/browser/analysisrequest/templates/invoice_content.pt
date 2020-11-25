@@ -49,6 +49,17 @@
             </span>
           </td>
         </tr>
+        <!-- Invoice Date -->
+        <tr>
+          <td>
+            <label i18n:translate="">Invoice Date</label>
+          </td>
+          <td>
+            <span tal:condition="nocall:invoice">
+              <span tal:content="python:view.to_localized_time(invoice.getInvoiceDate())"/>
+            </span>
+          </td>
+        </tr>
         <!-- Client Reference -->
         <tr>
           <td>
