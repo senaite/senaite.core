@@ -179,12 +179,11 @@ class InvoiceCreate(InvoicePrintView):
         sample = self.context
         # create first the invoice so that we have a unique invoice ID
         invoice = sample.createInvoice(None)
-        # check if an invoice PDF was already created
-        if invoice.getInvoicePDF() is None:
-            # create then the PDF with the new invoice ID
-            pdf = self.create_pdf()
-            # set it to the invoice object
-            invoice.setInvoicePDF(pdf)
+        # create then the PDF with the invoice ID
+        pdf = self.create_pdf()
+        # set it to the invoice object
+        invoice.setInvoicePDF(pdf)
+        # set message and redirect back
         self.add_status_message(_("Invoice {} created").format(
             api.get_id(invoice)))
         self.request.response.redirect(
