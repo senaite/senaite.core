@@ -69,19 +69,16 @@ class HeaderTableView(BrowserView):
                 if value is None:
                     continue
 
+                # Keep track of field-values
+                field_values.update({field: value})
+
                 # Cache the field value in the request
                 self.request[field.getName()] = value
 
                 # Validate the field values
                 err = field.validate(value, self.context)
                 if err:
-                    # Clear field values and add the error
                     errors.update({field.getName(): err})
-                    field_values = {}
-
-                elif not errors:
-                    # Only update the field value if no errors
-                    field_values.update({field: value})
 
             if errors:
                 self.request["errors"] = errors
@@ -99,6 +96,7 @@ class HeaderTableView(BrowserView):
                 # notify object edited event
                 event.notify(ObjectEditedEvent(self.context))
                 self.context.plone_utils.addPortalMessage(message, "info")
+
         return self.template()
 
     def get_field_value(self, field, form):
