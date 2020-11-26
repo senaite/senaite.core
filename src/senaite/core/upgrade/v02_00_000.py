@@ -107,6 +107,8 @@ def upgrade(tool):
     remove_supplyorder_action_from_clients(portal)
     remove_supplyorder_folder(portal)
     remove_all_supplyorders(portal)
+    remove_supplyorder_typeinfo(portal)
+    remove_supplyorder_workflow(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
@@ -304,3 +306,22 @@ def remove_all_supplyorders(portal):
 
     logger.info("Removed a total of {} supplyorders, committing...".format(num))
     commit_transaction(portal)
+
+
+def remove_supplyorder_typeinfo(portal):
+    logger.info("Remove supplyorder typeinfo ...")
+    pt = portal.portal_types
+    for t in ["SupplyOrder", "SupplyOrderFolder"]:
+        if t in pt.objectIds():
+            pt.manage_delObjects(t)
+
+    logger.info("Remove supplyorder typeinfo [DONE]")
+
+
+def remove_supplyorder_workflow(portal):
+    logger.info("Remove supplyorder workflow ...")
+    wf_tool = portal.portal_workflow
+    wf = wf_tool.get("senaite_supplyorder_workflow")
+    if wf is not None:
+        wf_tool.manage_delObjects(wf.getId())
+    logger.info("Remove supplyorder workflow [DONE]")
