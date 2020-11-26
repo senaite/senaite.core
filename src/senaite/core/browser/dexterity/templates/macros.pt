@@ -42,7 +42,9 @@
         </tal:errors>
 
         <!-- Secondary Field Errors -->
-        <tal:groups repeat="group view/groups">
+        <tal:groups define="groups view/groups|nothing"
+                    condition="python:bool(groups)"
+                    repeat="group groups">
           <tal:block tal:define="errors group/widgets/errors"
                     tal:condition="errors"
                     tal:repeat="error errors">

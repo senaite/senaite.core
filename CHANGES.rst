@@ -5,6 +5,7 @@ Changelog
 ---------------------
 
 - #1689 Display tabs in content edit view when more than one group
+- #1682 Fix `LocationError` when editing a entry in the configuration registry
 - #1685 Remove Supply Orders
 - #1684 Show only active dynamic analysisspecs in reference widget
 - #1687 Fix Sample's header table fields are not validated on submit
