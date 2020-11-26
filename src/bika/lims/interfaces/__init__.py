@@ -17,7 +17,7 @@
 #
 # Copyright 2018-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
-
+from senaite.core.interfaces import IHideActionsMenu
 from zope.interface import Interface
 
 

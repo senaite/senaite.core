@@ -61,27 +61,68 @@ class HeaderTableView(BrowserView):
             schema = self.context.Schema()
             fields = schema.fields()
             form = self.request.form
+
+            errors = {}
+            field_values = {}
             for field in fields:
-                fieldname = field.getName()
-                if fieldname in form:
-                    # Handle (multiValued) reference fields
-                    # https://github.com/bikalims/bika.lims/issues/2270
-                    uid_fieldname = "{}_uid".format(fieldname)
-                    if uid_fieldname in form:
-                        value = form[uid_fieldname]
-                        if field.multiValued:
-                            value = value.split(",")
-                        field.getMutator(self.context)(value)
-                    else:
-                        # other fields
-                        field.getMutator(self.context)(form[fieldname])
-            message = _("Changes saved.")
-            # reindex the object after save to update all catalog metadata
-            self.context.reindexObject()
-            # notify object edited event
-            event.notify(ObjectEditedEvent(self.context))
-            self.context.plone_utils.addPortalMessage(message, "info")
+                value = self.get_field_value(field, form)
+                if value is None:
+                    continue
+
+                # Cache the field value in the request
+                self.request[field.getName()] = value
+
+                # Validate the field values
+                err = field.validate(value, self.context)
+                if err:
+                    # Clear field values and add the error
+                    errors.update({field.getName(): err})
+                    field_values = {}
+
+                elif not errors:
+                    # Only update the field value if no errors
+                    field_values.update({field: value})
+
+            if errors:
+                self.request["errors"] = errors
+                message = _("Please correct the indicated errors")
+                self.context.plone_utils.addPortalMessage(message, "error")
+
+            else:
+                # Store the field values
+                for field, value in field_values.items():
+                    field.getMutator(self.context)(value)
+
+                message = _("Changes saved.")
+                # reindex the object after save to update all catalog metadata
+                self.context.reindexObject()
+                # notify object edited event
+                event.notify(ObjectEditedEvent(self.context))
+                self.context.plone_utils.addPortalMessage(message, "info")
         return self.template()
+
+    def get_field_value(self, field, form):
+        """Returns the submitted value for the given field
+        """
+        fieldname = field.getName()
+        if fieldname not in form:
+            return None
+
+        # Handle (multiValued) reference fields
+        # https://github.com/bikalims/bika.lims/issues/2270
+        uid_fieldname = "{}_uid".format(fieldname)
+        if uid_fieldname in form:
+            value = form[uid_fieldname]
+            if field.multiValued:
+                value = value.split(",")
+            return value
+
+        # other fields
+        return form[fieldname]
+
+    def is_valid(self, field, value):
+        invalid = field.validate(value, self.context)
+        return invalid is None
 
     @viewcache.memoize
     def is_primary_with_partitions(self):

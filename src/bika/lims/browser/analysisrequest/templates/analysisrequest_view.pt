@@ -98,6 +98,20 @@
         </div>
       </tal:lab_analyses>
 
+      <tal:ast_analyses>
+        <div class="row">
+          <div class="col-sm-12">
+            <h3>
+              <i class="labanalyses-icon" title="AST" i18n:attributes="title">
+                <svg tal:replace="structure senaite_theme/icon_data/analysisservice" />
+              </i>
+              <span i18n:translate="">Antibiotic Susceptibility</span>
+            </h3>
+            <span tal:replace="structure python:view.render_analyses_table(table='ast')"/>
+          </div>
+        </div>
+      </tal:ast_analyses>
+
       <tal:qc_analyses condition="python:view.has_qc_analyses()">
         <div class="row">
           <div class="col-sm-12">

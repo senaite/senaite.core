@@ -50,8 +50,6 @@ class AnalysisRequestViewView(BrowserView):
     def render_analyses_table(self, table="lab"):
         """Render Analyses Table
         """
-        if table not in ["lab", "field", "qc"]:
-            raise KeyError("Table '{}' does not exist".format(table))
         view_name = "table_{}_analyses".format(table)
         view = api.get_view(
             view_name, context=self.context, request=self.request)
