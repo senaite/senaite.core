@@ -142,18 +142,6 @@
     <permission value="View"/>
   </action>
 
-  <action title="Orders"
-          action_id="orders"
-          category="object"
-          condition_expr=""
-          icon_expr="string:${portal_url}/images/supplyorder.png"
-          link_target=""
-          url_expr="string:${object_url}/orders"
-          i18n:attributes="title"
-          visible="True">
-    <permission value="View"/>
-  </action>
-
   <action title="Analysis Reports"
           action_id="reports_listing"
           category="object"

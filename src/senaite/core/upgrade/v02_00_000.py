@@ -99,6 +99,9 @@ def upgrade(tool):
     # Add new indexes
     add_new_indexes(portal)
 
+    # Remove "Order" action in clients
+    remove_order_action_from_clients(portal)
+
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
 
@@ -241,3 +244,14 @@ def add_index(catalog_id, index_name, index_metatype):
     catalog.addIndex(index_name, index_metatype)
     logger.info("Indexing new index '{}' ...".format(index_name))
     catalog.manage_reindexIndex(index_name)
+
+
+def remove_order_action_from_clients(portal):
+    logger.info("Removing 'orders' action from clients ...")
+    type_info = portal.portal_types.getTypeInfo("Client")
+    actions = map(lambda action: action.id, type_info._actions)
+    for index, action in enumerate(actions, start=0):
+        if action == "orders":
+            type_info.deleteActions([index])
+            break
+    logger.info("Removing 'orders' action from clients ... [DONE]")
