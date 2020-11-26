@@ -17,7 +17,8 @@
                 root_sample python:view.is_primary_with_partitions();
                 dummy python:view.get_fields_grouped_by_location();
                 prominent python:dummy[0];
-                sublists python:dummy[1]"
+                sublists python:dummy[1];
+                errors python:request.get('errors',{})"
     tal:condition="sublists">
     <form method="post" name="header_form">
       <input type="hidden" name="header_table_submitted" value="1" />
@@ -33,8 +34,7 @@
                            editable python:mode=='edit';
                            primary_bound python:getattr(field, 'primary_bound', False);
                            widget python:field.widget;
-                           accessor python:field.getAccessor(context);
-                           errors python:{};">
+                           accessor python:field.getAccessor(context);">
             <td class="active label">
               <span tal:replace="python:widget.label"/>
               <!-- Display a notification icon if the field is primary bound
@@ -78,8 +78,7 @@
                                editable python:mode=='edit';
                                primary_bound python:getattr(field, 'primary_bound', False);
                                widget python:field.widget;
-                               accessor python:field.getAccessor(context);
-                               errors python:{};">
+                               accessor python:field.getAccessor(context);">
                 <td tal:attributes="class python:row_nr%2 and 'key odd active label' or 'key even active label'">
                   <span tal:replace="python:widget.label"/>
                   <!-- Display a notification icon if the field is primary bound
