@@ -120,10 +120,6 @@ class HeaderTableView(BrowserView):
         # other fields
         return form[fieldname]
 
-    def is_valid(self, field, value):
-        invalid = field.validate(value, self.context)
-        return invalid is None
-
     @viewcache.memoize
     def is_primary_with_partitions(self):
         """Check if the Sample is a primary with partitions
