@@ -231,6 +231,12 @@ def initialize_department_id_field(portal):
         while new_id in department_ids:
             idx += 1
             new_id = "".join(map(lambda p: p[0:idx], parts))
+        try:
+            # check if the new ID is avalid UTF8
+            new_id = new_id.decode("utf8")
+        except UnicodeDecodeError:
+            # fallback to title
+            new_id = title
         department_ids.append(new_id)
         obj.setDepartmentID(new_id)
 
