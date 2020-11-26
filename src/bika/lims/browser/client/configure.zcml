@@ -69,14 +69,6 @@
 
     <browser:page
       for="bika.lims.interfaces.IClient"
-      name="orders"
-      class="bika.lims.browser.client.ClientOrdersView"
-      permission="zope2.View"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
-      for="bika.lims.interfaces.IClient"
       name="contacts"
       class="bika.lims.browser.client.ClientContactsView"
       permission="zope2.View"

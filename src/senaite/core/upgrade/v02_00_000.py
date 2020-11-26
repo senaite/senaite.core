@@ -105,6 +105,7 @@ def upgrade(tool):
 
     # Remove Supplyorders
     remove_supplyorder_action_from_clients(portal)
+    remove_supplyorder_folder(portal)
     remove_all_supplyorders(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
@@ -268,7 +269,15 @@ def remove_supplyorder_action_from_clients(portal):
         if action == "orders":
             type_info.deleteActions([index])
             break
-    logger.info("Removing 'orders' action from clients ... [DONE]")
+    logger.info("Removing 'orders' action from clients [DONE]")
+
+
+def remove_supplyorder_folder(portal):
+    logger.info("Removing supplyorder folder ...")
+    supplyorders = portal.get("supplyorders")
+    if supplyorders:
+        portal.manage_delObjects(supplyorders.getId())
+    logger.info("Removing supplyorder folder [DONE]")
 
 
 def remove_all_supplyorders(portal):
