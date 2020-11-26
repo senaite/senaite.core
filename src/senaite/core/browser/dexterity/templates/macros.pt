@@ -89,7 +89,8 @@
           <metal:block define-slot="formtop" />
 
           <!-- navigation tabs -->
-          <ul class="nav nav-tabs" role="tablist">
+          <ul class="nav nav-tabs" role="tablist"
+              tal:condition="python: has_groups and enable_form_tabbing">
 
             <!-- primary tab -->
             <li class="nav-item" role="presentation"
@@ -105,7 +106,7 @@
             </li>
 
             <!-- secondary tabs -->
-            <li tal:repeat="group groups" tal:condition="has_groups" class="nav-item" role="presentation">
+            <li tal:repeat="group groups" class="nav-item" role="presentation">
               <a tal:define="normalizeString nocall:context/@@plone/normalizeString;
                              fieldset_label group/label;
                              fieldset_name python:getattr(group, '__name__', False) or getattr(group.label, 'default', False) or fieldset_label;
