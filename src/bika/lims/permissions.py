@@ -84,7 +84,6 @@ AddSamplingDeviation = "senaite.core: Add SamplingDeviation"
 AddStorageLocation = "senaite.core: Add StorageLocation"
 AddSubGroup = "senaite.core: Add SubGroup"
 AddSupplier = "senaite.core: Add Supplier"
-AddSupplyOrder = "senaite.core: Add SupplyOrder"
 AddWorksheetTemplate = "senaite.core: Add WorksheetTemplate"
 
 # Transition permissions
@@ -114,9 +113,6 @@ TransitionReceiveSample = "senaite.core: Transition: Receive Sample"
 TransitionRejectSample = "senaite.core: Transition: Reject Sample"
 TransitionSampleSample = "senaite.core: Transition: Sample Sample"
 TransitionScheduleSampling = "senaite.core: Transition: Schedule Sampling"
-
-# Transition permissions (Supply Order)
-TransitionDispatchOrder = "senaite.core: Transition: Dispatch Order"
 
 # Transition permissions (Worksheet)
 TransitionRejectWorksheet = "senaite.core: Transition: Reject Worksheet"

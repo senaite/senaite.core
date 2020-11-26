@@ -473,20 +473,6 @@ def attachPdf(mimemultipart, pdfreport, filename=None):
     mimemultipart.attach(part)
 
 
-def get_invoice_item_description(obj):
-    if obj.portal_type == 'AnalysisRequest':
-        samplepoint = obj.getSamplePoint()
-        samplepoint = samplepoint and samplepoint.Title() or ''
-        sampletype = obj.getSampleType()
-        sampletype = sampletype and sampletype.Title() or ''
-        description = sampletype + ' ' + samplepoint
-    elif obj.portal_type == 'SupplyOrder':
-        products = obj.folderlistingFolderContents()
-        products = [o.getProduct().Title() for o in products]
-        description = ', '.join(products)
-    return description
-
-
 def currency_format(context, locale):
     locale = locales.getLocale(locale)
     currency = context.bika_setup.getCurrency()

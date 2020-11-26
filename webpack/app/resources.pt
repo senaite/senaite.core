@@ -63,7 +63,6 @@
 <script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/js/bika.lims.rejection.js"></script>
 <script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/js/bika.lims.reports.js"></script>
 <script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/js/bika.lims.site.js"></script>
-<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/js/bika.lims.supplyorder.js"></script>
 <script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/js/bika.lims.utils.attachments.js"></script>
 <script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/js/bika.lims.utils.barcode.js"></script>
 <script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/js/bika.lims.worksheet.js"></script>
