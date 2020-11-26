@@ -5,6 +5,10 @@ Changelog
 ---------------------
 
 - #1682 Fix `LocationError` when editing a entry in the configuration registry
+- #1685 Remove Supply Orders
+- #1684 Show only active dynamic analysisspecs in reference widget
+- #1687 Fix Sample's header table fields are not validated on submit
+- #1683 Fix Attribute Error when creating invoice PDF
 - #1681 Allow input of date ranges between +- 150 years
 - #1678 Improved Generic Setup Content Structure Export/Import
 - #1676 New Field "Department ID" added to Departments

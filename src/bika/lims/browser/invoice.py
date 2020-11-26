@@ -42,9 +42,7 @@ class InvoiceView(BrowserView):
         if pdf:
             data = pdf.data
         else:
-            ar = self.context.getAnalysisRequest()
-            so = self.context.getSupplyOrder()
-            context = ar or so
+            context = self.context.getAnalysisRequest()
             view = api.get_view("invoice_create", context=context)
             data = view.create_pdf()
             self.context.setInvoicePDF(data)

@@ -348,12 +348,6 @@
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
-    <permission name="senaite.core: Add SupplyOrder" acquire="False">
-      <role name="LabClerk"/>
-      <role name="LabManager"/>
-      <role name="Manager"/>
-      <role name="Owner"/>
-    </permission>
     <permission name="senaite.core: Add WorksheetTemplate" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
@@ -488,13 +482,6 @@
       <role name="LabManager"/>
       <role name="Manager"/>
       <role name="SamplingCoordinator"/>
-    </permission>
-
-    <!-- Transition permissions (Supply Order) -->
-    <permission name="senaite.core: Transition: Dispatch Order" acquire="False">
-      <role name="LabClerk"/>
-      <role name="LabManager"/>
-      <role name="Manager"/>
     </permission>
 
     <!-- Transition permissions (Worksheet) -->

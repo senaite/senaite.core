@@ -25,7 +25,6 @@
     <element value="Contact"/>
     <element value="Sample"/>
     <element value="SamplePoint"/>
-    <element value="SupplyOrder"/>
     <element value="Folder"/>
     <element value="Invoice"/>
   </property>
@@ -139,18 +138,6 @@
           url_expr="string:${object_url}/attachments"
           i18n:attributes="title"
           visible="False">
-    <permission value="View"/>
-  </action>
-
-  <action title="Orders"
-          action_id="orders"
-          category="object"
-          condition_expr=""
-          icon_expr="string:${portal_url}/images/supplyorder.png"
-          link_target=""
-          url_expr="string:${object_url}/orders"
-          i18n:attributes="title"
-          visible="True">
     <permission value="View"/>
   </action>
 

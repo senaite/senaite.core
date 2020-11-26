@@ -131,10 +131,6 @@
   -->
   <object name="senaite_reports_workflow" meta_type="Workflow" />
 
-  <!-- Workflow: senaite_supplyorder_workflow
-  Workflow for Supply Orders. States "dispatched", "pending", "cancelled" -->
-  <object name="senaite_supplyorder_workflow" meta_type="Workflow"/>
-
   <!-- workflow: senaite_worksheets_workflow
   One-state workflow for worksheets base folder, that does not allow access to
   users other than lab personnel.
@@ -289,9 +285,6 @@
       <bound-workflow workflow_id="senaite_one_state_workflow"/>
     </type>
     <type type_id="SamplesFolder">
-      <bound-workflow workflow_id="senaite_one_state_workflow"/>
-    </type>
-    <type type_id="SupplyOrderFolder">
       <bound-workflow workflow_id="senaite_one_state_workflow"/>
     </type>
 
@@ -456,9 +449,6 @@
     </type>
     <type type_id="ReportFolder">
       <bound-workflow workflow_id="senaite_reports_workflow"/>
-    </type>
-    <type type_id="SupplyOrder">
-      <bound-workflow workflow_id="senaite_supplyorder_workflow"/>
     </type>
     <type type_id="Worksheet">
       <bound-workflow workflow_id="bika_worksheet_workflow"/>

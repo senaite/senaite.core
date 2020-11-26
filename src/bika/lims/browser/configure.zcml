@@ -27,8 +27,6 @@
   <include file="referencesample.zcml"/>
   <include file="stickers.zcml"/>
   <include file="supplier.zcml"/>
-  <include file="supplyorder.zcml"/>
-  <include file="supplyorderfolder.zcml"/>
   <include file="worksheettemplate.zcml"/>
 
   <include package=".analysisrequest"/>
