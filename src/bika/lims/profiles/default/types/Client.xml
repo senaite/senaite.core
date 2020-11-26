@@ -25,7 +25,6 @@
     <element value="Contact"/>
     <element value="Sample"/>
     <element value="SamplePoint"/>
-    <element value="SupplyOrder"/>
     <element value="Folder"/>
     <element value="Invoice"/>
   </property>
