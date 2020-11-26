@@ -5,6 +5,7 @@ Changelog
 ---------------------
 
 - #1684 Show only active dynamic analysisspecs in reference widget
+- #1687 Fix Sample's header table fields are not validated on submit
 - #1683 Fix Attribute Error when creating invoice PDF
 - #1681 Allow input of date ranges between +- 150 years
 - #1678 Improved Generic Setup Content Structure Export/Import
