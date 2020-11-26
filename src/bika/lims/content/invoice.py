@@ -57,13 +57,6 @@ schema = BikaSchema.copy() + Schema((
         allowed_types=("AnalysisRequest",),
         relationship="AnalysisRequestInvoice",
     ),
-    ReferenceField(
-        "SupplyOrder",
-        required=1,
-        vocabulary_display_path_bound=sys.maxsize,
-        allowed_types=("SupplyOrder",),
-        relationship="SupplyOrderInvoice",
-    ),
     DateTimeField(
         "InvoiceDate",
         required=1,

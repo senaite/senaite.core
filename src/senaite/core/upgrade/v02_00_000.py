@@ -18,6 +18,10 @@
 # Copyright 2018-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import time
+import traceback
+
+import transaction
 from bika.lims import api
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.catalog import SETUP_CATALOG
@@ -98,6 +102,13 @@ def upgrade(tool):
 
     # Add new indexes
     add_new_indexes(portal)
+
+    # Remove Supplyorders
+    remove_supplyorder_action_from_clients(portal)
+    remove_supplyorder_folder(portal)
+    remove_all_supplyorders(portal)
+    remove_supplyorder_typeinfo(portal)
+    remove_supplyorder_workflow(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
@@ -241,3 +252,76 @@ def add_index(catalog_id, index_name, index_metatype):
     catalog.addIndex(index_name, index_metatype)
     logger.info("Indexing new index '{}' ...".format(index_name))
     catalog.manage_reindexIndex(index_name)
+
+
+def commit_transaction(portal):
+    start = time.time()
+    logger.info("Commit transaction ...")
+    transaction.commit()
+    end = time.time()
+    logger.info("Commit transaction ... Took {:.2f}s [DONE]"
+                .format(end - start))
+
+
+def remove_supplyorder_action_from_clients(portal):
+    logger.info("Removing 'orders' action from clients ...")
+    type_info = portal.portal_types.getTypeInfo("Client")
+    actions = map(lambda action: action.id, type_info._actions)
+    for index, action in enumerate(actions, start=0):
+        if action == "orders":
+            type_info.deleteActions([index])
+            break
+    logger.info("Removing 'orders' action from clients [DONE]")
+
+
+def remove_supplyorder_folder(portal):
+    logger.info("Removing supplyorder folder ...")
+    supplyorders = portal.get("supplyorders")
+    if supplyorders:
+        portal.manage_delObjects(supplyorders.getId())
+    logger.info("Removing supplyorder folder [DONE]")
+
+
+def remove_all_supplyorders(portal):
+    logger.info("Removing all supplyorders ...")
+    num = 0
+    clients = portal.clients.objectValues()
+
+    for client in clients:
+        cid = client.getId()
+        logger.info("Deleting supplyorders of client {}...".format(cid))
+        sids = client.objectIds(spec="SupplyOrder")
+        for sid in sids:
+            num += 1
+            # bypass security checks
+            try:
+                client._delObject(sid)
+                logger.info("#{}: Deleted supplyorder '{}' of client '{}'"
+                            .format(num, sid, cid))
+            except Exception:
+                logger.error("Cannot delete supplyorder '{}': {}"
+                             .format(sid, traceback.format_exc()))
+            if num % 1000 == 0:
+                commit_transaction(portal)
+
+    logger.info("Removed a total of {} supplyorders, committing...".format(num))
+    commit_transaction(portal)
+
+
+def remove_supplyorder_typeinfo(portal):
+    logger.info("Remove supplyorder typeinfo ...")
+    pt = portal.portal_types
+    for t in ["SupplyOrder", "SupplyOrderFolder"]:
+        if t in pt.objectIds():
+            pt.manage_delObjects(t)
+
+    logger.info("Remove supplyorder typeinfo [DONE]")
+
+
+def remove_supplyorder_workflow(portal):
+    logger.info("Remove supplyorder workflow ...")
+    wf_tool = portal.portal_workflow
+    wf = wf_tool.get("senaite_supplyorder_workflow")
+    if wf is not None:
+        wf_tool.manage_delObjects(wf.getId())
+    logger.info("Remove supplyorder workflow [DONE]")

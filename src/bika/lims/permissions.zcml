@@ -55,7 +55,6 @@
   <permission id="senaite.core.permissions.AddStorageLocation" title="senaite.core: Add StorageLocation"/>
   <permission id="senaite.core.permissions.AddSubGroup" title="senaite.core: Add SubGroup"/>
   <permission id="senaite.core.permissions.AddSupplier" title="senaite.core: Add Supplier"/>
-  <permission id="senaite.core.permissions.AddSupplyOrder" title="senaite.core: Add SupplyOrder"/>
   <permission id="senaite.core.permissions.AddWorksheetTemplate" title="senaite.core: Add WorksheetTemplate"/>
 
 
@@ -86,9 +85,6 @@
   <permission id="senaite.core.permissions.TransitionRejectSample" title="senaite.core: Transition: Reject Sample"/>
   <permission id="senaite.core.permissions.TransitionSampleSample" title="senaite.core: Transition: Sample Sample"/>
   <permission id="senaite.core.permissions.TransitionScheduleSampling" title="senaite.core: Transition: Schedule Sampling"/>
-
-  # Transition Permissions (Supply Order)
-  <permission id="senaite.core.permissions.TransitionDispatchOrder" title="senaite.core: Transition: Dispatch Order"/>
 
   # Transition Permissions (Worksheet)
   <permission id="senaite.core.permissions.TransitionRejectWorksheet" title="senaite.core: Transition: Reject Worksheet"/>
