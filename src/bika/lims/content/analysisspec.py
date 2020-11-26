@@ -67,6 +67,7 @@ schema = Schema((
             showOn=True,
             catalog_name=SETUP_CATALOG,
             base_query=dict(
+                is_active=True,
                 sort_on="sortable_title",
                 sort_order="ascending"
             ),
