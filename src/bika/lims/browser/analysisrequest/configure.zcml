@@ -95,6 +95,24 @@
       layer="bika.lims.interfaces.IBikaLIMS"
       />
 
+  <!-- Section for Field Analyses -->
+  <subscriber
+    for="bika.lims.interfaces.IAnalysisRequest"
+    provides="senaite.core.interfaces.ISampleSection"
+    factory=".sections.FieldAnalysesSection"/>
+
+  <!-- Section for Laboratory Analyses -->
+  <subscriber
+    for="bika.lims.interfaces.IAnalysisRequest"
+    provides="senaite.core.interfaces.ISampleSection"
+    factory=".sections.LabAnalysesSection"/>
+
+  <!-- Section for QC Analyses -->
+  <subscriber
+    for="bika.lims.interfaces.IAnalysisRequest"
+    provides="senaite.core.interfaces.ISampleSection"
+    factory=".sections.QCAnalysesSection"/>
+
   <!-- Table Lab Analyses -->
   <browser:page
       for="bika.lims.interfaces.IAnalysisRequest"

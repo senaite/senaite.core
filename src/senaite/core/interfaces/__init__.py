@@ -48,3 +48,16 @@ class IHideActionsMenu(Interface):
     """Marker interface that can be applied for conttents that should not
     display the content actions menu
     """
+
+
+class ISampleSection(Interface):
+    """Marker for additional sections to be displayed in Sample view/edit form
+    """
+
+    def is_visible(self):
+        """Returns whether this section is visible or not
+        """
+
+    def render(self):
+        """Returns the html-like section
+        """
