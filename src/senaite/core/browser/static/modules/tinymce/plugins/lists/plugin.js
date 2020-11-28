@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.5.1 (2020-10-01)
+ * Version: 5.6.1 (2020-11-25)
  */
 (function () {
     'use strict';
@@ -248,11 +248,14 @@
       r.reverse();
       return r;
     };
+    var get = function (xs, i) {
+      return i >= 0 && i < xs.length ? Optional.some(xs[i]) : Optional.none();
+    };
     var head = function (xs) {
-      return xs.length === 0 ? Optional.none() : Optional.some(xs[0]);
+      return get(xs, 0);
     };
     var last = function (xs) {
-      return xs.length === 0 ? Optional.none() : Optional.some(xs[xs.length - 1]);
+      return get(xs, xs.length - 1);
     };
 
     var __assign = function () {
@@ -1975,7 +1978,7 @@
       });
     };
 
-    var get = function (editor) {
+    var get$1 = function (editor) {
       return {
         backspaceDelete: function (isForward) {
           backspaceDelete(editor, isForward);
@@ -2136,7 +2139,7 @@
         }
         register$1(editor);
         register$2(editor);
-        return get(editor);
+        return get$1(editor);
       });
     }
 

@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.5.1 (2020-10-01)
+ * Version: 5.6.1 (2020-11-25)
  */
 (function () {
     'use strict';
@@ -500,7 +500,7 @@
       return header;
     };
     var handleGetContent = function (editor, head, foot, evt) {
-      if (!evt.selection && (!evt.source_view || !shouldHideInSourceView(editor))) {
+      if (evt.format === 'html' && !evt.selection && (!evt.source_view || !shouldHideInSourceView(editor))) {
         evt.content = unprotectHtml(global$1.trim(head) + '\n' + global$1.trim(evt.content) + '\n' + global$1.trim(foot));
       }
     };

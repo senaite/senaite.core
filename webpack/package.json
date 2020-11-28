@@ -4,7 +4,7 @@
   "main": "app/senaite.core.js",
   "scripts": {
     "build": "webpack -p",
-    "watch": "webpack -p --watch",
+    "watch": "webpack -d --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "babel": {

@@ -4,6 +4,7 @@ Changelog
 2.0.0rc3 (unreleased)
 ---------------------
 
+- #1693 Fix Datepicker localization
 - #1691 Fix immediate logout when timeout exceeds 32 bit integer value
 - #1692 Fix tabbing across elements within analyses listing
 - #1689 Display tabs in content edit view when more than one group
