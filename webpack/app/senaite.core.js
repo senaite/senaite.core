@@ -1,4 +1,5 @@
 import $ from "jquery";
+import I18N from "./components/i18n.js";
 import {i18n, _t, _p} from "./i18n-wrapper.js"
 import Site from "./components/site.js"
 import Sidebar from "./components/sidebar.js"
@@ -8,7 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
   console.debug("*** SENAITE CORE JS LOADED ***");
 
   // Initialize i18n message factories
-  window.i18n = i18n;
+  window.i18n = new I18N();
   window._t = _t;
   window._p = _p;
 
