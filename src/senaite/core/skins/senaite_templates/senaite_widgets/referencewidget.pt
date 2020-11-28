@@ -79,7 +79,6 @@
                      class="blurrable firstToFocus referencewidget"
                      tal:condition="python:context.Schema()[fieldName].required"
                      tal:attributes="name fieldName;
-                                     required python:True;
                                      id fieldName;
                                      value text;
                                      uid val/UID|nothing;
