@@ -5,6 +5,7 @@ Changelog
 ---------------------
 
 - #1691 Fix immediate logout when timeout exceeds 32 bit integer value
+- #1692 Fix tabbing across elements within analyses listing
 - #1689 Display tabs in content edit view when more than one group
 - #1682 Fix `LocationError` when editing a entry in the configuration registry
 - #1685 Remove Supply Orders
