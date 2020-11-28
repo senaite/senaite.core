@@ -1,4 +1,5 @@
 import $ from "jquery";
+import I18N from "./components/i18n.js";
 import {i18n, _t, _p} from "./i18n-wrapper.js"
 import Site from "./components/site.js"
 import Sidebar from "./components/sidebar.js"
@@ -8,7 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
   console.debug("*** SENAITE CORE JS LOADED ***");
 
   // Initialize i18n message factories
-  window.i18n = i18n;
+  window.i18n = new I18N();
   window._t = _t;
   window._p = _p;
 
@@ -41,9 +42,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Auto LogOff
   var logoff = document.body.dataset.autoLogoff || 0;
-  var logged = document.body.classList.contains('userrole-authenticated');
+  var logged = document.body.classList.contains("userrole-authenticated");
+  // Max value for setTimeout is a 32 bit integer
+  const max_timeout = 2**31 - 1;
   if (logoff > 0 && logged) {
     var logoff_ms = logoff * 60 * 1000;
+    if (logoff_ms > max_timeout) {
+      console.warn(`Setting logoff_ms to max value ${max_timeout}ms`);
+      logoff_ms = max_timeout;
+    }
     setTimeout(function() {
       location.href = window.portal_url + "/logout";
     }, logoff_ms);

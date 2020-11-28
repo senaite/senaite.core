@@ -59,15 +59,21 @@ def get_date(context, value):
             pass
         return None
 
-    def get_locale_format(key, context):
-        format = translate(key, domain="senaite.core", mapping={})
+    def get_locale_format(key):
+        request = api.get_request()
+        format = translate(
+            key, domain="senaite.core", mapping={}, context=request)
         # TODO: Is this replacement below strictly necessary?
         return format.replace(r"${", '%').replace('}', '')
 
     # Try with prioritized formats
-    formats = [get_locale_format("date_format_long", context),
-               get_locale_format("date_format_short", context),
-               "%Y-%m-%d %H:%M", "%Y-%m-%d", "%Y-%m-%d %H:%M:%S"]
+    formats = [
+        get_locale_format("date_format_long"),
+        get_locale_format("date_format_short"),
+        "%Y-%m-%d %H:%M",
+        "%Y-%m-%d",
+        "%Y-%m-%d %H:%M:%S",
+    ]
     for pri_format in formats:
         val = try_parse(value, pri_format)
         if not val:

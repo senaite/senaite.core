@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.5.1 (2020-10-01)
+ * Version: 5.6.1 (2020-11-25)
  */
 (function () {
     'use strict';
@@ -273,10 +273,19 @@
     var getValue = function (item) {
       return isString(item.value) ? item.value : '';
     };
+    var getText = function (item) {
+      if (isString(item.text)) {
+        return item.text;
+      } else if (isString(item.title)) {
+        return item.title;
+      } else {
+        return '';
+      }
+    };
     var sanitizeList = function (list, extractValue) {
       var out = [];
       global$2.each(list, function (item) {
-        var text = isString(item.text) ? item.text : isString(item.title) ? item.title : '';
+        var text = getText(item);
         if (item.menu !== undefined) {
           var items = sanitizeList(item.menu, extractValue);
           out.push({

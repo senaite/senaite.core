@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.5.1 (2020-10-01)
+ * Version: 5.6.1 (2020-11-25)
  */
 (function () {
     'use strict';
@@ -399,8 +399,11 @@
       copy.sort(comparator);
       return copy;
     };
+    var get = function (xs, i) {
+      return i >= 0 && i < xs.length ? Optional.some(xs[i]) : Optional.none();
+    };
     var head = function (xs) {
-      return xs.length === 0 ? Optional.none() : Optional.some(xs[0]);
+      return get(xs, 0);
     };
     var findMap = function (arr, f) {
       for (var i = 0; i < arr.length; i++) {
@@ -1200,7 +1203,7 @@
         return v;
       });
     };
-    var get = function (obj, key) {
+    var get$1 = function (obj, key) {
       return has(obj, key) ? Optional.from(obj[key]) : Optional.none();
     };
     var has = function (obj, key) {
@@ -1227,12 +1230,12 @@
         rawSet(dom, k, v);
       });
     };
-    var get$1 = function (element, key) {
+    var get$2 = function (element, key) {
       var v = element.dom.getAttribute(key);
       return v === null ? undefined : v;
     };
     var getOpt = function (element, key) {
-      return Optional.from(get$1(element, key));
+      return Optional.from(get$2(element, key));
     };
     var has$1 = function (element, key) {
       var dom = element.dom;
@@ -1243,7 +1246,7 @@
     };
 
     var read = function (element, attr) {
-      var value = get$1(element, attr);
+      var value = get$2(element, attr);
       return value === undefined || value === '' ? [] : value.split(' ');
     };
     var add = function (element, attr, id) {
@@ -1267,7 +1270,7 @@
     var supports = function (element) {
       return element.dom.classList !== undefined;
     };
-    var get$2 = function (element) {
+    var get$3 = function (element) {
       return read(element, 'class');
     };
     var add$1 = function (element, clazz) {
@@ -1285,7 +1288,7 @@
       }
     };
     var cleanClass = function (element) {
-      var classList = supports(element) ? element.dom.classList : get$2(element);
+      var classList = supports(element) ? element.dom.classList : get$3(element);
       if (classList.length === 0) {
         remove$1(element, 'class');
       }
@@ -1816,21 +1819,21 @@
       }
     ]);
     var strictAccess = function (path, obj, key) {
-      return get(obj, key).fold(function () {
+      return get$1(obj, key).fold(function () {
         return missingStrict(path, key, obj);
       }, SimpleResult.svalue);
     };
     var fallbackAccess = function (obj, key, fallbackThunk) {
-      var v = get(obj, key).fold(function () {
+      var v = get$1(obj, key).fold(function () {
         return fallbackThunk(obj);
       }, identity);
       return SimpleResult.svalue(v);
     };
     var optionAccess = function (obj, key) {
-      return SimpleResult.svalue(get(obj, key));
+      return SimpleResult.svalue(get$1(obj, key));
     };
     var optionDefaultedAccess = function (obj, key, fallback) {
-      var opt = get(obj, key).map(function (val) {
+      var opt = get$1(obj, key).map(function (val) {
         return val === true ? fallback(obj) : val;
       });
       return SimpleResult.svalue(opt);
@@ -1981,7 +1984,7 @@
     var field = adt$1.field;
 
     var chooseFrom = function (path, strength, input, branches, ch) {
-      var fields = get(branches, ch);
+      var fields = get$1(branches, ch);
       return fields.fold(function () {
         return missingBranch(path, branches, ch);
       }, function (vp) {
@@ -1990,7 +1993,7 @@
     };
     var choose = function (key, branches) {
       var extract = function (path, strength, input) {
-        var choice = get(input, key);
+        var choice = get$1(input, key);
         return choice.fold(function () {
           return missingKey(path, key);
         }, function (chosen) {
@@ -2414,7 +2417,7 @@
         },
         exhibit: function (info, base) {
           return getConfig(info).bind(function (behaviourInfo) {
-            return get(active, 'exhibit').map(function (exhibitor) {
+            return get$1(active, 'exhibit').map(function (exhibitor) {
               return exhibitor(base, behaviourInfo.config, behaviourInfo.state);
             });
           }).getOr(nu$5({}));
@@ -2424,7 +2427,7 @@
         },
         handlers: function (info) {
           return getConfig(info).map(function (behaviourInfo) {
-            var getEvents = get(active, 'events').getOr(function () {
+            var getEvents = get$1(active, 'events').getOr(function () {
               return {};
             });
             return getEvents(behaviourInfo.config, behaviourInfo.state);
@@ -2693,7 +2696,7 @@
       return children(SugarElement.fromDom(div));
     };
 
-    var get$3 = function (element) {
+    var get$4 = function (element) {
       return element.dom.innerHTML;
     };
     var set$1 = function (element, content) {
@@ -2709,7 +2712,7 @@
       var container = SugarElement.fromTag('div');
       var clone = SugarElement.fromDom(element.dom.cloneNode(true));
       append(container, clone);
-      return get$3(container);
+      return get$4(container);
     };
 
     var clone = function (original, isDeep) {
@@ -2829,7 +2832,7 @@
       };
     };
     var processEvent = function (eventName, initialTarget, f) {
-      var status = get(eventConfig.get(), eventName).orThunk(function () {
+      var status = get$1(eventConfig.get(), eventName).orThunk(function () {
         var patterns = keys(eventConfig.get());
         return findMap(patterns, function (p) {
           return eventName.indexOf(p) > -1 ? Optional.some(eventConfig.get()[p]) : Optional.none();
@@ -3208,7 +3211,7 @@
         internalSet(dom, k, v);
       });
     };
-    var get$4 = function (element, property) {
+    var get$5 = function (element, property) {
       var dom = element.dom;
       var styles = window.getComputedStyle(dom);
       var r = styles.getPropertyValue(property);
@@ -3248,7 +3251,7 @@
       var get = function (element) {
         var r = getOffset(element);
         if (r <= 0 || r === null) {
-          var css = get$4(element, name);
+          var css = get$5(element, name);
           return parseFloat(css) || 0;
         }
         return r;
@@ -3256,7 +3259,7 @@
       var getOuter = get;
       var aggregate = function (element, properties) {
         return foldl(properties, function (acc, property) {
-          var val = get$4(element, property);
+          var val = get$5(element, property);
           var value = val === undefined ? 0 : parseInt(val, 10);
           return isNaN(value) ? acc : acc + value;
         }, 0);
@@ -3279,7 +3282,7 @@
       var dom = element.dom;
       return inBody(element) ? dom.getBoundingClientRect().height : dom.offsetHeight;
     });
-    var get$5 = function (element) {
+    var get$6 = function (element) {
       return api.get(element);
     };
 
@@ -3308,7 +3311,13 @@
     };
 
     function ClosestOrAncestor (is, ancestor, scope, a, isRoot) {
-      return is(scope, a) ? Optional.some(scope) : isFunction(isRoot) && isRoot(scope) ? Optional.none() : ancestor(scope, a, isRoot);
+      if (is(scope, a)) {
+        return Optional.some(scope);
+      } else if (isFunction(isRoot) && isRoot(scope)) {
+        return Optional.none();
+      } else {
+        return ancestor(scope, a, isRoot);
+      }
     }
 
     var ancestor$1 = function (scope, predicate, isRoot) {
@@ -3435,7 +3444,13 @@
 
     var cycleBy = function (value, delta, min, max) {
       var r = value + delta;
-      return r > max ? min : r < min ? max : r;
+      if (r > max) {
+        return min;
+      } else if (r < min) {
+        return max;
+      } else {
+        return r;
+      }
     };
     var clamp = function (value, min, max) {
       return Math.min(Math.max(value, min), max);
@@ -3733,7 +3748,7 @@
         var target = tabbingConfig.visibilitySelector.bind(function (sel) {
           return closest$2(element, sel);
         }).getOr(element);
-        return get$5(target) > 0;
+        return get$6(target) > 0;
       };
       var findInitial = function (component, tabbingConfig) {
         var tabstops = descendants(component.element, tabbingConfig.selector);
@@ -3815,7 +3830,7 @@
     var CyclicType = create$2(state$1('cyclic', always));
 
     var inside = function (target) {
-      return name(target) === 'input' && get$1(target, 'type') !== 'radio' || name(target) === 'textarea';
+      return name(target) === 'input' && get$2(target, 'type') !== 'radio' || name(target) === 'textarea';
     };
 
     var doDefaultExecute = function (component, _simulatedEvent, focused) {
@@ -3908,7 +3923,7 @@
       };
     };
     var getDirection = function (element) {
-      return get$4(element, 'direction') === 'rtl' ? 'rtl' : 'ltr';
+      return get$5(element, 'direction') === 'rtl' ? 'rtl' : 'ltr';
     };
 
     var useH = function (movement) {
@@ -4079,7 +4094,7 @@
 
     var horizontal = function (container, selector, current, delta) {
       var isDisabledButton = function (candidate) {
-        return name(candidate) === 'button' && get$1(candidate, 'disabled') === 'disabled';
+        return name(candidate) === 'button' && get$2(candidate, 'disabled') === 'disabled';
       };
       var tryCycle = function (initial, index, candidates) {
         var newIndex = cycleBy(index, delta, 0, candidates.length - 1);
@@ -4426,7 +4441,7 @@
         return forbid(f.name(), 'Cannot configure ' + f.name() + ' for ' + name);
       }).concat([state$1('dump', identity)]));
     };
-    var get$6 = function (data) {
+    var get$7 = function (data) {
       return data.dump;
     };
     var augment = function (data, original) {
@@ -4435,7 +4450,7 @@
     var SketchBehaviours = {
       field: field$1,
       augment: augment,
-      get: get$6
+      get: get$7
     };
 
     var _placeholder = 'placeholder';
@@ -4462,7 +4477,7 @@
         })) {
         return adt$2.single(true, constant(compSpec));
       }
-      return get(placeholders, compSpec.name).fold(function () {
+      return get$1(placeholders, compSpec.name).fold(function () {
         throw new Error('Unknown placeholder component: ' + compSpec.name + '\nKnown: [' + keys(placeholders) + ']\nNamespace: ' + owner.getOr('none') + '\nSpec: ' + JSON.stringify(compSpec, null, 2));
       }, function (newSpec) {
         return newSpec.replace();
@@ -4479,7 +4494,7 @@
       var base = scan(owner, detail, compSpec, placeholders);
       return base.fold(function (req, valueThunk) {
         var value = isSubstituted(compSpec) ? valueThunk(detail, compSpec.config, compSpec.validated) : valueThunk(detail);
-        var childSpecs = get(value, 'components').getOr([]);
+        var childSpecs = get$1(value, 'components').getOr([]);
         var substituted = bind(childSpecs, function (c) {
           return substitute(owner, detail, c, placeholders);
         });
@@ -4734,7 +4749,7 @@
       return wrap$1(premadeTag, comp);
     };
     var getPremade = function (spec) {
-      return get(spec, premadeTag);
+      return get$1(spec, premadeTag);
     };
     var makeApi = function (f) {
       return markAsSketchApi(function (component) {
@@ -4865,8 +4880,8 @@
       var events = events$2(detail.action);
       var tag = detail.dom.tag;
       var lookupAttr = function (attr) {
-        return get(detail.dom, 'attributes').bind(function (attrs) {
-          return get(attrs, attr);
+        return get$1(detail.dom, 'attributes').bind(function (attrs) {
+          return get$1(attrs, attr);
         });
       };
       var getModAttributes = function () {
@@ -4961,7 +4976,7 @@
       var children$1 = children(elem);
       var attrs = getAttrs(elem);
       var classes = getClasses(elem);
-      var contents = children$1.length === 0 ? {} : { innerHtml: get$3(elem) };
+      var contents = children$1.length === 0 ? {} : { innerHtml: get$4(elem) };
       return __assign({
         tag: name(elem),
         classes: classes,
@@ -5220,8 +5235,8 @@
         dataByText.set({});
       };
       var lookup = function (itemString) {
-        return get(dataByValue.get(), itemString).orThunk(function () {
-          return get(dataByText.get(), itemString);
+        return get$1(dataByValue.get(), itemString).orThunk(function () {
+          return get$1(dataByText.get(), itemString);
         });
       };
       var update = function (items) {
@@ -5231,8 +5246,8 @@
         var newDataByText = {};
         each(items, function (item) {
           newDataByValue[item.value] = item;
-          get(item, 'meta').each(function (meta) {
-            get(meta, 'text').each(function (text) {
+          get$1(item, 'meta').each(function (meta) {
+            get$1(meta, 'text').each(function (text) {
               newDataByText[text] = item;
             });
           });
@@ -5380,7 +5395,7 @@
     var set$4 = function (element, h) {
       return api$1.set(element, h);
     };
-    var get$7 = function (element) {
+    var get$8 = function (element) {
       return api$1.get(element);
     };
 
@@ -5753,7 +5768,7 @@
     var setPositionFromValue = function (slider, thumb, detail, edges) {
       var value = currentValue(detail);
       var pos = findPositionOfValue(slider, edges.getSpectrum(slider), value.x, edges.getLeftEdge(slider), edges.getRightEdge(slider), detail);
-      var thumbRadius = get$7(thumb.element) / 2;
+      var thumbRadius = get$8(thumb.element) / 2;
       set$3(thumb.element, 'left', pos - thumbRadius + 'px');
     };
     var onLeft = handleMovement(-1);
@@ -5876,7 +5891,7 @@
     var setPositionFromValue$1 = function (slider, thumb, detail, edges) {
       var value = currentValue(detail);
       var pos = findPositionOfValue$1(slider, edges.getSpectrum(slider), value.y, edges.getTopEdge(slider), edges.getBottomEdge(slider), detail);
-      var thumbRadius = get$5(thumb.element) / 2;
+      var thumbRadius = get$6(thumb.element) / 2;
       set$3(thumb.element, 'top', pos - thumbRadius + 'px');
     };
     var onLeft$1 = Optional.none;
@@ -5957,8 +5972,8 @@
       var value = currentValue(detail);
       var xPos = findPositionOfValue(slider, edges.getSpectrum(slider), value.x, edges.getLeftEdge(slider), edges.getRightEdge(slider), detail);
       var yPos = findPositionOfValue$1(slider, edges.getSpectrum(slider), value.y, edges.getTopEdge(slider), edges.getBottomEdge(slider), detail);
-      var thumbXRadius = get$7(thumb.element) / 2;
-      var thumbYRadius = get$5(thumb.element) / 2;
+      var thumbXRadius = get$8(thumb.element) / 2;
+      var thumbYRadius = get$6(thumb.element) / 2;
       set$3(thumb.element, 'left', xPos - thumbXRadius + 'px');
       set$3(thumb.element, 'top', yPos - thumbYRadius + 'px');
     };
@@ -6296,7 +6311,7 @@
           return getRaw(elem, 'font-size');
         });
         return inline.getOrThunk(function () {
-          return get$4(start, 'font-size');
+          return get$5(start, 'font-size');
         });
       }).getOr('');
     };
@@ -6318,7 +6333,7 @@
         editor.execCommand('fontSize', false, value);
       }
     };
-    var get$8 = function (editor) {
+    var get$9 = function (editor) {
       var size = getSize(editor);
       return sizeToIndex(size).getOr(defaultIndex);
     };
@@ -6408,7 +6423,7 @@
           apply$1(editor, value);
         },
         getInitialValue: function () {
-          return get$8(editor);
+          return get$9(editor);
         }
       };
       return button(realm, 'font-size', function () {
@@ -6680,7 +6695,7 @@
       });
     };
 
-    var get$9 = function (element) {
+    var get$a = function (element) {
       return element.dom.textContent;
     };
     var set$5 = function (element, value) {
@@ -6704,10 +6719,10 @@
       };
     };
     var fromLink = function (link) {
-      var text = get$9(link);
-      var url = get$1(link, 'href');
-      var title = get$1(link, 'title');
-      var target = get$1(link, 'target');
+      var text = get$a(link);
+      var url = get$2(link, 'href');
+      var title = get$2(link, 'title');
+      var target = get$2(link, 'target');
       return {
         url: defaultToEmpty(url),
         text: text !== url ? defaultToEmpty(text) : '',
@@ -6724,8 +6739,8 @@
       });
     };
     var wasSimple = function (link) {
-      var prevHref = get$1(link, 'href');
-      var prevText = get$9(link);
+      var prevHref = get$2(link, 'href');
+      var prevText = get$a(link);
       return prevHref === prevText;
     };
     var getTextToApply = function (link, url, info) {
@@ -6832,7 +6847,7 @@
           attributes: __assign({ role: 'presentation' }, attributes)
         }, domWithoutAttributes),
         components: detail.components,
-        behaviours: get$6(detail.containerBehaviours),
+        behaviours: get$7(detail.containerBehaviours),
         events: detail.events,
         domModification: detail.domModification,
         eventOrder: detail.eventOrder
@@ -6882,7 +6897,7 @@
       ]
     });
 
-    var get$a = function (element) {
+    var get$b = function (element) {
       return element.dom.value;
     };
     var set$6 = function (element, value) {
@@ -6911,7 +6926,7 @@
       return derive$1([Focusing.config({
           onFocus: !detail.selectOnFocus ? noop : function (component) {
             var input = component.element;
-            var value = get$a(input);
+            var value = get$b(input);
             input.dom.setSelectionRange(0, value.length);
           }
         })]);
@@ -6922,10 +6937,10 @@
             return { initialValue: data };
           }).getOr({})), {
             getValue: function (input) {
-              return get$a(input.element);
+              return get$b(input.element);
             },
             setValue: function (input, data) {
-              var current = get$a(input.element);
+              var current = get$b(input.element);
               if (current !== data) {
                 set$6(input.element, data);
               }
@@ -7066,7 +7081,7 @@
       remove$1(component.element, 'disabled');
     };
     var ariaIsDisabled = function (component) {
-      return get$1(component.element, 'aria-disabled') === 'true';
+      return get$2(component.element, 'aria-disabled') === 'true';
     };
     var ariaDisable = function (component) {
       set(component.element, 'aria-disabled', 'true');
@@ -7349,7 +7364,7 @@
           if (spec$1.state.currentScreen.get() + direction >= 0 && spec$1.state.currentScreen.get() + direction < screens.length) {
             getRaw(parent, 'left').each(function (left) {
               var currentLeft = parseInt(left, 10);
-              var w = get$7(screens[0]);
+              var w = get$8(screens[0]);
               set$3(parent, 'left', currentLeft - direction * w + 'px');
             });
             spec$1.state.currentScreen.set(spec$1.state.currentScreen.get() + direction);
@@ -7606,7 +7621,7 @@
       var r = {};
       each$1(data, function (detail, key) {
         each$1(detail, function (value, indexKey) {
-          var chain = get(r, indexKey).getOr([]);
+          var chain = get$1(r, indexKey).getOr([]);
           r[indexKey] = chain.concat([tuple(key, value)]);
         });
       });
@@ -7868,7 +7883,7 @@
     };
 
     var getBehaviours$1 = function (spec) {
-      var behaviours = get(spec, 'behaviours').getOr({});
+      var behaviours = get$1(spec, 'behaviours').getOr({});
       var keys$1 = filter(keys(behaviours), function (k) {
         return behaviours[k] !== undefined;
       });
@@ -7961,7 +7976,7 @@
     };
 
     var buildSubcomponents = function (spec) {
-      var components = get(spec, 'components').getOr([]);
+      var components = get$1(spec, 'components').getOr([]);
       return map(components, build$1);
     };
     var buildFromSpec = function (userSpec) {
@@ -8443,8 +8458,8 @@
       });
     };
     var trace = function (items, byItem, byMenu, finish) {
-      return get(byMenu, finish).bind(function (triggerItem) {
-        return get(items, triggerItem).bind(function (triggerMenu) {
+      return get$1(byMenu, finish).bind(function (triggerItem) {
+        return get$1(items, triggerItem).bind(function (triggerMenu) {
           var rest = trace(items, byItem, byMenu, triggerMenu);
           return Optional.some([triggerMenu].concat(rest));
         });
@@ -8463,7 +8478,7 @@
         return [submenu].concat(trace(items, byItem, byMenu, submenu));
       });
       return map$1(items, function (menu) {
-        return get(menuPaths, menu).getOr([menu]);
+        return get$1(menuPaths, menu).getOr([menu]);
       });
     };
 
@@ -8519,7 +8534,7 @@
         var extraPath = filter(lookupItem(itemValue).toArray(), function (menuValue) {
           return getPreparedMenu(menuValue).isSome();
         });
-        return get(paths.get(), itemValue).bind(function (path) {
+        return get$1(paths.get(), itemValue).bind(function (path) {
           var revPath = reverse(extraPath.concat(path));
           var triggers = bind(revPath, function (menuValue, menuIndex) {
             return getTriggerData(menuValue, getItemByValue, revPath.slice(0, menuIndex + 1)).fold(function () {
@@ -8532,27 +8547,27 @@
         });
       };
       var expand = function (itemValue) {
-        return get(expansions.get(), itemValue).map(function (menu) {
-          var current = get(paths.get(), itemValue).getOr([]);
+        return get$1(expansions.get(), itemValue).map(function (menu) {
+          var current = get$1(paths.get(), itemValue).getOr([]);
           return [menu].concat(current);
         });
       };
       var collapse = function (itemValue) {
-        return get(paths.get(), itemValue).bind(function (path) {
+        return get$1(paths.get(), itemValue).bind(function (path) {
           return path.length > 1 ? Optional.some(path.slice(1)) : Optional.none();
         });
       };
       var refresh = function (itemValue) {
-        return get(paths.get(), itemValue);
+        return get$1(paths.get(), itemValue);
       };
       var getPreparedMenu = function (menuValue) {
         return lookupMenu(menuValue).bind(extractPreparedMenu);
       };
       var lookupMenu = function (menuValue) {
-        return get(menus.get(), menuValue);
+        return get$1(menus.get(), menuValue);
       };
       var lookupItem = function (itemValue) {
-        return get(expansions.get(), itemValue);
+        return get$1(expansions.get(), itemValue);
       };
       var otherMenus = function (path) {
         var menuValues = directory.get();
@@ -8667,7 +8682,7 @@
           var r = {};
           var items = descendants(container.element, '.' + detail.markers.item);
           var parentItems = filter(items, function (i) {
-            return get$1(i, 'aria-haspopup') === 'true';
+            return get$2(i, 'aria-haspopup') === 'true';
           });
           each(parentItems, function (i) {
             container.getSystem().getByDom(i).each(function (itemComp) {
@@ -8843,7 +8858,7 @@
       };
       var extractMenuFromContainer = function (container) {
         return Optional.from(container.components()[0]).filter(function (comp) {
-          return get$1(comp.element, 'role') === 'menu';
+          return get$2(comp.element, 'role') === 'menu';
         });
       };
       var repositionMenus = function (container) {
@@ -8980,8 +8995,8 @@
     });
 
     var findRoute = function (component, transConfig, transState, route) {
-      return get(transConfig.routes, route.start).bind(function (sConfig) {
-        return get(sConfig, route.destination);
+      return get$1(transConfig.routes, route.start).bind(function (sConfig) {
+        return get$1(sConfig, route.destination);
       });
     };
     var getTransition = function (comp, transConfig, transState) {
@@ -9009,7 +9024,7 @@
     };
     var getNewRoute = function (comp, transConfig, transState, destination) {
       return {
-        start: get$1(comp.element, transConfig.stateAttr),
+        start: get$2(comp.element, transConfig.stateAttr),
         destination: destination
       };
     };
@@ -9017,14 +9032,14 @@
       var el = comp.element;
       return getOpt(el, transConfig.destinationAttr).map(function (destination) {
         return {
-          start: get$1(comp.element, transConfig.stateAttr),
+          start: get$2(comp.element, transConfig.stateAttr),
           destination: destination
         };
       });
     };
     var jumpTo = function (comp, transConfig, transState, destination) {
       disableTransition(comp, transConfig, transState);
-      if (has$1(comp.element, transConfig.stateAttr) && get$1(comp.element, transConfig.stateAttr) !== destination) {
+      if (has$1(comp.element, transConfig.stateAttr) && get$2(comp.element, transConfig.stateAttr) !== destination) {
         transConfig.onFinish(comp, destination);
       }
       set(comp.element, transConfig.stateAttr, destination);
@@ -9187,7 +9202,7 @@
     var scrollable = scrollableStyle;
 
     var getValue$4 = function (item) {
-      return get(item, 'format').getOr(item.title);
+      return get$1(item, 'format').getOr(item.title);
     };
     var convert$1 = function (formats, memMenuThunk) {
       var mainMenu = makeMenu('Styles', [].concat(map(formats.items, function (k) {
@@ -9311,12 +9326,12 @@
           return Optional.none();
         },
         onOpenMenu: function (container, menu) {
-          var w = get$7(container.element);
+          var w = get$8(container.element);
           set$4(menu.element, w);
           Transitioning.jumpTo(menu, 'current');
         },
         onOpenSubmenu: function (container, item, submenu) {
-          var w = get$7(container.element);
+          var w = get$8(container.element);
           var menu = ancestor$2(item.element, '[role="menu"]').getOrDie('hacky');
           var menuComp = container.getSystem().getByDom(menu).getOrDie();
           set$4(submenu.element, w);
@@ -9630,13 +9645,13 @@
 
     var INTERVAL = 50;
     var INSURANCE = 1000 / INTERVAL;
-    var get$b = function (outerWindow) {
+    var get$c = function (outerWindow) {
       var isPortrait = outerWindow.matchMedia('(orientation: portrait)').matches;
       return { isPortrait: constant(isPortrait) };
     };
     var getActualWidth = function (outerWindow) {
       var isIos = detect$3().os.isiOS();
-      var isPortrait = get$b(outerWindow).isPortrait();
+      var isPortrait = get$c(outerWindow).isPortrait();
       return isIos && !isPortrait ? outerWindow.screen.height : outerWindow.screen.width;
     };
     var onChange = function (outerWindow, listeners) {
@@ -9644,7 +9659,7 @@
       var poller = null;
       var change = function () {
         global$4.clearInterval(poller);
-        var orientation = get$b(outerWindow);
+        var orientation = get$c(outerWindow);
         listeners.onChange(orientation);
         onAdjustment(function () {
           listeners.onReady(orientation);
@@ -10032,7 +10047,7 @@
         return sel.rangeCount > 0;
       }).bind(doGetExact);
     };
-    var get$c = function (win) {
+    var get$d = function (win) {
       return getExact(win).map(function (range) {
         return SimSelection.exact(range.start, range.soffset, range.finish, range.foffset);
       });
@@ -10099,7 +10114,7 @@
             var html = SugarElement.fromDom(doc.dom.documentElement);
             var getCursorBox = editor.getCursorBox.getOrThunk(function () {
               return function () {
-                return get$c(win).bind(function (sel) {
+                return get$d(win).bind(function (sel) {
                   return getFirstRect$1(win, sel).orThunk(function () {
                     return tryFallbackBox(win);
                   });
@@ -10153,7 +10168,7 @@
         return meta;
       };
       var element = first('meta[name="viewport"]').getOrThunk(nu);
-      var backup = get$1(element, 'content');
+      var backup = get$2(element, 'content');
       var maximize = function () {
         set(element, 'content', 'width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0');
       };
@@ -10177,7 +10192,7 @@
     var bgFallback = 'background-color:rgb(255,255,255)!important;';
     var isAndroid = detect$3().os.isAndroid();
     var matchColor = function (editorBody) {
-      var color = get$4(editorBody, 'background-color');
+      var color = get$5(editorBody, 'background-color');
       return color !== undefined && color !== '' ? 'background-color:' + color + '!important' : bgFallback;
     };
     var clobberStyles = function (container, editorBody) {
@@ -10186,7 +10201,7 @@
       };
       var clobber = function (clobberStyle) {
         return function (element) {
-          var styles = get$1(element, 'style');
+          var styles = get$2(element, 'style');
           var backup = styles === undefined ? 'no-styles' : styles.trim();
           if (backup === clobberStyle) {
             return;
@@ -10207,7 +10222,7 @@
     var restoreStyles = function () {
       var clobberedEls = all$2('[' + attr + ']');
       each(clobberedEls, function (element) {
-        var restore = get$1(element, attr);
+        var restore = get$2(element, attr);
         if (restore !== 'no-styles') {
           set(element, 'style', restore);
         } else {
@@ -10316,7 +10331,7 @@
         }
       ]);
       var fireIfReady = function (event, type) {
-        return get(handlers, type).bind(function (handler) {
+        return get$1(handlers, type).bind(function (handler) {
           return handler(event);
         });
       };
@@ -10408,7 +10423,7 @@
     };
 
     var safeParse = function (element, attribute) {
-      var parsed = parseInt(get$1(element, attribute), 10);
+      var parsed = parseInt(get$2(element, attribute), 10);
       return isNaN(parsed) ? 0 : parsed;
     };
 
@@ -10802,7 +10817,7 @@
       set(container, dataHorizontal, 'true');
     };
     var hasScroll = function (container) {
-      return get$1(container, dataHorizontal) === 'true' ? hasHorizontalScroll(container) : hasVerticalScroll(container);
+      return get$2(container, dataHorizontal) === 'true' ? hasHorizontalScroll(container) : hasVerticalScroll(container);
     };
     var exclusive = function (scope, selector) {
       return bind$3(scope, 'touchmove', function (event) {
@@ -11101,13 +11116,13 @@
         width: [
           output('property', 'width'),
           output('getDimension', function (elem) {
-            return get$7(elem) + 'px';
+            return get$8(elem) + 'px';
           })
         ],
         height: [
           output('property', 'height'),
           output('getDimension', function (elem) {
-            return get$5(elem) + 'px';
+            return get$6(elem) + 'px';
           })
         ]
       }))
@@ -11326,7 +11341,7 @@
     };
 
     var derive$2 = function (rawEvent, rawTarget) {
-      var source = get(rawEvent, 'target').getOr(rawTarget);
+      var source = get$1(rawEvent, 'target').getOr(rawTarget);
       return Cell(source);
     };
 
@@ -11453,21 +11468,21 @@
           return Optional.none();
         }, function (id) {
           return handlers.bind(function (h) {
-            return get(h, id);
+            return get$1(h, id);
           }).map(function (descHandler) {
             return eventHandler(elem, descHandler);
           });
         });
       };
       var filterByType = function (type) {
-        return get(registry, type).map(function (handlers) {
+        return get$1(registry, type).map(function (handlers) {
           return mapToArray(handlers, function (f, id) {
             return broadcastHandler(id, f);
           });
         }).getOr([]);
       };
       var find = function (isAboveRoot, type, target) {
-        var handlers = get(registry, type);
+        var handlers = get$1(registry, type);
         return closest(target, function (elem) {
           return findHandler(handlers, elem);
         }, isAboveRoot);
@@ -11528,7 +11543,7 @@
         return events.find(isAboveRoot, type, target);
       };
       var getById = function (id) {
-        return get(components, id);
+        return get$1(components, id);
       };
       return {
         find: find,
@@ -11859,7 +11874,7 @@
         });
       };
       var reposition = function () {
-        var toolbarHeight = get$5(toolstrip);
+        var toolbarHeight = get$6(toolstrip);
         iosApi.run(function (api) {
           api.setViewportOffset(toolbarHeight);
         });
@@ -12702,7 +12717,7 @@
       return findDevice(outerWindow.screen.width, outerWindow.screen.height);
     };
     var accountableKeyboardHeight = function (outerWindow) {
-      var portrait = get$b(outerWindow).isPortrait();
+      var portrait = get$c(outerWindow).isPortrait();
       var limits = softKeyboardLimits(outerWindow);
       var keyboard = portrait ? limits.portrait : limits.landscape;
       var visualScreenHeight = portrait ? outerWindow.screen.height : outerWindow.screen.width;
@@ -12710,13 +12725,13 @@
     };
     var getGreenzone = function (socket, dropup) {
       var outerWindow = owner(socket).dom.defaultView;
-      var viewportHeight = get$5(socket) + get$5(dropup);
+      var viewportHeight = get$6(socket) + get$6(dropup);
       var acc = accountableKeyboardHeight(outerWindow);
       return viewportHeight - acc;
     };
     var updatePadding = function (contentBody, socket, dropup) {
       var greenzoneHeight = getGreenzone(socket, dropup);
-      var deltaHeight = get$5(socket) + get$5(dropup) - greenzoneHeight;
+      var deltaHeight = get$6(socket) + get$6(dropup) - greenzoneHeight;
       set$3(contentBody, 'padding-bottom', deltaHeight + 'px');
     };
 
@@ -12743,7 +12758,7 @@
       return safeParse(element, yFixedData);
     };
     var getYFixedProperty = function (element) {
-      return get$1(element, yFixedProperty);
+      return get$2(element, yFixedProperty);
     };
     var getLastWindowSize = function (element) {
       return safeParse(element, windowSizeData);
@@ -12757,7 +12772,7 @@
     };
     var classify = function (element) {
       var offsetY = getYFixedData(element);
-      var classifier = get$1(element, yScrollingData) === 'true' ? classifyScrolling : classifyFixed;
+      var classifier = get$2(element, yScrollingData) === 'true' ? classifyScrolling : classifyFixed;
       return classifier(element, offsetY);
     };
     var findFixtures = function (container) {
@@ -12765,7 +12780,7 @@
       return map(candidates, classify);
     };
     var takeoverToolbar = function (toolbar) {
-      var oldToolbarStyle = get$1(toolbar, 'style');
+      var oldToolbarStyle = get$2(toolbar, 'style');
       setAll$1(toolbar, {
         position: 'absolute',
         top: '0px'
@@ -12780,7 +12795,7 @@
       return { restore: restore };
     };
     var takeoverViewport = function (toolbarHeight, height, viewport) {
-      var oldViewportStyle = get$1(viewport, 'style');
+      var oldViewportStyle = get$2(viewport, 'style');
       register(viewport);
       setAll$1(viewport, {
         position: 'absolute',
@@ -12801,7 +12816,7 @@
       return { restore: restore };
     };
     var takeoverDropup = function (dropup) {
-      var oldDropupStyle = get$1(dropup, 'style');
+      var oldDropupStyle = get$2(dropup, 'style');
       setAll$1(dropup, {
         position: 'absolute',
         bottom: '0px'
@@ -12824,8 +12839,8 @@
     var takeover$1 = function (viewport, contentBody, toolbar, dropup) {
       var outerWindow = owner(viewport).dom.defaultView;
       var toolbarSetup = takeoverToolbar(toolbar);
-      var toolbarHeight = get$5(toolbar);
-      var dropupHeight = get$5(dropup);
+      var toolbarHeight = get$6(toolbar);
+      var dropupHeight = get$6(dropup);
       var viewportHeight = deriveViewportHeight(viewport, toolbarHeight, dropupHeight);
       var viewportSetup = takeoverViewport(toolbarHeight, viewportHeight, viewport);
       var dropupSetup = takeoverDropup(dropup);
@@ -12843,8 +12858,8 @@
       };
       var refresh = function () {
         if (isActive) {
-          var newToolbarHeight = get$5(toolbar);
-          var dropupHeight_1 = get$5(dropup);
+          var newToolbarHeight = get$6(toolbar);
+          var dropupHeight_1 = get$6(dropup);
           var newHeight = deriveViewportHeight(viewport, newToolbarHeight, dropupHeight_1);
           set(viewport, yFixedData, newToolbarHeight + 'px');
           set$3(viewport, 'height', newHeight + 'px');
@@ -12971,7 +12986,7 @@
         moveOnlyScroll(socket, socket.dom.scrollTop - greenzone + bottom).get(refreshCursor);
       } else if (top < 0) {
         moveOnlyScroll(socket, socket.dom.scrollTop + top).get(refreshCursor);
-      }
+      } else ;
     };
 
     var par = function (asyncValues, nu) {

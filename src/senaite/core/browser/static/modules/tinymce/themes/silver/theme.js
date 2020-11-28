@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.5.1 (2020-10-01)
+ * Version: 5.6.1 (2020-11-25)
  */
 (function () {
     'use strict';
@@ -419,11 +419,14 @@
       copy.sort(comparator);
       return copy;
     };
+    var get = function (xs, i) {
+      return i >= 0 && i < xs.length ? Optional.some(xs[i]) : Optional.none();
+    };
     var head = function (xs) {
-      return xs.length === 0 ? Optional.none() : Optional.some(xs[0]);
+      return get(xs, 0);
     };
     var last = function (xs) {
-      return xs.length === 0 ? Optional.none() : Optional.some(xs[xs.length - 1]);
+      return get(xs, xs.length - 1);
     };
     var from$1 = isFunction(Array.from) ? Array.from : function (x) {
       return nativeSlice.call(x);
@@ -700,7 +703,7 @@
         return v;
       });
     };
-    var get = function (obj, key) {
+    var get$1 = function (obj, key) {
       return has(obj, key) ? Optional.from(obj[key]) : Optional.none();
     };
     var has = function (obj, key) {
@@ -1013,21 +1016,21 @@
       }
     ]);
     var strictAccess = function (path, obj, key) {
-      return get(obj, key).fold(function () {
+      return get$1(obj, key).fold(function () {
         return missingStrict(path, key, obj);
       }, SimpleResult.svalue);
     };
     var fallbackAccess = function (obj, key, fallbackThunk) {
-      var v = get(obj, key).fold(function () {
+      var v = get$1(obj, key).fold(function () {
         return fallbackThunk(obj);
       }, identity);
       return SimpleResult.svalue(v);
     };
     var optionAccess = function (obj, key) {
-      return SimpleResult.svalue(get(obj, key));
+      return SimpleResult.svalue(get$1(obj, key));
     };
     var optionDefaultedAccess = function (obj, key, fallback) {
-      var opt = get(obj, key).map(function (val) {
+      var opt = get$1(obj, key).map(function (val) {
         return val === true ? fallback(obj) : val;
       });
       return SimpleResult.svalue(opt);
@@ -1229,7 +1232,7 @@
     var field = adt$1.field;
 
     var chooseFrom = function (path, strength, input, branches, ch) {
-      var fields = get(branches, ch);
+      var fields = get$1(branches, ch);
       return fields.fold(function () {
         return missingBranch(path, branches, ch);
       }, function (vp) {
@@ -1238,7 +1241,7 @@
     };
     var choose = function (key, branches) {
       var extract = function (path, strength, input) {
-        var choice = get(input, key);
+        var choice = get$1(input, key);
         return choice.fold(function () {
           return missingKey(path, key);
         }, function (chosen) {
@@ -2297,7 +2300,7 @@
       return children(SugarElement.fromDom(div));
     };
 
-    var get$1 = function (element) {
+    var get$2 = function (element) {
       return element.dom.innerHTML;
     };
     var set = function (element, content) {
@@ -2313,7 +2316,7 @@
       var container = SugarElement.fromTag('div');
       var clone = SugarElement.fromDom(element.dom.cloneNode(true));
       append(container, clone);
-      return get$1(container);
+      return get$2(container);
     };
 
     var rawSet = function (dom, key, value) {
@@ -2333,12 +2336,12 @@
         rawSet(dom, k, v);
       });
     };
-    var get$2 = function (element, key) {
+    var get$3 = function (element, key) {
       var v = element.dom.getAttribute(key);
       return v === null ? undefined : v;
     };
     var getOpt = function (element, key) {
-      return Optional.from(get$2(element, key));
+      return Optional.from(get$3(element, key));
     };
     var has$1 = function (element, key) {
       var dom = element.dom;
@@ -2495,7 +2498,7 @@
       return wrap$1(premadeTag, comp);
     };
     var getPremade = function (spec) {
-      return get(spec, premadeTag);
+      return get$1(spec, premadeTag);
     };
     var makeApi = function (f) {
       return markAsSketchApi(function (component) {
@@ -2561,7 +2564,7 @@
       var r = {};
       each$1(data, function (detail, key) {
         each$1(detail, function (value, indexKey) {
-          var chain = get(r, indexKey).getOr([]);
+          var chain = get$1(r, indexKey).getOr([]);
           r[indexKey] = chain.concat([tuple(key, value)]);
         });
       });
@@ -2807,7 +2810,7 @@
     };
 
     var read$2 = function (element, attr) {
-      var value = get$2(element, attr);
+      var value = get$3(element, attr);
       return value === undefined || value === '' ? [] : value.split(' ');
     };
     var add = function (element, attr, id) {
@@ -2831,7 +2834,7 @@
     var supports = function (element) {
       return element.dom.classList !== undefined;
     };
-    var get$3 = function (element) {
+    var get$4 = function (element) {
       return read$2(element, 'class');
     };
     var add$1 = function (element, clazz) {
@@ -2849,7 +2852,7 @@
       }
     };
     var cleanClass = function (element) {
-      var classList = supports(element) ? element.dom.classList : get$3(element);
+      var classList = supports(element) ? element.dom.classList : get$4(element);
       if (classList.length === 0) {
         remove$1(element, 'class');
       }
@@ -2892,6 +2895,9 @@
     } : documentOrOwner;
     var getContentContainer = function (dos) {
       return isShadowRoot(dos) ? dos : SugarElement.fromDom(documentOrOwner(dos).dom.body);
+    };
+    var isInShadowRoot = function (e) {
+      return getShadowRoot(e).isSome();
     };
     var getShadowRoot = function (e) {
       var r = getRootNode(e);
@@ -2973,7 +2979,7 @@
         });
       });
     };
-    var get$4 = function (element, property) {
+    var get$5 = function (element, property) {
       var dom = element.dom;
       var styles = window.getComputedStyle(dom);
       var r = styles.getPropertyValue(property);
@@ -3017,7 +3023,7 @@
       return e.dom.offsetWidth;
     };
 
-    var get$5 = function (element) {
+    var get$6 = function (element) {
       return element.dom.value;
     };
     var set$3 = function (element, value) {
@@ -3048,7 +3054,7 @@
     };
 
     var getBehaviours$1 = function (spec) {
-      var behaviours = get(spec, 'behaviours').getOr({});
+      var behaviours = get$1(spec, 'behaviours').getOr({});
       var keys$1 = filter(keys(behaviours), function (k) {
         return behaviours[k] !== undefined;
       });
@@ -3141,7 +3147,7 @@
     };
 
     var buildSubcomponents = function (spec) {
-      var components = get(spec, 'components').getOr([]);
+      var components = get$1(spec, 'components').getOr([]);
       return map(components, build$1);
     };
     var buildFromSpec = function (userSpec) {
@@ -3216,7 +3222,7 @@
       var get = function (element) {
         var r = getOffset(element);
         if (r <= 0 || r === null) {
-          var css = get$4(element, name);
+          var css = get$5(element, name);
           return parseFloat(css) || 0;
         }
         return r;
@@ -3224,7 +3230,7 @@
       var getOuter = get;
       var aggregate = function (element, properties) {
         return foldl(properties, function (acc, property) {
-          var val = get$4(element, property);
+          var val = get$5(element, property);
           var value = val === undefined ? 0 : parseInt(val, 10);
           return isNaN(value) ? acc : acc + value;
         }, 0);
@@ -3247,7 +3253,7 @@
       var dom = element.dom;
       return inBody(element) ? dom.getBoundingClientRect().height : dom.offsetHeight;
     });
-    var get$6 = function (element) {
+    var get$7 = function (element) {
       return api.get(element);
     };
     var getOuter$1 = function (element) {
@@ -3322,7 +3328,7 @@
     var set$4 = function (element, h) {
       return api$1.set(element, h);
     };
-    var get$7 = function (element) {
+    var get$8 = function (element) {
       return api$1.get(element);
     };
     var getOuter$2 = function (element) {
@@ -3385,7 +3391,7 @@
       element.dom.removeEventListener(event, handler, useCapture);
     };
 
-    var get$8 = function (_DOC) {
+    var get$9 = function (_DOC) {
       var doc = _DOC !== undefined ? _DOC.dom : document;
       var x = doc.body.scrollLeft || doc.documentElement.scrollLeft;
       var y = doc.body.scrollTop || doc.documentElement.scrollTop;
@@ -3399,7 +3405,7 @@
       }
     };
 
-    var get$9 = function (_win) {
+    var get$a = function (_win) {
       var win = _win === undefined ? window : _win;
       return Optional.from(win['visualViewport']);
     };
@@ -3416,8 +3422,8 @@
     var getBounds = function (_win) {
       var win = _win === undefined ? window : _win;
       var doc = win.document;
-      var scroll = get$8(SugarElement.fromDom(doc));
-      return get$9(win).fold(function () {
+      var scroll = get$9(SugarElement.fromDom(doc));
+      return get$a(win).fold(function () {
         var html = win.document.documentElement;
         var width = html.clientWidth;
         var height = html.clientHeight;
@@ -3458,7 +3464,7 @@
 
     var find$3 = function (element) {
       var doc = SugarElement.fromDom(document);
-      var scroll = get$8(doc);
+      var scroll = get$9(doc);
       var path = pathTo(element, Navigation);
       return path.fold(curry(absolute, element), function (frames) {
         var offset = viewport(element);
@@ -3518,7 +3524,13 @@
     };
 
     function ClosestOrAncestor (is, ancestor, scope, a, isRoot) {
-      return is(scope, a) ? Optional.some(scope) : isFunction(isRoot) && isRoot(scope) ? Optional.none() : ancestor(scope, a, isRoot);
+      if (is(scope, a)) {
+        return Optional.some(scope);
+      } else if (isFunction(isRoot) && isRoot(scope)) {
+        return Optional.none();
+      } else {
+        return ancestor(scope, a, isRoot);
+      }
     }
 
     var ancestor$1 = function (scope, predicate, isRoot) {
@@ -3582,11 +3594,11 @@
         if (!isElement(elem)) {
           return false;
         }
-        var id = get$2(elem, 'id');
+        var id = get$3(elem, 'id');
         return id !== undefined && id.indexOf('aria-owns') > -1;
       });
       return dependent.bind(function (dep) {
-        var id = get$2(dep, 'id');
+        var id = get$3(dep, 'id');
         var dos = getRootNode(dep);
         return descendant$1(dos, '[aria-owns="' + id + '"]');
       });
@@ -3693,7 +3705,7 @@
       };
     };
     var processEvent = function (eventName, initialTarget, f) {
-      var status = get(eventConfig.get(), eventName).orThunk(function () {
+      var status = get$1(eventConfig.get(), eventName).orThunk(function () {
         var patterns = keys(eventConfig.get());
         return findMap(patterns, function (p) {
           return eventName.indexOf(p) > -1 ? Optional.some(eventConfig.get()[p]) : Optional.none();
@@ -3856,7 +3868,7 @@
         'top',
         'bottom'
       ], function (dir) {
-        return get(restrictions, dir).map(function (restriction) {
+        return get$1(restrictions, dir).map(function (restriction) {
           return getRestriction(anchor, restriction);
         });
       });
@@ -3864,7 +3876,7 @@
     var adjustBounds = function (bounds, boundsRestrictions, bubbleOffsets) {
       var applyRestriction = function (dir, current) {
         var bubbleOffset = dir === 'top' || dir === 'bottom' ? bubbleOffsets.top : bubbleOffsets.left;
-        return get(boundsRestrictions, dir).bind(identity).bind(function (restriction) {
+        return get$1(boundsRestrictions, dir).bind(identity).bind(function (restriction) {
           if (dir === 'left' || dir === 'top') {
             return restriction >= current ? Optional.some(restriction) : Optional.none();
           } else {
@@ -4114,7 +4126,7 @@
         },
         exhibit: function (info, base) {
           return getConfig(info).bind(function (behaviourInfo) {
-            return get(active, 'exhibit').map(function (exhibitor) {
+            return get$1(active, 'exhibit').map(function (exhibitor) {
               return exhibitor(base, behaviourInfo.config, behaviourInfo.state);
             });
           }).getOr(nu$6({}));
@@ -4124,7 +4136,7 @@
         },
         handlers: function (info) {
           return getConfig(info).map(function (behaviourInfo) {
-            var getEvents = get(active, 'events').getOr(function () {
+            var getEvents = get$1(active, 'events').getOr(function () {
               return {};
             });
             return getEvents(behaviourInfo.config, behaviourInfo.state);
@@ -4310,7 +4322,7 @@
     var toBox = function (origin, element) {
       var rel = curry(find$3, element);
       var position = origin.fold(rel, rel, function () {
-        var scroll = get$8();
+        var scroll = get$9();
         return find$3(element).translate(-scroll.left, -scroll.top);
       });
       var width = getOuter$2(element);
@@ -4331,7 +4343,7 @@
     var translate = function (origin, x, y) {
       var pos = SugarPosition(x, y);
       var removeScroll = function () {
-        var outerScroll = get$8();
+        var outerScroll = get$9();
         return pos.translate(-outerScroll.left, -outerScroll.top);
       };
       return origin.fold(constant(pos), constant(pos), removeScroll);
@@ -4355,7 +4367,13 @@
 
     var cycleBy = function (value, delta, min, max) {
       var r = value + delta;
-      return r > max ? min : r < min ? max : r;
+      if (r > max) {
+        return min;
+      } else if (r < min) {
+        return max;
+      } else {
+        return r;
+      }
     };
     var clamp = function (value, min, max) {
       return Math.min(Math.max(value, min), max);
@@ -4546,7 +4564,7 @@
     ];
     var nu$8 = function (width, yoffset, classes) {
       var getClasses = function (prop) {
-        return get(classes, prop).getOr([]);
+        return get$1(classes, prop).getOr([]);
       };
       var make = function (xDelta, yDelta, alignmentsOn) {
         var alignmentsOff = difference(allAlignments, alignmentsOn);
@@ -4669,7 +4687,7 @@
       };
     };
     var getDirection = function (element) {
-      return get$4(element, 'direction') === 'rtl' ? 'rtl' : 'ltr';
+      return get$5(element, 'direction') === 'rtl' ? 'rtl' : 'ltr';
     };
 
     var AttributeValue;
@@ -4680,7 +4698,7 @@
     var Attribute = 'data-alloy-vertical-dir';
     var isBottomToTopDir = function (el) {
       return closest$2(el, function (current) {
-        return isElement(current) && get$2(current, 'data-alloy-vertical-dir') === AttributeValue.BottomToTop;
+        return isElement(current) && get$3(current, 'data-alloy-vertical-dir') === AttributeValue.BottomToTop;
       });
     };
 
@@ -4692,7 +4710,7 @@
         option('onBottomRtl')
       ]);
     };
-    var get$a = function (elem, info, defaultLtr, defaultRtl, defaultBottomLtr, defaultBottomRtl, dirElement) {
+    var get$b = function (elem, info, defaultLtr, defaultRtl, defaultBottomLtr, defaultBottomRtl, dirElement) {
       var isBottomToTop = dirElement.map(isBottomToTopDir).getOr(false);
       var customLtr = info.layouts.map(function (ls) {
         return ls.onLtr(elem);
@@ -4717,7 +4735,7 @@
     var placement = function (component, anchorInfo, origin) {
       var hotspot = anchorInfo.hotspot;
       var anchorBox = toBox(origin, hotspot.element);
-      var layouts = get$a(component.element, anchorInfo, belowOrAbove(), belowOrAboveRtl(), aboveOrBelow(), aboveOrBelowRtl(), Optional.some(anchorInfo.hotspot.element));
+      var layouts = get$b(component.element, anchorInfo, belowOrAbove(), belowOrAboveRtl(), aboveOrBelow(), aboveOrBelowRtl(), Optional.some(anchorInfo.hotspot.element));
       return Optional.some(nu$9({
         anchorBox: anchorBox,
         bubble: anchorInfo.bubble.getOr(fallback()),
@@ -4737,7 +4755,7 @@
     var placement$1 = function (component, anchorInfo, origin) {
       var pos = translate(origin, anchorInfo.x, anchorInfo.y);
       var anchorBox = bounds$1(pos.left, pos.top, anchorInfo.width, anchorInfo.height);
-      var layouts = get$a(component.element, anchorInfo, all$2(), allRtl(), all$2(), allRtl(), Optional.none());
+      var layouts = get$b(component.element, anchorInfo, all$2(), allRtl(), all$2(), allRtl(), Optional.none());
       return Optional.some(nu$9({
         anchorBox: anchorBox,
         bubble: anchorInfo.bubble,
@@ -5007,7 +5025,7 @@
     }
 
     var api$2 = NodeValue(isText, 'text');
-    var get$b = function (element) {
+    var get$c = function (element) {
       return api$2.get(element);
     };
     var getOption = function (element) {
@@ -5118,7 +5136,7 @@
         return point(children$1[offset], 0);
       } else {
         var last = children$1[children$1.length - 1];
-        var len = isText(last) ? get$b(last).length : children(last).length;
+        var len = isText(last) ? get$c(last).length : children(last).length;
         return point(last, len);
       }
     };
@@ -5168,7 +5186,7 @@
     };
     var getRootPoint = function (component, origin, anchorInfo) {
       var doc = owner(component.element);
-      var outerScroll = get$8(doc);
+      var outerScroll = get$9(doc);
       var offset = getOffset(component, origin, anchorInfo).getOr(outerScroll);
       return absolute$2(offset, outerScroll.left, outerScroll.top);
     };
@@ -5202,7 +5220,7 @@
         var anchorBox = rect(topLeft.left, topLeft.top, box.width, box.height);
         var layoutsLtr = anchorInfo.showAbove ? aboveOrBelow() : belowOrAbove();
         var layoutsRtl = anchorInfo.showAbove ? aboveOrBelowRtl() : belowOrAboveRtl();
-        var layouts = get$a(elem, anchorInfo, layoutsLtr, layoutsRtl, layoutsLtr, layoutsRtl, Optional.none());
+        var layouts = get$b(elem, anchorInfo, layoutsLtr, layoutsRtl, layoutsLtr, layoutsRtl, Optional.none());
         return nu$9({
           anchorBox: anchorBox,
           bubble: anchorInfo.bubble.getOr(fallback()),
@@ -5213,14 +5231,8 @@
       });
     };
 
-    var point$1 = function (element, offset) {
-      return {
-        element: element,
-        offset: offset
-      };
-    };
     var descendOnce$1 = function (element, offset) {
-      return isText(element) ? point$1(element, offset) : descendOnce(element, offset);
+      return isText(element) ? point(element, offset) : descendOnce(element, offset);
     };
     var getAnchorSelection = function (win, anchorInfo) {
       var getSelection = anchorInfo.getSelection.getOrThunk(function () {
@@ -5340,7 +5352,7 @@
 
     var placement$4 = function (component, submenuInfo, origin) {
       var anchorBox = toBox(origin, submenuInfo.item.element);
-      var layouts = get$a(component.element, submenuInfo, all$3(), allRtl$1(), all$3(), allRtl$1(), Optional.none());
+      var layouts = get$b(component.element, submenuInfo, all$3(), allRtl$1(), all$3(), allRtl$1(), Optional.none());
       return Optional.some(nu$9({
         anchorBox: anchorBox,
         bubble: fallback(),
@@ -5809,8 +5821,8 @@
         dataByText.set({});
       };
       var lookup = function (itemString) {
-        return get(dataByValue.get(), itemString).orThunk(function () {
-          return get(dataByText.get(), itemString);
+        return get$1(dataByValue.get(), itemString).orThunk(function () {
+          return get$1(dataByText.get(), itemString);
         });
       };
       var update = function (items) {
@@ -5820,8 +5832,8 @@
         var newDataByText = {};
         each(items, function (item) {
           newDataByValue[item.value] = item;
-          get(item, 'meta').each(function (meta) {
-            get(meta, 'text').each(function (text) {
+          get$1(item, 'meta').each(function (meta) {
+            get$1(meta, 'text').each(function (text) {
               newDataByText[text] = item;
             });
           });
@@ -5968,7 +5980,7 @@
         return forbid(f.name(), 'Cannot configure ' + f.name() + ' for ' + name);
       }).concat([state$1('dump', identity)]));
     };
-    var get$c = function (data) {
+    var get$d = function (data) {
       return data.dump;
     };
     var augment = function (data, original) {
@@ -5977,7 +5989,7 @@
     var SketchBehaviours = {
       field: field$1,
       augment: augment,
-      get: get$c
+      get: get$d
     };
 
     var _placeholder = 'placeholder';
@@ -6004,7 +6016,7 @@
         })) {
         return adt$9.single(true, constant(compSpec));
       }
-      return get(placeholders, compSpec.name).fold(function () {
+      return get$1(placeholders, compSpec.name).fold(function () {
         throw new Error('Unknown placeholder component: ' + compSpec.name + '\nKnown: [' + keys(placeholders) + ']\nNamespace: ' + owner.getOr('none') + '\nSpec: ' + JSON.stringify(compSpec, null, 2));
       }, function (newSpec) {
         return newSpec.replace();
@@ -6021,7 +6033,7 @@
       var base = scan(owner, detail, compSpec, placeholders);
       return base.fold(function (req, valueThunk) {
         var value = isSubstituted(compSpec) ? valueThunk(detail, compSpec.config, compSpec.validated) : valueThunk(detail);
-        var childSpecs = get(value, 'components').getOr([]);
+        var childSpecs = get$1(value, 'components').getOr([]);
         var substituted = bind(childSpecs, function (c) {
           return substitute(owner, detail, c, placeholders);
         });
@@ -6440,7 +6452,7 @@
     };
 
     var inside = function (target) {
-      return name(target) === 'input' && get$2(target, 'type') !== 'radio' || name(target) === 'textarea';
+      return name(target) === 'input' && get$3(target, 'type') !== 'radio' || name(target) === 'textarea';
     };
 
     var getCurrent = function (component, composeConfig, _composeState) {
@@ -6793,7 +6805,7 @@
         var target = tabbingConfig.visibilitySelector.bind(function (sel) {
           return closest$3(element, sel);
         }).getOr(element);
-        return get$6(target) > 0;
+        return get$7(target) > 0;
       };
       var findInitial = function (component, tabbingConfig) {
         var tabstops = descendants(component.element, tabbingConfig.selector);
@@ -7126,7 +7138,7 @@
 
     var horizontal = function (container, selector, current, delta) {
       var isDisabledButton = function (candidate) {
-        return name(candidate) === 'button' && get$2(candidate, 'disabled') === 'disabled';
+        return name(candidate) === 'button' && get$3(candidate, 'disabled') === 'disabled';
       };
       var tryCycle = function (initial, index, candidates) {
         var newIndex = cycleBy(index, delta, 0, candidates.length - 1);
@@ -8100,8 +8112,8 @@
       });
     };
     var trace = function (items, byItem, byMenu, finish) {
-      return get(byMenu, finish).bind(function (triggerItem) {
-        return get(items, triggerItem).bind(function (triggerMenu) {
+      return get$1(byMenu, finish).bind(function (triggerItem) {
+        return get$1(items, triggerItem).bind(function (triggerMenu) {
           var rest = trace(items, byItem, byMenu, triggerMenu);
           return Optional.some([triggerMenu].concat(rest));
         });
@@ -8120,7 +8132,7 @@
         return [submenu].concat(trace(items, byItem, byMenu, submenu));
       });
       return map$2(items, function (menu) {
-        return get(menuPaths, menu).getOr([menu]);
+        return get$1(menuPaths, menu).getOr([menu]);
       });
     };
 
@@ -8176,7 +8188,7 @@
         var extraPath = filter(lookupItem(itemValue).toArray(), function (menuValue) {
           return getPreparedMenu(menuValue).isSome();
         });
-        return get(paths.get(), itemValue).bind(function (path) {
+        return get$1(paths.get(), itemValue).bind(function (path) {
           var revPath = reverse(extraPath.concat(path));
           var triggers = bind(revPath, function (menuValue, menuIndex) {
             return getTriggerData(menuValue, getItemByValue, revPath.slice(0, menuIndex + 1)).fold(function () {
@@ -8189,27 +8201,27 @@
         });
       };
       var expand = function (itemValue) {
-        return get(expansions.get(), itemValue).map(function (menu) {
-          var current = get(paths.get(), itemValue).getOr([]);
+        return get$1(expansions.get(), itemValue).map(function (menu) {
+          var current = get$1(paths.get(), itemValue).getOr([]);
           return [menu].concat(current);
         });
       };
       var collapse = function (itemValue) {
-        return get(paths.get(), itemValue).bind(function (path) {
+        return get$1(paths.get(), itemValue).bind(function (path) {
           return path.length > 1 ? Optional.some(path.slice(1)) : Optional.none();
         });
       };
       var refresh = function (itemValue) {
-        return get(paths.get(), itemValue);
+        return get$1(paths.get(), itemValue);
       };
       var getPreparedMenu = function (menuValue) {
         return lookupMenu(menuValue).bind(extractPreparedMenu);
       };
       var lookupMenu = function (menuValue) {
-        return get(menus.get(), menuValue);
+        return get$1(menus.get(), menuValue);
       };
       var lookupItem = function (itemValue) {
-        return get(expansions.get(), itemValue);
+        return get$1(expansions.get(), itemValue);
       };
       var otherMenus = function (path) {
         var menuValues = directory.get();
@@ -8324,7 +8336,7 @@
           var r = {};
           var items = descendants(container.element, '.' + detail.markers.item);
           var parentItems = filter(items, function (i) {
-            return get$2(i, 'aria-haspopup') === 'true';
+            return get$3(i, 'aria-haspopup') === 'true';
           });
           each(parentItems, function (i) {
             container.getSystem().getByDom(i).each(function (itemComp) {
@@ -8500,7 +8512,7 @@
       };
       var extractMenuFromContainer = function (container) {
         return Optional.from(container.components()[0]).filter(function (comp) {
-          return get$2(comp.element, 'role') === 'menu';
+          return get$3(comp.element, 'role') === 'menu';
         });
       };
       var repositionMenus = function (container) {
@@ -8917,8 +8929,8 @@
       var events = events$7(detail.action);
       var tag = detail.dom.tag;
       var lookupAttr = function (attr) {
-        return get(detail.dom, 'attributes').bind(function (attrs) {
-          return get(attrs, attr);
+        return get$1(detail.dom, 'attributes').bind(function (attrs) {
+          return get$1(attrs, attr);
         });
       };
       var getModAttributes = function () {
@@ -8988,7 +9000,7 @@
     var defaultIcon = function (icons) {
       return Optional.from(icons()['temporary-placeholder']).getOr('!not found!');
     };
-    var get$d = function (name, icons) {
+    var get$e = function (name, icons) {
       return Optional.from(icons()[name.toLowerCase()]).getOrThunk(function () {
         return defaultIcon(icons);
       });
@@ -9107,7 +9119,7 @@
             dom: {
               tag: 'div',
               classes: ['tox-icon'],
-              innerHtml: get$d('close', detail.iconProvider),
+              innerHtml: get$e('close', detail.iconProvider),
               attributes: { 'aria-label': detail.translationProvider('Close') }
             }
           }],
@@ -9527,7 +9539,7 @@
 
     var global$4 = tinymce.util.Tools.resolve('tinymce.util.Promise');
 
-    var point$2 = function (container, offset) {
+    var point$1 = function (container, offset) {
       return {
         container: container,
         offset: offset
@@ -9542,10 +9554,10 @@
     };
     var toLast = function (node) {
       if (isText$1(node)) {
-        return point$2(node, node.data.length);
+        return point$1(node, node.data.length);
       } else {
         var children = node.childNodes;
-        return children.length > 0 ? toLast(children[children.length - 1]) : point$2(node, children.length);
+        return children.length > 0 ? toLast(children[children.length - 1]) : point$1(node, children.length);
       }
     };
     var toLeaf = function (node, offset) {
@@ -9555,7 +9567,7 @@
       } else if (children.length > 0 && isElement$1(node) && children.length === offset) {
         return toLast(children[children.length - 1]);
       } else {
-        return point$2(node, offset);
+        return point$1(node, offset);
       }
     };
 
@@ -9607,7 +9619,8 @@
             matchText: context.text,
             items: results,
             columns: ac.columns,
-            onAction: ac.onAction
+            onAction: ac.onAction,
+            highlightOn: ac.highlightOn
           };
         });
       }));
@@ -9642,7 +9655,8 @@
       defaultedNumber('maxResults', 10),
       optionFunction('matches'),
       strictFunction('fetch'),
-      strictFunction('onAction')
+      strictFunction('onAction'),
+      defaultedArrayOf('highlightOn', [], string)
     ]);
     var createSeparatorItem = function (spec) {
       return asRaw('Autocompleter.Separator', separatorMenuItemSchema, spec);
@@ -9793,8 +9807,16 @@
     var checkmarkClass = 'tox-collection__item-checkmark';
     var activeClass = 'tox-collection__item--active';
     var iconClassRtl = 'tox-collection__item-icon-rtl';
+    var containerClass = 'tox-collection__item-container';
+    var containerColumnClass = 'tox-collection__item-container--column';
+    var containerRowClass = 'tox-collection__item-container--row';
+    var containerAlignRightClass = 'tox-collection__item-container--align-right';
+    var containerAlignLeftClass = 'tox-collection__item-container--align-left';
+    var containerValignTopClass = 'tox-collection__item-container--valign-top';
+    var containerValignMiddleClass = 'tox-collection__item-container--valign-middle';
+    var containerValignBottomClass = 'tox-collection__item-container--valign-bottom';
     var classForPreset = function (presets) {
-      return get(presetClasses, presets).getOr(navClass);
+      return get$1(presetClasses, presets).getOr(navClass);
     };
 
     var forMenu = function (presets) {
@@ -10050,6 +10072,37 @@
       };
     };
 
+    var cardImageFields = [
+      strictString('type'),
+      strictString('src'),
+      optionString('alt'),
+      defaultedArrayOf('classes', [], string)
+    ];
+    var cardImageSchema = objOf(cardImageFields);
+
+    var cardTextFields = [
+      strictString('type'),
+      strictString('text'),
+      optionString('name'),
+      defaultedArrayOf('classes', ['tox-collection__item-label'], string)
+    ];
+    var cardTextSchema = objOf(cardTextFields);
+
+    var itemSchema$2 = valueThunkOf(function () {
+      return chooseProcessor('type', {
+        cardimage: cardImageSchema,
+        cardtext: cardTextSchema,
+        cardcontainer: cardContainerSchema
+      });
+    });
+    var cardContainerSchema = objOf([
+      strictString('type'),
+      defaultedString('direction', 'horizontal'),
+      defaultedString('align', 'left'),
+      defaultedString('valign', 'middle'),
+      strictArrayOf('items', itemSchema$2)
+    ]);
+
     var commonMenuItemFields = [
       defaultedBoolean('disabled', false),
       optionString('text'),
@@ -10059,6 +10112,19 @@
       }), anyValue$1()),
       defaulted$1('meta', {})
     ];
+
+    var cardMenuItemSchema = objOf([
+      strictString('type'),
+      optionString('label'),
+      strictArrayOf('items', itemSchema$2),
+      defaultedFunction('onSetup', function () {
+        return noop;
+      }),
+      defaultedFunction('onAction', noop)
+    ].concat(commonMenuItemFields));
+    var createCardMenuItem = function (spec) {
+      return asRaw('cardmenuitem', cardMenuItemSchema, spec);
+    };
 
     var choiceMenuItemSchema = objOf([
       strictString('type'),
@@ -10369,7 +10435,7 @@
       remove$1(component.element, 'disabled');
     };
     var ariaIsDisabled = function (component) {
-      return get$2(component.element, 'aria-disabled') === 'true';
+      return get$3(component.element, 'aria-disabled') === 'true';
     };
     var ariaDisable = function (component) {
       set$1(component.element, 'aria-disabled', 'true');
@@ -10745,7 +10811,7 @@
             onControlDetached(spec, editorOffCell)
           ]),
           DisablingConfigs.item(function () {
-            return spec.disabled || providersbackstage.isReadOnly();
+            return spec.disabled || providersbackstage.isDisabled();
           }),
           receivingConfig(),
           Replacing.config({})
@@ -10800,11 +10866,11 @@
         components: [text(global$6.translate(text$1))]
       };
     };
-    var renderHtml = function (html) {
+    var renderHtml = function (html, classes) {
       return {
         dom: {
           tag: 'div',
-          classes: [textClass],
+          classes: classes,
           innerHtml: html
         }
       };
@@ -10838,7 +10904,7 @@
         dom: {
           tag: 'div',
           classes: [checkmarkClass],
-          innerHtml: get$d('checkmark', icons)
+          innerHtml: get$e('checkmark', icons)
         }
       };
     };
@@ -10847,7 +10913,7 @@
         dom: {
           tag: 'div',
           classes: [caretClass],
-          innerHtml: get$d('chevron-right', icons)
+          innerHtml: get$e('chevron-right', icons)
         }
       };
     };
@@ -10856,7 +10922,45 @@
         dom: {
           tag: 'div',
           classes: [caretClass],
-          innerHtml: get$d('chevron-down', icons)
+          innerHtml: get$e('chevron-down', icons)
+        }
+      };
+    };
+    var renderContainer = function (container, components) {
+      var directionClass = container.direction === 'vertical' ? containerColumnClass : containerRowClass;
+      var alignClass = container.align === 'left' ? containerAlignLeftClass : containerAlignRightClass;
+      var getValignClass = function () {
+        switch (container.valign) {
+        case 'top':
+          return containerValignTopClass;
+        case 'middle':
+          return containerValignMiddleClass;
+        case 'bottom':
+          return containerValignBottomClass;
+        }
+      };
+      return {
+        dom: {
+          tag: 'div',
+          classes: [
+            containerClass,
+            directionClass,
+            alignClass,
+            getValignClass()
+          ]
+        },
+        components: components
+      };
+    };
+    var renderImage = function (src, classes, alt) {
+      return {
+        dom: {
+          tag: 'img',
+          classes: classes,
+          attributes: {
+            src: src,
+            alt: alt.getOr('')
+          }
         }
       };
     };
@@ -10898,26 +11002,28 @@
         optComponents: []
       };
     };
-    var renderNormalItemStructure = function (info, icon, renderIcons, textRender, rtlClass) {
-      var leftIcon = renderIcons ? icon.or(Optional.some('')).map(renderIcon) : Optional.none();
-      var checkmark = info.checkMark;
-      var domTitle = info.ariaLabel.map(function (label) {
+    var renderItemDomStructure = function (rtlClass, ariaLabel) {
+      var domTitle = ariaLabel.map(function (label) {
         return { attributes: { title: global$6.translate(label) } };
       }).getOr({});
-      var dom = __assign({
+      return __assign({
         tag: 'div',
         classes: [
           navClass,
           selectableClass
         ].concat(rtlClass ? [iconClassRtl] : [])
       }, domTitle);
+    };
+    var renderNormalItemStructure = function (info, icon, renderIcons, textRender, rtlClass) {
+      var leftIcon = renderIcons ? icon.or(Optional.some('')).map(renderIcon) : Optional.none();
+      var checkmark = info.checkMark;
       var content = info.htmlContent.fold(function () {
         return info.textContent.map(textRender);
       }, function (html) {
-        return Optional.some(renderHtml(html));
+        return Optional.some(renderHtml(html, [textClass]));
       });
       var menuItem = {
-        dom: dom,
+        dom: renderItemDomStructure(rtlClass, info.ariaLabel),
         optComponents: [
           leftIcon,
           content,
@@ -10969,7 +11075,7 @@
     };
 
     var tooltipBehaviour = function (meta, sharedBackstage) {
-      return get(meta, 'tooltipWorker').map(function (tooltipWorker) {
+      return get$1(meta, 'tooltipWorker').map(function (tooltipWorker) {
         return [Tooltipping.config({
             lazySink: sharedBackstage.getSink,
             tooltipDom: {
@@ -12058,12 +12164,71 @@
       });
     };
 
+    var render = function (items, extras) {
+      return map(items, function (item) {
+        switch (item.type) {
+        case 'cardcontainer':
+          return renderContainer(item, render(item.items, extras));
+        case 'cardimage':
+          return renderImage(item.src, item.classes, item.alt);
+        case 'cardtext':
+          var shouldHighlight = item.name.exists(function (name) {
+            return contains(extras.cardText.highlightOn, name);
+          });
+          var matchText = shouldHighlight ? Optional.from(extras.cardText.matchText).getOr('') : '';
+          return renderHtml(replaceText(item.text, matchText), item.classes);
+        }
+      });
+    };
+    var renderCardMenuItem = function (spec, itemResponse, sharedBackstage, extras) {
+      var getApi = function (component) {
+        return {
+          isDisabled: function () {
+            return Disabling.isDisabled(component);
+          },
+          setDisabled: function (state) {
+            Disabling.set(component, state);
+            each(descendants(component.element, '*'), function (elm) {
+              component.getSystem().getByDom(elm).each(function (comp) {
+                if (comp.hasConfigured(Disabling)) {
+                  Disabling.set(comp, state);
+                }
+              });
+            });
+          }
+        };
+      };
+      var structure = {
+        dom: renderItemDomStructure(false, spec.label),
+        optComponents: [Optional.some({
+            dom: {
+              tag: 'div',
+              classes: [
+                containerClass,
+                containerRowClass
+              ]
+            },
+            components: render(spec.items, extras)
+          })]
+      };
+      return renderCommonItem({
+        data: buildData(__assign({ text: Optional.none() }, spec)),
+        disabled: spec.disabled,
+        getApi: getApi,
+        onAction: spec.onAction,
+        onSetup: spec.onSetup,
+        triggersSubmenu: false,
+        itemBehaviours: Optional.from(extras.itemBehaviours).getOr([])
+      }, structure, itemResponse, sharedBackstage.providers);
+    };
+
     var autocomplete = renderAutocompleteItem;
     var separator = renderSeparatorItem;
     var normal = renderNormalItem;
     var nested = renderNestedItem;
     var toggle$1 = renderToggleMenuItem;
     var fancy = renderFancyMenuItem;
+    var card = renderCardMenuItem;
 
     var FocusMode;
     (function (FocusMode) {
@@ -12105,15 +12270,32 @@
         }
       }
     };
-    var createAutocompleteItems = function (items, matchText, onItemValueHandler, columns, itemResponse, sharedBackstage) {
+    var createAutocompleteItems = function (items, matchText, onItemValueHandler, columns, itemResponse, sharedBackstage, highlightOn) {
       var renderText = columns === 1;
       var renderIcons = !renderText || menuHasIcons(items);
       return cat(map(items, function (item) {
-        if (item.type === 'separator') {
+        switch (item.type) {
+        case 'separator':
           return createSeparatorItem(item).fold(handleError, function (d) {
             return Optional.some(separator(d));
           });
-        } else {
+        case 'cardmenuitem':
+          return createCardMenuItem(item).fold(handleError, function (d) {
+            return Optional.some(card(__assign(__assign({}, d), {
+              onAction: function (api) {
+                d.onAction(api);
+                onItemValueHandler(d.value, d.meta);
+              }
+            }), itemResponse, sharedBackstage, {
+              itemBehaviours: tooltipBehaviour(d.meta, sharedBackstage),
+              cardText: {
+                matchText: matchText,
+                highlightOn: highlightOn
+              }
+            }));
+          });
+        case 'autocompleteitem':
+        default:
           return createAutocompleterItem(item).fold(handleError, function (d) {
             return Optional.some(autocomplete(d, matchText, renderText, 'normal', onItemValueHandler, itemResponse, sharedBackstage, renderIcons));
           });
@@ -12231,7 +12413,7 @@
               match.onAction(autocompleterApi, range, itemValue, itemMeta);
               processingAction.set(false);
             });
-          }, columns, ItemResponse$1.BUBBLE_TO_SANDBOX, sharedBackstage);
+          }, columns, ItemResponse$1.BUBBLE_TO_SANDBOX, sharedBackstage, match.highlightOn);
         });
       };
       var commenceIfNecessary = function (context) {
@@ -12302,7 +12484,9 @@
           return InlineView.getContent(autocompleter);
         }
       };
-      AutocompleterEditorEvents.setup(autocompleterUiApi, editor);
+      if (editor.hasPlugin('rtc') === false) {
+        AutocompleterEditorEvents.setup(autocompleterUiApi, editor);
+      }
     };
     var Autocompleter = { register: register$2 };
 
@@ -12418,7 +12602,7 @@
         }
       ]);
       var fireIfReady = function (event, type) {
-        return get(handlers, type).bind(function (handler) {
+        return get$1(handlers, type).bind(function (handler) {
           return handler(event);
         });
       };
@@ -12550,7 +12734,7 @@
     };
 
     var derive$2 = function (rawEvent, rawTarget) {
-      var source = get(rawEvent, 'target').getOr(rawTarget);
+      var source = get$1(rawEvent, 'target').getOr(rawTarget);
       return Cell(source);
     };
 
@@ -12677,21 +12861,21 @@
           return Optional.none();
         }, function (id) {
           return handlers.bind(function (h) {
-            return get(h, id);
+            return get$1(h, id);
           }).map(function (descHandler) {
             return eventHandler(elem, descHandler);
           });
         });
       };
       var filterByType = function (type) {
-        return get(registry, type).map(function (handlers) {
+        return get$1(registry, type).map(function (handlers) {
           return mapToArray(handlers, function (f, id) {
             return broadcastHandler(id, f);
           });
         }).getOr([]);
       };
       var find = function (isAboveRoot, type, target) {
-        var handlers = get(registry, type);
+        var handlers = get$1(registry, type);
         return closest(target, function (elem) {
           return findHandler(handlers, elem);
         }, isAboveRoot);
@@ -12752,7 +12936,7 @@
         return events.find(isAboveRoot, type, target);
       };
       var getById = function (id) {
-        return get(components, id);
+        return get$1(components, id);
       };
       return {
         find: find,
@@ -12772,7 +12956,7 @@
           attributes: __assign({ role: 'presentation' }, attributes)
         }, domWithoutAttributes),
         components: detail.components,
-        behaviours: get$c(detail.containerBehaviours),
+        behaviours: get$d(detail.containerBehaviours),
         events: detail.events,
         domModification: detail.domModification,
         eventOrder: detail.eventOrder
@@ -13088,6 +13272,8 @@
       active: ActiveTabstopping
     });
 
+    var global$a = tinymce.util.Tools.resolve('tinymce.html.Entities');
+
     var renderFormFieldWith = function (pLabel, pField, extraClasses, extraBehaviours) {
       var spec = renderFormFieldSpecWith(pLabel, pField, extraClasses, extraBehaviours);
       return FormField.sketch(spec);
@@ -13139,15 +13325,9 @@
       var runOnItem = function (f) {
         return function (comp, se) {
           closest$3(se.event.target, '[data-collection-item-value]').each(function (target) {
-            f(comp, se, target, get$2(target, 'data-collection-item-value'));
+            f(comp, se, target, get$3(target, 'data-collection-item-value'));
           });
         };
-      };
-      var escapeAttribute = function (ch) {
-        if (ch === '"') {
-          return '&quot;';
-        }
-        return ch;
       };
       var setContents = function (comp, items) {
         var htmlLines = map(items, function (item) {
@@ -13162,8 +13342,8 @@
           var ariaLabel = itemText.replace(/\_| \- |\-/g, function (match) {
             return mapItemName[match];
           });
-          var readonlyClass = providersBackstage.isReadOnly() ? ' tox-collection__item--state-disabled' : '';
-          return '<div class="tox-collection__item' + readonlyClass + '" tabindex="-1" data-collection-item-value="' + escapeAttribute(item.value) + '" title="' + ariaLabel + '" aria-label="' + ariaLabel + '">' + iconContent + textContent + '</div>';
+          var disabledClass = providersBackstage.isDisabled() ? ' tox-collection__item--state-disabled' : '';
+          return '<div class="tox-collection__item' + disabledClass + '" tabindex="-1" data-collection-item-value="' + global$a.encodeAllRaw(item.value) + '" title="' + ariaLabel + '" aria-label="' + ariaLabel + '">' + iconContent + textContent + '</div>';
         });
         var chunks = spec.columns !== 'auto' && spec.columns > 1 ? chunk(htmlLines, spec.columns) : [htmlLines];
         var html = map(chunks, function (ch) {
@@ -13173,7 +13353,7 @@
       };
       var onClick = runOnItem(function (comp, se, tgt, itemValue) {
         se.stop();
-        if (!providersBackstage.isReadOnly()) {
+        if (!providersBackstage.isDisabled()) {
           emitWith(comp, formActionEvent, {
             name: spec.name,
             value: itemValue
@@ -13216,7 +13396,7 @@
         factory: { sketch: identity },
         behaviours: derive$1([
           Disabling.config({
-            disabled: providersBackstage.isReadOnly,
+            disabled: providersBackstage.isDisabled,
             onDisabled: function (comp) {
               iterCollectionItems(comp, function (childElm) {
                 add$2(childElm, 'tox-collection__item--state-disabled');
@@ -13281,7 +13461,7 @@
       return derive$1([Focusing.config({
           onFocus: !detail.selectOnFocus ? noop : function (component) {
             var input = component.element;
-            var value = get$5(input);
+            var value = get$6(input);
             input.dom.setSelectionRange(0, value.length);
           }
         })]);
@@ -13292,10 +13472,10 @@
             return { initialValue: data };
           }).getOr({})), {
             getValue: function (input) {
-              return get$5(input.element);
+              return get$6(input.element);
             },
             setValue: function (input, data) {
-              var current = get$5(input.element);
+              var current = get$6(input.element);
               if (current !== data) {
                 set$3(input.element, data);
               }
@@ -14084,8 +14264,8 @@
         if (!available) {
           throw new Error('Cannot find coupled component: ' + name + '. Known coupled components: ' + JSON.stringify(available, null, 2));
         } else {
-          return get(coupled, name).getOrThunk(function () {
-            var builder = get(coupleConfig.others, name).getOrDie('No information found for coupled component: ' + name);
+          return get$1(coupled, name).getOrThunk(function () {
+            var builder = get$1(coupleConfig.others, name).getOrDie('No information found for coupled component: ' + name);
             var spec = builder(component);
             var built = component.getSystem().build(spec);
             coupled[name] = built;
@@ -14223,7 +14403,7 @@
     };
     var matchWidth = function (hotspot, container, useMinWidth) {
       var menu = Composing.getCurrent(container).getOr(container);
-      var buttonWidth = get$7(hotspot.element);
+      var buttonWidth = get$8(hotspot.element);
       if (useMinWidth) {
         set$2(menu.element, 'min-width', buttonWidth + 'px');
       } else {
@@ -14361,8 +14541,8 @@
     var factory$6 = function (detail, components, _spec, externals) {
       var _a;
       var lookupAttr = function (attr) {
-        return get(detail.dom, 'attributes').bind(function (attrs) {
-          return get(attrs, attr);
+        return get$1(detail.dom, 'attributes').bind(function (attrs) {
+          return get$1(attrs, attr);
         });
       };
       var switchToMenu = function (sandbox) {
@@ -14529,7 +14709,7 @@
         components: spec.components,
         toggleClass: 'mce-active',
         dropdownBehaviours: derive$1([
-          DisablingConfigs.button(sharedBackstage.providers.isReadOnly),
+          DisablingConfigs.button(sharedBackstage.providers.isDisabled),
           receivingConfig(),
           Unselecting.config({}),
           Tabstopping.config({})
@@ -14564,7 +14744,7 @@
           });
         },
         inputBehaviours: derive$1([
-          Disabling.config({ disabled: sharedBackstage.providers.isReadOnly }),
+          Disabling.config({ disabled: sharedBackstage.providers.isDisabled }),
           receivingConfig(),
           Tabstopping.config({}),
           Invalidating.config({
@@ -15198,7 +15378,7 @@
     var setPositionFromValue = function (slider, thumb, detail, edges) {
       var value = currentValue(detail);
       var pos = findPositionOfValue(slider, edges.getSpectrum(slider), value.x, edges.getLeftEdge(slider), edges.getRightEdge(slider), detail);
-      var thumbRadius = get$7(thumb.element) / 2;
+      var thumbRadius = get$8(thumb.element) / 2;
       set$2(thumb.element, 'left', pos - thumbRadius + 'px');
     };
     var onLeft = handleMovement(-1);
@@ -15321,7 +15501,7 @@
     var setPositionFromValue$1 = function (slider, thumb, detail, edges) {
       var value = currentValue(detail);
       var pos = findPositionOfValue$1(slider, edges.getSpectrum(slider), value.y, edges.getTopEdge(slider), edges.getBottomEdge(slider), detail);
-      var thumbRadius = get$6(thumb.element) / 2;
+      var thumbRadius = get$7(thumb.element) / 2;
       set$2(thumb.element, 'top', pos - thumbRadius + 'px');
     };
     var onLeft$1 = Optional.none;
@@ -15402,8 +15582,8 @@
       var value = currentValue(detail);
       var xPos = findPositionOfValue(slider, edges.getSpectrum(slider), value.x, edges.getLeftEdge(slider), edges.getRightEdge(slider), detail);
       var yPos = findPositionOfValue$1(slider, edges.getSpectrum(slider), value.y, edges.getTopEdge(slider), edges.getBottomEdge(slider), detail);
-      var thumbXRadius = get$7(thumb.element) / 2;
-      var thumbYRadius = get$6(thumb.element) / 2;
+      var thumbXRadius = get$8(thumb.element) / 2;
+      var thumbYRadius = get$7(thumb.element) / 2;
       set$2(thumb.element, 'left', xPos - thumbXRadius + 'px');
       set$2(thumb.element, 'top', yPos - thumbYRadius + 'px');
     };
@@ -16253,7 +16433,7 @@
       };
     };
 
-    var global$a = tinymce.util.Tools.resolve('tinymce.Resource');
+    var global$b = tinymce.util.Tools.resolve('tinymce.Resource');
 
     var isOldCustomEditor = function (spec) {
       return Object.prototype.hasOwnProperty.call(spec, 'init');
@@ -16270,7 +16450,7 @@
         behaviours: derive$1([
           config('custom-editor-events', [runOnAttached(function (component) {
               memReplaced.getOpt(component).each(function (ta) {
-                (isOldCustomEditor(spec) ? spec.init(ta.element.dom) : global$a.load(spec.scriptId, spec.scriptUrl).then(function (init) {
+                (isOldCustomEditor(spec) ? spec.init(ta.element.dom) : global$b.load(spec.scriptId, spec.scriptUrl).then(function (init) {
                   return init(ta.element.dom, spec.settings);
                 })).then(function (ea) {
                   initialValue.get().each(function (cvalue) {
@@ -16305,6 +16485,8 @@
         components: [memReplaced.asSpec()]
       };
     };
+
+    var global$c = tinymce.util.Tools.resolve('tinymce.util.Tools');
 
     var processors = objOf([
       defaulted$1('preprocess', identity),
@@ -16347,10 +16529,10 @@
       });
     };
     var domValue = function (optInitialValue) {
-      return withElement(optInitialValue, get$5, set$3);
+      return withElement(optInitialValue, get$6, set$3);
     };
     var domHtml = function (optInitialValue) {
-      return withElement(optInitialValue, get$1, set);
+      return withElement(optInitialValue, get$2, set);
     };
     var memory$1 = function (initialValue) {
       return Representing.config({
@@ -16369,12 +16551,15 @@
       memory: memory$1
     };
 
-    var extensionsAccepted = '.jpg,.jpeg,.png,.gif';
-    var filterByExtension = function (files) {
-      var re = new RegExp('(' + extensionsAccepted.split(/\s*,\s*/).join('|') + ')$', 'i');
-      return filter(from$1(files), function (file) {
-        return re.test(file.name);
-      });
+    var defaultImageFileTypes = 'jpeg,jpg,jpe,jfi,jif,jfif,png,gif,bmp,webp';
+    var filterByExtension = function (files, providersBackstage) {
+      var allowedImageFileTypes = global$c.explode(providersBackstage.getSetting('images_file_types', defaultImageFileTypes, 'string'));
+      var isFileInAllowedTypes = function (file) {
+        return exists(allowedImageFileTypes, function (type) {
+          return endsWith(file.name, '.' + type);
+        });
+      };
+      return filter(from$1(files), isFileInAllowedTypes);
     };
     var renderDropZone = function (spec, providersBackstage) {
       var stopper = function (_, se) {
@@ -16398,7 +16583,7 @@
         handleFiles(component, input.files);
       };
       var handleFiles = function (component, files) {
-        Representing.setValue(component, filterByExtension(files));
+        Representing.setValue(component, filterByExtension(files, providersBackstage));
         emitWith(component, formChangeEvent, { name: spec.name });
       };
       var memInput = record({
@@ -16477,7 +16662,7 @@
                   },
                   buttonBehaviours: derive$1([
                     Tabstopping.config({}),
-                    DisablingConfigs.button(providersBackstage.isReadOnly),
+                    DisablingConfigs.button(providersBackstage.isDisabled),
                     receivingConfig()
                   ])
                 })
@@ -17531,10 +17716,10 @@
       }, behaviours);
     };
     var renderIconFromPack = function (iconName, iconsProvider) {
-      return renderIcon$1(get$d(iconName, iconsProvider), {});
+      return renderIcon$1(get$e(iconName, iconsProvider), {});
     };
     var renderReplacableIconFromPack = function (iconName, iconsProvider) {
-      return renderIcon$1(get$d(iconName, iconsProvider), { behaviours: derive$1([Replacing.config({})]) });
+      return renderIcon$1(get$e(iconName, iconsProvider), { behaviours: derive$1([Replacing.config({})]) });
     };
     var renderLabel$1 = function (text, prefix, providersBackstage) {
       return {
@@ -17617,7 +17802,7 @@
             dom: {
               tag: 'div',
               classes: [prefix + '__select-chevron'],
-              innerHtml: get$d('chevron-down', sharedBackstage.providers.icons)
+              innerHtml: get$e('chevron-down', sharedBackstage.providers.icons)
             }
           })
         ]),
@@ -17625,7 +17810,7 @@
         useMinWidth: true,
         dropdownBehaviours: derive$1(__spreadArrays(spec.dropdownBehaviours, [
           DisablingConfigs.button(function () {
-            return spec.disabled || sharedBackstage.providers.isReadOnly();
+            return spec.disabled || sharedBackstage.providers.isDisabled();
           }),
           receivingConfig(),
           Unselecting.config({}),
@@ -17727,7 +17912,7 @@
       if (isSeparator(item)) {
         return item;
       } else {
-        var itemValue = get(item, 'value').getOrThunk(function () {
+        var itemValue = get$1(item, 'value').getOrThunk(function () {
           return generate$1('generated-menu-item');
         });
         return deepMerge({ value: itemValue }, item);
@@ -17858,7 +18043,7 @@
       var common = __assign({
         buttonBehaviours: derive$1([
           DisablingConfigs.button(function () {
-            return spec.disabled || providersBackstage.isReadOnly();
+            return spec.disabled || providersBackstage.isDisabled();
           }),
           receivingConfig(),
           Tabstopping.config({}),
@@ -18221,7 +18406,7 @@
                 'tox-icon',
                 'tox-lock-icon__lock'
               ],
-              innerHtml: get$d('lock', providersBackstage.icons)
+              innerHtml: get$e('lock', providersBackstage.icons)
             }
           },
           {
@@ -18231,14 +18416,14 @@
                 'tox-icon',
                 'tox-lock-icon__unlock'
               ],
-              innerHtml: get$d('unlock', providersBackstage.icons)
+              innerHtml: get$e('unlock', providersBackstage.icons)
             }
           }
         ],
         buttonBehaviours: derive$1([
           Disabling.config({
             disabled: function () {
-              return spec.disabled || providersBackstage.isReadOnly();
+              return spec.disabled || providersBackstage.isDisabled();
             }
           }),
           receivingConfig(),
@@ -18261,7 +18446,7 @@
           inputBehaviours: derive$1([
             Disabling.config({
               disabled: function () {
-                return spec.disabled || providersBackstage.isReadOnly();
+                return spec.disabled || providersBackstage.isDisabled();
               }
             }),
             receivingConfig(),
@@ -18328,7 +18513,7 @@
         coupledFieldBehaviours: derive$1([
           Disabling.config({
             disabled: function () {
-              return spec.disabled || providersBackstage.isReadOnly();
+              return spec.disabled || providersBackstage.isDisabled();
             },
             onDisabled: function (comp) {
               FormCoupledInputs.getField1(comp).bind(FormField.getField).each(Disabling.disable);
@@ -18788,15 +18973,13 @@
       };
     };
 
-    var global$b = tinymce.util.Tools.resolve('tinymce.geom.Rect');
+    var global$d = tinymce.util.Tools.resolve('tinymce.geom.Rect');
 
-    var global$c = tinymce.util.Tools.resolve('tinymce.dom.DomQuery');
+    var global$e = tinymce.util.Tools.resolve('tinymce.dom.DomQuery');
 
-    var global$d = tinymce.util.Tools.resolve('tinymce.util.Observable');
+    var global$f = tinymce.util.Tools.resolve('tinymce.util.Observable');
 
-    var global$e = tinymce.util.Tools.resolve('tinymce.util.Tools');
-
-    var global$f = tinymce.util.Tools.resolve('tinymce.util.VK');
+    var global$g = tinymce.util.Tools.resolve('tinymce.util.VK');
 
     function getDocumentSize(doc) {
       var max = Math.max;
@@ -18842,7 +19025,7 @@
         } else {
           cursor = handleElm.runtimeStyle.cursor;
         }
-        $eventOverlay = global$c('<div></div>').css({
+        $eventOverlay = global$e('<div></div>').css({
           position: 'absolute',
           top: 0,
           left: 0,
@@ -18852,7 +19035,7 @@
           opacity: 0.0001,
           cursor: cursor
         }).appendTo(doc.body);
-        global$c(doc).on('mousemove touchmove', drag).on('mouseup touchend', stop);
+        global$e(doc).on('mousemove touchmove', drag).on('mouseup touchend', stop);
         settings.start(e);
       };
       var drag = function (e) {
@@ -18867,16 +19050,16 @@
       };
       var stop = function (e) {
         updateWithTouchData(e);
-        global$c(doc).off('mousemove touchmove', drag).off('mouseup touchend', stop);
+        global$e(doc).off('mousemove touchmove', drag).off('mouseup touchend', stop);
         $eventOverlay.remove();
         if (settings.stop) {
           settings.stop(e);
         }
       };
       this.destroy = function () {
-        global$c(handleElement).off();
+        global$e(handleElement).off();
       };
-      global$c(handleElement).on('mousedown touchstart', start);
+      global$e(handleElement).on('mousedown touchstart', start);
     }
 
     var count = 0;
@@ -18977,7 +19160,7 @@
         if (h < 20) {
           h = 20;
         }
-        rect = currentRect = global$b.clamp({
+        rect = currentRect = global$d.clamp({
           x: x,
           y: y,
           w: w,
@@ -19001,21 +19184,21 @@
             }
           });
         }
-        global$c('<div id="' + id + '" class="' + prefix + 'croprect-container"' + ' role="grid" aria-dropeffect="execute">').appendTo(containerElm);
-        global$e.each(blockers, function (blocker) {
-          global$c('#' + id, containerElm).append('<div id="' + id + '-' + blocker + '"class="' + prefix + 'croprect-block" style="display: none" data-mce-bogus="all">');
+        global$e('<div id="' + id + '" class="' + prefix + 'croprect-container"' + ' role="grid" aria-dropeffect="execute">').appendTo(containerElm);
+        global$c.each(blockers, function (blocker) {
+          global$e('#' + id, containerElm).append('<div id="' + id + '-' + blocker + '"class="' + prefix + 'croprect-block" style="display: none" data-mce-bogus="all">');
         });
-        global$e.each(handles, function (handle) {
-          global$c('#' + id, containerElm).append('<div id="' + id + '-' + handle.name + '" class="' + prefix + 'croprect-handle ' + prefix + 'croprect-handle-' + handle.name + '"' + 'style="display: none" data-mce-bogus="all" role="gridcell" tabindex="-1"' + ' aria-label="' + handle.label + '" aria-grabbed="false" title="' + handle.label + '">');
+        global$c.each(handles, function (handle) {
+          global$e('#' + id, containerElm).append('<div id="' + id + '-' + handle.name + '" class="' + prefix + 'croprect-handle ' + prefix + 'croprect-handle-' + handle.name + '"' + 'style="display: none" data-mce-bogus="all" role="gridcell" tabindex="-1"' + ' aria-label="' + handle.label + '" aria-grabbed="false" title="' + handle.label + '">');
         });
-        dragHelpers = global$e.map(handles, createDragHelper);
+        dragHelpers = global$c.map(handles, createDragHelper);
         repaint(currentRect);
-        global$c(containerElm).on('focusin focusout', function (e) {
-          global$c(e.target).attr('aria-grabbed', e.type === 'focus' ? 'true' : 'false');
+        global$e(containerElm).on('focusin focusout', function (e) {
+          global$e(e.target).attr('aria-grabbed', e.type === 'focus' ? 'true' : 'false');
         });
-        global$c(containerElm).on('keydown', function (e) {
+        global$e(containerElm).on('keydown', function (e) {
           var activeHandle;
-          global$e.each(handles, function (handle) {
+          global$c.each(handles, function (handle) {
             if (e.target.id === id + '-' + handle.name) {
               activeHandle = handle;
               return false;
@@ -19027,20 +19210,20 @@
             moveRect(activeHandle, startRect, deltaX, deltaY);
           }
           switch (e.keyCode) {
-          case global$f.LEFT:
+          case global$g.LEFT:
             moveAndBlock(e, activeHandle, currentRect, -10, 0);
             break;
-          case global$f.RIGHT:
+          case global$g.RIGHT:
             moveAndBlock(e, activeHandle, currentRect, 10, 0);
             break;
-          case global$f.UP:
+          case global$g.UP:
             moveAndBlock(e, activeHandle, currentRect, 0, -10);
             break;
-          case global$f.DOWN:
+          case global$g.DOWN:
             moveAndBlock(e, activeHandle, currentRect, 0, 10);
             break;
-          case global$f.ENTER:
-          case global$f.SPACEBAR:
+          case global$g.ENTER:
+          case global$g.SPACEBAR:
             e.preventDefault();
             action();
             break;
@@ -19048,15 +19231,15 @@
         });
       }
       function toggleVisibility(state) {
-        var selectors = global$e.map(handles, function (handle) {
+        var selectors = global$c.map(handles, function (handle) {
           return '#' + id + '-' + handle.name;
-        }).concat(global$e.map(blockers, function (blocker) {
+        }).concat(global$c.map(blockers, function (blocker) {
           return '#' + id + '-' + blocker;
         })).join(',');
         if (state) {
-          global$c(selectors, containerElm).show();
+          global$e(selectors, containerElm).show();
         } else {
-          global$c(selectors, containerElm).hide();
+          global$e(selectors, containerElm).hide();
         }
       }
       function repaint(rect) {
@@ -19067,15 +19250,15 @@
           if (rect.w < 0) {
             rect.w = 0;
           }
-          global$c('#' + id + '-' + name, containerElm).css({
+          global$e('#' + id + '-' + name, containerElm).css({
             left: rect.x,
             top: rect.y,
             width: rect.w,
             height: rect.h
           });
         }
-        global$e.each(handles, function (handle) {
-          global$c('#' + id + '-' + handle.name, containerElm).css({
+        global$c.each(handles, function (handle) {
+          global$e('#' + id + '-' + handle.name, containerElm).css({
             left: rect.w * handle.xMul + rect.x,
             top: rect.h * handle.yMul + rect.y
           });
@@ -19122,13 +19305,13 @@
         repaint(currentRect);
       }
       function destroy() {
-        global$e.each(dragHelpers, function (helper) {
+        global$c.each(dragHelpers, function (helper) {
           helper.destroy();
         });
         dragHelpers = [];
       }
       render();
-      var instance = global$e.extend({
+      var instance = global$c.extend({
         toggleVisibility: toggleVisibility,
         setClampRect: setClampRect,
         setRect: setRect,
@@ -19136,7 +19319,7 @@
         setInnerRect: setInnerRect,
         setViewPortRect: setViewPortRect,
         destroy: destroy
-      }, global$d);
+      }, global$f);
       return instance;
     };
     var CropRect = { create: create$7 };
@@ -19179,8 +19362,8 @@
       var repaintImg = function (anyInSystem, img) {
         memContainer.getOpt(anyInSystem).each(function (panel) {
           var zoom = zoomState.get();
-          var panelW = get$7(panel.element);
-          var panelH = get$6(panel.element);
+          var panelW = get$8(panel.element);
+          var panelH = get$7(panel.element);
           var width = img.dom.naturalWidth * zoom;
           var height = img.dom.naturalHeight * zoom;
           var left = Math.max(0, panelW / 2 - width / 2);
@@ -19221,8 +19404,8 @@
       };
       var zoomFit = function (anyInSystem, img) {
         memContainer.getOpt(anyInSystem).each(function (panel) {
-          var panelW = get$7(panel.element);
-          var panelH = get$6(panel.element);
+          var panelW = get$8(panel.element);
+          var panelH = get$7(panel.element);
           var width = img.dom.naturalWidth;
           var height = img.dom.naturalHeight;
           var zoom = Math.min(panelW / width, panelH / height);
@@ -19248,7 +19431,7 @@
               h: img.dom.naturalHeight
             };
             viewRectState.set(viewRect);
-            var rect = global$b.inflate(viewRect, -20, -20);
+            var rect = global$d.inflate(viewRect, -20, -20);
             rectState.set(rect);
             if (lastViewRect.w !== viewRect.w || lastViewRect.h !== viewRect.h) {
               zoomFit(panel, img);
@@ -19486,7 +19669,7 @@
         URL.revokeObjectURL(state.url);
       };
       var destroyStates = function (states) {
-        global$e.each(states, destroyState);
+        global$c.each(states, destroyState);
       };
       var destroyTempState = function () {
         tempState.get().each(destroyState);
@@ -19816,7 +19999,7 @@
                       return item.value;
                     }).getOr(''),
                     getValue: function (comp) {
-                      return get$2(comp.element, dataAttribute);
+                      return get$3(comp.element, dataAttribute);
                     },
                     setValue: function (comp, data) {
                       findItemByValue(spec.items, data).each(function (item) {
@@ -19896,7 +20079,7 @@
             store: __assign({
               mode: 'manual',
               getValue: function (select) {
-                return get$5(select.element);
+                return get$6(select.element);
               },
               setValue: function (select, newValue) {
                 var found = find(detail.options, function (opt) {
@@ -19944,7 +20127,7 @@
         selectBehaviours: derive$1([
           Disabling.config({
             disabled: function () {
-              return spec.disabled || providersBackstage.isReadOnly();
+              return spec.disabled || providersBackstage.isDisabled();
             }
           }),
           Tabstopping.config({}),
@@ -19957,7 +20140,7 @@
         dom: {
           tag: 'div',
           classes: ['tox-selectfield__icon-js'],
-          innerHtml: get$d('chevron-down', providersBackstage.icons)
+          innerHtml: get$e('chevron-down', providersBackstage.icons)
         }
       });
       var selectWrap = {
@@ -19982,7 +20165,7 @@
         fieldBehaviours: derive$1([
           Disabling.config({
             disabled: function () {
-              return spec.disabled || providersBackstage.isReadOnly();
+              return spec.disabled || providersBackstage.isDisabled();
             },
             onDisabled: function (comp) {
               FormField.getField(comp).each(Disabling.disable);
@@ -20057,7 +20240,7 @@
       var baseInputBehaviours = [
         Disabling.config({
           disabled: function () {
-            return spec.disabled || providersBackstage.isReadOnly();
+            return spec.disabled || providersBackstage.isDisabled();
           }
         }),
         receivingConfig(),
@@ -20119,7 +20302,7 @@
       var extraBehaviours = [
         Disabling.config({
           disabled: function () {
-            return spec.disabled || providersBackstage.isReadOnly();
+            return spec.disabled || providersBackstage.isDisabled();
           },
           onDisabled: function (comp) {
             FormField.getField(comp).each(Disabling.disable);
@@ -20252,9 +20435,9 @@
     };
     var setSelectionOn = function (input, f) {
       var el = input.element;
-      var value = get$5(el);
+      var value = get$6(el);
       var node = el.dom;
-      if (get$2(el, 'type') !== 'number') {
+      if (get$3(el, 'type') !== 'number') {
         f(node, value);
       }
     };
@@ -20329,7 +20512,7 @@
           store: __assign({
             mode: 'dataset',
             getDataKey: function (comp) {
-              return get$5(comp.element);
+              return get$6(comp.element);
             },
             getFallbackEntry: function (itemString) {
               return {
@@ -20354,7 +20537,7 @@
             var sandbox = Coupling.getCoupled(component, 'sandbox');
             var focusInInput = Focusing.isFocused(component);
             if (focusInInput) {
-              if (get$5(component.element).length >= detail.minChars) {
+              if (get$6(component.element).length >= detail.minChars) {
                 var previousValue_1 = Composing.getCurrent(sandbox).bind(function (menu) {
                   return Highlighting.getHighlighted(menu).map(Representing.getValue);
                 });
@@ -20813,7 +20996,7 @@
           [
             Disabling.config({
               disabled: function () {
-                return spec.disabled || providersBackstage.isReadOnly();
+                return spec.disabled || providersBackstage.isDisabled();
               }
             }),
             Tabstopping.config({}),
@@ -20874,7 +21057,7 @@
               'tox-icon',
               'tox-control-wrap__status-icon-' + name
             ],
-            innerHtml: get$d(icon, providersBackstage.icons),
+            innerHtml: get$e(icon, providersBackstage.icons),
             attributes: __assign({
               'title': providersBackstage.translate(label),
               'aria-live': 'polite'
@@ -20907,7 +21090,7 @@
         ],
         behaviours: derive$1([Disabling.config({
             disabled: function () {
-              return spec.disabled || providersBackstage.isReadOnly();
+              return spec.disabled || providersBackstage.isDisabled();
             }
           })])
       });
@@ -20953,7 +21136,7 @@
         fieldBehaviours: derive$1([
           Disabling.config({
             disabled: function () {
-              return spec.disabled || providersBackstage.isReadOnly();
+              return spec.disabled || providersBackstage.isDisabled();
             },
             onDisabled: function (comp) {
               FormField.getField(comp).each(Disabling.disable);
@@ -20995,7 +21178,7 @@
                     'tox-button--naked',
                     'tox-button--icon'
                   ],
-                  innerHtml: get$d(spec.icon, providersBackstage.icons),
+                  innerHtml: get$e(spec.icon, providersBackstage.icons),
                   attributes: { title: providersBackstage.translate(spec.iconTooltip) }
                 },
                 action: function (comp) {
@@ -21046,7 +21229,7 @@
           ComposingConfigs.self(),
           Disabling.config({
             disabled: function () {
-              return spec.disabled || providerBackstage.isReadOnly();
+              return spec.disabled || providerBackstage.isDisabled();
             }
           }),
           Tabstopping.config({}),
@@ -21080,7 +21263,7 @@
               'tox-icon',
               'tox-checkbox-icon__' + className
             ],
-            innerHtml: get$d(iconName, providerBackstage.icons)
+            innerHtml: get$e(iconName, providerBackstage.icons)
           }
         };
       };
@@ -21107,7 +21290,7 @@
         fieldBehaviours: derive$1([
           Disabling.config({
             disabled: function () {
-              return spec.disabled || providerBackstage.isReadOnly();
+              return spec.disabled || providerBackstage.isDisabled();
             },
             disableClass: 'tox-checkbox--disabled',
             onDisabled: function (comp) {
@@ -21149,7 +21332,7 @@
 
     var make$6 = function (render) {
       return function (parts, spec, backstage) {
-        return get(spec, 'name').fold(function () {
+        return get$1(spec, 'name').fold(function () {
           return render(spec, backstage);
         }, function (fieldName) {
           return parts.field(fieldName, render(spec, backstage));
@@ -21240,7 +21423,7 @@
       return interpretParts(parts, spec, newBackstage);
     };
     var interpretParts = function (parts, spec, backstage) {
-      return get(factories, spec.type).fold(function () {
+      return get$1(factories, spec.type).fold(function () {
         console.error('Unknown factory type "' + spec.type + '", defaulting to container: ', spec);
         return spec;
       }, function (factory) {
@@ -21556,15 +21739,16 @@
               }])
           };
         } else if (isInlineFormat(fmt) || isBlockFormat(fmt) || isSelectorFormat(fmt)) {
-          var formatName = 'custom-' + fmt.title.toLowerCase();
+          var formatName = isString(fmt.name) ? fmt.name : fmt.title.toLowerCase();
+          var formatNameWithPrefix = 'custom-' + formatName;
           return {
             customFormats: acc.customFormats.concat([{
-                name: formatName,
+                name: formatNameWithPrefix,
                 format: fmt
               }]),
             formats: acc.formats.concat([{
                 title: fmt.title,
-                format: formatName,
+                format: formatNameWithPrefix,
                 icon: fmt.icon
               }])
           };
@@ -21618,12 +21802,13 @@
         return deepMerge(item, submenuSpec);
       };
       var enrichCustom = function (item) {
-        var formatName = generate$1(item.title);
+        var formatName = isString(item.name) ? item.name : generate$1(item.title);
+        var formatNameWithPrefix = 'custom-' + formatName;
         var customSpec = {
           type: 'formatter',
-          format: formatName,
-          isSelected: isSelectedFor(formatName),
-          getStylePreview: getPreviewFor(formatName)
+          format: formatNameWithPrefix,
+          isSelected: isSelectedFor(formatNameWithPrefix),
+          getStylePreview: getPreviewFor(formatNameWithPrefix)
         };
         var newItem = deepMerge(item, customSpec);
         editor.formatter.register(formatName, newItem);
@@ -21703,7 +21888,7 @@
       };
     };
 
-    var trim$1 = global$e.trim;
+    var trim$1 = global$c.trim;
     var hasContentEditableState = function (value) {
       return function (node) {
         if (node && node.nodeType === 1) {
@@ -21858,7 +22043,7 @@
       return !!value;
     };
     var makeMap = function (value) {
-      return map$2(global$e.makeMap(value, /[, ]/), isTruthy);
+      return map$2(global$c.makeMap(value, /[, ]/), isTruthy);
     };
     var getPicker = function (editor) {
       return Optional.from(getFilePickerCallback(editor)).filter(isFunction);
@@ -21956,9 +22141,10 @@
               return editor.ui.registry.getAll().menuItems;
             },
             translate: global$6.translate,
-            isReadOnly: function () {
-              return editor.mode.isReadOnly();
-            }
+            isDisabled: function () {
+              return editor.mode.isReadOnly() || editor.ui.isDisabled();
+            },
+            getSetting: editor.getParam.bind(editor)
           },
           interpreter: function (s) {
             return interpretWithoutForm(s, backstage);
@@ -22147,9 +22333,9 @@
       var focusedComp = findFocusedComp(groups);
       setOverflow([]);
       setGroups(primary, groups);
-      var availableWidth = get$7(primary.element);
+      var availableWidth = get$8(primary.element);
       var overflows = partition$3(availableWidth, detail.builtGroups.get(), function (comp) {
-        return get$7(comp.element);
+        return get$8(comp.element);
       }, overflowGroup);
       if (overflows.extra.length === 0) {
         Replacing.remove(primary, overflowGroup);
@@ -22703,13 +22889,13 @@
         width: [
           output('property', 'width'),
           output('getDimension', function (elem) {
-            return get$7(elem) + 'px';
+            return get$8(elem) + 'px';
           })
         ],
         height: [
           output('property', 'height'),
           output('getDimension', function (elem) {
-            return get$6(elem) + 'px';
+            return get$7(elem) + 'px';
           })
         ]
       }))
@@ -22942,7 +23128,7 @@
         Toolbar.setGroups(component, groups);
       });
       return derive$1([
-        DisablingConfigs.toolbarButton(toolbarSpec.providers.isReadOnly),
+        DisablingConfigs.toolbarButton(toolbarSpec.providers.isDisabled),
         receivingConfig(),
         Keying.config({
           mode: modeName,
@@ -23473,7 +23659,7 @@
           'common-button-display-events'
         ], _d),
         buttonBehaviours: derive$1([
-          DisablingConfigs.toolbarButton(providersBackstage.isReadOnly),
+          DisablingConfigs.toolbarButton(providersBackstage.isDisabled),
           receivingConfig(),
           config('common-button-display-events', [run(mousedown(), function (button, se) {
               se.event.prevent();
@@ -23539,7 +23725,7 @@
             onControlDetached(specialisation, editorOffCell)
           ]),
           DisablingConfigs.toolbarButton(function () {
-            return spec.disabled || providersBackstage.isReadOnly();
+            return spec.disabled || providersBackstage.isDisabled();
           }),
           receivingConfig()
         ].concat(specialisation.toolbarButtonBehaviours))
@@ -23646,7 +23832,7 @@
         onItemExecute: function (_a, _b, _c) {
         },
         splitDropdownBehaviours: derive$1([
-          DisablingConfigs.splitButton(sharedBackstage.providers.isReadOnly),
+          DisablingConfigs.splitButton(sharedBackstage.providers.isDisabled),
           receivingConfig(),
           config('split-dropdown-events', [
             run(focusButtonEvent, Focusing.focus),
@@ -23675,10 +23861,10 @@
                 'tox-tbtn',
                 'tox-split-button__chevron'
               ],
-              innerHtml: get$d('chevron-down', sharedBackstage.providers.icons)
+              innerHtml: get$e('chevron-down', sharedBackstage.providers.icons)
             },
             buttonBehaviours: derive$1([
-              DisablingConfigs.splitButton(sharedBackstage.providers.isReadOnly),
+              DisablingConfigs.splitButton(sharedBackstage.providers.isDisabled),
               receivingConfig()
             ])
           }),
@@ -24073,10 +24259,10 @@
             }),
             run(changeSlideEvent, function (comp, se) {
               remove$6(comp.element, 'width');
-              var currentWidth = get$7(comp.element);
+              var currentWidth = get$8(comp.element);
               InlineView.setContent(comp, se.event.contents);
               add$2(comp.element, resizingClass);
-              var newWidth = get$7(comp.element);
+              var newWidth = get$8(comp.element);
               set$2(comp.element, 'width', currentWidth + 'px');
               InlineView.getContent(comp).each(function (newContents) {
                 se.event.focus.bind(function (f) {
@@ -24520,6 +24706,15 @@
       '24pt': '6',
       '36pt': '7'
     };
+    var keywordFontSizes = {
+      'xx-small': '7pt',
+      'x-small': '8pt',
+      'small': '10pt',
+      'medium': '12pt',
+      'large': '14pt',
+      'x-large': '18pt',
+      'xx-large': '24pt'
+    };
     var round$1 = function (number, precision) {
       var factor = Math.pow(10, precision);
       return Math.round(number * factor) / factor;
@@ -24527,11 +24722,12 @@
     var toPt = function (fontSize, precision) {
       if (/[0-9.]+px$/.test(fontSize)) {
         return round$1(parseInt(fontSize, 10) * 72 / 96, precision || 0) + 'pt';
+      } else {
+        return get$1(keywordFontSizes, fontSize).getOr(fontSize);
       }
-      return fontSize;
     };
     var toLegacy = function (fontSize) {
-      return get(legacyFontSizes, fontSize).getOr('');
+      return get$1(legacyFontSizes, fontSize).getOr('');
     };
     var getSpec$2 = function (editor) {
       var getMatchingValue = function () {
@@ -24622,27 +24818,21 @@
       });
     };
 
-    var findNearest = function (editor, getStyles, parents) {
+    var findNearest = function (editor, getStyles) {
       var styles = getStyles();
-      return findMap(parents, function (parent) {
-        return find(styles, function (fmt) {
-          return editor.formatter.matchNode(parent, fmt.format);
+      var formats = map(styles, function (style) {
+        return style.format;
+      });
+      return Optional.from(editor.formatter.closest(formats)).bind(function (fmt) {
+        return find(styles, function (data) {
+          return data.format === fmt;
         });
       }).orThunk(function () {
-        if (editor.formatter.match('p')) {
-          return Optional.some({
-            title: 'Paragraph',
-            format: 'p'
-          });
-        }
-        return Optional.none();
+        return someIf(editor.formatter.match('p'), {
+          title: 'Paragraph',
+          format: 'p'
+        });
       });
-    };
-    var getCurrentSelectionParents = function (editor) {
-      var currentNode = editor.selection.getStart(true) || editor.getBody();
-      return editor.dom.getParents(currentNode, function () {
-        return true;
-      }, editor.getBody());
     };
 
     var revocable = function (doRevoke) {
@@ -24724,11 +24914,6 @@
 
     var defaultBlocks = 'Paragraph=p;' + 'Heading 1=h1;' + 'Heading 2=h2;' + 'Heading 3=h3;' + 'Heading 4=h4;' + 'Heading 5=h5;' + 'Heading 6=h6;' + 'Preformatted=pre';
     var getSpec$3 = function (editor) {
-      var getMatchingValue = function (nodeChangeEvent) {
-        return findNearest(editor, function () {
-          return dataset.data;
-        }, nodeChangeEvent);
-      };
       var isSelectedFor = function (format) {
         return function () {
           return editor.formatter.match(format);
@@ -24743,8 +24928,10 @@
           });
         };
       };
-      var updateSelectMenuText = function (parents, comp) {
-        var detectedFormat = getMatchingValue(parents);
+      var updateSelectMenuText = function (comp) {
+        var detectedFormat = findNearest(editor, function () {
+          return dataset.data;
+        });
         var text = detectedFormat.fold(function () {
           return 'Paragraph';
         }, function (fmt) {
@@ -24753,13 +24940,12 @@
         emitWith(comp, updateMenuText, { text: text });
       };
       var nodeChangeHandler = Optional.some(function (comp) {
-        return function (e) {
-          return updateSelectMenuText(e.parents, comp);
+        return function () {
+          return updateSelectMenuText(comp);
         };
       });
       var setInitialValue = Optional.some(function (comp) {
-        var parents = getCurrentSelectionParents(editor);
-        updateSelectMenuText(parents, comp);
+        return updateSelectMenuText(comp);
       });
       var dataset = buildBasicSettingsDataset(editor, 'block_formats', defaultBlocks, Delimiter.SemiColon);
       return {
@@ -24806,7 +24992,7 @@
           }) : Optional.none();
         };
       };
-      var updateSelectMenuText = function (parents, comp) {
+      var updateSelectMenuText = function (comp) {
         var getFormatItems = function (fmt) {
           var subs = fmt.items;
           return subs !== undefined && subs.length > 0 ? bind(subs, getFormatItems) : [{
@@ -24817,7 +25003,7 @@
         var flattenedItems = bind(getStyleFormats(editor), getFormatItems);
         var detectedFormat = findNearest(editor, function () {
           return flattenedItems;
-        }, parents);
+        });
         var text = detectedFormat.fold(function () {
           return 'Paragraph';
         }, function (fmt) {
@@ -24826,13 +25012,12 @@
         emitWith(comp, updateMenuText, { text: text });
       };
       var nodeChangeHandler = Optional.some(function (comp) {
-        return function (e) {
-          return updateSelectMenuText(e.parents, comp);
+        return function () {
+          return updateSelectMenuText(comp);
         };
       });
       var setInitialValue = Optional.some(function (comp) {
-        var parents = getCurrentSelectionParents(editor);
-        updateSelectMenuText(parents, comp);
+        return updateSelectMenuText(comp);
       });
       return {
         tooltip: 'Formats',
@@ -24965,7 +25150,7 @@
       }
     };
     var extractFrom = function (spec, extras, editor) {
-      return get(types, spec.type).fold(function () {
+      return get$1(types, spec.type).fold(function () {
         console.error('skipping button defined by', spec);
         return Optional.none();
       }, function (render) {
@@ -25021,14 +25206,14 @@
       }
     };
     var lookupButton = function (editor, buttons, toolbarItem, allowToolbarGroups, extras, prefixes) {
-      return get(buttons, toolbarItem.toLowerCase()).orThunk(function () {
+      return get$1(buttons, toolbarItem.toLowerCase()).orThunk(function () {
         return prefixes.bind(function (ps) {
           return findMap(ps, function (prefix) {
-            return get(buttons, prefix + toolbarItem.toLowerCase());
+            return get$1(buttons, prefix + toolbarItem.toLowerCase());
           });
         });
       }).fold(function () {
-        return get(bespokeButtons, toolbarItem.toLowerCase()).map(function (r) {
+        return get$1(bespokeButtons, toolbarItem.toLowerCase()).map(function (r) {
           return r(editor, extras);
         }).orThunk(function () {
           return Optional.none();
@@ -25186,7 +25371,7 @@
         }).getOrThunk(function () {
           return editor.selection.getRng().getBoundingClientRect();
         });
-        var diffTop = editor.inline ? get$8().top : absolute$1(SugarElement.fromDom(editor.getBody())).y;
+        var diffTop = editor.inline ? get$9().top : absolute$1(SugarElement.fromDom(editor.getBody())).y;
         return {
           y: nodeBounds.top + diffTop,
           bottom: nodeBounds.bottom + diffTop
@@ -25274,7 +25459,7 @@
       };
       editor.on(showContextToolbarEvent, function (e) {
         var scopes = getScopes();
-        get(scopes.lookupTable, e.toolbarKey).each(function (ctx) {
+        get$1(scopes.lookupTable, e.toolbarKey).each(function (ctx) {
           launchContext([ctx], e.target === editor ? Optional.none() : Optional.some(e));
           InlineView.getContent(contextbar).each(Keying.focusIn);
         });
@@ -25578,13 +25763,13 @@
     };
     var getPrior = function (elem, state) {
       return state.getInitialPosition().map(function (pos) {
-        return bounds$1(pos.bounds.x, pos.bounds.y, get$7(elem), get$6(elem));
+        return bounds$1(pos.bounds.x, pos.bounds.y, get$8(elem), get$7(elem));
       });
     };
     var storePrior = function (elem, box, state) {
       state.setInitialPosition(Optional.some({
         style: getAllRaw(elem),
-        position: get$4(elem, 'position') || 'static',
+        position: get$5(elem, 'position') || 'static',
         bounds: box
       }));
     };
@@ -25598,13 +25783,13 @@
           var offsetBox_1 = getOffsetParent(elem).map(box).getOrThunk(function () {
             return box(body());
           });
-          return Optional.some(morphAdt.absolute(NuPositionCss('absolute', get(position.style, 'left').map(function (_left) {
+          return Optional.some(morphAdt.absolute(NuPositionCss('absolute', get$1(position.style, 'left').map(function (_left) {
             return box$1.x - offsetBox_1.x;
-          }), get(position.style, 'top').map(function (_top) {
+          }), get$1(position.style, 'top').map(function (_top) {
             return box$1.y - offsetBox_1.y;
-          }), get(position.style, 'right').map(function (_right) {
+          }), get$1(position.style, 'right').map(function (_right) {
             return offsetBox_1.right - box$1.right;
-          }), get(position.style, 'bottom').map(function (_bottom) {
+          }), get$1(position.style, 'bottom').map(function (_bottom) {
             return offsetBox_1.bottom - box$1.bottom;
           }))));
         default:
@@ -25843,14 +26028,14 @@
     var scrollFromBehindHeader = function (e, containerHeader) {
       var doc = owner(containerHeader);
       var viewHeight = doc.dom.defaultView.innerHeight;
-      var scrollPos = get$8(doc);
+      var scrollPos = get$9(doc);
       var markerElement = SugarElement.fromDom(e.elm);
       var markerPos = absolute$1(markerElement);
-      var markerHeight = get$6(markerElement);
+      var markerHeight = get$7(markerElement);
       var markerTop = markerPos.y;
       var markerBottom = markerTop + markerHeight;
       var editorHeaderPos = absolute(containerHeader);
-      var editorHeaderHeight = get$6(containerHeader);
+      var editorHeaderHeight = get$7(containerHeader);
       var editorHeaderTop = editorHeaderPos.top;
       var editorHeaderBottom = editorHeaderTop + editorHeaderHeight;
       var editorHeaderDockedAtTop = Math.abs(editorHeaderTop - scrollPos.top) < 2;
@@ -25867,13 +26052,13 @@
     };
     var updateIframeContentFlow = function (header) {
       var getOccupiedHeight = function (elm) {
-        return getOuter$1(elm) + (parseInt(get$4(elm, 'margin-top'), 10) || 0) + (parseInt(get$4(elm, 'margin-bottom'), 10) || 0);
+        return getOuter$1(elm) + (parseInt(get$5(elm, 'margin-top'), 10) || 0) + (parseInt(get$5(elm, 'margin-bottom'), 10) || 0);
       };
       var elm = header.element;
       parent(elm).each(function (parentElem) {
         var padding = 'padding-' + Docking.getModes(header)[0];
         if (Docking.isDocked(header)) {
-          var parentWidth = get$7(parentElem);
+          var parentWidth = get$8(parentElem);
           set$2(elm, 'width', parentWidth + 'px');
           set$2(parentElem, padding, getOccupiedHeight(elm) + 'px');
         } else {
@@ -26194,7 +26379,7 @@
         };
       };
       var doShowing = function (comp, _key) {
-        return get$2(comp.element, 'aria-hidden') !== 'true';
+        return get$3(comp.element, 'aria-hidden') !== 'true';
       };
       var doShow = function (comp, key) {
         if (!doShowing(comp)) {
@@ -26237,7 +26422,7 @@
         uid: detail.uid,
         dom: detail.dom,
         components: components,
-        behaviours: get$c(detail.slotBehaviours),
+        behaviours: get$d(detail.slotBehaviours),
         apis: apis
       };
     };
@@ -26440,7 +26625,7 @@
                   emitWith(slider, fixSize, { width: getRaw(slider.element, 'width').getOr('') });
                 },
                 onStartShrink: function (slider) {
-                  emitWith(slider, fixSize, { width: get$7(slider.element) + 'px' });
+                  emitWith(slider, fixSize, { width: get$8(slider.element) + 'px' });
                 }
               }),
               Replacing.config({}),
@@ -26485,7 +26670,7 @@
       var children$1 = children(elem);
       var attrs = getAttrs(elem);
       var classes = getClasses(elem);
-      var contents = children$1.length === 0 ? {} : { innerHtml: get$1(elem) };
+      var contents = children$1.length === 0 ? {} : { innerHtml: get$2(elem) };
       return __assign({
         tag: name(elem),
         classes: classes,
@@ -26925,19 +27110,37 @@
       };
     };
 
+    var loadStylesheet = function (editor, stylesheetUrl, styleSheetLoader) {
+      return new global$4(function (resolve, reject) {
+        styleSheetLoader.load(stylesheetUrl, resolve, reject);
+        editor.on('remove', function () {
+          return styleSheetLoader.unload(stylesheetUrl);
+        });
+      });
+    };
+    var loadUiSkins = function (editor, skinUrl) {
+      var skinUiCss = skinUrl + '/skin.min.css';
+      return loadStylesheet(editor, skinUiCss, editor.ui.styleSheetLoader);
+    };
+    var loadShadowDomUiSkins = function (editor, skinUrl) {
+      var isInShadowRoot$1 = isInShadowRoot(SugarElement.fromDom(editor.getElement()));
+      if (isInShadowRoot$1) {
+        var shadowDomSkinCss = skinUrl + '/skin.shadowdom.min.css';
+        return loadStylesheet(editor, shadowDomSkinCss, global$5.DOM.styleSheetLoader);
+      } else {
+        return global$4.resolve();
+      }
+    };
     var loadSkin = function (isInline, editor) {
       var skinUrl = getSkinUrl(editor);
-      var skinUiCss;
       if (skinUrl) {
-        skinUiCss = skinUrl + '/skin.min.css';
         editor.contentCSS.push(skinUrl + (isInline ? '/content.inline' : '/content') + '.min.css');
       }
-      if (isSkinDisabled(editor) === false && skinUiCss) {
-        var styleSheetLoader_1 = editor.ui.styleSheetLoader;
-        styleSheetLoader_1.load(skinUiCss, fireSkinLoaded$1(editor), fireSkinLoadError$1(editor, 'Skin could not be loaded'));
-        editor.on('remove', function () {
-          return styleSheetLoader_1.unload(skinUiCss);
-        });
+      if (isSkinDisabled(editor) === false && isString(skinUrl)) {
+        global$4.all([
+          loadUiSkins(editor, skinUrl),
+          loadShadowDomUiSkins(editor, skinUrl)
+        ]).then(fireSkinLoaded$1(editor), fireSkinLoadError$1(editor, 'Skin could not be loaded'));
       } else {
         fireSkinLoaded$1(editor)();
       }
@@ -26964,10 +27167,10 @@
       }
     };
 
-    var DOM = global$5.DOM;
     var detection = detect$3();
     var isiOS12 = detection.os.isiOS() && detection.os.version.major <= 12;
     var setupEvents = function (editor, uiComponents) {
+      var dom = editor.dom;
       var contentWindow = editor.getWin();
       var initialDocEle = editor.getDoc().documentElement;
       var lastWindowDimensions = Cell(SugarPosition(contentWindow.innerWidth, contentWindow.innerHeight));
@@ -26990,8 +27193,8 @@
       var scroll = function (e) {
         return fireScrollContent(editor, e);
       };
-      DOM.bind(contentWindow, 'resize', resizeWindow);
-      DOM.bind(contentWindow, 'scroll', scroll);
+      dom.bind(contentWindow, 'resize', resizeWindow);
+      dom.bind(contentWindow, 'scroll', scroll);
       var elementLoad = capture$1(SugarElement.fromDom(editor.getBody()), 'load', resizeDocument);
       var mothership = uiComponents.uiMothership.element;
       editor.on('hide', function () {
@@ -27003,11 +27206,12 @@
       editor.on('NodeChange', resizeDocument);
       editor.on('remove', function () {
         elementLoad.unbind();
-        DOM.unbind(contentWindow, 'resize', resizeWindow);
-        DOM.unbind(contentWindow, 'scroll', scroll);
+        dom.unbind(contentWindow, 'resize', resizeWindow);
+        dom.unbind(contentWindow, 'scroll', scroll);
+        contentWindow = null;
       });
     };
-    var render = function (editor, uiComponents, rawUiConfig, backstage, args) {
+    var render$1 = function (editor, uiComponents, rawUiConfig, backstage, args) {
       var lastToolbarWidth = Cell(0);
       var outerContainer = uiComponents.outerContainer;
       iframe(editor);
@@ -27031,7 +27235,8 @@
         var limit = first(function () {
           editor.fire('ScrollContent');
         }, 20);
-        bind$3(socket.element, 'scroll', limit.throttle);
+        var unbinder = bind$3(socket.element, 'scroll', limit.throttle);
+        editor.on('remove', unbinder.unbind);
       }
       setupReadonlyModeSwitch(editor, uiComponents);
       editor.addCommand('ToggleSidebar', function (_ui, value) {
@@ -27054,15 +27259,27 @@
           }
         });
       }
+      var api = {
+        enable: function () {
+          broadcastReadonly(uiComponents, false);
+        },
+        disable: function () {
+          broadcastReadonly(uiComponents, true);
+        },
+        isDisabled: function () {
+          return Disabling.isDisabled(outerContainer);
+        }
+      };
       return {
         iframeContainer: socket.element.dom,
-        editorContainer: outerContainer.element.dom
+        editorContainer: outerContainer.element.dom,
+        api: api
       };
     };
 
     var Iframe = /*#__PURE__*/Object.freeze({
         __proto__: null,
-        render: render
+        render: render$1
     });
 
     var parseToInt = function (val) {
@@ -27128,7 +27345,7 @@
         return isSplitToolbar ? toolbar.fold(function () {
           return 0;
         }, function (tbar) {
-          return tbar.components().length > 1 ? get$6(tbar.components()[1].element) : 0;
+          return tbar.components().length > 1 ? get$7(tbar.components()[1].element) : 0;
         }) : 0;
       };
       var calcMode = function (container) {
@@ -27136,14 +27353,14 @@
         case ToolbarLocation.auto:
           var toolbar_1 = OuterContainer.getToolbar(outerContainer);
           var offset = calcToolbarOffset(toolbar_1);
-          var toolbarHeight = get$6(container.element) - offset;
+          var toolbarHeight = get$7(container.element) - offset;
           var targetBounds = box(targetElm);
           var roomAtTop = targetBounds.y > toolbarHeight;
           if (roomAtTop) {
             return 'top';
           } else {
             var doc = documentElement(targetElm);
-            var docHeight = Math.max(doc.dom.scrollHeight, get$6(doc));
+            var docHeight = Math.max(doc.dom.scrollHeight, get$7(doc));
             var roomAtBottom = targetBounds.bottom < docHeight - toolbarHeight;
             if (roomAtBottom) {
               return 'bottom';
@@ -27169,8 +27386,8 @@
       };
       var updateChromeWidth = function () {
         var maxWidth = editorMaxWidthOpt.getOrThunk(function () {
-          var bodyMargin = parseToInt(get$4(body(), 'margin-left')).getOr(0);
-          return get$7(body()) - absolute(targetElm).left + bodyMargin;
+          var bodyMargin = parseToInt(get$5(body(), 'margin-left')).getOr(0);
+          return get$8(body()) - absolute(targetElm).left + bodyMargin;
         });
         set$2(floatContainer.get().element, 'max-width', maxWidth + 'px');
       };
@@ -27178,7 +27395,7 @@
         var toolbar = OuterContainer.getToolbar(outerContainer);
         var offset = calcToolbarOffset(toolbar);
         var targetBounds = box(targetElm);
-        var top = isPositionedAtTop() ? Math.max(targetBounds.y - get$6(floatContainer.get().element) + offset, 0) : targetBounds.bottom;
+        var top = isPositionedAtTop() ? Math.max(targetBounds.y - get$7(floatContainer.get().element) + offset, 0) : targetBounds.bottom;
         setAll$1(outerContainer.element, {
           position: 'absolute',
           top: Math.round(top) + 'px',
@@ -27303,7 +27520,7 @@
         elementLoad.clear();
       });
     };
-    var render$1 = function (editor, uiComponents, rawUiConfig, backstage, args) {
+    var render$2 = function (editor, uiComponents, rawUiConfig, backstage, args) {
       var mothership = uiComponents.mothership, uiMothership = uiComponents.uiMothership, outerContainer = uiComponents.outerContainer;
       var floatContainer = Cell(null);
       var targetElm = SugarElement.fromDom(args.targetNode);
@@ -27343,6 +27560,15 @@
         },
         hide: function () {
           ui.hide();
+        },
+        enable: function () {
+          broadcastReadonly(uiComponents, false);
+        },
+        disable: function () {
+          broadcastReadonly(uiComponents, true);
+        },
+        isDisabled: function () {
+          return Disabling.isDisabled(outerContainer);
         }
       };
       return {
@@ -27353,7 +27579,7 @@
 
     var Inline = /*#__PURE__*/Object.freeze({
         __proto__: null,
-        render: render$1
+        render: render$2
     });
 
     var register$5 = function (editor) {
@@ -27383,7 +27609,7 @@
           icon: 'align-justify'
         }
       ];
-      global$e.each(alignToolbarButtons, function (item) {
+      global$c.each(alignToolbarButtons, function (item) {
         editor.ui.registry.addToggleButton(item.name, {
           tooltip: item.text,
           onAction: function () {
@@ -27455,7 +27681,7 @@
       };
     };
     var registerFormatButtons = function (editor) {
-      global$e.each([
+      global$c.each([
         {
           name: 'bold',
           text: 'Bold',
@@ -27505,7 +27731,7 @@
       }
     };
     var registerCommandButtons = function (editor) {
-      global$e.each([
+      global$c.each([
         {
           name: 'cut',
           text: 'Cut',
@@ -27565,7 +27791,7 @@
       });
     };
     var registerCommandToggleButtons = function (editor) {
-      global$e.each([{
+      global$c.each([{
           name: 'blockquote',
           text: 'Blockquote',
           action: 'mceBlockQuote',
@@ -27587,7 +27813,7 @@
       registerCommandToggleButtons(editor);
     };
     var registerMenuItems = function (editor) {
-      global$e.each([
+      global$c.each([
         {
           name: 'bold',
           text: 'Bold',
@@ -28437,10 +28663,10 @@
     var fixed$1 = adt$c.fixed;
 
     var parseAttrToInt = function (element, name) {
-      var value = get$2(element, name);
+      var value = get$3(element, name);
       return isUndefined(value) ? NaN : parseInt(value, 10);
     };
-    var get$e = function (component, snapsInfo) {
+    var get$f = function (component, snapsInfo) {
       var element = component.element;
       var x = parseAttrToInt(element, snapsInfo.leftAttr);
       var y = parseAttrToInt(element, snapsInfo.topAttr);
@@ -28458,7 +28684,7 @@
     };
 
     var getCoords = function (component, snapInfo, coord, delta) {
-      return get$e(component, snapInfo).fold(function () {
+      return get$f(component, snapInfo).fold(function () {
         return coord;
       }, function (fixed) {
         return fixed$1(fixed.left + delta.left, fixed.top + delta.top);
@@ -28545,7 +28771,7 @@
       var target = dragConfig.getTarget(component.element);
       if (dragConfig.repositionTarget) {
         var doc = owner(component.element);
-        var scroll_1 = get$8(doc);
+        var scroll_1 = get$9(doc);
         var origin_1 = getOrigin(target);
         var snapPin = snapTo(snap, scroll_1, origin_1);
         var styles = toStyles(snapPin.coord, scroll_1, origin_1);
@@ -28574,7 +28800,7 @@
         getRaw(root, 'z-index').each(function (zindex) {
           set$1(root, initialAttribute, zindex);
         });
-        set$2(root, 'z-index', get$4(blocker.element, 'z-index'));
+        set$2(root, 'z-index', get$5(blocker.element, 'z-index'));
       });
     };
     var instigate = function (anyComponent, blocker) {
@@ -28665,7 +28891,7 @@
       var target = dragConfig.getTarget(component.element);
       if (dragConfig.repositionTarget) {
         var doc = owner(component.element);
-        var scroll_1 = get$8(doc);
+        var scroll_1 = get$9(doc);
         var origin_1 = getOrigin(target);
         var currentCoord = getCurrentCoord(target);
         var newCoord = calcNewCoord(component, dragConfig.snaps, currentCoord, scroll_1, origin_1, delta, startData);
@@ -29115,7 +29341,7 @@
     };
     var resize$3 = function (editor, deltas, resizeType) {
       var container = SugarElement.fromDom(editor.getContainer());
-      var dimensions = getDimensions(editor, deltas, resizeType, get$6(container), get$7(container));
+      var dimensions = getDimensions(editor, deltas, resizeType, get$7(container), get$8(container));
       each$1(dimensions, function (val, dim) {
         return set$2(container, dim, numToPx(val));
       });
@@ -29158,7 +29384,7 @@
               editor.nodeChanged();
             },
             buttonBehaviours: derive$1([
-              DisablingConfigs.button(providersBackstage.isReadOnly),
+              DisablingConfigs.button(providersBackstage.isDisabled),
               receivingConfig()
             ])
           });
@@ -29212,7 +29438,7 @@
             mode: 'flow',
             selector: 'div[role=button]'
           }),
-          Disabling.config({ disabled: providersBackstage.isReadOnly }),
+          Disabling.config({ disabled: providersBackstage.isDisabled }),
           receivingConfig(),
           Tabstopping.config({}),
           Replacing.config({}),
@@ -29249,7 +29475,7 @@
         },
         components: [],
         buttonBehaviours: derive$1([
-          DisablingConfigs.button(providersBackstage.isReadOnly),
+          DisablingConfigs.button(providersBackstage.isDisabled),
           receivingConfig(),
           Tabstopping.config({}),
           Replacing.config({}),
@@ -29305,7 +29531,7 @@
               'title': providersBackstage.translate('Resize'),
               'aria-hidden': 'true'
             },
-            innerHtml: get$d('resize-handle', providersBackstage.icons)
+            innerHtml: get$e('resize-handle', providersBackstage.icons)
           },
           behaviours: derive$1([Dragging.config({
               mode: 'mouse',
@@ -29394,6 +29620,7 @@
       var touchPlatformClass = 'tox-platform-touch';
       var deviceClasses = isTouch ? [touchPlatformClass] : [];
       var isToolbarBottom = isToolbarLocationBottom(editor);
+      var isUiContainerInBody = eq$1(body(), getUiContainer(editor));
       var dirAttributes = global$6.isRtl() ? { attributes: { dir: 'rtl' } } : {};
       var verticalDirAttributes = { attributes: (_a = {}, _a[Attribute] = isToolbarBottom ? AttributeValue.BottomToTop : AttributeValue.TopToBottom, _a) };
       var lazyHeader = function () {
@@ -29402,21 +29629,32 @@
       var isHeaderDocked = function () {
         return header.isDocked(lazyHeader);
       };
-      var sink = build$1({
-        dom: __assign({
-          tag: 'div',
-          classes: [
-            'tox',
-            'tox-silver-sink',
-            'tox-tinymce-aux'
-          ].concat(platformClasses).concat(deviceClasses)
-        }, dirAttributes),
-        behaviours: derive$1([Positioning.config({
-            useFixed: function () {
-              return isHeaderDocked();
-            }
-          })])
-      });
+      var resizeUiMothership = function () {
+        set$2(uiMothership.element, 'width', document.body.clientWidth + 'px');
+      };
+      var makeSinkDefinition = function () {
+        var sinkSpec = {
+          dom: __assign({
+            tag: 'div',
+            classes: [
+              'tox',
+              'tox-silver-sink',
+              'tox-tinymce-aux'
+            ].concat(platformClasses).concat(deviceClasses)
+          }, dirAttributes),
+          behaviours: derive$1([Positioning.config({
+              useFixed: function () {
+                return isHeaderDocked();
+              }
+            })])
+        };
+        var reactiveWidthSpec = {
+          dom: { styles: { width: document.body.clientWidth + 'px' } },
+          events: derive([run(windowResize(), resizeUiMothership)])
+        };
+        return deepMerge(sinkSpec, isUiContainerInBody ? reactiveWidthSpec : {});
+      };
+      var sink = build$1(makeSinkDefinition());
       var lazySink = function () {
         return Result.value(sink);
       };
@@ -29570,10 +29808,14 @@
           attributes: attributes
         },
         components: containerComponents,
-        behaviours: derive$1([Keying.config({
+        behaviours: derive$1([
+          receivingConfig(),
+          Disabling.config({ disableClass: 'tox-tinymce--disabled' }),
+          Keying.config({
             mode: 'cyclic',
             selector: '.tox-menubar, .tox-toolbar, .tox-toolbar__primary, .tox-toolbar__overflow--open, .tox-sidebar__overflow--open, .tox-statusbar__path, .tox-statusbar__wordcount, .tox-statusbar__branding a'
-          })])
+          })
+        ])
       }));
       lazyOuterContainer = Optional.some(outerContainer);
       editor.shortcuts.add('alt+F9', 'focus menubar', function () {
@@ -29662,7 +29904,7 @@
     };
 
     var describedBy = function (describedElement, describeElement) {
-      var describeId = Optional.from(get$2(describedElement, 'id')).fold(function () {
+      var describeId = Optional.from(get$3(describedElement, 'id')).fold(function () {
         var id = generate$1('dialog-describe');
         set$1(describeElement, 'id', id);
         return id;
@@ -29751,11 +29993,10 @@
       })
     ]);
 
-    var factory$i = function (detail, components, spec, externals) {
-      var _a;
-      var dialogBusyEvent = generate$1('alloy.dialog.busy');
-      var dialogIdleEvent = generate$1('alloy.dialog.idle');
-      var busyBehaviours = derive$1([
+    var block = function (component, config, state, getBusySpec) {
+      set$1(component.element, 'aria-busy', true);
+      var root = config.getRoot(component).getOr(component);
+      var blockerBehaviours = derive$1([
         Keying.config({
           mode: 'special',
           onTab: function () {
@@ -29767,47 +30008,85 @@
         }),
         Focusing.config({})
       ]);
+      var blockSpec = getBusySpec(root, blockerBehaviours);
+      var blocker = root.getSystem().build(blockSpec);
+      Replacing.append(root, premade$1(blocker));
+      if (blocker.hasConfigured(Keying)) {
+        Keying.focusIn(blocker);
+      }
+      if (!state.isBlocked()) {
+        config.onBlock(component);
+      }
+      state.blockWith(function () {
+        return Replacing.remove(root, blocker);
+      });
+    };
+    var unblock = function (component, config, state) {
+      remove$1(component.element, 'aria-busy');
+      if (state.isBlocked()) {
+        config.onUnblock(component);
+      }
+      state.clear();
+    };
+
+    var BlockingApis = /*#__PURE__*/Object.freeze({
+        __proto__: null,
+        block: block,
+        unblock: unblock
+    });
+
+    var BlockingSchema = [
+      defaultedFunction('getRoot', Optional.none),
+      onHandler('onBlock'),
+      onHandler('onUnblock')
+    ];
+
+    var init$f = function () {
+      var blocker = destroyable();
+      var blockWith = function (destroy) {
+        blocker.set({ destroy: destroy });
+      };
+      return nu$5({
+        readState: blocker.isSet,
+        blockWith: blockWith,
+        clear: blocker.clear,
+        isBlocked: blocker.isSet
+      });
+    };
+
+    var BlockingState = /*#__PURE__*/Object.freeze({
+        __proto__: null,
+        init: init$f
+    });
+
+    var Blocking = create$1({
+      fields: BlockingSchema,
+      name: 'blocking',
+      apis: BlockingApis,
+      state: BlockingState
+    });
+
+    var factory$i = function (detail, components, spec, externals) {
+      var _a;
+      var dialogComp = Cell(Optional.none());
       var showDialog = function (dialog) {
+        dialogComp.set(Optional.some(dialog));
         var sink = detail.lazySink(dialog).getOrDie();
-        var busyComp = Cell(Optional.none());
         var externalBlocker = externals.blocker();
         var blocker = sink.getSystem().build(__assign(__assign({}, externalBlocker), {
           components: externalBlocker.components.concat([premade$1(dialog)]),
           behaviours: derive$1([
             Focusing.config({}),
-            config('dialog-blocker-events', [
-              runOnSource(focusin(), function () {
+            config('dialog-blocker-events', [runOnSource(focusin(), function () {
                 Keying.focusIn(dialog);
-              }),
-              run(dialogIdleEvent, function (_blocker, _se) {
-                if (has$1(dialog.element, 'aria-busy')) {
-                  remove$1(dialog.element, 'aria-busy');
-                  busyComp.get().each(function (bc) {
-                    return Replacing.remove(dialog, bc);
-                  });
-                }
-              }),
-              run(dialogBusyEvent, function (blocker, se) {
-                set$1(dialog.element, 'aria-busy', 'true');
-                var getBusySpec = se.event.getBusySpec;
-                busyComp.get().each(function (bc) {
-                  Replacing.remove(dialog, bc);
-                });
-                var busySpec = getBusySpec(dialog, busyBehaviours);
-                var busy = blocker.getSystem().build(busySpec);
-                busyComp.set(Optional.some(busy));
-                Replacing.append(dialog, premade$1(busy));
-                if (busy.hasConfigured(Keying)) {
-                  Keying.focusIn(busy);
-                }
-              })
-            ])
+              })])
           ])
         }));
         attach$1(sink, blocker);
         Keying.focusIn(dialog);
       };
       var hideDialog = function (dialog) {
+        dialogComp.set(Optional.none());
         parent(dialog.element).each(function (blockerDom) {
           dialog.getSystem().getByDom(blockerDom).each(function (blocker) {
             detach(blocker);
@@ -29821,10 +30100,10 @@
         return getPartOrDie(dialog, detail, 'footer');
       };
       var setBusy = function (dialog, getBusySpec) {
-        emitWith(dialog, dialogBusyEvent, { getBusySpec: getBusySpec });
+        Blocking.block(dialog, getBusySpec);
       };
       var setIdle = function (dialog) {
-        emit(dialog, dialogIdleEvent);
+        Blocking.unblock(dialog);
       };
       var modalEventsId = generate$1('modal-events');
       var eventOrder = __assign(__assign({}, detail.eventOrder), (_a = {}, _a[attachedToDom()] = [modalEventsId].concat(detail.eventOrder['alloy.system.attached'] || []), _a));
@@ -29855,6 +30134,7 @@
             onEscape: detail.onEscape,
             useTabstopAt: detail.useTabstopAt
           }),
+          Blocking.config({ getRoot: dialogComp.get }),
           config(modalEventsId, [runOnAttached(function (c) {
               labelledBy(c.element, getPartOrDie(c, detail, 'title').element);
               describedBy(c.element, getPartOrDie(c, detail, 'body').element);
@@ -30131,14 +30411,14 @@
 
     var createItemsField = function (name) {
       return field('items', 'items', strict(), arrOf(valueOf(function (v) {
-        return asRaw('Checking item of ' + name, itemSchema$2, v).fold(function (sErr) {
+        return asRaw('Checking item of ' + name, itemSchema$3, v).fold(function (sErr) {
           return Result.error(formatError(sErr));
         }, function (passValue) {
           return Result.value(passValue);
         });
       })));
     };
-    var itemSchema$2 = valueThunkOf(function () {
+    var itemSchema$3 = valueThunkOf(function () {
       return chooseProcessor('type', {
         alertbanner: alertBannerSchema,
         bar: objOf(createBarFields(createItemsField('bar'))),
@@ -30167,7 +30447,7 @@
     var panelFields = [
       strictString('type'),
       defaulted$1('classes', []),
-      strictArrayOf('items', itemSchema$2)
+      strictArrayOf('items', itemSchema$3)
     ];
     var panelSchema = objOf(panelFields);
 
@@ -30176,7 +30456,7 @@
         return generate$1('tab-name');
       }), string),
       strictString('title'),
-      strictArrayOf('items', itemSchema$2)
+      strictArrayOf('items', itemSchema$3)
     ];
     var tabPanelFields = [
       strictString('type'),
@@ -30565,7 +30845,7 @@
         uid: detail.uid,
         dom: detail.dom,
         components: components,
-        behaviours: get$c(detail.tabSectionBehaviours),
+        behaviours: get$d(detail.tabSectionBehaviours),
         events: derive(flatten([
           detail.selectFirst ? [runOnAttached(function (section, _simulatedEvent) {
               changeTabBy(section, Highlighting.getFirst);
@@ -30639,19 +30919,19 @@
     var getMaxTabviewHeight = function (dialog, tabview, tablist) {
       var documentElement$1 = documentElement(dialog).dom;
       var rootElm = ancestor$2(dialog, '.tox-dialog-wrap').getOr(dialog);
-      var isFixed = get$4(rootElm, 'position') === 'fixed';
+      var isFixed = get$5(rootElm, 'position') === 'fixed';
       var maxHeight;
       if (isFixed) {
         maxHeight = Math.max(documentElement$1.clientHeight, window.innerHeight);
       } else {
         maxHeight = Math.max(documentElement$1.offsetHeight, documentElement$1.scrollHeight);
       }
-      var tabviewHeight = get$6(tabview);
-      var isTabListBeside = tabview.dom.offsetLeft >= tablist.dom.offsetLeft + get$7(tablist);
-      var currentTabHeight = isTabListBeside ? Math.max(get$6(tablist), tabviewHeight) : tabviewHeight;
-      var dialogTopMargin = parseInt(get$4(dialog, 'margin-top'), 10) || 0;
-      var dialogBottomMargin = parseInt(get$4(dialog, 'margin-bottom'), 10) || 0;
-      var dialogHeight = get$6(dialog) + dialogTopMargin + dialogBottomMargin;
+      var tabviewHeight = get$7(tabview);
+      var isTabListBeside = tabview.dom.offsetLeft >= tablist.dom.offsetLeft + get$8(tablist);
+      var currentTabHeight = isTabListBeside ? Math.max(get$7(tablist), tabviewHeight) : tabviewHeight;
+      var dialogTopMargin = parseInt(get$5(dialog, 'margin-top'), 10) || 0;
+      var dialogBottomMargin = parseInt(get$5(dialog, 'margin-bottom'), 10) || 0;
+      var dialogHeight = get$7(dialog) + dialogTopMargin + dialogBottomMargin;
       var chromeHeight = dialogHeight - currentTabHeight;
       return maxHeight - chromeHeight;
     };
@@ -31130,7 +31410,7 @@
             dom: {
               tag: 'div',
               classes: ['tox-icon'],
-              innerHtml: get$d('close', providersBackstage.icons)
+              innerHtml: get$e('close', providersBackstage.icons)
             }
           }],
         action: function (comp) {
@@ -31201,29 +31481,32 @@
         draggable: backstage.dialog.isDraggableModal()
       }, backstage.shared.providers);
     };
+    var getBusySpec = function (message, bs) {
+      return {
+        dom: {
+          tag: 'div',
+          classes: ['tox-dialog__busy-spinner'],
+          attributes: { 'aria-label': message },
+          styles: {
+            left: '0px',
+            right: '0px',
+            bottom: '0px',
+            top: '0px',
+            position: 'absolute'
+          }
+        },
+        behaviours: bs,
+        components: [{ dom: fromHtml$2('<div class="tox-spinner"><div></div><div></div><div></div></div>') }]
+      };
+    };
     var getEventExtras = function (lazyDialog, extra) {
       return {
         onClose: function () {
           return extra.closeWindow();
         },
         onBlock: function (blockEvent) {
-          ModalDialog.setBusy(lazyDialog(), function (d, bs) {
-            return {
-              dom: {
-                tag: 'div',
-                classes: ['tox-dialog__busy-spinner'],
-                attributes: { 'aria-label': blockEvent.message },
-                styles: {
-                  left: '0px',
-                  right: '0px',
-                  bottom: '0px',
-                  top: '0px',
-                  position: 'absolute'
-                }
-              },
-              behaviours: bs,
-              components: [{ dom: fromHtml$2('<div class="tox-spinner"><div></div><div></div><div></div></div>') }]
-            };
+          ModalDialog.setBusy(lazyDialog(), function (_comp, bs) {
+            return getBusySpec(blockEvent.message, bs);
           });
         },
         onUnblock: function () {
@@ -31251,11 +31534,11 @@
         },
         dialogEvents: dialogEvents,
         eventOrder: (_a = {}, _a[receive()] = [
-          'reflecting',
-          'receiving'
+          Reflecting.name(),
+          Receiving.name()
         ], _a[attachedToDom()] = [
           'scroll-lock',
-          'reflecting',
+          Reflecting.name(),
           'messages',
           'dialog-events',
           'alloy.base.behaviour'
@@ -31263,7 +31546,7 @@
           'alloy.base.behaviour',
           'dialog-events',
           'messages',
-          'reflecting',
+          Reflecting.name(),
           'scroll-lock'
         ], _a)
       })));
@@ -31587,6 +31870,16 @@
       return instanceApi;
     };
 
+    var getDialogSizeClasses = function (size) {
+      switch (size) {
+      case 'large':
+        return ['tox-dialog--width-lg'];
+      case 'medium':
+        return ['tox-dialog--width-md'];
+      default:
+        return [];
+      }
+    };
     var renderDialog$1 = function (dialogInit, extra, backstage) {
       var header = getHeader(dialogInit.internalDialog.title, backstage);
       var body = renderModalBody({ body: dialogInit.internalDialog.body }, backstage);
@@ -31598,7 +31891,7 @@
       }, getEventExtras(function () {
         return dialog;
       }, extra), backstage.shared.getSink);
-      var dialogSize = dialogInit.internalDialog.size !== 'normal' ? dialogInit.internalDialog.size === 'large' ? ['tox-dialog--width-lg'] : ['tox-dialog--width-md'] : [];
+      var dialogSize = getDialogSizeClasses(dialogInit.internalDialog.size);
       var spec = {
         header: header,
         body: body,
@@ -31651,9 +31944,13 @@
       var dialogEvents = SilverDialogEvents.initDialog(function () {
         return instanceApi;
       }, {
-        onBlock: function () {
+        onBlock: function (event) {
+          Blocking.block(dialog, function (_comp, bs) {
+            return getBusySpec(event.message, bs);
+          });
         },
         onUnblock: function () {
+          Blocking.unblock(dialog);
         },
         onClose: function () {
           return extra.closeWindow();
@@ -31683,7 +31980,7 @@
               return Optional.some(true);
             },
             useTabstopAt: function (elem) {
-              return !isPseudoStop(elem) && (name(elem) !== 'button' || get$2(elem, 'disabled') !== 'disabled');
+              return !isPseudoStop(elem) && (name(elem) !== 'button' || get$3(elem, 'disabled') !== 'disabled');
             }
           }),
           Reflecting.config({
@@ -31695,6 +31992,12 @@
           config('execute-on-form', dialogEvents.concat([runOnSource(focusin(), function (comp, _se) {
               Keying.focusIn(comp);
             })])),
+          Blocking.config({
+            getRoot: function () {
+              return Optional.some(dialog);
+            }
+          }),
+          Replacing.config({}),
           RepresentingConfigs.memory({})
         ]),
         components: [
@@ -31724,7 +32027,7 @@
       };
     };
 
-    var global$g = tinymce.util.Tools.resolve('tinymce.util.URI');
+    var global$h = tinymce.util.Tools.resolve('tinymce.util.URI');
 
     var getUrlDialogApi = function (root) {
       var withRoot = function (f) {
@@ -31832,14 +32135,14 @@
         };
       }));
       var classes = internalDialog.width.isNone() && internalDialog.height.isNone() ? ['tox-dialog--width-lg'] : [];
-      var iframeUri = new global$g(internalDialog.url, { base_uri: new global$g(window.location.href) });
+      var iframeUri = new global$h(internalDialog.url, { base_uri: new global$h(window.location.href) });
       var iframeDomain = iframeUri.protocol + '://' + iframeUri.host + (iframeUri.port ? ':' + iframeUri.port : '');
       var messageHandlerUnbinder = Cell(Optional.none());
       var extraBehaviours = [
         config('messages', [
           runOnAttached(function () {
             var unbind = bind$3(SugarElement.fromDom(window), 'message', function (e) {
-              if (iframeUri.isSameOrigin(new global$g(e.raw.origin))) {
+              if (iframeUri.isSameOrigin(new global$h(e.raw.origin))) {
                 var data = e.raw.data;
                 if (isSupportedMessage(data)) {
                   handleMessage(editor, instanceApi, data);
