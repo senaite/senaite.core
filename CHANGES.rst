@@ -4,6 +4,7 @@ Changelog
 2.0.0rc3 (unreleased)
 ---------------------
 
+- #1692 Fix tabbing across elements within analyses listing
 - #1689 Display tabs in content edit view when more than one group
 - #1682 Fix `LocationError` when editing a entry in the configuration registry
 - #1685 Remove Supply Orders
