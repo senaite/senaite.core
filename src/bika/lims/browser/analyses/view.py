@@ -549,7 +549,7 @@ class AnalysesView(BikaListingView):
             "analysisservice_info?service_uid={}&analysis_uid={}"
             .format(obj.getServiceUID, obj.UID),
             value="<i class='fas fa-info-circle'></i>",
-            css_class="service_info")
+            css_class="service_info", tabindex="-1")
 
         # Note that getSampleTypeUID returns the type of the Sample, no matter
         # if the sample associated to the analysis is a regular Sample (routine
@@ -899,7 +899,7 @@ class AnalysesView(BikaListingView):
                 self.show_methodinstr_columns = True
         elif method_title:
             item['replace']['Method'] = get_link(analysis_brain.getMethodURL,
-                                                 method_title)
+                                                 method_title, tabindex="-1")
             self.show_methodinstr_columns = True
 
     def _folder_item_instrument(self, analysis_brain, item):
@@ -913,7 +913,7 @@ class AnalysesView(BikaListingView):
             # Manual entry of results, instrument is not allowed
             item['Instrument'] = _('Manual')
             item['replace']['Instrument'] = \
-                '<a href="#">{}</a>'.format(t(_('Manual')))
+                '<a href="#" tabindex="-1">{}</a>'.format(t(_('Manual')))
             return
 
         # Instrument can be assigned to this analysis
@@ -934,7 +934,7 @@ class AnalysesView(BikaListingView):
             # Edition not allowed
             instrument_title = instrument and instrument.Title() or ''
             instrument_link = get_link(instrument.absolute_url(),
-                                       instrument_title)
+                                       instrument_title, tabindex="-1")
             item['Instrument'] = instrument_title
             item['replace']['Instrument'] = instrument_link
             return
@@ -984,7 +984,7 @@ class AnalysesView(BikaListingView):
 
             url = '{}/at_download/AttachmentFile'
             url = url.format(attachment.absolute_url())
-            link = get_link(url, at_file.filename)
+            link = get_link(url, at_file.filename, tabindex="-1")
             attachments_html.append(link)
 
             if not self.is_analysis_edition_allowed(obj):
@@ -1143,7 +1143,7 @@ class AnalysesView(BikaListingView):
             ratio = float(done) / float(num_verifications) if done > 0 else 0
             ratio = int(ratio * 100)
             scale = ratio == 0 and 0 or (ratio / 25) * 25
-            anchor = "<a href='#' title='{} &#13;{} {}' " \
+            anchor = "<a href='#' tabindex='-1' title='{} &#13;{} {}' " \
                      "class='multi-verification scale-{}'>{}/{}</a>"
             anchor = anchor.format(t(_("Multi-verification required")),
                                    str(pending),
@@ -1228,7 +1228,7 @@ class AnalysesView(BikaListingView):
         title = t(_("Assigned to: ${worksheet_id}",
                     mapping={'worksheet_id': safe_unicode(worksheet.id)}))
         img = get_image('worksheet.png', title=title)
-        anchor = get_link(worksheet.absolute_url(), img)
+        anchor = get_link(worksheet.absolute_url(), img, tabindex="-1")
         self._append_html_element(item, 'state_title', anchor)
 
     def _folder_item_reflex_icons(self, analysis_brain, item):
@@ -1267,7 +1267,8 @@ class AnalysesView(BikaListingView):
                 return
 
             part_url = analysis_brain.getRequestURL
-            url = get_link(part_url, value=sample_id, **{"class": "small"})
+            kwargs = {"class": "small", "tabindex": "-1"}
+            url = get_link(part_url, value=sample_id, **kwargs)
             title = item["replace"].get("Service") or item["Service"]
             item["replace"]["Service"] = "{}<br/>{}".format(title, url)
 
@@ -1289,6 +1290,9 @@ class AnalysesView(BikaListingView):
 
         full_obj = self.get_object(analysis_brain)
         item['Hidden'] = full_obj.getHidden()
+
+        # Hidden checkbox is not reachable by tabbing
+        item["tabindex"]["Hidden"] = "disabled"
         if self.has_permission(FieldEditAnalysisHidden, obj=full_obj):
             item['allow_edit'].append('Hidden')
 
