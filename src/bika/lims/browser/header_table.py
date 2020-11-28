@@ -112,7 +112,7 @@ class HeaderTableView(BrowserView):
         if uid_fieldname in form:
             value = form[uid_fieldname]
             if field.multiValued:
-                value = value.split(",")
+                value = filter(None, value.split(","))
             return value
 
         # other fields

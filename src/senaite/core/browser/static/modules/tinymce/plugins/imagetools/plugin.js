@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.5.1 (2020-10-01)
+ * Version: 5.6.1 (2020-11-25)
  */
 (function () {
     'use strict';
@@ -936,8 +936,8 @@
         width = img.width;
         height = img.height;
         if (width || height) {
-          img.setAttribute('width', size.w);
-          img.setAttribute('height', size.h);
+          img.setAttribute('width', String(size.w));
+          img.setAttribute('height', String(size.h));
         }
       }
     }
@@ -955,20 +955,20 @@
     var isFigure = function (editor, elem) {
       return editor.dom.is(elem, 'figure');
     };
-    var getEditableImage = function (editor, elem) {
-      var isImage = function (imgNode) {
-        return editor.dom.is(imgNode, 'img:not([data-mce-object],[data-mce-placeholder])');
-      };
+    var isImage = function (editor, imgNode) {
+      return editor.dom.is(imgNode, 'img:not([data-mce-object],[data-mce-placeholder])');
+    };
+    var getEditableImage = function (editor, node) {
       var isEditable = function (imgNode) {
-        return isImage(imgNode) && (isLocalImage(editor, imgNode) || isCorsImage(editor, imgNode) || getProxyUrl(editor));
+        return isImage(editor, imgNode) && (isLocalImage(editor, imgNode) || isCorsImage(editor, imgNode) || isNonNullable(getProxyUrl(editor)));
       };
-      if (isFigure(editor, elem)) {
-        var imgOpt = getFigureImg(elem);
-        return imgOpt.map(function (img) {
+      if (isFigure(editor, node)) {
+        return getFigureImg(node).bind(function (img) {
           return isEditable(img.dom) ? Optional.some(img.dom) : Optional.none();
         });
+      } else {
+        return isEditable(node) ? Optional.some(node) : Optional.none();
       }
-      return isEditable(elem) ? Optional.some(elem) : Optional.none();
     };
     var displayError = function (editor, error) {
       editor.notificationManager.open({
@@ -978,18 +978,18 @@
     };
     var getSelectedImage = function (editor) {
       var elem = editor.selection.getNode();
-      if (isFigure(editor, elem)) {
-        return getFigureImg(elem);
-      } else {
+      var figureElm = editor.dom.getParent(elem, 'figure.image');
+      if (figureElm !== null && isFigure(editor, figureElm)) {
+        return getFigureImg(figureElm);
+      } else if (isImage(editor, elem)) {
         return Optional.some(SugarElement.fromDom(elem));
+      } else {
+        return Optional.none();
       }
     };
-    var extractFilename = function (editor, url) {
-      var m = url.match(/\/([^\/\?]+)?\.(?:jpeg|jpg|png|gif)(?:\?|$)/i);
-      if (m) {
-        return editor.dom.encode(m[1]);
-      }
-      return null;
+    var extractFilename = function (editor, url, group) {
+      var m = url.match(/(?:\/|^)(([^\/\?]+)\.(?:[a-z0-9.]+))(?:\?|$)/i);
+      return isNonNullable(m) ? editor.dom.encode(m[group]) : null;
     };
     var createId = function () {
       return 'imagetools' + count++;
@@ -1039,18 +1039,21 @@
     var cancelTimedUpload = function (imageUploadTimerState) {
       global$2.clearTimeout(imageUploadTimerState.get());
     };
-    var updateSelectedImage = function (editor, ir, uploadImmediately, imageUploadTimerState, selectedImage, size) {
+    var updateSelectedImage = function (editor, origBlob, ir, uploadImmediately, imageUploadTimerState, selectedImage, size) {
       return ir.toBlob().then(function (blob) {
-        var uri, name, blobInfo;
+        var uri, name, filename, blobInfo;
         var blobCache = editor.editorUpload.blobCache;
         uri = selectedImage.src;
+        var useFilename = origBlob.type === blob.type;
         if (shouldReuseFilename(editor)) {
           blobInfo = blobCache.getByUri(uri);
-          if (blobInfo) {
+          if (isNonNullable(blobInfo)) {
             uri = blobInfo.uri();
             name = blobInfo.name();
+            filename = blobInfo.filename();
           } else {
-            name = extractFilename(editor, uri);
+            name = extractFilename(editor, uri, 2);
+            filename = extractFilename(editor, uri, 1);
           }
         }
         blobInfo = blobCache.create({
@@ -1058,7 +1061,8 @@
           blob: blob,
           base64: ir.toBase64(),
           uri: uri,
-          name: name
+          name: name,
+          filename: useFilename ? filename : undefined
         });
         blobCache.add(blobInfo);
         editor.undoManager.transact(function () {
@@ -1092,9 +1096,11 @@
         }, function (img) {
           return editor._scanForImages().then(function () {
             return findBlob(editor, img.dom);
-          }).then(blobToImageResult).then(fn).then(function (imageResult) {
-            return updateSelectedImage(editor, imageResult, false, imageUploadTimerState, img.dom, size);
-          }, function (error) {
+          }).then(function (blob) {
+            return blobToImageResult(blob).then(fn).then(function (imageResult) {
+              return updateSelectedImage(editor, blob, imageResult, false, imageUploadTimerState, img.dom, size);
+            });
+          }).catch(function (error) {
             displayError(editor, error);
           });
         });
@@ -1135,8 +1141,8 @@
         URL.revokeObjectURL(newImage.src);
         return blob;
       }).then(blobToImageResult).then(function (imageResult) {
-        return updateSelectedImage(editor, imageResult, true, imageUploadTimerState, img);
-      }, function () {
+        return updateSelectedImage(editor, blob, imageResult, true, imageUploadTimerState, img);
+      }).catch(function () {
       });
     };
 
@@ -1214,8 +1220,7 @@
         var originalSizeOpt = originalImgOpt.map(function (origImg) {
           return getNaturalImageSize(origImg.dom);
         });
-        var imgOpt = getSelectedImage(editor);
-        imgOpt.each(function (img) {
+        originalImgOpt.each(function (img) {
           getEditableImage(editor, img.dom).each(function (_) {
             findBlob(editor, img.dom).then(function (blob) {
               var state = createState(blob);
@@ -1241,12 +1246,15 @@
     var setup = function (editor, imageUploadTimerState, lastSelectedImageState) {
       editor.on('NodeChange', function (e) {
         var lastSelectedImage = lastSelectedImageState.get();
-        if (lastSelectedImage && lastSelectedImage.src !== e.element.src) {
+        var selectedImage = getEditableImage(editor, e.element);
+        if (lastSelectedImage && !selectedImage.exists(function (img) {
+            return lastSelectedImage.src === img.src;
+          })) {
           cancelTimedUpload(imageUploadTimerState);
           editor.editorUpload.uploadImagesAuto();
           lastSelectedImageState.set(null);
         }
-        getEditableImage(editor, e.element).each(lastSelectedImageState.set);
+        selectedImage.each(lastSelectedImageState.set);
       });
     };
 
@@ -1282,11 +1290,10 @@
         onAction: cmd('mceEditImage'),
         onSetup: function (buttonApi) {
           var setDisabled = function () {
-            var elementOpt = getSelectedImage(editor);
-            elementOpt.each(function (element) {
-              var disabled = getEditableImage(editor, element.dom).isNone();
-              buttonApi.setDisabled(disabled);
+            var disabled = getSelectedImage(editor).forall(function (element) {
+              return getEditableImage(editor, element.dom).isNone();
             });
+            buttonApi.setDisabled(disabled);
           };
           editor.on('NodeChange', setDisabled);
           return function () {

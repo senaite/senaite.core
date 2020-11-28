@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.5.1 (2020-10-01)
+ * Version: 5.6.1 (2020-11-25)
  */
 (function () {
     'use strict';
@@ -299,8 +299,11 @@
     var bind = function (xs, f) {
       return flatten(map(xs, f));
     };
+    var get$1 = function (xs, i) {
+      return i >= 0 && i < xs.length ? Optional.some(xs[i]) : Optional.none();
+    };
     var head = function (xs) {
-      return xs.length === 0 ? Optional.none() : Optional.some(xs[0]);
+      return get$1(xs, 0);
     };
 
     var keys = Object.keys;
@@ -504,7 +507,7 @@
     var set = function (element, key, value) {
       rawSet(element.dom, key, value);
     };
-    var get$1 = function (element, key) {
+    var get$2 = function (element, key) {
       var v = element.dom.getAttribute(key);
       return v === null ? undefined : v;
     };
@@ -527,7 +530,7 @@
         internalSet(dom, k, v);
       });
     };
-    var get$2 = function (element, property) {
+    var get$3 = function (element, property) {
       var dom = element.dom;
       var styles = window.getComputedStyle(dom);
       var r = styles.getPropertyValue(property);
@@ -595,14 +598,14 @@
     };
     var SugarPosition = r;
 
-    var get$3 = function (_DOC) {
+    var get$4 = function (_DOC) {
       var doc = _DOC !== undefined ? _DOC.dom : document;
       var x = doc.body.scrollLeft || doc.documentElement.scrollLeft;
       var y = doc.body.scrollTop || doc.documentElement.scrollTop;
       return SugarPosition(x, y);
     };
 
-    var get$4 = function (_win) {
+    var get$5 = function (_win) {
       var win = _win === undefined ? window : _win;
       return Optional.from(win['visualViewport']);
     };
@@ -619,8 +622,8 @@
     var getBounds = function (_win) {
       var win = _win === undefined ? window : _win;
       var doc = win.document;
-      var scroll = get$3(SugarElement.fromDom(doc));
-      return get$4(win).fold(function () {
+      var scroll = get$4(SugarElement.fromDom(doc));
+      return get$5(win).fold(function () {
         var html = win.document.documentElement;
         var width = html.clientWidth;
         var height = html.clientHeight;
@@ -630,7 +633,7 @@
       });
     };
     var bind$3 = function (name, callback, _win) {
-      return get$4(_win).map(function (visualViewport) {
+      return get$5(_win).map(function (visualViewport) {
         var handler = function (e) {
           return callback(fromRawEvent(e));
         };
@@ -739,7 +742,7 @@
     var bgFallback = 'background-color:rgb(255,255,255)!important;';
     var isAndroid = global$2.os.isAndroid();
     var matchColor = function (editorBody) {
-      var color = get$2(editorBody, 'background-color');
+      var color = get$3(editorBody, 'background-color');
       return color !== undefined && color !== '' ? 'background-color:' + color + '!important' : bgFallback;
     };
     var clobberStyles = function (dom, container, editorBody) {
@@ -748,7 +751,7 @@
       };
       var clobber = function (clobberStyle) {
         return function (element) {
-          var styles = get$1(element, 'style');
+          var styles = get$2(element, 'style');
           var backup = styles === undefined ? 'no-styles' : styles.trim();
           if (backup === clobberStyle) {
             return;
@@ -769,7 +772,7 @@
     var restoreStyles = function (dom) {
       var clobberedEls = all$1('[' + attr + ']');
       each(clobberedEls, function (element) {
-        var restore = get$1(element, attr);
+        var restore = get$2(element, attr);
         if (restore !== 'no-styles') {
           setAll(element, dom.parseStyle(restore));
         } else {
@@ -790,7 +793,7 @@
     var setScrollPos = function (pos) {
       window.scrollTo(pos.x, pos.y);
     };
-    var viewportUpdate = get$4().fold(function () {
+    var viewportUpdate = get$5().fold(function () {
       return {
         bind: noop,
         unbind: noop
@@ -849,13 +852,22 @@
       var editorContainerStyle = editorContainer.style;
       var iframe = editor.iframeElement;
       var iframeStyle = iframe.style;
+      var handleClasses = function (handler) {
+        handler(body, 'tox-fullscreen');
+        handler(documentElement, 'tox-fullscreen');
+        handler(editorContainer, 'tox-fullscreen');
+        getShadowRoot(editorContainerS).map(function (root) {
+          return getShadowHost(root).dom;
+        }).each(function (host) {
+          handler(host, 'tox-fullscreen');
+          handler(host, 'tox-shadowhost');
+        });
+      };
       var cleanup = function () {
         if (isTouch) {
           restoreStyles(editor.dom);
         }
-        DOM.removeClass(body, 'tox-fullscreen');
-        DOM.removeClass(documentElement, 'tox-fullscreen');
-        DOM.removeClass(editorContainer, 'tox-fullscreen');
+        handleClasses(DOM.removeClass);
         viewportUpdate.unbind();
         Optional.from(fullscreenState.get()).each(function (info) {
           return info.fullscreenChangeHandler.unbind();
@@ -884,9 +896,7 @@
         }
         iframeStyle.width = iframeStyle.height = '100%';
         editorContainerStyle.width = editorContainerStyle.height = '';
-        DOM.addClass(body, 'tox-fullscreen');
-        DOM.addClass(documentElement, 'tox-fullscreen');
-        DOM.addClass(editorContainer, 'tox-fullscreen');
+        handleClasses(DOM.addClass);
         viewportUpdate.bind(editorContainerS);
         editor.on('remove', cleanup);
         fullscreenState.set(newFullScreenInfo);
