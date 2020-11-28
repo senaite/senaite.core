@@ -4,6 +4,7 @@ Changelog
 2.0.0rc3 (unreleased)
 ---------------------
 
+- #1695 Fix form submission for required multi-reference fields
 - #1693 Fix Datepicker localization
 - #1691 Fix immediate logout when timeout exceeds 32 bit integer value
 - #1692 Fix tabbing across elements within analyses listing
