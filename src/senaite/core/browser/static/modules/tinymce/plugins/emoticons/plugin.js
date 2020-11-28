@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.5.1 (2020-10-01)
+ * Version: 5.6.1 (2020-11-25)
  */
 (function () {
     'use strict';
@@ -12,14 +12,21 @@
     var global = tinymce.util.Tools.resolve('tinymce.PluginManager');
 
     var DEFAULT_ID = 'tinymce.plugins.emoticons';
+    var getEmoticonDatabase = function (editor) {
+      return editor.getParam('emoticons_database', 'emojis', 'string');
+    };
     var getEmoticonDatabaseUrl = function (editor, pluginUrl) {
-      return editor.getParam('emoticons_database_url', pluginUrl + '/js/emojis' + editor.suffix + '.js');
+      var database = getEmoticonDatabase(editor);
+      return editor.getParam('emoticons_database_url', pluginUrl + '/js/' + database + editor.suffix + '.js', 'string');
     };
     var getEmoticonDatabaseId = function (editor) {
       return editor.getParam('emoticons_database_id', DEFAULT_ID, 'string');
     };
     var getAppendedEmoticons = function (editor) {
       return editor.getParam('emoticons_append', {}, 'object');
+    };
+    var getEmotionsImageUrl = function (editor) {
+      return editor.getParam('emoticons_images_url', 'https://twemoji.maxcdn.com/v/13.0.1/72x72/', 'string');
     };
 
     var __assign = function () {
@@ -222,6 +229,16 @@
       return hasOwnProperty$1.call(obj, key);
     };
 
+    var checkRange = function (str, substr, start) {
+      return substr === '' || str.length >= substr.length && str.substr(start, start + substr.length) === substr;
+    };
+    var contains = function (str, substr) {
+      return str.indexOf(substr) !== -1;
+    };
+    var startsWith = function (str, prefix) {
+      return checkRange(str, prefix, 0);
+    };
+
     var global$1 = tinymce.util.Tools.resolve('tinymce.Resource');
 
     var global$2 = tinymce.util.Tools.resolve('tinymce.util.Delay');
@@ -255,6 +272,16 @@
     var initDatabase = function (editor, databaseUrl, databaseId) {
       var categories = Cell(Optional.none());
       var all = Cell(Optional.none());
+      var emojiImagesUrl = getEmotionsImageUrl(editor);
+      var getEmoji = function (lib) {
+        if (startsWith(lib.char, '<img')) {
+          return lib.char.replace(/src="([^"]+)"/, function (match, url) {
+            return 'src="' + emojiImagesUrl + url + '"';
+          });
+        } else {
+          return lib.char;
+        }
+      };
       var processEmojis = function (emojis) {
         var cats = {};
         var everything = [];
@@ -262,7 +289,7 @@
           var entry = {
             title: title,
             keywords: lib.keywords,
-            char: lib.char,
+            char: getEmoji(lib),
             category: translateCategory(categoryNameMap, lib.category)
           };
           var current = cats[entry.category] !== undefined ? cats[entry.category] : [];
@@ -348,9 +375,22 @@
       }
       return r;
     };
+    var each$1 = function (xs, f) {
+      for (var i = 0, len = xs.length; i < len; i++) {
+        var x = xs[i];
+        f(x, i);
+      }
+    };
 
-    var contains = function (str, substr) {
-      return str.indexOf(substr) !== -1;
+    var setup = function (editor) {
+      editor.on('PreInit', function () {
+        editor.parser.addAttributeFilter('data-emoticon', function (nodes) {
+          each$1(nodes, function (node) {
+            node.attr('data-mce-resize', 'false');
+            node.attr('data-mce-placeholder', '1');
+          });
+        });
+      });
     };
 
     var emojiMatches = function (emoji, lowerCasePattern) {
@@ -556,6 +596,7 @@
         var database = initDatabase(editor, databaseUrl, databaseId);
         register(editor, database);
         init(editor, database);
+        setup(editor);
       });
     }
 

@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.5.1 (2020-10-01)
+ * Version: 5.6.1 (2020-11-25)
  */
 (function () {
     'use strict';
@@ -110,10 +110,8 @@
     };
     var startStoreDraft = function (editor) {
       var interval = getAutoSaveInterval(editor);
-      global$1.setInterval(function () {
-        if (!editor.removed) {
-          storeDraft(editor);
-        }
+      global$1.setEditorInterval(editor, function () {
+        storeDraft(editor);
       }, interval);
     };
     var restoreLastDraft = function (editor) {

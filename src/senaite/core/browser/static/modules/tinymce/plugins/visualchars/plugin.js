@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.5.1 (2020-10-01)
+ * Version: 5.6.1 (2020-11-25)
  */
 (function () {
     'use strict';
@@ -443,18 +443,20 @@
       editor.selection.moveToBookmark(bookmark);
     };
 
-    var toggleVisualChars = function (editor, toggleState) {
-      var body = editor.getBody();
-      var selection = editor.selection;
-      toggleState.set(!toggleState.get());
+    var applyVisualChars = function (editor, toggleState) {
       fireVisualChars(editor, toggleState.get());
-      var bookmark = selection.getBookmark();
+      var body = editor.getBody();
       if (toggleState.get() === true) {
         show(editor, body);
       } else {
         hide(editor, body);
       }
-      selection.moveToBookmark(bookmark);
+    };
+    var toggleVisualChars = function (editor, toggleState) {
+      toggleState.set(!toggleState.get());
+      var bookmark = editor.selection.getBookmark();
+      applyVisualChars(editor, toggleState);
+      editor.selection.moveToBookmark(bookmark);
     };
 
     var register = function (editor, toggleState) {
@@ -472,9 +474,7 @@
 
     var setup = function (editor, toggleState) {
       editor.on('init', function () {
-        var valueForToggling = !isEnabledByDefault(editor);
-        toggleState.set(valueForToggling);
-        toggleVisualChars(editor, toggleState);
+        applyVisualChars(editor, toggleState);
       });
     };
 
@@ -491,6 +491,7 @@
           }
         });
       }
+      editor.on('remove', debouncedToggle.stop);
     };
 
     var toggleActiveState = function (editor, enabledStated) {
@@ -526,7 +527,7 @@
 
     function Plugin () {
       global.add('visualchars', function (editor) {
-        var toggleState = Cell(false);
+        var toggleState = Cell(isEnabledByDefault(editor));
         register(editor, toggleState);
         register$1(editor, toggleState);
         setup$1(editor, toggleState);
