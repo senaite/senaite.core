@@ -23,6 +23,7 @@ import traceback
 
 import transaction
 from bika.lims import api
+from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.catalog import SETUP_CATALOG
 from bika.lims.setuphandlers import add_dexterity_setup_items
@@ -51,6 +52,12 @@ UNINSTALL_PRODUCTS = [
 INDEXES_TO_ADD = [
     # List of tuples (catalog_name, index_name, index meta type)
     (SETUP_CATALOG, "department_id", "KeywordIndex"),
+]
+
+METADATA_TO_REMOVE = [
+    # Only used in Analyses listing and it's behavior is bizarre, probably
+    # because is a dict and requires special care with ZODB
+    (CATALOG_ANALYSIS_LISTING, "getInterimFields"),
 ]
 
 
@@ -109,6 +116,9 @@ def upgrade(tool):
     remove_all_supplyorders(portal)
     remove_supplyorder_typeinfo(portal)
     remove_supplyorder_workflow(portal)
+
+    # Remove stale metadata
+    remove_stale_metadata(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
@@ -331,3 +341,21 @@ def remove_supplyorder_workflow(portal):
     if wf is not None:
         wf_tool.manage_delObjects(wf.getId())
     logger.info("Remove supplyorder workflow [DONE]")
+
+
+def remove_stale_metadata(portal):
+    logger.info("Removing stale metadata ...")
+    for catalog, column in METADATA_TO_REMOVE:
+        del_metadata(catalog, column)
+    logger.info("Removing stale metadata ... [DONE]")
+
+
+def del_metadata(catalog_id, column):
+    logger.info("Removing '{}' metadata from '{}' ..."
+                .format(column, catalog_id))
+    catalog = api.get_tool(catalog_id)
+    if column not in catalog.schema():
+        logger.info("Metadata '{}' not in catalog '{}' [SKIP]"
+                    .format(column, catalog_id))
+        return
+    catalog.delColumn(column)
