@@ -820,7 +820,8 @@ class AnalysesView(BikaListingView):
 
         # Set interim fields. Note we add the key 'formatted_value' to the list
         # of interims the analysis has already assigned.
-        interim_fields = analysis_brain.getInterimFields or list()
+        analysis_obj = self.get_object(analysis_brain)
+        interim_fields = analysis_obj.getInterimFields() or list()
 
         # Copy to prevent to avoid persistent changes
         interim_fields = copy(interim_fields)

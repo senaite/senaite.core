@@ -18,7 +18,6 @@
 # Copyright 2018-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from bika.lims import api
 from AccessControl import getSecurityManager
 from plone.app.contentmenu.menu import \
     DisplaySubMenuItem as BaseDisplaySubMenuItem
@@ -29,7 +28,6 @@ from plone.app.contentmenu.menu import \
 from plone.app.contentmenu.menu import \
     WorkflowSubMenuItem as BaseWorkflowSubMenuItem
 from plone.memoize.instance import memoize
-from zope.component import getMultiAdapter
 from plone.portlets.interfaces import ILocalPortletAssignable
 from senaite.core.interfaces import IShowDisplayMenu
 from senaite.core.interfaces import IShowFactoriesMenu
@@ -47,17 +45,8 @@ class FactoriesSubMenuItem(BaseFactoriesSubMenuItem):
     """The "Add" Menu
     """
 
-    @property
-    @memoize
-    def senaite_theme(self):
-        return getMultiAdapter(
-            (self.context, self.request),
-            name="senaite_theme")
-
     @memoize
     def available(self):
-        if api.is_portal(self.context):
-            return True
         return IShowFactoriesMenu.providedBy(self.context)
 
 

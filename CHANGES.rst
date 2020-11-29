@@ -5,6 +5,7 @@ Changelog
 ---------------------
 
 - #1690 Allow to add new sections in Sample via adapters
+- #1696 Fix interims with choices are not displayed in listings after a while
 - #1695 Fix form submission for required multi-reference fields
 - #1693 Fix Datepicker localization
 - #1691 Fix immediate logout when timeout exceeds 32 bit integer value

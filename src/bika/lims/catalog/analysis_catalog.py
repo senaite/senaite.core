@@ -80,7 +80,6 @@ _columns_list = [
     "getUnit",
     "getKeyword",
     "getCategoryTitle",
-    "getInterimFields",
     "getRemarks",
     "getRetestOfUID",
     "getDateSampled",
