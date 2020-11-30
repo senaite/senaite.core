@@ -21,6 +21,7 @@
 import json
 from collections import OrderedDict
 from copy import copy
+from copy import deepcopy
 
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
@@ -824,7 +825,7 @@ class AnalysesView(BikaListingView):
         interim_fields = analysis_obj.getInterimFields() or list()
 
         # Copy to prevent to avoid persistent changes
-        interim_fields = copy(interim_fields)
+        interim_fields = deepcopy(interim_fields)
 
         for interim_field in interim_fields:
             interim_keyword = interim_field.get('keyword', '')
