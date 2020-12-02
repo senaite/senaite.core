@@ -4,7 +4,8 @@ Changelog
 2.0.0rc3 (unreleased)
 ---------------------
 
-- #1690 Allow to add new sections in Sample via adapters
+- #1690 Added ContentSectionViewletManager to allow dynamic addition of sections
+- #1698 Apply focus styling for setup view tiles when tabbing
 - #1696 Fix interims with choices are not displayed in listings after a while
 - #1695 Fix form submission for required multi-reference fields
 - #1693 Fix Datepicker localization

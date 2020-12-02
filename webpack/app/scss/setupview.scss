@@ -28,3 +28,8 @@
 #setupview .tile:hover {
     background-color: $gray-200;
 }
+
+#setupview .tile:focus {
+    background-color: $gray-200;
+    color: #2d5e77;
+}
