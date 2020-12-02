@@ -18,33 +18,15 @@
 # Copyright 2018-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from plone.app.z3cform.interfaces import IPloneFormLayer
-from zope.interface import Interface
+from plone.app.viewletmanager.manager import OrderedViewletManager
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
 
-class ISenaiteCore(Interface):
-    """Marker interface that defines a Zope 3 browser layer.
-    """
+class ContentSectionsViewletManager(OrderedViewletManager):
+    custom_template = ViewPageTemplateFile("templates/contentsections.pt")
 
+    def render(self):
+        return self.custom_template()
 
-class ISenaiteFormLayer(IPloneFormLayer):
-    """Used to override plone.app.z3cform forms
-    """
-
-
-class IShowDisplayMenu(Interface):
-    """Marker interface that can be applied for contents that should display
-    the "Display" menu
-    """
-
-
-class IShowFactoriesMenu(Interface):
-    """Marker interface that can be applied for contents that should display
-    the "Add" menu
-    """
-
-
-class IHideActionsMenu(Interface):
-    """Marker interface that can be applied for conttents that should not
-    display the content actions menu
-    """
+    def get_sections_viewlets(self):
+        return sorted(self.viewlets, key=lambda v: v.order)

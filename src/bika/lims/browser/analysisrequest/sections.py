@@ -20,17 +20,12 @@
 
 from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
-from bika.lims.interfaces import IAnalysisRequest
-from senaite.core.interfaces import ISampleSection
-from zope.component import adapts
-from zope.interface import implementer
+from plone.app.layout.viewlets import ViewletBase
 
 
-@implementer(ISampleSection)
-class LabAnalysesSection(object):
-    """Lab Analyses section adapter for Sample view
+class LabAnalysesViewlet(ViewletBase):
+    """Laboratory analyses section viewlet for Sample view
     """
-    adapts(IAnalysisRequest)
 
     # Order index for this section
     order = 10
@@ -39,8 +34,9 @@ class LabAnalysesSection(object):
     icon_name = "analysisservice"
     capture = "lab"
 
-    def __init__(self, sample):
-        self.sample = sample
+    @property
+    def sample(self):
+        return self.view.context
 
     def is_visible(self):
         """Returns true if this sample contains at least one analysis for the
@@ -55,6 +51,9 @@ class LabAnalysesSection(object):
         view = api.get_view(view_name, context=self.sample, request=request)
         return view
 
+    def index(self):
+        return self.render()
+
     def render(self):
         view = self.get_listing_view()
         view.update()
@@ -62,16 +61,16 @@ class LabAnalysesSection(object):
         return view.ajax_contents_table()
 
 
-class FieldAnalysesSection(LabAnalysesSection):
-    """Field analyses section adapter for Sample view
+class FieldAnalysesViewlet(LabAnalysesViewlet):
+    """Field analyses section viewlet for Sample view
     """
     order = 5
     title = _("Field Analyses")
     capture = "field"
 
 
-class QCAnalysesSection(LabAnalysesSection):
-    """QC analyses section adapter for Sample view
+class QCAnalysesViewlet(LabAnalysesViewlet):
+    """QC analyses section viewlet for Sample view
     """
     order = 50
     title = _("QC Analyses")

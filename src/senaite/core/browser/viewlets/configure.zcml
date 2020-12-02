@@ -227,5 +227,12 @@
       layer="senaite.core.interfaces.ISenaiteCore"
       />
 
+  <!-- Sections Viewlet Manager -->
+  <browser:viewletManager
+    name="senaite.contentsections"
+    provides=".interfaces.IContentSection"
+    class=".contentsections.ContentSectionsViewletManager"
+    permission="zope2.View"
+    layer="senaite.core.interfaces.ISenaiteCore" />
 
 </configure>

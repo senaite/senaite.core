@@ -1,0 +1,20 @@
+<div id="content-sections" i18n:domain="senaite.core">
+
+  <div class="row mb-4" tal:repeat="section view/get_sections_viewlets">
+    <div class="col-sm-12" tal:condition="section/is_visible">
+
+      <!-- Section title -->
+      <h3 tal:define="icon section/icon_name|nothing;
+                      title section/title|nothing"
+          tal:condition="title">
+        <img tal:condition="icon|nothing" tal:attributes="src string:senaite_theme/icon/${icon}"/>
+        <span i18n:translate="" tal:content="title"/>
+      </h3>
+
+      <!-- Section content -->
+      <span tal:replace="structure python:section.render()"/>
+
+    </div>
+  </div>
+
+</div>

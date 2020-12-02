@@ -71,19 +71,7 @@
       <!-- /Remarks Widget -->
 
       <!-- Additional sections -->
-      <div class="row mb-4" tal:repeat="section view/get_sections">
-        <div class="col-sm-12"
-             tal:condition="section/is_visible">
-          <h3 tal:define="icon section/icon_name|nothing;
-                          title section/title|nothing"
-              tal:condition="title">
-            <img tal:condition="icon|nothing"
-                 tal:attributes="src string:senaite_theme/icon/${icon}"/>
-            <span i18n:translate="" tal:content="title"/>
-          </h3>
-          <span tal:replace="structure python:section.render()"/>
-        </div>
-      </div>
+      <div tal:replace="structure provider:senaite.contentsections"></div>
 
       <!-- Results interpretation -->
       <div class="row">

@@ -22,9 +22,6 @@ from bika.lims import api
 from bika.lims.browser import BrowserView
 from bika.lims.browser.header_table import HeaderTableView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from senaite.core.interfaces import ISampleSection
-from zope.component import subscribers
-
 from resultsinterpretation import ARResultsInterpretationView
 
 
@@ -49,14 +46,6 @@ class AnalysisRequestViewView(BrowserView):
         self.riview = ARResultsInterpretationView(self.context, self.request)
 
         return self.template()
-
-    def get_sections(self):
-        """Returns a list with adapters that implement ISampleSection
-        """
-        # We use subscriber adapters here because we need different add-ons to
-        # be able to add their own sections without dependencies amongst them
-        sections = subscribers((self.context, ), ISampleSection)
-        return sorted(sections, key=lambda s: getattr(s, "order", 100))
 
     def is_hazardous(self):
         """Checks if the AR is hazardous

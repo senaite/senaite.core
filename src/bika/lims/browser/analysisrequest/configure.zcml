@@ -95,23 +95,32 @@
       layer="bika.lims.interfaces.IBikaLIMS"
       />
 
-  <!-- Section for Field Analyses -->
-  <subscriber
+  <!-- Field Analyses Section -->
+  <browser:viewlet
     for="bika.lims.interfaces.IAnalysisRequest"
-    provides="senaite.core.interfaces.ISampleSection"
-    factory=".sections.FieldAnalysesSection"/>
+    name="senaite.core.section.field_analyses"
+    manager="senaite.core.browser.viewlets.interfaces.IContentSection"
+    class=".sections.FieldAnalysesViewlet"
+    layer="senaite.core.interfaces.ISenaiteCore"
+    permission="zope2.View" />
 
-  <!-- Section for Laboratory Analyses -->
-  <subscriber
+  <!-- Lab Analyses Section -->
+  <browser:viewlet
     for="bika.lims.interfaces.IAnalysisRequest"
-    provides="senaite.core.interfaces.ISampleSection"
-    factory=".sections.LabAnalysesSection"/>
+    name="senaite.core.section.lab_analyses"
+    manager="senaite.core.browser.viewlets.interfaces.IContentSection"
+    class=".sections.LabAnalysesViewlet"
+    layer="senaite.core.interfaces.ISenaiteCore"
+    permission="zope2.View" />
 
-  <!-- Section for QC Analyses -->
-  <subscriber
+  <!-- QC Analyses Section -->
+  <browser:viewlet
     for="bika.lims.interfaces.IAnalysisRequest"
-    provides="senaite.core.interfaces.ISampleSection"
-    factory=".sections.QCAnalysesSection"/>
+    name="senaite.core.section.qc_analyses"
+    manager="senaite.core.browser.viewlets.interfaces.IContentSection"
+    class=".sections.QCAnalysesViewlet"
+    layer="senaite.core.interfaces.ISenaiteCore"
+    permission="zope2.View" />
 
   <!-- Table Lab Analyses -->
   <browser:page

@@ -44,3 +44,8 @@ class IAboveListingTable(IViewletManager):
 class IBelowListingTable(IViewletManager):
     """A viewlet manager that sits below listing tables
     """
+
+
+class IContentSection(IViewletManager):
+    """A viewlet manager that render sections inside content
+    """
