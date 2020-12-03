@@ -132,3 +132,12 @@ div.overlay div.close {
         padding-left: 0;
     }
 }
+
+/* Header and description in content views */
+article#content header {
+  margin-bottom:15px;
+}
+
+.documentDescription {
+  font-size:95%;
+}
