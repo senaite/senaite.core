@@ -16,6 +16,13 @@
     <viewlet name="plone.contentviews" />
   </order>
 
+  <!-- Viewlets in sample sections -->
+  <order manager="senaite.samplesections" skinname="*">
+    <viewlet name="senaite.core.samplesection.field_analyses" />
+    <viewlet name="senaite.core.samplesection.lab_analyses" />
+    <viewlet name="senaite.core.samplesection.qc_analyses" />
+  </order>
+
   <!-- Hidden viewlets in plone.portalheader -->
   <hidden manager="plone.portalheader" skinname="*" purge="True">
     <viewlet name="plone.searchbox"/>

@@ -70,8 +70,12 @@
       </div>
       <!-- /Remarks Widget -->
 
-      <!-- Additional sections -->
-      <div tal:replace="structure provider:senaite.contentsections"></div>
+      <!-- Viewlet manager for sample sections -->
+      <div class="row" id="sample-sections">
+        <div class="col-sm-12">
+          <div tal:replace="structure provider:senaite.samplesections"></div>
+        </div>
+      </div>
 
       <!-- Results interpretation -->
       <div class="row">

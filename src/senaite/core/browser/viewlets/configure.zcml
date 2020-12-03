@@ -227,12 +227,41 @@
       layer="senaite.core.interfaces.ISenaiteCore"
       />
 
-  <!-- Sections Viewlet Manager -->
+  <!-- Viewlet manager that sits in the sample view content area -->
   <browser:viewletManager
-    name="senaite.contentsections"
-    provides=".interfaces.IContentSection"
-    class=".contentsections.ContentSectionsViewletManager"
-    permission="zope2.View"
-    layer="senaite.core.interfaces.ISenaiteCore" />
+      name="senaite.samplesections"
+      provides=".interfaces.ISampleSection"
+      class="plone.app.viewletmanager.manager.OrderedViewletManager"
+      permission="zope2.View"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
+  <!-- Sample section viewlet: lab analyses lisiting -->
+  <browser:viewlet
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="senaite.core.samplesection.lab_analyses"
+      manager=".interfaces.ISampleSection"
+      class=".sampleanalyses.LabAnalysesViewlet"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      permission="zope2.View" />
+
+
+  <!-- Sample section viewlet: field analyses lisiting -->
+  <browser:viewlet
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="senaite.core.samplesection.field_analyses"
+      manager=".interfaces.ISampleSection"
+      class=".sampleanalyses.FieldAnalysesViewlet"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      permission="zope2.View" />
+
+  <!-- Sample section viewlet: QC analyses listing -->
+  <browser:viewlet
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="senaite.core.samplesection.qc_analyses"
+      manager=".interfaces.ISampleSection"
+      class=".sampleanalyses.QCAnalysesViewlet"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      permission="zope2.View" />
 
 </configure>

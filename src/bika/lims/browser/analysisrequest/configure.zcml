@@ -95,33 +95,6 @@
       layer="bika.lims.interfaces.IBikaLIMS"
       />
 
-  <!-- Field Analyses Section -->
-  <browser:viewlet
-    for="bika.lims.interfaces.IAnalysisRequest"
-    name="senaite.core.section.field_analyses"
-    manager="senaite.core.browser.viewlets.interfaces.IContentSection"
-    class=".sections.FieldAnalysesViewlet"
-    layer="senaite.core.interfaces.ISenaiteCore"
-    permission="zope2.View" />
-
-  <!-- Lab Analyses Section -->
-  <browser:viewlet
-    for="bika.lims.interfaces.IAnalysisRequest"
-    name="senaite.core.section.lab_analyses"
-    manager="senaite.core.browser.viewlets.interfaces.IContentSection"
-    class=".sections.LabAnalysesViewlet"
-    layer="senaite.core.interfaces.ISenaiteCore"
-    permission="zope2.View" />
-
-  <!-- QC Analyses Section -->
-  <browser:viewlet
-    for="bika.lims.interfaces.IAnalysisRequest"
-    name="senaite.core.section.qc_analyses"
-    manager="senaite.core.browser.viewlets.interfaces.IContentSection"
-    class=".sections.QCAnalysesViewlet"
-    layer="senaite.core.interfaces.ISenaiteCore"
-    permission="zope2.View" />
-
   <!-- Table Lab Analyses -->
   <browser:page
       for="bika.lims.interfaces.IAnalysisRequest"

@@ -21,14 +21,13 @@
 from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
 from plone.app.layout.viewlets import ViewletBase
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
 
 class LabAnalysesViewlet(ViewletBase):
     """Laboratory analyses section viewlet for Sample view
     """
-
-    # Order index for this section
-    order = 10
+    index = ViewPageTemplateFile("templates/sampleanalyses.pt")
 
     title = _("Analyses")
     icon_name = "analysisservice"
@@ -38,7 +37,7 @@ class LabAnalysesViewlet(ViewletBase):
     def sample(self):
         return self.view.context
 
-    def is_visible(self):
+    def available(self):
         """Returns true if this sample contains at least one analysis for the
         point of capture (capture)
         """
@@ -51,10 +50,7 @@ class LabAnalysesViewlet(ViewletBase):
         view = api.get_view(view_name, context=self.sample, request=request)
         return view
 
-    def index(self):
-        return self.render()
-
-    def render(self):
+    def contents_table(self):
         view = self.get_listing_view()
         view.update()
         view.before_render()
@@ -64,7 +60,6 @@ class LabAnalysesViewlet(ViewletBase):
 class FieldAnalysesViewlet(LabAnalysesViewlet):
     """Field analyses section viewlet for Sample view
     """
-    order = 5
     title = _("Field Analyses")
     capture = "field"
 
@@ -72,11 +67,10 @@ class FieldAnalysesViewlet(LabAnalysesViewlet):
 class QCAnalysesViewlet(LabAnalysesViewlet):
     """QC analyses section viewlet for Sample view
     """
-    order = 50
     title = _("QC Analyses")
     capture = "qc"
 
-    def is_visible(self):
+    def available(self):
         """Returns true if this sample contains at least one qc analysis
         """
         analyses = self.sample.getQCAnalyses()

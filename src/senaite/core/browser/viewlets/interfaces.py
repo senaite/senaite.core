@@ -46,6 +46,6 @@ class IBelowListingTable(IViewletManager):
     """
 
 
-class IContentSection(IViewletManager):
-    """A viewlet manager that render sections inside content
+class ISampleSection(IViewletManager):
+    """A viewlet manager responsible for sample sections below the header table
     """

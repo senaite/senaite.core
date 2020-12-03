@@ -90,6 +90,7 @@ def upgrade(tool):
     setup.runImportStepFromProfile(profile, "typeinfo")
     setup.runImportStepFromProfile(profile, "workflow")
     setup.runImportStepFromProfile(profile, "browserlayer")
+    setup.runImportStepFromProfile(profile, "viewlets")
     # run import steps located in bika.lims profiles
     _run_import_step(portal, "typeinfo", profile="profile-bika.lims:default")
     _run_import_step(portal, "workflow", profile="profile-bika.lims:default")
