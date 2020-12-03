@@ -35,7 +35,7 @@ class LabAnalysesViewlet(ViewletBase):
 
     @property
     def sample(self):
-        return self.view.context
+        return self.context
 
     def available(self):
         """Returns true if this sample contains at least one analysis for the
