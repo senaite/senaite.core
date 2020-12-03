@@ -4,6 +4,7 @@ Changelog
 2.0.0rc3 (unreleased)
 ---------------------
 
+- #1699 Better styling of header and description in content views
 - #1690 Added ContentSectionViewletManager to allow dynamic addition of sections
 - #1698 Apply focus styling for setup view tiles when tabbing
 - #1696 Fix interims with choices are not displayed in listings after a while
