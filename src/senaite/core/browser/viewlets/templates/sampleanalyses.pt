@@ -1,4 +1,5 @@
 <div class="analysis-listing-table"
+     tal:condition="python:view.available()"
      i18n:domain="senaite.core">
   <div class="row mb-4">
     <div class="col-sm-12">
