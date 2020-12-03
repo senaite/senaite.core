@@ -2,10 +2,12 @@ const path = require("path");
 const webpack = require("webpack");
 const childProcess = require("child_process");
 
+const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
+const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const { CleanWebpackPlugin } = require("clean-webpack-plugin");
+
 
 const gitCmd = "git rev-list -1 HEAD -- `pwd`";
 let gitHash = childProcess.execSync(gitCmd).toString().substring(0, 7);
@@ -93,6 +95,22 @@ module.exports = {
         ]
       }
     ]
+  },
+  optimization: {
+    minimize: true,
+    minimizer: [
+      // https://webpack.js.org/plugins/css-minimizer-webpack-plugin/
+      new CssMinimizerPlugin({
+        minimizerOptions: {
+          preset: [
+            "default",
+            {
+              discardComments: { removeAll: true },
+            },
+          ],
+        },
+      }),
+    ],
   },
   plugins: [
     // https://github.com/johnagan/clean-webpack-plugin
