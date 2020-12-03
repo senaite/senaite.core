@@ -19,7 +19,6 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
-from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.analyses.qc import QCAnalysesView
 from bika.lims.browser.analyses.view import AnalysesView
 

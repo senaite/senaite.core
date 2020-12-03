@@ -44,3 +44,8 @@ class IAboveListingTable(IViewletManager):
 class IBelowListingTable(IViewletManager):
     """A viewlet manager that sits below listing tables
     """
+
+
+class ISampleSection(IViewletManager):
+    """A viewlet manager responsible for sample sections below the header table
+    """

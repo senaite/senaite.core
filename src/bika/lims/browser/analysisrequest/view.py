@@ -47,40 +47,6 @@ class AnalysisRequestViewView(BrowserView):
 
         return self.template()
 
-    def render_analyses_table(self, table="lab"):
-        """Render Analyses Table
-        """
-        if table not in ["lab", "field", "qc"]:
-            raise KeyError("Table '{}' does not exist".format(table))
-        view_name = "table_{}_analyses".format(table)
-        view = api.get_view(
-            view_name, context=self.context, request=self.request)
-        # Call listing hooks
-        view.update()
-        view.before_render()
-        return view.ajax_contents_table()
-
-    def has_lab_analyses(self):
-        """Check if the AR contains lab analyses
-        """
-        # Negative performance impact - add a Metadata column
-        analyses = self.context.getAnalyses(getPointOfCapture="lab")
-        return len(analyses) > 0
-
-    def has_field_analyses(self):
-        """Check if the AR contains field analyses
-        """
-        # Negative performance impact - add a Metadata column
-        analyses = self.context.getAnalyses(getPointOfCapture="field")
-        return len(analyses) > 0
-
-    def has_qc_analyses(self):
-        """Check if the AR contains field analyses
-        """
-        # Negative performance impact - add a Metadata column
-        analyses = self.context.getQCAnalyses()
-        return len(analyses) > 0
-
     def is_hazardous(self):
         """Checks if the AR is hazardous
         """
