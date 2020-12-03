@@ -27,11 +27,9 @@
       this.on_analysis_template_changed = bind(this.on_analysis_template_changed, this);
       this.on_analysis_lock_button_click = bind(this.on_analysis_lock_button_click, this);
       this.on_analysis_details_click = bind(this.on_analysis_details_click, this);
-      this.on_analysis_specification_changed = bind(this.on_analysis_specification_changed, this);
       this.on_referencefield_value_changed = bind(this.on_referencefield_value_changed, this);
       this.hide_all_service_info = bind(this.hide_all_service_info, this);
       this.get_service = bind(this.get_service, this);
-      this.set_service_spec = bind(this.set_service_spec, this);
       this.set_service = bind(this.set_service, this);
       this.set_template = bind(this.set_template, this);
       this.get_reference_field_value = bind(this.get_reference_field_value, this);
@@ -93,10 +91,6 @@
       $("body").on("click", "tr[fieldname=InvoiceExclude] input[type='checkbox']", this.recalculate_records);
       $("body").on("click", "tr[fieldname=Analyses] input[type='checkbox']", this.on_analysis_checkbox_click);
       $("body").on("selected change", "input[type='text'].referencewidget", this.on_referencefield_value_changed);
-      $("body").on("change", "input.min", this.on_analysis_specification_changed);
-      $("body").on("change", "input.max", this.on_analysis_specification_changed);
-      $("body").on("change", "input.warn_min", this.on_analysis_specification_changed);
-      $("body").on("change", "input.warn_max", this.on_analysis_specification_changed);
       $("body").on("click", ".service-lockbtn", this.on_analysis_lock_button_click);
       $("body").on("click", ".service-infobtn", this.on_analysis_details_click);
       $("body").on("selected change", "tr[fieldname=Template] input[type='text']", this.on_analysis_template_changed);
@@ -257,7 +251,7 @@
       $(".service-lockbtn").hide();
       return $.each(records, function(arnum, record) {
         var discard;
-        discard = ["service_metadata", "specification_metadata", "template_metadata"];
+        discard = ["service_metadata", "template_metadata"];
         $.each(record, function(name, metadata) {
           if (indexOf.call(discard, name) >= 0 || !name.endsWith("_metadata")) {
             return;
@@ -276,11 +270,6 @@
         });
         $.each(record.template_metadata, function(uid, template) {
           return me.set_template(arnum, template);
-        });
-        $.each(record.specification_metadata, function(uid, spec) {
-          return $.each(spec.specifications, function(uid, service_spec) {
-            return me.set_service_spec(arnum, uid, service_spec);
-          });
         });
         return $.each(record.unmet_dependencies, function(uid, dependencies) {
           var context, dialog, service;
@@ -679,24 +668,6 @@
       return $(this).trigger("services:changed");
     };
 
-    AnalysisRequestAdd.prototype.set_service_spec = function(arnum, uid, spec) {
-
-      /*
-       * Set the specification of the service
-       */
-      var el, max, min, warn_max, warn_min;
-      console.debug("*** set_service_spec::AR=" + arnum + " UID=" + uid + " spec=", spec);
-      el = $("div#" + uid + "-" + arnum + "-specifications");
-      min = $(".min", el);
-      max = $(".max", el);
-      warn_min = $(".warn_min", el);
-      warn_max = $(".warn_max", el);
-      min.val(spec.min);
-      max.val(spec.max);
-      warn_min.val(spec.warn_min);
-      return warn_max.val(spec.warn_max);
-    };
-
     AnalysisRequestAdd.prototype.get_service = function(uid) {
 
       /*
@@ -792,23 +763,12 @@
       return $(me).trigger("form:changed");
     };
 
-    AnalysisRequestAdd.prototype.on_analysis_specification_changed = function(event) {
-
-      /*
-       * Eventhandler when the specification of an analysis service changed
-       */
-      var me;
-      console.debug("°°° on_analysis_specification_changed °°°");
-      me = this;
-      return $(me).trigger("form:changed");
-    };
-
     AnalysisRequestAdd.prototype.on_analysis_details_click = function(event) {
 
       /*
        * Eventhandler when the user clicked on the info icon of a service.
        */
-      var $el, arnum, context, data, el, extra, info, profiles, record, specifications, template, templates, uid;
+      var $el, arnum, context, data, el, extra, info, profiles, record, template, templates, uid;
       el = event.currentTarget;
       $el = $(el);
       uid = $el.attr("uid");
@@ -819,8 +779,7 @@
       data = info.data("data");
       extra = {
         profiles: [],
-        templates: [],
-        specifications: []
+        templates: []
       };
       record = this.records_snapshot[arnum];
       if (uid in record.service_to_profiles) {
@@ -833,12 +792,6 @@
         templates = record.service_to_templates[uid];
         $.each(templates, function(index, uid) {
           return extra["templates"].push(record.template_metadata[uid]);
-        });
-      }
-      if (uid in record.service_to_specifications) {
-        specifications = record.service_to_specifications[uid];
-        $.each(specifications, function(index, uid) {
-          return extra["specifications"].push(record.specification_metadata[uid]);
         });
       }
       if (!data) {

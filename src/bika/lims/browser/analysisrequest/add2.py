@@ -98,7 +98,6 @@ class AnalysisRequestAddView(BrowserView):
         self.tmp_ar = self.get_ar()
         self.ar_count = self.get_ar_count()
         self.fieldvalues = self.generate_fieldvalues(self.ar_count)
-        self.specifications = self.generate_specifications(self.ar_count)
         self.ShowPrices = self.setup.getShowPrices()
         self.theme = api.get_view("senaite_theme")
         self.icon = self.theme.icon_url("Sample")
@@ -135,12 +134,6 @@ class AnalysisRequestAddView(BrowserView):
         currency = setup.getCurrency()
         currencies = locales.getLocale('en').numbers.currencies
         return currencies[currency]
-
-    def is_ar_specs_allowed(self):
-        """Checks if AR Specs are allowed
-        """
-        setup = api.get_setup()
-        return setup.getEnableARSpecs()
 
     def get_ar_count(self):
         """Return the ar_count request paramteter
@@ -183,34 +176,6 @@ class AnalysisRequestAddView(BrowserView):
         base_name = name.split("-")[0]
         suffix = "-{}".format(arnum)
         return "{}{}".format(base_name, suffix)
-
-    def generate_specifications(self, count=1):
-        """Returns a mapping of count -> specification
-        """
-
-        out = {}
-
-        # mapping of UID index to AR objects {1: <AR1>, 2: <AR2> ...}
-        copy_from = self.get_copy_from()
-
-        for arnum in range(count):
-            # get the source object
-            source = copy_from.get(arnum)
-
-            if source is None:
-                out[arnum] = {}
-                continue
-
-            # get the results range from the source object
-            results_range = source.getResultsRange()
-
-            # mapping of keyword -> rr specification
-            specification = {}
-            for rr in results_range:
-                specification[rr.get("keyword")] = rr
-            out[arnum] = specification
-
-        return out
 
     def get_input_widget(self, fieldname, arnum=0, **kw):
         """Get the field widget of the AR in column <arnum>
@@ -1098,47 +1063,6 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             "title": obj and api.get_title(obj) or ""
         }
 
-    @cache(cache_key)
-    def get_specification_info(self, obj):
-        """Returns the info for a Specification
-        """
-        info = self.get_base_info(obj)
-
-        results_range = obj.getResultsRange()
-        info.update({
-            "results_range": results_range,
-            "sample_type_uid": obj.getSampleTypeUID(),
-            "sample_type_title": obj.getSampleTypeTitle(),
-            "client_uid": obj.getClientUID(),
-        })
-
-        bsc = api.get_tool("bika_setup_catalog")
-
-        def get_service_by_keyword(keyword):
-            if keyword is None:
-                return []
-            return map(api.get_object, bsc({
-                "portal_type": "AnalysisService",
-                "getKeyword": keyword
-            }))
-
-        # append a mapping of service_uid -> specification
-        specifications = {}
-        for spec in results_range:
-            service_uid = spec.get("uid")
-            if service_uid is None:
-                # service spec is not attached to a specific service, but to a
-                # keyword
-                for service in get_service_by_keyword(spec.get("keyword")):
-                    service_uid = api.get_uid(service)
-                    specifications[service_uid] = spec
-                continue
-            specifications[service_uid] = spec
-        info["specifications"] = specifications
-        # spec'd service UIDs
-        info["service_uids"] = specifications.keys()
-        return info
-
     def ajax_get_global_settings(self):
         """Returns the global Bika settings
         """
@@ -1229,11 +1153,6 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             # Get reference fields metadata
             metadata = self.get_record_metadata(record)
 
-            # Extract additional metadata from this record
-            # service_to_specs
-            service_to_specs = self.get_service_to_specs_info(metadata)
-            metadata.update(service_to_specs)
-
             # service_to_templates, template_to_services
             templates_additional = self.get_template_additional_info(metadata)
             metadata.update(templates_additional)
@@ -1301,18 +1220,6 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             metadata[key] = {obj_info["uid"]: obj_info}
 
         return metadata
-
-    def get_service_to_specs_info(self, metadata):
-        service_to_specs = {}
-        specifications = metadata.get("specification_metadata", {})
-        for uid, obj_info in specifications.items():
-            service_uids = obj_info["service_uids"]
-            for service_uid in service_uids:
-                if service_uid in service_to_specs:
-                    service_to_specs[service_uid].append(uid)
-                else:
-                    service_to_specs[service_uid] = [uid]
-        return {"service_to_specifications": service_to_specs}
 
     def get_template_additional_info(self, metadata):
         template_to_services = {}
@@ -1602,12 +1509,6 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
             file_fields = filter(lambda f: f.endswith("_file"), record)
             attachments[n] = map(lambda f: record.pop(f), file_fields)
 
-            # Process Specifications field (dictionary like records instance).
-            # -> Convert to a standard Python dictionary.
-            specifications = map(
-                lambda x: dict(x), record.pop("Specifications", []))
-            record["Specifications"] = specifications
-
             # Required fields and their values
             required_keys = [field.getName() for field in fields
                              if field.required]
@@ -1679,16 +1580,12 @@ class ajaxAnalysisRequestAddView(AnalysisRequestAddView):
                 actions.resume()
                 raise RuntimeError("No client found")
 
-            # get the specifications and pass them to the AR create function.
-            specifications = record.pop("Specifications", {})
-
             # Create the Analysis Request
             try:
                 ar = crar(
                     client,
                     self.request,
                     record,
-                    results_ranges=specifications
                 )
             except (KeyError, RuntimeError) as e:
                 actions.resume()
