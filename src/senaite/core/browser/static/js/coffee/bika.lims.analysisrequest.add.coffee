@@ -78,11 +78,6 @@ class window.AnalysisRequestAdd
     # Generic onchange event handler for reference fields
     $("body").on "selected change" , "input[type='text'].referencewidget", @on_referencefield_value_changed
 
-    # Analysis Specification changed
-    $("body").on "change", "input.min", @on_analysis_specification_changed
-    $("body").on "change", "input.max", @on_analysis_specification_changed
-    $("body").on "change", "input.warn_min", @on_analysis_specification_changed
-    $("body").on "change", "input.warn_max", @on_analysis_specification_changed
     # Analysis lock button clicked
     $("body").on "click", ".service-lockbtn", @on_analysis_lock_button_click
     # Analysis info button clicked
@@ -247,10 +242,10 @@ class window.AnalysisRequestAdd
     $.each records, (arnum, record) ->
 
       # Apply the values generically, but those to be handled differently
-      discard = ["service_metadata", "specification_metadata", "template_metadata"]
+      discard = ["service_metadata", "template_metadata"]
       $.each record, (name, metadata) ->
         # Discard those fields that will be handled differently and those that
-        # do not contain explicit object metadata (e.g service_to_specification)
+        # do not contain explicit object metadata
         if name in discard or !name.endsWith("_metadata")
           return
         $.each metadata, (uid, obj_info) ->
@@ -273,11 +268,6 @@ class window.AnalysisRequestAdd
       # set template
       $.each record.template_metadata, (uid, template) ->
         me.set_template arnum, template
-
-      # set specification
-      $.each record.specification_metadata, (uid, spec) ->
-        $.each spec.specifications, (uid, service_spec) ->
-          me.set_service_spec arnum, uid, service_spec
 
       # handle unmet dependencies, one at a time
       $.each record.unmet_dependencies, (uid, dependencies) ->
@@ -687,26 +677,6 @@ class window.AnalysisRequestAdd
     $(@).trigger "services:changed"
 
 
-  set_service_spec: (arnum, uid, spec) =>
-    ###
-     * Set the specification of the service
-    ###
-    console.debug "*** set_service_spec::AR=#{arnum} UID=#{uid} spec=", spec
-
-    # get the service specifications
-    el = $("div##{uid}-#{arnum}-specifications")
-
-    min = $(".min", el)
-    max = $(".max", el)
-    warn_min = $(".warn_min", el)
-    warn_max = $(".warn_max", el)
-
-    min.val spec.min
-    max.val spec.max
-    warn_min.val spec.warn_min
-    warn_max.val spec.warn_max
-
-
   get_service: (uid) =>
     ###
      * Fetch the service data from server by UID
@@ -801,18 +771,6 @@ class window.AnalysisRequestAdd
     $(me).trigger "form:changed"
 
 
-  on_analysis_specification_changed: (event) =>
-    ###
-     * Eventhandler when the specification of an analysis service changed
-    ###
-    console.debug "°°° on_analysis_specification_changed °°°"
-
-    me = this
-
-    # trigger form:changed event
-    $(me).trigger "form:changed"
-
-
   on_analysis_details_click: (event) =>
     ###
      * Eventhandler when the user clicked on the info icon of a service.
@@ -833,7 +791,6 @@ class window.AnalysisRequestAdd
     extra =
       profiles: []
       templates: []
-      specifications: []
 
     # get the current snapshot record for this column
     record = @records_snapshot[arnum]
@@ -849,12 +806,6 @@ class window.AnalysisRequestAdd
       templates = record.service_to_templates[uid]
       $.each templates, (index, uid) ->
         extra["templates"].push record.template_metadata[uid]
-
-    # inject specification info
-    if uid of record.service_to_specifications
-      specifications = record.service_to_specifications[uid]
-      $.each specifications, (index, uid) ->
-        extra["specifications"].push record.specification_metadata[uid]
 
     if not data
       @get_service(uid).done (data) ->

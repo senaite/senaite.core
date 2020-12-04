@@ -486,57 +486,6 @@
                             &#9432;
                           </div>
 
-                          <tal:specifications tal:condition="python:view.is_ar_specs_allowed()">
-                            <!-- Specifications -->
-                            <div tal:define="fieldname string:Specifications-${arnum};
-                                             specifications python:view.specifications.get(arnum);
-                                             service_spec python:specifications.get(service_keyword, {})"
-                                 tal:attributes="fieldname string:${fieldname};
-                                                 uid service_uid;
-                                                 arnum arnum;
-                                                 id string:${service_uid}-${arnum}-specifications;
-                                                 class string:service-specifications ${service_uid}-specifications d-sm-flex justify-content-center;">
-                              <input type="hidden"
-                                     tal:attributes="name string:${fieldname}.uid:records;
-                                                     value string:${service_uid}"/>
-                              <input type="hidden"
-                                     tal:attributes="name string:${fieldname}.keyword:records;
-                                                     value string:${service_keyword}"/>
-                              <input type="text"
-                                     class="form-control warn_min"
-                                     size="1"
-                                     placeholder="&lt;min"
-                                     title="&lt;min"
-                                     i18n:attributes="placeholder"
-                                     tal:attributes="name string:${fieldname}.warn_min:records;
-                                                     value python:service_spec.get('warn_min');"/>
-                              <input type="text"
-                                     class="form-control min"
-                                     size="1"
-                                     placeholder="&gt;min"
-                                     title="&gt;min"
-                                     i18n:attributes="placeholder;title"
-                                     tal:attributes="name string:${fieldname}.min:records;
-                                                     value python:service_spec.get('min');"/>
-                              <input type="text"
-                                     class="form-control max"
-                                     size="1"
-                                     placeholder="&lt;max"
-                                     title="&lt;max"
-                                     i18n:attributes="placeholder;title"
-                                     tal:attributes="name string:${fieldname}.max:records;
-                                                     value python:service_spec.get('max');"/>
-                              <input type="text"
-                                     class="form-control warn_max"
-                                     size="1"
-                                     placeholder="&gt;max"
-                                     title="&gt;max"
-                                     i18n:attributes="placeholder;title"
-                                     tal:attributes="name string:${fieldname}.warn_max:records;
-                                                     value python:service_spec.get('warn_max');"/>
-                            </div>
-                          </tal:specifications>
-
                           <!-- Service Info Box -->
                           <div tal:attributes="id string:${service_uid}-info;
                                                class string:${service_uid}-info service-info;">
