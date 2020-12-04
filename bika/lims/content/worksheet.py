@@ -1269,6 +1269,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                     an.setMethod(meth)
 
             an.setInstrument(instrument)
+            an.reindexObject()
             total += 1
 
         self.getField('Instrument').set(self, instrument)

@@ -132,4 +132,4 @@ class SetInstrument():
         instrument = rc.lookupObject(value)
         if not instrument:
             raise Exception("Unable to lookup instrument")
-        self.context.setInstrument(instrument)
+        self.context.setInstrument(instrument, override_analyses=True)
