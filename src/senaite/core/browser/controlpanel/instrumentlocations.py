@@ -28,9 +28,10 @@ class InstrumentLocationsView(ListingView):
                 "icon": "++resource++bika.lims.images/add.png",
             }}
 
-        self.title = self.context.translate(_("Instrument Locations"))
-        self.icon = "++resource++bika.lims.images/instrumenttype_big.png"
-        self.description = ""
+        t = self.context.translate
+        self.title = t(_("Instrument Locations"))
+        self.description = t(
+            "The place where the instrument is located in the laboratory")
 
         self.show_select_row = False
         self.show_select_column = True
