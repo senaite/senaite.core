@@ -24,6 +24,7 @@ from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
+from bika.lims.api import user as api_user
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import ILabContacts
@@ -90,6 +91,12 @@ class LabContactsView(BikaListingView):
             ("EmailAddress", {
                 "title": _("Email Address"),
                 "toggle": True}),
+            ("Username", {
+                "title": _("User name"),
+                "toggle": False}),
+            ("Groups", {
+                "title": _("User groups"),
+                "toggle": False}),
         ))
 
         self.review_states = [
@@ -154,8 +161,23 @@ class LabContactsView(BikaListingView):
         item["BusinessPhone"] = obj.getBusinessPhone()
         item["Fax"] = obj.getBusinessFax()
         item["MobilePhone"] = obj.getMobilePhone()
+        item["Username"] = obj.getUsername()
 
+        # Display the groups the user belongs to, if any
+        groups = self.get_user_groups(obj)
+        item["Groups"] = ", ".join(groups)
         return item
+
+    def get_user_groups(self, contact):
+        """Returns the groups from the contact passed-in
+        """
+        username = contact.getUsername()
+        if not username:
+            return []
+
+        skip = ["AuthenticatedUsers"]
+        groups = api_user.get_groups(username)
+        return filter(lambda g: g not in skip, sorted(groups))
 
 
 schema = ATFolderSchema.copy()
