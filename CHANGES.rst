@@ -6,6 +6,7 @@ Changelog
 
 **Fixed**
 
+- #1704 Fix Cannot override behavior of LabContacts folder on `before_render`
 - #1680 Fix Selected instrument is not assigned to analyses in Worksheet
 - #1673 Fix Samples not sorted in natural order when Worksheet Template is used
 - #1656 Fix Maximum length of Choices subfield (interim) is set to 40
@@ -23,6 +24,7 @@ Changelog
 
 **Added**
 
+- #1704 Add "User name" and "User groups" columns in Lab Contacts list
 - #1612 Add Client sample ID to worksheet template printview
 - #1609 Support result options entry for interim values
 - #1598 Added "modified" index in Sample's (AnalysisRequest) catalog
