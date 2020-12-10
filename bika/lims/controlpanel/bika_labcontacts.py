@@ -89,6 +89,9 @@ class LabContactsView(BikaListingView):
             ("EmailAddress", {
                 "title": _("Email Address"),
                 "toggle": True}),
+            ("UserRoles", {
+                "title": _("User Roles"),
+                "toggle": True}),
         ))
 
         self.review_states = [
@@ -162,6 +165,15 @@ class LabContactsView(BikaListingView):
         item["Fax"] = obj.getBusinessFax()
         item["MobilePhone"] = obj.getMobilePhone()
 
+        user = api.get_user(obj.getUsername())
+        if user is None:
+            roles = ''
+        else:
+            ignored_roles = ['Authenticated', 'Member']
+            roles = filter(lambda r: r not in ignored_roles,
+                           user.getRoles())
+
+        item["UserRoles"] = ','.join(roles)
         return item
 
 
