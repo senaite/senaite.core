@@ -406,9 +406,6 @@ def convert_instrumentlocations_to_dx(portal):
     setup = api.get_setup()
     old = setup.get(old_id)
 
-
-    import pdb; pdb.set_trace()
-
     # return if the old container is already gone
     if not old:
         return
