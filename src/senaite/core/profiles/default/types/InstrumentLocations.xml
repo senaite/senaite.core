@@ -10,7 +10,7 @@
             i18n:translate=""></property>
 
   <!-- content-type icon -->
-  <property name="icon_expr">senaite_theme/icon/instrumentlocations</property>
+  <property name="icon_expr">senaite_theme/icon/instrumentlocation</property>
 
   <!-- factory name; usually the same as type name -->
   <property name="factory">InstrumentLocations</property>
