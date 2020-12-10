@@ -33,7 +33,6 @@ class InstrumentLocationsView(ListingView):
         self.description = t(_(
             "The place where the instrument is located in the laboratory"))
 
-        self.show_select_row = False
         self.show_select_column = True
         self.pagesize = 25
 
