@@ -22,17 +22,19 @@ import collections
 
 from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
+from plone.app.folder.folder import ATFolder
+from plone.app.folder.folder import ATFolderSchema
+from zope.interface.declarations import implements
+
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
+from bika.lims.api import user as api_user
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import ILabContacts
 from bika.lims.permissions import AddLabContact
 from bika.lims.utils import get_email_link
 from bika.lims.utils import get_link
-from plone.app.folder.folder import ATFolder
-from plone.app.folder.folder import ATFolderSchema
-from zope.interface.declarations import implements
 
 
 # TODO: Separate content and view into own modules!
@@ -169,11 +171,11 @@ class LabContactsView(BikaListingView):
         if user is None:
             roles = ''
         else:
-            ignored_roles = ['Authenticated', 'Member']
+            ignored_roles = ["AuthenticatedUsers"]
             roles = filter(lambda r: r not in ignored_roles,
-                           user.getRoles())
+                           api_user.get_groups(user))
 
-        item["UserRoles"] = ','.join(roles)
+        item["UserRoles"] = ', '.join(sorted(roles))
         return item
 
 
