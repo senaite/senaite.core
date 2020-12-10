@@ -18,6 +18,7 @@
 # Copyright 2018-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import json
 import time
 import traceback
 
@@ -26,15 +27,23 @@ from bika.lims import api
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.catalog import SETUP_CATALOG
+from bika.lims.interfaces import IAuditable
 from bika.lims.setuphandlers import add_dexterity_setup_items
+from plone.dexterity.fti import DexterityFTI
 from senaite.core import logger
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.setuphandlers import _run_import_step
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
+from zope.interface import alsoProvides
 
 version = "2.0.0"  # Remember version number in metadata.xml and setup.py
 profile = "profile-{0}:default".format(product)
+
+RENAME_AT_TYPES = [
+    "InstrumentLocation",
+    "InstrumentLocations",
+]
 
 INSTALL_PRODUCTS = [
     "senaite.core",
@@ -76,6 +85,9 @@ def upgrade(tool):
     logger.info("Upgrading {0}: {1} -> {2}".format(product, ver_from, version))
 
     # -------- ADD YOUR STUFF BELOW --------
+
+    # Rename AT portal types to be replaces by DX types
+    rename_at_portal_types(portal)
 
     # Remove duplicate methods from analysis services
     remove_duplicate_methods_in_services(portal)
@@ -120,6 +132,9 @@ def upgrade(tool):
 
     # Remove stale metadata
     remove_stale_metadata(portal)
+
+    # Convert Instrument Locations to DX
+    convert_instrumentlocations_to_dx(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
@@ -360,3 +375,90 @@ def del_metadata(catalog_id, column):
                     .format(column, catalog_id))
         return
     catalog.delColumn(column)
+
+
+def rename_at_portal_types(portal):
+    """Rename AT type information
+    """
+    logger.info("Rename AT FTIs ...")
+    pt = api.get_tool("portal_types")
+    for type_name in RENAME_AT_TYPES:
+        fti = pt.getTypeInfo(type_name)
+        if isinstance(fti, DexterityFTI):
+            logger.info("{} is already a DX FTI ")
+            continue
+        # rename the FTI
+        old_id = fti.getId()
+        new_id = "AT{}".format(old_id)
+        pt.manage_renameObject(old_id, new_id)
+        logger.info("Renamed FTI: {} -> {}".format(old_id, new_id))
+    logger.info("Rename AT FTIs ... [DONE]")
+
+
+def convert_instrumentlocations_to_dx(portal):
+    """Converts existing Instrument Locations to Dexterity
+    """
+    logger.info("Convert Instrument Locations to Dexterity ...")
+
+    old_id = "bika_instrumentlocations"
+    new_id = "instrumentlocations"
+
+    setup = api.get_setup()
+    old = setup.get(old_id)
+
+
+    import pdb; pdb.set_trace()
+
+    # return if the old container is already gone
+    if not old:
+        return
+
+    # get the new container
+    new = setup.get(new_id)
+
+    # create the new container if it is not there
+    if not new:
+        # temporarily allow to create objects in setup
+        pt = api.get_tool("portal_types")
+        fti = pt.BikaSetup
+        allowed_types = fti.allowed_content_types
+        portal_type = "InstrumentLocations"
+        fti.allowed_content_types = allowed_types + (portal_type, )
+        setup.invokeFactory(portal_type, new_id)
+        fti.allowed_content_types = allowed_types
+        new = setup.get(new_id)
+        new.setTitle("Instrument Locations")
+        new.reindexObject()
+
+    # copy items from old -> new container
+    for src in old.objectValues():
+        # extract the old values
+        uid = api.get_uid(src)
+        title = api.get_title(src)
+        description = api.get_description(src)
+        snapshots = api.snapshot.get_snapshots(src)
+        # create the new DX object
+        target = api.create(
+            new, "InstrumentLocation", title=title, description=description)
+        # set the same target
+        setattr(target, "_plone.uuid", uid)
+        # copy auditlog
+        storage = api.snapshot.get_storage(target)
+        storage[:] = map(json.dumps, snapshots)[:]
+        alsoProvides(target, IAuditable)
+        # unindex the old object
+        src.unindexObject()
+        # reindex the new object
+        new.reindexObject()
+
+    # unindex the old object
+    old.unindexObject()
+
+    # delete the old object
+    setup._delObject(old_id, suppress_events=True)
+
+    # XXX: somehow the UID catalog maintains the old items
+    uc = api.get_tool("uid_catalog")
+    uc.refreshCatalog(clear=1)
+
+    logger.info("Convert Instrument Locations to Dexterity ... [DONE]")
