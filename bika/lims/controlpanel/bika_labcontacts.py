@@ -91,8 +91,11 @@ class LabContactsView(BikaListingView):
             ("EmailAddress", {
                 "title": _("Email Address"),
                 "toggle": True}),
-            ("UserRoles", {
-                "title": _("User Roles"),
+            ("Username", {
+                "title": _("User name"),
+                "toggle": True}),
+            ("Groups", {
+                "title": _("User groups"),
                 "toggle": True}),
         ))
 
@@ -166,17 +169,23 @@ class LabContactsView(BikaListingView):
         item["BusinessPhone"] = obj.getBusinessPhone()
         item["Fax"] = obj.getBusinessFax()
         item["MobilePhone"] = obj.getMobilePhone()
+        item["Username"] = obj.getUsername()
 
-        user = api.get_user(obj.getUsername())
-        if user is None:
-            roles = ''
-        else:
-            ignored_roles = ["AuthenticatedUsers"]
-            roles = filter(lambda r: r not in ignored_roles,
-                           api_user.get_groups(user))
-
-        item["UserRoles"] = ', '.join(sorted(roles))
+        # Display the groups the user belongs to, if any
+        groups = self.get_user_groups(obj)
+        item["Groups"] = ", ".join(groups)
         return item
+
+    def get_user_groups(self, contact):
+        """Returns the groups from the contact passed-in
+        """
+        username = contact.getUsername()
+        if not username:
+            return []
+
+        skip = ["AuthenticatedUsers"]
+        groups = api_user.get_groups(username)
+        return filter(lambda g: g not in skip, sorted(groups))
 
 
 schema = ATFolderSchema.copy()
