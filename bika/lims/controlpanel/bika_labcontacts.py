@@ -112,9 +112,11 @@ class LabContactsView(BikaListingView):
             },
         ]
 
-    def before_render(self):
+    def update(self):
         """Before template render hook
         """
+        super(LabContactsView, self).update()
+
         # Don't allow any context actions
         self.request.set("disable_border", 1)
 
