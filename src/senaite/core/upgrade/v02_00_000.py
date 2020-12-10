@@ -434,10 +434,11 @@ def convert_instrumentlocations_to_dx(portal):
         title = api.get_title(src)
         description = api.get_description(src)
         snapshots = api.snapshot.get_snapshots(src)
-        # create the new DX object
-        target = api.create(
-            new, "InstrumentLocation", title=title, description=description)
-        # set the same target
+        # create the new DX object and set explicitly the values
+        target = api.create(new, "InstrumentLocation")
+        target.setTitle(title)
+        target.setDescription(description)
+        # take over the UID
         setattr(target, "_plone.uuid", uid)
         # copy auditlog
         storage = api.snapshot.get_storage(target)
