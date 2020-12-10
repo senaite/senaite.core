@@ -30,8 +30,8 @@ class InstrumentLocationsView(ListingView):
 
         t = self.context.translate
         self.title = t(_("Instrument Locations"))
-        self.description = t(
-            "The place where the instrument is located in the laboratory")
+        self.description = t(_(
+            "The place where the instrument is located in the laboratory"))
 
         self.show_select_row = False
         self.show_select_column = True
