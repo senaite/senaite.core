@@ -11,4 +11,11 @@
        https://github.com/plone/plone.app.blob/issues/54 -->
   <adapter factory=".fileupload.BlobbableFileUpload" />
 
+
+  <!-- Analysis: resolve active status -->
+  <adapter
+    factory=".analysis.AnalysisActiveStatus"
+    provides=".interfaces.IActiveStatus"
+    for="bika.lims.interfaces.IAnalysis" />
+
 </configure>
