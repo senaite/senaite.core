@@ -225,7 +225,7 @@ AllowManualDetectionLimit = BooleanField(
 # Specify attachment requirements for these analyses
 AttachmentRequired = BooleanField(
     'AttachmentRequired',
-    schemata="Analyses",
+    schemata="Analysis",
     default=False,
     widget=BooleanWidget(
         label=_("Attachment required for verification"),
