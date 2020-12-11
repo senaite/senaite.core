@@ -106,6 +106,7 @@ def upgrade(tool):
     setup.runImportStepFromProfile(profile, "workflow")
     setup.runImportStepFromProfile(profile, "browserlayer")
     setup.runImportStepFromProfile(profile, "viewlets")
+    setup.runImportStepFromProfile(profile, "repositorytool")
     # run import steps located in bika.lims profiles
     _run_import_step(portal, "typeinfo", profile="profile-bika.lims:default")
     _run_import_step(portal, "workflow", profile="profile-bika.lims:default")
@@ -139,6 +140,9 @@ def upgrade(tool):
     # Convert Instrument Locations to DX
     # https://github.com/senaite/senaite.core/pull/1705
     convert_instrumentlocations_to_dx(portal)
+
+    # Remove analysis services from CMFEditions auto versioning
+    remove_services_from_repositorytool(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
@@ -451,3 +455,12 @@ def convert_instrumentlocations_to_dx(portal):
     delete_object(old)
 
     logger.info("Convert Instrument Locations to Dexterity ... [DONE]")
+
+
+def remove_services_from_repositorytool(portal):
+    """Remove Analysis Service from Repository Tool
+    """
+    rt = api.get_tool("portal_repository")
+    mapping = rt._version_policy_mapping
+    mapping.pop("AnalysisService", None)
+    rt._version_policy_mapping = mapping
