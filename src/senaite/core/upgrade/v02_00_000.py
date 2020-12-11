@@ -60,6 +60,8 @@ METADATA_TO_REMOVE = [
     # Only used in Analyses listing and it's behavior is bizarre, probably
     # because is a dict and requires special care with ZODB
     (CATALOG_ANALYSIS_LISTING, "getInterimFields"),
+    # No longer used, see https://github.com/senaite/senaite.core/pull/1709/
+    (CATALOG_ANALYSIS_LISTING, "getAttachmentUIDs")
 ]
 
 

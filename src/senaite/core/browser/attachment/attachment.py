@@ -160,11 +160,6 @@ class AttachmentsView(BrowserView):
             attachments.append(attachment.UID())
             analysis.setAttachment(attachments)
 
-            # The metadata for getAttachmentUIDs need to get updated,
-            # otherwise the attachments are not displayed
-            # https://github.com/senaite/bika.lims/issues/521
-            analysis.reindexObject()
-
         if service_uid:
             workflow = api.get_tool('portal_workflow')
 
@@ -195,11 +190,6 @@ class AttachmentsView(BrowserView):
                     attachments.append(other.UID())
                 attachments.append(attachment.UID())
                 analysis.setAttachment(attachments)
-
-                # The metadata for getAttachmentUIDs need to get updated,
-                # otherwise the attachments are not displayed
-                # https://github.com/senaite/bika.lims/issues/521
-                analysis.reindexObject()
 
         if self.request['HTTP_REFERER'].endswith('manage_results'):
             self.request.response.redirect('{}/manage_results'.format(
@@ -246,10 +236,6 @@ class AttachmentsView(BrowserView):
                 attachments.append(other.UID())
             attachments.append(attachment.UID())
             analysis.setAttachment(attachments)
-            # The metadata for getAttachmentUIDs need to get updated,
-            # otherwise the attachments are not displayed
-            # https://github.com/senaite/bika.lims/issues/521
-            analysis.reindexObject()
 
         else:
             others = self.context.getAttachment()

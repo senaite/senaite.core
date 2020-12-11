@@ -1120,15 +1120,6 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         return self.isInstrumentValid()
 
     @security.public
-    def getAttachmentUIDs(self):
-        """Used to populate metadata, so that we don't need full objects of
-        analyses when working with their attachments.
-        """
-        attachments = self.getAttachment()
-        uids = [att.UID() for att in attachments]
-        return uids
-
-    @security.public
     def getCalculationUID(self):
         """Used to populate catalog values
         """

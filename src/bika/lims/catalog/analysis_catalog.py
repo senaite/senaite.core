@@ -64,7 +64,6 @@ _indexes_dict = {
 }
 # Defining the columns for this catalog
 _columns_list = [
-    "getAttachmentUIDs",
     "getRequestID",
     "getReferenceAnalysesGroupID",
     "getResultCaptureDate",
