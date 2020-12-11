@@ -4,6 +4,7 @@ Changelog
 2.0.0rc3 (unreleased)
 ---------------------
 
+- #1709 Consolidated Attachment Options to a single Option
 - #1702 Remove Analysis Specifications from AR Add Form
 - #1700 Better styling of header and description in content views
 - #1690 Added ContentSectionViewletManager to allow dynamic addition of sections
