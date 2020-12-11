@@ -25,8 +25,10 @@ import transaction
 from bika.lims import api
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
+from bika.lims.catalog import CATALOG_WORKSHEET_LISTING
 from bika.lims.catalog import SETUP_CATALOG
 from bika.lims.setuphandlers import add_dexterity_setup_items
+from bika.lims.utils import changeWorkflowState
 from senaite.core import logger
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.setuphandlers import _run_import_step
@@ -120,6 +122,9 @@ def upgrade(tool):
 
     # Remove stale metadata
     remove_stale_metadata(portal)
+
+    # Resolve objects in attachment_due
+    resolve_attachment_due(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
@@ -360,3 +365,15 @@ def del_metadata(catalog_id, column):
                     .format(column, catalog_id))
         return
     catalog.delColumn(column)
+
+
+def resolve_attachment_due(portal):
+    logger.info("Resolving objects in 'attachment_due' status ...")
+
+    # The only objects that can be in attachment_due are worksheets
+    query = {"portal_type": "Worksheet", "review_state": "attachment_due"}
+    for worksheet in api.search(query, CATALOG_WORKSHEET_LISTING):
+        changeWorkflowState(worksheet, "bika_worksheet_workflow",
+                            "to_be_verified", action="submit")
+
+    logger.info("Resolving objects in 'attachment_due' status [DONE]")

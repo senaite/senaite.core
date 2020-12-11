@@ -18,41 +18,6 @@
   <permission>senaite.core: View Results</permission>
   <permission>Modify portal content</permission>
 
-  <state state_id="attachment_due" title="Attachment due" i18n:attributes="title">
-    <exit-transition transition_id="attach" />
-    <exit-transition transition_id="reject" />
-    <permission-map name="senaite.core: Transition: Reject Worksheet" acquired="True"/>
-    <permission-map name="senaite.core: Transition: Remove Worksheet" acquired="False"/>
-    <permission-map name="senaite.core: Add Attachment" acquired="False">
-      <permission-role>Analyst</permission-role>
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-    </permission-map>
-    <permission-map name="senaite.core: Transition: Assign Analysis" acquired="True"/>
-    <permission-map name="senaite.core: Edit Worksheet" acquired="False">
-      <permission-role>Analyst</permission-role>
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-    </permission-map>
-    <permission-map name="senaite.core: Transition: Retract" acquired="False">
-    </permission-map>
-    <permission-map name="senaite.core: Transition: Unassign Analysis" acquired="True"/>
-    <permission-map name="senaite.core: View Results" acquired="False">
-      <permission-role>Analyst</permission-role>
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-    </permission-map>
-    <permission-map name="Modify portal content" acquired="False">
-      <permission-role>Analyst</permission-role>
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-    </permission-map>
-  </state>
-
   <state state_id="open" title="Open" i18n:attributes="title">
     <exit-transition transition_id="submit" />
     <exit-transition transition_id="remove" />
@@ -185,13 +150,6 @@
     </permission-map>
   </state>
 
-  <transition transition_id="attach" title="Attach" new_state="to_be_verified" trigger="USER" before_script="" after_script="" i18n:attributes="title">
-    <action url="" category="workflow" icon="">Add attachment</action>
-    <guard>
-      <guard-expression>python:here.guard_attach_transition()</guard-expression>
-    </guard>
-  </transition>
-
   <transition transition_id="reject" title="Reject" new_state="rejected" trigger="USER" before_script="" after_script="" i18n:attributes="title">
     <action url="" category="workflow" icon="">Reject</action>
     <guard>
@@ -247,7 +205,7 @@
     </guard>
   </transition>
 
-  <transition transition_id="submit" title="Submit" new_state="attachment_due" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+  <transition transition_id="submit" title="Submit" new_state="to_be_verified" trigger="USER" before_script="" after_script="" i18n:attributes="title">
     <action url="" category="workflow" icon="">Submit for verification</action>
     <guard>
       <guard-expression>python:here.guard_handler("submit")</guard-expression>
