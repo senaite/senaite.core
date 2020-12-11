@@ -142,6 +142,7 @@ def upgrade(tool):
     convert_instrumentlocations_to_dx(portal)
 
     # Remove analysis services from CMFEditions auto versioning
+    # https://github.com/senaite/senaite.core/pull/1708
     remove_services_from_repositorytool(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
