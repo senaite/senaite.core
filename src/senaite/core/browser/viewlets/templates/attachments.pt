@@ -220,7 +220,7 @@
                 </td>
                 <td>
                   <!-- Analysis selection dropdown -->
-                  <tal:analyses tal:condition="attachments_view/global_analysis_attachments_allowed">
+                  <tal:analyses>
                     <tal:variables
                       tal:define="analyses attachments_view/get_analyses;
                                   a_analyses python:[a for a in analyses if a.portal_type == 'Analysis'];
@@ -232,7 +232,6 @@
                         <!-- Empty option attaches to the AR -->
                         <option selected="selected"
                                 disabled="disabled"
-                                tal:condition="attachments_view/global_ar_attachments_allowed"
                                 tal:attributes="value python:None">
                           <span tal:omit-tag="python:True"
                                 i18n:translate="">Attach to Analysis Request</span>

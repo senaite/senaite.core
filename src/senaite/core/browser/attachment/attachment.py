@@ -32,7 +32,6 @@ from zope.annotation.interfaces import IAnnotations
 from zope.interface import implements
 from zope.publisher.interfaces import IPublishTraverse
 
-
 ATTACHMENTS_STORAGE = "bika.lims.browser.attachment"
 
 EDITABLE_STATES = [
@@ -332,24 +331,6 @@ class AttachmentsView(BrowserView):
             client = api.get_parent(attachment)
             client.manage_delObjects([attachment.getId(), ])
 
-    def global_attachments_allowed(self):
-        """Checks Setup if Attachments are allowed
-        """
-        bika_setup = api.get_bika_setup()
-        return bika_setup.getAttachmentsPermitted()
-
-    def global_ar_attachments_allowed(self):
-        """Checks Bika Setup if AR Attachments are allowed
-        """
-        bika_setup = api.get_bika_setup()
-        return bika_setup.getARAttachmentsPermitted()
-
-    def global_analysis_attachments_allowed(self):
-        """Checks Setup if Attachments for Analyses are allowed
-        """
-        bika_setup = api.get_bika_setup()
-        return bika_setup.getAnalysisAttachmentsPermitted()
-
     def get_attachment_size(self, attachment):
         """Get the human readable size of the attachment
         """
@@ -441,22 +422,11 @@ class AttachmentsView(BrowserView):
         """Returns a list of analyses from the AR
         """
         analyses = self.context.getAnalyses(full_objects=True)
-        return filter(self.is_analysis_attachment_allowed, analyses)
-
-    def is_analysis_attachment_allowed(self, analysis):
-        """Checks if the analysis
-        """
-        if analysis.getAttachmentOption() not in ["p", "r"]:
-            return False
-        if api.get_workflow_status_of(analysis) in ["retracted"]:
-            return False
-        return True
+        return filter(api.is_active, analyses)
 
     def user_can_add_attachments(self):
         """Checks if the current logged in user is allowed to add attachments
         """
-        if not self.global_attachments_allowed():
-            return False
         context = self.context
         pm = api.get_tool("portal_membership")
         return pm.checkPermission(AddAttachment, context)
