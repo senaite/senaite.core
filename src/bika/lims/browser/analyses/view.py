@@ -276,7 +276,7 @@ class AnalysesView(BikaListingView):
             return False
         if obj is None:
             return check_permission(permission, self.context)
-        return check_permission(permission, api.get_object(obj))
+        return check_permission(permission, self.get_object(obj))
 
     @viewcache.memoize
     def is_analysis_edition_allowed(self, analysis_brain):
@@ -290,7 +290,7 @@ class AnalysesView(BikaListingView):
             # inside a deactivated Analysis Request, for instance
             return False
 
-        analysis_obj = api.get_object(analysis_brain)
+        analysis_obj = self.get_object(analysis_brain)
         if analysis_obj.getPointOfCapture() == 'field':
             # This analysis must be captured on field, during sampling.
             if not self.has_permission(EditFieldResults, analysis_obj):
@@ -328,7 +328,7 @@ class AnalysesView(BikaListingView):
             return False
 
         # Get the ananylsis object
-        obj = api.get_object(analysis_brain)
+        obj = self.get_object(analysis_brain)
 
         if not obj.getDetectionLimitOperand():
             # This is a regular result (not a detection limit)
@@ -355,7 +355,7 @@ class AnalysesView(BikaListingView):
             return False
 
         # Get the ananylsis object
-        obj = api.get_object(analysis_brain)
+        obj = self.get_object(analysis_brain)
 
         # Manual setting of uncertainty is not allowed
         if not obj.getAllowManualUncertainty():
@@ -966,46 +966,20 @@ class AnalysesView(BikaListingView):
         if not self.has_permission(ViewResults, obj):
             return
 
-        item['Attachments'] = ''
-        attachment_uids = obj.getAttachmentUIDs
-        if not attachment_uids:
-            obj = self.get_object(obj)
-            if obj.getAttachmentRequired():
-                img = get_image("warning.png", title=_("Attachment required"))
-                item["replace"]["Attachments"] = img
-            return
-
         attachments_html = []
-        attachments = api.search({'UID': attachment_uids}, 'uid_catalog')
-        for attachment in attachments:
-            attachment = api.get_object(attachment)
-            uid = api.get_uid(attachment)
-            html = '<span class="attachment" attachment_uid="{}">'.format(uid)
-            attachments_html.append(html)
-
-            at_file = attachment.getAttachmentFile()
-
-            url = '{}/at_download/AttachmentFile'
-            url = url.format(attachment.absolute_url())
+        analysis = self.get_object(obj)
+        for at in analysis.getAttachment():
+            at_file = at.getAttachmentFile()
+            url = "{}/at_download/AttachmentFile".format(api.get_url(at))
             link = get_link(url, at_file.filename, tabindex="-1")
             attachments_html.append(link)
 
-            if not self.is_analysis_edition_allowed(obj):
-                attachments_html.append('<br/></span>')
-                continue
-
-            img = '<img data-toggle="confirmation"' \
-                  ' class="deleteAttachmentButton"' \
-                  ' attachment_uid="{}" src="{}"/>'
-            img = img.format(uid, 'senaite_theme/icon_url/delete')
-            attachments_html.append(img)
-            attachments_html.append('<br/></span>')
-
         if attachments_html:
-            # Remove the last <br/></span> and add only </span>
-            attachments_html = attachments_html[:-1]
-            attachments_html.append('</span>')
-            item['replace']['Attachments'] = ''.join(attachments_html)
+            item["replace"]["Attachments"] = "<br/>".join(attachments_html)
+
+        elif analysis.getAttachmentRequired():
+            img = get_image("warning.png", title=_("Attachment required"))
+            item["replace"]["Attachments"] = img
 
     def _folder_item_uncertainty(self, analysis_brain, item):
         """Fills the analysis' uncertainty to the item passed in.
