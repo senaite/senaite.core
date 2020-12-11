@@ -51,6 +51,8 @@
   <!-- Dexterity behaviours for this type -->
   <property name="behaviors">
     <element value="plone.app.dexterity.behaviors.metadata.IBasic"/>
+    <!-- Needed behavior to indexed in uid_catalog -->
+    <element value="plone.app.referenceablebehavior.referenceable.IReferenceable" />
   </property>
 
   <!-- Action aliases -->
@@ -68,7 +70,7 @@
           icon_expr=""
           link_target=""
           url_expr="string:${object_url}"
-          visible="True">
+          visible="False">
     <permission value="View"/>
   </action>
 
@@ -80,7 +82,8 @@
           description=""
           icon_expr=""
           link_target=""
-          url_expr="string:${object_url}/edit" visible="True">
+          url_expr="string:${object_url}/edit"
+          visible="False">
     <permission value="Modify portal content"/>
   </action>
 
