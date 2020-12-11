@@ -67,11 +67,11 @@ def Import(context, request):
     if parser:
         # Select parameters for the importer from the values
         # just read from the import view
-        status = ['sample_received', 'attachment_due', 'to_be_verified']
+        status = ['sample_received', 'to_be_verified']
         if artoapply == 'received':
             status = ['sample_received']
         elif artoapply == 'received_tobeverified':
-            status = ['sample_received', 'attachment_due', 'to_be_verified']
+            status = ['sample_received', 'to_be_verified']
 
         over = [False, False]
         if override == 'nooverride':

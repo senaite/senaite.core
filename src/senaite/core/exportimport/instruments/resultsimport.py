@@ -367,7 +367,6 @@ class AnalysisResultsImporter(Logger):
         self.wf = getToolByName(self.context, 'portal_workflow')
         if not self._allowed_ar_states:
             self._allowed_ar_states = ['sample_received',
-                                       'attachment_due',
                                        'to_be_verified']
         if not self._allowed_analysis_states:
             self._allowed_analysis_states = [

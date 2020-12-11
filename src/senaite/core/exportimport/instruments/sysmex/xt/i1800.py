@@ -48,7 +48,7 @@ def Import(context, request):
     warns = []
     status_mapping = {
         'received': ['sample_received'],
-        'received_tobeverified': ['sample_received', 'attachment_due', 'to_be_verified']
+        'received_tobeverified': ['sample_received', 'to_be_verified']
     }
     override_mapping = {
         'nooverride': [False, False],
@@ -67,7 +67,7 @@ def Import(context, request):
                           mapping={"fileformat": fileformat})))
     if parser:
         # Load the importer
-        status = status_mapping.get(artoapply, ['sample_received', 'attachment_due', 'to_be_verified'])
+        status = status_mapping.get(artoapply, ['sample_received', 'to_be_verified'])
         over = override_mapping.get(override, [False, False])
         importer = SysmexXTImporter(parser=parser,
                                     context=context,

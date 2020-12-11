@@ -48,11 +48,11 @@ def GenericImport(context, request, parser, importer=None):
 
     if parser:
         # Load the importer
-        status = ['sample_received', 'attachment_due', 'to_be_verified']
+        status = ['sample_received', 'to_be_verified']
         if artoapply == 'received':
             status = ['sample_received']
         elif artoapply == 'received_tobeverified':
-            status = ['sample_received', 'attachment_due', 'to_be_verified']
+            status = ['sample_received', 'to_be_verified']
 
         over = [False, False]
         if override == 'nooverride':
