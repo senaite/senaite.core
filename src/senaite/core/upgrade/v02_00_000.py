@@ -443,6 +443,9 @@ def convert_instrumentlocations_to_dx(portal):
         # catalog the new object
         catalog_object(target)
 
+    # copy snapshots for the container
+    copy_snapshots(old, new)
+
     # delete the old object
     delete_object(old)
 
