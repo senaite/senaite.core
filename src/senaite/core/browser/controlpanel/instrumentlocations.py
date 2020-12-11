@@ -5,7 +5,7 @@ import collections
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.permissions import AddInstrumentLocation
-from bika.lims.utils import get_link
+from bika.lims.utils import get_link_for
 from senaite.app.listing import ListingView
 
 
@@ -75,11 +75,8 @@ class InstrumentLocationsView(ListingView):
         :index: current index of the item
         """
         obj = api.get_object(obj)
-        title = obj.Title()
-        description = obj.Description()
-        url = obj.absolute_url()
 
-        item["replace"]["Title"] = get_link(url, value=title)
-        item["Description"] = description
+        item["replace"]["Title"] = get_link_for(obj)
+        item["Description"] = api.get_description(obj)
 
         return item
