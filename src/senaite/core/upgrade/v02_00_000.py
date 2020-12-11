@@ -137,6 +137,7 @@ def upgrade(tool):
     remove_stale_metadata(portal)
 
     # Convert Instrument Locations to DX
+    # https://github.com/senaite/senaite.core/pull/1705
     convert_instrumentlocations_to_dx(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
