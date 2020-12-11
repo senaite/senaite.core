@@ -985,9 +985,6 @@ class AnalysesView(BikaListingView):
 
             at_file = attachment.getAttachmentFile()
 
-            icon = self.senaite_theme.icon_tag("attachment", width="16")
-            attachments_html.append(icon)
-
             url = '{}/at_download/AttachmentFile'
             url = url.format(attachment.absolute_url())
             link = get_link(url, at_file.filename, tabindex="-1")
@@ -1000,8 +997,7 @@ class AnalysesView(BikaListingView):
             img = '<img data-toggle="confirmation"' \
                   ' class="deleteAttachmentButton"' \
                   ' attachment_uid="{}" src="{}"/>'
-            img = img.format(
-                uid, '++plone++senaite.core.static/assets/svg/delete.svg')
+            img = img.format(uid, 'senaite_theme/icon_url/delete')
             attachments_html.append(img)
             attachments_html.append('<br/></span>')
 
