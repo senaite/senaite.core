@@ -23,9 +23,9 @@ from collections import OrderedDict
 from datetime import datetime
 from datetime import timedelta
 
-import Missing
 import six
 
+import Missing
 from AccessControl.PermissionRole import rolesForPermissionOn
 from Acquisition import aq_base
 from bika.lims import logger
@@ -141,8 +141,8 @@ def create(container, portal_type, *args, **kwargs):
 
     if fti.product:
         obj = _createObjectByType(portal_type, container, id)
-        obj.Schema().updateAll(obj, title=title, **kwargs)
         obj.processForm()
+        obj.edit(title=title, **kwargs)
     else:
         # newstyle factory
         factory = getUtility(IFactory, fti.factory)
