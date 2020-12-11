@@ -5,6 +5,7 @@ Changelog
 ---------------------
 
 - #1705 Migrated instrument locations to Dexterity
+- #1706 Add "User name" and "User groups" columns in Lab Contacts listing
 - #1702 Remove Analysis Specifications from AR Add Form
 - #1700 Better styling of header and description in content views
 - #1690 Added ContentSectionViewletManager to allow dynamic addition of sections
