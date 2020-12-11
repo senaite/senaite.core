@@ -385,15 +385,6 @@ schema = BikaFolderSchema.copy() + Schema((
             format='select',
         )
     ),
-    BooleanField(
-        'AttachmentRequired',
-        schemata="Analyses",
-        default=False,
-        widget=BooleanWidget(
-            label=_("Attachment required for verification"),
-            description=_("Make attachments mandatory for verification")
-        ),
-    ),
     StringField(
         'ResultsDecimalMark',
         schemata="Analyses",
