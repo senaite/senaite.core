@@ -1,0 +1,14 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:zcml="http://namespaces.zope.org/zcml">
+
+  <browser:page
+      name="ajax_edit"
+      for="*"
+      permission="cmf.ModifyPortalContent"
+      class=".edit.AjaxEditView"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
+</configure>
