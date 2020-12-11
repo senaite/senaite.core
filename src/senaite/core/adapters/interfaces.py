@@ -19,8 +19,18 @@
 # Some rights reserved, see README and LICENSE.
 
 from plone.app.blob.interfaces import IFileUpload
+from zope.interface import Interface
 
 
 class ISenaiteFileUpload(IFileUpload):
     """Marker interface for ZPublisher.HTTPRequest.FileUpload class
     """
+
+
+class IActiveStatus(Interface):
+    """Marker interface to determine active/inactive status of an object
+    """
+
+    def is_active(self):
+        """Returns whether the object has to be considered as active
+        """

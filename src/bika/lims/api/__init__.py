@@ -54,8 +54,10 @@ from Products.CMFPlone.utils import base_hasattr
 from Products.CMFPlone.utils import safe_unicode
 from Products.PlonePAS.tools.memberdata import MemberData
 from Products.ZCatalog.interfaces import ICatalogBrain
+from senaite.core.adapters.interfaces import IActiveStatus
 from zope import globalrequest
 from zope.component import getUtility
+from zope.component import queryAdapter
 from zope.component import queryMultiAdapter
 from zope.component.interfaces import IFactory
 from zope.event import notify
@@ -836,15 +838,23 @@ def get_review_status(brain_or_object):
 
 
 def is_active(brain_or_object):
-    """Check if the workflow state of the object is 'inactive' or 'cancelled'.
+    """Check if the object is active. First checks for review status "cancelled"
+    and "inactive". Relies on IActiveStatus adapter (if exists) otherwise.
 
     :param brain_or_object: A single catalog brain or content object
     :type brain_or_object: ATContentType/DexterityContentType/CatalogBrain
-    :returns: False if the object is in the state 'inactive' or 'cancelled'
+    :returns: False if the object cannot be considered as active
     :rtype: bool
     """
     if get_review_status(brain_or_object) in ["cancelled", "inactive"]:
         return False
+
+    # Check if object is active, regardless of its workflow status
+    obj = get_object(brain_or_object)
+    adapter = queryAdapter(obj, IActiveStatus)
+    if adapter:
+        return adapter.is_active()
+
     return True
 
 
