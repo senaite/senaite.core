@@ -963,12 +963,16 @@ class AnalysesView(BikaListingView):
         return api.get_user(user_id)
 
     def _folder_item_attachments(self, obj, item):
+        if not self.has_permission(ViewResults, obj):
+            return
+
         item['Attachments'] = ''
         attachment_uids = obj.getAttachmentUIDs
         if not attachment_uids:
-            return
-
-        if not self.has_permission(ViewResults, obj):
+            obj = self.get_object(obj)
+            if obj.getAttachmentRequired():
+                img = get_image("warning.png", title=_("Attachment required"))
+                item["replace"]["Attachments"] = img
             return
 
         attachments_html = []
