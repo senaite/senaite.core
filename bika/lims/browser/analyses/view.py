@@ -21,6 +21,7 @@
 import json
 from collections import OrderedDict
 from copy import copy
+from copy import deepcopy
 
 from DateTime import DateTime
 from Products.Archetypes.config import REFERENCE_CATALOG
@@ -810,7 +811,7 @@ class AnalysesView(BikaListingView):
         interim_fields = analysis_brain.getInterimFields or list()
 
         # Copy to prevent to avoid persistent changes
-        interim_fields = copy(interim_fields)
+        interim_fields = deepcopy(interim_fields)
 
         for interim_field in interim_fields:
             interim_keyword = interim_field.get('keyword', '')
