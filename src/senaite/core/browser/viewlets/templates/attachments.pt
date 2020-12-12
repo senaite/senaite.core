@@ -56,7 +56,7 @@
           <input type="hidden" name="submitted" value="1"/>
           <span tal:replace="structure context/@@authenticator/authenticator"/>
 
-          <table id="attachments_update_table" class="listing">
+          <table id="attachments_update_table" class="table-sm">
             <thead>
               <tr>
                 <th i18n:translate=''>Name</th>
@@ -93,31 +93,37 @@
                   <!-- Attachment Type -->
                   <select name="AttachmentType"
                           class="form-control"
+                          tal:condition="can_edit"
                           tal:attributes="name string:attachments.AttachmentType:records;
                                           data-attachment-uid string:${attachment/UID};">
                     <tal:item repeat="item attachments_view/get_attachment_types">
                       <option tal:attributes="value item/UID;
-                                              selected python:item.UID==attachment['type']"
+                                              selected python:item.UID==attachment['type_uid']"
                               tal:content="item/Title">
                         Attachment Type
                       </option>
                     </tal:item>
                   </select>
+                  <span tal:condition="not:can_edit"
+                        tal:content="attachment/type"/>
                 </td>
                 <td class="attachment-field-size">
                   <!-- File Size -->
-                  <span class="filesize" tal:content="attachment/size"></span>
+                  <span class="filesize" tal:content="attachment/size"/>
                 </td>
                 <td class="attachment-analysis">
                   <!-- Attached to Analysis -->
-                  <span class="analysis" tal:content="attachment/analysis"></span>
+                  <span class="analysis" tal:content="attachment/analysis"/>
                 </td>
                 <td class="attachment-keywords">
                   <!-- Attachment Keywords -->
                   <input name="AttachmentKeys"
                          class="form-control"
+                         tal:condition="can_edit"
                          tal:attributes="name string:attachments.AttachmentKeys:records;
                                          value attachment/keywords;"/>
+                  <span tal:condition="not:can_edit"
+                        tal:content="attachment/keywords"/>
                 </td>
                 <td class="attachment-report-option">
                   <!-- Attachment Report Option
@@ -126,6 +132,7 @@
                     -->
                   <select name="ReportOption"
                           class="form-control"
+                          tal:condition="can_edit"
                           tal:attributes="name string:attachments.ReportOption:records;
                                           data-attachment-uid string:${attachment/UID}">
                     <tal:item repeat="item attachments_view/get_attachment_report_options">
@@ -136,23 +143,26 @@
                       </option>
                     </tal:item>
                   </select>
+                  <span tal:condition="not:can_edit"
+                        tal:content="attachment/report_option_value"/>
                 </td>
                 <td class="attachment-delete" tal:condition="can_edit">
 
                   <!-- Delete Attachment -->
                   <input type="checkbox"
+                          tal:condition="attachment/can_edit"
                           tal:attributes="name string:attachments.delete:records:boolean;
                                           value python:True;"/>
-                    <input type="hidden"
-                          tal:attributes="name string:attachments.delete:records:boolean:default;
-                                          value python:False;"/>
+                  <input type="hidden"
+                        tal:attributes="name string:attachments.delete:records:boolean:default;
+                                        value python:False;"/>
                 </td>
               </tr>
             </tbody>
           </table>
 
           <!-- short usage description -->
-          <div class="formHelp discreet">
+          <div class="formHelp discreet" tal:condition="can_edit">
             <p i18n:translate="">
               Please click the update button after your changes.
             </p>
@@ -168,6 +178,7 @@
                  type="submit"
                  name="updateARAttachment"
                  value="Update Attachments"
+                 tal:condition="can_edit"
                  i18n:attributes="value"/>
 
         </form>
@@ -176,7 +187,8 @@
 
       <!-- Add Attachments -->
       <div id="attachments_add"
-            class="ar_attachments_list">
+           tal:condition="can_edit"
+           class="ar_attachments_list">
 
         <!-- Add Form -->
         <form action="attachments_view"
@@ -188,14 +200,14 @@
           <input type="hidden" name="submitted" value="1"/>
           <span tal:replace="structure context/@@authenticator/authenticator"/>
 
-          <table id="attachments_add_table" class="listing">
+          <table id="attachments_add_table" class="table-sm">
             <thead>
               <tr>
                 <th i18n:translate="">Add new Attachment</th>
                 <th i18n:translate="">Type</th>
                 <th i18n:translate="">Analysis</th>
                 <th i18n:translate="">Keywords</th>
-                <th i18n:translate=''>Report Option</th>
+                <th i18n:translate="">Report Option</th>
               </tr>
             </thead>
             <tbody>

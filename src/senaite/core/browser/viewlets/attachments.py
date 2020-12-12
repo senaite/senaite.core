@@ -46,7 +46,7 @@ class AttachmentsViewlet(ViewletBase):
         # XXX: Hack to show the viewlet only on the AR base_view
         if not any(map(url.endswith, ["base_view", "manage_results"])):
             return False
-        return self.attachments_view.user_can_edit_attachments()
+        return True
 
     def update(self):
         """Called always before render()

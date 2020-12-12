@@ -19,7 +19,10 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
+from bika.lims import EditFieldResults
+from bika.lims import EditResults
 from bika.lims import FieldEditAnalysisResult
+from bika.lims import FieldEditResultsInterpretation
 from bika.lims import logger
 from bika.lims.api import security
 from bika.lims.config import ATTACHMENT_REPORT_OPTIONS
@@ -330,14 +333,19 @@ class AttachmentsView(BrowserView):
         attachment_file = attachment.getAttachmentFile()
         attachment_type = attachment.getAttachmentType()
 
+        report_option = attachment.getReportOption()
+        report_option_value = ATTACHMENT_REPORT_OPTIONS.getValue(report_option)
+
         return {
             'keywords': attachment.getAttachmentKeys(),
             'size': self.get_attachment_size(attachment),
             'name': attachment_file.filename,
-            'type': api.get_uid(attachment_type) if attachment_type else '',
+            'type_uid': api.get_uid(attachment_type) if attachment_type else "",
+            "type": api.get_title(attachment_type) if attachment_type else "",
             'absolute_url': attachment.absolute_url(),
             'UID': attachment_uid,
-            'report_option': attachment.getReportOption(),
+            'report_option': report_option,
+            'report_option_value': report_option_value,
             'analysis': '',
         }
 
@@ -352,14 +360,24 @@ class AttachmentsView(BrowserView):
         # process AR attachments
         for attachment in self.context.getAttachment():
             attachment_info = self.get_attachment_info(attachment)
+            attachment_info["can_edit"] = self.user_can_edit_attachments()
             attachments.append(attachment_info)
 
         # process analyses attachments
+        permission = FieldEditAnalysisResult
+        skip = ["cancelled", "retracted", "rejected"]
         for analysis in self.context.getAnalyses(full_objects=True):
+            if api.get_review_status(analysis) in skip:
+                # Skip non-valid analyses, user can download their attachments
+                # from the analysis listing anyways
+                continue
+
+            can_edit = security.check_permission(permission, analysis)
             for attachment in analysis.getAttachment():
                 attachment_info = self.get_attachment_info(attachment)
-                attachment_info["analysis"] = analysis.Title()
+                attachment_info["analysis"] = api.get_title(analysis)
                 attachment_info["analysis_uid"] = api.get_uid(analysis)
+                attachment_info["can_edit"] = can_edit
                 attachments.append(attachment_info)
 
         return attachments
@@ -408,7 +426,6 @@ class AttachmentsView(BrowserView):
         """Returns whether the current user is allowed to add/edit/delete
         attachments to/from current context, not necessarily to/from analyses
         """
-        # XXX Revisit AddAttachment permission
         return security.check_permission(AddAttachment, self.context)
 
 

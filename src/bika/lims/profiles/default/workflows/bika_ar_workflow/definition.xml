@@ -744,7 +744,11 @@
 
     <!-- Hide the 'Manage Analyses' tab -->
     <permission-map name="senaite.core: Add Analysis" acquired="False"/>
-    <permission-map name="senaite.core: Add Attachment" acquired="True"/>
+    <permission-map name="senaite.core: Add Attachment" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Publisher</permission-role>
+    </permission-map>
     <!-- Hide the 'Manage Results' tab -->
     <permission-map name="senaite.core: Edit Field Results" acquired="False"/>
     <permission-map name="senaite.core: Edit Results" acquired="False"/>
@@ -826,7 +830,7 @@
     <permission-map name="senaite.core: Transition: Schedule Sampling" acquired="False"/>
     <!-- Hide the 'Manage Analyses' tab -->
     <permission-map name="senaite.core: Add Analysis" acquired="False"/>
-    <permission-map name="senaite.core: Add Attachment" acquired="True"/>
+    <permission-map name="senaite.core: Add Attachment" acquired="False"/>
     <!-- Hide the 'Manage Results' tab -->
     <permission-map name="senaite.core: Edit Field Results" acquired="False"/>
     <permission-map name="senaite.core: Edit Results" acquired="False"/>

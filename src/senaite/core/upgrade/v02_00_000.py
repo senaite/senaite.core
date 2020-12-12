@@ -123,7 +123,8 @@ def upgrade(tool):
     # https://github.com/senaite/senaite.core/pull/1638
     fix_published_results_permission(portal)
 
-    # Update workflow mappings for samples to allow profile editing
+    # Update workflow mappings for samples to allow profile editing and fix
+    # Add Attachment permission for verified and published status
     update_workflow_mappings_samples(portal)
 
     # Initialize new department ID field
@@ -220,7 +221,7 @@ def fix_published_results_permission(portal):
 
 
 def update_workflow_mappings_samples(portal):
-    """Allow to edit analysis profiles
+    """Allow to edit analysis profiles and fix AddAttachment permission
     """
     logger.info("Updating role mappings for Samples ...")
     wf_id = "bika_ar_workflow"
@@ -234,6 +235,8 @@ def update_workflow_mappings_samples(portal):
                  "attachment_due",
                  "to_be_verified",
                  "to_be_preserved",
+                 "verified",
+                 "published"
              ]}
     brains = api.search(query, CATALOG_ANALYSIS_REQUEST_LISTING)
     update_workflow_mappings_for(portal, wf_id, brains)
