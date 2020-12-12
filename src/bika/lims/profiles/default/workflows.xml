@@ -204,9 +204,6 @@
     <type type_id="Departments">
       <bound-workflow workflow_id="senaite_one_state_workflow"/>
     </type>
-    <type type_id="InstrumentLocations">
-      <bound-workflow workflow_id="senaite_one_state_workflow"/>
-    </type>
     <type type_id="InstrumentTypes">
       <bound-workflow workflow_id="senaite_one_state_workflow"/>
     </type>
@@ -329,9 +326,6 @@
       <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
     </type>
     <type type_id="Instrument">
-      <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
-    </type>
-    <type type_id="InstrumentLocation">
       <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
     </type>
     <type type_id="InstrumentType">
