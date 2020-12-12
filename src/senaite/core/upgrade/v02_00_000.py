@@ -28,6 +28,7 @@ from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.catalog import SETUP_CATALOG
 from bika.lims.setuphandlers import add_dexterity_setup_items
 from plone.dexterity.fti import DexterityFTI
+from Products.CMFEditions.interfaces import IVersioned
 from senaite.core import logger
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.setuphandlers import _run_import_step
@@ -39,6 +40,7 @@ from senaite.core.upgrade.utils import delete_object
 from senaite.core.upgrade.utils import set_uid
 from senaite.core.upgrade.utils import temporary_allow_type
 from senaite.core.upgrade.utils import uncatalog_object
+from zope.interface import noLongerProvides
 
 version = "2.0.0"  # Remember version number in metadata.xml and setup.py
 profile = "profile-{0}:default".format(product)
@@ -106,6 +108,7 @@ def upgrade(tool):
     setup.runImportStepFromProfile(profile, "workflow")
     setup.runImportStepFromProfile(profile, "browserlayer")
     setup.runImportStepFromProfile(profile, "viewlets")
+    setup.runImportStepFromProfile(profile, "repositorytool")
     # run import steps located in bika.lims profiles
     _run_import_step(portal, "typeinfo", profile="profile-bika.lims:default")
     _run_import_step(portal, "workflow", profile="profile-bika.lims:default")
@@ -139,6 +142,10 @@ def upgrade(tool):
     # Convert Instrument Locations to DX
     # https://github.com/senaite/senaite.core/pull/1705
     convert_instrumentlocations_to_dx(portal)
+
+    # Remove analysis services from CMFEditions auto versioning
+    # https://github.com/senaite/senaite.core/pull/1708
+    remove_services_from_repositorytool(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
@@ -451,3 +458,28 @@ def convert_instrumentlocations_to_dx(portal):
     delete_object(old)
 
     logger.info("Convert Instrument Locations to Dexterity ... [DONE]")
+
+
+def remove_services_from_repositorytool(portal):
+    """Remove Analysis Service from Repository Tool
+    """
+    logger.info("Remove auto versioning for Analysis Services ...")
+    portal_type = "AnalysisService"
+
+    rt = api.get_tool("portal_repository")
+    mapping = rt._version_policy_mapping
+    mapping.pop(portal_type, None)
+    rt._version_policy_mapping = mapping
+    versionable_types = rt.getVersionableContentTypes()
+    if portal_type in versionable_types:
+        versionable_types.remove(portal_type)
+        rt.setVersionableContentTypes(versionable_types)
+
+    # Remove marker interface for existing services
+    brains = api.search(dict(portal_type="AnalysisService"))
+    for brain in brains:
+        obj = api.get_object(brain)
+        if IVersioned.providedBy(obj):
+            noLongerProvides(obj, IVersioned)
+
+    logger.info("Remove auto versioning for Analysis Services ... [DONE]")

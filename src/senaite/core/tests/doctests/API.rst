@@ -880,21 +880,21 @@ for the passed in object::
 Checking if an Object is Versionable
 ....................................
 
-Some contents in SENAITE LIMS support versioning. This function checks this for you.
+NOTE: Versioning is outdated!
+      This code will be removed as soon as we drop the `HistoryAwareReferenceField`
+      reference between Calculation and Analysis.
 
 Instruments are not versionable::
 
     >>> api.is_versionable(instrument1)
     False
 
-Analysisservices are versionable::
+Calculations are versionable::
 
-    >>> analysisservices = bika_setup.bika_analysisservices
-    >>> analysisservice1 = api.create(analysisservices, "AnalysisService", title="AnalysisService-1")
-    >>> analysisservice2 = api.create(analysisservices, "AnalysisService", title="AnalysisService-2")
-    >>> analysisservice3 = api.create(analysisservices, "AnalysisService", title="AnalysisService-3")
+    >>> calculations = bika_setup.bika_calculations
+    >>> calc = api.create(calculations, "Calculation", title="Calculation 1")
 
-    >>> api.is_versionable(analysisservice1)
+    >>> api.is_versionable(calc)
     True
 
 
@@ -903,13 +903,13 @@ Getting the Version of an Object
 
 This function returns the version as an integer::
 
-    >>> api.get_version(analysisservice1)
+    >>> api.get_version(calc)
     0
 
 Calling `processForm` bumps the version::
 
-    >>> analysisservice1.processForm()
-    >>> api.get_version(analysisservice1)
+    >>> calc.processForm()
+    >>> api.get_version(calc)
     1
 
 
