@@ -18,20 +18,26 @@
 # Copyright 2018-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import six
+
 from bika.lims import api
 from bika.lims import FieldEditAnalysisResult
 from bika.lims import logger
 from bika.lims import SampleAddAttachment
 from bika.lims import SampleDeleteAttachment
+from bika.lims import SampleEditAttachment
 from bika.lims.api import security
+from bika.lims.catalog import SETUP_CATALOG
 from bika.lims.config import ATTACHMENT_REPORT_OPTIONS
+from bika.lims.interfaces.analysis import IRequestAnalysis
 from BTrees.OOBTree import OOBTree
 from plone import protect
+from plone.memoize import view
 from Products.Five.browser import BrowserView
+from senaite.core.p3compat import cmp
 from zope.annotation.interfaces import IAnnotations
 from zope.interface import implements
 from zope.publisher.interfaces import IPublishTraverse
-from plone.memoize import view
 
 ATTACHMENTS_STORAGE = "bika.lims.browser.attachment"
 
@@ -84,7 +90,7 @@ class AttachmentsView(BrowserView):
         return action()
 
     def action_update(self):
-        """Form action enpoint to update the attachments
+        """Form action endpoint to update the attachments
         """
 
         order = []
@@ -122,16 +128,17 @@ class AttachmentsView(BrowserView):
 
         ws = self.context
         form = self.request.form
-        attachment_file = form.get('AttachmentFile_file', None)
-        analysis_uid = self.request.get('analysis_uid', None)
-        service_uid = self.request.get('Service', None)
-        AttachmentType = form.get('AttachmentType', '')
-        AttachmentKeys = form.get('AttachmentKeys', '')
-        ReportOption = form.get('ReportOption', 'r')
+        attachment_file = form.get("AttachmentFile_file", None)
+        analysis_uid = self.request.get("analysis_uid", None)
+        service_uid = self.request.get("Service", None)
+        attachment_type = form.get("AttachmentType", "")
+        attachment_keys = form.get("AttachmentKeys", "")
+        report_option = form.get("ReportOption", "r")
 
         # nothing to do if the attachment file is missing
         if attachment_file is None:
-            logger.warn("AttachmentView.action_add_attachment: Attachment file is missing")
+            logger.warn("AttachmentView.action_add_attachment: Attachment file "
+                        "is missing")
             return
 
         if analysis_uid:
@@ -142,9 +149,9 @@ class AttachmentsView(BrowserView):
             attachment = self.create_attachment(
                 ws,
                 attachment_file,
-                AttachmentType=AttachmentType,
-                AttachmentKeys=AttachmentKeys,
-                ReportOption=ReportOption)
+                AttachmentType=attachment_type,
+                AttachmentKeys=attachment_keys,
+                ReportOption=report_option)
 
             others = analysis.getAttachment()
             attachments = []
@@ -154,28 +161,21 @@ class AttachmentsView(BrowserView):
             analysis.setAttachment(attachments)
 
         if service_uid:
-            workflow = api.get_tool('portal_workflow')
-
-            # XXX: refactor out dependency to this view.
-            view = api.get_view("manage_results", context=self.context, request=self.request)
-            analyses = self.context.getAnalyses()
-            allowed_states = ["assigned", "unassigned", "to_be_verified"]
-            for analysis in analyses:
-                if analysis.portal_type not in ('Analysis', 'DuplicateAnalysis'):
+            for analysis in self.context.getAnalyses():
+                if not IRequestAnalysis.providedBy(analysis):
                     continue
-                if not analysis.getServiceUID() == service_uid:
+                if api.get_uid(analysis) != service_uid:
                     continue
-                review_state = workflow.getInfoFor(analysis, 'review_state', '')
-                if review_state not in allowed_states:
+                if not self.is_editable(analysis):
                     continue
 
                 # create attachment
                 attachment = self.create_attachment(
                     ws,
                     attachment_file,
-                    AttachmentType=AttachmentType,
-                    AttachmentKeys=AttachmentKeys,
-                    ReportOption=ReportOption)
+                    AttachmentType=attachment_type,
+                    AttachmentKeys=attachment_keys,
+                    ReportOption=report_option)
 
                 others = analysis.getAttachment()
                 attachments = []
@@ -198,23 +198,24 @@ class AttachmentsView(BrowserView):
 
         form = self.request.form
         parent = api.get_parent(self.context)
-        attachment_file = form.get('AttachmentFile_file', None)
-        AttachmentType = form.get('AttachmentType', '')
-        AttachmentKeys = form.get('AttachmentKeys', '')
-        ReportOption = form.get('ReportOption', 'r')
+        attachment_file = form.get("AttachmentFile_file", None)
+        attachment_type = form.get("AttachmentType", "")
+        attachment_keys = form.get("AttachmentKeys", "")
+        report_option = form.get("ReportOption", "r")
 
         # nothing to do if the attachment file is missing
         if attachment_file is None:
-            logger.warn("AttachmentView.action_add_attachment: Attachment file is missing")
+            logger.warn("AttachmentView.action_add_attachment: Attachment file "
+                        "is missing")
             return
 
         # create attachment
         attachment = self.create_attachment(
             parent,
             attachment_file,
-            AttachmentType=AttachmentType,
-            AttachmentKeys=AttachmentKeys,
-            ReportOption=ReportOption)
+            AttachmentType=attachment_type,
+            AttachmentKeys=attachment_keys,
+            ReportOption=report_option)
 
         # append the new UID to the end of the current order
         self.set_attachments_order(api.get_uid(attachment))
@@ -345,12 +346,10 @@ class AttachmentsView(BrowserView):
             'analysis': '',
         }
 
+    @view.memoize
     def get_attachments(self):
         """Returns a list of attachments info dictionaries
-
-        Original code taken from bika.lims.analysisrequest.view
         """
-
         attachments = []
 
         # process AR attachments
@@ -399,18 +398,20 @@ class AttachmentsView(BrowserView):
     def get_attachment_types(self):
         """Returns a list of available attachment types
         """
-        bika_setup_catalog = api.get_tool("bika_setup_catalog")
-        attachment_types = bika_setup_catalog(portal_type='AttachmentType',
-                                              is_active=True,
-                                              sort_on="sortable_title",
-                                              sort_order="ascending")
-        return attachment_types
+        query = {
+            "portal_type": "AttachmentType",
+            "is_active": True,
+            "sort_on": "sortable_title",
+            "sort_order": "ascending"
+        }
+        return api.search(query, SETUP_CATALOG)
 
     def get_attachment_report_options(self):
         """Returns the valid attachment report options
         """
         return ATTACHMENT_REPORT_OPTIONS.items()
 
+    @view.memoize
     def get_analyses(self):
         """Returns the list of analyses for which the current user has
         privileges granted to add/edit/remove attachments
@@ -418,18 +419,21 @@ class AttachmentsView(BrowserView):
         analyses = self.context.getAnalyses(full_objects=True)
         return filter(self.is_editable, analyses)
 
+    @view.memoize
     def can_add_attachments(self):
         """Returns whether the current user is allowed to add attachments to
         current context, but not necessarily to analyses
         """
         return security.check_permission(SampleAddAttachment, self.context)
 
+    @view.memoize
     def can_edit_attachments(self):
         """Returns whether the current user is allowed to edit attachments
         from current context, but not necessarily from analyses
         """
-        return security.check_permission(SampleAddAttachment, self.context)
+        return security.check_permission(SampleEditAttachment, self.context)
 
+    @view.memoize
     def can_delete_attachments(self):
         """Returns whether the current user is allowed to delete attachments
         from current context, but not necessarily from analyses
@@ -469,14 +473,14 @@ class AttachmentsView(BrowserView):
         """Remember the attachments order
         """
         # append single uids to the order
-        if isinstance(order, basestring):
+        if isinstance(order, six.string_types):
             new_order = self.storage.get("order", [])
             new_order.append(order)
             order = new_order
         self.storage.update({"order": order})
 
     def get_attachments_order(self):
-        """Retunrs a list of UIDs for sorting purposes.
+        """Returns a list of UIDs for sorting purposes.
 
         The order should be in the same order like the rows of the attachment
         listing viewlet.
