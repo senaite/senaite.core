@@ -158,7 +158,7 @@ Load results test file and import the results::
     >>> cobasintegra_parser = CobasIntegra400plus2CSVParser(test_file)
     >>> importer = CobasIntegra400plus2Importer(parser=cobasintegra_parser,
     ...                             context=portal,
-    ...                             allowed_ar_states=['sample_received', 'attachment_due', 'to_be_verified'],
+    ...                             allowed_ar_states=['sample_received', 'to_be_verified'],
     ...                             allowed_analysis_states=None,
     ...                             override=[True, True])
     >>> importer.process()

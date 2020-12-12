@@ -422,8 +422,7 @@ class DashboardView(BrowserView):
         name = _('Samples with results pending')
         desc = _("Results pending")
         purl = 'analysisrequests?analysisrequests_review_state=sample_received'
-        query['review_state'] = ['attachment_due',
-                                 'sample_received', ]
+        query['review_state'] = ['sample_received', ]
         out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
         # Samples to be verified
@@ -491,7 +490,7 @@ class DashboardView(BrowserView):
         name = _('Results pending')
         desc = _('Results pending')
         purl = 'worksheets?list_review_state=open'
-        query['review_state'] = ['open', 'attachment_due']
+        query['review_state'] = ['open']
         out.append(self._getStatistics(name, desc, purl, bc, query, total))
 
         # Worksheets to be verified
@@ -596,13 +595,11 @@ class DashboardView(BrowserView):
                     'invalid':             _('Invalid'),
                     'sample_received':     _('Results pending'),
                     'assigned':            _('Results pending'),
-                    'attachment_due':      _('Results pending'),
                     'to_be_verified':      _('To be verified'),
                     'verified':            _('Verified'),
                     'published':           _('Published')}
         elif portal_type == 'Worksheet':
             return {'open':            _('Results pending'),
-                    'attachment_due':  _('Results pending'),
                     'to_be_verified':  _('To be verified'),
                     'verified':        _('Verified')}
 
@@ -625,7 +622,6 @@ class DashboardView(BrowserView):
             _('Sample received'):           '#E0E4CC',
 
             'assigned':                     '#dcdcdc',
-            'attachment_due':               '#dcdcdc',
             'open':                         '#dcdcdc',
             _('Results pending'):           '#dcdcdc',
 

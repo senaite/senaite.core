@@ -584,8 +584,6 @@ class Client_Contacts(WorksheetImporter):
                 JobTitle=row.get('JobTitle', ''),
                 Department=row.get('Department', ''),
                 PublicationPreference=pub_pref,
-                AttachmentsPermitted=row[
-                    'AttachmentsPermitted'] and True or False,
             )
             self.fill_contactfields(row, contact)
             self.fill_addressfields(row, contact)
@@ -1638,7 +1636,6 @@ class Analysis_Services(WorksheetImporter):
                 PointOfCapture=row['PointOfCapture'].lower(),
                 Category=category,
                 Department=department,
-                AttachmentOption=row.get('Attachment', '')[0].lower() if row.get('Attachment', '') else 'p',
                 Unit=row['Unit'] and row['Unit'] or None,
                 Precision=row['Precision'] and str(row['Precision']) or '0',
                 ExponentialFormatPrecision=str(self.to_int(row.get('ExponentialFormatPrecision',7),7)),

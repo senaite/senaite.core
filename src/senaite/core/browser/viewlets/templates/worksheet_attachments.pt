@@ -55,7 +55,7 @@
                 </select>
               </td>
               <td>
-                <tal:analyses tal:condition="attachments_view/global_analysis_attachments_allowed">
+                <tal:analyses>
                   <div class="form-group">
                     <!-- Please see
                         bika.lims.browser.worksheet.ajax.AttachAnalyses on how these

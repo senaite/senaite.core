@@ -4,6 +4,8 @@ Changelog
 2.0.0rc3 (unreleased)
 ---------------------
 
+- #1709 Remove "attachment_due" status from Worksheet and Sample
+- #1709 Consolidated Attachment Options to a single Option
 - #1708 Remove auto versioning for Analysis Services
 - #1705 Migrated instrument locations to Dexterity
 - #1706 Add "User name" and "User groups" columns in Lab Contacts listing

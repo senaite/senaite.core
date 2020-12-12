@@ -26,7 +26,6 @@ from bika.lims.browser.widgets import DurationWidget
 from bika.lims.browser.widgets import RecordsWidget
 from bika.lims.browser.widgets import ReferenceWidget
 from bika.lims.browser.widgets import RejectionSetupWidget
-from bika.lims.config import ATTACHMENT_OPTIONS
 from bika.lims.config import CURRENCIES
 from bika.lims.config import DECIMAL_MARKS
 from bika.lims.config import MULTI_VERIFICATION_TYPE
@@ -384,34 +383,6 @@ schema = BikaFolderSchema.copy() + Schema((
                 "This setting can enable/disable verifying/consecutively verifying"
                 "more than once for the same user."),
             format='select',
-        )
-    ),
-    StringField(
-        'ARAttachmentOption',
-        schemata="Analyses",
-        default='p',
-        vocabulary=ATTACHMENT_OPTIONS,
-        widget=SelectionWidget(
-            format='select',
-            label=_("Sample Attachment Option"),
-            description=_(
-                "The system wide default configuration to indicate "
-                "whether file attachments are required, permitted or not "
-                "per sample"),
-        )
-    ),
-    StringField(
-        'AnalysisAttachmentOption',
-        schemata="Analyses",
-        default='p',
-        vocabulary=ATTACHMENT_OPTIONS,
-        widget=SelectionWidget(
-            format='select',
-            label=_("Analysis Attachment Option"),
-            description=_(
-                "Same as the above, but sets the default on analysis services. "
-                "This setting can be set per individual analysis on its "
-                "own configuration"),
         )
     ),
     StringField(
@@ -892,36 +863,11 @@ class BikaSetup(folder.ATFolder):
     schema = schema
     security = ClassSecurityInfo()
 
-    def getAttachmentsPermitted(self):
-        """Attachments permitted
-        """
-        if self.getARAttachmentOption() in ['r', 'p'] \
-           or self.getAnalysisAttachmentOption() in ['r', 'p']:
-            return True
-        else:
-            return False
-
     def getStickerTemplates(self):
         """Get the sticker templates
         """
         out = [[t['id'], t['title']] for t in _getStickerTemplates()]
         return DisplayList(out)
-
-    def getARAttachmentsPermitted(self):
-        """AR attachments permitted
-        """
-        if self.getARAttachmentOption() == 'n':
-            return False
-        else:
-            return True
-
-    def getAnalysisAttachmentsPermitted(self):
-        """Analysis attachments permitted
-        """
-        if self.getAnalysisAttachmentOption() == 'n':
-            return False
-        else:
-            return True
 
     def getAnalysisServicesVocabulary(self):
         """

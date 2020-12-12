@@ -25,8 +25,10 @@ import transaction
 from bika.lims import api
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
+from bika.lims.catalog import CATALOG_WORKSHEET_LISTING
 from bika.lims.catalog import SETUP_CATALOG
 from bika.lims.setuphandlers import add_dexterity_setup_items
+from bika.lims.utils import changeWorkflowState
 from plone.dexterity.fti import DexterityFTI
 from Products.CMFEditions.interfaces import IVersioned
 from senaite.core import logger
@@ -72,6 +74,8 @@ METADATA_TO_REMOVE = [
     # Only used in Analyses listing and it's behavior is bizarre, probably
     # because is a dict and requires special care with ZODB
     (CATALOG_ANALYSIS_LISTING, "getInterimFields"),
+    # No longer used, see https://github.com/senaite/senaite.core/pull/1709/
+    (CATALOG_ANALYSIS_LISTING, "getAttachmentUIDs")
 ]
 
 
@@ -146,6 +150,9 @@ def upgrade(tool):
     # Remove analysis services from CMFEditions auto versioning
     # https://github.com/senaite/senaite.core/pull/1708
     remove_services_from_repositorytool(portal)
+
+    # Resolve objects in attachment_due
+    resolve_attachment_due(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
@@ -483,3 +490,16 @@ def remove_services_from_repositorytool(portal):
             noLongerProvides(obj, IVersioned)
 
     logger.info("Remove auto versioning for Analysis Services ... [DONE]")
+
+
+def resolve_attachment_due(portal):
+    logger.info("Resolving objects in 'attachment_due' status ...")
+
+    # The only objects that can be in attachment_due are worksheets
+    query = {"portal_type": "Worksheet", "review_state": "attachment_due"}
+    for worksheet in api.search(query, CATALOG_WORKSHEET_LISTING):
+        worksheet = api.get_object(worksheet)
+        changeWorkflowState(worksheet, "bika_worksheet_workflow",
+                            "to_be_verified", action="submit")
+
+    logger.info("Resolving objects in 'attachment_due' status [DONE]")

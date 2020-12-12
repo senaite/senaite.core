@@ -100,11 +100,11 @@ class Importer:
     def get_allowed_ar_states(self):
         artoapply = self.request.form['artoapply']
         # Load the importer
-        ar_states = ['sample_received', 'attachment_due', 'to_be_verified']
+        ar_states = ['sample_received', 'to_be_verified']
         if artoapply == 'received':
             ar_states = ['sample_received']
         elif artoapply == 'received_tobeverified':
-            ar_states = ['sample_received', 'attachment_due', 'to_be_verified']
+            ar_states = ['sample_received', 'to_be_verified']
         return ar_states
 
     def get_overrides(self):

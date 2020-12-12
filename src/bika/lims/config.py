@@ -71,11 +71,6 @@ STD_TYPES = DisplayList((
     ('c', _('Control')),
     ('b', _('Blank')),
 ))
-ATTACHMENT_OPTIONS = DisplayList((
-    ('r', _('Required')),
-    ('p', _('Permitted')),
-    ('n', _('Not Permitted')),
-))
 ATTACHMENT_REPORT_OPTIONS = DisplayList((
     ('r', _('Render in Report')),
     ('i', _('Ignore in Report')),

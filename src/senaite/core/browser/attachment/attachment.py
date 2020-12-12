@@ -22,6 +22,7 @@ from bika.lims import api
 from bika.lims import logger
 from bika.lims.config import ATTACHMENT_REPORT_OPTIONS
 from bika.lims.decorators import returns_json
+from bika.lims.interfaces import IVerified
 from bika.lims.permissions import AddAttachment
 from bika.lims.permissions import EditFieldResults
 from bika.lims.permissions import EditResults
@@ -31,7 +32,6 @@ from Products.Five.browser import BrowserView
 from zope.annotation.interfaces import IAnnotations
 from zope.interface import implements
 from zope.publisher.interfaces import IPublishTraverse
-
 
 ATTACHMENTS_STORAGE = "bika.lims.browser.attachment"
 
@@ -161,11 +161,6 @@ class AttachmentsView(BrowserView):
             attachments.append(attachment.UID())
             analysis.setAttachment(attachments)
 
-            # The metadata for getAttachmentUIDs need to get updated,
-            # otherwise the attachments are not displayed
-            # https://github.com/senaite/bika.lims/issues/521
-            analysis.reindexObject()
-
         if service_uid:
             workflow = api.get_tool('portal_workflow')
 
@@ -196,11 +191,6 @@ class AttachmentsView(BrowserView):
                     attachments.append(other.UID())
                 attachments.append(attachment.UID())
                 analysis.setAttachment(attachments)
-
-                # The metadata for getAttachmentUIDs need to get updated,
-                # otherwise the attachments are not displayed
-                # https://github.com/senaite/bika.lims/issues/521
-                analysis.reindexObject()
 
         if self.request['HTTP_REFERER'].endswith('manage_results'):
             self.request.response.redirect('{}/manage_results'.format(
@@ -247,10 +237,6 @@ class AttachmentsView(BrowserView):
                 attachments.append(other.UID())
             attachments.append(attachment.UID())
             analysis.setAttachment(attachments)
-            # The metadata for getAttachmentUIDs need to get updated,
-            # otherwise the attachments are not displayed
-            # https://github.com/senaite/bika.lims/issues/521
-            analysis.reindexObject()
 
         else:
             others = self.context.getAttachment()
@@ -331,24 +317,6 @@ class AttachmentsView(BrowserView):
         if retain is False:
             client = api.get_parent(attachment)
             client.manage_delObjects([attachment.getId(), ])
-
-    def global_attachments_allowed(self):
-        """Checks Setup if Attachments are allowed
-        """
-        bika_setup = api.get_bika_setup()
-        return bika_setup.getAttachmentsPermitted()
-
-    def global_ar_attachments_allowed(self):
-        """Checks Bika Setup if AR Attachments are allowed
-        """
-        bika_setup = api.get_bika_setup()
-        return bika_setup.getARAttachmentsPermitted()
-
-    def global_analysis_attachments_allowed(self):
-        """Checks Setup if Attachments for Analyses are allowed
-        """
-        bika_setup = api.get_bika_setup()
-        return bika_setup.getAnalysisAttachmentsPermitted()
 
     def get_attachment_size(self, attachment):
         """Get the human readable size of the attachment
@@ -441,22 +409,12 @@ class AttachmentsView(BrowserView):
         """Returns a list of analyses from the AR
         """
         analyses = self.context.getAnalyses(full_objects=True)
-        return filter(self.is_analysis_attachment_allowed, analyses)
-
-    def is_analysis_attachment_allowed(self, analysis):
-        """Checks if the analysis
-        """
-        if analysis.getAttachmentOption() not in ["p", "r"]:
-            return False
-        if api.get_workflow_status_of(analysis) in ["retracted"]:
-            return False
-        return True
+        analyses = filter(api.is_active, analyses)
+        return filter(lambda a: not IVerified.providedBy(a), analyses)
 
     def user_can_add_attachments(self):
         """Checks if the current logged in user is allowed to add attachments
         """
-        if not self.global_attachments_allowed():
-            return False
         context = self.context
         pm = api.get_tool("portal_membership")
         return pm.checkPermission(AddAttachment, context)

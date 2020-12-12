@@ -159,7 +159,7 @@ Load results test file and import the results::
     >>> tx1800i_parser = TX1800iParser(test_file)
     >>> importer = SysmexXTImporter(parser=tx1800i_parser,
     ...                             context=portal,
-    ...                             allowed_ar_states=['sample_received', 'attachment_due', 'to_be_verified'],
+    ...                             allowed_ar_states=['sample_received', 'to_be_verified'],
     ...                             allowed_analysis_states=None,
     ...                             override=[True, True])
     >>> importer.process()
@@ -174,7 +174,7 @@ Check the rest of the importer logs to verify that the values were correctly imp
 
     >>> importer.logs[1:]
     ['End of file reached successfully: 1 objects, 21 analyses, 1 results',
-     'Allowed Sample states: sample_received, attachment_due, to_be_verified',
+     'Allowed Sample states: sample_received, to_be_verified',
      'Allowed analysis states: unassigned, assigned, to_be_verified',
      "H2O-0001: [u'Analysis HCT', u'Analysis RBC', u'Analysis WBC', u'Analysis HGB'] imported sucessfully",
      'Import finished successfully: 1 Samples and 4 results updated']
