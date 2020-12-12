@@ -498,6 +498,7 @@ def resolve_attachment_due(portal):
     # The only objects that can be in attachment_due are worksheets
     query = {"portal_type": "Worksheet", "review_state": "attachment_due"}
     for worksheet in api.search(query, CATALOG_WORKSHEET_LISTING):
+        worksheet = api.get_object(worksheet)
         changeWorkflowState(worksheet, "bika_worksheet_workflow",
                             "to_be_verified", action="submit")
 
