@@ -25,8 +25,6 @@ from bika.lims.api import security
 from bika.lims.config import ATTACHMENT_REPORT_OPTIONS
 from bika.lims.decorators import returns_json
 from bika.lims.permissions import AddAttachment
-from bika.lims.permissions import EditFieldResults
-from bika.lims.permissions import EditResults
 from BTrees.OOBTree import OOBTree
 from plone import protect
 from Products.Five.browser import BrowserView
@@ -35,14 +33,6 @@ from zope.interface import implements
 from zope.publisher.interfaces import IPublishTraverse
 
 ATTACHMENTS_STORAGE = "bika.lims.browser.attachment"
-
-EDITABLE_STATES = [
-    'to_be_sampled',
-    'to_be_preserved',
-    'sample_due',
-    'sample_received',
-    'to_be_verified',
-]
 
 
 class AttachmentsView(BrowserView):
@@ -414,37 +404,13 @@ class AttachmentsView(BrowserView):
         analyses = self.context.getAnalyses(full_objects=True)
         return filter(lambda a: security.check_permission(perm, a), analyses)
 
-    def user_can_add_attachments(self):
-        """Checks if the current logged in user is allowed to add attachments
+    def user_can_edit_attachments(self):
+        """Returns whether the current user is allowed to add/edit/delete
+        attachments to/from current context, not necessarily to/from analyses
         """
-        context = self.context
-        pm = api.get_tool("portal_membership")
-        return pm.checkPermission(AddAttachment, context)
+        # XXX Revisit AddAttachment permission
+        return security.check_permission(AddAttachment, self.context)
 
-    def user_can_update_attachments(self):
-        """Checks if the current logged in user is allowed to update attachments
-        """
-        context = self.context
-        pm = api.get_tool("portal_membership")
-        return pm.checkPermission(EditResults, context) or \
-            pm.checkPermission(EditFieldResults, context)
-
-    def user_can_delete_attachments(self):
-        """Checks if the current logged in user is allowed to delete attachments
-        """
-        context = self.context
-        if not self.is_ar_editable():
-            return False
-        user = api.user.get_user()
-        return (self.user_can_add_attachments() and
-                not user.allowed(context, ["Client"])) or \
-            self.user_can_update_attachments()
-
-    def is_ar_editable(self):
-        """Checks if the AR is in a review_state that allows to update the attachments.
-        """
-        state = api.get_workflow_status_of(self.context)
-        return state in EDITABLE_STATES
 
     # ANNOTATION HANDLING
 

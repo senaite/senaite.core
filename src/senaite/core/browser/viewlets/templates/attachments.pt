@@ -36,7 +36,8 @@
     </style>
 
     <!-- Attachments Viewlet -->
-    <div class="panel-body">
+    <div class="panel-body"
+         tal:define="can_edit attachments_view/user_can_edit_attachments">
 
       <!-- Attachments List -->
       <div id="attachments_update"
@@ -67,12 +68,11 @@
                 <!-- Please do not move this column to be the first, because the
                       :records converter will somehow offset the True/False value of
                       the checkbox by -1 (the record before will be deleted) -->
-                <th tal:condition="attachments_view/user_can_delete_attachments">Delete</th>
+                <th tal:condition="can_edit">Delete</th>
               </tr>
             </thead>
             <tbody>
-              <tr tal:repeat="attachment attachments"
-                  tal:define="user_can_delete python:attachments_view.user_can_delete_attachments()">
+              <tr tal:repeat="attachment attachments">
 
                 <td class="attachment-link">
                   <!-- Icon and Attachment download link -->
@@ -137,7 +137,7 @@
                     </tal:item>
                   </select>
                 </td>
-                <td class="attachment-delete" tal:condition="user_can_delete">
+                <td class="attachment-delete" tal:condition="can_edit">
 
                   <!-- Delete Attachment -->
                   <input type="checkbox"
