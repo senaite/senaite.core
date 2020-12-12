@@ -19,10 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
-from bika.lims import EditFieldResults
-from bika.lims import EditResults
 from bika.lims import FieldEditAnalysisResult
-from bika.lims import FieldEditResultsInterpretation
 from bika.lims import logger
 from bika.lims.api import security
 from bika.lims.config import ATTACHMENT_REPORT_OPTIONS
@@ -368,8 +365,9 @@ class AttachmentsView(BrowserView):
         skip = ["cancelled", "retracted", "rejected"]
         for analysis in self.context.getAnalyses(full_objects=True):
             if api.get_review_status(analysis) in skip:
-                # Skip non-valid analyses, user can download their attachments
-                # from the analysis listing anyways
+                # Do not display attachments from invalid analyses in the
+                # attachments viewlet, user can download them from the analysis
+                # listing anyways
                 continue
 
             can_edit = security.check_permission(permission, analysis)
