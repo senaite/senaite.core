@@ -4,6 +4,7 @@ Changelog
 2.0.0rc3 (unreleased)
 ---------------------
 
+- #1711 Make attachments viewlet to rely on permissions, not on statuses
 - #1709 Remove "attachment_due" status from Worksheet and Sample
 - #1709 Consolidated Attachment Options to a single Option
 - #1708 Remove auto versioning for Analysis Services
