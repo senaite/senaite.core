@@ -19,10 +19,11 @@
 # Some rights reserved, see README and LICENSE.
 
 from bika.lims import api
+from bika.lims import FieldEditAnalysisResult
 from bika.lims import logger
+from bika.lims.api import security
 from bika.lims.config import ATTACHMENT_REPORT_OPTIONS
 from bika.lims.decorators import returns_json
-from bika.lims.interfaces import IVerified
 from bika.lims.permissions import AddAttachment
 from bika.lims.permissions import EditFieldResults
 from bika.lims.permissions import EditResults
@@ -406,11 +407,12 @@ class AttachmentsView(BrowserView):
         return ATTACHMENT_REPORT_OPTIONS.items()
 
     def get_analyses(self):
-        """Returns a list of analyses from the AR
+        """Returns the list of analyses for which the current user has
+        privileges granted to add/edit/remove attachments
         """
+        perm = FieldEditAnalysisResult
         analyses = self.context.getAnalyses(full_objects=True)
-        analyses = filter(api.is_active, analyses)
-        return filter(lambda a: not IVerified.providedBy(a), analyses)
+        return filter(lambda a: security.check_permission(perm, a), analyses)
 
     def user_can_add_attachments(self):
         """Checks if the current logged in user is allowed to add attachments
