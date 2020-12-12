@@ -8,11 +8,17 @@
   <bindings>
 
     <!-- Bindings to "senaite_one_state_workflow" -->
+    <type type_id="InstrumentLocations">
+      <bound-workflow workflow_id="senaite_one_state_workflow"/>
+    </type>
     <type type_id="InterpretationTemplates">
       <bound-workflow workflow_id="senaite_one_state_workflow"/>
     </type>
 
     <!-- Bindings to "senaite_deactivable_type_workflow" -->
+    <type type_id="InstrumentLocation">
+      <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
+    </type>
     <type type_id="InterpretationTemplate">
       <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
     </type>

@@ -18,85 +18,15 @@
 # Copyright 2018-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
-from bika.lims import api
-from bika.lims import bikaMessageFactory as _
-from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
-from bika.lims.interfaces import IInstrumentLocations
-from bika.lims.permissions import AddInstrumentLocation
-from bika.lims.utils import get_link
 from plone.app.folder.folder import ATFolder
-from plone.app.folder.folder import ATFolderSchema
-from senaite.core.interfaces import IHideActionsMenu
-from zope.interface import implements
 
 
-
-class InstrumentLocationsView(BikaListingView):
-    """Displays all available instrument locations in a table
+# BBB: Only kept for backwards compatibility
+class InstrumentLocations(ATFolder):
+    """Moved to senaite.core.content.instrumentlocations
     """
 
-    def __init__(self, context, request):
-        super(InstrumentLocationsView, self).__init__(context, request)
 
-        self.contentFilter = {'portal_type': 'InstrumentLocation',
-                              'sort_on': 'sortable_title'}
-
-        self.context_actions = {_('Add'):
-                                {'url': 'createObject?type_name=InstrumentLocation',
-                                 'permission': AddInstrumentLocation,
-                                 'icon': '++resource++bika.lims.images/add.png'}}
-
-        self.title = self.context.translate(_("Instrument Locations"))
-        self.icon = "++resource++bika.lims.images/instrumenttype_big.png"
-        self.description = ""
-
-        self.show_select_row = False
-        self.show_select_column = True
-        self.pagesize = 25
-
-        self.columns = {
-            'Title': {'title': _('Title'),
-                      'index': 'sortable_title'},
-            'Description': {'title': _('Description'),
-                            'index': 'description',
-                            'toggle': True},
-        }
-
-        self.review_states = [
-            {'id': 'default',
-             'title': _('Active'),
-             'contentFilter': {'is_active': True},
-             'transitions': [{'id': 'deactivate'}, ],
-             'columns': ['Title', 'Description']},
-            {'id': 'inactive',
-             'title': _('Inactive'),
-             'contentFilter': {'is_active': False},
-             'transitions': [{'id': 'activate'}, ],
-             'columns': ['Title', 'Description']},
-            {'id': 'all',
-             'title': _('All'),
-             'contentFilter': {},
-             'columns': ['Title', 'Description']},
-        ]
-
-    def folderitem(self, obj, item, index):
-        obj = api.get_object(obj)
-        item["Description"] = obj.Description()
-        item["replace"]["title"] = get_link(item["url"], item["Title"])
-        return item
-
-
-schema = ATFolderSchema.copy()
-
-
-class InstrumentLocations(ATFolder):
-    implements(IInstrumentLocations, IHideActionsMenu)
-    displayContentsTab = False
-    schema = schema
-
-
-schemata.finalizeATCTSchema(schema, folderish=True, moveDiscussion=False)
 atapi.registerType(InstrumentLocations, PROJECTNAME)

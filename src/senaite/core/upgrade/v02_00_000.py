@@ -27,14 +27,26 @@ from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.catalog import SETUP_CATALOG
 from bika.lims.setuphandlers import add_dexterity_setup_items
+from plone.dexterity.fti import DexterityFTI
 from senaite.core import logger
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.setuphandlers import _run_import_step
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
+from senaite.core.upgrade.utils import catalog_object
+from senaite.core.upgrade.utils import copy_snapshots
+from senaite.core.upgrade.utils import delete_object
+from senaite.core.upgrade.utils import set_uid
+from senaite.core.upgrade.utils import temporary_allow_type
+from senaite.core.upgrade.utils import uncatalog_object
 
 version = "2.0.0"  # Remember version number in metadata.xml and setup.py
 profile = "profile-{0}:default".format(product)
+
+REMOVE_AT_TYPES = [
+    "InstrumentLocation",
+    "InstrumentLocations",
+]
 
 INSTALL_PRODUCTS = [
     "senaite.core",
@@ -76,6 +88,9 @@ def upgrade(tool):
     logger.info("Upgrading {0}: {1} -> {2}".format(product, ver_from, version))
 
     # -------- ADD YOUR STUFF BELOW --------
+
+    # Remove AT types from portal_types tool
+    remove_at_portal_types(portal)
 
     # Remove duplicate methods from analysis services
     remove_duplicate_methods_in_services(portal)
@@ -120,6 +135,10 @@ def upgrade(tool):
 
     # Remove stale metadata
     remove_stale_metadata(portal)
+
+    # Convert Instrument Locations to DX
+    # https://github.com/senaite/senaite.core/pull/1705
+    convert_instrumentlocations_to_dx(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
@@ -360,3 +379,75 @@ def del_metadata(catalog_id, column):
                     .format(column, catalog_id))
         return
     catalog.delColumn(column)
+
+
+def remove_at_portal_types(portal):
+    """Remove AT portal type information
+    """
+    logger.info("Remove AT types from portal_types tool ...")
+    pt = api.get_tool("portal_types")
+    for type_name in REMOVE_AT_TYPES:
+        fti = pt.getTypeInfo(type_name)
+        # keep DX FTIs
+        if isinstance(fti, DexterityFTI):
+            logger.info("Type '{}' is already a DX FTI".format(fti))
+            continue
+        pt.manage_delObjects(fti.getId())
+    logger.info("Remove AT types from portal_types tool ... [DONE]")
+
+
+def convert_instrumentlocations_to_dx(portal):
+    """Converts existing Instrument Locations to Dexterity
+    """
+    logger.info("Convert Instrument Locations to Dexterity ...")
+
+    old_id = "bika_instrumentlocations"
+    new_id = "instrument_locations"
+    new_title = "Instrument Locations"
+
+    setup = api.get_setup()
+    old = setup.get(old_id)
+
+    # return if the old container is already gone
+    if not old:
+        return
+
+    # uncatalog the old object
+    uncatalog_object(old)
+
+    # get the new container
+    new = setup.get(new_id)
+
+    # create the new container if it is not there
+    if not new:
+        # temporarily allow to create objects in setup
+        with temporary_allow_type(setup, "InstrumentLocations") as container:
+            new = api.create(
+                container, "InstrumentLocations", id=new_id, title=new_title)
+        new.reindexObject()
+
+    # copy items from old -> new container
+    for src in old.objectValues():
+        # extract the old values
+        uid = api.get_uid(src)
+        title = api.get_title(src)
+        description = api.get_description(src)
+        # uncatalog the old object
+        uncatalog_object(src)
+        # create the new DX object and set explicitly the values
+        target = api.create(new, "InstrumentLocation", title=title)
+        target.description = api.safe_unicode(description)
+        # take over the UID
+        set_uid(target, uid)
+        # copy auditlog
+        copy_snapshots(src, target)
+        # catalog the new object
+        catalog_object(target)
+
+    # copy snapshots for the container
+    copy_snapshots(old, new)
+
+    # delete the old object
+    delete_object(old)
+
+    logger.info("Convert Instrument Locations to Dexterity ... [DONE]")
