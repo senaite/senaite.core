@@ -21,15 +21,17 @@
 from bika.lims import api
 from bika.lims import FieldEditAnalysisResult
 from bika.lims import logger
+from bika.lims import SampleAddAttachment
+from bika.lims import SampleDeleteAttachment
 from bika.lims.api import security
 from bika.lims.config import ATTACHMENT_REPORT_OPTIONS
-from bika.lims.permissions import AddAttachment
 from BTrees.OOBTree import OOBTree
 from plone import protect
 from Products.Five.browser import BrowserView
 from zope.annotation.interfaces import IAnnotations
 from zope.interface import implements
 from zope.publisher.interfaces import IPublishTraverse
+from plone.memoize import view
 
 ATTACHMENTS_STORAGE = "bika.lims.browser.attachment"
 
@@ -324,11 +326,9 @@ class AttachmentsView(BrowserView):
     def get_attachment_info(self, attachment):
         """Returns a dictionary of attachment information
         """
-
         attachment_uid = api.get_uid(attachment)
         attachment_file = attachment.getAttachmentFile()
         attachment_type = attachment.getAttachmentType()
-
         report_option = attachment.getReportOption()
         report_option_value = ATTACHMENT_REPORT_OPTIONS.getValue(report_option)
 
@@ -356,11 +356,10 @@ class AttachmentsView(BrowserView):
         # process AR attachments
         for attachment in self.context.getAttachment():
             attachment_info = self.get_attachment_info(attachment)
-            attachment_info["can_edit"] = self.user_can_edit_attachments()
+            attachment_info["can_edit"] = self.can_edit_attachments()
             attachments.append(attachment_info)
 
         # process analyses attachments
-        permission = FieldEditAnalysisResult
         skip = ["cancelled", "retracted", "rejected"]
         for analysis in self.context.getAnalyses(full_objects=True):
             if api.get_review_status(analysis) in skip:
@@ -369,7 +368,7 @@ class AttachmentsView(BrowserView):
                 # listing anyways
                 continue
 
-            can_edit = security.check_permission(permission, analysis)
+            can_edit = self.is_editable(analysis)
             for attachment in analysis.getAttachment():
                 attachment_info = self.get_attachment_info(attachment)
                 attachment_info["analysis"] = api.get_title(analysis)
@@ -396,6 +395,7 @@ class AttachmentsView(BrowserView):
         sorted_attachments = sorted(attachments, cmp=att_cmp)
         return sorted_attachments
 
+    @view.memoize
     def get_attachment_types(self):
         """Returns a list of available attachment types
         """
@@ -415,15 +415,32 @@ class AttachmentsView(BrowserView):
         """Returns the list of analyses for which the current user has
         privileges granted to add/edit/remove attachments
         """
-        perm = FieldEditAnalysisResult
         analyses = self.context.getAnalyses(full_objects=True)
-        return filter(lambda a: security.check_permission(perm, a), analyses)
+        return filter(self.is_editable, analyses)
 
-    def user_can_edit_attachments(self):
-        """Returns whether the current user is allowed to add/edit/delete
-        attachments to/from current context, not necessarily to/from analyses
+    def can_add_attachments(self):
+        """Returns whether the current user is allowed to add attachments to
+        current context, but not necessarily to analyses
         """
-        return security.check_permission(AddAttachment, self.context)
+        return security.check_permission(SampleAddAttachment, self.context)
+
+    def can_edit_attachments(self):
+        """Returns whether the current user is allowed to edit attachments
+        from current context, but not necessarily from analyses
+        """
+        return security.check_permission(SampleAddAttachment, self.context)
+
+    def can_delete_attachments(self):
+        """Returns whether the current user is allowed to delete attachments
+        from current context, but not necessarily from analyses
+        """
+        return security.check_permission(SampleDeleteAttachment, self.context)
+
+    def is_editable(self, analysis):
+        """Returns whether the current user has privileges for the edition
+        of the analysis passed in
+        """
+        return security.check_permission(FieldEditAnalysisResult, analysis)
 
     # ANNOTATION HANDLING
 

@@ -114,6 +114,7 @@ def upgrade(tool):
     setup.runImportStepFromProfile(profile, "viewlets")
     setup.runImportStepFromProfile(profile, "repositorytool")
     # run import steps located in bika.lims profiles
+    _run_import_step(portal, "rolemap", profile="profile-bika.lims:default")
     _run_import_step(portal, "typeinfo", profile="profile-bika.lims:default")
     _run_import_step(portal, "workflow", profile="profile-bika.lims:default")
 
@@ -225,19 +226,7 @@ def update_workflow_mappings_samples(portal):
     """
     logger.info("Updating role mappings for Samples ...")
     wf_id = "bika_ar_workflow"
-    query = {"portal_type": "AnalysisRequest",
-             "review_state": [
-                 "sample_due",
-                 "sample_registered",
-                 "scheduled_sampling",
-                 "to_be_sampled",
-                 "sample_received",
-                 "attachment_due",
-                 "to_be_verified",
-                 "to_be_preserved",
-                 "verified",
-                 "published"
-             ]}
+    query = {"portal_type": "AnalysisRequest"}
     brains = api.search(query, CATALOG_ANALYSIS_REQUEST_LISTING)
     update_workflow_mappings_for(portal, wf_id, brains)
     logger.info("Updating role mappings for Samples [DONE]")
@@ -250,6 +239,8 @@ def update_workflow_mappings_for(portal, wf_id, brains):
     for num, brain in enumerate(brains):
         if num and num % 100 == 0:
             logger.info("Updating role mappings: {0}/{1}".format(num, total))
+        if num and num % 1000 == 0:
+            commit_transaction(portal)
         obj = api.get_object(brain)
         workflow.updateRoleMappingsFor(obj)
         obj.reindexObject(idxs=["allowedRolesAndUsers"])

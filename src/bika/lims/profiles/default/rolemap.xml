@@ -494,6 +494,25 @@
       <role name="Manager"/>
     </permission>
 
+    <!-- Type-specific permissions -->
+    <permission name="senaite.core: Sample: Add Attachment" acquire="False">
+      <role name="Analyst"/>
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
+    <permission name="senaite.core: Sample: Edit Attachment" acquire="False">
+      <role name="Analyst"/>
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
+    <permission name="senaite.core: Sample: Delete Attachment" acquire="False">
+      <role name="Analyst"/>
+      <role name="LabClerk"/>
+      <role name="LabManager"/>
+      <role name="Manager"/>
+    </permission>
 
     <!-- Field permissions -->
     <!-- Field permissions (Analysis Request) -->

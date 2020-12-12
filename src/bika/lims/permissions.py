@@ -119,6 +119,14 @@ TransitionRejectWorksheet = "senaite.core: Transition: Reject Worksheet"
 TransitionRemoveWorksheet = "senaite.core: Transition: Remove Worksheet"
 
 
+# Type-specific permissions
+# =========================
+# Sample (Analysis Request)
+SampleAddAttachment = "senaite.core: Sample: Add Attachment"
+SampleEditAttachment = "senaite.core: Sample: Edit Attachment"
+SampleDeleteAttachment = "senaite.core: Sample: Delete Attachment"
+
+
 # Field Permissions
 # =================
 # Field permissions (Analysis Request)

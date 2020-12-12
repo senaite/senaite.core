@@ -6,7 +6,7 @@
           class="btn btn-light dropdown-toggle mb-3"
           data-toggle="collapse"
           data-target="#ar-attachments-panel">
-    <i class="fas fa-paperclip" aria-hidden="true"></i>
+    <i class="fas fa-paperclip" aria-hidden="true"/>
     <span i18n:translate="">Attachments</span>
   </button>
 
@@ -37,12 +37,15 @@
 
     <!-- Attachments Viewlet -->
     <div class="panel-body"
-         tal:define="can_edit attachments_view/user_can_edit_attachments">
+         tal:define="can_add attachments_view/can_add_attachments;
+                     can_edit attachments_view/can_edit_attachments;
+                     can_delete attachments_view/can_delete_attachments;
+                     attachments attachments_view/get_sorted_attachments;
+                     attachment_types attachments_view/get_attachment_types;
+                     report_options attachments_view/get_attachment_report_options">
 
       <!-- Attachments List -->
-      <div id="attachments_update"
-           class="ar_attachments_list"
-           tal:define="attachments attachments_view/get_sorted_attachments">
+      <div id="attachments_update" class="ar_attachments_list">
 
         <!-- Update Attachment Form -->
         <form action="attachments_view/update"
@@ -59,16 +62,16 @@
           <table id="attachments_update_table" class="table-sm">
             <thead>
               <tr>
-                <th i18n:translate=''>Name</th>
-                <th i18n:translate=''>Type</th>
-                <th i18n:translate=''>Size</th>
-                <th i18n:translate=''>Analysis</th>
-                <th i18n:translate=''>Keywords</th>
-                <th i18n:translate=''>Report Option</th>
+                <th i18n:translate="">Name</th>
+                <th i18n:translate="">Type</th>
+                <th i18n:translate="">Size</th>
+                <th i18n:translate="">Analysis</th>
+                <th i18n:translate="">Keywords</th>
+                <th i18n:translate="">Report Option</th>
                 <!-- Please do not move this column to be the first, because the
                       :records converter will somehow offset the True/False value of
                       the checkbox by -1 (the record before will be deleted) -->
-                <th tal:condition="can_edit">Delete</th>
+                <th tal:condition="can_delete">Delete</th>
               </tr>
             </thead>
             <tbody>
@@ -76,7 +79,7 @@
 
                 <td class="attachment-link">
                   <!-- Icon and Attachment download link -->
-                  <i class="fa fa-paperclip" aria-hidden="true"></i>
+                  <i class="fa fa-paperclip" aria-hidden="true"/>
                   <a title="Click to download"
                       tal:attributes="href string:${attachment/absolute_url}/at_download/AttachmentFile"
                       tal:content="attachment/name">name</a>
@@ -89,6 +92,7 @@
                   <input type="hidden" tal:attributes="name string:order:list;
                                                        value string:${attachment/UID}"/>
                 </td>
+
                 <td class="attachment-type">
                   <!-- Attachment Type -->
                   <select name="AttachmentType"
@@ -96,25 +100,25 @@
                           tal:condition="can_edit"
                           tal:attributes="name string:attachments.AttachmentType:records;
                                           data-attachment-uid string:${attachment/UID};">
-                    <tal:item repeat="item attachments_view/get_attachment_types">
-                      <option tal:attributes="value item/UID;
+                      <option tal:repeat="item attachment_types"
+                              tal:attributes="value item/UID;
                                               selected python:item.UID==attachment['type_uid']"
-                              tal:content="item/Title">
-                        Attachment Type
-                      </option>
-                    </tal:item>
+                              tal:content="item/Title"/>
                   </select>
                   <span tal:condition="not:can_edit"
                         tal:content="attachment/type"/>
                 </td>
+
                 <td class="attachment-field-size">
                   <!-- File Size -->
                   <span class="filesize" tal:content="attachment/size"/>
                 </td>
+
                 <td class="attachment-analysis">
                   <!-- Attached to Analysis -->
                   <span class="analysis" tal:content="attachment/analysis"/>
                 </td>
+
                 <td class="attachment-keywords">
                   <!-- Attachment Keywords -->
                   <input name="AttachmentKeys"
@@ -125,6 +129,7 @@
                   <span tal:condition="not:can_edit"
                         tal:content="attachment/keywords"/>
                 </td>
+
                 <td class="attachment-report-option">
                   <!-- Attachment Report Option
                         i=Ignore in Report
@@ -135,20 +140,19 @@
                           tal:condition="can_edit"
                           tal:attributes="name string:attachments.ReportOption:records;
                                           data-attachment-uid string:${attachment/UID}">
-                    <tal:item repeat="item attachments_view/get_attachment_report_options">
-                      <option tal:attributes="value python:item[0];
-                                              selected python:item[0]==attachment['report_option']"
-                              tal:content="python: item[1]">
-                        Attachment Report Option
-                      </option>
-                    </tal:item>
+                    <option tal:repeat="item report_options"
+                            tal:attributes="value python:item[0];
+                                            selected python:item[0]==attachment['report_option']"
+                            tal:content="python: item[1]"/>
                   </select>
                   <span tal:condition="not:can_edit"
                         tal:content="attachment/report_option_value"/>
                 </td>
-                <td class="attachment-delete" tal:condition="can_edit">
 
-                  <!-- Delete Attachment -->
+                <td class="attachment-delete" tal:condition="can_delete">
+                  <!-- Delete Attachment
+                  Note that for deletion we rely on "can_edit" from attachment
+                  -->
                   <input type="checkbox"
                           tal:condition="attachment/can_edit"
                           tal:attributes="name string:attachments.delete:records:boolean;
@@ -172,7 +176,7 @@
           </div>
 
           <!-- Update attachments button.
-                This will send the values to the `attachmetns_view` endpoint. -->
+               This will send the values to the `attachmetns_view` endpoint. -->
           <input class="btn btn-secondary context"
                  id="updateButton"
                  type="submit"
@@ -187,7 +191,7 @@
 
       <!-- Add Attachments -->
       <div id="attachments_add"
-           tal:condition="can_edit"
+           tal:condition="can_add"
            class="ar_attachments_list">
 
         <!-- Add Form -->
@@ -222,12 +226,9 @@
                 <td>
                   <!-- Attachment type selection dropdown -->
                   <select name="AttachmentType" class="form-control">
-                    <tal:item repeat="item attachments_view/get_attachment_types">
-                      <option tal:attributes="value item/UID;"
-                              tal:content="item/Title">
-                        Attachment Type
-                      </option>
-                    </tal:item>
+                    <option tal:repeat="item attachment_types"
+                            tal:attributes="value item/UID;"
+                            tal:content="item/Title"/>
                   </select>
                 </td>
                 <td>
@@ -246,11 +247,11 @@
                                 disabled="disabled"
                                 tal:attributes="value python:None">
                           <span tal:omit-tag="python:True"
-                                i18n:translate="">Attach to Analysis Request</span>
+                                i18n:translate="">Attach to Sample</span>
                         </option>
                         <tal:a tal:repeat="item a_analyses">
                           <option tal:attributes="value item/UID;"
-                                  tal:content="item/Title"></option>
+                                  tal:content="item/Title"/>
                         </tal:a>
                         <tal:b tal:repeat="item b_analyses">
                           <option tal:attributes="value item/UID;">
@@ -288,12 +289,9 @@
                       r=Render in Report
                     -->
                   <select name="ReportOption" class="form-control">
-                    <tal:item repeat="item attachments_view/get_attachment_report_options">
-                      <option tal:attributes="value python:item[0];"
-                              tal:content="python: item[1]">
-                        Attachment Report Option
-                      </option>
-                    </tal:item>
+                    <option tal:repeat="item report_options"
+                            tal:attributes="value python:item[0];"
+                            tal:content="python: item[1]"/>
                   </select>
                 </td>
               </tr>
