@@ -20,22 +20,4 @@
       layer="senaite.core.interfaces.ISenaiteCore"
       />
 
-  <!-- Ajax exposed Attachments Methods -->
-
-  <browser:page
-      for="bika.lims.interfaces.IAnalysisRequest"
-      name="ajax_attachments_view"
-      class=".attachment.ajaxAttachmentsView"
-      permission="zope.Public"
-      layer="senaite.core.interfaces.ISenaiteCore"
-      />
-
-  <browser:page
-      for="bika.lims.interfaces.IWorksheet"
-      name="ajax_attachments_view"
-      class=".attachment.ajaxAttachmentsView"
-      permission="zope.Public"
-      layer="senaite.core.interfaces.ISenaiteCore"
-      />
-
 </configure>

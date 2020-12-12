@@ -23,7 +23,6 @@ from bika.lims import FieldEditAnalysisResult
 from bika.lims import logger
 from bika.lims.api import security
 from bika.lims.config import ATTACHMENT_REPORT_OPTIONS
-from bika.lims.decorators import returns_json
 from bika.lims.permissions import AddAttachment
 from BTrees.OOBTree import OOBTree
 from plone import protect
@@ -426,7 +425,6 @@ class AttachmentsView(BrowserView):
         """
         return security.check_permission(AddAttachment, self.context)
 
-
     # ANNOTATION HANDLING
 
     def get_annotation(self):
@@ -467,48 +465,3 @@ class AttachmentsView(BrowserView):
         listing viewlet.
         """
         return self.storage.get("order", [])
-
-
-class ajaxAttachmentsView(AttachmentsView):
-    """Ajax helpers for attachments
-    """
-
-    def __init__(self, context, request):
-        super(ajaxAttachmentsView, self).__init__(context, request)
-
-    @returns_json
-    def __call__(self):
-        protect.CheckAuthenticator(self.request.form)
-
-        if len(self.traverse_subpath) != 1:
-            return self.error("Not found", status=404)
-        func_name = "ajax_{}".format(self.traverse_subpath[0])
-        func = getattr(self, func_name, None)
-        if func is None:
-            return self.error("Invalid function", status=400)
-        return func()
-
-    def error(self, message, status=500, **kw):
-        self.request.response.setStatus(status)
-        result = {"success": False, "errors": message}
-        result.update(kw)
-        return result
-
-    def ajax_delete_analysis_attachment(self):
-        """Endpoint for attachment delete in WS
-        """
-        form = self.request.form
-        attachment_uid = form.get("attachment_uid", None)
-
-        if not attachment_uid:
-            return "error"
-
-        attachment = api.get_object_by_uid(attachment_uid, None)
-        if attachment is None:
-            return "Could not resolve attachment UID {}".format(attachment_uid)
-
-        # handle delete via the AttachmentsView
-        view = self.context.restrictedTraverse("@@attachments_view")
-        view.delete_attachment(attachment)
-
-        return "success"
