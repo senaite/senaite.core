@@ -404,11 +404,7 @@ class AnalysesView(BikaListingView):
         :param brain_or_object_or_uid: UID/Catalog brain/content object
         :returns: content object
         """
-        if api.is_uid(brain_or_object_or_uid):
-            return api.get_object_by_uid(brain_or_object_or_uid, default=None)
-        if api.is_object(brain_or_object_or_uid):
-            return api.get_object(brain_or_object_or_uid)
-        return None
+        return api.get_object(brain_or_object_or_uid, default=None)
 
     @viewcache.memoize
     def get_methods_vocabulary(self, analysis_brain):
