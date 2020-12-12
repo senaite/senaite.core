@@ -22,6 +22,7 @@ from bika.lims import api
 from bika.lims import logger
 from bika.lims.config import ATTACHMENT_REPORT_OPTIONS
 from bika.lims.decorators import returns_json
+from bika.lims.interfaces import IVerified
 from bika.lims.permissions import AddAttachment
 from bika.lims.permissions import EditFieldResults
 from bika.lims.permissions import EditResults
@@ -408,7 +409,8 @@ class AttachmentsView(BrowserView):
         """Returns a list of analyses from the AR
         """
         analyses = self.context.getAnalyses(full_objects=True)
-        return filter(api.is_active, analyses)
+        analyses = filter(api.is_active, analyses)
+        return filter(lambda a: not IVerified.providedBy(a), analyses)
 
     def user_can_add_attachments(self):
         """Checks if the current logged in user is allowed to add attachments
