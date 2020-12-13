@@ -121,10 +121,14 @@ TransitionRemoveWorksheet = "senaite.core: Transition: Remove Worksheet"
 
 # Type-specific permissions
 # =========================
-# Sample (Analysis Request)
+# Makes "Add Attachment" section from sample context visible
 SampleAddAttachment = "senaite.core: Sample: Add Attachment"
+# Allows to edit "Type", "Keywords" and "Report Option" from attachments, even
+# for those attachment assigned to an analysis
 SampleEditAttachment = "senaite.core: Sample: Edit Attachment"
+# Displays the "Delete" checkbox
 SampleDeleteAttachment = "senaite.core: Sample: Delete Attachment"
+# Makes "Add Attachment" section from worksheet context visible
 WorksheetAddAttachment = "senaite.core: Worksheet: Add Attachment"
 
 
@@ -167,6 +171,8 @@ FieldEditTemplate = "senaite.core: Field: Edit Template"
 
 # Field permissions (Analysis and alike)
 FieldEditAnalysisHidden = "senaite.core: Field: Edit Analysis Hidden"
+# Allows the edition of the result from an Analysis, as well as the assignment,
+# edition or removal of attachment.
 FieldEditAnalysisResult = "senaite.core: Field: Edit Analysis Result"
 FieldEditAnalysisRemarks = "senaite.core: Field: Edit Analysis Remarks"
 
