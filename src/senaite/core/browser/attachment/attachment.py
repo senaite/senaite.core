@@ -20,12 +20,13 @@
 
 import six
 
-from bika.lims import api
 from bika.lims import FieldEditAnalysisResult
-from bika.lims import logger
 from bika.lims import SampleAddAttachment
 from bika.lims import SampleDeleteAttachment
 from bika.lims import SampleEditAttachment
+from bika.lims import api
+from bika.lims import logger
+from bika.lims import senaiteMessageFactory as _
 from bika.lims.api import security
 from bika.lims.catalog import SETUP_CATALOG
 from bika.lims.config import ATTACHMENT_REPORT_OPTIONS
@@ -89,6 +90,11 @@ class AttachmentsView(BrowserView):
         # call the endpoint
         return action()
 
+    def add_status_message(self, message, level="info"):
+        """Set a portal status message
+        """
+        return self.context.plone_utils.addPortalMessage(message, level)
+
     def action_update(self):
         """Form action endpoint to update the attachments
         """
@@ -137,8 +143,8 @@ class AttachmentsView(BrowserView):
 
         # nothing to do if the attachment file is missing
         if attachment_file is None:
-            logger.warn("AttachmentView.action_add_attachment: Attachment file "
-                        "is missing")
+            logger.warn("AttachmentView.action_add_attachment: "
+                        "Attachment file is missing")
             return
 
         if analysis_uid:
@@ -159,14 +165,20 @@ class AttachmentsView(BrowserView):
                 attachments.append(other.UID())
             attachments.append(attachment.UID())
             analysis.setAttachment(attachments)
+            self.add_status_message(
+                _("Attachment added to analysis '{}'"
+                  .format(api.get_title(analysis))))
 
         if service_uid:
+            attached = 0
+            service = api.get_object_by_uid(service_uid)
+
             for analysis in self.context.getAnalyses():
                 if not IRequestAnalysis.providedBy(analysis):
                     continue
-                if api.get_uid(analysis) != service_uid:
-                    continue
                 if not self.is_editable(analysis):
+                    continue
+                if analysis.getKeyword() != service.getKeyword():
                     continue
 
                 # create attachment
@@ -183,6 +195,21 @@ class AttachmentsView(BrowserView):
                     attachments.append(other.UID())
                 attachments.append(attachment.UID())
                 analysis.setAttachment(attachments)
+                attached += 1
+
+            if attached > 0:
+                self.add_status_message(
+                    _("Attachment added to all '{}' analyses"
+                      .format(api.get_title(service))))
+            else:
+                self.add_status_message(
+                    _("No analysis found for service '{}'"
+                      .format(api.get_title(service))), level="warning")
+
+        if not any([analysis_uid, service_uid]):
+            self.add_status_message(
+                _("Please select an analysis or service for the attachment"),
+                level="warning")
 
         if self.request['HTTP_REFERER'].endswith('manage_results'):
             self.request.response.redirect('{}/manage_results'.format(
