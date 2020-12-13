@@ -23,10 +23,10 @@ from operator import itemgetter
 
 import plone
 import plone.protect
+from bika.lims import FieldEditAnalysisResult
+from bika.lims.api import security
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFCore.utils import getToolByName
-
-from bika.lims.workflow import getCurrentState
 
 
 class AttachAnalyses():
@@ -45,7 +45,6 @@ class AttachAnalyses():
         nr_rows = self.request['rows']
         sord = self.request['sord']
         sidx = self.request['sidx']
-        attachable_states = ('assigned', 'unassigned', 'to_be_verified')
         analysis_to_slot = {}
         for s in self.context.getLayout():
             analysis_to_slot[s['analysis_uid']] = int(s['position'])
@@ -56,8 +55,8 @@ class AttachAnalyses():
                 analyses.append(i)
         rows = []
         for analysis in analyses:
-            review_state = getCurrentState(analysis)
-            if review_state not in attachable_states:
+            # Skip analyses that cannot be edited (attachment not permitted)
+            if not security.check_permission(FieldEditAnalysisResult, analysis):
                 continue
             parent = analysis.getParentTitle()
             rows.append({'analysis_uid': analysis.UID(),

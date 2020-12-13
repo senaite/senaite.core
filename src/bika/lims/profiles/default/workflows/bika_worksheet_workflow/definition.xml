@@ -57,14 +57,10 @@
     <exit-transition transition_id="" />
     <permission-map name="senaite.core: Transition: Reject Worksheet" acquired="False"/>
     <permission-map name="senaite.core: Transition: Remove Worksheet" acquired="False"/>
-    <permission-map name="senaite.core: Add Attachment" acquired="False">
-      <permission-role>Manager</permission-role>
-    </permission-map>
+    <permission-map name="senaite.core: Add Attachment" acquired="False"/>
     <permission-map name="senaite.core: Transition: Assign Analysis" acquired="False"/>
-    <permission-map name="senaite.core: Edit Worksheet" acquired="False">
-    </permission-map>
-    <permission-map name="senaite.core: Transition: Retract" acquired="False">
-    </permission-map>
+    <permission-map name="senaite.core: Edit Worksheet" acquired="False"/>
+    <permission-map name="senaite.core: Transition: Retract" acquired="False"/>
     <permission-map name="senaite.core: Transition: Unassign Analysis" acquired="False"/>
     <permission-map name="senaite.core: View Results" acquired="False">
       <permission-role>Analyst</permission-role>
@@ -85,15 +81,11 @@
     <permission-map name="senaite.core: Transition: Reject Worksheet" acquired="True"/>
     <permission-map name="senaite.core: Transition: Remove Worksheet" acquired="False"/>
     <permission-map name="senaite.core: Add Attachment" acquired="False">
-      <permission-role>Analyst</permission-role>
-      <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>
     <permission-map name="senaite.core: Transition: Assign Analysis" acquired="True"/>
     <permission-map name="senaite.core: Edit Worksheet" acquired="False">
-      <permission-role>Analyst</permission-role>
-      <permission-role>LabClerk</permission-role>
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>
@@ -120,17 +112,9 @@
     <exit-transition transition_id="retract" />
     <permission-map name="senaite.core: Transition: Reject Worksheet" acquired="False"/>
     <permission-map name="senaite.core: Transition: Remove Worksheet" acquired="False"/>
-    <permission-map name="senaite.core: Add Attachment" acquired="False">
-      <permission-role>Analyst</permission-role>
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-    </permission-map>
+    <permission-map name="senaite.core: Add Attachment" acquired="False"/>
     <permission-map name="senaite.core: Transition: Assign Analysis" acquired="False"/>
-    <permission-map name="senaite.core: Edit Worksheet" acquired="False">
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-    </permission-map>
+    <permission-map name="senaite.core: Edit Worksheet" acquired="False"/>
     <permission-map name="senaite.core: Transition: Retract" acquired="False">
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>

@@ -6,7 +6,7 @@
           class="btn btn-light dropdown-toggle mb-3"
           data-toggle="collapse"
           data-target="#ws-attachments-panel">
-    <i class="fas fa-paperclip" aria-hidden="true"></i>
+    <i class="fas fa-paperclip" aria-hidden="true"/>
     <span i18n:translate="">Attachments</span>
   </button>
 
@@ -15,7 +15,9 @@
        tal:define="attachments_view python:view.get_attachments_view()">
 
     <!-- Attachments Viewlet -->
-    <div class="panel-body">
+    <div class="panel-body"
+         tal:define="attachment_types attachments_view/get_attachment_types;
+                     services view/get_services;">
 
       <!-- Add Attachments -->
       <div class="ws_attachments_add">
@@ -46,12 +48,9 @@
               </td>
               <td>
                 <select class="form-control" name="AttachmentType">
-                  <tal:item repeat="item attachments_view/get_attachment_types">
-                    <option tal:attributes="value item/UID;"
-                            tal:content="item/Title">
-                      Attachment Type
-                    </option>
-                  </tal:item>
+                  <option tal:repeat="item attachment_types"
+                          tal:attributes="value item/UID;"
+                          tal:content="item/Title"/>
                 </select>
               </td>
               <td>
@@ -67,21 +66,12 @@
                 </tal:analyses>
               </td>
               <td>
-                <tal:services
-                  tal:define="global last_uid python:None;
-                              services view/get_services" >
-                  <select class="form-control" name="Service" id="Service" condition="services">
-                    <option value='' selected></option>
-                    <tal:service tal:repeat="service services">
-                      <tal:nodups tal:condition="python:not service.UID() == last_uid">
-                        <option
-                          tal:define="global last_uid service/UID"
-                          tal:attributes="value service/UID;"
-                          tal:content="service/Title"></option>
-                      </tal:nodups>
-                    </tal:service>
-                  </select>
-                </tal:services>
+                <select class="form-control" name="Service" id="Service">
+                  <option value=""/>
+                  <option tal:repeat="service services"
+                          tal:attributes="value service/uid;"
+                          tal:content="service/title"/>
+                </select>
               </td>
               <td>
                 <input class="form-control" name="AttachmentKeys"/>

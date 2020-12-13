@@ -18,9 +18,13 @@
 # Copyright 2018-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from bika.lims import AddAttachment
 from bika.lims import api
+from bika.lims import FieldEditAnalysisResult
+from bika.lims.api import security
 from plone.app.layout.viewlets.common import ViewletBase
+from plone.memoize import view
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
 
 class AttachmentsViewlet(ViewletBase):
@@ -74,9 +78,25 @@ class WorksheetAttachmentsViewlet(AttachmentsViewlet):
         # XXX: Hack to show the viewlet only on the WS manage_results view
         if not self.request.getURL().endswith("manage_results"):
             return False
-        return True
+        return security.check_permission(AddAttachment, self.context)
 
+    @view.memoize
     def get_services(self):
-        """Returns a list of AnalysisService objects
+        """Returns a list of AnalysisService objects present in worksheet
         """
-        return self.context.getWorksheetServices()
+        services = set()
+        for analysis in self.context.getAnalyses():
+            # Skip non-editable analyses
+            if not security.check_permission(FieldEditAnalysisResult, analysis):
+                continue
+            service = analysis.getAnalysisService()
+            services.add(service)
+
+        services = sorted(list(services), key=lambda s: api.get_title(s))
+        return map(self.get_service_info, services)
+
+    def get_service_info(self, service):
+        return {
+            "uid": api.get_uid(service),
+            "title": api.get_title(service),
+        }
