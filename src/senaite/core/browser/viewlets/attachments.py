@@ -22,7 +22,7 @@ from bika.lims import AddAttachment
 from bika.lims import api
 from bika.lims import FieldEditAnalysisResult
 from bika.lims import WorksheetAddAttachment
-from bika.lims.api import security
+from bika.lims.api.security import check_permission
 from plone.app.layout.viewlets.common import ViewletBase
 from plone.memoize import view
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
@@ -79,7 +79,7 @@ class WorksheetAttachmentsViewlet(AttachmentsViewlet):
         # XXX: Hack to show the viewlet only on the WS manage_results view
         if not self.request.getURL().endswith("manage_results"):
             return False
-        return security.check_permission(WorksheetAddAttachment, self.context)
+        return check_permission(WorksheetAddAttachment, self.context)
 
     @view.memoize
     def get_services(self):
@@ -89,7 +89,7 @@ class WorksheetAttachmentsViewlet(AttachmentsViewlet):
         services = set()
         for analysis in self.context.getAnalyses():
             # Skip non-editable analyses
-            if not security.check_permission(FieldEditAnalysisResult, analysis):
+            if not check_permission(FieldEditAnalysisResult, analysis):
                 continue
             service = analysis.getAnalysisService()
             services.add(service)
