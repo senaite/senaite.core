@@ -32,7 +32,7 @@
           <input type="hidden" name="submitted" value="1"/>
           <span tal:replace="structure context/@@authenticator/authenticator"/>
 
-          <table class="listing">
+          <table class="table-sm">
             <tr>
               <th i18n:translate="">Add new Attachment</th>
               <th i18n:translate="">Type</th>
@@ -42,16 +42,20 @@
             </tr>
             <tr>
               <td>
-                <!-- Attachment File Upload -->
-                <input type="file" name="AttachmentFile_file"
-                       onchange="string:document.getElementById('addARButton').disabled=false"/>
+                <div class="form-group">
+                  <!-- Attachment File Upload -->
+                  <input type="file" name="AttachmentFile_file"
+                         onchange="string:document.getElementById('addARButton').disabled=false"/>
+                </div>
               </td>
               <td>
-                <select class="form-control" name="AttachmentType">
-                  <option tal:repeat="item attachment_types"
-                          tal:attributes="value item/UID;"
-                          tal:content="item/Title"/>
-                </select>
+                <div class="form-group">
+                  <select class="form-control" name="AttachmentType">
+                    <option tal:repeat="item attachment_types"
+                            tal:attributes="value item/UID;"
+                            tal:content="item/Title"/>
+                  </select>
+                </div>
               </td>
               <td>
                 <tal:analyses>
@@ -66,15 +70,19 @@
                 </tal:analyses>
               </td>
               <td>
-                <select class="form-control" name="Service" id="Service">
-                  <option value=""/>
-                  <option tal:repeat="service services"
-                          tal:attributes="value service/uid;"
-                          tal:content="service/title"/>
-                </select>
+                <div class="form-group">
+                  <select class="form-control" name="Service" id="Service">
+                    <option value=""/>
+                    <option tal:repeat="service services"
+                            tal:attributes="value service/uid;"
+                            tal:content="service/title"/>
+                  </select>
+                </div>
               </td>
               <td>
-                <input class="form-control" name="AttachmentKeys"/>
+                <div class="form-group">
+                  <input class="form-control" name="AttachmentKeys"/>
+                </div>
               </td>
             </tr>
           </table>
