@@ -51,6 +51,7 @@ from Products.Archetypes.atapi import SelectionWidget
 from Products.Archetypes.atapi import StringField
 from Products.Archetypes.atapi import TextAreaWidget
 from Products.Archetypes.atapi import registerType
+from Products.Archetypes.Field import BooleanField
 from Products.Archetypes.Field import TextField
 from Products.Archetypes.utils import DisplayList
 from Products.Archetypes.utils import IntDisplayList
@@ -341,6 +342,20 @@ schema = BikaFolderSchema.copy() + Schema((
                 "each analysis in results entry view"
             )
         ),
+    ),
+    BooleanField(
+        "AutoVerifySamples",
+        schemata="Analyses",
+        default=True,
+        widget=BooleanWidget(
+            label=_("Automatic verification of samples"),
+            description=_(
+                "When enabled, the sample is automatically verified as soon as "
+                "all results are verified. Otherwise, users with enough "
+                "privileges have to manually verify the sample afterwards. "
+                "Default: enabled"
+            )
+        )
     ),
     BooleanField(
         'SelfVerificationEnabled',
