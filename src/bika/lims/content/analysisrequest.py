@@ -977,7 +977,7 @@ schema = BikaSchema.copy() + Schema((
         relationship='AnalysisRequestAttachment',
         mode="rw",
         read_permission=View,
-        # Te addition and removal of attachments is governed by the specific
+        # The addition and removal of attachments is governed by the specific
         # permissions "Add Sample Attachment" and "Delete Sample Attachment",
         # so we assume here that the write permission is the less restrictive
         # "ModifyPortalContent"
