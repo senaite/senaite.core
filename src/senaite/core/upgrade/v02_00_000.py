@@ -114,6 +114,7 @@ def upgrade(tool):
     setup.runImportStepFromProfile(profile, "viewlets")
     setup.runImportStepFromProfile(profile, "repositorytool")
     # run import steps located in bika.lims profiles
+    _run_import_step(portal, "rolemap", profile="profile-bika.lims:default")
     _run_import_step(portal, "typeinfo", profile="profile-bika.lims:default")
     _run_import_step(portal, "workflow", profile="profile-bika.lims:default")
 
@@ -123,8 +124,10 @@ def upgrade(tool):
     # https://github.com/senaite/senaite.core/pull/1638
     fix_published_results_permission(portal)
 
-    # Update workflow mappings for samples to allow profile editing
+    # Update workflow mappings for samples to allow profile editing and fix
+    # Add Attachment permission for verified and published status
     update_workflow_mappings_samples(portal)
+    update_workflow_mappings_worksheets(portal)
 
     # Initialize new department ID field
     # https://github.com/senaite/senaite.core/pull/1676
@@ -220,24 +223,25 @@ def fix_published_results_permission(portal):
 
 
 def update_workflow_mappings_samples(portal):
-    """Allow to edit analysis profiles
+    """Allow to edit analysis profiles and fix AddAttachment permission
     """
     logger.info("Updating role mappings for Samples ...")
     wf_id = "bika_ar_workflow"
-    query = {"portal_type": "AnalysisRequest",
-             "review_state": [
-                 "sample_due",
-                 "sample_registered",
-                 "scheduled_sampling",
-                 "to_be_sampled",
-                 "sample_received",
-                 "attachment_due",
-                 "to_be_verified",
-                 "to_be_preserved",
-             ]}
+    query = {"portal_type": "AnalysisRequest"}
     brains = api.search(query, CATALOG_ANALYSIS_REQUEST_LISTING)
     update_workflow_mappings_for(portal, wf_id, brains)
     logger.info("Updating role mappings for Samples [DONE]")
+
+
+def update_workflow_mappings_worksheets(portal):
+    """Fix AddAttachment permission
+    """
+    logger.info("Updating role mappings for Worksheets ...")
+    wf_id = "bika_worksheet_workflow"
+    query = {"portal_type": "Worksheet"}
+    brains = api.search(query, CATALOG_WORKSHEET_LISTING)
+    update_workflow_mappings_for(portal, wf_id, brains)
+    logger.info("Updating role mappings for Worksheets [DONE]")
 
 
 def update_workflow_mappings_for(portal, wf_id, brains):
@@ -247,6 +251,8 @@ def update_workflow_mappings_for(portal, wf_id, brains):
     for num, brain in enumerate(brains):
         if num and num % 100 == 0:
             logger.info("Updating role mappings: {0}/{1}".format(num, total))
+        if num and num % 1000 == 0:
+            commit_transaction(portal)
         obj = api.get_object(brain)
         workflow.updateRoleMappingsFor(obj)
         obj.reindexObject(idxs=["allowedRolesAndUsers"])

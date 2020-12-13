@@ -23,13 +23,14 @@ from operator import itemgetter
 
 import plone
 import plone.protect
+from bika.lims import FieldEditAnalysisResult
+from bika.lims.api.security import check_permission
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFCore.utils import getToolByName
+from Products.Five.browser import BrowserView
 
-from bika.lims.workflow import getCurrentState
 
-
-class AttachAnalyses():
+class AttachAnalyses(BrowserView):
     """ In attachment add form,
         the analyses dropdown combo uses this as source.
         Form is handled by the worksheet ManageResults code
@@ -37,7 +38,7 @@ class AttachAnalyses():
     def __init__(self, context, request):
         self.context = context
         self.request = request
-        
+
     def __call__(self):
         plone.protect.CheckAuthenticator(self.request)
         searchTerm = 'searchTerm' in self.request and self.request['searchTerm'].lower() or ''
@@ -45,7 +46,6 @@ class AttachAnalyses():
         nr_rows = self.request['rows']
         sord = self.request['sord']
         sidx = self.request['sidx']
-        attachable_states = ('assigned', 'unassigned', 'to_be_verified')
         analysis_to_slot = {}
         for s in self.context.getLayout():
             analysis_to_slot[s['analysis_uid']] = int(s['position'])
@@ -56,8 +56,8 @@ class AttachAnalyses():
                 analyses.append(i)
         rows = []
         for analysis in analyses:
-            review_state = getCurrentState(analysis)
-            if review_state not in attachable_states:
+            # Skip analyses that cannot be edited (attachment not permitted)
+            if not check_permission(FieldEditAnalysisResult, analysis):
                 continue
             parent = analysis.getParentTitle()
             rows.append({'analysis_uid': analysis.UID(),
@@ -93,7 +93,7 @@ class AttachAnalyses():
         return json.dumps(ret)
 
 
-class SetAnalyst():
+class SetAnalyst(BrowserView):
     """The Analysis dropdown sets worksheet.Analyst immediately
     """
 
@@ -102,7 +102,6 @@ class SetAnalyst():
         self.request = request
 
     def __call__(self):
-        rc = getToolByName(self.context, REFERENCE_CATALOG)
         mtool = getToolByName(self, 'portal_membership')
         plone.protect.CheckAuthenticator(self.request)
         plone.protect.PostOnly(self.request)
@@ -114,7 +113,7 @@ class SetAnalyst():
         self.context.setAnalyst(value)
 
 
-class SetInstrument():
+class SetInstrument(BrowserView):
     """The Instrument dropdown sets worksheet.Instrument immediately
     """
 

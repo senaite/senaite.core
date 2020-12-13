@@ -962,6 +962,7 @@ class AnalysesView(BikaListingView):
         if not self.has_permission(ViewResults, obj):
             return
 
+        attachments_names = []
         attachments_html = []
         analysis = self.get_object(obj)
         for at in analysis.getAttachment():
@@ -969,9 +970,11 @@ class AnalysesView(BikaListingView):
             url = "{}/at_download/AttachmentFile".format(api.get_url(at))
             link = get_link(url, at_file.filename, tabindex="-1")
             attachments_html.append(link)
+            attachments_names.append(at_file.filename)
 
         if attachments_html:
             item["replace"]["Attachments"] = "<br/>".join(attachments_html)
+            item["Attachments"] = ", ".join(attachments_names)
 
         elif analysis.getAttachmentRequired():
             img = get_image("warning.png", title=_("Attachment required"))

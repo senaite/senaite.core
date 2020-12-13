@@ -32,7 +32,6 @@
   <permission>senaite.core: Transition: Schedule Sampling</permission>
 
   <permission>senaite.core: Add Analysis</permission>
-  <permission>senaite.core: Add Attachment</permission>
   <permission>senaite.core: Edit Field Results</permission>
   <permission>senaite.core: Edit Results</permission>
   <permission>senaite.core: Manage Invoices</permission>
@@ -41,6 +40,11 @@
   <permission>Add portal content</permission>
   <permission>Modify portal content</permission>
   <permission>View</permission>
+
+  <!-- Type-specific permissions -->
+  <permission>senaite.core: Sample: Add Attachment</permission>
+  <permission>senaite.core: Sample: Edit Attachment</permission>
+  <permission>senaite.core: Sample: Delete Attachment</permission>
 
   <!-- Field-specific permissions
   Are meant to be used for "read_permission" and "write_permission" in fields.
@@ -105,7 +109,6 @@
       <permission-role>SamplingCoordinator</permission-role>
     </permission-map>
 
-
     <!-- MANAGED PERMISSIONS -->
     <!-- Permissions for Transitions (must match with exit transitions) -->
     <permission-map name="senaite.core: Transition: Cancel Analysis Request" acquired="False"/>
@@ -121,7 +124,6 @@
     <permission-map name="senaite.core: Transition: Schedule Sampling" acquired="False"/>
 
     <permission-map name="senaite.core: Add Analysis" acquired="True"/>
-    <permission-map name="senaite.core: Add Attachment" acquired="True"/>
     <permission-map name="senaite.core: Edit Field Results" acquired="True"/>
     <permission-map name="senaite.core: Edit Results" acquired="True"/>
     <permission-map name="senaite.core: Manage Invoices" acquired="True"/>
@@ -129,6 +131,12 @@
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
     <permission-map name="View" acquired="True"/>
+
+    <!-- Type-specific permissions -->
+    <permission-map name="senaite.core: Sample: Add Attachment" acquired="True"/>
+    <permission-map name="senaite.core: Sample: Edit Attachment" acquired="True"/>
+    <permission-map name="senaite.core: Sample: Delete Attachment" acquired="True"/>
+
     <!-- Field Permissions
          NOTE: This field-specific permissions for "sample_registered" apply to
          Analysis Request Add form! -->
@@ -214,7 +222,6 @@
       <!-- Roles with this permission not granted by default in rolemap -->
       <permission-role>Sampler</permission-role>
     </permission-map>
-    <permission-map name="senaite.core: Add Attachment" acquired="True"/>
     <permission-map name="senaite.core: Edit Field Results" acquired="True"/>
     <permission-map name="senaite.core: Edit Results" acquired="False"/>
     <permission-map name="senaite.core: Manage Invoices" acquired="True"/>
@@ -222,6 +229,21 @@
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
     <permission-map name="View" acquired="True"/>
+
+    <!-- Type-specific permissions -->
+    <permission-map name="senaite.core: Sample: Add Attachment" acquired="True">
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
+    </permission-map>
+    <permission-map name="senaite.core: Sample: Edit Attachment" acquired="True">
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
+    </permission-map>
+    <permission-map name="senaite.core: Sample: Delete Attachment" acquired="True">
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
+    </permission-map>
+
     <!-- Field Permissions -->
     <permission-map name="senaite.core: Field: Edit Batch" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Client Order Number" acquired="True"/>
@@ -311,7 +333,6 @@
       <!-- Roles with this permission not granted by default in rolemap -->
       <permission-role>Sampler</permission-role>
     </permission-map>
-    <permission-map name="senaite.core: Add Attachment" acquired="True"/>
     <permission-map name="senaite.core: Edit Field Results" acquired="True"/>
     <permission-map name="senaite.core: Edit Results" acquired="False"/>
     <permission-map name="senaite.core: Manage Invoices" acquired="True"/>
@@ -319,6 +340,21 @@
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
     <permission-map name="View" acquired="True"/>
+
+    <!-- Type-specific permissions -->
+    <permission-map name="senaite.core: Sample: Add Attachment" acquired="True">
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
+    </permission-map>
+    <permission-map name="senaite.core: Sample: Edit Attachment" acquired="True">
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
+    </permission-map>
+    <permission-map name="senaite.core: Sample: Delete Attachment" acquired="True">
+      <permission-role>Sampler</permission-role>
+      <permission-role>SamplingCoordinator</permission-role>
+    </permission-map>
+
     <!-- Field Permissions -->
     <permission-map name="senaite.core: Field: Edit Batch" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Client Order Number" acquired="True"/>
@@ -398,7 +434,6 @@
     <permission-map name="senaite.core: Transition: Schedule Sampling" acquired="False"/>
 
     <permission-map name="senaite.core: Add Analysis" acquired="True"/>
-    <permission-map name="senaite.core: Add Attachment" acquired="True"/>
     <permission-map name="senaite.core: Edit Field Results" acquired="True"/>
     <permission-map name="senaite.core: Edit Results" acquired="False"/>
     <permission-map name="senaite.core: Manage Invoices" acquired="True"/>
@@ -406,6 +441,12 @@
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
     <permission-map name="View" acquired="True"/>
+
+    <!-- Type-specific permissions -->
+    <permission-map name="senaite.core: Sample: Add Attachment" acquired="True"/>
+    <permission-map name="senaite.core: Sample: Edit Attachment" acquired="True"/>
+    <permission-map name="senaite.core: Sample: Delete Attachment" acquired="True"/>
+
     <!-- Field Permissions -->
     <permission-map name="senaite.core: Field: Edit Batch" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Client Order Number" acquired="True"/>
@@ -485,7 +526,6 @@
     <permission-map name="senaite.core: Transition: Schedule Sampling" acquired="False"/>
 
     <permission-map name="senaite.core: Add Analysis" acquired="True"/>
-    <permission-map name="senaite.core: Add Attachment" acquired="True"/>
     <permission-map name="senaite.core: Edit Field Results" acquired="True"/>
     <permission-map name="senaite.core: Edit Results" acquired="True"/>
     <permission-map name="senaite.core: Manage Invoices" acquired="True"/>
@@ -493,6 +533,12 @@
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
     <permission-map name="View" acquired="True"/>
+
+    <!-- Type-specific permissions -->
+    <permission-map name="senaite.core: Sample: Add Attachment" acquired="True"/>
+    <permission-map name="senaite.core: Sample: Edit Attachment" acquired="True"/>
+    <permission-map name="senaite.core: Sample: Delete Attachment" acquired="True"/>
+
     <!-- Field Permissions -->
     <permission-map name="senaite.core: Field: Edit Batch" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Client Order Number" acquired="True"/>
@@ -573,7 +619,6 @@
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
     </permission-map>
-    <permission-map name="senaite.core: Add Attachment" acquired="True"/>
     <permission-map name="senaite.core: Edit Field Results" acquired="False"/>
     <permission-map name="senaite.core: Edit Results" acquired="False"/>
     <permission-map name="senaite.core: Manage Invoices" acquired="True"/>
@@ -585,6 +630,12 @@
     </permission-map>
     <permission-map name="Modify portal content" acquired="True"/>
     <permission-map name="View" acquired="True"/>
+
+    <!-- Type-specific permissions -->
+    <permission-map name="senaite.core: Sample: Add Attachment" acquired="True"/>
+    <permission-map name="senaite.core: Sample: Edit Attachment" acquired="True"/>
+    <permission-map name="senaite.core: Sample: Delete Attachment" acquired="True"/>
+
     <!-- Field Permissions -->
     <permission-map name="senaite.core: Field: Edit Batch" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Client Order Number" acquired="True"/>
@@ -661,7 +712,6 @@
     <permission-map name="senaite.core: Transition: Schedule Sampling" acquired="False"/>
 
     <permission-map name="senaite.core: Add Analysis" acquired="True"/>
-    <permission-map name="senaite.core: Add Attachment" acquired="True"/>
     <permission-map name="senaite.core: Edit Field Results" acquired="True"/>
     <permission-map name="senaite.core: Edit Results" acquired="True"/>
     <permission-map name="senaite.core: Manage Invoices" acquired="True"/>
@@ -669,6 +719,12 @@
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
     <permission-map name="View" acquired="True"/>
+
+    <!-- Type-specific permissions -->
+    <permission-map name="senaite.core: Sample: Add Attachment" acquired="True"/>
+    <permission-map name="senaite.core: Sample: Edit Attachment" acquired="True"/>
+    <permission-map name="senaite.core: Sample: Delete Attachment" acquired="True"/>
+
     <!-- Field Permissions -->
     <permission-map name="senaite.core: Field: Edit Batch" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Client Order Number" acquired="True"/>
@@ -744,7 +800,6 @@
 
     <!-- Hide the 'Manage Analyses' tab -->
     <permission-map name="senaite.core: Add Analysis" acquired="False"/>
-    <permission-map name="senaite.core: Add Attachment" acquired="True"/>
     <!-- Hide the 'Manage Results' tab -->
     <permission-map name="senaite.core: Edit Field Results" acquired="False"/>
     <permission-map name="senaite.core: Edit Results" acquired="False"/>
@@ -757,6 +812,20 @@
     </permission-map>
     <permission-map name="Modify portal content" acquired="True"/>
     <permission-map name="View" acquired="True"/>
+
+    <!-- Type-specific permissions -->
+    <permission-map name="senaite.core: Sample: Add Attachment" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Publisher</permission-role>
+    </permission-map>
+    <permission-map name="senaite.core: Sample: Edit Attachment" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Publisher</permission-role>
+    </permission-map>
+    <permission-map name="senaite.core: Sample: Delete Attachment" acquired="False"/>
+
     <!-- Field Permissions (all readonly) -->
     <permission-map name="senaite.core: Field: Edit Batch" acquired="False"/>
     <permission-map name="senaite.core: Field: Edit Client Order Number" acquired="False"/>
@@ -826,7 +895,6 @@
     <permission-map name="senaite.core: Transition: Schedule Sampling" acquired="False"/>
     <!-- Hide the 'Manage Analyses' tab -->
     <permission-map name="senaite.core: Add Analysis" acquired="False"/>
-    <permission-map name="senaite.core: Add Attachment" acquired="True"/>
     <!-- Hide the 'Manage Results' tab -->
     <permission-map name="senaite.core: Edit Field Results" acquired="False"/>
     <permission-map name="senaite.core: Edit Results" acquired="False"/>
@@ -835,6 +903,18 @@
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
     <permission-map name="View" acquired="True"/>
+
+    <!-- Type-specific permissions -->
+    <permission-map name="senaite.core: Sample: Add Attachment" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="senaite.core: Sample: Edit Attachment" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="senaite.core: Sample: Delete Attachment" acquired="False"/>
+
     <!-- Field Permissions (all readonly) -->
     <permission-map name="senaite.core: Field: Edit Batch" acquired="False"/>
     <permission-map name="senaite.core: Field: Edit Client Order Number" acquired="False"/>
@@ -901,7 +981,6 @@
     <permission-map name="senaite.core: Transition: Schedule Sampling" acquired="False"/>
     <!-- Hide the 'Manage Analyses' tab -->
     <permission-map name="senaite.core: Add Analysis" acquired="False"/>
-    <permission-map name="senaite.core: Add Attachment" acquired="True"/>
     <!-- Hide the 'Manage Results' tab -->
     <permission-map name="senaite.core: Edit Field Results" acquired="False"/>
     <permission-map name="senaite.core: Edit Results" acquired="False"/>
@@ -910,6 +989,12 @@
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
     <permission-map name="View" acquired="True"/>
+
+    <!-- Type-specific permissions -->
+    <permission-map name="senaite.core: Sample: Add Attachment" acquired="False"/>
+    <permission-map name="senaite.core: Sample: Edit Attachment" acquired="False"/>
+    <permission-map name="senaite.core: Sample: Delete Attachment" acquired="False"/>
+
     <!-- Field Permissions (all readonly) -->
     <permission-map name="senaite.core: Field: Edit Batch" acquired="False"/>
     <permission-map name="senaite.core: Field: Edit Client Order Number" acquired="False"/>
@@ -975,7 +1060,6 @@
     <permission-map name="senaite.core: Transition: Schedule Sampling" acquired="False"/>
     <!-- Hide the 'Manage Analyses' tab -->
     <permission-map name="senaite.core: Add Analysis" acquired="False"/>
-    <permission-map name="senaite.core: Add Attachment" acquired="True"/>
     <!-- Hide the 'Manage Results' tab -->
     <permission-map name="senaite.core: Edit Field Results" acquired="False"/>
     <permission-map name="senaite.core: Edit Results" acquired="False"/>
@@ -984,6 +1068,12 @@
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
     <permission-map name="View" acquired="True"/>
+
+    <!-- Type-specific permissions -->
+    <permission-map name="senaite.core: Sample: Add Attachment" acquired="False"/>
+    <permission-map name="senaite.core: Sample: Edit Attachment" acquired="False"/>
+    <permission-map name="senaite.core: Sample: Delete Attachment" acquired="False"/>
+
     <!-- Field Permissions (all readonly) -->
     <permission-map name="senaite.core: Field: Edit Batch" acquired="False"/>
     <permission-map name="senaite.core: Field: Edit Client Order Number" acquired="False"/>
@@ -1054,7 +1144,6 @@
     <permission-map name="senaite.core: Transition: Schedule Sampling" acquired="False"/>
     <!-- Hide the 'Manage Analyses' tab -->
     <permission-map name="senaite.core: Add Analysis" acquired="False"/>
-    <permission-map name="senaite.core: Add Attachment" acquired="True"/>
     <!-- Hide the 'Manage Results' tab -->
     <permission-map name="senaite.core: Edit Field Results" acquired="False"/>
     <permission-map name="senaite.core: Edit Results" acquired="False"/>
@@ -1063,6 +1152,12 @@
     <permission-map name="Access contents information" acquired="True"/>
     <permission-map name="Modify portal content" acquired="True"/>
     <permission-map name="View" acquired="True"/>
+
+    <!-- Type-specific permissions -->
+    <permission-map name="senaite.core: Sample: Add Attachment" acquired="False"/>
+    <permission-map name="senaite.core: Sample: Edit Attachment" acquired="False"/>
+    <permission-map name="senaite.core: Sample: Delete Attachment" acquired="False"/>
+
     <!-- Field Permissions (all readonly) -->
     <permission-map name="senaite.core: Field: Edit Batch" acquired="False"/>
     <permission-map name="senaite.core: Field: Edit Client Order Number" acquired="False"/>

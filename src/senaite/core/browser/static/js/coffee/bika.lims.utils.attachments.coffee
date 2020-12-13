@@ -31,22 +31,6 @@ window.AttachmentsUtils = ->
         $('#addButton').prop 'disabled', true
       return
 
-    # This is the button next to analysis attachments in ARs and Worksheets
-    $('.deleteAttachmentButton').live 'click', ->
-      attachment_uid = $(this).attr('attachment_uid')
-      options =
-        url: "@@ajax_attachments_view/delete_analysis_attachment"
-        type: 'POST'
-        success: (responseText, statusText, xhr, $form) ->
-          if responseText == 'success'
-            $("span[attachment_uid=#{attachment_uid}]").remove()
-          return
-        data:
-          'attachment_uid': attachment_uid
-          '_authenticator': $('input[name="_authenticator"]').val()
-      $.ajax options
-      return
-
     # Dropdown grid of Analyses in attachment forms
     $('#Analysis').combogrid
       colModel: [

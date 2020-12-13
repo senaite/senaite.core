@@ -1137,16 +1137,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             return ws.absolute_url_path()
         return ''
 
-    def getWorksheetServices(self):
-        """get list of analysis services present on this worksheet
-        """
-        services = []
-        for analysis in self.getAnalyses():
-            service = analysis.getAnalysisService()
-            if service and service not in services:
-                services.append(service)
-        return services
-
     def getQCAnalyses(self):
         """
         Return the Quality Control analyses.
