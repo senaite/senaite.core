@@ -92,10 +92,10 @@
 
   # Object-specific permissions
   # ---------------------------
-  # Sample (Analysis Request)
   <permission id="senaite.core.permissions.SampleAddAttachment" title="senaite.core: Sample: Add Attachment"/>
   <permission id="senaite.core.permissions.SampleEditAttachment" title="senaite.core: Sample: Edit Attachment"/>
   <permission id="senaite.core.permissions.SampleDeleteAttachment" title="senaite.core: Sample: Delete Attachment"/>
+  <permission id="senaite.core.permissions.WorksheetAddAttachment" title="senaite.core: Worksheet: Add Attachment"/>
 
   # Field Permissions
   # -----------------

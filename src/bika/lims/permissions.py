@@ -125,6 +125,7 @@ TransitionRemoveWorksheet = "senaite.core: Transition: Remove Worksheet"
 SampleAddAttachment = "senaite.core: Sample: Add Attachment"
 SampleEditAttachment = "senaite.core: Sample: Edit Attachment"
 SampleDeleteAttachment = "senaite.core: Sample: Delete Attachment"
+WorksheetAddAttachment = "senaite.core: Worksheet: Add Attachment"
 
 
 # Field Permissions

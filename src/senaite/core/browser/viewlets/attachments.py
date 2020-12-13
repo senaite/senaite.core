@@ -21,6 +21,7 @@
 from bika.lims import AddAttachment
 from bika.lims import api
 from bika.lims import FieldEditAnalysisResult
+from bika.lims import WorksheetAddAttachment
 from bika.lims.api import security
 from plone.app.layout.viewlets.common import ViewletBase
 from plone.memoize import view
@@ -78,11 +79,12 @@ class WorksheetAttachmentsViewlet(AttachmentsViewlet):
         # XXX: Hack to show the viewlet only on the WS manage_results view
         if not self.request.getURL().endswith("manage_results"):
             return False
-        return security.check_permission(AddAttachment, self.context)
+        return security.check_permission(WorksheetAddAttachment, self.context)
 
     @view.memoize
     def get_services(self):
-        """Returns a list of AnalysisService objects present in worksheet
+        """Returns a list of dicts that represent the Analysis Services that
+        are editable and present in current Worksheet
         """
         services = set()
         for analysis in self.context.getAnalyses():
@@ -92,10 +94,13 @@ class WorksheetAttachmentsViewlet(AttachmentsViewlet):
             service = analysis.getAnalysisService()
             services.add(service)
 
+        # Return the
         services = sorted(list(services), key=lambda s: api.get_title(s))
         return map(self.get_service_info, services)
 
     def get_service_info(self, service):
+        """Returns a dict that represents an analysis service
+        """
         return {
             "uid": api.get_uid(service),
             "title": api.get_title(service),
