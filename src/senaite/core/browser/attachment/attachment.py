@@ -100,6 +100,7 @@ class AttachmentsView(BrowserView):
         """
 
         order = []
+        deleted = 0
         form = self.request.form
         attachments = form.get("attachments", [])
 
@@ -113,6 +114,7 @@ class AttachmentsView(BrowserView):
             # delete the attachment if the delete flag is true
             if values.pop("delete", False):
                 self.delete_attachment(obj)
+                deleted += 1
                 continue
 
             # remember the order
@@ -122,9 +124,11 @@ class AttachmentsView(BrowserView):
             obj.update(**values)
             obj.reindexObject()
 
+        # add update notification
+        if not deleted:
+            self.add_status_message(_("Attachment(s) updated"))
         # set the attachments order to the annotation storage
         self.set_attachments_order(order)
-
         # redirect back to the default view
         return self.request.response.redirect(self.context.absolute_url())
 
@@ -232,8 +236,8 @@ class AttachmentsView(BrowserView):
 
         # nothing to do if the attachment file is missing
         if attachment_file is None:
-            logger.warn("AttachmentView.action_add_attachment: Attachment file "
-                        "is missing")
+            logger.warn("AttachmentView.action_add_attachment: "
+                        "Attachment file is missing")
             return
 
         # create attachment
@@ -257,7 +261,9 @@ class AttachmentsView(BrowserView):
                 attachments.append(other.UID())
             attachments.append(attachment.UID())
             analysis.setAttachment(attachments)
-
+            self.add_status_message(
+                _("Attachment added to analysis '{}'"
+                  .format(api.get_title(analysis))))
         else:
             others = self.context.getAttachment()
             attachments = []
@@ -266,8 +272,10 @@ class AttachmentsView(BrowserView):
             attachments.append(attachment.UID())
 
             self.context.setAttachment(attachments)
+            self.add_status_message(
+                _("Attachment added to the current sample"))
 
-        if self.request['HTTP_REFERER'].endswith('manage_results'):
+        if self.request["HTTP_REFERER"].endswith("manage_results"):
             self.request.response.redirect('{}/manage_results'.format(
                 self.context.absolute_url()))
         else:
@@ -337,6 +345,7 @@ class AttachmentsView(BrowserView):
         if retain is False:
             client = api.get_parent(attachment)
             client.manage_delObjects([attachment.getId(), ])
+            self.add_status_message(_("Attachment(s) deleted"))
 
     def get_attachment_size(self, attachment):
         """Get the human readable size of the attachment
@@ -346,9 +355,9 @@ class AttachmentsView(BrowserView):
         if file:
             fsize = file.get_size()
         if fsize < 1024:
-            fsize = '%s b' % fsize
+            fsize = "%s b" % fsize
         else:
-            fsize = '%s Kb' % (fsize / 1024)
+            fsize = "%s Kb" % (fsize / 1024)
         return fsize
 
     def get_attachment_info(self, attachment):
@@ -361,16 +370,16 @@ class AttachmentsView(BrowserView):
         report_option_value = ATTACHMENT_REPORT_OPTIONS.getValue(report_option)
 
         return {
-            'keywords': attachment.getAttachmentKeys(),
-            'size': self.get_attachment_size(attachment),
-            'name': attachment_file.filename,
-            'type_uid': api.get_uid(attachment_type) if attachment_type else "",
+            "keywords": attachment.getAttachmentKeys(),
+            "size": self.get_attachment_size(attachment),
+            "name": attachment_file.filename,
+            "type_uid": api.get_uid(attachment_type) if attachment_type else "",
             "type": api.get_title(attachment_type) if attachment_type else "",
-            'absolute_url': attachment.absolute_url(),
-            'UID': attachment_uid,
-            'report_option': report_option,
-            'report_option_value': report_option_value,
-            'analysis': '',
+            "absolute_url": attachment.absolute_url(),
+            "UID": attachment_uid,
+            "report_option": report_option,
+            "report_option_value": report_option_value,
+            "analysis": "",
         }
 
     @view.memoize
