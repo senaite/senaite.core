@@ -59,19 +59,19 @@
           <input type="hidden" name="submitted" value="1"/>
           <span tal:replace="structure context/@@authenticator/authenticator"/>
 
-          <table id="attachments_update_table" class="table-sm">
+          <table id="attachments_update_table">
             <thead>
               <tr>
-                <th i18n:translate="">Name</th>
-                <th i18n:translate="">Type</th>
-                <th i18n:translate="">Size</th>
-                <th i18n:translate="">Analysis</th>
-                <th i18n:translate="">Keywords</th>
-                <th i18n:translate="">Report Option</th>
+                <th class="pr-3" i18n:translate="">Name</th>
+                <th class="pr-3" i18n:translate="">Type</th>
+                <th class="pr-3" i18n:translate="">Size</th>
+                <th class="pr-3" i18n:translate="">Analysis</th>
+                <th class="pr-3" i18n:translate="">Keywords</th>
+                <th class="pr-3" i18n:translate="">Report Option</th>
                 <!-- Please do not move this column to be the first, because the
                       :records converter will somehow offset the True/False value of
                       the checkbox by -1 (the record before will be deleted) -->
-                <th tal:condition="can_delete">Delete</th>
+                <th class="pr-3" tal:condition="can_delete">Delete</th>
               </tr>
             </thead>
             <tbody>
@@ -176,7 +176,7 @@
           </div>
 
           <!-- Update attachments button.
-               This will send the values to the `attachmetns_view` endpoint. -->
+               This will send the values to the `attachments_view` endpoint. -->
           <input class="btn btn-secondary context"
                  id="updateButton"
                  type="submit"
@@ -204,14 +204,14 @@
           <input type="hidden" name="submitted" value="1"/>
           <span tal:replace="structure context/@@authenticator/authenticator"/>
 
-          <table id="attachments_add_table" class="table-sm">
+          <table id="attachments_add_table">
             <thead>
               <tr>
-                <th i18n:translate="">Add new Attachment</th>
-                <th i18n:translate="">Type</th>
-                <th i18n:translate="">Analysis</th>
-                <th i18n:translate="">Keywords</th>
-                <th i18n:translate="">Report Option</th>
+                <th class="pr-3" i18n:translate="">Add new Attachment</th>
+                <th class="pr-3" i18n:translate="">Type</th>
+                <th class="pr-3" i18n:translate="">Analysis</th>
+                <th class="pr-3" i18n:translate="">Keywords</th>
+                <th class="pr-3" i18n:translate="">Report Option</th>
               </tr>
             </thead>
             <tbody>

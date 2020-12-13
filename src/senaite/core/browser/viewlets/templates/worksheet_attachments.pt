@@ -32,13 +32,13 @@
           <input type="hidden" name="submitted" value="1"/>
           <span tal:replace="structure context/@@authenticator/authenticator"/>
 
-          <table class="table-sm">
+          <table>
             <tr>
-              <th i18n:translate="">Add new Attachment</th>
-              <th i18n:translate="">Type</th>
-              <th i18n:translate="">Analysis</th>
-              <th i18n:translate="">All Analyses of Service</th>
-              <th i18n:translate="">Keywords</th>
+              <th class="pr-3" i18n:translate="">Add new Attachment</th>
+              <th class="pr-3" i18n:translate="">Type</th>
+              <th class="pr-3" i18n:translate="">Analysis</th>
+              <th class="pr-3" i18n:translate="">All Analyses of Service</th>
+              <th class="pr-3" i18n:translate="">Keywords</th>
             </tr>
             <tr>
               <td>
