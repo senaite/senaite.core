@@ -2,13 +2,14 @@ const path = require("path");
 const webpack = require("webpack");
 const childProcess = require("child_process");
 
-const { CleanWebpackPlugin } = require("clean-webpack-plugin");
+const CleanCSS = require("clean-css");
 const CopyPlugin = require("copy-webpack-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const MergeIntoSingleFilePlugin = require("webpack-merge-and-include-globally");
-const CleanCSS = require("clean-css");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const uglifyJS = require("uglify-js");
+const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 
 
 const gitCmd = "git rev-list -1 HEAD -- `pwd`";
@@ -148,8 +149,13 @@ module.exports = {
           "../src/senaite/core/browser/static/js/bika.lims.loader.js",
         ],
         dest: code => {
+          const min = uglifyJS.minify(code, {sourceMap: {
+            filename: "legacy.js",
+            url: "legacy.js.map"
+          }});
           return {
-            "legacy.js": code,
+            "legacy.js":min.code,
+            "legacy.js.map": min.map
           }
         },
       }, {
@@ -174,10 +180,15 @@ module.exports = {
           "../src/senaite/core/browser/static/thirdparty/d3.js",
         ],
         dest: code => {
+          const min = uglifyJS.minify(code, {sourceMap: {
+            filename: "thirdparty.js",
+            url: "thirdparty.js.map"
+          }});
           return {
-            "thirdparty.js": code,
+            "thirdparty.js":min.code,
+            "thirdparty.js.map": min.map
           }
-        }
+        },
       }, {
         // thirdparty.css
         src: [
