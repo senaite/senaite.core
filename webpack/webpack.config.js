@@ -7,6 +7,7 @@ const CopyPlugin = require("copy-webpack-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const MergeIntoSingleFilePlugin = require("webpack-merge-and-include-globally");
 
 
 const gitCmd = "git rev-list -1 HEAD -- `pwd`";
@@ -113,6 +114,51 @@ module.exports = {
     ],
   },
   plugins: [
+    // https://github.com/markshapiro/webpack-merge-and-include-globally
+    new MergeIntoSingleFilePlugin({
+      // transformFileName: (fileName, extension, hash) => `${fileName}-${gitHash}${extension}`,
+      files: [{
+        // all the legacy bika.lims JS files
+        src: [
+          "../src/senaite/core/browser/static/js/bika.lims.analysisprofile.js",
+          "../src/senaite/core/browser/static/js/bika.lims.analysisrequest.js",
+          "../src/senaite/core/browser/static/js/bika.lims.analysisservice.js",
+          "../src/senaite/core/browser/static/js/bika.lims.artemplate.js",
+          "../src/senaite/core/browser/static/js/bika.lims.batch.js",
+          "../src/senaite/core/browser/static/js/bika.lims.bikasetup.js",
+          "../src/senaite/core/browser/static/js/bika.lims.calculation.edit.js",
+          "../src/senaite/core/browser/static/js/bika.lims.client.js",
+          "../src/senaite/core/browser/static/js/bika.lims.common.js",
+          "../src/senaite/core/browser/static/js/bika.lims.department.js",
+          "../src/senaite/core/browser/static/js/bika.lims.graphics.controlchart.js",
+          "../src/senaite/core/browser/static/js/bika.lims.graphics.range.js",
+          "../src/senaite/core/browser/static/js/bika.lims.instrument.import.js",
+          "../src/senaite/core/browser/static/js/bika.lims.instrument.js",
+          "../src/senaite/core/browser/static/js/bika.lims.method.js",
+          "../src/senaite/core/browser/static/js/bika.lims.referencesample.js",
+          "../src/senaite/core/browser/static/js/bika.lims.reflexrule.js",
+          "../src/senaite/core/browser/static/js/bika.lims.rejection.js",
+          "../src/senaite/core/browser/static/js/bika.lims.reports.js",
+          "../src/senaite/core/browser/static/js/bika.lims.site.js",
+          "../src/senaite/core/browser/static/js/bika.lims.utils.attachments.js",
+          "../src/senaite/core/browser/static/js/bika.lims.utils.barcode.js",
+          "../src/senaite/core/browser/static/js/bika.lims.worksheet.js",
+          "../src/senaite/core/browser/static/js/bika.lims.worksheet.print.js",
+          "../src/senaite/core/browser/static/js/bika.lims.worksheettemplate.js",
+          "../src/senaite/core/browser/static/js/bika.lims.loader.js",
+        ],
+        dest: code => {
+          return {
+            "legacy.js": code,
+          }
+        },
+      }, {
+        src: ["../src/senaite/core/browser/static/css/bika.lims.graphics.css"],
+        dest: "legacy.css"
+      }]
+    }, filesMap => {
+      console.log("generated files: ",filesMap)
+    }),
     // https://github.com/johnagan/clean-webpack-plugin
     new CleanWebpackPlugin(),
     // https://webpack.js.org/plugins/html-webpack-plugin/
