@@ -396,15 +396,22 @@ var Sidebar = /*#__PURE__*/function () {
     this.on_mouseleave = this.on_mouseleave.bind(this); // toggle button handler
 
     this.toggle_el = document.getElementById(this.config.toggle_el);
-    this.toggle_el.addEventListener("click", this.on_click); // sidebar view/hide handler
+
+    if (this.toggle_el) {
+      this.toggle_el.addEventListener("click", this.on_click);
+    } // sidebar view/hide handler
+
 
     this.el = document.getElementById(this.config.el);
-    this.el.addEventListener("mouseenter", this.on_mouseenter);
-    this.el.addEventListener("mouseleave", this.on_mouseleave);
 
-    if (this.is_toggled()) {
-      this.el.classList.remove("minimized");
-      this.el.classList.add("toggled");
+    if (this.el) {
+      this.el.addEventListener("mouseenter", this.on_mouseenter);
+      this.el.addEventListener("mouseleave", this.on_mouseleave);
+
+      if (this.is_toggled()) {
+        this.el.classList.remove("minimized");
+        this.el.classList.add("toggled");
+      }
     }
 
     return this;
