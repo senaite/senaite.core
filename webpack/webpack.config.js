@@ -8,6 +8,7 @@ const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MergeIntoSingleFilePlugin = require("webpack-merge-and-include-globally");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const TerserPlugin = require('terser-webpack-plugin');
 const uglifyJS = require("uglify-js");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 
@@ -102,6 +103,19 @@ module.exports = {
   optimization: {
     minimize: true,
     minimizer: [
+      // https://v4.webpack.js.org/plugins/terser-webpack-plugin/
+      new TerserPlugin({
+        extractComments: true,
+        sourceMap: true, // Must be set to true if using source-maps in production
+        exclude: /\/modules/,
+        terserOptions: {
+          // https://github.com/webpack-contrib/terser-webpack-plugin#terseroptions
+          extractComments: true,
+          compress: {
+            drop_console: true,
+          },
+	      }
+      }),
       // https://webpack.js.org/plugins/css-minimizer-webpack-plugin/
       new CssMinimizerPlugin({
         minimizerOptions: {
