@@ -8,6 +8,7 @@ const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const MergeIntoSingleFilePlugin = require("webpack-merge-and-include-globally");
+const CleanCSS = require("clean-css");
 
 
 const gitCmd = "git rev-list -1 HEAD -- `pwd`";
@@ -116,10 +117,9 @@ module.exports = {
   plugins: [
     // https://github.com/markshapiro/webpack-merge-and-include-globally
     new MergeIntoSingleFilePlugin({
-      // transformFileName: (fileName, extension, hash) => `${fileName}-${gitHash}${extension}`,
       files: [{
-        // all the legacy bika.lims JS files
         src: [
+          // legacy.js
           "../src/senaite/core/browser/static/js/bika.lims.analysisprofile.js",
           "../src/senaite/core/browser/static/js/bika.lims.analysisrequest.js",
           "../src/senaite/core/browser/static/js/bika.lims.analysisservice.js",
@@ -153,9 +153,43 @@ module.exports = {
           }
         },
       }, {
-        src: ["../src/senaite/core/browser/static/css/bika.lims.graphics.css"],
-        dest: "legacy.css"
-      }]
+        // legacy.css
+        src: [
+          "../src/senaite/core/browser/static/css/bika.lims.graphics.css",
+        ],
+        dest: code => ({
+          "legacy.css":new CleanCSS({}).minify(code).styles,
+        })
+      }, {
+        // thirdparty.js
+        src: [
+          "../src/senaite/core/browser/static/thirdparty/jqueryui/jquery-ui-1.12.1.min.js",
+          "../src/senaite/core/browser/static/thirdparty/jqueryui/jquery-ui-i18n.min.js",
+          "../src/senaite/core/browser/static/thirdparty/timepicker/jquery-ui-timepicker-addon-1.6.3.min.js",
+          "../src/senaite/core/browser/static/thirdparty/timepicker/i18n/jquery-ui-timepicker-addon-i18n-1.6.3.min.js",
+          "../src/senaite/core/browser/static/thirdparty/combogrid/jquery.ui.combogrid-1.6.4.js",
+          "../src/senaite/core/browser/static/thirdparty/plone/overlayhelpers.js",
+          "../src/senaite/core/browser/static/thirdparty/jquery-barcode-2.2.0.min.js",
+          "../src/senaite/core/browser/static/thirdparty/jquery-qrcode-0.17.0.min.js",
+          "../src/senaite/core/browser/static/thirdparty/d3.js",
+        ],
+        dest: code => {
+          return {
+            "thirdparty.js": code,
+          }
+        }
+      }, {
+        // thirdparty.css
+        src: [
+          "../src/senaite/core/browser/static/thirdparty/jqueryui/themes/base/jquery-ui.min.css",
+          "../src/senaite/core/browser/static/thirdparty/jqueryui/themes/base/theme.css",
+          "../src/senaite/core/browser/static/thirdparty/combogrid/jquery.ui.combogrid-1.6.4.css",
+        ],
+        dest: code => ({
+          "thirdparty.css":new CleanCSS({}).minify(code).styles,
+        })
+      }
+    ]
     }, filesMap => {
       console.log("generated files: ",filesMap)
     }),

@@ -9,6 +9,8 @@
 <script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/modules/react-dom/react-dom.production.min.js"></script>
 <script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/modules/tinymce/tinymce.min.js"></script>
 
+<!-- Plone jQuery Tools -->
+<script tal:attributes="src string:${view/site_url}/++resource++plone.app.jquerytools.js"></script>
 
 <!-- Core JS bundle -->
 <% for (let js in htmlWebpackPlugin.files.js) { %>
@@ -20,29 +22,20 @@
 <link href="#" rel="stylesheet" tal:attributes="href <%= 'string:${view/site_url}' + htmlWebpackPlugin.files.css[f] %>" />
 <% } %>
 
-
 <!-- Legacy JS bundle -->
 <script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/bundles/legacy.js"></script>
+
+<!-- Legacy CSS bundle -->
 <link href="#" rel="stylesheet" tal:attributes="href string:${view/site_url}/++plone++senaite.core.static/bundles/legacy.css" />
 
-<!-- jQuery UI -->
-<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/thirdparty/jqueryui/jquery-ui-1.12.1.min.js"></script>
-<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/thirdparty/jqueryui/jquery-ui-i18n.min.js"></script>
+<!-- Thirdparty JS bundle -->
+<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/bundles/thirdparty.js"></script>
+
+<!-- Thirdparty CSS bundle -->
+<link href="#" rel="stylesheet" tal:attributes="href string:${view/site_url}/++plone++senaite.core.static/bundles/thirdparty.css" />
+
+<!-- Note: Styles refer to images and cannot be merged by webpack -->
 <link href="#" rel="stylesheet" tal:attributes="href string:${view/site_url}/++plone++senaite.core.static/thirdparty/jqueryui/themes/base/jquery-ui.min.css" />
 <link href="#" rel="stylesheet" tal:attributes="href string:${view/site_url}/++plone++senaite.core.static/thirdparty/jqueryui/themes/base/theme.css" />
-<!-- JQuery UI - timepicker -->
-<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/thirdparty/timepicker/jquery-ui-timepicker-addon-1.6.3.min.js"></script>
-<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/thirdparty/timepicker/i18n/jquery-ui-timepicker-addon-i18n-1.6.3.min.js"></script>
-<!-- JQuery UI - combogrid -->
-<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/thirdparty/combogrid/jquery.ui.combogrid-1.6.4.js"></script>
 <link href="#" rel="stylesheet" tal:attributes="href string:${view/site_url}/++plone++senaite.core.static/thirdparty/combogrid/jquery.ui.combogrid-1.6.4.css" />
-
-<!-- Plone jQuery Tools -->
-<script tal:attributes="src string:${view/site_url}/++resource++plone.app.jquerytools.js"></script>
-<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/thirdparty/plone/overlayhelpers.js"></script>
 <link href="#" rel="stylesheet" tal:attributes="href string:${view/site_url}/++resource++plone.app.jquerytools.overlays.css" />
-
-<!-- thirdparty -->
-<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/thirdparty/jquery-barcode-2.2.0.min.js"></script>
-<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/thirdparty/jquery-qrcode-0.17.0.min.js"></script>
-<script tal:attributes="src string:${view/site_url}/++plone++senaite.core.static/thirdparty/d3.js"></script>
