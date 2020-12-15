@@ -235,7 +235,10 @@ module.exports = {
     }),
     // https://webpack.js.org/plugins/mini-css-extract-plugin/
     new MiniCssExtractPlugin({
-      filename: devMode ? "[name].css" : `[name]-${gitHash}.css`,
+      // N.B. use stable CSS name, because it is used in tinyMCE content as well
+      //      -> see: `senaite.core.js`
+      // filename: devMode ? "[name].css" : `[name]-${gitHash}.css`,
+      filename: "[name].css"
     }),
     // https://webpack.js.org/plugins/copy-webpack-plugin/
     new CopyPlugin({
