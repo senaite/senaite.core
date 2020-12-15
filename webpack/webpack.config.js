@@ -2,11 +2,15 @@ const path = require("path");
 const webpack = require("webpack");
 const childProcess = require("child_process");
 
-const { CleanWebpackPlugin } = require("clean-webpack-plugin");
+const CleanCSS = require("clean-css");
 const CopyPlugin = require("copy-webpack-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const MergeIntoSingleFilePlugin = require("webpack-merge-and-include-globally");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const TerserPlugin = require('terser-webpack-plugin');
+const uglifyJS = require("uglify-js");
+const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 
 
 const gitCmd = "git rev-list -1 HEAD -- `pwd`";
@@ -99,6 +103,19 @@ module.exports = {
   optimization: {
     minimize: true,
     minimizer: [
+      // https://v4.webpack.js.org/plugins/terser-webpack-plugin/
+      new TerserPlugin({
+        extractComments: true,
+        sourceMap: true, // Must be set to true if using source-maps in production
+        exclude: /\/modules/,
+        terserOptions: {
+          // https://github.com/webpack-contrib/terser-webpack-plugin#terseroptions
+          extractComments: true,
+          compress: {
+            drop_console: true,
+          },
+	      }
+      }),
       // https://webpack.js.org/plugins/css-minimizer-webpack-plugin/
       new CssMinimizerPlugin({
         minimizerOptions: {
@@ -113,6 +130,94 @@ module.exports = {
     ],
   },
   plugins: [
+    // https://github.com/markshapiro/webpack-merge-and-include-globally
+    new MergeIntoSingleFilePlugin({
+      files: [{
+        src: [
+          // legacy.js
+          "../src/senaite/core/browser/static/js/bika.lims.analysisprofile.js",
+          "../src/senaite/core/browser/static/js/bika.lims.analysisrequest.js",
+          "../src/senaite/core/browser/static/js/bika.lims.analysisservice.js",
+          "../src/senaite/core/browser/static/js/bika.lims.artemplate.js",
+          "../src/senaite/core/browser/static/js/bika.lims.batch.js",
+          "../src/senaite/core/browser/static/js/bika.lims.bikasetup.js",
+          "../src/senaite/core/browser/static/js/bika.lims.calculation.edit.js",
+          "../src/senaite/core/browser/static/js/bika.lims.client.js",
+          "../src/senaite/core/browser/static/js/bika.lims.common.js",
+          "../src/senaite/core/browser/static/js/bika.lims.department.js",
+          "../src/senaite/core/browser/static/js/bika.lims.graphics.controlchart.js",
+          "../src/senaite/core/browser/static/js/bika.lims.graphics.range.js",
+          "../src/senaite/core/browser/static/js/bika.lims.instrument.import.js",
+          "../src/senaite/core/browser/static/js/bika.lims.instrument.js",
+          "../src/senaite/core/browser/static/js/bika.lims.method.js",
+          "../src/senaite/core/browser/static/js/bika.lims.referencesample.js",
+          "../src/senaite/core/browser/static/js/bika.lims.reflexrule.js",
+          "../src/senaite/core/browser/static/js/bika.lims.rejection.js",
+          "../src/senaite/core/browser/static/js/bika.lims.reports.js",
+          "../src/senaite/core/browser/static/js/bika.lims.site.js",
+          "../src/senaite/core/browser/static/js/bika.lims.utils.attachments.js",
+          "../src/senaite/core/browser/static/js/bika.lims.utils.barcode.js",
+          "../src/senaite/core/browser/static/js/bika.lims.worksheet.js",
+          "../src/senaite/core/browser/static/js/bika.lims.worksheet.print.js",
+          "../src/senaite/core/browser/static/js/bika.lims.worksheettemplate.js",
+          "../src/senaite/core/browser/static/js/bika.lims.loader.js",
+        ],
+        dest: code => {
+          const min = uglifyJS.minify(code, {sourceMap: {
+            filename: "legacy.js",
+            url: "legacy.js.map"
+          }, compress: {drop_console: true}});
+          return {
+            "legacy.js":min.code,
+            "legacy.js.map": min.map
+          }
+        },
+      }, {
+        // legacy.css
+        src: [
+          "../src/senaite/core/browser/static/css/bika.lims.graphics.css",
+        ],
+        dest: code => ({
+          "legacy.css":new CleanCSS({}).minify(code).styles,
+        })
+      }, {
+        // thirdparty.js
+        src: [
+          "../src/senaite/core/browser/static/thirdparty/jqueryui/jquery-ui-1.12.1.min.js",
+          "../src/senaite/core/browser/static/thirdparty/jqueryui/jquery-ui-i18n.min.js",
+          "../src/senaite/core/browser/static/thirdparty/timepicker/jquery-ui-timepicker-addon-1.6.3.min.js",
+          "../src/senaite/core/browser/static/thirdparty/timepicker/i18n/jquery-ui-timepicker-addon-i18n-1.6.3.min.js",
+          "../src/senaite/core/browser/static/thirdparty/combogrid/jquery.ui.combogrid-1.6.4.js",
+          "../src/senaite/core/browser/static/thirdparty/plone/overlayhelpers.js",
+          "../src/senaite/core/browser/static/thirdparty/jquery-barcode-2.2.0.min.js",
+          "../src/senaite/core/browser/static/thirdparty/jquery-qrcode-0.17.0.min.js",
+          "../src/senaite/core/browser/static/thirdparty/d3.js",
+        ],
+        dest: code => {
+          const min = uglifyJS.minify(code, {sourceMap: {
+            filename: "thirdparty.js",
+            url: "thirdparty.js.map"
+          }, compress: {drop_console: true}});
+          return {
+            "thirdparty.js":min.code,
+            "thirdparty.js.map": min.map
+          }
+        },
+      }, {
+        // thirdparty.css
+        src: [
+          "../src/senaite/core/browser/static/thirdparty/jqueryui/themes/base/jquery-ui.min.css",
+          "../src/senaite/core/browser/static/thirdparty/jqueryui/themes/base/theme.css",
+          "../src/senaite/core/browser/static/thirdparty/combogrid/jquery.ui.combogrid-1.6.4.css",
+        ],
+        dest: code => ({
+          "thirdparty.css":new CleanCSS({}).minify(code).styles,
+        })
+      }
+    ]
+    }, filesMap => {
+      console.log("generated files: ",filesMap)
+    }),
     // https://github.com/johnagan/clean-webpack-plugin
     new CleanWebpackPlugin(),
     // https://webpack.js.org/plugins/html-webpack-plugin/
