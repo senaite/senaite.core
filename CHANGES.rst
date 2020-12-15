@@ -4,6 +4,7 @@ Changelog
 2.0.0rc3 (unreleased)
 ---------------------
 
+- #1715 Updated build system to Webpack 5
 - #1714 Removed add button in auditlog listing view
 - #1713 JS/CSS resources optimized to increase loading performance
 - #1712 Add "Automatic verification of samples" setting in setup
