@@ -155,18 +155,6 @@ window.bika.lims.controllers =  {
 };
 
 
-
-var _bika_lims_loaded_js = new Array();
-
-/**
- * Initializes only the js controllers needed for the current view.
- * Initializes the JS objects from the controllers dictionary for which
- * there is at least one match with the dict key. The JS objects are
- * loaded in the same order as defined in the controllers dict.
- */
-window.bika.lims.initview = function() {
-    return window.bika.lims.loadControllers(false, []);
-};
 /**
  * 'all' is a bool variable used to load all the controllers.
  * 'controllerKeys' is an array which contains specific controllers' keys which aren't
@@ -177,6 +165,7 @@ window.bika.lims.initview = function() {
  */
 window.bika.lims.loadControllers = function(all, controllerKeys) {
     var controllers = window.bika.lims.controllers;
+    var _bika_lims_loaded_js = new Array();
     var prev = _bika_lims_loaded_js.length;
     for (var key in controllers) {
         // Check if the key have value. Also check if this key exists in the controllerKeys array.
@@ -199,17 +188,7 @@ window.bika.lims.loadControllers = function(all, controllerKeys) {
 
 };
 
-window.bika.lims.initialized = false;
-/**
- * Initializes all bika.lims js stuff
- */
-window.bika.lims.initialize = function() {
-    return window.bika.lims.initview();
-};
-
-document.addEventListener("DOMContentLoaded", () => {
-    // Initializes bika.lims
-    var length = window.bika.lims.initialize();
-    window.bika.lims.initialized = true;
-  console.debug("*** SENAITE LOADER INITIALIZED ***");
+document.addEventListener("DOMContentLoaded", function(event) {
+    window.bika.lims.loadControllers(false, []);
+    console.debug("*** SENAITE LOADER INITIALIZED ***");
 });

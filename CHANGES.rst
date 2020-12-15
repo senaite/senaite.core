@@ -5,6 +5,7 @@ Changelog
 ---------------------
 
 - #1714 Removed add button in auditlog listing view
+- #1713 JS/CSS resources optimized to increase loading performance
 - #1712 Add "Automatic verification of samples" setting in setup
 - #1711 Make attachments viewlet to rely on permissions, not on statuses
 - #1709 Remove "attachment_due" status from Worksheet and Sample

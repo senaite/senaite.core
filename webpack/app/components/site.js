@@ -14,7 +14,7 @@ Site = (function() {
     this.set_cookie = bind(this.set_cookie, this);
     this.read_cookie = bind(this.read_cookie, this);
     this.authenticator = bind(this.authenticator, this);
-    console.debug("Site::init");
+    // console.debug("Site::init");
   }
 
 
@@ -40,7 +40,7 @@ Site = (function() {
 
   Site.prototype.read_cookie = function(name) {
     var c, ca, i;
-    console.debug("Site::read_cookie:" + name);
+    // console.debug("Site::read_cookie:" + name);
     name = name + '=';
     ca = document.cookie.split(';');
     i = 0;
@@ -66,7 +66,7 @@ Site = (function() {
 
   Site.prototype.set_cookie = function(name, value) {
     var d, expires;
-    console.debug("Site::set_cookie:name=" + name + ", value=" + value);
+    // console.debug("Site::set_cookie:name=" + name + ", value=" + value);
     d = new Date;
     d.setTime(d.getTime() + 1 * 24 * 60 * 60 * 1000);
     expires = 'expires=' + d.toUTCString();
