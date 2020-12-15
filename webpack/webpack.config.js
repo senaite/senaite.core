@@ -188,7 +188,7 @@ module.exports = {
         dest: code => {
           if (devMode) {
             return {
-              "thirdparty.js": code
+              "legacy.js": code
             }
           }
           const min = uglifyJS.minify(code, {sourceMap: {
