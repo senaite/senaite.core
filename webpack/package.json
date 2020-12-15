@@ -3,8 +3,8 @@
   "version": "2.0.0",
   "main": "app/senaite.core.js",
   "scripts": {
-    "build": "webpack --optimization-node-env production",
-    "watch": "webpack --optimization-node-env development --watch",
+    "build": "mode=production webpack",
+    "watch": "mode=development webpack --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "babel": {

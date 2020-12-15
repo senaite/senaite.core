@@ -19,8 +19,9 @@ let gitHash = childProcess.execSync(gitCmd).toString().substring(0, 7);
 
 const staticPath = path.resolve(__dirname, "../src/senaite/core/browser/static");
 
-const devMode = process.env.NODE_ENV == "development";
-const mode = devMode ? "development" : "production";
+const devMode = process.env.mode == "development";
+const mode = process.env.mode;
+console.log(`RUNNING WEBPACK IN '${mode}' MODE`);
 
 
 module.exports = {
