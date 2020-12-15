@@ -24,7 +24,7 @@
          tal:omit-tag="not:has_action">
         <div
           i18n:translate=""
-          tal:define="css_class string:${menuItem/extra/class} tb-state font-weight-bold"
+          tal:define="css_class string:${menuItem/extra/class} tb-state"
           tal:attributes="class python:has_action and css_class or css_class + ' nav-link'"
           tal:condition="menuItem/extra/stateTitle | nothing"
           tal:content="menuItem/extra/stateTitle">
