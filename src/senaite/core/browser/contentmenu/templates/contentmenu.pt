@@ -11,7 +11,6 @@
         tal:define="submenu menuItem/submenu;
                     has_dropdown not:menuItem/extra/hideChildren | not:submenu | nothing;
                     identifier menuItem/extra/id">
-
       <!-- Menu Item -->
       <a href="#"
          i18n:attributes="title;"
@@ -19,30 +18,18 @@
          tal:attributes="href string:#${menuItem/extra/id};
                          title menuItem/description;
                          class string:label-${state_class} nav-link"
-         tal:define="state_class menuItem/extra/class | nothing;
+         tal:define="has_action menuItem/action;
+                     state_class menuItem/extra/class | nothing;
                      state_class python:state_class and state_class or ''"
-         tal:omit-tag="not:menuItem/action">
-
-        <span
-          aria-hidden="true"
-          class=""
-          tal:attributes="class string:icon-${identifier}"></span>
-
-        <!-- <span -->
-        <!--   class="" -->
-        <!--   i18n:translate="" -->
-        <!--   tal:content="menuItem/title"> -->
-        <!--   Menu Title -->
-        <!-- </span> -->
-
-        <span
-          class=""
+         tal:omit-tag="not:has_action">
+        <div
           i18n:translate=""
-          tal:attributes="class string:${menuItem/extra/class} tb-state"
+          tal:define="css_class string:${menuItem/extra/class} tb-state font-weight-bold"
+          tal:attributes="class python:has_action and css_class or css_class + ' nav-link'"
           tal:condition="menuItem/extra/stateTitle | nothing"
           tal:content="menuItem/extra/stateTitle">
           State title
-        </span>
+        </div>
       </a>
 
       <!-- dropdown menu -->
@@ -51,11 +38,6 @@
            tal:condition="not:menuItem/extra/hideChildren | not:submenu | nothing">
 
           <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            <!-- Icon -->
-            <span
-              aria-hidden="true"
-              class=""
-              tal:attributes="class string:icon-${identifier} toolbar-menu-icon"></span>
             <span
               class=""
               i18n:translate=""
@@ -83,8 +65,7 @@
               tal:attributes="href subMenuItem/action;
                               title subMenuItem/description;
                               id subMenuItem/extra/id | nothing;
-                              class string:${subMenuItem/extra/class|nothing} nav-link;
-                              data-pat-plone-modal subMenuItem/extra/modal | nothing;"
+                              class string:${subMenuItem/extra/class|nothing} nav-link;"
                               tal:condition="subMenuItem/action">
               <tal:title
                 content="structure subMenuItem/title"
