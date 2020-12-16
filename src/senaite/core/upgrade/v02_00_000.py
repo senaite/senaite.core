@@ -245,7 +245,7 @@ def port_workflows(portal):
 def port_workflow(portal, source, destination, portal_types):
     """Ports the workflow to senaite namespace
     """
-    msg = "Porting workflow {} to {}".format(source, destination)
+    msg = "Porting {} to {}".format(source, destination)
     logger.info("{} ...".format(msg))
     query = {"portal_type": portal_types}
     brains = api.search(query, UID_CATALOG)
