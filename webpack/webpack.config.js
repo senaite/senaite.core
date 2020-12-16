@@ -2,13 +2,14 @@ const path = require("path");
 const webpack = require("webpack");
 const childProcess = require("child_process");
 
+const BundleAnalyzerPlugin = require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
 const CleanCSS = require("clean-css");
 const CopyPlugin = require("copy-webpack-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MergeIntoSingleFilePlugin = require("webpack-merge-and-include-globally");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const TerserPlugin = require('terser-webpack-plugin');
+const TerserPlugin = require("terser-webpack-plugin");
 const uglifyJS = require("uglify-js");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 
@@ -18,10 +19,17 @@ let gitHash = childProcess.execSync(gitCmd).toString().substring(0, 7);
 
 const staticPath = path.resolve(__dirname, "../src/senaite/core/browser/static");
 
-const devMode = process.env.NODE_ENV !== 'production';
+const devMode = process.env.mode == "development";
+const prodMode = process.env.mode == "production";
+const mode = process.env.mode;
+console.log(`RUNNING WEBPACK IN '${mode}' MODE`);
 
 
 module.exports = {
+  // https://webpack.js.org/configuration/devtool
+  devtool: devMode ? "eval" : "source-map",
+  // https://webpack.js.org/configuration/mode/#usage
+  mode: mode,
   context: path.resolve(__dirname, "app"),
   entry: {
     main: [
@@ -32,7 +40,7 @@ module.exports = {
     ],
   },
   output: {
-    filename: `[name]-${gitHash}.js`,
+    filename: devMode ? "[name].js" : `[name]-${gitHash}.js`,
     path: path.resolve(staticPath, "bundles"),
     publicPath: "/++plone++senaite.core.static/bundles"
   },
@@ -56,9 +64,6 @@ module.exports = {
           {
             // https://webpack.js.org/plugins/mini-css-extract-plugin/
             loader: MiniCssExtractPlugin.loader,
-            options: {
-              hmr: process.env.NODE_ENV === "development"
-            },
           },
           {
             // https://webpack.js.org/loaders/css-loader/
@@ -101,18 +106,20 @@ module.exports = {
     ]
   },
   optimization: {
-    minimize: true,
+    minimize: prodMode,
     minimizer: [
       // https://v4.webpack.js.org/plugins/terser-webpack-plugin/
       new TerserPlugin({
-        extractComments: true,
-        sourceMap: true, // Must be set to true if using source-maps in production
         exclude: /\/modules/,
         terserOptions: {
           // https://github.com/webpack-contrib/terser-webpack-plugin#terseroptions
-          extractComments: true,
+          sourceMap: true, // Must be set to true if using source-maps in production
+          format: {
+            comments: false
+          },
           compress: {
             drop_console: true,
+            passes: 2,
           },
 	      }
       }),
@@ -130,6 +137,22 @@ module.exports = {
     ],
   },
   plugins: [
+    // https://github.com/johnagan/clean-webpack-plugin
+    new CleanWebpackPlugin({
+      verbose: false,
+      // Workaround in `watch` mode when trying to remove the `resources.pt` in the parent folder:
+      // Error: clean-webpack-plugin: Cannot delete files/folders outside the current working directory.
+      cleanAfterEveryBuildPatterns: ["!../*"],
+    }),
+    // https://webpack.js.org/plugins/html-webpack-plugin/
+    new HtmlWebpackPlugin({
+      inject: false,
+      filename:  path.resolve(staticPath, "resources.pt"),
+      template: "resources.pt",
+    }),
+    new webpack.ProgressPlugin(),
+    // https://github.com/webpack-contrib/webpack-bundle-analyzer
+    // new BundleAnalyzerPlugin(),
     // https://github.com/markshapiro/webpack-merge-and-include-globally
     new MergeIntoSingleFilePlugin({
       files: [{
@@ -163,6 +186,11 @@ module.exports = {
           "../src/senaite/core/browser/static/js/bika.lims.loader.js",
         ],
         dest: code => {
+          if (devMode) {
+            return {
+              "legacy.js": code
+            }
+          }
           const min = uglifyJS.minify(code, {sourceMap: {
             filename: "legacy.js",
             url: "legacy.js.map"
@@ -194,6 +222,11 @@ module.exports = {
           "../src/senaite/core/browser/static/thirdparty/d3.js",
         ],
         dest: code => {
+          if (devMode) {
+            return {
+              "thirdparty.js": code
+            }
+          }
           const min = uglifyJS.minify(code, {sourceMap: {
             filename: "thirdparty.js",
             url: "thirdparty.js.map"
@@ -218,18 +251,12 @@ module.exports = {
     }, filesMap => {
       console.log("generated files: ",filesMap)
     }),
-    // https://github.com/johnagan/clean-webpack-plugin
-    new CleanWebpackPlugin(),
-    // https://webpack.js.org/plugins/html-webpack-plugin/
-    new HtmlWebpackPlugin({
-      inject: false,
-      filename:  path.resolve(staticPath, "resources.pt"),
-      template: "resources.pt",
-    }),
     // https://webpack.js.org/plugins/mini-css-extract-plugin/
     new MiniCssExtractPlugin({
-      filename: devMode ? "[name].css" : "[name].[hash].css",
-      chunkFilename: devMode ? "[id].css" : "[id].[hash].css",
+      // N.B. use stable CSS name, because it is used in tinyMCE content as well
+      //      -> see: `senaite.core.js`
+      // filename: devMode ? "[name].css" : `[name]-${gitHash}.css`,
+      filename: "[name].css"
     }),
     // https://webpack.js.org/plugins/copy-webpack-plugin/
     new CopyPlugin({
