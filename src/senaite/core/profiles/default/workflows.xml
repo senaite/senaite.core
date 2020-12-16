@@ -8,6 +8,7 @@
 
   <!-- Type-specific workflow definitions -->
   <object name="senaite_sample_workflow" meta_type="Workflow"/>
+  <object name="senaite_worksheet_workflow" meta_type="Workflow"/>
 
   <bindings>
 
@@ -35,6 +36,9 @@
     <!-- Bindings to type-specific workflow definitions -->
     <type type_id="AnalysisRequest">
       <bound-workflow workflow_id="senaite_sample_workflow"/>
+    </type>
+    <type type_id="Worksheet">
+      <bound-workflow workflow_id="senaite_worksheet_workflow"/>
     </type>
     <!-- /Bindings to type-specific workflow definitions -->
 

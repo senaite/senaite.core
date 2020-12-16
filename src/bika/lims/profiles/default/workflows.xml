@@ -8,7 +8,6 @@
   <object name="bika_referencesample_workflow" meta_type="Workflow"/>
   <object name="bika_reject_analysis_workflow" meta_type="Workflow"/>
   <object name="bika_sample_workflow" meta_type="Workflow"/>
-  <object name="bika_worksheet_workflow" meta_type="Workflow"/>
   <object name="folder_workflow" meta_type="Workflow"/>
   <object name="intranet_folder_workflow" meta_type="Workflow"/>
   <object name="intranet_workflow" meta_type="Workflow"/>
@@ -439,9 +438,6 @@
     </type>
     <type type_id="ReportFolder">
       <bound-workflow workflow_id="senaite_reports_workflow"/>
-    </type>
-    <type type_id="Worksheet">
-      <bound-workflow workflow_id="bika_worksheet_workflow"/>
     </type>
     <type type_id="WorksheetFolder">
       <bound-workflow workflow_id="senaite_worksheets_workflow"/>

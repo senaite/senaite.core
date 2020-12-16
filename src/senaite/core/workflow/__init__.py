@@ -19,3 +19,4 @@
 # Some rights reserved, see README and LICENSE.
 
 SAMPLE_WORKFLOW = "senaite_sample_workflow"
+WORKSHEET_WORKFLOW = "senaite_worksheet_workflow"

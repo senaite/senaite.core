@@ -45,6 +45,7 @@ from senaite.core.upgrade.utils import set_uid
 from senaite.core.upgrade.utils import temporary_allow_type
 from senaite.core.upgrade.utils import uncatalog_object
 from senaite.core.workflow import SAMPLE_WORKFLOW
+from senaite.core.workflow import WORKSHEET_WORKFLOW
 from zope.interface import noLongerProvides
 
 version = "2.0.0"  # Remember version number in metadata.xml and setup.py
@@ -83,7 +84,8 @@ METADATA_TO_REMOVE = [
 
 WORKFLOWS_TO_PORT = [
     # List of tuples (source wf_id, destination wf_id, [portal_type,])
-    ("bika_ar_workflow", SAMPLE_WORKFLOW, ["AnalysisRequest", ])
+    ("bika_ar_workflow", SAMPLE_WORKFLOW, ["AnalysisRequest", ]),
+    ("bika_worksheet_workflow", WORKSHEET_WORKFLOW, ["Worksheet", ])
 ]
 
 
@@ -281,10 +283,9 @@ def update_workflow_mappings_worksheets(portal):
     """Fix AddAttachment permission
     """
     logger.info("Updating role mappings for Worksheets ...")
-    wf_id = "bika_worksheet_workflow"
     query = {"portal_type": "Worksheet"}
     brains = api.search(query, CATALOG_WORKSHEET_LISTING)
-    update_workflow_mappings_for(portal, wf_id, brains)
+    update_workflow_mappings_for(portal, WORKSHEET_WORKFLOW, brains)
     logger.info("Updating role mappings for Worksheets [DONE]")
 
 
@@ -549,7 +550,7 @@ def resolve_attachment_due(portal):
     query = {"portal_type": "Worksheet", "review_state": "attachment_due"}
     for worksheet in api.search(query, CATALOG_WORKSHEET_LISTING):
         worksheet = api.get_object(worksheet)
-        changeWorkflowState(worksheet, "bika_worksheet_workflow",
+        changeWorkflowState(worksheet, WORKSHEET_WORKFLOW,
                             "to_be_verified", action="submit")
 
     logger.info("Resolving objects in 'attachment_due' status [DONE]")
