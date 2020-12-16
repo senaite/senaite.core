@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.6.1 (2020-11-25)
+ * Version: 5.6.2 (2020-12-08)
  */
 (function () {
     'use strict';
@@ -29620,7 +29620,7 @@
       var touchPlatformClass = 'tox-platform-touch';
       var deviceClasses = isTouch ? [touchPlatformClass] : [];
       var isToolbarBottom = isToolbarLocationBottom(editor);
-      var isUiContainerInBody = eq$1(body(), getUiContainer(editor));
+      var uiContainer = getUiContainer(editor);
       var dirAttributes = global$6.isRtl() ? { attributes: { dir: 'rtl' } } : {};
       var verticalDirAttributes = { attributes: (_a = {}, _a[Attribute] = isToolbarBottom ? AttributeValue.BottomToTop : AttributeValue.TopToBottom, _a) };
       var lazyHeader = function () {
@@ -29633,6 +29633,7 @@
         set$2(uiMothership.element, 'width', document.body.clientWidth + 'px');
       };
       var makeSinkDefinition = function () {
+        var isGridUiContainer = eq$1(body(), uiContainer) && get$5(uiContainer, 'display') === 'grid';
         var sinkSpec = {
           dom: __assign({
             tag: 'div',
@@ -29652,7 +29653,7 @@
           dom: { styles: { width: document.body.clientWidth + 'px' } },
           events: derive([run(windowResize(), resizeUiMothership)])
         };
-        return deepMerge(sinkSpec, isUiContainerInBody ? reactiveWidthSpec : {});
+        return deepMerge(sinkSpec, isGridUiContainer ? reactiveWidthSpec : {});
       };
       var sink = build$1(makeSinkDefinition());
       var lazySink = function () {
