@@ -45,6 +45,7 @@ from senaite.core.upgrade.utils import set_uid
 from senaite.core.upgrade.utils import temporary_allow_type
 from senaite.core.upgrade.utils import uncatalog_object
 from senaite.core.workflow import ANALYSIS_WORKFLOW
+from senaite.core.workflow import DUPLICATE_ANALYSIS_WORKFLOW
 from senaite.core.workflow import SAMPLE_WORKFLOW
 from senaite.core.workflow import WORKSHEET_WORKFLOW
 from zope.interface import noLongerProvides
@@ -86,6 +87,8 @@ METADATA_TO_REMOVE = [
 WORKFLOW_DEFINITIONS_TO_PORT = [
     # List of tuples (source wf_id, destination wf_id, [portal_type,])
     ("bika_analysis_workflow", ANALYSIS_WORKFLOW, ["Analysis", ]),
+    ("bika_duplicateanalysis_workflow", DUPLICATE_ANALYSIS_WORKFLOW,
+     ["DuplicateAnalysis", ]),
     ("bika_ar_workflow", SAMPLE_WORKFLOW, ["AnalysisRequest", ]),
     ("bika_worksheet_workflow", WORKSHEET_WORKFLOW, ["Worksheet", ]),
 ]

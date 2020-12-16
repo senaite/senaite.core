@@ -19,5 +19,6 @@
 # Some rights reserved, see README and LICENSE.
 
 ANALYSIS_WORKFLOW = "senaite_analysis_workflow"
+DUPLICATE_ANALYSIS_WORKFLOW = "senaite_duplicateanalysis_workflow"
 SAMPLE_WORKFLOW = "senaite_sample_workflow"
 WORKSHEET_WORKFLOW = "senaite_worksheet_workflow"
