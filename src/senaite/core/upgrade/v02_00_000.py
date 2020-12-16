@@ -87,6 +87,11 @@ METADATA_TO_REMOVE = [
     (CATALOG_ANALYSIS_LISTING, "getAttachmentUIDs")
 ]
 
+STALE_WORKFLOW_DEFINITIONS = [
+    # List of stale workflow definition ids to remove
+    "bika_sample_workflow",
+]
+
 WORKFLOW_DEFINITIONS_TO_PORT = [
     # List of tuples (source wf_id, destination wf_id, [portal_type,])
     ("bika_analysis_workflow", ANALYSIS_WORKFLOW, ["Analysis", ]),
@@ -140,7 +145,6 @@ def upgrade(tool):
     # run import steps located in bika.lims profiles
     _run_import_step(portal, "rolemap", profile="profile-bika.lims:default")
     _run_import_step(portal, "typeinfo", profile="profile-bika.lims:default")
-    _run_import_step(portal, "workflow", profile="profile-bika.lims:default")
 
     add_dexterity_setup_items(portal)
 
@@ -150,6 +154,9 @@ def upgrade(tool):
 
     # Port workflow definitions to senaite namespace
     port_workflow_definitions(portal)
+
+    # Remove stale workflow definitions
+    remove_stale_workflow_definitions(portal)
 
     # Update workflow mappings for samples to allow profile editing and fix
     # Add Attachment permission for verified and published status
@@ -255,7 +262,20 @@ def port_workflow_definitions(portal):
     logger.info("Porting workflow definitions to senaite namespace ...")
     for source, destination, portal_types in WORKFLOW_DEFINITIONS_TO_PORT:
         port_workflow(portal, source, destination, portal_types)
-    logger.info("Porting workflow definitions to senaite namespace ...")
+    logger.info("Porting workflow definitions to senaite namespace [DONE]")
+
+
+def remove_stale_workflow_definitions(portal):
+    """Removes stale workflow definitions
+    """
+    logger.info("Removing stale workflow definitions ...")
+    wf_tool = api.get_tool("portal_workflow")
+    for workflow_id in STALE_WORKFLOW_DEFINITIONS:
+        if workflow_id in wf_tool:
+            logger.info("Removing {}".format(workflow_id))
+            wf_tool._delObject(workflow_id)
+
+    logger.info("Removing stale workflow definitions [DONE]")
 
 
 def port_workflow(portal, source, destination, portal_types):
