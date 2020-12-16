@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <dc-workflow xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-             workflow_id="bika_reject_analysis_workflow"
-             title="Bika Rejected Analysis Workflow"
+             workflow_id="senaite_rejectanalysis_workflow"
+             title="RejectAnalysis Workflow"
              description=""
              state_variable="review_state"
              initial_state="rejected"

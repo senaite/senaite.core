@@ -4,7 +4,6 @@
       name="title">Contains workflow definitions for your portal</property>
   <object name="bika_referenceanalysis_workflow" meta_type="Workflow"/>
   <object name="bika_referencesample_workflow" meta_type="Workflow"/>
-  <object name="bika_reject_analysis_workflow" meta_type="Workflow"/>
   <object name="bika_sample_workflow" meta_type="Workflow"/>
   <object name="folder_workflow" meta_type="Workflow"/>
   <object name="intranet_folder_workflow" meta_type="Workflow"/>
@@ -28,9 +27,6 @@
     <!-- Analysis-like types -->
     <type type_id="ReferenceAnalysis">
       <bound-workflow workflow_id="bika_referenceanalysis_workflow"/>
-    </type>
-    <type type_id="RejectAnalysis">
-      <bound-workflow workflow_id="bika_reject_analysis_workflow"/>
     </type>
 
     <!-- TODO: Remove Sample-like types custom workflows -->
