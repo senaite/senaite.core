@@ -18,6 +18,7 @@
   <object name="senaite_instruments_workflow" meta_type="Workflow" />
   <object name="senaite_labcontact_workflow" meta_type="Workflow" />
   <object name="senaite_laboratory_workflow" meta_type="Workflow" />
+  <object name="senaite_referenceanalysis_workflow" meta_type="Workflow" />
   <object name="senaite_referencesamples_workflow" meta_type="Workflow" />
   <object name="senaite_rejectanalysis_workflow" meta_type="Workflow" />
   <object name="senaite_reports_workflow" meta_type="Workflow" />
@@ -306,6 +307,9 @@
     </type>
     <type type_id="Methods">
       <bound-workflow workflow_id="senaite_setup_workflow"/>
+    </type>
+    <type type_id="ReferenceAnalysis">
+      <bound-workflow workflow_id="senaite_referenceanalysis_workflow"/>
     </type>
     <type type_id="ReferenceSamplesFolder">
       <bound-workflow workflow_id="senaite_referencesamples_workflow"/>

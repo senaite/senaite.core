@@ -46,6 +46,7 @@ from senaite.core.upgrade.utils import temporary_allow_type
 from senaite.core.upgrade.utils import uncatalog_object
 from senaite.core.workflow import ANALYSIS_WORKFLOW
 from senaite.core.workflow import DUPLICATE_ANALYSIS_WORKFLOW
+from senaite.core.workflow import REFERENCE_ANALYSIS_WORKFLOW
 from senaite.core.workflow import REJECT_ANALYSIS_WORKFLOW
 from senaite.core.workflow import SAMPLE_WORKFLOW
 from senaite.core.workflow import WORKSHEET_WORKFLOW
@@ -91,6 +92,8 @@ WORKFLOW_DEFINITIONS_TO_PORT = [
     ("bika_duplicateanalysis_workflow", DUPLICATE_ANALYSIS_WORKFLOW,
      ["DuplicateAnalysis", ]),
     ("bika_ar_workflow", SAMPLE_WORKFLOW, ["AnalysisRequest", ]),
+    ("bika_referenceanalysis_workflow", REFERENCE_ANALYSIS_WORKFLOW,
+     ["ReferenceAnalysis", ]),
     ("bika_reject_analysis_workflow", REJECT_ANALYSIS_WORKFLOW,
      ["RejectAnalysis", ]),
     ("bika_worksheet_workflow", WORKSHEET_WORKFLOW, ["Worksheet", ]),
