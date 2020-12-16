@@ -273,7 +273,7 @@ def remove_stale_workflow_definitions(portal):
     for workflow_id in STALE_WORKFLOW_DEFINITIONS:
         if workflow_id in wf_tool:
             logger.info("Removing {}".format(workflow_id))
-            wf_tool._delObject(workflow_id)
+            wf_tool._delObject(workflow_id)  # noqa
 
     logger.info("Removing stale workflow definitions [DONE]")
 
@@ -304,11 +304,10 @@ def port_workflow(portal, source, destination, portal_types):
         if history:
             obj.workflow_history[destination] = copy.deepcopy(history)
             del obj.workflow_history[source]
-            obj.reindexObject()
 
     # Remove the workflow definition from portal_workflow
     wf_tool = api.get_tool("portal_workflow")
-    wf_tool._delObject(source)
+    wf_tool._delObject(source)  # noqa
     logger.info("{} [DONE]".format(msg))
 
 
