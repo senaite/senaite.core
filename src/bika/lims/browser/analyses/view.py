@@ -306,6 +306,11 @@ class AnalysesView(BikaListingView):
         if not self.has_permission(FieldEditAnalysisResult, analysis_obj):
             return False
 
+        # Check if the method allows to edit the result
+        method = analysis_obj.getMethod()
+        if method and not method.getManualEntryOfResults():
+            return False
+
         # Is the instrument out of date?
         # The user can assign a result to the analysis if it does not have any
         # instrument assigned or the instrument assigned is valid.
