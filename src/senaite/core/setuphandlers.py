@@ -88,6 +88,7 @@ def install(context):
     _run_import_step(portal, "rolemap")
     _run_import_step(portal, "typeinfo")
     _run_import_step(portal, "factorytool")
+    _run_import_step(portal, "workflow", "profile-senaite.core:default")
 
     # Run Installers
     setup_groups(portal)
