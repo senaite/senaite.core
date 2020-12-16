@@ -4,10 +4,11 @@
     xmlns:zcml="http://namespaces.zope.org/zcml">
 
   <browser:page
-      name="ajax_edit"
+      name="ajax_form"
       for="*"
       permission="cmf.ModifyPortalContent"
-      class=".edit.AjaxEditView"
+      class=".form.AjaxFormView"
+      allowed_attributes="modified"
       layer="senaite.core.interfaces.ISenaiteCore"
       />
 
