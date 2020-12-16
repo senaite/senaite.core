@@ -260,6 +260,12 @@ def port_workflow(portal, source, destination, portal_types):
     """
     msg = "Porting {} to {}".format(source, destination)
     logger.info("{} ...".format(msg))
+
+    wf_tool = api.get_tool("portal_workflow")
+    if source not in wf_tool:
+        logger.info("{} does not exist [SKIP]".format(source))
+        return
+
     query = {"portal_type": portal_types}
     brains = api.search(query, UID_CATALOG)
     total = len(brains)
@@ -276,6 +282,10 @@ def port_workflow(portal, source, destination, portal_types):
             obj.workflow_history[destination] = copy.deepcopy(history)
             del obj.workflow_history[source]
             obj.reindexObject()
+
+    # Remove the workflow definition from portal_workflow
+    wf_tool = api.get_tool("portal_workflow")
+    wf_tool._delObject(source)
     logger.info("{} [DONE]".format(msg))
 
 
