@@ -8,7 +8,7 @@
       for="*"
       permission="cmf.ModifyPortalContent"
       class=".form.AjaxFormView"
-      allowed_attributes="modified"
+      allowed_attributes="initialized modified"
       layer="senaite.core.interfaces.ISenaiteCore"
       />
 

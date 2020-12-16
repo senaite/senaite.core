@@ -29,9 +29,15 @@ class EditForm{
     for (const selector of selectors) {
       let form = document.querySelector(selector);
       if (form && form.tagName === "FORM") {
+        this.setup_form(form);
         this.watch_form(form);
       }
     }
+  }
+
+  setup_form(form) {
+    console.debug(`EditForm::setup_form(${form})`);
+    this.submit(form, {}, "initialized");
   }
 
   watch_form(form) {
@@ -61,19 +67,73 @@ class EditForm{
     this.changed[name] = flag;
   }
 
+  toggle_field_visibility(field, toggle) {
+    let parent = field.closest(".field");
+    let css_class = "d-none";
+    if (toggle === false) {
+      parent.classList.add(css_class);
+    } else {
+      parent.classList.remove(css_class);
+    }
+  }
+
+  update_form(form, data) {
+    console.info("*** UPDATE FORM ***", data)
+    let hide = data.hide || [];
+    let show = data.show || [];
+    let update = data.update || {}
+
+    for (const selector of hide) {
+      let el = form.querySelector(`[data-fieldname='${selector}']`);
+      if (!el) continue;
+      this.toggle_field_visibility(el, false);
+    }
+
+    for (const selector of show) {
+      let el = form.querySelector(`[data-fieldname='${selector}']`);
+      if (!el) continue;
+      this.toggle_field_visibility(el, true);
+    }
+
+    for (const [key, value] of Object.entries(update)) {
+      console.log(`Update ${key} -> ${value}`);
+      let el = form.querySelector(`[data-fieldname='${key}']`);
+      if (!el) continue;
+      let input = el.querySelector(`[name='${key}']`);
+      if (!input) continue;
+      input.value = value;
+    }
+  }
+
   notify_change(form, field) {
-    let view_url = document.body.dataset.viewUrl;
-    let ajax_url = `${view_url}/ajax_form/modified`;
+    let data = {
+      name: field.name,
+      value: field.value,
+    }
+    this.submit(form, data, "modified");
+  }
+
+  get_form_data(form) {
+    let data = {};
     let form_data = new FormData(form);
+    form_data.forEach(function(value, key) {
+      data[key] = value;
+    });
+    return data;
+  }
+
+  submit(form, data, endpoint) {
+    let view_url = document.body.dataset.viewUrl;
+    let ajax_url = `${view_url}/ajax_form/${endpoint}`;
+
+    let payload = Object.assign({
+      "form": this.get_form_data(form)
+    }, data)
 
     let init = {
       method: "POST",
       credentials: "include",
-      body: JSON.stringify({
-        name: field.name,
-        value: field.value,
-        formdata: JSON.stringify(form_data)
-      }),
+      body: JSON.stringify(payload),
       headers: {
         "Content-Type": "application/json",
         "X-CSRF-TOKEN": document.querySelector("#protect-script").dataset.token
@@ -83,16 +143,16 @@ class EditForm{
     let request = new Request(ajax_url, init);
 
     fetch(request)
-      .then(function(response) {
+      .then((response) => {
         if (!response.ok) {
           return Promise.reject(response);
         }
         return response.json();
       })
-      .then(function(data) {
-        console.info("*** GOT RESPONSE JSON ***", data)
+      .then((data) => {
+        this.update_form(form, data);
       })
-      .catch(function(error) {
+      .catch((error) => {
         console.error(error);
       });
   }

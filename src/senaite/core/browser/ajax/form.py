@@ -11,11 +11,24 @@ class AjaxFormView(BrowserView):
     """
 
     @returns_json
+    def initialized(self):
+        return {
+            "hide": ["description", "title"],
+            "show": [],
+        }
+
+    @returns_json
     def modified(self):
         data = self.get_json()
         if not data:
             return {}
-        return {'description': '123'}
+        return {
+            "hide": ["MethodID"],
+            "show": ["title", "description"],
+            "update": {
+                "description": "hahahahaha",
+            }
+        }
 
     def get_json(self):
         body = self.request.get("BODY", "{}")
