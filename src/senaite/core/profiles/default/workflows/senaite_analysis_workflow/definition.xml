@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <dc-workflow xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-             workflow_id="bika_analysis_workflow"
-             title="Bika Analysis Workflow"
+             workflow_id="senaite_analysis_workflow"
+             title="Analysis Workflow"
              description=""
              state_variable="review_state"
              initial_state="registered"

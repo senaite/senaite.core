@@ -64,6 +64,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
 from Products.CMFPlone.utils import safe_unicode
 from senaite.core.browser.fields.records import RecordsField
+from senaite.core.workflow import ANALYSIS_WORKFLOW
 from zope.interface import implements
 
 ALL_ANALYSES_TYPES = "all"
@@ -1448,7 +1449,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             review_state = workflow.getInfoFor(analysis, 'review_state', '')
             if review_state == 'to_be_verified':
                 # TODO Workflow - Analysis Retest transition within a Worksheet
-                changeWorkflowState(analysis, "bika_analysis_workflow", "assigned")
+                changeWorkflowState(analysis, ANALYSIS_WORKFLOW, "assigned")
         self.REQUEST['context_uid'] = self.UID()
         self.setLayout(old_layout)
         self.setAnalyses(old_ws_analyses)

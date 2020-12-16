@@ -8,6 +8,7 @@
   <object name="senaite_one_state_workflow" meta_type="Workflow"/>
 
   <!-- Type-specific workflow definitions -->
+  <object name="senaite_analysis_workflow" meta_type="Workflow" />
   <object name="senaite_batch_workflow" meta_type="Workflow" />
   <object name="senaite_batches_workflow" meta_type="Workflow"/>
   <object name="senaite_client_workflow" meta_type="Workflow"/>
@@ -268,6 +269,9 @@
 
 
     <!-- Bindings to type-specific workflow definitions -->
+    <type type_id="Analysis">
+      <bound-workflow workflow_id="senaite_analysis_workflow"/>
+    </type>
     <type type_id="AnalysisRequest">
       <bound-workflow workflow_id="senaite_sample_workflow"/>
     </type>

@@ -44,6 +44,7 @@ from senaite.core.upgrade.utils import delete_object
 from senaite.core.upgrade.utils import set_uid
 from senaite.core.upgrade.utils import temporary_allow_type
 from senaite.core.upgrade.utils import uncatalog_object
+from senaite.core.workflow import ANALYSIS_WORKFLOW
 from senaite.core.workflow import SAMPLE_WORKFLOW
 from senaite.core.workflow import WORKSHEET_WORKFLOW
 from zope.interface import noLongerProvides
@@ -82,10 +83,11 @@ METADATA_TO_REMOVE = [
     (CATALOG_ANALYSIS_LISTING, "getAttachmentUIDs")
 ]
 
-WORKFLOWS_TO_PORT = [
+WORKFLOW_DEFINITIONS_TO_PORT = [
     # List of tuples (source wf_id, destination wf_id, [portal_type,])
+    ("bika_analysis_workflow", ANALYSIS_WORKFLOW, ["Analysis", ]),
     ("bika_ar_workflow", SAMPLE_WORKFLOW, ["AnalysisRequest", ]),
-    ("bika_worksheet_workflow", WORKSHEET_WORKFLOW, ["Worksheet", ])
+    ("bika_worksheet_workflow", WORKSHEET_WORKFLOW, ["Worksheet", ]),
 ]
 
 
@@ -134,8 +136,8 @@ def upgrade(tool):
     # https://github.com/senaite/senaite.core/pull/1638
     fix_published_results_permission(portal)
 
-    # Port workflows to senaite
-    port_workflows(portal)
+    # Port workflow definitions to senaite namespace
+    port_workflow_definitions(portal)
 
     # Update workflow mappings for samples to allow profile editing and fix
     # Add Attachment permission for verified and published status
@@ -235,13 +237,13 @@ def fix_published_results_permission(portal):
             break
 
 
-def port_workflows(portal):
+def port_workflow_definitions(portal):
     """Ports the workflow definitions to senaite namespace
     """
-    logger.info("Porting workflows to senaite namespace ...")
-    for source, destination, portal_types in WORKFLOWS_TO_PORT:
+    logger.info("Porting workflow definitions to senaite namespace ...")
+    for source, destination, portal_types in WORKFLOW_DEFINITIONS_TO_PORT:
         port_workflow(portal, source, destination, portal_types)
-    logger.info("Porting workflows to senaite namespace ...")
+    logger.info("Porting workflow definitions to senaite namespace ...")
 
 
 def port_workflow(portal, source, destination, portal_types):

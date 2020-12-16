@@ -25,6 +25,7 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
 from bika.lims.utils import formatDateQuery, formatDateParms, logged_in_client
 from plone.app.layout.globals.interfaces import IViewView
+from senaite.core.workflow import ANALYSIS_WORKFLOW
 from zope.interface import implements
 
 
@@ -81,10 +82,10 @@ class Report(BrowserView):
                 {'title': _('Published'), 'value': published, 'type': 'text'})
 
         workflow = getToolByName(self.context, 'portal_workflow')
-        if 'bika_analysis_workflow' in self.request.form:
-            query['review_state'] = self.request.form['bika_analysis_workflow']
+        if ANALYSIS_WORKFLOW in self.request.form:
+            query['review_state'] = self.request.form[ANALYSIS_WORKFLOW]
             review_state = workflow.getTitleForStateOnType(
-                self.request.form['bika_analysis_workflow'], 'Analysis')
+                self.request.form[ANALYSIS_WORKFLOW], 'Analysis')
             parms.append(
                 {'title': _('Status'), 'value': review_state, 'type': 'text'})
 

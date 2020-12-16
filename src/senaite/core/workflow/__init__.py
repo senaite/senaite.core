@@ -18,5 +18,6 @@
 # Copyright 2018-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+ANALYSIS_WORKFLOW = "senaite_analysis_workflow"
 SAMPLE_WORKFLOW = "senaite_sample_workflow"
 WORKSHEET_WORKFLOW = "senaite_worksheet_workflow"

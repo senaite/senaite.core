@@ -26,6 +26,7 @@ from Products.Archetypes.config import UID_CATALOG
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
 from Products.CMFPlone.utils import safe_unicode
+from senaite.core.workflow import ANALYSIS_WORKFLOW
 from senaite.core.workflow import SAMPLE_WORKFLOW
 from zope.interface import alsoProvides
 from zope.lifecycleevent import modified
@@ -323,7 +324,7 @@ def create_retest(ar):
     for analysis in retest.getAnalyses(full_objects=True):
         if not IRoutineAnalysis.providedBy(analysis):
             continue
-        changeWorkflowState(analysis, "bika_analysis_workflow", "unassigned")
+        changeWorkflowState(analysis, ANALYSIS_WORKFLOW, "unassigned")
 
     # Reindex and other stuff
     push_reindex_to_actions_pool(retest)
