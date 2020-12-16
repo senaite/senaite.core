@@ -107,8 +107,8 @@ class TestBarcodeEntry(BaseTestCase):
                          "AR redirect should be  %s but it's %s" % (
                              expected, value['url']))
 
-        changeWorkflowState(self.ar1, 'bika_ar_workflow', 'verified')
-        wf.getWorkflowById('bika_ar_workflow').updateRoleMappingsFor(self.ar1)
+        changeWorkflowState(self.ar1, 'senaite_sample_workflow', 'verified')
+        wf.getWorkflowById('senaite_sample_workflow').updateRoleMappingsFor(self.ar1)
         self.ar1.reindexObject(idxs=['allowedRolesAndUsers'])
 
         value = json.loads(barcode_entry(self.portal, self.portal.REQUEST)())

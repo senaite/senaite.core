@@ -18,6 +18,7 @@
 # Copyright 2018-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import copy
 import time
 import traceback
 
@@ -30,6 +31,7 @@ from bika.lims.catalog import SETUP_CATALOG
 from bika.lims.setuphandlers import add_dexterity_setup_items
 from bika.lims.utils import changeWorkflowState
 from plone.dexterity.fti import DexterityFTI
+from Products.Archetypes.config import UID_CATALOG
 from Products.CMFEditions.interfaces import IVersioned
 from senaite.core import logger
 from senaite.core.config import PROJECTNAME as product
@@ -42,6 +44,7 @@ from senaite.core.upgrade.utils import delete_object
 from senaite.core.upgrade.utils import set_uid
 from senaite.core.upgrade.utils import temporary_allow_type
 from senaite.core.upgrade.utils import uncatalog_object
+from senaite.core.workflow import SAMPLE_WORKFLOW
 from zope.interface import noLongerProvides
 
 version = "2.0.0"  # Remember version number in metadata.xml and setup.py
@@ -76,6 +79,11 @@ METADATA_TO_REMOVE = [
     (CATALOG_ANALYSIS_LISTING, "getInterimFields"),
     # No longer used, see https://github.com/senaite/senaite.core/pull/1709/
     (CATALOG_ANALYSIS_LISTING, "getAttachmentUIDs")
+]
+
+WORKFLOWS_TO_PORT = [
+    # List of tuples (source wf_id, destination wf_id, [portal_type,])
+    ("bika_ar_workflow", SAMPLE_WORKFLOW, ["AnalysisRequest", ])
 ]
 
 
@@ -123,6 +131,9 @@ def upgrade(tool):
     # Published results tab is not displayed to client contacts
     # https://github.com/senaite/senaite.core/pull/1638
     fix_published_results_permission(portal)
+
+    # Port workflows to senaite
+    port_workflows(portal)
 
     # Update workflow mappings for samples to allow profile editing and fix
     # Add Attachment permission for verified and published status
@@ -222,11 +233,44 @@ def fix_published_results_permission(portal):
             break
 
 
+def port_workflows(portal):
+    """Ports the workflow definitions to senaite namespace
+    """
+    logger.info("Porting workflows to senaite namespace ...")
+    for source, destination, portal_types in WORKFLOWS_TO_PORT:
+        port_workflow(portal, source, destination, portal_types)
+    logger.info("Porting workflows to senaite namespace ...")
+
+
+def port_workflow(portal, source, destination, portal_types):
+    """Ports the workflow to senaite namespace
+    """
+    msg = "Porting workflow {} to {}".format(source, destination)
+    logger.info("{} ...".format(msg))
+    query = {"portal_type": portal_types}
+    brains = api.search(query, UID_CATALOG)
+    total = len(brains)
+    for num, brain in enumerate(brains):
+        if num and num % 100 == 0:
+            logger.info("{0}: {1}/{2}".format(msg, num, total))
+        if num and num % 1000 == 0:
+            commit_transaction(portal)
+
+        # Override the workflow history
+        obj = api.get_object(brain)
+        history = obj.workflow_history.get(source)
+        if history:
+            obj.workflow_history[destination] = copy.deepcopy(history)
+            del obj.workflow_history[source]
+            obj.reindexObject()
+    logger.info("{} [DONE]".format(msg))
+
+
 def update_workflow_mappings_samples(portal):
     """Allow to edit analysis profiles and fix AddAttachment permission
     """
     logger.info("Updating role mappings for Samples ...")
-    wf_id = "bika_ar_workflow"
+    wf_id = "senaite_sample_workflow"
     query = {"portal_type": "AnalysisRequest"}
     brains = api.search(query, CATALOG_ANALYSIS_REQUEST_LISTING)
     update_workflow_mappings_for(portal, wf_id, brains)

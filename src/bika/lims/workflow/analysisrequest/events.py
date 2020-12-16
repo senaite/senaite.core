@@ -29,11 +29,11 @@ from bika.lims.utils import changeWorkflowState
 from bika.lims.utils.analysisrequest import create_retest
 from bika.lims.workflow import doActionFor as do_action_for
 from bika.lims.workflow import get_prev_status_from_history
-from bika.lims.workflow.analysisrequest import AR_WORKFLOW_ID
 from bika.lims.workflow.analysisrequest import do_action_to_analyses
 from bika.lims.workflow.analysisrequest import do_action_to_ancestors
 from bika.lims.workflow.analysisrequest import do_action_to_descendants
 from DateTime import DateTime
+from senaite.core.workflow import SAMPLE_WORKFLOW
 from zope.interface import alsoProvides
 from zope.interface import noLongerProvides
 
@@ -143,7 +143,7 @@ def after_reinstate(analysis_request):
 
     # Force the transition to previous state before the request was cancelled
     prev_status = get_prev_status_from_history(analysis_request, "cancelled")
-    changeWorkflowState(analysis_request, AR_WORKFLOW_ID, prev_status,
+    changeWorkflowState(analysis_request, SAMPLE_WORKFLOW, prev_status,
                         action="reinstate")
     analysis_request.reindexObject()
 
