@@ -20,7 +20,7 @@ Worksheet.
 
 
 Test Setup
-----------
+..........
 
 Running this test from the buildout directory:
 
@@ -138,7 +138,7 @@ layout with 7 slots:
 
 
 Apply Worksheet Template to a Worksheet
----------------------------------------
+.......................................
 
 Create a new Worksheet by using this worksheet template:
 
@@ -219,7 +219,7 @@ slots reserved for blank and controls are not occupied:
 
 
 Remove analyses and Apply Worksheet Template again
---------------------------------------------------
+..................................................
 
 Remove analyses located at position 2:
 
@@ -269,7 +269,7 @@ As well as in duplicate analyses:
 
 
 Remove a duplicate and add it manually
---------------------------------------
+......................................
 
 Remove all duplicate analyses from slot 5:
 
@@ -337,7 +337,7 @@ control:
 
 
 Control and blanks with Worksheet Template
-------------------------------------------
+..........................................
 
 First, create a Reference Definition for blank:
 
@@ -400,7 +400,7 @@ Control analyses at slot number 6:
 
 
 Remove Reference Analyses and add them manually
------------------------------------------------
+...............................................
 
 Remove all controls from slot 6:
 
@@ -467,7 +467,7 @@ Reject any remaining analyses awaiting for assignment:
 
 
 WorksheetTemplate assignment to a non-empty Worksheet
------------------------------------------------------
+.....................................................
 
 Worksheet Template can also be used when the worksheet is not empty.
 The template has slots available for routine analyses in positions 1, 2 and 4:
@@ -588,7 +588,7 @@ Reject any remaining analyses awaiting for assignment:
 
 
 WorksheetTemplate assignment keeps Sample natural order
--------------------------------------------------------
+.......................................................
 
 Analyses are grabbed by using their priority sort key, but samples are sorted
 in natural order in the slots.
@@ -611,7 +611,7 @@ Slots follows the natural order of the samples:
 
 
 Assignment of a WorksheetTemplate with no services
---------------------------------------------------
+..................................................
 
 Create a Worksheet Template without services assigned:
 
@@ -646,7 +646,7 @@ Worksheet remains empty:
 
 
 Assignment of Worksheet Template with Instrument
---------------------------------------------------
+................................................
 
 When a Worksheet Template has an instrument assigned, only analyses that can be
 performed with that same instrument are added in the worksheet.
@@ -744,7 +744,7 @@ Reject any remaining analyses awaiting for assignment:
 
 
 Assignment of Worksheet Template with Method
---------------------------------------------
+............................................
 
 When a Worksheet Template has a method assigned, only analyses that can be
 performed with that same method are added in the worksheet.

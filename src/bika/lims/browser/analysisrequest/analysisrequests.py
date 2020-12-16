@@ -246,7 +246,6 @@ class AnalysisRequestsView(BikaListingView):
                         "to_be_sampled",
                         "sample_due",
                         "sample_received",
-                        "attachment_due",
                         "to_be_preserved",
                         "to_be_verified",
                         "verified",
@@ -387,8 +386,7 @@ class AnalysisRequestsView(BikaListingView):
                                    title=t(_("Assigned"))),
                 "contentFilter": {
                     "assigned_state": "assigned",
-                    "review_state": ("sample_received",
-                                     "attachment_due",),
+                    "review_state": ("sample_received",),
                     "sort_on": "created",
                     "sort_order": "descending",
                 },
@@ -402,7 +400,6 @@ class AnalysisRequestsView(BikaListingView):
                     "assigned_state": "unassigned",
                     "review_state": (
                         "sample_received",
-                        "attachment_due",
                     ),
                     "sort_on": "created",
                     "sort_order": "descending",
@@ -417,7 +414,6 @@ class AnalysisRequestsView(BikaListingView):
                     # Query only for unpublished ARs that are late
                     "review_state": (
                         "sample_received",
-                        "attachment_due",
                         "to_be_verified",
                         "verified",
                     ),

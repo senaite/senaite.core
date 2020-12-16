@@ -4,6 +4,17 @@ Changelog
 2.0.0rc3 (unreleased)
 ---------------------
 
+- #1716 Fix workflow state offset in toolbar when no dropdown is rendered
+- #1715 Updated build system to Webpack 5
+- #1714 Removed add button in auditlog listing view
+- #1713 JS/CSS resources optimized to increase loading performance
+- #1712 Add "Automatic verification of samples" setting in setup
+- #1711 Make attachments viewlet to rely on permissions, not on statuses
+- #1709 Remove "attachment_due" status from Worksheet and Sample
+- #1709 Consolidated Attachment Options to a single Option
+- #1708 Remove auto versioning for Analysis Services
+- #1705 Migrated instrument locations to Dexterity
+- #1706 Add "User name" and "User groups" columns in Lab Contacts listing
 - #1702 Remove Analysis Specifications from AR Add Form
 - #1700 Better styling of header and description in content views
 - #1690 Added ContentSectionViewletManager to allow dynamic addition of sections

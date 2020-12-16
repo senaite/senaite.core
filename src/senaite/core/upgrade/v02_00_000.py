@@ -25,16 +25,32 @@ import transaction
 from bika.lims import api
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
+from bika.lims.catalog import CATALOG_WORKSHEET_LISTING
 from bika.lims.catalog import SETUP_CATALOG
 from bika.lims.setuphandlers import add_dexterity_setup_items
+from bika.lims.utils import changeWorkflowState
+from plone.dexterity.fti import DexterityFTI
+from Products.CMFEditions.interfaces import IVersioned
 from senaite.core import logger
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.setuphandlers import _run_import_step
 from senaite.core.upgrade import upgradestep
 from senaite.core.upgrade.utils import UpgradeUtils
+from senaite.core.upgrade.utils import catalog_object
+from senaite.core.upgrade.utils import copy_snapshots
+from senaite.core.upgrade.utils import delete_object
+from senaite.core.upgrade.utils import set_uid
+from senaite.core.upgrade.utils import temporary_allow_type
+from senaite.core.upgrade.utils import uncatalog_object
+from zope.interface import noLongerProvides
 
 version = "2.0.0"  # Remember version number in metadata.xml and setup.py
 profile = "profile-{0}:default".format(product)
+
+REMOVE_AT_TYPES = [
+    "InstrumentLocation",
+    "InstrumentLocations",
+]
 
 INSTALL_PRODUCTS = [
     "senaite.core",
@@ -58,6 +74,8 @@ METADATA_TO_REMOVE = [
     # Only used in Analyses listing and it's behavior is bizarre, probably
     # because is a dict and requires special care with ZODB
     (CATALOG_ANALYSIS_LISTING, "getInterimFields"),
+    # No longer used, see https://github.com/senaite/senaite.core/pull/1709/
+    (CATALOG_ANALYSIS_LISTING, "getAttachmentUIDs")
 ]
 
 
@@ -77,6 +95,9 @@ def upgrade(tool):
 
     # -------- ADD YOUR STUFF BELOW --------
 
+    # Remove AT types from portal_types tool
+    remove_at_portal_types(portal)
+
     # Remove duplicate methods from analysis services
     remove_duplicate_methods_in_services(portal)
 
@@ -91,7 +112,9 @@ def upgrade(tool):
     setup.runImportStepFromProfile(profile, "workflow")
     setup.runImportStepFromProfile(profile, "browserlayer")
     setup.runImportStepFromProfile(profile, "viewlets")
+    setup.runImportStepFromProfile(profile, "repositorytool")
     # run import steps located in bika.lims profiles
+    _run_import_step(portal, "rolemap", profile="profile-bika.lims:default")
     _run_import_step(portal, "typeinfo", profile="profile-bika.lims:default")
     _run_import_step(portal, "workflow", profile="profile-bika.lims:default")
 
@@ -101,8 +124,10 @@ def upgrade(tool):
     # https://github.com/senaite/senaite.core/pull/1638
     fix_published_results_permission(portal)
 
-    # Update workflow mappings for samples to allow profile editing
+    # Update workflow mappings for samples to allow profile editing and fix
+    # Add Attachment permission for verified and published status
     update_workflow_mappings_samples(portal)
+    update_workflow_mappings_worksheets(portal)
 
     # Initialize new department ID field
     # https://github.com/senaite/senaite.core/pull/1676
@@ -120,6 +145,17 @@ def upgrade(tool):
 
     # Remove stale metadata
     remove_stale_metadata(portal)
+
+    # Convert Instrument Locations to DX
+    # https://github.com/senaite/senaite.core/pull/1705
+    convert_instrumentlocations_to_dx(portal)
+
+    # Remove analysis services from CMFEditions auto versioning
+    # https://github.com/senaite/senaite.core/pull/1708
+    remove_services_from_repositorytool(portal)
+
+    # Resolve objects in attachment_due
+    resolve_attachment_due(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
@@ -187,24 +223,25 @@ def fix_published_results_permission(portal):
 
 
 def update_workflow_mappings_samples(portal):
-    """Allow to edit analysis profiles
+    """Allow to edit analysis profiles and fix AddAttachment permission
     """
     logger.info("Updating role mappings for Samples ...")
     wf_id = "bika_ar_workflow"
-    query = {"portal_type": "AnalysisRequest",
-             "review_state": [
-                 "sample_due",
-                 "sample_registered",
-                 "scheduled_sampling",
-                 "to_be_sampled",
-                 "sample_received",
-                 "attachment_due",
-                 "to_be_verified",
-                 "to_be_preserved",
-             ]}
+    query = {"portal_type": "AnalysisRequest"}
     brains = api.search(query, CATALOG_ANALYSIS_REQUEST_LISTING)
     update_workflow_mappings_for(portal, wf_id, brains)
     logger.info("Updating role mappings for Samples [DONE]")
+
+
+def update_workflow_mappings_worksheets(portal):
+    """Fix AddAttachment permission
+    """
+    logger.info("Updating role mappings for Worksheets ...")
+    wf_id = "bika_worksheet_workflow"
+    query = {"portal_type": "Worksheet"}
+    brains = api.search(query, CATALOG_WORKSHEET_LISTING)
+    update_workflow_mappings_for(portal, wf_id, brains)
+    logger.info("Updating role mappings for Worksheets [DONE]")
 
 
 def update_workflow_mappings_for(portal, wf_id, brains):
@@ -214,6 +251,8 @@ def update_workflow_mappings_for(portal, wf_id, brains):
     for num, brain in enumerate(brains):
         if num and num % 100 == 0:
             logger.info("Updating role mappings: {0}/{1}".format(num, total))
+        if num and num % 1000 == 0:
+            commit_transaction(portal)
         obj = api.get_object(brain)
         workflow.updateRoleMappingsFor(obj)
         obj.reindexObject(idxs=["allowedRolesAndUsers"])
@@ -360,3 +399,113 @@ def del_metadata(catalog_id, column):
                     .format(column, catalog_id))
         return
     catalog.delColumn(column)
+
+
+def remove_at_portal_types(portal):
+    """Remove AT portal type information
+    """
+    logger.info("Remove AT types from portal_types tool ...")
+    pt = api.get_tool("portal_types")
+    for type_name in REMOVE_AT_TYPES:
+        fti = pt.getTypeInfo(type_name)
+        # keep DX FTIs
+        if isinstance(fti, DexterityFTI):
+            logger.info("Type '{}' is already a DX FTI".format(fti))
+            continue
+        pt.manage_delObjects(fti.getId())
+    logger.info("Remove AT types from portal_types tool ... [DONE]")
+
+
+def convert_instrumentlocations_to_dx(portal):
+    """Converts existing Instrument Locations to Dexterity
+    """
+    logger.info("Convert Instrument Locations to Dexterity ...")
+
+    old_id = "bika_instrumentlocations"
+    new_id = "instrument_locations"
+    new_title = "Instrument Locations"
+
+    setup = api.get_setup()
+    old = setup.get(old_id)
+
+    # return if the old container is already gone
+    if not old:
+        return
+
+    # uncatalog the old object
+    uncatalog_object(old)
+
+    # get the new container
+    new = setup.get(new_id)
+
+    # create the new container if it is not there
+    if not new:
+        # temporarily allow to create objects in setup
+        with temporary_allow_type(setup, "InstrumentLocations") as container:
+            new = api.create(
+                container, "InstrumentLocations", id=new_id, title=new_title)
+        new.reindexObject()
+
+    # copy items from old -> new container
+    for src in old.objectValues():
+        # extract the old values
+        uid = api.get_uid(src)
+        title = api.get_title(src)
+        description = api.get_description(src)
+        # uncatalog the old object
+        uncatalog_object(src)
+        # create the new DX object and set explicitly the values
+        target = api.create(new, "InstrumentLocation", title=title)
+        target.description = api.safe_unicode(description)
+        # take over the UID
+        set_uid(target, uid)
+        # copy auditlog
+        copy_snapshots(src, target)
+        # catalog the new object
+        catalog_object(target)
+
+    # copy snapshots for the container
+    copy_snapshots(old, new)
+
+    # delete the old object
+    delete_object(old)
+
+    logger.info("Convert Instrument Locations to Dexterity ... [DONE]")
+
+
+def remove_services_from_repositorytool(portal):
+    """Remove Analysis Service from Repository Tool
+    """
+    logger.info("Remove auto versioning for Analysis Services ...")
+    portal_type = "AnalysisService"
+
+    rt = api.get_tool("portal_repository")
+    mapping = rt._version_policy_mapping
+    mapping.pop(portal_type, None)
+    rt._version_policy_mapping = mapping
+    versionable_types = rt.getVersionableContentTypes()
+    if portal_type in versionable_types:
+        versionable_types.remove(portal_type)
+        rt.setVersionableContentTypes(versionable_types)
+
+    # Remove marker interface for existing services
+    brains = api.search(dict(portal_type="AnalysisService"))
+    for brain in brains:
+        obj = api.get_object(brain)
+        if IVersioned.providedBy(obj):
+            noLongerProvides(obj, IVersioned)
+
+    logger.info("Remove auto versioning for Analysis Services ... [DONE]")
+
+
+def resolve_attachment_due(portal):
+    logger.info("Resolving objects in 'attachment_due' status ...")
+
+    # The only objects that can be in attachment_due are worksheets
+    query = {"portal_type": "Worksheet", "review_state": "attachment_due"}
+    for worksheet in api.search(query, CATALOG_WORKSHEET_LISTING):
+        worksheet = api.get_object(worksheet)
+        changeWorkflowState(worksheet, "bika_worksheet_workflow",
+                            "to_be_verified", action="submit")
+
+    logger.info("Resolving objects in 'attachment_due' status [DONE]")

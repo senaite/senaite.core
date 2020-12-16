@@ -109,7 +109,7 @@ class ManageResultsView(BrowserView):
         if not self.is_manage_allowed():
             return False
         review_state = api.get_workflow_status_of(self.context)
-        edit_states = ["open", "attachment_due", "to_be_verified"]
+        edit_states = ["open", "to_be_verified"]
         return review_state in edit_states
 
     def getInstruments(self):

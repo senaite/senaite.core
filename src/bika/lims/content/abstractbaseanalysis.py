@@ -27,7 +27,6 @@ from bika.lims.browser.widgets.durationwidget import DurationWidget
 from bika.lims.browser.widgets.recordswidget import RecordsWidget
 from bika.lims.browser.widgets.referencewidget import ReferenceWidget
 from bika.lims.catalog.bikasetup_catalog import SETUP_CATALOG
-from bika.lims.config import ATTACHMENT_OPTIONS
 from bika.lims.config import SERVICE_POINT_OF_CAPTURE
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IBaseAnalysis
@@ -224,19 +223,14 @@ AllowManualDetectionLimit = BooleanField(
 )
 
 # Specify attachment requirements for these analyses
-AttachmentOption = StringField(
-    'AttachmentOption',
+AttachmentRequired = BooleanField(
+    'AttachmentRequired',
     schemata="Analysis",
-    default='p',
-    vocabulary=ATTACHMENT_OPTIONS,
-    widget=SelectionWidget(
-        label=_("Attachment Option"),
-        description=_(
-            "Indicates whether file attachments, e.g. microscope images, "
-            "are required for this analysis and whether file upload function "
-            "will be available for it on data capturing screens"),
-        format='select',
-    )
+    default=False,
+    widget=BooleanWidget(
+        label=_("Attachment required for verification"),
+        description=_("Make attachments mandatory for verification")
+    ),
 )
 
 # The keyword for the service is used as an identifier during instrument
@@ -734,7 +728,7 @@ schema = BikaSchema.copy() + Schema((
     UpperDetectionLimit,
     DetectionLimitSelector,
     AllowManualDetectionLimit,
-    AttachmentOption,
+    AttachmentRequired,
     Keyword,
     ManualEntryOfResults,
     InstrumentEntryOfResults,

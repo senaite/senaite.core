@@ -118,7 +118,7 @@ def guard_submit(analysis):
 
     # Cannot submit if attachment not set, but is required
     if not analysis.getAttachment():
-        if analysis.getAttachmentOption() == 'r':
+        if analysis.getAttachmentRequired():
             return False
 
     # Check if can submit based on the Analysis Request state

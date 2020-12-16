@@ -39,24 +39,6 @@
           $('#addButton').prop('disabled', true);
         }
       });
-      $('.deleteAttachmentButton').live('click', function() {
-        var attachment_uid, options;
-        attachment_uid = $(this).attr('attachment_uid');
-        options = {
-          url: "@@ajax_attachments_view/delete_analysis_attachment",
-          type: 'POST',
-          success: function(responseText, statusText, xhr, $form) {
-            if (responseText === 'success') {
-              $("span[attachment_uid=" + attachment_uid + "]").remove();
-            }
-          },
-          data: {
-            'attachment_uid': attachment_uid,
-            '_authenticator': $('input[name="_authenticator"]').val()
-          }
-        };
-        $.ajax(options);
-      });
       $('#Analysis').combogrid({
         colModel: [
           {

@@ -244,12 +244,9 @@ class AnalysisSpecificationView(BikaListingView):
         if obj.getAccredited():
             after_icons += get_image(
                 "accredited.png", title=_("Accredited"))
-        if obj.getAttachmentOption() == "r":
+        if obj.getAttachmentRequired():
             after_icons += get_image(
                 "attach_reqd.png", title=_("Attachment required"))
-        if obj.getAttachmentOption() == "n":
-            after_icons += get_image(
-                "attach_no.png", title=_("Attachment not permitted"))
         if after_icons:
             item["after"]["Title"] = after_icons
 

@@ -222,9 +222,13 @@ def after_verify(analysis):
         doActionFor(ws, 'verify')
         push_reindex_to_actions_pool(ws)
 
-    # Promote transition to Analysis Request
+    # Promote transition to Analysis Request if Sample auto-verify is enabled
     if IRequestAnalysis.providedBy(analysis):
-        doActionFor(analysis.getRequest(), 'verify')
+        setup = api.get_setup()
+        if setup.getAutoVerifySamples():
+            doActionFor(analysis.getRequest(), "verify")
+
+        # Reindex the sample (and ancestors) this analysis belongs to
         reindex_request(analysis)
 
 
