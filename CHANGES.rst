@@ -4,6 +4,7 @@ Changelog
 2.0.0rc3 (unreleased)
 ---------------------
 
+- #1718 Fix allow/disallow manual entry of analysis result based on method setting
 - #1716 Fix workflow state offset in toolbar when no dropdown is rendered
 - #1715 Updated build system to Webpack 5
 - #1714 Removed add button in auditlog listing view
