@@ -21,6 +21,7 @@
 ANALYSIS_WORKFLOW = "senaite_analysis_workflow"
 DUPLICATE_ANALYSIS_WORKFLOW = "senaite_duplicateanalysis_workflow"
 REFERENCE_ANALYSIS_WORKFLOW = "senaite_referenceanalysis_workflow"
+REFERENCE_SAMPLE_WORKFLOW = "senaite_referencesample_workflow"
 REJECT_ANALYSIS_WORKFLOW = "senaite_rejectanalysis_workflow"
 SAMPLE_WORKFLOW = "senaite_sample_workflow"
 WORKSHEET_WORKFLOW = "senaite_worksheet_workflow"

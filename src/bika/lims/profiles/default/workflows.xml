@@ -2,7 +2,6 @@
 <object name="portal_workflow" meta_type="Plone Workflow Tool">
   <property
       name="title">Contains workflow definitions for your portal</property>
-  <object name="bika_referencesample_workflow" meta_type="Workflow"/>
   <object name="bika_sample_workflow" meta_type="Workflow"/>
   <object name="folder_workflow" meta_type="Workflow"/>
   <object name="intranet_folder_workflow" meta_type="Workflow"/>
@@ -18,11 +17,6 @@
     <type type_id="SamplesFolder">
       <bound-workflow workflow_id="senaite_one_state_workflow"/>
     </type>
-
-    <type type_id="ReferenceSample">
-      <bound-workflow workflow_id="bika_referencesample_workflow"/>
-    </type>
-
 
     <!-- TODO: Remove Sample-like types custom workflows -->
     <type type_id="Sample">

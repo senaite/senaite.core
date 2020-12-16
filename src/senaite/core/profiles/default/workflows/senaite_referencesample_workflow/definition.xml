@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <dc-workflow xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-             workflow_id="bika_referencesample_workflow"
-             title="Bika Reference Sample Workflow"
+             workflow_id="senaite_referencesample_workflow"
+             title="ReferenceSample Workflow"
              description=""
              state_variable="review_state"
              initial_state="current"
