@@ -14,15 +14,15 @@ class EditForm{
     }, config);
     // bind event handlers
     this.on_modified = this.on_modified.bind(this);
-    this.on_input = this.on_input.bind(this);
     this.on_blur = this.on_blur.bind(this);
+    this.on_click = this.on_click.bind(this);
+    this.on_change = this.on_change.bind(this);
     // init form
     this.init_forms();
-    this.changed = {};
   }
 
   /**
-   * Initialize all form elements
+   * Initialize all form elements given by the config
    */
   init_forms() {
     let selectors = this.config.form_selectors;
@@ -35,22 +35,39 @@ class EditForm{
     }
   }
 
+  /**
+   * Trigger `initialized` event on the form element
+   */
   setup_form(form) {
     console.debug(`EditForm::setup_form(${form})`);
-    this.submit(form, {}, "initialized");
+    this.ajax_send(form, {}, "initialized");
   }
 
+  /**
+   * Bind event handlers on form fields to monitor changes
+   */
   watch_form(form) {
     console.debug(`EditForm::watch_form(${form})`);
     let fields = this.get_form_fields(form);
     for (const field of fields) {
-        console.debug(`[Watching field ${field.name}]`);
-        field.addEventListener("input", this.on_input);
+      if (this.is_input(field) || this.is_textarea(field) || this.is_select(field)) {
+        // bind change event
+        field.addEventListener("change", this.on_change);
+      }
+      else if (this.is_radio(field) || this.is_checkbox(field)) {
+        // bind click event
+        field.addEventListener("click", this.on_click);
+      } else {
+        // bind blur event
         field.addEventListener("blur", this.on_blur);
+      }
     }
     form.addEventListener("modified", this.on_modified);
   }
 
+  /**
+   * Return form fields for the given selectors of the config
+   */
   get_form_fields(form) {
     console.debug(`EditForm::get_form_fields(${form})`);
     let fields = [];
@@ -62,9 +79,67 @@ class EditForm{
     return fields
   }
 
-  set_change_flag(el, flag) {
-    let name = el.name;
-    this.changed[name] = flag;
+  /**
+   * Checks if the element is a textarea field
+   */
+  is_textarea(el) {
+    return el.tagName == "TEXTAREA";
+  }
+
+  /**
+   * Checks if the element is a select field
+   */
+  is_select(el) {
+    return el.tagName == "SELECT";
+  }
+
+  /**
+   * Checks if the element is an input field
+   */
+  is_input(el) {
+    return el.tagName === "INPUT";
+  }
+
+  /**
+   * Checks if the element is an input[type='text'] field
+   */
+  is_text(el) {
+    return this.is_input(el) && el.type === "text";
+  }
+
+  /**
+   * Checks if the element is an input[type='checkbox'] field
+   */
+  is_checkbox(el) {
+    return this.is_input(el) && el.type === "checkbox";
+  }
+
+  /**
+   * Checks if the element is an input[type='radio'] field
+   */
+  is_radio(el) {
+    return this.is_input(el) && el.type === "radio";
+  }
+
+  /**
+   * Checks if the element is a SENAITE reference field
+   */
+  is_reference(el) {
+    return el.classList.contains("referencewidget");
+  }
+
+  /**
+   * Checks if the element is a SENAITE single-reference field
+   */
+  is_single_reference(el) {
+    return this.is_reference(el) && el.getAttribute("multivalued") == "0";
+  }
+
+  /**
+   * Checks if the element is a SENAITE multi-reference field
+   */
+  is_multi_reference(el) {
+    return this.is_reference(el) && el.getAttribute("multivalued") == "1";
   }
 
   toggle_field_visibility(field, toggle) {
@@ -83,18 +158,21 @@ class EditForm{
     let show = data.show || [];
     let update = data.update || {}
 
+    // hide fields
     for (const selector of hide) {
       let el = form.querySelector(`[data-fieldname='${selector}']`);
       if (!el) continue;
       this.toggle_field_visibility(el, false);
     }
 
+    // show fields
     for (const selector of show) {
       let el = form.querySelector(`[data-fieldname='${selector}']`);
       if (!el) continue;
       this.toggle_field_visibility(el, true);
     }
 
+    // updated fields
     for (const [key, value] of Object.entries(update)) {
       console.log(`Update ${key} -> ${value}`);
       let el = form.querySelector(`[data-fieldname='${key}']`);
@@ -105,14 +183,33 @@ class EditForm{
     }
   }
 
-  notify_change(form, field) {
-    let data = {
-      name: field.name,
-      value: field.value,
+  /**
+   * return the value of form field
+   */
+  get_input_value(field) {
+    if (this.is_checkbox(field)) {
+      // returns true/false for checkboxes
+      return field.checked;
+    } else if (this.is_select(field)) {
+      // returns a list of selected option
+      let selected = field.selectedOptions;
+      return Array.prototype.map.call(selected, (option) => option.value)
+    } else if (this.is_single_reference(field)) {
+      // returns the value of the `uid` attribute
+      return field.getAttribute("uid");
+    } else if (this.is_multi_reference(field)) {
+      // returns the value of the `uid` attribute and splits it on `,`
+      let uids = field.getAttribute("uid");
+      if (uids.length == 0) return [];
+      return uids.split(",");
     }
-    this.submit(form, data, "modified");
+    // return the plain field value
+    return field.value;
   }
 
+  /**
+   * return a dictionary of all the form values
+   */
   get_form_data(form) {
     let data = {};
     let form_data = new FormData(form);
@@ -122,7 +219,21 @@ class EditForm{
     return data;
   }
 
-  submit(form, data, endpoint) {
+  /**
+   * notify a field change to the server ajax endpoint
+   */
+  notify(form, field, endpoint) {
+    let data = {
+      name: field.name,
+      value: this.get_input_value(field),
+    }
+    this.ajax_send(form, data, endpoint);
+  }
+
+  /**
+   * send ajax request to the server
+   */
+  ajax_send(form, data, endpoint) {
     let view_url = document.body.dataset.viewUrl;
     let ajax_url = `${view_url}/ajax_form/${endpoint}`;
 
@@ -140,8 +251,8 @@ class EditForm{
       },
     }
 
+    // send ajax request to server
     let request = new Request(ajax_url, init);
-
     fetch(request)
       .then((response) => {
         if (!response.ok) {
@@ -150,6 +261,7 @@ class EditForm{
         return response.json();
       })
       .then((data) => {
+        console.debug("GOT JSON RESPONSE --> ", data);
         this.update_form(form, data);
       })
       .catch((error) => {
@@ -157,36 +269,55 @@ class EditForm{
       });
   }
 
+  /**
+   * trigger `modified` event on the form
+   */
+  modified(el) {
+    let event = new CustomEvent("modified", {
+      detail: {
+        field: el,
+        form: el.form
+      }
+    });
+    // dispatch the event on the element
+    el.form.dispatchEvent(event);
+  }
+
+  /**
+   * event handler for `modified` event
+   */
   on_modified(event) {
-    console.info(`Field '${event.detail.name}' changed value to '${event.detail.value}'`);
+    console.debug("EVENT -> on_modified");
     let form = event.detail.form;
     let field = event.detail.field;
-    this.notify_change(form, field);
+    this.notify(form, field, "modified");
   }
 
-  on_input(event) {
-    let el = event.currentTarget;
-    this.set_change_flag(el, true);
-  }
-
+  /**
+   * event handler for `blur` event
+   */
   on_blur(event) {
+    console.debug("EVENT -> on_blur");
     let el = event.currentTarget;
-    let name = el.name;
-    let value = el.value;
-    if (this.changed[name]) {
-      let event = new CustomEvent("modified", {
-        detail: {
-          field: el,
-          name: name,
-          value: value,
-          form: el.form
-        }
-      });
-      // dispatch the event on the element
-      el.form.dispatchEvent(event);
-      // set back the change flag
-      this.set_change_flag(el, false)
-    }
+    this.modified(el);
+  }
+
+  /**
+   * event handler for `click` event
+   */
+  on_click(event) {
+    console.debug("EVENT -> on_click");
+    let el = event.currentTarget;
+    this.modified(el);
+  }
+
+  /**
+   * event handler for `change` event
+   */
+  on_change(event) {
+    console.debug("EVENT -> on_change");
+    let el = event.currentTarget;
+    this.modified(el);
   }
 
 }
