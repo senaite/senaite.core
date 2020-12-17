@@ -142,6 +142,9 @@ class EditForm{
     return this.is_reference(el) && el.getAttribute("multivalued") == "1";
   }
 
+  /**
+   * toggles the display of the field with the `d-none` class
+   */
   toggle_field_visibility(field, toggle) {
     let parent = field.closest(".field");
     let css_class = "d-none";
@@ -152,11 +155,64 @@ class EditForm{
     }
   }
 
+  /**
+   * flush all field errors
+   */
+  flush_errors(form) {
+    let fields_with_errors = document.querySelectorAll(".is-invalid");
+    for (const field of fields_with_errors) {
+      this.remove_field_error(field);
+    }
+  }
+
+  /**
+   * set field error
+   */
+  set_field_error(field, message) {
+    field.classList.add("is-invalid");
+    if (message) {
+      let div = document.createElement("div");
+      div.className = "invalid-feedback";
+      div.innerHTML = message;
+      field.parentElement.appendChild(div);
+    }
+  }
+
+  /**
+   * remove field error
+   */
+  remove_field_error(field) {
+    field.classList.remove("is-invalid")
+    let msg = field.parentElement.querySelector(".invalid-feedback");
+    if (msg) {
+      msg.remove();
+    }
+  }
+
+  /**
+   * update the form with the response from the server
+   */
   update_form(form, data) {
     console.info("*** UPDATE FORM ***", data)
+
     let hide = data.hide || [];
     let show = data.show || [];
-    let update = data.update || {}
+    let update = data.update || {};
+    let messages = data.messages || [];
+    let errors = data.errors || {};
+
+    // flush all field errors
+    this.flush_errors();
+
+    // render field errors
+    for (const [key, value] of Object.entries(errors)) {
+      let el = form.querySelector(`[name='${key}']`);
+      if (!el) {
+        console.warn(`Field ${key} not found in form`);
+        continue;
+      }
+      this.set_field_error(el, value);
+    }
 
     // hide fields
     for (const selector of hide) {
