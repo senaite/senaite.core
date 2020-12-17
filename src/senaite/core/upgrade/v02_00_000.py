@@ -18,6 +18,7 @@
 # Copyright 2018-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import copy
 import time
 import traceback
 
@@ -30,6 +31,7 @@ from bika.lims.catalog import SETUP_CATALOG
 from bika.lims.setuphandlers import add_dexterity_setup_items
 from bika.lims.utils import changeWorkflowState
 from plone.dexterity.fti import DexterityFTI
+from Products.Archetypes.config import UID_CATALOG
 from Products.CMFEditions.interfaces import IVersioned
 from senaite.core import logger
 from senaite.core.config import PROJECTNAME as product
@@ -42,6 +44,13 @@ from senaite.core.upgrade.utils import delete_object
 from senaite.core.upgrade.utils import set_uid
 from senaite.core.upgrade.utils import temporary_allow_type
 from senaite.core.upgrade.utils import uncatalog_object
+from senaite.core.workflow import ANALYSIS_WORKFLOW
+from senaite.core.workflow import DUPLICATE_ANALYSIS_WORKFLOW
+from senaite.core.workflow import REFERENCE_ANALYSIS_WORKFLOW
+from senaite.core.workflow import REFERENCE_SAMPLE_WORKFLOW
+from senaite.core.workflow import REJECT_ANALYSIS_WORKFLOW
+from senaite.core.workflow import SAMPLE_WORKFLOW
+from senaite.core.workflow import WORKSHEET_WORKFLOW
 from zope.interface import noLongerProvides
 
 version = "2.0.0"  # Remember version number in metadata.xml and setup.py
@@ -76,6 +85,26 @@ METADATA_TO_REMOVE = [
     (CATALOG_ANALYSIS_LISTING, "getInterimFields"),
     # No longer used, see https://github.com/senaite/senaite.core/pull/1709/
     (CATALOG_ANALYSIS_LISTING, "getAttachmentUIDs")
+]
+
+STALE_WORKFLOW_DEFINITIONS = [
+    # List of stale workflow definition ids to remove
+    "bika_sample_workflow",
+]
+
+WORKFLOW_DEFINITIONS_TO_PORT = [
+    # List of tuples (source wf_id, destination wf_id, [portal_type,])
+    ("bika_analysis_workflow", ANALYSIS_WORKFLOW, ["Analysis", ]),
+    ("bika_duplicateanalysis_workflow", DUPLICATE_ANALYSIS_WORKFLOW,
+     ["DuplicateAnalysis", ]),
+    ("bika_ar_workflow", SAMPLE_WORKFLOW, ["AnalysisRequest", ]),
+    ("bika_referencesample_workflow", REFERENCE_SAMPLE_WORKFLOW,
+     ["ReferenceSample", ]),
+    ("bika_referenceanalysis_workflow", REFERENCE_ANALYSIS_WORKFLOW,
+     ["ReferenceAnalysis", ]),
+    ("bika_reject_analysis_workflow", REJECT_ANALYSIS_WORKFLOW,
+     ["RejectAnalysis", ]),
+    ("bika_worksheet_workflow", WORKSHEET_WORKFLOW, ["Worksheet", ]),
 ]
 
 
@@ -116,13 +145,18 @@ def upgrade(tool):
     # run import steps located in bika.lims profiles
     _run_import_step(portal, "rolemap", profile="profile-bika.lims:default")
     _run_import_step(portal, "typeinfo", profile="profile-bika.lims:default")
-    _run_import_step(portal, "workflow", profile="profile-bika.lims:default")
 
     add_dexterity_setup_items(portal)
 
     # Published results tab is not displayed to client contacts
     # https://github.com/senaite/senaite.core/pull/1638
     fix_published_results_permission(portal)
+
+    # Port workflow definitions to senaite namespace
+    port_workflow_definitions(portal)
+
+    # Remove stale workflow definitions
+    remove_stale_workflow_definitions(portal)
 
     # Update workflow mappings for samples to allow profile editing and fix
     # Add Attachment permission for verified and published status
@@ -222,11 +256,66 @@ def fix_published_results_permission(portal):
             break
 
 
+def port_workflow_definitions(portal):
+    """Ports the workflow definitions to senaite namespace
+    """
+    logger.info("Porting workflow definitions to senaite namespace ...")
+    for source, destination, portal_types in WORKFLOW_DEFINITIONS_TO_PORT:
+        port_workflow(portal, source, destination, portal_types)
+    logger.info("Porting workflow definitions to senaite namespace [DONE]")
+
+
+def remove_stale_workflow_definitions(portal):
+    """Removes stale workflow definitions
+    """
+    logger.info("Removing stale workflow definitions ...")
+    wf_tool = api.get_tool("portal_workflow")
+    for workflow_id in STALE_WORKFLOW_DEFINITIONS:
+        if workflow_id in wf_tool:
+            logger.info("Removing {}".format(workflow_id))
+            wf_tool._delObject(workflow_id)  # noqa
+
+    logger.info("Removing stale workflow definitions [DONE]")
+
+
+def port_workflow(portal, source, destination, portal_types):
+    """Ports the workflow to senaite namespace
+    """
+    msg = "Porting {} to {}".format(source, destination)
+    logger.info("{} ...".format(msg))
+
+    wf_tool = api.get_tool("portal_workflow")
+    if source not in wf_tool:
+        logger.info("{} does not exist [SKIP]".format(source))
+        return
+
+    query = {"portal_type": portal_types}
+    brains = api.search(query, UID_CATALOG)
+    total = len(brains)
+    for num, brain in enumerate(brains):
+        if num and num % 100 == 0:
+            logger.info("{0}: {1}/{2}".format(msg, num, total))
+        if num and num % 1000 == 0:
+            commit_transaction(portal)
+
+        # Override the workflow history
+        obj = api.get_object(brain)
+        history = obj.workflow_history.get(source)
+        if history:
+            obj.workflow_history[destination] = copy.deepcopy(history)
+            del obj.workflow_history[source]
+
+    # Remove the workflow definition from portal_workflow
+    wf_tool = api.get_tool("portal_workflow")
+    wf_tool._delObject(source)  # noqa
+    logger.info("{} [DONE]".format(msg))
+
+
 def update_workflow_mappings_samples(portal):
     """Allow to edit analysis profiles and fix AddAttachment permission
     """
     logger.info("Updating role mappings for Samples ...")
-    wf_id = "bika_ar_workflow"
+    wf_id = "senaite_sample_workflow"
     query = {"portal_type": "AnalysisRequest"}
     brains = api.search(query, CATALOG_ANALYSIS_REQUEST_LISTING)
     update_workflow_mappings_for(portal, wf_id, brains)
@@ -237,10 +326,9 @@ def update_workflow_mappings_worksheets(portal):
     """Fix AddAttachment permission
     """
     logger.info("Updating role mappings for Worksheets ...")
-    wf_id = "bika_worksheet_workflow"
     query = {"portal_type": "Worksheet"}
     brains = api.search(query, CATALOG_WORKSHEET_LISTING)
-    update_workflow_mappings_for(portal, wf_id, brains)
+    update_workflow_mappings_for(portal, WORKSHEET_WORKFLOW, brains)
     logger.info("Updating role mappings for Worksheets [DONE]")
 
 
@@ -505,7 +593,7 @@ def resolve_attachment_due(portal):
     query = {"portal_type": "Worksheet", "review_state": "attachment_due"}
     for worksheet in api.search(query, CATALOG_WORKSHEET_LISTING):
         worksheet = api.get_object(worksheet)
-        changeWorkflowState(worksheet, "bika_worksheet_workflow",
+        changeWorkflowState(worksheet, WORKSHEET_WORKFLOW,
                             "to_be_verified", action="submit")
 
     logger.info("Resolving objects in 'attachment_due' status [DONE]")

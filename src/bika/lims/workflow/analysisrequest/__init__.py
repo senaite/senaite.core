@@ -20,8 +20,6 @@
 
 from bika.lims.workflow import doActionFor as do_action_for
 
-AR_WORKFLOW_ID = "bika_ar_workflow"
-
 
 def do_action_to_ancestors(analysis_request, transition_id):
     """Promotes the transitiion passed in to ancestors, if any

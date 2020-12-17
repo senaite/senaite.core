@@ -26,6 +26,8 @@ from Products.Archetypes.config import UID_CATALOG
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
 from Products.CMFPlone.utils import safe_unicode
+from senaite.core.workflow import ANALYSIS_WORKFLOW
+from senaite.core.workflow import SAMPLE_WORKFLOW
 from zope.interface import alsoProvides
 from zope.lifecycleevent import modified
 
@@ -51,7 +53,6 @@ from bika.lims.utils import tmpID
 from bika.lims.workflow import ActionHandlerPool
 from bika.lims.workflow import doActionFor
 from bika.lims.workflow import push_reindex_to_actions_pool
-from bika.lims.workflow.analysisrequest import AR_WORKFLOW_ID
 from bika.lims.workflow.analysisrequest import do_action_to_analyses
 
 
@@ -114,7 +115,7 @@ def create_analysisrequest(client, request, values, analyses=None,
         if primary.getDateReceived():
             primary_id = primary.getId()
             comment = "Auto-received. Secondary Sample of {}".format(primary_id)
-            changeWorkflowState(ar, AR_WORKFLOW_ID, "sample_received",
+            changeWorkflowState(ar, SAMPLE_WORKFLOW, "sample_received",
                                 action="receive", comments=comment)
 
             # Mark the secondary as received
@@ -316,14 +317,14 @@ def create_retest(ar):
         push_reindex_to_actions_pool(nan)
 
     # Transition the retest to "sample_received"!
-    changeWorkflowState(retest, 'bika_ar_workflow', 'sample_received')
+    changeWorkflowState(retest, SAMPLE_WORKFLOW, 'sample_received')
     alsoProvides(retest, IReceived)
 
     # Initialize analyses
     for analysis in retest.getAnalyses(full_objects=True):
         if not IRoutineAnalysis.providedBy(analysis):
             continue
-        changeWorkflowState(analysis, "bika_analysis_workflow", "unassigned")
+        changeWorkflowState(analysis, ANALYSIS_WORKFLOW, "unassigned")
 
     # Reindex and other stuff
     push_reindex_to_actions_pool(retest)
@@ -424,7 +425,7 @@ def create_partition(analysis_request, request, analyses, sample_type=None,
 
     # Force partition to same status as the primary
     status = api.get_workflow_status_of(ar)
-    changeWorkflowState(partition, "bika_ar_workflow", status)
+    changeWorkflowState(partition, SAMPLE_WORKFLOW, status)
     if IReceived.providedBy(ar):
         alsoProvides(partition, IReceived)
 
