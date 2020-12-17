@@ -1,14 +1,14 @@
 <?xml version="1.0"?>
 <dc-workflow xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-             workflow_id="bika_referenceanalysis_workflow"
-             title="Bika Reference Analysis Workflow"
+             workflow_id="senaite_duplicateanalysis_workflow"
+             title="Duplicate Analysis Workflow"
              description=""
              state_variable="review_state"
              initial_state="assigned"
              manager_bypass="False"
              i18n:domain="senaite.core">
 
-  <permission>senaite.core: Edit Results</permission>
+  <permission>senaite.core: Transition: Unassign Analysis</permission>
   <permission>senaite.core: Transition: Retract</permission>
   <permission>senaite.core: Transition: Verify</permission>
   <permission>senaite.core: View Results</permission>
@@ -31,11 +31,9 @@
 
 
   <!-- State: assigned (initial state)
-  Reference analyses are assigned to a Worksheet or to an Instrument if is an
-  internal calibration test. This is the initial state because ref analyses can
-  only exist if associated to a Worksheet and/or to an Instrument
-  For this same reason, an "unassigned" state does not exist
-  -->
+  Duplicate is assigned to a Worksheet. This is the initial state because
+  duplicates can only live inside a Worksheet.
+  For this same reason, an "unassigned" state does not exist -->
   <state state_id="assigned" title="Assigned" i18n:attributes="title">
 
     <!-- TRANSITIONS -->
@@ -95,52 +93,18 @@
 
   </state>
 
-  <!-- State: rejected
-       The analysis has been rejected and cannot be used anymore -->
-  <state state_id="rejected" title="Rejected" i18n:attributes="title">
-
-    <!-- TRANSITIONS -->
-    <exit-transition transition_id="" />
-    <!-- /TRANSITIONS -->
-
-    <!-- Only allow modification of fields explicitly granted
-         N.B. Permissions are *only* checked in process_form and *not* if we set the
-         field directly via the generated mutator -->
-    <permission-map name="Modify portal content" acquired="False">
-    </permission-map>
-
-    <permission-map name="senaite.core: Edit Results" acquired="False">
-    </permission-map>
-
-    <permission-map name="senaite.core: View Results" acquired="False">
-      <permission-role>Analyst</permission-role>
-      <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-      <permission-role>RegulatoryInspector</permission-role>
-    </permission-map>
-
-    <!-- FIELD PERMISSIONS (rejected) -->
-    <permission-map name="senaite.core: Field: Edit Analysis Result" acquired="False">
-    </permission-map>
-    <permission-map name="senaite.core: Field: Edit Analysis Remarks" acquired="False">
-    </permission-map>
-    <permission-map name="senaite.core: Field: Edit Analysis Hidden" acquired="False">
-    </permission-map>
-    <!-- /FIELD PERMISSIONS -->
-
-  </state>
-
   <!-- State: to_be_verified
   Results have been submitted and awaiting for review -->
   <state state_id="to_be_verified" title="To be verified" i18n:attributes="title">
+    <!-- A duplicate can only live together with the analysis it comes from
+    bounded in a Worksheet. Hence, we can unassign a duplicate once submitted
+    if its counterpart analysis can be unassigned. More info in guard. -->
 
     <!-- TRANSITIONS -->
+    <exit-transition transition_id="unassign" />
     <exit-transition transition_id="multi_verify" />
     <exit-transition transition_id="verify" />
     <exit-transition transition_id="retract" />
-    <exit-transition transition_id="reject" />
-    <exit-transition transition_id="unassign" />
     <!-- /TRANSITIONS -->
 
     <!-- Only allow modification of fields explicitly granted
@@ -174,44 +138,15 @@
       <permission-role>Verifier</permission-role>
     </permission-map>
 
-    <!-- FIELD PERMISSIONS (to_be_verified) -->
-    <permission-map name="senaite.core: Field: Edit Analysis Result" acquired="False">
-    </permission-map>
-    <permission-map name="senaite.core: Field: Edit Analysis Remarks" acquired="False">
-    </permission-map>
-    <permission-map name="senaite.core: Field: Edit Analysis Hidden" acquired="False">
+    <permission-map name="Delete objects" acquired="False">
       <permission-role>LabManager</permission-role>
       <permission-role>Manager</permission-role>
-      <permission-role>LabClerk</permission-role>
-      <permission-role>Publisher</permission-role>
-    </permission-map>
-    <!-- /FIELD PERMISSIONS -->
-
-  </state>
-
-  <!-- State: to_be_verified
-       Results have been submitted and awaiting for review -->
-  <state state_id="verified" title="Verified" i18n:attributes="title">
-
-    <!-- TRANSITIONS -->
-    <exit-transition transition_id="unassign" />
-    <!-- /TRANSITIONS -->
-
-    <!-- Only allow modification of fields explicitly granted
-         N.B. Permissions are *only* checked in process_form and *not* if we set the
-         field directly via the generated mutator -->
-    <permission-map name="Modify portal content" acquired="False">
-    </permission-map>
-
-    <permission-map name="senaite.core: Edit Results" acquired="False">
-    </permission-map>
-
-    <permission-map name="senaite.core: View Results" acquired="False">
+      <!-- Although Analysts and Labclerks shouldn't be able to assign analyses
+      to Worksheets by default, these roles are here because of the option
+      "RestrictWorksheetManagement" in Setup. The guard is in charge to manage
+      this -->
       <permission-role>Analyst</permission-role>
       <permission-role>LabClerk</permission-role>
-      <permission-role>LabManager</permission-role>
-      <permission-role>Manager</permission-role>
-      <permission-role>RegulatoryInspector</permission-role>
     </permission-map>
 
     <!-- FIELD PERMISSIONS (to_be_verified) -->
@@ -230,7 +165,7 @@
   </state>
 
   <!-- State: retracted
-  The reference analysis has been retracted and a retest has been created -->
+  The duplicate analysis has been retracted and a retest has been created -->
   <state state_id="retracted" title="Retracted" i18n:attributes="title">
 
     <!-- TRANSITIONS -->
@@ -267,19 +202,70 @@
 
   </state>
 
+  <state state_id="verified" title="Verified" i18n:attributes="title">
+    <!-- A duplicate can only live together with the analysis it comes from
+    bounded in a Worksheet. Hence, we can unassign a duplicate once verified
+    if its counterpart analysis can be unassigned. More info in guard. -->
+
+    <!-- TRANSITIONS -->
+    <exit-transition transition_id="unassign" />
+    <!-- /TRANSITIONS -->
+
+    <!-- Only allow modification of fields explicitly granted
+         N.B. Permissions are *only* checked in process_form and *not* if we set the
+         field directly via the generated mutator -->
+    <permission-map name="Modify portal content" acquired="False">
+    </permission-map>
+
+    <permission-map name="senaite.core: Edit Results" acquired="False">
+    </permission-map>
+
+    <permission-map name="senaite.core: View Results" acquired="False">
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+    </permission-map>
+
+    <permission-map name="Delete objects" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <!-- Although Analysts and Labclerks shouldn't be able to assign analyses
+      to Worksheets by default, these roles are here because of the option
+      "RestrictWorksheetManagement" in Setup. The guard is in charge to manage
+      this -->
+      <permission-role>Analyst</permission-role>
+      <permission-role>LabClerk</permission-role>
+    </permission-map>
+
+    <!-- FIELD PERMISSIONS (verified) -->
+    <permission-map name="senaite.core: Field: Edit Analysis Result" acquired="False">
+    </permission-map>
+    <permission-map name="senaite.core: Field: Edit Analysis Remarks" acquired="False">
+    </permission-map>
+    <permission-map name="senaite.core: Field: Edit Analysis Hidden" acquired="False">
+      <permission-role>LabManager</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>LabClerk</permission-role>
+      <permission-role>Publisher</permission-role>
+    </permission-map>
+    <!-- /FIELD PERMISSIONS -->
+
+  </state>
+
 
   <!-- *** TRANSITIONS *** -->
 
 
-  <!-- Transition: unassign from a worksheet. Deletes the reference! -->
+  <!-- Transition: unassign from a worksheet. Deletes the duplicate! -->
   <transition transition_id="unassign" title="Remove" new_state="assigned"
               trigger="USER" before_script="" after_script=""
               i18n:attributes="title">
     <action url="" category="workflow" icon="">Remove</action>
     <guard>
-      <!-- The guard permission is "Delete objects" because since a Reference
-      Analysis cannot exist if not bound to a Worksheet and/or Instrument, the
-      unassignment of the analysis causes its removal of the system.
+      <!-- The guard permission is "Delete objects" because since a Duplicate
+      Analysis cannot exist if not bound to a Worksheet, the unassignment of
+      the analysis causes its removal of the system.
       Note this transition "unassign" can only take place when the analysis has
       no results submitted yet -->
       <guard-permission>Delete objects</guard-permission>
@@ -299,8 +285,8 @@
   </transition>
 
   <!-- Transition: retract
-  The analysis transitions to "retracted" state and a new copy of the reference
-  analysis is created. The initial state of the new copy is "assigned". -->
+  The analysis transitions to "retracted" state and a new copy of the duplicate
+  is created. The initial state of the new copy is "assigned". -->
   <transition transition_id="retract" title="Retract" new_state="retracted"
               trigger="USER" before_script="" after_script=""
               i18n:attributes="title">
@@ -345,7 +331,6 @@
     <guard>
     </guard>
   </variable>
-
   <variable variable_id="actor" for_catalog="False" for_status="True" update_always="True">
     <description>The ID of the user who performed the last transition</description>
     <default>
@@ -354,7 +339,6 @@
     <guard>
     </guard>
   </variable>
-
   <variable variable_id="comments" for_catalog="False" for_status="True" update_always="True">
     <description>Comment about the last transition</description>
     <default>
@@ -363,7 +347,6 @@
     <guard>
     </guard>
   </variable>
-
   <variable variable_id="review_history" for_catalog="False" for_status="False" update_always="False">
     <description>Provides access to workflow history</description>
     <default>
@@ -372,7 +355,6 @@
     <guard>
     </guard>
   </variable>
-
   <variable variable_id="time" for_catalog="False" for_status="True" update_always="True">
     <description>When the previous transition was performed</description>
     <default>

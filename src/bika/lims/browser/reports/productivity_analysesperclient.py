@@ -31,6 +31,7 @@ from bika.lims.catalog.analysis_catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.utils import formatDateQuery, formatDateParms, logged_in_client
 from bika.lims.utils import t
 from plone.app.layout.globals.interfaces import IViewView
+from senaite.core.workflow import ANALYSIS_WORKFLOW
 from zope.interface import implements
 
 
@@ -140,7 +141,7 @@ class Report(BrowserView):
         """Applies the filter by review_state to the search query
         """
         self.add_filter_by_wf_state(query=query, out_params=out_params,
-                                    wf_id="bika_analysis_workflow",
+                                    wf_id=ANALYSIS_WORKFLOW,
                                     index="review_state",
                                     title=_("Status"))
 

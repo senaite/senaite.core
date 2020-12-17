@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <dc-workflow xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-             workflow_id="bika_worksheet_workflow"
-             title="Bika Worksheet Workflow"
+             workflow_id="senaite_worksheet_workflow"
+             title="Worksheet Workflow"
              description=""
              state_variable="review_state"
              initial_state="open"

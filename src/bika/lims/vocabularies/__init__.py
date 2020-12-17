@@ -344,53 +344,6 @@ class AnalystVocabulary(UserVocabulary):
 AnalystVocabularyFactory = AnalystVocabulary()
 
 
-class AnalysisRequestWorkflowStateVocabulary(object):
-    """Vocabulary factory for workflow states.
-
-        >>> from zope.component import queryUtility
-
-        >>> portal = layer['portal']
-
-        >>> name = 'bika.lims.vocabularies.AnalysisRequestWorkflowStates'
-        >>> util = queryUtility(IVocabularyFactory, name)
-
-        >>> tool = getToolByName(portal, "portal_workflow")
-
-        >>> states = util(portal)
-        >>> states
-        <zope.schema.vocabulary.SimpleVocabulary object at ...>
-
-        >>> pub = states.by_token['published']
-        >>> pub.title, pub.token, pub.value
-        (u'Published', 'published', 'published')
-    """
-    implements(IVocabularyFactory)
-
-    def __call__(self, context):
-        portal = getSite()
-        wftool = getToolByName(portal, 'portal_workflow', None)
-        if wftool is None:
-            return SimpleVocabulary([])
-
-        # XXX This is evil. A vocabulary shouldn't be request specific.
-        # The sorting should go into a separate widget.
-
-        # we get REQUEST from wftool because context may be an adapter
-        request = aq_get(wftool, 'REQUEST', None)
-
-        wf = wftool.getWorkflowById('bika_ar_workflow')
-        items = wftool.listWFStatesByTitle(filter_similar=True)
-        items_dict = dict([(i[1], t(i[0])) for i in items])
-        items_list = [(k, v) for k, v in items_dict.items()]
-        items_list.sort(lambda x, y: cmp(x[1], y[1]))
-        terms = [SimpleTerm(k, title=u'%s' % v) for k, v in items_list]
-        return SimpleVocabulary(terms)
-
-
-AnalysisRequestWorkflowStateVocabularyFactory = \
-    AnalysisRequestWorkflowStateVocabulary()
-
-
 def getTemplates(bikalims_path, restype, filter_by_type=False):
     """ Returns an array with the Templates available in the Bika LIMS path
         specified plus the templates from the resources directory specified and

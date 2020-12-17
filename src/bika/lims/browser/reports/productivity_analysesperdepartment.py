@@ -24,6 +24,7 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.browser import BrowserView
 from bika.lims.browser.reports.selection_macros import SelectionMacrosView
 from plone.app.layout.globals.interfaces import IViewView
+from senaite.core.workflow import ANALYSIS_WORKFLOW
 from zope.interface import implements
 
 
@@ -54,7 +55,7 @@ class Report(BrowserView):
             titles.append(val['titles'])
 
         val = self.selection_macros.parse_state(self.request,
-                                                'bika_analysis_workflow',
+                                                ANALYSIS_WORKFLOW,
                                                 'getAnalysisState',
                                                 _('Analysis State'))
         if val:
