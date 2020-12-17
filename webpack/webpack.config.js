@@ -40,7 +40,8 @@ module.exports = {
     ],
   },
   output: {
-    filename: devMode ? "[name].js" : `[name]-${gitHash}.js`,
+    // filename: devMode ? "[name].js" : `[name]-${gitHash}.js`,
+    filename: "[name].js",
     path: path.resolve(staticPath, "bundles"),
     publicPath: "/++plone++senaite.core.static/bundles"
   },
@@ -125,6 +126,7 @@ module.exports = {
       }),
       // https://webpack.js.org/plugins/css-minimizer-webpack-plugin/
       new CssMinimizerPlugin({
+        exclude: /\/modules/,
         minimizerOptions: {
           preset: [
             "default",
