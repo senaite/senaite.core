@@ -114,7 +114,7 @@ module.exports = {
         exclude: /\/modules/,
         terserOptions: {
           // https://github.com/webpack-contrib/terser-webpack-plugin#terseroptions
-          sourceMap: true, // Must be set to true if using source-maps in production
+          sourceMap: false, // Must be set to true if using source-maps in production
           format: {
             comments: false
           },
