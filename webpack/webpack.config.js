@@ -195,11 +195,11 @@ module.exports = {
           }
           const min = uglifyJS.minify(code, {sourceMap: {
             filename: "legacy.js",
-            url: "legacy.js.map"
+            // url: "legacy.js.map"
           }, compress: {drop_console: true}});
           return {
             "legacy.js":min.code,
-            "legacy.js.map": min.map
+            // "legacy.js.map": min.map
           }
         },
       }, {
@@ -231,11 +231,11 @@ module.exports = {
           }
           const min = uglifyJS.minify(code, {sourceMap: {
             filename: "thirdparty.js",
-            url: "thirdparty.js.map"
+            // url: "thirdparty.js.map"
           }, compress: {drop_console: true}});
           return {
             "thirdparty.js":min.code,
-            "thirdparty.js.map": min.map
+            // "thirdparty.js.map": min.map
           }
         },
       }, {
