@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 
-from bika.lims import api
+from six import string_types
+
 from bika.lims import senaiteMessageFactory as _
-from bika.lims.catalog import SETUP_CATALOG
+from bika.lims.validators import ServiceKeywordValidator
 from senaite.core.interfaces import IAjaxEditForm
 from zope.interface import implementer
 
@@ -41,21 +42,10 @@ class EditForm(object):
         if current_value == value:
             # nothing changed
             return
-        # check for existing keyword
-        catalog = api.get_tool(SETUP_CATALOG)
-        query = {"portal_type": "AnalysisService", "getKeyword": value}
-        brains = catalog.searchResults(query)
-        if len(brains) > 0:
-            brain = brains[0]
-            return _(u"Keyword '{}' already used by analysis service '{}'"
-                     .format(value, api.get_title(brain)))
-        # check if current keyword is used in a calculation
-        query = {"portal_type": "Calculation"}
-        brains = catalog(query)
-        ref = "[{}]".format(current_value)
-        for brain in brains:
-            calc = api.get_object(brain)
-            if ref in calc.getFormula():
-                return _(u"Current keyword used in calculation '{}'"
-                         .format(api.get_title(calc)))
+        if not value:
+            return _("Keyword required")
+        validator = ServiceKeywordValidator()
+        check = validator(value, instance=self.context)
+        if isinstance(check, string_types):
+            return _(check)
         return None

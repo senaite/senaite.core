@@ -179,7 +179,10 @@ class EditForm{
    */
   set_field_error(field, message) {
     field.classList.add("is-invalid");
-    if (message) {
+    let existing_message = field.parentElement.querySelector("div.invalid-feedback");
+    if (existing_message) {
+      existing_message.innerHTML = _t(message)
+    } else {
       let div = document.createElement("div");
       div.className = "invalid-feedback";
       div.innerHTML = _t(message);
