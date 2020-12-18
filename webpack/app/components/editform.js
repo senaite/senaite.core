@@ -164,13 +164,14 @@ class EditForm{
   }
 
   /**
-   * flush all field errors
+   * check if fields have errors
    */
-  flush_errors(form) {
-    let fields_with_errors = document.querySelectorAll(".is-invalid");
-    for (const field of fields_with_errors) {
-      this.remove_field_error(field);
+  has_field_errors(form) {
+    let fields_with_errors = form.querySelectorAll(".is-invalid");
+    if (fields_with_errors.length > 0) {
+      return true;
     }
+    return false;
   }
 
   /**
@@ -183,6 +184,17 @@ class EditForm{
       div.className = "invalid-feedback";
       div.innerHTML = _t(message);
       field.parentElement.appendChild(div);
+    }
+  }
+
+  /**
+   * remove field error
+   */
+  remove_field_error(field) {
+    field.classList.remove("is-invalid")
+    let msg = field.parentElement.querySelector(".invalid-feedback");
+    if (msg) {
+      msg.remove();
     }
   }
 
@@ -207,17 +219,6 @@ class EditForm{
   }
 
   /**
-   * remove field error
-   */
-  remove_field_error(field) {
-    field.classList.remove("is-invalid")
-    let msg = field.parentElement.querySelector(".invalid-feedback");
-    if (msg) {
-      msg.remove();
-    }
-  }
-
-  /**
    * update the form with the response from the server
    */
   update_form(form, data) {
@@ -230,20 +231,21 @@ class EditForm{
     let errors = data.errors || {};
 
     // disallow submit on errors
-    if (Object.entries(errors).length > 0) {
+    if (this.has_field_errors(form)) {
       this.toggle_submit(form, false);
     } else {
       this.toggle_submit(form, true);
     }
 
-    // flush all field errors
-    this.flush_errors();
-
     // render field errors
     for (const [key, value] of Object.entries(errors)) {
       let el = this.get_form_field_by_name(form, key);
       if (!el) continue;
-      this.set_field_error(el, value);
+      if (value) {
+        this.set_field_error(el, value);
+      } else {
+        this.remove_field_error(el);
+      }
     }
 
     // render status messages
