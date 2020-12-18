@@ -143,6 +143,14 @@ class EditForm{
   }
 
   /**
+   * toggles the submit button
+   */
+  toggle_submit(form, toggle) {
+    let btn = form.querySelector("input[type='submit']");
+    btn.disabled = !toggle;
+  }
+
+  /**
    * toggles the display of the field with the `d-none` class
    */
   toggle_field_visibility(field, toggle) {
@@ -220,6 +228,13 @@ class EditForm{
     let update = data.update || {};
     let messages = data.messages || [];
     let errors = data.errors || {};
+
+    // disallow submit on errors
+    if (Object.entries(errors).length > 0) {
+      this.toggle_submit(form, false);
+    } else {
+      this.toggle_submit(form, true);
+    }
 
     // flush all field errors
     this.flush_errors();
