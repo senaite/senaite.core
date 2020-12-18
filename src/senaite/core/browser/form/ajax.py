@@ -4,6 +4,8 @@ import json
 
 from bika.lims.browser import BrowserView
 from bika.lims.decorators import returns_json
+from senaite.core.interfaces import IAjaxEditForm
+from zope.component import queryMultiAdapter
 
 __doc__ = """
 The edit form handler is the server part of `editform.js` JS and must implement
@@ -58,76 +60,31 @@ Note: All error marked fields are flushed in between the updates.
 """
 
 
-class AjaxFormView(BrowserView):
-    """Ajax Form View
+class FormView(BrowserView):
+    """Form View
     """
+
+    @property
+    def adapter(self):
+        return queryMultiAdapter((self.context, self.request), IAjaxEditForm)
 
     @returns_json
     def initialized(self):
-        return {
-            "hide": [],
-            "show": [],
-            "update": {
-                "ScientificName": False,
-                "PointOfCapture": "lab",
-                "Department": {
-                    "selected": [
-                        {
-                            "title": "Clinical Lab",
-                            "value": "6f3cb33f10e04ac19b32b8bd47fcd43b",
-                        }
-                    ],
-                    "options": []
-                },
-                "Calculation": {
-                    "selected": [
-                        {
-                            "title": "Total Aflatoxins",
-                            "value": "69c3999948e94490bf43c7b49694fe2c",
-                        }
-                    ],
-                    "options": [
-                        {
-                            "value": "69c3999948e94490bf43c7b49694fe2c",
-                            "title": "Total Aflatoxins",
-                        }
-                    ]
-                }
-            },
-            "messages": [
-                {"level": "warning", "message": "Hello World"}
-            ],
-            "errors": {
-                "description": "Invalid description",
-            },
-        }
+        data = self.get_json()
+        if not data:
+            data = {}
+        if not self.adapter:
+            return {}
+        return self.adapter.initialized(data)
 
     @returns_json
     def modified(self):
         data = self.get_json()
         if not data:
+            data = {}
+        if not self.adapter:
             return {}
-
-        err = {data.get("name"): data.get("value")}
-
-        return {
-            "hide": ["MethodID"],
-            "show": ["title", "description"],
-            "update": {
-                "description": "hahahahaha",
-
-                # "Methods": {
-                #     "selected": [],
-                #     "options": [
-                #         {
-                #             "name": "Automated hematology analysis",
-                #             "value": "d3a80442e71343e39ae1932fec7ec4c1",
-                #         }
-                #     ]
-                # }
-            },
-            "errors": err,
-        }
+        return self.adapter.modified(data)
 
     def get_json(self):
         body = self.request.get("BODY", "{}")

@@ -48,3 +48,24 @@ class IHideActionsMenu(Interface):
     """Marker interface that can be applied for conttents that should not
     display the content actions menu
     """
+
+
+class IAjaxEditForm(Interface):
+    """Ajax edit form adapter
+    """
+
+    def initialized(data):
+        """Called once after the edit form was rendered
+
+        :param data: JSON payload of the edit form.
+                     Contains at least `form`, `name`, `value`
+        :returns: A dictionary with update instructions for the frontend logic
+        """
+
+    def modified(data):
+        """Called for each field modification
+
+        :param data: JSON payload of the edit form.
+                     Contains at least `form`, `name`, `value`
+        :returns: A dictionary with update instructions for the frontend logic
+        """

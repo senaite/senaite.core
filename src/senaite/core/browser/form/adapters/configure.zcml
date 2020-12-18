@@ -1,0 +1,14 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+           i18n_domain="senaite.core">
+
+  <adapter
+      for="bika.lims.interfaces.IAnalysisService
+           zope.publisher.interfaces.browser.IBrowserRequest"
+      factory=".analysisservice.EditForm"/>
+
+  <adapter
+      for="bika.lims.interfaces.ICalculation
+           zope.publisher.interfaces.browser.IBrowserRequest"
+      factory=".calculation.EditForm"/>
+
+</configure>

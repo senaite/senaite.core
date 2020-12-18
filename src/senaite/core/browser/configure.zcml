@@ -14,7 +14,6 @@
       />
 
   <!-- Package includes -->
-  <include package=".ajax"/>
   <include package=".attachment"/>
   <include package=".bootstrap"/>
   <include package=".content"/>
@@ -23,6 +22,7 @@
   <include package=".dashboard"/>
   <include package=".dexterity"/>
   <include package=".fields"/>
+  <include package=".form"/>
   <include package=".frontpage"/>
   <include package=".globals"/>
   <include package=".idserver"/>
