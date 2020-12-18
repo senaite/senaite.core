@@ -179,6 +179,26 @@ class EditForm{
   }
 
   /**
+   * add a status message
+   */
+  add_statusmessage(message, level="info") {
+    let el  = document.createElement("div");
+    el.innerHTML = `
+      <div class="alert alert-${level} alert-dismissible fade show" role="alert">
+        <strong>${level.charAt(0).toUpperCase() + level.slice(1)}</strong>
+        ${message}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    `
+    el = el.firstElementChild
+    let parent = document.getElementById("viewlet-above-content");
+    parent.appendChild(el);
+    return el;
+  }
+
+  /**
    * remove field error
    */
   remove_field_error(field) {
@@ -209,6 +229,13 @@ class EditForm{
       let el = this.get_form_field_by_name(form, key);
       if (!el) continue;
       this.set_field_error(el, value);
+    }
+
+    // render status messages
+    for (const item of messages) {
+      let level = item.level || "info";
+      let message = item.message || "";
+      this.add_statusmessage(message, level);
     }
 
     // hide fields
