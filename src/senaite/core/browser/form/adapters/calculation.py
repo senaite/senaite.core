@@ -1,17 +1,20 @@
 # -*- coding: utf-8 -*-
 
-from bika.lims.interfaces import ICalculation
 from senaite.core.interfaces import IAjaxEditForm
-from zope.component import adapter
 from zope.interface import implementer
 
 
-@adapter(ICalculation)
 @implementer(IAjaxEditForm)
 class EditForm(object):
 
+    def __init__(self, context, request):
+        self.context = context
+        self.request = request
+
     def initialized(self, data):
-        return {}
+        return {
+            "hide": ["cmfeditions_version_comment"],
+        }
 
     def modified(self, data):
         return {}
