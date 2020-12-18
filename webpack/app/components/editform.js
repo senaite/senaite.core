@@ -206,24 +206,21 @@ class EditForm{
 
     // render field errors
     for (const [key, value] of Object.entries(errors)) {
-      let el = form.querySelector(`[name='${key}']`);
-      if (!el) {
-        console.warn(`Field ${key} not found in form`);
-        continue;
-      }
+      let el = this.get_form_field_by_name(form, key);
+      if (!el) continue;
       this.set_field_error(el, value);
     }
 
     // hide fields
     for (const selector of hide) {
-      let el = form.querySelector(`[data-fieldname='${selector}']`);
+      let el = this.get_form_field_by_name(form, selector);
       if (!el) continue;
       this.toggle_field_visibility(el, false);
     }
 
     // show fields
     for (const selector of show) {
-      let el = form.querySelector(`[data-fieldname='${selector}']`);
+      let el = this.get_form_field_by_name(form, selector);
       if (!el) continue;
       this.toggle_field_visibility(el, true);
     }
@@ -231,18 +228,47 @@ class EditForm{
     // updated fields
     for (const [key, value] of Object.entries(update)) {
       console.log(`Update ${key} -> ${value}`);
-      let el = form.querySelector(`[data-fieldname='${key}']`);
+      let el = this.get_form_field_by_name(form, key);
       if (!el) continue;
-      let input = el.querySelector(`[name='${key}']`);
-      if (!input) continue;
-      input.value = value;
+      this.set_field_value(el, value);
     }
   }
 
   /**
-   * return the value of form field
+   * return a form field by name
    */
-  get_input_value(field) {
+  get_form_field_by_name(form, name) {
+    // get the first element that matches the name
+    let el = form.querySelector(`[name^='${name}']`);
+    if (!el) {
+      return null;
+    }
+    return el;
+  }
+
+  /**
+   * return a dictionary of all the form values
+   */
+  get_form_data(form) {
+    let data = {};
+    let form_data = new FormData(form);
+    form_data.forEach(function(value, key) {
+      data[key] = value;
+    });
+    return data;
+  }
+
+  /**
+   * set the value of the form field
+   */
+  set_field_value(field, value) {
+    field.value = value;
+  }
+
+  /**
+   * return the value of the form field
+   */
+  get_field_value(field) {
     if (this.is_checkbox(field)) {
       // returns true/false for checkboxes
       return field.checked;
@@ -264,24 +290,21 @@ class EditForm{
   }
 
   /**
-   * return a dictionary of all the form values
+   * returns the name of the field w/o ZPublisher converter
    */
-  get_form_data(form) {
-    let data = {};
-    let form_data = new FormData(form);
-    form_data.forEach(function(value, key) {
-      data[key] = value;
-    });
-    return data;
+  get_field_name(field) {
+    let name = field.name;
+    return name.split(":")[0];
   }
+
 
   /**
    * notify a field change to the server ajax endpoint
    */
   notify(form, field, endpoint) {
     let data = {
-      name: field.name,
-      value: this.get_input_value(field),
+      name: this.get_field_name(field),
+      value: this.get_field_value(field),
     }
     this.ajax_send(form, data, endpoint);
   }
