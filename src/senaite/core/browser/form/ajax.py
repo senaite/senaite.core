@@ -57,6 +57,61 @@ A dictionary of `field name` -> `error message` that highlights the fields as
 erroneous and displays the error message below the field.
 
 Note: All error marked fields are flushed in between the updates.
+
+    messages: []
+
+A list of message dictionaries. Each message dictionary consists of a `level`
+and `message` mapping.
+
+The level can be one of the following values:
+
+    - alert
+    - warning
+    - info
+    - success
+
+The `message` should be an i18n message factory to be properly translated.
+
+
+Example:
+
+{
+    "hide": ["title"],
+    "show": [],
+    "update": {
+        "ScientificName": False,
+        "PointOfCapture": "lab",
+        "Department": {
+            "selected": [
+                {
+                    "title": "Clinical Lab",
+                    "value": "6f3cb33f10e04ac19b32b8bd47fcd43b",
+                }
+            ],
+            "options": []
+        },
+        "Calculation": {
+            "selected": [
+                {
+                    "title": "Total Aflatoxins",
+                    "value": "69c3999948e94490bf43c7b49694fe2c",
+                }
+            ],
+            "options": [
+                {
+                    "value": "69c3999948e94490bf43c7b49694fe2c",
+                    "title": "Total Aflatoxins",
+                }
+            ]
+        }
+    },
+    "messages": [
+        {"level": "info", "message": _("Changes Saved")}
+    ],
+    "errors": {
+        "description": _("Invalid description"),
+    },
+}
 """
 
 

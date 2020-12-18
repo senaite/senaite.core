@@ -173,7 +173,7 @@ class EditForm{
     if (message) {
       let div = document.createElement("div");
       div.className = "invalid-feedback";
-      div.innerHTML = message;
+      div.innerHTML = _t(message);
       field.parentElement.appendChild(div);
     }
   }
@@ -186,7 +186,7 @@ class EditForm{
     el.innerHTML = `
       <div class="alert alert-${level} alert-dismissible fade show" role="alert">
         <strong>${level.charAt(0).toUpperCase() + level.slice(1)}</strong>
-        ${message}
+        ${_t(message)}
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
