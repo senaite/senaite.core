@@ -262,7 +262,32 @@ class EditForm{
    * set the value of the form field
    */
   set_field_value(field, value) {
-    field.value = value;
+    // for reference/select fields
+    let selected = value.selected || [];
+    let options = value.options || [];
+
+    // set reference value
+    if (this.is_single_reference(field)) {
+      for (const item of selected) {
+        field.setAttribute("uid", item.value);
+        field.value = item.title;
+      }
+    }
+    // set select field
+    else if (this.is_select(field)) {
+      // TODO: filtering options first
+      for (const item of selected) {
+        field.value = item.value;
+      }
+    }
+    // set checkbox value
+    else if (this.is_checkbox(field)) {
+      field.checked = value;
+    }
+    // set other field values
+    else {
+      field.value = value;
+    }
   }
 
   /**
