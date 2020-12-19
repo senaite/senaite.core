@@ -22,20 +22,21 @@ from AccessControl import ClassSecurityInfo
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import UIDReferenceField
-from bika.lims.browser.widgets import ReferenceWidget
+from bika.lims.catalog import SETUP_CATALOG
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IDeactivable
 from bika.lims.interfaces import IHaveInstrument
 from bika.lims.interfaces import IMethod
 from plone.app.blob.field import FileField as BlobFileField
+from Products.Archetypes.atapi import InAndOutWidget
 from Products.Archetypes.public import BaseFolder
 from Products.Archetypes.public import BooleanField
 from Products.Archetypes.public import BooleanWidget
 from Products.Archetypes.public import FileWidget
 from Products.Archetypes.public import LinesField
-from Products.Archetypes.public import MultiSelectionWidget
 from Products.Archetypes.public import Schema
+from Products.Archetypes.public import SelectionWidget
 from Products.Archetypes.public import StringField
 from Products.Archetypes.public import StringWidget
 from Products.Archetypes.public import TextAreaWidget
@@ -49,11 +50,9 @@ schema = BikaSchema.copy() + Schema((
     # Method ID should be unique, specified on MethodSchemaModifier
     StringField(
         "MethodID",
-        searchable=1,
         required=0,
         validators=("uniquefieldvalidator",),
         widget=StringWidget(
-            visible={"view": "visible", "edit": "visible"},
             label=_("Method ID"),
             description=_("Define an identifier code for the method. "
                           "It must be unique."),
@@ -62,6 +61,7 @@ schema = BikaSchema.copy() + Schema((
 
     TextField(
         "Instructions",
+        required=0,
         default_content_type="text/plain",
         allowed_content_types=("text/plain", ),
         default_output_type="text/plain",
@@ -74,84 +74,93 @@ schema = BikaSchema.copy() + Schema((
 
     BlobFileField(
         "MethodDocument",  # XXX Multiple Method documents please
+        required=0,
         widget=FileWidget(
             label=_("Method Document"),
             description=_("Load documents describing the method here"),
         )
     ),
 
-    LinesField(
-        "Instruments",
-        vocabulary="availableInstrumentsVocabulary",
-        accessor="getInstrumentUIDs",
-        widget=MultiSelectionWidget(
-            visible=True,
-            label=_("Instruments"),
-            description=_(
-                "Select the supported Instruments for this Method."),
-        )
-    ),
-
-    # If no instrument selected, always True.
-    BooleanField(
-        "ManualEntryOfResults",
-        schemata="default",
-        default=True,
-        widget=BooleanWidget(
-            label=_("Manual entry of results"),
-            description=_("The results for the Analysis Services that use "
-                          "this method can be set manually"),
-        )
-    ),
-
-    # Calculations associated to this method. The analyses services
-    # with this method assigned will use the calculation selected here.
-    UIDReferenceField(
-        "Calculation",
-        allowed_types=("Calculation", ),
-        widget=ReferenceWidget(
-            visible={"edit": "visible", "view": "visible"},
-            format="select",
-            checkbox_bound=0,
-            label=_("Calculation"),
-            description=_(
-                "If required, select a calculation for the The analysis "
-                "services linked to this method. Calculations can be "
-                "configured under the calculations item in the LIMS set-up"),
-            showOn=True,
-            catalog_name="bika_setup_catalog",
-            base_query={
-                "sort_on": "sortable_title",
-                "is_active": True,
-                "sort_limit": 50,
-            },
-        )
-    ),
     BooleanField(
         "Accredited",
-        schemata="default",
-        default=True,
+        required=0,
         widget=BooleanWidget(
             label=_("Accredited"),
             description=_("Check if the method has been accredited"))
     ),
-))
 
-schema["description"].schemata = "default"
-schema["description"].widget.visible = True
-schema["description"].widget.label = _("Description")
-schema["description"].widget.description = _(
-    "Describes the method in layman terms. "
-    "This information is made available to lab clients")
+    # N.B. Always true when no instrument selected
+    BooleanField(
+        "ManualEntryOfResults",
+        required=0,
+        default=True,
+        widget=BooleanWidget(
+            label=_("Manual entry of results"),
+            description=_("Allow to introduce analysis results manually"),
+        )
+    ),
+
+    # NOTE: `Instruments` is a computed field and checks the supported methods
+    #        of all global instruments.
+    # The Lines Field is used to use the vocabulary
+    LinesField(
+        "Instruments",
+        required=0,
+        vocabulary="_instruments_vocabulary",
+        accessor="getRawInstruments",
+        widget=InAndOutWidget(
+            label=_("Instruments"),
+            description=_("Instruments supporting this method"),
+        )
+    ),
+
+    UIDReferenceField(
+        "Instrument",
+        required=0,
+        allowed_types=("Instrument", ),
+        vocabulary="_default_instrument_vocabulary",
+        default="",
+        accessor="getRawInstrument",
+        widget=SelectionWidget(
+            format="select",
+            label=_("Default Instrument"),
+            description=_("Default selected instrument for analyses"),
+        )
+    ),
+
+    LinesField(
+        "Calculations",
+        required=0,
+        vocabulary="_calculations_vocabulary",
+        allowed_types=("Calculation", ),
+        accessor="getRawCalculations",
+        widget=InAndOutWidget(
+            label=_("Calculations"),
+            description=_("Supported calculations of this method"),
+        )
+    ),
+
+    UIDReferenceField(
+        "Calculation",
+        required=0,
+        allowed_types=("Calculation", ),
+        vocabulary="_default_calculation_vocabulary",
+        accessor="getRawCalculation",
+        widget=SelectionWidget(
+            format="select",
+            label=_("Default Calculation"),
+            description=_("Default selected calculation for analyses"),
+        )
+    ),
+))
 
 
 class Method(BaseFolder):
-    """Method content
+    """Analysis method
     """
     implements(IMethod, IDeactivable, IHaveInstrument)
 
     security = ClassSecurityInfo()
-    displayContentsTab = False
     schema = schema
     _at_rename_after_creation = True
 
@@ -159,11 +168,20 @@ class Method(BaseFolder):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
 
-    def getInstrument(self):
-        """Instruments capable to perform this method.
-        Required by IHaveInstrument
+    def setManualEntryOfResults(self, value):
+        """Allow manual entry of results
         """
-        return self.getInstruments()
+        field = self.getField("ManualEntryOfResults")
+        if not self.getInstruments():
+            # Always true if no instrument is selected
+            field.set(self, True)
+        else:
+            field.set(self, value)
+
+    def isManualEntryOfResults(self):
+        """BBB: Remove when not used anymore!
+        """
+        return self.getManualEntryOfResults()
 
     def getInstruments(self):
         """Instruments capable to perform this method
@@ -182,7 +200,7 @@ class Method(BaseFolder):
         value = filter(lambda uid: uid, value)
 
         # handle removed instruments
-        existing = self.getInstrumentUIDs()
+        existing = self.getRawInstruments()
         to_remove = filter(lambda uid: uid not in value, existing)
 
         # handle all Instruments flushed
@@ -205,37 +223,159 @@ class Method(BaseFolder):
             methods.append(self)
             instrument.setMethods(methods)
 
-    def getInstrumentUIDs(self):
-        """UIDs of the instruments capable to perform this method
+    def getInstrument(self):
+        """Return the default instrument
         """
-        return map(api.get_uid, self.getInstruments())
+        field = self.getField("Instrument")
+        instrument = field.get(self)
+        if not instrument:
+            return None
+        # check if the instrument is in the selected instruments
+        instruments = self.getRawInstruments()
+        if instruments:
+            if instrument not in instruments:
+                return None
+        return api.get_object(instrument)
 
-    def setManualEntryOfResults(self, value):
-        """Allow manual entry of results
+    def getRawInstrument(self):
+        """Return the UID of the default instrument
         """
-        field = self.getField("ManualEntryOfResults")
-        if not self.getInstruments():
-            # Always true if no instrument is selected
-            field.set(self, True)
-        else:
-            field.set(self, value)
+        field = self.getField("Instrument")
+        instrument = field.getRaw(self)
+        if not instrument:
+            return None
+        # check if the instrument is in the selected instruments
+        instruments = self.getRawInstruments()
+        if instruments:
+            if instrument not in instruments:
+                return None
+        return instrument
 
-    def availableInstrumentsVocabulary(self):
-        """Available instruments registered in the system
+    def getCalculations(self):
+        """List of Calculation UIDs
         """
-        bsc = api.get_tool("bika_setup_catalog")
+        field = self.getField("Calculations")
+        return field.get(self)
+
+    def getRawCalculations(self):
+        """List of Calculation UIDs
+        """
+        field = self.getField("Calculations")
+        calculations = field.getRaw(self)
+        if not calculations:
+            return []
+        return map(api.get_uid, calculations)
+
+    def setCalculations(self, value):
+        """Set the available calculations for the method
+        """
+        if not value:
+            value = []
+        value = filter(api.is_uid, value)
+        field = self.getField("Calculations")
+        field.set(self, value)
+
+    def getCalculation(self):
+        """Get the default calculation
+        """
+        field = self.getField("Calculation")
+        calculation = field.get(self)
+        if not calculation:
+            return None
+        # check if the calculation is in the selected calculations
+        calculations = self.getRawCalculations()
+        if calculations:
+            if calculation not in calculations:
+                return None
+        return api.get_object(calculation)
+
+    def getRawCalculation(self):
+        """Returns the UID of the assigned calculation
+
+        NOTE: This is the default accessor of the `Calculation` schema field
+        and needed for the selection widget to render the selected value
+        properly in _view_ mode.
+
+        :returns: Calculation UID
+        """
+        field = self.getField("Calculation")
+        calculation = field.getRaw(self)
+        if not calculation:
+            return None
+        # check if the calculation is in the selected calculations
+        calculations = self.getRawCalculations()
+        if calculations:
+            if calculation not in calculations:
+                return None
+        return calculation
+
+    def query_available_instruments(self):
+        """Return all available Instruments
+        """
+        catalog = api.get_tool(SETUP_CATALOG)
         query = {
             "portal_type": "Instrument",
-            "sort_on": "sortable_title",
             "is_active": True,
+            "sort_on": "sortable_title",
+            "sort_order": "ascending",
         }
-        items = [(i.UID, i.Title) for i in bsc(query)]
-        return DisplayList(list(items))
+        return catalog(query)
 
-    def isManualEntryOfResults(self):
-        """BBB
+    def _instruments_vocabulary(self):
+        """Vocabulary used for instruments field
         """
-        return self.getManualEntryOfResults()
+        instruments = self.query_available_instruments()
+        items = [(ins.UID, ins.Title) for ins in instruments]
+        dlist = DisplayList(items)
+        return dlist
+
+    def _default_instrument_vocabulary(self):
+        """Vocabulary used for default instrument field
+        """
+        # check if we selected instruments
+        instruments = self.getInstruments()
+        if not instruments:
+            # query all available instruments
+            instruments = self.query_available_instruments()
+        items = [(api.get_uid(i), api.get_title(i)) for i in instruments]
+        dlist = DisplayList(items)
+        # allow to leave this field empty
+        dlist.add("", _("None"))
+        return dlist
+
+    def query_available_calculations(self):
+        """Return all available calculations
+        """
+        catalog = api.get_tool(SETUP_CATALOG)
+        query = {
+            "portal_type": "Calculation",
+            "is_active": True,
+            "sort_on": "sortable_title",
+            "sort_order": "ascending",
+        }
+        return catalog(query)
+
+    def _calculations_vocabulary(self):
+        """Vocabulary used for calculations field
+        """
+        calculations = self.query_available_calculations()
+        items = [(calc.UID, calc.Title) for calc in calculations]
+        dlist = DisplayList(items)
+        return dlist
+
+    def _default_calculation_vocabulary(self):
+        """Vocabulary used for the default calculation field
+        """
+        # check selected calculations
+        calculations = self.getCalculations()
+        if not calculations:
+            # query all available calculations
+            calculations = self.query_available_calculations()
+        items = [(api.get_uid(c), api.get_title(c)) for c in calculations]
+        # allow to leave this field empty
+        dlist = DisplayList(items)
+        dlist.add("", _("None"))
+        return dlist
 
 
 registerType(Method, PROJECTNAME)
