@@ -371,7 +371,7 @@ MaxTimeAllowed = DurationField(
 DuplicateVariation = FixedPointField(
     'DuplicateVariation',
     default='0.00',
-    schemata="Method",
+    schemata="Analysis",
     widget=DecimalWidget(
         label=_("Duplicate Variation %"),
         description=_(
@@ -385,7 +385,7 @@ DuplicateVariation = FixedPointField(
 # accreditation.
 Accredited = BooleanField(
     'Accredited',
-    schemata="Method",
+    schemata="Description",
     default=False,
     widget=BooleanWidget(
         label=_("Accredited"),
@@ -730,8 +730,8 @@ schema = BikaSchema.copy() + Schema((
     AllowManualDetectionLimit,
     AttachmentRequired,
     Keyword,
-    ManualEntryOfResults,
-    InstrumentEntryOfResults,
+    # ManualEntryOfResults,
+    # InstrumentEntryOfResults,
     Instrument,
     Method,
     MaxTimeAllowed,

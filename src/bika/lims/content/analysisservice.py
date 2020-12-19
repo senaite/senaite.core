@@ -400,23 +400,28 @@ schema = schema.copy() + Schema((
     PartitionSetup,
     Methods,
     Instruments,
-    UseDefaultCalculation,
+    # UseDefaultCalculation,
     Calculation,
     InterimFields,
 ))
 
 # Re-order some fields from AbstractBaseAnalysis schema.
 # Adding them to the Schema(()) above does not work.
-schema.moveField('ManualEntryOfResults', after='PartitionSetup')
-schema.moveField('Methods', after='ManualEntryOfResults')
-schema.moveField('InstrumentEntryOfResults', after='Methods')
-schema.moveField('Instruments', after='InstrumentEntryOfResults')
-schema.moveField('Instrument', after='Instruments')
-schema.moveField('Method', after='Instrument')
-schema.moveField('Calculation', after='UseDefaultCalculation')
-schema.moveField('DuplicateVariation', after='Calculation')
-schema.moveField('Accredited', after='Calculation')
-schema.moveField('InterimFields', after='Calculation')
+# schema.moveField('ManualEntryOfResults', after='PartitionSetup')
+# schema.moveField('Methods', after='ManualEntryOfResults')
+# schema.moveField('InstrumentEntryOfResults', after='Methods')
+# schema.moveField('Instruments', after='InstrumentEntryOfResults')
+# schema.moveField('Instrument', after='Instruments')
+# schema.moveField('Method', after='Instrument')
+# schema.moveField('Calculation', after='UseDefaultCalculation')
+# schema.moveField('InterimFields', after='Calculation')
+# schema.moveField('DuplicateVariation', after='Calculation')
+# schema.moveField('Accredited', after='Description')
+
+# Move default method field after available methods field
+schema.moveField("Method", after="Methods")
+# Move default instrument field after available instruments field
+schema.moveField("Instrument", after="Instruments")
 
 
 class AnalysisService(AbstractBaseAnalysis):
