@@ -29,12 +29,12 @@ from bika.lims.interfaces import IDeactivable
 from bika.lims.interfaces import IHaveInstrument
 from bika.lims.interfaces import IMethod
 from plone.app.blob.field import FileField as BlobFileField
-from Products.Archetypes.atapi import InAndOutWidget
 from Products.Archetypes.public import BaseFolder
 from Products.Archetypes.public import BooleanField
 from Products.Archetypes.public import BooleanWidget
 from Products.Archetypes.public import FileWidget
 from Products.Archetypes.public import LinesField
+from Products.Archetypes.public import MultiSelectionWidget
 from Products.Archetypes.public import Schema
 from Products.Archetypes.public import StringField
 from Products.Archetypes.public import StringWidget
@@ -84,7 +84,7 @@ schema = BikaSchema.copy() + Schema((
         "Instruments",
         vocabulary="availableInstrumentsVocabulary",
         accessor="getInstrumentUIDs",
-        widget=InAndOutWidget(
+        widget=MultiSelectionWidget(
             visible=True,
             label=_("Instruments"),
             description=_(

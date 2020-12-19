@@ -385,6 +385,7 @@ class EditForm{
    * send ajax request to the server
    */
   ajax_send(form, data, endpoint) {
+    console.debug("AJAX SEND --> ", data)
     let view_url = document.body.dataset.viewUrl;
     let ajax_url = `${view_url}/ajax_form/${endpoint}`;
 
