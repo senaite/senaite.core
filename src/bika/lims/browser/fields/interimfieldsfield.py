@@ -23,9 +23,9 @@ import copy
 from AccessControl import ClassSecurityInfo
 from bika.lims import bikaMessageFactory as _
 from bika.lims.interfaces import IAnalysisService
-from bika.lims.interfaces import IRoutineAnalysis
 from bika.lims.interfaces.calculation import ICalculation
 from Products.Archetypes.Registry import registerField
+from Products.CMFPlone.utils import base_hasattr
 from senaite.core.browser.fields.records import RecordsField
 
 
@@ -89,11 +89,14 @@ class InterimFieldsField(RecordsField):
         if ICalculation.providedBy(instance):
             return interims
 
-        # return merged service + calculation interims for analyses
-        if IRoutineAnalysis.providedBy(instance):
-            calculation = instance.getCalculation()
-            if not calculation:
-                return interims
+        # check if the object provides a calculation
+        if not base_hasattr(instance, "getCalculation"):
+            return interims
+
+        # return merged service + calculation interims
+        calculation = instance.getCalculation()
+        if not calculation:
+            return interims
 
         # Ensure the analysis includes the interims from the service
         keys = map(lambda interim: interim["keyword"], interims)
