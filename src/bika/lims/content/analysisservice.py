@@ -19,13 +19,12 @@
 # Some rights reserved, see README and LICENSE.
 
 from AccessControl import ClassSecurityInfo
-from bika.lims import PMF
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import InterimFieldsField
 from bika.lims.browser.fields import UIDReferenceField
-from bika.lims.browser.fiels import PartitionSetupField
-from bika.lims.browser.fiels.partitionsetupfield import getContainers
+from bika.lims.browser.fields import PartitionSetupField
+from bika.lims.browser.fields.partitionsetupfield import getContainers
 from bika.lims.browser.widgets.partitionsetupwidget import PartitionSetupWidget
 from bika.lims.browser.widgets.recordswidget import RecordsWidget
 from bika.lims.browser.widgets.referencewidget import ReferenceWidget
@@ -258,19 +257,6 @@ schema = schema.copy() + Schema((
     InterimFields,
 ))
 
-# Re-order some fields from AbstractBaseAnalysis schema.
-# Adding them to the Schema(()) above does not work.
-# schema.moveField('ManualEntryOfResults', after='PartitionSetup')
-# schema.moveField('Methods', after='ManualEntryOfResults')
-# schema.moveField('InstrumentEntryOfResults', after='Methods')
-# schema.moveField('Instruments', after='InstrumentEntryOfResults')
-# schema.moveField('Instrument', after='Instruments')
-# schema.moveField('Method', after='Instrument')
-# schema.moveField('Calculation', after='UseDefaultCalculation')
-# schema.moveField('InterimFields', after='Calculation')
-# schema.moveField('DuplicateVariation', after='Calculation')
-# schema.moveField('Accredited', after='Description')
-
 # Move default method field after available methods field
 schema.moveField("Method", after="Methods")
 # Move default instrument field after available instruments field
@@ -278,10 +264,11 @@ schema.moveField("Instrument", after="Instruments")
 
 
 class AnalysisService(AbstractBaseAnalysis):
+    """Analysis Service Content Holder
+    """
     implements(IAnalysisService, IDeactivable)
     security = ClassSecurityInfo()
     schema = schema
-    displayContentsTab = False
     _at_rename_after_creation = True
 
     def _renameAfterCreation(self, check_auto_id=False):
@@ -508,20 +495,18 @@ class AnalysisService(AbstractBaseAnalysis):
 
     @security.public
     def after_deactivate_transition_event(self):
-        """Method triggered after a 'deactivate' transition for the current
-        AnalysisService is performed. Removes this service from the Analysis
-        Profiles or Analysis Request Templates where is assigned.
-        This function is called automatically by
-        bika.lims.workflow.AfterTransitionEventHandler
+        """Method triggered after a 'deactivate' transition
+
+        Removes this service from all assigned Profiles and Templates.
         """
         # Remove the service from profiles to which is assigned
-        profiles = self.getBackReferences('AnalysisProfileAnalysisService')
+        profiles = self.getBackReferences("AnalysisProfileAnalysisService")
         for profile in profiles:
             profile.remove_service(self)
 
         # Remove the service from templates to which is assigned
-        bsc = api.get_tool('bika_setup_catalog')
-        templates = bsc(portal_type='ARTemplate')
+        catalog = api.get_tool(SETUP_CATALOG)
+        templates = catalog(portal_type="ARTemplate")
         for template in templates:
             template = api.get_object(template)
             template.remove_service(self)

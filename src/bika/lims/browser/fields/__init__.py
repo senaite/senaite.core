@@ -18,18 +18,18 @@
 # Copyright 2018-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from .addressfield import AddressField
-from .aranalysesfield import ARAnalysesField
-from .coordinatefield import CoordinateField
-from .datetimefield import DateTimeField
-from .durationfield import DurationField
-from .emailsfield import EmailsField
-from .historyawarereferencefield import HistoryAwareReferenceField
-from .interimfieldsfield import InterimFieldsField
-from .partitionsetupfield import PartitionSetupfield
-from .proxyfield import ProxyField
-from .referenceresultsfield import ReferenceResultsField
-from .reflexrulefield import ReflexRuleField
-from .resultrangefield import ResultRangeField
-from .resultsrangesfield import ResultsRangesField
-from .uidreferencefield import UIDReferenceField
+from .addressfield import AddressField  # noqa
+from .aranalysesfield import ARAnalysesField # noqa
+from .coordinatefield import CoordinateField # noqa
+from .datetimefield import DateTimeField # noqa
+from .durationfield import DurationField # noqa
+from .emailsfield import EmailsField # noqa
+from .historyawarereferencefield import HistoryAwareReferenceField # noqa
+from .interimfieldsfield import InterimFieldsField # noqa
+from .partitionsetupfield import PartitionSetupField # noqa
+from .proxyfield import ProxyField # noqa
+from .referenceresultsfield import ReferenceResultsField # noqa
+from .reflexrulefield import ReflexRuleField # noqa
+from .resultrangefield import ResultRangeField # noqa
+from .resultsrangesfield import ResultsRangesField # noqa
+from .uidreferencefield import UIDReferenceField # noqa
