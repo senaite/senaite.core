@@ -27,9 +27,11 @@ from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets.partitionsetupwidget import PartitionSetupWidget
 from bika.lims.browser.widgets.recordswidget import RecordsWidget
 from bika.lims.browser.widgets.referencewidget import ReferenceWidget
+from bika.lims.catalog import SETUP_CATALOG
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.abstractbaseanalysis import AbstractBaseAnalysis
 from bika.lims.content.abstractbaseanalysis import schema
+from Products.Archetypes.atapi import PicklistWidget
 from bika.lims.interfaces import IAnalysisService
 from bika.lims.interfaces import IDeactivable
 from bika.lims.utils import to_utf8 as _c
@@ -299,14 +301,14 @@ UseDefaultCalculation = BooleanField(
 # - If InstrumentEntry not checked, show
 # See browser/js/bika.lims.analysisservice.edit.js
 Methods = UIDReferenceField(
-    'Methods',
+    "Methods",
     schemata="Method",
     required=0,
     multiValued=1,
-    vocabulary='_getAvailableMethodsDisplayList',
-    allowed_types=('Method',),
-    accessor="getMethodUIDs",
-    widget=MultiSelectionWidget(
+    vocabulary="_methods_vocabulary",
+    allowed_types=("Method", ),
+    accessor="getRawMethods",
+    widget=PicklistWidget(
         label=_("Methods"),
         description=_(
             "The tests of this type of analysis can be performed by using "
@@ -444,7 +446,6 @@ class AnalysisService(AbstractBaseAnalysis):
         :returns: Calculation object
         """
         return self.getField("Calculation").get(self)
-
     @security.public
     def getCalculationUID(self):
         """Returns the UID of the assigned calculation
@@ -525,16 +526,12 @@ class AnalysisService(AbstractBaseAnalysis):
         return self.getField("Methods").get(self)
 
     @security.public
-    def getMethodUIDs(self):
-        """Returns the UIDs of the assigned methods
-
-        NOTE: This is the default accessor of the `Methods` schema field
-        and needed for the multiselection widget to render the selected values
-        properly in _view_ mode.
+    def getRawMethods(self):
+        """Returns the assigned method UIDs
 
         :returns: List of method UIDs
         """
-        return self.getRawMethods()
+        return self.getField("Methods").get(self)
 
     @security.public
     def getInstruments(self):
@@ -568,22 +565,26 @@ class AnalysisService(AbstractBaseAnalysis):
             else None
         return instruments if instruments else []
 
-    @security.private
-    def _getAvailableMethodsDisplayList(self):
-        """ Returns a DisplayList with the available Methods
-            registered in Bika-Setup. Only active Methods and those
-            with Manual Entry field active are fetched.
-            Used to fill the Methods MultiSelectionWidget when 'Allow
-            Instrument Entry of Results is not selected'.
+    def query_available_methods(self):
+        """Return all available methods
         """
-        bsc = getToolByName(self, 'bika_setup_catalog')
-        items = [(i.UID, i.Title)
-                 for i in bsc(portal_type='Method',
-                              is_active=True)
-                 if i.getObject().isManualEntryOfResults()]
-        items.sort(lambda x, y: cmp(x[1], y[1]))
-        items.insert(0, ('', _("None")))
-        return DisplayList(list(items))
+        catalog = api.get_tool(SETUP_CATALOG)
+        query = {
+            "portal_type": "Method",
+            "is_active": True,
+            "sort_on": "sortable_title",
+            "sort_order": "ascending",
+        }
+        return catalog(query)
+
+    @security.private
+    def _methods_vocabulary(self):
+        """Vocabulary used for methods field
+        """
+        methods = self.query_available_methods()
+        items = [(api.get_uid(m), api.get_title(m)) for m in methods]
+        dlist = DisplayList(items)
+        return dlist
 
     @security.private
     def _getAvailableCalculationsDisplayList(self):
