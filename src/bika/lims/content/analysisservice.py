@@ -22,8 +22,8 @@ from AccessControl import ClassSecurityInfo
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import InterimFieldsField
-from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.fields import PartitionSetupField
+from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.fields.partitionsetupfield import getContainers
 from bika.lims.browser.widgets.partitionsetupwidget import PartitionSetupWidget
 from bika.lims.browser.widgets.recordswidget import RecordsWidget
@@ -43,6 +43,88 @@ from Products.Archetypes.public import SelectionWidget
 from Products.Archetypes.public import registerType
 from Products.CMFCore.utils import getToolByName
 from zope.interface import implements
+
+Methods = UIDReferenceField(
+    "Methods",
+    schemata="Method",
+    required=0,
+    multiValued=1,
+    vocabulary="_methods_vocabulary",
+    allowed_types=("Method", ),
+    accessor="getRawMethods",
+    widget=PicklistWidget(
+        label=_("Methods"),
+        description=_("Available methods to perform the test"),
+    )
+)
+
+Instruments = UIDReferenceField(
+    "Instruments",
+    schemata="Method",
+    required=0,
+    multiValued=1,
+    vocabulary="_instruments_vocabulary",
+    allowed_types=("Instrument", ),
+    accessor="getRawInstruments",
+    widget=PicklistWidget(
+        label=_("Instruments"),
+        description=_("Available instruments based on the selected methods."),
+    )
+)
+
+# XXX REMOVE
+UseDefaultCalculation = BooleanField(
+    "UseDefaultCalculation",
+    schemata="Method",
+    default=True,
+    widget=BooleanWidget(
+        visible=False,
+        label=_("Use the Default Calculation of Method"),
+        description=_(
+            "Select if the calculation to be used is the calculation set by "
+            "default in the default method. If unselected, the calculation "
+            "can be selected manually"),
+    )
+)
+
+Calculations = UIDReferenceField(
+    "Calculations",
+    schemata="Method",
+    required=0,
+    vocabulary="_calculations_vocabulary",
+    allowed_types=("Calculation", ),
+    multiValued=1,
+    accessor="getRawCalculations",
+    widget=PicklistWidget(
+        label=_("Calculations"),
+        description=_("Supported calculations of this service"),
+    )
+)
+
+Calculation = UIDReferenceField(
+    "Calculation",
+    schemata="Method",
+    required=0,
+    vocabulary="_default_calculation_vocabulary",
+    allowed_types=("Calculation", ),
+    accessor="getRawCalculation",
+    widget=SelectionWidget(
+        format="select",
+        label=_("Calculation"),
+        description=_("Calculation to be assigned to this content."),
+        catalog_name=SETUP_CATALOG,
+        base_query={"is_active": True},
+    )
+)
+
+InterimFields = InterimFieldsField(
+    "InterimFields",
+    schemata="Result Options",
+    widget=RecordsWidget(
+        label=_("Result variables"),
+        description=_("Additional result values"),
+    )
+)
 
 # If this flag is true, then analyses created from this service will be linked
 # to their own Sample Partition, and no other analyses will be linked to that
@@ -119,90 +201,26 @@ PartitionSetup = PartitionSetupField(
     )
 )
 
-# XXX REMOVE
-UseDefaultCalculation = BooleanField(
-    "UseDefaultCalculation",
-    schemata="Method",
-    default=True,
-    widget=BooleanWidget(
-        visible=False,
-        label=_("Use the Default Calculation of Method"),
-        description=_(
-            "Select if the calculation to be used is the calculation set by "
-            "default in the default method. If unselected, the calculation "
-            "can be selected manually"),
-    )
-)
-
-Methods = UIDReferenceField(
-    "Methods",
-    schemata="Method",
-    required=0,
-    multiValued=1,
-    vocabulary="_methods_vocabulary",
-    allowed_types=("Method", ),
-    accessor="getRawMethods",
-    widget=PicklistWidget(
-        label=_("Methods"),
-        description=_("Available methods to perform the test"),
-    )
-)
-
-Instruments = UIDReferenceField(
-    "Instruments",
-    schemata="Method",
-    required=0,
-    multiValued=1,
-    vocabulary="_instruments_vocabulary",
-    allowed_types=("Instrument", ),
-    accessor="getRawInstruments",
-    widget=PicklistWidget(
-        label=_("Instruments"),
-        description=_("Available instruments based on the selected methods."),
-    )
-)
-
-Calculation = UIDReferenceField(
-    "Calculation",
-    schemata="Method",
-    required=0,
-    vocabulary="_getAvailableCalculationsDisplayList",
-    allowed_types=("Calculation",),
-    accessor="getCalculationUID",
-    widget=SelectionWidget(
-        format="select",
-        label=_("Calculation"),
-        description=_("Calculation to be assigned to this content."),
-        catalog_name="bika_setup_catalog",
-        base_query={"is_active": True},
-    )
-)
-
-InterimFields = InterimFieldsField(
-    "InterimFields",
-    schemata="Result Options",
-    widget=RecordsWidget(
-        label=_("Result variables"),
-        description=_("Additional result values"),
-    )
-)
 
 schema = schema.copy() + Schema((
+    Methods,
+    Instruments,
+    UseDefaultCalculation,
+    Calculations,
+    Calculation,
+    InterimFields,
     Separate,
     Preservation,
     Container,
     PartitionSetup,
-    Methods,
-    Instruments,
-    UseDefaultCalculation,
-    Calculation,
-    InterimFields,
 ))
 
 # Move default method field after available methods field
 schema.moveField("Method", after="Methods")
 # Move default instrument field after available instruments field
 schema.moveField("Instrument", after="Instruments")
+# Move default calculation field after available calculations field
+schema.moveField("Calculation", after="Calculations")
 
 
 class AnalysisService(AbstractBaseAnalysis):
@@ -218,94 +236,13 @@ class AnalysisService(AbstractBaseAnalysis):
 
         return renameAfterCreation(self)
 
-    @security.public
-    def getCalculation(self):
-        """Returns the assigned calculation
-
-        :returns: Calculation object
-        """
-        return self.getField("Calculation").get(self)
-
-    @security.public
-    def getCalculationUID(self):
-        """Returns the UID of the assigned calculation
-
-        NOTE: This is the default accessor of the `Calculation` schema field
-        and needed for the selection widget to render the selected value
-        properly in _view_ mode.
-
-        :returns: Calculation UID
-        """
-        calculation = self.getCalculation()
-        if not calculation:
-            return None
-        return api.get_uid(calculation)
-
-    @security.public
-    def getContainers(self, instance=None):
-        # On first render, the containers must be filtered
-        instance = instance or self
-        separate = self.getSeparate()
-        containers = getContainers(instance,
-                                   allow_blank=True,
-                                   show_container_types=not separate,
-                                   show_containers=separate)
-        return DisplayList(containers)
-
-    def getPreservations(self):
-        bsc = getToolByName(self, 'bika_setup_catalog')
-        items = [(o.UID, o.Title) for o in
-                 bsc(portal_type='Preservation', is_active=True)]
-        items.sort(lambda x, y: cmp(x[1], y[1]))
-        return DisplayList(list(items))
-
-    @security.public
-    def getAvailableMethods(self):
-        """ Returns the methods available for this analysis.
-            If the service has the getInstrumentEntryOfResults(), returns
-            the methods available from the instruments capable to perform
-            the service, as well as the methods set manually for the
-            analysis on its edit view. If getInstrumentEntryOfResults()
-            is unset, only the methods assigned manually to that service
-            are returned.
-        """
-        if not self.getInstrumentEntryOfResults():
-            # No need to go further, just return the manually assigned methods
-            return self.getMethods()
-
-        # Return the manually assigned methods plus those from instruments
-        method_uids = self.getAvailableMethodUIDs()
-        query = dict(portal_type="Method", UID=method_uids)
-        brains = api.search(query, "bika_setup_catalog")
-        return map(api.get_object_by_uid, brains)
-
-    @security.public
-    def getAvailableMethodUIDs(self):
-        """
-        Returns the UIDs of the available methods. it is used as a
-        vocabulary to fill the selection list of 'Methods' field.
-        """
-        # N.B. we return a copy of the list to avoid accidental writes
-        method_uids = self.getRawMethods()[:]
-        if self.getInstrumentEntryOfResults():
-            for instrument in self.getInstruments():
-                method_uids.extend(instrument.getRawMethods())
-            method_uids = filter(None, method_uids)
-            method_uids = list(set(method_uids))
-        return method_uids
-
-    @security.public
     def getMethods(self):
         """Returns the assigned methods
-
-        If you want to obtain the available methods to assign to the service,
-        use getAvailableMethodUIDs.
 
         :returns: List of method objects
         """
         return self.getField("Methods").get(self)
 
-    @security.public
     def getRawMethods(self):
         """Returns the assigned method UIDs
 
@@ -317,7 +254,6 @@ class AnalysisService(AbstractBaseAnalysis):
             return []
         return methods
 
-    @security.public
     def getInstruments(self):
         """Returns the assigned instruments
 
@@ -330,74 +266,41 @@ class AnalysisService(AbstractBaseAnalysis):
         """
         return self.getField("Instruments").getRaw(self)
 
-    @security.public
-    def getAvailableInstruments(self):
-        """ Returns the instruments available for this service.
-            If the service has the getInstrumentEntryOfResults(), returns
-            the instruments capable to perform this service. Otherwhise,
-            returns an empty list.
-        """
-        instruments = self.getInstruments() \
-            if self.getInstrumentEntryOfResults() is True \
-            else None
-        return instruments if instruments else []
+    def getCalculations(self):
+        """Returns the assigned calculations
 
-    @security.private
-    def _getAvailableCalculationsDisplayList(self):
-        """ Returns a DisplayList with the available Calculations
-            registered in Bika-Setup. Only active Calculations are
-            fetched. Used to fill the Calculation field
+        :returns: List of calculation objects
         """
-        bsc = getToolByName(self, 'bika_setup_catalog')
-        items = [(i.UID, i.Title)
-                 for i in bsc(portal_type='Calculation',
-                              is_active=True)]
-        items.sort(lambda x, y: cmp(x[1], y[1]))
-        items.insert(0, ('', _("None")))
-        return DisplayList(list(items))
+        return self.getField("Calculations").get(self)
 
-    @security.public
-    def getServiceDependencies(self):
-        """
-        This methods returns a list with the analyses services dependencies.
-        :return: a list of analysis services objects.
-        """
-        calc = self.getCalculation()
-        if calc:
-            return calc.getCalculationDependencies(flat=True)
-        return []
+    def getRawCalculations(self):
+        """Returns the assigned calculation UIDs
 
-    @security.public
-    def getServiceDependenciesUIDs(self):
+        :returns: List of calculation UIDs
         """
-        This methods returns a list with the service dependencies UIDs
-        :return: a list of uids
+        field = self.getField("Calculations")
+        methods = field.getRaw(self)
+        if not methods:
+            return []
+        return methods
+
+    def getCalculation(self):
+        """Returns the assigned calculation
+
+        :returns: Calculation object
         """
-        deps = self.getServiceDependencies()
-        deps_uids = [service.UID() for service in deps]
-        return deps_uids
+        return self.getField("Calculation").get(self)
 
-    @security.public
-    def getServiceDependants(self):
-        bsc = getToolByName(self, 'bika_setup_catalog')
-        active_calcs = bsc(portal_type='Calculation', is_active=True)
-        calculations = [c.getObject() for c in active_calcs]
-        dependants = []
-        for calc in calculations:
-            calc_dependants = calc.getDependentServices()
-            if self in calc_dependants:
-                calc_dependencies = calc.getCalculationDependants()
-                dependants = dependants + calc_dependencies
-        dependants = list(set(dependants))
-        if self in dependants:
-            dependants.remove(self)
-        return dependants
+    def getRawCalculation(self):
+        """Returns the UID of the assigned calculation
 
-    @security.public
-    def getServiceDependantsUIDs(self):
-        deps = self.getServiceDependants()
-        deps_uids = [service.UID() for service in deps]
-        return deps_uids
+        :returns: Calculation UID
+        """
+        field = self.getField("Calculation")
+        calculation = field.getRaw(self)
+        if not calculation:
+            return None
+        return Calculation
 
     def query_available_methods(self):
         """Return all available methods
@@ -479,6 +382,40 @@ class AnalysisService(AbstractBaseAnalysis):
         dlist.add("", _("None"))
         return dlist
 
+    def query_available_calculations(self):
+        """Return all available calculations
+        """
+        catalog = api.get_tool(SETUP_CATALOG)
+        query = {
+            "portal_type": "Calculation",
+            "is_active": True,
+            "sort_on": "sortable_title",
+            "sort_order": "ascending",
+        }
+        return catalog(query)
+
+    def _calculations_vocabulary(self):
+        """Vocabulary used for calculations field
+        """
+        calculations = self.query_available_calculations()
+        items = [(api.get_uid(c), api.get_title(c)) for c in calculations]
+        dlist = DisplayList(items)
+        return dlist
+
+    def _default_calculation_vocabulary(self):
+        """Vocabulary used for the default calculation field
+        """
+        # check selected calculations
+        calculations = self.getCalculations()
+        if not calculations:
+            # query all available calculations
+            calculations = self.query_available_calculations()
+        items = [(api.get_uid(c), api.get_title(c)) for c in calculations]
+        # allow to leave this field empty
+        dlist = DisplayList(items)
+        dlist.add("", _("None"))
+        return dlist
+
     def after_deactivate_transition_event(self):
         """Method triggered after a 'deactivate' transition
 
@@ -495,6 +432,65 @@ class AnalysisService(AbstractBaseAnalysis):
         for template in templates:
             template = api.get_object(template)
             template.remove_service(self)
+
+    # XXX DECIDE IF NEEDED
+    # --------------------
+
+    def getContainers(self, instance=None):
+        # On first render, the containers must be filtered
+        instance = instance or self
+        separate = self.getSeparate()
+        containers = getContainers(instance,
+                                   allow_blank=True,
+                                   show_container_types=not separate,
+                                   show_containers=separate)
+        return DisplayList(containers)
+
+    def getPreservations(self):
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        items = [(o.UID, o.Title) for o in
+                 bsc(portal_type='Preservation', is_active=True)]
+        items.sort(lambda x, y: cmp(x[1], y[1]))
+        return DisplayList(list(items))
+
+    def getServiceDependencies(self):
+        """
+        This methods returns a list with the analyses services dependencies.
+        :return: a list of analysis services objects.
+        """
+        calc = self.getCalculation()
+        if calc:
+            return calc.getCalculationDependencies(flat=True)
+        return []
+
+    def getServiceDependenciesUIDs(self):
+        """
+        This methods returns a list with the service dependencies UIDs
+        :return: a list of uids
+        """
+        deps = self.getServiceDependencies()
+        deps_uids = [service.UID() for service in deps]
+        return deps_uids
+
+    def getServiceDependants(self):
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        active_calcs = bsc(portal_type='Calculation', is_active=True)
+        calculations = [c.getObject() for c in active_calcs]
+        dependants = []
+        for calc in calculations:
+            calc_dependants = calc.getDependentServices()
+            if self in calc_dependants:
+                calc_dependencies = calc.getCalculationDependants()
+                dependants = dependants + calc_dependencies
+        dependants = list(set(dependants))
+        if self in dependants:
+            dependants.remove(self)
+        return dependants
+
+    def getServiceDependantsUIDs(self):
+        deps = self.getServiceDependants()
+        deps_uids = [service.UID() for service in deps]
+        return deps_uids
 
 
 registerType(AnalysisService, PROJECTNAME)
