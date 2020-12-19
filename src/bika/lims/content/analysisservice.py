@@ -24,6 +24,8 @@ from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import InterimFieldsField
 from bika.lims.browser.fields import UIDReferenceField
+from bika.lims.browser.fiels import PartitionSetupField
+from bika.lims.browser.fiels.partitionsetupfield import getContainers
 from bika.lims.browser.widgets.partitionsetupwidget import PartitionSetupWidget
 from bika.lims.browser.widgets.recordswidget import RecordsWidget
 from bika.lims.browser.widgets.referencewidget import ReferenceWidget
@@ -31,11 +33,9 @@ from bika.lims.catalog import SETUP_CATALOG
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.abstractbaseanalysis import AbstractBaseAnalysis
 from bika.lims.content.abstractbaseanalysis import schema
-from Products.Archetypes.atapi import PicklistWidget
 from bika.lims.interfaces import IAnalysisService
 from bika.lims.interfaces import IDeactivable
-from bika.lims.utils import to_utf8 as _c
-from magnitude import mg
+from Products.Archetypes.atapi import PicklistWidget
 from Products.Archetypes.public import BooleanField
 from Products.Archetypes.public import BooleanWidget
 from Products.Archetypes.public import DisplayList
@@ -43,172 +43,21 @@ from Products.Archetypes.public import MultiSelectionWidget
 from Products.Archetypes.public import Schema
 from Products.Archetypes.public import SelectionWidget
 from Products.Archetypes.public import registerType
-from Products.Archetypes.Registry import registerField
 from Products.CMFCore.utils import getToolByName
-from senaite.core.browser.fields.records import RecordsField
 from zope.interface import implements
-
-
-def getContainers(instance,
-                  minvol=None,
-                  allow_blank=True,
-                  show_container_types=True,
-                  show_containers=True):
-    """ Containers vocabulary
-
-    This is a separate class so that it can be called from ajax to filter
-    the container list, as well as being used as the AT field vocabulary.
-
-    Returns a tuple of tuples: ((object_uid, object_title), ())
-
-    If the partition is flagged 'Separate', only containers are displayed.
-    If the Separate flag is false, displays container types.
-
-    XXX bsc = self.portal.bika_setup_catalog
-    XXX obj = bsc(getKeyword='Moist')[0].getObject()
-    XXX u'Container Type: Canvas bag' in obj.getContainers().values()
-    XXX True
-
-    """
-
-    bsc = getToolByName(instance, 'bika_setup_catalog')
-
-    items = [['', _('Any')]] if allow_blank else []
-
-    containers = []
-    for container in bsc(portal_type='Container', sort_on='sortable_title'):
-        container = container.getObject()
-
-        # verify container capacity is large enough for required sample volume.
-        if minvol is not None:
-            capacity = container.getCapacity()
-            try:
-                capacity = capacity.split(' ', 1)
-                capacity = mg(float(capacity[0]), capacity[1])
-                if capacity < minvol:
-                    continue
-            except (ValueError, TypeError):
-                # if there's a unit conversion error, allow the container
-                # to be displayed.
-                pass
-
-        containers.append(container)
-
-    if show_containers:
-        # containers with no containertype first
-        for container in containers:
-            if not container.getContainerType():
-                items.append([container.UID(), container.Title()])
-
-    ts = getToolByName(instance, 'translation_service').translate
-    cat_str = _c(ts(_('Container Type')))
-    containertypes = [c.getContainerType() for c in containers]
-    containertypes = dict([(ct.UID(), ct.Title())
-                           for ct in containertypes if ct])
-    for ctype_uid, ctype_title in containertypes.items():
-        ctype_title = _c(ctype_title)
-        if show_container_types:
-            items.append([ctype_uid, "%s: %s" % (cat_str, ctype_title)])
-        if show_containers:
-            for container in containers:
-                ctype = container.getContainerType()
-                if ctype and ctype.UID() == ctype_uid:
-                    items.append([container.UID(), container.Title()])
-
-    items = tuple(items)
-    return items
-
-
-class PartitionSetupField(RecordsField):
-    _properties = RecordsField._properties.copy()
-    _properties.update({
-        'subfields': (
-            'sampletype',
-            'separate',
-            'preservation',
-            'container',
-            'vol',
-            # 'retentionperiod',
-        ),
-        'subfield_labels': {
-            'sampletype': _('Sample Type'),
-            'separate': _('Separate Container'),
-            'preservation': _('Preservation'),
-            'container': _('Container'),
-            'vol': _('Required Volume'),
-            # 'retentionperiod': _('Retention Period'),
-        },
-        'subfield_types': {
-            'separate': 'boolean',
-            'vol': 'string',
-            'container': 'selection',
-            'preservation': 'selection',
-        },
-        'subfield_vocabularies': {
-            'sampletype': 'SampleTypes',
-            'preservation': 'Preservations',
-            'container': 'Containers',
-        },
-        'subfield_sizes': {
-            'sampletype': 1,
-            'preservation': 6,
-            'vol': 8,
-            'container': 6,
-            # 'retentionperiod':10,
-        }
-    })
-    security = ClassSecurityInfo()
-
-    security.declarePublic('SampleTypes')
-
-    def SampleTypes(self, instance=None):
-        instance = instance or self
-        bsc = getToolByName(instance, 'bika_setup_catalog')
-        items = []
-        for st in bsc(portal_type='SampleType',
-                      is_active=True,
-                      sort_on='sortable_title'):
-            st = st.getObject()
-            title = st.Title()
-            items.append((st.UID(), title))
-        items = [['', '']] + list(items)
-        return DisplayList(items)
-
-    security.declarePublic('Preservations')
-
-    def Preservations(self, instance=None):
-        instance = instance or self
-        bsc = getToolByName(instance, 'bika_setup_catalog')
-        items = [[c.UID, c.title] for c in
-                 bsc(portal_type='Preservation',
-                     is_active=True,
-                     sort_on='sortable_title')]
-        items = [['', _('Any')]] + list(items)
-        return DisplayList(items)
-
-    security.declarePublic('Containers')
-
-    def Containers(self, instance=None):
-        instance = instance or self
-        items = getContainers(instance, allow_blank=True)
-        return DisplayList(items)
-
-
-registerField(PartitionSetupField, title="", description="")
-
 
 # If this flag is true, then analyses created from this service will be linked
 # to their own Sample Partition, and no other analyses will be linked to that
 # partition.
 Separate = BooleanField(
-    'Separate',
-    schemata='Container and Preservation',
+    "Separate",
+    schemata="Container and Preservation",
     default=False,
     required=0,
     widget=BooleanWidget(
         label=_("Separate Container"),
-        description=_("Check this box to ensure a separate sample container is "
-                      "used for this analysis service"),
+        description=_("Check this box to ensure a separate sample container "
+                      "is used for this analysis service"),
     )
 )
 
@@ -216,10 +65,10 @@ Separate = BooleanField(
 # preservation, then it's possible that they can be performed on the same
 # sample partition.
 Preservation = UIDReferenceField(
-    'Preservation',
-    schemata='Container and Preservation',
-    allowed_types=('Preservation',),
-    vocabulary='getPreservations',
+    "Preservation",
+    schemata="Container and Preservation",
+    allowed_types=("Preservation",),
+    vocabulary="getPreservations",
     required=0,
     multiValued=0,
     widget=ReferenceWidget(
@@ -229,8 +78,8 @@ Preservation = UIDReferenceField(
             "Select a default preservation for this analysis service. If the "
             "preservation depends on the sample type combination, specify a "
             "preservation per sample type in the table below"),
-        catalog_name='bika_setup_catalog',
-        base_query={'is_active': True},
+        catalog_name=SETUP_CATALOG,
+        base_query={"is_active": True},
     )
 )
 
@@ -238,10 +87,10 @@ Preservation = UIDReferenceField(
 # If multiple services share the same container or containertype, then it's
 # possible that their analyses can be performed on the same partitions
 Container = UIDReferenceField(
-    'Container',
-    schemata='Container and Preservation',
-    allowed_types=('Container', 'ContainerType'),
-    vocabulary='getContainers',
+    "Container",
+    schemata="Container and Preservation",
+    allowed_types=("Container", "ContainerType"),
+    vocabulary="getContainers",
     required=0,
     multiValued=0,
     widget=ReferenceWidget(
@@ -252,8 +101,8 @@ Container = UIDReferenceField(
             "service. If the container to be used depends on the sample type "
             "and preservation combination, specify the container in the "
             "sample type table below"),
-        catalog_name='bika_setup_catalog',
-        base_query={'is_active': True},
+        catalog_name=SETUP_CATALOG,
+        base_query={"is_active": True},
     )
 )
 
@@ -262,23 +111,24 @@ Container = UIDReferenceField(
 # will be created, which containers/preservations they will use, and which
 # analyases can be performed on each partition.
 PartitionSetup = PartitionSetupField(
-    'PartitionSetup',
-    schemata='Container and Preservation',
+    "PartitionSetup",
+    schemata="Container and Preservation",
     widget=PartitionSetupWidget(
-        label=PMF("Preservation per sample type"),
+        label=_("Preservation per sample type"),
         description=_(
             "Please specify preservations that differ from the analysis "
             "service's default preservation per sample type here."),
     )
 )
 
+# XXX REMOVE
 # Allow/Disallow to set the calculation manually
 # Behavior controlled by javascript depending on Instruments field:
 # - If no instruments available, hide and uncheck
 # - If at least one instrument selected then checked, but not readonly
 # See browser/js/bika.lims.analysisservice.edit.js
 UseDefaultCalculation = BooleanField(
-    'UseDefaultCalculation',
+    "UseDefaultCalculation",
     schemata="Method",
     default=True,
     widget=BooleanWidget(
@@ -329,12 +179,12 @@ Methods = UIDReferenceField(
 # - If InstrumentEntry not checked, hide and unset
 # - If InstrumentEntry checked, set the first selected and show
 Instruments = UIDReferenceField(
-    'Instruments',
+    "Instruments",
     schemata="Method",
     required=0,
     multiValued=1,
-    vocabulary='_getAvailableInstrumentsDisplayList',
-    allowed_types=('Instrument',),
+    vocabulary="_getAvailableInstrumentsDisplayList",
+    allowed_types=("Instrument",),
     accessor="getInstrumentUIDs",
     widget=MultiSelectionWidget(
         label=_("Instruments"),

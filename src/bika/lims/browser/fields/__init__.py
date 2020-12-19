@@ -19,16 +19,17 @@
 # Some rights reserved, see README and LICENSE.
 
 from .addressfield import AddressField
+from .aranalysesfield import ARAnalysesField
+from .coordinatefield import CoordinateField
 from .datetimefield import DateTimeField
 from .durationfield import DurationField
-from .aranalysesfield import ARAnalysesField
-from .interimfieldsfield import InterimFieldsField
-from .referenceresultsfield import ReferenceResultsField
-from .historyawarereferencefield import HistoryAwareReferenceField
-from .coordinatefield import CoordinateField
-from .reflexrulefield import ReflexRuleField
-from .proxyfield import ProxyField
-from .uidreferencefield import UIDReferenceField
 from .emailsfield import EmailsField
+from .historyawarereferencefield import HistoryAwareReferenceField
+from .interimfieldsfield import InterimFieldsField
+from .partitionsetupfield import PartitionSetupfield
+from .proxyfield import ProxyField
+from .referenceresultsfield import ReferenceResultsField
+from .reflexrulefield import ReflexRuleField
 from .resultrangefield import ResultRangeField
 from .resultsrangesfield import ResultsRangesField
+from .uidreferencefield import UIDReferenceField
