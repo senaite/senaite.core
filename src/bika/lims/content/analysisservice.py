@@ -215,6 +215,8 @@ schema = schema.copy() + Schema((
     PartitionSetup,
 ))
 
+# Move manual entry of results field before available methods field
+schema.moveField("ManualEntryOfResults", before="Methods")
 # Move default method field after available methods field
 schema.moveField("Method", after="Methods")
 # Move default instrument field after available instruments field

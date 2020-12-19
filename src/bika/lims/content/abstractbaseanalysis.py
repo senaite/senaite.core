@@ -251,25 +251,13 @@ Keyword = StringField(
     )
 )
 
-# Allow/Disallow manual entry of results
-# Behavior of AnalysisServices controlled by javascript depending on
-# Instruments field:
-# - If InstrumentEntry not checked, set checked and readonly
-# - If InstrumentEntry checked, set as not readonly
-# See browser/js/bika.lims.analysisservice.edit.js
 ManualEntryOfResults = BooleanField(
-    'ManualEntryOfResults',
+    "ManualEntryOfResults",
     schemata="Method",
     default=True,
     widget=BooleanWidget(
-        visible=False,
-        label=_("Instrument assignment is not required"),
-        description=_(
-            "Select if the results for tests of this type of analysis can be "
-            "set manually. If selected, the user will be able to set a result "
-            "for a test of this type of analysis in manage results view "
-            "without the need of selecting an instrument, even though the "
-            "method selected for the test has instruments assigned."),
+        label=_("Manual entry of results"),
+        description=_("Allow to introduce analysis results manually"),
     )
 )
 
