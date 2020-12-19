@@ -140,15 +140,6 @@ UseDefaultCalculation = BooleanField(
     )
 )
 
-# Manual methods associated to the AS
-# List of methods capable to perform the Analysis Service. The
-# Methods selected here are displayed in the Analysis Request
-# Add view, closer to this Analysis Service if selected.
-# Use getAvailableMethods() to retrieve the list with methods both
-# from selected instruments and manually entered.
-# Behavior controlled by js depending on ManualEntry/Instrument:
-# - If InstrumentEntry not checked, show
-# See browser/js/bika.lims.analysisservice.edit.js
 Methods = UIDReferenceField(
     "Methods",
     schemata="Method",
@@ -159,24 +150,10 @@ Methods = UIDReferenceField(
     accessor="getRawMethods",
     widget=PicklistWidget(
         label=_("Methods"),
-        description=_(
-            "The tests of this type of analysis can be performed by using "
-            "more than one method with the 'Manual entry of results' option "
-            "enabled. A selection list with the methods selected here is "
-            "populated in the manage results view for each test of this type "
-            "of analysis. Note that only methods with 'Allow manual entry' "
-            "option enabled are displayed here; if you want the user to be "
-            "able to assign a method that requires instrument entry, enable "
-            "the 'Instrument assignment is allowed' option."),
+        description=_("Available methods to perform the test"),
     )
 )
 
-# Instruments associated to the AS
-# List of instruments capable to perform the Analysis Service. The
-# Instruments selected here are displayed in the Analysis Request
-# Add view, closer to this Analysis Service if selected.
-# - If InstrumentEntry not checked, hide and unset
-# - If InstrumentEntry checked, set the first selected and show
 Instruments = UIDReferenceField(
     "Instruments",
     schemata="Method",
@@ -185,18 +162,9 @@ Instruments = UIDReferenceField(
     vocabulary="_instruments_vocabulary",
     allowed_types=("Instrument", ),
     accessor="getRawInstruments",
-    widget=MultiSelectionWidget(
+    widget=PicklistWidget(
         label=_("Instruments"),
-        description=_(
-            "More than one instrument can be used in a test of this type of "
-            "analysis. A selection list with the instruments selected here is "
-            "populated in the results manage view for each test of this type "
-            "of analysis. The available instruments in the selection list "
-            "will change in accordance with the method selected by the user "
-            "for that test in the manage results view. Although a method can "
-            "have more than one instrument assigned, the selection list is "
-            "only populated with the instruments that are both set here and "
-            "allowed for the selected method."),
+        description=_("Available instruments based on the selected methods."),
     )
 )
 
@@ -283,6 +251,7 @@ class AnalysisService(AbstractBaseAnalysis):
         :returns: Calculation object
         """
         return self.getField("Calculation").get(self)
+
     @security.public
     def getCalculationUID(self):
         """Returns the UID of the assigned calculation
@@ -505,8 +474,20 @@ class AnalysisService(AbstractBaseAnalysis):
     def _instruments_vocabulary(self):
         """Vocabulary used for instruments field
         """
-        instruments = self.query_available_instruments()
-        items = [(ins.UID, ins.Title) for ins in instruments]
+        instruments = []
+        # When methods are selected, display only instruments from the methods
+        methods = self.getMethods()
+        for method in methods:
+            for instrument in method.getInstruments():
+                if instrument in instruments:
+                    continue
+                instruments.append(instrument)
+
+        if not methods:
+            # query all available instruments when no methods are selected
+            instruments = self.query_available_instruments()
+
+        items = [(api.get_uid(i), api.get_title(i)) for i in instruments]
         dlist = DisplayList(items)
         return dlist
 
