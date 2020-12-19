@@ -280,6 +280,7 @@ UseDefaultCalculation = BooleanField(
     schemata="Method",
     default=True,
     widget=BooleanWidget(
+        visible=False,
         label=_("Use the Default Calculation of Method"),
         description=_(
             "Select if the calculation to be used is the calculation set by "
@@ -400,7 +401,7 @@ schema = schema.copy() + Schema((
     PartitionSetup,
     Methods,
     Instruments,
-    # UseDefaultCalculation,
+    UseDefaultCalculation,
     Calculation,
     InterimFields,
 ))

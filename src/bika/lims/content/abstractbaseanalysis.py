@@ -262,6 +262,7 @@ ManualEntryOfResults = BooleanField(
     schemata="Method",
     default=True,
     widget=BooleanWidget(
+        visible=False,
         label=_("Instrument assignment is not required"),
         description=_(
             "Select if the results for tests of this type of analysis can be "
@@ -282,6 +283,7 @@ InstrumentEntryOfResults = BooleanField(
     schemata="Method",
     default=False,
     widget=BooleanWidget(
+        visible=False,
         label=_("Instrument assignment is allowed"),
         description=_(
             "Select if the results for tests of this type of analysis can be "
@@ -730,8 +732,8 @@ schema = BikaSchema.copy() + Schema((
     AllowManualDetectionLimit,
     AttachmentRequired,
     Keyword,
-    # ManualEntryOfResults,
-    # InstrumentEntryOfResults,
+    ManualEntryOfResults,
+    InstrumentEntryOfResults,
     Instrument,
     Method,
     MaxTimeAllowed,
