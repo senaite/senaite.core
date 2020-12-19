@@ -72,20 +72,20 @@ def copy_analysis_field_values(source, analysis, **kwargs):
         if fieldname not in dst_schema:
             continue
         value = kwargs.get(fieldname, field.get(source))
-        if value:
-            # Campbell's mental note:never ever use '.set()' directly to a
-            # field. If you can't use the setter, then use the mutator in order
-            # to give the value. We have realized that in some cases using
-            # 'set' when the value is a string, it saves the value
-            # as unicode instead of plain string.
-            field = analysis.getField(fieldname)
-            if IExtensionField.providedBy(field):
-                # SchemaExtender fields don't auto-generate the accessor/mutator
-                field.set(analysis, value)
-            else:
-                mutator_name = field.mutator
-                mutator = getattr(analysis, mutator_name)
-                mutator(value)
+
+        # Campbell's mental note:never ever use '.set()' directly to a
+        # field. If you can't use the setter, then use the mutator in order
+        # to give the value. We have realized that in some cases using
+        # 'set' when the value is a string, it saves the value
+        # as unicode instead of plain string.
+        field = analysis.getField(fieldname)
+        if IExtensionField.providedBy(field):
+            # SchemaExtender fields don't auto-generate the accessor/mutator
+            field.set(analysis, value)
+        else:
+            mutator_name = field.mutator
+            mutator = getattr(analysis, mutator_name)
+            mutator(value)
 
 
 def create_analysis(context, source, **kwargs):
