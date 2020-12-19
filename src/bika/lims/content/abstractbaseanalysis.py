@@ -273,11 +273,7 @@ ManualEntryOfResults = BooleanField(
     )
 )
 
-# Allow/Disallow instrument entry of results
-# Behavior controlled by javascript depending on Instruments field:
-# - If no instruments available, hide and uncheck
-# - If at least one instrument selected, checked, but not readonly
-# See browser/js/bika.lims.analysisservice.edit.js
+# XXX REMOVE
 InstrumentEntryOfResults = BooleanField(
     'InstrumentEntryOfResults',
     schemata="Method",
@@ -294,14 +290,6 @@ InstrumentEntryOfResults = BooleanField(
     )
 )
 
-# Default instrument to be used.
-# Gets populated with the instruments selected in the Instruments field.
-# Behavior of AnalysisServices controlled by js depending on
-# ManualEntry/Instruments:
-# - Populate dynamically with selected Instruments
-# - If InstrumentEntry checked, set first selected instrument
-# - If InstrumentEntry not checked, hide and set None
-# See browser/js/bika.lims.analysisservice.edit.js
 Instrument = UIDReferenceField(
     "Instrument",
     read_permission=View,
@@ -309,32 +297,16 @@ Instrument = UIDReferenceField(
     schemata="Method",
     searchable=True,
     required=0,
-    vocabulary="_getAvailableInstrumentsDisplayList",
+    vocabulary="_default_instrument_vocabulary",
     allowed_types=("Instrument",),
     accessor="getInstrumentUID",
     widget=SelectionWidget(
         format="select",
         label=_("Default Instrument"),
-        description=_(
-            "This is the instrument that is assigned to  tests from this type "
-            "of analysis in manage results view. The method associated to "
-            "this instrument will be assigned as the default method too.Note "
-            "the instrument's method will prevail over any of the methods "
-            "choosen if the 'Instrument assignment is not required' option is "
-            "enabled.")
+        description=_("Default instrument used for analyses of this type"),
     )
 )
 
-# Default method to be used. This field is used in Analysis Service
-# Edit view, use getMethod() to retrieve the Method to be used in
-# this Analysis Service.
-# Gets populated with the methods selected in the multiselection
-# box above or with the default instrument's method.
-# Behavior controlled by js depending on ManualEntry/Instrument/Methods:
-# - If InstrumentEntry checked, set instrument's default method, and readonly
-# - If InstrumentEntry not checked, populate dynamically with
-#   selected Methods, set the first method selected and non-readonly
-# See browser/js/bika.lims.analysisservice.edit.js
 Method = UIDReferenceField(
     "Method",
     read_permission=View,
@@ -347,7 +319,7 @@ Method = UIDReferenceField(
     widget=SelectionWidget(
         format="select",
         label=_("Default Method"),
-        description=_("Default method used for this Analysis")
+        description=_("Default method used for analyses of this type"),
     )
 )
 

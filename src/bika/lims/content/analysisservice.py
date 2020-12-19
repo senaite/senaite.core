@@ -38,7 +38,6 @@ from Products.Archetypes.atapi import PicklistWidget
 from Products.Archetypes.public import BooleanField
 from Products.Archetypes.public import BooleanWidget
 from Products.Archetypes.public import DisplayList
-from Products.Archetypes.public import MultiSelectionWidget
 from Products.Archetypes.public import Schema
 from Products.Archetypes.public import SelectionWidget
 from Products.Archetypes.public import registerType
@@ -121,11 +120,6 @@ PartitionSetup = PartitionSetupField(
 )
 
 # XXX REMOVE
-# Allow/Disallow to set the calculation manually
-# Behavior controlled by javascript depending on Instruments field:
-# - If no instruments available, hide and uncheck
-# - If at least one instrument selected then checked, but not readonly
-# See browser/js/bika.lims.analysisservice.edit.js
 UseDefaultCalculation = BooleanField(
     "UseDefaultCalculation",
     schemata="Method",
@@ -168,17 +162,6 @@ Instruments = UIDReferenceField(
     )
 )
 
-# Calculation to be used. This field is used in Analysis Service Edit view.
-#
-# AnalysisService defines a setter to maintain back-references on the
-# calculation, so that calculations can easily lookup their dependants based
-# on this field's value.
-#
-#  The default calculation is the one linked to the default method Behavior
-# controlled by js depending on UseDefaultCalculation:
-# - If UseDefaultCalculation is set to False, show this field
-# - If UseDefaultCalculation is set to True, show this field
-#  See browser/js/bika.lims.analysisservice.edit.js
 Calculation = UIDReferenceField(
     "Calculation",
     schemata="Method",
@@ -195,21 +178,12 @@ Calculation = UIDReferenceField(
     )
 )
 
-# InterimFields are defined in Calculations, Services, and Analyses.
-# In Analysis Services, the default values are taken from Calculation.
-# In Analyses, the default values are taken from the Analysis Service.
-# When instrument results are imported, the values in analysis are overridden
-# before the calculation is performed.
 InterimFields = InterimFieldsField(
-    'InterimFields',
+    "InterimFields",
     schemata="Result Options",
     widget=RecordsWidget(
         label=_("Result variables"),
-        description=_(
-            "Variables are displayed as additional input fields on results "
-            "entry, next to 'Result' field. If the analysis has a Calculation "
-            "assigned, the values set here override those from the Calculation "
-        ),
+        description=_("Additional result values"),
     )
 )
 
@@ -489,6 +463,20 @@ class AnalysisService(AbstractBaseAnalysis):
 
         items = [(api.get_uid(i), api.get_title(i)) for i in instruments]
         dlist = DisplayList(items)
+        return dlist
+
+    def _default_instrument_vocabulary(self):
+        """Vocabulary used for default instrument field
+        """
+        # check if we selected instruments
+        instruments = self.getInstruments()
+        if not instruments:
+            # query all available instruments
+            instruments = self.query_available_instruments()
+        items = [(api.get_uid(i), api.get_title(i)) for i in instruments]
+        dlist = DisplayList(items)
+        # allow to leave this field empty
+        dlist.add("", _("None"))
         return dlist
 
     def after_deactivate_transition_event(self):
