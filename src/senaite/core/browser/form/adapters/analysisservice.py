@@ -37,6 +37,10 @@ class EditForm(object):
         self.response["errors"] = errors
         return self.response
 
+    @property
+    def setup_catalog(self):
+        return api.get_tool(SETUP_CATALOG)
+
     def validate_keyword(self, value):
         """Validate the service keyword
         """
@@ -51,8 +55,7 @@ class EditForm(object):
         # Check if the current value is used in a calculation
         ref = "[{}]".format(current_value)
         query = {"portal_type": "Calculation"}
-        catalog = api.get_tool(SETUP_CATALOG)
-        for brain in catalog(query):
+        for brain in self.setup_catalog(query):
             calc = api.get_object(brain)
             if ref in calc.getFormula():
                 return _("Current keyword '{}' used in calculation '{}'"
