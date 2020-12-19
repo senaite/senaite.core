@@ -162,7 +162,6 @@ module.exports = {
           // legacy.js
           "../src/senaite/core/browser/static/js/bika.lims.analysisprofile.js",
           "../src/senaite/core/browser/static/js/bika.lims.analysisrequest.js",
-          "../src/senaite/core/browser/static/js/bika.lims.analysisservice.js",
           "../src/senaite/core/browser/static/js/bika.lims.artemplate.js",
           "../src/senaite/core/browser/static/js/bika.lims.batch.js",
           "../src/senaite/core/browser/static/js/bika.lims.bikasetup.js",
@@ -174,7 +173,6 @@ module.exports = {
           "../src/senaite/core/browser/static/js/bika.lims.graphics.range.js",
           "../src/senaite/core/browser/static/js/bika.lims.instrument.import.js",
           "../src/senaite/core/browser/static/js/bika.lims.instrument.js",
-          "../src/senaite/core/browser/static/js/bika.lims.method.js",
           "../src/senaite/core/browser/static/js/bika.lims.referencesample.js",
           "../src/senaite/core/browser/static/js/bika.lims.reflexrule.js",
           "../src/senaite/core/browser/static/js/bika.lims.rejection.js",
