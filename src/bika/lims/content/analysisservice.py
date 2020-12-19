@@ -182,9 +182,9 @@ Instruments = UIDReferenceField(
     schemata="Method",
     required=0,
     multiValued=1,
-    vocabulary="_getAvailableInstrumentsDisplayList",
-    allowed_types=("Instrument",),
-    accessor="getInstrumentUIDs",
+    vocabulary="_instruments_vocabulary",
+    allowed_types=("Instrument", ),
+    accessor="getRawInstruments",
     widget=MultiSelectionWidget(
         label=_("Instruments"),
         description=_(
@@ -378,17 +378,10 @@ class AnalysisService(AbstractBaseAnalysis):
         """
         return self.getField("Instruments").get(self)
 
-    @security.public
-    def getInstrumentUIDs(self):
-        """Returns the UIDs of the assigned instruments
-
-        NOTE: This is the default accessor of the `Instruments` schema field
-        and needed for the multiselection widget to render the selected values
-        properly in _view_ mode.
-
-        :returns: List of instrument UIDs
+    def getRawInstruments(self):
+        """List of assigned Instrument UIDs
         """
-        return self.getRawInstruments()
+        return self.getField("Instruments").getRaw(self)
 
     @security.public
     def getAvailableInstruments(self):
@@ -402,27 +395,6 @@ class AnalysisService(AbstractBaseAnalysis):
             else None
         return instruments if instruments else []
 
-    def query_available_methods(self):
-        """Return all available methods
-        """
-        catalog = api.get_tool(SETUP_CATALOG)
-        query = {
-            "portal_type": "Method",
-            "is_active": True,
-            "sort_on": "sortable_title",
-            "sort_order": "ascending",
-        }
-        return catalog(query)
-
-    @security.private
-    def _methods_vocabulary(self):
-        """Vocabulary used for methods field
-        """
-        methods = self.query_available_methods()
-        items = [(api.get_uid(m), api.get_title(m)) for m in methods]
-        dlist = DisplayList(items)
-        return dlist
-
     @security.private
     def _getAvailableCalculationsDisplayList(self):
         """ Returns a DisplayList with the available Calculations
@@ -435,19 +407,6 @@ class AnalysisService(AbstractBaseAnalysis):
                               is_active=True)]
         items.sort(lambda x, y: cmp(x[1], y[1]))
         items.insert(0, ('', _("None")))
-        return DisplayList(list(items))
-
-    @security.private
-    def _getAvailableInstrumentsDisplayList(self):
-        """ Returns a DisplayList with the available Instruments
-            registered in Bika-Setup. Only active Instruments are
-            fetched. Used to fill the Instruments MultiSelectionWidget
-        """
-        bsc = getToolByName(self, 'bika_setup_catalog')
-        items = [(i.UID, i.Title)
-                 for i in bsc(portal_type='Instrument',
-                              is_active=True)]
-        items.sort(lambda x, y: cmp(x[1], y[1]))
         return DisplayList(list(items))
 
     @security.public
@@ -493,7 +452,46 @@ class AnalysisService(AbstractBaseAnalysis):
         deps_uids = [service.UID() for service in deps]
         return deps_uids
 
-    @security.public
+    def query_available_methods(self):
+        """Return all available methods
+        """
+        catalog = api.get_tool(SETUP_CATALOG)
+        query = {
+            "portal_type": "Method",
+            "is_active": True,
+            "sort_on": "sortable_title",
+            "sort_order": "ascending",
+        }
+        return catalog(query)
+
+    def _methods_vocabulary(self):
+        """Vocabulary used for methods field
+        """
+        methods = self.query_available_methods()
+        items = [(api.get_uid(m), api.get_title(m)) for m in methods]
+        dlist = DisplayList(items)
+        return dlist
+
+    def query_available_instruments(self):
+        """Return all available Instruments
+        """
+        catalog = api.get_tool(SETUP_CATALOG)
+        query = {
+            "portal_type": "Instrument",
+            "is_active": True,
+            "sort_on": "sortable_title",
+            "sort_order": "ascending",
+        }
+        return catalog(query)
+
+    def _instruments_vocabulary(self):
+        """Vocabulary used for instruments field
+        """
+        instruments = self.query_available_instruments()
+        items = [(ins.UID, ins.Title) for ins in instruments]
+        dlist = DisplayList(items)
+        return dlist
+
     def after_deactivate_transition_event(self):
         """Method triggered after a 'deactivate' transition
 
