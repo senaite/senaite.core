@@ -29,12 +29,11 @@ from bika.lims.interfaces import IDeactivable
 from bika.lims.interfaces import IHaveInstrument
 from bika.lims.interfaces import IMethod
 from plone.app.blob.field import FileField as BlobFileField
-from Products.Archetypes.atapi import InAndOutWidget
+from Products.Archetypes.atapi import PicklistWidget
 from Products.Archetypes.public import BaseFolder
 from Products.Archetypes.public import BooleanField
 from Products.Archetypes.public import BooleanWidget
 from Products.Archetypes.public import FileWidget
-from Products.Archetypes.public import LinesField
 from Products.Archetypes.public import Schema
 from Products.Archetypes.public import SelectionWidget
 from Products.Archetypes.public import StringField
@@ -102,13 +101,13 @@ schema = BikaSchema.copy() + Schema((
 
     # NOTE: `Instruments` is a computed field and checks the supported methods
     #        of all global instruments.
-    # The Lines Field is used to use the vocabulary
-    LinesField(
+    UIDReferenceField(
         "Instruments",
         required=0,
         vocabulary="_instruments_vocabulary",
+        multiValued=1,
         accessor="getRawInstruments",
-        widget=InAndOutWidget(
+        widget=PicklistWidget(
             label=_("Instruments"),
             description=_("Instruments supporting this method"),
         )
@@ -128,13 +127,14 @@ schema = BikaSchema.copy() + Schema((
         )
     ),
 
-    LinesField(
+    UIDReferenceField(
         "Calculations",
         required=0,
         vocabulary="_calculations_vocabulary",
         allowed_types=("Calculation", ),
+        multiValued=1,
         accessor="getRawCalculations",
-        widget=InAndOutWidget(
+        widget=PicklistWidget(
             label=_("Calculations"),
             description=_("Supported calculations of this method"),
         )
@@ -359,7 +359,7 @@ class Method(BaseFolder):
         """Vocabulary used for calculations field
         """
         calculations = self.query_available_calculations()
-        items = [(calc.UID, calc.Title) for calc in calculations]
+        items = [(api.get_uid(c), api.get_title(c)) for c in calculations]
         dlist = DisplayList(items)
         return dlist
 
