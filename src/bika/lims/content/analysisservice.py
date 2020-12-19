@@ -368,7 +368,11 @@ class AnalysisService(AbstractBaseAnalysis):
 
         :returns: List of method UIDs
         """
-        return self.getField("Methods").get(self)
+        field = self.getField("Methods")
+        methods = field.getRaw(self)
+        if not methods:
+            return []
+        return methods
 
     @security.public
     def getInstruments(self):
@@ -470,6 +474,20 @@ class AnalysisService(AbstractBaseAnalysis):
         methods = self.query_available_methods()
         items = [(api.get_uid(m), api.get_title(m)) for m in methods]
         dlist = DisplayList(items)
+        return dlist
+
+    def _default_method_vocabulary(self):
+        """Vocabulary used for default method field
+        """
+        # check if we selected methods
+        methods = self.getMethods()
+        if not methods:
+            # query all available methods
+            methods = self.query_available_methods()
+        items = [(api.get_uid(m), api.get_title(m)) for m in methods]
+        dlist = DisplayList(items)
+        # allow to leave this field empty
+        dlist.add("", _("None"))
         return dlist
 
     def query_available_instruments(self):
