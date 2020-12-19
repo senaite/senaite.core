@@ -2,7 +2,9 @@
 
 from six import string_types
 
+from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
+from bika.lims.catalog import SETUP_CATALOG
 from bika.lims.validators import ServiceKeywordValidator
 from senaite.core.interfaces import IAjaxEditForm
 from zope.interface import implementer
@@ -39,11 +41,23 @@ class EditForm(object):
         """Validate the service keyword
         """
         current_value = self.context.getKeyword()
+        # Check if the values changed
         if current_value == value:
             # nothing changed
             return
+        # Check if the new value is empty
         if not value:
             return _("Keyword required")
+        # Check if the current value is used in a calculation
+        ref = "[{}]".format(current_value)
+        query = {"portal_type": "Calculation"}
+        catalog = api.get_tool(SETUP_CATALOG)
+        for brain in catalog(query):
+            calc = api.get_object(brain)
+            if ref in calc.getFormula():
+                return _("Current keyword '{}' used in calculation '{}'"
+                         .format(current_value, api.get_title(calc)))
+        # Check the current value with the validator
         validator = ServiceKeywordValidator()
         check = validator(value, instance=self.context)
         if isinstance(check, string_types):
