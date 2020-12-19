@@ -330,6 +330,10 @@ class AnalysesView(BikaListingView):
         # Get the ananylsis object
         obj = self.get_object(analysis_brain)
 
+        # check if manual entry of result is allowed
+        if not obj.getManualEntryOfResults():
+            return False
+
         if not obj.getDetectionLimitOperand():
             # This is a regular result (not a detection limit)
             return True
