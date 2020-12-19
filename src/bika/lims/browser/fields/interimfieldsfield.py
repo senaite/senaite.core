@@ -81,6 +81,9 @@ class InterimFieldsField(RecordsField):
     def get(self, instance, **kwargs):
         interims = RecordsField.get(self, instance, **kwargs) or []
 
+        # make sure we have a copy of the interims field
+        interims = copy.deepcopy(interims)
+
         # return "additional result values" for analysis service
         if IAnalysisService.providedBy(instance):
             return interims
