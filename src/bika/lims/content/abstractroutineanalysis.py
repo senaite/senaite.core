@@ -21,17 +21,6 @@
 from datetime import timedelta
 
 from AccessControl import ClassSecurityInfo
-from Products.ATContentTypes.utils import DT2dt
-from Products.ATContentTypes.utils import dt2DT
-from Products.Archetypes.Field import BooleanField
-from Products.Archetypes.Field import FixedPointField
-from Products.Archetypes.Field import StringField
-from Products.Archetypes.Schema import Schema
-from Products.CMFCore.permissions import View
-from zope.interface import alsoProvides
-from zope.interface import implements
-from zope.interface import noLongerProvides
-
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import UIDReferenceField
@@ -46,8 +35,18 @@ from bika.lims.interfaces import ICancellable
 from bika.lims.interfaces import IInternalUse
 from bika.lims.interfaces import IRoutineAnalysis
 from bika.lims.interfaces.analysis import IRequestAnalysis
+from bika.lims.utils.analysis import create_analysis
 from bika.lims.workflow import getTransitionDate
-
+from Products.Archetypes.Field import BooleanField
+from Products.Archetypes.Field import FixedPointField
+from Products.Archetypes.Field import StringField
+from Products.Archetypes.Schema import Schema
+from Products.ATContentTypes.utils import DT2dt
+from Products.ATContentTypes.utils import dt2DT
+from Products.CMFCore.permissions import View
+from zope.interface import alsoProvides
+from zope.interface import implements
+from zope.interface import noLongerProvides
 
 # True if the analysis is created by a reflex rule
 IsReflexAnalysis = BooleanField(
@@ -377,7 +376,6 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
             value = None
         field = self.getField("Calculation")
         field.set(self, value)
-        # TODO: Ensure dependencies
 
     @security.public
     def getDependents(self, with_retests=False, recursive=False):

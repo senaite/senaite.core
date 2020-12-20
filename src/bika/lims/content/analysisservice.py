@@ -380,6 +380,55 @@ class AnalysisService(AbstractBaseAnalysis):
             return None
         return calculation
 
+    def getServiceDependencies(self):
+        """Return calculation dependencies of the service
+
+        **Important**
+        This method returns the dependencies for the default calculation!
+        Analyses might select another Calculation and thus, have different
+        dependencies.
+
+        :return: a list of analysis services objects.
+        """
+        calc = self.getCalculation()
+        if calc:
+            return calc.getCalculationDependencies(flat=True)
+        return []
+
+    def getServiceDependenciesUIDs(self):
+        """Return calculation dependency UIDs of the service
+
+        **Important**
+        This method returns the dependencies for the default calculation!
+        Analyses might select another Calculation and thus, have different
+        dependencies.
+
+        :return: a list of uids
+        """
+        return map(api.get_uid, self.getServiceDependencies())
+
+    def getServiceDependants(self):
+        """Return services depending on us
+        """
+        catalog = api.get_tool(SETUP_CATALOG)
+        active_calcs = catalog(portal_type="Calculation", is_active=True)
+        calculations = map(api.get_object, active_calcs)
+        dependants = []
+        for calc in calculations:
+            calc_dependants = calc.getDependentServices()
+            if self in calc_dependants:
+                calc_dependencies = calc.getCalculationDependants()
+                dependants = dependants + calc_dependencies
+        dependants = list(set(dependants))
+        if self in dependants:
+            dependants.remove(self)
+        return dependants
+
+    def getServiceDependantsUIDs(self):
+        """Return service UIDs depending on us
+        """
+        return map(api.get_uid, self.getServiceDependants())
+
     def query_available_methods(self):
         """Return all available methods
         """
@@ -530,45 +579,6 @@ class AnalysisService(AbstractBaseAnalysis):
                  bsc(portal_type='Preservation', is_active=True)]
         items.sort(lambda x, y: cmp(x[1], y[1]))
         return DisplayList(list(items))
-
-    def getServiceDependencies(self):
-        """
-        This methods returns a list with the analyses services dependencies.
-        :return: a list of analysis services objects.
-        """
-        calc = self.getCalculation()
-        if calc:
-            return calc.getCalculationDependencies(flat=True)
-        return []
-
-    def getServiceDependenciesUIDs(self):
-        """
-        This methods returns a list with the service dependencies UIDs
-        :return: a list of uids
-        """
-        deps = self.getServiceDependencies()
-        deps_uids = [service.UID() for service in deps]
-        return deps_uids
-
-    def getServiceDependants(self):
-        bsc = getToolByName(self, 'bika_setup_catalog')
-        active_calcs = bsc(portal_type='Calculation', is_active=True)
-        calculations = [c.getObject() for c in active_calcs]
-        dependants = []
-        for calc in calculations:
-            calc_dependants = calc.getDependentServices()
-            if self in calc_dependants:
-                calc_dependencies = calc.getCalculationDependants()
-                dependants = dependants + calc_dependencies
-        dependants = list(set(dependants))
-        if self in dependants:
-            dependants.remove(self)
-        return dependants
-
-    def getServiceDependantsUIDs(self):
-        deps = self.getServiceDependants()
-        deps_uids = [service.UID() for service in deps]
-        return deps_uids
 
     def getAvailableMethods(self):
         """ Returns the methods available for this analysis.
