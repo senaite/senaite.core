@@ -725,13 +725,16 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         service = self.getAnalysisService()
         if not service:
             return []
+        # get the available methods of the service
+        methods = service.getMethods()
 
-        methods = []
+        # XXX Maybe this must be checked earlier?
         if self.getManualEntryOfResults():
-            methods = service.getMethods()
-        if self.getInstrumentEntryOfResults():
-            for instrument in service.getInstruments():
-                methods.extend(instrument.getMethods())
+            # filter out any methods that do not allow manual entry
+            methods = filter(lambda m: m.getManualEntryOfResults(), methods)
+        else:
+            # filter out any methods w/o instruments
+            methods = filter(lambda m: m.getInstruments(), methods)
 
         return list(set(methods))
 
@@ -756,15 +759,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         service = self.getAnalysisService()
         if not service:
             return []
-
-        instruments = []
-        if self.getInstrumentEntryOfResults():
-            instruments = service.getInstruments()
-        if self.getManualEntryOfResults():
-            for meth in self.getAllowedMethods():
-                instruments += meth.getInstruments()
-
-        return list(set(instruments))
+        return service.getInstruments()
 
     @security.public
     def getAllowedInstrumentUIDs(self):

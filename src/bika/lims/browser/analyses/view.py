@@ -402,7 +402,6 @@ class AnalysesView(BikaListingView):
         """
         return api.get_object(brain_or_object_or_uid, default=None)
 
-    @viewcache.memoize
     def get_methods_vocabulary(self, analysis_brain):
         """Returns a vocabulary with all the methods available for the passed in
         analysis, either those assigned to an instrument that are capable to
@@ -419,17 +418,13 @@ class AnalysesView(BikaListingView):
         :type analysis_brain: CatalogBrain
         :returns: A list of dicts
         """
-        uids = analysis_brain.getAllowedMethodUIDs
-        query = {'portal_type': 'Method',
-                 'is_active': True,
-                 'UID': uids}
-        brains = api.search(query, 'bika_setup_catalog')
-        if not brains:
-            return [{'ResultValue': '', 'ResultText': _('None')}]
-        return map(lambda brain: {'ResultValue': brain.UID,
-                                  'ResultText': brain.Title}, brains)
+        obj = self.get_object(analysis_brain)
+        methods = obj.getAllowedMethods()
+        if not methods:
+            return [{"ResultValue": "", "ResultText": _("None")}]
+        return map(lambda m: {"ResultValue": api.get_uid(m),
+                              "ResultText": api.get_title(m)}, methods)
 
-    @viewcache.memoize
     def get_instruments_vocabulary(self, analysis_brain):
         """Returns a vocabulary with the valid and active instruments available
         for the analysis passed in.
@@ -452,35 +447,31 @@ class AnalysesView(BikaListingView):
         :return: A vocabulary with the instruments for the analysis
         :rtype: A list of dicts: [{'ResultValue':UID, 'ResultText':Title}]
         """
-        if not analysis_brain.getInstrumentEntryOfResults:
-            # Instrument entry of results for this analysis is not allowed
-            return list()
+        obj = self.get_object(analysis_brain)
+        instruments = obj.getAllowedInstruments()
+        vocab = [{"ResultValue": "", "ResultText": _("None")}]
 
         # If the analysis is a QC analysis, display all instruments, including
         # those uncalibrated or for which the last QC test failed.
-        meta_type = analysis_brain.meta_type
-        uncalibrated = meta_type == 'ReferenceAnalysis'
-        if meta_type == 'DuplicateAnalysis':
-            base_analysis_type = analysis_brain.getAnalysisPortalType
-            uncalibrated = base_analysis_type == 'ReferenceAnalysis'
+        is_qc = api.get_portal_type(obj) == "ReferenceAnalysis"
 
-        uids = analysis_brain.getAllowedInstrumentUIDs
-        query = {'portal_type': 'Instrument',
-                 'is_active': True,
-                 'UID': uids}
-        brains = api.search(query, 'bika_setup_catalog')
-        vocab = [{'ResultValue': '', 'ResultText': _('None')}]
-        for brain in brains:
-            instrument = self.get_object(brain)
-            if uncalibrated and not instrument.isOutOfDate():
-                # Is a QC analysis, include instrument also if is not valid
-                vocab.append({'ResultValue': instrument.UID(),
-                              'ResultText': instrument.Title()})
+        for instrument in instruments:
+            # append all valid instruments
             if instrument.isValid():
-                # Only add the 'valid' instruments: certificate
-                # on-date and valid internal calibration tests
-                vocab.append({'ResultValue': instrument.UID(),
-                              'ResultText': instrument.Title()})
+                vocab.append({
+                    "ResultValue": api.get_uid(instrument),
+                    "ResultText": api.get_title(instrument),
+                })
+            elif instrument.isOutOfDate():
+                # skip out of date instruments
+                continue
+            elif is_qc:
+                # Is a QC analysis, include instrument also if is not valid
+                vocab.append({
+                    "ResultValue": api.get_uid(instrument),
+                    "ResultText": api.get_title(instrument),
+                })
+
         return vocab
 
     @viewcache.memoize
@@ -902,35 +893,30 @@ class AnalysesView(BikaListingView):
         :param analysis_brain: Brain that represents an analysis
         :param item: analysis' dictionary counterpart that represents a row
         """
-        item['Instrument'] = ''
-        if not analysis_brain.getInstrumentEntryOfResults:
-            # Manual entry of results, instrument is not allowed
-            item['Instrument'] = _('Manual')
-            item['replace']['Instrument'] = \
-                '<a href="#" tabindex="-1">{}</a>'.format(t(_('Manual')))
-            return
+        item["Instrument"] = ""
 
         # Instrument can be assigned to this analysis
         is_editable = self.is_analysis_edition_allowed(analysis_brain)
         self.show_methodinstr_columns = True
         instrument = self.get_instrument(analysis_brain)
+
         if is_editable:
             # Edition allowed
             voc = self.get_instruments_vocabulary(analysis_brain)
             if voc:
                 # The service has at least one instrument available
-                item['Instrument'] = instrument.UID() if instrument else ''
-                item['choices']['Instrument'] = voc
-                item['allow_edit'].append('Instrument')
+                item["Instrument"] = instrument.UID() if instrument else ""
+                item["choices"]["Instrument"] = voc
+                item["allow_edit"].append("Instrument")
                 return
 
         if instrument:
             # Edition not allowed
-            instrument_title = instrument and instrument.Title() or ''
+            instrument_title = instrument and instrument.Title() or ""
             instrument_link = get_link(instrument.absolute_url(),
                                        instrument_title, tabindex="-1")
-            item['Instrument'] = instrument_title
-            item['replace']['Instrument'] = instrument_link
+            item["Instrument"] = instrument_title
+            item["replace"]["Instrument"] = instrument_link
             return
 
     def _folder_item_analyst(self, obj, item):
