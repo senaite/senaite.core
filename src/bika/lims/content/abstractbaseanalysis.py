@@ -942,6 +942,17 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
         """
         return self.getField("Instrument").get(self)
 
+    def getRawInstrument(self):
+        """Returns the UID of the assigned instrument
+
+        :returns: Instrument UID
+        """
+        field = self.getField("Instrument")
+        instrument = field.getRaw(self)
+        if not instrument:
+            return None
+        return instrument
+
     @security.public
     def getInstrumentUID(self):
         """Returns the UID of the assigned instrument
@@ -952,10 +963,7 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
 
         :returns: Method UID
         """
-        instrument = self.getInstrument()
-        if not instrument:
-            return None
-        return api.get_uid(instrument)
+        return self.getRawInstrument()
 
     @security.public
     def getInstrumentURL(self):
