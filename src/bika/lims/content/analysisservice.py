@@ -279,6 +279,32 @@ class AnalysisService(AbstractBaseAnalysis):
         """
         return self.getField("Instruments").getRaw(self)
 
+    def getInstrument(self):
+        """Return the default instrument
+        """
+        field = self.getField("Instrument")
+        instrument = field.get(self)
+        if not instrument:
+            return None
+        # check if the instrument is in the selected instruments
+        instruments = self.getRawInstruments()
+        if instrument not in instruments:
+            return None
+        return api.get_object(instrument)
+
+    def getRawInstrument(self):
+        """Return the UID of the default instrument
+        """
+        field = self.getField("Instrument")
+        instrument = field.getRaw(self)
+        if not instrument:
+            return None
+        # check if the instrument is in the selected instruments
+        instruments = self.getRawInstruments()
+        if instrument not in instruments:
+            return None
+        return instrument
+
     def getCalculations(self):
         """Returns the assigned calculations
 
