@@ -246,10 +246,10 @@ class AnalysisService(AbstractBaseAnalysis):
         Always enabled when no instrument is selected
         """
         field = self.getField("ManualEntryOfResults")
+        # always true when no instruments selected
         if not self.getInstruments():
-            field.set(self, True)
-        else:
-            field.set(self, value)
+            value = True
+        field.set(self, value)
 
     def getMethods(self):
         """Returns the assigned methods
@@ -258,16 +258,6 @@ class AnalysisService(AbstractBaseAnalysis):
         """
         field = self.getField("Methods")
         methods = field.get(self)
-
-        # filter out methods based on manaul entry setting of the service
-        if self.getManualEntryOfResults():
-            # filter out methods that do not allow manual entry of results
-            methods = filter(
-                lambda m: not m.getManualEntryOfResults(), methods)
-        else:
-            # filter out methods w/o instruments assigned
-            methods = filter(lambda m: not m.getInstrument(), methods)
-
         return methods
 
     def getRawMethods(self):
