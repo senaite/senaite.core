@@ -415,10 +415,15 @@ class AnalysesView(BikaListingView):
         """
         obj = self.get_object(analysis_brain)
         methods = obj.getAllowedMethods()
+        vocab = [{"ResultValue": "", "ResultText": _("None")}]
         if not methods:
-            return [{"ResultValue": "", "ResultText": _("None")}]
-        return map(lambda m: {"ResultValue": api.get_uid(m),
-                              "ResultText": api.get_title(m)}, methods)
+            return vocab
+        for method in methods:
+            vocab.append({
+                "ResultValue": api.get_uid(method),
+                "ResultText": api.get_title(method),
+            })
+        return vocab
 
     def get_instruments_vocabulary(self, analysis_brain):
         """Returns a vocabulary with the valid and active instruments available
