@@ -367,7 +367,7 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
     def setCalculation(self, value):
         """Set the current calculation
 
-        NOTE: result is flushed
+        NOTE: this resets the result and interim fields
         """
         if not value:
             value = None
@@ -375,9 +375,11 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
         field.set(self, value)
         # flush result
         self.setResult(None)
+        # reset interim fields
+        self.resetInterimFields()
 
-    def getInterimFields(self):
-        """Return service and calculation interim fields
+    def resetInterimFields(self):
+        """Reset interim fields to original values
         """
         # get the service interims
         s_interims = self.getServiceInterimFields()
@@ -391,7 +393,7 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
             lambda interim: interim["keyword"] not in s_interim_keys,
             c_interims)
 
-        return s_interims + c_interims
+        self.setInterimFields(s_interims + c_interims)
 
     def getServiceInterimFields(self):
         """Return a copy of the service interim fields
