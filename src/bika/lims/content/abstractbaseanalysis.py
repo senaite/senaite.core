@@ -261,11 +261,12 @@ ManualEntryOfResults = BooleanField(
     )
 )
 
-# XXX REMOVE
+# XXX Hidden! We always allow results from instruments!
+# TODO: Remove if everywhere refactored.
 InstrumentEntryOfResults = BooleanField(
     'InstrumentEntryOfResults',
     schemata="Method",
-    default=False,
+    default=True,
     widget=BooleanWidget(
         visible=False,
         label=_("Instrument assignment is allowed"),
