@@ -326,10 +326,10 @@ class AnalysisService(AbstractBaseAnalysis):
         if not instrument:
             return None
         # check if the instrument is in the selected instruments
-        instruments = self.getRawInstruments()
+        instruments = self.getInstruments()
         if instrument not in instruments:
             return None
-        return api.get_object(instrument)
+        return instrument
 
     def getRawInstrument(self):
         """Return the UID of the default instrument
@@ -370,7 +370,7 @@ class AnalysisService(AbstractBaseAnalysis):
         if not calculation:
             return None
         # check if the calculation is in the selected calculations
-        calculations = self.getRawCalculations()
+        calculations = self.getCalculations()
         if calculation not in calculations:
             return None
         return api.get_object(calculation)
