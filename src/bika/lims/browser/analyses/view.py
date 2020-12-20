@@ -306,13 +306,6 @@ class AnalysesView(BikaListingView):
         if not self.has_permission(FieldEditAnalysisResult, analysis_obj):
             return False
 
-        # Is the instrument out of date?
-        # The user can assign a result to the analysis if it does not have any
-        # instrument assigned or the instrument assigned is valid.
-        if not self.is_analysis_instrument_valid(analysis_brain):
-            # return if it is allowed to enter a manual result
-            return analysis_obj.getManualEntryOfResults()
-
         return True
 
     @viewcache.memoize
@@ -371,7 +364,6 @@ class AnalysesView(BikaListingView):
 
         return True
 
-    @viewcache.memoize
     def is_analysis_instrument_valid(self, analysis_brain):
         """Return if the analysis has a valid instrument.
 
