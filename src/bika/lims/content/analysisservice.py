@@ -278,6 +278,34 @@ class AnalysisService(AbstractBaseAnalysis):
         methods = self.getMethods()
         return map(api.get_uid, methods)
 
+    def getMethod(self):
+        """Get the default method
+        """
+        field = self.getField("Method")
+        method = field.get(self)
+        if not method:
+            return None
+        # check if the method is in the selected methods
+        methods = self.getMethods()
+        if method not in methods:
+            return None
+        return method
+
+    def getRawMethod(self):
+        """Returns the UID of the default method
+
+        :returns: method UID
+        """
+        field = self.getField("Method")
+        method = field.getRaw(self)
+        if not method:
+            return None
+        # check if the method is in the selected methods
+        methods = self.getRawMethods()
+        if method not in methods:
+            return None
+        return method
+
     def getInstruments(self):
         """Returns the assigned instruments
 
