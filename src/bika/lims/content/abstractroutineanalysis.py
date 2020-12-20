@@ -347,6 +347,39 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
         raise NotImplementedError("getSiblings is not implemented.")
 
     @security.public
+    def getCalculation(self):
+        """Return current assigned calculation
+        """
+        field = self.getField("Calculation")
+        calculation = field.get(self)
+        if not calculation:
+            return None
+        return calculation
+
+    @security.public
+    def getCalculationUID(self):
+        """Used to populate catalog values
+        """
+        calculation = self.getCalculation()
+        if calculation:
+            return calculation.UID()
+
+    def setCalculation(self, value):
+        """Set the current calculation
+
+        NOTE: this flushes all interims + the result
+        """
+        # flush interims
+        self.setInterimFields([])
+        # flush result
+        self.setResult(None)
+        if not value:
+            value = None
+        field = self.getField("Calculation")
+        field.set(self, value)
+        # TODO: Ensure dependencies
+
+    @security.public
     def getDependents(self, with_retests=False, recursive=False):
         """
         Returns a list of siblings who depend on us to calculate their result.
@@ -381,7 +414,6 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
                                                   recursive=True)
             deps.extend(down_dependencies)
         return deps
-
 
     @security.public
     def getDependencies(self, with_retests=False, recursive=False):

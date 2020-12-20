@@ -1137,38 +1137,6 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         """
         return self.isInstrumentValid()
 
-    def setCalculation(self, value):
-        """Set the current calculation
-
-        NOTE: this flushes all local interims
-        """
-        # flush interims
-        self.setInterimFields([])
-        # flush result
-        self.setResult(None)
-        if not value:
-            value = None
-        field = self.getField("Calculation")
-        field.set(self, value)
-
-    @security.public
-    def getCalculation(self):
-        """Return current assigned calculation
-        """
-        field = self.getField("Calculation")
-        calculation = field.get(self)
-        if not calculation:
-            return None
-        return calculation
-
-    @security.public
-    def getCalculationUID(self):
-        """Used to populate catalog values
-        """
-        calculation = self.getCalculation()
-        if calculation:
-            return calculation.UID()
-
     @security.public
     def remove_duplicates(self, ws):
         """When this analysis is unassigned from a worksheet, this function
