@@ -124,6 +124,11 @@ class AnalysesView(BikaListingView):
                 "ajax": True,
                 "sortable": False,
                 "toggle": True}),
+            ("Calculation", {
+                "title": _("Calculation"),
+                "ajax": True,
+                "sortable": False,
+                "toggle": True}),
             ("Analyst", {
                 "title": _("Analyst"),
                 "sortable": False,
@@ -364,33 +369,23 @@ class AnalysesView(BikaListingView):
 
         return True
 
-    def is_analysis_instrument_valid(self, analysis_brain):
-        """Return if the analysis has a valid instrument.
-
-        If the analysis passed in is from ReferenceAnalysis type or does not
-        have an instrument assigned, returns True
-
-        :param analysis_brain: Brain that represents an analysis
-        :return: True if the instrument assigned is valid or is None"""
-        if analysis_brain.meta_type == 'ReferenceAnalysis':
-            # If this is a ReferenceAnalysis, there is no need to check the
-            # validity of the instrument, because this is a QC analysis and by
-            # definition, it has the ability to promote an instrument to a
-            # valid state if the result is correct.
-            return True
-        instrument = self.get_instrument(analysis_brain)
-        return not instrument or instrument.isValid()
-
     def get_instrument(self, analysis_brain):
         """Returns the instrument assigned to the analysis passed in, if any
 
         :param analysis_brain: Brain that represents an analysis
-        :return: Instrument object or None"""
-        instrument_uid = analysis_brain.getInstrumentUID
-        # Note we look for the instrument by using its UID, case we want the
-        # instrument to be cached by UID so if same instrument is assigned to
-        # several analyses, a single search for instrument will be required
-        return self.get_object(instrument_uid)
+        :return: Instrument object or None
+        """
+        obj = self.get_object(analysis_brain)
+        return obj.getInstrument()
+
+    def get_calculation(self, analysis_brain):
+        """Returns the calculation assigned to the analysis passed in, if any
+
+        :param analysis_brain: Brain that represents an analysis
+        :return: Calculation object or None
+        """
+        obj = self.get_object(analysis_brain)
+        return obj.getCalculation()
 
     @viewcache.memoize
     def get_object(self, brain_or_object_or_uid):
@@ -471,6 +466,32 @@ class AnalysesView(BikaListingView):
                     "ResultValue": api.get_uid(instrument),
                     "ResultText": api.get_title(instrument),
                 })
+
+        return vocab
+
+    def get_calculation_vocabulary(self, analysis_brain):
+        """Vocabulary of the available analysis calculations
+
+        The vocabulary is a list of dictionaries. Each dictionary has the
+        following structure:
+
+            {'ResultValue': <instrument_UID>,
+             'ResultText': <instrument_Title>}
+
+        :param analysis_brain: A single Analysis or ReferenceAnalysis
+        :type analysis_brain: Analysis or.ReferenceAnalysis
+        :return: A vocabulary with the instruments for the analysis
+        :rtype: A list of dicts: [{'ResultValue':UID, 'ResultText':Title}]
+        """
+        obj = self.get_object(analysis_brain)
+        calculations = obj.getAllowedCalculations()
+        vocab = [{"ResultValue": "", "ResultText": _("None")}]
+
+        for calculation in calculations:
+            vocab.append({
+                "ResultValue": api.get_uid(calculation),
+                "ResultText": api.get_title(calculation),
+            })
 
         return vocab
 
@@ -620,7 +641,6 @@ class AnalysesView(BikaListingView):
                     "toggle": True,
                     "ajax": True,
                 }
-
 
         if self.allow_edit:
             new_states = []
@@ -802,6 +822,16 @@ class AnalysesView(BikaListingView):
 
         is_editable = self.is_analysis_edition_allowed(analysis_brain)
 
+        # calculation
+        calculation = self.get_calculation(analysis_brain)
+        calculation_uid = api.get_uid(calculation) if calculation else ""
+        item["calculation"] = calculation_uid
+        item["Calculation"] = calculation_uid
+        calculation_vocab = self.get_calculation_vocabulary(analysis_brain)
+        if is_editable and calculation_vocab:
+            item["choices"]["Calculation"] = calculation_vocab
+            item["allow_edit"].append("Calculation")
+
         # Set interim fields. Note we add the key 'formatted_value' to the list
         # of interims the analysis has already assigned.
         analysis_obj = self.get_object(analysis_brain)
@@ -859,11 +889,6 @@ class AnalysesView(BikaListingView):
 
         item['interimfields'] = interim_fields
         self.interim_fields[analysis_brain.UID] = interim_fields
-
-        # Set calculation
-        calculation_uid = analysis_brain.getCalculationUID
-        has_calculation = calculation_uid and True or False
-        item['calculation'] = has_calculation
 
     def _folder_item_method(self, analysis_brain, item):
         """Fills the analysis' method to the item passed in.

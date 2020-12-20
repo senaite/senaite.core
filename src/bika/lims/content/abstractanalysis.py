@@ -126,6 +126,8 @@ NumberOfRequiredVerifications = IntegerField(
 # the calculation at creation time.
 Calculation = HistoryAwareReferenceField(
     'Calculation',
+    read_permission=View,
+    write_permission=FieldEditAnalysisResult,
     allowed_types=('Calculation',),
     relationship='AnalysisCalculation',
     referenceClass=HoldingReference
@@ -771,6 +773,27 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         return [i.UID() for i in self.getAllowedInstruments()]
 
     @security.public
+    def getAllowedCalculations(self):
+        """Returns the allowed calculations for this analysis
+
+        :return: A list of calculations allowed for this Analysis
+        :rtype: list of calculations
+        """
+        service = self.getAnalysisService()
+        if not service:
+            return []
+        return service.getCalculations()
+
+    @security.public
+    def getAllowedCalculationUIDs(self):
+        """Returns the allowed calculation UIDs for this analysis
+
+        :return: A list of calculations allowed for this Analysis
+        :rtype: list of calculation UIDs
+        """
+        return map(api.get_uid, self.getAllowedCalculations())
+
+    @security.public
     def getExponentialFormatPrecision(self, result=None):
         """ Returns the precision for the Analysis Service and result
         provided. Results with a precision value above this exponential
@@ -1113,6 +1136,30 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         :rtype: bool
         """
         return self.isInstrumentValid()
+
+    def setCalculation(self, value):
+        """Set the current calculation
+
+        NOTE: this flushes all local interims
+        """
+        # flush interims
+        self.setInterimFields([])
+        # flush result
+        self.setResult(None)
+        if not value:
+            value = None
+        field = self.getField("Calculation")
+        field.set(self, value)
+
+    @security.public
+    def getCalculation(self):
+        """Return current assigned calculation
+        """
+        field = self.getField("Calculation")
+        calculation = field.get(self)
+        if not calculation:
+            return None
+        return calculation
 
     @security.public
     def getCalculationUID(self):
