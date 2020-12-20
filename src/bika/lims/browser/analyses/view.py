@@ -831,8 +831,10 @@ class AnalysesView(BikaListingView):
         # calculation
         calculation = self.get_calculation(analysis_brain)
         calculation_uid = api.get_uid(calculation) if calculation else ""
+        calculation_title = get_link_for(calculation) if calculation else ""
         item["calculation"] = calculation_uid
         item["Calculation"] = calculation_uid
+        item["replace"]["Calculation"] = calculation_title or _("Manual")
         calculation_vocab = self.get_calculation_vocabulary(analysis_brain)
         if is_editable and calculation_vocab:
             item["choices"]["Calculation"] = calculation_vocab
