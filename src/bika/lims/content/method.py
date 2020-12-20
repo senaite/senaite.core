@@ -232,9 +232,8 @@ class Method(BaseFolder):
             return None
         # check if the instrument is in the selected instruments
         instruments = self.getRawInstruments()
-        if instruments:
-            if instrument not in instruments:
-                return None
+        if instrument not in instruments:
+            return None
         return api.get_object(instrument)
 
     def getRawInstrument(self):
@@ -246,9 +245,8 @@ class Method(BaseFolder):
             return None
         # check if the instrument is in the selected instruments
         instruments = self.getRawInstruments()
-        if instruments:
-            if instrument not in instruments:
-                return None
+        if instrument not in instruments:
+            return None
         return instrument
 
     def getCalculations(self):
@@ -284,9 +282,8 @@ class Method(BaseFolder):
             return None
         # check if the calculation is in the selected calculations
         calculations = self.getRawCalculations()
-        if calculations:
-            if calculation not in calculations:
-                return None
+        if calculation not in calculations:
+            return None
         return api.get_object(calculation)
 
     def getRawCalculation(self):
@@ -304,9 +301,8 @@ class Method(BaseFolder):
             return None
         # check if the calculation is in the selected calculations
         calculations = self.getRawCalculations()
-        if calculations:
-            if calculation not in calculations:
-                return None
+        if calculation not in calculations:
+            return None
         return calculation
 
     def query_available_instruments(self):
