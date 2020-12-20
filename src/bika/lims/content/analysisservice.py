@@ -238,6 +238,17 @@ class AnalysisService(AbstractBaseAnalysis):
 
         return renameAfterCreation(self)
 
+    def setManualEntryOfResults(self, value):
+        """Allow manual entry of results
+
+        Always enabled when no instrument is selected
+        """
+        field = self.getField("ManualEntryOfResults")
+        if not self.getInstruments():
+            field.set(self, True)
+        else:
+            field.set(self, value)
+
     def getMethods(self):
         """Returns the assigned methods
 
