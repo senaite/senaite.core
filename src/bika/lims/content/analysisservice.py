@@ -324,11 +324,17 @@ class AnalysisService(AbstractBaseAnalysis):
         return methods
 
     def getCalculation(self):
-        """Returns the assigned calculation
-
-        :returns: Calculation object
+        """Get the default calculation
         """
-        return self.getField("Calculation").get(self)
+        field = self.getField("Calculation")
+        calculation = field.get(self)
+        if not calculation:
+            return None
+        # check if the calculation is in the selected calculations
+        calculations = self.getRawCalculations()
+        if calculation not in calculations:
+            return None
+        return api.get_object(calculation)
 
     def getRawCalculation(self):
         """Returns the UID of the assigned calculation
@@ -338,6 +344,10 @@ class AnalysisService(AbstractBaseAnalysis):
         field = self.getField("Calculation")
         calculation = field.getRaw(self)
         if not calculation:
+            return None
+        # check if the calculation is in the selected calculations
+        calculations = self.getRawCalculations()
+        if calculation not in calculations:
             return None
         return calculation
 
