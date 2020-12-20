@@ -254,18 +254,27 @@ class AnalysisService(AbstractBaseAnalysis):
 
         :returns: List of method objects
         """
-        return self.getField("Methods").get(self)
+        field = self.getField("Methods")
+        methods = field.get(self)
+
+        # filter out methods based on manaul entry setting of the service
+        if self.getManualEntryOfResults():
+            # filter out methods that do not allow manual entry of results
+            methods = filter(
+                lambda m: not m.getManualEntryOfResults(), methods)
+        else:
+            # filter out methods w/o instruments assigned
+            methods = filter(lambda m: not m.getInstrument(), methods)
+
+        return methods
 
     def getRawMethods(self):
         """Returns the assigned method UIDs
 
         :returns: List of method UIDs
         """
-        field = self.getField("Methods")
-        methods = field.getRaw(self)
-        if not methods:
-            return []
-        return methods
+        methods = self.getMethods()
+        return map(api.get_uid, methods)
 
     def getInstruments(self):
         """Returns the assigned instruments
