@@ -47,6 +47,7 @@ from bika.lims.utils import format_supsub
 from bika.lims.utils import formatDecimalMark
 from bika.lims.utils import get_image
 from bika.lims.utils import get_link
+from bika.lims.utils import get_link_for
 from bika.lims.utils import getUsers
 from bika.lims.utils import t
 from bika.lims.utils.analysis import format_uncertainty
@@ -852,21 +853,22 @@ class AnalysesView(BikaListingView):
 
             interim_value = interim_field.get("value", "")
             interim_formatted = formatDecimalMark(interim_value, self.dmk)
-            interim_field['formatted_value'] = interim_formatted
+            interim_field["formatted_value"] = interim_formatted
             item[interim_keyword] = interim_field
-            item['class'][interim_keyword] = 'interim'
+            item["class"][interim_keyword] = "interim"
 
             # Note: As soon as we have a separate content type for field
             #       analysis, we can solely rely on the field permission
             #       "senaite.core: Field: Edit Analysis Result"
             if is_editable:
-                if self.has_permission(FieldEditAnalysisResult, analysis_brain):
-                    item['allow_edit'].append(interim_keyword)
+                if self.has_permission(
+                        FieldEditAnalysisResult, analysis_brain):
+                    item["allow_edit"].append(interim_keyword)
 
             # Add this analysis' interim fields to the interim_columns list
-            interim_hidden = interim_field.get('hidden', False)
+            interim_hidden = interim_field.get("hidden", False)
             if not interim_hidden:
-                interim_title = interim_field.get('title')
+                interim_title = interim_field.get("title")
                 self.interim_columns[interim_keyword] = interim_title
 
             # Does interim's results list needs to be rendered?
@@ -879,8 +881,8 @@ class AnalysesView(BikaListingView):
                 # Generate the display list
                 # [{"ResultValue": value, "ResultText": text},]
                 headers = ["ResultValue", "ResultText"]
-                d_list = map(lambda it: dict(zip(headers, it)), choices.items())
-                item.setdefault("choices", {})[interim_keyword] = d_list
+                dl = map(lambda it: dict(zip(headers, it)), choices.items())
+                item.setdefault("choices", {})[interim_keyword] = dl
 
                 # Set the text as the formatted value
                 text = choices.get(interim_value, "")
@@ -892,7 +894,7 @@ class AnalysesView(BikaListingView):
 
                 item[interim_keyword] = interim_field
 
-        item['interimfields'] = interim_fields
+        item["interimfields"] = interim_fields
         self.interim_fields[analysis_brain.UID] = interim_fields
 
     def _folder_item_method(self, analysis_brain, item):
@@ -901,20 +903,20 @@ class AnalysesView(BikaListingView):
         :param analysis_brain: Brain that represents an analysis
         :param item: analysis' dictionary counterpart that represents a row
         """
-
+        obj = self.get_object(analysis_brain)
         is_editable = self.is_analysis_edition_allowed(analysis_brain)
-        method_title = analysis_brain.getMethodTitle
-        item['Method'] = method_title or ''
+        method_title = api.get_title(obj)
+        item["Method"] = method_title or _("Manual")
         if is_editable:
             method_vocabulary = self.get_methods_vocabulary(analysis_brain)
             if method_vocabulary:
-                item['Method'] = analysis_brain.getMethodUID
-                item['choices']['Method'] = method_vocabulary
-                item['allow_edit'].append('Method')
+                item["Method"] = obj.getRawMethod()
+                item["choices"]["Method"] = method_vocabulary
+                item["allow_edit"].append("Method")
                 self.show_methodinstr_columns = True
         elif method_title:
-            item['replace']['Method'] = get_link(analysis_brain.getMethodURL,
-                                                 method_title, tabindex="-1")
+            item["replace"]["Method"] = get_link(
+                api.get_url(obj), method_title, tabindex="-1")
             self.show_methodinstr_columns = True
 
     def _folder_item_instrument(self, analysis_brain, item):
@@ -948,6 +950,8 @@ class AnalysesView(BikaListingView):
             item["Instrument"] = instrument_title
             item["replace"]["Instrument"] = instrument_link
             return
+        else:
+            item["Instrument"] = _("Manual")
 
     def _folder_item_analyst(self, obj, item):
         is_editable = self.is_analysis_edition_allowed(obj)
