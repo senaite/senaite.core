@@ -261,8 +261,9 @@ ManualEntryOfResults = BooleanField(
     )
 )
 
-# XXX Hidden! We always allow results from instruments!
-# TODO: Remove if everywhere refactored.
+# XXX Hidden and always True!
+# -> We always allow results from instruments for simplicity!
+# TODO: Remove if everywhere refactored (also the getter).
 InstrumentEntryOfResults = BooleanField(
     'InstrumentEntryOfResults',
     schemata="Method",
@@ -895,6 +896,14 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
         bsval = "%s (%s)" % (_("System default"), str(bsve))
         items = [(-1, bsval), (1, '1'), (2, '2'), (3, '3'), (4, '4')]
         return IntDisplayList(list(items))
+
+    @security.public
+    def getInstrumentEntryOfResults(self):
+        """XXX: ALWAYS ALLOW INSTRUMENT RESULTS
+
+        TODO: Remove if refactored
+        """
+        return True
 
     @security.public
     def getMethodTitle(self):
