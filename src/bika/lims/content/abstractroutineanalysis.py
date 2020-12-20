@@ -399,6 +399,8 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
         """Return a copy of the service interim fields
         """
         service = self.getAnalysisService()
+        if not service:
+            return []
         return copy.deepcopy(service.getInterimFields())
 
     def getCalculationInterimFields(self):
