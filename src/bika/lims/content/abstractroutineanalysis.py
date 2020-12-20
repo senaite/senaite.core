@@ -18,6 +18,7 @@
 # Copyright 2018-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import copy
 from datetime import timedelta
 
 from AccessControl import ClassSecurityInfo
@@ -366,16 +367,45 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
     def setCalculation(self, value):
         """Set the current calculation
 
-        NOTE: this flushes all interims + the result
+        NOTE: result is flushed
         """
-        # flush interims
-        self.setInterimFields([])
-        # flush result
-        self.setResult(None)
         if not value:
             value = None
         field = self.getField("Calculation")
         field.set(self, value)
+        # flush result
+        self.setResult(None)
+
+    def getInterimFields(self):
+        """Return service and calculation interim fields
+        """
+        # get the service interims
+        s_interims = self.getServiceInterimFields()
+        s_interim_keys = map(lambda interim: interim["keyword"], s_interims)
+
+        # get the calculation interims
+        c_interims = self.getCalculationInterimFields()
+
+        # remove duplicates
+        c_interims = filter(
+            lambda interim: interim["keyword"] not in s_interim_keys,
+            c_interims)
+
+        return s_interims + c_interims
+
+    def getServiceInterimFields(self):
+        """Return a copy of the service interim fields
+        """
+        service = self.getAnalysisService()
+        return copy.deepcopy(service.getInterimFields())
+
+    def getCalculationInterimFields(self):
+        """Return a copy of the calculation interim fields
+        """
+        calculation = self.getCalculation()
+        if not calculation:
+            return []
+        return copy.deepcopy(calculation.getInterimFields())
 
     @security.public
     def getDependents(self, with_retests=False, recursive=False):
