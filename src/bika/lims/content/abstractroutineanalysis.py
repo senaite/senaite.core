@@ -18,7 +18,6 @@
 # Copyright 2018-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-import copy
 from datetime import timedelta
 
 from AccessControl import ClassSecurityInfo
@@ -36,7 +35,6 @@ from bika.lims.interfaces import ICancellable
 from bika.lims.interfaces import IInternalUse
 from bika.lims.interfaces import IRoutineAnalysis
 from bika.lims.interfaces.analysis import IRequestAnalysis
-from bika.lims.utils.analysis import create_analysis
 from bika.lims.workflow import getTransitionDate
 from Products.Archetypes.Field import BooleanField
 from Products.Archetypes.Field import FixedPointField
@@ -363,53 +361,6 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
         calculation = self.getCalculation()
         if calculation:
             return calculation.UID()
-
-    def setCalculation(self, value):
-        """Set the current calculation
-
-        NOTE: this resets the result and interim fields
-        """
-        if not value:
-            value = None
-        field = self.getField("Calculation")
-        field.set(self, value)
-        # flush result
-        self.setResult(None)
-        # reset interim fields
-        self.resetInterimFields()
-
-    def resetInterimFields(self):
-        """Reset interim fields to original values
-        """
-        # get the service interims
-        s_interims = self.getServiceInterimFields()
-        s_interim_keys = map(lambda interim: interim["keyword"], s_interims)
-
-        # get the calculation interims
-        c_interims = self.getCalculationInterimFields()
-
-        # remove duplicates
-        c_interims = filter(
-            lambda interim: interim["keyword"] not in s_interim_keys,
-            c_interims)
-
-        self.setInterimFields(s_interims + c_interims)
-
-    def getServiceInterimFields(self):
-        """Return a copy of the service interim fields
-        """
-        service = self.getAnalysisService()
-        if not service:
-            return []
-        return copy.deepcopy(service.getInterimFields())
-
-    def getCalculationInterimFields(self):
-        """Return a copy of the calculation interim fields
-        """
-        calculation = self.getCalculation()
-        if not calculation:
-            return []
-        return copy.deepcopy(calculation.getInterimFields())
 
     @security.public
     def getDependents(self, with_retests=False, recursive=False):
