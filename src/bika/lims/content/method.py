@@ -22,6 +22,7 @@ from AccessControl import ClassSecurityInfo
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import UIDReferenceField
+from bika.lims.browser.widgets import ReferenceWidget
 from bika.lims.catalog import SETUP_CATALOG
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
@@ -35,7 +36,6 @@ from Products.Archetypes.public import BooleanField
 from Products.Archetypes.public import BooleanWidget
 from Products.Archetypes.public import FileWidget
 from Products.Archetypes.public import Schema
-from Products.Archetypes.public import SelectionWidget
 from Products.Archetypes.public import StringField
 from Products.Archetypes.public import StringWidget
 from Products.Archetypes.public import TextAreaWidget
@@ -88,17 +88,6 @@ schema = BikaSchema.copy() + Schema((
             description=_("Check if the method has been accredited"))
     ),
 
-    # N.B. Always true when no instrument selected
-    BooleanField(
-        "ManualEntryOfResults",
-        required=0,
-        default=True,
-        widget=BooleanWidget(
-            label=_("Manual entry of results"),
-            description=_("Allow to introduce analysis results manually"),
-        )
-    ),
-
     # NOTE: `Instruments` is a computed field and checks the supported methods
     #        of all global instruments.
     UIDReferenceField(
@@ -110,20 +99,6 @@ schema = BikaSchema.copy() + Schema((
         widget=PicklistWidget(
             label=_("Instruments"),
             description=_("Instruments supporting this method"),
-        )
-    ),
-
-    UIDReferenceField(
-        "Instrument",
-        required=0,
-        allowed_types=("Instrument", ),
-        vocabulary="_default_instrument_vocabulary",
-        default="",
-        accessor="getRawInstrument",
-        widget=SelectionWidget(
-            format="select",
-            label=_("Default Instrument"),
-            description=_("Default selected instrument for analyses"),
         )
     ),
 
@@ -140,23 +115,49 @@ schema = BikaSchema.copy() + Schema((
         )
     ),
 
+    # XXX: HIDDEN -> TO BE REMOVED
+    # TODO: Migrate to Calculations!
     UIDReferenceField(
         "Calculation",
-        required=0,
         allowed_types=("Calculation", ),
-        vocabulary="_default_calculation_vocabulary",
-        accessor="getRawCalculation",
-        widget=SelectionWidget(
+        widget=ReferenceWidget(
+            visible=False,
             format="select",
-            label=_("Default Calculation"),
-            description=_("Default selected calculation for analyses"),
+            checkbox_bound=0,
+            label=_("Calculation"),
+            description=_(
+                "If required, select a calculation for the The analysis "
+                "services linked to this method. Calculations can be "
+                "configured under the calculations item in the LIMS set-up"),
+            showOn=True,
+            catalog_name="bika_setup_catalog",
+            base_query={
+                "sort_on": "sortable_title",
+                "is_active": True,
+                "sort_limit": 50,
+            },
+        )
+    ),
+
+    # XXX: HIDDEN -> TO BE REMOVED
+    BooleanField(
+        "ManualEntryOfResults",
+        schemata="default",
+        default=True,
+        widget=BooleanWidget(
+            label=_("Manual entry of results"),
+            description=_("The results for the Analysis Services that use "
+                          "this method can be set manually"),
         )
     ),
 ))
 
 
 class Method(BaseFolder):
-    """Analysis method
+    """A method describes how an analysis is performed
+
+    Methods can be assigned to analysis services and define which instruments
+    and calculations are possible.
     """
     implements(IMethod, IDeactivable, IHaveInstrument)
 
@@ -167,21 +168,6 @@ class Method(BaseFolder):
     def _renameAfterCreation(self, check_auto_id=False):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
-
-    def setManualEntryOfResults(self, value):
-        """Allow manual entry of results
-        """
-        field = self.getField("ManualEntryOfResults")
-        if not self.getInstruments():
-            # Always true if no instrument is selected
-            field.set(self, True)
-        else:
-            field.set(self, value)
-
-    def isManualEntryOfResults(self):
-        """BBB: Remove when not used anymore!
-        """
-        return self.getManualEntryOfResults()
 
     def getInstruments(self):
         """Instruments capable to perform this method
@@ -203,10 +189,6 @@ class Method(BaseFolder):
         existing = self.getRawInstruments()
         to_remove = filter(lambda uid: uid not in value, existing)
 
-        # handle all Instruments flushed
-        if not value:
-            self.setManualEntryOfResults(True)
-
         # remove method from removed instruments
         for uid in to_remove:
             instrument = api.get_object_by_uid(uid)
@@ -222,32 +204,6 @@ class Method(BaseFolder):
                 continue
             methods.append(self)
             instrument.setMethods(methods)
-
-    def getInstrument(self):
-        """Return the default instrument
-        """
-        field = self.getField("Instrument")
-        instrument = field.get(self)
-        if not instrument:
-            return None
-        # check if the instrument is in the selected instruments
-        instruments = self.getInstruments()
-        if instrument not in instruments:
-            return None
-        return instrument
-
-    def getRawInstrument(self):
-        """Return the UID of the default instrument
-        """
-        field = self.getField("Instrument")
-        instrument = field.getRaw(self)
-        if not instrument:
-            return None
-        # check if the instrument is in the selected instruments
-        instruments = self.getRawInstruments()
-        if instrument not in instruments:
-            return None
-        return instrument
 
     def getCalculations(self):
         """List of Calculation UIDs
@@ -273,34 +229,6 @@ class Method(BaseFolder):
         field = self.getField("Calculations")
         field.set(self, value)
 
-    def getCalculation(self):
-        """Get the default calculation
-        """
-        field = self.getField("Calculation")
-        calculation = field.get(self)
-        if not calculation:
-            return None
-        # check if the calculation is in the selected calculations
-        calculations = self.getCalculations()
-        if calculation not in calculations:
-            return None
-        return api.get_object(calculation)
-
-    def getRawCalculation(self):
-        """Returns the UID of the assigned calculation
-
-        :returns: Calculation UID
-        """
-        field = self.getField("Calculation")
-        calculation = field.getRaw(self)
-        if not calculation:
-            return None
-        # check if the calculation is in the selected calculations
-        calculations = self.getRawCalculations()
-        if calculation not in calculations:
-            return None
-        return calculation
-
     def query_available_instruments(self):
         """Return all available Instruments
         """
@@ -319,20 +247,6 @@ class Method(BaseFolder):
         instruments = self.query_available_instruments()
         items = [(ins.UID, ins.Title) for ins in instruments]
         dlist = DisplayList(items)
-        return dlist
-
-    def _default_instrument_vocabulary(self):
-        """Vocabulary used for default instrument field
-        """
-        # check if we selected instruments
-        instruments = self.getInstruments()
-        if not instruments:
-            # query all available instruments
-            instruments = self.query_available_instruments()
-        items = [(api.get_uid(i), api.get_title(i)) for i in instruments]
-        dlist = DisplayList(items)
-        # allow to leave this field empty
-        dlist.add("", _("None"))
         return dlist
 
     def query_available_calculations(self):
@@ -355,19 +269,17 @@ class Method(BaseFolder):
         dlist = DisplayList(items)
         return dlist
 
-    def _default_calculation_vocabulary(self):
-        """Vocabulary used for the default calculation field
+    # TO BE REMOVED
+
+    def getManualEntryOfResults(self):
+        """BBB
         """
-        # check selected calculations
-        calculations = self.getCalculations()
-        if not calculations:
-            # query all available calculations
-            calculations = self.query_available_calculations()
-        items = [(api.get_uid(c), api.get_title(c)) for c in calculations]
-        # allow to leave this field empty
-        dlist = DisplayList(items)
-        dlist.add("", _("None"))
-        return dlist
+        return True
+
+    def isManualEntryOfResults(self):
+        """BBB
+        """
+        return True
 
 
 registerType(Method, PROJECTNAME)
