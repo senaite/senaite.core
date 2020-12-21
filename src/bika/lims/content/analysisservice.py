@@ -76,7 +76,7 @@ Instruments = UIDReferenceField(
     )
 )
 
-# XXX REMOVE
+# XXX: HIDDEN -> TO BE REMOVED
 UseDefaultCalculation = BooleanField(
     "UseDefaultCalculation",
     schemata="Method",
@@ -116,24 +116,21 @@ InterimFields = InterimFieldsField(
     )
 )
 
-# If this flag is true, then analyses created from this service will be linked
-# to their own Sample Partition, and no other analyses will be linked to that
-# partition.
+# XXX: HIDDEN -> TO BE REMOVED
 Separate = BooleanField(
     "Separate",
     schemata="Container and Preservation",
     default=False,
     required=0,
     widget=BooleanWidget(
+        visible=False,
         label=_("Separate Container"),
         description=_("Check this box to ensure a separate sample container "
                       "is used for this analysis service"),
     )
 )
 
-# The preservation for this service; If multiple services share the same
-# preservation, then it's possible that they can be performed on the same
-# sample partition.
+# XXX: HIDDEN -> TO BE REMOVED
 Preservation = UIDReferenceField(
     "Preservation",
     schemata="Container and Preservation",
@@ -142,6 +139,7 @@ Preservation = UIDReferenceField(
     required=0,
     multiValued=0,
     widget=ReferenceWidget(
+        visible=False,
         checkbox_bound=0,
         label=_("Default Preservation"),
         description=_(
