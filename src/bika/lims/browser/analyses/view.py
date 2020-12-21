@@ -128,9 +128,8 @@ class AnalysesView(ListingView):
                 "toggle": True}),
             ("Calculation", {
                 "title": _("Calculation"),
-                "ajax": True,
                 "sortable": False,
-                "toggle": True}),
+                "toggle": False}),
             ("Analyst", {
                 "title": _("Analyst"),
                 "sortable": False,
@@ -330,10 +329,6 @@ class AnalysesView(ListingView):
         # Get the ananylsis object
         obj = self.get_object(analysis_brain)
 
-        # check if manual entry of result is allowed
-        if not obj.getManualEntryOfResults():
-            return False
-
         if not obj.getDetectionLimitOperand():
             # This is a regular result (not a detection limit)
             return True
@@ -417,9 +412,9 @@ class AnalysesView(ListingView):
         """
         obj = self.get_object(analysis_brain)
         methods = obj.getAllowedMethods()
-        vocab = [{"ResultValue": "", "ResultText": _("None")}]
         if not methods:
-            return vocab
+            return [{"ResultValue": "", "ResultText": _("None")}]
+        vocab = []
         for method in methods:
             vocab.append({
                 "ResultValue": api.get_uid(method),
@@ -473,32 +468,6 @@ class AnalysesView(ListingView):
                     "ResultValue": api.get_uid(instrument),
                     "ResultText": api.get_title(instrument),
                 })
-
-        return vocab
-
-    def get_calculation_vocabulary(self, analysis_brain):
-        """Vocabulary of the available analysis calculations
-
-        The vocabulary is a list of dictionaries. Each dictionary has the
-        following structure:
-
-            {'ResultValue': <instrument_UID>,
-             'ResultText': <instrument_Title>}
-
-        :param analysis_brain: A single Analysis or ReferenceAnalysis
-        :type analysis_brain: Analysis or.ReferenceAnalysis
-        :return: A vocabulary with the instruments for the analysis
-        :rtype: A list of dicts: [{'ResultValue':UID, 'ResultText':Title}]
-        """
-        obj = self.get_object(analysis_brain)
-        calculations = obj.getAllowedCalculations()
-        vocab = [{"ResultValue": "", "ResultText": _("None")}]
-
-        for calculation in calculations:
-            vocab.append({
-                "ResultValue": api.get_uid(calculation),
-                "ResultText": api.get_title(calculation),
-            })
 
         return vocab
 
@@ -832,14 +801,11 @@ class AnalysesView(ListingView):
         # calculation
         calculation = self.get_calculation(analysis_brain)
         calculation_uid = api.get_uid(calculation) if calculation else ""
-        calculation_title = get_link_for(calculation) if calculation else ""
+        calculation_title = api.get_title(calculation) if calculation else ""
+        calculation_link = get_link_for(calculation) if calculation else ""
         item["calculation"] = calculation_uid
-        item["Calculation"] = calculation_uid
-        item["replace"]["Calculation"] = calculation_title or _("Manual")
-        calculation_vocab = self.get_calculation_vocabulary(analysis_brain)
-        if is_editable and calculation_vocab:
-            item["choices"]["Calculation"] = calculation_vocab
-            item["allow_edit"].append("Calculation")
+        item["Calculation"] = calculation_title
+        item["replace"]["Calculation"] = calculation_link or _("Manual")
 
         # Set interim fields. Note we add the key 'formatted_value' to the list
         # of interims the analysis has already assigned.

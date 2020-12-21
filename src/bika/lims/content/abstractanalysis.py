@@ -728,17 +728,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         if not service:
             return []
         # get the available methods of the service
-        methods = service.getMethods()
-
-        # XXX Maybe this must be checked earlier?
-        if self.getManualEntryOfResults():
-            # filter out any methods that do not allow manual entry
-            methods = filter(lambda m: m.getManualEntryOfResults(), methods)
-        else:
-            # filter out any methods w/o instruments
-            methods = filter(lambda m: m.getInstruments(), methods)
-
-        return list(set(methods))
+        return service.getMethods()
 
     @security.public
     def getAllowedMethodUIDs(self):
