@@ -191,6 +191,9 @@ def upgrade(tool):
     # Resolve objects in attachment_due
     resolve_attachment_due(portal)
 
+    # Migrates the `Calculation` field -> `Calculations`
+    migrate_calculations_of_methods(portal)
+
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
 
@@ -597,3 +600,25 @@ def resolve_attachment_due(portal):
                             "to_be_verified", action="submit")
 
     logger.info("Resolving objects in 'attachment_due' status [DONE]")
+
+
+def migrate_calculations_of_methods(portal):
+    logger.info("Migrate Method `Calculation` field ...")
+    query = {"portal_type": "Method"}
+    for brain in api.search(query, SETUP_CATALOG):
+        obj = api.get_object(brain)
+        calc_field = obj.getField("Calculation")
+        calc = calc_field.get(obj)
+        if not calc:
+            continue
+        calcs_field = obj.getField("Calculations")
+        calcs = calcs_field.get(obj)
+        if calc not in calcs:
+            calcs_field.set(obj, calcs + [calc])
+            logger.info(
+                "Migrated '{}' in Method '{}' to Calculations Field"
+                .format(api.get_title(calc), api.get_title(obj)))
+        # flush the old field
+        calc_field.set(obj, None)
+
+    logger.info("Migrate Method `Calculation` field ... [DONE]")
