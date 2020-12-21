@@ -19,7 +19,6 @@
 # Some rights reserved, see README and LICENSE.
 
 from AccessControl import ClassSecurityInfo
-from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import DurationField
 from bika.lims.browser.fields import UIDReferenceField
@@ -251,11 +250,13 @@ Keyword = StringField(
     )
 )
 
+# XXX: HIDDEN -> TO BE REMOVED
 ManualEntryOfResults = BooleanField(
     "ManualEntryOfResults",
     schemata="Method",
     default=True,
     widget=BooleanWidget(
+        visible=False,
         label=_("Manual entry of results"),
         description=_("Allow to introduce analysis results manually"),
     )
@@ -313,7 +314,7 @@ Method = UIDReferenceField(
     )
 )
 
-# Maximum time (from sample reception) allowed for the analysis to be performed.
+# Max. time (from sample reception) allowed for the analysis to be performed.
 # After this amount of time, a late alert is printed, and the analysis will be
 # flagged in turnaround time report.
 MaxTimeAllowed = DurationField(
