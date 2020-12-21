@@ -38,7 +38,6 @@ from Products.Archetypes.public import FileWidget
 from Products.Archetypes.public import Schema
 from Products.Archetypes.public import StringField
 from Products.Archetypes.public import StringWidget
-from Products.Archetypes.public import TextAreaWidget
 from Products.Archetypes.public import TextField
 from Products.Archetypes.public import registerType
 from Products.Archetypes.utils import DisplayList
@@ -118,7 +117,6 @@ schema = BikaSchema.copy() + Schema((
     ),
 
     # XXX: HIDDEN -> TO BE REMOVED
-    # TODO: Migrate to Calculations!
     UIDReferenceField(
         "Calculation",
         allowed_types=("Calculation", ),
