@@ -581,37 +581,19 @@ class AnalysisService(AbstractBaseAnalysis):
         return DisplayList(list(items))
 
     def getAvailableMethods(self):
-        """ Returns the methods available for this analysis.
-            If the service has the getInstrumentEntryOfResults(), returns
-            the methods available from the instruments capable to perform
-            the service, as well as the methods set manually for the
-            analysis on its edit view. If getInstrumentEntryOfResults()
-            is unset, only the methods assigned manually to that service
-            are returned.
+        """Returns the methods available for this analysis.
         """
-        if not self.getInstrumentEntryOfResults():
-            # No need to go further, just return the manually assigned methods
-            return self.getMethods()
-
-        # Return the manually assigned methods plus those from instruments
-        method_uids = self.getAvailableMethodUIDs()
-        query = dict(portal_type="Method", UID=method_uids)
-        brains = api.search(query, "bika_setup_catalog")
-        return map(api.get_object_by_uid, brains)
+        return self.getMethods()
 
     def getAvailableMethodUIDs(self):
-        """
-        Returns the UIDs of the available methods. it is used as a
-        vocabulary to fill the selection list of 'Methods' field.
+        """Returns the UIDs of the available methods
+
+        Used here:
+        Module bika.lims.catalog.indexers.bikasetup, line 72, in method_available_uid
+
         """
         # N.B. we return a copy of the list to avoid accidental writes
-        method_uids = self.getRawMethods()[:]
-        if self.getInstrumentEntryOfResults():
-            for instrument in self.getInstruments():
-                method_uids.extend(instrument.getRawMethods())
-            method_uids = filter(None, method_uids)
-            method_uids = list(set(method_uids))
-        return method_uids
+        return self.getRawMethods()[:]
 
 
 registerType(AnalysisService, PROJECTNAME)
