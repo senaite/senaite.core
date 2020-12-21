@@ -29,8 +29,8 @@ from bika.lims import logger
 from bika.lims.api.analysis import get_formatted_interval
 from bika.lims.api.analysis import is_out_of_range
 from bika.lims.api.analysis import is_result_range_compliant
-from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
+from bika.lims.catalog import SETUP_CATALOG
 from bika.lims.config import LDL
 from bika.lims.config import UDL
 from bika.lims.interfaces import IAnalysisRequest
@@ -55,11 +55,12 @@ from DateTime import DateTime
 from plone.memoize import view as viewcache
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFPlone.utils import safe_unicode
+from senaite.app.listing import ListingView
 from zope.component import getAdapters
 from zope.component import getMultiAdapter
 
 
-class AnalysesView(BikaListingView):
+class AnalysesView(ListingView):
     """Displays a list of Analyses in a table.
 
     Visible InterimFields from all analyses are added to self.columns[].
@@ -91,7 +92,7 @@ class AnalysesView(BikaListingView):
         self.interim_fields = {}
         self.interim_columns = OrderedDict()
         self.specs = {}
-        self.bsc = api.get_tool("bika_setup_catalog")
+        self.bsc = api.get_tool(SETUP_CATALOG)
         self.portal = api.get_portal()
         self.portal_url = api.get_url(self.portal)
         self.rc = api.get_tool(REFERENCE_CATALOG)
