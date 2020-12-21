@@ -147,6 +147,7 @@ schema = BikaSchema.copy() + Schema((
         schemata="default",
         default=True,
         widget=BooleanWidget(
+            visible=False,
             label=_("Manual entry of results"),
             description=_("The results for the Analysis Services that use "
                           "this method can be set manually"),
