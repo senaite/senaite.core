@@ -18,6 +18,8 @@
 # Copyright 2018-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+import itertools
+
 from AccessControl import ClassSecurityInfo
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
@@ -89,20 +91,6 @@ UseDefaultCalculation = BooleanField(
     )
 )
 
-Calculations = UIDReferenceField(
-    "Calculations",
-    schemata="Method",
-    required=0,
-    vocabulary="_calculations_vocabulary",
-    allowed_types=("Calculation", ),
-    multiValued=1,
-    accessor="getRawCalculations",
-    widget=PicklistWidget(
-        label=_("Calculations"),
-        description=_("Supported calculations of this service"),
-    )
-)
-
 Calculation = UIDReferenceField(
     "Calculation",
     schemata="Method",
@@ -165,9 +153,7 @@ Preservation = UIDReferenceField(
     )
 )
 
-# The container or containertype for this service's analyses can be specified.
-# If multiple services share the same container or containertype, then it's
-# possible that their analyses can be performed on the same partitions
+# XXX: HIDDEN -> TO BE REMOVED
 Container = UIDReferenceField(
     "Container",
     schemata="Container and Preservation",
@@ -176,6 +162,7 @@ Container = UIDReferenceField(
     required=0,
     multiValued=0,
     widget=ReferenceWidget(
+        visible=False,
         checkbox_bound=0,
         label=_("Default Container"),
         description=_(
@@ -188,14 +175,12 @@ Container = UIDReferenceField(
     )
 )
 
-# This is a list of dictionaries which contains the PartitionSetupWidget
-# settings.  This is used to decide how many distinct physical partitions
-# will be created, which containers/preservations they will use, and which
-# analyases can be performed on each partition.
+# XXX: HIDDEN -> TO BE REMOVED
 PartitionSetup = PartitionSetupField(
     "PartitionSetup",
     schemata="Container and Preservation",
     widget=PartitionSetupWidget(
+        visible=False,
         label=_("Preservation per sample type"),
         description=_(
             "Please specify preservations that differ from the analysis "
@@ -208,7 +193,6 @@ schema = schema.copy() + Schema((
     Methods,
     Instruments,
     UseDefaultCalculation,
-    Calculations,
     Calculation,
     InterimFields,
     Separate,
@@ -217,14 +201,10 @@ schema = schema.copy() + Schema((
     PartitionSetup,
 ))
 
-# Move manual entry of results field before available methods field
-schema.moveField("ManualEntryOfResults", before="Methods")
 # Move default method field after available methods field
 schema.moveField("Method", after="Methods")
 # Move default instrument field after available instruments field
 schema.moveField("Instrument", after="Instruments")
-# Move default calculation field after available calculations field
-schema.moveField("Calculation", after="Calculations")
 
 
 class AnalysisService(AbstractBaseAnalysis):
@@ -239,17 +219,6 @@ class AnalysisService(AbstractBaseAnalysis):
         from bika.lims.idserver import renameAfterCreation
 
         return renameAfterCreation(self)
-
-    def setManualEntryOfResults(self, value):
-        """Allow manual entry of results
-
-        Always enabled when no instrument is selected
-        """
-        field = self.getField("ManualEntryOfResults")
-        # always true when no instruments selected
-        if not self.getInstruments():
-            value = True
-        field.set(self, value)
 
     def getMethods(self):
         """Returns the assigned methods
@@ -334,24 +303,6 @@ class AnalysisService(AbstractBaseAnalysis):
             return None
         return instrument
 
-    def getCalculations(self):
-        """Returns the assigned calculations
-
-        :returns: List of calculation objects
-        """
-        return self.getField("Calculations").get(self)
-
-    def getRawCalculations(self):
-        """Returns the assigned calculation UIDs
-
-        :returns: List of calculation UIDs
-        """
-        field = self.getField("Calculations")
-        methods = field.getRaw(self)
-        if not methods:
-            return []
-        return methods
-
     def getCalculation(self):
         """Get the default calculation
         """
@@ -359,11 +310,7 @@ class AnalysisService(AbstractBaseAnalysis):
         calculation = field.get(self)
         if not calculation:
             return None
-        # check if the calculation is in the selected calculations
-        calculations = self.getCalculations()
-        if calculation not in calculations:
-            return None
-        return api.get_object(calculation)
+        return calculation
 
     def getRawCalculation(self):
         """Returns the UID of the assigned calculation
@@ -374,19 +321,10 @@ class AnalysisService(AbstractBaseAnalysis):
         calculation = field.getRaw(self)
         if not calculation:
             return None
-        # check if the calculation is in the selected calculations
-        calculations = self.getRawCalculations()
-        if calculation not in calculations:
-            return None
         return calculation
 
     def getServiceDependencies(self):
         """Return calculation dependencies of the service
-
-        **Important**
-        This method returns the dependencies for the default calculation!
-        Analyses might select another Calculation and thus, have different
-        dependencies.
 
         :return: a list of analysis services objects.
         """
@@ -397,11 +335,6 @@ class AnalysisService(AbstractBaseAnalysis):
 
     def getServiceDependenciesUIDs(self):
         """Return calculation dependency UIDs of the service
-
-        **Important**
-        This method returns the dependencies for the default calculation!
-        Analyses might select another Calculation and thus, have different
-        dependencies.
 
         :return: a list of uids
         """
@@ -521,20 +454,20 @@ class AnalysisService(AbstractBaseAnalysis):
         }
         return catalog(query)
 
-    def _calculations_vocabulary(self):
-        """Vocabulary used for calculations field
+    def get_methods_calculations(self):
+        """Return calculations assigned to the selected methods
         """
-        calculations = self.query_available_calculations()
-        items = [(api.get_uid(c), api.get_title(c)) for c in calculations]
-        dlist = DisplayList(items)
-        return dlist
+        methods = self.getMethods()
+        if not methods:
+            return None
+        methods_calcs = map(lambda m: m.getCalculations(), methods)
+        return list(itertools.chain(*methods_calcs))
 
     def _default_calculation_vocabulary(self):
         """Vocabulary used for the default calculation field
         """
-        # check selected calculations
-        calculations = self.getCalculations()
-        if not calculations:
+        calculations = self.get_methods_calculations()
+        if calculations is None:
             # query all available calculations
             calculations = self.query_available_calculations()
         items = [(api.get_uid(c), api.get_title(c)) for c in calculations]
