@@ -156,6 +156,14 @@ schema = BikaSchema.copy() + Schema((
 ))
 
 
+# Show the description field after MethodID
+schema["description"].schemata = "default"
+schema["description"].widget.visible = True
+schema["description"].widget.label = _("Description")
+schema["description"].widget.description = _("Short method description")
+schema.moveField("description", after="MethodID")
+
+
 class Method(BaseFolder):
     """A method describes how an analysis is performed
 
