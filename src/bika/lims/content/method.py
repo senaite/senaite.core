@@ -59,11 +59,19 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
+    BooleanField(
+        "Accredited",
+        required=0,
+        widget=BooleanWidget(
+            label=_("Accredited"),
+            description=_("Check if the method has been accredited"))
+    ),
+
     TextField(
         "Instructions",
         required=0,
         default_content_type="text/html",
-        allowed_content_types=("text/plain", "text/html" ),
+        allowed_content_types=("text/plain", "text/html"),
         default_output_type="text/x-html-safe",
         widget=RichWidget(
             label=_("Instructions"),
@@ -80,14 +88,6 @@ schema = BikaSchema.copy() + Schema((
             label=_("Method Document"),
             description=_("Load documents describing the method here"),
         )
-    ),
-
-    BooleanField(
-        "Accredited",
-        required=0,
-        widget=BooleanWidget(
-            label=_("Accredited"),
-            description=_("Check if the method has been accredited"))
     ),
 
     # NOTE: `Instruments` is a computed field and checks the supported methods
