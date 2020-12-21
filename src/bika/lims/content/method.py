@@ -42,6 +42,7 @@ from Products.Archetypes.public import TextAreaWidget
 from Products.Archetypes.public import TextField
 from Products.Archetypes.public import registerType
 from Products.Archetypes.utils import DisplayList
+from Products.Archetypes.Widget import RichWidget
 from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
@@ -61,13 +62,14 @@ schema = BikaSchema.copy() + Schema((
     TextField(
         "Instructions",
         required=0,
-        default_content_type="text/plain",
-        allowed_content_types=("text/plain", ),
-        default_output_type="text/plain",
-        widget=TextAreaWidget(
+        default_content_type="text/html",
+        allowed_content_types=("text/plain", "text/html" ),
+        default_output_type="text/x-html-safe",
+        widget=RichWidget(
             label=_("Instructions"),
             description=_("Technical description and instructions "
                           "intended for analysts"),
+            allow_file_upload=False,
         ),
     ),
 
