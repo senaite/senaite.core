@@ -763,27 +763,6 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         return [i.UID() for i in self.getAllowedInstruments()]
 
     @security.public
-    def getAllowedCalculations(self):
-        """Returns the allowed calculations for this analysis
-
-        :return: A list of calculations allowed for this Analysis
-        :rtype: list of calculations
-        """
-        service = self.getAnalysisService()
-        if not service:
-            return []
-        return service.getCalculations()
-
-    @security.public
-    def getAllowedCalculationUIDs(self):
-        """Returns the allowed calculation UIDs for this analysis
-
-        :return: A list of calculations allowed for this Analysis
-        :rtype: list of calculation UIDs
-        """
-        return map(api.get_uid, self.getAllowedCalculations())
-
-    @security.public
     def getExponentialFormatPrecision(self, result=None):
         """ Returns the precision for the Analysis Service and result
         provided. Results with a precision value above this exponential

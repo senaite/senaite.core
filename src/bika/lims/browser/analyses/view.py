@@ -22,6 +22,7 @@ import json
 from collections import OrderedDict
 from copy import copy
 from copy import deepcopy
+from operator import itemgetter
 
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
@@ -445,13 +446,22 @@ class AnalysesView(ListingView):
         :rtype: A list of dicts: [{'ResultValue':UID, 'ResultText':Title}]
         """
         obj = self.get_object(analysis_brain)
+        # get the allowed interfaces from the analysis service
         instruments = obj.getAllowedInstruments()
-        vocab = [{"ResultValue": "", "ResultText": _("None")}]
+        # get the current assigned method
+        method = obj.getMethod()
+        if method:
+            # supported instrument from the method
+            method_instruments = method.getInstruments()
+            # allow only method instruments that are set in service
+            instruments = list(
+                set(instruments).intersection(method_instruments))
 
         # If the analysis is a QC analysis, display all instruments, including
         # those uncalibrated or for which the last QC test failed.
         is_qc = api.get_portal_type(obj) == "ReferenceAnalysis"
 
+        vocab = []
         for instrument in instruments:
             # append all valid instruments
             if instrument.isValid():
@@ -468,6 +478,11 @@ class AnalysesView(ListingView):
                     "ResultValue": api.get_uid(instrument),
                     "ResultText": api.get_title(instrument),
                 })
+
+        # sort the vocabulary
+        vocab = list(sorted(vocab, key=itemgetter("ResultText")))
+        # prepend empty item
+        vocab = [{"ResultValue": "", "ResultText": _("None")}] + vocab
 
         return vocab
 
