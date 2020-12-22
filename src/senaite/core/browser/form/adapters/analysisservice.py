@@ -6,36 +6,22 @@ from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
 from bika.lims.catalog import SETUP_CATALOG
 from bika.lims.validators import ServiceKeywordValidator
-from senaite.core.interfaces import IAjaxEditForm
-from zope.interface import implementer
+from senaite.core.browser.form.adapters import EditFormAdapterBase
 
 
-@implementer(IAjaxEditForm)
-class EditForm(object):
-
-    def __init__(self, context, request):
-        self.context = context
-        self.request = request
-        self.response = {
-            "hide": [],
-            "show": [],
-            "update": {},
-            "errors": {},
-            "messages": [],
-        }
+class EditForm(EditFormAdapterBase):
+    """Edit form adapter for Analysis Service
+    """
 
     def initialized(self, data):
-        self.response["hide"].append("Remarks")
-        return self.response
+        return self.data
 
     def modified(self, data):
-        errors = {}
         name = data.get("name")
         value = data.get("value")
         if name == "Keyword":
-            errors["Keyword"] = self.validate_keyword(value)
-        self.response["errors"] = errors
-        return self.response
+            self.set_field_error("Keyword", self.validate_keyword(value))
+        return self.data
 
     @property
     def setup_catalog(self):
