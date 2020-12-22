@@ -56,7 +56,6 @@ window.bika.lims.controllers =  {
     ".portaltype-bikasetup.template-base_edit":
         ['BikaSetupEditView'],
 
-
     // Clients
     ".portaltype-client.template-base_edit":
         ['ClientEditView'],
@@ -109,15 +108,6 @@ window.bika.lims.controllers =  {
     // Worksheets
     ".portaltype-worksheetfolder":
         ['WorksheetFolderView'],
-
-    ".portaltype-worksheet.template-add_blank":
-        ['WorksheetAddQCAnalysesView'],
-
-    ".portaltype-worksheet.template-add_control":
-        ['WorksheetAddQCAnalysesView'],
-
-    ".portaltype-worksheet.template-add_duplicate":
-        ['WorksheetAddDuplicateAnalysesView'],
 
     ".portaltype-worksheet.template-manage_results":
         ['WorksheetManageResultsView'],
