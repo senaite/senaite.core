@@ -233,13 +233,6 @@ class EditForm{
     let messages = data.messages || [];
     let errors = data.errors || {};
 
-    // disallow submit on errors
-    if (this.has_field_errors(form)) {
-      this.toggle_submit(form, false);
-    } else {
-      this.toggle_submit(form, true);
-    }
-
     // render field errors
     for (const [key, value] of Object.entries(errors)) {
       let el = this.get_form_field_by_name(form, key);
@@ -279,6 +272,14 @@ class EditForm{
       if (!el) continue;
       this.set_field_value(el, value);
     }
+
+    // disallow submit when field errors are present
+    if (this.has_field_errors(form)) {
+      this.toggle_submit(form, false);
+    } else {
+      this.toggle_submit(form, true);
+    }
+
   }
 
   /**
