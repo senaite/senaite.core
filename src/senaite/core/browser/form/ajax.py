@@ -82,21 +82,15 @@ Example:
         "ScientificName": False,
         "PointOfCapture": "lab",
         "Department": {
-            "selected": [
+            "value": ["6f3cb33f10e04ac19b32b8bd47fcd43b"],
+            "options": [
                 {
                     "title": "Clinical Lab",
                     "value": "6f3cb33f10e04ac19b32b8bd47fcd43b",
                 }
-            ],
-            "options": []
+            ]
         },
         "Calculation": {
-            "selected": [
-                {
-                    "title": "Total Aflatoxins",
-                    "value": "69c3999948e94490bf43c7b49694fe2c",
-                }
-            ],
             "options": [
                 {
                     "value": "69c3999948e94490bf43c7b49694fe2c",

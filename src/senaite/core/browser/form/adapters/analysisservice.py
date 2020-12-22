@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from six import string_types
+from itertools import chain
 
 from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
@@ -19,9 +20,81 @@ class EditForm(EditFormAdapterBase):
     def modified(self, data):
         name = data.get("name")
         value = data.get("value")
+
+        # Handle Keyword change
         if name == "Keyword":
             self.set_field_error("Keyword", self.validate_keyword(value))
+
+        # Handle Methods Change
+        elif name == "Methods":
+            # Available Methods
+            empty = [{"title": _("None"), "value": None}]
+            # Get selected methods
+            methods = map(api.get_object_by_uid, value)
+            # Available instruments for the selected methods
+            instruments = self.get_available_instruments_for(methods)
+            # Available calculations for the selected methods
+            calculations = self.get_available_calculations_for(methods)
+            # Build select options
+            m_opts = map(lambda o: dict(
+                title=api.get_title(o), value=api.get_uid(o)), methods)
+            i_opts = map(lambda o: dict(
+                title=api.get_title(o), value=api.get_uid(o)), instruments)
+            c_opts = map(lambda o: dict(
+                title=api.get_title(o), value=api.get_uid(o)), calculations)
+
+            # When methods are selected, we filter other fields accordingly
+            if methods:
+                self.update_field("Method", {"options": empty + m_opts})
+                self.update_field("Instruments_options", {"options": i_opts})
+                self.update_field("Instruments:list", {"options": i_opts})
+                self.update_field("Instrument", {"options": empty + i_opts})
+                self.update_field("Calculation", {"options": empty + c_opts})
+            else:
+                self.update_field("Method", {"options": empty})
+                self.update_field("Instruments:list", {"options": []})
+                self.update_field("Instruments_options", {"options": i_opts})
+                self.update_field("Instrument", {"options": empty})
+
+        # Handle Instruments Change
+        elif name == "Instruments":
+            instruments = map(api.get_object_by_uid, value)
+            empty = [{"title": _("None"), "value": None}]
+            i_opts = map(lambda o: dict(
+                title=api.get_title(o), value=api.get_uid(o)), instruments)
+            self.update_field("Instrument", {"options": empty + i_opts})
+
         return self.data
+
+    def get_available_instruments_for(self, methods):
+        """Return all available instruments for the given methods
+
+        If no methods are given, all active instruments are returned
+        """
+        if methods:
+            return list(chain(*map(lambda m: m.getInstruments(), methods)))
+        query = {
+            "portal_type": "Instrument",
+            "is_active": True,
+            "sort_on": "sortable_title"
+        }
+        brains = self.setup_catalog(query)
+        return map(api.get_object, brains)
+
+    def get_available_calculations_for(self, methods):
+        """Return all available instruments for the given methods
+
+        If no methods are given, all active instruments are returned
+        """
+        if methods:
+            return list(chain(*map(lambda m: m.getCalculations(), methods)))
+        query = {
+            "portal_type": "Calculation",
+            "is_active": True,
+            "sort_on": "sortable_title"
+        }
+        brains = self.setup_catalog(query)
+        return map(api.get_object, brains)
 
     @property
     def setup_catalog(self):

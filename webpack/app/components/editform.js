@@ -13,11 +13,11 @@ class EditForm{
       "field_selectors": []
     }, config);
     // bind event handlers
+    this.on_mutated = this.on_mutated.bind(this);
     this.on_modified = this.on_modified.bind(this);
     this.on_blur = this.on_blur.bind(this);
     this.on_click = this.on_click.bind(this);
     this.on_change = this.on_change.bind(this);
-    // init form
     this.init_forms();
   }
 
@@ -50,7 +50,11 @@ class EditForm{
     console.debug(`EditForm::watch_form(${form})`);
     let fields = this.get_form_fields(form);
     for (const field of fields) {
-      if (this.is_input(field) || this.is_textarea(field) || this.is_select(field)) {
+      if (this.is_button(field) || this.is_input_button(field)) {
+        // bind click event
+        field.addEventListener("click", this.on_click);
+      }
+      else if (this.is_text(field) || this.is_textarea(field) || this.is_select(field)) {
         // bind change event
         field.addEventListener("change", this.on_change);
       }
@@ -62,7 +66,46 @@ class EditForm{
         field.addEventListener("blur", this.on_blur);
       }
     }
+    // observe DOM mutations in form
+    this.observe_mutations(form);
+    // bind custom form event handlers
     form.addEventListener("modified", this.on_modified);
+    form.addEventListener("mutated", this.on_mutated);
+  }
+
+  /**
+   * Initialize a DOM mutation observer to rebind dynamic added fields,
+   * e.g. for records field etc.
+   */
+  observe_mutations(form) {
+    let observer = new MutationObserver(function(mutations) {
+      let event = new CustomEvent("mutated", {
+        detail: {
+          form: form,
+          mutations: mutations
+        }
+      });
+      form.dispatchEvent(event);
+    });
+    // observe the form with all contained elements
+    observer.observe(form, {
+      childList: true,
+      subtree: true
+    });
+  }
+
+  /**
+   * Handle a single DOM mutation
+   */
+  handle_mutation(form, mutation) {
+    let target = mutation.target;
+    let added = mutation.addedNodes;
+    let removed = mutation.removedNodes;
+    // handle picklist widget
+    if (this.is_multiple_select(target)) {
+      this.notify(form, target, "modified");
+    }
+    // TODO: Handle records field
   }
 
   /**
@@ -94,6 +137,13 @@ class EditForm{
   }
 
   /**
+   * Checks if the element is a multiple select field
+   */
+  is_multiple_select(el) {
+    return this.is_select(el) && el.hasAttribute("multiple");
+  }
+
+  /**
    * Checks if the element is an input field
    */
   is_input(el) {
@@ -105,6 +155,20 @@ class EditForm{
    */
   is_text(el) {
     return this.is_input(el) && el.type === "text";
+  }
+
+  /**
+   * Checks if the element is a button field
+   */
+  is_button(el) {
+    return el.tagName === "BUTTON";
+  }
+
+  /**
+   * Checks if the element is an input[type='button'] field
+   */
+  is_input_button(el) {
+    return this.is_input(el) && el.type === "button";
   }
 
   /**
@@ -287,11 +351,13 @@ class EditForm{
    */
   get_form_field_by_name(form, name) {
     // get the first element that matches the name
-    let el = form.querySelector(`[name^='${name}']`);
-    if (!el) {
+    let exact = form.querySelector(`[name='${name}']`);
+    let fuzzy = form.querySelector(`[name^='${name}']`);
+    let field = exact || fuzzy || null;
+    if (field === null) {
       return null;
     }
-    return el;
+    return field;
   }
 
   /**
@@ -311,7 +377,7 @@ class EditForm{
    */
   set_field_value(field, value) {
     // for reference/select fields
-    let selected = value.selected || [];
+    let selected = value.value || [];
     let options = value.options || [];
 
     // set reference value
@@ -323,9 +389,28 @@ class EditForm{
     }
     // set select field
     else if (this.is_select(field)) {
-      // TODO: filtering options first
-      for (const item of selected) {
-        field.value = item.value;
+      if (selected.length == 0) {
+        let old_selected = field.options[field.selected];
+        if (old_selected) {
+          selected = [old_selected.value];
+        }
+      }
+      // remove all options
+      field.options.length = 0;
+      // sort options
+      options.sort((a, b) => a.title.localeCompare(b.title))
+      // build new options
+      for (const option of options) {
+        let el = document.createElement("option");
+        el.value = option.value;
+        el.innerHTML = option.title;
+        if (selected.indexOf(option.value) !== -1) {
+          el.selected = true;
+        }
+        field.appendChild(el);
+      }
+      if (selected.length == 0) {
+        field.selectedIndex = 0;
       }
     }
     // set checkbox value
@@ -386,13 +471,14 @@ class EditForm{
    * send ajax request to the server
    */
   ajax_send(form, data, endpoint) {
-    console.debug("AJAX SEND --> ", data)
     let view_url = document.body.dataset.viewUrl;
     let ajax_url = `${view_url}/ajax_form/${endpoint}`;
 
     let payload = Object.assign({
       "form": this.get_form_data(form)
     }, data)
+
+    console.debug("AJAX SEND --> ", payload)
 
     let init = {
       method: "POST",
@@ -434,6 +520,24 @@ class EditForm{
     });
     // dispatch the event on the element
     el.form.dispatchEvent(event);
+  }
+
+  /**
+   * event handler for `mutated` event
+   */
+  on_mutated(event) {
+    console.debug("EVENT -> on_mutated");
+    let form = event.detail.form;
+    let mutations = event.detail.mutations;
+    // reduce multiple mutations on the same node to one
+    let seen = [];
+    for (const mutation of mutations) {
+      if (seen.indexOf(mutation.target) > -1) {
+        continue;
+      }
+      seen = seen.concat(mutation.target);
+      this.handle_mutation(form, mutation);
+    }
   }
 
   /**

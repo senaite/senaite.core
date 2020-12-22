@@ -19,7 +19,6 @@
 # Some rights reserved, see README and LICENSE.
 
 import itertools
-from operator import itemgetter
 
 from AccessControl import ClassSecurityInfo
 from bika.lims import api
@@ -432,9 +431,6 @@ class AnalysisService(AbstractBaseAnalysis):
         """
         # check if we selected instruments
         instruments = self.getInstruments()
-        if not instruments:
-            # query all available instruments
-            instruments = self.query_available_instruments()
         items = [(api.get_uid(i), api.get_title(i)) for i in instruments]
         dlist = DisplayList(items).sortedByValue()
         # allow to leave this field empty

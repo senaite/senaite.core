@@ -68,6 +68,14 @@ class EditFormAdapterBase(object):
         value.append({"level": level, "message": message})
         self._data[key] = value
 
+    def update_field(self, name, value):
+        """Set update field
+        """
+        key = "update"
+        records = self._data.get(key, {})
+        records[name] = value
+        self._data[key] = records
+
     def initialized(self, data):
         return NotImplementedError("Must be implemented by subclass")
 
