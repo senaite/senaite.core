@@ -19,6 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 import itertools
+from operator import itemgetter
 
 from AccessControl import ClassSecurityInfo
 from bika.lims import api
@@ -389,7 +390,7 @@ class AnalysisService(AbstractBaseAnalysis):
             # query all available methods
             methods = self.query_available_methods()
         items = [(api.get_uid(m), api.get_title(m)) for m in methods]
-        dlist = DisplayList(items)
+        dlist = DisplayList(items).sortedByValue()
         # allow to leave this field empty
         dlist.add("", _("None"))
         return dlist
@@ -435,7 +436,7 @@ class AnalysisService(AbstractBaseAnalysis):
             # query all available instruments
             instruments = self.query_available_instruments()
         items = [(api.get_uid(i), api.get_title(i)) for i in instruments]
-        dlist = DisplayList(items)
+        dlist = DisplayList(items).sortedByValue()
         # allow to leave this field empty
         dlist.add("", _("None"))
         return dlist
@@ -470,7 +471,7 @@ class AnalysisService(AbstractBaseAnalysis):
             calculations = self.query_available_calculations()
         items = [(api.get_uid(c), api.get_title(c)) for c in calculations]
         # allow to leave this field empty
-        dlist = DisplayList(items)
+        dlist = DisplayList(items).sortedByValue()
         dlist.add("", _("None"))
         return dlist
 
