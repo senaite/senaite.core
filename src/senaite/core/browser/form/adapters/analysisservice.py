@@ -15,6 +15,12 @@ class EditForm(EditFormAdapterBase):
     """
 
     def initialized(self, data):
+        form = data.get("form")
+        method = form.get("Method")
+        if not method:
+            self.set_status_message(
+                _("No Method selected for this Service"),
+                level="warning")
         return self.data
 
     def modified(self, data):
