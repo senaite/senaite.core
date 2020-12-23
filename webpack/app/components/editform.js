@@ -289,7 +289,7 @@ class EditForm {
     let errors = data.errors || [];
     let messages = data.messages || [];
     let notifications = data.notifications || [];
-    let updates = data.update || [];
+    let updates = data.updates || [];
 
     // render field errors
     for (const record of errors) {
@@ -350,7 +350,8 @@ class EditForm {
 
     // updated fields
     for (const record of updates) {
-      ({name, value} = record);
+      let name, value, rest;
+      ({name, value, ...rest} = record);
       let el = this.get_form_field_by_name(form, name);
       if (!el) continue;
       this.set_field_value(el, value);
