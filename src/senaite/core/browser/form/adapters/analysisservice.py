@@ -51,9 +51,12 @@ class EditForm(EditFormAdapterBase):
 
             # When methods are selected, we filter other fields accordingly
             if methods:
+                # selected instruments
+                i_sel = map(api.get_uid, instruments)
                 self.update_field("Method", {"options": empty + m_opts})
                 self.update_field("Instruments_options", {"options": i_opts})
-                self.update_field("Instruments:list", {"options": i_opts})
+                self.update_field("Instruments:list", {
+                    "options": i_opts, "selected": i_sel})
                 self.update_field("Instrument", {"options": empty + i_opts})
                 self.update_field("Calculation", {"options": empty + c_opts})
             else:

@@ -5,13 +5,14 @@
  *
  */
 
-class EditForm{
+class EditForm {
 
   constructor(config) {
     this.config = Object.assign({
       "form_selectors": [],
       "field_selectors": []
     }, config);
+
     // bind event handlers
     this.on_mutated = this.on_mutated.bind(this);
     this.on_modified = this.on_modified.bind(this);
@@ -106,104 +107,6 @@ class EditForm{
       this.notify(form, target, "modified");
     }
     // TODO: Handle records field
-  }
-
-  /**
-   * Return form fields for the given selectors of the config
-   */
-  get_form_fields(form) {
-    console.debug(`EditForm::get_form_fields(${form})`);
-    let fields = [];
-    let selectors = this.config.field_selectors;
-    for (const selector of selectors) {
-      let nodes = form.querySelectorAll(selector);
-      fields = fields.concat(...nodes.values())
-    }
-    return fields
-  }
-
-  /**
-   * Checks if the element is a textarea field
-   */
-  is_textarea(el) {
-    return el.tagName == "TEXTAREA";
-  }
-
-  /**
-   * Checks if the element is a select field
-   */
-  is_select(el) {
-    return el.tagName == "SELECT";
-  }
-
-  /**
-   * Checks if the element is a multiple select field
-   */
-  is_multiple_select(el) {
-    return this.is_select(el) && el.hasAttribute("multiple");
-  }
-
-  /**
-   * Checks if the element is an input field
-   */
-  is_input(el) {
-    return el.tagName === "INPUT";
-  }
-
-  /**
-   * Checks if the element is an input[type='text'] field
-   */
-  is_text(el) {
-    return this.is_input(el) && el.type === "text";
-  }
-
-  /**
-   * Checks if the element is a button field
-   */
-  is_button(el) {
-    return el.tagName === "BUTTON";
-  }
-
-  /**
-   * Checks if the element is an input[type='button'] field
-   */
-  is_input_button(el) {
-    return this.is_input(el) && el.type === "button";
-  }
-
-  /**
-   * Checks if the element is an input[type='checkbox'] field
-   */
-  is_checkbox(el) {
-    return this.is_input(el) && el.type === "checkbox";
-  }
-
-  /**
-   * Checks if the element is an input[type='radio'] field
-   */
-  is_radio(el) {
-    return this.is_input(el) && el.type === "radio";
-  }
-
-  /**
-   * Checks if the element is a SENAITE reference field
-   */
-  is_reference(el) {
-    return el.classList.contains("referencewidget");
-  }
-
-  /**
-   * Checks if the element is a SENAITE single-reference field
-   */
-  is_single_reference(el) {
-    return this.is_reference(el) && el.getAttribute("multivalued") == "0";
-  }
-
-  /**
-   * Checks if the element is a SENAITE multi-reference field
-   */
-  is_multi_reference(el) {
-    return this.is_reference(el) && el.getAttribute("multivalued") == "1";
   }
 
   /**
@@ -343,7 +246,6 @@ class EditForm{
     } else {
       this.toggle_submit(form, true);
     }
-
   }
 
   /**
@@ -373,54 +275,25 @@ class EditForm{
   }
 
   /**
-   * set the value of the form field
+   * Return form fields for the given selectors of the config
    */
-  set_field_value(field, value) {
-    // for reference/select fields
-    let selected = value.value || [];
-    let options = value.options || [];
+  get_form_fields(form) {
+    console.debug(`EditForm::get_form_fields(${form})`);
+    let fields = [];
+    let selectors = this.config.field_selectors;
+    for (const selector of selectors) {
+      let nodes = form.querySelectorAll(selector);
+      fields = fields.concat(...nodes.values())
+    }
+    return fields
+  }
 
-    // set reference value
-    if (this.is_single_reference(field)) {
-      for (const item of selected) {
-        field.setAttribute("uid", item.value);
-        field.value = item.title;
-      }
-    }
-    // set select field
-    else if (this.is_select(field)) {
-      if (selected.length == 0) {
-        let old_selected = field.options[field.selected];
-        if (old_selected) {
-          selected = [old_selected.value];
-        }
-      }
-      // remove all options
-      field.options.length = 0;
-      // sort options
-      options.sort((a, b) => a.title.localeCompare(b.title))
-      // build new options
-      for (const option of options) {
-        let el = document.createElement("option");
-        el.value = option.value;
-        el.innerHTML = option.title;
-        if (selected.indexOf(option.value) !== -1) {
-          el.selected = true;
-        }
-        field.appendChild(el);
-      }
-      if (selected.length == 0) {
-        field.selectedIndex = 0;
-      }
-    }
-    // set checkbox value
-    else if (this.is_checkbox(field)) {
-      field.checked = value;
-    }
-    // set other field values
-    else {
-      field.value = value;
-    }
+  /**
+   * returns the name of the field w/o ZPublisher converter
+   */
+  get_field_name(field) {
+    let name = field.name;
+    return name.split(":")[0];
   }
 
   /**
@@ -448,13 +321,76 @@ class EditForm{
   }
 
   /**
-   * returns the name of the field w/o ZPublisher converter
+   * set the value of the form field
    */
-  get_field_name(field) {
-    let name = field.name;
-    return name.split(":")[0];
+  set_field_value(field, value) {
+    // for reference/select fields
+    let selected = value.selected || [];
+    let options = value.options || [];
+
+    // set reference value
+    if (this.is_single_reference(field)) {
+      for (const item of selected) {
+        field.setAttribute("uid", item.value);
+        field.value = item.title;
+      }
+    }
+    // set select field
+    else if (this.is_select(field)) {
+      if (selected.length == 0) {
+        let old_selected = field.options[field.selected];
+        if (old_selected) {
+          selected = [old_selected.value];
+        }
+      }
+      // remove all options
+      field.options.length = 0;
+      // sort options
+      options.sort((a, b) => {
+        let _a = a.title.toLowerCase();
+        let _b = b.title.toLowerCase();
+        if (a.value === null) _a = "_";
+        if (b.value === null) _b = "_";
+        return _a.localeCompare(_b)
+      });
+      // build new options
+      for (const option of options) {
+        let el = document.createElement("option");
+        el.value = option.value;
+        el.innerHTML = option.title;
+        if (selected.indexOf(option.value) !== -1) {
+          el.selected = true;
+        }
+        field.appendChild(el);
+      }
+      if (selected.length == 0) {
+        field.selectedIndex = 0;
+      }
+    }
+    // set checkbox value
+    else if (this.is_checkbox(field)) {
+      field.checked = value;
+    }
+    // set other field values
+    else {
+      field.value = value;
+    }
   }
 
+
+  /**
+   * trigger `modified` event on the form
+   */
+  modified(el) {
+    let event = new CustomEvent("modified", {
+      detail: {
+        field: el,
+        form: el.form
+      }
+    });
+    // dispatch the event on the element
+    el.form.dispatchEvent(event);
+  }
 
   /**
    * notify a field change to the server ajax endpoint
@@ -509,17 +445,87 @@ class EditForm{
   }
 
   /**
-   * trigger `modified` event on the form
+   * Checks if the element is a textarea field
    */
-  modified(el) {
-    let event = new CustomEvent("modified", {
-      detail: {
-        field: el,
-        form: el.form
-      }
-    });
-    // dispatch the event on the element
-    el.form.dispatchEvent(event);
+  is_textarea(el) {
+    return el.tagName == "TEXTAREA";
+  }
+
+  /**
+   * Checks if the element is a select field
+   */
+  is_select(el) {
+    return el.tagName == "SELECT";
+  }
+
+  /**
+   * Checks if the element is a multiple select field
+   */
+  is_multiple_select(el) {
+    return this.is_select(el) && el.hasAttribute("multiple");
+  }
+
+  /**
+   * Checks if the element is an input field
+   */
+  is_input(el) {
+    return el.tagName === "INPUT";
+  }
+
+  /**
+   * Checks if the element is an input[type='text'] field
+   */
+  is_text(el) {
+    return this.is_input(el) && el.type === "text";
+  }
+
+  /**
+   * Checks if the element is a button field
+   */
+  is_button(el) {
+    return el.tagName === "BUTTON";
+  }
+
+  /**
+   * Checks if the element is an input[type='button'] field
+   */
+  is_input_button(el) {
+    return this.is_input(el) && el.type === "button";
+  }
+
+  /**
+   * Checks if the element is an input[type='checkbox'] field
+   */
+  is_checkbox(el) {
+    return this.is_input(el) && el.type === "checkbox";
+  }
+
+  /**
+   * Checks if the element is an input[type='radio'] field
+   */
+  is_radio(el) {
+    return this.is_input(el) && el.type === "radio";
+  }
+
+  /**
+   * Checks if the element is a SENAITE reference field
+   */
+  is_reference(el) {
+    return el.classList.contains("referencewidget");
+  }
+
+  /**
+   * Checks if the element is a SENAITE single-reference field
+   */
+  is_single_reference(el) {
+    return this.is_reference(el) && el.getAttribute("multivalued") == "0";
+  }
+
+  /**
+   * Checks if the element is a SENAITE multi-reference field
+   */
+  is_multi_reference(el) {
+    return this.is_reference(el) && el.getAttribute("multivalued") == "1";
   }
 
   /**

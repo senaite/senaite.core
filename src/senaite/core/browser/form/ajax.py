@@ -82,7 +82,7 @@ Example:
         "ScientificName": False,
         "PointOfCapture": "lab",
         "Department": {
-            "value": ["6f3cb33f10e04ac19b32b8bd47fcd43b"],
+            "selected": ["6f3cb33f10e04ac19b32b8bd47fcd43b"],
             "options": [
                 {
                     "title": "Clinical Lab",
