@@ -683,6 +683,12 @@ Create a Worksheet Template and assign the instrument:
     ...                             Instrument=instrument,
     ...                             Service=service_uids)
 
+Reject any previous analyses awaiting for assignment:
+
+    >>> query = {"portal_type": "Analysis", "review_state": "unassigned"}
+    >>> objs = map(api.get_object, api.search(query, "bika_analysis_catalog"))
+    >>> success = map(lambda obj: doActionFor(obj, "reject"), objs)
+
 Create and receive 2 samples:
 
     >>> service_uids = [Cu]
@@ -701,39 +707,20 @@ Worksheet remains empty because the instrument is not allowed for `Cu` service:
 
 Assign the Instrument to the `Cu` service:
 
-    >>> Cu.setInstrumentEntryOfResults(True)
     >>> Cu.setInstruments([instrument,])
 
 Re-assign the worksheet template:
 
     >>> worksheet.applyWorksheetTemplate(instr_template)
 
-Worksheet still remains empty, because the analyses were created before the
-assignment of Instrument to the the `Cu` service:
+Worksheet contains now the two `Cu` analyses:
 
-    >>> worksheet.getAnalyses()
-    []
-
-Create a 2 more samples:
-
-    >>> service_uids = [Cu]
-    >>> samples = map(lambda i: create_analysisrequest(client, request, values, service_uids), range(2))
-    >>> success = map(lambda s: doActionFor(s, "receive"), samples)
-
-Re-assign the worksheet template and the worksheet now contains the two
-analyses from the new samples we've created:
-
-    >>> worksheet.applyWorksheetTemplate(instr_template)
     >>> ws_analyses = worksheet.getAnalyses()
-    >>> len(ws_analyses)
-    2
-
     >>> all(map(lambda a: a.getRequest() in samples, ws_analyses))
     True
 
 Unassign instrument from `Cu` service:
 
-    >>> Cu.setInstrumentEntryOfResults(False)
     >>> Cu.setInstruments([])
 
 Reject any remaining analyses awaiting for assignment:
