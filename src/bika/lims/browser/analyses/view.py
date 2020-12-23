@@ -463,20 +463,27 @@ class AnalysesView(ListingView):
 
         vocab = []
         for instrument in instruments:
+            uid = api.get_uid(instrument)
+            title = api.get_title(instrument)
             # append all valid instruments
             if instrument.isValid():
                 vocab.append({
-                    "ResultValue": api.get_uid(instrument),
-                    "ResultText": api.get_title(instrument),
+                    "ResultValue": uid,
+                    "ResultText": title,
                 })
             elif instrument.isOutOfDate():
-                # skip out of date instruments
-                continue
+                # disable out of date instruments
+                title = _("{} (Out of date)".format(title))
+                vocab.append({
+                    "disabled": True,
+                    "ResultValue": None,
+                    "ResultText": title,
+                })
             elif is_qc:
                 # Is a QC analysis, include instrument also if is not valid
                 vocab.append({
-                    "ResultValue": api.get_uid(instrument),
-                    "ResultText": api.get_title(instrument),
+                    "ResultValue": uid,
+                    "ResultText": title,
                 })
 
         # sort the vocabulary
