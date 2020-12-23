@@ -690,10 +690,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
     @security.public
     def isInstrumentAllowed(self, instrument):
         """Checks if the specified instrument can be set for this analysis,
-        either if the instrument was assigned directly (by using "Allows
-        instrument entry of results") or indirectly via Method ("Allows manual
-        entry of results") in Analysis Service Edit view.
-        Param instrument can be either an uid or an object
+
         :param instrument: string,Instrument
         :return: True if the assignment of the passed in instrument is allowed
         :rtype: bool
@@ -703,11 +700,8 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
     @security.public
     def isMethodAllowed(self, method):
-        """Checks if the analysis can follow the method specified, either if
-        the method was assigned directly (by using "Allows manual entry of
-        results") or indirectly via Instrument ("Allows instrument entry of
-        results") in Analysis Service Edit view.
-        Param method can be either a uid or an object
+        """Checks if the analysis can follow the method specified
+
         :param method: string,Method
         :return: True if the analysis can follow the method specified
         :rtype: bool
@@ -737,14 +731,12 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         :return: A list with the UIDs of the methods allowed for this analysis
         :rtype: list of strings
         """
-        return [m.UID() for m in self.getAllowedMethods()]
+        return map(api.get_uid, self.getAllowedMethods())
 
     @security.public
     def getAllowedInstruments(self):
-        """Returns the allowed instruments for this analysis, either if the
-        instrument was assigned directly (by using "Allows instrument entry of
-        results") or indirectly via Method (by using "Allows manual entry of
-        results") in Analysis Service edit view.
+        """Returns the allowed instruments from the service
+
         :return: A list of instruments allowed for this Analysis
         :rtype: list of instruments
         """
@@ -760,7 +752,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         :return: List of instruments' UIDs allowed for this analysis
         :rtype: list of strings
         """
-        return [i.UID() for i in self.getAllowedInstruments()]
+        return map(api.get_uid, self.getAllowedInstruments())
 
     @security.public
     def getExponentialFormatPrecision(self, result=None):
