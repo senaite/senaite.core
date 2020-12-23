@@ -23,7 +23,6 @@ from string import Template
 
 import six
 from Products.Archetypes.config import UID_CATALOG
-from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
 from Products.CMFPlone.utils import safe_unicode
 from senaite.core.workflow import ANALYSIS_WORKFLOW

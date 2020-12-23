@@ -22,14 +22,13 @@ import copy
 import math
 
 import zope.event
-from Products.Archetypes.event import ObjectInitializedEvent
-from Products.CMFPlone.utils import _createObjectByType
 from archetypes.schemaextender.interfaces import IExtensionField
-
 from bika.lims import api
 from bika.lims.interfaces import IAnalysisService
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.utils import formatDecimalMark
+from Products.Archetypes.event import ObjectInitializedEvent
+from Products.CMFPlone.utils import _createObjectByType
 
 
 def duplicateAnalysis(analysis):
