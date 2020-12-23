@@ -4,6 +4,7 @@ Changelog
 2.0.0rc3 (unreleased)
 ---------------------
 
+- #1719 Service/Method/Calculation relationship handling
 - #1717 Port workflow definitions to senaite namespace
 - #1716 Fix workflow state offset in toolbar when no dropdown is rendered
 - #1715 Updated build system to Webpack 5
