@@ -278,17 +278,5 @@ class Method(BaseFolder):
         dlist = DisplayList(items)
         return dlist
 
-    # TO BE REMOVED
-
-    def getManualEntryOfResults(self):
-        """BBB
-        """
-        return True
-
-    def isManualEntryOfResults(self):
-        """BBB
-        """
-        return True
-
 
 registerType(Method, PROJECTNAME)

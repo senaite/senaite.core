@@ -12,4 +12,9 @@
            zope.publisher.interfaces.browser.IBrowserRequest"
       factory=".calculation.EditForm"/>
 
+  <adapter
+      for="bika.lims.interfaces.IMethod
+           zope.publisher.interfaces.browser.IBrowserRequest"
+      factory=".method.EditForm"/>
+
 </configure>

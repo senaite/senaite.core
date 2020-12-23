@@ -517,8 +517,7 @@ class AnalysisService(AbstractBaseAnalysis):
         """Returns the UIDs of the available methods
 
         Used here:
-        Module bika.lims.catalog.indexers.bikasetup, line 72, in method_available_uid
-
+        bika.lims.catalog.indexers.bikasetup.method_available_uid
         """
         # N.B. we return a copy of the list to avoid accidental writes
         return self.getRawMethods()[:]
