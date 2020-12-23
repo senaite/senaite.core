@@ -57,7 +57,7 @@ class EditForm(EditFormAdapterBase):
                             .format(api.get_title(obj), api.get_title(brain)))
                 messages.append(message)
 
-        return ", ".join(messages)
+        return "<br/>".join(messages)
 
     def validate_calculations(self, calculations):
         """Check if the new calculations are valid for the method
@@ -83,4 +83,4 @@ class EditForm(EditFormAdapterBase):
                             .format(api.get_title(obj), api.get_title(brain)))
                 messages.append(message)
 
-        return ", ".join(messages)
+        return "<br/>".join(messages)
