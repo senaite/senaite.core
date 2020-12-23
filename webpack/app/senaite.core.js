@@ -34,13 +34,6 @@ document.addEventListener("DOMContentLoaded", () => {
     "el": "sidebar",
   });
 
-
-  // Tooltips
-  $(function () {
-    $("[data-toggle='tooltip']").tooltip()
-  })
-  // /Tooltips
-
   // Auto LogOff
   var logoff = document.body.dataset.autoLogoff || 0;
   var logged = document.body.classList.contains("userrole-authenticated");
@@ -71,5 +64,10 @@ document.addEventListener("DOMContentLoaded", () => {
       "textarea",
     ]
   })
+
+  // Init Tooltips
+  $(function () {
+    $("[data-toggle='tooltip']").tooltip()
+  });
 
 });
