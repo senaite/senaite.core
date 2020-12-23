@@ -24,11 +24,12 @@ field converters, e.g. `fieldname:boolean:default` etc.).
         payload = self.get_json()
         return {}
 
-This method is called for each field modification. The JSON `payload` provides
-the key `form` with the HTML form data as described above. Furthermore, it
-provides the keys `name` and `value` with the name and value of the changed
-field. The `key` is the fieldname w/o the coverter to match the schema of the
-object and the value is converted as follows:
+This method is called on each field modification. The JSON `payload` provides
+the key `form` with the HTML form data as described above.
+
+Furthermore, it provides the keys `name` and `value` with the name and value of
+the changed field. The `key` is the fieldname w/o the coverter to match the
+schema of the object and the value is converted as follows:
 
     - checkbox fields: True/False
     - single reference fields: UID
@@ -36,52 +37,35 @@ object and the value is converted as follows:
     - select fields: list of selected values
 
 The return value of both methods is a dictionary with instructions to be done
-in the fronted. The following keys are supported:
+in the fronted.
 
-    hide: []
+The following keys are supported in the returned dictionary:
 
-A list of (schema) field names that should be hidden.
+    hide: [
+        {"name": "title"},
+        {"name": "description"},
+    ]
 
-    show: []
+A list of field records containing at least the `name` of the field.
 
-A list of (schema) field names that should be visible.
+    show: [
+        {"name": "title"},
+        {"name": "description"},
+    ]
 
-    update: {}
+A list of field records containing at least the `name` of the field.
 
-A dictionary of `field name` -> `field option` pairs to update the fields (more
-on that later).
+    readonly: [
+        {"name": "title"},
+        {"name": "description"},
+    ]
 
-    errors: {}
+A list of field records containing at least the `name` of the field.
 
-A dictionary of `field name` -> `error message` that highlights the fields as
-erroneous and displays the error message below the field.
-
-Note: All error marked fields are flushed in between the updates.
-
-    messages: []
-
-A list of message dictionaries. Each message dictionary consists of a `level`
-and `message` mapping.
-
-The level can be one of the following values:
-
-    - alert
-    - warning
-    - info
-    - success
-
-The `message` should be an i18n message factory to be properly translated.
-
-
-Example:
-
-{
-    "hide": ["title"],
-    "show": [],
-    "update": {
-        "ScientificName": False,
-        "PointOfCapture": "lab",
-        "Department": {
+    update: [
+        {"name": "title", value="My Title"},
+        {"name": "description", "value": "My Description"},
+        {"name": "Department", "value": {
             "selected": ["6f3cb33f10e04ac19b32b8bd47fcd43b"],
             "options": [
                 {
@@ -89,23 +73,38 @@ Example:
                     "value": "6f3cb33f10e04ac19b32b8bd47fcd43b",
                 }
             ]
-        },
-        "Calculation": {
-            "options": [
-                {
-                    "value": "69c3999948e94490bf43c7b49694fe2c",
-                    "title": "Total Aflatoxins",
-                }
-            ]
         }
-    },
-    "messages": [
-        {"level": "info", "message": _("Changes Saved")}
-    ],
-    "errors": {
-        "description": _("Invalid description"),
-    },
-}
+    ]
+
+A list of records containing at least the `name` and the `value` of the fields
+to update.
+
+    errors: [
+        {"name": "title", error="Invalid characters detected"},
+    ]
+
+A list of records containing at least the `name` and the `error` of the fields
+that should be displayed as erroneous.
+
+Note: Form submission is disabled when fields are marked as erroneous!
+
+    messages: [
+        {"message": "Changes Saved", level="info"},
+    ]
+
+A list of records containing at least the `message` and the `level` of the
+status messages to display.
+
+The level can be one of the following values:
+
+    - info
+    - success
+    - warning
+    - dangrous
+    - success
+
+The `message` should be an i18n message factory and are translated with
+`jsi18n` in JS.
 """
 
 

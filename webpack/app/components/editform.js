@@ -120,7 +120,7 @@ class EditForm {
   /**
    * toggles the display of the field with the `d-none` class
    */
-  toggle_field_visibility(field, toggle) {
+  toggle_field_visibility(field, toggle=true) {
     let parent = field.closest(".field");
     let css_class = "d-none";
     if (toggle === false) {
@@ -139,6 +139,22 @@ class EditForm {
       return true;
     }
     return false;
+  }
+
+  /**
+   * set field readable only
+   */
+  set_field_readonly(field, message=null) {
+    field.setAttribute("readonly", "");
+    let existing_message = field.parentElement.querySelector("div.readonly-message");
+    if (existing_message) {
+      existing_message.innerHTML = _t(message)
+    } else {
+      let div = document.createElement("div");
+      div.className = "readonly-message text-info small";
+      div.innerHTML = _t(message);
+      field.parentElement.appendChild(div);
+    }
   }
 
   /**
@@ -196,46 +212,64 @@ class EditForm {
 
     let hide = data.hide || [];
     let show = data.show || [];
-    let update = data.update || {};
+    let readonly = data.readonly || [];
+    let errors = data.errors || [];
     let messages = data.messages || [];
-    let errors = data.errors || {};
+    let updates = data.update || [];
 
     // render field errors
-    for (const [key, value] of Object.entries(errors)) {
-      let el = this.get_form_field_by_name(form, key);
+    for (const record of errors) {
+      let name, error, rest;
+      ({name, error, ...rest} = record);
+      let el = this.get_form_field_by_name(form, name);
       if (!el) continue;
-      if (value) {
-        this.set_field_error(el, value);
+      if (error) {
+        this.set_field_error(el, error);
       } else {
         this.remove_field_error(el);
       }
     }
 
     // render status messages
-    for (const item of messages) {
-      let level = item.level || "info";
-      let message = item.message || "";
+    for (const record of messages) {
+      let name, error, rest;
+      ({message, level, ...rest} = record);
+      let level = level || "info";
+      let message = message || "";
       this.add_statusmessage(message, level);
     }
 
     // hide fields
-    for (const selector of hide) {
-      let el = this.get_form_field_by_name(form, selector);
+    for (const record of hide) {
+      let name, rest;
+      ({name, ...rest} = record);
+      let el = this.get_form_field_by_name(form, name);
       if (!el) continue;
       this.toggle_field_visibility(el, false);
     }
 
     // show fields
-    for (const selector of show) {
-      let el = this.get_form_field_by_name(form, selector);
+    for (const record of show) {
+      let name, rest;
+      ({name, ...rest} = record);
+      let el = this.get_form_field_by_name(form, name);
       if (!el) continue;
       this.toggle_field_visibility(el, true);
     }
 
+    // readonly fields
+    for (const record of readonly) {
+      let name, message, rest;
+      ({name, message, ...rest} = record);
+      let el = this.get_form_field_by_name(form, name);
+      if (!el) continue;
+      this.set_field_readonly(el, message);
+    }
+
     // updated fields
-    for (const [key, value] of Object.entries(update)) {
-      console.log(`Update ${key} -> ${value}`);
-      let el = this.get_form_field_by_name(form, key);
+    for (const record of updates) {
+      ({name, value} = record);
+      let el = this.get_form_field_by_name(form, name);
       if (!el) continue;
       this.set_field_value(el, value);
     }
@@ -349,20 +383,23 @@ class EditForm {
       options.sort((a, b) => {
         let _a = a.title.toLowerCase();
         let _b = b.title.toLowerCase();
-        if (a.value === null) _a = "_";
-        if (b.value === null) _b = "_";
-        return _a.localeCompare(_b)
+        if (a.value === null) _a = "";
+        if (b.value === null) _b = "";
+        if (_a < _b) return -1;
+        if (_a > _b) return 1;
       });
       // build new options
       for (const option of options) {
         let el = document.createElement("option");
         el.value = option.value;
         el.innerHTML = option.title;
+        // select item if the value is in the selected array
         if (selected.indexOf(option.value) !== -1) {
           el.selected = true;
         }
         field.appendChild(el);
       }
+      // select first item
       if (selected.length == 0) {
         field.selectedIndex = 0;
       }

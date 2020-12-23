@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from six import string_types
-
 from senaite.core.interfaces import IAjaxEditForm
 from zope.interface import implementer
 
@@ -17,67 +15,64 @@ class EditFormAdapterBase(object):
         self._data = {
             "hide": [],
             "show": [],
-            "update": {},
-            "errors": {},
+            "readonly": [],
+            "errors": [],
             "messages": [],
+            "updates": [],
         }
 
     @property
     def data(self):
         return self._data
 
-    def hide_field(self, name):
-        """Add the field to the `hide` list
-        """
-        if not isinstance(name, string_types):
-            raise TypeError("Value must be a string type, got '{}'"
-                            .format(type(name)))
-        key = "hide"
-        value = self._data.get(key, [])[:]
-        if name not in value:
-            value.append(name)
-        self._data[key] = value
-
-    def show_field(self, name):
-        """Add the field to the show list
-        """
-        if not isinstance(name, string_types):
-            raise TypeError("Name must be a string type, got '{}'"
-                            .format(type(name)))
-        key = "show"
-        value = self._data.get(key, [])[:]
-        if name not in value:
-            value.append(name)
-        self._data[key] = value
-
-    def set_field_error(self, name, error):
-        """Set field error
-        """
-        key = "errors"
-        value = self._data.get(key, {})
-        value[name] = error
-        self._data[key] = value
-
-    def set_status_message(self, message, level="info"):
-        """Set status message
-        """
-        if message is None:
-            return
-        key = "messages"
-        value = self._data.get(key, [])[:]
-        value.append({"level": level, "message": message})
-        self._data[key] = value
-
-    def update_field(self, name, value):
-        """Set update field
-        """
-        key = "update"
-        records = self._data.get(key, {})
-        records[name] = value
-        self._data[key] = records
-
     def initialized(self, data):
         return NotImplementedError("Must be implemented by subclass")
 
     def modified(self, data):
         return NotImplementedError("Must be implemented by subclass")
+
+    def add_record_to(self, key, record):
+        """Add a record to the dictionary
+        """
+        # always operate on a copy of the item
+        value = self._data.get(key, [])[:]
+        # append the record to the list
+        value.append(record)
+        # set the value back on the dictionary
+        self._data[key] = value
+
+    def add_hide_field(self, name, **kw):
+        """Add the field to the `hide` list
+        """
+        record = dict(name=name, **kw)
+        self.add_record_to("hide", record)
+
+    def add_show_field(self, name, **kw):
+        """Add the field to the show list
+        """
+        record = dict(name=name, **kw)
+        self.add_record_to("show", record)
+
+    def add_readonly_field(self, name, message=None, **kw):
+        """Add field to the readonly list
+        """
+        record = dict(name=name, message=message, **kw)
+        self.add_record_to("readonly", record)
+
+    def add_error_field(self, name, error, **kw):
+        """Add field to the error list
+        """
+        record = dict(name=name, error=error, **kw)
+        self.add_record_to("errors", record)
+
+    def add_status_message(self, message, level="info", **kw):
+        """Add status message to the messages list
+        """
+        record = dict(message=message, level=level, **kw)
+        self.add_record_to("messages", record)
+
+    def add_update_field(self, name, value, **kw):
+        """Add field to the update list
+        """
+        record = dict(name=name, value=value, **kw)
+        self.add_record_to("updates", record)

@@ -6,6 +6,7 @@ from itertools import chain
 from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
 from bika.lims.catalog import SETUP_CATALOG
+from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.validators import ServiceKeywordValidator
 from senaite.core.browser.form.adapters import EditFormAdapterBase
 
@@ -16,11 +17,20 @@ class EditForm(EditFormAdapterBase):
 
     def initialized(self, data):
         form = data.get("form")
+        # Check if method is set
         method = form.get("Method")
         if not method:
-            self.set_status_message(
+            self.add_status_message(
                 _("No Method selected for this Service"),
                 level="warning")
+        # Protect keyword field
+        keyword = form.get("Keyword")
+        if keyword:
+            writable = self.can_change_keyword(keyword)
+            if not writable:
+                self.add_readonly_field(
+                    "Keyword", _("Keyword is used in active analyses "
+                                 "and can not be changed anymore"))
         return self.data
 
     def modified(self, data):
@@ -29,7 +39,7 @@ class EditForm(EditFormAdapterBase):
 
         # Handle Keyword change
         if name == "Keyword":
-            self.set_field_error("Keyword", self.validate_keyword(value))
+            self.add_error_field("Keyword", self.validate_keyword(value))
 
         # Handle Methods Change
         elif name == "Methods":
@@ -53,17 +63,28 @@ class EditForm(EditFormAdapterBase):
             if methods:
                 # selected instruments
                 i_sel = map(api.get_uid, instruments)
-                self.update_field("Method", {"options": empty + m_opts})
-                self.update_field("Instruments_options", {"options": i_opts})
-                self.update_field("Instruments:list", {
+                # set update fields
+                self.add_update_field("Method", {
+                    "options": empty + m_opts})
+                self.add_update_field("Instruments_options", {
+                    "options": i_opts})
+                self.add_update_field("Instruments:list", {
                     "options": i_opts, "selected": i_sel})
-                self.update_field("Instrument", {"options": empty + i_opts})
-                self.update_field("Calculation", {"options": empty + c_opts})
+                self.add_update_field("Instrument", {
+                    "options": empty + i_opts})
+                self.add_update_field("Calculation", {
+                    "options": empty + c_opts})
             else:
-                self.update_field("Method", {"options": empty})
-                self.update_field("Instruments:list", {"options": []})
-                self.update_field("Instruments_options", {"options": i_opts})
-                self.update_field("Instrument", {"options": empty})
+                self.add_update_field("Method", {
+                    "options": empty})
+                self.add_update_field("Instruments:list", {
+                    "options": []})
+                self.add_update_field("Instruments_options", {
+                    "options": i_opts})
+                self.add_update_field("Instrument", {
+                    "options": empty})
+                self.add_update_field("Calculation", {
+                    "options": empty + c_opts})
 
         # Handle Instruments Change
         elif name == "Instruments":
@@ -71,7 +92,8 @@ class EditForm(EditFormAdapterBase):
             empty = [{"title": _("None"), "value": None}]
             i_opts = map(lambda o: dict(
                 title=api.get_title(o), value=api.get_uid(o)), instruments)
-            self.update_field("Instrument", {"options": empty + i_opts})
+            self.add_update_field("Instrument", {
+                "options": empty + i_opts})
 
         return self.data
 
@@ -108,6 +130,22 @@ class EditForm(EditFormAdapterBase):
     @property
     def setup_catalog(self):
         return api.get_tool(SETUP_CATALOG)
+
+    @property
+    def analysis_catalog(self):
+        return api.get_tool(CATALOG_ANALYSIS_LISTING)
+
+    def can_change_keyword(self, keyword):
+        """Check if the keyword can be changed
+
+        Writable if no active analyses exist with the given keyword
+        """
+        query = {
+            "portal_type": "Analysis",
+            "is_active": True,
+            "getKeyword": keyword}
+        brains = self.analysis_catalog(query)
+        return len(brains) == 0
 
     def validate_keyword(self, value):
         """Validate the service keyword
