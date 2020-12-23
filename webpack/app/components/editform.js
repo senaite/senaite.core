@@ -5,6 +5,10 @@
  *
  */
 
+// needed for Bootstrap toasts
+import $ from "jquery";
+
+
 class EditForm {
 
   constructor(config) {
@@ -12,6 +16,8 @@ class EditForm {
       "form_selectors": [],
       "field_selectors": []
     }, config);
+
+    this.hooked_fields = [];
 
     // bind event handlers
     this.on_mutated = this.on_mutated.bind(this);
@@ -51,27 +57,42 @@ class EditForm {
     console.debug(`EditForm::watch_form(${form})`);
     let fields = this.get_form_fields(form);
     for (const field of fields) {
-      if (this.is_button(field) || this.is_input_button(field)) {
-        // bind click event
-        field.addEventListener("click", this.on_click);
-      }
-      else if (this.is_text(field) || this.is_textarea(field) || this.is_select(field)) {
-        // bind change event
-        field.addEventListener("change", this.on_change);
-      }
-      else if (this.is_radio(field) || this.is_checkbox(field)) {
-        // bind click event
-        field.addEventListener("click", this.on_click);
-      } else {
-        // bind blur event
-        field.addEventListener("blur", this.on_blur);
-      }
+      this.hook_field(field)
     }
     // observe DOM mutations in form
     this.observe_mutations(form);
     // bind custom form event handlers
     form.addEventListener("modified", this.on_modified);
     form.addEventListener("mutated", this.on_mutated);
+  }
+
+  /**
+   * Bind event handlers to field
+   */
+  hook_field(field) {
+    // return immediately if the fields is already hooked
+    if (this.hooked_fields.indexOf(field) !== -1) {
+      // console.debug(`Field '${field.name}' is already hooked`);
+      return
+    }
+    if (this.is_button(field) || this.is_input_button(field)) {
+      // bind click event
+      field.addEventListener("click", this.on_click);
+    }
+    else if (this.is_text(field) || this.is_textarea(field) || this.is_select(field)) {
+      // bind change event
+      field.addEventListener("change", this.on_change);
+    }
+    else if (this.is_radio(field) || this.is_checkbox(field)) {
+      // bind click event
+      field.addEventListener("click", this.on_click);
+    } else {
+      // bind blur event
+      field.addEventListener("blur", this.on_blur);
+    }
+    // console.debug(`Hooked field '${field.name}'`);
+    // remember hooked fields
+    this.hooked_fields = this.hooked_fields.concat(field);
   }
 
   /**
@@ -100,13 +121,20 @@ class EditForm {
    */
   handle_mutation(form, mutation) {
     let target = mutation.target;
+    let parent = target.closest(".field");
     let added = mutation.addedNodes;
     let removed = mutation.removedNodes;
+    let selectors = this.config.field_selectors;
     // handle picklist widget
     if (this.is_multiple_select(target)) {
-      this.notify(form, target, "modified");
+      return this.notify(form, target, "modified");
     }
-    // TODO: Handle records field
+    // hook new fields, e.g. when the records field "More" button was clicked
+    if (added && target.ELEMENT_NODE) {
+      for (const field of target.querySelectorAll(selectors)) {
+        this.hook_field(field);
+      }
+    }
   }
 
   /**
