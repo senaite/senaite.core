@@ -481,6 +481,8 @@ class AnalysesView(ListingView):
                 })
             elif is_qc:
                 # Is a QC analysis, include instrument also if is not valid
+                if instrument.isOutOfDate():
+                    title = _("{} (Out of date)".format(title))
                 vocab.append({
                     "ResultValue": uid,
                     "ResultText": title,
