@@ -22,25 +22,22 @@ import itertools
 
 from AccessControl import ClassSecurityInfo
 from AccessControl import Unauthorized
-from Products.Archetypes.Registry import registerField
-from Products.Archetypes.public import Field
-from Products.Archetypes.public import ObjectField
-from zope.interface import alsoProvides
-from zope.interface import implements
-from zope.interface import noLongerProvides
-
 from bika.lims import api
 from bika.lims import logger
 from bika.lims.api.security import check_permission
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.catalog import SETUP_CATALOG
-from bika.lims.interfaces import IARAnalysesField
 from bika.lims.interfaces import IAnalysis
 from bika.lims.interfaces import IAnalysisService
-from bika.lims.interfaces import IInternalUse
+from bika.lims.interfaces import IARAnalysesField
 from bika.lims.interfaces import ISubmitted
 from bika.lims.permissions import AddAnalysis
 from bika.lims.utils.analysis import create_analysis
+from Products.Archetypes.public import Field
+from Products.Archetypes.public import ObjectField
+from Products.Archetypes.Registry import registerField
+from zope.interface import implements
+
 
 """Field to manage Analyses on ARs
 
@@ -119,8 +116,7 @@ class ARAnalysesField(ObjectField):
 
         # Bail out if the AR is inactive
         if not api.is_active(instance):
-            raise Unauthorized("Inactive ARs can not be modified"
-                               .format(AddAnalysis))
+            raise Unauthorized("Inactive ARs can not be modified")
 
         # Bail out if the user has not the right permission
         if not check_permission(AddAnalysis, instance):
