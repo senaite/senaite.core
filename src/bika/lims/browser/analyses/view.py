@@ -898,7 +898,8 @@ class AnalysesView(ListingView):
         """
         obj = self.get_object(analysis_brain)
         is_editable = self.is_analysis_edition_allowed(analysis_brain)
-        method_title = api.get_title(obj)
+        method = obj.getMethod()
+        method_title = method and api.get_title(method) or ""
         item["Method"] = method_title or _("Manual")
         if is_editable:
             method_vocabulary = self.get_methods_vocabulary(analysis_brain)
@@ -909,7 +910,7 @@ class AnalysesView(ListingView):
                 self.show_methodinstr_columns = True
         elif method_title:
             item["replace"]["Method"] = get_link(
-                api.get_url(obj), method_title, tabindex="-1")
+                api.get_url(method), method_title, tabindex="-1")
             self.show_methodinstr_columns = True
 
     def _folder_item_instrument(self, analysis_brain, item):
