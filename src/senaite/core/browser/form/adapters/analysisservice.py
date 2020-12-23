@@ -19,7 +19,8 @@ class EditForm(EditFormAdapterBase):
         form = data.get("form")
         # Check if method is set
         method = form.get("Method")
-        if not method:
+        methods = form.get("Methods:list")
+        if not (method or methods):
             self.add_status_message(
                 _("No Method selected for this Service"),
                 level="warning")
