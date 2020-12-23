@@ -1,20 +1,16 @@
 # -*- coding: utf-8 -*-
 
-from senaite.core.interfaces import IAjaxEditForm
-from zope.interface import implementer
+from senaite.core.browser.form.adapters import EditFormAdapterBase
 
 
-@implementer(IAjaxEditForm)
-class EditForm(object):
-
-    def __init__(self, context, request):
-        self.context = context
-        self.request = request
+class EditForm(EditFormAdapterBase):
+    """Edit form adapter for Calculation
+    """
 
     def initialized(self, data):
-        return {
-            "hide": ["cmfeditions_version_comment"],
-        }
+        self.add_hide_field("cmfeditions_version_comment")
+        self.add_hide_field("TestResult")
+        return self.data
 
     def modified(self, data):
-        return {}
+        return self.data
