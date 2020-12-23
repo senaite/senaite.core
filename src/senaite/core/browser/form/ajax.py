@@ -88,6 +88,13 @@ that should be displayed as erroneous.
 
 Note: Form submission is disabled when fields are marked as erroneous!
 
+    notifications: [
+        {"title": "Heads Up", message": "Notifications are awesome!"},
+    ]
+
+A list of records containing at least the `title` and the `message` of the
+notifications messages to display.
+
     messages: [
         {"message": "Changes Saved", level="info"},
     ]

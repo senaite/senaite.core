@@ -18,6 +18,7 @@ class EditFormAdapterBase(object):
             "readonly": [],
             "errors": [],
             "messages": [],
+            "notifications": [],
             "updates": [],
         }
 
@@ -70,6 +71,12 @@ class EditFormAdapterBase(object):
         """
         record = dict(message=message, level=level, **kw)
         self.add_record_to("messages", record)
+
+    def add_notification(self, title, message, **kw):
+        """Add status message to the messages list
+        """
+        record = dict(title=title, message=message, **kw)
+        self.add_record_to("notifications", record)
 
     def add_update_field(self, name, value, **kw):
         """Add field to the update list

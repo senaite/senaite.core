@@ -31,6 +31,7 @@ class EditForm(EditFormAdapterBase):
                 self.add_readonly_field(
                     "Keyword", _("Keyword is used in active analyses "
                                  "and can not be changed anymore"))
+
         return self.data
 
     def modified(self, data):

@@ -205,6 +205,51 @@ class EditForm {
   }
 
   /**
+   * add a notification message
+   */
+  add_notification(title, message, options) {
+    options = options || {};
+    options = Object.assign({
+      animation: true,
+      autohide: true,
+      delay: 5000,
+    }, options)
+    let el = document.createElement("div");
+    el.innerHTML = `
+      <div class="toast" style="width:300px" role="alert"
+           data-animation="${options.animation}"
+           data-autohide="${options.autohide}"
+           data-delay="${options.delay}">
+        <div class="toast-header">
+          <strong class="mr-auto">${title.charAt(0).toUpperCase() + title.slice(1)}</strong>
+          <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="toast-body">
+          ${_t(message)}
+        </div>
+      </div>
+    `
+    el = el.firstElementChild;
+    let parent = document.querySelector(".toast-container");
+    if (!parent) {
+      parent = document.createElement("div");
+      parent.innerHTML = `
+        <div style="position: fixed; top: 0px; right: 0px; width=100%;">
+          <div class="toast-container" style="position: absolute; top: 10px; right: 10px;">
+          </div>
+        </div>
+      `
+      let wrapper = document.querySelector(".container-fluid");
+      wrapper.appendChild(parent);
+      parent = parent.querySelector(".toast-container");
+    }
+    parent.appendChild(el);
+    return el;
+  }
+
+  /**
    * update the form with the response from the server
    */
   update_form(form, data) {
@@ -215,6 +260,7 @@ class EditForm {
     let readonly = data.readonly || [];
     let errors = data.errors || [];
     let messages = data.messages || [];
+    let notifications = data.notifications || [];
     let updates = data.update || [];
 
     // render field errors
@@ -237,6 +283,14 @@ class EditForm {
       let level = level || "info";
       let message = message || "";
       this.add_statusmessage(message, level);
+    }
+
+    // render notification messages
+    for (const record of notifications) {
+      let title, message, rest;
+      ({title, message, ...rest} = record);
+      let el = this.add_notification(title, message, rest);
+      $(el).toast("show");
     }
 
     // hide fields
