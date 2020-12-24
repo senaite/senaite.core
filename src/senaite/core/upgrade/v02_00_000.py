@@ -192,7 +192,12 @@ def upgrade(tool):
     resolve_attachment_due(portal)
 
     # Migrates the `Calculation` field -> `Calculations`
+    # https://github.com/senaite/senaite.core/pull/1719
     migrate_calculations_of_methods(portal)
+
+    # Remove calclation interims from service interims
+    # https://github.com/senaite/senaite.core/pull/1719
+    migrate_service_interims(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
@@ -622,3 +627,23 @@ def migrate_calculations_of_methods(portal):
         calc_field.set(obj, None)
 
     logger.info("Migrate Method `Calculation` field ... [DONE]")
+
+
+def migrate_service_interims(portal):
+    logger.info("Remove calculation interims from service interims ...")
+    query = {"portal_type": "AnalysisService"}
+    for brain in api.search(query, SETUP_CATALOG):
+        obj = api.get_object(brain)
+        calc = obj.getCalculation()
+        if not calc:
+            continue
+        s_interims = obj.getInterimFields()
+        if not s_interims:
+            continue
+        # cleanup service interims from calculation interims
+        c_interims = calc.getInterimFields()
+        c_interim_keys = map(lambda i: i.get("keyword"), c_interims)
+        new_interims = filter(
+            lambda i: i.get("keyword") not in c_interim_keys, s_interims)
+        obj.setInterimFields(new_interims)
+    logger.info("Remove calculation interims from service interims ... [DONE]")
