@@ -48,9 +48,9 @@ def returns_json(func):
     """
     def decorator(*args, **kwargs):
         instance = args[0]
+        result = func(*args, **kwargs)
         request = getattr(instance, 'request', None)
         request.response.setHeader("Content-Type", "application/json")
-        result = func(*args, **kwargs)
         return json.dumps(result)
     return decorator
 

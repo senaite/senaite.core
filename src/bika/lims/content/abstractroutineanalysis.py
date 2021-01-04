@@ -21,17 +21,6 @@
 from datetime import timedelta
 
 from AccessControl import ClassSecurityInfo
-from Products.ATContentTypes.utils import DT2dt
-from Products.ATContentTypes.utils import dt2DT
-from Products.Archetypes.Field import BooleanField
-from Products.Archetypes.Field import FixedPointField
-from Products.Archetypes.Field import StringField
-from Products.Archetypes.Schema import Schema
-from Products.CMFCore.permissions import View
-from zope.interface import alsoProvides
-from zope.interface import implements
-from zope.interface import noLongerProvides
-
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import UIDReferenceField
@@ -47,7 +36,16 @@ from bika.lims.interfaces import IInternalUse
 from bika.lims.interfaces import IRoutineAnalysis
 from bika.lims.interfaces.analysis import IRequestAnalysis
 from bika.lims.workflow import getTransitionDate
-
+from Products.Archetypes.Field import BooleanField
+from Products.Archetypes.Field import FixedPointField
+from Products.Archetypes.Field import StringField
+from Products.Archetypes.Schema import Schema
+from Products.ATContentTypes.utils import DT2dt
+from Products.ATContentTypes.utils import dt2DT
+from Products.CMFCore.permissions import View
+from zope.interface import alsoProvides
+from zope.interface import implements
+from zope.interface import noLongerProvides
 
 # True if the analysis is created by a reflex rule
 IsReflexAnalysis = BooleanField(
@@ -347,6 +345,24 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
         raise NotImplementedError("getSiblings is not implemented.")
 
     @security.public
+    def getCalculation(self):
+        """Return current assigned calculation
+        """
+        field = self.getField("Calculation")
+        calculation = field.get(self)
+        if not calculation:
+            return None
+        return calculation
+
+    @security.public
+    def getCalculationUID(self):
+        """Used to populate catalog values
+        """
+        calculation = self.getCalculation()
+        if calculation:
+            return calculation.UID()
+
+    @security.public
     def getDependents(self, with_retests=False, recursive=False):
         """
         Returns a list of siblings who depend on us to calculate their result.
@@ -381,7 +397,6 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
                                                   recursive=True)
             deps.extend(down_dependencies)
         return deps
-
 
     @security.public
     def getDependencies(self, with_retests=False, recursive=False):

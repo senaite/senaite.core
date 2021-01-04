@@ -1,0 +1,18 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:zcml="http://namespaces.zope.org/zcml">
+
+  <!-- package includes -->
+  <include package=".adapters"/>
+
+  <browser:page
+      name="ajax_form"
+      for="*"
+      permission="cmf.ModifyPortalContent"
+      class=".ajax.FormView"
+      allowed_attributes="initialized modified"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
+</configure>

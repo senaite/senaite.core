@@ -126,6 +126,8 @@ NumberOfRequiredVerifications = IntegerField(
 # the calculation at creation time.
 Calculation = HistoryAwareReferenceField(
     'Calculation',
+    read_permission=View,
+    write_permission=FieldEditAnalysisResult,
     allowed_types=('Calculation',),
     relationship='AnalysisCalculation',
     referenceClass=HoldingReference
@@ -688,10 +690,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
     @security.public
     def isInstrumentAllowed(self, instrument):
         """Checks if the specified instrument can be set for this analysis,
-        either if the instrument was assigned directly (by using "Allows
-        instrument entry of results") or indirectly via Method ("Allows manual
-        entry of results") in Analysis Service Edit view.
-        Param instrument can be either an uid or an object
+
         :param instrument: string,Instrument
         :return: True if the assignment of the passed in instrument is allowed
         :rtype: bool
@@ -701,11 +700,8 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
     @security.public
     def isMethodAllowed(self, method):
-        """Checks if the analysis can follow the method specified, either if
-        the method was assigned directly (by using "Allows manual entry of
-        results") or indirectly via Instrument ("Allows instrument entry of
-        results") in Analysis Service Edit view.
-        Param method can be either a uid or an object
+        """Checks if the analysis can follow the method specified
+
         :param method: string,Method
         :return: True if the analysis can follow the method specified
         :rtype: bool
@@ -725,15 +721,8 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         service = self.getAnalysisService()
         if not service:
             return []
-
-        methods = []
-        if self.getManualEntryOfResults():
-            methods = service.getMethods()
-        if self.getInstrumentEntryOfResults():
-            for instrument in service.getInstruments():
-                methods.extend(instrument.getMethods())
-
-        return list(set(methods))
+        # get the available methods of the service
+        return service.getMethods()
 
     @security.public
     def getAllowedMethodUIDs(self):
@@ -742,29 +731,19 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         :return: A list with the UIDs of the methods allowed for this analysis
         :rtype: list of strings
         """
-        return [m.UID() for m in self.getAllowedMethods()]
+        return map(api.get_uid, self.getAllowedMethods())
 
     @security.public
     def getAllowedInstruments(self):
-        """Returns the allowed instruments for this analysis, either if the
-        instrument was assigned directly (by using "Allows instrument entry of
-        results") or indirectly via Method (by using "Allows manual entry of
-        results") in Analysis Service edit view.
+        """Returns the allowed instruments from the service
+
         :return: A list of instruments allowed for this Analysis
         :rtype: list of instruments
         """
         service = self.getAnalysisService()
         if not service:
             return []
-
-        instruments = []
-        if self.getInstrumentEntryOfResults():
-            instruments = service.getInstruments()
-        if self.getManualEntryOfResults():
-            for meth in self.getAllowedMethods():
-                instruments += meth.getInstruments()
-
-        return list(set(instruments))
+        return service.getInstruments()
 
     @security.public
     def getAllowedInstrumentUIDs(self):
@@ -773,7 +752,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         :return: List of instruments' UIDs allowed for this analysis
         :rtype: list of strings
         """
-        return [i.UID() for i in self.getAllowedInstruments()]
+        return map(api.get_uid, self.getAllowedInstruments())
 
     @security.public
     def getExponentialFormatPrecision(self, result=None):
@@ -1118,14 +1097,6 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         :rtype: bool
         """
         return self.isInstrumentValid()
-
-    @security.public
-    def getCalculationUID(self):
-        """Used to populate catalog values
-        """
-        calculation = self.getCalculation()
-        if calculation:
-            return calculation.UID()
 
     @security.public
     def remove_duplicates(self, ws):

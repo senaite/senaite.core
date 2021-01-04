@@ -40,7 +40,8 @@ module.exports = {
     ],
   },
   output: {
-    filename: devMode ? "[name].js" : `[name]-${gitHash}.js`,
+    // filename: devMode ? "[name].js" : `[name]-${gitHash}.js`,
+    filename: "[name].js",
     path: path.resolve(staticPath, "bundles"),
     publicPath: "/++plone++senaite.core.static/bundles"
   },
@@ -113,7 +114,7 @@ module.exports = {
         exclude: /\/modules/,
         terserOptions: {
           // https://github.com/webpack-contrib/terser-webpack-plugin#terseroptions
-          sourceMap: true, // Must be set to true if using source-maps in production
+          sourceMap: false, // Must be set to true if using source-maps in production
           format: {
             comments: false
           },
@@ -125,6 +126,7 @@ module.exports = {
       }),
       // https://webpack.js.org/plugins/css-minimizer-webpack-plugin/
       new CssMinimizerPlugin({
+        exclude: /\/modules/,
         minimizerOptions: {
           preset: [
             "default",
@@ -160,7 +162,6 @@ module.exports = {
           // legacy.js
           "../src/senaite/core/browser/static/js/bika.lims.analysisprofile.js",
           "../src/senaite/core/browser/static/js/bika.lims.analysisrequest.js",
-          "../src/senaite/core/browser/static/js/bika.lims.analysisservice.js",
           "../src/senaite/core/browser/static/js/bika.lims.artemplate.js",
           "../src/senaite/core/browser/static/js/bika.lims.batch.js",
           "../src/senaite/core/browser/static/js/bika.lims.bikasetup.js",
@@ -172,7 +173,6 @@ module.exports = {
           "../src/senaite/core/browser/static/js/bika.lims.graphics.range.js",
           "../src/senaite/core/browser/static/js/bika.lims.instrument.import.js",
           "../src/senaite/core/browser/static/js/bika.lims.instrument.js",
-          "../src/senaite/core/browser/static/js/bika.lims.method.js",
           "../src/senaite/core/browser/static/js/bika.lims.referencesample.js",
           "../src/senaite/core/browser/static/js/bika.lims.reflexrule.js",
           "../src/senaite/core/browser/static/js/bika.lims.rejection.js",
@@ -193,11 +193,11 @@ module.exports = {
           }
           const min = uglifyJS.minify(code, {sourceMap: {
             filename: "legacy.js",
-            url: "legacy.js.map"
+            // url: "legacy.js.map"
           }, compress: {drop_console: true}});
           return {
             "legacy.js":min.code,
-            "legacy.js.map": min.map
+            // "legacy.js.map": min.map
           }
         },
       }, {
@@ -229,11 +229,11 @@ module.exports = {
           }
           const min = uglifyJS.minify(code, {sourceMap: {
             filename: "thirdparty.js",
-            url: "thirdparty.js.map"
+            // url: "thirdparty.js.map"
           }, compress: {drop_console: true}});
           return {
             "thirdparty.js":min.code,
-            "thirdparty.js.map": min.map
+            // "thirdparty.js.map": min.map
           }
         },
       }, {

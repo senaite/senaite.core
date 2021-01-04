@@ -1,0 +1,20 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+           i18n_domain="senaite.core">
+
+  <adapter
+      for="bika.lims.interfaces.IAnalysisService
+           zope.publisher.interfaces.browser.IBrowserRequest"
+      factory=".analysisservice.EditForm"/>
+
+  <!-- BBB: Fix interface import! -->
+  <adapter
+      for="bika.lims.interfaces.calculation.ICalculation
+           zope.publisher.interfaces.browser.IBrowserRequest"
+      factory=".calculation.EditForm"/>
+
+  <adapter
+      for="bika.lims.interfaces.IMethod
+           zope.publisher.interfaces.browser.IBrowserRequest"
+      factory=".method.EditForm"/>
+
+</configure>

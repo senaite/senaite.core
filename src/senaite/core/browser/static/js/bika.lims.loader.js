@@ -34,14 +34,6 @@ window.bika.lims.controllers =  {
 
     /** JS objects to be loaded on specific views or pages **/
 
-    // Methods
-    ".portaltype-method.template-base_edit":
-        ['MethodEditView'],
-
-    // Analysis Services
-    ".portaltype-analysisservice.template-base_edit":
-        ['AnalysisServiceEditView'],
-
     // Analysis Profile
     ".portaltype-analysisprofile.template-base_edit":
         ['AnalysisProfileEditView'],
@@ -63,7 +55,6 @@ window.bika.lims.controllers =  {
     // Bika Setup
     ".portaltype-bikasetup.template-base_edit":
         ['BikaSetupEditView'],
-
 
     // Clients
     ".portaltype-client.template-base_edit":
@@ -117,15 +108,6 @@ window.bika.lims.controllers =  {
     // Worksheets
     ".portaltype-worksheetfolder":
         ['WorksheetFolderView'],
-
-    ".portaltype-worksheet.template-add_blank":
-        ['WorksheetAddQCAnalysesView'],
-
-    ".portaltype-worksheet.template-add_control":
-        ['WorksheetAddQCAnalysesView'],
-
-    ".portaltype-worksheet.template-add_duplicate":
-        ['WorksheetAddDuplicateAnalysesView'],
 
     ".portaltype-worksheet.template-manage_results":
         ['WorksheetManageResultsView'],

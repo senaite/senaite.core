@@ -1,6 +1,7 @@
 import $ from "jquery";
 import I18N from "./components/i18n.js";
 import {i18n, _t, _p} from "./i18n-wrapper.js"
+import EditForm from "./components/editform.js"
 import Site from "./components/site.js"
 import Sidebar from "./components/sidebar.js"
 
@@ -33,13 +34,6 @@ document.addEventListener("DOMContentLoaded", () => {
     "el": "sidebar",
   });
 
-
-  // Tooltips
-  $(function () {
-    $("[data-toggle='tooltip']").tooltip()
-  })
-  // /Tooltips
-
   // Auto LogOff
   var logoff = document.body.dataset.autoLogoff || 0;
   var logged = document.body.classList.contains("userrole-authenticated");
@@ -56,5 +50,24 @@ document.addEventListener("DOMContentLoaded", () => {
     }, logoff_ms);
   }
   // /Auto LogOff
+
+
+  // Ajax Edit Form Handler
+  var form = new EditForm({
+    form_selectors: ["form[name='edit_form']"],
+    field_selectors: [
+      "input[type='text']",
+      "input[type='number']",
+      "input[type='checkbox']",
+      "input[type='radio']",
+      "select:not([multiple])",
+      "textarea",
+    ]
+  })
+
+  // Init Tooltips
+  $(function () {
+    $("[data-toggle='tooltip']").tooltip()
+  });
 
 });

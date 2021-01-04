@@ -159,12 +159,9 @@ AnalysisService, so not on the second server:
     ...                            'default': ''},
     ...                           ]
     >>> analysisservice.setInterimFields(service_interim_fields)
-    >>> analysisservice.getInterimFields()
-    [{'default': '', 'unit': '', 'keyword': 'ASRExpDate', 'title': 'ASRExpDate'},
-     {'default': '', 'unit': '', 'keyword': 'ASRLotNumber', 'title': 'ASRLotNumber'},
-     {'default': '', 'unit': '', 'keyword': 'AssayCalibrationTime', 'title': 'AssayCalibrationTime'},
-     {'default': '', 'unit': '', 'keyword': 'FinalResult', 'title': 'FinalResult'},
-     {'default': '', 'unit': '', 'keyword': 'Location', 'title': 'Location'}]
+    >>> interims = analysisservice.getInterimFields()
+    >>> map(lambda i: i.get("keyword"), interims)
+    ['ASRExpDate', 'ASRLotNumber', 'AssayCalibrationTime', 'FinalResult', 'Location']
 
 Create an `AnalysisRequest` with this `AnalysisService` and receive it:
 

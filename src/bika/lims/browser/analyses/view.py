@@ -22,6 +22,7 @@ import json
 from collections import OrderedDict
 from copy import copy
 from copy import deepcopy
+from operator import itemgetter
 
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
@@ -29,8 +30,8 @@ from bika.lims import logger
 from bika.lims.api.analysis import get_formatted_interval
 from bika.lims.api.analysis import is_out_of_range
 from bika.lims.api.analysis import is_result_range_compliant
-from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
+from bika.lims.catalog import SETUP_CATALOG
 from bika.lims.config import LDL
 from bika.lims.config import UDL
 from bika.lims.interfaces import IAnalysisRequest
@@ -47,6 +48,7 @@ from bika.lims.utils import format_supsub
 from bika.lims.utils import formatDecimalMark
 from bika.lims.utils import get_image
 from bika.lims.utils import get_link
+from bika.lims.utils import get_link_for
 from bika.lims.utils import getUsers
 from bika.lims.utils import t
 from bika.lims.utils.analysis import format_uncertainty
@@ -54,11 +56,12 @@ from DateTime import DateTime
 from plone.memoize import view as viewcache
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFPlone.utils import safe_unicode
+from senaite.app.listing import ListingView
 from zope.component import getAdapters
 from zope.component import getMultiAdapter
 
 
-class AnalysesView(BikaListingView):
+class AnalysesView(ListingView):
     """Displays a list of Analyses in a table.
 
     Visible InterimFields from all analyses are added to self.columns[].
@@ -90,7 +93,7 @@ class AnalysesView(BikaListingView):
         self.interim_fields = {}
         self.interim_columns = OrderedDict()
         self.specs = {}
-        self.bsc = api.get_tool("bika_setup_catalog")
+        self.bsc = api.get_tool(SETUP_CATALOG)
         self.portal = api.get_portal()
         self.portal_url = api.get_url(self.portal)
         self.rc = api.get_tool(REFERENCE_CATALOG)
@@ -124,6 +127,10 @@ class AnalysesView(BikaListingView):
                 "ajax": True,
                 "sortable": False,
                 "toggle": True}),
+            ("Calculation", {
+                "title": _("Calculation"),
+                "sortable": False,
+                "toggle": False}),
             ("Analyst", {
                 "title": _("Analyst"),
                 "sortable": False,
@@ -306,13 +313,6 @@ class AnalysesView(BikaListingView):
         if not self.has_permission(FieldEditAnalysisResult, analysis_obj):
             return False
 
-        # Is the instrument out of date?
-        # The user can assign a result to the analysis if it does not have any
-        # instrument assigned or the instrument assigned is valid.
-        if not self.is_analysis_instrument_valid(analysis_brain):
-            # return if it is allowed to enter a manual result
-            return analysis_obj.getManualEntryOfResults()
-
         return True
 
     @viewcache.memoize
@@ -367,34 +367,23 @@ class AnalysesView(BikaListingView):
 
         return True
 
-    @viewcache.memoize
-    def is_analysis_instrument_valid(self, analysis_brain):
-        """Return if the analysis has a valid instrument.
-
-        If the analysis passed in is from ReferenceAnalysis type or does not
-        have an instrument assigned, returns True
-
-        :param analysis_brain: Brain that represents an analysis
-        :return: True if the instrument assigned is valid or is None"""
-        if analysis_brain.meta_type == 'ReferenceAnalysis':
-            # If this is a ReferenceAnalysis, there is no need to check the
-            # validity of the instrument, because this is a QC analysis and by
-            # definition, it has the ability to promote an instrument to a
-            # valid state if the result is correct.
-            return True
-        instrument = self.get_instrument(analysis_brain)
-        return not instrument or instrument.isValid()
-
     def get_instrument(self, analysis_brain):
         """Returns the instrument assigned to the analysis passed in, if any
 
         :param analysis_brain: Brain that represents an analysis
-        :return: Instrument object or None"""
-        instrument_uid = analysis_brain.getInstrumentUID
-        # Note we look for the instrument by using its UID, case we want the
-        # instrument to be cached by UID so if same instrument is assigned to
-        # several analyses, a single search for instrument will be required
-        return self.get_object(instrument_uid)
+        :return: Instrument object or None
+        """
+        obj = self.get_object(analysis_brain)
+        return obj.getInstrument()
+
+    def get_calculation(self, analysis_brain):
+        """Returns the calculation assigned to the analysis passed in, if any
+
+        :param analysis_brain: Brain that represents an analysis
+        :return: Calculation object or None
+        """
+        obj = self.get_object(analysis_brain)
+        return obj.getCalculation()
 
     @viewcache.memoize
     def get_object(self, brain_or_object_or_uid):
@@ -406,7 +395,6 @@ class AnalysesView(BikaListingView):
         """
         return api.get_object(brain_or_object_or_uid, default=None)
 
-    @viewcache.memoize
     def get_methods_vocabulary(self, analysis_brain):
         """Returns a vocabulary with all the methods available for the passed in
         analysis, either those assigned to an instrument that are capable to
@@ -423,17 +411,18 @@ class AnalysesView(BikaListingView):
         :type analysis_brain: CatalogBrain
         :returns: A list of dicts
         """
-        uids = analysis_brain.getAllowedMethodUIDs
-        query = {'portal_type': 'Method',
-                 'is_active': True,
-                 'UID': uids}
-        brains = api.search(query, 'bika_setup_catalog')
-        if not brains:
-            return [{'ResultValue': '', 'ResultText': _('None')}]
-        return map(lambda brain: {'ResultValue': brain.UID,
-                                  'ResultText': brain.Title}, brains)
+        obj = self.get_object(analysis_brain)
+        methods = obj.getAllowedMethods()
+        if not methods:
+            return [{"ResultValue": "", "ResultText": _("None")}]
+        vocab = []
+        for method in methods:
+            vocab.append({
+                "ResultValue": api.get_uid(method),
+                "ResultText": api.get_title(method),
+            })
+        return vocab
 
-    @viewcache.memoize
     def get_instruments_vocabulary(self, analysis_brain):
         """Returns a vocabulary with the valid and active instruments available
         for the analysis passed in.
@@ -456,35 +445,54 @@ class AnalysesView(BikaListingView):
         :return: A vocabulary with the instruments for the analysis
         :rtype: A list of dicts: [{'ResultValue':UID, 'ResultText':Title}]
         """
-        if not analysis_brain.getInstrumentEntryOfResults:
-            # Instrument entry of results for this analysis is not allowed
-            return list()
+        obj = self.get_object(analysis_brain)
+        # get the allowed interfaces from the analysis service
+        instruments = obj.getAllowedInstruments()
+        # get the current assigned method
+        method = obj.getMethod()
+        if method:
+            # supported instrument from the method
+            method_instruments = method.getInstruments()
+            # allow only method instruments that are set in service
+            instruments = list(
+                set(instruments).intersection(method_instruments))
 
         # If the analysis is a QC analysis, display all instruments, including
         # those uncalibrated or for which the last QC test failed.
-        meta_type = analysis_brain.meta_type
-        uncalibrated = meta_type == 'ReferenceAnalysis'
-        if meta_type == 'DuplicateAnalysis':
-            base_analysis_type = analysis_brain.getAnalysisPortalType
-            uncalibrated = base_analysis_type == 'ReferenceAnalysis'
+        is_qc = api.get_portal_type(obj) == "ReferenceAnalysis"
 
-        uids = analysis_brain.getAllowedInstrumentUIDs
-        query = {'portal_type': 'Instrument',
-                 'is_active': True,
-                 'UID': uids}
-        brains = api.search(query, 'bika_setup_catalog')
-        vocab = [{'ResultValue': '', 'ResultText': _('None')}]
-        for brain in brains:
-            instrument = self.get_object(brain)
-            if uncalibrated and not instrument.isOutOfDate():
-                # Is a QC analysis, include instrument also if is not valid
-                vocab.append({'ResultValue': instrument.UID(),
-                              'ResultText': instrument.Title()})
+        vocab = []
+        for instrument in instruments:
+            uid = api.get_uid(instrument)
+            title = api.get_title(instrument)
+            # append all valid instruments
             if instrument.isValid():
-                # Only add the 'valid' instruments: certificate
-                # on-date and valid internal calibration tests
-                vocab.append({'ResultValue': instrument.UID(),
-                              'ResultText': instrument.Title()})
+                vocab.append({
+                    "ResultValue": uid,
+                    "ResultText": title,
+                })
+            elif is_qc:
+                # Is a QC analysis, include instrument also if is not valid
+                if instrument.isOutOfDate():
+                    title = _("{} (Out of date)".format(title))
+                vocab.append({
+                    "ResultValue": uid,
+                    "ResultText": title,
+                })
+            elif instrument.isOutOfDate():
+                # disable out of date instruments
+                title = _("{} (Out of date)".format(title))
+                vocab.append({
+                    "disabled": True,
+                    "ResultValue": None,
+                    "ResultText": title,
+                })
+
+        # sort the vocabulary
+        vocab = list(sorted(vocab, key=itemgetter("ResultText")))
+        # prepend empty item
+        vocab = [{"ResultValue": "", "ResultText": _("None")}] + vocab
+
         return vocab
 
     @viewcache.memoize
@@ -633,7 +641,6 @@ class AnalysesView(BikaListingView):
                     "toggle": True,
                     "ajax": True,
                 }
-
 
         if self.allow_edit:
             new_states = []
@@ -815,6 +822,15 @@ class AnalysesView(BikaListingView):
 
         is_editable = self.is_analysis_edition_allowed(analysis_brain)
 
+        # calculation
+        calculation = self.get_calculation(analysis_brain)
+        calculation_uid = api.get_uid(calculation) if calculation else ""
+        calculation_title = api.get_title(calculation) if calculation else ""
+        calculation_link = get_link_for(calculation) if calculation else ""
+        item["calculation"] = calculation_uid
+        item["Calculation"] = calculation_title
+        item["replace"]["Calculation"] = calculation_link or _("Manual")
+
         # Set interim fields. Note we add the key 'formatted_value' to the list
         # of interims the analysis has already assigned.
         analysis_obj = self.get_object(analysis_brain)
@@ -830,21 +846,22 @@ class AnalysesView(BikaListingView):
 
             interim_value = interim_field.get("value", "")
             interim_formatted = formatDecimalMark(interim_value, self.dmk)
-            interim_field['formatted_value'] = interim_formatted
+            interim_field["formatted_value"] = interim_formatted
             item[interim_keyword] = interim_field
-            item['class'][interim_keyword] = 'interim'
+            item["class"][interim_keyword] = "interim"
 
             # Note: As soon as we have a separate content type for field
             #       analysis, we can solely rely on the field permission
             #       "senaite.core: Field: Edit Analysis Result"
             if is_editable:
-                if self.has_permission(FieldEditAnalysisResult, analysis_brain):
-                    item['allow_edit'].append(interim_keyword)
+                if self.has_permission(
+                        FieldEditAnalysisResult, analysis_brain):
+                    item["allow_edit"].append(interim_keyword)
 
             # Add this analysis' interim fields to the interim_columns list
-            interim_hidden = interim_field.get('hidden', False)
+            interim_hidden = interim_field.get("hidden", False)
             if not interim_hidden:
-                interim_title = interim_field.get('title')
+                interim_title = interim_field.get("title")
                 self.interim_columns[interim_keyword] = interim_title
 
             # Does interim's results list needs to be rendered?
@@ -857,8 +874,8 @@ class AnalysesView(BikaListingView):
                 # Generate the display list
                 # [{"ResultValue": value, "ResultText": text},]
                 headers = ["ResultValue", "ResultText"]
-                d_list = map(lambda it: dict(zip(headers, it)), choices.items())
-                item.setdefault("choices", {})[interim_keyword] = d_list
+                dl = map(lambda it: dict(zip(headers, it)), choices.items())
+                item.setdefault("choices", {})[interim_keyword] = dl
 
                 # Set the text as the formatted value
                 text = choices.get(interim_value, "")
@@ -870,13 +887,8 @@ class AnalysesView(BikaListingView):
 
                 item[interim_keyword] = interim_field
 
-        item['interimfields'] = interim_fields
+        item["interimfields"] = interim_fields
         self.interim_fields[analysis_brain.UID] = interim_fields
-
-        # Set calculation
-        calculation_uid = analysis_brain.getCalculationUID
-        has_calculation = calculation_uid and True or False
-        item['calculation'] = has_calculation
 
     def _folder_item_method(self, analysis_brain, item):
         """Fills the analysis' method to the item passed in.
@@ -884,20 +896,21 @@ class AnalysesView(BikaListingView):
         :param analysis_brain: Brain that represents an analysis
         :param item: analysis' dictionary counterpart that represents a row
         """
-
+        obj = self.get_object(analysis_brain)
         is_editable = self.is_analysis_edition_allowed(analysis_brain)
-        method_title = analysis_brain.getMethodTitle
-        item['Method'] = method_title or ''
+        method = obj.getMethod()
+        method_title = method and api.get_title(method) or ""
+        item["Method"] = method_title or _("Manual")
         if is_editable:
             method_vocabulary = self.get_methods_vocabulary(analysis_brain)
             if method_vocabulary:
-                item['Method'] = analysis_brain.getMethodUID
-                item['choices']['Method'] = method_vocabulary
-                item['allow_edit'].append('Method')
+                item["Method"] = obj.getRawMethod()
+                item["choices"]["Method"] = method_vocabulary
+                item["allow_edit"].append("Method")
                 self.show_methodinstr_columns = True
         elif method_title:
-            item['replace']['Method'] = get_link(analysis_brain.getMethodURL,
-                                                 method_title, tabindex="-1")
+            item["replace"]["Method"] = get_link(
+                api.get_url(method), method_title, tabindex="-1")
             self.show_methodinstr_columns = True
 
     def _folder_item_instrument(self, analysis_brain, item):
@@ -906,36 +919,33 @@ class AnalysesView(BikaListingView):
         :param analysis_brain: Brain that represents an analysis
         :param item: analysis' dictionary counterpart that represents a row
         """
-        item['Instrument'] = ''
-        if not analysis_brain.getInstrumentEntryOfResults:
-            # Manual entry of results, instrument is not allowed
-            item['Instrument'] = _('Manual')
-            item['replace']['Instrument'] = \
-                '<a href="#" tabindex="-1">{}</a>'.format(t(_('Manual')))
-            return
+        item["Instrument"] = ""
 
         # Instrument can be assigned to this analysis
         is_editable = self.is_analysis_edition_allowed(analysis_brain)
         self.show_methodinstr_columns = True
         instrument = self.get_instrument(analysis_brain)
+
         if is_editable:
             # Edition allowed
             voc = self.get_instruments_vocabulary(analysis_brain)
             if voc:
                 # The service has at least one instrument available
-                item['Instrument'] = instrument.UID() if instrument else ''
-                item['choices']['Instrument'] = voc
-                item['allow_edit'].append('Instrument')
+                item["Instrument"] = instrument.UID() if instrument else ""
+                item["choices"]["Instrument"] = voc
+                item["allow_edit"].append("Instrument")
                 return
 
         if instrument:
             # Edition not allowed
-            instrument_title = instrument and instrument.Title() or ''
+            instrument_title = instrument and instrument.Title() or ""
             instrument_link = get_link(instrument.absolute_url(),
                                        instrument_title, tabindex="-1")
-            item['Instrument'] = instrument_title
-            item['replace']['Instrument'] = instrument_link
+            item["Instrument"] = instrument_title
+            item["replace"]["Instrument"] = instrument_link
             return
+        else:
+            item["Instrument"] = _("Manual")
 
     def _folder_item_analyst(self, obj, item):
         is_editable = self.is_analysis_edition_allowed(obj)
