@@ -57,8 +57,7 @@ Methods = UIDReferenceField(
     widget=PicklistWidget(
         label=_("Methods"),
         description=_(
-            "Available methods to perform the test depending if they "
-            "allow or deny the manual entry of results."),
+            "Available methods to perform the test"),
     )
 )
 
