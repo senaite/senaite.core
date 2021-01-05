@@ -79,6 +79,11 @@ INDEXES_TO_ADD = [
     (SETUP_CATALOG, "department_id", "KeywordIndex"),
 ]
 
+INDEXES_TO_REMOVE = [
+    # List of tuples (catalog_name, index_name)
+    (CATALOG_ANALYSIS_LISTING, "getMethodUID"),
+]
+
 METADATA_TO_REMOVE = [
     # Only used in Analyses listing and it's behavior is bizarre, probably
     # because is a dict and requires special care with ZODB
@@ -88,6 +93,7 @@ METADATA_TO_REMOVE = [
     (CATALOG_ANALYSIS_LISTING, "getInstrumentEntryOfResults"),
     (CATALOG_ANALYSIS_LISTING, "getCalculationUID"),
     (CATALOG_ANALYSIS_LISTING, "getAllowedInstrumentUIDs"),
+    (CATALOG_ANALYSIS_LISTING, "getMethodUID"),
 ]
 
 STALE_WORKFLOW_DEFINITIONS = [
@@ -179,6 +185,9 @@ def upgrade(tool):
     remove_all_supplyorders(portal)
     remove_supplyorder_typeinfo(portal)
     remove_supplyorder_workflow(portal)
+
+    # Remove stale indexes
+    remove_stale_indexes(portal)
 
     # Remove stale metadata
     remove_stale_metadata(portal)
@@ -498,6 +507,24 @@ def del_metadata(catalog_id, column):
                     .format(column, catalog_id))
         return
     catalog.delColumn(column)
+
+
+def remove_stale_indexes(portal):
+    logger.info("Removing stale indexes ...")
+    for catalog_id, index_name in INDEXES_TO_REMOVE:
+        del_index(portal, catalog_id, index_name)
+    logger.info("Removing stale indexes ... [DONE]")
+
+
+def del_index(portal, catalog_id, index_name):
+    logger.info("Removing '{}' index from '{}' ..."
+                .format(index_name, catalog_id))
+    catalog = api.get_tool(catalog_id)
+    if index_name not in catalog.indexes():
+        logger.info("Index '{}' not in catalog '{}' [SKIP]"
+                    .format(index_name, catalog_id))
+        return
+    catalog.delIndex(index_name)
 
 
 def remove_at_portal_types(portal):

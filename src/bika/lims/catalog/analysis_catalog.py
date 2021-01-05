@@ -53,7 +53,6 @@ _indexes_dict = {
     # TODO Index "getSamplePointUID" is only used in reports/selection_macros
     "getSamplePointUID": "FieldIndex",
     "getReferenceAnalysesGroupID": "FieldIndex",
-    "getMethodUID": "FieldIndex",
     "getInstrumentUID": "FieldIndex",
     "getWorksheetUID": "FieldIndex",
     "getOriginalReflexedAnalysisUID": "FieldIndex",
@@ -87,7 +86,6 @@ _columns_list = [
     "getAnalysisPortalType",
     "isInstrumentValid",
     # Columns from method
-    "getMethodUID",
     "getMethodTitle",
     "getMethodURL",
     "getAllowedMethodUIDs",
