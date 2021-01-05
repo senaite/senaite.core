@@ -82,20 +82,22 @@ def install(context):
     logger.info("SENAITE CORE install handler [BEGIN]")
     portal = context.getSite()
 
-    # Run required import steps
+    # TODO: Remove all profiles from bika.lims package
+    # Run required import steps from bika.lims package
     _run_import_step(portal, "skins")
     _run_import_step(portal, "browserlayer")
     _run_import_step(portal, "rolemap")
     _run_import_step(portal, "typeinfo")
     _run_import_step(portal, "factorytool")
+
+    # Run required import steps from senaite.core package
     _run_import_step(portal, "workflow", "profile-senaite.core:default")
+    _run_import_step(portal, "toolset", "profile-senaite.core:default")
 
     # Run Installers
     setup_groups(portal)
     remove_default_content(portal)
     setup_core_catalogs(portal)
-    setup_content_structure(portal)
-    add_dexterity_setup_items(portal)
     setup_catalog_mappings(portal)
 
     # Run after all catalogs have been setup
@@ -104,6 +106,10 @@ def install(context):
     # Set CMF Form actions
     setup_form_controller_actions(portal)
     setup_form_controller_more_action(portal)
+
+    # Setup contents
+    setup_content_structure(portal)
+    add_dexterity_setup_items(portal)
 
     logger.info("SENAITE CORE install handler [DONE]")
 
@@ -124,6 +130,7 @@ def setup_content_structure(portal):
     """Install the base content structure
     """
     logger.info("*** Install SENAITE Content Types ***")
+    _run_import_step(portal, "typeinfo", "profile-senaite.core:default")
     _run_import_step(portal, "content")
     reindex_content_structure(portal)
 
