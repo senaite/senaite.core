@@ -23,6 +23,8 @@ import logging
 import time
 from contextlib import contextmanager
 
+from pkg_resources import parse_version
+
 import transaction
 from Acquisition import aq_base
 from Acquisition import aq_parent
@@ -30,6 +32,7 @@ from bika.lims import api
 from bika.lims.catalog.catalog_utilities import addZCTextIndex
 from bika.lims.interfaces import IAuditable
 from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import get_installer
 from Products.ZCatalog.ProgressHandler import ZLogHandler
 from senaite.core import logger
 from zope.interface import alsoProvides
@@ -52,40 +55,20 @@ class UpgradeUtils(object):
         self.pgthreshold = pgthreshold
 
     def getInstalledVersion(self, product):
-        qi = self.portal.portal_quickinstaller
-        info = qi.upgradeInfo(product)
-        return info['installedVersion']
+        qi = get_installer(self.portal)
+        info = qi.upgrade_info(product)
+        version = qi.get_product_version(product)
+        return info.get("installedVersion", version)
 
     def isOlderVersion(self, product, version):
         # If the version to upgrade is lower than te actual version of the
         # product, skip the step to prevent out-of-date upgrade
         # Since there are heteregeneous names of versioning before v3.2.0, we
         # need to convert the version string to numbers, format and compare
-        iver = self.getInstalledVersion(product)
-        iver = self.normalizeVersion(iver)
-        nver = self.normalizeVersion(version)
-        logger.debug('{0} versions: Installed {1} - Target {2}'
-                     .format(product, nver, iver))
-        return nver < iver
 
-    def normalizeVersion(self, version):
-        ver = version.replace('.', '')
-        major = ver[0] if len(ver) >= 1 else '0'
-        minor = ver[1] if len(ver) >= 2 else '0'
-        rev = ver[2:] if len(ver) >= 3 else '0'
-        patch = 0
-        if len(rev) == 5:
-            patch = rev[1:]
-            rev = rev[:1]
-        elif len(rev) > 2:
-            patch = rev[2:]
-            rev = rev[:2]
-
-        return '{0}.{1}.{2}.{3}'.format(
-            '{:02d}'.format(int(major)),
-            '{:02d}'.format(int(minor)),
-            '{:02d}'.format(int(rev)),
-            '{:04d}'.format(int(patch)))
+        from_version = parse_version(self.getInstalledVersion(product))
+        to_version = parse_version(version)
+        return to_version < from_version
 
     def delIndexAndColumn(self, catalog, index):
         self.delIndex(catalog, index)
