@@ -88,7 +88,6 @@ _columns_list = [
     # Columns from method
     "getMethodTitle",
     "getMethodURL",
-    "getAllowedMethodUIDs",
     "getAnalyst",
     "getAnalystName",
     "getNumberOfRequiredVerifications",

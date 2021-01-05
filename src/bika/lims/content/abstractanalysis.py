@@ -705,8 +705,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         :return: True if the analysis can follow the method specified
         :rtype: bool
         """
-        uid = api.get_uid(method)
-        return uid in self.getAllowedMethodUIDs()
+        return method in self.getAllowedMethods()
 
     @security.public
     def getAllowedMethods(self):
@@ -722,15 +721,6 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             return []
         # get the available methods of the service
         return service.getMethods()
-
-    @security.public
-    def getAllowedMethodUIDs(self):
-        """Used to populate getAllowedMethodUIDs metadata. Delegates to
-        method getAllowedMethods() for the retrieval of the methods allowed.
-        :return: A list with the UIDs of the methods allowed for this analysis
-        :rtype: list of strings
-        """
-        return map(api.get_uid, self.getAllowedMethods())
 
     @security.public
     def getAllowedInstruments(self):
