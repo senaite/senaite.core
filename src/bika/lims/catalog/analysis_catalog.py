@@ -75,7 +75,6 @@ _columns_list = [
     "getClientURL",
     "getRequestTitle",
     "getResult",
-    "getCalculationUID",
     "getUnit",
     "getKeyword",
     "getCategoryTitle",

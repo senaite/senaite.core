@@ -355,14 +355,6 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
         return calculation
 
     @security.public
-    def getCalculationUID(self):
-        """Used to populate catalog values
-        """
-        calculation = self.getCalculation()
-        if calculation:
-            return calculation.UID()
-
-    @security.public
     def getDependents(self, with_retests=False, recursive=False):
         """
         Returns a list of siblings who depend on us to calculate their result.

@@ -85,7 +85,8 @@ METADATA_TO_REMOVE = [
     (CATALOG_ANALYSIS_LISTING, "getInterimFields"),
     # No longer used, see https://github.com/senaite/senaite.core/pull/1709/
     (CATALOG_ANALYSIS_LISTING, "getAttachmentUIDs"),
-    (CATALOG_ANALYSIS_LISTING, "getInstrumentEntryOfResults")
+    (CATALOG_ANALYSIS_LISTING, "getInstrumentEntryOfResults"),
+    (CATALOG_ANALYSIS_LISTING, "getCalculationUID"),
 ]
 
 STALE_WORKFLOW_DEFINITIONS = [
