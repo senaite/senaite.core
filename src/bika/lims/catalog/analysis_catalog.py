@@ -106,7 +106,6 @@ _columns_list = [
     # defined as a service metacolumn instead of an analysis one
     "getResultOptions",
     "getServiceUID",
-    "getInstrumentEntryOfResults",
     "getAllowedInstrumentUIDs",
     "getInstrumentUID",
     "getSampleTypeUID",

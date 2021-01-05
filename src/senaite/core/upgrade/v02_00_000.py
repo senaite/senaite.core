@@ -84,7 +84,8 @@ METADATA_TO_REMOVE = [
     # because is a dict and requires special care with ZODB
     (CATALOG_ANALYSIS_LISTING, "getInterimFields"),
     # No longer used, see https://github.com/senaite/senaite.core/pull/1709/
-    (CATALOG_ANALYSIS_LISTING, "getAttachmentUIDs")
+    (CATALOG_ANALYSIS_LISTING, "getAttachmentUIDs"),
+    (CATALOG_ANALYSIS_LISTING, "getInstrumentEntryOfResults")
 ]
 
 STALE_WORKFLOW_DEFINITIONS = [
