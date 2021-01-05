@@ -695,8 +695,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         :return: True if the assignment of the passed in instrument is allowed
         :rtype: bool
         """
-        uid = api.get_uid(instrument)
-        return uid in self.getAllowedInstrumentUIDs()
+        return instrument in self.getAllowedInstruments()
 
     @security.public
     def isMethodAllowed(self, method):
@@ -744,15 +743,6 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         if not service:
             return []
         return service.getInstruments()
-
-    @security.public
-    def getAllowedInstrumentUIDs(self):
-        """Used to populate getAllowedInstrumentUIDs metadata. Delegates to
-        getAllowedInstruments() for the retrieval of the instruments allowed.
-        :return: List of instruments' UIDs allowed for this analysis
-        :rtype: list of strings
-        """
-        return map(api.get_uid, self.getAllowedInstruments())
 
     @security.public
     def getExponentialFormatPrecision(self, result=None):

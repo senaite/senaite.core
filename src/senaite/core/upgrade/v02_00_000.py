@@ -87,6 +87,7 @@ METADATA_TO_REMOVE = [
     (CATALOG_ANALYSIS_LISTING, "getAttachmentUIDs"),
     (CATALOG_ANALYSIS_LISTING, "getInstrumentEntryOfResults"),
     (CATALOG_ANALYSIS_LISTING, "getCalculationUID"),
+    (CATALOG_ANALYSIS_LISTING, "getAllowedInstrumentUIDs"),
 ]
 
 STALE_WORKFLOW_DEFINITIONS = [
