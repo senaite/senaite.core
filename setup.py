@@ -71,7 +71,7 @@ setup(
         'five.pt==2.2.4',
         'z3c.jbot',
         'plone.resource',
-        'CairoSVG==1.0.20',
+        'CairoSVG==2.5.1',
         'cairocffi<1.0.0',
         'zopyx.txng3.ext==3.4.0',
         "senaite.core.supermodel>=1.2.0",
