@@ -19,16 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 import collections
-from senaite.core.interfaces import IHideActionsMenu
-from transaction import savepoint
 
-from Products.ATContentTypes.content.schemata import finalizeATCTSchema
-from Products.Archetypes import atapi
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import _createObjectByType
-from Products.CMFPlone.utils import safe_unicode
-from Products.Five.browser import BrowserView
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
@@ -45,6 +36,15 @@ from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder
 from plone.app.folder.folder import ATFolderSchema
 from plone.app.layout.globals.interfaces import IViewView
+from Products.Archetypes import atapi
+from Products.ATContentTypes.content.schemata import finalizeATCTSchema
+from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import _createObjectByType
+from Products.CMFPlone.utils import safe_unicode
+from Products.Five.browser import BrowserView
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from senaite.core.interfaces import IHideActionsMenu
+from transaction import savepoint
 from zope.i18n.locales import locales
 from zope.interface.declarations import implements
 
@@ -249,7 +249,6 @@ class AnalysisServicesView(BikaListingView):
                 "sortable": False}),
             ("SortKey", {
                 "title": _("Sort Key"),
-                "attr": "getSortKey",
                 "sortable": False}),
         ))
 
@@ -395,6 +394,10 @@ class AnalysisServicesView(BikaListingView):
         # Unit
         unit = obj.getUnit()
         item["Unit"] = unit and format_supsub(unit) or ""
+
+        # Sort key
+        sortkey = obj.getSortKey()
+        item["SortKey"] = sortkey
 
         # Icons
         after_icons = ""

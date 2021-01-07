@@ -19,29 +19,21 @@
 # Some rights reserved, see README and LICENSE.
 
 import collections
-import json
-
-import plone
-from Products.ATContentTypes.content import schemata
-from Products.Archetypes import atapi
-from Products.CMFCore.permissions import ModifyPortalContent
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import safe_unicode
-from plone.app.folder.folder import ATFolder
-from plone.app.folder.folder import ATFolderSchema
-from senaite.core.interfaces import IHideActionsMenu
-from zope.interface.declarations import implements
 
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
-from bika.lims.api.security import check_permission
-from bika.lims.browser import BrowserView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.catalog import SETUP_CATALOG
 from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import ISampleTypes
 from bika.lims.permissions import AddSampleType
 from bika.lims.utils import get_link_for
+from plone.app.folder.folder import ATFolder
+from plone.app.folder.folder import ATFolderSchema
+from Products.Archetypes import atapi
+from Products.ATContentTypes.content import schemata
+from senaite.core.interfaces import IHideActionsMenu
+from zope.interface.declarations import implements
 
 # TODO: Separate content and view into own modules!
 
@@ -161,6 +153,18 @@ class SampleTypesView(BikaListingView):
         container_type = obj.getContainerType()
         item["replace"]["ContainerType"] = get_link_for(container_type)
 
+        # Hazardous
+        hazardous = obj.getHazardous()
+        item["getHazardous"] = hazardous
+
+        # Prefix
+        prefix = obj.getPrefix()
+        item["getPrefix"] = prefix
+
+        # Minimum Volume
+        vol = obj.getMinimumVolume()
+        item["getMinimumVolume"] = vol
+
         # Hide sample points assigned to this sample type that do not belong
         # to the same container (Client or Setup)
         sample_points = obj.getSamplePoints()
@@ -177,65 +181,6 @@ class SampleTypesView(BikaListingView):
         item["replace"]["SamplePoints"] = ", ".join(links)
 
         return item
-
-
-class ajax_SampleTypes(BrowserView):
-    """Autocomplete data source for sample types field
-
-    return JSON data [string,string]
-    if "samplepoint" is in the request, it's expected to be a title string
-    The objects returned will be filtered by samplepoint's SampleTypes.
-    if no items are found, all items are returned.
-
-    If term is a one or two letters, return items that begin with them
-        If there aren't any, return items that contain them
-    """
-    def __call__(self):
-        plone.protect.CheckAuthenticator(self.request)
-        bsc = getToolByName(self.context, "bika_setup_catalog")
-        term = safe_unicode(self.request.get("term", "")).lower()
-        items = []
-        if not term:
-            return json.dumps(items)
-        samplepoint = safe_unicode(self.request.get("samplepoint", ""))
-        # Strip "Lab: " from sample point titles
-        samplepoint = samplepoint.replace("%s: " % _("Lab"), "")
-        if samplepoint and len(samplepoint) > 1:
-            sp = bsc(
-                portal_type="SamplePoint",
-                is_active=True,
-                title=samplepoint
-            )
-            if not sp:
-                return json.dumps([])
-            sp = sp[0].getObject()
-            items = sp.getSampleTypes()
-        if not items:
-            items = bsc(
-                portal_type="SampleType",
-                is_active=True,
-                sort_on="sortable_title",
-            )
-            if term and len(term) < 3:
-                # Items that start with A or AA
-                items = [
-                    s.getObject() for s in items
-                    if s.title.lower().startswith(term)
-                ]
-                if not items:
-                    # or, items that contain A or AA
-                    items = [
-                        s.getObject() for s in items
-                        if s.title.lower().find(term) > -1]
-            else:
-                # or, items that contain term.
-                items = [
-                    s.getObject() for s in items
-                    if s.title.lower().find(term) > -1]
-
-        items = [callable(s.Title) and s.Title() or s.title
-                 for s in items]
-        return json.dumps(items)
 
 
 schema = ATFolderSchema.copy()

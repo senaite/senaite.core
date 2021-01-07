@@ -18,16 +18,18 @@
 # Copyright 2018-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from Products.ATContentTypes.content import schemata
-from Products.Archetypes import atapi
-from bika.lims import api
+import collections
+
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import IBatchLabels
 from bika.lims.permissions import AddBatchLabel
 from bika.lims.utils import get_link
-from plone.app.folder.folder import ATFolder, ATFolderSchema
+from plone.app.folder.folder import ATFolder
+from plone.app.folder.folder import ATFolderSchema
+from Products.Archetypes import atapi
+from Products.ATContentTypes.content import schemata
 from senaite.core.interfaces import IHideActionsMenu
 from zope.interface.declarations import implements
 
@@ -36,52 +38,72 @@ class BatchLabelsView(BikaListingView):
 
     def __init__(self, context, request):
         super(BatchLabelsView, self).__init__(context, request)
-        self.catalog = 'bika_setup_catalog'
-        self.contentFilter = {'portal_type': 'BatchLabel',
-                              'sort_on': 'sortable_title'}
-        self.context_actions = {_('Add'):
-                                {'url': 'createObject?type_name=BatchLabel',
-                                 'permission': AddBatchLabel,
-                                 'icon': '++resource++bika.lims.images/add.png'}}
+
+        self.catalog = "bika_setup_catalog"
+
+        self.contentFilter = {
+            "portal_type": "BatchLabel",
+            "sort_on": "sortable_title",
+        }
+        self.context_actions = {
+            _("Add"): {
+                "url": "createObject?type_name=BatchLabel",
+                "permission": AddBatchLabel,
+                "icon": "++resource++bika.lims.images/add.png"}
+        }
+
         self.title = self.context.translate(_("Batch Labels"))
-        self.icon = self.portal_url + "/++resource++bika.lims.images/batchlabel_big.png"
+        self.icon = "{}/{}".format(
+            self.portal_url,
+            "/++resource++bika.lims.images/batchlabel_big.png"
+        )
         self.description = ""
 
         self.show_select_row = False
         self.show_select_column = True
         self.pagesize = 25
 
-        self.columns = {
-            'Title': {'title': _('Label'),
-                      'index':'sortable_title'},
-        }
+        self.columns = collections.OrderedDict((
+            ("Title", {
+                "title": _("Label"),
+                "index": "sortable_title"}),
+            ))
 
         self.review_states = [
-            {'id':'default',
-             'title': _('Active'),
-             'contentFilter': {'is_active': True},
-             'transitions': [{'id':'deactivate'}, ],
-             'columns': ['Title']},
-            {'id':'inactive',
-             'title': _('Inactive'),
-             'contentFilter': {'is_active': False},
-             'transitions': [{'id':'activate'}, ],
-             'columns': ['Title']},
-            {'id':'all',
-             'title': _('All'),
-             'contentFilter':{},
-             'columns': ['Title']},
+            {
+                "id": "default",
+                "title": _("Active"),
+                "contentFilter": {"is_active": True},
+                "transitions": [{"id": "deactivate"}, ],
+                "columns": self.columns.keys(),
+            }, {
+                "id": "inactive",
+                "title": _("Inactive"),
+                "contentFilter": {'is_active': False},
+                "transitions": [{"id": "activate"}, ],
+                "columns": self.columns.keys(),
+            }, {
+                "id": "all",
+                "title": _("All"),
+                "contentFilter": {},
+                "columns": self.columns.keys(),
+            },
         ]
 
     def folderitem(self, obj, item, index):
-        item["replace"]["Title"] = get_link(item["url"], item["Title"])
+        item["replace"]["Title"] = get_link(
+            item["url"], item["Title"])
         return item
 
+
 schema = ATFolderSchema.copy()
+
+
 class BatchLabels(ATFolder):
     implements(IBatchLabels, IHideActionsMenu)
     displayContentsTab = False
     schema = schema
 
-schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
+
+schemata.finalizeATCTSchema(schema, folderish=True, moveDiscussion=False)
 atapi.registerType(BatchLabels, PROJECTNAME)

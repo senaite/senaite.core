@@ -79,25 +79,23 @@ class SampleConditionsView(BikaListingView):
 
         self.review_states = [
             {
-                'id': 'default',
-                'title': _('All'),
-                'contentFilter': {},
-                'transitions': [{'id': 'empty'}, ],
+                "id": "default",
+                "title": _("Active"),
+                "contentFilter": {"is_active": True},
+                "transitions": [{"id": "deactivate"}, ],
                 "columns": self.columns.keys(),
             }, {
-                'id': 'active',
-                'title': _('Active'),
-                'contentFilter': {'is_active': True},
-                'transitions': [{'id': 'deactivate'}, ],
+                "id": "inactive",
+                "title": _("Inactive"),
+                "contentFilter": {'is_active': False},
+                "transitions": [{"id": "activate"}, ],
                 "columns": self.columns.keys(),
             }, {
-                'id': 'inactive',
-                'title': _('Inactive'),
-                'contentFilter': {'is_active': False},
-                'transitions': [{'id': 'activate'}, ],
+                "id": "all",
+                "title": _("All"),
+                "contentFilter": {},
                 "columns": self.columns.keys(),
-
-             }
+            },
         ]
 
     def folderitem(self, obj, item, index):
