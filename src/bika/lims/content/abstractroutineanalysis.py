@@ -29,7 +29,6 @@ from bika.lims.catalog.indexers.baseanalysis import sortable_title
 from bika.lims.content.abstractanalysis import AbstractAnalysis
 from bika.lims.content.abstractanalysis import schema
 from bika.lims.content.clientawaremixin import ClientAwareMixin
-from bika.lims.content.reflexrule import doReflexRuleAction
 from bika.lims.interfaces import IAnalysis
 from bika.lims.interfaces import ICancellable
 from bika.lims.interfaces import IInternalUse
@@ -498,36 +497,3 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
             alsoProvides(self, IInternalUse)
         else:
             noLongerProvides(self, IInternalUse)
-
-    @security.public
-    def setReflexAnalysisOf(self, analysis):
-        """Sets the analysis that has been reflexed in order to create this
-        one, but if the analysis is the same as self, do nothing.
-        :param analysis: an analysis object or UID
-        """
-        if not analysis or analysis.UID() == self.UID():
-            pass
-        else:
-            self.getField('ReflexAnalysisOf').set(self, analysis)
-
-    @security.public
-    def addReflexRuleActionsTriggered(self, text):
-        """This function adds a new item to the string field
-        ReflexRuleActionsTriggered. From the field: Reflex rule triggered
-        actions from which the current analysis is responsible of. Separated
-        by '|'
-        :param text: is a str object with the format '<UID>.<rulename>' ->
-        '123354.1'
-        """
-        old = self.getReflexRuleActionsTriggered()
-        self.setReflexRuleActionsTriggered(old + text + '|')
-
-    @security.public
-    def getOriginalReflexedAnalysisUID(self):
-        """
-        Returns the uid of the original reflexed analysis.
-        """
-        original = self.getOriginalReflexedAnalysis()
-        if original:
-            return original.UID()
-        return ''

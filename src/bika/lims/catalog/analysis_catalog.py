@@ -56,6 +56,7 @@ _indexes_dict = {
     "getMethodUID": "FieldIndex",
     "getInstrumentUID": "FieldIndex",
     "getWorksheetUID": "FieldIndex",
+    # TODO Remove getOriginalReflexedAnalysisUID
     "getOriginalReflexedAnalysisUID": "FieldIndex",
     "getPrioritySortkey": "FieldIndex",
     "getAncestorsUIDs": "KeywordIndex",
@@ -100,6 +101,7 @@ _columns_list = [
     "getSubmittedBy",
     "getVerificators",
     "getLastVerificator",
+    # TODO Remove getIsReflexAnalysis column
     "getIsReflexAnalysis",
     "getPrioritySortkey",
     # TODO-performance: All that comes from services could be
