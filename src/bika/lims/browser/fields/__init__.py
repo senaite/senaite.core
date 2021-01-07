@@ -29,7 +29,6 @@ from .interimfieldsfield import InterimFieldsField # noqa
 from .partitionsetupfield import PartitionSetupField # noqa
 from .proxyfield import ProxyField # noqa
 from .referenceresultsfield import ReferenceResultsField # noqa
-from .reflexrulefield import ReflexRuleField # noqa
 from .resultrangefield import ResultRangeField # noqa
 from .resultsrangesfield import ResultsRangesField # noqa
 from .uidreferencefield import UIDReferenceField # noqa

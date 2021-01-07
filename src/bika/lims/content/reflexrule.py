@@ -33,7 +33,6 @@ from bika.lims.config import PROJECTNAME
 from bika.lims import bikaMessageFactory as _
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IReflexRule, IDeactivable
-from bika.lims.browser.fields import ReflexRuleField
 from bika.lims.utils import isnumber
 from bika.lims.utils import getUsers
 from bika.lims.utils import tmpID
@@ -70,7 +69,6 @@ schema = BikaSchema.copy() + Schema((
                 "service will be bound to."),
         )
     ),
-    ReflexRuleField('ReflexRules',),
 ))
 schema['description'].widget.visible = True
 schema['description'].widget.label = _("Description")
