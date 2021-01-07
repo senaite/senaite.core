@@ -551,6 +551,9 @@ def remove_at_portal_types(portal):
         if isinstance(fti, DexterityFTI):
             logger.info("Type '{}' is already a DX FTI".format(fti))
             continue
+        elif not fti:
+            # Removed already
+            continue
         pt.manage_delObjects(fti.getId())
     logger.info("Remove AT types from portal_types tool ... [DONE]")
 
