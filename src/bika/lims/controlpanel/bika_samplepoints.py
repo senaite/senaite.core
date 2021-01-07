@@ -19,30 +19,21 @@
 # Some rights reserved, see README and LICENSE.
 
 import collections
-import json
-
-import plone
-from Products.ATContentTypes.content import schemata
-from Products.Archetypes import atapi
-from Products.CMFCore.permissions import ModifyPortalContent
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import safe_unicode
-from plone.app.folder.folder import ATFolder
-from plone.app.folder.folder import ATFolderSchema
-from senaite.core.interfaces import IHideActionsMenu
-from zope.interface.declarations import implements
 
 from bika.lims import api
 from bika.lims import bikaMessageFactory as _
-from bika.lims.api.security import check_permission
-from bika.lims.browser import BrowserView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.catalog import SETUP_CATALOG
 from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import ISamplePoints
 from bika.lims.permissions import AddSamplePoint
 from bika.lims.utils import get_link_for
-
+from plone.app.folder.folder import ATFolder
+from plone.app.folder.folder import ATFolderSchema
+from Products.Archetypes import atapi
+from Products.ATContentTypes.content import schemata
+from senaite.core.interfaces import IHideActionsMenu
+from zope.interface.declarations import implements
 
 # TODO: Separate content and view into own modules!
 
@@ -138,92 +129,6 @@ class SamplePointsView(BikaListingView):
         item["replace"]["SampleTypes"] = ", ".join(links)
 
         return item
-
-
-class ajax_SamplePoints(BrowserView):
-    """ The autocomplete data source for sample point selection widgets.
-        Returns a JSON list of sample point titles.
-
-    Request parameters:
-
-    - sampletype: if specified, it's expected to be the title
-        of a SamplePoint object.  Optionally, the string 'Lab: ' might be
-        prepended, to distinguish between Lab and Client objects.
-
-    - term: the string which will be searched against all SamplePoint
-        titles.
-
-    - _authenticator: The plone.protect authenticator.
-    """
-
-    def filter_list(self, items, searchterm):
-        if searchterm and len(searchterm) < 3:
-            # Items that start with A or AA
-            res = [s.getObject() for s in items
-                   if s.title.lower().startswith(searchterm)]
-            if not res:
-                # or, items that contain A or AA
-                res = [s.getObject() for s in items
-                       if s.title.lower().find(searchterm) > -1]
-        else:
-            # or, items that contain searchterm.
-            res = [s.getObject() for s in items
-                   if s.title.lower().find(searchterm) > -1]
-        return res
-
-    def __call__(self):
-        plone.protect.CheckAuthenticator(self.request)
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
-        term = safe_unicode(self.request.get('term', '')).lower()
-        items = []
-        if not term:
-            return json.dumps(items)
-        # Strip "Lab: " from sample point title
-        term = term.replace("%s: " % _("Lab"), "")
-        sampletype = safe_unicode(self.request.get("sampletype", ""))
-        if sampletype and len(sampletype) > 1:
-            st = bsc(
-                portal_type="SampleType",
-                title=sampletype,
-                is_active=True,
-            )
-            if not st:
-                return json.dumps([])
-            st = st[0].getObject()
-            items = [o.Title() for o in st.getSamplePoints()]
-
-        if not items:
-            client_items = lab_items = []
-
-            # User (client) sample points
-            if self.context.portal_type in ("Client", "AnalysisRequest"):
-                if self.context.portal_type == "Client":
-                    client_path = self.context.getPhysicalPath()
-                else:
-                    client_path = self.context.aq_parent.getPhysicalPath()
-                client_items = list(
-                    bsc(portal_type="SamplePoint",
-                        path={"query": "/".join(client_path), "level": 0},
-                        is_active=True,
-                        sort_on="sortable_title"))
-
-            # Global (lab) sample points
-            sample_points = self.context.bika_setup.bika_samplepoints
-            lab_path = sample_points.getPhysicalPath()
-            lab_items = list(
-                bsc(portal_type="SamplePoint",
-                    path={"query": "/".join(lab_path), "level": 0},
-                    is_active=True,
-                    sort_on="sortable_title"))
-            client_items = [callable(s.Title) and s.Title() or s.title
-                            for s in self.filter_list(client_items, term)]
-            lab_items = [callable(s.Title) and s.Title() or s.title
-                         for s in self.filter_list(lab_items, term)]
-            lab_items = ["%s: %s" % (_("Lab"), safe_unicode(i))
-                         for i in lab_items]
-            items = client_items + lab_items
-
-        return json.dumps(items)
 
 
 schema = ATFolderSchema.copy()

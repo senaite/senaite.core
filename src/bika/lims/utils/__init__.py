@@ -23,38 +23,37 @@ import os
 import re
 import tempfile
 import urllib2
+from email import Encoders
+from email.MIMEBase import MIMEBase
+from time import time
+
 from AccessControl import ModuleSecurityInfo
 from AccessControl import allow_module
 from AccessControl import getSecurityManager
 from Acquisition import aq_inner
 from Acquisition import aq_parent
-from email import Encoders
-from time import time
-
-import types
-from DateTime import DateTime
-from Products.Archetypes.interfaces.field import IComputedField
-from Products.Archetypes.public import DisplayList
-from Products.CMFCore.WorkflowCore import WorkflowException
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import safe_unicode
-from Products.DCWorkflow.events import AfterTransitionEvent
 from bika.lims import api
 from bika.lims import logger
 from bika.lims.browser import BrowserView
-from email.MIMEBase import MIMEBase
-from plone.memoize import ram
+from bika.lims.interfaces import IClient
+from bika.lims.interfaces import IClientAwareMixin
+from DateTime import DateTime
+from plone.protect.utils import addTokenToUrl
 from plone.registry.interfaces import IRegistry
 from plone.subrequest import subrequest
-from weasyprint import CSS, HTML
+from Products.Archetypes.interfaces.field import IComputedField
+from Products.Archetypes.public import DisplayList
+from Products.CMFCore.utils import getToolByName
+from Products.CMFCore.WorkflowCore import WorkflowException
+from Products.CMFPlone.utils import safe_unicode
+from Products.DCWorkflow.events import AfterTransitionEvent
+from weasyprint import CSS
+from weasyprint import HTML
 from weasyprint import default_url_fetcher
 from zope.component import queryUtility
 from zope.event import notify
 from zope.i18n import translate
 from zope.i18n.locales import locales
-
-from bika.lims.interfaces import IClient
-from bika.lims.interfaces import IClientAwareMixin
 
 ModuleSecurityInfo('email.Utils').declarePublic('formataddr')
 allow_module('csv')
@@ -124,19 +123,6 @@ class js_warn(BrowserView):
         """Javascript sends a string for us to place into the warn log
         """
         self.logger.warning(message)
-
-
-ModuleSecurityInfo('Products.bika.utils').declarePublic('printfile')
-
-
-def printfile(portal, from_addr, to_addrs, msg):
-
-    """ set the path, then the cmd 'lpr filepath'
-    temp_path = 'C:/Zope2/Products/Bika/version.txt'
-
-    os.system('lpr "%s"' %temp_path)
-    """
-    pass
 
 
 def getUsers(context, roles, allow_empty=True):
@@ -695,6 +681,9 @@ def get_link(href, value=None, **kwargs):
         return ""
     anchor_value = value and value or href
     attr = render_html_attributes(**kwargs)
+    # Add a CSRF token
+    if href.startswith("http"):
+        href = addTokenToUrl(href)
     return '<a href="{}" {}>{}</a>'.format(href, attr, anchor_value)
 
 

@@ -65,7 +65,7 @@ class SamplingDeviationsView(BikaListingView):
 
         self.columns = collections.OrderedDict((
             ("Title", {
-                "title": _("Sampling Deviationn"),
+                "title": _("Sampling Deviation"),
                 "index": "sortable_title"}),
             ("Description", {
                 "title": _("Description"),

@@ -86,8 +86,7 @@ class AnalysisCategoriesView(BikaListingView):
             }),
             ("SortKey", {
                 "title": _("Sort Key"),
-                "attr": "getSortKey",
-                "sortable": False
+                "sortable": True
             }),
         ))
 
@@ -125,6 +124,7 @@ class AnalysisCategoriesView(BikaListingView):
 
         item["replace"]["Title"] = get_link(url, value=title)
         item["Description"] = description
+        item["SortKey"] = obj.getSortKey()
 
         department = obj.getDepartment()
         if department:
