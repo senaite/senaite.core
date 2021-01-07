@@ -94,7 +94,6 @@ def initialize(context):
     from bika.lims.content.containertype import ContainerType  # noqa
     from bika.lims.content.department import Department  # noqa
     from bika.lims.content.duplicateanalysis import DuplicateAnalysis  # noqa
-    from bika.lims.content.identifiertype import IdentifierType  # noqa
     from bika.lims.content.instrument import Instrument  # noqa
     from bika.lims.content.instrumentcalibration import InstrumentCalibration  # noqa
     from bika.lims.content.instrumentcertification import InstrumentCertification  # noqa
@@ -149,7 +148,6 @@ def initialize(context):
     from bika.lims.controlpanel.bika_containers import Containers  # noqa
     from bika.lims.controlpanel.bika_containertypes import ContainerTypes  # noqa
     from bika.lims.controlpanel.bika_departments import Departments  # noqa
-    from bika.lims.controlpanel.bika_identifiertypes import IdentifierTypes  # noqa
     from bika.lims.controlpanel.bika_instrumentlocations import InstrumentLocations  # noqa
     from bika.lims.controlpanel.bika_instruments import Instruments  # noqa
     from bika.lims.controlpanel.bika_instrumenttypes import InstrumentTypes  # noqa
