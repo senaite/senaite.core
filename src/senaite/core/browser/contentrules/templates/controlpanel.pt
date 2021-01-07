@@ -11,6 +11,13 @@
     <div metal:fill-slot="prefs_configlet_main"
          tal:define="rules view/registeredRules">
 
+      <!-- Link back to controlpanel -->
+      <a id="setup-link" class="link-parent"
+         tal:attributes="href string:$portal_url/@@overview-controlpanel"
+         i18n:translate="">
+        Site Setup
+      </a>
+
       <h1 class="documentFirstHeading"
           i18n:translate="title_manage_contentrules">Content Rules</h1>
 
