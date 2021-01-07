@@ -59,6 +59,8 @@ profile = "profile-{0}:default".format(product)
 REMOVE_AT_TYPES = [
     "InstrumentLocation",
     "InstrumentLocations",
+    "ReflexRule",
+    "ReflexRuleFolder",
 ]
 
 INSTALL_PRODUCTS = [
