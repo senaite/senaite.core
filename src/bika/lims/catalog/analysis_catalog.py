@@ -36,7 +36,6 @@ CATALOG_ANALYSIS_LISTING = "bika_analysis_catalog"
 # Defining the indexes for this catalog
 _indexes_dict = {
     "sortable_title": "FieldIndex",
-    "getParentUID": "FieldIndex",
     "getDueDate": "DateIndex",
     "getDateReceived": "DateIndex",
     "getResultCaptureDate": "DateIndex",
@@ -50,10 +49,7 @@ _indexes_dict = {
     "getCategoryUID": "FieldIndex",
     "getPointOfCapture": "FieldIndex",
     "getSampleTypeUID": "FieldIndex",
-    # TODO Index "getSamplePointUID" is only used in reports/selection_macros
-    "getSamplePointUID": "FieldIndex",
     "getReferenceAnalysesGroupID": "FieldIndex",
-    "getMethodUID": "FieldIndex",
     "getInstrumentUID": "FieldIndex",
     "getWorksheetUID": "FieldIndex",
     # TODO Remove getOriginalReflexedAnalysisUID
@@ -61,7 +57,6 @@ _indexes_dict = {
     "getPrioritySortkey": "FieldIndex",
     "getAncestorsUIDs": "KeywordIndex",
     "isSampleReceived": "BooleanIndex",
-    "isRetest": "BooleanIndex",
 }
 # Defining the columns for this catalog
 _columns_list = [
@@ -70,13 +65,10 @@ _columns_list = [
     "getResultCaptureDate",
     "getParentURL",
     "getRequestURL",
-    "getParentTitle",
-    "getParentUID",
     "getClientTitle",
     "getClientURL",
     "getRequestTitle",
     "getResult",
-    "getCalculationUID",
     "getUnit",
     "getKeyword",
     "getCategoryTitle",
@@ -87,12 +79,9 @@ _columns_list = [
     "getReferenceResults",
     # Used in duplicated analysis objects
     "getAnalysisPortalType",
-    "isInstrumentValid",
     # Columns from method
-    "getMethodUID",
     "getMethodTitle",
     "getMethodURL",
-    "getAllowedMethodUIDs",
     "getAnalyst",
     "getAnalystName",
     "getNumberOfRequiredVerifications",
@@ -108,9 +97,6 @@ _columns_list = [
     # defined as a service metacolumn instead of an analysis one
     "getResultOptions",
     "getServiceUID",
-    "getInstrumentEntryOfResults",
-    "getAllowedInstrumentUIDs",
-    "getInstrumentUID",
     "getSampleTypeUID",
     "getClientOrderNumber",
     "getDateReceived",

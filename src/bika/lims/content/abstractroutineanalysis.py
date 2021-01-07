@@ -198,14 +198,6 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
         return None
 
     @security.public
-    def getSamplePointUID(self):
-        """Used to populate catalog values.
-        """
-        sample_point = self.getSamplePoint()
-        if sample_point:
-            return api.get_uid(sample_point)
-
-    @security.public
     def getDueDate(self):
         """Used to populate getDueDate index and metadata.
         This calculates the difference between the time the analysis processing
@@ -303,14 +295,6 @@ class AbstractRoutineAnalysis(AbstractAnalysis, ClientAwareMixin):
         if not calculation:
             return None
         return calculation
-
-    @security.public
-    def getCalculationUID(self):
-        """Used to populate catalog values
-        """
-        calculation = self.getCalculation()
-        if calculation:
-            return calculation.UID()
 
     @security.public
     def getDependents(self, with_retests=False, recursive=False):

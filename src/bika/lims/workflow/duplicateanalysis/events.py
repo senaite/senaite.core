@@ -101,7 +101,7 @@ def after_retract(duplicate_analysis):
     worksheet.setAnalyses(worksheet.getAnalyses() + [retest, ])
 
     # Reindex
-    retest.reindexObject(idxs=["getAnalyst", "getWorksheetUID", "isRetest",
+    retest.reindexObject(idxs=["getAnalyst", "getWorksheetUID",
                                "getReferenceAnalysesGroupID"])
     worksheet.reindexObject(idxs=["getAnalysesUIDs"])
 

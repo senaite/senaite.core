@@ -4,6 +4,7 @@ Changelog
 2.0.0rc3 (unreleased)
 ---------------------
 
+- #1724 Purge stale metadata and indexes from analysis catalog
 - #1720 Fix UnicodeDecodeError for Instrument Import Log View
 - #1719 Service/Method/Calculation relationship handling
 - #1717 Port workflow definitions to senaite namespace
