@@ -676,18 +676,6 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         return -self.getEarliness()
 
     @security.public
-    def isInstrumentValid(self):
-        """Checks if the instrument selected for this analysis is valid.
-        Returns false if an out-of-date or uncalibrated instrument is
-        assigned.
-        :return: True if the Analysis has no instrument assigned or is valid
-        :rtype: bool
-        """
-        if self.getInstrument():
-            return self.getInstrument().isValid()
-        return True
-
-    @security.public
     def isInstrumentAllowed(self, instrument):
         """Checks if the specified instrument can be set for this analysis,
 
@@ -1060,16 +1048,6 @@ class AbstractAnalysis(AbstractBaseAnalysis):
                 "Analysis %s is assigned to more than one worksheet."
                 % self.getId())
         return worksheet[0]
-
-    @security.public
-    def getInstrumentValid(self):
-        """Used to populate catalog values. Delegates to isInstrumentValid()
-        Returns false if an out-of-date or uncalibrated instrument is
-        assigned.
-        :return: True if the Analysis has no instrument assigned or is valid
-        :rtype: bool
-        """
-        return self.isInstrumentValid()
 
     @security.public
     def remove_duplicates(self, ws):

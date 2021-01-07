@@ -78,7 +78,6 @@ _columns_list = [
     "getReferenceResults",
     # Used in duplicated analysis objects
     "getAnalysisPortalType",
-    "isInstrumentValid",
     # Columns from method
     "getMethodTitle",
     "getMethodURL",

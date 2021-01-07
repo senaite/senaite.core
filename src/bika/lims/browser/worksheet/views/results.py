@@ -176,9 +176,8 @@ class ManageResultsView(BrowserView):
         invalid = []
         ans = self.context.getAnalyses()
         for an in ans:
-            valid = an.isInstrumentValid()
-            if not valid:
-                instrument = an.getInstrument()
+            instrument = an.getInstrument()
+            if instrument and not instrument.isValid():
                 inv = "%s (%s)" % (
                     safe_unicode(an.Title()), safe_unicode(instrument.Title()))
                 if inv not in invalid:
