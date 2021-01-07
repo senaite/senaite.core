@@ -786,7 +786,6 @@ Re-assign the worksheet template:
 
 The worksheet now contains the two analyses:
 
-    >>> worksheet.applyWorksheetTemplate(method_template)
     >>> ws_analyses = worksheet.getAnalyses()
     >>> len(ws_analyses)
     2
