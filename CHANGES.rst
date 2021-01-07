@@ -5,6 +5,7 @@ Changelog
 ---------------------
 
 - #1727 Cleanup Controlpanel Items
+- #1726 Content rules control panel templates styled
 - #1724 Purge stale metadata and indexes from analysis catalog
 - #1720 Fix UnicodeDecodeError for Instrument Import Log View
 - #1719 Service/Method/Calculation relationship handling

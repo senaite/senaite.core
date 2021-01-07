@@ -18,6 +18,7 @@
   <include package=".bootstrap"/>
   <include package=".content"/>
   <include package=".contentmenu"/>
+  <include package=".contentrules"/>
   <include package=".controlpanel"/>
   <include package=".dashboard"/>
   <include package=".dexterity"/>

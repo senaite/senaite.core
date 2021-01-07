@@ -1,0 +1,26 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:plone="http://namespaces.plone.org/plone"
+    i18n_domain="senaite.core">
+
+  <!-- Content rules control panel -->
+  <browser:page
+      for="Products.CMFCore.interfaces.ISiteRoot"
+      name="rules-controlpanel"
+      class=".controlpanel.ContentRulesControlPanel"
+      permission="plone.app.contentrules.ManageContentRules"
+      allowed_attributes="template"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
+  <!-- Manage elements in a rul -->
+  <browser:page
+      name="manage-elements"
+      for="plone.contentrules.rule.interfaces.IRule"
+      class=".elements.ManageElements"
+      permission="plone.app.contentrules.ManageContentRules"
+      layer="senaite.core.interfaces.ISenaiteCore"
+      />
+
+</configure>
