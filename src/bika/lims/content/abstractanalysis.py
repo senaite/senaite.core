@@ -676,18 +676,6 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         return -self.getEarliness()
 
     @security.public
-    def isInstrumentValid(self):
-        """Checks if the instrument selected for this analysis is valid.
-        Returns false if an out-of-date or uncalibrated instrument is
-        assigned.
-        :return: True if the Analysis has no instrument assigned or is valid
-        :rtype: bool
-        """
-        if self.getInstrument():
-            return self.getInstrument().isValid()
-        return True
-
-    @security.public
     def isInstrumentAllowed(self, instrument):
         """Checks if the specified instrument can be set for this analysis,
 
@@ -696,7 +684,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         :rtype: bool
         """
         uid = api.get_uid(instrument)
-        return uid in self.getAllowedInstrumentUIDs()
+        return uid in map(api.get_uid, self.getAllowedInstruments())
 
     @security.public
     def isMethodAllowed(self, method):
@@ -707,7 +695,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         :rtype: bool
         """
         uid = api.get_uid(method)
-        return uid in self.getAllowedMethodUIDs()
+        return uid in map(api.get_uid, self.getAllowedMethods())
 
     @security.public
     def getAllowedMethods(self):
@@ -725,15 +713,6 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         return service.getMethods()
 
     @security.public
-    def getAllowedMethodUIDs(self):
-        """Used to populate getAllowedMethodUIDs metadata. Delegates to
-        method getAllowedMethods() for the retrieval of the methods allowed.
-        :return: A list with the UIDs of the methods allowed for this analysis
-        :rtype: list of strings
-        """
-        return map(api.get_uid, self.getAllowedMethods())
-
-    @security.public
     def getAllowedInstruments(self):
         """Returns the allowed instruments from the service
 
@@ -744,15 +723,6 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         if not service:
             return []
         return service.getInstruments()
-
-    @security.public
-    def getAllowedInstrumentUIDs(self):
-        """Used to populate getAllowedInstrumentUIDs metadata. Delegates to
-        getAllowedInstruments() for the retrieval of the instruments allowed.
-        :return: List of instruments' UIDs allowed for this analysis
-        :rtype: list of strings
-        """
-        return map(api.get_uid, self.getAllowedInstruments())
 
     @security.public
     def getExponentialFormatPrecision(self, result=None):
@@ -1040,15 +1010,6 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         return self.created()
 
     @security.public
-    def getParentUID(self):
-        """This method is used to populate catalog values
-        This function returns the analysis' parent UID
-        """
-        parent = self.aq_parent
-        if parent:
-            return parent.UID()
-
-    @security.public
     def getParentURL(self):
         """This method is used to populate catalog values
         This function returns the analysis' parent URL
@@ -1087,16 +1048,6 @@ class AbstractAnalysis(AbstractBaseAnalysis):
                 "Analysis %s is assigned to more than one worksheet."
                 % self.getId())
         return worksheet[0]
-
-    @security.public
-    def getInstrumentValid(self):
-        """Used to populate catalog values. Delegates to isInstrumentValid()
-        Returns false if an out-of-date or uncalibrated instrument is
-        assigned.
-        :return: True if the Analysis has no instrument assigned or is valid
-        :rtype: bool
-        """
-        return self.isInstrumentValid()
 
     @security.public
     def remove_duplicates(self, ws):

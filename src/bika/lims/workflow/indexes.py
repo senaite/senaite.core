@@ -41,7 +41,6 @@ ACTIONS_TO_INDEXES = {
             "getAnalyst",
             "getDueDate",
             "getInstrumentUID",
-            "getMethodUID",
             "getResultCaptureDate",
         ],
         "unassign": [
@@ -62,7 +61,6 @@ ACTIONS_TO_INDEXES = {
             "getAnalyst",
             "getDueDate",
             "getInstrumentUID",
-            "getMethodUID",
             "getResultCaptureDate",
         ],
         "unassign": None,
@@ -79,7 +77,6 @@ ACTIONS_TO_INDEXES = {
             "getAnalyst",
             "getDueDate",
             "getInstrumentUID",
-            "getMethodUID",
             "getResultCaptureDate",
             "review_state",
         ],

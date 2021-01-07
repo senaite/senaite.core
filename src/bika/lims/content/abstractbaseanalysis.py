@@ -899,14 +899,6 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
         return IntDisplayList(list(items))
 
     @security.public
-    def getInstrumentEntryOfResults(self):
-        """XXX: ALWAYS ALLOW INSTRUMENT RESULTS
-
-        TODO: Remove if refactored
-        """
-        return True
-
-    @security.public
     def getMethodTitle(self):
         """This is used to populate catalog values
         """
