@@ -25,6 +25,7 @@ from bika.lims.setuphandlers import setup_catalog_mappings
 from bika.lims.setuphandlers import setup_core_catalogs
 from bika.lims.setuphandlers import setup_form_controller_actions
 from bika.lims.setuphandlers import setup_groups
+from Products.CMFPlone.utils import get_installer
 from senaite.core import logger
 from senaite.core.config import PROFILE_ID
 from zope.interface import implementer
@@ -89,6 +90,15 @@ def install(context):
     _run_import_step(portal, "typeinfo")
     _run_import_step(portal, "factorytool")
     _run_import_step(portal, "workflow", "profile-senaite.core:default")
+    _run_import_step(portal, "toolset", "profile-senaite.core:default")
+    _run_import_step(portal, "typeinfo", "profile-senaite.core:default")
+
+    # skip installers if already installed
+    qi = get_installer(portal)
+    profiles = ["bika.lims", "senaite.core"]
+    if any(map(lambda p: qi.is_product_installed(p), profiles)):
+        logger.info("SENAITE CORE already installed [SKIP]")
+        return
 
     # Run Installers
     setup_groups(portal)
