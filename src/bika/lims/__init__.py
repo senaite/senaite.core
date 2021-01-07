@@ -119,7 +119,6 @@ def initialize(context):
     from bika.lims.content.referencedefinition import ReferenceDefinition  # noqa
     from bika.lims.content.referencesample import ReferenceSample  # noqa
     from bika.lims.content.referencesamplesfolder import ReferenceSamplesFolder  # noqa
-    from bika.lims.content.reflexrule import ReflexRule  # noqa
     from bika.lims.content.rejectanalysis import RejectAnalysis  # noqa
     from bika.lims.content.report import Report  # noqa
     from bika.lims.content.reportfolder import ReportFolder  # noqa
@@ -156,7 +155,6 @@ def initialize(context):
     from bika.lims.controlpanel.bika_manufacturers import Manufacturers  # noqa
     from bika.lims.controlpanel.bika_preservations import Preservations  # noqa
     from bika.lims.controlpanel.bika_referencedefinitions import ReferenceDefinitions  # noqa
-    from bika.lims.controlpanel.bika_reflexrulefolder import ReflexRuleFolder  # noqa
     from bika.lims.controlpanel.bika_sampleconditions import SampleConditions  # noqa
     from bika.lims.controlpanel.bika_samplematrices import SampleMatrices  # noqa
     from bika.lims.controlpanel.bika_samplepoints import SamplePoints  # noqa

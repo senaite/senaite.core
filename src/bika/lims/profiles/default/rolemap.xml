@@ -295,11 +295,6 @@
       <role name="Manager"/>
       <role name="Owner"/>
     </permission>
-    <permission name="senaite.core: Add ReflexRule" acquire="False">
-      <role name="LabManager"/>
-      <role name="Manager"/>
-      <role name="Owner"/>
-    </permission>
     <permission name="senaite.core: Add SampleCondition" acquire="False">
       <role name="LabClerk"/>
       <role name="LabManager"/>
