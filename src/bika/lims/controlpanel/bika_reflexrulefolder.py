@@ -18,35 +18,14 @@
 # Copyright 2018-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from Products.ATContentTypes.content import schemata
-from Products.Archetypes import atapi
-from Products.CMFCore import permissions
-from Products.CMFCore.utils import getToolByName
-from bika.lims import api
-from bika.lims import bikaMessageFactory as _
-from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
-from bika.lims.interfaces import IReflexRuleFolder
-from bika.lims.permissions import ManageBika, AddReflexRule
-from bika.lims.utils import get_link
-from bika.lims.utils import get_link_for
 from plone.app.folder.folder import ATFolder
-from plone.app.folder.folder import ATFolderSchema
-from senaite.core.interfaces import IHideActionsMenu
-from zope.interface.declarations import implements
-
-schema = ATFolderSchema.copy()
+from Products.Archetypes import atapi
 
 
+# BBB: Backwards compatibility
 class ReflexRuleFolder(ATFolder):
-    implements(IReflexRuleFolder, IHideActionsMenu)
-    displayContentsTab = False
-    schema = schema
-
-
-schemata.finalizeATCTSchema(
-    schema,
-    folderish=True,
-    moveDiscussion=False)
+    """Removed in 2.0rc3
+    """
 
 atapi.registerType(ReflexRuleFolder, PROJECTNAME)

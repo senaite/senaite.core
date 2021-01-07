@@ -806,8 +806,9 @@ class IReflexRule(Interface):
     """
 
 
+# BBB: Backwards compatibility
 class IReflexRuleFolder(Interface):
-    """Marker interface for the Reflex Rule Folder
+    """Removed in 2.0rc3
     """
 
 
