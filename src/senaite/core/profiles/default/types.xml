@@ -4,6 +4,8 @@
  <!-- remove old AT based types -->
  <object remove="True" name="InstrumentLocation" meta_type="Factory-based Type Information with dynamic views"/>
  <object remove="True" name="InstrumentLocations" meta_type="Factory-based Type Information with dynamic views"/>
+ <object remove="True" name="ReflexRuleFolder" meta_type="Factory-based Type Information with dynamic views"/>
+ <object remove="True" name="ReflexRule" meta_type="Factory-based Type Information with dynamic views"/>
  <!-- Instrument Locations -->
  <object name="InstrumentLocation" meta_type="Dexterity FTI" />
  <object name="InstrumentLocations" meta_type="Dexterity FTI" />
