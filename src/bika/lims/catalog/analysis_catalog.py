@@ -64,7 +64,6 @@ _columns_list = [
     "getResultCaptureDate",
     "getParentURL",
     "getRequestURL",
-    "getParentTitle",
     "getClientTitle",
     "getClientURL",
     "getRequestTitle",
