@@ -695,7 +695,8 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         :return: True if the assignment of the passed in instrument is allowed
         :rtype: bool
         """
-        return instrument in self.getAllowedInstruments()
+        uid = api.get_uid(instrument)
+        return uid in map(api.get_uid, self.getAllowedInstruments())
 
     @security.public
     def isMethodAllowed(self, method):
@@ -705,7 +706,8 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         :return: True if the analysis can follow the method specified
         :rtype: bool
         """
-        return method in self.getAllowedMethods()
+        uid = api.get_uid(method)
+        return uid in map(api.get_uid, self.getAllowedMethods())
 
     @security.public
     def getAllowedMethods(self):
