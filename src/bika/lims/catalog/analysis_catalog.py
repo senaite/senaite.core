@@ -50,8 +50,6 @@ _indexes_dict = {
     "getCategoryUID": "FieldIndex",
     "getPointOfCapture": "FieldIndex",
     "getSampleTypeUID": "FieldIndex",
-    # TODO Index "getSamplePointUID" is only used in reports/selection_macros
-    "getSamplePointUID": "FieldIndex",
     "getReferenceAnalysesGroupID": "FieldIndex",
     "getInstrumentUID": "FieldIndex",
     "getWorksheetUID": "FieldIndex",

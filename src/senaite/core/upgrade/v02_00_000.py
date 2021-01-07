@@ -83,6 +83,7 @@ INDEXES_TO_REMOVE = [
     # List of tuples (catalog_name, index_name)
     (CATALOG_ANALYSIS_LISTING, "getMethodUID"),
     (CATALOG_ANALYSIS_LISTING, "isRetest"),
+    (CATALOG_ANALYSIS_LISTING, "getSamplePointUID"),
 ]
 
 METADATA_TO_REMOVE = [
@@ -97,6 +98,7 @@ METADATA_TO_REMOVE = [
     (CATALOG_ANALYSIS_LISTING, "getMethodUID"),
     (CATALOG_ANALYSIS_LISTING, "getAllowedMethodUIDs"),
     (CATALOG_ANALYSIS_LISTING, "getInstrumentUID"),
+    (CATALOG_ANALYSIS_REQUEST_LISTING, "getSamplePointUID"),
 ]
 
 STALE_WORKFLOW_DEFINITIONS = [
