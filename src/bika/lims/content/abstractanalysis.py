@@ -1022,15 +1022,6 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         return self.created()
 
     @security.public
-    def getParentUID(self):
-        """This method is used to populate catalog values
-        This function returns the analysis' parent UID
-        """
-        parent = self.aq_parent
-        if parent:
-            return parent.UID()
-
-    @security.public
     def getParentURL(self):
         """This method is used to populate catalog values
         This function returns the analysis' parent URL
