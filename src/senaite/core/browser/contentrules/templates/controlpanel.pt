@@ -1,0 +1,197 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      metal:use-macro="here/prefs_main_template/macros/master"
+      i18n:domain="plone">
+
+  <body>
+
+    <div metal:fill-slot="prefs_configlet_main"
+         tal:define="rules view/registeredRules">
+
+      <!-- Link back to controlpanel -->
+      <a id="setup-link" class="link-parent"
+         tal:attributes="href string:$portal_url/@@overview-controlpanel"
+         i18n:translate="">
+        Site Setup
+      </a>
+
+      <h1 class="documentFirstHeading"
+          i18n:translate="title_manage_contentrules">Content Rules</h1>
+
+      <p i18n:translate="description-contentrules-controlpanel" class="documentDescription">
+        Use the form below to define, change or remove content rules. Rules
+        will automatically perform actions on content when certain triggers
+        take place. After defining rules, you may want to go to a folder
+        to assign them, using the "rules" item in the actions menu.
+      </p>
+
+      <div id="translated-text" style="display:none">
+        <span id="trns_form_error" i18n:translate="">
+          There was an error saving content rules.
+        </span>
+        <span id="trns_form_success" i18n:translate="">
+          Content rule settings updated.
+        </span>
+      </div>
+
+      <!-- Disable globally -->
+      <div class="mb-4" id="fieldset-global">
+        <form name="ruleSettings" method="POST"
+              tal:attributes="action string:${context/absolute_url}/@@rules-controlpanel">
+          <span tal:replace="structure context/@@authenticator/authenticator"/>
+          <div class="field">
+            <input type="hidden" name="global_disable:boolean:default" value="" />
+            <input type="checkbox"
+                   id="rules_disable_globally"
+                   name="global_disable:boolean"
+                   value="True"
+                   tal:attributes="checked python:view.globally_disabled() and 'checked' or None" />
+            <label for="rules_disable_globally" i18n:translate="">Disable globally</label>
+            <div class="formHelp" i18n:translate="">
+              Whether or not content rules should be disabled globally. If this is selected,
+              no rules will be executed anywhere in the portal.
+            </div>
+          </div>
+
+          <div class="formControls">
+            <input type="submit"
+                   name="form.button.SaveSettings"
+                   class="btn btn-primary"
+                   value="Save"
+                   i18n:attributes="value label_save;" />
+          </div>
+        </form>
+      </div>
+
+      <!-- rules -->
+      <fieldset id="fieldset-rules"
+                tal:define="rules rules|view/registeredRules;
+                    add_url string:${context/absolute_url}/+rule/plone.ContentRule;">
+        <legend id="fieldsetlegend-rules" i18n:translate="legend-contentrules">Content rules</legend>
+
+        <!-- table filters (disabled) -->
+        <div class="filters" tal:condition="python:False">
+          <span class="type-filters">
+            <span i18n:translate="">Filter:</span>
+            <span class="filter-option"
+                  tal:repeat="rule view/ruleTypesToShow">
+              <input id="all" type="checkbox"
+                     tal:attributes="id rule/id"
+              />
+              <label
+                for="all"
+                tal:attributes="for rule/id"
+                tal:content="rule/title">
+                All</label>
+            </span>
+          </span>
+          <span class="state-filters" tal:condition="rules">
+            <span class="filter-option"
+                  tal:repeat="state view/statesToShow">
+              <input id="all" type="checkbox"
+                     tal:attributes="id state/id"
+              />
+              <label
+                for="all"
+                tal:attributes="for state/id"
+                tal:content="state/title">
+                All</label>
+            </span>
+          </span>
+        </div>
+
+        <div id="rules_table_form"
+             metal:define-macro="rules_table_form">
+          <table class="table table-striped"
+                 tal:condition="rules">
+            <thead>
+              <tr>
+                <th i18n:translate="label_contentrules_rule_listing">content rule</th>
+                <th i18n:translate="label_contentrules_rule_event">event</th>
+                <th i18n:translate="label_contentrules_rule_enabled">enabled</th>
+                <th >&nbsp;</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tal:rules repeat="rule view/registeredRules">
+                <tr tal:define="oddrow repeat/rule/odd"
+                    tal:attributes="class python:(oddrow and 'even ' or 'odd ') + rule['row_class'];">
+                  <td>
+                    <dl>
+                      <dt>
+                        <a tal:attributes="href string:${context/absolute_url}/++rule++${rule/id}/@@manage-elements">
+                          <span tal:replace="rule/title">Rule Title</span>
+                        </a>
+                      </dt>
+                      <dd tal:content="rule/description">
+                        Rule Description.
+                      </dd>
+                    </dl>
+                  </td>
+                  <td>
+                    <span class="trigger"
+                          tal:content="rule/trigger"
+                          i18n:translate="">trigger</span>
+                  </td>
+                  <td class="checker"
+                      tal:define="enabled rule/enabled;
+                                  assigned rule/assigned;">
+                    <!-- rule enabled -->
+                    <i class="fas fa-check"
+                       tal:condition="python:enabled and assigned"
+                       i18n:attributes="title label_contentrules_rule_enabled;"
+                       title="active"></i>
+                    <!-- rule not enabled and not assigned -->
+                    <i class="fas fa-times"
+                       tal:condition="python:not enabled"
+                       i18n:attributes="title"
+                       title="inactive"></i>
+                    <!-- rule enabled but not assigned -->
+                    <i class="fas fa-ban"
+                       tal:condition="python:not assigned and enabled"
+                       i18n:attributes="title"
+                       title="unassigned"></i>
+                  </td>
+                  <td>
+                    <form style="display: inline" method="POST"
+                          tal:attributes="action string:${context/absolute_url}/@@rules-controlpanel">
+                      <span tal:replace="structure context/@@authenticator/authenticator"/>
+                      <input type="hidden"
+                             name="rule-id"
+                             tal:attributes="value rule/id">
+                      <input class="btn btn-sm btn-primary" type="submit" value="Enable"
+                             name="form.button.EnableRule"
+                             tal:attributes="data-value rule/id;
+                                    data-url string:$portal_url/@@contentrule-enable"
+                             i18n:attributes="value label_enable;" />
+                      <input class="btn btn-sm btn-secondary" type="submit" value="Disable"
+                             name="form.button.DisableRule"
+                             tal:attributes="data-value rule/id;
+                                    data-url string:$portal_url/@@contentrule-disable"
+                             i18n:attributes="value label_disable;" />
+                      <input class="btn btn-sm btn-danger" type="submit" value="Delete"
+                             tal:attributes="data-value rule/id;
+                                    data-url string:$portal_url/@@contentrule-delete"
+                             name="form.button.DeleteRule"
+                             i18n:attributes="value label_delete;" />
+                    </form>
+                  </td>
+                </tr>
+              </tal:rules>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- add rule -->
+        <a id="#addcontentrule" tal:attributes="href add_url"
+           class="btn btn-primary"
+           i18n:translate="label_contentrule_add">Add content rule</a>
+      </fieldset>
+
+    </div>
+  </body>
+</html>
+
