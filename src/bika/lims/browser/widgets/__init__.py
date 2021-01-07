@@ -38,7 +38,6 @@ from .scheduleinputwidget import ScheduleInputWidget
 from .integer import IntegerWidget
 from .decimal import DecimalWidget
 from .rejectionsetupwidget import RejectionSetupWidget
-from .reflexrulewidget import ReflexRuleWidget
 from .rejectionwidget import RejectionWidget
 from .priorityselectionwidget import  PrioritySelectionWidget
 from .comboboxwidget import ComboBoxWidget
