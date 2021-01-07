@@ -82,6 +82,7 @@ INDEXES_TO_ADD = [
 INDEXES_TO_REMOVE = [
     # List of tuples (catalog_name, index_name)
     (CATALOG_ANALYSIS_LISTING, "getMethodUID"),
+    (CATALOG_ANALYSIS_LISTING, "isRetest"),
 ]
 
 METADATA_TO_REMOVE = [
