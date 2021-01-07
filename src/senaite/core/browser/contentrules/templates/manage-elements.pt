@@ -1,0 +1,331 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      metal:use-macro="here/prefs_main_template/macros/master"
+      i18n:domain="plone">
+
+  <body>
+
+    <div metal:fill-slot="prefs_configlet_main">
+
+      <h1 class="documentFirstHeading"
+          i18n:translate="title_edit_contentrule">Edit content rule</h1>
+
+      <a href=""
+         class="link-parent"
+         tal:attributes="href string:${portal_url}/@@rules-controlpanel"
+         i18n:translate="go_to_contentrules_management">
+        Up to rule management
+      </a>
+
+      <p i18n:translate="contentrules_description_execution"
+         class="documentDescription">
+        Rules execute when a triggering event occurs. Rule actions will only
+        be invoked if all the rule's conditions are met. You can add new
+        actions and conditions using the buttons below.
+      </p>
+
+      <!-- conditions panel -->
+      <div class="font-weight-bold text-muted" i18n:translate="if_all_conditions_met">
+        If all of the following conditions are met:
+      </div>
+      <a name="condition"></a>
+      <div class="border rounded p-2" id="configure-conditions" tal:define="conditions view/conditions">
+        <!-- no conditions message -->
+        <div tal:condition="not:conditions" class="alert alert-warning">
+          <strong>Info</strong>
+          <span i18n:translate="">
+            There is not any additional condition checked on this rule.
+          </span>
+        </div>
+
+        <form tal:attributes="action view/view_url" method="post"
+              tal:define="auth_token context/@@authenticator/token"
+              tal:repeat="condition conditions">
+          <span tal:replace="structure context/@@authenticator/authenticator"></span>
+          <a tal:attributes="name string:condition++${condition/idx}"></a>
+          <input type="hidden" name="element_id:int" tal:attributes="value condition/idx" />
+          <div class="rule-element">
+            <div class="rule-operations">
+              <a tal:attributes="href string:${condition/editview}?_authenticator=${auth_token}"
+                 class="btn btn-sm btn-primary"
+                 tal:condition="condition/editview" i18n:translate="label_edit">Edit</a>
+              <input type="submit"
+                     name="form.button.DeleteCondition"
+                     value="Remove"
+                     class="btn btn-sm btn-danger"
+                     i18n:attributes="value label_remove;"
+              />
+              <input tal:attributes="disabled python:condition['first'] and 'disabled' or None"
+                     type="submit"
+                     name="form.button.MoveConditionUp"
+                     value="&uarr;"
+                     class="btn btn-sm btn-secondary"
+              />
+              <input tal:attributes="disabled python:condition['last'] and 'disabled' or None"
+                     type="submit"
+                     name="form.button.MoveConditionDown"
+                     value="&darr;"
+                     class="btn btn-sm btn-secondary"
+              />
+            </div>
+
+            <div class="my-3 alert alert-info">
+              <strong tal:content="condition/title" i18n:translate="">Transition was publish.</strong>
+              <span tal:content="condition/summary">
+                Something happened
+              </span>
+            </div>
+          </div>
+        </form>
+
+        <!-- conditions select -->
+        <form tal:attributes="action string:${view/base_url}/+condition" method="get"
+              id="add-condition">
+          <span tal:replace="structure context/@@authenticator/authenticator"></span>
+
+          <div class="input-group mb-3">
+            <span class="input-group-prepend">
+              <label i18n:translate="contentrules_add_condition"
+                    class="input-group-text"
+                    for="contentrules-add-condition">
+                Add condition
+              </label>
+            </span>
+            <select class="custom-select" name=":action" size="1" id="contentrules-add-condition">
+              <tal:block repeat="condition view/addable_conditions">
+                <option tal:attributes="value condition/addview"
+                        i18n:translate=""
+                        tal:content="condition/title" />
+              </tal:block>
+            </select>
+            <div class="input-group-append">
+              <input class="btn btn-sm btn-primary"
+                    type="submit"
+                    name="form.button.AddCondition"
+                    value="Add"
+                    i18n:attributes="value label_add;" />
+            </div>
+          </div>
+        </form>
+      </div> <!-- /conditions panel -->
+
+
+      <!-- actions panel -->
+      <div class="font-weight-bold text-muted mt-4" i18n:translate="contentrules_perform_actions">
+        Perform the following actions:
+      </div>
+      <div class="border rounded p-2" id="configure-actions" tal:define="actions view/actions">
+        <a name="action"></a>
+        <div tal:condition="not:actions" class="alert alert-warning">
+          <strong>Warning</strong>
+          <span i18n:translate="">
+            There is not any action performed by this rule.
+            Click on Add button to setup an action.
+          </span>
+        </div>
+        <form tal:attributes="action view/view_url" method="post"
+              tal:define="auth_token context/@@authenticator/token"
+              tal:repeat="action actions">
+          <span tal:replace="structure context/@@authenticator/authenticator"></span>
+          <a tal:attributes="name string:action++${action/idx}"></a>
+          <input type="hidden" name="element_id:int" tal:attributes="value action/idx" />
+          <div class="rule-element">
+            <div class="rule-operations">
+              <a tal:attributes="href string:${action/editview}?_authenticator=${auth_token}" class="pat-plone-modal"
+                 tal:condition="action/editview">
+                <input type="submit"
+                       name="form.button.EditAction"
+                       value="Edit"
+                       class="btn btn-sm btn-primary"
+                       i18n:attributes="value label_edit;"
+                />
+              </a>
+              <input type="submit"
+                     name="form.button.DeleteAction"
+                     value="Remove"
+                     class="btn btn-sm btn-danger"
+                     i18n:attributes="value label_remove;"
+              />
+              <input tal:attributes="disabled python:action['first'] and 'disabled' or None"
+                     type="submit"
+                     name="form.button.MoveActionUp"
+                     value="&uarr;"
+                     class="btn btn-sm btn-secondary"
+              />
+              <input tal:attributes="disabled python:action['last'] and 'disabled' or None"
+                     type="submit"
+                     name="form.button.MoveActionDown"
+                     value="&darr;"
+                     class="btn btn-sm btn-secondary"
+              />
+            </div>
+
+            <div class="my-3 alert alert-info">
+              <strong tal:content="action/title"
+                      i18n:translate="">Move to folder</strong>
+              <span tal:content="action/summary">
+                Something happened
+              </span>
+            </div>
+          </div>
+        </form>
+
+        <!-- action select -->
+        <form tal:attributes="action string:${view/base_url}/+action" method="get"
+              id="add-action">
+          <span tal:replace="structure context/@@authenticator/authenticator"></span>
+
+          <div class="input-group mb-3">
+            <span class="input-group-prepend">
+              <label i18n:translate="contentrules_add_action"
+                     class="input-group-text"
+                     for="contentrules-add-action">
+                Add action
+              </label>
+            </span>
+            <select class="custom-select" name=":action" size="1" id="contentrules-add-action">
+              <tal:block repeat="action view/addable_actions">
+                <option tal:attributes="value action/addview"
+                        i18n:translate=""
+                        tal:content="action/title"></option>
+              </tal:block>
+            </select>
+            <div class="input-group-append">
+              <input class="btn btn-sm btn-primary"
+                     type="submit"
+                     name="form.button.AddAction"
+                     value="Add"
+                     i18n:attributes="value label_add;" />
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- assignments -->
+      <tal:assignments define="assignments view/assignments">
+        <div class="font-weight-bold text-muted mt-4" i18n:translate="label_contentrules_rule_assignments">
+          Assignments
+        </div>
+        <div class="" id="manage-assignments">
+          <tal:noassignments condition="not:assignments">
+            <div class="portalMessage warning">
+              <strong i18n:translate="">This rule is not assigned to any location</strong>
+
+              <tal:enabled condition="view/rule_enabled">
+                <span i18n:translate="">
+                  The rule is enabled but will perform nothing since it is not assigned anywhere.
+                </span>
+                <br />
+                <span i18n:translate="">
+                  Go to the folder where you want the rule to apply, or at the site root,
+                  click on 'rule' tab, and then locally setup the rules.
+                </span>
+                <form  tal:attributes="action view/view_url" method="post">
+                  <span tal:replace="structure context/@@authenticator/authenticator"/>
+                  <label i18n:translate="contentrules_assignments_shortcuts">Shortcuts:</label>
+                  <input type="submit"
+                         class="btn btn-sm btn-primary"
+                         value="Apply rule on the whole site"
+                         name="form.button.ApplyOnWholeSite"
+                         i18n:attributes="value" />
+                </form>
+              </tal:enabled>
+            </div>
+
+          </tal:noassignments>
+          <tal:assignments condition="nocall:assignments">
+            <div class="alert alert-dark">
+              <strong>Info</strong>
+              <span
+                i18n:translate="description_contentrules_rule_assignments">
+                This rule is assigned to the following locations:
+              </span>
+              <tal:items repeat="assignment assignments">
+                <a tal:attributes="href string:${assignment/url}/@@manage-content-rules"
+                   tal:content="assignment/title" />
+              </tal:items>
+            </div>
+          </tal:assignments>
+        </div>
+      </tal:assignments>
+
+      <!-- edit rule -->
+      <div class="font-weight-bold text-muted mt-4" i18n:translate="">Configure rule</div>
+      <div class="border rounded p-2" id="configure-rule">
+        <form tal:attributes="action view/view_url" method="post">
+          <span tal:replace="structure context/@@authenticator/authenticator"></span>
+
+          <div class="form-group">
+            <label for="form.title" i18n:translate="label_title">Title</label>
+            <input class="form-control"
+                   id="form.title" type="text" width="50" name="title"
+                   tal:attributes="value request/ruleTitle | view/rule_title"/>
+            <small class="form-text text-muted" i18n:translate="description_contentrule_title">
+              Please set a descriptive title for the rule.
+            </small>
+          </div>
+
+          <div class="form-group">
+            <label for="form.description" i18n:translate="label_description">Description</label>
+            <textarea id="form.description"
+                      class="form-control"
+                      name="description"
+                      tal:content="request/ruleDescription | view/rule_description ">
+            </textarea>
+            <small class="form-text text-muted" i18n:translate="contentrules_description_description">
+              Enter a short description of the rule and its purpose.
+            </small>
+          </div>
+
+          <div class="form-group">
+            <label i18n:translate="label_rule_event_trigger">
+              Event trigger: <span i18n:name="trigger" tal:content="view/rule_event"></span>
+            </label>
+            <small class="form-text text-muted" i18n:translate="contentrules_description_trigger">
+              The rule will execute when the following event occurs.
+            </small>
+          </div>
+
+          <div class="form-group custom-control custom-switch">
+            <input class="custom-control-input"
+                   type="checkbox" id="stop" name="stopExecuting"
+                   tal:attributes="checked view/rule_stop"/>
+            <label class="custom-control-label" for="stop" i18n:translate="contentrules_description_stop">
+              Stop evaluating content rules after this rule completes
+            </label>
+          </div>
+
+          <div class="form-group custom-control custom-switch">
+            <input class="custom-control-input"
+                   type="checkbox" id="cascading" name="cascading"
+                   tal:attributes="checked view/rule_cascading"/>
+            <label class="custom-control-label" for="cascading" i18n:translate="contentrules_description_cascading">
+              The actions executed by this rule can trigger other rules
+            </label>
+          </div>
+
+          <div class="form-group custom-control custom-switch">
+            <input class="custom-control-input"
+                   type="checkbox" id="enabled" name="enabled"
+                   tal:attributes="checked view/rule_enabled"/>
+            <label class="custom-control-label" for="enabled" i18n:translate="">
+              Enabled
+            </label>
+          </div>
+
+          <div class="formControls">
+            <input class="btn btn-primary"
+                   type="submit"
+                   name="form.button.Save"
+                   value="Save"
+                   i18n:attributes="value label_save;" />
+          </div>
+        </form>
+      </div>
+
+    </div>
+  </body>
+</html>
