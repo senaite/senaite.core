@@ -123,9 +123,6 @@
     <type type_id="ReferenceDefinitions">
       <bound-workflow workflow_id="senaite_one_state_workflow"/>
     </type>
-    <type type_id="ReflexRuleFolder">
-      <bound-workflow workflow_id="senaite_one_state_workflow"/>
-    </type>
     <type type_id="SampleConditions">
       <bound-workflow workflow_id="senaite_one_state_workflow"/>
     </type>
@@ -234,9 +231,6 @@
       <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
     </type>
     <type type_id="ReferenceDefinition">
-      <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
-    </type>
-    <type type_id="ReflexRule">
       <bound-workflow workflow_id="senaite_deactivable_type_workflow"/>
     </type>
     <type type_id="SampleCondition">
