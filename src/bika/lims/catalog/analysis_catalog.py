@@ -52,8 +52,6 @@ _indexes_dict = {
     "getReferenceAnalysesGroupID": "FieldIndex",
     "getInstrumentUID": "FieldIndex",
     "getWorksheetUID": "FieldIndex",
-    # TODO Remove getOriginalReflexedAnalysisUID
-    "getOriginalReflexedAnalysisUID": "FieldIndex",
     "getPrioritySortkey": "FieldIndex",
     "getAncestorsUIDs": "KeywordIndex",
     "isSampleReceived": "BooleanIndex",
@@ -90,8 +88,6 @@ _columns_list = [
     "getSubmittedBy",
     "getVerificators",
     "getLastVerificator",
-    # TODO Remove getIsReflexAnalysis column
-    "getIsReflexAnalysis",
     "getPrioritySortkey",
     # TODO-performance: All that comes from services could be
     # defined as a service metacolumn instead of an analysis one
