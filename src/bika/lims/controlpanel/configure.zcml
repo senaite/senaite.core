@@ -236,14 +236,6 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
-    <browser:page
-      for="bika.lims.interfaces.IReflexRuleFolder"
-      name="folder_view"
-      class=".bika_reflexrulefolder.ReflexRuleFolderView"
-      permission="senaite.core.permissions.ManageBika"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
     <!-- For autocomplete dropdown -->
     <browser:page
       for="*"
