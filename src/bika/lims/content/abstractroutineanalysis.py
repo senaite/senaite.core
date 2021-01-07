@@ -46,49 +46,6 @@ from zope.interface import alsoProvides
 from zope.interface import implements
 from zope.interface import noLongerProvides
 
-# True if the analysis is created by a reflex rule
-IsReflexAnalysis = BooleanField(
-    'IsReflexAnalysis',
-    default=False,
-    required=0
-)
-
-# This field contains the original analysis which was reflected
-OriginalReflexedAnalysis = UIDReferenceField(
-    'OriginalReflexedAnalysis',
-    required=0,
-    allowed_types=('Analysis',)
-)
-
-# This field contains the analysis which has been reflected following
-# a reflex rule
-ReflexAnalysisOf = UIDReferenceField(
-    'ReflexAnalysisOf',
-    required=0,
-    allowed_types=('Analysis',)
-)
-
-# Which is the Reflex Rule action that has created this analysis
-ReflexRuleAction = StringField(
-    'ReflexRuleAction',
-    required=0,
-    default=0
-)
-
-# Which is the 'local_id' inside the reflex rule
-ReflexRuleLocalID = StringField(
-    'ReflexRuleLocalID',
-    required=0,
-    default=0
-)
-
-# Reflex rule triggered actions which the current analysis is responsible for.
-# Separated by '|'
-ReflexRuleActionsTriggered = StringField(
-    'ReflexRuleActionsTriggered',
-    required=0,
-    default=''
-)
 
 # The actual uncertainty for this analysis' result, populated when the result
 # is submitted.
@@ -114,12 +71,6 @@ HiddenManually = BooleanField(
 
 
 schema = schema.copy() + Schema((
-    IsReflexAnalysis,
-    OriginalReflexedAnalysis,
-    ReflexAnalysisOf,
-    ReflexRuleAction,
-    ReflexRuleActionsTriggered,
-    ReflexRuleLocalID,
     Uncertainty,
     HiddenManually,
 ))
