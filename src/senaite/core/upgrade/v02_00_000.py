@@ -169,6 +169,9 @@ def upgrade(tool):
     # run import steps located in bika.lims profiles
     _run_import_step(portal, "rolemap", profile="profile-bika.lims:default")
     _run_import_step(portal, "typeinfo", profile="profile-bika.lims:default")
+    # https://github.com/senaite/senaite.core/pull/1730
+    _run_import_step(
+        portal, "componentregistry", profile="profile-bika.lims:default")
 
     add_dexterity_setup_items(portal)
 
