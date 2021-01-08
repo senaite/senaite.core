@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.0.0rc3 (unreleased)
+2.0.0rc3 (2021-01-08)
 ---------------------
 
 - #1728 Remove legacy reflex rules
