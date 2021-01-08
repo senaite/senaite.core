@@ -164,6 +164,8 @@ def upgrade(tool):
     setup.runImportStepFromProfile(profile, "browserlayer")
     setup.runImportStepFromProfile(profile, "viewlets")
     setup.runImportStepFromProfile(profile, "repositorytool")
+    setup.runImportStepFromProfile(profile, "controlpanel")
+    setup.runImportStepFromProfile(profile, "plone.app.registry")
     # run import steps located in bika.lims profiles
     _run_import_step(portal, "rolemap", profile="profile-bika.lims:default")
     _run_import_step(portal, "typeinfo", profile="profile-bika.lims:default")
