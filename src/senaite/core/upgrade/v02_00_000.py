@@ -224,6 +224,10 @@ def upgrade(tool):
     # https://github.com/senaite/senaite.core/pull/1719
     migrate_service_interims(portal)
 
+    # Remove reflex rule folder
+    # https://github.com/senaite/senaite.core/pull/1728
+    delete_reflexrulefolder(portal)
+
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
 
@@ -693,3 +697,12 @@ def migrate_service_interims(portal):
             lambda i: i.get("keyword") not in c_interim_keys, s_interims)
         obj.setInterimFields(new_interims)
     logger.info("Remove calculation interims from service interims ... [DONE]")
+
+
+def delete_reflexrulefolder(portal):
+    logger.info("Remove reflex rule folder ...")
+    setup = api.get_setup()
+    obj_id = "bika_reflexrulefolder"
+    if obj_id in setup.objectIds():
+        setup._delObject(obj_id)
+    logger.info("Remove reflex rule folder ... [DONE]")
