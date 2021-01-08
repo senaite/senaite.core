@@ -102,11 +102,11 @@
     <permission>Set own properties</permission>
   </configlet>
 
-  <!-- Navigation (hidden) -->
+  <!-- Navigation -->
   <configlet title="Navigation" action_id="NavigationSettings" appId="Plone"
              category="plone-general" condition_expr=""
              icon_expr="string:$portal_url/navigation_icon.png"
-             url_expr="string:${portal_url}/@@navigation-controlpanel" visible="False">
+             url_expr="string:${portal_url}/@@navigation-controlpanel" visible="True">
     <permission>Plone Site Setup: Navigation</permission>
   </configlet>
 
