@@ -174,7 +174,6 @@ module.exports = {
           "../src/senaite/core/browser/static/js/bika.lims.instrument.import.js",
           "../src/senaite/core/browser/static/js/bika.lims.instrument.js",
           "../src/senaite/core/browser/static/js/bika.lims.referencesample.js",
-          "../src/senaite/core/browser/static/js/bika.lims.reflexrule.js",
           "../src/senaite/core/browser/static/js/bika.lims.rejection.js",
           "../src/senaite/core/browser/static/js/bika.lims.reports.js",
           "../src/senaite/core/browser/static/js/bika.lims.site.js",

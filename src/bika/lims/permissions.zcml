@@ -46,7 +46,6 @@
   <permission id="senaite.core.permissions.AddPreservation" title="senaite.core: Add Preservation"/>
   <permission id="senaite.core.permissions.AddPricelist" title="senaite.core: Add Pricelist"/>
   <permission id="senaite.core.permissions.AddReferenceDefinition" title="senaite.core: Add ReferenceDefinition"/>
-  <permission id="senaite.core.permissions.AddReflexRule" title="senaite.core: Add ReflexRule"/>
   <permission id="senaite.core.permissions.AddSampleCondition" title="senaite.core: Add SampleCondition"/>
   <permission id="senaite.core.permissions.AddSampleMatrix" title="senaite.core: Add SampleMatrix"/>
   <permission id="senaite.core.permissions.AddSamplePoint" title="senaite.core: Add SamplePoint"/>

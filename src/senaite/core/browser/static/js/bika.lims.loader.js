@@ -118,9 +118,6 @@ window.bika.lims.controllers =  {
     "#worksheet-printview-wrapper":
         ['WorksheetPrintView'],
 
-    ".portaltype-reflexrule.template-base_edit":
-        ['ReflexRuleEditView'],
-
     ".template-labcontacts.portaltype-department":
         ['DepartmentLabContactsView'],
 

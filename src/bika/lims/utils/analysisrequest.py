@@ -298,7 +298,7 @@ def create_retest(ar):
     renameAfterCreation(retest)
 
     # Copy the analyses from the source
-    intermediate_states = ['retracted', 'reflexed']
+    intermediate_states = ['retracted',]
     for an in ar.getAnalyses(full_objects=True):
         # skip retests
         if an.isRetest():

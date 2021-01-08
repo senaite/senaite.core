@@ -136,11 +136,6 @@ def after_submit(analysis):
     # Promote to analyses this analysis depends on
     promote_to_dependencies(analysis, "submit")
 
-    # TODO: REFLEX TO REMOVE
-    # Do all the reflex rules process
-    if IRequestAnalysis.providedBy(analysis):
-        analysis._reflex_rule_process('submit')
-
     # Promote transition to worksheet
     ws = analysis.getWorksheet()
     if ws:
@@ -210,11 +205,6 @@ def after_verify(analysis):
 
     # Promote to analyses this analysis depends on
     promote_to_dependencies(analysis, "verify")
-
-    # TODO: REFLEX TO REMOVE
-    # Do all the reflex rules process
-    if IRequestAnalysis.providedBy(analysis):
-        analysis._reflex_rule_process('verify')
 
     # Promote transition to worksheet
     ws = analysis.getWorksheet()

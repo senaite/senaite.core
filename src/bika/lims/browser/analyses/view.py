@@ -599,8 +599,6 @@ class AnalysesView(ListingView):
         self._folder_item_assigned_worksheet(obj, item)
         # Fill accredited icon
         self._folder_item_accredited_icon(obj, item)
-        # Fill reflex analysis icons
-        self._folder_item_reflex_icons(obj, item)
         # Fill hidden field (report visibility)
         self._folder_item_report_visibility(obj, item)
         # Renders additional icons to be displayed
@@ -1215,20 +1213,6 @@ class AnalysesView(ListingView):
         img = get_image('worksheet.png', title=title)
         anchor = get_link(worksheet.absolute_url(), img, tabindex="-1")
         self._append_html_element(item, 'state_title', anchor)
-
-    def _folder_item_reflex_icons(self, analysis_brain, item):
-        """Adds an icon to the item dictionary if the analysis has been
-        automatically generated due to a reflex rule
-
-        :param analysis_brain: Brain that represents an analysis
-        :param item: analysis' dictionary counterpart that represents a row
-        """
-        if not analysis_brain.getIsReflexAnalysis:
-            # Do nothing
-            return
-        img = get_image('reflexrule.png',
-                        title=t(_('It comes form a reflex rule')))
-        self._append_html_element(item, 'Service', img)
 
     def _folder_item_accredited_icon(self, analysis_brain, item):
         """Adds an icon to the item dictionary if it is an accredited analysis
