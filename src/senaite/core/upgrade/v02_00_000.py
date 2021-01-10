@@ -234,6 +234,7 @@ def upgrade(tool):
     delete_reflexrulefolder(portal)
 
     # Removes the method `notifiyModified` from analyses
+    # https://github.com/senaite/senaite.core/pull/1731
     remove_collective_indexing_notify_modified(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
