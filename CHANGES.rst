@@ -1,6 +1,12 @@
 Changelog
 =========
 
+2.0.0 (unreleased)
+------------------
+
+- #1731 Remove `notifyModified` method from analyses
+
+
 2.0.0rc3 (2021-01-08)
 ---------------------
 
