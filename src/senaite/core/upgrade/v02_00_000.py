@@ -769,8 +769,8 @@ def remove_collective_indexing_notify_modified(portal):
             del od["notifyModified"]
             obj._p_changed = 1
             obj.reindexObject()
-            transaction.commit()
             cleaned += 1
-    logger.info("Cleaned {} Analyes".format(cleaned))
 
+    logger.info("Cleaned {} Analyes, committing transaction.".format(cleaned))
+    transaction.commit()
     logger.info("Remove `notifyModified` method from Analyses ... [DONE]")
