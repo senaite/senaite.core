@@ -233,6 +233,9 @@ def upgrade(tool):
     # https://github.com/senaite/senaite.core/pull/1728
     delete_reflexrulefolder(portal)
 
+    # Removes the method `notifiyModified` from analyses
+    remove_collective_indexing_notify_modified(portal)
+
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
 
@@ -711,3 +714,62 @@ def delete_reflexrulefolder(portal):
     if obj_id in setup.objectIds():
         setup._delObject(obj_id)
     logger.info("Remove reflex rule folder ... [DONE]")
+
+
+def remove_collective_indexing_notify_modified(portal):
+    """Removes stale artefact from collective.indexing
+
+    Traceback (innermost last):
+        Module ZServer.ZPublisher.Publish, line 151, in publish
+        Module ZServer.ZPublisher.Publish, line 393, in commit
+        Module transaction._manager, line 257, in commit
+        Module transaction._manager, line 135, in commit
+        Module transaction._transaction, line 282, in commit
+        Module transaction._transaction, line 273, in commit
+        Module transaction._transaction, line 465, in _commitResources
+        Module transaction._transaction, line 439, in _commitResources
+        Module ZODB.Connection, line 489, in commit
+        Module ZODB.Connection, line 997, in savepoint
+        Module ZODB.Connection, line 546, in _commit
+        Module ZODB.Connection, line 578, in _store_objects
+        Module ZODB.serialize, line 430, in serialize
+        Module ZODB.serialize, line 439, in _dump
+    PicklingError: Can't pickle <class 'collective.indexing.indexer.notifyModified'>: import of module collective.indexing.indexer failed  # noqa
+
+    in collective.indexing.indexer:
+
+    def reindex(obj, attributes=None):
+        op = getDispatcher(obj, 'reindex')
+        if op is not None:
+            # prevent update of modification date during deferred reindexing
+            od = obj.__dict__
+            if not 'notifyModified' in od:
+                od['notifyModified'] = notifyModified
+            op(obj, attributes or [])
+            if 'notifyModified' in od:
+                del od['notifyModified']
+    """
+    logger.info("Remove `notifyModified` method from Analyses ...")
+
+    results = api.search(
+        dict(portal_type="Analysis"), CATALOG_ANALYSIS_LISTING)
+    total = len(results)
+    logger.info("Checking {} Analyses".format(total))
+
+    cleaned = 0
+    for num, brain in enumerate(results):
+        if num and num % 1000 == 0:
+            logger.info("Processed {}/{}".format(num+1, total))
+        obj = api.get_object(brain)
+        od = obj.__dict__
+        if "notifyModified" in od:
+            logger.info("Removing 'notifyModified' from {}".format(
+                api.get_path(obj)))
+            del od["notifyModified"]
+            obj._p_changed = 1
+            obj.reindexObject()
+            transaction.commit()
+            cleaned += 1
+    logger.info("Cleaned {} Analyes".format(cleaned))
+
+    logger.info("Remove `notifyModified` method from Analyses ... [DONE]")
