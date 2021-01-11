@@ -4,6 +4,7 @@ Changelog
 2.0.0 (unreleased)
 ------------------
 
+- #1734 Allow to drag&drop images in tinymce
 - #1732 Readonly Transactions
 - #1731 Remove `notifyModified` method from analyses
 
