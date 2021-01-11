@@ -20,6 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // TinyMCE
   tinymce.init({
     height: 300,
+    paste_data_images: true,
     selector: "textarea.mce_editable,div.ArchetypesRichWidget textarea,textarea[name='form.widgets.IRichTextBehavior.text'],textarea.richTextWidget",
     plugins: ["paste", "link", "fullscreen", "table", "code"],
     content_css : "/++plone++senaite.core.static/bundles/main.css",
