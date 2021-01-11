@@ -3,7 +3,7 @@ Changelog
 
 2.0.0 (unreleased)
 ------------------
-
+- #1733 Allow results interpretation in sample received state
 - #1731 Remove `notifyModified` method from analyses
 
 
