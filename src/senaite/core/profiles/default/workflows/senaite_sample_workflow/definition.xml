@@ -562,8 +562,7 @@
     <permission-map name="senaite.core: Field: Edit Publication Specification" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Rejection Reasons" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Remarks" acquired="True"/>
-    <!-- Make the field 'Results Interpretation' readonly -->
-    <permission-map name="senaite.core: Field: Edit Results Interpretation" acquired="False"/>
+    <permission-map name="senaite.core: Field: Edit Results Interpretation" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Sample Point" acquired="True"/>
     <!-- Make the field 'SampleType' readonly -->
     <permission-map name="senaite.core: Field: Edit Sample Type" acquired="False"/>
@@ -846,7 +845,7 @@
     <permission-map name="senaite.core: Field: Edit Preserver" acquired="False"/>
     <permission-map name="senaite.core: Field: Edit Priority" acquired="False"/>
     <permission-map name="senaite.core: Field: Edit Profiles" acquired="False"/>
-    <!-- Allow to change the publicatoin specification -->
+    <!-- Allow to change the publication specification -->
     <permission-map name="senaite.core: Field: Edit Publication Specification" acquired="True"/>
     <permission-map name="senaite.core: Field: Edit Rejection Reasons" acquired="False"/>
     <!-- Allow to add the remarks -->
