@@ -22,6 +22,7 @@ import json
 
 from bika.lims.browser import BrowserView
 from bika.lims.decorators import returns_json
+from senaite.core.decorators import readonly_transaction
 from senaite.core.interfaces import IAjaxEditForm
 from zope.component import queryMultiAdapter
 
@@ -135,12 +136,15 @@ The `message` should be an i18n message factory and are translated with
 
 class FormView(BrowserView):
     """Form View
+
+    NOTE: No persistent operations are allowed!
     """
 
     @property
     def adapter(self):
         return queryMultiAdapter((self.context, self.request), IAjaxEditForm)
 
+    @readonly_transaction
     @returns_json
     def initialized(self):
         data = self.get_json()
@@ -150,6 +154,7 @@ class FormView(BrowserView):
             return {}
         return self.adapter.initialized(data)
 
+    @readonly_transaction
     @returns_json
     def modified(self):
         data = self.get_json()
