@@ -1,0 +1,40 @@
+checks:
+  python:
+    code_rating: true
+    duplicate_code: true
+    classes_valid_slots: true
+
+filter:
+  excluded_paths:
+    - '*/coffee/*'
+    - '*/test/*'
+    - '*/tests/*'
+    - '*/static/assets/*'
+    - '*/static/bootstrap/*'
+    - '*/static/bundles/*'
+    - '*/static/fonts/*'
+    - '*/static/jquery/*'
+    - '*/static/modules/*'
+    - '*/static/thirdparty/*'
+    - '*/upgrade/*'
+    - '*.min.js'
+
+build:
+  environment:
+    python: 2.7.9
+
+  dependencies:
+    before:
+      - pip install -v pip==19.3.1
+      - pip install -v setuptools==44.1.1
+      - pip install -v zc.buildout==2.13.3
+      - pip install virtualenv
+      - /home/scrutinizer/.pyenv/versions/2.7.9/bin/buildout -v
+      - mv -v /home/scrutinizer/build/develop-eggs/* /home/scrutinizer/.pyenv/versions/2.7.9/lib/python2.7/site-packages/
+      - mv -v /home/scrutinizer/build/eggs/*.egg /home/scrutinizer/.pyenv/versions/2.7.9/lib/python2.7/site-packages/
+
+  nodes:
+    analysis:
+      tests:
+        override:
+          - py-scrutinizer-run
