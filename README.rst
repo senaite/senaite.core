@@ -12,7 +12,7 @@
 .. image:: https://img.shields.io/travis/senaite/senaite.core/master.svg?style=flat-square
     :target: https://travis-ci.org/senaite/senaite.core
 
-.. image:: https://img.shields.io/scrutinizer/g/senaite/senaite.core/master.svg?style=flat-square
+.. image:: https://img.shields.io/scrutinizer/g/senaite/senaite.core/2.x.svg?style=flat-square
     :target: https://scrutinizer-ci.com/g/senaite/senaite.core/
 
 .. image:: https://img.shields.io/github/issues-pr/senaite/senaite.core.svg?style=flat-square
