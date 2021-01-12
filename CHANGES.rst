@@ -5,6 +5,7 @@ Changelog
 ------------------
 
 - #1734 Allow to drag&drop images in tinymce
+- #1733 Allow results interpretation in sample received state
 - #1732 Readonly Transactions
 - #1731 Remove `notifyModified` method from analyses
 
