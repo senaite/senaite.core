@@ -2429,9 +2429,9 @@ class AnalysisRequest(BaseFolder, ClientAwareMixin):
             attachment.setReportOption("i")
             # remove the image data base64 prefix
             html = html.replace(data_type, "")
-            # remove the base64 image data with the attachment URL
-            html = html.replace(data, "{}/AttachmentFile".format(
-                attachment.absolute_url()))
+            # remove the base64 image data with the attachment link
+            html = html.replace(data, "resolve_attachment?uid={}".format(
+                api.get_uid(attachment)))
             size = attachment.getAttachmentFile().get_size()
             logger.info("Converted {:.2f} Kb inline image for {}"
                         .format(size/1024, api.get_url(self)))

@@ -19,6 +19,7 @@
 # Some rights reserved, see README and LICENSE.
 
 import copy
+import re
 import time
 import traceback
 
@@ -236,6 +237,9 @@ def upgrade(tool):
     # Removes the method `notifiyModified` from analyses
     # https://github.com/senaite/senaite.core/pull/1731
     remove_collective_indexing_notify_modified(portal)
+
+    # Resolve attachment image URLs in results interpretations by UID
+    migrate_resultsinterpretations_inline_images(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
@@ -774,3 +778,45 @@ def remove_collective_indexing_notify_modified(portal):
     logger.info("Cleaned {} Analyes, committing transaction.".format(cleaned))
     transaction.commit()
     logger.info("Remove `notifyModified` method from Analyses ... [DONE]")
+
+
+def migrate_resultsinterpretations_inline_images(portal):
+    """Reolve resultsinterpretation inline images
+    """
+    logger.info("Migrating results interpretation image links ...")
+
+    IMG_SRC_RX = re.compile(r'<img.*?src="(.*?)"')
+    ATT_RX = re.compile(r'attachment-[0-9]+')
+
+    catalog = api.get_tool(CATALOG_ANALYSIS_REQUEST_LISTING)
+    query = {"portal_type": "AnalysisRequest"}
+    results = catalog(query)
+    count = len(results)
+
+    for num, brain in enumerate(results):
+        obj = api.get_object(brain)
+        if num and num % 1000 == 0:
+            logger.info("Processed {}/{}".format(num, count))
+        rid = obj.getResultsInterpretationDepts()
+        for ri in rid:
+            html = ri.get("richtext")
+            image_sources = re.findall(IMG_SRC_RX, html)
+            for src in image_sources:
+                att_id = re.findall(ATT_RX, src)
+                if not att_id:
+                    continue
+                attachment = obj.aq_parent.get(att_id[0])
+                if not attachment:
+                    continue
+                # convert absolute link to `resolve_attachment` view
+                link = "resolve_attachment?uid={}".format(
+                    api.get_uid(attachment))
+                html = html.replace(src, link)
+                logger.info(
+                    "Converted image link for sample '{}' from '{}' -> '{}'"
+                    .format(obj.getId(), src, link))
+                obj._p_changed = True
+            ri["richtext"] = html
+
+    transaction.commit()
+    logger.info("Migrating results interpretation image links ... [DONE]")
