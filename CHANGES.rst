@@ -4,6 +4,7 @@ Changelog
 1.3.5 (unreleased)
 ------------------
 
+- #1737 Fix: formatDateQuery does not add the timezone for queries
 - #1707 Fix sporadic persistent changes with interims
 - #1704 Add "User name" and "User groups" columns in Lab Contacts list
 - #1704 Fix Cannot override behavior of LabContacts folder on `before_render`
