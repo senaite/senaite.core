@@ -34,7 +34,7 @@ class TestSetup(BaseTestCase):
         existing = self.portal.objectIds()
         self.assertTrue("clients" in existing)
         self.assertTrue("methods" in existing)
-        self.assertTrue("analysisrequests" in existing)
+        self.assertTrue("samples" in existing)
 
 
 def test_suite():

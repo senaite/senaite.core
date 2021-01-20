@@ -65,7 +65,7 @@ registry = getUtility(IRegistry)
 if 'bika.lims.client.default_landing_page' in registry:
     landing_page = registry['bika.lims.client.default_landing_page']
 else:
-    landing_page = 'analysisrequests'
+    landing_page = 'samples'
 
 if client:
     url = client.absolute_url() + "/" + landing_page
