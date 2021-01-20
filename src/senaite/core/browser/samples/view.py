@@ -711,12 +711,10 @@ class SamplesView(ListingView):
         item["getPreserver"] = ""
         item["getDatePreserved"] = ""
 
-        # Advanced partitioning
-        # append the UID of the primary AR as parent
-        item["parent"] = obj.getRawParentAnalysisRequest or ""
+        # Assign the parent sample of this partition
+        item["parent"] = obj.getRawParentAnalysisRequest
 
-        # append partition UIDs of this AR as children
-        item["children"] = []
+        # Assign the partitions of this sample
         if self.show_partitions:
             item["children"] = obj.getDescendantsUIDs or []
 

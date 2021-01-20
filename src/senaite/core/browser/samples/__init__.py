@@ -17,5 +17,3 @@
 #
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
-
-from senaite.core.browser.samples.view import SamplesView as AnalysisRequestsView

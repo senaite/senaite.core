@@ -1,0 +1,15 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:zcml="http://namespaces.zope.org/zcml">
+
+  <!-- main site/analysisrequests view -->
+  <browser:page
+      for="bika.lims.interfaces.IAnalysisRequestsFolder"
+      name="base_view"
+      class=".view.SamplesView"
+      permission="cmf.ListFolderContents"
+      layer="senaite.core.interfaces.ISenaiteCore"
+  />
+
+</configure>
