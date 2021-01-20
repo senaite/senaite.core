@@ -217,6 +217,7 @@ def upgrade(tool):
     convert_instrumentlocations_to_dx(portal)
 
     # Convert AnalysisRequestsFolder to DX
+    # https://github.com/senaite/senaite.core/pull/1739
     convert_analysisrequestsfolder_to_dx(portal)
 
     # Remove analysis services from CMFEditions auto versioning
