@@ -415,81 +415,19 @@ class SamplesView(ListingView):
         """
         super(SamplesView, self).update()
 
+        setup = api.get_setup()
         self.workflow = api.get_tool("portal_workflow")
         self.member = self.mtool.getAuthenticatedMember()
         self.roles = self.member.getRoles()
 
-        setup = api.get_bika_setup()
+        # Remove unnecessary filters
+        self.purge_review_states()
 
-        # remove `to_be_sampled` filter
-        if not setup.getSamplingWorkflowEnabled():
-            self.review_states = filter(
-                lambda x: x.get("id") != "to_be_sampled", self.review_states)
+        # Remove unnecessary columns
+        self.purge_columns()
 
-        # remove `scheduled_sampling` filter
-        if not setup.getScheduleSamplingEnabled():
-            self.review_states = filter(
-                lambda x: x.get("id") != "scheduled_sampling",
-                self.review_states)
-
-        # remove `to_be_preserved` filter
-        if not setup.getSamplePreservationEnabled():
-            self.review_states = filter(
-                lambda x: x.get("id") != "to_be_preserved", self.review_states)
-
-        # remove `rejected` filter
-        if not setup.getRejectionReasons():
-            self.review_states = filter(
-                lambda x: x.get("id") != "rejected", self.review_states)
-
-        self.hideclientlink = "RegulatoryInspector" in self.roles \
-                              and "Manager" not in self.roles \
-                              and "LabManager" not in self.roles \
-                              and "LabClerk" not in self.roles
-
-        self.editresults = -1
-        self.clients = {}
-        # self.user_is_preserver = "Preserver" in self.roles
-        # Printing workflow enabled?
-        # If not, remove the Column
-        self.printwfenabled = \
-            self.context.bika_setup.getPrintingWorkflowEnabled()
-        printed_colname = "Printed"
-        if not self.printwfenabled and printed_colname in self.columns:
-            # Remove "Printed" columns
-            del self.columns[printed_colname]
-            tmprvs = []
-            for rs in self.review_states:
-                tmprs = rs
-                tmprs["columns"] = [c for c in rs.get("columns", []) if
-                                    c != printed_colname]
-                tmprvs.append(tmprs)
-            self.review_states = tmprvs
-        elif self.printwfenabled:
-            # Print button to choose multiple ARs and print them.
-            review_states = []
-            action = "print_sample"
-            url = "{}/workflow_action?action={}".format(self.url, action)
-            for review_state in self.review_states:
-                review_state.get("custom_transitions", []).extend(
-                    [{"id": "print_sample",
-                      "title": _("Print"),
-                      "url": url}, ])
-                review_states.append(review_state)
-            self.review_states = review_states
-
-        # Only "senaite.core: ManageAnalysisRequests" may see the copy button.
-        if self.copy_to_new_allowed:
-            review_states = []
-            action = "copy_to_new"
-            url = "{}/workflow_action?action={}".format(self.url, action)
-            for review_state in self.review_states:
-                review_state.get("custom_transitions", []).extend(
-                    [{"id": "copy_to_new",
-                      "title": _("Copy to new"),
-                      "url": url}, ])
-                review_states.append(review_state)
-            self.review_states = review_states
+        # Additional custom transitions
+        self.add_custom_transitions()
 
     def before_render(self):
         """Before template render hook
@@ -550,23 +488,13 @@ class SamplesView(ListingView):
         # val = obj.Schema().getField('SubGroup').get(obj)
         # item['SubGroup'] = val.Title() if val else ''
 
-        date = obj.getSamplingDate
-        item["SamplingDate"] = \
-            self.ulocalized_time(date, long_format=1) if date else ""
-        date = obj.getDateReceived
-        item["getDateReceived"] = \
-            self.ulocalized_time(date, long_format=1) if date else ""
-        date = obj.getDueDate
-        item["getDueDate"] = \
-            self.ulocalized_time(date, long_format=1) if date else ""
-        date = obj.getDatePublished
-        item["getDatePublished"] = \
-            self.ulocalized_time(date, long_format=1) if date else ""
-        date = obj.getDateVerified
-        item["getDateVerified"] = \
-            self.ulocalized_time(date, long_format=1) if date else ""
+        item["SamplingDate"] = self.str_date(obj.getSamplingDate)
+        item["getDateReceived"] = self.str_date(obj.getDateReceived)
+        item["getDueDate"] = self.str_date(obj.getDueDate)
+        item["getDatePublished"] = self.str_date(obj.getDatePublished)
+        item["getDateVerified"] = self.str_date(obj.getDateVerified)
 
-        if self.printwfenabled:
+        if self.is_printing_workflow_enabled:
             item["Printed"] = ""
             printed = obj.getPrinted if hasattr(obj, "getPrinted") else "0"
             print_icon = ""
@@ -694,12 +622,72 @@ class SamplesView(ListingView):
 
         return item
 
+    def purge_review_states(self):
+        """Purges unnecessary review statuses
+        """
+        remove_filters = []
+        setup = api.get_bika_setup()
+        if not setup.getSamplingWorkflowEnabled():
+            remove_filters.append("to_be_sampled")
+        if not setup.getScheduleSamplingEnabled():
+            remove_filters.append("scheduled_sampling")
+        if not setup.getSamplePreservationEnabled():
+            remove_filters.append("to_be_preserved")
+        if not setup.getRejectionReasons():
+            remove_filters.append("rejected")
+
+        self.review_states = filter(lambda r: r.get("id") not in remove_filters,
+                                    self.review_states)
+
+    def purge_columns(self):
+        """Purges unnecessary columns
+        """
+        remove_columns = []
+        if not self.is_printing_workflow_enabled:
+            remove_columns.append("Printed")
+
+        for rv in self.review_states:
+            cols = rv.get("columns", [])
+            rv["columns"] = filter(lambda c: c not in remove_columns, cols)
+
+    def add_custom_transitions(self):
+        """Adds custom transitions as required
+        """
+        custom_transitions = []
+        if self.is_printing_workflow_enabled:
+            custom_transitions.append({
+                "id": "print_sample",
+                "title": _("Print"),
+                "url": "{}/workflow_action?action={}".format(
+                    self.url, "print_sample")
+            })
+        if self.copy_to_new_allowed:
+            custom_transitions.append({
+                "id": "copy_to_new",
+                "title": _("Copy to new"),
+                "url": "{}/workflow_action?action={}".format(
+                    self.url, "copy_to_new")
+            })
+
+        for rv in self.review_states:
+            rv.setdefault("custom_transitions", []).extend(custom_transitions)
+
     @property
     def copy_to_new_allowed(self):
         mtool = api.get_tool("portal_membership")
         if mtool.checkPermission(AddAnalysisRequest, self.context):
             return True
         return False
+
+    @property
+    def is_printing_workflow_enabled(self):
+        setup = api.get_setup()
+        return setup.getPrintingWorkflowEnabled()
+
+    def str_date(self, date, long_format=1, default=""):
+        if not date:
+            return default
+        return self.ulocalized_time(date, long_format=long_format)
 
     def getDefaultAddCount(self):
         return self.context.bika_setup.getDefaultNumberOfARsToAdd()
