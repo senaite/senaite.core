@@ -76,9 +76,10 @@ class WorkflowActionPublishAdapter(RequestContextAware):
     implements(IWorkflowActionUIDsAdapter)
 
     def __call__(self, action, uids):
-        purl = self.context.portal_url()
         uids = ",".join(uids)
-        url = "{}/analysisrequests/publish?items={}".format(purl, uids)
+        portal = api.get_portal()
+        portal_url = api.get_url(portal)
+        url = "{}/samples/publish?items={}".format(portal_url, uids)
         return self.redirect(redirect_url=url)
 
 
