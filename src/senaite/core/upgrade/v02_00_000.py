@@ -670,6 +670,11 @@ def convert_analysisrequestsfolder_to_dx(portal):
     # delete the old object
     delete_object(old)
 
+    # Move the object after Clients nav item
+    position = portal.getObjectPosition("clients")
+    portal.moveObjectToPosition("samples", position + 1)
+    portal.plone_utils.reindexOnReorder(portal)
+
     logger.info("Convert AnalysisRequestsFolder to Dexterity ... [DONE]")
 
 
