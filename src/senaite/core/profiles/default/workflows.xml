@@ -42,7 +42,7 @@
     <type type_id="AnalysisProfiles">
       <bound-workflow workflow_id="senaite_one_state_workflow"/>
     </type>
-    <type type_id="AnalysisRequestsFolder">
+    <type type_id="Samples">
       <bound-workflow workflow_id="senaite_one_state_workflow"/>
     </type>
     <type type_id="AnalysisServices">

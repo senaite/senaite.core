@@ -18,16 +18,19 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from bika.lims.config import PROJECTNAME
-from plone.app.folder.folder import ATFolder
-from Products.Archetypes import atapi
+from plone.dexterity.content import Container
+from plone.supermodel import model
+from senaite.core.interfaces import IHideActionsMenu
+from zope.interface import implementer
 
 
-# BBB: Only kept for backwards compatibility
-class AnalysisRequestsFolder(ATFolder):
-    """
-    Fake folder for nav bar. Has the view browser/samples/view.py wired
-    Moved to senaite.core.content.samples
+class ISamples(model.Schema):
+    """Schema and marker interface
     """
 
-atapi.registerType(AnalysisRequestsFolder, PROJECTNAME)
+
+@implementer(ISamples, IHideActionsMenu)
+class Samples(Container):
+    """A fake container for samples displayed in the navigation bar.
+    Has the view browser/samples/view.py wired
+    """

@@ -31,7 +31,7 @@
         <element>ClientFolder</element>
         <element>Methods</element>
         <element>Folder</element>
-        <element>AnalysisRequestsFolder</element>
+        <element>Samples</element>
       </default>
       <description xmlns:ns0="http://xml.zope.org/namespaces/i18n" ns0:domain="plone" ns0:translate="">The content types that should be shown in the navigation and site map.</description>
       <missing_value/>
@@ -43,7 +43,7 @@
     </field>
     <value>
       <!-- Work Items -->
-      <element>AnalysisRequestsFolder</element>
+      <element>Samples</element>
       <element>BatchFolder</element>
       <element>ClientFolder</element>
       <element>Folder</element>

@@ -3,10 +3,10 @@
     xmlns:browser="http://namespaces.zope.org/browser"
     xmlns:zcml="http://namespaces.zope.org/zcml">
 
-  <!-- main site/analysisrequests view -->
+  <!-- main site/samples view -->
   <browser:page
-      for="bika.lims.interfaces.IAnalysisRequestsFolder"
-      name="base_view"
+      for="senaite.core.content.samples.ISamples"
+      name="view"
       class=".view.SamplesView"
       permission="cmf.ListFolderContents"
       layer="senaite.core.interfaces.ISenaiteCore"

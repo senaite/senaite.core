@@ -456,6 +456,7 @@ schema = BikaFolderSchema.copy() + Schema((
             "Client",
             "ClientFolder",
             "AnalysisRequestsFolder",
+            "Samples",
             "WorksheetFolder",
         ),
         mode="rw",
