@@ -18,6 +18,7 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from bika.lims.setuphandlers import add_dexterity_portal_items
 from bika.lims.setuphandlers import add_dexterity_setup_items
 from bika.lims.setuphandlers import reindex_content_structure
 from bika.lims.setuphandlers import setup_auditlog_catalog
@@ -105,6 +106,7 @@ def install(context):
     remove_default_content(portal)
     setup_core_catalogs(portal)
     setup_content_structure(portal)
+    add_dexterity_portal_items(portal)
     add_dexterity_setup_items(portal)
     setup_catalog_mappings(portal)
 
