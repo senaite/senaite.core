@@ -11,7 +11,7 @@
                   plone_view context/@@plone;
                   portal portal_state/portal;
                   portal_type python:context.portal_type;
-                  anchor_self python:('Client','AnalysisRequest', 'AnalysisRequestsFolder', 'Batch');
+                  anchor_self python:('Client','AnalysisRequest', 'Samples', 'Batch');
                   goback_url  python:context.absolute_url() if portal_type in anchor_self else context.aq_parent.absolute_url();">
   <head>
     <div tal:replace="structure provider:plone.htmlhead" />

@@ -20,6 +20,9 @@
 
 from zope.interface import Interface
 
+# BBB: Only kept for backwards compatibility
+from senaite.core.content.samples import ISamples as IAnalysisRequestsFolder
+
 
 class ISenaiteSiteRoot(Interface):
     """Marker interface for the Senaite Site Root
@@ -145,11 +148,6 @@ class IAnalysisRequestSecondary(Interface):
 
 class IAnalysisRequestAddView(Interface):
     """AR Add view
-    """
-
-
-class IAnalysisRequestsFolder(Interface):
-    """AnalysisRequests Folder
     """
 
 
