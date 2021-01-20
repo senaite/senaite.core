@@ -45,38 +45,24 @@ class SamplesView(ListingView):
     def __init__(self, context, request):
         super(SamplesView, self).__init__(context, request)
 
-        # hide the right column
-        request.set("disable_plone.rightcolumn", 1)
-
-        # hide the editable border
-        if self.context.portal_type == "AnalysisRequestsFolder":
-            self.request.set("disable_border", 1)
-
-        # catalog used for the query
         self.catalog = CATALOG_ANALYSIS_REQUEST_LISTING
-
         self.contentFilter = {
             "sort_on": "created",
             "sort_order": "descending",
             "isRootAncestor": True,  # only root ancestors
         }
 
-        self.context_actions = {}
-
-        self.allow_edit = True
-
-        self.show_select_row = False
-        self.show_select_column = True
-        self.form_id = "analysisrequests"
-
-        ar_image_path = "/++resource++bika.lims.images/sample_big.png"
-        self.icon = "{}{}".format(self.portal_url, ar_image_path)
         self.title = self.context.translate(_("Samples"))
         self.description = ""
+
+        self.show_select_column = True
+        self.form_id = "analysisrequests"
+        self.context_actions = {}
+
         self.url = api.get_url(self.context)
 
-        SamplingWorkflowEnabled = \
-            self.context.bika_setup.getSamplingWorkflowEnabled()
+        # Toggle some columns if the sampling workflow is enabled
+        sampling_enabled = api.get_setup().getSamplingWorkflowEnabled()
 
         self.columns = collections.OrderedDict((
             ("Priority", {
@@ -109,7 +95,7 @@ class SamplesView(ListingView):
             ("SamplingDate", {
                 "title": _("Expected Sampling Date"),
                 "index": "getSamplingDate",
-                "toggle": SamplingWorkflowEnabled}),
+                "toggle": sampling_enabled}),
             ("getDateSampled", {
                 "title": _("Date Sampled"),
                 "toggle": True,
@@ -197,7 +183,7 @@ class SamplesView(ListingView):
                 "toggle": False}),
             ("getSampler", {
                 "title": _("Sampler"),
-                "toggle": SamplingWorkflowEnabled}),
+                "toggle": sampling_enabled}),
             ("getPreserver", {
                 "title": _("Preserver"),
                 "sortable": False,
