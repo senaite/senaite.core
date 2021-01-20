@@ -56,7 +56,7 @@ class SamplesView(ListingView):
         self.description = ""
 
         self.show_select_column = True
-        self.form_id = "analysisrequests"
+        self.form_id = "samples"
         self.context_actions = {}
 
         self.url = api.get_url(self.context)
@@ -218,7 +218,7 @@ class SamplesView(ListingView):
         print_stickers = {
             "id": "print_stickers",
             "title": _("Print stickers"),
-            "url": "workflow_action?action=print_stickers"
+            "url": "{}/workflow_action?action=print_stickers".format(self.url)
         }
 
         self.review_states = [
@@ -359,12 +359,7 @@ class SamplesView(ListingView):
                     "sort_on": "created",
                     "sort_order": "descending",
                 },
-                "custom_transitions": [
-                    {
-                        "id": "print_stickers",
-                        "title": _("Print stickers"),
-                        "url": "workflow_action?action=print_stickers"},
-                ],
+                "custom_transitions": [print_stickers],
                 "columns": self.columns.keys(),
             }, {
                 "id": "assigned",
