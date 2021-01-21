@@ -29,7 +29,6 @@
   <permission id="senaite.core.permissions.AddBatch" title="senaite.core: Add Batch"/>
   <permission id="senaite.core.permissions.AddBatchLabel" title="senaite.core: Add BatchLabel"/>
   <permission id="senaite.core.permissions.AddCalculation" title="senaite.core: Add Calculation"/>
-  <permission id="senaite.core.permissions.AddClient" title="senaite.core: Add Client"/>
   <permission id="senaite.core.permissions.AddContainer" title="senaite.core: Add Container"/>
   <permission id="senaite.core.permissions.AddContainerType" title="senaite.core: Add ContainerType"/>
   <permission id="senaite.core.permissions.AddDepartment" title="senaite.core: Add Department"/>
