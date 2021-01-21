@@ -21,15 +21,16 @@
 from plone.dexterity.content import Container
 from plone.supermodel import model
 from senaite.core.interfaces import IHideActionsMenu
+from senaite.core.interfaces import ISamples
 from zope.interface import implementer
 
 
-class ISamples(model.Schema):
+class ISamplesSchema(model.Schema):
     """Schema and marker interface
     """
 
 
-@implementer(ISamples, IHideActionsMenu)
+@implementer(ISamples, ISamplesSchema, IHideActionsMenu)
 class Samples(Container):
     """A fake container for samples displayed in the navigation bar.
     Has the view browser/samples/view.py wired

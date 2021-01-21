@@ -45,7 +45,7 @@ class IShowFactoriesMenu(Interface):
 
 
 class IHideActionsMenu(Interface):
-    """Marker interface that can be applied for conttents that should not
+    """Marker interface that can be applied for contents that should not
     display the content actions menu
     """
 
@@ -69,3 +69,8 @@ class IAjaxEditForm(Interface):
                      Contains at least `form`, `name`, `value`
         :returns: A dictionary with update instructions for the frontend logic
         """
+
+
+class ISamples(Interface):
+    """Marker interface for samples main folder
+    """

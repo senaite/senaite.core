@@ -43,7 +43,7 @@
   <property name="add_permission">cmf.AddPortalContent</property>
 
   <!-- Python class for content items of this sort -->
-  <property name="schema">senaite.core.content.samples.ISamples</property>
+  <property name="schema">senaite.core.content.samples.ISamplesSchema</property>
   <property name="klass">senaite.core.content.samples.Samples</property>
 
   <!-- Dexterity behaviours for this type -->

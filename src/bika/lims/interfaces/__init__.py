@@ -21,7 +21,7 @@
 from zope.interface import Interface
 
 # BBB: Only kept for backwards compatibility
-from senaite.core.content.samples import ISamples as IAnalysisRequestsFolder
+from senaite.core.interfaces import ISamples as IAnalysisRequestsFolder
 
 
 class ISenaiteSiteRoot(Interface):

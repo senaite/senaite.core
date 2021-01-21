@@ -5,7 +5,7 @@
 
   <!-- main site/samples view -->
   <browser:page
-      for="senaite.core.content.samples.ISamples"
+      for="senaite.core.interfaces.ISamples"
       name="view"
       class=".view.SamplesView"
       permission="cmf.ListFolderContents"
