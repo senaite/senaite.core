@@ -649,7 +649,7 @@ def convert_instrumentlocations_to_dx(portal):
 
 
 def convert_clientfolder_to_dx(portal):
-    """Converts existing Instrument Locations to Dexterity
+    """Converts existing ClientFolder to Dexterity
     """
     logger.info("Convert ClientFolder to Dexterity ...")
 
