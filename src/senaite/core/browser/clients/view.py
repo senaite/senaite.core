@@ -24,6 +24,7 @@ from bika.lims import api
 from bika.lims import senaiteMessageFactory as _
 from bika.lims.utils import get_email_link
 from bika.lims.utils import get_link
+from plone.memoize import view
 from Products.CMFCore.permissions import AddPortalContent
 from senaite.app.listing import ListingView
 
@@ -143,6 +144,7 @@ class ClientsView(ListingView):
         landing = self.get_client_landing_page()
         return "{}/{}".format(api.get_url(client), landing)
 
+    @view.memoize
     def get_client_landing_page(self):
         """Returns the id of the view from inside Client to which the user has
         to be redirected when clicking to the link of a Client
