@@ -538,22 +538,14 @@ def add_dexterity_items(container, items):
     :param container: container of the items to add
     :param items: tuple of Id, Title, FTI
     """
-    pt = api.get_tool("portal_types")
-    ti = pt.getTypeInfo(container)
-
-    # Temporary allow content type creation in content
-    ftis = map(lambda item: item[2], items)
-    temporary_allow_type(container, ftis)
-
     for id, title, fti in items:
         obj = container.get(id)
         if obj is None:
             with temporary_allow_type(container, fti) as ct:
                 obj = api.create(ct, fti, id=id, title=title)
-            obj.reindexObject()
         else:
             obj.setTitle(title)
-            obj.reindexObject()
+        obj.reindexObject()
 
 
 def setup_html_filter(portal):
