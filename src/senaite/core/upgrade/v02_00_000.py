@@ -65,6 +65,7 @@ version = "2.0.0"  # Remember version number in metadata.xml and setup.py
 profile = "profile-{0}:default".format(product)
 
 REMOVE_AT_TYPES = [
+    "ClientFolder",
     "AnalysisRequestsFolder",
     "InstrumentLocation",
     "InstrumentLocations",
