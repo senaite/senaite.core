@@ -18,29 +18,16 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-"""AnalysisRequestsFolder is a fake folder to live in the nav bar.  It has
-view from browser/analysisrequest.py wired to it.
-"""
-from Products.ATContentTypes.content import schemata
-from Products.Archetypes import atapi
-from Products.CMFCore import permissions
-from Products.CMFCore.utils import getToolByName
 from bika.lims.config import PROJECTNAME
-from AccessControl import ClassSecurityInfo
-from bika.lims.interfaces import IAnalysisRequestsFolder
-from plone.app.folder import folder
-from zope.interface import implements
-from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
+from plone.app.folder.folder import ATFolder
+from Products.Archetypes import atapi
 
-schema = folder.ATFolderSchema.copy()
 
-class AnalysisRequestsFolder(folder.ATFolder):
-    implements(IAnalysisRequestsFolder)
-    schema = schema
-    displayContentsTab = False
-    security = ClassSecurityInfo()
-
-schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
+# BBB: Only kept for backwards compatibility
+class AnalysisRequestsFolder(ATFolder):
+    """
+    Fake folder for nav bar. Has the view browser/samples/view.py wired
+    Moved to senaite.core.content.samples
+    """
 
 atapi.registerType(AnalysisRequestsFolder, PROJECTNAME)

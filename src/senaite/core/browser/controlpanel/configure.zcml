@@ -13,6 +13,14 @@
       permission="senaite.core.permissions.ManageBika"
       layer="senaite.core.interfaces.ISenaiteCore"/>
 
+  <!-- Result Interpretation Templates View -->
+  <browser:page
+      for="senaite.core.content.interpretationtemplates.IInterpretationTemplates"
+      name="view"
+      class=".interpretationtemplates.InterpretationTemplatesView"
+      permission="senaite.core.permissions.ManageBika"
+      layer="senaite.core.interfaces.ISenaiteCore"
+  />
 
   <!-- Control Panel Overview -->
   <browser:page

@@ -77,15 +77,6 @@
       name="CCEmails"
       />
 
-  <!-- main site/analysisrequests view -->
-  <browser:page
-      for="bika.lims.interfaces.IAnalysisRequestsFolder"
-      name="base_view"
-      class="bika.lims.browser.analysisrequest.analysisrequests.AnalysisRequestsView"
-      permission="cmf.ListFolderContents"
-      layer="bika.lims.interfaces.IBikaLIMS"
-      />
-
   <!-- AR Main View -->
   <browser:page
       for="bika.lims.interfaces.IAnalysisRequest"

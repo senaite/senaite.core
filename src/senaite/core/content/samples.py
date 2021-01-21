@@ -18,27 +18,20 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from Products.CMFPlone.utils import get_installer
-from senaite.core.tests.base import BaseTestCase
+from plone.dexterity.content import Container
+from plone.supermodel import model
+from senaite.core.interfaces import IHideActionsMenu
+from senaite.core.interfaces import ISamples
+from zope.interface import implementer
 
 
-class TestSetup(BaseTestCase):
-    """Test Setup
+class ISamplesSchema(model.Schema):
+    """Schema and marker interface
     """
 
-    def test_is_senaite_core_installed(self):
-        qi = get_installer(self.portal)
-        self.assertTrue(qi.is_product_installed("senaite.core"))
 
-    def test_content_structure_exists(self):
-        existing = self.portal.objectIds()
-        self.assertTrue("clients" in existing)
-        self.assertTrue("methods" in existing)
-        self.assertTrue("samples" in existing)
-
-
-def test_suite():
-    from unittest import TestSuite, makeSuite
-    suite = TestSuite()
-    suite.addTest(makeSuite(TestSetup))
-    return suite
+@implementer(ISamples, ISamplesSchema, IHideActionsMenu)
+class Samples(Container):
+    """A fake container for samples displayed in the navigation bar.
+    Has the view browser/samples/view.py wired
+    """

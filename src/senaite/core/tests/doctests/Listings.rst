@@ -114,14 +114,14 @@ Listing View
 ............
 
 
-    >>> from bika.lims.browser.bika_listing import BikaListingView
-    >>> context = portal.analysisrequests
+    >>> from senaite.app.listing.view import ListingView
+    >>> context = portal.samples
     >>> request = self.request
-    >>> listing = BikaListingView(context, request)
+    >>> listing = ListingView(context, request)
     >>> listing
-    <bika.lims.browser.bika_listing.BikaListingView object at 0x...>
+    <senaite.app.listing.view.ListingView object at 0x...>
 
-Setup the view to behave like the `AnalysisRequestsView`:
+Setup the view to behave like the `SamplesView`:
 
     >>> from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 

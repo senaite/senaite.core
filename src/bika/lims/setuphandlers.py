@@ -28,7 +28,7 @@ from bika.lims.catalog import getCatalogDefinitions
 from bika.lims.catalog import setup_catalogs
 from bika.lims.catalog.catalog_utilities import addZCTextIndex
 from plone import api as ploneapi
-
+from senaite.core.upgrade.utils import temporary_allow_type
 
 PROFILE_ID = "profile-bika.lims:default"
 
@@ -293,6 +293,7 @@ def setup_handler(context):
     setup_groups(portal)
     setup_catalog_mappings(portal)
     setup_core_catalogs(portal)
+    add_dexterity_portal_items(portal)
     add_dexterity_setup_items(portal)
     # XXX P5: Fix HTML filtering
     # setup_html_filter(portal)
@@ -492,19 +493,32 @@ def setup_form_controller_actions(portal):
         action_arg="python:object.aq_inner.aq_parent.absolute_url()")
 
 
+def add_dexterity_portal_items(portal):
+    """Adds the Dexterity Container in the Site folder
+
+    N.B.: We do this in code, because adding this as Generic Setup Profile in
+          `profiles/default/structure` flushes the contents on every import.
+    """
+    # Tuples of ID, Title, FTI
+    items = [
+        ("samples",  # ID
+         "Samples",  # Title
+         "Samples"),  # FTI
+    ]
+    add_dexterity_items(portal, items)
+
+    # Move Samples after Clients nav item
+    position = portal.getObjectPosition("clients")
+    portal.moveObjectToPosition("samples", position + 1)
+    portal.plone_utils.reindexOnReorder(portal)
+
+
 def add_dexterity_setup_items(portal):
     """Adds the Dexterity Container in the Setup Folder
 
     N.B.: We do this in code, because adding this as Generic Setup Profile in
           `profiles/default/structure` flushes the contents on every import.
     """
-    setup = api.get_setup()
-    pt = api.get_tool("portal_types")
-    ti = pt.getTypeInfo(setup)
-
-    # Disable content type filtering
-    ti.filter_content_types = False
-
     # Tuples of ID, Title, FTI
     items = [
         ("dynamic_analysisspecs",  # ID
@@ -515,18 +529,23 @@ def add_dexterity_setup_items(portal):
          "Interpretation Templates",
          "InterpretationTemplates")
     ]
+    setup = api.get_setup()
+    add_dexterity_items(setup, items)
 
+
+def add_dexterity_items(container, items):
+    """Adds a dexterity item, usually a folder in the container
+    :param container: container of the items to add
+    :param items: tuple of Id, Title, FTI
+    """
     for id, title, fti in items:
-        obj = setup.get(id)
-        if setup.get(id) is None:
-            logger.info("Adding Setup Item for '{}'".format(id))
-            setup.invokeFactory(fti, id, title=title)
+        obj = container.get(id)
+        if obj is None:
+            with temporary_allow_type(container, fti) as ct:
+                obj = api.create(ct, fti, id=id, title=title)
         else:
             obj.setTitle(title)
-            obj.reindexObject()
-
-    # Enable content type filtering
-    ti.filter_content_types = True
+        obj.reindexObject()
 
 
 def setup_html_filter(portal):

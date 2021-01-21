@@ -1,6 +1,5 @@
 <configure
     xmlns="http://namespaces.zope.org/zope"
-    xmlns:browser="http://namespaces.zope.org/browser"
     xmlns:plone="http://namespaces.plone.org/plone"
     i18n_domain="senaite.core">
 
@@ -16,7 +15,6 @@
   <!-- Package includes -->
   <include package=".attachment"/>
   <include package=".bootstrap"/>
-  <include package=".content"/>
   <include package=".contentmenu"/>
   <include package=".contentrules"/>
   <include package=".controlpanel"/>
@@ -31,6 +29,7 @@
   <include package=".login"/>
   <include package=".main_template"/>
   <include package=".portlets"/>
+  <include package=".samples"/>
   <include package=".viewlets"/>
   <include package=".widgets"/>
 

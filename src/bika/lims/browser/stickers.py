@@ -53,7 +53,7 @@ class Sticker(BrowserView):
 
        - path: addon/stickers/configure.zcml
            ...
-           **Defining stickers for samples, analysisrequests and partitions
+           **Defining stickers for samples and partitions
            <plone:static
              directory="templates"
              type="stickers"

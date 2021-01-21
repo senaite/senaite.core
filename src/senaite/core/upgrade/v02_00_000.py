@@ -58,6 +58,7 @@ version = "2.0.0"  # Remember version number in metadata.xml and setup.py
 profile = "profile-{0}:default".format(product)
 
 REMOVE_AT_TYPES = [
+    "AnalysisRequestsFolder",
     "InstrumentLocation",
     "InstrumentLocations",
     "ReflexRule",
@@ -214,6 +215,10 @@ def upgrade(tool):
     # Convert Instrument Locations to DX
     # https://github.com/senaite/senaite.core/pull/1705
     convert_instrumentlocations_to_dx(portal)
+
+    # Convert AnalysisRequestsFolder to DX
+    # https://github.com/senaite/senaite.core/pull/1739
+    convert_analysisrequestsfolder_to_dx(portal)
 
     # Remove analysis services from CMFEditions auto versioning
     # https://github.com/senaite/senaite.core/pull/1708
@@ -630,6 +635,48 @@ def convert_instrumentlocations_to_dx(portal):
     delete_object(old)
 
     logger.info("Convert Instrument Locations to Dexterity ... [DONE]")
+
+
+def convert_analysisrequestsfolder_to_dx(portal):
+    """Converts AnalysisRequestsFolder to Dexterity
+    """
+    logger.info("Convert AnalysisRequestsFolder to Dexterity ...")
+
+    old_id = "analysisrequests"
+    new_id = "samples"
+    new_title = "Samples"
+
+    old = portal.get(old_id)
+
+    # return if the old container is already gone
+    if not old:
+        return
+
+    # uncatalog the old object
+    uncatalog_object(old)
+
+    # get the new container
+    new = portal.get(new_id)
+
+    # create the new container if it is not there
+    if not new:
+        # temporarily allow to create objects in setup
+        with temporary_allow_type(portal, "Samples") as container:
+            new = api.create(container, "Samples", id=new_id, title=new_title)
+        new.reindexObject()
+
+    # copy snapshots for the container
+    copy_snapshots(old, new)
+
+    # delete the old object
+    delete_object(old)
+
+    # Move the object after Clients nav item
+    position = portal.getObjectPosition("clients")
+    portal.moveObjectToPosition("samples", position + 1)
+    portal.plone_utils.reindexOnReorder(portal)
+
+    logger.info("Convert AnalysisRequestsFolder to Dexterity ... [DONE]")
 
 
 def remove_services_from_repositorytool(portal):
