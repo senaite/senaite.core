@@ -4,10 +4,14 @@
 
   <!-- remove old AT based types -->
   <object remove="True" name="AnalysisRequestsFolder" meta_type="Factory-based Type Information with dynamic views"/>
+  <object remove="True" name="ClientFolder" meta_type="Factory-based Type Information with dynamic views"/>
   <object remove="True" name="InstrumentLocation" meta_type="Factory-based Type Information with dynamic views"/>
   <object remove="True" name="InstrumentLocations" meta_type="Factory-based Type Information with dynamic views"/>
   <object remove="True" name="ReflexRuleFolder" meta_type="Factory-based Type Information with dynamic views"/>
   <object remove="True" name="ReflexRule" meta_type="Factory-based Type Information with dynamic views"/>
+
+  <!-- Clients -->
+  <object name="Clients" meta_type="Dexterity FTI" />
 
   <!-- Samples -->
   <object name="Samples" meta_type="Dexterity FTI" />

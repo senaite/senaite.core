@@ -28,7 +28,7 @@
       <default>
         <element>WorksheetFolder</element>
         <element>BatchFolder</element>
-        <element>ClientFolder</element>
+        <element>Clients</element>
         <element>Methods</element>
         <element>Folder</element>
         <element>Samples</element>
@@ -45,7 +45,7 @@
       <!-- Work Items -->
       <element>Samples</element>
       <element>BatchFolder</element>
-      <element>ClientFolder</element>
+      <element>Clients</element>
       <element>Folder</element>
       <element>Methods</element>
       <element>WorksheetFolder</element>

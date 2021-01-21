@@ -454,7 +454,7 @@ schema = BikaFolderSchema.copy() + Schema((
         allowed_types=(
             "Document",
             "Client",
-            "ClientFolder",
+            "Clients",
             "Samples",
             "WorksheetFolder",
         ),

@@ -4,7 +4,8 @@ Changelog
 2.0.0 (unreleased)
 ------------------
 
-- #1739 Migrated samples folder to Dexterity
+- #1740 Migrate clients folder to Dexterity
+- #1739 Migrate samples folder to Dexterity
 - #1738 Resolve attachment images by UID
 - #1734 Allow to drag&drop images in tinymce
 - #1733 Allow results interpretation in sample received state

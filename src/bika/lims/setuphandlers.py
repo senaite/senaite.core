@@ -501,11 +501,13 @@ def add_dexterity_portal_items(portal):
     """
     # Tuples of ID, Title, FTI
     items = [
-        ("samples",  # ID
-         "Samples",  # Title
-         "Samples"),  # FTI
+        ("clients", "Clients", "Clients"),
+        ("samples",  "Samples",  "Samples"),
     ]
     add_dexterity_items(portal, items)
+
+    # Move Clients at first position of the navbar
+    portal.moveObjectToPosition("clients", 1)
 
     # Move Samples after Clients nav item
     position = portal.getObjectPosition("clients")

@@ -22,6 +22,7 @@ from zope.interface import Interface
 
 # BBB: Only kept for backwards compatibility
 from senaite.core.interfaces import ISamples as IAnalysisRequestsFolder
+from senaite.core.interfaces import IClients as IClientFolder
 
 
 class ISenaiteSiteRoot(Interface):
@@ -83,11 +84,6 @@ class IGenerateID(Interface):
 
 class IHaveNoBreadCrumbs(Interface):
     """Items which do not display breadcrumbs
-    """
-
-
-class IClientFolder(Interface):
-    """Client folder
     """
 
 

@@ -17,16 +17,3 @@
 #
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
-
-from bika.lims.config import PROJECTNAME
-from plone.app.folder import folder
-from Products.Archetypes import atapi
-
-
-# BBB: Only kept for backwards compatibility
-class ClientFolder(folder.ATFolder):
-    """
-    Moved to senaite.core.content.clients
-    """
-
-atapi.registerType(ClientFolder, PROJECTNAME)

@@ -74,3 +74,8 @@ class IAjaxEditForm(Interface):
 class ISamples(Interface):
     """Marker interface for samples main folder
     """
+
+
+class IClients(Interface):
+    """Marker interface for clients folder
+    """

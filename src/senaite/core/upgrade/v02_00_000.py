@@ -24,6 +24,9 @@ import time
 import traceback
 
 import transaction
+from Acquisition import aq_base
+from Acquisition import aq_inner
+from Acquisition import aq_parent
 from bika.lims import api
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
@@ -31,6 +34,7 @@ from bika.lims.catalog import CATALOG_WORKSHEET_LISTING
 from bika.lims.catalog import SETUP_CATALOG
 from bika.lims.setuphandlers import add_dexterity_setup_items
 from bika.lims.utils import changeWorkflowState
+from OFS.event import ObjectWillBeMovedEvent
 from plone.dexterity.fti import DexterityFTI
 from Products.Archetypes.config import UID_CATALOG
 from Products.CMFEditions.interfaces import IVersioned
@@ -38,13 +42,13 @@ from senaite.core import logger
 from senaite.core.config import PROJECTNAME as product
 from senaite.core.setuphandlers import _run_import_step
 from senaite.core.upgrade import upgradestep
-from senaite.core.upgrade.utils import UpgradeUtils
 from senaite.core.upgrade.utils import catalog_object
 from senaite.core.upgrade.utils import copy_snapshots
 from senaite.core.upgrade.utils import delete_object
 from senaite.core.upgrade.utils import set_uid
 from senaite.core.upgrade.utils import temporary_allow_type
 from senaite.core.upgrade.utils import uncatalog_object
+from senaite.core.upgrade.utils import UpgradeUtils
 from senaite.core.workflow import ANALYSIS_WORKFLOW
 from senaite.core.workflow import DUPLICATE_ANALYSIS_WORKFLOW
 from senaite.core.workflow import REFERENCE_ANALYSIS_WORKFLOW
@@ -52,7 +56,10 @@ from senaite.core.workflow import REFERENCE_SAMPLE_WORKFLOW
 from senaite.core.workflow import REJECT_ANALYSIS_WORKFLOW
 from senaite.core.workflow import SAMPLE_WORKFLOW
 from senaite.core.workflow import WORKSHEET_WORKFLOW
+from zope.container.contained import notifyContainerModified
+from zope.event import notify
 from zope.interface import noLongerProvides
+from zope.lifecycleevent import ObjectMovedEvent
 
 version = "2.0.0"  # Remember version number in metadata.xml and setup.py
 profile = "profile-{0}:default".format(product)
@@ -215,6 +222,10 @@ def upgrade(tool):
     # Convert Instrument Locations to DX
     # https://github.com/senaite/senaite.core/pull/1705
     convert_instrumentlocations_to_dx(portal)
+
+    # Convert ClientFolder to DX
+    # https://github.com/senaite/senaite.core/pull/1740
+    convert_clientfolder_to_dx(portal)
 
     # Convert AnalysisRequestsFolder to DX
     # https://github.com/senaite/senaite.core/pull/1739
@@ -635,6 +646,92 @@ def convert_instrumentlocations_to_dx(portal):
     delete_object(old)
 
     logger.info("Convert Instrument Locations to Dexterity ... [DONE]")
+
+
+def convert_clientfolder_to_dx(portal):
+    """Converts existing Instrument Locations to Dexterity
+    """
+    logger.info("Convert ClientFolder to Dexterity ...")
+
+    dx_id = "clients"
+    fti = "Clients"
+    title = "Clients"
+
+    old = portal.get(dx_id)
+
+    # return if the container is a DX type already
+    if api.is_dexterity_content(old):
+        return
+
+    # uncatalog the old object
+    uncatalog_object(old)
+
+    # Make room for the new id
+    tmp_id = "{}_tmp".format(dx_id)
+    old.setId(tmp_id)
+
+    # create the new container
+    with temporary_allow_type(portal, fti) as container:
+        new = api.create(container, fti, id=dx_id, title=title)
+    new.reindexObject()
+
+    # move items from old -> new container
+    # Note that we don't care here if the children are ATs
+    for src in old.objectValues():
+        logger.info("Moving {} ...".format(api.get_path(src)))
+        obj = move_obj(src, new)
+        catalog_object(obj)
+
+    # copy snapshots for the container
+    copy_snapshots(old, new)
+
+    # delete the old object
+    delete_object(old)
+
+    # Move to the first position of the navbar
+    portal.moveObjectToPosition("clients", 1)
+    portal.plone_utils.reindexOnReorder(portal)
+
+    logger.info("Convert ClientFolder to Dexterity ... [DONE]")
+
+
+def move_obj(ob, destination):
+    """
+    This function has the same effect as:
+
+        id = obj.getId()
+        cp = origin.manage_cutObjects(id)
+        destination.manage_pasteObjects(cp)
+
+    but with slightly better performance and **without permission checks**. The
+    code is mostly grabbed from OFS.CopySupport.CopyContainer_pasteObjects
+    """
+    id = ob.getId()
+
+    # Notify the object will be copied to destination
+    ob._notifyOfCopyTo(destination, op=1)
+
+    # Notify that the object will be moved
+    origin = aq_parent(aq_inner(ob))
+    notify(ObjectWillBeMovedEvent(ob, origin, id, destination, id))
+
+    # Effectively move the object from origin to destination
+    origin._delObject(id, suppress_events=True)
+    ob = aq_base(ob)
+    destination._setObject(id, ob, set_owner=0, suppress_events=True)
+    ob = destination._getOb(id)
+
+    # Since we used "suppress_events=True", we need to manually notify that the
+    # object has been moved and containers modified. This also makes the objects
+    # to be re-catalogued
+    notify(ObjectMovedEvent(ob, origin, id, destination, id))
+    notifyContainerModified(origin)
+    notifyContainerModified(destination)
+
+    # Try to make ownership implicit if possible, so it acquires the permissions
+    # from the container
+    ob.manage_changeOwnershipType(explicit=0)
+    return ob
 
 
 def convert_analysisrequestsfolder_to_dx(portal):

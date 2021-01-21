@@ -18,15 +18,19 @@
 # Copyright 2018-2021 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from bika.lims.config import PROJECTNAME
-from plone.app.folder import folder
-from Products.Archetypes import atapi
+from plone.dexterity.content import Container
+from plone.supermodel import model
+from senaite.core.interfaces import IClients
+from senaite.core.interfaces import IHideActionsMenu
+from zope.interface import implementer
 
 
-# BBB: Only kept for backwards compatibility
-class ClientFolder(folder.ATFolder):
+class IClientsSchema(model.Schema):
+    """Clients' Schema inerface
     """
-    Moved to senaite.core.content.clients
-    """
 
-atapi.registerType(ClientFolder, PROJECTNAME)
+
+@implementer(IClients, IClientsSchema, IHideActionsMenu)
+class Clients(Container):
+    """Container of Client objects
+    """

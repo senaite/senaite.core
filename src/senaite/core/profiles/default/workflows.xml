@@ -282,7 +282,7 @@
     <type type_id="Client">
       <bound-workflow workflow_id="senaite_client_workflow"/>
     </type>
-    <type type_id="ClientFolder">
+    <type type_id="Clients">
       <bound-workflow workflow_id="senaite_clients_workflow"/>
     </type>
     <type type_id="Contact">

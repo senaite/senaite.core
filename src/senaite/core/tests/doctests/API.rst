@@ -486,12 +486,12 @@ Getting the Parent Object
 This function returns the parent object::
 
     >>> api.get_parent(client)
-    <ClientFolder at /plone/clients>
+    <Clients at /plone/clients>
 
 Brains are also supported::
 
     >>> api.get_parent(brain)
-    <ClientFolder at /plone/clients>
+    <Clients at /plone/clients>
 
 The function can also use a catalog query on the `portal_catalog` and return a
 brain, if the passed parameter `catalog_search` was set to true. ::
@@ -527,7 +527,7 @@ This function unifies all SENAITE LIMS catalog to a single search interface::
 
 Multiple content types are also supported::
 
-    >>> results = api.search({'portal_type': ['Client', 'ClientFolder'], 'sort_on': 'getId'})
+    >>> results = api.search({'portal_type': ['Client', 'Clients'], 'sort_on': 'getId'})
     >>> map(api.get_id, results)
     ['client-1', 'clients']
 
@@ -548,7 +548,7 @@ Now we create some objects which are located in the `bika_setup_catalog`::
 Queries which result in multiple catalogs will be refused, as it would require
 manual merging and sorting of the results afterwards. Thus, we fail here:
 
-    >>> results = api.search({'portal_type': ['Client', 'ClientFolder', 'Instrument'], 'sort_on': 'getId'})
+    >>> results = api.search({'portal_type': ['Client', 'Clients', 'Instrument'], 'sort_on': 'getId'})
     Traceback (most recent call last):
     [...]
     APIError: Multi Catalog Queries are not supported!
